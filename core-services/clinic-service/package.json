@@ -1,18 +1,19 @@
 {
-    "name": "clinic-service-api",
-    "private": true,
-    "version": "1.0.0",
-    "description": "Serverless api for managing PETs clinics",
-    "scripts": {
-      "test": "glob -c \"node --loader tsx --test\" \"./src/**/*.test.ts\""
-    },
-    "dependencies": {},
-    "devDependencies": {
-      "@types/node": "^18.0.0",
-      "typescript": "^5.1.6",
-      "tsx": "^3.12.7",
-      "glob": "^10.3.3",
-      "serverless": "^3.34.0",
-      "serverless-offline": "^12.0.4"
-    }
+  "name": "clinic-service",
+  "private": true,
+  "version": "1.0.0",
+  "description": "AWS lambda for managing PETs clinics using serverless framework",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.585.0",
+    "@aws-sdk/lib-dynamodb": "^3.585.0",
+    "express": "^4.19.2",
+    "global": "^4.4.0",
+    "serverless-dynamodb": "^0.2.54",
+    "serverless-http": "^3.2.0",
+    "serverless-offline-aws-eventbridge": "^2.1.0"
+  },
+  "devDependencies": {
+    "serverless-offline": "^13.6.0",
+    "serverless-plugin-tracing": "^2.0.0"
   }
+}

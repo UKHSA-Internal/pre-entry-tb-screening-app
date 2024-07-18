@@ -1,0 +1,95 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: ukhsapets
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: pets-clinic-aws-serverless
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: clinic-service
+
+stages:
+  default:
+    params:
+      tableName: "pets-local-clinics"
+
+plugins:
+  - Serverless-dynamodb
+  - serverless-plugin-tracing
+  - serverless-offline
+  - serverless-offline-aws-eventbridge
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - Fn::GetAtt: [clinicsTable, Arn]
+        - Effect: "Allow"
+          Action:
+            - "xray:PutTraceSegments"
+            - "xray:PutTelemetryRecords"
+          Resource:
+            - "*"
+  environment:
+    USERS_TABLE: ${param:tableName}
+
+functions:
+  getClinics:
+    environment:
+      BRANCH: local
+    handler: handler.handler
+    events:
+      - httpApi: "*"
+
+resources:
+  Resources:
+    clinicsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: petsClinicId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: petsClinicId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${param:tableName}
+
+custom:
+  serverless-offline:
+      httpPort: 3004
+  serverless-dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8007
+      #docker: false
+      inMemory: true
+      migrate: true
+      seed: true
+      noStart: false
+      host: 127.0.0.1
+    seed:
+      pets-local-clinics:
+        sources:
+          - table: "pets-local-clinics"
+            sources: [./test/resources/pets-clinics.json]
+  serverless-offline-aws-eventbridge:
+    port: 4010 # port to run the eventBridge mock server on
+    mockEventBridgeServer: true # Set to false if EventBridge is already mocked by another stack
+    hostname: 127.0.0.1 # IP or hostname of existing EventBridge if mocked by another stack
+    pubSubPort: 4011 # Port to run the MQ server (or just listen if using an EventBridge Mock server from another stack)
+    debug: true # flag to show debug messages
+    account: '1234567' # account id that gets passed to the event
+    maximumRetryAttempts: 10 # maximumRetryAttempts to retry lambda
+    retryDelayMs: 500 # retry delay
+    throwRetryExhausted: false # default true
+    payloadSizeLimit: "10mb" # Controls the maximum payload size being passed to https://www.npmjs.com/package/bytes (Note: this payload size might not be the same size as your AWS Eventbridge receive)
