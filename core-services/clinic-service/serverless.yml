@@ -18,7 +18,12 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs20.x
+  runtime: nodejs18.x
+  tracing:
+    apiGateway: true
+    lambda: true
+  region: eu-west-2
+  stage: dev
   iam:
     role:
       statements:
@@ -39,7 +44,7 @@ provider:
           Resource:
             - "*"
   environment:
-    USERS_TABLE: ${param:tableName}
+    CLINICS_TABLE: ${param:tableName}
 
 functions:
   getClinics:
@@ -47,7 +52,21 @@ functions:
       BRANCH: local
     handler: handler.handler
     events:
-      - httpApi: "*"
+      # - httpApi: "*"
+      - http:
+          path: clinics/{petsClinicId}
+          method: get
+          request:
+            parameters:
+              paths:
+                petsClinicId: true
+      - http:
+          path: clinics
+          method: get
+      - eventBridge:
+          pattern:
+            source:
+              - ukhsa.update.pets.clinics
 
 resources:
   Resources:
@@ -69,6 +88,7 @@ custom:
   serverless-dynamodb:
     stages:
       - dev
+      - test
     start:
       port: 8007
       #docker: false

@@ -4,6 +4,7 @@ const {
   DynamoDBDocumentClient,
   GetCommand,
   PutCommand,
+  ScanCommand
 } = require("@aws-sdk/lib-dynamodb");
 
 const express = require("express");
@@ -11,57 +12,51 @@ const serverless = require("serverless-http");
 
 const app = express();
 
-const USERS_TABLE = process.env.USERS_TABLE;
-const client = new DynamoDBClient();
+const CLINICS_TABLE = "pets-local-clinics";
+const client = new DynamoDBClient({ region: "localhost", endpoint: "http://127.0.0.1:8007"});
 const docClient = DynamoDBDocumentClient.from(client);
 
 app.use(express.json());
 
-app.get("/users/:userId", async (req, res) => {
+app.get("/clinics/:petsClinicId", async (req, res) => {
+  console.log(`${req.params.petsClinicId} ----- pets clinic id requested!!!`)
   const params = {
-    TableName: USERS_TABLE,
+    TableName: CLINICS_TABLE,
     Key: {
-      userId: req.params.userId,
+      petsClinicId: `${req.params.petsClinicId}`,
     },
   };
 
   try {
     const command = new GetCommand(params);
     const { Item } = await docClient.send(command);
+    console.log(`${Item} --- response from db`);
     if (Item) {
-      const { userId, name } = Item;
-      res.json({ userId, name });
+      const { petsClinicId, name } = Item;
+      res.json({ petsClinicId, name });
     } else {
       res
         .status(404)
-        .json({ error: 'Could not find user with provided "userId"' });
+        .json({ error: 'Could not find clinic with provided "petsClinicId"' });
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "Could not retrieve user" });
+    res.status(500).json({ error: "Could not retrieve clinic" });
   }
 });
 
-app.post("/users", async (req, res) => {
-  const { userId, name } = req.body;
-  if (typeof userId !== "string") {
-    res.status(400).json({ error: '"userId" must be a string' });
-  } else if (typeof name !== "string") {
-    res.status(400).json({ error: '"name" must be a string' });
-  }
-
+app.get("/clinics", async (req, res) => {
   const params = {
-    TableName: USERS_TABLE,
-    Item: { userId, name },
+    TableName: CLINICS_TABLE
   };
 
   try {
-    const command = new PutCommand(params);
-    await docClient.send(command);
-    res.json({ userId, name });
+    const command = new ScanCommand(params);
+    const { Items } = await docClient.send(command);
+    res.json(Items);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Could not create user" });
+    res.status(500).json({ error: "Could not retrieve all clinics" });
   }
 });
 
