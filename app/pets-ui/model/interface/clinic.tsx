@@ -1,17 +1,17 @@
 export default interface ClinicInterface {
-    testStationId: string
-    testStationPNumber: string
-    testStationStatus: string
-    testStationName: string
-    testStationContactNumber: string
-    testStationAccessNotes: string
-    testStationGeneralNotes: string
-    testStationTown: string
-    testStationAddress: string
-    testStationPostcode: string
-    testStationCountry: string
-    testStationLongitude: string
-    testStationLatitude: string
-    testStationType: string
-    testStationEmails: string[]
+    petsClinicId: string
+    petsClinicPNumber: string
+    petsClinicStatus: string
+    petsClinicName: string
+    petsClinicContactNumber: string
+    petsClinicAccessNotes: string
+    petsClinicGeneralNotes: string
+    petsClinicTown: string
+    petsClinicAddress: string
+    petsClinicPostcode: string
+    petsClinicCountry: string
+    petsClinicLongitude: string
+    petsClinicLatitude: string
+    petsClinicType: string
+    petsClinicEmails: string[]
 }

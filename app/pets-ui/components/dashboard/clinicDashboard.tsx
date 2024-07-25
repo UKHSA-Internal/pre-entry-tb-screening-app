@@ -1,24 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-// import ClinicInterface from "../../model/interface/clinic";
-
-interface ClinicInterface {
-  testStationId: string
-  testStationPNumber: string
-  testStationStatus: string
-  testStationName: string
-  testStationContactNumber: string
-  testStationAccessNotes: string
-  testStationGeneralNotes: string
-  testStationTown: string
-  testStationAddress: string
-  testStationPostcode: string
-  testStationCountry: string
-  testStationLongitude: string
-  testStationLatitude: string
-  testStationType: string
-  testStationEmails: string[]
-}
+import ClinicInterface from "../../model/interface/clinic";
 
 export default function ClinicDashboard() {
   const [data, setData] = useState<any>(null)
@@ -49,26 +31,26 @@ export default function ClinicDashboard() {
           </tr>
       </thead>
       {data.map((clinic: ClinicInterface) => 
-        (<tbody className="govuk-table__body" key={clinic.testStationId}>
+        (<tbody className="govuk-table__body" key={clinic.petsClinicId}>
           <tr className="govuk-table__row">
             <th scope="row" className="govuk-table__header">Clinic ID</th>
-            <td className="govuk-table__cell">{clinic.testStationId}</td>
+            <td className="govuk-table__cell">{clinic.petsClinicId}</td>
           </tr>
           <tr className="govuk-table__row">
             <th scope="row" className="govuk-table__header">Clinic Name</th>
-            <td className="govuk-table__cell">{clinic.testStationName}</td>
+            <td className="govuk-table__cell">{clinic.petsClinicName}</td>
           </tr>
           <tr className="govuk-table__row">
             <th scope="row" className="govuk-table__header">Clinic Status</th>
-            <td className="govuk-table__cell">{clinic.testStationStatus}</td>
+            <td className="govuk-table__cell">{clinic.petsClinicStatus}</td>
           </tr>
           <tr className="govuk-table__row">
             <th scope="row" className="govuk-table__header">Clinic State/Town</th>
-            <td className="govuk-table__cell">{clinic.testStationTown}</td>
+            <td className="govuk-table__cell">{clinic.petsClinicTown}</td>
           </tr>
           <tr className="govuk-table__row">
             <th scope="row" className="govuk-table__header">Clinic Country</th>
-            <td className="govuk-table__cell">{clinic.testStationCountry}</td>
+            <td className="govuk-table__cell">{clinic.petsClinicCountry}</td>
           </tr>
           <br/>
         </tbody>)
