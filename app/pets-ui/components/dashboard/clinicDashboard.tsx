@@ -7,7 +7,7 @@ export default function ClinicDashboard() {
   const [isLoading, setLoading] = useState(true)
  
   useEffect(() => {
-    fetch('http://localhost:3004/test-stations')
+    fetch('http://localhost:3004/dev/clinics')
       .then((res) => res.json())
       .then((data) => {
         console.log(data)
