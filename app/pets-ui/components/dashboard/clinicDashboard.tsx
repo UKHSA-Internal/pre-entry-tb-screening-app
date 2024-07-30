@@ -1,13 +1,13 @@
 'use client'
 import { useState, useEffect } from 'react'
-import ClinicInterface from "../../model/interface/clinic";
+import ClinicInterface from "@model/interface/clinic";
 
 export default function ClinicDashboard() {
   const [data, setData] = useState<any>(null)
   const [isLoading, setLoading] = useState(true)
  
   useEffect(() => {
-    fetch('http://localhost:3004/test-stations')
+    fetch('http://localhost:3004/dev/clinics')
       .then((res) => res.json())
       .then((data) => {
         console.log(data)
