@@ -67,6 +67,14 @@ const mockResponseMultipleClinics = JSON.stringify([
 ])
 
 describe('Dashboard component', () => {
+    it('renders correctly when fetch returns no data', async () => {
+        const mockResponse = JSON.stringify(null)
+        fetchMock.mockResponseOnce(mockResponse)
+        render(<ClinicDashboard/>)
+        expect(screen.getByText("Loading...")).toBeTruthy()
+        expect(await screen.findByText("No clinic data")).toBeTruthy()
+    })
+    
     it('renders correctly when fetch returns a single clinic', async () => {
         fetchMock.mockResponseOnce(mockResponseSingleClinic)
         render(<ClinicDashboard/>)
