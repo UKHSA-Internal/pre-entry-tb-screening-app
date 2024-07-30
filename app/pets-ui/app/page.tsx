@@ -1,4 +1,4 @@
-import ClinicsDashboard from '../components/dashboard/clinicDashboard';
+import ClinicsDashboard from '@components/dashboard/clinicDashboard';
 
 export default function Home() {
 	return (

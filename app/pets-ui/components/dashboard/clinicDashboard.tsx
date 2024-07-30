@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import ClinicInterface from "../../model/interface/clinic";
+import ClinicInterface from "@model/interface/clinic";
 
 export default function ClinicDashboard() {
   const [data, setData] = useState<any>(null)
