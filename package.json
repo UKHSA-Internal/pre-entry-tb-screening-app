@@ -2,6 +2,9 @@
   "private": "true",
   "name": "pets-monorepo",
   "version": "1.0.0",
+  "scripts": {
+    "security-checks": "git secrets --scan"
+  },
   "main": "index.js",
   "repository": "git@github.com:UKHSA-Internal/pre-entry-tb-screening-app.git",
   "author": "Tomide Fasugba",
