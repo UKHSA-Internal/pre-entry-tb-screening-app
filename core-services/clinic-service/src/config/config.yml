@@ -1,0 +1,14 @@
+#dynamodb:
+#  local:
+#    params:
+#      region: localhost
+#      endpoint: http://127.0.0.1:8000
+#    table: pets-local-clinics
+#  local-global:
+#    params:
+#      region: localhost
+#      endpoint: http://127.0.0.1:8000
+#    table: pets-local-global-clinics
+#  remote:
+#    params: {}
+#    table: pets-${BRANCH}-clinics
