@@ -13,6 +13,7 @@ stages:
 plugins:
   - Serverless-dynamodb
   - serverless-plugin-tracing
+  - serverless-auto-swagger
   - serverless-offline
   - serverless-offline-aws-eventbridge
 
@@ -83,8 +84,12 @@ resources:
         TableName: ${param:tableName}
 
 custom:
+  autoswagger:
+    basePath: "/dev"
+    useStage: true
+    # excludeStages: ["test"]
   serverless-offline:
-      httpPort: 3004
+    httpPort: 3004
   serverless-dynamodb:
     stages:
       - dev
@@ -108,7 +113,7 @@ custom:
     hostname: 127.0.0.1 # IP or hostname of existing EventBridge if mocked by another stack
     pubSubPort: 4011 # Port to run the MQ server (or just listen if using an EventBridge Mock server from another stack)
     debug: true # flag to show debug messages
-    account: '1234567' # account id that gets passed to the event
+    account: "1234567" # account id that gets passed to the event
     maximumRetryAttempts: 10 # maximumRetryAttempts to retry lambda
     retryDelayMs: 500 # retry delay
     throwRetryExhausted: false # default true
