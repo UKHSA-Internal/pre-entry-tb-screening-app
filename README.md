@@ -16,8 +16,7 @@
     	- `git checkout main`
     	- `git branch git-secrets-test`
     	- `git checkout git-secrets-test`
-	- create a file named test.txt with the following contents: ACCESS_KEY_ID="AKIA-IOSFODNN7-ABCDPLE"
-	- remove the dashes so that the string inside the double quotes has 20 characters
+	- create a file named test.txt with the following contents: ACCESS_KEY_ID="****IOSFODNN7ABCDPLE", replacing the asterisks with "AKIA" to mimic an AWS Access Key
 	- attempt to commit this change:
     	- you should receive the following error: "[ERROR] Matched one or more prohibited patterns", and the commit should fail
 	- change the file contents to ACCESS_KEY_ID="AKIAIOSFODNN7EXAMPLE"
