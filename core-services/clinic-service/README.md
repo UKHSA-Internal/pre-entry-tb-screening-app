@@ -89,6 +89,12 @@ Now you can invoke the function as before, but this time the function will be ex
 
 When you are done developing, don't forget to run `serverless deploy` to deploy the function to the cloud.
 
+## Starting the service
+
+On Windows use `yarn run start` to start the service
+
+On macOS/Linux use `yarn run start-m` to start the service
+
 ## Swagger Docs
 
 After starting the service, go to http://localhost:3004/dev/swagger to view the Swagger Docs. These docs will be automatically updated after changes to endpoints.

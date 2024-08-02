@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "description": "AWS lambda for managing PETs clinics using serverless framework",
   "scripts": {
-    "start": "BRANCH=local SLS_DEBUG=* serverless offline start"
+    "start": "serverless offline start --verbose",
+    "start-m": "BRANCH=local SLS_DEBUG=* serverless offline start"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.585.0",

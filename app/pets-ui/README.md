@@ -34,3 +34,11 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## Unit Tests
+
+Unit tests are run using Jest (with Babel for Typescript support).
+
+To run all unit tests use `yarn run test`.
+
+To run a subset of tests append the names of files or folders to the command, i.e. use `yarn run test <name1> <name2> ...`. Note that the names should not include a path, they should be just the name of the file or folder.
