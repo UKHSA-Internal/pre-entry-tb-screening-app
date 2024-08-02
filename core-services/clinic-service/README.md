@@ -92,3 +92,7 @@ When you are done developing, don't forget to run `serverless deploy` to deploy 
 ## Swagger Docs
 
 After starting the service, go to http://localhost:3004/dev/swagger to view the Swagger Docs. These docs will be automatically updated after changes to endpoints.
+
+## Importing into Postman
+
+After starting the service, open Postman, click 'Import' in the top left and enter http://localhost:3004/dev/swagger.json into the popup to import all APIs into Postman as a collection.
