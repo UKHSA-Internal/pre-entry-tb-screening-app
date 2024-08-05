@@ -17,6 +17,7 @@
     "serverless-offline-aws-eventbridge": "^2.1.0"
   },
   "devDependencies": {
+    "serverless-auto-swagger": "^3.0.0",
     "serverless-offline": "^13.6.0",
     "serverless-plugin-tracing": "^2.0.0"
   }
