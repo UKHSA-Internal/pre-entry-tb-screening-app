@@ -32,7 +32,7 @@ jobs:
         run: yarn
       - name: Run unit tests
         run: yarn run test
-      # *add coverage check here*
+      # add coverage check here
       - name: Run eslint
         run: yarn run lint
 
