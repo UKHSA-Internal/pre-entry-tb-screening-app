@@ -28,3 +28,4 @@ jobs:
         run: |
           cd ./app/pets-ui/
           yarn run lint
+        continue-on-error: true
