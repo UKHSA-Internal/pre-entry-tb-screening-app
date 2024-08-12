@@ -46,14 +46,20 @@ jobs:
         run: yarn
       - name: Build application
         run: yarn run build
-
-      - name: Upload App to S3 Bucket
-        uses: jakejarvis/s3-sync-action@master
+      - name: Upload build artifact
+        run: actions/upload-artifact@v4
         with:
-          args: --follow-symlinks --delete
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_PETS_UI_S3_BUCKET_NAME }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "eu-west-2"
-          SOURCE_DIR: "app/pets-ui/build"
+          name: app-build
+          path: app/pets-ui/build
+          if-no-files-found: error
+
+      # - name: Upload App to S3 Bucket
+      #   uses: jakejarvis/s3-sync-action@master
+      #   with:
+      #     args: --follow-symlinks --delete
+      #   env:
+      #     AWS_S3_BUCKET: ${{ secrets.AWS_PETS_UI_S3_BUCKET_NAME }}
+      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     AWS_REGION: "eu-west-2"
+      #     SOURCE_DIR: "app/pets-ui/build"
