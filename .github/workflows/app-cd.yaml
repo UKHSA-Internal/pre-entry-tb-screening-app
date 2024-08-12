@@ -61,6 +61,11 @@ jobs:
     needs: [test-and-linting, build]
 
     steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-build
+          path: app/pets-ui/.next
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
