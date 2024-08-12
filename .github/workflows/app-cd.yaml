@@ -52,7 +52,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-build
-          path: app/pets-ui/build
+          path: app/pets-ui/.next
           if-no-files-found: error
 
       # - name: Upload App to S3 Bucket
