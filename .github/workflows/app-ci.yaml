@@ -20,6 +20,8 @@ jobs:
           cache: "yarn"
       - name: Install dependencies
         run: yarn
+      - name: Audit packages
+        run: yarn audit
       - name: Run unit tests
         run: |
           cd ./app/pets-ui/
