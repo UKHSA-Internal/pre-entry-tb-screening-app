@@ -67,6 +67,9 @@ jobs:
           aws-region: "eu-west-2"
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Upload App to S3
+        working-directory: app/pets-ui/.next
+        run: aws s3 sync . s3://${{ secrets.AWS_PETS_UI_S3_BUCKET_NAME }}
 
       # - name: Upload App to S3 Bucket
       #   uses: jakejarvis/s3-sync-action@master
