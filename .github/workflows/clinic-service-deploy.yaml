@@ -1,7 +1,9 @@
 name: Pets Clinic Service Deployment
 
 on:
-  merge:
+  pull_request:
+    types:
+      - closed
     branches: [main]
     paths: "core-services/clinic-service/**"
   workflow_dispatch:
