@@ -10,8 +10,8 @@ export interface IPetsClinic {
   petsClinicAddress: string
   petsClinicPostcode: string
   petsClinicCountry: string
-  petsClinicLongitude: string
-  petsClinicLatitude: string
+  petsClinicLongitude: number
+  petsClinicLatitude: number
   petsClinicType: string
   petsClinicEmails: string[]
 }

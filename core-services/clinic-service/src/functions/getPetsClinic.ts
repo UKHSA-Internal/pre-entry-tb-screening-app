@@ -1,10 +1,10 @@
 import { PetsClinicService } from "../services/PetsClinicService";
-import { PetsClinicDAO } from "../models/PetsClinicDAO";
-import { HTTPResponse } from "../models/HTTPResponse";
-import { HTTPError } from "../models/HTTPError";
-import { Validator } from "../utils/Validator";
+import PetsClinicDAO from "@models/dao/PetsClinicDAO";
+import { HTTPResponse } from "@models/HTTPResponse";
+import { HTTPError } from "@models/HTTPError";
+import { Validator } from "@utils/Validator";
 import { Handler } from "aws-lambda";
-import { ERRORS, HTTPRESPONSE } from "../utils/Enum";
+import { ERRORS, HTTP_RESPONSE } from "@utils/Enum";
 
 export const getPetsClinic: Handler = async (event) => {
   const petsClinicDAO = new PetsClinicDAO();
@@ -14,19 +14,20 @@ export const getPetsClinic: Handler = async (event) => {
 
   if (event.pathParameters) {
     if (!check.parametersAreValid(event.pathParameters)) {
-      return new HTTPResponse(400, HTTPRESPONSE.MISSING_PARAMETERS);
+      return new HTTPResponse(400, HTTP_RESPONSE.MISSING_PARAMETERS);
     }
   } else {
-    return new HTTPResponse(400, HTTPRESPONSE.MISSING_PARAMETERS);
+    return new HTTPResponse(400, HTTP_RESPONSE.MISSING_PARAMETERS);
   }
 
-  const testStationPNumber = event.pathParameters
-    ? event.pathParameters.testStationPNumber
-    : undefined;
+  // const petsClinicId = event.pathParameters
+  //   ? event.pathParameters.petsClinicId
+  //   : undefined;
 
   try {
-    const testStation = await service.getTestStation(testStationPNumber);
-    return new HTTPResponse(200, testStation);
+    //update to call getPetsClinic given clinic id
+    const petsClinic = await service.getAllPetsClinic()[0];
+    return new HTTPResponse(200, petsClinic);
   } catch (error: any) {
     console.error(error);
     if (!(error instanceof HTTPError)) {

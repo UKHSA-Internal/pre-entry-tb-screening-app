@@ -1,6 +1,7 @@
-import { HTTPError } from "../models/HTTPError";
-import { IPetsClinic } from "../models/IPetsClinic";
-import { ERRORS } from "../utils/Enum";
+import { HTTPError } from "@models/HTTPError";
+import { IPetsClinic } from "@models/IPetsClinic";
+import { ERRORS } from "@utils/Enum";
+import PetsClinicDAO from "@models/dao/PetsClinicDAO";
 
 export class PetsClinicService {
   public readonly petsClinicDAO: PetsClinicDAO;

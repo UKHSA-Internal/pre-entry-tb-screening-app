@@ -6,7 +6,7 @@ export enum ERRORS {
   FUNCTION_CONFIG_NOT_DEFINED = "Functions were not defined in the config file.",
 }
 
-export enum HTTPRESPONSE {
+export enum HTTP_RESPONSE {
   AWS_EVENT_EMPTY = "AWS event is empty. Check your test event.",
   INVALID_SOURCE = "Invalid event source for PUT.",
   MISSING_PARAMETERS = "Missing parameter value.",
