@@ -1,14 +1,26 @@
-#dynamodb:
-#  local:
-#    params:
-#      region: localhost
-#      endpoint: http://127.0.0.1:8000
-#    table: pets-local-clinics
-#  local-global:
-#    params:
-#      region: localhost
-#      endpoint: http://127.0.0.1:8000
-#    table: pets-local-global-clinics
-#  remote:
-#    params: {}
-#    table: pets-${BRANCH}-clinics
+dynamodb:
+ local:
+   params:
+     region: localhost
+     endpoint: http://127.0.0.1:8000
+   table: pets-local-clinics
+ local-global:
+   params:
+     region: localhost
+     endpoint: http://127.0.0.1:8000
+   table: pets-local-global-clinics
+ remote:
+   params: {}
+   table: pets-${BRANCH}-clinics
+
+# functions:
+#   - getTestStations:
+#       method: GET
+#       path: /test-stations
+#       proxy: null
+#       function: getTestStations
+#   - getTestStation:
+#       method: GET
+#       path: /test-stations/{+proxy}
+#       proxy: :testStationPNumber
+#       function: getTestStation
