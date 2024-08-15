@@ -2,7 +2,6 @@ name: Pets Clinic Service PR Checks
 
 on:
   pull_request:
-    branches: [main]
     paths: "core-services/clinic-service/**"
   workflow_dispatch:
 
