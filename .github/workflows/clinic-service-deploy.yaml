@@ -24,7 +24,8 @@ jobs:
           node-version: 18.x
           cache: "yarn"
       - name: Create zip
-        run: zip clinic-service-lambda.zip core-services/clinic-service/handler.js
+        run: zip clinic-service-lambda.zip handler.js
+        working-directory: core-services/clinic-service
       - name: Upload handler file
         uses: actions/upload-artifact@v4
         with:
