@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./*"],
+      "@config/*": ["./src/config/*"],
+      "@functions/*": ["./src/functions/*"],
+      "@models/*": ["./src/models/*"],
+      "@model": ["./src/models/"],
+      "@services/*": ["./src/services/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@test/*": ["./test/*"],
+    },
+    "esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
+    "resolveJsonModule": true,
+  }
+}
