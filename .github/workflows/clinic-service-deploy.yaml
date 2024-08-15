@@ -23,15 +23,16 @@ jobs:
         with:
           node-version: 18.x
           cache: "yarn"
-      - name: Create zip
+      - name: Create lambda zip
         run: zip clinic-service-lambda.zip handler.js
         working-directory: core-services/clinic-service
-      - name: Upload handler file
+      - name: Upload lambda zip
         uses: actions/upload-artifact@v4
         with:
           name: lambda-zip
           path: clinic-service-lambda.zip
           if-no-files-found: error
+        working-directory: core-services/clinic-service
 
   deploy:
     name: Deploy to S3
