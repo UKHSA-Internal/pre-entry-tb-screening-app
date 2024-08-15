@@ -29,10 +29,9 @@ jobs:
       - name: Upload lambda zip
         uses: actions/upload-artifact@v4
         with:
-          name: lambda-zip
-          path: clinic-service-lambda.zip
+          name: clinic-service-lambda
+          path: core-services/clinic-service/clinic-service-lambda.zip
           if-no-files-found: error
-        working-directory: core-services/clinic-service
 
   deploy:
     name: Deploy to S3
@@ -43,7 +42,7 @@ jobs:
       - name: Download build file
         uses: actions/download-artifact@v4
         with:
-          name: lambda-zip
+          name: clinic-service-lambda
           path: deploy/
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
