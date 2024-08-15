@@ -21,11 +21,9 @@ jobs:
       - name: Install dependencies
         run: yarn
       - name: Run unit tests
-        run: |
-          cd ./app/pets-ui/
-          yarn run test
+        run: yarn run test
+        working-directory: app/pets-ui
       - name: Run eslint
-        run: |
-          cd ./app/pets-ui/
-          yarn run lint
+        run: yarn run lint
+        working-directory: app/pets-ui
         continue-on-error: true
