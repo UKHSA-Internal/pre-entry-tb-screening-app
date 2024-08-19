@@ -41,12 +41,16 @@ export default function ClinicDashboard() {
             <td className="govuk-table__cell">{clinic.petsClinicName}</td>
           </tr>
           <tr className="govuk-table__row">
-            <th scope="row" className="govuk-table__header">Clinic Status</th>
-            <td className="govuk-table__cell">{clinic.petsClinicStatus}</td>
+            <th scope="row" className="govuk-table__header">Clinic Address Line 1</th>
+            <td className="govuk-table__cell">{clinic.petsClinicAddressLine1}</td>
           </tr>
           <tr className="govuk-table__row">
-            <th scope="row" className="govuk-table__header">Clinic State/Town</th>
-            <td className="govuk-table__cell">{clinic.petsClinicTown}</td>
+            <th scope="row" className="govuk-table__header">Clinic Address Line 2</th>
+            <td className="govuk-table__cell">{clinic.petsClinicAddressLine2}</td>
+          </tr>
+          <tr className="govuk-table__row">
+            <th scope="row" className="govuk-table__header">Clinic City</th>
+            <td className="govuk-table__cell">{clinic.petsClinicCity}</td>
           </tr>
           <tr className="govuk-table__row">
             <th scope="row" className="govuk-table__header">Clinic Country</th>

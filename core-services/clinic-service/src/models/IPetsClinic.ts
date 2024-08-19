@@ -1,17 +1,13 @@
 export interface IPetsClinic {
   petsClinicId: string
-  petsClinicPNumber: string
-  petsClinicStatus: string
   petsClinicName: string
-  petsClinicContactNumber: string
-  petsClinicAccessNotes: string
-  petsClinicGeneralNotes: string
-  petsClinicTown: string
-  petsClinicAddress: string
-  petsClinicPostcode: string
+  petsClinicAddressLine1: string
+  petsClinicAddressLine2: string
+  petsClinicCity: string
   petsClinicCountry: string
-  petsClinicLongitude: number
-  petsClinicLatitude: number
-  petsClinicType: string
+  petsClinicPostcode: string
+  petsClinicContactNumber1: string
+  petsClinicContactNumber2: string
   petsClinicEmails: string[]
+  petsClinicIsIom: boolean
 }
