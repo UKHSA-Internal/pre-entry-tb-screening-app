@@ -1,0 +1,30 @@
+name: Pets Clinic Service PR Checks
+
+on:
+  pull_request:
+    paths: "core-services/clinic-service/**"
+  workflow_dispatch:
+
+jobs:
+  test-and-linting:
+    name: Run unit tests, linting & security checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "yarn"
+      - name: Install dependencies
+        run: yarn
+      - name: Audit packages
+        run: yarn audit
+      - name: Run unit tests
+        run: yarn run test
+        working-directory: core-services/clinic-service
+      # - name: Run eslint
+      #   run: yarn run lint
+      #   working-directory: core-services/clinic-service
