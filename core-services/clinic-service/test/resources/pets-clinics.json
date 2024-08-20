@@ -1,23 +1,19 @@
 [
   {
     "petsClinicId": "1",
-    "petsClinicPNumber": "NIG-01",
-    "petsClinicStatus": "active",
-    "petsClinicName": "Q-Life Family clinic",
-    "petsClinicContactNumber": "+234 71 6476 7465",
-    "petsClinicAccessNotes": "Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.\n\nProin eu mi. Nulla ac enim. In tempor, turpis nec euismod scelerisque, quam turpis adipiscing lorem, vitae mattis nibh ligula nec sem.",
-    "petsClinicGeneralNotes": "Maecenas leo odio, condimentum id, luctus nec, molestie sed, justo. Pellentesque viverra pede ac diam. Cras pellentesque volutpat dui.\n\nMaecenas tristique, est et tempus semper, est quam pharetra magna, ac consequat metus sapien ut nunc. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Mauris viverra diam vitae quam. Suspendisse potenti.\n\nNullam porttitor lacus at turpis. Donec posuere metus vitae ipsum. Aliquam non mauris.",
-    "petsClinicTown": "Lagos",
-    "petsClinicAddress": "Plot 12A Queen Bolarinle Street",
-    "petsClinicPostcode": "11101",
+    "petsClinicName":  "Q-Life Family clinic",
+    "petsClinicAddressLine1": "Plot 12A",
+    "petsClinicAddressLine2": "Queen Bolarinle Street",
+    "petsClinicCity": "Lagos",
     "petsClinicCountry": "NGR",
-    "petsClinicLongitude": 5.8978018,
-    "petsClinicLatitude": 43.4945737,
-    "petsClinicType": "iom-certified",
+    "petsClinicPostcode": "11101",
+    "petsClinicContactNumber1": "+234 71 6476 7465",
+    "petsClinicContactNumber2": "+234 72 6477 7466",
     "petsClinicEmails": [
       "testclinicname@dvsa.gov.uk",
       "testclinicname1@dvsa.gov.uk",
       "testclinicname2@dvsa.gov.uk"
-    ]
+    ],
+    "petsClinicIsIom": true
   }
 ]
