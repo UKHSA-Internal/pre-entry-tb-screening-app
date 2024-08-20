@@ -36,7 +36,7 @@ jobs:
           role-session-name: PETS-Clinic-Service-Deploy
       - name: Upload App to S3
         working-directory: core-services/clinic-service
-        run: aws s3 sync clinic-service-lambda.zip s3://${{ secrets.AWS_PETS_CLINIC_SERVICE_S3_BUCKET_NAME }} --sse aws:kms --sse-kms-key-id ${{ secrets.AWS_PETS_UI_S3_SSE_KEY }}
+        run: aws s3 cp clinic-service-lambda.zip s3://${{ secrets.AWS_PETS_CLINIC_SERVICE_S3_BUCKET_NAME }} --sse aws:kms --sse-kms-key-id ${{ secrets.AWS_PETS_UI_S3_SSE_KEY }}
 
   #     - name: Upload lambda zip
   #       uses: actions/upload-artifact@v4
