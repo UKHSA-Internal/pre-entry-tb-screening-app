@@ -1,6 +1,8 @@
 name: Pets Clinic Service Deployment
 
 on:
+  push:
+    branches: [feature/TBBETA-460]
   pull_request:
     types:
       - closed
