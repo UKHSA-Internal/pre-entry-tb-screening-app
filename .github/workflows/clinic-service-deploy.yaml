@@ -12,7 +12,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy handler in zip
+    name: Deploy handler & swagger files
     runs-on: ubuntu-latest
 
     steps:
