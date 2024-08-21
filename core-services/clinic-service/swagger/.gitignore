@@ -1,0 +1,4 @@
+# Ignore all files in swagger 
+*
+!.gitignore
+!swagger.js
