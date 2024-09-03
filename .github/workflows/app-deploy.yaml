@@ -44,4 +44,4 @@ jobs:
       - name: Upload App to S3
         working-directory: app/pets-ui/.next
         # run: aws s3 sync . s3://${{ secrets.AWS_PETS_UI_S3_BUCKET_NAME }} --sse aws:kms --sse-kms-key-id ${{ secrets.AWS_PETS_UI_S3_SSE_KEY }}
-        run: aws s3 sync . s3://$AWS_PETS_UI_S3_BUCKET_NAME --sse aws:kms --sse-kms-key-id ${{ secrets.AWS_PETS_UI_S3_SSE_KEY }}
+        run: aws s3 sync . s3://$TEST_APPDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $TEST_APPDEPLOY_SSE_KEY
