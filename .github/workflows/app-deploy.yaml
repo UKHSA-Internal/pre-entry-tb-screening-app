@@ -1,6 +1,8 @@
 name: Pets UI Deployment
 
 on:
+  push:
+    branches: [feature/TBBETA-454]
   pull_request:
     types:
       - closed
