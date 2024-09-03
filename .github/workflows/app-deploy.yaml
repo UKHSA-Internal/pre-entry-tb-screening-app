@@ -39,7 +39,7 @@ jobs:
       - name: Get secrets from AWS
         uses: aws-actions/aws-secretsmanager-get-secrets@v2
         with:
-          secret-ids: test/PetsUiDeploymentSecrets
+          secret-ids: test/AppDeploy
           parse-json-secrets: true
       - name: Upload App to S3
         working-directory: app/pets-ui/.next
