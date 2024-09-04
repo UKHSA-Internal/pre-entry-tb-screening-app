@@ -4,9 +4,10 @@
   "version": "1.0.0",
   "description": "AWS lambda for managing PETs clinics using serverless framework",
   "scripts": {
-    "start": "serverless offline start --verbose",
+    "start": "BRANCH=local serverless offline start --verbose",
     "start-m": "BRANCH=local SLS_DEBUG=* serverless offline start",
-    "test": "jest"
+    "test": "BRANCH=local jest",
+    "tools-setup": "sls dynamodb install"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.585.0",
@@ -16,18 +17,20 @@
     "express": "^4.19.2",
     "global": "^4.4.0",
     "node-yaml": "^4.0.1",
+    "path-parser": "^6.1.0",
     "serverless-dynamodb": "^0.2.54",
     "serverless-http": "^3.2.0",
     "serverless-offline-aws-eventbridge": "^2.1.0"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.145",
     "@types/jest": "^29.5.12",
     "@types/jest-plugin-context": "^2.9.7",
     "aws-sdk-client-mock": "^4.0.1",
     "jest": "^29.7.0",
     "jest-plugin-context": "^2.9.0",
     "serverless-auto-swagger": "^3.0.0",
-    "serverless-offline": "^13.6.0",
+    "serverless-offline": "^14.0.0",
     "serverless-plugin-tracing": "^2.0.0",
     "ts-jest": "^29.2.4",
     "ts-node": "^10.9.2",

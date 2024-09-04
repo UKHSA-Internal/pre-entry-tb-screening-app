@@ -2,16 +2,16 @@ import AWSXRay from "aws-xray-sdk";
 import {
   DynamoDBDocumentClient,
   PutCommand,
+  GetCommand
 } from "@aws-sdk/lib-dynamodb";
 import { 
   DynamoDBClient, 
-  PutItemOutput, 
-  QueryCommand, 
+  PutItemOutput,
   ScanCommand, 
-  ScanOutput 
+  ScanOutput
 } from "@aws-sdk/client-dynamodb";
 import { ServiceException } from "@smithy/smithy-client";
-import { Configuration } from "../../utils/Configuration";
+import { Configuration } from "@utils/Configuration";
 import { IPetsClinic } from "@models/IPetsClinic";
 
 export default class PetsClinicDAO {
@@ -30,6 +30,18 @@ export default class PetsClinicDAO {
       }
       PetsClinicDAO.dbClient = DynamoDBDocumentClient.from(client);
     }
+  }
+
+  public async getItem(petsClinicId: String) {
+    const params = {
+      TableName: this.tableName,
+      Key: {
+        "petsClinicId": petsClinicId,
+      },
+    };
+    const command = new GetCommand(params);
+
+    return await PetsClinicDAO.dbClient.send(command);
   }
   
   public async getAll(): Promise<ScanOutput | ServiceException> {

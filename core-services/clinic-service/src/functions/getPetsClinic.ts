@@ -20,13 +20,13 @@ export const getPetsClinic: Handler = async (event) => {
     return new HTTPResponse(400, HTTP_RESPONSE.MISSING_PARAMETERS);
   }
 
-  // const petsClinicId = event.pathParameters
-  //   ? event.pathParameters.petsClinicId
-  //   : undefined;
+  const petsClinicId = event.pathParameters
+    ? event.pathParameters.petsClinicId
+    : undefined;
 
   try {
-    //update to call getPetsClinic given clinic id
-    const petsClinic = await service.getAllPetsClinic()[0];
+    //update to call getPetsClinic in PetsClinicService given clinic id
+    const petsClinic = await service.getPetsClinic(petsClinicId);
     return new HTTPResponse(200, petsClinic);
   } catch (error: any) {
     console.error(error);

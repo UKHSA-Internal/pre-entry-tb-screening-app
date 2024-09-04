@@ -11,9 +11,25 @@ export class PetsClinicService {
   }
 
   /**
+   * Fetch a pets clinic from DynamoDB based on its clinic id
+   */
+  public async getPetsClinic(petsClinicId: string) {
+    const petsClinic = await this.petsClinicDAO.getItem(
+      petsClinicId
+    );
+
+    if (!petsClinic) {
+      throw new HTTPError(404, ERRORS.RESOURCE_NOT_FOUND);
+    }
+
+    return petsClinic;
+  }
+
+  /**
    * Fetch a list of all pets clinics from DynamoDB
    */
   public getAllPetsClinic() {
+    console.log(this.petsClinicDAO);
     return this.petsClinicDAO
       .getAll()
       .then((data: any) => {
