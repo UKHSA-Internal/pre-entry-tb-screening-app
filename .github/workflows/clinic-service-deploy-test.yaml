@@ -1,13 +1,6 @@
 name: Pets Clinic Service Deployment
 
 on:
-  push:
-    branches: [feature/TBBETA-454]
-  pull_request:
-    types:
-      - closed
-    branches: [main]
-    paths: "core-services/clinic-service/**"
   workflow_dispatch:
 
 jobs:

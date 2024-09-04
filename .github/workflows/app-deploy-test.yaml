@@ -1,11 +1,6 @@
 name: Pets UI Deployment
 
 on:
-  pull_request:
-    types:
-      - closed
-    branches: [main]
-    paths: "app/**"
   workflow_dispatch:
 
 jobs:
