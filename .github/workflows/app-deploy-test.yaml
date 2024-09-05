@@ -1,4 +1,4 @@
-name: Pets UI Deployment
+name: Pets UI Deployment - Test
 
 on:
   workflow_dispatch:
