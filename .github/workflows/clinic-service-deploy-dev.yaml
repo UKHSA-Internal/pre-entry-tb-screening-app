@@ -1,11 +1,6 @@
 name: Pets Clinic Service Deployment - Dev
 
 on:
-  pull_request:
-    types:
-      - closed
-    branches: [main]
-    paths: "core-services/clinic-service/**"
   workflow_dispatch:
 
 jobs:
@@ -22,8 +17,10 @@ jobs:
         with:
           node-version: 18.x
           cache: "yarn"
+      - name: Build clinic service
+        run: yarn run build
       - name: Create lambda zip
-        run: zip clinic-service-lambda.zip handler.js
+        run: zip clinic-service-lambda.zip ./build
         working-directory: core-services/clinic-service
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
