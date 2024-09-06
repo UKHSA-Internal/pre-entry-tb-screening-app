@@ -1,0 +1,43 @@
+name: Pets Clinic Service Deployment - Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy handler & swagger files
+    runs-on: ubuntu-latest
+    environment: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "yarn"
+      - name: Build clinic service
+        run: yarn run build
+      - name: Create lambda zip
+        run: zip clinic-service-lambda.zip ./build
+        working-directory: core-services/clinic-service
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: "eu-west-2"
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_PETS_CLINIC_SERVICE_ROLE_NAME }}"
+          role-session-name: PETS-Clinic-Service-Deploy
+      - name: Get secrets from AWS
+        uses: aws-actions/aws-secretsmanager-get-secrets@v2
+        with:
+          secret-ids: test/ClinicServiceDeploy
+          parse-json-secrets: true
+      - name: Upload Clinic Service to S3
+        working-directory: core-services/clinic-service
+        run: aws s3 cp clinic-service-lambda.zip s3://$TEST_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $TEST_CLINICSERVICEDEPLOY_SSE_KEY
+      - name: Upload Swagger file to S3
+        working-directory: core-services/clinic-service/swagger
+        run: aws s3 cp swagger.js s3://$TEST_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $TEST_CLINICSERVICEDEPLOY_SSE_KEY
