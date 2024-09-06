@@ -2,6 +2,20 @@ import { Configuration } from "@utils/Configuration";
 import { IDBConfig, IFunctionConfig } from "@models/index";
 import { ERRORS } from "@utils/Enum";
 
+let dbConfig: IDBConfig;
+
+function setUpConfigs (env: String) {
+  process.env.BRANCH = env;
+
+  switch(env) {
+    // Switch to mockedConfig to simplify environment mocking
+    case "develop":
+      dbConfig = getMockedConfig().getDynamoDBConfig();
+    default:
+      dbConfig = Configuration.getInstance().getDynamoDBConfig();
+  }
+}
+
 describe("Configuration", () => {
   beforeEach(() => {
     jest.resetModules();
@@ -25,7 +39,7 @@ describe("Configuration", () => {
   });
 
   describe("the config is empty", () => {
-    process.env.BRANCH = "local";
+    setUpConfigs("local");
     const emptyConfig: Configuration = new Configuration(
       "../../test/resources/EmptyConfig.yml"
     );
@@ -41,9 +55,7 @@ describe("Configuration", () => {
   });
 
   describe("the BRANCH environment variable is local", () => {
-    process.env.BRANCH = "local";
-    const dbConfig: IDBConfig =
-      Configuration.getInstance().getDynamoDBConfig();
+    setUpConfigs("local");
     it("should return the local invoke config", () => {
       expect(Object.keys(dbConfig.params)).toEqual(
         expect.arrayContaining(["region", "endpoint"])
@@ -54,26 +66,25 @@ describe("Configuration", () => {
 
   describe("the BRANCH environment variable is local-global", () => {
     process.env.BRANCH = "local-global";
-    const dbConfig: IDBConfig =
-      Configuration.getInstance().getDynamoDBConfig();
+    const databaseConfig:IDBConfig = Configuration.getInstance().getDynamoDBConfig();
     it("should return the local invoke config", () => {
-      expect(Object.keys(dbConfig)).toEqual(
+      expect(Object.keys(databaseConfig)).toEqual(
         expect.arrayContaining(["params", "table"])
       );
-      expect(Object.keys(dbConfig.params)).toEqual(
+      expect(Object.keys(databaseConfig.params)).toEqual(
         expect.arrayContaining(["region", "endpoint"])
       );
-      expect(Object.keys(dbConfig)).not.toEqual(
+      expect(Object.keys(databaseConfig)).not.toEqual(
         expect.arrayContaining(["keys"])
       );
-      expect(dbConfig.table).toEqual("pets-local-global-clinics");
+      expect(databaseConfig.table).toEqual("pets-local-global-clinics");
     });
   });
 
   describe("the BRANCH environment variable is empty", () => {
+    process.env.BRANCH = "";
+    let dbConfig = Configuration.getInstance().getDynamoDBConfig();
     it("should return the remote invoke config", () => {
-      process.env.BRANCH = "";
-      const dbConfig: IDBConfig = getMockedConfig().getDynamoDBConfig();
       expect(Object.keys(dbConfig)).not.toEqual(
         expect.arrayContaining(["keys"])
       );
@@ -84,9 +95,7 @@ describe("Configuration", () => {
 
   describe("the BRANCH environment variable is 'develop'", () => {
     it("should return the remote invoke config", () => {
-      process.env.BRANCH = "develop";
-      // Switch to mockedConfig to simplify environment mocking
-      const dbConfig: IDBConfig = getMockedConfig().getDynamoDBConfig();
+      setUpConfigs("develop");
       expect(Object.keys(dbConfig)).not.toEqual(
         expect.arrayContaining(["keys"])
       );
@@ -96,7 +105,7 @@ describe("Configuration", () => {
   });
 
   describe("the config is empty", () => {
-    process.env.BRANCH = "local";
+    setUpConfigs("local");
     const emptyConfig: Configuration = new Configuration(
       "../../test/resources/EmptyConfig.yml"
     );
@@ -112,7 +121,7 @@ describe("Configuration", () => {
   });
 
   describe("the config is present", () => {
-    process.env.BRANCH = "local";
+    setUpConfigs("local");
     const funcConfig: IFunctionConfig[] =
       Configuration.getInstance().getFunctions();
     it("should return the list of specified functions with names and matching paths", () => {
