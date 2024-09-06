@@ -4,15 +4,13 @@ import { ERRORS } from "@utils/Enum";
 
 let dbConfig: IDBConfig;
 
-function setUpConfigs (env: String) {
+function setUpConfigs (env: string) {
   process.env.BRANCH = env;
 
-  switch(env) {
-    // Switch to mockedConfig to simplify environment mocking
-    case "develop":
-      dbConfig = getMockedConfig().getDynamoDBConfig();
-    default:
-      dbConfig = Configuration.getInstance().getDynamoDBConfig();
+  if (env == "develop") {
+    dbConfig = getMockedConfig().getDynamoDBConfig();
+  } else {
+    dbConfig = Configuration.getInstance().getDynamoDBConfig();
   }
 }
 
@@ -67,7 +65,7 @@ describe("Configuration", () => {
   describe("the BRANCH environment variable is local-global", () => {
     process.env.BRANCH = "local-global";
     const databaseConfig:IDBConfig = Configuration.getInstance().getDynamoDBConfig();
-    it("should return the local invoke config", () => {
+    it("should return the local-global invoke config", () => {
       expect(Object.keys(databaseConfig)).toEqual(
         expect.arrayContaining(["params", "table"])
       );
@@ -93,17 +91,6 @@ describe("Configuration", () => {
     });
   });
 
-  describe("the BRANCH environment variable is 'develop'", () => {
-    it("should return the remote invoke config", () => {
-      setUpConfigs("develop");
-      expect(Object.keys(dbConfig)).not.toEqual(
-        expect.arrayContaining(["keys"])
-      );
-      expect(dbConfig.table).toEqual("pets-dev-clinics-001");
-      expect(dbConfig.params).toStrictEqual({});
-    });
-  });
-
   describe("the config is empty", () => {
     setUpConfigs("local");
     const emptyConfig: Configuration = new Configuration(
@@ -117,6 +104,17 @@ describe("Configuration", () => {
           ERRORS.FUNCTION_CONFIG_NOT_DEFINED
         );
       }
+    });
+
+    describe("the BRANCH environment variable is 'develop'", () => {
+      it("should return the remote invoke config", () => {
+        setUpConfigs("develop");
+        expect(Object.keys(dbConfig)).not.toEqual(
+          expect.arrayContaining(["keys"])
+        );
+        expect(dbConfig.table).toEqual("pets-dev-clinics-001");
+        expect(dbConfig.params).toStrictEqual({});
+      });
     });
   });
 

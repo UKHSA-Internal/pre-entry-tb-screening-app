@@ -32,7 +32,7 @@ export default class PetsClinicDAO {
     }
   }
 
-  public async getItem(petsClinicId: String) {
+  public async getItem(petsClinicId: string) {
     const params = {
       TableName: this.tableName,
       Key: {
