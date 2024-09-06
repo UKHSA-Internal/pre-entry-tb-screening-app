@@ -19,6 +19,9 @@ jobs:
         with:
           node-version: 18.x
           cache: "yarn"
+      - name: Install dependencies
+        run: yarn
+        working-directory: core-services/clinic-service
       - name: Build clinic service
         working-directory: core-services/clinic-service
         run: yarn run build
