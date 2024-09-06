@@ -20,6 +20,7 @@ jobs:
           node-version: 18.x
           cache: "yarn"
       - name: Build clinic service
+        working-directory: core-services/clinic-service
         run: yarn run build
       - name: Create lambda zip
         run: zip clinic-service-lambda.zip ./build
