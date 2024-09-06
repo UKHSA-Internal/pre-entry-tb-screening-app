@@ -87,13 +87,13 @@ export class Configuration {
       if (!this.config.functions) {
         throw new Error(ERRORS.FUNCTION_CONFIG_NOT_DEFINED);
       }
-  
+
       return this.config.functions.map((fn: Handler) => {
         const [name, params]: any = Object.entries(fn)[0];
         const path: string = params.proxy
           ? params.path.replace("{+proxy}", params.proxy)
           : params.path;
-  
+
         return {
           name,
           method: params.method.toUpperCase(),

@@ -21,8 +21,10 @@ jobs:
         with:
           node-version: 18.x
           cache: "yarn"
+      - name: Build clinic service
+        run: yarn run build
       - name: Create lambda zip
-        run: zip clinic-service-lambda.zip handler.js
+        run: zip clinic-service-files.zip ./build
         working-directory: core-services/clinic-service
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -34,7 +36,7 @@ jobs:
           role-session-name: PETS-Clinic-Service-Deploy
       - name: Upload Clinic Service to S3
         working-directory: core-services/clinic-service
-        run: aws s3 cp clinic-service-lambda.zip s3://${{ secrets.AWS_PETS_CLINIC_SERVICE_S3_BUCKET_NAME }} --sse aws:kms --sse-kms-key-id ${{ secrets.AWS_PETS_UI_S3_SSE_KEY }}
+        run: aws s3 cp clinic-service-files.zip s3://${{ secrets.AWS_PETS_CLINIC_SERVICE_S3_BUCKET_NAME }} --sse aws:kms --sse-kms-key-id ${{ secrets.AWS_PETS_UI_S3_SSE_KEY }}
       - name: Upload Swagger file to S3
         working-directory: core-services/clinic-service/swagger
         run: aws s3 cp swagger.js s3://${{ secrets.AWS_PETS_CLINIC_SERVICE_S3_BUCKET_NAME }} --sse aws:kms --sse-kms-key-id ${{ secrets.AWS_PETS_UI_S3_SSE_KEY }}
