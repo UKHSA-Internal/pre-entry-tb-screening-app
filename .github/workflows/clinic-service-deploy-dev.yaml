@@ -45,9 +45,8 @@ jobs:
       - name: Process Swagger file
         uses: actions/github-script@v7
         with:
-          working-directory: core-services/clinic-service
           script: |
-            const script = require('swagger-integrations.js')
+            const script = require('core-services/clinic-service/swagger-integrations.js')
             console.log(script)
       - name: Upload Swagger file to S3
         working-directory: core-services/clinic-service/swagger
