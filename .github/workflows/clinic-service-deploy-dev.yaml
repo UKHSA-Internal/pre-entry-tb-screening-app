@@ -52,7 +52,9 @@ jobs:
             console.log(swaggerAsArray)
             swaggerAsArray = swaggerAsArray.slice(2,-1)
             var swaggerAsString = '{' + swaggerAsArray.join('') + '}'
+            console.log(swaggerAsString)
             var swaggerAsJson = JSON.parse(swaggerAsString)
+            console.log(swaggerAsJson)
             let integrationBlock = {'uri': '','passthroughBehavior': 'when_no_match','httpMethod': '','type': 'aws_proxy'}
             let uriSecretNames = []
             for (path in swaggerAsJson['paths']) {
