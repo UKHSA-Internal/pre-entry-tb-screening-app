@@ -66,7 +66,7 @@ jobs:
             }
             console.log(uriSecretNames)
             console.log(swaggerAsJson)
-            fs.writeFile('output_test.txt', swaggerAsJson, (err) => {if (err) throw err;});
+            fs.writeFile('output_test.txt', JSON.stringify(swaggerAsJson), (err) => {if (err) throw err;});
 
       - name: Upload Swagger file to S3
         working-directory: core-services/clinic-service/swagger
