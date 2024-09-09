@@ -29,4 +29,4 @@ for (path in swaggerAsJson['paths']) {
     }
 }
 
-return [uriSecretNames, JSON.stringify(swaggerAsJson)]
+export default [uriSecretNames, JSON.stringify(swaggerAsJson)]
