@@ -28,8 +28,5 @@ for (path in swaggerAsJson['paths']) {
         swaggerAsJson['paths'][path][httpMethod]['x-amazon-apigateway-integration']['httpMethod'] = httpMethod.toUpperCase()
     }
 }
-console.log("uri names:")
-console.log(uriSecretNames)
-console.log("json str:")
-console.log(JSON.stringify(swaggerAsJson))
+
 return([uriSecretNames, JSON.stringify(swaggerAsJson)])
