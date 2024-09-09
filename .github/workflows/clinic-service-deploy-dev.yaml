@@ -69,6 +69,5 @@ jobs:
             fs.writeFile('output_test.txt', JSON.stringify(swaggerAsJson), (err) => {if (err) throw err;});
 
       - name: Upload Swagger file to S3
-        working-directory: core-services/clinic-service/swagger
         run: |
           aws s3 cp output_test.txt s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
