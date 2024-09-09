@@ -48,13 +48,11 @@ jobs:
           script: |
             addIntegrationsToSwagger = require('./core-services/clinic-service/swagger-integrations.js');
             output = addIntegrationsToSwagger;
-            swagger = output.pop()
+            console.log(output)
             fs = require('fs');
-            fs.writeFile('uris_test.txt', output, (err) => {if (err) throw err;});
-            fs.writeFile('swagger_test.txt', swagger, (err) => {if (err) throw err;});
+            fs.writeFile('output_test.txt', output, (err) => {if (err) throw err;});
 
       - name: Upload Swagger file to S3
         working-directory: core-services/clinic-service/swagger
         run: |
-          aws s3 cp uris_test.txt s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
-          aws s3 cp swagger_test.txt s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
+          aws s3 cp output_test.txt s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
