@@ -48,7 +48,7 @@ jobs:
           script: |
             addIntegrationsToSwagger = require('./core-services/clinic-service/swagger-integrations.js');
             output = addIntegrationsToSwagger;
-            console.log(output)
+            console.log( output )
             fs = require('fs');
             fs.writeFile('output_test.txt', output, (err) => {if (err) throw err;});
 
