@@ -46,7 +46,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            let inputFilePath = 'core-services/clinic-service/swagger/swagger.js'
+            let inputFilePath = './core-services/clinic-service/swagger/swagger.js'
             fs = require('fs')
             var swaggerAsArray = fs.readFileSync(inputFilePath, 'utf-8').split('\r\n')
             swaggerAsArray = swaggerAsArray.slice(2,-1)
@@ -66,11 +66,7 @@ jobs:
             }
             console.log(uriSecretNames)
             console.log(swaggerAsJson)
-      #      addIntegrationsToSwagger = require('./core-services/clinic-service/swagger-integrations.js');
-      #      output = addIntegrationsToSwagger;
-      #      console.log( output )
-      #      fs = require('fs');
-      #      fs.writeFile('output_test.txt', output, (err) => {if (err) throw err;});
+            fs.writeFile('output_test.txt', swaggerAsJson, (err) => {if (err) throw err;});
 
       - name: Upload Swagger file to S3
         working-directory: core-services/clinic-service/swagger
