@@ -46,8 +46,14 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const script = require('./core-services/clinic-service/swagger-integrations.js')
-            console.log(script)
+            const addIntegrationsToSwagger = require('./core-services/clinic-service/swagger-integrations.js');
+            [const uriSecretNames, let swagger] = addIntegrationsToSwagger;
+            const fs = require('fs');
+            fs.writeFile('uris_test.txt', uriSecretNames, (err) => {if (err) throw err;});
+            fs.writeFile('swagger_test.txt', swagger, (err) => {if (err) throw err;});
+
       - name: Upload Swagger file to S3
         working-directory: core-services/clinic-service/swagger
-        run: aws s3 cp swagger.js s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
+        run: |
+          aws s3 cp uris_test.txt s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
+          aws s3 cp swagger_test.txt s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
