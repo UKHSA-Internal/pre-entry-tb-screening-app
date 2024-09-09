@@ -47,10 +47,10 @@ jobs:
         with:
           script: |
             addIntegrationsToSwagger = require('./core-services/clinic-service/swagger-integrations.js');
-            [uriSecretNames, swagger] = addIntegrationsToSwagger;
+            output = addIntegrationsToSwagger;
             fs = require('fs');
-            fs.writeFile('uris_test.txt', uriSecretNames, (err) => {if (err) throw err;});
-            fs.writeFile('swagger_test.txt', swagger, (err) => {if (err) throw err;});
+            fs.writeFile('uris_test.txt', output.uriSecretNames, (err) => {if (err) throw err;});
+            fs.writeFile('swagger_test.txt', output.swagger, (err) => {if (err) throw err;});
 
       - name: Upload Swagger file to S3
         working-directory: core-services/clinic-service/swagger

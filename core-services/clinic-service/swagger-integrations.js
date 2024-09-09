@@ -29,4 +29,7 @@ for (path in swaggerAsJson['paths']) {
     }
 }
 
-return([uriSecretNames, JSON.stringify(swaggerAsJson)])
+return {
+    'uriSecretNames': uriSecretNames,
+    'swagger': JSON.stringify(swaggerAsJson)
+}
