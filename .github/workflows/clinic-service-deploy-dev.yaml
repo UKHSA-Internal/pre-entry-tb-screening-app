@@ -48,7 +48,7 @@ jobs:
           script: |
             let inputFilePath = './core-services/clinic-service/swagger/swagger.js'
             fs = require('fs')
-            var swaggerAsArray = fs.readFileSync(inputFilePath, 'utf-8').split('\r\n')
+            var swaggerAsArray = fs.readFileSync(inputFilePath, 'utf-8').split('\n')
             console.log(swaggerAsArray)
             swaggerAsArray = swaggerAsArray.slice(2,-1)
             console.log(swaggerAsArray)
