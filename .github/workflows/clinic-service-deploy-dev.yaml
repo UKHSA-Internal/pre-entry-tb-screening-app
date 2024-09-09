@@ -51,6 +51,7 @@ jobs:
             var swaggerAsArray = fs.readFileSync(inputFilePath, 'utf-8').split('\r\n')
             console.log(swaggerAsArray)
             swaggerAsArray = swaggerAsArray.slice(2,-1)
+            console.log(swaggerAsArray)
             var swaggerAsString = '{' + swaggerAsArray.join('') + '}'
             console.log(swaggerAsString)
             var swaggerAsJson = JSON.parse(swaggerAsString)
