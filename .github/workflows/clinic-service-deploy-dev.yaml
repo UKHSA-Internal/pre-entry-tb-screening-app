@@ -46,11 +46,31 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            addIntegrationsToSwagger = require('./core-services/clinic-service/swagger-integrations.js');
-            output = addIntegrationsToSwagger;
-            console.log( output )
-            fs = require('fs');
-            fs.writeFile('output_test.txt', output, (err) => {if (err) throw err;});
+            let inputFilePath = 'core-services/clinic-service/swagger/swagger.js'
+            fs = require('fs')
+            var swaggerAsArray = fs.readFileSync(inputFilePath, 'utf-8').split('\r\n')
+            swaggerAsArray = swaggerAsArray.slice(2,-1)
+            var swaggerAsString = '{' + swaggerAsArray.join('') + '}'
+            var swaggerAsJson = JSON.parse(swaggerAsString)
+            let integrationBlock = {'uri': '','passthroughBehavior': 'when_no_match','httpMethod': '','type': 'aws_proxy'}
+            let uriSecretNames = []
+            for (path in swaggerAsJson['paths']) {
+              for (httpMethod in swaggerAsJson['paths'][path]) {
+                  swaggerAsJson['paths'][path][httpMethod]['x-amazon-apigateway-integration'] = {...integrationBlock} // Spreading the object clones it, preventing original object from being referenced when fields are amended
+                  let uriSecretName = 'CLINIC_SERVICE_URIS_' + path.toUpperCase() + '_' + httpMethod.toUpperCase()
+                  uriSecretName = uriSecretName.replace(/[^A-Z0-9_]/g, ''); // Removing special characters to conform to GHA Secret naming rules
+                  uriSecretNames.push(uriSecretName)
+                  swaggerAsJson['paths'][path][httpMethod]['x-amazon-apigateway-integration']['uri'] = uriSecretName
+                  swaggerAsJson['paths'][path][httpMethod]['x-amazon-apigateway-integration']['httpMethod'] = httpMethod.toUpperCase()
+              }
+            }
+            console.log(uriSecretNames)
+            console.log(swaggerAsJson)
+      #      addIntegrationsToSwagger = require('./core-services/clinic-service/swagger-integrations.js');
+      #      output = addIntegrationsToSwagger;
+      #      console.log( output )
+      #      fs = require('fs');
+      #      fs.writeFile('output_test.txt', output, (err) => {if (err) throw err;});
 
       - name: Upload Swagger file to S3
         working-directory: core-services/clinic-service/swagger
