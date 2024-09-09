@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy clinic service
+    name: Deploy build & swagger spec
     runs-on: ubuntu-latest
     environment: dev
 
@@ -19,14 +19,10 @@ jobs:
         with:
           node-version: 18.x
           cache: "yarn"
-      - name: Install dependencies
-        run: yarn install
-        working-directory: core-services/clinic-service
       - name: Build clinic service
-        working-directory: core-services/clinic-service
         run: yarn run build
       - name: Create lambda zip
-        run: zip -r clinic-service-lambda.zip .build/*
+        run: zip clinic-service-lambda.zip ./build
         working-directory: core-services/clinic-service
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
