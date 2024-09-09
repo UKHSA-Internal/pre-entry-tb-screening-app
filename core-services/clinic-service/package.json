@@ -6,7 +6,9 @@
   "scripts": {
     "start": "serverless offline start --verbose",
     "start-m": "BRANCH=local SLS_DEBUG=* serverless offline start",
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc -b tsconfig.json && yarn run build:copy",
+    "build:copy": "find src -type f \\( -name \"*.yml\" -or -name \"*.json\" \\) | cpio -pdm .build && find test -type f \\( -name \"*.yml\" -or -name \"*.json\" \\)  | cpio -pdm .build"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.585.0",
