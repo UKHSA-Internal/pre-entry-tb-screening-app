@@ -51,7 +51,7 @@ jobs:
             console.log(output)
             for (uri of output.uriSecretNames) {
               console.log(uri)
-              output.swaggerSpec = output.swaggerSpec.replace(uri, eval('$CLINIC_SERVICE_URIS_' + uri))
+              output.swaggerSpec = output.swaggerSpec.replace(uri, eval('$' + uri))
             }
             console.log(output.swaggerSpec)
             fs.writeFile('output_test.txt', 'test', (err) => {if (err) throw err;});
