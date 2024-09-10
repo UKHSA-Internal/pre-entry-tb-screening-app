@@ -41,20 +41,16 @@ jobs:
       # - name: Upload Clinic Service to S3
       #   working-directory: core-services/clinic-service
       #   run: aws s3 cp clinic-service-lambda.zip s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
-      - name: Print URI secrets
-        run: aws secretsmanager get-secret-value --secret-id Clinic_Service_URIs
       - name: Process Swagger file
         uses: actions/github-script@v7
         with:
           script: |
-            console.log(process.env.DEV_CLINICSERVICEDEPLOY_BUCKET_NAME)
-            console.log($CLINIC_SERVICE_URIS_CLINICSPETSCLINICID_GET)
             script = require('./core-services/clinic-service/swagger-integrations.js')
             output = script()
             console.log(output)
             for (uri of output.uriSecretNames) {
               console.log(uri)
-              output.swaggerSpec = output.swaggerSpec.replace(uri, eval('$' + uri))
+              output.swaggerSpec = output.swaggerSpec.replace(uri, eval('process.env.' + uri))
             }
             console.log(output.swaggerSpec)
             fs.writeFile('output_test.txt', 'test', (err) => {if (err) throw err;});
