@@ -50,7 +50,7 @@ jobs:
             for (uri of output.uriSecretNames) {
               output.swaggerSpec = output.swaggerSpec.replace(uri, eval('process.env.' + uri))
             }
-            fs.writeFile('swagger.json', JSON.parse(output.swaggerSpec), (err) => {if (err) throw err;});
+            fs.writeFile('swagger.json', output.swaggerSpec, (err) => {if (err) throw err;});
 
       - name: Upload Swagger file to S3
         run: |
