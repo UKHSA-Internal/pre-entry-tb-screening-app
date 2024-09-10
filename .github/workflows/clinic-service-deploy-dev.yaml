@@ -49,7 +49,7 @@ jobs:
             script = require('./core-services/clinic-service/swagger-integrations.js')
             output = script()
             console.log(output)
-            for (uri in output.uriSecretNames) {
+            for (uri of output.uriSecretNames) {
               console.log(uri)
               output.swaggerSpec = output.swaggerSpec.replace(uri, 'testUriReplacement')
             }
