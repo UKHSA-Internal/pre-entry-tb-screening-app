@@ -47,7 +47,13 @@ jobs:
         with:
           script: |
             script = require('./core-services/clinic-service/swagger-integrations.js')
-            console.log(script())
+            output = script()
+            console.log(output)
+            for (uri in output.uriSecretNames) {
+              console.log(uri)
+              output.swaggerSpec = output.swaggerSpec.replace(uri, 'testUriReplacement')
+            }
+            console.log(output.swaggerSpec)
             fs.writeFile('output_test.txt', 'test', (err) => {if (err) throw err;});
 
       - name: Upload Swagger file to S3
