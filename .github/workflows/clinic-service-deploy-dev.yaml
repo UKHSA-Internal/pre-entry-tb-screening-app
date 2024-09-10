@@ -37,7 +37,7 @@ jobs:
         with:
           secret-ids: |
             dev/ClinicServiceDeploy
-            ,Clinic_Service_URIs
+            URIS, Clinic_Service_URIs
           parse-json-secrets: true
       # - name: Upload Clinic Service to S3
       #   working-directory: core-services/clinic-service
@@ -46,8 +46,8 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            console.log($CLINICS_GET)
-            console.log($CLINICSPETSCLINICID_GET)
+            console.log($URIS_CLINICS_GET)
+            console.log($URIS_CLINICSPETSCLINICID_GET)
             console.log($CLINIC_SERVICE_URIS_CLINICS_GET)
             console.log($CLINIC_SERVICE_URIS_CLINICSPETSCLINICID_GET)
             script = require('./core-services/clinic-service/swagger-integrations.js')
