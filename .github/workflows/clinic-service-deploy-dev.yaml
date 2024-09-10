@@ -47,8 +47,8 @@ jobs:
         with:
           script: |
             script = require('./core-services/clinic-service/swagger-integrations.js')
-            console.log(script)
-            fs.writeFile('output_test.txt', output, (err) => {if (err) throw err;});
+            console.log(script())
+            fs.writeFile('output_test.txt', script(), (err) => {if (err) throw err;});
 
       - name: Upload Swagger file to S3
         run: |
