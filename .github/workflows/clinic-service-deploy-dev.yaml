@@ -47,14 +47,11 @@ jobs:
           script: |
             script = require('./core-services/clinic-service/swagger-integrations.js')
             output = script()
-            console.log(output)
             for (uri of output.uriSecretNames) {
-              console.log(uri)
               output.swaggerSpec = output.swaggerSpec.replace(uri, eval('process.env.' + uri))
             }
-            console.log(output.swaggerSpec)
-            fs.writeFile('output_test.txt', 'test', (err) => {if (err) throw err;});
+            fs.writeFile('swagger.json', output.swaggerSpec, (err) => {if (err) throw err;});
 
       - name: Upload Swagger file to S3
         run: |
-          aws s3 cp output_test.txt s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
+          aws s3 cp swagger.json s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
