@@ -2,9 +2,13 @@
 let inputFilePath = 'core-services/clinic-service/swagger/swagger.js'
 fs = require('fs')
 var swaggerAsArray = fs.readFileSync(inputFilePath, 'utf-8').split('\n')
+console.log(swaggerAsArray)
 swaggerAsArray = swaggerAsArray.slice(2,-1)
+console.log(swaggerAsArray)
 var swaggerAsString = '{' + swaggerAsArray.join('') + '}'
+console.log(swaggerAsString)
 var swaggerAsJson = JSON.parse(swaggerAsString)
+console.log(swaggerAsJson)
 
 // Define integration block
 let integrationBlock = {
@@ -28,5 +32,6 @@ for (path in swaggerAsJson['paths']) {
         swaggerAsJson['paths'][path][httpMethod]['x-amazon-apigateway-integration']['httpMethod'] = httpMethod.toUpperCase()
     }
 }
-
+console.log(swaggerAsJson)
+console.log(typeof(swaggerAsJson))
 return JSON.stringify(swaggerAsJson)
