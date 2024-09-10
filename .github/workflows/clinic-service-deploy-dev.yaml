@@ -47,7 +47,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            console.log($DEV_CLINICSERVICEDEPLOY_BUCKET_NAME)
+            console.log(process.env.DEV_CLINICSERVICEDEPLOY_BUCKET_NAME)
             console.log($CLINIC_SERVICE_URIS_CLINICSPETSCLINICID_GET)
             script = require('./core-services/clinic-service/swagger-integrations.js')
             output = script()
