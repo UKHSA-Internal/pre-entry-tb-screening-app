@@ -34,4 +34,6 @@ for (path in swaggerAsJson['paths']) {
 }
 console.log(swaggerAsJson)
 console.log(typeof(swaggerAsJson))
-return JSON.stringify(swaggerAsJson)
+console.log(typeof(JSON.stringify(swaggerAsJson)))
+console.log(typeof(JSON.stringify(swaggerAsJson).toString()))
+return JSON.stringify(swaggerAsJson).toString()
