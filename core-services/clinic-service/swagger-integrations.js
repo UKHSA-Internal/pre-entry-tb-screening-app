@@ -30,5 +30,8 @@ for (path in swaggerAsJson['paths']) {
 }
 
 module.exports = () => {
-    return [uriSecretNames, JSON.stringify(swaggerAsJson)]
+    return {
+        'uriSecretNames': uriSecretNames,
+        'swaggerSpec': JSON.stringify(swaggerAsJson)
+    }
 }
