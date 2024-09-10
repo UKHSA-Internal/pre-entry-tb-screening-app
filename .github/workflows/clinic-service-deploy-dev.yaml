@@ -36,7 +36,8 @@ jobs:
         uses: aws-actions/aws-secretsmanager-get-secrets@v2
         with:
           secret-ids: |
-            ,testsecrets
+            dev/ClinicServiceDeploy
+            Clinic_Service_URIs
           parse-json-secrets: true
       # - name: Upload Clinic Service to S3
       #   working-directory: core-services/clinic-service
@@ -51,7 +52,5 @@ jobs:
               output.swaggerSpec = output.swaggerSpec.replace(uri, eval('process.env.' + uri))
             }
             fs.writeFile('swagger.json', output.swaggerSpec, (err) => {if (err) throw err;});
-
       - name: Upload Swagger file to S3
-        run: |
-          aws s3 cp swagger.json s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
+        run: aws s3 cp swagger.json s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
