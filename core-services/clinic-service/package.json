@@ -13,9 +13,11 @@
     "@aws-sdk/lib-dynamodb": "^3.585.0",
     "aws-lambda": "^1.0.7",
     "aws-xray-sdk": "^3.9.0",
+    "body-parser": "1.20.3",
     "express": "^4.19.2",
     "global": "^4.4.0",
     "node-yaml": "^4.0.1",
+    "path-to-regexp": "6.2.2",
     "serverless-dynamodb": "^0.2.54",
     "serverless-http": "^3.2.0",
     "serverless-offline-aws-eventbridge": "^2.1.0"
