@@ -23,7 +23,12 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "outDir": ".build",
-    "rootDir": "./"
+    "rootDir": "./",
+    "plugins": [
+      { 
+        "transform": "typescript-transform-paths" 
+      }
+    ]
   },
   "exclude": [
     "jest.config.ts",

@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "node-yaml": "^4.0.1",
+    "path-parser": "^6.1.0",
+    "js-yaml": "^3.13.x"
+  }
+}

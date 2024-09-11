@@ -20,7 +20,7 @@ jobs:
           node-version: 18.x
           cache: "yarn"
       - name: Install dependencies
-        run: yarn install
+        run: yarn workspace clinic-service install
         working-directory: core-services/clinic-service
       - name: Build clinic service
         working-directory: core-services/clinic-service
