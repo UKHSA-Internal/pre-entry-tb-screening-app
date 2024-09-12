@@ -19,10 +19,13 @@ jobs:
         with:
           node-version: 18.x
           cache: "yarn"
+      - name: Install dependencies
+        run: yarn workspace clinic-service install
+        working-directory: core-services/clinic-service
       - name: Build clinic service
         run: yarn run build
       - name: Create lambda zip
-        run: zip clinic-service-lambda.zip ./build
+        run: zip clinic-service-lambda.zip ./build/*
         working-directory: core-services/clinic-service
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
