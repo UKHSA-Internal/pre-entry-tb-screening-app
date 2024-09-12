@@ -2,8 +2,6 @@ name: Pets UI Deployment - Test
 
 on:
   workflow_dispatch:
-  push:
-    branches: [features/TBBETA-466]
 
 jobs:
   build-and-deploy:
