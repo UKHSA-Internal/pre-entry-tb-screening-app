@@ -60,13 +60,13 @@ jobs:
         working-directory: clinic-service-node-modules
         run: yarn
       - name: Create node_modules zip
-        run: zip node_modules.zip node_modules/*
+        run: zip -r node_modules.zip node_modules
         working-directory: clinic-service-node-modules
       - name: Upload node_modules file to S3
         working-directory: clinic-service-node-modules
         run: aws s3 cp node_modules.zip s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
       - name: Create full node_modules zip
-        run: zip full_node_modules.zip node_modules/*
+        run: zip -r full_node_modules.zip node_modules
       - name: Upload full node_modules file to S3
         run: aws s3 cp full_node_modules.zip s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
       
