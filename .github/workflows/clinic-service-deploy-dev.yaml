@@ -23,6 +23,7 @@ jobs:
         run: yarn workspace clinic-service install
         working-directory: core-services/clinic-service
       - name: Build clinic service
+        working-directory: core-services/clinic-service
         run: yarn run build
       - name: Create lambda zip
         run: zip clinic-service-lambda.zip ./build/*
