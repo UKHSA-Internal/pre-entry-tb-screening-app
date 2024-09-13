@@ -60,4 +60,4 @@ jobs:
       - name: Create nodejs zip file
         run: zip -r nodejs.zip nodejs
       - name: Upload nodejs zip file to S3
-        run: aws s3 cp nodejs.zip s3://$TEST_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $TEST_CLINICSERVICEDEPLOY_SSE_KEY
+        run: aws s3 cp nodejs.zip s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
