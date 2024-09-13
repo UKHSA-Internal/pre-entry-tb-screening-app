@@ -11,7 +11,7 @@ dynamodb:
    table: pets-local-global-clinics
  remote:
    params: {}
-   table: pets-dev-clinics-001
+   table: pets-clinics
 
 functions:
   - getPetsClinics:
