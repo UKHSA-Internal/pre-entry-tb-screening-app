@@ -54,12 +54,10 @@ jobs:
             script = require('./core-services/clinic-service/zip-node-modules.js')
             packageDotJson = script()
             console.log(packageDotJson)
-      - name: Create node_modules folder including only non-dev dependencies
-        working-directory: clinic-service-node-modules
+      - name: Run yarn in nodejs folder
+        working-directory: nodejs
         run: yarn
-      - name: Create node_modules zip
-        run: zip -r node_modules.zip node_modules
-        working-directory: clinic-service-node-modules
-      - name: Upload node_modules file to S3
-        working-directory: clinic-service-node-modules
-        run: aws s3 cp node_modules.zip s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
+      - name: Create nodejs zip file
+        run: zip -r nodejs.zip nodejs
+      - name: Upload nodejs zip file to S3
+        run: aws s3 cp nodejs.zip s3://$TEST_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $TEST_CLINICSERVICEDEPLOY_SSE_KEY
