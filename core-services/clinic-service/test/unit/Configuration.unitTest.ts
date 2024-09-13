@@ -86,7 +86,7 @@ describe("Configuration", () => {
       expect(Object.keys(dbConfig)).not.toEqual(
         expect.arrayContaining(["keys"])
       );
-      expect(dbConfig.table).toEqual("pets-dev-clinics-001");
+      expect(dbConfig.table).toEqual("pets-clinics");
       expect(dbConfig.params).toStrictEqual({});
     });
   });
@@ -112,7 +112,7 @@ describe("Configuration", () => {
         expect(Object.keys(dbConfig)).not.toEqual(
           expect.arrayContaining(["keys"])
         );
-        expect(dbConfig.table).toEqual("pets-dev-clinics-001");
+        expect(dbConfig.table).toEqual("pets-clinics");
         expect(dbConfig.params).toStrictEqual({});
       });
     });
