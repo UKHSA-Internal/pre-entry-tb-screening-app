@@ -52,7 +52,8 @@ jobs:
         with:
           script: |
             script = require('./core-services/clinic-service/zip-node-modules.js')
-            script()
+            packageDotJson = script()
+            console.log(packageDotJson)
       - name: Create node_modules folder including only non-dev dependencies
         working-directory: clinic-service-node-modules
         run: yarn
