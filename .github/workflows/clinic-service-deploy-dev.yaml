@@ -2,6 +2,8 @@ name: Pets Clinic Service Deployment - Dev
 
 on:
   workflow_dispatch:
+  push:
+    branches: [feature/TBBETA-466]
 
 jobs:
   deploy:
@@ -49,11 +51,8 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            fs = require('fs')
-            fs.mkdir('./clinic-service-node-modules', (err) => {if (err) throw err;})
-            inputPackageDotJson = fs.readFileSync('./core-services/clinic-service/package.json', 'utf-8')
-            outputPackageDotJson = '{"dependencies":' + JSON.stringify(JSON.parse(inputPackageDotJson)['dependencies']) + '}'
-            fs.writeFile('./clinic-service-node-modules/package.json', outputPackageDotJson, (err) => {if (err) throw err;});
+            script = require('./core-services/clinic-service/zip-node-modules.js')
+            script()
       - name: Create node_modules folder including only non-dev dependencies
         working-directory: clinic-service-node-modules
         run: yarn
