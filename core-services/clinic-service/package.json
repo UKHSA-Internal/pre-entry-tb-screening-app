@@ -14,9 +14,8 @@
     "test": "jest",
     "test-m": "BRANCH=local jest",
     "tools-setup": "sls dynamodb install",
-    "build": "tspc -b tsconfig.json && yarn run build:copy && yarn run postbuild",
+    "build": "tspc -b tsconfig.json && yarn run build:copy",
     "build:copy": "find src -type f \\( -name \"*.yml\" -or -name \"*.json\" \\) | cpio -pdm .build && find test -type f \\( -name \"*.yml\" -or -name \"*.json\" \\)  | cpio -pdm .build",
-    "postbuild": "cp test/resources/package.json .build/ && cd .build && yarn install && rm yarn.lock",
     "zip": "zip -r test-service.zip .build"
   },
   "dependencies": {
