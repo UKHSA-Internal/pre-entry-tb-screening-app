@@ -2,8 +2,6 @@ name: Pets Clinic Service Deployment - Dev
 
 on:
   workflow_dispatch:
-  push:
-    branches: [feature/TBBETA-466]
 
 jobs:
   deploy:
@@ -51,9 +49,8 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            script = require('./core-services/clinic-service/zip-node-modules.js')
-            packageDotJson = script()
-            console.log(packageDotJson)
+            const script = require('./.github/scripts/zip-node-modules.js')
+            script()
       - name: Run yarn in nodejs folder
         working-directory: nodejs
         run: yarn
@@ -61,3 +58,5 @@ jobs:
         run: zip -r nodejs.zip nodejs
       - name: Upload nodejs zip file to S3
         run: aws s3 cp nodejs.zip s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
+      - name: Update clinic service lambda code
+        run: aws lambda update-function-code --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:clinic-service-lambda --s3-bucket $DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --s3-key clinic-service-lambda.zip
