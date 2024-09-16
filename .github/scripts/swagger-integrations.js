@@ -29,17 +29,9 @@ for (let path in swaggerAsJson['paths']) {
     }
 }
 
-// Insert secret values into swagger spec & write to swagger.json
-let swaggerSpec = JSON.stringify(swaggerAsJson)
-for (uri of uriSecretNames) {
-    swaggerSpec = swaggerSpec.replace(uri, eval('process.env.' + uri))
-}
-fs.writeFile('swagger.json', swaggerSpec, (err) => {if (err) throw err;});
-
-
 module.exports = () => {
     return {
         'uriSecretNames': uriSecretNames,
-        'swaggerSpec': swaggerSpec
+        'swaggerSpec': JSON.stringify(swaggerAsJson)
     }
 }
