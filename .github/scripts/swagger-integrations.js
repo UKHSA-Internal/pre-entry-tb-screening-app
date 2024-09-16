@@ -35,11 +35,3 @@ for (uri of uriSecretNames) {
     swaggerSpec = swaggerSpec.replace(uri, eval('process.env.' + uri))
 }
 fs.writeFile('swagger.json', swaggerSpec, (err) => {if (err) throw err;});
-
-
-module.exports = () => {
-    return {
-        'uriSecretNames': uriSecretNames,
-        'swaggerSpec': swaggerSpec
-    }
-}
