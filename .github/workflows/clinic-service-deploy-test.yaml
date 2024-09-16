@@ -52,7 +52,8 @@ jobs:
         with:
           script: |
             const script = require('./.github/scripts/zip-node-modules.js')
-            script()
+            outputPackageDotJson = script()
+            console.log(outputPackageDotJson)
       - name: Run yarn in nodejs folder
         working-directory: nodejs
         run: yarn
