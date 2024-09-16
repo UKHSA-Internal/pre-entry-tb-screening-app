@@ -51,8 +51,9 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const script = require('./.github/scripts/zip-node-modules.js')
+            const script = require('.github/scripts/zip-node-modules.js')
             console.log(script)
+            console.log(script())
       - name: Run yarn in nodejs folder
         working-directory: nodejs
         run: yarn
