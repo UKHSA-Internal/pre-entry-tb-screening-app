@@ -54,6 +54,7 @@ jobs:
             const script = require('./.github/scripts/zip-node-modules.js')
             const fs = require('fs')
             console.log(fs.readFileSync('./.github/scripts/zip-node-modules.js', 'utf-8'))
+            script()
       - name: Run yarn in nodejs folder
         working-directory: nodejs
         run: yarn
