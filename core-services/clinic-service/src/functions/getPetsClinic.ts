@@ -1,4 +1,4 @@
-import { PetsClinicService } from "../services/PetsClinicService";
+import { PetsClinicService } from "@services/PetsClinicService";
 import PetsClinicDAO from "@models/dao/PetsClinicDAO";
 import { HTTPResponse } from "@models/HTTPResponse";
 import { HTTPError } from "@models/HTTPError";
