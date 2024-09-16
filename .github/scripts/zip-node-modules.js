@@ -1,5 +1,5 @@
 // Create folder structure required for lambda layer
-fs = require('fs')
+const fs = require('fs')
 fs.mkdir('./nodejs', (err) => {
     if (err) throw err;
 })
