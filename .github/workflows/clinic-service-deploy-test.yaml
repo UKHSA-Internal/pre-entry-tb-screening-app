@@ -2,6 +2,8 @@ name: Pets Clinic Service Deployment - Test
 
 on:
   workflow_dispatch:
+  push:
+    branches: [feature/TBBETA-474]
 
 jobs:
   deploy:
@@ -41,14 +43,6 @@ jobs:
         working-directory: core-services/clinic-service
         run: aws s3 cp clinic-service-lambda.zip s3://$TEST_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $TEST_CLINICSERVICEDEPLOY_SSE_KEY
       - name: Process Swagger file
-        uses: actions/github-script@v7
-        with:
-          script: |
-            script = require('./core-services/clinic-service/swagger-integrations.js')
-            output = script()
-            for (uri of output.uriSecretNames) {
-              output.swaggerSpec = output.swaggerSpec.replace(uri, eval('process.env.' + uri))
-            }
-            fs.writeFile('swagger.json', output.swaggerSpec, (err) => {if (err) throw err;});
+        run: ./scripts/swagger-integrations.js
       - name: Upload Swagger file to S3
         run: aws s3 cp swagger.json s3://$TEST_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $TEST_CLINICSERVICEDEPLOY_SSE_KEY
