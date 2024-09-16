@@ -43,6 +43,6 @@ jobs:
       #   working-directory: core-services/clinic-service
       #   run: aws s3 cp clinic-service-lambda.zip s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
       - name: Process Swagger file
-        run: ./scripts/swagger-integrations.js
+        run: .github/scripts/swagger-integrations.js
       - name: Upload Swagger file to S3
         run: aws s3 cp swagger.json s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
