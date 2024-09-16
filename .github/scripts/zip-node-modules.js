@@ -7,9 +7,3 @@ let outputPackageDotJson = '{"dependencies":' + JSON.stringify(JSON.parse(inputP
 fs.writeFile('./nodejs/package.json', outputPackageDotJson, (err) => {
     if (err) throw err;
 });
-
-module.exports = () => {
-    return {
-        outputPackageDotJson
-    }
-}
