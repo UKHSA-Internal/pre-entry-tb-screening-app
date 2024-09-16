@@ -5,7 +5,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy handler & swagger files
+    name: Deploy build & swagger spec
     runs-on: ubuntu-latest
     environment: test
 
@@ -33,11 +33,18 @@ jobs:
       - name: Get secrets from AWS
         uses: aws-actions/aws-secretsmanager-get-secrets@v2
         with:
-          secret-ids: test/ClinicServiceDeploy
+          secret-ids: |
+            test/ClinicServiceDeploy
+            Clinic_Service_URIs
           parse-json-secrets: true
       - name: Upload Clinic Service to S3
         working-directory: core-services/clinic-service
         run: aws s3 cp clinic-service-lambda.zip s3://$TEST_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $TEST_CLINICSERVICEDEPLOY_SSE_KEY
+      - name: Process Swagger file
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const script = require('./.github/scripts/swagger-integrations.js')
+            script(context)
       - name: Upload Swagger file to S3
-        working-directory: core-services/clinic-service/swagger
-        run: aws s3 cp swagger.js s3://$TEST_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $TEST_CLINICSERVICEDEPLOY_SSE_KEY
+        run: aws s3 cp swagger.json s3://$TEST_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $TEST_CLINICSERVICEDEPLOY_SSE_KEY
