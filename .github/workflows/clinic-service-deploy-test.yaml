@@ -2,8 +2,6 @@ name: Pets Clinic Service Deployment - Test
 
 on:
   workflow_dispatch:
-  push:
-    branches: [feature/TBBETA-474]
 
 jobs:
   deploy:
@@ -19,11 +17,11 @@ jobs:
         with:
           node-version: 18.x
           cache: "yarn"
-      # - name: Build clinic service
-      #   run: yarn run build
-      # - name: Create lambda zip
-      #   run: zip clinic-service-lambda.zip ./build
-      #   working-directory: core-services/clinic-service
+      - name: Build clinic service
+        run: yarn run build
+      - name: Create lambda zip
+        run: zip clinic-service-lambda.zip ./build
+        working-directory: core-services/clinic-service
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -39,9 +37,9 @@ jobs:
             test/ClinicServiceDeploy
             Clinic_Service_URIs
           parse-json-secrets: true
-      # - name: Upload Clinic Service to S3
-      #   working-directory: core-services/clinic-service
-      #   run: aws s3 cp clinic-service-lambda.zip s3://$TEST_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $TEST_CLINICSERVICEDEPLOY_SSE_KEY
+      - name: Upload Clinic Service to S3
+        working-directory: core-services/clinic-service
+        run: aws s3 cp clinic-service-lambda.zip s3://$TEST_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $TEST_CLINICSERVICEDEPLOY_SSE_KEY
       - name: Process Swagger file
         uses: actions/github-script@v7
         with:
