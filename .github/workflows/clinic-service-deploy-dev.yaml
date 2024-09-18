@@ -49,7 +49,7 @@ jobs:
         with:
           script: |
             const script = require('./.github/scripts/swagger-integrations.js')
-            script(context)
+            script()
       - name: Upload Swagger file to S3
         working-directory: core-services/clinic-service/swagger
         run: aws s3 cp swagger.json s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY

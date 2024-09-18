@@ -48,7 +48,6 @@ describe("getPetsClinic", () => {
     
         it("throw error on failed query", async () => {
             // expect 500 & INTERNAL_SERVER_ERROR
-            
         });
     });
     
