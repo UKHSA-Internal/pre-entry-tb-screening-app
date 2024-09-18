@@ -39,7 +39,9 @@ jobs:
       - name: Get secrets from AWS
         uses: aws-actions/aws-secretsmanager-get-secrets@v2
         with:
-          secret-ids: dev/ClinicServiceDeploy
+          secret-ids: |
+            dev/ClinicServiceDeploy
+            Clinic_Service_URIs
           parse-json-secrets: true
       - name: Upload Clinic Service to S3
         working-directory: core-services/clinic-service
