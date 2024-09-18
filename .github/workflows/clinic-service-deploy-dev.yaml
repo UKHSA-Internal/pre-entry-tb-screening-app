@@ -2,6 +2,8 @@ name: Pets Clinic Service Deployment - Dev
 
 on:
   workflow_dispatch:
+  push:
+    paths: "core-services/clinic-service/**"
 
 jobs:
   deploy:

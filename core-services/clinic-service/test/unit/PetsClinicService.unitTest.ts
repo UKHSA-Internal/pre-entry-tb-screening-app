@@ -7,6 +7,8 @@ describe("PetsClinicService", () => {
         jest.resetAllMocks().restoreAllMocks();
     });
 
+    //follow vtm structure
+
     describe("getPetsClinic", () => {
         it("returns data on successful query", async () => {
             // expect 200 & data
