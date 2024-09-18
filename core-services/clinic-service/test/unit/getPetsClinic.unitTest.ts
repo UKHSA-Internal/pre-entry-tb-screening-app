@@ -42,8 +42,6 @@ describe("getPetsClinic", () => {
             // jest.spyOn(Validator, 'parametersAreValid').mockImplementation(() => true)
             const output = await new getPetsClinic({"pathParameters": {"petsClinicId": "12345"}})
             console.log(output)
-
-
         });
     
         it("throw error on failed query", async () => {
