@@ -46,7 +46,7 @@ jobs:
         run: aws s3 cp clinic-service-lambda.zip s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
       - name: Upload Swagger file to S3
         working-directory: core-services/clinic-service/swagger
-        run: aws s3 cp swagger.js s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
+        run: aws s3 cp swagger.json s3://$DEV_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_CLINICSERVICEDEPLOY_SSE_KEY
       - name: Create package.json file including only non-dev dependencies
         uses: actions/github-script@v7
         with:
