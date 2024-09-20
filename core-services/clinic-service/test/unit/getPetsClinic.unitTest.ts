@@ -2,8 +2,7 @@ import mockContext, { Context } from "aws-lambda";
 import { PetsClinicService } from "@services/PetsClinicService";
 import { getPetsClinic } from '@functions/getPetsClinic'
 import { HTTPResponse } from "@models/HTTPResponse";
-import { ERRORS, HTTP_RESPONSE } from "@utils/Enum";
-import { Validator } from "@utils/Validator";
+import { ERRORS } from "@utils/Enum";
 import clinics from "../resources/pets-clinics.json";
 
 const ctx = mockContext as Context;
