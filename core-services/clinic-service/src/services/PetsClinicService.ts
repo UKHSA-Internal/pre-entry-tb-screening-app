@@ -29,7 +29,6 @@ export class PetsClinicService {
    * Fetch a list of all pets clinics from DynamoDB
    */
   public getAllPetsClinic() {
-    console.log(this.petsClinicDAO);
     return this.petsClinicDAO
       .getAll()
       .then((data: any) => {

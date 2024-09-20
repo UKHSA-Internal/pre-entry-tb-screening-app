@@ -25,7 +25,6 @@ export const getPetsClinic: Handler = async (event) => {
     : undefined;
 
   try {
-    //update to call getPetsClinic in PetsClinicService given clinic id
     const petsClinic = await service.getPetsClinic(petsClinicId);
     return new HTTPResponse(200, petsClinic);
   } catch (error: any) {
