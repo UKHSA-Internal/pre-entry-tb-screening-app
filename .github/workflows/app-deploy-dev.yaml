@@ -1,45 +1,15 @@
 name: Pets UI Deployment - Dev
 
 on:
+  workflow_dispatch:
   pull_request:
-    types:
-      - closed
+    types: [closed]
     branches: [main]
     paths: "app/**"
-  workflow_dispatch:
+  push:
+    branches: [feature/TBBETA-476]
 
 jobs:
-  build-and-deploy:
-    name: Build and Deploy
-    runs-on: ubuntu-latest
-    environment: dev
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
-          cache: "yarn"
-      - name: Install dependencies
-        run: yarn
-      - name: Build application
-        run: yarn run build
-        working-directory: app/pets-ui
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: "eu-west-2"
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_PETS_UI_ROLE_NAME }}"
-          role-session-name: PETS-UI-Deploy
-      - name: Get secrets from AWS
-        uses: aws-actions/aws-secretsmanager-get-secrets@v2
-        with:
-          secret-ids: dev/AppDeploy
-          parse-json-secrets: true
-      - name: Upload App to S3
-        working-directory: app/pets-ui/.next
-        run: aws s3 sync . s3://$DEV_APPDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_APPDEPLOY_SSE_KEY
+  uses: ./.github/workflows/app-deploy.yaml
+  with:
+    environment: "dev"
