@@ -2,6 +2,8 @@ name: Pets Clinic Service Deployment - Test
 
 on:
   workflow_dispatch:
+  push:
+    branches: [feature/TBBETA-466]
 
 jobs:
   clinic-service:
