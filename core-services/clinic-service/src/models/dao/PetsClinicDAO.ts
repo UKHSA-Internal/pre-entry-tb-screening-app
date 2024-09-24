@@ -2,12 +2,12 @@ import AWSXRay from "aws-xray-sdk";
 import {
   DynamoDBDocumentClient,
   PutCommand,
-  GetCommand
+  GetCommand,
+  ScanCommand
 } from "@aws-sdk/lib-dynamodb";
 import { 
   DynamoDBClient, 
   PutItemOutput,
-  ScanCommand, 
   ScanOutput
 } from "@aws-sdk/client-dynamodb";
 import { ServiceException } from "@smithy/smithy-client";

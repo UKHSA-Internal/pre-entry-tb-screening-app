@@ -2,7 +2,7 @@
             module.exports = {
   "swagger": "2.0",
   "info": {
-    "title": "clinic-service",
+    "title": "ukhsa-pets-clinic-service",
     "version": "1"
   },
   "paths": {
