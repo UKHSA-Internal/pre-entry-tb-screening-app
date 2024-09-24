@@ -23,7 +23,7 @@ module.exports = () => {
         for (let httpMethod in swaggerAsJson['paths'][path]) {
             swaggerAsJson['paths'][path][httpMethod]['x-amazon-apigateway-integration'] = {...integrationBlock} // Spreading the object clones it, preventing original object from being referenced when fields are amended
             let uriSecretName = 'CLINIC_SERVICE_URIS_' + path.toUpperCase() + '_' + httpMethod.toUpperCase()
-            uriSecretName = uriSecretName.replace(/[^A-Z0-9_]/g, ''); // Removing special characters tform to GHA Secret naming rules
+            uriSecretName = uriSecretName.replace(/[^A-Z0-9_]/g, ''); // Removing special characters to conform to GHA Secret naming rules
             uriSecretNames.push(uriSecretName)
             swaggerAsJson['paths'][path][httpMethod]['x-amazon-apigateway-integration']['uri'] = uriSecretName
             swaggerAsJson['paths'][path][httpMethod]['x-amazon-apigateway-integration']['httpMethod'] = httpMethod.toUpperCase()
