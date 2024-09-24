@@ -3,14 +3,15 @@ import {
   GetCommand,
   GetCommandOutput,
   PutCommand,
-  PutCommandOutput
+  PutCommandOutput,
+  ScanCommand
 } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
 import PetsClinicDAO from "@models/dao/PetsClinicDAO";
 import { HTTPError } from "@models/HTTPError";
 import { RESPONSE_STATUS } from "@utils/Enum";
 import clinics from "../resources/pets-clinics.json";
-import { ScanCommand, ScanCommandOutput } from "@aws-sdk/client-dynamodb";
+import { ScanCommandOutput } from "@aws-sdk/client-dynamodb";
 
 describe("PetsClinicDAO", () => {
   beforeEach(() => {
