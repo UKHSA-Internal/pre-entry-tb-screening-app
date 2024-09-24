@@ -6,8 +6,6 @@ on:
     types: [closed]
     branches: [main]
     paths: "core-services/clinic-service/**"
-  push:
-    branches: [feature/TBBETA-466]
 
 jobs:
   clinic-service:
