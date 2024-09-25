@@ -1,13 +1,17 @@
-name: Pets Clinic Service Deployment - Test
+name: Pets Clinic Service Deployment
 
 on:
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
 
 jobs:
   deploy:
     name: Deploy build & swagger spec
     runs-on: ubuntu-latest
-    environment: test
+    environment: ${{ inputs.environment }}
 
     steps:
       - name: Checkout code
@@ -34,17 +38,17 @@ jobs:
         uses: aws-actions/aws-secretsmanager-get-secrets@v2
         with:
           secret-ids: |
-            test/ClinicServiceDeploy
+            ClinicServiceDeploy
             Clinic_Service_URIs
           parse-json-secrets: true
       - name: Upload Clinic Service to S3
         working-directory: core-services/clinic-service
-        run: aws s3 cp clinic-service-lambda.zip s3://$TEST_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $TEST_CLINICSERVICEDEPLOY_SSE_KEY
+        run: aws s3 cp clinic-service-lambda.zip s3://$CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $CLINICSERVICEDEPLOY_SSE_KEY
       - name: Process Swagger file
         uses: actions/github-script@v7
         with:
           script: |
             const script = require('./.github/scripts/swagger-integrations.js')
-            script(context)
+            script()
       - name: Upload Swagger file to S3
-        run: aws s3 cp swagger.json s3://$TEST_CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $TEST_CLINICSERVICEDEPLOY_SSE_KEY
+        run: aws s3 cp swagger.json s3://$CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $CLINICSERVICEDEPLOY_SSE_KEY

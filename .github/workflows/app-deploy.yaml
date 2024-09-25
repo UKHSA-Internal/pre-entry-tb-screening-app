@@ -1,18 +1,17 @@
-name: Pets UI Deployment - Dev
+name: Pets UI Deployment
 
 on:
-  pull_request:
-    types:
-      - closed
-    branches: [main]
-    paths: "app/**"
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
 
 jobs:
   build-and-deploy:
     name: Build and Deploy
     runs-on: ubuntu-latest
-    environment: dev
+    environment: ${{ inputs.environment }}
 
     steps:
       - name: Checkout code
@@ -38,8 +37,8 @@ jobs:
       - name: Get secrets from AWS
         uses: aws-actions/aws-secretsmanager-get-secrets@v2
         with:
-          secret-ids: dev/AppDeploy
+          secret-ids: AppDeploy
           parse-json-secrets: true
       - name: Upload App to S3
         working-directory: app/pets-ui/.next
-        run: aws s3 sync . s3://$DEV_APPDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $DEV_APPDEPLOY_SSE_KEY
+        run: aws s3 sync . s3://$APPDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $APPDEPLOY_SSE_KEY
