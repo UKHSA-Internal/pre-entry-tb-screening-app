@@ -12,57 +12,45 @@ beforeEach(() => {
 const mockResponseSingleClinic = JSON.stringify([
     {
         "petsClinicId": "testId",
-        "petsClinicPNumber": "testPNumber",
-        "petsClinicStatus": "testStatus",
-        "petsClinicName": "testName",
-        "petsClinicContactNumber": "testContactNumber",
-        "petsClinicAccessNotes": "testAccessNotes",
-        "petsClinicGeneralNotes": "testGeneralNotes",
-        "petsClinicTown": "testTown",
-        "petsClinicAddress": "testAddress",
-        "petsClinicPostcode": "testPostcode",
+        "petsClinicName":  "testName",
+        "petsClinicAddressLine1": "testAddressLine1",
+        "petsClinicAddressLine2": "testAddressLine2",
+        "petsClinicCity": "testCity",
         "petsClinicCountry": "testCountry",
-        "petsClinicLongitude": "testLongitude",
-        "petsClinicLatitude": "testLatitude",
-        "petsClinicType": "testType",
-        "petsClinicEmails": ["testEmail0","testEmail1"]
+        "petsClinicPostcode": "testPostcode",
+        "petsClinicContactNumber1": "testContactNumber1",
+        "petsClinicContactNumber2": "testContactNumber2",
+        "petsClinicEmails": ["testEmail0","testEmail1"],
+        "petsClinicIsIom": true
     }
 ])
 
 const mockResponseMultipleClinics = JSON.stringify([
     {
         "petsClinicId": "testId0",
-        "petsClinicPNumber": "testPNumber0",
-        "petsClinicStatus": "testStatus0",
-        "petsClinicName": "testName0",
-        "petsClinicContactNumber": "testContactNumber0",
-        "petsClinicAccessNotes": "testAccessNotes0",
-        "petsClinicGeneralNotes": "testGeneralNotes0",
-        "petsClinicTown": "testTown0",
-        "petsClinicAddress": "testAddress0",
-        "petsClinicPostcode": "testPostcode0",
+        "petsClinicName":  "testName0",
+        "petsClinicAddressLine1": "testAddressLine10",
+        "petsClinicAddressLine2": "testAddressLine20",
+        "petsClinicCity": "testCity0",
         "petsClinicCountry": "testCountry0",
-        "petsClinicLongitude": "testLongitude0",
-        "petsClinicLatitude": "testLatitude0",
-        "petsClinicType": "testType0",
-        "petsClinicEmails": ["testEmail00","testEmail01"]
+        "petsClinicPostcode": "testPostcode0",
+        "petsClinicContactNumber1": "testContactNumber10",
+        "petsClinicContactNumber2": "testContactNumber20",
+        "petsClinicEmails": ["testEmail00","testEmail10"],
+        "petsClinicIsIom": false
     },
     {
         "petsClinicId": "testId1",
-        "petsClinicPNumber": "testPNumber1",
-        "petsClinicStatus": "testStatus1",
-        "petsClinicName": "testName1",
-        "petsClinicContactNumber": "testContactNumber1",
-        "petsClinicAccessNotes": "testAccessNotes1",
-        "petsClinicGeneralNotes": "testGeneralNotes1",
-        "petsClinicTown": "testTown1",
-        "petsClinicAddress": "testAddress1",
-        "petsClinicPostcode": "testPostcode1",
+        "petsClinicName":  "testName1",
+        "petsClinicAddressLine1": "testAddressLine11",
+        "petsClinicAddressLine2": "testAddressLine21",
+        "petsClinicCity": "testCity1",
         "petsClinicCountry": "testCountry1",
-        "petsClinicLongitude": "testLongitude1",
-        "petsClinicLatitude": "testLatitude1",
-        "petsClinicType": "testType1",
-        "petsClinicEmails": ["testEmail10","testEmail11"]
+        "petsClinicPostcode": "testPostcode1",
+        "petsClinicContactNumber1": "testContactNumber11",
+        "petsClinicContactNumber2": "testContactNumber21",
+        "petsClinicEmails": ["testEmail01","testEmail11"],
+        "petsClinicIsIom": true
     }
 ])
 
@@ -83,7 +71,7 @@ describe('Dashboard component', () => {
         expect(await screen.findByText("testId")).toBeTruthy()
         expect(await screen.findByRole("table")).toBeTruthy()
         expect(await screen.findAllByRole("rowgroup")).toHaveLength(2) // testing for 1 thead and 1 tbody element
-        expect(await screen.findAllByRole("row")).toHaveLength(6)
+        expect(await screen.findAllByRole("row")).toHaveLength(7)
         expect(await screen.findByRole("button")).toBeTruthy()
     })
 
@@ -96,7 +84,7 @@ describe('Dashboard component', () => {
         expect(await screen.findByText("testId1")).toBeTruthy()
         expect(await screen.findByRole("table")).toBeTruthy()
         expect(await screen.findAllByRole("rowgroup")).toHaveLength(3) // testing for 1 thead and 2 tbody elements
-        expect(await screen.findAllByRole("row")).toHaveLength(11)
+        expect(await screen.findAllByRole("row")).toHaveLength(13)
         expect(await screen.findByRole("button")).toBeTruthy()
     })
 })

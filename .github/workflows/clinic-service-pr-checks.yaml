@@ -1,8 +1,8 @@
-name: Pets UI CI
+name: Pets Clinic Service PR Checks
 
 on:
-  push:
-    paths: "app/**"
+  pull_request:
+    paths: "core-services/clinic-service/**"
   workflow_dispatch:
 
 jobs:
@@ -24,8 +24,7 @@ jobs:
         run: yarn audit
       - name: Run unit tests
         run: yarn run test
-        working-directory: app/pets-ui
-      - name: Run eslint
-        run: yarn run lint
-        working-directory: app/pets-ui
-        continue-on-error: true
+        working-directory: core-services/clinic-service
+      # - name: Run eslint
+      #   run: yarn run lint
+      #   working-directory: core-services/clinic-service

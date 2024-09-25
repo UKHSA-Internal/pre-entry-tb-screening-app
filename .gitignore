@@ -30,3 +30,12 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# env
+.env
+
+# jest
+pets.code-workspace
+
+# aws
+*.pkg
