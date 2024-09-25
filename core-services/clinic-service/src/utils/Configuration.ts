@@ -1,7 +1,7 @@
 import { Handler } from "aws-lambda";
 // @ts-ignore
 import * as yml from "node-yaml";
-import { IFunctionConfig } from "@model";
+import { IFunctionConfig } from "@models/index";
 import { ERRORS } from "./Enum";
 
 export class Configuration {
@@ -78,4 +78,28 @@ export class Configuration {
 
     return this.config.dynamodb[env];
   }
+
+    /**
+   * Retrieves the lambda functions declared in the config
+   * @returns IFunctionEvent[]
+   */
+    public getFunctions(): IFunctionConfig[] {
+      if (!this.config.functions) {
+        throw new Error(ERRORS.FUNCTION_CONFIG_NOT_DEFINED);
+      }
+
+      return this.config.functions.map((fn: Handler) => {
+        const [name, params]: any = Object.entries(fn)[0];
+        const path: string = params.proxy
+          ? params.path.replace("{+proxy}", params.proxy)
+          : params.path;
+
+        return {
+          name,
+          method: params.method.toUpperCase(),
+          path,
+          function: require(`../functions/${name}`)[name],
+        };
+      });
+    }
 }

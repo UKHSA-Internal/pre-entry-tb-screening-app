@@ -21,10 +21,14 @@ jobs:
         with:
           node-version: 18.x
           cache: "yarn"
+      - name: Install dependencies
+        run: yarn workspace clinic-service install
+        working-directory: core-services/clinic-service
       - name: Build clinic service
+        working-directory: core-services/clinic-service
         run: yarn run build
       - name: Create lambda zip
-        run: zip clinic-service-lambda.zip ./build
+        run: zip -r clinic-service-lambda.zip .build/*
         working-directory: core-services/clinic-service
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -52,3 +56,18 @@ jobs:
             script()
       - name: Upload Swagger file to S3
         run: aws s3 cp swagger.json s3://$CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $CLINICSERVICEDEPLOY_SSE_KEY
+      - name: Create package.json file including only non-dev dependencies
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const script = require('./.github/scripts/zip-node-modules.js')
+            script()
+      - name: Run yarn in nodejs folder
+        working-directory: nodejs
+        run: yarn
+      - name: Create nodejs zip file
+        run: zip -r nodejs.zip nodejs
+      - name: Upload nodejs zip file to S3
+        run: aws s3 cp nodejs.zip s3://$CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $CLINICSERVICEDEPLOY_SSE_KEY
+      - name: Update clinic service lambda code
+        run: aws lambda update-function-code --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:clinic-service-lambda --s3-bucket $CLINICSERVICEDEPLOY_BUCKET_NAME --s3-key clinic-service-lambda.zip

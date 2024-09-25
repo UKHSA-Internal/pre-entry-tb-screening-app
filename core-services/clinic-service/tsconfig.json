@@ -1,17 +1,37 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": "./src",
+    "target": "es2020",
+    "strict": true,
+    "preserveConstEnums": true,
+    "noEmit": false,
+    "sourceMap": false,
+    "module":"commonjs",
+    "moduleResolution":"node",
+    "skipLibCheck": true,
+    "alwaysStrict": true,
+    "forceConsistentCasingInFileNames": true, 
+    "isolatedModules": true, 
     "paths": {
       "@/*": ["./*"],
-      "@config/*": ["./src/config/*"],
-      "@functions/*": ["./src/functions/*"],
-      "@models/*": ["./src/models/*"],
-      "@model": ["./src/models/"],
-      "@services/*": ["./src/services/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@test/*": ["./test/*"],
+      "@config/*": ["config/*"],
+      "@functions/*": ["functions/*"],
+      "@models/*": ["models/*"],
+      "@services/*": ["services/*"],
+      "@utils/*": ["utils/*"]
     },
-    "esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
+    "esModuleInterop": true,
     "resolveJsonModule": true,
-  }
+    "outDir": ".build",
+    "rootDir": "./",
+    "plugins": [
+      { 
+        "transform": "typescript-transform-paths" 
+      }
+    ]
+  },
+  "exclude": [
+    "jest.config.ts",
+    "**/*.unitTest.ts"
+  ]
 }

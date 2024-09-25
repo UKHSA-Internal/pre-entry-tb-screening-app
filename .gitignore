@@ -33,3 +33,9 @@ Temporary Items
 
 # env
 .env
+
+# jest
+pets.code-workspace
+
+# aws
+*.pkg

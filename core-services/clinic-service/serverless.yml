@@ -3,15 +3,14 @@ org: ukhsapets
 # "app" enables Serverless Framework Dashboard features and sharing them with other Services.
 app: pets-clinic-aws-serverless
 # "service" is the name of this project. This will also be added to your AWS resource names.
-service: clinic-service
+service: ukhsa-pets-clinic-service
 
-stages:
+params:
   default:
-    params:
-      tableName: "pets-local-clinics"
+    tableName: "pets-local-clinics"
 
 plugins:
-  - Serverless-dynamodb
+  - serverless-dynamodb
   - serverless-plugin-tracing
   - serverless-auto-swagger
   - serverless-offline
@@ -48,12 +47,11 @@ provider:
     CLINICS_TABLE: ${param:tableName}
 
 functions:
-  getClinics:
+  getPetsClinics:
     environment:
       BRANCH: local
-    handler: handler.handler
+    handler: clinics.handler
     events:
-      # - httpApi: "*"
       - http:
           path: clinics/{petsClinicId}
           method: get
@@ -103,7 +101,7 @@ custom:
       noStart: false
       host: 127.0.0.1
     seed:
-      pets-local-clinics:
+      pets-clinics:
         sources:
           - table: "pets-local-clinics"
             sources: [./test/resources/pets-clinics.json]
