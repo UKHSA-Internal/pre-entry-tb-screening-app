@@ -63,8 +63,8 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const script = require('./.github/scripts/swagger-integrations.js')
-            script()
+            const addIntegrationsToSwagger = require('./.github/scripts/add-integrations-to-swagger.js')
+            addIntegrationsToSwagger()
       - name: Upload Swagger file to S3
         run: aws s3 cp swagger.json s3://$CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $CLINICSERVICEDEPLOY_SSE_KEY
 
@@ -72,7 +72,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const createPackageDotJson = require('./.github/scripts/zip-node-modules.js')
+            const createPackageDotJson = require('./.github/scripts/create-package-dot-json.js')
             createPackageDotJson('clinic-service')
             createPackageDotJson('lambda-authoriser')
       - name: Clinic Service - Run yarn in nodejs folder
