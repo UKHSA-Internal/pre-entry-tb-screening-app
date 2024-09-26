@@ -30,6 +30,9 @@ jobs:
       - name: Create lambda zip
         run: zip -r clinic-service-lambda.zip .build/*
         working-directory: core-services/clinic-service
+      - name: Create lambda authoriser zip
+        run: zip -r lambda-authoriser.zip src/*
+        working-directory: core-services/lambda-authoriser
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -44,10 +47,14 @@ jobs:
           secret-ids: |
             ClinicServiceDeploy
             Clinic_Service_URIs
+            LambdaAuthoriserDeploy
           parse-json-secrets: true
       - name: Upload Clinic Service to S3
         working-directory: core-services/clinic-service
         run: aws s3 cp clinic-service-lambda.zip s3://$CLINICSERVICEDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $CLINICSERVICEDEPLOY_SSE_KEY
+      - name: Upload Lambda Authoriser to S3
+        working-directory: core-services/lambda-authoriser
+        run: aws s3 cp lambda-authoriser.zip s3://$LAMBDAAUTHORISERDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $LAMBDAAUTHORISERDEPLOY_SSE_KEY
       - name: Process Swagger file
         uses: actions/github-script@v7
         with:
