@@ -1,6 +1,5 @@
 export class Validator {
   // tslint:disable-next-line: no-empty
-  public constructor() {}
 
   /**
    * Validate query or path parameter provided in the request

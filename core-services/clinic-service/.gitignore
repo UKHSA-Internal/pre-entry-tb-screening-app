@@ -6,7 +6,7 @@ node_modules/**
 
 # Serverless specific files
 .serverless
-.dynamodb/**
+.dynamodb
 
 # Typescript
 .build

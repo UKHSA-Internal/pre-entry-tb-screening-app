@@ -2,25 +2,29 @@ dynamodb:
  local:
    params:
      region: localhost
-     endpoint: http://127.0.0.1:8000
+     endpoint: http://127.0.0.1:8007
    table: pets-local-clinics
  local-global:
    params:
      region: localhost
-     endpoint: http://127.0.0.1:8000
+     endpoint: http://127.0.0.1:8007
    table: pets-local-global-clinics
  remote:
    params: {}
-   table: pets-${BRANCH}-clinics
+   table: pets-clinics
 
-# functions:
-#   - getTestStations:
-#       method: GET
-#       path: /test-stations
-#       proxy: null
-#       function: getTestStations
-#   - getTestStation:
-#       method: GET
-#       path: /test-stations/{+proxy}
-#       proxy: :testStationPNumber
-#       function: getTestStation
+functions:
+  - getPetsClinics:
+      method: GET
+      path: /clinics
+      proxy: null
+      function: getPetsClinics
+  - getPetsClinic:
+      method: GET
+      path: /clinics/{+proxy}
+      proxy: :petsClinicId
+      function: getPetsClinic
+
+serverless:
+  basePath: /${BRANCH}
+  port: 3004

@@ -2,15 +2,15 @@
             module.exports = {
   "swagger": "2.0",
   "info": {
-    "title": "clinic-service",
+    "title": "ukhsa-pets-clinic-service",
     "version": "1"
   },
   "paths": {
     "/clinics/{petsClinicId}": {
       "get": {
-        "summary": "getClinics",
+        "summary": "getPetsClinics",
         "description": "",
-        "operationId": "getClinics.get.clinics/{petsClinicId}",
+        "operationId": "getPetsClinics.get.clinics/{petsClinicId}",
         "consumes": [
           "application/json"
         ],
@@ -34,9 +34,9 @@
     },
     "/clinics": {
       "get": {
-        "summary": "getClinics",
+        "summary": "getPetsClinics",
         "description": "",
-        "operationId": "getClinics.get.clinics",
+        "operationId": "getPetsClinics.get.clinics",
         "consumes": [
           "application/json"
         ],
