@@ -6,10 +6,10 @@ module.exports = (serviceName) => {
         if (err) throw err;
     })
 
-    console.log(fs.readdir(`./`))
-    console.log(fs.readdir(`./node-zip/`))
-    console.log(fs.readdir(`./node-zip/${serviceName}/`))
-    console.log(fs.readdir(`./node-zip/${serviceName}/nodejs/`))
+    console.log(fs.readdir(`./`), (err) => { if (err) throw err; })
+    console.log(fs.readdir(`./node-zip/`), (err) => { if (err) throw err; })
+    console.log(fs.readdir(`./node-zip/${serviceName}/`), (err) => { if (err) throw err; })
+    console.log(fs.readdir(`./node-zip/${serviceName}/nodejs/`), (err) => { if (err) throw err; })
 
     // Create package.json containing only non-dev dependencies
     let inputPackageDotJson = fs.readFileSync(`./core-services/${serviceName}/package.json`, 'utf-8')
