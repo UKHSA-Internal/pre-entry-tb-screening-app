@@ -8,6 +8,7 @@ import { JWT_MESSAGE } from "../models/enums";
 import { ILogEvent } from "../models/ILogEvent";
 import { writeLogMessage } from "../common/Logger";
 import newPolicyDocument from "./newPolicyDocument";
+import getSecrets from "../services/secrets-utils";
 import { Jwt, JwtPayload } from "jsonwebtoken";
 
 /**
@@ -20,14 +21,23 @@ import { Jwt, JwtPayload } from "jsonwebtoken";
 export const authorizer = async (event: APIGatewayTokenAuthorizerEvent, context: Context): Promise<APIGatewayAuthorizerResult> => {
   const logEvent: ILogEvent = {};
 
-  if (!process.env.AZURE_TENANT_ID || !process.env.AZURE_CLIENT_ID) {
+  let AZURE_CLIENT_ID, AZURE_TENANT_ID;
+  const secrets = await getSecrets("some-key");
+
+  if (secrets.SecretString) {
+    const secretsJson = JSON.parse(secrets.SecretString);
+    AZURE_CLIENT_ID = secretsJson.AZURE_CLIENT_ID;
+    AZURE_TENANT_ID = secretsJson.AZURE_TENANT_ID
+  }
+  
+  if (!AZURE_CLIENT_ID || !AZURE_TENANT_ID) {
     writeLogMessage(logEvent, JWT_MESSAGE.INVALID_ID_SETUP);
     return unauthorisedPolicy();
   }
 
   try {
     initialiseLogEvent(event);
-    const jwt = await getValidJwt(event.authorizationToken, logEvent, process.env.AZURE_TENANT_ID, process.env.AZURE_CLIENT_ID);
+    const jwt = await getValidJwt(event.authorizationToken, logEvent, AZURE_TENANT_ID, AZURE_CLIENT_ID);
 
     const policy = generateRolePolicy(jwt, logEvent) ?? generateFunctionalPolicy(jwt, logEvent);
 
