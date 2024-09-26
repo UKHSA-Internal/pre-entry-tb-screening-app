@@ -11,7 +11,7 @@ on:
 
 jobs:
   clinic-service:
-    uses: ./.github/workflows/clinic-service-deploy.yaml
+    uses: ./.github/workflows/templates/clinic-service-deploy.yaml
     with:
       environment: "dev"
     secrets: inherit

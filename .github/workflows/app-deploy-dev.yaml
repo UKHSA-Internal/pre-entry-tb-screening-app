@@ -9,7 +9,7 @@ on:
 
 jobs:
   pets-ui:
-    uses: ./.github/workflows/app-deploy.yaml
+    uses: ./.github/workflows/templates/app-deploy.yaml
     with:
       environment: "dev"
     secrets: inherit
