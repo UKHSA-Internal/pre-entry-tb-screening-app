@@ -1,0 +1,22 @@
+service: lambda-authoriser
+
+plugins:
+  - serverless-offline
+  - serverless-plugin-typescript
+  - serverless-dotenv-plugin
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-west-2
+
+functions:
+  authoriserFunction:
+    handler: src/handler.handler
+  testFunction:
+    handler: tests/handler.test
+    events:
+      - http:
+          path: testFunction
+          method: POST
+          authorizer: authoriserFunction
