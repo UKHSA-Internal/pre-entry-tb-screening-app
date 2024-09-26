@@ -2,7 +2,7 @@ module.exports = (serviceName) => {
     // Create folder structure required for lambda layer
     const fs = require('fs')
     serviceName = serviceName.toString()
-    fs.mkdir(`./node-zip/${serviceName}/nodejs`, (err) => {
+    fs.mkdir(`./node-zip/${serviceName}/nodejs`, { recursive: true }, (err) => {
         if (err) throw err;
     })
 
