@@ -6,6 +6,11 @@ module.exports = (serviceName) => {
         if (err) throw err;
     })
 
+    console.log(fs.readdir(`./`))
+    console.log(fs.readdir(`./node-zip/`))
+    console.log(fs.readdir(`./node-zip/${serviceName}/`))
+    console.log(fs.readdir(`./node-zip/${serviceName}/nodejs/`))
+
     // Create package.json containing only non-dev dependencies
     let inputPackageDotJson = fs.readFileSync(`./core-services/${serviceName}/package.json`, 'utf-8')
     let outputPackageDotJson = '{"dependencies":' + JSON.stringify(JSON.parse(inputPackageDotJson)['dependencies']) + '}'
