@@ -10,20 +10,18 @@ import newPolicyDocument from "./newPolicyDocument";
 type NonEmptyArray<T> = [T, ...T[]];
 
 const accessToHttpVerbs: AccessHttpVerbMap = {
-  read: ["GET", "HEAD"],
+  read: ["GET"],
   write: ["*"],
 };
 
 const Configuration: AuthorizerConfig = {
   SystemAdmin: ["/*"],
-  CVSPsvTester: ["/*"],
-  CVSHgvTester: ["/*"],
-  CVSAdrTester: ["/*"],
-  CVSTirTester: ["/*"],
-  VTMAdmin: ["/*"],
-  Certs: ["/v1/document-retrieval", "/v1/document-retrieval/*"],
-  VehicleData: ["/v1/enquiry", "/v1/enquiry/*"],
-  DVLATrailers: ["/v1/trailers", "/v1/trailers/*"],
+  UkhsaDataAnalyst: ["/clinics*"],
+  ClinicAdmin: ["/clinics/?*"],
+  ClinicRadiologist: ["/clinics/?*"],
+  UkhsaRadiologist: ["/clinics*"],
+  OxfordRadiologist: ["/clinics*"],
+  HeathrowDoctor: ["/clinics*"]
 };
 
 interface AuthorizerConfig {
