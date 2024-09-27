@@ -6,7 +6,22 @@ export interface IApiAccess {
 }
 
 export const functionConfig: { [key: string]: NonEmptyArray<IApiAccess> } = {
-  "": [
-    
+  "Clinics.ReadAll": [
+    {
+        verbs: ["GET", "OPTIONS"],
+        path: "clinics",
+    }
   ],
+  "Clinics.ReadOwn": [
+    {
+        verbs: ["GET", "OPTIONS"],
+        path: "clinics/?*",
+    }
+  ],
+  "Clinics.WriteAll": [
+    {
+        verbs: ["POST"],
+        path: "clinics",
+    }
+  ]
 };
