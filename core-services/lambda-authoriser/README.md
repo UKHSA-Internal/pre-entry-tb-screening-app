@@ -1,92 +1,99 @@
-<!--
-title: 'AWS Simple HTTP Endpoint example in NodeJS'
-description: 'This template demonstrates how to make a simple HTTP API with Node.js running on AWS Lambda and API Gateway using the Serverless Framework.'
-layout: Doc
-framework: v3
-platform: AWS
-language: nodeJS
-authorLink: 'https://github.com/serverless'
-authorName: 'Serverless, inc.'
-authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'
--->
+# Lambda-authoriser
 
-# Serverless Framework Node HTTP API on AWS
+Custom authentication and authorisation mechanism for all PETs API Gateway calls.
 
-This template demonstrates how to make a simple HTTP API with Node.js running on AWS Lambda and API Gateway using the Serverless Framework.
+- Calls to PETs api gateway trigger Lambda handler [authorizer.ts][authorizer-ts], as described on [AWS Lambda Authorizer Input][lambda-authorizer-input].
+- This Lambda will return a policy document, as described on [AWS Lambda Authorizer Input][lambda-authorizer-input].
 
-This template does not include any kind of persistence (database). For more advanced examples, check out the [serverless/examples repository](https://github.com/serverless/examples/) which includes Typescript, Mongo, DynamoDB and other examples.
+## Documentation
 
-## Usage
+See the [Lambda Authorizer Confluence page][confluence].
 
-### Deployment
+## Configuration
 
-```
-$ serverless deploy
-```
+- Configuration is a TS object of type `AuthorizerConfig`.
+- Both `AuthorizerConfig` and the configuration itself are in [configuration.ts][configuration-ts].
+- A (fake) example can be found [here][fake-config].
 
-After deploying, you should see output similar to:
+## Prerequisites
 
-```bash
-Deploying aws-node-http-api-project to stage dev (us-east-1)
+### Node JS
 
-✔ Service deployed to stack aws-node-http-api-project-dev (152s)
+Check you have Node and NPM in your terminal:
 
-endpoint: GET - https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/
-functions:
-  hello: aws-node-http-api-project-dev-hello (1.9 kB)
+```shell script
+node --version
+npm --version
 ```
 
-_Note_: In current form, after deployment, your API is public and can be invoked by anyone. For production deployments, you might want to configure an authorizer. For details on how to do that, refer to [http event docs](https://www.serverless.com/framework/docs/providers/aws/events/apigateway/).
+**We strongly recommend [`nvm`][nvm] to manage your Node installations** ([`nvm-windows`][nvm-windows] on Windows). The project's `.nvmrc` (root directory) contains the recommended Node version.
 
-### Invocation
+To install on Linux:
 
-After successful deployment, you can call the created application via HTTP:
-
-```bash
-curl https://xxxxxxx.execute-api.us-east-1.amazonaws.com/
+```shell script
+sudo apt install nodejs
 ```
 
-Which should result in response similar to the following (removed `input` content for brevity):
+To install on MacOS, either:
+
+- Download from [official site][nodejs]
+- Use [Homebrew][homebrew]: `brew install node`
+
+To install on Windows, either:
+
+- Download from [official site][nodejs]
+- Use [Chocolatey][chocolatey]: `cinst nodejs.install`
+
+## Dependencies
+
+```shell script
+npm install
+```
+
+## Build
+
+```shell script
+npm run build
+```
+
+Output folder: `build/` (Git-ignored)
+
+On Windows, you will need to use [Git Bash][git-bash]. You may also need to:
+
+- replace `export` statements with your own environment variable configuration.
+- find binaries for things like `cpio`.
+
+## Test
+
+```shell script
+npm test
+```
+
+## Local Invocation
+
+The [serverless-offline][serverless-offline] package is used to run the lambda locally. A test function is initialiased and protected by the lambda authoriser. Details of the configuration are in the serverless.yml file.
+Before running/debugging, copy the `.env.example` file to `.env`.
+
+- `AZURE_CLIENT_ID` needs to be a list of audiences the tokens will be validated against.
+- `AZURE_TENANT_ID` needs to be the tenantId to use for the token validation.
+
+### Running
+
+Run `npm start` to run the test function and lambda authoriser. Once running, the test function can be called using postman or something similar. An example postman collection can be found at `tests/resources/authoriser.postman_collection.json`. There are a number of variables that need population before it will work. These are the details of credentials you will want to test i.e. clientId, secret etc.
+If there is any reason the token does not allow access to the resource the reason is sent back in the response.
 
 ```json
 {
-  "message": "Go Serverless v2.0! Your function executed successfully!",
-  "input": {
-    ...
-  }
+  "statusCode": 403,
+  "error": "Forbidden",
+  "message": "User is not authorized to access this resource"
 }
 ```
 
-### Local development
+If the token does allow access, the request will be allowed through to the test function and `"Test function successfully invoked. Access was granted."` is returned in the response.
 
-You can invoke your function locally by using the following command:
+### Debugging
 
-```bash
-serverless invoke local --function hello
-```
-
-Which should result in response similar to the following:
-
-```
-{
-  "statusCode": 200,
-  "body": "{\n  \"message\": \"Go Serverless v3.0! Your function executed successfully!\",\n  \"input\": \"\"\n}"
-}
-```
+A debug configuration has been added that runs `npm start` under a debug session. Testing is performed via postman as described above.
 
 
-Alternatively, it is also possible to emulate API Gateway and Lambda locally by using `serverless-offline` plugin. In order to do that, execute the following command:
-
-```bash
-serverless plugin install -n serverless-offline
-```
-
-It will add the `serverless-offline` plugin to `devDependencies` in `package.json` file as well as will add it to `plugins` in `serverless.yml`.
-
-After installation, you can start local emulation with:
-
-```
-serverless offline
-```
-
-To learn more about the capabilities of `serverless-offline`, please refer to its [GitHub repository](https://github.com/dherault/serverless-offline).
