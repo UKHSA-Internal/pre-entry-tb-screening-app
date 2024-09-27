@@ -22,7 +22,7 @@ export const authorizer = async (event: APIGatewayTokenAuthorizerEvent, context:
   const logEvent: ILogEvent = {};
 
   let AZURE_CLIENT_ID, AZURE_TENANT_ID;
-  const secrets = await getSecrets("some-key");
+  const secrets = await getSecrets("LambdaAuthoriserAzureCredentials");
 
   if (secrets.SecretString) {
     const secretsJson = JSON.parse(secrets.SecretString);
