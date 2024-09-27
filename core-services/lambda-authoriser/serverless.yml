@@ -1,9 +1,9 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: ukhsa
 service: lambda-authoriser
 
 plugins:
   - serverless-offline
-  - serverless-plugin-typescript
-  - serverless-dotenv-plugin
 
 provider:
   name: aws
