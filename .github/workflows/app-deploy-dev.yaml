@@ -6,8 +6,6 @@ on:
     types: [closed]
     branches: [main]
     paths: "app/**"
-  push:
-    branches: [feature/TBBETA-435]
 
 jobs:
   pets-ui:
