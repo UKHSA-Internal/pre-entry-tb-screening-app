@@ -17,12 +17,12 @@ describe("getLegacyRoles()", () => {
   });
 
   it("should return backwards-compatible roles with write access", () => {
-    const roles: Role[] = getLegacyRoles(tokenWithRoles(["CVSFullAccess"]), {});
+    const roles: Role[] = getLegacyRoles(tokenWithRoles(["SystemAdmin"]), {});
 
     expect(roles.length).toEqual(1);
 
     expect(roles).toContainEqual({
-      name: "CVSFullAccess",
+      name: "SystemAdmin",
       access: "write",
     });
   });
