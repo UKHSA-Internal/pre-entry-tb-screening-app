@@ -1,4 +1,4 @@
-name: Pets Clinic Service Deployment - Dev
+name: Pets Core Services Deployment - Dev
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   clinic-service:
-    uses: ./.github/workflows/clinic-service-deploy.yaml
+    uses: ./.github/workflows/core-services-deploy.yaml
     with:
       environment: "dev"
     secrets: inherit

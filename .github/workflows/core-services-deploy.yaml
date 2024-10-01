@@ -1,4 +1,4 @@
-name: Pets Clinic Service Deployment
+name: Pets Core Services Deployment
 
 on:
   workflow_call:

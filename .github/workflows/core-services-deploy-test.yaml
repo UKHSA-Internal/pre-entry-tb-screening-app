@@ -1,11 +1,11 @@
-name: Pets Clinic Service Deployment - Test
+name: Pets Core Services Deployment - Test
 
 on:
   workflow_dispatch:
 
 jobs:
   clinic-service:
-    uses: ./.github/workflows/clinic-service-deploy.yaml
+    uses: ./.github/workflows/core-services-deploy.yaml
     with:
       environment: "test"
     secrets: inherit

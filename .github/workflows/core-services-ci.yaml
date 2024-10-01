@@ -1,7 +1,6 @@
-name: Pets Clinic Service PR Checks
-
+name: Pets Core Services CI
 on:
-  pull_request:
+  push:
     paths: "core-services/clinic-service/**"
   workflow_dispatch:
 
@@ -28,3 +27,4 @@ jobs:
       # - name: Run eslint
       #   run: yarn run lint
       #   working-directory: core-services/clinic-service
+      #   continue-on-error: true
