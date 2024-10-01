@@ -44,6 +44,7 @@ jobs:
         run: yarn workspace ${{ matrix.service.name }} install
         working-directory: core-services/${{ matrix.service.name }}
       - name: Build service
+        if: ${{ matrix.service.name }} != lambda-authoriser
         working-directory: core-services/${{ matrix.service.name }}
         run: yarn run build
 
