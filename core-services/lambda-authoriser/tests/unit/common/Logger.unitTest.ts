@@ -5,24 +5,27 @@ import { writeLogMessage } from "../../../src/common/Logger";
 import successLogEvent from "../../resources/successLogEvent.json";
 import Role from "../../../src/services/roles";
 
+
 describe("test writeLogMessage method", () => {
   const logError: ILogError = {};
   const logErrorEvent: ILogEvent = errorLogEvent;
-  logErrorEvent.roles = [{name: "test", access: "read"}] as Role[];
+  logErrorEvent.roles = [
+    {
+      name: "test", 
+      access: "read"
+    }] as Role[];
+  console.log = jest.fn();
 
   context("when only the log event is passed in", () => {
     it("should return no errors", () => {
       const returnValue: ILogEvent = writeLogMessage(successLogEvent, null);
-
       expect(returnValue.statusCode).toBe(200);
     });
   });
 
   context("when log event and error are passed in", () => {
     it("should log TokenExpiredError", () => {
-      const error: ILogError = { name: "TokenExpiredError", message: "Error" };
-      console.log = jest.fn();
-
+      const error: ILogError = buildILogError("TokenExpiredError", "Error");
       logError.name = "TokenExpiredError";
       const returnValue: ILogEvent = writeLogMessage(logErrorEvent, error);
 
@@ -34,9 +37,7 @@ describe("test writeLogMessage method", () => {
     });
 
     it("should log NotBeforeError", () => {
-      const error: ILogError = { name: "NotBeforeError" };
-      console.log = jest.fn();
-
+      const error: ILogError = buildILogError("NotBeforeError");
       logError.name = "NotBeforeError";
       const returnValue: ILogEvent = writeLogMessage(logErrorEvent, error);
 
@@ -48,9 +49,7 @@ describe("test writeLogMessage method", () => {
     });
 
     it("should log JsonWebTokenError", () => {
-      const error: ILogError = { name: "JsonWebTokenError", message: "test" };
-      console.log = jest.fn();
-
+      const error: ILogError = buildILogError("JsonWebTokenError", "test");
       logError.name = "JsonWebTokenError";
       const returnValue: ILogEvent = writeLogMessage(logErrorEvent, error);
 
@@ -62,9 +61,7 @@ describe("test writeLogMessage method", () => {
     });
 
     it("should log the default error", () => {
-      const error: ILogError = { name: "Error", message: "Error" };
-      console.log = jest.fn();
-
+      const error: ILogError = buildILogError("Error", "Error");
       const returnValue: ILogEvent = writeLogMessage(logErrorEvent, error);
 
       expect(returnValue.error?.name).toBe("Error");
@@ -73,3 +70,10 @@ describe("test writeLogMessage method", () => {
       expect(returnValue.roles).toBe(logErrorEvent.roles);
     });
 });
+
+const buildILogError = (name: string, message?: string): ILogError => {
+  return {
+    name: name,
+    message: message
+  }
+}

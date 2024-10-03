@@ -1,4 +1,4 @@
-import { APIGatewayTokenAuthorizerEvent, Context } from "aws-lambda";
+import { APIGatewayTokenAuthorizerEvent, Context, Statement } from "aws-lambda";
 import { authorizer } from "../../../src/functions/authorizer";
 import { IncomingMessage } from "http";
 import { APIGatewayAuthorizerResult } from "aws-lambda/trigger/api-gateway-authorizer";
@@ -42,11 +42,8 @@ describe("authorizer() unit tests", () => {
 
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
     expect(returnValue.policyDocument.Statement.length).toEqual(1);
-    expect(returnValue.policyDocument.Statement).toContainEqual({
-      Effect: "Allow",
-      Action: "execute-api:Invoke",
-      Resource: `arn:aws:execute-api:eu-west-1:*:*/*/GET/*`,
-    });
+    expect(returnValue.policyDocument.Statement).toContainEqual(
+      buildAllowStatementWithResource("arn:aws:execute-api:eu-west-1:*:*/*/GET/*"));
   });
 
   it("should return valid write statements on valid JWT", async () => {
@@ -59,11 +56,8 @@ describe("authorizer() unit tests", () => {
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
 
     expect(returnValue.policyDocument.Statement.length).toEqual(1);
-    expect(returnValue.policyDocument.Statement).toContainEqual({
-      Effect: "Allow",
-      Action: "execute-api:Invoke",
-      Resource: "arn:aws:execute-api:eu-west-1:*:*/*/*/*",
-    });
+    expect(returnValue.policyDocument.Statement).toContainEqual(
+      buildAllowStatementWithResource("arn:aws:execute-api:eu-west-1:*:*/*/*/*"));
   });
 
   it("should return valid clinic read statements on valid JWT", async () => {
@@ -76,11 +70,8 @@ describe("authorizer() unit tests", () => {
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
 
     expect(returnValue.policyDocument.Statement.length).toEqual(1);
-    expect(returnValue.policyDocument.Statement).toContainEqual({
-      Effect: "Allow",
-      Action: "execute-api:Invoke",
-      Resource: "arn:aws:execute-api:eu-west-1:*:*/*/GET/clinics*",
-    });
+    expect(returnValue.policyDocument.Statement).toContainEqual(
+      buildAllowStatementWithResource("arn:aws:execute-api:eu-west-1:*:*/*/GET/clinics*"));
   });
 
   it("should return an accurate policy based on a single functional role", async () => {
@@ -92,11 +83,8 @@ describe("authorizer() unit tests", () => {
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
 
     expect(returnValue.policyDocument.Statement.length).toEqual(2);
-    expect(returnValue.policyDocument.Statement).toContainEqual({
-      Effect: "Allow",
-      Action: "execute-api:Invoke",
-      Resource: "arn:aws:execute-api:eu-west-1:*:*/*/OPTIONS/clinics",
-    });
+    expect(returnValue.policyDocument.Statement).toContainEqual(
+      buildAllowStatementWithResource("arn:aws:execute-api:eu-west-1:*:*/*/OPTIONS/clinics"));
   });
 
   it("should return an accurate policy based on multiple functional roles", async () => {
@@ -127,11 +115,8 @@ describe("authorizer() unit tests", () => {
     expect(returnValue.principalId).toEqual("Unauthorised");
 
     expect(returnValue.policyDocument.Statement.length).toEqual(1);
-    expect(returnValue.policyDocument.Statement).toContainEqual({
-      Effect: "Deny",
-      Action: "execute-api:Invoke",
-      Resource: "arn:aws:execute-api:eu-west-1:*:*/*/*",
-    });
+    expect(returnValue.policyDocument.Statement).toContainEqual(
+      buildDenyStatementWithResource("arn:aws:execute-api:eu-west-1:*:*/*/*"));
   });
 });
 
@@ -164,3 +149,19 @@ const exampleContext = (): Context => {
     },
   };
 };
+
+const buildAllowStatementWithResource = (resource: string): Statement => {
+  return {
+    Effect: "Allow",
+    Action: "execute-api:Invoke",
+    Resource: resource,
+  }
+}
+
+const buildDenyStatementWithResource = (resource: string): Statement => {
+  return {
+    Effect: "Deny",
+    Action: "execute-api:Invoke",
+    Resource: resource,
+  }
+}
