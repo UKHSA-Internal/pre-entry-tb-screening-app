@@ -1,4 +1,4 @@
-import { APIGatewayTokenAuthorizerEvent, Context, Statement } from "aws-lambda";
+import { APIGatewayTokenAuthorizerEvent, Context, Statement, StatementEffect } from "aws-lambda";
 import { authorizer } from "../../../src/functions/authorizer";
 import { IncomingMessage } from "http";
 import { APIGatewayAuthorizerResult } from "aws-lambda/trigger/api-gateway-authorizer";
@@ -37,60 +37,52 @@ describe("authorizer() unit tests", () => {
     const jwtJsonClone = JSON.parse(JSON.stringify(jwtJson));
     jwtJsonClone.payload.roles = ["SystemAdmin.read"];
     (getValidJwt as jest.Mock) = jest.fn().mockReturnValue(jwtJsonClone);
-
     const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
 
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
     expect(returnValue.policyDocument.Statement.length).toEqual(1);
     expect(returnValue.policyDocument.Statement).toContainEqual(
-      buildAllowStatementWithResource("arn:aws:execute-api:eu-west-1:*:*/*/GET/*"));
+      buildStatement("arn:aws:execute-api:eu-west-1:*:*/*/GET/*", "allow"));
   });
 
   it("should return valid write statements on valid JWT", async () => {
     const jwtJsonClone = JSON.parse(JSON.stringify(jwtJson));
     jwtJsonClone.payload.roles = ["SystemAdmin.write"];
     (getValidJwt as jest.Mock) = jest.fn().mockReturnValue(jwtJsonClone);
-
     const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
 
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
-
     expect(returnValue.policyDocument.Statement.length).toEqual(1);
     expect(returnValue.policyDocument.Statement).toContainEqual(
-      buildAllowStatementWithResource("arn:aws:execute-api:eu-west-1:*:*/*/*/*"));
+      buildStatement("arn:aws:execute-api:eu-west-1:*:*/*/*/*", "allow"));
   });
 
   it("should return valid clinic read statements on valid JWT", async () => {
     const jwtJsonClone = JSON.parse(JSON.stringify(jwtJson));
     jwtJsonClone.payload.roles = ["HeathrowDoctor.read"];
     (getValidJwt as jest.Mock) = jest.fn().mockReturnValue(jwtJsonClone);
-
     const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
 
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
-
     expect(returnValue.policyDocument.Statement.length).toEqual(1);
     expect(returnValue.policyDocument.Statement).toContainEqual(
-      buildAllowStatementWithResource("arn:aws:execute-api:eu-west-1:*:*/*/GET/clinics*"));
+      buildStatement("arn:aws:execute-api:eu-west-1:*:*/*/GET/clinics*", "allow"));
   });
 
   it("should return an accurate policy based on a single functional role", async () => {
     (getLegacyRoles as jest.Mock) = jest.fn().mockReturnValue([]);
     jwtJson.payload.roles = ["Clinics.ReadAll"];
-
     const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
 
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
-
     expect(returnValue.policyDocument.Statement.length).toEqual(2);
     expect(returnValue.policyDocument.Statement).toContainEqual(
-      buildAllowStatementWithResource("arn:aws:execute-api:eu-west-1:*:*/*/OPTIONS/clinics"));
+      buildStatement("arn:aws:execute-api:eu-west-1:*:*/*/OPTIONS/clinics", "allow"));
   });
 
   it("should return an accurate policy based on multiple functional roles", async () => {
     (getLegacyRoles as jest.Mock) = jest.fn().mockReturnValue([]);
     jwtJson.payload.roles = ["Clinics.ReadAll", "Clinics.WriteAll"];
-
     const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
 
     expect(returnValue.principalId).toEqual(jwtJson.payload.sub);
@@ -109,14 +101,12 @@ describe("authorizer() unit tests", () => {
 
   it("should return an unauthorised policy response", async () => {
     jwtJson.payload.roles = [];
-
     const returnValue: APIGatewayAuthorizerResult = await authorizer(event, exampleContext());
 
     expect(returnValue.principalId).toEqual("Unauthorised");
-
     expect(returnValue.policyDocument.Statement.length).toEqual(1);
     expect(returnValue.policyDocument.Statement).toContainEqual(
-      buildDenyStatementWithResource("arn:aws:execute-api:eu-west-1:*:*/*/*"));
+      buildStatement("arn:aws:execute-api:eu-west-1:*:*/*/*", "deny"));
   });
 });
 
@@ -150,17 +140,9 @@ const exampleContext = (): Context => {
   };
 };
 
-const buildAllowStatementWithResource = (resource: string): Statement => {
+const buildStatement = (resource: string, effect: string): Statement => {
   return {
-    Effect: "Allow",
-    Action: "execute-api:Invoke",
-    Resource: resource,
-  }
-}
-
-const buildDenyStatementWithResource = (resource: string): Statement => {
-  return {
-    Effect: "Deny",
+    Effect: effect as StatementEffect,
     Action: "execute-api:Invoke",
     Resource: resource,
   }

@@ -79,6 +79,7 @@ describe("getLegacyRoles()", () => {
     const roles: Role[] = getLegacyRoles(tokenWithRoles(["name.READ", "name.WRITE"]), {});
 
     expect(roles.length).toEqual(2);
+    
     expect(roles).toContainEqual({
       name: "name",
       access: "read",
