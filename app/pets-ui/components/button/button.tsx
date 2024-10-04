@@ -14,7 +14,7 @@ export interface ButtonProps {
     href: string;
 }
 
-export default function Button(props: ButtonProps) {
+export default function Button(props: Readonly<ButtonProps>) {
     return (
         <Link id={props.id} href={props.href}>
             <button type="submit" className={props.type} data-module="govuk-button">
