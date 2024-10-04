@@ -7,7 +7,7 @@ export interface ButtonProps {
     href: string;
 }
 
-export default function Button(props: ButtonProps) {
+export default function Button(props: Readonly<ButtonProps>) {
     return (
         <div id={props.id} className="govuk-button-group">
             <Link href={props.href}>
