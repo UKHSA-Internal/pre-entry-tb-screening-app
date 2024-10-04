@@ -17,12 +17,10 @@ const buttonClassName = (type: string) => {
 
 export default function Button(props: ButtonProps) {
     return (
-        <div id={props.id} className="govuk-button-group">
-            <Link href={props.href}>
-                <button type="submit" className={buttonClassName(props.type)} data-module="govuk-button">
-                    {props.text}
-                </button>
-            </Link>
-        </div>
+        <Link id={props.id} href={props.href}>
+            <button type="submit" className={buttonClassName(props.type)} data-module="govuk-button">
+                {props.text}
+            </button>
+        </Link>
     )
 }
