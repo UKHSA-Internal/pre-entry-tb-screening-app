@@ -7,7 +7,7 @@ export interface FreeTextProps {
     hint?: string;
 }
 
-export default function FreeText(props: FreeTextProps) {
+export default function FreeText(props: Readonly<FreeTextProps>) {
     return (
         <div id={props.id} className="govuk-form-group">
             <h1 className="govuk-label-wrapper">
