@@ -1,24 +1,23 @@
 'use client'
 import Link from 'next/link'
 
-export interface ButtonProps {
-    id: string;
-    type: "default" | "secondary" | "warning";
-    text: string;
-    href: string;
+export enum ButtonType {
+    DEFAULT = "govuk-button",
+    SECONDARY = "govuk-button govuk-button--secondary",
+    WARNING = "govuk-button govuk-button--warning"
 }
 
-const buttonClassName = (type: string) => {
-    if (type == "default") return "govuk-button"
-    else if (type == "secondary") return "govuk-button govuk-button--secondary"
-    else if (type == "warning") return "govuk-button govuk-button--warning"
-    else return "govuk-button"
+export interface ButtonProps {
+    id: string;
+    type: ButtonType;
+    text: string;
+    href: string;
 }
 
 export default function Button(props: ButtonProps) {
     return (
         <Link id={props.id} href={props.href}>
-            <button type="submit" className={buttonClassName(props.type)} data-module="govuk-button">
+            <button type="submit" className={props.type} data-module="govuk-button">
                 {props.text}
             </button>
         </Link>
