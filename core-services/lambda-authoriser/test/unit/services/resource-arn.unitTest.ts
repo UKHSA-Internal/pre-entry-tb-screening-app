@@ -39,11 +39,11 @@ describe("throw errors", () => {
 
     test_arn = `arn:test:${arnPartial}`;
     expect(() => { stringToArn(test_arn) }).toThrowError(Error);
-    expect(() => { stringToArn(test_arn) }).toThrow("ARN part 1 should be exact string 'aws'");
+    expect(() => { stringToArn(test_arn) }).toThrow("ARN part 1 should be exact string `aws`");
 
     test_arn = `arn:aws:test:${arnPartial}`;
     expect(() => { stringToArn(test_arn) }).toThrowError(Error);
-    expect(() => { stringToArn(test_arn) }).toThrow("ARN part 2 is not 'execute-api' - this is not an API Gateway ARN");
+    expect(() => { stringToArn(test_arn) }).toThrow("ARN part 2 is not `execute-api` - this is not an API Gateway ARN");
 
     test_arn = `arn:aws:${arnPartial}`;
     expect(() => { stringToArn(test_arn) }).toThrowError(Error);
