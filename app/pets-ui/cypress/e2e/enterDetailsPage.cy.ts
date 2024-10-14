@@ -1,4 +1,4 @@
-describe ('Enter Applicant Details Page'), () => {
+describe ('Enter Applicant Details Page', () => {
 // Check whether the 'Full Name' and 'Passport Number' fields are visible on Enter applicant details page. 
     it('should display mandatory fields with correct properties', () => { 
 // Visit the "enter details" page 
@@ -13,6 +13,7 @@ describe ('Enter Applicant Details Page'), () => {
        cy.get('Passport number').should('be.visible') 
             .should('have.attr', 'required')
             .should('have.attr', 'type', 'text'); 
+});
 
 // Check the user is navigated to the confirmation page after submission
     it('should navigate to confirmation page after valid data submission', () => { 
@@ -28,6 +29,5 @@ describe ('Enter Applicant Details Page'), () => {
         // Validate that the page navigates to the confirmation page 
         cy.url().should('include', 'http://localhost:3000/applicant/check-answers'); 
         
-}); });
-    
-}
+});
+});
