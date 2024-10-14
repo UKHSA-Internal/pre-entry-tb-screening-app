@@ -83,7 +83,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const addIntegrationsToSwagger = require('./.github/scripts/add-integrations-to-swagger.ts')
+            const addIntegrationsToSwagger = require('./.github/scripts/add-integrations-to-swagger.js')
             addIntegrationsToSwagger(${{ matrix.service.name }})
       - name: Upload Swagger file to S3
         if: ${{ matrix.service.name != 'lambda-authoriser' }}
@@ -94,7 +94,7 @@ jobs:
       #   uses: actions/github-script@v7
       #   with:
       #     script: |
-      #       const createPackageDotJson = require('./.github/scripts/create-package-dot-json.ts')
+      #       const createPackageDotJson = require('./.github/scripts/create-package-dot-json.js')
       #       createPackageDotJson('clinic-service')
       #       createPackageDotJson('lambda-authoriser')
       # - name: Clinic Service - Run yarn in nodejs folder
