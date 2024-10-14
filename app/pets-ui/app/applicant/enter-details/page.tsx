@@ -1,5 +1,5 @@
 'use client'
-import FreeText from '@/components/input/freeText';
+import FreeText from '@/components/freeText/freeText';
 import Button, { ButtonType } from '@/components/button/button';
 import './page.scss'
 
