@@ -18,7 +18,7 @@ jobs:
         service:
           - name: clinic-service
             build-file: .build/*
-          - name: lamdba-authoriser
+          - name: lambda-authoriser
             build-file: src/*
 
     steps:
