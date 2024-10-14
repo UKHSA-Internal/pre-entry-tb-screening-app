@@ -25,6 +25,3 @@ jobs:
       - name: Run unit tests
         run: yarn run test
         working-directory: core-services/clinic-service
-      # - name: Run eslint
-      #   run: yarn run lint
-      #   working-directory: core-services/clinic-service
