@@ -13,7 +13,7 @@
     "start-m": "BRANCH=local SLS_DEBUG=* serverless offline start",
     "test": "jest",
     "test-m": "BRANCH=local jest",
-    "tools-setup": "sls dynamodb install",
+    "tools-setup": "serverless dynamodb install",
     "build": "tspc -b tsconfig.json && yarn run build:copy",
     "build:copy": "find src -type f \\( -name \"*.yml\" -or -name \"*.json\" \\) | cpio -pdm .build && find test -type f \\( -name \"*.yml\" -or -name \"*.json\" \\)  | cpio -pdm .build",
     "zip": "zip -r test-service.zip .build"
@@ -34,6 +34,7 @@
     "aws-sdk-client-mock": "^4.0.1",
     "jest": "^29.7.0",
     "jest-plugin-context": "^2.9.0",
+    "serverless": "4.1.15",
     "serverless-auto-swagger": "^3.0.0",
     "serverless-dynamodb": "^0.2.54",
     "serverless-http": "^3.2.0",
