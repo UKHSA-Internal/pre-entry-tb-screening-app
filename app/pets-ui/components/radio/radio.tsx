@@ -32,17 +32,23 @@ export default function Radio(props: Readonly<RadioProps>) {
     return (
         <div id={props.id} className="govuk-form-group">
             <fieldset className="govuk-fieldset">
-                <legend className="govuk-fieldset__legend govuk-fieldset__legend--l">
-                    <h1 className="govuk-fieldset__heading">
-                        {props.title}
-                    </h1>
-                </legend>
-                <legend className="govuk-fieldset__legend">
-                    {props.legend}
-                </legend>
-                <div id="changedName-hint" className="govuk-hint">
-                    {props.hint}
-                </div>
+                {props.title && 
+                    <legend className="govuk-fieldset__legend govuk-fieldset__legend--l">
+                        <h1 className="govuk-fieldset__heading">
+                            {props.title}
+                        </h1>
+                    </legend>
+                }
+                {props.legend && 
+                    <legend className="govuk-fieldset__legend">
+                        {props.legend}
+                    </legend>
+                }
+                {props.hint &&
+                    <div id="changedName-hint" className="govuk-hint">
+                        {props.hint}
+                    </div>
+                }
                 <div className={props.isInline} data-module="govuk-radios">
                     {answerOptions.map((answerOption: string, index: number) => (
                         <div className="govuk-radios__item" key={`answer-option-${index + 1}`}>
