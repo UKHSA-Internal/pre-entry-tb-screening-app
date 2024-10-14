@@ -17,10 +17,12 @@ jobs:
       matrix:
         service:
           - name: clinic-service
+            zip-file: clinic-service-lambda.zip
             build-file: .build/*
             bucket-secret: $CORESERVICESDEPLOY_CLINIC_SERVICE_BUCKET_NAME
             sse-key-secret: $CORESERVICESDEPLOY_CLINIC_SERVICE_SSE_KEY
           - name: lambda-authoriser
+            zip-file: lambda-authoriser.zip
             build-file: src/*
 
     steps:
@@ -51,7 +53,7 @@ jobs:
         run: yarn run build
 
       - name: Create zip
-        run: zip -r ${{ matrix.service.name }}.zip ${{ matrix.service.build-file }}
+        run: zip -r ${{ matrix.service.zip-file }} ${{ matrix.service.build-file }}
         working-directory: core-services/${{ matrix.service.name }}
 
       - name: Configure AWS credentials
@@ -71,9 +73,8 @@ jobs:
           parse-json-secrets: true
 
       - name: Upload Service to S3
-        if: ${{ matrix.service.name != 'lambda-authoriser' }}
         working-directory: core-services/${{ matrix.service.name }}
-        run: aws s3 cp ${{ matrix.service.name }}-lambda.zip s3://${{ matrix.service.bucket-secret }} --sse aws:kms --sse-kms-key-id ${{ matrix.service.sse-key-secret }}
+        run: aws s3 cp ${{ matrix.service.zip-file }} s3://${{ matrix.service.bucket-secret }} --sse aws:kms --sse-kms-key-id ${{ matrix.service.sse-key-secret }}
       # - name: Upload Lambda Authoriser to S3
       #   working-directory: core-services/lambda-authoriser
       #   run: aws s3 cp lambda-authoriser.zip s3://$LAMBDAAUTHORISERDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $LAMBDAAUTHORISERDEPLOY_SSE_KEY
