@@ -28,3 +28,16 @@ jobs:
       #   run: yarn run lint
       #   working-directory: core-services/clinic-service
       #   continue-on-error: true
+  sonarcloud-scan-clinics:
+  name: SonarCloudScanClinics
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        projectBaseDir: core-services/clinic-service/
+
