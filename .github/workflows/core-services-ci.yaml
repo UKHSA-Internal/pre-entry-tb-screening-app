@@ -2,6 +2,8 @@ name: Pets Core Services CI
 on:
   push:
     paths: "core-services/clinic-service/**"
+  pull_request:
+    paths: "core-services/clinic-service/**"
   workflow_dispatch:
 
 jobs:
@@ -24,3 +26,9 @@ jobs:
       - name: Run unit tests
         run: yarn run test
         working-directory: core-services/clinic-service
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: core-services/clinic-service/
