@@ -6,7 +6,7 @@ on:
 
 jobs:
   test-and-linting:
-    name: Run unit tests, linting & security checks
+    name: Run unit tests, audit, and SonarCloud Scan
     runs-on: ubuntu-latest
 
     steps:
