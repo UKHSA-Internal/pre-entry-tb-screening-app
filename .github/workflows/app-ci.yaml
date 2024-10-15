@@ -1,7 +1,7 @@
 name: Pets UI CI
 
 on:
-  push:
+  pull_request:
     paths: "app/**"
   workflow_dispatch:
 
@@ -29,3 +29,9 @@ jobs:
         run: yarn run lint
         working-directory: app/pets-ui
         continue-on-error: true
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: app/pets-ui/
