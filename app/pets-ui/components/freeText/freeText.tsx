@@ -15,12 +15,16 @@ export default function FreeText(props: Readonly<FreeTextProps>) {
                     {props.title}
                 </label>
             </h1>
-            <label className="govuk-label" htmlFor={props.id}>
-                {props.label}
-            </label>
-            <div className="govuk-hint">
-                {props.hint}
-            </div>
+            {props.label &&
+                <label className="govuk-label" htmlFor={props.id}>
+                    {props.label}
+                </label>
+            }
+            {props.hint &&
+                <div className="govuk-hint">
+                    {props.hint}
+                </div>
+            }
             <input className="govuk-input" name={props.id} type="text"></input>
         </div>
     )
