@@ -1,0 +1,53 @@
+name: Pets Core Services CI
+on:
+  pull_request:
+    paths:
+      - "core-services/applicant-service/**"
+      - "core-services/clinic-service/**"
+      - "core-services/lambda-authoriser/**"
+  workflow_dispatch:
+
+jobs:
+  test-and-linting:
+    name: Run unit tests, audit, and SonarCloud Scan
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        service: [clinic-service, lambda-authoriser]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "yarn"
+      - name: Paths filter
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            applicant-service:
+              - "core-services/applicant-service/**"
+            clinic-service:
+              - "core-services/clinic-service/**"
+            lambda-authoriser:
+              - "core-services/lambda-authoriser/**"
+      - name: Install dependencies
+        run: yarn
+      - name: Audit packages
+        run: yarn audit
+      - name: Run unit tests
+        run: yarn run test
+        working-directory: core-services/${{ matrix.service }}
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: core-services/${{ matrix.service }}/

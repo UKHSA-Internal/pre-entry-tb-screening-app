@@ -1,0 +1,4 @@
+roleToResources:
+  - roleName: "Clinics.ReadAll"
+    associatedResources:
+      - "/clinics/*"

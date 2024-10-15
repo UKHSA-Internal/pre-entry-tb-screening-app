@@ -1,0 +1,11 @@
+name: Pets UI Deployment - Dev
+
+on:
+  workflow_dispatch:
+
+jobs:
+  pets-ui:
+    uses: ./.github/workflows/app-deploy.yaml
+    with:
+      environment: "dev"
+    secrets: inherit

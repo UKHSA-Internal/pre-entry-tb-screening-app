@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "outDir": ".build",
+    "baseUrl": "./src",
+    "strict": true,
+    "esModuleInterop": true
+  }
+}

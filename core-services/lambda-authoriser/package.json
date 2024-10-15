@@ -1,0 +1,30 @@
+{
+  "name": "lambda-authoriser",
+  "private": true,
+  "version": "1.0.0",
+  "description": "AWS lambda authoriser for validating a client's Azure AD JWT and generating an access policy.",
+  "license": "MIT",
+  "scripts": {
+    "start": "serverless offline start --verbose",
+    "start-m": "BRANCH=local SLS_DEBUG=* serverless offline start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.658.1",
+    "axios": "^1.7.7",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.145",
+    "@types/jest": "^29.5.13",
+    "@types/jest-plugin-context": "^2.9.7",
+    "@types/jsonwebtoken": "^9.0.7",
+    "jest": "^29.7.0",
+    "jest-plugin-context": "^2.9.0",
+    "nock": "^13.5.5",
+    "serverless-offline": "^14.3.2",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  }
+}

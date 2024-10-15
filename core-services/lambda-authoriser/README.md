@@ -1,0 +1,99 @@
+# Lambda-authoriser
+
+Custom authentication and authorisation mechanism for all PETs API Gateway calls.
+
+- Calls to PETs api gateway trigger Lambda handler [authorizer.ts][authorizer-ts], as described on [AWS Lambda Authorizer Input][lambda-authorizer-input].
+- This Lambda will return a policy document, as described on [AWS Lambda Authorizer Input][lambda-authorizer-input].
+
+## Documentation
+
+See the [Lambda Authorizer Confluence page][confluence].
+
+## Configuration
+
+- Configuration is a TS object of type `AuthorizerConfig`.
+- Both `AuthorizerConfig` and the configuration itself are in [configuration.ts][configuration-ts].
+- A (fake) example can be found [here][fake-config].
+
+## Prerequisites
+
+### Node JS
+
+Check you have Node and NPM in your terminal:
+
+```shell script
+node --version
+npm --version
+```
+
+**We strongly recommend [`nvm`][nvm] to manage your Node installations** ([`nvm-windows`][nvm-windows] on Windows). The project's `.nvmrc` (root directory) contains the recommended Node version.
+
+To install on Linux:
+
+```shell script
+sudo apt install nodejs
+```
+
+To install on MacOS, either:
+
+- Download from [official site][nodejs]
+- Use [Homebrew][homebrew]: `brew install node`
+
+To install on Windows, either:
+
+- Download from [official site][nodejs]
+- Use [Chocolatey][chocolatey]: `cinst nodejs.install`
+
+## Dependencies
+
+```shell script
+npm install
+```
+
+## Build
+
+```shell script
+npm run build
+```
+
+Output folder: `build/` (Git-ignored)
+
+On Windows, you will need to use [Git Bash][git-bash]. You may also need to:
+
+- replace `export` statements with your own environment variable configuration.
+- find binaries for things like `cpio`.
+
+## Test
+
+```shell script
+npm test
+```
+
+## Local Invocation
+
+The [serverless-offline][serverless-offline] package is used to run the lambda locally. A test function is initialiased and protected by the lambda authoriser. Details of the configuration are in the serverless.yml file.
+Before running/debugging, copy the `.env.example` file to `.env`.
+
+- `AZURE_CLIENT_ID` needs to be a list of audiences the tokens will be validated against.
+- `AZURE_TENANT_ID` needs to be the tenantId to use for the token validation.
+
+### Running
+
+Run `npm start` to run the test function and lambda authoriser. Once running, the test function can be called using postman or something similar. An example postman collection can be found at `tests/resources/authoriser.postman_collection.json`. There are a number of variables that need population before it will work. These are the details of credentials you will want to test i.e. clientId, secret etc.
+If there is any reason the token does not allow access to the resource the reason is sent back in the response.
+
+```json
+{
+  "statusCode": 403,
+  "error": "Forbidden",
+  "message": "User is not authorized to access this resource"
+}
+```
+
+If the token does allow access, the request will be allowed through to the test function and `"Test function successfully invoked. Access was granted."` is returned in the response.
+
+### Debugging
+
+A debug configuration has been added that runs `npm start` under a debug session. Testing is performed via postman as described above.
+
+
