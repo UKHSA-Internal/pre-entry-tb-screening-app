@@ -19,7 +19,7 @@ jobs:
 
     strategy:
       matrix:
-        service: [applicant-service, clinic-service, lambda-authoriser]
+        service: [clinic-service, lambda-authoriser]
 
     steps:
       - name: Checkout code
