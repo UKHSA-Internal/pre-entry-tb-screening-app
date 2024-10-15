@@ -21,11 +21,13 @@ jobs:
             build-folder: .build/*
             bucket-secret: $CORESERVICESDEPLOY_CLINIC_SERVICE_BUCKET_NAME
             sse-key-secret: $CORESERVICESDEPLOY_CLINIC_SERVICE_SSE_KEY
+            lambda: clinic-service-lambda
           - name: lambda-authoriser
             zip-file: lambda-authoriser.zip
             build-folder: src/*
             bucket-secret: $CORESERVICESDEPLOY_LAMBDA_AUTHORISER_BUCKET_NAME
             sse-key-secret: $CORESERVICESDEPLOY_LAMBDA_AUTHORISER_SSE_KEY
+            lambda: api-gateway-authoriser
 
     steps:
       - name: Checkout code
@@ -107,4 +109,4 @@ jobs:
         run: aws s3 cp nodejs.zip s3://${{ matrix.service.bucket-secret }} --sse aws:kms --sse-kms-key-id ${{ matrix.service.sse-key-secret }}
 
       - name: Update lambda code
-        run: aws lambda update-function-code --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:${{ matrix.service.name }}-lambda --s3-bucket ${{ matrix.service.bucket-secret }} --s3-key clinic-service-lambda.zip
+        run: aws lambda update-function-code --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:${{ matrix.service.lambda }} --s3-bucket ${{ matrix.service.bucket-secret }} --s3-key ${{ matrix.service.zip-file }}
