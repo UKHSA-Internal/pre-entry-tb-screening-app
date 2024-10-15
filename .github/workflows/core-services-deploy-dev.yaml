@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  clinic-service:
+  deploy:
     uses: ./.github/workflows/core-services-deploy.yaml
     with:
       environment: "dev"

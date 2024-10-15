@@ -6,12 +6,12 @@ on:
     types: [closed]
     branches: [main]
     paths:
-      - "core-services/clinic-service/**"
       - "core-services/applicant-service/**"
+      - "core-services/clinic-service/**"
       - "core-services/lambda-authoriser/**"
 
 jobs:
-  clinic-service:
+  deploy:
     uses: ./.github/workflows/core-services-deploy.yaml
     with:
       environment: "preprod"
