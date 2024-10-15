@@ -95,7 +95,7 @@ jobs:
         with:
           script: |
             const createPackageDotJson = require('./.github/scripts/create-package-dot-json.js')
-            createPackageDotJson(${{ matrix.service.name }})
+            createPackageDotJson('${{ matrix.service.name }}')
       # - name: Clinic Service - Run yarn in nodejs folder
       #   working-directory: node-zip/clinic-service/nodejs
       #   run: yarn
