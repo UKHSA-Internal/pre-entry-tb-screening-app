@@ -78,25 +78,24 @@ jobs:
         working-directory: core-services/${{ matrix.service.name }}
         run: aws s3 cp ${{ matrix.service.zip-file }} s3://${{ matrix.service.bucket-secret }} --sse aws:kms --sse-kms-key-id ${{ matrix.service.sse-key-secret }}
 
-      - name: Process Swagger file
-        if: ${{ matrix.service.name != 'lambda-authoriser' }}
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const addIntegrationsToSwagger = require('./.github/scripts/add-integrations-to-swagger.js')
-            addIntegrationsToSwagger(${{ matrix.service.name }})
-      - name: Upload Swagger file to S3
-        if: ${{ matrix.service.name != 'lambda-authoriser' }}
-        working-directory: core-services/${{ matrix.service.name }}
-        run: aws s3 cp swagger.json s3://${{ matrix.service.bucket-secret }} --sse aws:kms --sse-kms-key-id $CLINICSERVICEDEPLOY_SSE_KEY
-
-      # - name: Create package.json file including only non-dev dependencies
+      # - name: Process Swagger file
+      #   if: ${{ matrix.service.name != 'lambda-authoriser' }}
       #   uses: actions/github-script@v7
       #   with:
       #     script: |
-      #       const createPackageDotJson = require('./.github/scripts/create-package-dot-json.js')
-      #       createPackageDotJson('clinic-service')
-      #       createPackageDotJson('lambda-authoriser')
+      #       const addIntegrationsToSwagger = require('./.github/scripts/add-integrations-to-swagger.js')
+      #       addIntegrationsToSwagger(${{ matrix.service.name }})
+      # - name: Upload Swagger file to S3
+      #   if: ${{ matrix.service.name != 'lambda-authoriser' }}
+      #   working-directory: core-services/${{ matrix.service.name }}
+      #   run: aws s3 cp swagger.json s3://${{ matrix.service.bucket-secret }} --sse aws:kms --sse-kms-key-id ${{ matrix.service.sse-key-secret }}
+
+      - name: Create package.json file including only non-dev dependencies
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const createPackageDotJson = require('./.github/scripts/create-package-dot-json.js')
+            createPackageDotJson(${{ matrix.service.name }})
       # - name: Clinic Service - Run yarn in nodejs folder
       #   working-directory: node-zip/clinic-service/nodejs
       #   run: yarn
