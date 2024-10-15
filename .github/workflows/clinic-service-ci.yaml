@@ -29,12 +29,15 @@ jobs:
       #   working-directory: core-services/clinic-service
       #   continue-on-error: true
   sonarcloud-scan-clinics:
-    name: SonarCloudScanClinics
+    name: SonarCloudScan Clinic Service
     runs-on: ubuntu-latest
     
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+        # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
