@@ -25,7 +25,7 @@ export default class StatementBuilder {
    * @param effect - the effect of this Statement
    * @returns StatementBuilder
    */
-  public setEffect(effect: Effect): StatementBuilder {
+  public setEffect(effect: Effect): this {
     this.effect = effect;
     return this;
   }
@@ -35,7 +35,7 @@ export default class StatementBuilder {
    * @param action - action for this statement
    * @returns StatementBuilder
    */
-  public setAction(action: Action): StatementBuilder {
+  public setAction(action: Action): this {
     this.action = action;
     return this;
   }
@@ -45,7 +45,7 @@ export default class StatementBuilder {
    * @param regionId - the ARN's region
    * @returns StatementBuilder
    */
-  public setRegionId(regionId: string): StatementBuilder {
+  public setRegionId(regionId: string): this {
     this.regionId = regionId;
     return this;
   }
@@ -55,7 +55,7 @@ export default class StatementBuilder {
    * @param accountId - the ARN's account-id
    * @returns StatementBuilder
    */
-  public setAccountId(accountId: string): StatementBuilder {
+  public setAccountId(accountId: string): this {
     this.accountId = accountId;
     return this;
   }
@@ -65,7 +65,7 @@ export default class StatementBuilder {
    * @param apiId - the ARN's API id
    * @returns StatementBuilder
    */
-  public setApiId(apiId: string): StatementBuilder {
+  public setApiId(apiId: string): this {
     this.apiId = apiId;
     return this;
   }
@@ -75,7 +75,7 @@ export default class StatementBuilder {
    * @param stage - the ARN's stage-name
    * @returns StatementBuilder
    */
-  public setStage(stage: string): StatementBuilder {
+  public setStage(stage: string): this {
     this.stage = stage;
     return this;
   }
@@ -85,7 +85,7 @@ export default class StatementBuilder {
    * @param httpVerb - the ARN's HTTP verb
    * @returns StatementBuilder
    */
-  public setHttpVerb(httpVerb: HttpVerb): StatementBuilder {
+  public setHttpVerb(httpVerb: HttpVerb): this {
     this.httpVerb = httpVerb;
     return this;
   }
@@ -95,7 +95,7 @@ export default class StatementBuilder {
    * @param resource - the ARN's path specifier
    * @returns StatementBuilder
    */
-  public setResource(resource: string | null): StatementBuilder {
+  public setResource(resource: string | null): this {
     this.resource = resource;
     return this;
   }
@@ -105,7 +105,7 @@ export default class StatementBuilder {
    * @param childResource - the ARN's child path specifier
    * @returns StatementBuilder
    */
-  public setChildResource(childResource: string | null): StatementBuilder {
+  public setChildResource(childResource: string | null): this {
     this.childResource = childResource;
     return this;
   }
