@@ -9,7 +9,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy build & swagger spec
+    name: Build, package & deploy services
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
 
