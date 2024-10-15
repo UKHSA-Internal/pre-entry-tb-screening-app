@@ -1,10 +1,5 @@
 name: Pets Core Services CI
 on:
-  push:
-    paths:
-      - "core-services/applicant-service/**"
-      - "core-services/clinic-service/**"
-      - "core-services/lambda-authoriser/**"
   pull_request:
     paths:
       - "core-services/applicant-service/**"

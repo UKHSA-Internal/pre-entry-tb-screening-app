@@ -1,8 +1,6 @@
 name: Pets UI CI
 
 on:
-  push:
-    paths: "app/**"
   pull_request:
     paths: "app/**"
   workflow_dispatch:
