@@ -18,12 +18,12 @@ jobs:
         service:
           - name: clinic-service
             zip-file: clinic-service-lambda.zip
-            build-file: .build/*
+            build-folder: .build/*
             bucket-secret: $CORESERVICESDEPLOY_CLINIC_SERVICE_BUCKET_NAME
             sse-key-secret: $CORESERVICESDEPLOY_CLINIC_SERVICE_SSE_KEY
           - name: lambda-authoriser
             zip-file: lambda-authoriser.zip
-            build-file: src/*
+            build-folder: src/*
             bucket-secret: $CORESERVICESDEPLOY_LAMBDA_AUTHORISER_BUCKET_NAME
             sse-key-secret: $CORESERVICESDEPLOY_LAMBDA_AUTHORISER_SSE_KEY
 
@@ -55,7 +55,7 @@ jobs:
         run: yarn run build
 
       - name: Create zip
-        run: zip -r ${{ matrix.service.zip-file }} ${{ matrix.service.build-file }}
+        run: zip -r ${{ matrix.service.zip-file }} ${{ matrix.service.build-folder }}
         working-directory: core-services/${{ matrix.service.name }}
 
       - name: Configure AWS credentials
