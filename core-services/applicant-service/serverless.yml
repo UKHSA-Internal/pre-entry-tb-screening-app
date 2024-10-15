@@ -1,0 +1,14 @@
+service: ukhsa-pets-applicant-service
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-west-2
+
+functions:
+  myFunction:
+    handler: src/index.handler
+    events:
+      - http:
+          path: hello
+          method: get
