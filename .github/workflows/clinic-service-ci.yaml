@@ -12,6 +12,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+        # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -24,24 +27,9 @@ jobs:
       - name: Run unit tests
         run: yarn run test
         working-directory: core-services/clinic-service
-      # - name: Run eslint
-      #   run: yarn run lint
-      #   working-directory: core-services/clinic-service
-      #   continue-on-error: true
-  sonarcloud-scan-clinics:
-    name: SonarCloudScan Clinic Service
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-        # Disabling shallow clone is recommended for improving relevancy of reporting
-          fetch-depth: 0
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: core-services/clinic-service/
-
