@@ -18,8 +18,8 @@ module.exports = (serviceName) => {
             'x-amazon-apigateway-authtype' : 'custom',
             'x-amazon-apigateway-authorizer' : {
                 'type' : 'token',
-                'authorizerUri' : 'arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-2:account-id:function:api-gateway-authoriser/invocations',
-                'authorizerCredentials' : 'arn:aws:iam::account-id:role/api_gateway_auth_invocation',
+                'authorizerUri' : 'arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-2:AWS_ACCOUNT_ID:function:api-gateway-authoriser/invocations',
+                'authorizerCredentials' : 'arn:aws:iam::AWS_ACCOUNT_ID:role/api_gateway_auth_invocation',
                 'identityValidationExpression' : '^x-[a-z]+',
                 'authorizerResultTtlInSeconds' : 60
             }
@@ -55,6 +55,7 @@ module.exports = (serviceName) => {
 
     // Insert secret values into swagger spec & write to swagger.json
     let swaggerSpec = JSON.stringify(swaggerAsJson)
+    swaggerSpec = swaggerSpec.replace('AWS_ACCOUNT_ID', eval('process.env.AWS_ACCOUNT_ID'))
     for (uri of uriSecretNames) {
         swaggerSpec = swaggerSpec.replace(uri, eval('process.env.' + uri))
     }
