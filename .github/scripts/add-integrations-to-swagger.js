@@ -7,6 +7,25 @@ module.exports = (serviceName) => {
     let swaggerAsString = '{' + swaggerAsArray.join('') + '}'
     let swaggerAsJson = JSON.parse(swaggerAsString)
 
+    // Define security blocks
+    let securityBlock = {
+        'authorizer' : []
+    }
+    let securityDefinitions = {
+        'authorizer' : {
+            'type' : 'apiKey',
+            'in' : 'header',
+            'x-amazon-apigateway-authtype' : 'custom',
+            'x-amazon-apigateway-authorizer' : {
+                'type' : 'token',
+                'authorizerUri' : 'arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-2:account-id:function:api-gateway-authoriser/invocations',
+                'authorizerCredentials' : 'arn:aws:iam::account-id:role/api_gateway_auth_invocation',
+                'identityValidationExpression' : '^x-[a-z]+',
+                'authorizerResultTtlInSeconds' : 60
+            }
+        }
+    }
+
     // Define integration block
     let integrationBlock = {
         'uri': '',
@@ -18,9 +37,10 @@ module.exports = (serviceName) => {
     // Create array of URI names that will be used later in deployment pipeline to insert URIs
     let uriSecretNames = []
 
-    // Insert integration block for each HTTP Method in each path
+    // Insert integration & security blocks for each HTTP Method in each path
     for (let path in swaggerAsJson['paths']) {
         for (let httpMethod in swaggerAsJson['paths'][path]) {
+            swaggerAsJson['paths'][path][httpMethod]['security'] = securityBlock
             swaggerAsJson['paths'][path][httpMethod]['x-amazon-apigateway-integration'] = {...integrationBlock} // Spreading the object clones it, preventing original object from being referenced when fields are amended
             let uriSecretName = 'CORESERVICESURIS_' + path.toUpperCase() + '_' + httpMethod.toUpperCase()
             uriSecretName = uriSecretName.replace(/[^A-Z0-9_]/g, ''); // Removing special characters to conform to GHA Secret naming rules
@@ -29,6 +49,9 @@ module.exports = (serviceName) => {
             swaggerAsJson['paths'][path][httpMethod]['x-amazon-apigateway-integration']['httpMethod'] = httpMethod.toUpperCase()
         }
     }
+
+    // Insert security definitions block
+    swaggerAsJson['securityDefinitions'] = securityDefinitions
 
     // Insert secret values into swagger spec & write to swagger.json
     let swaggerSpec = JSON.stringify(swaggerAsJson)
