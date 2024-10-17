@@ -20,7 +20,7 @@ module.exports = (serviceName) => {
             'x-amazon-apigateway-authtype' : 'custom',
             'x-amazon-apigateway-authorizer' : {
                 'type' : 'token',
-                'authorizerUri' : 'arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-2:AWS_ACCOUNT_ID:function:api-gateway-authoriser/invocations',
+                'authorizerUri' : 'arn:aws:apigateway:eu-west-2:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-2:AWS_ACCOUNT_ID:function:api-gateway-authoriser/invocations',
                 'authorizerCredentials' : 'arn:aws:iam::AWS_ACCOUNT_ID:role/api_gateway_auth_invocation',
                 'identityValidationExpression' : '^x-[a-z]+',
                 'authorizerResultTtlInSeconds' : 60
