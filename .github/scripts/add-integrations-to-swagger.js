@@ -16,6 +16,7 @@ module.exports = (serviceName) => {
     let securityDefinitions = {
         'authorizer' : {
             'type' : 'apiKey',
+            'name': 'Authorization',
             'in' : 'header',
             'x-amazon-apigateway-authtype' : 'custom',
             'x-amazon-apigateway-authorizer' : {
