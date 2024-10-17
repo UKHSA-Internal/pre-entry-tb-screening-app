@@ -4,6 +4,7 @@
     "target": "es2020",
     "strict": true,
     "module": "commonjs",
+    "moduleResolution": "node",
     "paths": {
       "@/*": ["./*"],
       "@config/*": ["config/*"],
