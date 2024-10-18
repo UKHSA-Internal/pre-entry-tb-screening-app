@@ -18,7 +18,7 @@ export interface RadioProps {
 export default function Radio(props: Readonly<RadioProps>) {
     
     const stringToJsxAttribute = (input: string) => {
-        return input.toLowerCase().replaceAll(" ", "-").replace(/[^a-z 0-9 -]/g, "")
+        return input.toLowerCase().replaceAll(" ", "-").replace(/[^a-z 0-9-]/g, "")
     }
     
     let radioInputName: string = "undefined";
@@ -26,8 +26,11 @@ export default function Radio(props: Readonly<RadioProps>) {
     else if (props.legend) {radioInputName = stringToJsxAttribute(props.legend)}
 
     let answerOptions: string[] = []
-    if (!props.sortAnswersAlphabetically) {answerOptions = props.answerOptions}
-    else {answerOptions = props.answerOptions.sort()}
+    if (!props.sortAnswersAlphabetically) {
+        answerOptions = props.answerOptions
+    } else {
+        props.answerOptions.sort((a, b) => a.localeCompare(b))
+    }
     
     return (
         <div id={props.id} className="govuk-form-group">
