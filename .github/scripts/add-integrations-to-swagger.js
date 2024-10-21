@@ -10,9 +10,9 @@ module.exports = (serviceName) => {
     let swaggerAsJson = JSON.parse(swaggerAsString)
 
     // Define security blocks
-    let securityBlock = {
+    let securityBlock = [{
         'authorizer' : []
-    }
+    }]
     let securityDefinitions = {
         'authorizer' : {
             'type' : 'apiKey',
