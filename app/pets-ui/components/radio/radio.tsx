@@ -18,7 +18,7 @@ export interface RadioProps {
 export default function Radio(props: Readonly<RadioProps>) {
     
     const stringToJsxAttribute = (input: string) => {
-        return input.toLowerCase().replaceAll(" ", "-").replace(/[^a-z 0-9 -]/g, "")
+        return input.toLowerCase().replaceAll(" ", "-").replace(/[^a-z0-9 -]/g, "")
     }
     
     let radioInputName: string = "undefined";
