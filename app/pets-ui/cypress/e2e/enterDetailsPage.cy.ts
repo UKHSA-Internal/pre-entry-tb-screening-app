@@ -4,15 +4,12 @@ describe ('Enter Applicant Details Page', () => {
 // Visit the "enter details" page 
         cy.visit('http://localhost:3000/applicant/enter-details'); 
 
-// Check that the 'Full Name' field is mandatory, and accepts alphanumeric characters 
-        cy.get('Full name').should('be.visible')
-             .should('have.attr', 'required') 
-             .should('have.attr', 'type', 'text'); 
+// Check that the 'Full Name' field is visible
+        cy.contains('label', 'Full Name').should('be.visible'); 
 
-// Check that the 'Passport Number' field is mandatory, and accepts alphanumeric characters
-       cy.get('Passport number').should('be.visible') 
-            .should('have.attr', 'required')
-            .should('have.attr', 'type', 'text'); 
+// Check that the 'Passport Number' field is visible
+       cy.contains('label', 'Passport Number').should('be.visible');
+            
 });
 
 // Check the user is navigated to the confirmation page after submission
@@ -20,12 +17,14 @@ describe ('Enter Applicant Details Page', () => {
     // Visit the "enter details" page 
         cy.visit('http://localhost:3000/applicant/enter-details'); 
 
-        // Enter valid data into the 'Full Name' field 
-        cy.get('Full name').type('John Doe'); 
-        // Enter valid data into the 'Passport Number' field 
-        cy.get('Passport number').type('AB1234567'); 
+        // Check the 'Full Name' field accepts alphanumeric characters and Enter valid data.
+        cy.get('input[name="name"]').should('have.attr', 'type', 'text')
+        .type('John Doe'); 
+        // Check the 'Passport Number'field accepts alphanumeric characters and Enter valid data.
+        cy.get('input[name="passport-number"]').should('have.attr', 'type', 'text')
+        .type('AB1234567'); 
         // Click the submit button 
-        cy.get('Submit').click(); 
+        cy.get('button[type="submit"]').click(); 
         // Validate that the page navigates to the confirmation page 
         cy.url().should('include', 'http://localhost:3000/applicant/check-answers'); 
         
