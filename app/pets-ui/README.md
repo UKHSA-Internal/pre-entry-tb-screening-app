@@ -42,3 +42,11 @@ Unit tests are run using Jest (with Babel for Typescript support).
 To run all unit tests use `yarn run test`.
 
 To run a subset of tests append the names of files or folders to the command, i.e. use `yarn run test <name1> <name2> ...`. Note that the names should not include a path, they should be just the name of the file or folder.
+
+
+## Cypress Tests
+
+In one terminal, open up the UI in the background using 'yarn run dev'
+Open a second terminal, CD to the e2e folder and run a 'yarn cypress open' to open cypress.
+Once cypress is open click on the 'E2E Testing' option, it should say 'Configured' underneath in green.
+Select your browser and then Select the test you wish to run.

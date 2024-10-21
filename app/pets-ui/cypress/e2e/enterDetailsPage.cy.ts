@@ -21,11 +21,11 @@ describe ('Enter Applicant Details Page', () => {
         cy.visit('http://localhost:3000/applicant/enter-details'); 
 
         // Enter valid data into the 'Full Name' field 
-        cy.get('Full name').type('John Doe'); 
+        cy.get('Full Name').type('John Doe'); 
         // Enter valid data into the 'Passport Number' field 
-        cy.get('Passport number').type('AB1234567'); 
+        cy.get('Passport Number').type('AB1234567'); 
         // Click the submit button 
-        cy.get('Submit').click(); 
+        cy.get('Save and continue').click(); 
         // Validate that the page navigates to the confirmation page 
         cy.url().should('include', 'http://localhost:3000/applicant/check-answers'); 
         
