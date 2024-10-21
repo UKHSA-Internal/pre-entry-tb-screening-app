@@ -19,6 +19,7 @@ plugins:
 provider:
   name: aws
   runtime: nodejs18.x
+  timeout: 10
   tracing:
     apiGateway: true
     lambda: true

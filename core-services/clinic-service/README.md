@@ -11,11 +11,13 @@ The project runs on node >18.x with typescript and serverless framework. For fur
 
 ### Prerequisites
 
-This project requires a Java Virtual Machine to run the Dynamo DB locally.
+This project requires a Java Virtual Machine & AWS credentials to run the Dynamo DB locally.
 We recommend to use Jabba to manage Java versions (this is similar to NVM). 
 
-- You can install jabba with Homebrew   
+- On Mac you can install jabba with Homebrew
 `brew install jabba`
+
+- On Windows follow installation instructions at: https://github.com/shyiko/jabba?tab=readme-ov-file#installation
 
 - Install Java 18 with Jabba   
 `jabba install openjdk@1.11.0`
@@ -23,12 +25,24 @@ We recommend to use Jabba to manage Java versions (this is similar to NVM).
 - Set current java version to use installed jdk   
 `jabba use openjdk@1.11.0`
 
+- Install the AWS CLI by following instructions at: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+
+- Set up AWS login credentials
+`aws configure`
+
+**Note that if the AWS CLI is not set up you may encounter a CredentialsProviderError when starting the service.**
+
 <br>
 
-> You might need to set $JAVA_HOME manually in your default rc file (.bashrc, .zshrc e.t.c) by adding this to the bottom of your
+> If you use a terminal other than Powershell you might need to set $JAVA_HOME manually in your default rc file (.bashrc, .zshrc etc.) by adding this to the bottom of the file:
 ```
 #set java home to jabba java jdk
-export JAVA_HOME="/Users/oluwatomide.fasugba/.jabba/jdk/openjdk@1.11.0/Contents/Home/bin/java"
+export JAVA_HOME="/Users/<username>/.jabba/jdk/openjdk@1.11.0/Contents/Home/bin/java"
+```
+
+> If you use Powershell you should add the following to your powershell profile file to avoid having to set the java version in every new terminal (you can find the file location by running `$PROFILE` in Powershell):
+```
+jabba use openjdk@1.11.0
 ```
 
 ## Architecture
