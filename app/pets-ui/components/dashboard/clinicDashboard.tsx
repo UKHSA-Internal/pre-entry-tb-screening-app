@@ -4,7 +4,7 @@ import ClinicInterface from "@model/interface/clinic";
 
 export default function ClinicDashboard() {
   const [data, setData] = useState<any>(null)
-  const [isLoading, setLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true)
  
   useEffect(() => {
     fetch('http://localhost:3004/dev/clinics')
@@ -12,7 +12,7 @@ export default function ClinicDashboard() {
       .then((data) => {
         console.log(data)
         setData(data)
-        setLoading(false)
+        setIsLoading(false)
       })
   }, [])
 
