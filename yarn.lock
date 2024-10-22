@@ -4844,6 +4844,15 @@ aws-sdk-client-mock@^4.0.1:
     sinon "^18.0.1"
     tslib "^2.1.0"
 
+aws-sdk-client-mock@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk-client-mock/-/aws-sdk-client-mock-4.1.0.tgz#ae1950b2277f8e65f9a039975d79ff9fffab39e3"
+  integrity sha512-h/tOYTkXEsAcV3//6C1/7U4ifSpKyJvb6auveAepqqNJl6TdZaPFEtKjBQNf8UxQdDP850knB2i/whq4zlsxJw==
+  dependencies:
+    "@types/sinon" "^17.0.3"
+    sinon "^18.0.1"
+    tslib "^2.1.0"
+
 aws-sdk@^2.814.0:
   version "2.1691.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1691.0.tgz#9d6ccdcbae03c806fc62667b76eb3e33e5294dcc"

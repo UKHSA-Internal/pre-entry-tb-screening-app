@@ -1,0 +1,32 @@
+[
+  {
+    "fullName": "John Doe",
+    "passportNumber": "A234DFR2",
+    "countryOfNationality": "India",
+    "countryOfIssue": "India",
+    "issueDate": {
+      "day": "5",
+      "month": "12",
+      "year": "2006"
+    },
+    "expiryDate": {
+      "day": "5",
+      "month": "12",
+      "year": "2006"
+    },
+    "dateOfBirth": {
+      "day": "5",
+      "month": "12",
+      "year": "2006"
+    },
+    "sex": "M",
+    "typesOfVisa": "Family Reunion",
+    "applicantHomeAddress1": "23 Long street",
+    "applicantHomeAddress2": "River Valley",
+    "applicantHomeAddress3": "",
+    "townOrCity": "Mumbai",
+    "provinceOrState": "Mumbai",
+    "country": "India",
+    "postcode": "1234"
+  }
+]
