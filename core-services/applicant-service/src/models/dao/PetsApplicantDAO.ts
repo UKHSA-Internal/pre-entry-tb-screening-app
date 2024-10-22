@@ -32,7 +32,6 @@ export default class PetsApplicantDAO {
     public async putItem(
       petsApplicantItem: IPetsApplicant
     ): Promise<PutItemOutput | ServiceException> {
-      petsApplicantItem = JSON.parse(petsApplicantItem.toString())
       const params = {
         TableName: this.tableName,
         Item: petsApplicantItem,

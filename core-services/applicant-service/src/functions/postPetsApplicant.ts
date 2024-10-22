@@ -21,7 +21,7 @@ export const postPetsApplicant: Handler = async (event) => {
   }
 
   const petsApplicantDetails = event.body
-    ? event.body
+    ? JSON.parse(event.body)
     : undefined;
 
   try {
