@@ -1,30 +1,18 @@
 {
-  "full_name": "John Doe",
-  "passport_number": "A234DFR2",
-  "country_of_nationality": "India",
-  "country_of_issue": "India",
-  "issue_date": {
-    "day": 5,
-    "month": 12,
-    "year": 2006
-  },
-  "expiry_date": {
-    "day": 5,
-    "month": 12,
-    "year": 2006
-  },
-  "date_of_birth": {
-    "day": 5,
-    "month": 12,
-    "year": 2006
-  },
+  "fullName": "John Doe",
+  "passportNumber": "A234DFR2",
+  "countryOfNationality": "India",
+  "countryOfIssue": "India",
+  "issueDate": "2006-12-5",
+  "expiryDate": "2006-12-5",
+  "dateOfBirth": "2006-12-5",
   "sex": "F",
-  "type_of_visa": "Family Reunion",
-  "applicants_home_address_1": "23 Long street",
-  "applicants_home_address_2": "River Valley",
-  "applicants_home_address_3": "",
-  "town_or_city": "Mumbai",
-  "province_or_state": "Mumbai",
+  "typesOfVisa": "Family Reunion",
+  "applicantHomeAddress1": "23 Long street",
+  "applicantHomeAddress2": "River Valley",
+  "applicantHomeAddress3": "",
+  "townOrCity": "Mumbai",
+  "provinceOrState": "Mumbai",
   "country": "India",
-  "post_code": "1234"
+  "postcode": "1234"
 }
