@@ -8,9 +8,9 @@
   "paths": {
     "/register-applicant": {
       "post": {
-        "summary": "postApplicantDetails",
+        "summary": "postPetsApplicant",
         "description": "",
-        "operationId": "postApplicantDetails.post.register-applicant",
+        "operationId": "postPetsApplicant.post.register-applicant",
         "consumes": [
           "application/json"
         ],

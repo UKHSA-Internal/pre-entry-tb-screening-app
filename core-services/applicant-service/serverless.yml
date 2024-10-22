@@ -70,10 +70,10 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
-          - AttributeName: full_name
+          - AttributeName: fullName
             AttributeType: S
         KeySchema:
-          - AttributeName: full_name
+          - AttributeName: fullName
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
         TableName: ${param:tableName}
