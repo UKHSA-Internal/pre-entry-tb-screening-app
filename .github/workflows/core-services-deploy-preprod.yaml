@@ -2,13 +2,13 @@ name: Pets Core Services Deployment - Preprod
 
 on:
   workflow_dispatch:
-  pull_request:
-    types: [closed]
-    branches: [main]
-    paths:
-      - "core-services/applicant-service/**"
-      - "core-services/clinic-service/**"
-      - "core-services/lambda-authoriser/**"
+  # pull_request:
+  #   types: [closed]
+  #   branches: [main]
+  #   paths:
+  #     - "core-services/applicant-service/**"
+  #     - "core-services/clinic-service/**"
+  #     - "core-services/lambda-authoriser/**"
 
 jobs:
   deploy:
