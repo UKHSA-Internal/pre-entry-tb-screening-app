@@ -14,11 +14,11 @@ dynamodb:
     table: pets-applicant-details
 
 functions:
-  - postApplicantDetails:
+  - postPetsApplicant:
       method: POST
       path: /register-applicant
       proxy: null
-      function: postApplicantDetails
+      function: postPetsApplicant
 
 serverless:
   basePath: /${BRANCH}
