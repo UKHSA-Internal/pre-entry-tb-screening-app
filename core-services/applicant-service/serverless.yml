@@ -55,10 +55,6 @@ functions:
       - http:
           path: register-applicant
           method: post
-          # request:
-          #   parameters:
-          #     paths:
-          #       petsClinicId: true
       - eventBridge:
           pattern:
             source:
