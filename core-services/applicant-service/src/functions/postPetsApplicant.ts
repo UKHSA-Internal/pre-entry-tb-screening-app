@@ -20,8 +20,8 @@ export const postPetsApplicant: Handler = async (event) => {
     return new HTTPResponse(400, HTTP_RESPONSE.MISSING_PARAMETERS);
   }
 
-  const petsApplicantDetails = event.pathParameters
-    ? event.pathParameters
+  const petsApplicantDetails = event.body
+    ? event.body
     : undefined;
 
   try {
