@@ -4,19 +4,19 @@ export interface IPetsApplicant {
     "countryOfNationality": string
     "countryOfIssue": string
     "issueDate": {
-        "day": number,
-        "month": number,
-        "year": number
+        "day": string,
+        "month": string,
+        "year": string
     },
     "expiryDate": {
-        "day": number,
-        "month": number,
-        "year": number
+        "day": string,
+        "month": string,
+        "year": string
     },
     "dateOfBirth": {
-        "day": number,
-        "month": number,
-        "year": number
+        "day": string,
+        "month": string,
+        "year": string
     },
     "sex": string
     "typesOfVisa": string
