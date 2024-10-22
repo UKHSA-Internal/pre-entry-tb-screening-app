@@ -97,7 +97,7 @@ custom:
       pets-applicants:
         sources:
           - table: "pets-local-applicants"
-            sources: [./test/resources/pets-applicant-mock.json]
+            sources: [./test/resources/pets-applicant-db-seed.json]
   serverless-offline-aws-eventbridge:
     port: 4010 # port to run the eventBridge mock server on
     mockEventBridgeServer: true # Set to false if EventBridge is already mocked by another stack
