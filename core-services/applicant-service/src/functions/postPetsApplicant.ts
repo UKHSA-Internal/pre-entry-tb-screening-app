@@ -12,12 +12,12 @@ export const postPetsApplicant: Handler = async (event) => {
 
   const check: Validator = new Validator();
 
-  if (event.pathParameters) {
-    if (!check.parametersAreValid(event.pathParameters)) {
-      return new HTTPResponse(400, HTTP_RESPONSE.MISSING_PARAMETERS);
+  if (event.body) {
+    if (!check.parametersAreValid(event.body)) {
+      return new HTTPResponse(400, HTTP_RESPONSE.INVALID_BODY);
     }
   } else {
-    return new HTTPResponse(400, HTTP_RESPONSE.MISSING_PARAMETERS);
+    return new HTTPResponse(400, HTTP_RESPONSE.INVALID_BODY);
   }
 
   const petsApplicantDetails = event.body
