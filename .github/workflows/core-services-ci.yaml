@@ -8,13 +8,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  create-strategy-matrix:
+  changes:
     name: Create strategy matrix
     runs-on: ubuntu-latest
     # permissions:
     #   pull-requests: read
     outputs:
-      packages: ${{ steps.filter.outputs.create-strategy-matrix }}
+      services: ${{ steps.filter.outputs.changes }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -31,15 +31,17 @@ jobs:
               - "core-services/clinic-service/**"
             lambda-authoriser:
               - "core-services/lambda-authoriser/**"
+      - run: echo "${{ steps.filter.outputs }}"
+      - run: echo "${{ steps.filter.outputs.changes }}"
 
   test-and-vulnerability-scans:
     name: Run unit tests, audit, and SonarCloud Scan
     runs-on: ubuntu-latest
-    needs: create-strategy-matrix
+    needs: changes
 
     strategy:
       matrix:
-        service: ${{ fromJSON(needs.create-strategy-matrix.outputs.packages) }}
+        service: ${{ fromJSON(needs.changes.outputs.services) }}
 
     steps:
       - name: Checkout code
