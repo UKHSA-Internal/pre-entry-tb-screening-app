@@ -12,11 +12,9 @@ export const postPetsApplicant: Handler = async (event) => {
 
   const check: Validator = new Validator();
 
-  if (event.body) {
-    if (!check.parametersAreValid(event.body)) {
-      return new HTTPResponse(400, HTTP_RESPONSE.INVALID_BODY);
-    }
-  } else {
+  if (!event.body) {
+    return new HTTPResponse(400, HTTP_RESPONSE.INVALID_BODY);
+  } else if (!check.parametersAreValid(event.body)) {
     return new HTTPResponse(400, HTTP_RESPONSE.INVALID_BODY);
   }
 
