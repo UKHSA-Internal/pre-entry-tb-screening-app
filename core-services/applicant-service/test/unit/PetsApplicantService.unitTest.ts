@@ -1,6 +1,4 @@
 import { HTTPError } from "@models/HTTPError";
-import { ERRORS } from "@utils/Enum";
-import { IPetsApplicant } from "@models/IPetsApplicant";
 import { PetsApplicantService } from "@/service/PetsApplicantService";
 import applicants from "../resources/pets-applicant-test.json";
 

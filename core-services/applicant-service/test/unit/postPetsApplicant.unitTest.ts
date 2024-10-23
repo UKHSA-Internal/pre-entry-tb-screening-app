@@ -1,24 +1,12 @@
 import mockContext, { Context } from "aws-lambda";
-// import { PetsClinicService } from "@services/PetsClinicService";
 import { PetsApplicantService } from "@/service/PetsApplicantService";
-// import { getPetsClinic } from '@functions/getPetsClinic'
 import { postPetsApplicant } from "@/functions/postPetsApplicant";
 import { HTTPResponse } from "@models/HTTPResponse";
 import { HTTPError } from "@/models/HTTPError";
 import { ERRORS } from "@utils/Enum";
-// import clinics from "../resources/pets-clinics.json";
-import applicants from "../resources/pets-applicant-test.json"
 
 const ctx = mockContext as Context;
 jest.mock("../../src/service/PetsApplicantService");
-
-/*
-test plan:
-keep 1st desc block scenarios
-strip out path param checks, remove from fn?
-test empty (invalid) body
-add method to validator to check that body.fullname & passport number are not empty/undefined 
-*/
 
 describe("postPetsApplicant Handler", () => {
     describe("with a valid event", () => {
