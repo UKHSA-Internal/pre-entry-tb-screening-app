@@ -8,13 +8,38 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-and-linting:
+  create-strategy-matrix:
+    name: Create strategy matrix using paths-filter
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      packages: ${{ steps.filter.outputs.changes }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            applicant-service:
+              - "core-services/applicant-service/**"
+            clinic-service:
+              - "core-services/clinic-service/**"
+            lambda-authoriser:
+              - "core-services/lambda-authoriser/**"
+
+  test-and-vulnerability-scans:
     name: Run unit tests, audit, and SonarCloud Scan
     runs-on: ubuntu-latest
+    needs: create-strategy-matrix
 
     strategy:
       matrix:
-        service: [applicant-service, clinic-service, lambda-authoriser]
+        service: ${{ fromJSON(needs.changes.outputs.packages) }}
 
     steps:
       - name: Checkout code
@@ -27,28 +52,28 @@ jobs:
         with:
           node-version: 18.x
           cache: "yarn"
-      - name: Paths filter
-        uses: dorny/paths-filter@v3
-        id: changes
-        with:
-          filters: |
-            applicant-service:
-              - "core-services/applicant-service/**"
-            clinic-service:
-              - "core-services/clinic-service/**"
-            lambda-authoriser:
-              - "core-services/lambda-authoriser/**"
+      # - name: Paths filter
+      #   uses: dorny/paths-filter@v3
+      #   id: changes
+      #   with:
+      #     filters: |
+      #       applicant-service:
+      #         - "core-services/applicant-service/**"
+      #       clinic-service:
+      #         - "core-services/clinic-service/**"
+      #       lambda-authoriser:
+      #         - "core-services/lambda-authoriser/**"
       - name: Install dependencies
-        if: steps.changes.outputs.${{ matrix.service }} == 'true'
+        # if: steps.changes.outputs.${{ matrix.service }} == 'true'
         run: yarn
       - name: Audit packages
         run: yarn audit
       - name: Run unit tests
-        if: steps.changes.outputs.${{ matrix.service }} == 'true'
+        # if: steps.changes.outputs.${{ matrix.service }} == 'true'
         run: yarn run test
         working-directory: core-services/${{ matrix.service }}
       - name: SonarCloud Scan
-        if: steps.changes.outputs.${{ matrix.service }} == 'true'
+        # if: steps.changes.outputs.${{ matrix.service }} == 'true'
         uses: SonarSource/sonarcloud-github-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
