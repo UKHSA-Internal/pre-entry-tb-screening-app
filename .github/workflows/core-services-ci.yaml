@@ -39,13 +39,16 @@ jobs:
             lambda-authoriser:
               - "core-services/lambda-authoriser/**"
       - name: Install dependencies
+        if: steps.filter.outputs.${{ matrix.service }} == 'true'
         run: yarn
       - name: Audit packages
         run: yarn audit
       - name: Run unit tests
+        if: steps.filter.outputs.${{ matrix.service }} == 'true'
         run: yarn run test
         working-directory: core-services/${{ matrix.service }}
       - name: SonarCloud Scan
+        if: steps.filter.outputs.${{ matrix.service }} == 'true'
         uses: SonarSource/sonarcloud-github-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
