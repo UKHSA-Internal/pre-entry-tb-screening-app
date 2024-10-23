@@ -10,4 +10,5 @@ export enum HTTP_RESPONSE {
   AWS_EVENT_EMPTY = "AWS event is empty. Check your test event.",
   INVALID_SOURCE = "Invalid event source for PUT.",
   MISSING_PARAMETERS = "Missing parameter value.",
+  INVALID_BODY = "Request body is invalid."
 }
