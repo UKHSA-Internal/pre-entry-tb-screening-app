@@ -18,9 +18,9 @@ export const postPetsApplicant: Handler = async (event) => {
     return new HTTPResponse(400, HTTP_RESPONSE.INVALID_BODY);
   }
 
-  const petsApplicantDetails = event.body
+  const petsApplicantDetails = typeof(event.body) == "string"
     ? JSON.parse(event.body)
-    : undefined;
+    : event.body;
 
   try {
     const petsApplicant = await service.putPetsApplicant(petsApplicantDetails);
