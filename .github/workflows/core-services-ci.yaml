@@ -9,12 +9,12 @@ on:
 
 jobs:
   create-strategy-matrix:
-    name: Create strategy matrix using paths-filter
+    name: Create strategy matrix
     runs-on: ubuntu-latest
     # permissions:
     #   pull-requests: read
     outputs:
-      packages: ${{ steps.filter.outputs.changes }}
+      packages: ${{ steps.filter.outputs.create-strategy-matrix }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -39,7 +39,7 @@ jobs:
 
     strategy:
       matrix:
-        service: ${{ fromJSON(needs.changes.outputs.packages) }}
+        service: ${{ fromJSON(needs.create-strategy-matrix.outputs.packages) }}
 
     steps:
       - name: Checkout code
