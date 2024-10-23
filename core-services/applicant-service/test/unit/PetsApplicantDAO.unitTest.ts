@@ -4,11 +4,11 @@ import {
   PutCommandOutput,
 } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
-import PetsClinicDAO from "@models/dao/PetsApplicantDAO";
+import PetsApplicantDAO from "@models/dao/PetsApplicantDAO";
 import { HTTPError } from "@models/HTTPError";
 import applicants from "../resources/pets-applicant-test.json";
 
-describe("PetsClinicDAO", () => {
+describe("PetsApplicantDAO", () => {
   beforeEach(() => {
     jest.resetModules();
   });
@@ -24,7 +24,7 @@ describe("PetsClinicDAO", () => {
         .on(PutCommand)
         .resolves("success" as unknown as PutCommandOutput);
       const expectedParams = applicants[0];
-      const dao = new PetsClinicDAO();
+      const dao = new PetsApplicantDAO();
       const output = await dao.putItem(applicants[0]);
       const putStub = mockDynamoClient.commandCalls(PutCommand);
       expect(output).toEqual("success");
@@ -36,7 +36,7 @@ describe("PetsClinicDAO", () => {
       const mockDynamoClient = mockClient(DynamoDBDocumentClient);
       mockDynamoClient.on(PutCommand).rejects(myError);
 
-      const dao = new PetsClinicDAO();
+      const dao = new PetsApplicantDAO();
       try {
         await dao.putItem(applicants[0]);
       } catch (err) {

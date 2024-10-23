@@ -16,9 +16,9 @@ describe("PetsApplicantService", () => {
 
     describe("putPetsApplicant", () => {
         it("returns data on successful query", async () => {
-            const PetsClinicDAOMock = getPetsClinicDAOMock(applicants[0]);
+            const PetsApplicantDAOMock = getPetsApplicantDAOMock(applicants[0]);
             const petsApplicantService = new PetsApplicantService(
-                new PetsClinicDAOMock()
+                new PetsApplicantDAOMock()
             );
             return petsApplicantService
                 .putPetsApplicant(applicants[0])
@@ -28,9 +28,9 @@ describe("PetsApplicantService", () => {
         });
     
         it("throws HTTP error on failed query", async () => {
-            const PetsClinicDAOMock = getPetsClinicHttpErrorMock(400, "Bad Request");
+            const PetsApplicantDAOMock = getPetsApplicantHttpErrorMock(400, "Bad Request");
             const petsApplicantService = new PetsApplicantService(
-                new PetsClinicDAOMock()
+                new PetsApplicantDAOMock()
             );
             return petsApplicantService
                 .putPetsApplicant(applicants[0])
@@ -45,9 +45,9 @@ describe("PetsApplicantService", () => {
         });
 
         it("throws 500 on failed query", async () => {
-            const PetsClinicDAOMock = getPetsClinicErrorMock();
+            const PetsApplicantDAOMock = getPetsApplicantErrorMock();
             const petsApplicantService = new PetsApplicantService(
-                new PetsClinicDAOMock()
+                new PetsApplicantDAOMock()
             );
             return petsApplicantService
                 .putPetsApplicant(applicants[0])
@@ -63,8 +63,8 @@ describe("PetsApplicantService", () => {
     });
 })
 
-const getPetsClinicDAOMock: any = (items: any) => {
-    const PetsClinicDAOMock = jest.fn().mockImplementation(() => {
+const getPetsApplicantDAOMock: any = (items: any) => {
+    const PetsApplicantDAOMock = jest.fn().mockImplementation(() => {
         return {
             putItem: () => {
                 return Promise.resolve({
@@ -74,11 +74,11 @@ const getPetsClinicDAOMock: any = (items: any) => {
         };
     });
 
-    return PetsClinicDAOMock;
+    return PetsApplicantDAOMock;
 }
 
-const getPetsClinicErrorMock: any = () => {
-    const PetsClinicDAOMock = jest.fn().mockImplementation(() => {
+const getPetsApplicantErrorMock: any = () => {
+    const PetsApplicantDAOMock = jest.fn().mockImplementation(() => {
         return {
           putItem: () => {
             return Promise.reject(new Error());
@@ -86,11 +86,11 @@ const getPetsClinicErrorMock: any = () => {
         };
     });
     
-    return PetsClinicDAOMock
+    return PetsApplicantDAOMock
 }
 
-const getPetsClinicHttpErrorMock: any = (error_code: number, error_message: string) => {
-    const PetsClinicDAOMock = jest.fn().mockImplementation(() => {
+const getPetsApplicantHttpErrorMock: any = (error_code: number, error_message: string) => {
+    const PetsApplicantDAOMock = jest.fn().mockImplementation(() => {
         return {
           putItem: () => {
             return Promise.reject(
@@ -100,5 +100,5 @@ const getPetsClinicHttpErrorMock: any = (error_code: number, error_message: stri
         };
     });
     
-    return PetsClinicDAOMock
+    return PetsApplicantDAOMock
 }
