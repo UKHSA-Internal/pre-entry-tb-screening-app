@@ -6,7 +6,7 @@ import {
 import { mockClient } from "aws-sdk-client-mock";
 import PetsClinicDAO from "@models/dao/PetsApplicantDAO";
 import { HTTPError } from "@models/HTTPError";
-import applicants from "../resources/pets-applicant-TEST.json";
+import applicants from "../resources/pets-applicant-test.json";
 
 describe("PetsClinicDAO", () => {
   beforeEach(() => {
