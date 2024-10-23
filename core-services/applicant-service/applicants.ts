@@ -32,8 +32,6 @@ async function handleEventBridge(event: EventBridgeEvent<any, any>) {
     if (event.source !== process.env.AWS_EVENT_BUS_SOURCE) {
       throw new Error(HTTP_RESPONSE.INVALID_SOURCE);
     }
-    // missing lines here?
-    // await putPetsClinic(event.detail);
   }
 }
 
