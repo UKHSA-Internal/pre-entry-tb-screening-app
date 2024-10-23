@@ -11,12 +11,3 @@ export enum HTTP_RESPONSE {
   INVALID_SOURCE = "Invalid event source for PUT.",
   MISSING_PARAMETERS = "Missing parameter value.",
 }
-
-export enum PETS_CLINIC_STATUS {
-  ACTIVE = "active",
-  OFFLINE = "offline",
-}
-
-export enum RESPONSE_STATUS {
-  SUCCESS = "success",
-}
