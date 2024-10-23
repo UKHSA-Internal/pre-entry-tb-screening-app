@@ -8,7 +8,7 @@
 - clone the https://github.com/awslabs/git-secrets repo
 - open a terminal, cd into the git-secrets repo & run `.\install.ps1`
 - restart vscode
-- cd into this repo and run:
+- run the following in the root folder of this repo:
 	- `git secrets --install`
 	- `git secrets --register-aws`
 - to test that git-secrets is working:
@@ -24,6 +24,20 @@
     	- this should succeed since this is an allowed pattern
 
 ### To scan the repo for secrets:
-- cd to the top level
-- run `yarn run security-checks`
+- run the following in the root folder of this repo: `yarn run security-checks`
 - note that by default all files returned by `git ls-files` are scanned. This DOES NOT include untracked files.
+
+## Java setup using Jabba
+
+### Initial setup
+- install jabba for your OS following instructions at https://github.com/shyiko/jabba?tab=readme-ov-file#installation
+- in a new terminal run `jabba --version` to check that jabba is installed correctly
+- run `jabba use openjdk@1.11.0` to set the version of java
+
+### Configure terminal to set java version on startup
+- open your terminal's configuration file:
+  - for bash, this is `~.bashrc`
+  - for zsh, this is `~.zshrc`
+  - for powershell, the filepath is returned by running `$PROFILE`
+- add the following to your terminal's configuration file: `jabba use openjdk@1.11.0`
+- run `java --version` in a brand new terminal - this should return `openjdk@1.11.0`
