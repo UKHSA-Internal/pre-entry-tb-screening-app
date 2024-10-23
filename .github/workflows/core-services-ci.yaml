@@ -11,8 +11,6 @@ jobs:
   changes:
     name: Create strategy matrix
     runs-on: ubuntu-latest
-    # permissions:
-    #   pull-requests: read
     outputs:
       services: ${{ steps.filter.outputs.changes }}
     steps:
@@ -31,8 +29,6 @@ jobs:
               - "core-services/clinic-service/**"
             lambda-authoriser:
               - "core-services/lambda-authoriser/**"
-      - run: echo "${{ steps.filter.outputs }}"
-      - run: echo "${{ steps.filter.outputs.changes }}"
 
   test-and-vulnerability-scans:
     name: Run unit tests, audit, and SonarCloud Scan
@@ -54,28 +50,14 @@ jobs:
         with:
           node-version: 18.x
           cache: "yarn"
-      # - name: Paths filter
-      #   uses: dorny/paths-filter@v3
-      #   id: changes
-      #   with:
-      #     filters: |
-      #       applicant-service:
-      #         - "core-services/applicant-service/**"
-      #       clinic-service:
-      #         - "core-services/clinic-service/**"
-      #       lambda-authoriser:
-      #         - "core-services/lambda-authoriser/**"
       - name: Install dependencies
-        # if: steps.changes.outputs.${{ matrix.service }} == 'true'
         run: yarn
       - name: Audit packages
         run: yarn audit
       - name: Run unit tests
-        # if: steps.changes.outputs.${{ matrix.service }} == 'true'
         run: yarn run test
         working-directory: core-services/${{ matrix.service }}
       - name: SonarCloud Scan
-        # if: steps.changes.outputs.${{ matrix.service }} == 'true'
         uses: SonarSource/sonarcloud-github-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
