@@ -23,10 +23,8 @@ export const getPetsApplicant: Handler = async (event) => {
   const petsApplicantPassportDetails = event.queryStringParameters
     ? event.queryStringParameters
     : undefined;
-  // console.log(petsApplicantPassportDetails)
 
   try {
-    console.log("func: calling service...")
     const petsApplicant = await service.getPetsApplicant(petsApplicantPassportDetails);
     return new HTTPResponse(200, petsApplicant);
   } catch (error: any) {
