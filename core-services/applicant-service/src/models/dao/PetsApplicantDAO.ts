@@ -41,7 +41,6 @@ export default class PetsApplicantDAO {
         FilterExpression: "passportNumber = :number AND countryOfIssue = :country"
       };
       const command = new ScanCommand(params);
-      console.log("dao: calling dynamo...")
       return await PetsApplicantDAO.dbClient.send(command);
     }
 
