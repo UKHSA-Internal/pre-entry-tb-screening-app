@@ -12,8 +12,6 @@ export const getPetsApplicant: Handler = async (event) => {
 
   const check: Validator = new Validator();
 
-  // console.log(event)
-
   if (!event.queryStringParameters) {
     return new HTTPResponse(400, HTTP_RESPONSE.MISSING_PARAMETERS);
   } else if (!check.parametersAreValid(event.queryStringParameters)) {

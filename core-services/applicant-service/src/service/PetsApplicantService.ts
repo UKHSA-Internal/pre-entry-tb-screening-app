@@ -22,7 +22,6 @@ export class PetsApplicantService {
         if (data.Count === 0) {
           throw new HTTPError(404, ERRORS.RESOURCE_NOT_FOUND);
         }
-        console.log(data.Items)
         return data.Items;
       })
       .catch((error: any) => {
