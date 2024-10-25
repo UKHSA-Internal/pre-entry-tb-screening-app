@@ -1,6 +1,4 @@
 module.exports = (servicesToDeploy) => {
-    console.log("servicesToDeploy:")
-    console.log(servicesToDeploy)
     const fullMatrix = [
         {
             "name": "applicant-service",
@@ -23,15 +21,9 @@ module.exports = (servicesToDeploy) => {
     ]
     const deployMatrix = []
     for (service of fullMatrix) {
-        console.log("service: " + service)
-        console.log("service name: " + service.name)
-        console.log("service name index: " + servicesToDeploy.indexOf(service.name))
         if (servicesToDeploy.indexOf(service.name) > -1) {
-            console.log("adding service")
             deployMatrix.push(service)
         }
     }
-    console.log("final matrix:")
-    console.log(deployMatrix)
-    return {"matrix": deployMatrix}
+    return deployMatrix
 }
