@@ -65,14 +65,28 @@ jobs:
         run: |
           if [ '${{ matrix.service }}' = 'applicant-service' ]; then
             echo "ZIP_FILE=applicant-service-lambda.zip" >> $GITHUB_ENV
+            echo "BUILD_FOLDER=.build/*" >> $GITHUB_ENV
+            echo "BUCKET_SECRET=$CORESERVICESDEPLOY_APPLICANT_SERVICE_BUCKET_NAME" >> $GITHUB_ENV
+            echo "SSE_KEY_SECRET=$CORESERVICESDEPLOY_APPLICANT_SERVICE_SSE_KEY" >> $GITHUB_ENV
+            echo "LAMBDA=applicant-service-lambda" >> $GITHUB_ENV
           elif [ '${{ matrix.service }}' = 'clinic-service' ]; then
             echo "ZIP_FILE=clinic-service-lambda.zip" >> $GITHUB_ENV
+            echo "BUILD_FOLDER=.build/*" >> $GITHUB_ENV
+            echo "BUCKET_SECRET=$CORESERVICESDEPLOY_CLINIC_SERVICE_BUCKET_NAME" >> $GITHUB_ENV
+            echo "SSE_KEY_SECRET=$CORESERVICESDEPLOY_CLINIC_SERVICE_SSE_KEY" >> $GITHUB_ENV
+            echo "LAMBDA=clinic-service-lambda" >> $GITHUB_ENV
           elif [ '${{ matrix.service }}' = 'lambda-authoriser' ]; then
             echo "ZIP_FILE=lambda-authoriser.zip" >> $GITHUB_ENV
-          else
-            echo "no condition met"
+            echo "BUILD_FOLDER=src/*" >> $GITHUB_ENV
+            echo "BUCKET_SECRET=$CORESERVICESDEPLOY_LAMBDA_AUTHORISER_BUCKET_NAME" >> $GITHUB_ENV
+            echo "SSE_KEY_SECRET=$CORESERVICESDEPLOY_LAMBDA_AUTHORISER_SSE_KEY" >> $GITHUB_ENV
+            echo "LAMBDA=api-gateway-authoriser" >> $GITHUB_ENV
           fi
       - run: echo $ZIP_FILE
+      - run: echo $BUILD_FOLDER
+      - run: echo $BUCKET_SECRET
+      - run: echo $LAMBDA
+
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Setup Node.js
