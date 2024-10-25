@@ -1,4 +1,6 @@
 module.exports = (servicesToDeploy) => {
+    console.log("servicesToDeploy:")
+    console.log(servicesToDeploy)
     const matrix = [
         {
             "name": "applicant-service",
