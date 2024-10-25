@@ -60,15 +60,18 @@ jobs:
       matrix:
         service: ${{ fromJSON(needs.changes.outputs.service) }}
 
-    env:
-      applicant-service:
-        zip-file: applicant-service-lambda.zip
-        build-folder: .build/*
-        bucket-secret: $CORESERVICESDEPLOY_APPLICANT_SERVICE_BUCKET_NAME
-        sse-key-secret: $CORESERVICESDEPLOY_APPLICANT_SERVICE_SSE_KEY
-        lambda: applicant-service-lambda
-
     steps:
+      - name: Create environment variables
+        run: |
+          if [ ${{ matrix.service }} = 'applicant-service']; then
+            echo "ZIP_FILE=applicant-service-lambda.zip" >> $GITHUB_ENV
+          elif [ ${{ matrix.service }} = 'clinic-service']; then
+            echo "ZIP_FILE=clinic-service-lambda.zip" >> $GITHUB_ENV
+          elif [ ${{ matrix.service }} = 'lambda-authoriser']; then
+            echo "ZIP_FILE=lambda-authoriser.zip" >> $GITHUB_ENV
+          fi
+          echo "$ZIP_FILE"
+
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Setup Node.js
@@ -76,10 +79,6 @@ jobs:
         with:
           node-version: 18.x
           cache: "yarn"
-
-      - run: echo "${{ env.applicant-service }}"
-      - run: echo "${{ env.applicant-service.zip-file }}"
-      - run: echo "${{ env.${{ matrix.service }} }}"
 
       - name: Install dependencies
         if: ${{ matrix.service.name != 'lambda-authoriser' }}
