@@ -31,24 +31,6 @@ jobs:
               - "core-services/clinic-service/**"
             lambda-authoriser:
               - "core-services/lambda-authoriser/**"
-      # - name: Create matrix
-      #   uses: actions/github-script@v7
-      #   id: create-matrix
-      #   with:
-      #     script: |
-      #       const createDeploymentMatrix = require('./.github/scripts/create-deployment-matrix.js')
-      #       return matrix = createDeploymentMatrix(${{ steps.filter.outputs.changes }})
-      # - name: Set job output
-      #   id: set-output
-      #   run: echo "matrix=${{ steps.filter.outputs.changes }}" >> "$GITHUB_OUTPUT"
-      #   run: echo "matrix=${{ steps.create-matrix.outputs.result }}" >> "$GITHUB_OUTPUT"
-
-  print-matrix:
-    runs-on: ubuntu-latest
-    needs: changes
-    steps:
-      - run: echo ${{ needs.changes.outputs.service }}
-      - run: echo ${{ fromJSON(needs.changes.outputs.service) }}
 
   deploy:
     name: Build, package & deploy services
@@ -98,10 +80,6 @@ jobs:
             echo "SSE_KEY_SECRET=$CORESERVICESDEPLOY_LAMBDA_AUTHORISER_SSE_KEY" >> $GITHUB_ENV
             echo "LAMBDA=api-gateway-authoriser" >> $GITHUB_ENV
           fi
-      - run: echo $ZIP_FILE
-      - run: echo $BUILD_FOLDER
-      - run: echo $BUCKET_SECRET
-      - run: echo $LAMBDA
 
       - name: Checkout code
         uses: actions/checkout@v4
