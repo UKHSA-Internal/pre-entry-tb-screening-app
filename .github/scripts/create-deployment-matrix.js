@@ -32,7 +32,7 @@ module.exports = (servicesToDeploy) => {
         console.log("service: " + service)
         console.log("service name: " + service.name)
         console.log("service name index: " + servicesToDeploy.indexOf(service.name))
-        if (servicesToDeploy.indexOf(service.name) < 0) {
+        if (servicesToDeploy.indexOf(service.name) > 0) {
             console.log("adding service")
             deployMatrix.push(service)
         }
