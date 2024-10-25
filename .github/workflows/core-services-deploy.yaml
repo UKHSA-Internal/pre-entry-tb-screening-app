@@ -54,7 +54,7 @@ jobs:
           script: |
             const createDeploymentMatrix = require('./.github/scripts/create-deployment-matrix.js')
             return matrix = createDeploymentMatrix(${{ steps.filter.outputs.changes }})
-      - run: "${{steps.create-matrix.outputs.result}}"
+      - run: echo "${{steps.create-matrix.outputs.result}}"
 
   print-matrix:
     runs-on: ubuntu-latest
