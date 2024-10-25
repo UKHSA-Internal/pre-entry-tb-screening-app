@@ -69,9 +69,10 @@ jobs:
             echo "ZIP_FILE=clinic-service-lambda.zip" >> $GITHUB_ENV
           elif [ '${{ matrix.service }}' = 'lambda-authoriser' ]; then
             echo "ZIP_FILE=lambda-authoriser.zip" >> $GITHUB_ENV
+          else
+            echo "no condition met"
           fi
-          echo $ZIP_FILE
-
+      - run: echo $ZIP_FILE
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Setup Node.js
