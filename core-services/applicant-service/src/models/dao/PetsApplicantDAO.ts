@@ -11,7 +11,7 @@ import {
   import { ServiceException } from "@smithy/smithy-client";
 import { Configuration } from "@utils/Configuration";
 import { IPetsApplicant } from "@models/IPetsApplicant";
-import { IPetsApplicantPassport } from "../IPetsApplicantPassport";
+import { IPetsApplicantPassport } from "@models/IPetsApplicantPassport";
 
 export default class PetsApplicantDAO {
     private static dbClient: DynamoDBDocumentClient;
