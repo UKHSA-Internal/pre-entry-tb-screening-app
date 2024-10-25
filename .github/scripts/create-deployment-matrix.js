@@ -33,7 +33,7 @@ module.exports = (servicesToDeploy) => {
         console.log("service name index: " + servicesToDeploy.indexOf(service.name))
         if (servicesToDeploy.indexOf(service.name) < 0) {
             console.log("removing service")
-            matrix.splice(0, matrix.indexOf(service))
+            matrix.splice(matrix.indexOf(service), 1)
         }
     }
     console.log("final matrix:")
