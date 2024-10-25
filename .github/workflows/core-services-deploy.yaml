@@ -56,7 +56,8 @@ jobs:
             return matrix = createDeploymentMatrix(${{ steps.filter.outputs.changes }})
       - name: Set job output
         id: set-output
-        run: echo "matrix=${{ steps.create-matrix.outputs.result }}" >> "$GITHUB_OUTPUT"
+        run: echo "matrix=${{ steps.filter.outputs.changes }}" >> "$GITHUB_OUTPUT"
+        #run: echo "matrix=${{ steps.create-matrix.outputs.result }}" >> "$GITHUB_OUTPUT"
 
   # print-matrix:
   #   runs-on: ubuntu-latest
