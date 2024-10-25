@@ -60,6 +60,14 @@ jobs:
       matrix:
         service: ${{ fromJSON(needs.changes.outputs.service) }}
 
+    env:
+      applicant-service:
+        zip-file: applicant-service-lambda.zip
+        build-folder: .build/*
+        bucket-secret: $CORESERVICESDEPLOY_APPLICANT_SERVICE_BUCKET_NAME
+        sse-key-secret: $CORESERVICESDEPLOY_APPLICANT_SERVICE_SSE_KEY
+        lambda: applicant-service-lambda
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -68,6 +76,10 @@ jobs:
         with:
           node-version: 18.x
           cache: "yarn"
+
+      - run: echo "${{ env.applicant-service }}"
+      - run: echo "${{ env.applicant-service.zip-file }}"
+      - run: echo "${{ env.${{ matrix.service }} }}"
 
       - name: Install dependencies
         if: ${{ matrix.service.name != 'lambda-authoriser' }}
