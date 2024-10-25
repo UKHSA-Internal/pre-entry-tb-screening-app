@@ -27,7 +27,7 @@ module.exports = (servicesToDeploy) => {
             "lambda": "api-gateway-authoriser"
         }
     ]
-    for (service in matrix) {
+    for (service of matrix) {
         console.log("service: " + service)
         console.log("service name: " + service.name)
         console.log("service name index: " + servicesToDeploy.indexOf(service.name))
