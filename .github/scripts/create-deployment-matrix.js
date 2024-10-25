@@ -1,7 +1,7 @@
 module.exports = (servicesToDeploy) => {
     console.log("servicesToDeploy:")
     console.log(servicesToDeploy)
-    const matrix = [
+    const fullMatrix = [
         {
             "name": "applicant-service",
             "zip-file": "applicant-service-lambda.zip",
@@ -27,16 +27,17 @@ module.exports = (servicesToDeploy) => {
             "lambda": "api-gateway-authoriser"
         }
     ]
-    for (service of matrix) {
+    const deployMatrix = []
+    for (service of fullMatrix) {
         console.log("service: " + service)
         console.log("service name: " + service.name)
         console.log("service name index: " + servicesToDeploy.indexOf(service.name))
         if (servicesToDeploy.indexOf(service.name) < 0) {
-            console.log("removing service")
-            matrix.splice(matrix.indexOf(service), 1)
+            console.log("adding service")
+            deployMatrix.push(service)
         }
     }
     console.log("final matrix:")
-    console.log(matrix)
-    return {"matrix": matrix}
+    console.log(deployMatrix)
+    return {"matrix": deployMatrix}
 }
