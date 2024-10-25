@@ -56,14 +56,14 @@ jobs:
             return matrix = createDeploymentMatrix(${{ steps.filter.outputs.changes }})
       - name: Set job output
         id: set-output
-        run: echo "matrix=${{steps.create-matrix.outputs.result}}" >> "$GITHUB_OUTPUT"
+        run: echo "matrix=${{ steps.create-matrix.outputs.result }}" >> "$GITHUB_OUTPUT"
 
-  # print-matrix:
-  #   runs-on: ubuntu-latest
-  #   needs: matrix
-  #   steps:
-  #     - run: echo "${{ needs.matrix.outputs.matrix }}"
-  #     - run: echo "${{ fromJSON(needs.matrix.outputs.matrix) }}"
+  print-matrix:
+    runs-on: ubuntu-latest
+    needs: matrix
+    steps:
+      - run: echo "${{ needs.matrix.outputs.matrix }}"
+      - run: echo "${{ fromJSON(needs.matrix.outputs.matrix) }}"
 
   deploy:
     name: Build, package & deploy services
@@ -73,26 +73,25 @@ jobs:
 
     strategy:
       matrix:
-        service:
-          ${{ fromJSON(needs.matrix.outputs.matrix) }}
-          # - name: applicant-service
-          #   zip-file: applicant-service-lambda.zip
-          #   build-folder: .build/*
-          #   bucket-secret: $CORESERVICESDEPLOY_APPLICANT_SERVICE_BUCKET_NAME
-          #   sse-key-secret: $CORESERVICESDEPLOY_APPLICANT_SERVICE_SSE_KEY
-          #   lambda: applicant-service-lambda
-          # - name: clinic-service
-          #   zip-file: clinic-service-lambda.zip
-          #   build-folder: .build/*
-          #   bucket-secret: $CORESERVICESDEPLOY_CLINIC_SERVICE_BUCKET_NAME
-          #   sse-key-secret: $CORESERVICESDEPLOY_CLINIC_SERVICE_SSE_KEY
-          #   lambda: clinic-service-lambda
-          # - name: lambda-authoriser
-          #   zip-file: lambda-authoriser.zip
-          #   build-folder: src/*
-          #   bucket-secret: $CORESERVICESDEPLOY_LAMBDA_AUTHORISER_BUCKET_NAME
-          #   sse-key-secret: $CORESERVICESDEPLOY_LAMBDA_AUTHORISER_SSE_KEY
-          #   lambda: api-gateway-authoriser
+        ${{ fromJSON(needs.matrix.outputs.matrix) }}
+        # - name: applicant-service
+        #   zip-file: applicant-service-lambda.zip
+        #   build-folder: .build/*
+        #   bucket-secret: $CORESERVICESDEPLOY_APPLICANT_SERVICE_BUCKET_NAME
+        #   sse-key-secret: $CORESERVICESDEPLOY_APPLICANT_SERVICE_SSE_KEY
+        #   lambda: applicant-service-lambda
+        # - name: clinic-service
+        #   zip-file: clinic-service-lambda.zip
+        #   build-folder: .build/*
+        #   bucket-secret: $CORESERVICESDEPLOY_CLINIC_SERVICE_BUCKET_NAME
+        #   sse-key-secret: $CORESERVICESDEPLOY_CLINIC_SERVICE_SSE_KEY
+        #   lambda: clinic-service-lambda
+        # - name: lambda-authoriser
+        #   zip-file: lambda-authoriser.zip
+        #   build-folder: src/*
+        #   bucket-secret: $CORESERVICESDEPLOY_LAMBDA_AUTHORISER_BUCKET_NAME
+        #   sse-key-secret: $CORESERVICESDEPLOY_LAMBDA_AUTHORISER_SSE_KEY
+        #   lambda: api-gateway-authoriser
 
     steps:
       - name: Checkout code

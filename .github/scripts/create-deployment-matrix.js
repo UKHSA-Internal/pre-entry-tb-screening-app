@@ -25,5 +25,5 @@ module.exports = (servicesToDeploy) => {
             deployMatrix.push(service)
         }
     }
-    return {"matrix": deployMatrix}
+    return {"service": deployMatrix.toString()}
 }
