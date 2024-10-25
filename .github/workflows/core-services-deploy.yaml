@@ -30,14 +30,14 @@ jobs:
               - "core-services/clinic-service/**"
             lambda-authoriser:
               - "core-services/lambda-authoriser/**"
-      - run: echo ${{ steps.filter.outputs }}
+      - run: echo ${{ steps.filter.outputs.changes }}
       - name: Create matrix
         uses: actions/github-script@v7
         id: create-matrix
         with:
           script: |
             const createDeploymentMatrix = require('./.github/scripts/create-deployment-matrix.js')
-            return matrix = createDeploymentMatrix(${{ steps.filter.outputs }})
+            return matrix = createDeploymentMatrix(${{ steps.filter.outputs.changes }})
 
   deploy:
     name: Build, package & deploy services
