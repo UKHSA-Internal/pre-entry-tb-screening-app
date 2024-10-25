@@ -61,6 +61,22 @@ jobs:
         service: ${{ fromJSON(needs.changes.outputs.service) }}
 
     steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          mask-aws-account-id: true
+          aws-region: "eu-west-2"
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_PETS_CORE_SERVICES_ROLE_NAME }}"
+          role-session-name: PETS-Core-Services-Deploy
+      - name: Get secrets from AWS
+        uses: aws-actions/aws-secretsmanager-get-secrets@v2
+        with:
+          secret-ids: |
+            CoreServicesDeploy
+            CoreServicesURIs
+          parse-json-secrets: true
       - name: Create environment variables
         run: |
           if [ '${{ matrix.service }}' = 'applicant-service' ]; then
@@ -107,23 +123,6 @@ jobs:
       - name: Create zip
         run: zip -r $ZIP_FILE $BUILD_FOLDER
         working-directory: core-services/${{ matrix.service }}
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          mask-aws-account-id: true
-          aws-region: "eu-west-2"
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_PETS_CORE_SERVICES_ROLE_NAME }}"
-          role-session-name: PETS-Core-Services-Deploy
-      - name: Get secrets from AWS
-        uses: aws-actions/aws-secretsmanager-get-secrets@v2
-        with:
-          secret-ids: |
-            CoreServicesDeploy
-            CoreServicesURIs
-          parse-json-secrets: true
 
       - name: Upload Service to S3
         working-directory: core-services/${{ matrix.service }}
