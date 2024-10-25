@@ -11,6 +11,7 @@ jobs:
   matrix:
     name: Create strategy matrix
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     outputs:
       matrix: ${{ steps.create-matrix.outputs.matrix }}
     steps:
