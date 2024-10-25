@@ -59,8 +59,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: matrix
     steps:
-      - run: echo ${{ needs.matrix.outputs.matrix }}
-      - run: echo ${{ fromJSON(needs.matrix.outputs.matrix) }}
+      - run: echo ${{ needs.matrix.outputs.result }}
+      - run: echo ${{ fromJSON(needs.matrix.outputs.result) }}
 
   deploy:
     name: Build, package & deploy services
