@@ -73,7 +73,7 @@ jobs:
 
     strategy:
       matrix:
-        ${{ fromJSON(needs.matrix.outputs.matrix) }}
+        service: ${{ fromJSON(needs.matrix.outputs.matrix) }}
         # - name: applicant-service
         #   zip-file: applicant-service-lambda.zip
         #   build-folder: .build/*

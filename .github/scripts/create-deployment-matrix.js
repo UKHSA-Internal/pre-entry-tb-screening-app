@@ -25,5 +25,5 @@ module.exports = (servicesToDeploy) => {
             deployMatrix.push(service)
         }
     }
-    return JSON.stringify({"service": {deployMatrix}})
+    return JSON.stringify(deployMatrix)
 }
