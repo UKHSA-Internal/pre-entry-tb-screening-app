@@ -13,7 +13,7 @@ interface AutocompleteI {
     autocomplete?: string;
 }
 
-export default function Date(props: Readonly<DateProps>) {
+export default function DateTextInput(props: Readonly<DateProps>) {
     const autocompleteBDay: Record<'day' | 'month' | 'year', AutocompleteI> = {
         day: {},
         month: {},

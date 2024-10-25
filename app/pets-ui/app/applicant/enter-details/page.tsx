@@ -1,7 +1,7 @@
 'use client'
 import FreeText from '@/components/freeText/freeText';
 import Button, { ButtonType } from '@/components/button/button';
-import Date from '@/components/date/date';
+import DateTextInput from '@/components/dateTextInput/dateTextInput';
 
 import './page.scss'
 
@@ -20,19 +20,19 @@ export default function Page() {
             label="Passport Number"
             hint="For example, 1208297A"
         />
-        <Date
+        <DateTextInput
             id="passport-issue-date"
             autocomplete={false}
             title="Issue Date"
             hint="For example, 31 3 2019"
         />
-        <Date
+        <DateTextInput
             id="passport-expiry-date"
             autocomplete={false}
             title="Expiry Date"
             hint="For example, 31 3 2019"
         />
-        <Date
+        <DateTextInput
             id="birth-date"
             autocomplete={true}
             title="Date of Birth"
