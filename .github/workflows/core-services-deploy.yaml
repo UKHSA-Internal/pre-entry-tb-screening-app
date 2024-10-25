@@ -64,6 +64,8 @@ jobs:
     steps:
       - run: echo "${{ needs.matrix.outputs.result }}"
       - run: echo "${{ needs.matrix.outputs.matrix }}"
+      - run: echo "${{ fromJSON(needs.matrix.outputs.result) }}"
+      - run: echo "${{ fromJSON(needs.matrix.outputs.matrix) }}"
 
   deploy:
     name: Build, package & deploy services
