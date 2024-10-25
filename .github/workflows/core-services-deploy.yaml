@@ -63,14 +63,14 @@ jobs:
     steps:
       - name: Create environment variables
         run: |
-          if [ ${{ matrix.service }} = 'applicant-service' ]; then
+          if [ '${{ matrix.service }}' = 'applicant-service' ]; then
             echo "ZIP_FILE=applicant-service-lambda.zip" >> $GITHUB_ENV
-          elif [ ${{ matrix.service }} = 'clinic-service' ]; then
+          elif [ '${{ matrix.service }}' = 'clinic-service' ]; then
             echo "ZIP_FILE=clinic-service-lambda.zip" >> $GITHUB_ENV
-          elif [ ${{ matrix.service }} = 'lambda-authoriser' ]; then
+          elif [ '${{ matrix.service }}' = 'lambda-authoriser' ]; then
             echo "ZIP_FILE=lambda-authoriser.zip" >> $GITHUB_ENV
           fi
-          echo "$ZIP_FILE"
+          echo $ZIP_FILE
 
       - name: Checkout code
         uses: actions/checkout@v4
