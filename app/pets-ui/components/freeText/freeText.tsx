@@ -1,10 +1,12 @@
 'use client'
+import { ChangeEventHandler } from "react";
 
 export interface FreeTextProps {
     id: string;
     title?: string;
     label?: string;
     hint?: string;
+    handleChange: ChangeEventHandler<HTMLInputElement>;
 }
 
 export default function FreeText(props: Readonly<FreeTextProps>) {
@@ -25,7 +27,7 @@ export default function FreeText(props: Readonly<FreeTextProps>) {
                     {props.hint}
                 </div>
             }
-            <input className="govuk-input" name={props.id} type="text"></input>
+            <input className="govuk-input" name={props.id} type="text" onChange={props.handleChange}></input>
         </div>
     )
 }
