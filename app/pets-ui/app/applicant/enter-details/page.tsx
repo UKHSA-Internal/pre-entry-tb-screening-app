@@ -3,23 +3,128 @@ import FreeText from '@/components/freeText/freeText';
 import Button, { ButtonType } from '@/components/button/button';
 import DateTextInput from '@/components/dateTextInput/dateTextInput';
 import Radio, { RadioIsInline } from '@/components/radio/radio';
+import { FormEvent, MouseEvent, useState } from 'react';
+import { convertDateToString } from './convert-date-to-string';
 
 import './page.scss'
 
 export default function Page() {
-	return (
+
+    const [formData, setFormData] = useState({
+        "fullName": "",
+        "passportNumber": "",
+        "countryOfNationality": "",
+        "countryOfIssue": "",
+        "issueDate": "",
+        "expiryDate": "",
+        "dateOfBirth": "",
+        "sex": "",
+        "typesOfVisa": "",
+        "applicantHomeAddress1": "",
+        "applicantHomeAddress2": "",
+        "applicantHomeAddress3": "",
+        "townOrCity": "",
+        "provinceOrState": "",
+        "country": "",
+        "postcode": ""
+    });
+
+    const [dateData, setDateData] = useState({
+        "passport-issue-date-day": "",
+        "passport-issue-date-month": "",
+        "passport-issue-date-year": "",
+        "passport-expiry-date-day": "",
+        "passport-expiry-date-month": "",
+        "passport-expiry-date-year": "",
+        "birth-date-day": "",
+        "birth-date-month": "",
+        "birth-date-year": "",
+    });
+    
+    const handleTextChange = (event: { target: { name: string; value: any; }; }) => {
+        const { name, value } = event.target;
+        const idToDbAttribute: {[key:string]:string} = {
+            "name": "fullName",
+            "passport-number": "passportNumber",
+            "address-1": "applicantHomeAddress1",
+            "address-2": "applicantHomeAddress2",
+            "address-3": "applicantHomeAddress3",
+            "town-or-city": "townOrCity",
+            "province-or-state": "provinceOrState",
+            "postcode": "postcode"
+        }
+        if (name in idToDbAttribute) {
+            setFormData({
+                ...formData,
+                [idToDbAttribute[name]]: value,
+            });
+        } else {
+            console.error("Unrecognised text component name")
+        }
+    };
+
+    const handleDateChange = (event: { target: { name: string; value: any; }; }) => {
+        const { name, value } = event.target;
+        if (name in dateData) {
+            setDateData({
+                ...dateData,
+                [name]: value,
+            });
+        } else {
+            console.error("Unrecognised date component name")
+        }
+    };
+
+    const handleButtonClick = async (event: MouseEvent) => {
+        event.preventDefault()
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        formData["issueDate"] = convertDateToString(
+            dateData["passport-issue-date-day"], 
+            dateData["passport-issue-date-month"], 
+            dateData["passport-issue-date-year"]
+        )
+        formData["expiryDate"] = convertDateToString(
+            dateData["passport-expiry-date-day"], 
+            dateData["passport-expiry-date-month"], 
+            dateData["passport-expiry-date-year"]
+        )
+        formData["dateOfBirth"] = convertDateToString(
+            dateData["birth-date-day"], 
+            dateData["birth-date-month"], 
+            dateData["birth-date-year"]
+        )
+
+        try {
+            const response = await fetch("http://localhost:3004/dev/register-applicant", {
+                method: "POST",
+                body: JSON.stringify(formData),
+                headers: myHeaders,
+            })
+            if (response.ok) {console.log("Good reponse"); console.log(response.json())}
+            else {console.log("Bad response"); console.log(response)}
+        } catch (error: any) {
+            console.log("Error submitting POST request:")
+            console.error(error.message);
+        }
+    };
+    
+    return (
     <div className="govuk-width-container">
       <main className="govuk-main-wrapper">
         <FreeText
             id="name"
             title="Applicant's Name"
             label="Full Name"
+            handleChange={handleTextChange}
         />
         <FreeText
             id="passport-number"
             title="Applicant's Passport Information"
             label="Passport Number"
             hint="For example, 1208297A"
+            handleChange={handleTextChange}
         />
         {/* Country of nationality dropdown */}
         {/* Country of issue dropdown */}
@@ -28,18 +133,21 @@ export default function Page() {
             autocomplete={false}
             legend="Issue Date"
             hint="For example, 31 3 2019"
+            handleChange={handleDateChange}
         />
         <DateTextInput
             id="passport-expiry-date"
             autocomplete={false}
             legend="Expiry Date"
             hint="For example, 31 3 2019"
+            handleChange={handleDateChange}
         />
         <DateTextInput
             id="birth-date"
             autocomplete={true}
             legend="Date of Birth"
             hint="For example, 31 3 2019"
+            handleChange={handleDateChange}
         />
         <Radio
             id="sex"
@@ -53,33 +161,40 @@ export default function Page() {
             id="address-1"
             title="Applicant's Home Address"
             label="Address line 1"
+            handleChange={handleTextChange}
         />
         <FreeText
             id="address-2"
             label="Address line 2"
+            handleChange={handleTextChange}
         />
         <FreeText
             id="address-3"
             label="Address line 3"
+            handleChange={handleTextChange}
         />
         <FreeText
             id="town-or-city"
             label="Town/City"
+            handleChange={handleTextChange}
         />
         <FreeText
             id="province-or-state"
             label="Province/State"
+            handleChange={handleTextChange}
         />
         {/* Country dropdown */}
         <FreeText
             id="postcode"
             label="Postcode"
+            handleChange={handleTextChange}
         />
         <Button
             id="save-and-continue"
             type={ButtonType.DEFAULT}
             text="Save and continue"
             href="/applicant/confirmation"
+            handleClick={handleButtonClick}
         />
         <br/>
       </main>
