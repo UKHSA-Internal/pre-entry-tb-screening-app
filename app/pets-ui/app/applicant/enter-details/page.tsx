@@ -42,7 +42,7 @@ export default function Page() {
             id="save-and-continue"
             type={ButtonType.DEFAULT}
             text="Save and continue"
-            href="/applicant/check-answers"
+            href="/applicant/confirmation"
         />
         <br/>
       </main>
