@@ -1,10 +1,26 @@
 {
   "compilerOptions": {
-    "target": "es2020",
-    "module": "commonjs",
-    "outDir": ".build",
     "baseUrl": "./src",
+    "target": "es2020",
     "strict": true,
-    "esModuleInterop": true
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "paths": {
+      "@/*": ["./*"],
+      "@config/*": ["config/*"],
+      "@functions/*": ["functions/*"],
+      "@models/*": ["models/*"],
+      "@services/*": ["services/*"],
+      "@utils/*": ["utils/*"]
+    },
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "outDir": ".build",
+    "rootDir": "./",
+    "plugins": [
+      { 
+        "transform": "typescript-transform-paths" 
+      }
+    ]
   }
 }

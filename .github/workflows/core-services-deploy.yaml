@@ -16,6 +16,12 @@ jobs:
     strategy:
       matrix:
         service:
+          - name: applicant-service
+            zip-file: applicant-service-lambda.zip
+            build-folder: .build/*
+            bucket-secret: $CORESERVICESDEPLOY_APPLICANT_SERVICE_BUCKET_NAME
+            sse-key-secret: $CORESERVICESDEPLOY_APPLICANT_SERVICE_SSE_KEY
+            lambda: applicant-service-lambda
           - name: clinic-service
             zip-file: clinic-service-lambda.zip
             build-folder: .build/*

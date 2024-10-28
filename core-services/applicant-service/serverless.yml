@@ -1,14 +1,111 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: ukhsapets
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: pets-applicant-aws-serverless
+# "service" is the name of this project. This will also be added to your AWS resource names.
 service: ukhsa-pets-applicant-service
+
+params:
+  default:
+    tableName: "pets-local-applicants"
+
+plugins:
+  - serverless-dynamodb
+  - serverless-plugin-tracing
+  - serverless-auto-swagger
+  - serverless-offline
+  - serverless-offline-aws-eventbridge
 
 provider:
   name: aws
   runtime: nodejs18.x
+  tracing:
+    apiGateway: true
+    lambda: true
   region: eu-west-2
+  stage: dev
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - Fn::GetAtt: [applicantsTable, Arn]
+        - Effect: "Allow"
+          Action:
+            - "xray:PutTraceSegments"
+            - "xray:PutTelemetryRecords"
+          Resource:
+            - "*"
+  environment:
+    APPLICANTS_TABLE: ${param:tableName}
 
 functions:
-  myFunction:
-    handler: src/index.handler
+  postPetsApplicant:
+    environment:
+      BRANCH: local
+    handler: applicants.handler
     events:
       - http:
-          path: hello
-          method: get
+          path: register-applicant
+          method: post
+      - eventBridge:
+          pattern:
+            source:
+              - ukhsa.update.pets.applicants
+
+resources:
+  Resources:
+    applicantsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: fullName
+            AttributeType: S
+        KeySchema:
+          - AttributeName: fullName
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${param:tableName}
+
+custom:
+  autoswagger:
+    basePath: "/dev"
+    useStage: true
+    # excludeStages: ["test"]
+  serverless-offline:
+    httpPort: 3004
+  serverless-dynamodb:
+    stages:
+      - dev
+      - test
+    start:
+      port: 8007
+      #docker: false
+      inMemory: true
+      migrate: true
+      seed: true
+      noStart: false
+      host: 127.0.0.1
+    seed:
+      pets-applicants:
+        sources:
+          - table: "pets-local-applicants"
+            sources: [./test/resources/pets-applicant-db-seed.json]
+  serverless-offline-aws-eventbridge:
+    port: 4010 # port to run the eventBridge mock server on
+    mockEventBridgeServer: true # Set to false if EventBridge is already mocked by another stack
+    hostname: 127.0.0.1 # IP or hostname of existing EventBridge if mocked by another stack
+    pubSubPort: 4011 # Port to run the MQ server (or just listen if using an EventBridge Mock server from another stack)
+    debug: true # flag to show debug messages
+    account: "1234567" # account id that gets passed to the event
+    maximumRetryAttempts: 10 # maximumRetryAttempts to retry lambda
+    retryDelayMs: 500 # retry delay
+    throwRetryExhausted: false # default true
+    payloadSizeLimit: "10mb" # Controls the maximum payload size being passed to https://www.npmjs.com/package/bytes (Note: this payload size might not be the same size as your AWS Eventbridge receive)
