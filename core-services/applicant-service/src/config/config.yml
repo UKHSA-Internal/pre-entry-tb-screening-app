@@ -14,6 +14,11 @@ dynamodb:
     table: pets-applicant-details
 
 functions:
+  - getPetsApplicant:
+      method: GET
+      path: /applicant-details
+      proxy: null
+      function: getPetsApplicant
   - postPetsApplicant:
       method: POST
       path: /register-applicant
