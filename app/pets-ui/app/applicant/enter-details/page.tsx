@@ -7,23 +7,9 @@ import Radio, { RadioIsInline } from '@/components/radio/radio';
 import { FormEvent, MouseEvent, useState } from 'react';
 import { convertDateToString } from './convert-date-to-string';
 import { useRouter } from 'next/navigation';
+import { countryList } from './country-list';
 
 import './page.scss'
-
-const countryOptions = [
-    {
-        value: "NGR",
-        label: "Nigeria"
-    },
-    {
-        value: "TOG",
-        label: "Togo"
-    },
-    {
-        value: "IND",
-        label: "India"
-    }
-]
 
 const visaOptions = [
     {
@@ -140,6 +126,26 @@ export default function Page() {
         }
     };
 
+    const handleDropdownChange = (event: { target: any; }) => {
+        const name = event.target.id
+        const value = event.target.value
+        console.log(name)
+        const idToDbAttribute: {[key:string]:string} = {
+            "country-of-nationality": "countryOfNationality",
+            "country-of-issue": "countryOfIssue",
+            "visa-type": "typesOfVisa",
+            "address-country": "country"
+        }
+        if (name in idToDbAttribute) {
+            setFormData({
+                ...formData,
+                [idToDbAttribute[name]]: value,
+            });
+        } else {
+            console.error("Unrecognised text component name")
+        }
+    };
+
     const handleButtonClick = async (event: MouseEvent) => {
         event.preventDefault()
         const myHeaders = new Headers();
@@ -199,17 +205,19 @@ export default function Page() {
             handleChange={handleTextChange}
         />
         <Dropdown
-            id="country-of-nationality-selector"
+            id="country-of-nationality"
             label="Country of Nationality"
             name="country"
-            options={countryOptions}
+            options={countryList}
+            handleOptionChange={handleDropdownChange}
         />
         <Dropdown
-            id="country-of-issue-selector"
+            id="country-of-issue"
             label="Country of Issue"
-            hint="This is usualy shown on the first page of the passport, at the top. Use the English spelling or the country code."
+            hint="This is usually shown on the first page of the passport, at the top. Use the English spelling or the country code."
             name="country"
-            options={countryOptions}
+            options={countryList}
+            handleOptionChange={handleDropdownChange}
         />
         <DateTextInput
             id="passport-issue-date"
@@ -241,10 +249,11 @@ export default function Page() {
             handleChange={handleRadioChange}
         />
         <Dropdown
-            id="visa-type-selector"
+            id="visa-type"
             label="Applicant's Visa Type"
             name="visa"
             options={visaOptions}
+            handleOptionChange={handleDropdownChange}
         />
         <FreeText
             id="address-1"
@@ -273,10 +282,11 @@ export default function Page() {
             handleChange={handleTextChange}
         />
         <Dropdown
-            id="address-country-selector"
+            id="address-country"
             label="Country"
             name="country"
-            options={countryOptions}
+            options={countryList}
+            handleOptionChange={handleDropdownChange}
         />
         <FreeText
             id="postcode"
