@@ -25,6 +25,33 @@ const countryOptions = [
     }
 ]
 
+const visaOptions = [
+    {
+        value: "Family Reunion",
+        label: "Family Reunion"
+    },
+    {
+        value: "Settlement and Dependents",
+        label: "Settlement and Dependents"
+    },
+    {
+        value: "Students",
+        label: "Students"
+    },
+    {
+        value: "Work",
+        label: "Work"
+    },
+    {
+        value: "Working Holiday Maker",
+        label: "Working Holiday Maker"
+    },
+    {
+        value: "Government Sponsored",
+        label: "Government Sponsored"
+    },
+]
+
 export default function Page() {
 
     const router = useRouter()
@@ -171,8 +198,19 @@ export default function Page() {
             hint="For example, 1208297A"
             handleChange={handleTextChange}
         />
-        {/* Country of nationality dropdown */}
-        {/* Country of issue dropdown */}
+        <Dropdown
+            id="country-of-nationality-selector"
+            label="Country of Nationality"
+            name="country"
+            options={countryOptions}
+        />
+        <Dropdown
+            id="country-of-issue-selector"
+            label="Country of Issue"
+            hint="This is usualy shown on the first page of the passport, at the top. Use the English spelling or the country code."
+            name="country"
+            options={countryOptions}
+        />
         <DateTextInput
             id="passport-issue-date"
             autocomplete={false}
@@ -202,7 +240,12 @@ export default function Page() {
             sortAnswersAlphabetically={false}
             handleChange={handleRadioChange}
         />
-        {/* Type of visa dropdown */}
+        <Dropdown
+            id="visa-type-selector"
+            label="Applicant's Visa Type"
+            name="visa"
+            options={visaOptions}
+        />
         <FreeText
             id="address-1"
             title="Applicant's Home Address"
@@ -229,18 +272,16 @@ export default function Page() {
             label="Province/State"
             handleChange={handleTextChange}
         />
-        {/* Country dropdown */}
+        <Dropdown
+            id="address-country-selector"
+            label="Country"
+            name="country"
+            options={countryOptions}
+        />
         <FreeText
             id="postcode"
             label="Postcode"
             handleChange={handleTextChange}
-        />
-        <Dropdown
-            id="country-of-issue-selector"
-            label="Country of Issue"
-            hint="This is usualy shown on the first page of the passport, at the top. Use the English spelling or the country code"
-            name="country"
-            options={countryOptions}
         />
         <Button
             id="save-and-continue"
