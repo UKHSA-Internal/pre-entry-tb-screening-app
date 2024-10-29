@@ -172,14 +172,6 @@ export default function Page() {
                 body: JSON.stringify(formData),
                 headers: myHeaders,
             })
-            if (response.ok) {
-                console.log("Good response: " + response.status);
-                console.log(response.json())
-            }
-            else {
-                console.log("Bad response: " + response.status);
-                console.log(response)
-            }
             router.push("/applicant/confirmation")
         } catch (error: any) {
             console.error("Error submitting POST request:")
