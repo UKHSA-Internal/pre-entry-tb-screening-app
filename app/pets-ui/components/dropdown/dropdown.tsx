@@ -20,7 +20,6 @@ export default function Dropdown(props: Readonly<DropdownProps>) {
 
     const handleOptionChange = (e: any) => {
         setOptionsState(e.target.value);
-        console.log(e.target.value);
     }
 
     return (
