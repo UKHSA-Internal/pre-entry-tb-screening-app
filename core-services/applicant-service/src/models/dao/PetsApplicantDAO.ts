@@ -1,7 +1,8 @@
 import AWSXRay from "aws-xray-sdk";
 import {
     DynamoDBDocumentClient,
-    PutCommand
+    PutCommand,
+    ScanCommand
 } from "@aws-sdk/lib-dynamodb";
 import { 
     DynamoDBClient, 
@@ -10,6 +11,7 @@ import {
   import { ServiceException } from "@smithy/smithy-client";
 import { Configuration } from "@utils/Configuration";
 import { IPetsApplicant } from "@models/IPetsApplicant";
+import { IPetsApplicantPassport } from "@models/IPetsApplicantPassport";
 
 export default class PetsApplicantDAO {
     private static dbClient: DynamoDBDocumentClient;
@@ -27,6 +29,19 @@ export default class PetsApplicantDAO {
         }
         PetsApplicantDAO.dbClient = DynamoDBDocumentClient.from(client);
       }
+    }
+
+    public async getItem(petsApplicantPassport: IPetsApplicantPassport) {
+      const params = {
+        TableName: this.tableName,
+        ExpressionAttributeValues: {
+          ":number": petsApplicantPassport.passportNumber,
+          ":country": petsApplicantPassport.countryOfIssue
+        },
+        FilterExpression: "passportNumber = :number AND countryOfIssue = :country"
+      };
+      const command = new ScanCommand(params);
+      return await PetsApplicantDAO.dbClient.send(command);
     }
 
     public async putItem(

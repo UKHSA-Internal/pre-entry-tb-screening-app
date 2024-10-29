@@ -6,6 +6,25 @@
     "version": "1"
   },
   "paths": {
+    "/applicant-details": {
+      "get": {
+        "summary": "getPetsApplicant",
+        "description": "",
+        "operationId": "getPetsApplicant.get.applicant-details",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "200 response"
+          }
+        }
+      }
+    },
     "/register-applicant": {
       "post": {
         "summary": "postPetsApplicant",

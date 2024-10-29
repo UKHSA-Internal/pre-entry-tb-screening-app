@@ -47,6 +47,18 @@ provider:
     APPLICANTS_TABLE: ${param:tableName}
 
 functions:
+  getPetsApplicant:
+    environment:
+      BRANCH: local
+    handler: applicants.handler
+    events:
+      - http:
+          path: applicant-details
+          method: get
+      - eventBridge:
+          pattern:
+            source:
+              - ukhsa.update.pets.applicants
   postPetsApplicant:
     environment:
       BRANCH: local

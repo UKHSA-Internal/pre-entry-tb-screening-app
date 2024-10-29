@@ -6,22 +6,24 @@ import { Validator } from "@utils/Validator";
 import { Handler } from "aws-lambda";
 import { ERRORS, HTTP_RESPONSE } from "@utils/Enum";
 
-export const postPetsApplicant: Handler = async (event) => {
+export const getPetsApplicant: Handler = async (event) => {
   const petsApplicantDAO = new PetsApplicantDAO();
   const service = new PetsApplicantService(petsApplicantDAO);
 
   const check: Validator = new Validator();
 
-  if (!event.body || !check.parametersAreValid(event.body)) {
-    return new HTTPResponse(400, HTTP_RESPONSE.INVALID_BODY);
+  if (!event.queryStringParameters) {
+    return new HTTPResponse(400, HTTP_RESPONSE.MISSING_PARAMETERS);
+  } else if (!check.parametersAreValid(event.queryStringParameters)) {
+    return new HTTPResponse(400, HTTP_RESPONSE.MISSING_PARAMETERS);
   }
 
-  const petsApplicantDetails = typeof(event.body) == "string"
-    ? JSON.parse(event.body)
-    : event.body;
+  const petsApplicantPassportDetails = event.queryStringParameters
+    ? event.queryStringParameters
+    : undefined;
 
   try {
-    const petsApplicant = await service.putPetsApplicant(petsApplicantDetails);
+    const petsApplicant = await service.getPetsApplicant(petsApplicantPassportDetails);
     return new HTTPResponse(200, petsApplicant);
   } catch (error: any) {
     console.error(error);

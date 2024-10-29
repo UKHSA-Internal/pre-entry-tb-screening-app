@@ -103,9 +103,11 @@ describe("Configuration", () => {
     const funcConfig: IFunctionConfig[] =
       Configuration.getInstance().getFunctions();
     it("should return the list of specified functions with names and matching paths", () => {
-      expect(funcConfig).toHaveLength(1);
-      expect(funcConfig[0].name).toEqual("postPetsApplicant");
-      expect(funcConfig[0].path).toEqual("/register-applicant");
+      expect(funcConfig).toHaveLength(2);
+      expect(funcConfig[0].name).toEqual("getPetsApplicant");
+      expect(funcConfig[0].path).toEqual("/applicant-details");
+      expect(funcConfig[1].name).toEqual("postPetsApplicant");
+      expect(funcConfig[1].path).toEqual("/register-applicant");
     });
   });
 });
