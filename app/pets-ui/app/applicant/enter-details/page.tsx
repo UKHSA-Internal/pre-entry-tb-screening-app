@@ -5,11 +5,14 @@ import DateTextInput from '@/components/dateTextInput/dateTextInput';
 import Radio, { RadioIsInline } from '@/components/radio/radio';
 import { FormEvent, MouseEvent, useState } from 'react';
 import { convertDateToString } from './convert-date-to-string';
+import { useRouter } from 'next/navigation';
 
 import './page.scss'
 
 export default function Page() {
 
+    const router = useRouter()
+    
     const [formData, setFormData] = useState({
         "fullName": "",
         "passportNumber": "",
@@ -129,6 +132,7 @@ export default function Page() {
                 console.log("Bad response: " + response.status);
                 console.log(response)
             }
+            router.push("/applicant/confirmation")
         } catch (error: any) {
             console.log("Error submitting POST request:")
             console.error(error.message);
