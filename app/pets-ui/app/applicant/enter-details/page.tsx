@@ -129,7 +129,6 @@ export default function Page() {
     const handleDropdownChange = (event: { target: any; }) => {
         const name = event.target.id
         const value = event.target.value
-        console.log(name)
         const idToDbAttribute: {[key:string]:string} = {
             "country-of-nationality": "countryOfNationality",
             "country-of-issue": "countryOfIssue",
@@ -183,7 +182,7 @@ export default function Page() {
             }
             router.push("/applicant/confirmation")
         } catch (error: any) {
-            console.log("Error submitting POST request:")
+            console.error("Error submitting POST request:")
             console.error(error.message);
         }
     };
