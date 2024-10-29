@@ -80,7 +80,7 @@ custom:
     useStage: true
     # excludeStages: ["test"]
   serverless-offline:
-    httpPort: 3004
+    httpPort: 3005
   serverless-dynamodb:
     stages:
       - dev
