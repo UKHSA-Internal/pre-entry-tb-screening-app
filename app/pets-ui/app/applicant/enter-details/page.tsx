@@ -75,6 +75,25 @@ export default function Page() {
         }
     };
 
+    const handleRadioChange = (event: FormEvent) => {
+        let name = event.currentTarget.attributes.getNamedItem("name")?.value
+        let value = event.currentTarget.attributes.getNamedItem("value")?.value
+        name = name ? name : "empty-name-attribute"
+        value = value ? value : "empty-value-attribute"
+
+        const idToDbAttribute: {[key:string]:string} = {
+            "applicants-sex": "sex",
+        }
+        if (name in idToDbAttribute) {
+            setFormData({
+                ...formData,
+                [idToDbAttribute[name]]: value,
+            });
+        } else {
+            console.error("Unrecognised radio component name")
+        }
+    };
+
     const handleButtonClick = async (event: MouseEvent) => {
         event.preventDefault()
         const myHeaders = new Headers();
@@ -102,8 +121,14 @@ export default function Page() {
                 body: JSON.stringify(formData),
                 headers: myHeaders,
             })
-            if (response.ok) {console.log("Good reponse"); console.log(response.json())}
-            else {console.log("Bad response"); console.log(response)}
+            if (response.ok) {
+                console.log("Good response: " + response.status);
+                console.log(response.json())
+            }
+            else {
+                console.log("Bad response: " + response.status);
+                console.log(response)
+            }
         } catch (error: any) {
             console.log("Error submitting POST request:")
             console.error(error.message);
@@ -155,6 +180,7 @@ export default function Page() {
             isInline={RadioIsInline.TRUE}
             answerOptions={["Male", "Female"]}
             sortAnswersAlphabetically={false}
+            handleChange={handleRadioChange}
         />
         {/* Type of visa dropdown */}
         <FreeText
