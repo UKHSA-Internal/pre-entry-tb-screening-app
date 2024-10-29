@@ -12,7 +12,7 @@ export interface DateProps {
 }
 
 interface AutocompleteI {
-    autocomplete?: string;
+    autoComplete?: string;
 }
 
 export default function DateTextInput(props: Readonly<DateProps>) {
@@ -23,9 +23,9 @@ export default function DateTextInput(props: Readonly<DateProps>) {
     };
 
     if (props.autocomplete) {
-        autocompleteBDay.day.autocomplete = "bday-day";
-        autocompleteBDay.month.autocomplete = "bday-month";
-        autocompleteBDay.year.autocomplete = "bday-year";
+        autocompleteBDay.day.autoComplete = "bday-day";
+        autocompleteBDay.month.autoComplete = "bday-month";
+        autocompleteBDay.year.autoComplete = "bday-year";
     }
 
     return (

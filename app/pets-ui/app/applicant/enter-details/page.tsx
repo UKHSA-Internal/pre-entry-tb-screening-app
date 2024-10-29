@@ -2,12 +2,28 @@
 import FreeText from '@/components/freeText/freeText';
 import Button, { ButtonType } from '@/components/button/button';
 import DateTextInput from '@/components/dateTextInput/dateTextInput';
+import Dropdown from '@/components/dropdown/dropdown';
 import Radio, { RadioIsInline } from '@/components/radio/radio';
 import { FormEvent, MouseEvent, useState } from 'react';
 import { convertDateToString } from './convert-date-to-string';
 import { useRouter } from 'next/navigation';
 
 import './page.scss'
+
+const countryOptions = [
+    {
+        value: "NGR",
+        label: "Nigeria"
+    },
+    {
+        value: "TOG",
+        label: "Togo"
+    },
+    {
+        value: "IND",
+        label: "India"
+    }
+]
 
 export default function Page() {
 
@@ -218,6 +234,13 @@ export default function Page() {
             id="postcode"
             label="Postcode"
             handleChange={handleTextChange}
+        />
+        <Dropdown
+            id="country-of-issue-selector"
+            label="Country of Issue"
+            hint="This is usualy shown on the first page of the passport, at the top. Use the English spelling or the country code"
+            name="country"
+            options={countryOptions}
         />
         <Button
             id="save-and-continue"
