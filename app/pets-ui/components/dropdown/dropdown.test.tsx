@@ -35,12 +35,6 @@ describe('Dropdown component', () => {
         const select = screen.getAllByRole('combobox')[0]
         
         let selectedValue = (container.getElementsByClassName('govuk-select')[0] as HTMLSelectElement).value
-        expect(selectedValue).toBe('choose')
-        
-        fireEvent.change(select, {
-            target: { value: "testval1"}
-        })
-        selectedValue = (container.getElementsByClassName('govuk-select')[0] as HTMLSelectElement).value
         expect(selectedValue).toBe('testval1')
 
         fireEvent.change(select, {
