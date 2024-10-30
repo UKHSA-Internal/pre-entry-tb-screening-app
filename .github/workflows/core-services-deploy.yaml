@@ -8,38 +8,21 @@ on:
         required: true
 
 jobs:
-  deploy:
-    name: Build, package & deploy services
+  changes:
+    name: Create strategy matrix
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-
-    strategy:
-      matrix:
-        service:
-          - name: clinic-service
-            zip-file: clinic-service-lambda.zip
-            build-folder: .build/*
-            bucket-secret: $CORESERVICESDEPLOY_CLINIC_SERVICE_BUCKET_NAME
-            sse-key-secret: $CORESERVICESDEPLOY_CLINIC_SERVICE_SSE_KEY
-            lambda: clinic-service-lambda
-          - name: lambda-authoriser
-            zip-file: lambda-authoriser.zip
-            build-folder: src/*
-            bucket-secret: $CORESERVICESDEPLOY_LAMBDA_AUTHORISER_BUCKET_NAME
-            sse-key-secret: $CORESERVICESDEPLOY_LAMBDA_AUTHORISER_SSE_KEY
-            lambda: api-gateway-authoriser
-
+    outputs:
+      service: ${{ steps.filter.outputs.changes }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
         with:
-          node-version: 18.x
-          cache: "yarn"
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
       - name: Paths filter
         uses: dorny/paths-filter@v3
-        id: changes
+        id: filter
         with:
           filters: |
             applicant-service:
@@ -49,19 +32,17 @@ jobs:
             lambda-authoriser:
               - "core-services/lambda-authoriser/**"
 
-      - name: Install dependencies
-        if: ${{ matrix.service.name != 'lambda-authoriser' }}
-        run: yarn workspace ${{ matrix.service.name }} install
-        working-directory: core-services/${{ matrix.service.name }}
-      - name: Build service
-        if: ${{ matrix.service.name != 'lambda-authoriser' }}
-        working-directory: core-services/${{ matrix.service.name }}
-        run: yarn run build
+  deploy:
+    name: Build, package & deploy services
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    needs: changes
 
-      - name: Create zip
-        run: zip -r ${{ matrix.service.zip-file }} ${{ matrix.service.build-folder }}
-        working-directory: core-services/${{ matrix.service.name }}
+    strategy:
+      matrix:
+        service: ${{ fromJSON(needs.changes.outputs.service) }}
 
+    steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -78,40 +59,82 @@ jobs:
             CoreServicesDeploy
             CoreServicesURIs
           parse-json-secrets: true
+      - name: Create environment variables
+        run: |
+          if [ '${{ matrix.service }}' = 'applicant-service' ]; then
+            echo "ZIP_FILE=applicant-service-lambda.zip" >> $GITHUB_ENV
+            echo "BUILD_FOLDER=.build/*" >> $GITHUB_ENV
+            echo "BUCKET_SECRET=$CORESERVICESDEPLOY_APPLICANT_SERVICE_BUCKET_NAME" >> $GITHUB_ENV
+            echo "SSE_KEY_SECRET=$CORESERVICESDEPLOY_APPLICANT_SERVICE_SSE_KEY" >> $GITHUB_ENV
+            echo "LAMBDA=applicant-service-lambda" >> $GITHUB_ENV
+          elif [ '${{ matrix.service }}' = 'clinic-service' ]; then
+            echo "ZIP_FILE=clinic-service-lambda.zip" >> $GITHUB_ENV
+            echo "BUILD_FOLDER=.build/*" >> $GITHUB_ENV
+            echo "BUCKET_SECRET=$CORESERVICESDEPLOY_CLINIC_SERVICE_BUCKET_NAME" >> $GITHUB_ENV
+            echo "SSE_KEY_SECRET=$CORESERVICESDEPLOY_CLINIC_SERVICE_SSE_KEY" >> $GITHUB_ENV
+            echo "LAMBDA=clinic-service-lambda" >> $GITHUB_ENV
+          elif [ '${{ matrix.service }}' = 'lambda-authoriser' ]; then
+            echo "ZIP_FILE=lambda-authoriser.zip" >> $GITHUB_ENV
+            echo "BUILD_FOLDER=src/*" >> $GITHUB_ENV
+            echo "BUCKET_SECRET=$CORESERVICESDEPLOY_LAMBDA_AUTHORISER_BUCKET_NAME" >> $GITHUB_ENV
+            echo "SSE_KEY_SECRET=$CORESERVICESDEPLOY_LAMBDA_AUTHORISER_SSE_KEY" >> $GITHUB_ENV
+            echo "LAMBDA=api-gateway-authoriser" >> $GITHUB_ENV
+          fi
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "yarn"
+
+      - name: Install dependencies
+        if: ${{ matrix.service != 'lambda-authoriser' }}
+        run: yarn workspace ${{ matrix.service }} install
+        working-directory: core-services/${{ matrix.service }}
+      - name: Build service
+        if: ${{ matrix.service != 'lambda-authoriser' }}
+        working-directory: core-services/${{ matrix.service }}
+        run: yarn run build
+
+      - name: Create zip
+        run: zip -r $ZIP_FILE $BUILD_FOLDER
+        working-directory: core-services/${{ matrix.service }}
 
       - name: Upload Service to S3
-        working-directory: core-services/${{ matrix.service.name }}
-        run: aws s3 cp ${{ matrix.service.zip-file }} s3://${{ matrix.service.bucket-secret }} --sse aws:kms --sse-kms-key-id ${{ matrix.service.sse-key-secret }}
+        working-directory: core-services/${{ matrix.service }}
+        run: aws s3 cp $ZIP_FILE s3://$BUCKET_SECRET --sse aws:kms --sse-kms-key-id $SSE_KEY_SECRET
 
       - name: Process Swagger file
-        if: ${{ matrix.service.name != 'lambda-authoriser' }}
+        if: ${{ matrix.service != 'lambda-authoriser' }}
         uses: actions/github-script@v7
         env:
           AWS_ACCOUNT_ID: "${{ secrets.AWS_ACCOUNT_ID }}"
         with:
           script: |
             const addIntegrationsToSwagger = require('./.github/scripts/add-integrations-to-swagger.js')
-            addIntegrationsToSwagger('${{ matrix.service.name }}')
+            addIntegrationsToSwagger('${{ matrix.service }}')
       - name: Upload Swagger file to S3
-        if: ${{ matrix.service.name != 'lambda-authoriser' }}
-        working-directory: core-services/${{ matrix.service.name }}
-        run: aws s3 cp swagger.json s3://${{ matrix.service.bucket-secret }} --sse aws:kms --sse-kms-key-id ${{ matrix.service.sse-key-secret }}
+        if: ${{ matrix.service != 'lambda-authoriser' }}
+        working-directory: core-services/${{ matrix.service }}
+        run: aws s3 cp swagger.json s3://$BUCKET_SECRET --sse aws:kms --sse-kms-key-id $SSE_KEY_SECRET
 
       - name: Create package.json file including only non-dev dependencies
         uses: actions/github-script@v7
         with:
           script: |
             const createPackageDotJson = require('./.github/scripts/create-package-dot-json.js')
-            createPackageDotJson('${{ matrix.service.name }}')
+            createPackageDotJson('${{ matrix.service }}')
       - name: Run yarn in nodejs folder
-        working-directory: node-zip/${{ matrix.service.name }}/nodejs
+        working-directory: node-zip/${{ matrix.service }}/nodejs
         run: yarn
       - name: Create nodejs zip file
-        working-directory: node-zip/${{ matrix.service.name }}
+        working-directory: node-zip/${{ matrix.service }}
         run: zip -r nodejs.zip nodejs
       - name: Upload nodejs zip file to S3
-        working-directory: node-zip/${{ matrix.service.name }}
-        run: aws s3 cp nodejs.zip s3://${{ matrix.service.bucket-secret }} --sse aws:kms --sse-kms-key-id ${{ matrix.service.sse-key-secret }}
+        working-directory: node-zip/${{ matrix.service }}
+        run: aws s3 cp nodejs.zip s3://$BUCKET_SECRET --sse aws:kms --sse-kms-key-id $SSE_KEY_SECRET
 
       - name: Update lambda code
-        run: aws lambda update-function-code --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:${{ matrix.service.lambda }} --s3-bucket ${{ matrix.service.bucket-secret }} --s3-key ${{ matrix.service.zip-file }}
+        run: aws lambda update-function-code --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:$LAMBDA --s3-bucket $BUCKET_SECRET --s3-key $ZIP_FILE

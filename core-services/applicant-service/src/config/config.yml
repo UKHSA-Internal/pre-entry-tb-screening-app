@@ -1,0 +1,25 @@
+dynamodb:
+  local:
+    params:
+      region: localhost
+      endpoint: http://127.0.0.1:8007
+    table: pets-local-applicants
+  remote:
+    params: {}
+    table: pets-applicant-details
+
+functions:
+  - getPetsApplicant:
+      method: GET
+      path: /applicant-details
+      proxy: null
+      function: getPetsApplicant
+  - postPetsApplicant:
+      method: POST
+      path: /register-applicant
+      proxy: null
+      function: postPetsApplicant
+
+serverless:
+  basePath: /${BRANCH}
+  port: 3005
