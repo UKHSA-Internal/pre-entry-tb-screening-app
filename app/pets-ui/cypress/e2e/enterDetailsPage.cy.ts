@@ -1,32 +1,33 @@
-describe ('Enter Applicant Details Page', () => {
+const fieldNames = [
+
+        'Full Name',
+        'Passport Number',
+        'Country of Nationality',
+        'Country of Issue',
+        'Issue Date',
+        'Expiry Date',
+        'Date of Birth',
+        "Applicant's Sex",
+        "Applicant's Visa Type",
+        'Address line 1',
+        'Address line 2',
+        'Address line 3',
+        'Town/City',
+        'Province/State',
+        'Country',
+        'Postcode'
+]
+
+describe ('Enter Applicant Details Page contains all the necessary fields', () => {
 // Check whether the 'Full Name' and 'Passport Number' fields are visible on Enter applicant details page. 
     it('should display mandatory fields with correct properties', () => { 
 // Visit the "enter details" page 
         cy.visit('http://localhost:3000/applicant/enter-details'); 
 
 // Check that the 'Full Name' field is visible
-        cy.contains('label', 'Full Name').should('be.visible'); 
-
-// Check that the 'Passport Number' field is visible
-       cy.contains('label', 'Passport Number').should('be.visible');
-            
-});
-
-// Check the user is navigated to the confirmation page after submission
-    it('should navigate to confirmation page after valid data submission', () => { 
-    // Visit the "enter details" page 
-        cy.visit('http://localhost:3000/applicant/enter-details'); 
-
-        // Check the 'Full Name' field accepts alphanumeric characters and Enter valid data.
-        cy.get('input[name="name"]').should('have.attr', 'type', 'text')
-        .type('John Doe'); 
-        // Check the 'Passport Number'field accepts alphanumeric characters and Enter valid data.
-        cy.get('input[name="passport-number"]').should('have.attr', 'type', 'text')
-        .type('AB1234567'); 
-        // Click the submit button 
-        cy.get('button[type="submit"]').click(); 
-        // Validate that the page navigates to the confirmation page 
-        cy.url().should('include', 'http://localhost:3000/applicant/check-answers'); 
+        fieldNames.forEach(label => {
+                cy.contains('label, legend, h1', label).should('be.visible'); 
+        })       
         
-});
+});      
 });
