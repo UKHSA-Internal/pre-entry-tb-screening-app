@@ -1,4 +1,4 @@
-import { countryList } from '../../app/applicant/enter-details/country-list';
+import { countryList } from '../../utils/country-list';
 describe ('Fill out applicant details form', () => {
 
 // Random number generator

@@ -5,9 +5,9 @@ import DateTextInput from '@/components/dateTextInput/dateTextInput';
 import Dropdown from '@/components/dropdown/dropdown';
 import Radio, { RadioIsInline } from '@/components/radio/radio';
 import { FormEvent, MouseEvent, useState } from 'react';
-import { convertDateToString } from './convert-date-to-string';
+import { convertDateToString } from '@utils/convert-date-to-string';
 import { useRouter } from 'next/navigation';
-import { countryList } from './country-list';
+import { countryList } from '@utils/country-list';
 
 import './page.scss'
 
