@@ -3,7 +3,6 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import Dropdown from './dropdown'
 
-
 const testOptions = [
     {
         label: "test1",
@@ -14,9 +13,12 @@ const testOptions = [
         value: "testval2"
     }
 ]
+
+const handleOptionChange = () => {}
+
 describe('Dropdown component', () => {
     it('renders correctly when all optional props are specified', () => {
-        render(<Dropdown id="test-id" name="test-name" options={testOptions} label="Test label" hint="test hint"/>)
+        render(<Dropdown id="test-id" name="test-name" options={testOptions} label="Test label" hint="test hint" handleOptionChange={handleOptionChange}/>)
         expect(screen.getAllByRole('option')).toBeTruthy();
         expect(screen.getByText('test1')).toBeTruthy();
         expect(screen.getByText('test2')).toBeTruthy();
@@ -24,14 +26,14 @@ describe('Dropdown component', () => {
     })
 
     it('renders correctly when all optional props are omitted', () => {
-        render(<Dropdown id="test-id" name="test-name" options={testOptions}/>)
+        render(<Dropdown id="test-id" name="test-name" options={testOptions} handleOptionChange={handleOptionChange}/>)
         expect(screen.getAllByRole('option')).toBeTruthy();
         expect(screen.getByText('test1')).toBeTruthy();
         expect(screen.getByText('test2')).toBeTruthy();
     })
 
     it('renders with default value and only updates selected value on change event', () => {
-        const {container} = render(<Dropdown id="test-id" name="test-name" options={testOptions} label="Test label" hint="test hint"/>)
+        const {container} = render(<Dropdown id="test-id" name="test-name" options={testOptions} label="Test label" hint="test hint" handleOptionChange={handleOptionChange}/>)
         const select = screen.getAllByRole('combobox')[0]
         
         let selectedValue = (container.getElementsByClassName('govuk-select')[0] as HTMLSelectElement).value
