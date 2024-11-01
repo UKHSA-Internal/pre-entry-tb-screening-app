@@ -57,7 +57,7 @@ module.exports = (serviceName) => {
     // Insert secret values into swagger spec & write to swagger.json
     let swaggerSpec = JSON.stringify(swaggerAsJson)
     swaggerSpec = swaggerSpec.replaceAll('AWS_ACCOUNT_ID', process.env.AWS_ACCOUNT_ID)
-    for (uri of uriSecretNames) {
+    for (let uri of uriSecretNames) {
         swaggerSpec = swaggerSpec.replace(uri, eval('process.env.' + uri))
     }
     fs.writeFile(`core-services/${serviceName}/swagger.json`, swaggerSpec, (err) => {if (err) throw err;});

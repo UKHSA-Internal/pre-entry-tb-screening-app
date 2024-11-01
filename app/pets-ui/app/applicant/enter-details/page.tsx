@@ -3,69 +3,293 @@ import FreeText from '@/components/freeText/freeText';
 import Button, { ButtonType } from '@/components/button/button';
 import DateTextInput from '@/components/dateTextInput/dateTextInput';
 import Dropdown from '@/components/dropdown/dropdown';
+import Radio, { RadioIsInline } from '@/components/radio/radio';
+import { FormEvent, MouseEvent, useState } from 'react';
+import { convertDateToString } from '@utils/convert-date-to-string';
+import { useRouter } from 'next/navigation';
+import { countryList } from '@utils/country-list';
 
 import './page.scss'
 
-const countryOptions = [
+const visaOptions = [
     {
-        value: "NGR",
-        label: "Nigeria"
+        value: "Family Reunion",
+        label: "Family Reunion"
     },
     {
-        value: "TOG",
-        label: "Togo"
+        value: "Settlement and Dependents",
+        label: "Settlement and Dependents"
     },
     {
-        value: "IND",
-        label: "India"
-    }
+        value: "Students",
+        label: "Students"
+    },
+    {
+        value: "Work",
+        label: "Work"
+    },
+    {
+        value: "Working Holiday Maker",
+        label: "Working Holiday Maker"
+    },
+    {
+        value: "Government Sponsored",
+        label: "Government Sponsored"
+    },
 ]
 
 export default function Page() {
-	return (
+
+    const router = useRouter()
+    
+    const [formData, setFormData] = useState({
+        "fullName": "",
+        "passportNumber": "",
+        "countryOfNationality": "",
+        "countryOfIssue": "",
+        "issueDate": "",
+        "expiryDate": "",
+        "dateOfBirth": "",
+        "sex": "",
+        "typesOfVisa": "",
+        "applicantHomeAddress1": "",
+        "applicantHomeAddress2": "",
+        "applicantHomeAddress3": "",
+        "townOrCity": "",
+        "provinceOrState": "",
+        "country": "",
+        "postcode": ""
+    });
+
+    const [dateData, setDateData] = useState({
+        "passport-issue-date-day": "",
+        "passport-issue-date-month": "",
+        "passport-issue-date-year": "",
+        "passport-expiry-date-day": "",
+        "passport-expiry-date-month": "",
+        "passport-expiry-date-year": "",
+        "birth-date-day": "",
+        "birth-date-month": "",
+        "birth-date-year": "",
+    });
+    
+    const handleTextChange = (event: { target: { name: string; value: any; }; }) => {
+        const { name, value } = event.target;
+        const idToDbAttribute: {[key:string]:string} = {
+            "name": "fullName",
+            "passport-number": "passportNumber",
+            "address-1": "applicantHomeAddress1",
+            "address-2": "applicantHomeAddress2",
+            "address-3": "applicantHomeAddress3",
+            "town-or-city": "townOrCity",
+            "province-or-state": "provinceOrState",
+            "postcode": "postcode"
+        }
+        if (name in idToDbAttribute) {
+            setFormData({
+                ...formData,
+                [idToDbAttribute[name]]: value,
+            });
+        } else {
+            console.error("Unrecognised text component name")
+        }
+    };
+
+    const handleDateChange = (event: { target: { name: string; value: any; }; }) => {
+        const { name, value } = event.target;
+        if (name in dateData) {
+            setDateData({
+                ...dateData,
+                [name]: value,
+            });
+        } else {
+            console.error("Unrecognised date component name")
+        }
+    };
+
+    const handleRadioChange = (event: FormEvent) => {
+        let name = event.currentTarget.attributes.getNamedItem("name")?.value
+        let value = event.currentTarget.attributes.getNamedItem("value")?.value
+        name = name ?? "empty-name-attribute"
+        value = value ?? "empty-value-attribute"
+
+        const idToDbAttribute: {[key:string]:string} = {
+            "applicants-sex": "sex",
+        }
+        if (name in idToDbAttribute) {
+            setFormData({
+                ...formData,
+                [idToDbAttribute[name]]: value,
+            });
+        } else {
+            console.error("Unrecognised radio component name")
+        }
+    };
+
+    const handleDropdownChange = (event: { target: any; }) => {
+        const name = event.target.id
+        const value = event.target.value
+        const idToDbAttribute: {[key:string]:string} = {
+            "country-of-nationality": "countryOfNationality",
+            "country-of-issue": "countryOfIssue",
+            "visa-type": "typesOfVisa",
+            "address-country": "country"
+        }
+        if (name in idToDbAttribute) {
+            setFormData({
+                ...formData,
+                [idToDbAttribute[name]]: value,
+            });
+        } else {
+            console.error("Unrecognised text component name")
+        }
+    };
+
+    const handleButtonClick = async (event: MouseEvent) => {
+        event.preventDefault()
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        formData["issueDate"] = convertDateToString(
+            dateData["passport-issue-date-day"], 
+            dateData["passport-issue-date-month"], 
+            dateData["passport-issue-date-year"]
+        )
+        formData["expiryDate"] = convertDateToString(
+            dateData["passport-expiry-date-day"], 
+            dateData["passport-expiry-date-month"], 
+            dateData["passport-expiry-date-year"]
+        )
+        formData["dateOfBirth"] = convertDateToString(
+            dateData["birth-date-day"], 
+            dateData["birth-date-month"], 
+            dateData["birth-date-year"]
+        )
+
+        try {
+            await fetch("http://localhost:3004/dev/register-applicant", {
+                method: "POST",
+                body: JSON.stringify(formData),
+                headers: myHeaders,
+            })
+            router.push("/applicant/confirmation")
+        } catch (error: any) {
+            console.error("Error submitting POST request:")
+            console.error(error.message);
+        }
+    };
+    
+    return (
     <div className="govuk-width-container">
       <main className="govuk-main-wrapper">
         <FreeText
             id="name"
             title="Applicant's Name"
             label="Full Name"
+            handleChange={handleTextChange}
         />
         <FreeText
             id="passport-number"
             title="Applicant's Passport Information"
             label="Passport Number"
             hint="For example, 1208297A"
+            handleChange={handleTextChange}
+        />
+        <Dropdown
+            id="country-of-nationality"
+            label="Country of Nationality"
+            name="country"
+            options={countryList}
+            handleOptionChange={handleDropdownChange}
+        />
+        <Dropdown
+            id="country-of-issue"
+            label="Country of Issue"
+            hint="This is usually shown on the first page of the passport, at the top. Use the English spelling or the country code."
+            name="country"
+            options={countryList}
+            handleOptionChange={handleDropdownChange}
         />
         <DateTextInput
             id="passport-issue-date"
             autocomplete={false}
-            title="Issue Date"
+            legend="Issue Date"
             hint="For example, 31 3 2019"
+            handleChange={handleDateChange}
         />
         <DateTextInput
             id="passport-expiry-date"
             autocomplete={false}
-            title="Expiry Date"
+            legend="Expiry Date"
             hint="For example, 31 3 2019"
+            handleChange={handleDateChange}
         />
         <DateTextInput
             id="birth-date"
             autocomplete={true}
-            title="Date of Birth"
+            legend="Date of Birth"
             hint="For example, 31 3 2019"
+            handleChange={handleDateChange}
+        />
+        <Radio
+            id="sex"
+            title="Applicant's Sex"
+            isInline={RadioIsInline.TRUE}
+            answerOptions={["Male", "Female"]}
+            sortAnswersAlphabetically={false}
+            handleChange={handleRadioChange}
         />
         <Dropdown
-            id="country-of-issue-selector"
-            label="Country of Issue"
-            hint="This is usualy shown on the first page of the passport, at the top. Use the English spelling or the country code"
+            id="visa-type"
+            label="Applicant's Visa Type"
+            name="visa"
+            options={visaOptions}
+            handleOptionChange={handleDropdownChange}
+        />
+        <FreeText
+            id="address-1"
+            title="Applicant's Home Address"
+            label="Address line 1"
+            handleChange={handleTextChange}
+        />
+        <FreeText
+            id="address-2"
+            label="Address line 2"
+            handleChange={handleTextChange}
+        />
+        <FreeText
+            id="address-3"
+            label="Address line 3"
+            handleChange={handleTextChange}
+        />
+        <FreeText
+            id="town-or-city"
+            label="Town/City"
+            handleChange={handleTextChange}
+        />
+        <FreeText
+            id="province-or-state"
+            label="Province/State"
+            handleChange={handleTextChange}
+        />
+        <Dropdown
+            id="address-country"
+            label="Country"
             name="country"
-            options={countryOptions}
+            options={countryList}
+            handleOptionChange={handleDropdownChange}
+        />
+        <FreeText
+            id="postcode"
+            label="Postcode"
+            handleChange={handleTextChange}
         />
         <Button
             id="save-and-continue"
             type={ButtonType.DEFAULT}
             text="Save and continue"
-            href="/applicant/check-answers"
+            href="/applicant/confirmation"
+            handleClick={handleButtonClick}
         />
         <br/>
       </main>

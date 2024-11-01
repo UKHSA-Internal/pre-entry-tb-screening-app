@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import Date from './dateTextInput'
 
+const handleChange = () => {}
 
 describe('Date Component', () => {
     it('renders correctly when all optional props are specified', () => {
@@ -12,6 +13,7 @@ describe('Date Component', () => {
             hint="For example, 31 3 2019"
             legend="Test legend"
             autocomplete={false}
+            handleChange={handleChange}
         />)
         expect(screen.getAllByRole('textbox')).toBeTruthy()
         expect(screen.getByText('Issue Date')).toBeTruthy()
@@ -23,6 +25,7 @@ describe('Date Component', () => {
         render(<Date
             id="passport-issue-date"
             autocomplete={false}
+            handleChange={handleChange}
         />)
         expect(screen.getAllByRole('textbox')).toBeTruthy()
         expect(screen.queryByText('Issue Date')).toBeNull()
@@ -31,7 +34,7 @@ describe('Date Component', () => {
     })
 
     it('does not set bday autocomplete when autocomplete is false', () => {
-        const { container } = render(<Date id="passport-issue-date" autocomplete={false}/>)
+        const { container } = render(<Date id="passport-issue-date" autocomplete={false} handleChange={handleChange}/>)
         const dateInputs = container.getElementsByClassName('govuk-input')
         expect(dateInputs.length).toBe(3);
         expect(dateInputs[0].getAttribute("autocomplete")).toBeNull();
@@ -40,7 +43,7 @@ describe('Date Component', () => {
     })
 
     it('sets bday autocomplete when autocomplete prop is true', () => {
-        const { container } = render(<Date id="passport-issue-date" autocomplete={true}/>)
+        const { container } = render(<Date id="passport-issue-date" autocomplete={true} handleChange={handleChange}/>)
         expect(container.getElementsByClassName('govuk-input').length).toBe(3);
         const dayInput = container.querySelector('[autocomplete="bday-day"]');
         const monthInput = container.querySelector('[autocomplete="bday-month"]');

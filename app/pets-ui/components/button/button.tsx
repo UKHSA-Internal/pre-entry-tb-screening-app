@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import { MouseEventHandler } from 'react';
 
 export enum ButtonType {
     DEFAULT = "govuk-button",
@@ -12,12 +13,17 @@ export interface ButtonProps {
     type: ButtonType;
     text: string;
     href: string;
+    handleClick: MouseEventHandler<HTMLButtonElement>;
 }
 
 export default function Button(props: Readonly<ButtonProps>) {
     return (
         <Link id={props.id} href={props.href}>
-            <button type="submit" className={props.type} data-module="govuk-button">
+            <button
+                type="submit"
+                className={props.type}
+                data-module="govuk-button"
+                onClick={props.handleClick}>
                 {props.text}
             </button>
         </Link>

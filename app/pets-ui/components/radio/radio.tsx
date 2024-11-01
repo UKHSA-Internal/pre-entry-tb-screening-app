@@ -1,4 +1,5 @@
 'use client'
+import { FormEventHandler } from "react";
 
 export enum RadioIsInline {
     TRUE = "govuk-radios govuk-radios--inline",
@@ -13,6 +14,7 @@ export interface RadioProps {
     isInline: RadioIsInline;
     answerOptions: string[];
     sortAnswersAlphabetically: boolean;
+    handleChange: FormEventHandler<HTMLDivElement>;
 }
 
 export default function Radio(props: Readonly<RadioProps>) {
@@ -58,6 +60,7 @@ export default function Radio(props: Readonly<RadioProps>) {
                                 name={radioInputName}
                                 type="radio"
                                 value={stringToJsxAttribute(answerOption)}
+                                onChange={props.handleChange}
                             />
                             <label className="govuk-label govuk-radios__label" htmlFor={props.id}>
                                 {answerOption}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { ChangeEventHandler } from "react";
 
 interface OptionItem {
     label: string;
@@ -13,14 +13,10 @@ interface DropdownProps {
     hint?: string;
     name: string;
     options: OptionItem[];
+    handleOptionChange: ChangeEventHandler<HTMLSelectElement>;
 }
 
 export default function Dropdown(props: Readonly<DropdownProps>) {
-    const [optionsState, setOptionsState] = useState<string>('choose')
-
-    const handleOptionChange = (e: any) => {
-        setOptionsState(e.target.value);
-    }
 
     return (
         <div className="govuk-form-group">
@@ -40,8 +36,7 @@ export default function Dropdown(props: Readonly<DropdownProps>) {
                 id={props.id} 
                 name={props.name} 
                 aria-describedby={`${props.id}-hint`}
-                onChange={handleOptionChange}
-                value={optionsState}
+                onChange={props.handleOptionChange}
             >
                 <option disabled value="choose">Select {props.name}</option>
                 {props.options.map((optionItem: OptionItem, index: number) => (

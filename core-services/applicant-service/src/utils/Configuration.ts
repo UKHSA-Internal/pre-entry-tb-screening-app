@@ -26,7 +26,7 @@ export class Configuration {
         // Insert the environment variable if available. If not, insert placeholder. If no placeholder, leave it as is.
         stringifiedConfig = stringifiedConfig.replace(
           match,
-          process.env[captureGroups[1]] || captureGroups[2] || captureGroups[1]
+          process.env[captureGroups[1]] ?? captureGroups[2] ?? captureGroups[1]
         );
       });
     }

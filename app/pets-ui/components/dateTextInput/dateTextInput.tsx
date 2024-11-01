@@ -1,4 +1,5 @@
 'use client'
+import { ChangeEventHandler } from "react";
 
 export interface DateProps {
     id: string;
@@ -7,6 +8,7 @@ export interface DateProps {
     hint?: string;
     // The autocomplete prop should only be used when this component is utilised for birth dates
     autocomplete: boolean;
+    handleChange: ChangeEventHandler<HTMLInputElement>;
 }
 
 interface AutocompleteI {
@@ -57,7 +59,8 @@ export default function DateTextInput(props: Readonly<DateProps>) {
                                 className="govuk-input govuk-date-input__input govuk-input--width-2" 
                                 id={`${props.id}-day`}
                                 name={`${props.id}-day`}
-                                type="text"/>
+                                type="text"
+                                onChange={props.handleChange}/>
                         </div>
                     </div>
                     <div className="govuk-date-input__item">
@@ -70,7 +73,8 @@ export default function DateTextInput(props: Readonly<DateProps>) {
                                 className="govuk-input govuk-date-input__input govuk-input--width-2" 
                                 id={`${props.id}-month`}
                                 name={`${props.id}-month`} 
-                                type="text"/>
+                                type="text"
+                                onChange={props.handleChange}/>
                         </div>
                     </div>
                     <div className="govuk-date-input__item">
@@ -83,7 +87,8 @@ export default function DateTextInput(props: Readonly<DateProps>) {
                                 className="govuk-input govuk-date-input__input govuk-input--width-4" 
                                 id={`${props.id}-year`} 
                                 name={`${props.id}-year`} 
-                                type="text"/>
+                                type="text"
+                                onChange={props.handleChange}/>
                         </div>
                     </div>
                 </div>
