@@ -25,7 +25,7 @@ export const arnToString = (input: ResourceArn): string => {
 };
 
 export const stringToArn = (input: string): ResourceArn => {
-  if (!input || !input.trim()) {
+  if (!input?.trim()) {
     throw new Error("ARN is null or blank");
   }
 

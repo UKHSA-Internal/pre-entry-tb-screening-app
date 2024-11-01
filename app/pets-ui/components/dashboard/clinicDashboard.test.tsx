@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, act, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import fetchMock from "jest-fetch-mock"
 import ClinicDashboard from './clinicDashboard'
 

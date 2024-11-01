@@ -110,8 +110,8 @@ export default function Page() {
     const handleRadioChange = (event: FormEvent) => {
         let name = event.currentTarget.attributes.getNamedItem("name")?.value
         let value = event.currentTarget.attributes.getNamedItem("value")?.value
-        name = name ? name : "empty-name-attribute"
-        value = value ? value : "empty-value-attribute"
+        name = name ?? "empty-name-attribute"
+        value = value ?? "empty-value-attribute"
 
         const idToDbAttribute: {[key:string]:string} = {
             "applicants-sex": "sex",
@@ -167,7 +167,7 @@ export default function Page() {
         )
 
         try {
-            const response = await fetch("http://localhost:3004/dev/register-applicant", {
+            await fetch("http://localhost:3004/dev/register-applicant", {
                 method: "POST",
                 body: JSON.stringify(formData),
                 headers: myHeaders,

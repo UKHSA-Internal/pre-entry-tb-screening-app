@@ -1,4 +1,4 @@
-import { decode, Jwt, JwtPayload, verify } from "jsonwebtoken";
+import { decode, Jwt, JwtPayload } from "jsonwebtoken";
 import { JWT_MESSAGE } from "../models/enums";
 import { ILogEvent } from "../models/ILogEvent";
 import { checkSignature } from "./signature-check";
@@ -24,12 +24,10 @@ export const getValidJwt = async (authorizationToken: string, logEvent: ILogEven
 
   if (!payload) {
     username = "No data available in token";
-  } else {
-    if (payload.preferred_username) {
+  } else if (payload.preferred_username) {
       username = payload.preferred_username;
-    } else {
-      username = payload.unique_name;
-    }
+  } else {
+    username = payload.unique_name;
   }
 
   logEvent.email = username;
@@ -52,7 +50,7 @@ const checkFormat = (authorizationToken: string) => {
     throw new Error(JWT_MESSAGE.NO_BEARER_PREFIX);
   }
 
-  if (!token || !token.trim()) {
+  if (!token?.trim()) {
     throw new Error(JWT_MESSAGE.BLANK_TOKEN);
   }
 };
