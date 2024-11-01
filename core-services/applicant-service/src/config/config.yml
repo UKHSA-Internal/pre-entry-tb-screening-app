@@ -4,11 +4,6 @@ dynamodb:
       region: localhost
       endpoint: http://127.0.0.1:8007
     table: pets-local-applicants
-  local-global:
-    params:
-      region: localhost
-      endpoint: http://127.0.0.1:8007
-    table: pets-local-global-applicants
   remote:
     params: {}
     table: pets-applicant-details
@@ -27,4 +22,4 @@ functions:
 
 serverless:
   basePath: /${BRANCH}
-  port: 3004
+  port: 3005
