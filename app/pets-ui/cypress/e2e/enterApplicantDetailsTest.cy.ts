@@ -1,25 +1,24 @@
 import { countryList } from '../../utils/country-list';
-describe ('Fill out applicant details form', () => {
 
 // Random number generator
-// const getRandomInt = (min:number, max: number) => Math.floor(Math.random() * (max - min +1)) +min;
 const randomElement = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
 const countryNames = countryList.map(country => country.value)
 const visaType = [
-        'Family Reunion','Settlement and Dependents', 'Students', 'Work', 'Working Holiday Maker','Government Sponsored'
+    'Family Reunion','Settlement and Dependents', 'Students', 'Work', 'Working Holiday Maker','Government Sponsored'
 ];
 
+describe ('Fill out applicant details form', () => {
 
-        beforeEach(() => {
-                cy.visit('http://localhost:3000/applicant/enter-details'); 
-                cy.intercept('POST', 'http://localhost:3004/dev/register-applicant', {
-                        statusCode: 200,
-                        body: {success: true, message: 'Data successfully posted'}
-                }).as('formSubmit');
-        });
+    beforeEach(() => {
+        cy.visit('http://localhost:3000/applicant/enter-details'); 
+        cy.intercept('POST', 'http://localhost:3004/dev/register-applicant', {
+            statusCode: 200,
+            body: {success: true, message: 'Data successfully posted'}
+        }).as('formSubmit');
+    });
 
     it('Fill out the application from with valid data', () => { 
- 
+
         // Enter valid data for 'Full name'
         cy.get('input[name="name"]').type('John Doe'); 
 
@@ -67,6 +66,6 @@ const visaType = [
         cy.wait('@formSubmit').its('response.statusCode').should('eq', 200)
         // Validate that the page navigates to the confirmation page 
         cy.url().should('include', 'http://localhost:3000/applicant/confirmation'); 
-        
-});
+
+    });
 });
