@@ -31,7 +31,7 @@ describe("Configuration", () => {
         expect.arrayContaining(["functions", "dynamodb", "serverless"])
       );
       expect(Object.keys(conf.dynamodb)).toEqual(
-        expect.arrayContaining(["local", "local-global", "remote"])
+        expect.arrayContaining(["local", "remote"])
       );
     });
   });
@@ -58,22 +58,6 @@ describe("Configuration", () => {
         expect.arrayContaining(["region", "endpoint"])
       );
       expect(dbConfig.table).toEqual("pets-local-applicants");
-    });
-  });
-
-  describe("the BRANCH environment variable is local-global", () => {
-    it("should return the local-global invoke config", () => {
-      setUpDatabaseConfigs("local-global");
-      expect(Object.keys(dbConfig)).toEqual(
-        expect.arrayContaining(["params", "table"])
-      );
-      expect(Object.keys(dbConfig.params)).toEqual(
-        expect.arrayContaining(["region", "endpoint"])
-      );
-      expect(Object.keys(dbConfig)).not.toEqual(
-        expect.arrayContaining(["keys"])
-      );
-      expect(dbConfig.table).toEqual("pets-local-global-applicants");
     });
   });
 
