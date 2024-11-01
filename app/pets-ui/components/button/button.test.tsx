@@ -2,9 +2,9 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import Button, { ButtonType } from './button'
 
-describe('Button component', () => {
-    const handleClick = () => {}
+const handleClick = () => {}
 
+describe('Button component', () => {
     it('renders correctly when button type is DEFAULT', () => {
         render(<Button id='test-id' text='test-text-default' href='/test-href' type={ButtonType.DEFAULT} handleClick={handleClick}/>)
         expect(screen.getByText('test-text-default')).toBeTruthy()

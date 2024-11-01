@@ -3,10 +3,9 @@ import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import Date from './dateTextInput'
 
+const handleChange = () => {}
 
 describe('Date Component', () => {
-    const handleChange = () => {}
-    
     it('renders correctly when all optional props are specified', () => {
         render(<Date
             id="passport-issue-date"
