@@ -11,7 +11,6 @@ import { useRouter } from 'next/navigation';
 import { countryList } from '@utils/country-list';
 import { validateFreeTextFields } from '@/utils/validators/applicant-details-freetext-validation';
 import { idToDbAttribute } from '@/utils/component-id-to-db-attribute';
-import { attributeToComponentId } from '@/utils/db-attribute-to-component-id';
 import { visaOptions } from '@/utils/visa-options';
 
 export default function Page() {
@@ -126,19 +125,11 @@ export default function Page() {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
-        for (let key in errorMessages) {
-            setErrorMessages({
-                ...errorMessages,
-                [key]: "",
-            });
-        }
         const textErrors = (validateFreeTextFields(formData))
-        for (let key in textErrors) {
-            setErrorMessages({
-                ...errorMessages,
-                [key]: textErrors[key as keyof typeof textErrors],
-            });
-        }
+        setErrorMessages({
+            ...errorMessages,
+            ...textErrors
+        });
 
         formData["issueDate"] = convertDateToString(
             dateData["passport-issue-date-day"], 
@@ -168,7 +159,7 @@ export default function Page() {
             console.error(error.message);
         }
     };
-    
+
     return (
     <div className="govuk-width-container">
       <main className="govuk-main-wrapper">
@@ -177,6 +168,7 @@ export default function Page() {
             title="Applicant's Name"
             label="Full Name"
             handleChange={handleTextChange}
+            errorMessage={errorMessages.fullName}
         />
         <FreeText
             id="passport-number"
@@ -184,6 +176,7 @@ export default function Page() {
             label="Passport Number"
             hint="For example, 1208297A"
             handleChange={handleTextChange}
+            errorMessage={errorMessages.passportNumber}
         />
         <Dropdown
             id="country-of-nationality"
@@ -241,26 +234,31 @@ export default function Page() {
             title="Applicant's Home Address"
             label="Address line 1"
             handleChange={handleTextChange}
+            errorMessage={errorMessages.applicantHomeAddress1}
         />
         <FreeText
             id="address-2"
             label="Address line 2"
             handleChange={handleTextChange}
+            errorMessage={errorMessages.applicantHomeAddress2}
         />
         <FreeText
             id="address-3"
             label="Address line 3"
             handleChange={handleTextChange}
+            errorMessage={errorMessages.applicantHomeAddress3}
         />
         <FreeText
             id="town-or-city"
             label="Town/City"
             handleChange={handleTextChange}
+            errorMessage={errorMessages.townOrCity}
         />
         <FreeText
             id="province-or-state"
             label="Province/State"
             handleChange={handleTextChange}
+            errorMessage={errorMessages.provinceOrState}
         />
         <Dropdown
             id="address-country"
@@ -273,6 +271,7 @@ export default function Page() {
             id="postcode"
             label="Postcode"
             handleChange={handleTextChange}
+            errorMessage={errorMessages.postcode}
         />
         <Button
             id="save-and-continue"
