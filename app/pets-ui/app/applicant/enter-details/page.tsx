@@ -1,4 +1,5 @@
 'use client'
+import './page.scss'
 import FreeText from '@/components/freeText/freeText';
 import Button, { ButtonType } from '@/components/button/button';
 import DateTextInput from '@/components/dateTextInput/dateTextInput';
@@ -8,35 +9,10 @@ import { FormEvent, MouseEvent, useState } from 'react';
 import { convertDateToString } from '@utils/convert-date-to-string';
 import { useRouter } from 'next/navigation';
 import { countryList } from '@utils/country-list';
-
-import './page.scss'
-
-const visaOptions = [
-    {
-        value: "Family Reunion",
-        label: "Family Reunion"
-    },
-    {
-        value: "Settlement and Dependents",
-        label: "Settlement and Dependents"
-    },
-    {
-        value: "Students",
-        label: "Students"
-    },
-    {
-        value: "Work",
-        label: "Work"
-    },
-    {
-        value: "Working Holiday Maker",
-        label: "Working Holiday Maker"
-    },
-    {
-        value: "Government Sponsored",
-        label: "Government Sponsored"
-    },
-]
+import { validateFreeTextFields } from '@/utils/validators/applicant-details-freetext-validation';
+import { idToDbAttribute } from '@/utils/component-id-to-db-attribute';
+import { attributeToComponentId } from '@/utils/db-attribute-to-component-id';
+import { visaOptions } from '@/utils/visa-options';
 
 export default function Page() {
 
@@ -72,19 +48,28 @@ export default function Page() {
         "birth-date-month": "",
         "birth-date-year": "",
     });
+
+    const [errorMessages, setErrorMessages] = useState({
+        "fullName": "",
+        "passportNumber": "",
+        "countryOfNationality": "",
+        "countryOfIssue": "",
+        "issueDate": "",
+        "expiryDate": "",
+        "dateOfBirth": "",
+        "sex": "",
+        "typesOfVisa": "",
+        "applicantHomeAddress1": "",
+        "applicantHomeAddress2": "",
+        "applicantHomeAddress3": "",
+        "townOrCity": "",
+        "provinceOrState": "",
+        "country": "",
+        "postcode": ""
+    });
     
     const handleTextChange = (event: { target: { name: string; value: any; }; }) => {
         const { name, value } = event.target;
-        const idToDbAttribute: {[key:string]:string} = {
-            "name": "fullName",
-            "passport-number": "passportNumber",
-            "address-1": "applicantHomeAddress1",
-            "address-2": "applicantHomeAddress2",
-            "address-3": "applicantHomeAddress3",
-            "town-or-city": "townOrCity",
-            "province-or-state": "provinceOrState",
-            "postcode": "postcode"
-        }
         if (name in idToDbAttribute) {
             setFormData({
                 ...formData,
@@ -113,9 +98,6 @@ export default function Page() {
         name = name ?? "empty-name-attribute"
         value = value ?? "empty-value-attribute"
 
-        const idToDbAttribute: {[key:string]:string} = {
-            "applicants-sex": "sex",
-        }
         if (name in idToDbAttribute) {
             setFormData({
                 ...formData,
@@ -129,19 +111,13 @@ export default function Page() {
     const handleDropdownChange = (event: { target: any; }) => {
         const name = event.target.id
         const value = event.target.value
-        const idToDbAttribute: {[key:string]:string} = {
-            "country-of-nationality": "countryOfNationality",
-            "country-of-issue": "countryOfIssue",
-            "visa-type": "typesOfVisa",
-            "address-country": "country"
-        }
         if (name in idToDbAttribute) {
             setFormData({
                 ...formData,
                 [idToDbAttribute[name]]: value,
             });
         } else {
-            console.error("Unrecognised text component name")
+            console.error("Unrecognised dropdown component name")
         }
     };
 
@@ -149,6 +125,20 @@ export default function Page() {
         event.preventDefault()
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
+
+        for (let key in errorMessages) {
+            setErrorMessages({
+                ...errorMessages,
+                [key]: "",
+            });
+        }
+        const textErrors = (validateFreeTextFields(formData))
+        for (let key in textErrors) {
+            setErrorMessages({
+                ...errorMessages,
+                [key]: textErrors[key as keyof typeof textErrors],
+            });
+        }
 
         formData["issueDate"] = convertDateToString(
             dateData["passport-issue-date-day"], 
