@@ -56,9 +56,9 @@ jobs:
       - name: Save build folder
         uses: actions/upload-artifact@v4
         with:
-          name: build
+          name: build-folder
           if-no-files-found: error
-          path: build
+          path: app/pets-ui/.next
 
   cypress-run:
     runs-on: ubuntu-latest
@@ -69,8 +69,8 @@ jobs:
       - name: Download the build folder
         uses: actions/download-artifact@v4
         with:
-          name: build
-          path: build
+          name: build-folder
+          path: app/pets-ui/.next
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
