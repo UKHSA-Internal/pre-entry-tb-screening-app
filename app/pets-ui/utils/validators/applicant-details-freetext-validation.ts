@@ -2,36 +2,52 @@ import { IFormData } from "@utils/IFormData"
 
 const textFields = {
     "fullName": {
-        "error": "Full name must contain only letters and spaces.",
-        "regex": /[^A-Za-z\s]/
+        "regex": /[^A-Za-z\s]/,
+        "regexError": "Full name must contain only letters and spaces.",
+        "isMandatory": true,
+        "mandatoryError": "Enter the applicant's full name."
     },
     "passportNumber": {
-        "error": "Passport number must contain only letters and numbers.",
-        "regex": /[^A-Za-z0-9]/
+        "regex": /[^A-Za-z0-9]/,
+        "regexError": "Passport number must contain only letters and numbers.",
+        "isMandatory": true,
+        "mandatoryError": "Enter the applicant's passport number."
     },
     "applicantHomeAddress1": {
-        "error": "Home address must contain only letters, numbers, spaces and punctuation.",
-        "regex": /[^A-Za-z0-9\s,-/()]/
+        "regex": /[^A-Za-z0-9\s,-/()]/,
+        "regexError": "Home address must contain only letters, numbers, spaces and punctuation.",
+        "isMandatory": true,
+        "mandatoryError": "Enter the first line of the applicant's home address."
     },
     "applicantHomeAddress2": {
-        "error": "Home address must contain only letters, numbers, spaces and punctuation.",
-        "regex": /[^A-Za-z0-9\s,-/()]/
+        "regex": /[^A-Za-z0-9\s,-/()]/,
+        "regexError": "Home address must contain only letters, numbers, spaces and punctuation.",
+        "isMandatory": false,
+        "mandatoryError": ""
     },
     "applicantHomeAddress3": {
-        "error": "Home address must contain only letters, numbers, spaces and punctuation.",
-        "regex": /[^A-Za-z0-9\s,-/()]/
+        "regex": /[^A-Za-z0-9\s,-/()]/,
+        "regexError": "Home address must contain only letters, numbers, spaces and punctuation.",
+        "isMandatory": false,
+        "mandatoryError": ""
     },
     "townOrCity": {
-        "error": "Town name must contain only letters, spaces and punctuation.",
-        "regex": /[^A-Za-z\s,-/()]/
+        "regex": /[^A-Za-z\s,-/()]/,
+        "regexError": "Town name must contain only letters, spaces and punctuation.",
+        "isMandatory": true,
+        "mandatoryError": "Enter the town or city of the applicant's home address."
     },
     "provinceOrState": {
-        "error": "Province/state name must contain only letters, spaces and punctuation.",
-        "regex": /[^A-Za-z\s,-/()]/
+        "regex": /[^A-Za-z\s,-/()]/,
+        "regexError": "Province/state name must contain only letters, spaces and punctuation.",
+        "isMandatory": true,
+        "mandatoryError": "Enter the province or state of the applicant's home address."
     },
     "postcode": {
-        "error": "Postcode must contain only letters, numbers and spaces.",
-        "regex": /[^A-Za-z0-9\s]/
+        "regex": /[^A-Za-z0-9\s]/,
+        "regexError": "Postcode must contain only letters, numbers and spaces.",
+        "isMandatory": false,
+        "mandatoryError": ""
     }
 }
 
@@ -51,9 +67,14 @@ export function validateFreeTextFields(formData: IFormData) {
         if (field in textFields) {
             const textFieldValue = formData[field as keyof typeof formData]
             const textFieldRegex = textFields[field as keyof typeof textFields].regex
-            const textFieldErrorMessage = textFields[field as keyof typeof textFields].error
-            if (textFieldValue.search(new RegExp(textFieldRegex)) > -1 ) {
-                errorMessages[field as keyof typeof errorMessages] = textFieldErrorMessage
+            const textFieldRegexError = textFields[field as keyof typeof textFields].regexError
+            const textFieldIsMandatory = textFields[field as keyof typeof textFields].isMandatory
+            const textFieldMandatoryError = textFields[field as keyof typeof textFields].mandatoryError
+            
+            if (textFieldIsMandatory && textFieldValue.length < 1) {
+                errorMessages[field as keyof typeof errorMessages] = textFieldMandatoryError
+            } else if (textFieldValue.search(new RegExp(textFieldRegex)) > -1 ) {
+                errorMessages[field as keyof typeof errorMessages] = textFieldRegexError
             }
         }
     }
