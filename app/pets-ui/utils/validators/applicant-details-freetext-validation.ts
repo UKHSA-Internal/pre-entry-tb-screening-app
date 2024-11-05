@@ -1,6 +1,6 @@
 import { IFormData } from "@utils/IFormData"
 
-const textFields = {
+const fieldValidationDetails = {
     "fullName": {
         "regex": /[^A-Za-z\s]/,
         "regexError": "Full name must contain only letters and spaces.",
@@ -65,19 +65,15 @@ export function validateFreeTextFields(formData: IFormData) {
     }
 
     for (let field in formData) {
-        if (field in textFields) {
+        if (field in fieldValidationDetails) {
             const textFieldValue = formData[field as keyof typeof formData]
-            const textFieldRegex = textFields[field as keyof typeof textFields].regex
-            const textFieldRegexError = textFields[field as keyof typeof textFields].regexError
-            const textFieldIsMandatory = textFields[field as keyof typeof textFields].isMandatory
-            const textFieldMandatoryError = textFields[field as keyof typeof textFields].mandatoryError
-            
-            if (textFieldIsMandatory && textFieldValue.length < 1) {
+            const validationDetails = fieldValidationDetails[field as keyof typeof fieldValidationDetails]
+            if (validationDetails.isMandatory && textFieldValue.length < 1) {
                 errorsExist = true
-                errorMessages[field as keyof typeof errorMessages] = textFieldMandatoryError
-            } else if (textFieldValue.search(new RegExp(textFieldRegex)) > -1 ) {
+                errorMessages[field as keyof typeof errorMessages] = validationDetails.mandatoryError
+            } else if (textFieldValue.search(new RegExp(validationDetails.regex)) > -1 ) {
                 errorsExist = true
-                errorMessages[field as keyof typeof errorMessages] = textFieldRegexError
+                errorMessages[field as keyof typeof errorMessages] = validationDetails.regexError
             }
         }
     }
