@@ -58,7 +58,8 @@ jobs:
         with:
           name: build-folder
           if-no-files-found: error
-          path: app/pets-ui/.next
+          path: .next/
+          working-directory: app/pets-ui
 
   cypress-run:
     runs-on: ubuntu-latest
