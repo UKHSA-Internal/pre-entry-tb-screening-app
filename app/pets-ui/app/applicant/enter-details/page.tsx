@@ -5,12 +5,13 @@ import Button, { ButtonType } from '@/components/button/button';
 import DateTextInput from '@/components/dateTextInput/dateTextInput';
 import Dropdown from '@/components/dropdown/dropdown';
 import Radio, { RadioIsInline } from '@/components/radio/radio';
-import { FormEvent, MouseEvent, useState } from 'react';
+import { FormEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import { convertDateToString } from '@utils/convert-date-to-string';
 import { useRouter } from 'next/navigation';
 import { countryList } from '@utils/country-list';
 import { validateFreeTextFields } from '@/utils/validators/applicant-details-freetext-validation';
 import { idToDbAttribute } from '@/utils/component-id-to-db-attribute';
+import { attributeToComponentId } from '@/utils/db-attribute-to-component-id';
 import { visaOptions } from '@/utils/visa-options';
 
 export default function Page() {
@@ -66,6 +67,7 @@ export default function Page() {
         "country": "",
         "postcode": ""
     });
+    const [errorsToDisplay, setErrorsToDisplay] = useState<string[]>([])
     
     const handleTextChange = (event: { target: { name: string; value: any; }; }) => {
         const { name, value } = event.target;
@@ -160,9 +162,41 @@ export default function Page() {
         }
     };
 
+    const initialPageRender = useRef(true);
+    const initialiseErrorMessages = useRef(true);
+    useEffect(() => {
+        if (initialPageRender.current) {
+            initialPageRender.current = false
+        } else if (initialiseErrorMessages.current) {
+            initialiseErrorMessages.current = false
+        } else {
+            const errorsAsArray = Object.entries(errorMessages)
+            const nonEmptyErrors = errorsAsArray.filter(([field, error]) => error !== "")
+            setErrorsToDisplay(nonEmptyErrors.map(([field, error]) => field))
+        }
+    }, [errorMessages])
+
     return (
     <div className="govuk-width-container">
-      <main className="govuk-main-wrapper">
+        <main className="govuk-main-wrapper">
+            {errorsToDisplay.length > 0 &&
+                <div className="govuk-error-summary" data-module="govuk-error-summary">
+                    <div role="alert">
+                        <h2 className="govuk-error-summary__title">
+                        There is a problem
+                        </h2>
+                        <div className="govuk-error-summary__body">
+                        <ul className="govuk-list govuk-error-summary__list">
+                            {errorsToDisplay.map((error) => (
+                                <li key={attributeToComponentId[error]}>
+                                <a href={"#" + attributeToComponentId[error]}>{errorMessages[error as keyof typeof errorMessages]}</a>
+                                </li>
+                            ))}
+                        </ul>
+                        </div>
+                    </div>
+                </div>
+            }
         <FreeText
             id="name"
             title="Applicant's Name"
