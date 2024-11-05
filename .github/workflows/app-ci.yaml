@@ -35,3 +35,19 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: app/pets-ui/
+  
+  cypress-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      # Install yarn dependencies, cache them correctly
+      # and run all Cypress tests
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          build: yarn
+          start: yarn run dev
+          working-directory: app/pets-ui/cypress/e2e
+          browser: chrome
+
