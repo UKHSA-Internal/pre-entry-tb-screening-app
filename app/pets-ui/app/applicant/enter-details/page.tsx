@@ -197,125 +197,125 @@ export default function Page() {
                     </div>
                 </div>
             }
-        <FreeText
-            id="name"
-            title="Applicant's Name"
-            label="Full Name"
-            handleChange={handleTextChange}
-            errorMessage={errorMessages.fullName}
-        />
-        <FreeText
-            id="passport-number"
-            title="Applicant's Passport Information"
-            label="Passport Number"
-            hint="For example, 1208297A"
-            handleChange={handleTextChange}
-            errorMessage={errorMessages.passportNumber}
-        />
-        <Dropdown
-            id="country-of-nationality"
-            label="Country of Nationality"
-            name="country"
-            options={countryList}
-            handleOptionChange={handleDropdownChange}
-        />
-        <Dropdown
-            id="country-of-issue"
-            label="Country of Issue"
-            hint="This is usually shown on the first page of the passport, at the top. Use the English spelling or the country code."
-            name="country"
-            options={countryList}
-            handleOptionChange={handleDropdownChange}
-        />
-        <DateTextInput
-            id="passport-issue-date"
-            autocomplete={false}
-            legend="Issue Date"
-            hint="For example, 31 3 2019"
-            handleChange={handleDateChange}
-        />
-        <DateTextInput
-            id="passport-expiry-date"
-            autocomplete={false}
-            legend="Expiry Date"
-            hint="For example, 31 3 2019"
-            handleChange={handleDateChange}
-        />
-        <DateTextInput
-            id="birth-date"
-            autocomplete={true}
-            legend="Date of Birth"
-            hint="For example, 31 3 2019"
-            handleChange={handleDateChange}
-        />
-        <Radio
-            id="sex"
-            title="Applicant's Sex"
-            isInline={RadioIsInline.TRUE}
-            answerOptions={["Male", "Female"]}
-            sortAnswersAlphabetically={false}
-            handleChange={handleRadioChange}
-        />
-        <Dropdown
-            id="visa-type"
-            label="Applicant's Visa Type"
-            name="visa"
-            options={visaOptions}
-            handleOptionChange={handleDropdownChange}
-        />
-        <FreeText
-            id="address-1"
-            title="Applicant's Home Address"
-            label="Address line 1"
-            handleChange={handleTextChange}
-            errorMessage={errorMessages.applicantHomeAddress1}
-        />
-        <FreeText
-            id="address-2"
-            label="Address line 2"
-            handleChange={handleTextChange}
-            errorMessage={errorMessages.applicantHomeAddress2}
-        />
-        <FreeText
-            id="address-3"
-            label="Address line 3"
-            handleChange={handleTextChange}
-            errorMessage={errorMessages.applicantHomeAddress3}
-        />
-        <FreeText
-            id="town-or-city"
-            label="Town/City"
-            handleChange={handleTextChange}
-            errorMessage={errorMessages.townOrCity}
-        />
-        <FreeText
-            id="province-or-state"
-            label="Province/State"
-            handleChange={handleTextChange}
-            errorMessage={errorMessages.provinceOrState}
-        />
-        <Dropdown
-            id="address-country"
-            label="Country"
-            name="country"
-            options={countryList}
-            handleOptionChange={handleDropdownChange}
-        />
-        <FreeText
-            id="postcode"
-            label="Postcode"
-            handleChange={handleTextChange}
-            errorMessage={errorMessages.postcode}
-        />
-        <Button
-            id="save-and-continue"
-            type={ButtonType.DEFAULT}
-            text="Save and continue"
-            href="/applicant/confirmation"
-            handleClick={handleButtonClick}
-        />
-        <br/>
-      </main>
+            <FreeText
+                id="name"
+                title="Applicant's Name"
+                label="Full Name"
+                handleChange={handleTextChange}
+                errorMessage={errorMessages.fullName}
+            />
+            <FreeText
+                id="passport-number"
+                title="Applicant's Passport Information"
+                label="Passport Number"
+                hint="For example, 1208297A"
+                handleChange={handleTextChange}
+                errorMessage={errorMessages.passportNumber}
+            />
+            <Dropdown
+                id="country-of-nationality"
+                label="Country of Nationality"
+                name="country"
+                options={countryList}
+                handleOptionChange={handleDropdownChange}
+            />
+            <Dropdown
+                id="country-of-issue"
+                label="Country of Issue"
+                hint="This is usually shown on the first page of the passport, at the top. Use the English spelling or the country code."
+                name="country"
+                options={countryList}
+                handleOptionChange={handleDropdownChange}
+            />
+            <DateTextInput
+                id="passport-issue-date"
+                autocomplete={false}
+                legend="Issue Date"
+                hint="For example, 31 3 2019"
+                handleChange={handleDateChange}
+            />
+            <DateTextInput
+                id="passport-expiry-date"
+                autocomplete={false}
+                legend="Expiry Date"
+                hint="For example, 31 3 2019"
+                handleChange={handleDateChange}
+            />
+            <DateTextInput
+                id="birth-date"
+                autocomplete={true}
+                legend="Date of Birth"
+                hint="For example, 31 3 2019"
+                handleChange={handleDateChange}
+            />
+            <Radio
+                id="sex"
+                title="Applicant's Sex"
+                isInline={RadioIsInline.TRUE}
+                answerOptions={["Male", "Female"]}
+                sortAnswersAlphabetically={false}
+                handleChange={handleRadioChange}
+            />
+            <Dropdown
+                id="visa-type"
+                label="Applicant's Visa Type"
+                name="visa"
+                options={visaOptions}
+                handleOptionChange={handleDropdownChange}
+            />
+            <FreeText
+                id="address-1"
+                title="Applicant's Home Address"
+                label="Address line 1"
+                handleChange={handleTextChange}
+                errorMessage={errorMessages.applicantHomeAddress1}
+            />
+            <FreeText
+                id="address-2"
+                label="Address line 2"
+                handleChange={handleTextChange}
+                errorMessage={errorMessages.applicantHomeAddress2}
+            />
+            <FreeText
+                id="address-3"
+                label="Address line 3"
+                handleChange={handleTextChange}
+                errorMessage={errorMessages.applicantHomeAddress3}
+            />
+            <FreeText
+                id="town-or-city"
+                label="Town/City"
+                handleChange={handleTextChange}
+                errorMessage={errorMessages.townOrCity}
+            />
+            <FreeText
+                id="province-or-state"
+                label="Province/State"
+                handleChange={handleTextChange}
+                errorMessage={errorMessages.provinceOrState}
+            />
+            <Dropdown
+                id="address-country"
+                label="Country"
+                name="country"
+                options={countryList}
+                handleOptionChange={handleDropdownChange}
+            />
+            <FreeText
+                id="postcode"
+                label="Postcode"
+                handleChange={handleTextChange}
+                errorMessage={errorMessages.postcode}
+            />
+            <Button
+                id="save-and-continue"
+                type={ButtonType.DEFAULT}
+                text="Save and continue"
+                href="/applicant/confirmation"
+                handleClick={handleButtonClick}
+            />
+            <br/>
+        </main>
     </div>
   );
 }
