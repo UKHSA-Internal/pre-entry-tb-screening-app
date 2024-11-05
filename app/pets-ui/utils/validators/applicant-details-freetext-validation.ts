@@ -52,6 +52,7 @@ const textFields = {
 }
 
 export function validateFreeTextFields(formData: IFormData) {
+    let errorsExist = false
     let errorMessages = {
         fullName: "",
         passportNumber: "",
@@ -72,12 +73,17 @@ export function validateFreeTextFields(formData: IFormData) {
             const textFieldMandatoryError = textFields[field as keyof typeof textFields].mandatoryError
             
             if (textFieldIsMandatory && textFieldValue.length < 1) {
+                errorsExist = true
                 errorMessages[field as keyof typeof errorMessages] = textFieldMandatoryError
             } else if (textFieldValue.search(new RegExp(textFieldRegex)) > -1 ) {
+                errorsExist = true
                 errorMessages[field as keyof typeof errorMessages] = textFieldRegexError
             }
         }
     }
 
-    return errorMessages
+    return {
+        "errorsExist": errorsExist,
+        "errorMessages": errorMessages
+    }
 }

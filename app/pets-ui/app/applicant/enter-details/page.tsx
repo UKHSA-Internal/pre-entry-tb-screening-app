@@ -124,41 +124,45 @@ export default function Page() {
 
     const handleButtonClick = async (event: MouseEvent) => {
         event.preventDefault()
-        const myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
 
-        const textErrors = (validateFreeTextFields(formData))
+        const textErrors = (validateFreeTextFields(formData)).errorMessages
         setErrorMessages({
             ...errorMessages,
             ...textErrors
         });
 
-        formData["issueDate"] = convertDateToString(
-            dateData["passport-issue-date-day"], 
-            dateData["passport-issue-date-month"], 
-            dateData["passport-issue-date-year"]
-        )
-        formData["expiryDate"] = convertDateToString(
-            dateData["passport-expiry-date-day"], 
-            dateData["passport-expiry-date-month"], 
-            dateData["passport-expiry-date-year"]
-        )
-        formData["dateOfBirth"] = convertDateToString(
-            dateData["birth-date-day"], 
-            dateData["birth-date-month"], 
-            dateData["birth-date-year"]
-        )
+        const errorsExist = (validateFreeTextFields(formData)).errorsExist
 
-        try {
-            await fetch("http://localhost:3004/dev/register-applicant", {
-                method: "POST",
-                body: JSON.stringify(formData),
-                headers: myHeaders,
-            })
-            router.push("/applicant/confirmation")
-        } catch (error: any) {
-            console.error("Error submitting POST request:")
-            console.error(error.message);
+        if (!errorsExist) {
+            formData["issueDate"] = convertDateToString(
+                dateData["passport-issue-date-day"], 
+                dateData["passport-issue-date-month"], 
+                dateData["passport-issue-date-year"]
+            )
+            formData["expiryDate"] = convertDateToString(
+                dateData["passport-expiry-date-day"], 
+                dateData["passport-expiry-date-month"], 
+                dateData["passport-expiry-date-year"]
+            )
+            formData["dateOfBirth"] = convertDateToString(
+                dateData["birth-date-day"], 
+                dateData["birth-date-month"], 
+                dateData["birth-date-year"]
+            )
+
+            try {
+                const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+                await fetch("http://localhost:3004/dev/register-applicant", {
+                    method: "POST",
+                    body: JSON.stringify(formData),
+                    headers: myHeaders,
+                })
+                router.push("/applicant/confirmation")
+            } catch (error: any) {
+                console.error("Error submitting POST request:")
+                console.error(error.message);
+            }
         }
     };
 
