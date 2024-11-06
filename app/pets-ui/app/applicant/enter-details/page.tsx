@@ -135,10 +135,10 @@ export default function Page() {
             ...dateErrors.errorMessages
         });
 
-        const errorsExist = textErrors.errorsExist
-            || dateErrors.errorsExist
+        const dataIsValid = textErrors.isValid
+            && dateErrors.isValid
 
-        if (!errorsExist) {
+        if (dataIsValid) {
             formData["issueDate"] = convertDateToString(
                 dateData["passport-issue-date-day"], 
                 dateData["passport-issue-date-month"], 

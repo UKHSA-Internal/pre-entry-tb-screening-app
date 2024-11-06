@@ -54,7 +54,7 @@ function isValidDate(day: string, month: string, year: string) {
 }
 
 export function validateDateFields(dateData: IDateData) {
-    let errorsExist = false
+    let isValid = true
     let errorMessages = {
         issueDate: "",
         expiryDate: "",
@@ -72,25 +72,25 @@ export function validateDateFields(dateData: IDateData) {
             monthValue.length < 1 ||
             yearValue.length < 1
         ) {
-            errorsExist = true
+            isValid = false
             errorMessages[field as keyof typeof errorMessages] = validationDetails.emptyFieldError
         } else if (
             dayValue.search(/\D/) > -1 ||
             !validMonthValues.includes(monthValue.toLowerCase()) ||
             yearValue.search(/\D/) > -1
         ) {
-            errorsExist = true
+            isValid = false
             errorMessages[field as keyof typeof errorMessages] = validationDetails.invalidCharError
         } else if (
             !isValidDate(dayValue, monthValue, yearValue)
         ) {
-            errorsExist = true
+            isValid = false
             errorMessages[field as keyof typeof errorMessages] = validationDetails.invalidDateError
         }
     }
 
     return {
-        "errorsExist": errorsExist,
+        "isValid": isValid,
         "errorMessages": errorMessages
     }
 }

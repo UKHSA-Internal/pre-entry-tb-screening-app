@@ -52,7 +52,7 @@ const fieldValidationDetails = {
 }
 
 export function validateFreeTextFields(formData: IFormData) {
-    let errorsExist = false
+    let isValid = true
     let errorMessages = {
         fullName: "",
         passportNumber: "",
@@ -69,17 +69,17 @@ export function validateFreeTextFields(formData: IFormData) {
             const textFieldValue = formData[field as keyof typeof formData]
             const validationDetails = fieldValidationDetails[field as keyof typeof fieldValidationDetails]
             if (validationDetails.isMandatory && textFieldValue.length < 1) {
-                errorsExist = true
+                isValid = false
                 errorMessages[field as keyof typeof errorMessages] = validationDetails.emptyFieldError
             } else if (textFieldValue.search(new RegExp(validationDetails.regex)) > -1 ) {
-                errorsExist = true
+                isValid = false
                 errorMessages[field as keyof typeof errorMessages] = validationDetails.regexError
             }
         }
     }
 
     return {
-        "errorsExist": errorsExist,
+        "isValid": isValid,
         "errorMessages": errorMessages
     }
 }
