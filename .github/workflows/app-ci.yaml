@@ -46,34 +46,10 @@ jobs:
         with:
           node-version: 18.x
           cache: "yarn"
-      - name: Cypress install
+      - name: Cypress install & run
         uses: cypress-io/github-action@v6
         with:
           build: yarn run build
           start: yarn run start
           working-directory: app/pets-ui
           browser: chrome
-      # - name: Save build folder
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: build-folder
-      #     if-no-files-found: error
-      #     path: app/pets-ui/.next/
-
-  # cypress-run:
-  #   runs-on: ubuntu-latest
-  #   needs: cypress-install
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-  #     - name: Download the build folder
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: build-folder
-  #         path: app/pets-ui/.next
-  #     - name: Cypress run
-  #       uses: cypress-io/github-action@v6
-  #       with:
-  #         start: yarn run start
-  #         working-directory: app/pets-ui
-  #         browser: chrome
