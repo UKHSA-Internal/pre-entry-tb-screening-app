@@ -10,6 +10,7 @@ import { convertDateToString } from '@utils/convert-date-to-string';
 import { useRouter } from 'next/navigation';
 import { countryList } from '@utils/country-list';
 import { validateFreeTextFields } from '@/utils/validators/applicant-details-freetext-validation';
+import { validateDateFields } from '@/utils/validators/applicant-details-date-validation';
 import { idToDbAttribute } from '@/utils/component-id-to-db-attribute';
 import { attributeToComponentId } from '@/utils/db-attribute-to-component-id';
 import { visaOptions } from '@/utils/visa-options';
@@ -125,13 +126,20 @@ export default function Page() {
     const handleButtonClick = async (event: MouseEvent) => {
         event.preventDefault()
 
-        const textErrors = (validateFreeTextFields(formData)).errorMessages
+        const textErrors = validateFreeTextFields(formData)
+        const dateErrors = validateDateFields(dateData)
+        
         setErrorMessages({
             ...errorMessages,
-            ...textErrors
+            ...textErrors.errorMessages
+        });
+        setErrorMessages({
+            ...errorMessages,
+            ...dateErrors.errorMessages
         });
 
-        const errorsExist = (validateFreeTextFields(formData)).errorsExist
+        const errorsExist = textErrors.errorsExist
+            || dateErrors.errorsExist
 
         if (!errorsExist) {
             formData["issueDate"] = convertDateToString(
