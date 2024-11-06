@@ -131,10 +131,7 @@ export default function Page() {
         
         setErrorMessages({
             ...errorMessages,
-            ...textErrors.errorMessages
-        });
-        setErrorMessages({
-            ...errorMessages,
+            ...textErrors.errorMessages,
             ...dateErrors.errorMessages
         });
 
@@ -245,6 +242,7 @@ export default function Page() {
                 legend="Issue Date"
                 hint="For example, 31 3 2019"
                 handleChange={handleDateChange}
+                errorMessage={errorMessages.issueDate}
             />
             <DateTextInput
                 id="passport-expiry-date"
@@ -252,6 +250,7 @@ export default function Page() {
                 legend="Expiry Date"
                 hint="For example, 31 3 2019"
                 handleChange={handleDateChange}
+                errorMessage={errorMessages.expiryDate}
             />
             <DateTextInput
                 id="birth-date"
@@ -259,6 +258,7 @@ export default function Page() {
                 legend="Date of Birth"
                 hint="For example, 31 3 2019"
                 handleChange={handleDateChange}
+                errorMessage={errorMessages.dateOfBirth}
             />
             <Radio
                 id="sex"
