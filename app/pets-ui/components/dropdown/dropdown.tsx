@@ -37,6 +37,7 @@ export default function Dropdown(props: Readonly<DropdownProps>) {
                 name={props.name} 
                 aria-describedby={`${props.id}-hint`}
                 onChange={props.handleOptionChange}
+                defaultValue="choose"
             >
                 <option disabled value="choose">Select {props.name}</option>
                 {props.options.map((optionItem: OptionItem, index: number) => (
