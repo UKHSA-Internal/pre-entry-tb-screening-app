@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import { countryList } from '@utils/country-list';
 import { validateFreeTextFields } from '@/utils/validators/applicant-details-freetext-validation';
 import { validateDateFields } from '@/utils/validators/applicant-details-date-validation';
-import { validateRadioFields } from '@/utils/validators/applicant-details-radio-validation';
+import { validateRadioAndDropdownFields } from '@/utils/validators/applicant-details-radio-dropdown-validation';
 import { idToDbAttribute } from '@/utils/component-id-to-db-attribute';
 import { attributeToComponentId } from '@/utils/db-attribute-to-component-id';
 import { visaOptions } from '@/utils/visa-options';
@@ -129,18 +129,18 @@ export default function Page() {
 
         const textErrors = validateFreeTextFields(formData)
         const dateErrors = validateDateFields(dateData)
-        const radioErrors = validateRadioFields(formData)
+        const radioAndDropdownErrors = validateRadioAndDropdownFields(formData)
         
         setErrorMessages({
             ...errorMessages,
             ...textErrors.errorMessages,
             ...dateErrors.errorMessages,
-            ...radioErrors.errorMessages
+            ...radioAndDropdownErrors.errorMessages
         });
 
         const dataIsValid = textErrors.isValid
             && dateErrors.isValid
-            && radioErrors.isValid
+            && radioAndDropdownErrors.isValid
 
         if (dataIsValid) {
             formData["issueDate"] = convertDateToString(
@@ -231,6 +231,7 @@ export default function Page() {
                 name="country"
                 options={countryList}
                 handleOptionChange={handleDropdownChange}
+                errorMessage={errorMessages.countryOfNationality}
             />
             <Dropdown
                 id="country-of-issue"
@@ -239,6 +240,7 @@ export default function Page() {
                 name="country"
                 options={countryList}
                 handleOptionChange={handleDropdownChange}
+                errorMessage={errorMessages.countryOfIssue}
             />
             <DateTextInput
                 id="passport-issue-date"
@@ -279,6 +281,7 @@ export default function Page() {
                 name="visa"
                 options={visaOptions}
                 handleOptionChange={handleDropdownChange}
+                errorMessage={errorMessages.typesOfVisa}
             />
             <FreeText
                 id="address-1"
@@ -317,6 +320,7 @@ export default function Page() {
                 name="country"
                 options={countryList}
                 handleOptionChange={handleDropdownChange}
+                errorMessage={errorMessages.country}
             />
             <FreeText
                 id="postcode"
