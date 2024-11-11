@@ -4,17 +4,13 @@
   "version": "1.0.0",
   "description": "AWS lambda for managing PETs clinics using serverless framework",
   "main": "clinics.js",
-  "engines": {
-    "node": "18.*",
-    "yarn": "1.22.*"
-  },
   "scripts": {
     "start": "serverless offline start --verbose",
     "start-m": "BRANCH=local SLS_DEBUG=* serverless offline start",
     "test": "jest",
     "test-m": "BRANCH=local jest",
     "tools-setup": "serverless dynamodb install",
-    "build": "tspc -b tsconfig.json && yarn run build:copy",
+    "build": "tspc -b tsconfig.json && pnpm run build:copy",
     "build:copy": "find src -type f \\( -name \"*.yml\" -or -name \"*.json\" \\) | cpio -pdm .build && find test -type f \\( -name \"*.yml\" -or -name \"*.json\" \\)  | cpio -pdm .build",
     "zip": "zip -r test-service.zip .build"
   },
@@ -28,6 +24,7 @@
     "path-parser": "^6.1.0"
   },
   "devDependencies": {
+    "@smithy/smithy-client": "^3.4.2",
     "@types/aws-lambda": "^8.10.145",
     "@types/jest": "^29.5.12",
     "@types/jest-plugin-context": "^2.9.7",

@@ -9,7 +9,7 @@
     "test": "jest",
     "test-m": "BRANCH=local jest",
     "tools-setup": "sls dynamodb install",
-    "build": "tspc -b tsconfig.json && yarn run build:copy",
+    "build": "tspc -b tsconfig.json && pnpm run build:copy",
     "build:copy": "find src -type f \\( -name \"*.yml\" -or -name \"*.json\" \\) | cpio -pdm .build && find test -type f \\( -name \"*.yml\" -or -name \"*.json\" \\)  | cpio -pdm .build",
     "zip": "zip -r test-service.zip .build"
   },
@@ -22,6 +22,8 @@
     "path-parser": "^6.1.0"
   },
   "devDependencies": {
+    "@smithy/smithy-client": "^3.4.2",
+    "@types/aws-lambda": "^8.10.145",
     "@types/jest": "^29.5.12",
     "aws-sdk-client-mock": "^4.1.0",
     "jest": "^29.7.0",
