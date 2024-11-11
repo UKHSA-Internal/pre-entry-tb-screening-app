@@ -46,6 +46,7 @@ export default function Dropdown(props: Readonly<DropdownProps>) {
                 </p>
             }
             <select 
+                id={props.id}
                 className={selectClass}
                 name={props.name} 
                 aria-describedby={`${props.id}-hint`}
