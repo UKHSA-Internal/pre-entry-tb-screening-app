@@ -2,7 +2,7 @@ name: Pets UI CI
 
 on:
   pull_request:
-    paths: "app/**"
+    paths: "pets-ui/**"
   workflow_dispatch:
 
 jobs:
@@ -17,21 +17,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
-          cache: "yarn"
+          cache: "pnpm"
       - name: Install dependencies
-        run: yarn
+        run: pnpm i
       - name: Audit packages
-        run: yarn audit
+        run: pnpm audit
       - name: Run unit tests
-        run: yarn run test
-        working-directory: app/pets-ui
+        run: pnpm run test
+        working-directory: pets-ui
       - name: Run eslint
-        run: yarn run lint
-        working-directory: app/pets-ui
+        run: pnpm run lint
+        working-directory: pets-ui
         continue-on-error: true
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          projectBaseDir: app/pets-ui/
+          projectBaseDir: pets-ui/
