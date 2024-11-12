@@ -1,5 +1,6 @@
+import { Helmet } from 'react-helmet-async';
 import ContactForm from '@sections/contact-form';
-import { GridCol, GridRow, Heading, Main, Paragraph, Page } from 'govuk-react';
+import { Heading, Main, Paragraph, Page } from 'govuk-react';
 
 // ----------------------------------------------------------------------
 
@@ -7,15 +8,19 @@ import { GridCol, GridRow, Heading, Main, Paragraph, Page } from 'govuk-react';
 export default function ContactDetailsPage() {
   return (
     <Page>
+      <Helmet>
+        <title> Create Applicant Form</title>
+      </Helmet>
+
       <Main>
         {/* Page Title */}
         <Heading>
-            Service Name
+            Enter Applicant Information
         </Heading>
-        <Paragraph>Welcome to the service description or page introduction text.</Paragraph>
+        <Paragraph>Enter the applicants profile information below. Select &apos;Save and Review&apos; to save any information added</Paragraph>
 
         {/* Content Section */}
-        <GridRow>
+        {/* <GridRow>
             <GridCol setWidth="one-half">
                 <Heading size="M">Section Title</Heading>
                 <Paragraph>Content for this section goes here.</Paragraph>
@@ -25,7 +30,7 @@ export default function ContactDetailsPage() {
                 <Heading size="M">Another Section</Heading>
                 <Paragraph>Additional content or instructions go here.</Paragraph>
             </GridCol>
-        </GridRow>
+        </GridRow> */}
 
         <ContactForm />
 
