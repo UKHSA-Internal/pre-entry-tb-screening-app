@@ -4,12 +4,4 @@
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.vite.json" }
   ],
-  "compilerOptions": {
-    "paths": {
-      "@/*": ["./src/*"],
-      "@assets/*": ["./src/assets/*"],
-      "@pages/*": ["./src/pages/*"],
-      "@sections/*": ["./src/sections/*"],
-    }
-  }
 }
