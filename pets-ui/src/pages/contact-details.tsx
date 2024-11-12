@@ -1,4 +1,4 @@
-import {default as ContactForm} from '@sections/contact-form';
+import ContactForm from '@sections/contact-form';
 import { GridCol, GridRow, Heading, Main, Paragraph, Page } from 'govuk-react';
 
 // ----------------------------------------------------------------------
