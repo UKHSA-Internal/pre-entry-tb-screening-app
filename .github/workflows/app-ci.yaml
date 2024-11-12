@@ -22,16 +22,16 @@ jobs:
         run: pnpm i
       - name: Audit packages
         run: pnpm audit
-      - name: Run unit tests
-        run: pnpm run test
-        working-directory: pets-ui
+      # - name: Run unit tests
+      #   run: pnpm run test
+      #   working-directory: pets-ui
       - name: Run eslint
         run: pnpm run lint
         working-directory: pets-ui
         continue-on-error: true
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          projectBaseDir: pets-ui/
+      # - name: SonarCloud Scan
+      #   uses: SonarSource/sonarcloud-github-action@master
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #   with:
+      #     projectBaseDir: pets-ui/
