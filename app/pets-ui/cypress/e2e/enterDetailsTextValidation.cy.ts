@@ -51,9 +51,6 @@ it('Should change error messages when incorrect format is used', () => {
     cy.get('input[name="town-or-city"]').type('22 Springfield');
     cy.get('input[name="province-or-state"]').type('IL67');
     cy.get('#address-country.govuk-select').select(countryName);
-    cy.get('input[name="postcode"]').type('62701 @!');
-
-    cy.get('button[type="submit"]').click(); 
 
     // Validate the error messages above each text box are correct
     const errorMessages = [
@@ -66,7 +63,6 @@ it('Should change error messages when incorrect format is used', () => {
         "Province/state name must contain only letters, spaces and punctuation",
         "Postcode must contain only letters, numbers and spaces."
     ]
-
     // Validate the summary box appears at the top contains the correct error messages
     cy.get('[data-module="govuk-error-summary"]').should('be.visible');
     errorMessages.forEach(error => {
@@ -91,3 +87,4 @@ it('Should change error messages when incorrect format is used', () => {
 });
 });
 });
+
