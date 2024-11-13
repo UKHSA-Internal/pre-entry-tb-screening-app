@@ -50,7 +50,7 @@ export default function ContactForm() {
         <GridCol>
             <Label>
                 <LabelText>
-                    Applicant's Name
+                    Applicant&apos;s Name
                 </LabelText>
                 <Input
                     id="name"
@@ -64,7 +64,7 @@ export default function ContactForm() {
         <GridCol>
             <Label>
                 <LabelText>
-                    Applicant's Passport Information
+                    Applicant&apos;s Passport Information
                 </LabelText>
                 <Input
                     id="passport-number"
@@ -147,11 +147,12 @@ export default function ContactForm() {
         <GridCol>
         {sex.map((option) => (
             <Radio
-                inline
-                title="Applicant's Sex"
-                name="group1"
-                >
-                {option.label}
+              inline
+              title="Applicant's Sex"
+              name="group1"
+              key={option.value}
+            >
+              {option.label}
             </Radio>
         ))}
         </GridCol>
@@ -160,11 +161,11 @@ export default function ContactForm() {
     <GridRow>
         <GridCol>
         <Select
-                id="visa-type"
-                label="Applicant's Visa Type"
-                >
-                {visaOptions.map((country) => <option key={country.value} value={country.value}>{country.label}</option>)}
-            </Select>
+          id="visa-type"
+          label="Applicant's Visa Type"
+        >
+          {visaOptions.map((country) => <option key={country.value} value={country.value}>{country.label}</option>)}
+        </Select>
         </GridCol>
     </GridRow>
         
@@ -172,7 +173,7 @@ export default function ContactForm() {
         <GridCol>
             <Label>
                 <LabelText>
-                    Applicant's Home Address
+                    Applicant&apos;s Home Address
                 </LabelText>
                 <Input
                     id="address-1"
@@ -215,8 +216,8 @@ export default function ContactForm() {
     </GridRow>
         
     <Button
-        id="save-and-continue"
-        route="/applicant/confirmation"
+      id="save-and-continue"
+      route="/applicant/confirmation"
     >Save and continue</Button>
 </div>
   );
