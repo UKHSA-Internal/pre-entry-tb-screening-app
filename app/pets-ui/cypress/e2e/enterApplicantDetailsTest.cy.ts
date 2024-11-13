@@ -26,8 +26,8 @@ describe ('Fill out applicant details form', () => {
         cy.get('input[name="passport-number"]').type('AB1234567');
 
         // Randomly Select 'Country of Nationality & Issue' 
-        cy.get('#country-of-nationality').select(randomElement(countryNames));
-        cy.get('#country-of-issue').select(randomElement(countryNames));
+        cy.get('#country-of-nationality.govuk-select').select(randomElement(countryNames));
+        cy.get('#country-of-issue.govuk-select').select(randomElement(countryNames));
 
         // Enter valid data for the Issue Date
         cy.get('input[name="passport-issue-date-day"]').type('10');
@@ -36,12 +36,12 @@ describe ('Fill out applicant details form', () => {
 
         // Enter valid data for the Expiry date 
         cy.get('input[name="passport-expiry-date-day"]').type('16');
-        cy.get('input[name="passport-expiry-date-month"]').type('5');
+        cy.get('input[name="passport-expiry-date-month"]').type('APR');
         cy.get('input[name="passport-expiry-date-year"]').type('2027');
 
         // Enter valid data for the Date of Birth
         cy.get('input[name="birth-date-day"]').type('4');
-        cy.get('input[name="birth-date-month"]').type('7');
+        cy.get('input[name="birth-date-month"]').type('JULY');
         cy.get('input[name="birth-date-year"]').type('1998');
 
 
@@ -49,7 +49,7 @@ describe ('Fill out applicant details form', () => {
         cy.get('input[name="applicants-sex"]').check(randomElement(['male', 'female']));
 
         // Randomly select Visa Type
-        cy.get('#visa-type').select(randomElement(visaType));
+        cy.get('#visa-type.govuk-select').select(randomElement(visaType));
 
         // Fill out Address Information
         cy.get('input[name="address-1"]').type('123 Main St');
@@ -57,6 +57,7 @@ describe ('Fill out applicant details form', () => {
         cy.get('input[name="address-3"]').type('West Lane');
         cy.get('input[name="town-or-city"]').type('Springfield');
         cy.get('input[name="province-or-state"]').type('IL');
+        cy.get('#address-country.govuk-select').select(randomElement(countryNames));
         cy.get('input[name="postcode"]').type('62701');
 
 
