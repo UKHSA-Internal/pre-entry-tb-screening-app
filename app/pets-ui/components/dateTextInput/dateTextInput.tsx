@@ -1,5 +1,5 @@
 'use client'
-import { ChangeEventHandler } from "react";
+import { ChangeEventHandler, useState, useEffect } from "react";
 
 export interface DateProps {
     id: string;
@@ -9,6 +9,7 @@ export interface DateProps {
     // The autocomplete prop should only be used when this component is utilised for birth dates
     autocomplete: boolean;
     handleChange: ChangeEventHandler<HTMLInputElement>;
+    errorMessage: string;
 }
 
 interface AutocompleteI {
@@ -28,8 +29,20 @@ export default function DateTextInput(props: Readonly<DateProps>) {
         autocompleteBDay.year.autoComplete = "bday-year";
     }
 
+    const [errorText, setErrorText] = useState("")
+    const [wrapperClass, setWrapperClass] = useState("govuk-form-group")
+    const [dayMonthClass, setDayMonthClass] = useState("govuk-input govuk-date-input__input govuk-input--width-2")
+    const [yearClass, setYearClass] = useState("govuk-input govuk-date-input__input govuk-input--width-4")
+    
+    useEffect(() => {
+        setErrorText(props.errorMessage)
+        setWrapperClass("govuk-form-group " + `${props.errorMessage && "govuk-form-group--error"}`)
+        setDayMonthClass("govuk-input govuk-date-input__input govuk-input--width-2 " + `${props.errorMessage && "govuk-input--error"}`)
+        setYearClass("govuk-input govuk-date-input__input govuk-input--width-4 " + `${props.errorMessage && "govuk-input--error"}`)
+    }, [props.errorMessage])
+
     return (
-        <div className="govuk-form-group">
+        <div id={props.id} className={wrapperClass}>
             <fieldset className="govuk-fieldset" role="group" aria-describedby={`${props.id}-hint`}>
                 {props.title && 
                     <legend className="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -48,6 +61,11 @@ export default function DateTextInput(props: Readonly<DateProps>) {
                         {props.hint}
                     </div>
                 }
+                {errorText && 
+                    <p className="govuk-error-message">
+                        <span className="govuk-visually-hidden">Error:</span> {errorText}
+                    </p>
+                }
                 <div className="govuk-date-input" id={props.id}>
                     <div className="govuk-date-input__item">
                         <div className="govuk-form-group">
@@ -56,7 +74,7 @@ export default function DateTextInput(props: Readonly<DateProps>) {
                             </label>
                             <input 
                                 {...autocompleteBDay.day}
-                                className="govuk-input govuk-date-input__input govuk-input--width-2" 
+                                className={dayMonthClass}
                                 id={`${props.id}-day`}
                                 name={`${props.id}-day`}
                                 type="text"
@@ -70,7 +88,7 @@ export default function DateTextInput(props: Readonly<DateProps>) {
                             </label>
                             <input 
                                 {...autocompleteBDay.month}
-                                className="govuk-input govuk-date-input__input govuk-input--width-2" 
+                                className={dayMonthClass}
                                 id={`${props.id}-month`}
                                 name={`${props.id}-month`} 
                                 type="text"
@@ -84,7 +102,7 @@ export default function DateTextInput(props: Readonly<DateProps>) {
                             </label>
                             <input 
                                 {...autocompleteBDay.year}
-                                className="govuk-input govuk-date-input__input govuk-input--width-4" 
+                                className={yearClass}
                                 id={`${props.id}-year`} 
                                 name={`${props.id}-year`} 
                                 type="text"

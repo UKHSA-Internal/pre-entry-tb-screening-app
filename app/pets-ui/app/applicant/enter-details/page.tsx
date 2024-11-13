@@ -10,6 +10,8 @@ import { convertDateToString } from '@utils/convert-date-to-string';
 import { useRouter } from 'next/navigation';
 import { countryList } from '@utils/country-list';
 import { validateFreeTextFields } from '@/utils/validators/applicant-details-freetext-validation';
+import { validateDateFields } from '@/utils/validators/applicant-details-date-validation';
+import { validateRadioAndDropdownFields } from '@/utils/validators/applicant-details-radio-dropdown-validation';
 import { idToDbAttribute } from '@/utils/component-id-to-db-attribute';
 import { attributeToComponentId } from '@/utils/db-attribute-to-component-id';
 import { visaOptions } from '@/utils/visa-options';
@@ -77,7 +79,7 @@ export default function Page() {
                 [idToDbAttribute[name]]: value,
             });
         } else {
-            console.error("Unrecognised text component name")
+            console.error("Unrecognised text component name: " + name)
         }
     };
 
@@ -89,7 +91,7 @@ export default function Page() {
                 [name]: value,
             });
         } else {
-            console.error("Unrecognised date component name")
+            console.error("Unrecognised date component name: " + name)
         }
     };
 
@@ -105,7 +107,7 @@ export default function Page() {
                 [idToDbAttribute[name]]: value,
             });
         } else {
-            console.error("Unrecognised radio component name")
+            console.error("Unrecognised radio component name: " + name)
         }
     };
 
@@ -118,22 +120,29 @@ export default function Page() {
                 [idToDbAttribute[name]]: value,
             });
         } else {
-            console.error("Unrecognised dropdown component name")
+            console.error("Unrecognised dropdown component name: " + name)
         }
     };
 
     const handleButtonClick = async (event: MouseEvent) => {
         event.preventDefault()
 
-        const textErrors = (validateFreeTextFields(formData)).errorMessages
+        const textErrors = validateFreeTextFields(formData)
+        const dateErrors = validateDateFields(dateData)
+        const radioAndDropdownErrors = validateRadioAndDropdownFields(formData)
+        
         setErrorMessages({
             ...errorMessages,
-            ...textErrors
+            ...textErrors.errorMessages,
+            ...dateErrors.errorMessages,
+            ...radioAndDropdownErrors.errorMessages
         });
 
-        const errorsExist = (validateFreeTextFields(formData)).errorsExist
+        const dataIsValid = textErrors.isValid
+            && dateErrors.isValid
+            && radioAndDropdownErrors.isValid
 
-        if (!errorsExist) {
+        if (dataIsValid) {
             formData["issueDate"] = convertDateToString(
                 dateData["passport-issue-date-day"], 
                 dateData["passport-issue-date-month"], 
@@ -222,6 +231,7 @@ export default function Page() {
                 name="country"
                 options={countryList}
                 handleOptionChange={handleDropdownChange}
+                errorMessage={errorMessages.countryOfNationality}
             />
             <Dropdown
                 id="country-of-issue"
@@ -230,6 +240,7 @@ export default function Page() {
                 name="country"
                 options={countryList}
                 handleOptionChange={handleDropdownChange}
+                errorMessage={errorMessages.countryOfIssue}
             />
             <DateTextInput
                 id="passport-issue-date"
@@ -237,6 +248,7 @@ export default function Page() {
                 legend="Issue Date"
                 hint="For example, 31 3 2019"
                 handleChange={handleDateChange}
+                errorMessage={errorMessages.issueDate}
             />
             <DateTextInput
                 id="passport-expiry-date"
@@ -244,6 +256,7 @@ export default function Page() {
                 legend="Expiry Date"
                 hint="For example, 31 3 2019"
                 handleChange={handleDateChange}
+                errorMessage={errorMessages.expiryDate}
             />
             <DateTextInput
                 id="birth-date"
@@ -251,14 +264,16 @@ export default function Page() {
                 legend="Date of Birth"
                 hint="For example, 31 3 2019"
                 handleChange={handleDateChange}
+                errorMessage={errorMessages.dateOfBirth}
             />
             <Radio
-                id="sex"
+                id="applicants-sex"
                 title="Applicant's Sex"
                 isInline={RadioIsInline.TRUE}
                 answerOptions={["Male", "Female"]}
                 sortAnswersAlphabetically={false}
                 handleChange={handleRadioChange}
+                errorMessage={errorMessages.sex}
             />
             <Dropdown
                 id="visa-type"
@@ -266,6 +281,7 @@ export default function Page() {
                 name="visa"
                 options={visaOptions}
                 handleOptionChange={handleDropdownChange}
+                errorMessage={errorMessages.typesOfVisa}
             />
             <FreeText
                 id="address-1"
@@ -304,6 +320,7 @@ export default function Page() {
                 name="country"
                 options={countryList}
                 handleOptionChange={handleDropdownChange}
+                errorMessage={errorMessages.country}
             />
             <FreeText
                 id="postcode"
