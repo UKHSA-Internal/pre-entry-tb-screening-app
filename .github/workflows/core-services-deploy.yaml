@@ -87,16 +87,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
-          cache: "yarn"
+          cache: "pnpm"
 
       - name: Install dependencies
         if: ${{ matrix.service != 'lambda-authoriser' }}
-        run: yarn workspace ${{ matrix.service }} install
+        run: pnpm i
         working-directory: core-services/${{ matrix.service }}
       - name: Build service
         if: ${{ matrix.service != 'lambda-authoriser' }}
         working-directory: core-services/${{ matrix.service }}
-        run: yarn run build
+        run: pnpm run build
 
       - name: Create zip
         run: zip -r $ZIP_FILE $BUILD_FOLDER
@@ -126,9 +126,9 @@ jobs:
           script: |
             const createPackageDotJson = require('./.github/scripts/create-package-dot-json.js')
             createPackageDotJson('${{ matrix.service }}')
-      - name: Run yarn in nodejs folder
+      - name: Install dependencies in nodejs folder
         working-directory: node-zip/${{ matrix.service }}/nodejs
-        run: yarn
+        run: pnpm i
       - name: Create nodejs zip file
         working-directory: node-zip/${{ matrix.service }}
         run: zip -r nodejs.zip nodejs

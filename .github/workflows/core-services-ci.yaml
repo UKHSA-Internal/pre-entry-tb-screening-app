@@ -49,13 +49,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
-          cache: "yarn"
+          cache: "pnpm"
       - name: Install dependencies
-        run: yarn
+        run: pnpm
       - name: Audit packages
-        run: yarn audit
+        run: pnpm audit
       - name: Run unit tests
-        run: yarn run test
+        run: pnpm run test
         working-directory: core-services/${{ matrix.service }}
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
