@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, coverageConfigDefaults } from 'vitest/config'
 import react from "@vitejs/plugin-react-swc";
 import tsconfigPaths from "vite-tsconfig-paths";
 
@@ -8,5 +8,13 @@ export default defineConfig({
   server: {
     host: true,
     port: 3000,
+  },
+  test: {
+    coverage: {
+      exclude: [
+        ...coverageConfigDefaults.exclude,
+        '**/src/utils/**',
+      ]
+    },
   },
 });
