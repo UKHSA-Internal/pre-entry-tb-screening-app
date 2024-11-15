@@ -55,4 +55,4 @@ jobs:
           build: yarn run build
           start: yarn run start
           working-directory: app/pets-ui
-          browser: {{ matrix.browser }}
+          browser: ${{ matrix.browser }}
