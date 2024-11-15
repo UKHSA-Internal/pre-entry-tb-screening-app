@@ -1,6 +1,6 @@
 'use client'
 
-import { ChangeEventHandler } from "react";
+import { ChangeEventHandler, useState, useEffect } from "react";
 
 interface OptionItem {
     label: string;
@@ -14,12 +14,22 @@ interface DropdownProps {
     name: string;
     options: OptionItem[];
     handleOptionChange: ChangeEventHandler<HTMLSelectElement>;
+    errorMessage: string;
 }
 
 export default function Dropdown(props: Readonly<DropdownProps>) {
+    const [errorText, setErrorText] = useState("")
+    const [wrapperClass, setWrapperClass] = useState("govuk-form-group")
+    const [selectClass, setSelectClass] = useState("govuk-select")
+    
+    useEffect(() => {
+        setErrorText(props.errorMessage)
+        setWrapperClass("govuk-form-group " + `${props.errorMessage && "govuk-form-group--error"}`)
+        setSelectClass("govuk-select " + `${props.errorMessage && "govuk-select--error"}`)
+    }, [props.errorMessage])
 
     return (
-        <div className="govuk-form-group">
+        <div id={props.id} className={wrapperClass}>
             {props.label && 
                 <label className="govuk-label" htmlFor="location">
                     {props.label}
@@ -30,13 +40,18 @@ export default function Dropdown(props: Readonly<DropdownProps>) {
                     {props.hint}
                 </div>
             }
-            
+            {errorText && 
+                <p className="govuk-error-message">
+                    <span className="govuk-visually-hidden">Error:</span> {errorText}
+                </p>
+            }
             <select 
-                className="govuk-select" 
-                id={props.id} 
+                id={props.id}
+                className={selectClass}
                 name={props.name} 
                 aria-describedby={`${props.id}-hint`}
                 onChange={props.handleOptionChange}
+                defaultValue="choose"
             >
                 <option disabled value="choose">Select {props.name}</option>
                 {props.options.map((optionItem: OptionItem, index: number) => (
