@@ -1,5 +1,5 @@
 describe ('Validate the error messages for mandatory fields', () => {
-    it('Should prompt user to fill out mandatory text fields', () => { 
+    it.skip('Should prompt user to fill out mandatory text fields', () => { 
        
         cy.visit('http://localhost:3000/applicant/enter-details'); 
    

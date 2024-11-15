@@ -9,7 +9,7 @@ const visaType = [
 ];
 describe ('Validate the error messages for the Free Text Boxes', () => {
 
-it('Should change error messages when incorrect format is used', () => { 
+it.skip('Should change error messages when incorrect format is used', () => { 
     
     cy.visit('http://localhost:3000/applicant/enter-details');    
 

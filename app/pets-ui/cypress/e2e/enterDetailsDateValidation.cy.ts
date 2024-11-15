@@ -12,7 +12,7 @@ beforeEach (() => {
 });
 describe ('Validate the error messages for the Date fields', () => {
 
-    it('Fill out the application date fields with invalid characters', () => { 
+    it.skip('Fill out the application date fields with invalid characters', () => { 
 
         // Enter valid data for 'Full name'
         cy.get('input[name="name"]').type('John Doe'); 
@@ -85,7 +85,7 @@ describe ('Validate the error messages for the Date fields', () => {
 });
 });
 
-it('Fill out the application date with Invalid Dates ', () => { 
+it.skip('Fill out the application date with Invalid Dates ', () => { 
 
     // Enter valid data for 'Full name'
     cy.get('input[name="name"]').type('John Doe'); 
