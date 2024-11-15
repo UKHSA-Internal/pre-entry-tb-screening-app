@@ -1,50 +1,22 @@
-# React + TypeScript + Vite
+# Complete UK Pre-Entry Health Screening - UI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Setup
 
-Currently, two official plugins are available:
+This project uses:
+- [Vite](https://vite.dev/) with [React](https://react.dev/) and [TypeScript](https://www.typescriptlang.org/docs/)
+- [govuk-react](https://github.com/govuk-react/govuk-react) for GDS-compliant UI components
+- [Vitest](https://vitest.dev/) and [Cypress](https://www.cypress.io/) for testing
+- [Redux](https://redux.js.org/) for state management
+- [pnpm](https://pnpm.io/) for package management
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+To install dependencies, run `pnpm i`.
 
-## Expanding the ESLint configuration
+## Commands
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- To start the UI in development mode, run `pnpm run dev`.
+- To create a build in `/dist`, run `pnpm run build`.
+- To preview a build created locally, run `pnpm run preview`.
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+- To run unit tests, run `pnpm run test`.
+- To open the cypress UI, run `pnpm run cypress`.
+- To run cypress E2E tests in the terminal, run `npx cypress run`.
