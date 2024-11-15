@@ -13,28 +13,12 @@ export default function ContactDetailsPage() {
       </Helmet>
 
       <Main>
-        {/* Page Title */}
         <Heading>
             Enter Applicant Information
         </Heading>
         <Paragraph>Enter the applicants profile information below. Select &apos;Save and Review&apos; to save any information added</Paragraph>
-
-        {/* Content Section */}
-        {/* <GridRow>
-            <GridCol setWidth="one-half">
-                <Heading size="M">Section Title</Heading>
-                <Paragraph>Content for this section goes here.</Paragraph>
-            </GridCol>
-
-            <GridCol setWidth="one-half">
-                <Heading size="M">Another Section</Heading>
-                <Paragraph>Additional content or instructions go here.</Paragraph>
-            </GridCol>
-        </GridRow> */}
-
         <ContactForm />
-
-    </Main>
+      </Main>
 
     </Page>
   );
