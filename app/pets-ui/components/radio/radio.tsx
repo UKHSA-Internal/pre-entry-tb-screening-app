@@ -1,5 +1,5 @@
 'use client'
-import { FormEventHandler } from "react";
+import { FormEventHandler, useState, useEffect } from "react";
 
 export enum RadioIsInline {
     TRUE = "govuk-radios govuk-radios--inline",
@@ -15,6 +15,7 @@ export interface RadioProps {
     answerOptions: string[];
     sortAnswersAlphabetically: boolean;
     handleChange: FormEventHandler<HTMLDivElement>;
+    errorMessage: string;
 }
 
 export default function Radio(props: Readonly<RadioProps>) {
@@ -30,10 +31,18 @@ export default function Radio(props: Readonly<RadioProps>) {
     let answerOptions: string[] = props.answerOptions
     if (props.sortAnswersAlphabetically) {
         answerOptions.sort((a, b) => a.localeCompare(b))
-    } 
+    }
+
+    const [errorText, setErrorText] = useState("")
+    const [wrapperClass, setWrapperClass] = useState("govuk-form-group")
+    
+    useEffect(() => {
+        setErrorText(props.errorMessage)
+        setWrapperClass("govuk-form-group " + `${props.errorMessage && "govuk-form-group--error"}`)
+    }, [props.errorMessage])
     
     return (
-        <div id={props.id} className="govuk-form-group">
+        <div id={props.id} className={wrapperClass}>
             <fieldset className="govuk-fieldset">
                 {props.title && 
                     <legend className="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -51,6 +60,11 @@ export default function Radio(props: Readonly<RadioProps>) {
                     <div id="changedName-hint" className="govuk-hint">
                         {props.hint}
                     </div>
+                }
+                {errorText && 
+                    <p className="govuk-error-message">
+                        <span className="govuk-visually-hidden">Error:</span> {errorText}
+                    </p>
                 }
                 <div className={props.isInline} data-module="govuk-radios">
                     {answerOptions.map((answerOption: string, index: number) => (

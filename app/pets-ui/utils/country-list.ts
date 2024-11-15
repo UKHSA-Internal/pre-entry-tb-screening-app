@@ -1,4 +1,6 @@
-export const countryList = [
+import { DropdownOptions } from "./IDropdownOptions"
+
+export const countryList: DropdownOptions[] = [
     {
         "value": "AFG",
         "label": "Afghanistan"

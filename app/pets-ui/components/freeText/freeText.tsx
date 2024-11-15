@@ -1,5 +1,5 @@
 'use client'
-import { ChangeEventHandler } from "react";
+import { ChangeEventHandler, useEffect, useState } from "react";
 
 export interface FreeTextProps {
     id: string;
@@ -7,11 +7,22 @@ export interface FreeTextProps {
     label?: string;
     hint?: string;
     handleChange: ChangeEventHandler<HTMLInputElement>;
+    errorMessage: string;
 }
 
 export default function FreeText(props: Readonly<FreeTextProps>) {
+    const [errorText, setErrorText] = useState("")
+    const [wrapperClass, setWrapperClass] = useState("govuk-form-group")
+    const [inputClass, setInputClass] = useState("govuk-input")
+    
+    useEffect(() => {
+        setErrorText(props.errorMessage)
+        setWrapperClass("govuk-form-group " + `${props.errorMessage && "govuk-form-group--error"}`)
+        setInputClass("govuk-input " + `${props.errorMessage && "govuk-input--error"}`)
+    }, [props.errorMessage])
+    
     return (
-        <div id={props.id} className="govuk-form-group">
+        <div id={props.id} className={wrapperClass}>
             <h1 className="govuk-label-wrapper">
                 <label className="govuk-label govuk-label--l" htmlFor={props.id}>
                     {props.title}
@@ -27,7 +38,12 @@ export default function FreeText(props: Readonly<FreeTextProps>) {
                     {props.hint}
                 </div>
             }
-            <input className="govuk-input" name={props.id} type="text" onChange={props.handleChange}></input>
+            {errorText && 
+                <p className="govuk-error-message">
+                    <span className="govuk-visually-hidden">Error:</span> {errorText}
+                </p>
+            }  
+            <input className={inputClass} name={props.id} type="text" onChange={props.handleChange}></input>
         </div>
     )
 }
