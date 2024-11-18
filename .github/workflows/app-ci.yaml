@@ -51,10 +51,15 @@ jobs:
         with:
           node-version: 23.x
           cache: "pnpm"
-      - name: Cypress install & run
+      - name: Cypress install dependencies
         uses: cypress-io/github-action@v6
         with:
+          runTests: false
+      - name: Cypress run tests
+        uses: cypress-io/github-action@v6
+        with:
+          install: false
+          working-directory: pets-ui
           build: pnpm run build
           start: pnpm run start
-          working-directory: pets-ui
           browser: ${{ matrix.browser }}
