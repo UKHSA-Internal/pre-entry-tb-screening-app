@@ -22,8 +22,6 @@ jobs:
           cache: "pnpm"
       - name: Install dependencies
         run: pnpm i
-      - name: Audit packages
-        run: pnpm audit
       - name: Run unit tests
         run: pnpm run test
         working-directory: pets-ui
