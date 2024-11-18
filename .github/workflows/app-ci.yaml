@@ -35,7 +35,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: pets-ui/
-  
+
   cypress-run:
     runs-on: ubuntu-latest
     strategy:
@@ -56,5 +56,5 @@ jobs:
         with:
           build: pnpm run build
           start: pnpm run start
-          working-directory: app/pets-ui
+          working-directory: pets-ui
           browser: ${{ matrix.browser }}
