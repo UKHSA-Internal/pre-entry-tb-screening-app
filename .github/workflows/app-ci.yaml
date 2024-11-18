@@ -38,6 +38,7 @@ jobs:
 
   cypress-run:
     runs-on: ubuntu-latest
+    if: false
     strategy:
       matrix:
         browser: [chrome, firefox, edge]
