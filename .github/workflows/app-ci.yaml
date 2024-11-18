@@ -61,5 +61,5 @@ jobs:
           install: false
           working-directory: pets-ui
           build: pnpm run build
-          start: pnpm run start
+          start: pnpm run preview
           browser: ${{ matrix.browser }}
