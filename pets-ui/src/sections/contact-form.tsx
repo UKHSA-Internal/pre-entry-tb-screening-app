@@ -46,106 +46,105 @@ export default function ContactForm() {
 
   return (
     <div>
-    <GridRow>
+      <GridRow>
         <GridCol>
-            <Label>
-                <LabelText>
-                    Applicant&apos;s Name
-                </LabelText>
-                <Input
-                    id="name"
-                    title="Applicant's Name"
-                    label="Full Name"
-                />
-            </Label>
+          <Label>
+            <LabelText>Applicant&apos;s Name</LabelText>
+            <Input
+              id="name"
+              title="Applicant's Name"
+              label="Full Name"
+            />
+          </Label>
         </GridCol>
-    </GridRow>
-    <GridRow>
+      </GridRow>
+      <GridRow>
         <GridCol>
-            <Label>
-                <LabelText>
-                    Applicant&apos;s Passport Information
-                </LabelText>
-                <Input
-                    id="passport-number"
-                    title="Applicant's Passport Information"
-                    label="Passport Number"
-                    hint="For example, 1208297A"
-                />
-            </Label>
+          <Label>
+            <LabelText>Applicant&apos;s Passport Information</LabelText>
+            <Input
+              id="passport-number"
+              title="Applicant's Passport Information"
+              label="Passport Number"
+              hint="For example, 1208297A"
+            />
+          </Label>
         </GridCol>
-    </GridRow>
-    <GridRow>
+      </GridRow>
+      <GridRow>
         <GridCol>
-            <Select
-                id="country-of-nationality"
-                label="Country of Nationality">
-                {CountryList.map((country) => <option key={country.value} value={country.value}>{country.label}</option>)}
-            </Select>
+          <Select
+            id="country-of-nationality"
+            label="Country of Nationality"
+          >
+            { CountryList.map((country) => 
+              <option key={country.value} value={country.value}>{country.label}</option>) 
+            }
+          </Select>
         </GridCol>
-    </GridRow>
-    <GridRow>
+      </GridRow>
+      <GridRow>
         <GridCol>
-        <Select
+          <Select
             id="country-of-issue"
             label="Country of Issue"
             hint="This is usually shown on the first page of the passport, at the top. Use the English spelling or the country code."
-            >
-            {CountryList.map((country) => <option key={country.value} value={country.value}>{country.label}</option>)}
-        </Select>
-            
+          >
+            { CountryList.map((country) => 
+              <option key={country.value} value={country.value}>{country.label}</option>)
+            }
+          </Select>
         </GridCol>
-    </GridRow>
-    <GridRow>
+      </GridRow>
+      <GridRow>
         <GridCol>
-            <DateField
-                id="date-of-birth"
-                title="Date of Birth"
-                inputs={{
-                    day: { },
-                    month: { },
-                    year: { }
-                }}
-                >     
-                Date of Birth
-            </DateField>
+          <DateField
+            id="date-of-birth"
+            title="Date of Birth"
+            inputs={{
+              day: { },
+              month: { },
+              year: { }
+            }}
+          >     
+            Date of Birth
+          </DateField>
         </GridCol>
-    </GridRow>
-    <GridRow>
+      </GridRow>
+      <GridRow>
         <GridCol>
-            <DateField
-                id="passport-issue-date"
-                title="Passport Issue Date"
-                inputs={{
-                    day: { },
-                    month: { },
-                    year: { }
-                }}
-                >     
-                Passport Issue Date
-            </DateField>
+          <DateField
+            id="passport-issue-date"
+            title="Passport Issue Date"
+            inputs={{
+              day: { },
+              month: { },
+              year: { }
+            }}
+          >     
+            Passport Issue Date
+          </DateField>
         </GridCol>
-    </GridRow>
-    <GridRow>
+      </GridRow>
+      <GridRow>
         <GridCol>
-            <DateField
-                id="passport-expiry-date"
-                title="Passport Expiry Date"
-                inputs={{
-                    day: { },
-                    month: { },
-                    year: { }
-                }}
-                >     
-                Passport Expiry Date
-            </DateField>
+          <DateField
+            id="passport-expiry-date"
+            title="Passport Expiry Date"
+            inputs={{
+              day: { },
+              month: { },
+              year: { }
+            }}
+          >     
+            Passport Expiry Date
+          </DateField>
         </GridCol>
-    </GridRow>
-        
-        
-    <GridRow>
+      </GridRow>
+          
+      <GridRow>
         <GridCol>
-        {sex.map((option) => (
+          {sex.map((option) => (
             <Radio
               inline
               title="Applicant's Sex"
@@ -154,11 +153,11 @@ export default function ContactForm() {
             >
               {option.label}
             </Radio>
-        ))}
+          ))}
         </GridCol>
-    </GridRow>
-        
-    <GridRow>
+      </GridRow>
+          
+      <GridRow>
         <GridCol>
         <Select
           id="visa-type"
@@ -167,58 +166,57 @@ export default function ContactForm() {
           {visaOptions.map((country) => <option key={country.value} value={country.value}>{country.label}</option>)}
         </Select>
         </GridCol>
-    </GridRow>
-        
-    <GridRow>
+      </GridRow>
+          
+      <GridRow>
         <GridCol>
-            <Label>
-                <LabelText>
-                    Applicant&apos;s Home Address
-                </LabelText>
-                <Input
-                    id="address-1"
-                    title="Applicant's Home Address"
-                    label="Address line 1"
-                />
-                <Input
-                        id="address-2"
-                        label="Address line 2"
-                    />
-                <Input
-                        id="address-3"
-                        label="Address line 3"
-                    />
-                <Input
-                        id="town-or-city"
-                        label="Town/City"
-                    />
-                <Input
-                        id="province-or-state"
-                        label="Province/State"
-                    />
-                <Input
-                        id="postcode"
-                        label="Postcode"
-                    />
-            </Label>
+          <Label>
+            <LabelText>
+                Applicant&apos;s Home Address
+            </LabelText>
+            <Input
+              id="address-1"
+              title="Applicant's Home Address"
+              label="Address line 1"
+            />
+            <Input
+              id="address-2"
+              label="Address line 2"
+            />
+            <Input
+              id="address-3"
+              label="Address line 3"
+            />
+            <Input
+              id="town-or-city"
+              label="Town/City"
+            />
+            <Input
+              id="province-or-state"
+              label="Province/State"
+            />
+            <Input
+              id="postcode"
+              label="Postcode"
+            />
+          </Label>
         </GridCol>
-    </GridRow>
-        
-    <GridRow>
+      </GridRow>
+          
+      <GridRow>
         <GridCol>
-            <Select
+          <Select
             id="address-country"
             label="Country"
-            >
-                {CountryList.map((country) => <option key={country.value} value={country.value}>{country.label}</option>)}
-            </Select>
+          >
+            {CountryList.map((country) => <option key={country.value} value={country.value}>{country.label}</option>)}
+          </Select>
         </GridCol>
-    </GridRow>
-        
-    <Button
-      id="save-and-continue"
-      route="/applicant/confirmation"
-    >Save and continue</Button>
-</div>
+      </GridRow>
+          
+      <Button id="save-and-continue" route="/applicant/confirmation">
+        Save and continue
+      </Button>
+    </div>
   );
 }
