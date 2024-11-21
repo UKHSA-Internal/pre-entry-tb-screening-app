@@ -46,9 +46,9 @@ export default function Radio(props: Readonly<RadioProps>) {
             <fieldset className="govuk-fieldset">
                 {props.title && 
                     <legend className="govuk-fieldset__legend govuk-fieldset__legend--m">
-                        <h1 className="govuk-fieldset__heading">
+                        <h2 className="govuk-fieldset__heading">
                             {props.title}
-                        </h1>
+                        </h2>
                     </legend>
                 }
                 {props.legend && 

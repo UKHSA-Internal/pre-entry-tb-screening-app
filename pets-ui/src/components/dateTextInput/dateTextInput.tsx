@@ -45,10 +45,10 @@ export default function DateTextInput(props: Readonly<DateProps>) {
         <div id={props.id} className={wrapperClass}>
             <fieldset className="govuk-fieldset" role="group" aria-describedby={`${props.id}-hint`}>
                 {props.title && 
-                    <legend className="govuk-fieldset__legend govuk-fieldset__legend--l">
-                        <h1 className="govuk-fieldset__heading">
+                    <legend className="govuk-fieldset__legend govuk-fieldset__legend--m">
+                        <h2 className="govuk-fieldset__heading">
                             {props.title}
-                        </h1>
+                        </h2>
                     </legend>
                 }
                 {props.legend && 
