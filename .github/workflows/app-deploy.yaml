@@ -16,16 +16,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
-          cache: "yarn"
+          node-version: 23.x
+          cache: "pnpm"
       - name: Install dependencies
-        run: yarn
+        run: pnpm i
       - name: Build application
-        run: yarn run build
-        working-directory: app/pets-ui
+        run: pnpm run build
+        working-directory: pets-ui
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -40,5 +42,5 @@ jobs:
           secret-ids: AppDeploy
           parse-json-secrets: true
       - name: Upload App to S3
-        working-directory: app/pets-ui/.next
+        working-directory: pets-ui/dist
         run: aws s3 sync . s3://$APPDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $APPDEPLOY_SSE_KEY

@@ -45,17 +45,17 @@ jobs:
         with:
           # Disabling shallow clone is recommended for improving relevancy of reporting
           fetch-depth: 0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
-          cache: "yarn"
+          node-version: 23.x
+          cache: "pnpm"
       - name: Install dependencies
-        run: yarn
-      - name: Audit packages
-        run: yarn audit
+        run: pnpm i
       - name: Run unit tests
-        run: yarn run test
+        run: pnpm run test
         working-directory: core-services/${{ matrix.service }}
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master

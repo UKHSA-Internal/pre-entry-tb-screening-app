@@ -41,3 +41,9 @@
   - for powershell, the filepath is returned by running `$PROFILE`
 - add the following to your terminal's configuration file: `jabba use openjdk@1.11.0`
 - run `java --version` in a brand new terminal - this should return `openjdk@1.11.0`
+
+## Automated dependency updates
+
+### Renovate
+- The `renovate.yaml` workflow will run at 25 minutes past the hour every 5 hours.
+- PRs for dependencies requiring updates will be opened by the workflow.

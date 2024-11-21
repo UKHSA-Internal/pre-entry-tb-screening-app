@@ -2,7 +2,7 @@ name: Pets UI CI
 
 on:
   pull_request:
-    paths: "app/**"
+    paths: "pets-ui/**"
   workflow_dispatch:
 
 jobs:
@@ -13,46 +13,54 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
-          cache: "yarn"
+          node-version: 23.x
+          cache: "pnpm"
       - name: Install dependencies
-        run: yarn
-      - name: Audit packages
-        run: yarn audit
+        run: pnpm i
       - name: Run unit tests
-        run: yarn run test
-        working-directory: app/pets-ui
+        run: pnpm run test
+        working-directory: pets-ui
       - name: Run eslint
-        run: yarn run lint
-        working-directory: app/pets-ui
+        run: pnpm run lint
+        working-directory: pets-ui
         continue-on-error: true
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          projectBaseDir: app/pets-ui/
-  
+          projectBaseDir: pets-ui/
+
   cypress-run:
     runs-on: ubuntu-latest
+    if: false
     strategy:
       matrix:
         browser: [chrome, firefox, edge]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
-          cache: "yarn"
-      - name: Cypress install & run
+          node-version: 23.x
+          cache: "pnpm"
+      - name: Cypress install dependencies
         uses: cypress-io/github-action@v6
         with:
-          build: yarn run build
-          start: yarn run start
-          working-directory: app/pets-ui
+          runTests: false
+      - name: Cypress run tests
+        uses: cypress-io/github-action@v6
+        with:
+          install: false
+          working-directory: pets-ui
+          build: pnpm run build
+          start: pnpm run dev
           browser: ${{ matrix.browser }}

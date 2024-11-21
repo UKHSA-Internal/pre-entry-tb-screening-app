@@ -6,7 +6,7 @@ on:
     types: [closed]
     branches: [release/*]
     paths:
-      - "app/**"
+      - "pets-ui/**"
 
 jobs:
   pets-ui:
