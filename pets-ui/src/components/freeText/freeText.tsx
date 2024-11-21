@@ -24,7 +24,7 @@ export default function FreeText(props: Readonly<FreeTextProps>) {
     return (
         <div id={props.id} className={wrapperClass}>
             <h2 className="govuk-label-wrapper">
-                <label className="govuk-label govuk-label--l" htmlFor={props.id}>
+                <label className="govuk-label govuk-label--m" htmlFor={props.id}>
                     {props.title}
                 </label>
             </h2>

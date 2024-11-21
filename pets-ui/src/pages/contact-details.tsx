@@ -13,7 +13,8 @@ export default function ContactDetailsPage() {
     <Header/>
       <div className="govuk-width-container">
         <main className="govuk-main-wrapper">
-          <h1 className="govuk-heading-xl">Enter Applicant Details</h1>
+          <h1 className="govuk-heading-l">Enter Applicant Information</h1>
+          <p className="govuk-body">Enter the applicant&apos;s profile information below. Select &apos;Save and continue&apos; to save any information added.</p>
           <ApplicantForm/>
         </main>
       </div>
