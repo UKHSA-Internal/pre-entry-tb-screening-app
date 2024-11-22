@@ -1,7 +1,8 @@
 import { Helmet } from 'react-helmet-async';
 import Header from "@/components/header/header";
 import Footer from "@/components/footer/footer";
-import ApplicantForm from '@/sections/applicant-form';
+// import ApplicantForm from '@/sections/applicant-form';
+import ApplicantFormTemp from '@/sections/applicant-form-temp';
 import "./contact-details.scss"
 
 export default function ContactDetailsPage() {
@@ -15,7 +16,8 @@ export default function ContactDetailsPage() {
         <main className="govuk-main-wrapper">
           <h1 className="govuk-heading-l">Enter Applicant Information</h1>
           <p className="govuk-body">Enter the applicant&apos;s profile information below. Select &apos;Save and continue&apos; to save any information added.</p>
-          <ApplicantForm/>
+          {/* <ApplicantForm/> */}
+          <ApplicantFormTemp/>
         </main>
       </div>
       <Footer/>
