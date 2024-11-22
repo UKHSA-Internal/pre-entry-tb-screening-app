@@ -997,4 +997,26 @@ const countryList = [
     }
 ];
 
-export default countryList;
+const attributeToComponentId: {[key:string]:string} = {
+  "fullName": "name",
+  "passportNumber": "passport-number",
+  "countryOfNationality": "country-of-nationality",
+  "countryOfIssue": "country-of-issue",
+  "issueDate": "passport-issue-date",
+  "expiryDate": "passport-expiry-date",
+  "dateOfBirth": "birth-date",
+  "sex": "applicants-sex",
+  "applicantHomeAddress1": "address-1",
+  "applicantHomeAddress2": "address-2",
+  "applicantHomeAddress3": "address-3",
+  "townOrCity": "town-or-city",
+  "provinceOrState": "province-or-state",
+  "country": "address-country",
+  "postcode": "postcode"
+}
+
+const validateFullName: (value?: string) => string | undefined = (value) => {
+  return value ? undefined : 'Please enter a first name';
+}
+
+export { countryList, attributeToComponentId, validateFullName };

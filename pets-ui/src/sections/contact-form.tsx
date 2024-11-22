@@ -1,6 +1,6 @@
 // @mui
 import { Input, Select, DateField, Button, Radio, GridRow, GridCol, LabelText, Label } from "govuk-react"
-import { default as CountryList } from "../utils/country-list"
+import { countryList } from "../utils/helpers"
 
 // ----------------------------------------------------------------------
 
@@ -77,7 +77,7 @@ export default function ContactForm() {
             id="country-of-nationality"
             label="Country of Nationality"
           >
-            { CountryList.map((country) => 
+            { countryList.map((country) => 
               <option key={country.value} value={country.value}>{country.label}</option>) 
             }
           </Select>
@@ -90,7 +90,7 @@ export default function ContactForm() {
             label="Country of Issue"
             hint="This is usually shown on the first page of the passport, at the top. Use the English spelling or the country code."
           >
-            { CountryList.map((country) => 
+            { countryList.map((country) => 
               <option key={country.value} value={country.value}>{country.label}</option>)
             }
           </Select>
@@ -209,7 +209,7 @@ export default function ContactForm() {
             id="address-country"
             label="Country"
           >
-            {CountryList.map((country) => <option key={country.value} value={country.value}>{country.label}</option>)}
+            {countryList.map((country) => <option key={country.value} value={country.value}>{country.label}</option>)}
           </Select>
         </GridCol>
       </GridRow>

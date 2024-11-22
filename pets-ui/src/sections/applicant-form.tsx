@@ -1,5 +1,8 @@
-import { useForm, SubmitHandler } from "react-hook-form"
-import { default as CountryList } from "@/utils/country-list"
+import { useState } from "react"
+import { useForm, SubmitHandler, FormProvider, useFormContext } from "react-hook-form"
+import { useNavigate } from "react-router-dom";
+
+import { countryList, attributeToComponentId } from "@/utils/helpers"
 import Button, { ButtonType } from "@/components/button/button"
 import DateTextInput from "@/components/dateTextInput/dateTextInput"
 import Dropdown from "@/components/dropdown/dropdown"
@@ -8,90 +11,137 @@ import Radio, { RadioIsInline } from "@/components/radio/radio"
 
 type FormValues = {
   fullName: string
-  dateOfBirth: string
+  dateOfBirth: {
+    year: string | number;
+    month: string | number;
+    day: string | number;
+  }
   sex: string
   passportNumber: string
   countryOfNationality: string
   countryOfIssue: string
-  passportIssueDate: string
-  passportExpiryDate: string 
+  passportIssueDate: {
+    year: string | number;
+    month: string | number;
+    day: string | number;
+  }
+  passportExpiryDate: {
+    year: string | number;
+    month: string | number;
+    day: string | number;
+  } 
   applicantHomeAddress1: string
-  applicantHomeAddress2: string
-  applicantHomeAddress3: string
+  applicantHomeAddress2?: string
+  applicantHomeAddress3?: string
   townOrCity: string
   provinceOrState: string
   country: string
-  postcode: string
+  postcode?: string
 }
 
 const ApplicantForm = () => {
-  const { register, handleSubmit } = useForm<FormValues>()
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    alert(JSON.stringify(data))
+  const { 
+    register, 
+    handleSubmit,
+    formState: { errors },
+    //  ...rest
+  } = useForm<FormValues>({
+    reValidateMode: 'onSubmit'
+  })
+  // const methods = useForm<FormValues>({reValidateMode: 'onSubmit'});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [submittedData, setSubmittedData] = useState<FormValues>();
+  const navigate = useNavigate();
+
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    setIsSubmitting(true);
+    try {
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      await fetch("http://localhost:3004/dev/register-applicant", {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: myHeaders,
+      })
+      setHasSubmitted(true)
+      setSubmittedData(data)
+      navigate("/applicant/confirmation")
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error submitting POST request:")
+        console.error(error?.message);
+      } else {
+        console.error("Error submitting POST request: unknown error type")
+        console.error(error);
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
-  return (
-    // <form onSubmit={handleSubmit(onSubmit)}>
-    //   <GridRow>
-    //     <GridCol>
-    //       <Label>
-    //         <LabelText>Applicant&apos;s Name</LabelText>
-    //         <Input
-    //           {...register("fullName", { required: true, pattern: /[^a-zA-Z\s]+/})}
-    //           id="name"
-    //           title="Applicant's Name"
-    //           label="Full Name"
-    //         />
-    //       </Label>
-    //     </GridCol>
-    //   </GridRow>
-    //   <GridRow>
-    //     <GridCol>
-    //       <Label>
-    //         <LabelText>Applicant&apos;s Passport Information</LabelText>
-    //         <Input
-    //           {...register("passportNumber", { required: true, pattern: /[^a-zA-Z\d]+/})}
-    //           id="passport-number"
-    //           title="Applicant's Passport Information"
-    //           label="Passport Number"
-    //           hint="For example, 1208297A"
-    //         />
-    //       </Label>
-    //     </GridCol>
-    //   </GridRow>
-    //   <GridRow>
-    //     <GridCol>
-    //       <Select
-    //         {...register("countryOfNationality", { required: true})}
-    //         id="country-of-nationality"
-    //         label="Country of Nationality"
-    //       >
-    //         { CountryList.map((country) => 
-    //           <option key={country.value} value={country.value}>{country.label}</option>) 
-    //         }
-    //       </Select>
-    //     </GridCol>
-    //   </GridRow>
-    //   <Button 
-    //     id="save-and-continue" 
-    //     route="/applicant/confirmation" 
-    //     type="submit"
-    //   >
-    //     Save and Continue
-    //   </Button>
-    // </form>
+  // const errors = methods.formState.errors;
+  // const handleSubmit = methods.handleSubmit;
 
+  const errorsToShow = Object.keys(errors);
+
+  return (
+    // <FormProvider {...methods}>
     <form onSubmit={handleSubmit(onSubmit)}>
-      
+        {!!errorsToShow?.length &&
+          <div className="govuk-error-summary" data-module="govuk-error-summary">
+            <div role="alert">
+              <h2 className="govuk-error-summary__title">
+              There is a problem
+              </h2>
+              <div className="govuk-error-summary__body">
+                <ul className="govuk-list govuk-error-summary__list">
+                  {errorsToShow.map((error) => (
+                    <li key={attributeToComponentId[error]}>
+                      <a href={"#" + attributeToComponentId[error]}>{errors[error as keyof typeof errors]?.message}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        }
         <FreeText
-          {...register("fullName", { required: true, pattern: /[^a-zA-Z\s]+/})}
+          {...register("fullName", { 
+            required: "Enter name",
+            pattern: {
+              value: /[^a-zA-Z\s]+/,
+              message: "Failed validation"
+            }
+          })}
           id="name"
           title="Applicant's Personal Details"
           label="Full Name"
           // handleChange={handleTextChange}
-          // errorMessage={errorMessages.fullName}
+          errorMessage={errors?.fullName?.message ?? ""}
           handleChange={() => {}}
-          errorMessage=""
+        />
+        {/* <p>{errors?.fullName?.message}</p> */}
+        {/* <p>{errorsToShow["fullName"]}</p> */}
+
+        {/* <input 
+          {...register("sex", { 
+            required: "Enter sex",
+            pattern: {
+              value: /A-Za-z\s/, 
+              message: "Sex must contain only letters and spaces."
+            }
+           })}
+        />
+        <p>{errors?.sex?.message}</p> */}
+
+        <FreeText
+          id="passportNumber"
+          title="Applicant's PN"
+          label="P Number"
+          // handleChange={handleTextChange}
+          errorMessage={""}
+          handleChange={() => {}}
         />
 
         <DateTextInput
@@ -136,7 +186,7 @@ const ApplicantForm = () => {
           id="country-of-nationality"
           label="Country of Nationality"
           name="country"
-          options={CountryList}
+          options={countryList}
           // handleOptionChange={handleDropdownChange}
           // errorMessage={errorMessages.countryOfNationality}
           handleOptionChange={() => {}}
@@ -149,7 +199,7 @@ const ApplicantForm = () => {
           label="Country of Issue"
           hint="This is usually shown on the first page of the passport, at the top. Use the English spelling or the country code."
           name="country"
-          options={CountryList}
+          options={countryList}
           // handleOptionChange={handleDropdownChange}
           // errorMessage={errorMessages.countryOfIssue}
           handleOptionChange={() => {}}
@@ -236,7 +286,7 @@ const ApplicantForm = () => {
           id="address-country"
           label="Country"
           name="country"
-          options={CountryList}
+          options={countryList}
           // handleOptionChange={handleDropdownChange}
           // errorMessage={errorMessages.country}
           handleOptionChange={() => {}}
@@ -261,8 +311,8 @@ const ApplicantForm = () => {
           // handleClick={handleButtonClick}
           handleClick={() => {}}
         />
-
     </form>
+    // </FormProvider>
   )
 }
 

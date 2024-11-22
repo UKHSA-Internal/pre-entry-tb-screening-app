@@ -1,6 +1,8 @@
 'use client'
 import { ChangeEventHandler, useEffect, useState } from "react";
 
+// import { useFormContext } from "react-hook-form";
+
 export interface FreeTextProps {
     id: string;
     title?: string;
@@ -8,12 +10,15 @@ export interface FreeTextProps {
     hint?: string;
     handleChange: ChangeEventHandler<HTMLInputElement>;
     errorMessage: string;
+    // input?:  string;
 }
 
 export default function FreeText(props: Readonly<FreeTextProps>) {
     const [errorText, setErrorText] = useState("")
     const [wrapperClass, setWrapperClass] = useState("govuk-form-group")
     const [inputClass, setInputClass] = useState("govuk-input")
+
+    // const { register } = useFormContext() //retrieve all hook methods
     
     useEffect(() => {
         setErrorText(props.errorMessage)
@@ -43,7 +48,20 @@ export default function FreeText(props: Readonly<FreeTextProps>) {
                     <span className="govuk-visually-hidden">Error:</span> {errorText}
                 </p>
             }  
-            <input className={inputClass} name={props.id} type="text" onChange={props.handleChange}></input>
+            <input 
+              // {...register("passportNumber", {
+              //   required: "Enter sex",
+              //   pattern: {
+              //     value: /A-Za-z\s/, 
+              //     message: "Sex must contain only letters and spaces."
+              //   }
+              // }) }
+              className={inputClass} 
+              name={props.id} 
+              type="text" 
+              onChange={props.handleChange}
+            >
+            </input>
         </div>
     )
 }
