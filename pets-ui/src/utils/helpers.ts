@@ -1005,7 +1005,7 @@ const attributeToComponentId: {[key:string]:string} = {
   "issueDate": "passport-issue-date",
   "expiryDate": "passport-expiry-date",
   "dateOfBirth": "birth-date",
-  "sex": "applicants-sex",
+  "sex": "sex",
   "applicantHomeAddress1": "address-1",
   "applicantHomeAddress2": "address-2",
   "applicantHomeAddress3": "address-3",
@@ -1019,4 +1019,12 @@ const validateFullName: (value?: string) => string | undefined = (value) => {
   return value ? undefined : 'Please enter a first name';
 }
 
-export { countryList, attributeToComponentId, validateFullName };
+const formRegex = {
+  "lettersAndNumbers": /^[A-Za-z0-9]+$/,
+  "lettersAndSpaces": /^[A-Za-z\s]+$/,
+  "lettersNumbersAndSpaces": /^[A-Za-z0-9\s]+$/,
+  "lettersSpacesAndPunctuation": /^[A-Za-z\s,-/()]+$/,
+  "lettersNumbersSpacesAndPunctuation": /^[A-Za-z0-9\s,-/()]+$/,
+}
+
+export { countryList, attributeToComponentId, validateFullName, formRegex };
