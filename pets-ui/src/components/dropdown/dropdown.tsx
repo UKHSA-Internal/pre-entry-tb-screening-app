@@ -1,6 +1,5 @@
-'use client'
-
-import { ChangeEventHandler, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useFormContext } from "react-hook-form";
 
 interface OptionItem {
     label: string;
@@ -11,13 +10,14 @@ interface DropdownProps {
     id: string;
     label?: string;
     hint?: string;
-    name: string;
     options: OptionItem[];
-    handleOptionChange: ChangeEventHandler<HTMLSelectElement>;
     errorMessage: string;
+    formValue: string;
+    required: string | false;
 }
 
 export default function Dropdown(props: Readonly<DropdownProps>) {
+    const { register } = useFormContext()
     const [errorText, setErrorText] = useState("")
     const [wrapperClass, setWrapperClass] = useState("govuk-form-group")
     const [selectClass, setSelectClass] = useState("govuk-select")
@@ -48,12 +48,13 @@ export default function Dropdown(props: Readonly<DropdownProps>) {
             <select 
                 id={props.id}
                 className={selectClass}
-                name={props.name} 
                 aria-describedby={`${props.id}-hint`}
-                onChange={props.handleOptionChange}
-                defaultValue="choose"
+                defaultValue=""
+                {...register(props.formValue, { 
+                    required: props.required,
+                })}
             >
-                <option disabled value="choose">Select {props.name}</option>
+                <option disabled value="">Select an option</option>
                 {props.options.map((optionItem: OptionItem, index: number) => (
                     <option 
                         value={optionItem.value} 

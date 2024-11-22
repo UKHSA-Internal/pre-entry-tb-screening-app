@@ -1,5 +1,5 @@
-'use client'
-import { FormEventHandler, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useFormContext } from "react-hook-form";
 
 export enum RadioIsInline {
     TRUE = "govuk-radios govuk-radios--inline",
@@ -8,14 +8,14 @@ export enum RadioIsInline {
 
 export interface RadioProps {
     id: string;
-    title?: string;
     legend?: string;
     hint?: string;
     isInline: RadioIsInline;
     answerOptions: string[];
     sortAnswersAlphabetically: boolean;
-    handleChange: FormEventHandler<HTMLDivElement>;
     errorMessage: string;
+    formValue: string;
+    required: string | false;
 }
 
 export default function Radio(props: Readonly<RadioProps>) {
@@ -24,15 +24,12 @@ export default function Radio(props: Readonly<RadioProps>) {
         return input.toLowerCase().replaceAll(" ", "-").replace(/[^a-z0-9 -]/g, "")
     }
     
-    let radioInputName: string = "undefined";
-    if (props.title) radioInputName = stringToJsxAttribute(props.title)
-    else if (props.legend) radioInputName = stringToJsxAttribute(props.legend)
-
     const answerOptions: string[] = props.answerOptions
     if (props.sortAnswersAlphabetically) {
         answerOptions.sort((a, b) => a.localeCompare(b))
     }
 
+    const { register } = useFormContext()
     const [errorText, setErrorText] = useState("")
     const [wrapperClass, setWrapperClass] = useState("govuk-form-group")
     
@@ -44,13 +41,6 @@ export default function Radio(props: Readonly<RadioProps>) {
     return (
         <div id={props.id} className={wrapperClass}>
             <fieldset className="govuk-fieldset">
-                {props.title && 
-                    <legend className="govuk-fieldset__legend govuk-fieldset__legend--m">
-                        <h2 className="govuk-fieldset__heading">
-                            {props.title}
-                        </h2>
-                    </legend>
-                }
                 {props.legend && 
                     <legend className="govuk-fieldset__legend">
                         {props.legend}
@@ -71,10 +61,11 @@ export default function Radio(props: Readonly<RadioProps>) {
                         <div className="govuk-radios__item" key={`answer-option-${index + 1}`}>
                             <input
                                 className="govuk-radios__input"
-                                name={radioInputName}
                                 type="radio"
                                 value={stringToJsxAttribute(answerOption)}
-                                onChange={props.handleChange}
+                                {...register(props.formValue, { 
+                                    required: props.required,
+                                })}
                             />
                             <label className="govuk-label govuk-radios__label" htmlFor={props.id}>
                                 {answerOption}
