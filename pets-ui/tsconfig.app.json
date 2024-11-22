@@ -29,6 +29,9 @@
       "@pages/*": ["./src/pages/*"],
       "@sections/*": ["./src/sections/*"],
     },
+
+    /* Vitest config */
+    "types": ["vitest/globals", "@testing-library/jest-dom"],
   },
   "include": ["src"]
 }
