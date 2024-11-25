@@ -1,5 +1,5 @@
+import { DateType } from "@/sections/applicant-form-temp";
 import { useEffect, useState } from "react";
-import { useFormContext, Controller } from "react-hook-form";
 
 export interface DateProps {
     id: string;
@@ -8,14 +8,32 @@ export interface DateProps {
     // The autocomplete prop should only be used when this component is utilised for birth dates
     autocomplete: boolean;
     errorMessage: string;
-    formValue: string;
+    value: DateType;
+    setDateValue: (value: DateType) => void;
 }
 
 interface AutocompleteI {
     autoComplete?: string;
 }
 
-export default function DateTextInput(props: Readonly<DateProps>) {
+const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
+    const { day, month, year } = props.value || {};
+
+    const handleDayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = { ...props.value, day: e.target.value };
+      props.setDateValue(newValue); // Update the whole date object
+    };
+  
+    const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = { ...props.value, month: e.target.value };
+      props.setDateValue(newValue); // Update the whole date object
+    };
+  
+    const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = { ...props.value, year: e.target.value };
+      props.setDateValue(newValue); // Update the whole date object
+    };
+
     const autocompleteBDay: Record<'day' | 'month' | 'year', AutocompleteI> = {
         day: {},
         month: {},
@@ -28,7 +46,6 @@ export default function DateTextInput(props: Readonly<DateProps>) {
         autocompleteBDay.year.autoComplete = "bday-year";
     }
 
-    const { control, formState: { errors } } = useFormContext()
     const [errorText, setErrorText] = useState("")
     const [wrapperClass, setWrapperClass] = useState("govuk-form-group")
     const [dayMonthClass, setDayMonthClass] = useState("govuk-input govuk-date-input__input govuk-input--width-2")
@@ -65,26 +82,13 @@ export default function DateTextInput(props: Readonly<DateProps>) {
                             <label className="govuk-label govuk-date-input__label" htmlFor={`${props.id}-day`}>
                                 Day
                             </label>
-                            {/* <input 
-                                {...autocompleteBDay.day}
-                                className={dayMonthClass}
-                                id={`${props.id}-day`}
-                                // name={`${props.id}-day`}
-                                type="text"
-                                // onChange={props.handleChange}
-                                {...register(props.formValue + ".day", {required: "day"})}
-                            /> */}
-                            <Controller
-                                name={`${props.formValue}.day`}
-                                control={control}
-                                render={({ field }) =>
-                                    <input
-                                        {...field}
-                                        className={dayMonthClass}
-                                        id={`${props.id}-day`}
-                                        type="text"
-                                    />
-                                }
+                            <input
+                              {...autocompleteBDay.day}
+                              className={dayMonthClass}
+                              id={`${props.id}-day`}
+                              type="string"
+                              value={day || ''}
+                              onChange={handleDayChange}
                             />
                         </div>
                     </div>
@@ -93,26 +97,13 @@ export default function DateTextInput(props: Readonly<DateProps>) {
                             <label className="govuk-label govuk-date-input__label" htmlFor={`${props.id}-month`}>
                                 Month
                             </label>
-                            {/* <input 
-                                {...autocompleteBDay.month}
-                                className={dayMonthClass}
-                                id={`${props.id}-month`}
-                                // name={`${props.id}-month`} 
-                                type="text"
-                                // onChange={props.handleChange}
-                                {...register(props.formValue + ".month", {required: "month"})}
-                            /> */}
-                            <Controller
-                                name={`${props.formValue}.month`}
-                                control={control}
-                                render={({ field }) =>
-                                    <input
-                                        {...field}
-                                        className={dayMonthClass}
-                                        id={`${props.id}-month`}
-                                        type="text"
-                                    />
-                                }
+                            <input
+                              {...autocompleteBDay.month}
+                              className={dayMonthClass}
+                              id={`${props.id}-month`}
+                              type="string"
+                              value={month || ''}
+                              onChange={handleMonthChange}
                             />
                         </div>
                     </div>
@@ -121,26 +112,13 @@ export default function DateTextInput(props: Readonly<DateProps>) {
                             <label className="govuk-label govuk-date-input__label" htmlFor={`${props.id}-year`}>
                                 Year
                             </label>
-                            {/* <input 
-                                {...autocompleteBDay.year}
-                                className={yearClass}
-                                id={`${props.id}-year`} 
-                                // name={`${props.id}-year`} 
-                                type="text"
-                                // onChange={props.handleChange}
-                                {...register(props.formValue + ".year", {required: "year"})}
-                            /> */}
-                            <Controller
-                                name={`${props.formValue}.year`}
-                                control={control}
-                                render={({ field }) =>
-                                    <input
-                                        {...field}
-                                        className={yearClass}
-                                        id={`${props.id}-year`}
-                                        type="text"
-                                    />
-                                }
+                            <input
+                              {...autocompleteBDay.year}
+                              className={yearClass}
+                              id={`${props.id}-year`} 
+                              type="string"
+                              value={year || ''}
+                              onChange={handleYearChange}
                             />
                         </div>
                     </div>
@@ -149,3 +127,6 @@ export default function DateTextInput(props: Readonly<DateProps>) {
         </div>
     )
 }
+
+
+export default DateTextInput;
