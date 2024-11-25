@@ -1,9 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-
 import { describe, it, expect } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { useForm, FormProvider } from "react-hook-form";
 import Dropdown from './dropdown'
 
 const testOptions = [
@@ -17,11 +14,27 @@ const testOptions = [
     }
 ]
 
-const handleOptionChange = () => {}
+type FormValues = {testValue: string}
 
 describe('Dropdown component', () => {
     it('renders correctly when all optional props are specified', () => {
-        render(<Dropdown id="test-id" name="test-name" options={testOptions} label="Test label" hint="test hint" handleOptionChange={handleOptionChange} errorMessage=''/>)
+        const DropdownToTest = () => {
+            const methods = useForm<FormValues>()
+            return (
+                <FormProvider {...methods}>
+                    <Dropdown
+                        id='test-id'
+                        label='Test label'
+                        hint='test hint'
+                        options={testOptions}
+                        errorMessage=''
+                        formValue='testValue'
+                        required='This is required'
+                    />
+                </FormProvider>
+            )
+        }
+        render(<DropdownToTest/>)
         expect(screen.getAllByRole('option')).toBeTruthy();
         expect(screen.getByText('test1')).toBeTruthy();
         expect(screen.getByText('test2')).toBeTruthy();
@@ -29,14 +42,42 @@ describe('Dropdown component', () => {
     })
 
     it('renders correctly when all optional props are omitted', () => {
-        render(<Dropdown id="test-id" name="test-name" options={testOptions} handleOptionChange={handleOptionChange} errorMessage=''/>)
+        const DropdownToTest = () => {
+            const methods = useForm<FormValues>()
+            return (
+                <FormProvider {...methods}>
+                    <Dropdown
+                        id='test-id'
+                        options={testOptions}
+                        errorMessage=''
+                        formValue='testValue'
+                        required='This is required'
+                    />
+                </FormProvider>
+            )
+        }
+        render(<DropdownToTest/>)
         expect(screen.getAllByRole('option')).toBeTruthy();
         expect(screen.getByText('test1')).toBeTruthy();
         expect(screen.getByText('test2')).toBeTruthy();
     })
 
     it('renders correctly when in an errored state', () => {
-        render(<Dropdown id="test-id" name="test-name" options={testOptions} handleOptionChange={handleOptionChange} errorMessage='test error'/>)
+        const DropdownToTest = () => {
+            const methods = useForm<FormValues>()
+            return (
+                <FormProvider {...methods}>
+                    <Dropdown
+                        id='test-id'
+                        options={testOptions}
+                        errorMessage='test error'
+                        formValue='testValue'
+                        required='This is required'
+                    />
+                </FormProvider>
+            )
+        }
+        render(<DropdownToTest/>)
         expect(screen.getAllByRole('option')).toBeTruthy();
         expect(screen.getByText('test1')).toBeTruthy();
         expect(screen.getByText('test2')).toBeTruthy();
@@ -44,11 +85,28 @@ describe('Dropdown component', () => {
     })
 
     it('renders with default value and only updates selected value on change event', () => {
-        const {container} = render(<Dropdown id="test-id" name="test-name" options={testOptions} label="Test label" hint="test hint" handleOptionChange={handleOptionChange} errorMessage=''/>)
+        const DropdownToTest = () => {
+            const methods = useForm<FormValues>()
+            return (
+                <FormProvider {...methods}>
+                    <Dropdown
+                        id='test-id'
+                        label="Test label"
+                        hint="test hint"
+                        options={testOptions}
+                        errorMessage='test error'
+                        formValue='testValue'
+                        required='This is required'
+                    />
+                </FormProvider>
+            )
+        }
+        const {container} = render(<DropdownToTest/>)
+
         const select = screen.getAllByRole('combobox')[0]
         
         let selectedValue = (container.getElementsByClassName('govuk-select')[0] as HTMLSelectElement).value
-        expect(selectedValue).toBe('choose')
+        expect(selectedValue).toBe('')
 
         fireEvent.change(select, {
             target: { value: "testval1"}
