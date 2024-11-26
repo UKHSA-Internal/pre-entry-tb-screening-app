@@ -32,6 +32,9 @@ importers:
       path-parser:
         specifier: ^6.1.0
         version: 6.1.0
+      search-params:
+        specifier: ^4.0.1
+        version: 4.0.1
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
@@ -5331,6 +5334,9 @@ packages:
 
   search-params@3.0.0:
     resolution: {integrity: sha512-8CYNl/bjkEhXWbDTU/K7c2jQtrnqEffIPyOLMqygW/7/b+ym8UtQumcAZjOfMLjZKR6AxK5tOr9fChbQZCzPqg==}
+
+  search-params@4.0.1:
+    resolution: {integrity: sha512-axiHDzALAbvAB1gQ7gh2K69Md9FJ6Cz/QOreaksDHQWjfwa+5rTR6twUnJg2f/luob2zRqVWENQcQgCUZYut5A==}
 
   semver@5.7.2:
     resolution: {integrity: sha512-cBznnQ9KjJqU67B52RMC65CMarK2600WFnbkcaiwWq3xy/5haFJlshgnpjovMVJ+Hff49d8GEn0b87C5pDQ10g==}
@@ -13190,6 +13196,8 @@ snapshots:
       loose-envify: 1.4.0
 
   search-params@3.0.0: {}
+
+  search-params@4.0.1: {}
 
   semver@5.7.2: {}
 
