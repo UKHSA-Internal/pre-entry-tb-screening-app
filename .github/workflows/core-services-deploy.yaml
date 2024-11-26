@@ -135,7 +135,9 @@ jobs:
         run: mkdir -p node-zip/${{ matrix.service }}/nodejs && cp core-services/${{ matrix.service }}/package.json node-zip/${{ matrix.service }}
       - name: Install prod dependencies
         working-directory: node-zip/${{ matrix.service }}
-        run: pnpm i --ignore-workspace --prod
+        run: pnpm i --ignore-workspace --prod --shamefully-hoist
+      - name: Remove .pnpm folder
+        run: rm -rf node-zip/${{ matrix.service }}/node_modules/.pnpm
       - name: Copy node modules to nodejs folder
         run: cp -Lr node-zip/${{ matrix.service }}/node_modules node-zip/${{ matrix.service }}/nodejs
       - run: ls
