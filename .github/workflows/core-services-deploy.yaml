@@ -131,14 +131,20 @@ jobs:
       # - name: Install dependencies in nodejs folder
       #   working-directory: node-zip/${{ matrix.service }}/nodejs
       #   run: pnpm i
-      - run: ls
-      - run: cd core-services/${{ matrix.service }} && ls
       - name: Copy node modules to node-zip folder for ${{ matrix.service }}
-        run: mkdir -p node-zip/${{ matrix.service }}/nodejs && cp -Lr core-services/${{ matrix.service }}/node_modules node-zip/${{ matrix.service }}/nodejs
+        run: mkdir -p node-zip/${{ matrix.service }}/nodejs && cp core-services/${{ matrix.service }}/package.json node-zip/${{ matrix.service }}
+      - name: Install prod dependencies
+        working-directory: node-zip/${{ matrix.service }}
+        run: pnpm i --ignore-workspace --prod
+      - name: Copy node modules to nodejs folder
+        run: cp -Lr node-zip/${{ matrix.service }}/node_modules node-zip/${{ matrix.service }}/nodejs
+      - run: ls
+        working-directory: node-zip/${{ matrix.service }}
+      - run: ls
+        working-directory: node-zip/${{ matrix.service }}/nodejs
       - name: Create nodejs zip file
         working-directory: node-zip/${{ matrix.service }}
         run: zip -r nodejs.zip nodejs
-      - run: cd node-zip/${{ matrix.service }} && ls
       - name: Upload nodejs zip file to S3
         working-directory: node-zip/${{ matrix.service }}
         run: aws s3 cp nodejs.zip s3://$BUCKET_SECRET --sse aws:kms --sse-kms-key-id $SSE_KEY_SECRET
