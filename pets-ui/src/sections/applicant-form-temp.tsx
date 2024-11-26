@@ -2,7 +2,7 @@
 import { useForm, SubmitHandler, FormProvider, Controller } from "react-hook-form"
 import { useNavigate } from "react-router-dom";
 
-import { attributeToComponentId, formRegex, countryList } from "@/utils/helpers"
+import { attributeToComponentId, formRegex, countryList, dateValidationMessages, validMonthValues, isValidDate } from "@/utils/helpers"
 import Button, { ButtonType } from "@/components/button/button"
 import FreeText from "@/components/freeText/freeText"
 import Radio, { RadioIsInline } from "@/components/radio/radio";
@@ -64,31 +64,17 @@ const ApplicantFormTemp = () => {
 
   const errorsToShow = Object.keys(errors);
 
-  const validateDate = (value: DateType) => {
+  const validateDate = (value: DateType, fieldName: string) => {
     const { day, month, year } = value;
 
     if (!day || !month || !year) {
-      return "All date fields are required";
+      return dateValidationMessages[fieldName as keyof typeof dateValidationMessages].emptyFieldError;
+    } else if ( isNaN(parseInt(day)) || isNaN(parseInt(year)) || !validMonthValues.includes(month.toLowerCase())) {
+      return dateValidationMessages[fieldName as keyof typeof dateValidationMessages].invalidCharError;
+    } else if (!isValidDate(day, month, year)) {
+      return dateValidationMessages[fieldName as keyof typeof dateValidationMessages].invalidDateError;
     }
 
-    const d = parseInt(day);
-    const m = parseInt(month);
-    const y = parseInt(year);
-    
-    if (isNaN(d) || isNaN(m) || isNaN(y)) {
-      return "Please enter valid numbers for day, month, and year";
-    }
-
-    if (m < 1 || m > 12) {
-      return "Month must be between 1 and 12";
-    }
-
-    const daysInMonth = new Date(y, m, 0).getDate();
-    if (d < 1 || d > daysInMonth) {
-      return `Day must be between 1 and ${daysInMonth}`;
-    }
-
-    //TODO: customise error based on specific date field.
     return true;
   }
 
@@ -155,7 +141,7 @@ const ApplicantFormTemp = () => {
           control={control}
           defaultValue={{ day: '', month: '', year: '' }} 
           rules={{
-            validate: (value: DateType) => validateDate(value),
+            validate: (value: DateType) => validateDate(value, "dateOfBirth"),
           }}
           render={({ field: { value, onChange } }) => (
             <DateTextInput 
@@ -195,7 +181,7 @@ const ApplicantFormTemp = () => {
           control={control}
           defaultValue={{ day: '', month: '', year: '' }} 
           rules={{
-            validate: (value: DateType) => validateDate(value),
+            validate: (value: DateType) => validateDate(value, "passportIssueDate"),
           }}
           render={({ field: { value, onChange } }) => (
             <DateTextInput 
@@ -205,7 +191,7 @@ const ApplicantFormTemp = () => {
               setDateValue={onChange}
               id={"passport-issue-date"}
               autocomplete={false}
-              errorMessage={errors?.dateOfBirth?.message ?? ""}
+              errorMessage={errors?.passportIssueDate?.message ?? ""}
             />
           )}
         />
@@ -215,7 +201,7 @@ const ApplicantFormTemp = () => {
           control={control}
           defaultValue={{ day: '', month: '', year: '' }} 
           rules={{
-            validate: (value: DateType) => validateDate(value),
+            validate: (value: DateType) => validateDate(value, "passportExpiryDate"),
           }}
           render={({ field: { value, onChange } }) => (
             <DateTextInput 
@@ -225,7 +211,7 @@ const ApplicantFormTemp = () => {
               setDateValue={onChange}
               id="passport-expiry-date"
               autocomplete={false}
-              errorMessage={errors?.dateOfBirth?.message ?? ""}
+              errorMessage={errors?.passportExpiryDate?.message ?? ""}
             />
           )}
         />
