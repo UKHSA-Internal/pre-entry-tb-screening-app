@@ -136,14 +136,18 @@ jobs:
       - name: Install prod dependencies
         working-directory: node-zip/${{ matrix.service }}
         run: pnpm i --ignore-workspace --prod --shamefully-hoist
-      - name: Remove .pnpm folder
-        run: rm -rf node-zip/${{ matrix.service }}/node_modules/.pnpm
       - name: Copy node modules to nodejs folder
         run: cp -Lr node-zip/${{ matrix.service }}/node_modules node-zip/${{ matrix.service }}/nodejs
       - run: ls
         working-directory: node-zip/${{ matrix.service }}
       - run: ls
         working-directory: node-zip/${{ matrix.service }}/nodejs
+      - run: ls
+        working-directory: node-zip/${{ matrix.service }}/nodejs/node_modules
+      - name: Remove .pnpm folder
+        run: rm -rf node-zip/${{ matrix.service }}/nodejs/node_modules/.pnpm
+      - run: ls
+        working-directory: node-zip/${{ matrix.service }}/nodejs/node_modules
       - name: Create nodejs zip file
         working-directory: node-zip/${{ matrix.service }}
         run: zip -r nodejs.zip nodejs
