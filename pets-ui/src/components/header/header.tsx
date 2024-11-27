@@ -1,5 +1,3 @@
-'use client'
-
 export default function Header() {
   return (
     <header className="govuk-header" data-module="govuk-header">
