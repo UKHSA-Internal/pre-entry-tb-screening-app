@@ -1,15 +1,40 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { useForm, SubmitHandler, FormProvider, Controller } from "react-hook-form"
 import { useNavigate } from "react-router-dom";
-
-import { attributeToComponentId, formRegex, countryList, dateValidationMessages, validMonthValues, isValidDate } from "@/utils/helpers"
+import { 
+  attributeToComponentId, 
+  formRegex, 
+  countryList, 
+  dateValidationMessages, 
+  validMonthValues, 
+  isValidDate 
+} from "@/utils/helpers"
 import Button, { ButtonType } from "@/components/button/button"
 import FreeText from "@/components/freeText/freeText"
 import Radio, { RadioIsInline } from "@/components/radio/radio";
 import DateTextInput, { DateType } from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
 
-type FormValues = {
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { 
+  setFullName, 
+  setApplicantHomeAddress1, 
+  setApplicantHomeAddress2,
+  setApplicantHomeAddress3,
+  setCountry,
+  setCountryOfIssue,
+  setCountryOfNationality,
+  setDob,
+  setPassportExpiryDate,
+  setPassportIssueDate,
+  setPassportNumber,
+  setPostcode,
+  setProvinceOrState,
+  setSex,
+  setTownOrCity
+} from "@/redux/applicantSlice";
+
+export type ApplicantDetailsType = {
   fullName: string
   sex: string
   dateOfBirth: DateType
@@ -30,12 +55,20 @@ type FormValues = {
 const ApplicantForm = () => {
   const navigate = useNavigate();
 
-  const methods = useForm<FormValues>({reValidateMode: 'onSubmit'})
+  const methods = useForm<ApplicantDetailsType>({reValidateMode: 'onSubmit'})
 
   const { control, handleSubmit, formState: { errors } } = methods;
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+  const updateReduxStore = (applicantData: unknown) => {
+    // useAppDispatch(setFullName(applicantData.fullName));
+    // useAppDispatch(setPassportNumber(passportNumber));
+    // useAppDispatch(setDob(dob));
+    // useAppDispatch(setSex(sex));
+  }
+
+  const onSubmit: SubmitHandler<ApplicantDetailsType> = async (data) => {
     console.log(data)
+    updateReduxStore(data);
     try {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");

@@ -28,6 +28,8 @@
       "@assets/*": ["./src/assets/*"],
       "@pages/*": ["./src/pages/*"],
       "@sections/*": ["./src/sections/*"],
+      "@components/*": ["./src/components/*"],
+      "@redux/*": ["./src/redux/*"],
     },
 
     /* Vitest config */
