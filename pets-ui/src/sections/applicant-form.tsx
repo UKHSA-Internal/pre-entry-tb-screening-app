@@ -33,6 +33,8 @@ import {
   setSex,
   setTownOrCity
 } from "@/redux/applicantSlice";
+// import { useDispatch } from "react-redux";
+// import { AppDispatch, RootState } from "@redux/store";
 
 export type ApplicantDetailsType = {
   fullName: string
@@ -59,9 +61,12 @@ const ApplicantForm = () => {
 
   const { control, handleSubmit, formState: { errors } } = methods;
 
-  const updateReduxStore = (applicantData: unknown) => {
-    // useAppDispatch(setFullName(applicantData.fullName));
-    // useAppDispatch(setPassportNumber(passportNumber));
+  // const dispatch = useDispatch<AppDispatch>();
+  // const applicant = useSelector((state: RootState) => state.applicant);
+
+  const updateReduxStore = (applicantData: ApplicantDetailsType) => {
+    // dispatch(setPassportExpiryDate(applicantData.passportExpiryDate));
+    // useAppDispatch(setPassportNumber(applicantData.passportNumber))
     // useAppDispatch(setDob(dob));
     // useAppDispatch(setSex(sex));
   }
@@ -319,6 +324,8 @@ const ApplicantForm = () => {
           href="/applicant/confirmation"
           handleClick={() => {}}
         />
+
+        {/* <pre>{JSON.stringify(applicant, null, 2)}</pre> */}
       </form>
     </FormProvider>
   )
