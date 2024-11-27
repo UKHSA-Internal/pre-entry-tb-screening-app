@@ -7,6 +7,8 @@ type Symptoms = "Cough" |
     "Other symptoms" |
     null
 
+type ApplicationStatus = "CREATED" | "CLOSED" | "COMPLETED_WT_PASS" | "COMPLETED_WT_FAIL"
+
 interface IPetApplication {
     // identifiers
     "applicantPassportNumber": string,
@@ -74,7 +76,7 @@ interface IPetApplication {
     "issueDateofMedicalCertificate": string,
     "clearanceCertificateNumber": string,
 
-    "ApplicationStatus": string,
+    "ApplicationStatus": ApplicationStatus,
 
     // metadata
     "applicationCreatedBy": string,
