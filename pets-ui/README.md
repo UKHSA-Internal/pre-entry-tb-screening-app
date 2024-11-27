@@ -4,7 +4,7 @@
 
 This project uses:
 - [Vite](https://vite.dev/) with [React](https://react.dev/) and [TypeScript](https://www.typescriptlang.org/docs/)
-- [govuk-react](https://github.com/govuk-react/govuk-react) for GDS-compliant UI components
+- [govuk-frontend](https://github.com/alphagov/govuk-frontend) for GDS-compliant sass styling
 - [Vitest](https://vitest.dev/) and [Cypress](https://www.cypress.io/) for testing
 - [Redux](https://redux.js.org/) for state management
 - [pnpm](https://pnpm.io/) for package management
