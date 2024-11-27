@@ -1,4 +1,3 @@
-import { DateType } from "@/sections/applicant-form-temp";
 import { useEffect, useState } from "react";
 
 export interface DateProps {
@@ -10,6 +9,12 @@ export interface DateProps {
     errorMessage: string;
     value: DateType;
     setDateValue: (value: DateType) => void;
+}
+
+export type DateType = {
+    year: string
+    month: string
+    day: string
 }
 
 interface AutocompleteI {

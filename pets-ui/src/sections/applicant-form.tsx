@@ -1,35 +1,23 @@
-import { useState } from "react"
-import { useForm, SubmitHandler, FormProvider, useFormContext } from "react-hook-form"
+/* eslint-disable @typescript-eslint/no-misused-promises */
+import { useForm, SubmitHandler, FormProvider, Controller } from "react-hook-form"
 import { useNavigate } from "react-router-dom";
 
-import { countryList, attributeToComponentId } from "@/utils/helpers"
+import { attributeToComponentId, formRegex, countryList, dateValidationMessages, validMonthValues, isValidDate } from "@/utils/helpers"
 import Button, { ButtonType } from "@/components/button/button"
-import DateTextInput from "@/components/dateTextInput/dateTextInput"
-import Dropdown from "@/components/dropdown/dropdown"
 import FreeText from "@/components/freeText/freeText"
-import Radio, { RadioIsInline } from "@/components/radio/radio"
+import Radio, { RadioIsInline } from "@/components/radio/radio";
+import DateTextInput, { DateType } from "@/components/dateTextInput/dateTextInput";
+import Dropdown from "@/components/dropdown/dropdown";
 
 type FormValues = {
   fullName: string
-  dateOfBirth: {
-    year: string | number;
-    month: string | number;
-    day: string | number;
-  }
   sex: string
-  passportNumber: string
+  dateOfBirth: DateType
   countryOfNationality: string
+  passportNumber: string
   countryOfIssue: string
-  passportIssueDate: {
-    year: string | number;
-    month: string | number;
-    day: string | number;
-  }
-  passportExpiryDate: {
-    year: string | number;
-    month: string | number;
-    day: string | number;
-  } 
+  passportIssueDate: DateType
+  passportExpiryDate: DateType 
   applicantHomeAddress1: string
   applicantHomeAddress2?: string
   applicantHomeAddress3?: string
@@ -40,32 +28,22 @@ type FormValues = {
 }
 
 const ApplicantForm = () => {
-  const { 
-    register, 
-    handleSubmit,
-    formState: { errors },
-    //  ...rest
-  } = useForm<FormValues>({
-    reValidateMode: 'onSubmit'
-  })
-  // const methods = useForm<FormValues>({reValidateMode: 'onSubmit'});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [submittedData, setSubmittedData] = useState<FormValues>();
   const navigate = useNavigate();
 
+  const methods = useForm<FormValues>({reValidateMode: 'onSubmit'})
+
+  const { control, handleSubmit, formState: { errors } } = methods;
+
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    setIsSubmitting(true);
+    console.log(data)
     try {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
-      await fetch("http://localhost:3004/dev/register-applicant", {
+      await fetch("http://localhost:3005/dev/register-applicant", {
           method: "POST",
           body: JSON.stringify(data),
           headers: myHeaders,
       })
-      setHasSubmitted(true)
-      setSubmittedData(data)
       navigate("/applicant/confirmation")
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -75,19 +53,28 @@ const ApplicantForm = () => {
         console.error("Error submitting POST request: unknown error type")
         console.error(error);
       }
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
-  // const errors = methods.formState.errors;
-  // const handleSubmit = methods.handleSubmit;
-
   const errorsToShow = Object.keys(errors);
 
+  const validateDate = (value: DateType, fieldName: string) => {
+    const { day, month, year } = value;
+
+    if (!day || !month || !year) {
+      return dateValidationMessages[fieldName as keyof typeof dateValidationMessages].emptyFieldError;
+    } else if ( isNaN(parseInt(day)) || isNaN(parseInt(year)) || !validMonthValues.includes(month.toLowerCase())) {
+      return dateValidationMessages[fieldName as keyof typeof dateValidationMessages].invalidCharError;
+    } else if (!isValidDate(day, month, year)) {
+      return dateValidationMessages[fieldName as keyof typeof dateValidationMessages].invalidDateError;
+    }
+
+    return true;
+  }
+
   return (
-    // <FormProvider {...methods}>
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <FormProvider {...methods}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length &&
           <div className="govuk-error-summary" data-module="govuk-error-summary">
             <div role="alert">
@@ -98,7 +85,9 @@ const ApplicantForm = () => {
                 <ul className="govuk-list govuk-error-summary__list">
                   {errorsToShow.map((error) => (
                     <li key={attributeToComponentId[error]}>
-                      <a href={"#" + attributeToComponentId[error]}>{errors[error as keyof typeof errors]?.message}</a>
+                      <a href={"#" + attributeToComponentId[error]}>
+                        {errors[error as keyof typeof errors]?.message}
+                      </a>
                     </li>
                   ))}
                 </ul>
@@ -106,201 +95,188 @@ const ApplicantForm = () => {
             </div>
           </div>
         }
+        
+        <h2 className="govuk-label govuk-label--m">
+          Applicant&apos;s Personal Details
+        </h2>
+
         <FreeText
-          {...register("fullName", { 
-            required: "Enter name",
-            pattern: {
-              value: /[^a-zA-Z\s]+/,
-              message: "Failed validation"
-            }
-          })}
           id="name"
-          title="Applicant's Personal Details"
           label="Full Name"
-          // handleChange={handleTextChange}
           errorMessage={errors?.fullName?.message ?? ""}
-          handleChange={() => {}}
-        />
-        {/* <p>{errors?.fullName?.message}</p> */}
-        {/* <p>{errorsToShow["fullName"]}</p> */}
-
-        {/* <input 
-          {...register("sex", { 
-            required: "Enter sex",
-            pattern: {
-              value: /A-Za-z\s/, 
-              message: "Sex must contain only letters and spaces."
-            }
-           })}
-        />
-        <p>{errors?.sex?.message}</p> */}
-
-        <FreeText
-          id="passportNumber"
-          title="Applicant's PN"
-          label="P Number"
-          // handleChange={handleTextChange}
-          errorMessage={""}
-          handleChange={() => {}}
-        />
-
-        <DateTextInput
-          {...register("dateOfBirth", { required: true })}
-          id="birth-date"
-          autocomplete={true}
-          legend="Date of Birth"
-          hint="For example, 31 3 2019"
-          // handleChange={handleDateChange}
-          // errorMessage={errorMessages.dateOfBirth}
-          handleChange={() => {}}
-          errorMessage=""
+          formValue="fullName"
+          required="Enter the applicant's full name."
+          patternValue={formRegex.lettersAndSpaces}
+          patternError="Full name must contain only letters and spaces."
         />
 
         <Radio
-          {...register("sex", { required: true })}
-          id="applicants-sex"
+          id="sex"
           legend="Sex"
           isInline={RadioIsInline.TRUE}
-          answerOptions={["Male", "Female"]}
+          answerOptions={["Female", "Male"]}
           sortAnswersAlphabetically={false}
-          // handleChange={handleRadioChange}
-          // errorMessage={errorMessages.sex}
-          handleChange={() => {}}
-          errorMessage=""
+          errorMessage={errors?.sex?.message ?? ""}
+          formValue="sex"
+          required="Select the applicant's sex."
+        />
+
+        <Dropdown
+          id="country-of-nationality"
+          label="Country of Nationality"
+          options={countryList}
+          errorMessage={errors?.countryOfNationality?.message ?? ""}
+          formValue="countryOfNationality"
+          required="Select a country."
+        />
+
+        <Controller
+          name="dateOfBirth"
+          control={control}
+          defaultValue={{ day: '', month: '', year: '' }} 
+          rules={{
+            validate: (value: DateType) => validateDate(value, "dateOfBirth"),
+          }}
+          render={({ field: { value, onChange } }) => (
+            <DateTextInput 
+              legend="Date of Birth"
+              hint="For example, 31 3 2019"
+              value={value} 
+              setDateValue={onChange}
+              id={"birth-date"}
+              autocomplete={false}
+              errorMessage={errors?.dateOfBirth?.message ?? ""}
+            />
+          )}
         />
 
         <FreeText
-          {...register("passportNumber", { required: true })}
-          id="passport-number"
-          title="Applicant's Passport Details"
-          label="Passport Number"
-          hint="For example, 1208297A"
-          // handleChange={handleTextChange}
-          // errorMessage={errorMessages.passportNumber}
-          handleChange={() => {}}
-          errorMessage=""
+          id="passportNumber"
+          label="Applicant's Passport Number"
+          errorMessage={errors?.passportNumber?.message ?? ""}
+          formValue="passportNumber"
+          required="Enter the applicant's passport number."
+          patternValue={formRegex.lettersAndNumbers}
+          patternError="Passport number must contain only letters and numbers."
         />
 
         <Dropdown
-          {...register("countryOfNationality", { required: true })}
-          id="country-of-nationality"
-          label="Country of Nationality"
-          name="country"
-          options={countryList}
-          // handleOptionChange={handleDropdownChange}
-          // errorMessage={errorMessages.countryOfNationality}
-          handleOptionChange={() => {}}
-          errorMessage=""
-        />
-
-        <Dropdown
-          {...register("countryOfIssue", { required: true })}
           id="country-of-issue"
           label="Country of Issue"
           hint="This is usually shown on the first page of the passport, at the top. Use the English spelling or the country code."
-          name="country"
           options={countryList}
-          // handleOptionChange={handleDropdownChange}
-          // errorMessage={errorMessages.countryOfIssue}
-          handleOptionChange={() => {}}
-          errorMessage=""
+          errorMessage={errors?.countryOfIssue?.message ?? ""}
+          formValue="countryOfIssue"
+          required="Select a country."
         />
 
-        <DateTextInput
-          {...register("passportIssueDate", { required: true })}
-          id="passport-issue-date"
-          autocomplete={false}
-          legend="Issue Date"
-          hint="For example, 31 3 2019"
-          // handleChange={handleDateChange}
-          // errorMessage={errorMessages.issueDate}
-          handleChange={() => {}}
-          errorMessage=""
+        <Controller
+          name="passportIssueDate"
+          control={control}
+          defaultValue={{ day: '', month: '', year: '' }} 
+          rules={{
+            validate: (value: DateType) => validateDate(value, "passportIssueDate"),
+          }}
+          render={({ field: { value, onChange } }) => (
+            <DateTextInput 
+              legend="Issue Date"
+              hint="For example, 31 3 2019"
+              value={value} 
+              setDateValue={onChange}
+              id={"passport-issue-date"}
+              autocomplete={false}
+              errorMessage={errors?.passportIssueDate?.message ?? ""}
+            />
+          )}
         />
 
-        <DateTextInput
-          {...register("passportExpiryDate", { required: true })}
-          id="passport-expiry-date"
-          autocomplete={false}
-          legend="Expiry Date"
-          hint="For example, 31 3 2019"
-          // handleChange={handleDateChange}
-          // errorMessage={errorMessages.expiryDate}
-          handleChange={() => {}}
-          errorMessage=""
+        <Controller
+          name="passportExpiryDate"
+          control={control}
+          defaultValue={{ day: '', month: '', year: '' }} 
+          rules={{
+            validate: (value: DateType) => validateDate(value, "passportExpiryDate"),
+          }}
+          render={({ field: { value, onChange } }) => (
+            <DateTextInput 
+              legend="Expiry Date"
+              hint="For example, 31 3 2019"
+              value={value} 
+              setDateValue={onChange}
+              id="passport-expiry-date"
+              autocomplete={false}
+              errorMessage={errors?.passportExpiryDate?.message ?? ""}
+            />
+          )}
         />
 
         <FreeText
-          {...register("applicantHomeAddress1", { required: true })}
           id="address-1"
-          title="Applicant's Home Address"
           label="Address line 1"
-          // handleChange={handleTextChange}
-          // errorMessage={errorMessages.applicantHomeAddress1}
-          handleChange={() => {}}
-          errorMessage=""
+          errorMessage={errors?.applicantHomeAddress1?.message ?? ""}
+          formValue="applicantHomeAddress1"
+          required="Enter the first line of the applicant's home address."
+          patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
+          patternError="Home address must contain only letters, numbers, spaces and punctuation."
         />
 
         <FreeText
-          {...register("applicantHomeAddress2", { required: false })}
           id="address-2"
           label="Address line 2"
-          // handleChange={handleTextChange}
-          // errorMessage={errorMessages.applicantHomeAddress2}
-          handleChange={() => {}}
-          errorMessage=""
+          errorMessage={errors?.applicantHomeAddress2?.message ?? ""}
+          formValue="applicantHomeAddress2"
+          required={false}
+          patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
+          patternError="Home address must contain only letters, numbers, spaces and punctuation."
         />
 
         <FreeText
-          {...register("applicantHomeAddress3", { required: false })}
           id="address-3"
           label="Address line 3"
-          // handleChange={handleTextChange}
-          // errorMessage={errorMessages.applicantHomeAddress3}
-          handleChange={() => {}}
-          errorMessage=""
+          errorMessage={errors?.applicantHomeAddress3?.message ?? ""}
+          formValue="applicantHomeAddress3"
+          required={false}
+          patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
+          patternError="Home address must contain only letters, numbers, spaces and punctuation."
         />
 
         <FreeText
-          {...register("townOrCity", { required: true })}
           id="town-or-city"
           label="Town/City"
-          // handleChange={handleTextChange}
-          // errorMessage={errorMessages.townOrCity}
-          handleChange={() => {}}
-          errorMessage=""
+          errorMessage={errors?.townOrCity?.message ?? ""}
+          formValue="townOrCity"
+          required="Enter the town or city of the applicant's home address."
+          patternValue={formRegex.lettersSpacesAndPunctuation}
+          patternError="Town name must contain only letters, spaces and punctuation."
         />
         
         <FreeText
-          {...register("provinceOrState", { required: false })}
           id="province-or-state"
           label="Province/State"
-          // handleChange={handleTextChange}
-          // errorMessage={errorMessages.provinceOrState}
-          handleChange={() => {}}
-          errorMessage=""
+          errorMessage={errors?.provinceOrState?.message ?? ""}
+          formValue="provinceOrState"
+          required="Enter the province or state of the applicant's home address."
+          patternValue={formRegex.lettersSpacesAndPunctuation}
+          patternError="Province/state name must contain only letters, spaces and punctuation."
         />
 
         <Dropdown
-          {...register("country", { required: true })}
           id="address-country"
           label="Country"
-          name="country"
           options={countryList}
-          // handleOptionChange={handleDropdownChange}
-          // errorMessage={errorMessages.country}
-          handleOptionChange={() => {}}
-          errorMessage=""
+          errorMessage={errors?.country?.message ?? ""}
+          formValue="country"
+          required="Select a country."
         />
 
         <FreeText
-          {...register("postcode", { required: false })}
           id="postcode"
           label="Postcode"
-          // handleChange={handleTextChange}
-          // errorMessage={errorMessages.postcode}
-          handleChange={() => {}}
-          errorMessage=""
+          errorMessage={errors?.postcode?.message ?? ""}
+          formValue="postcode"
+          required={false}
+          patternValue={formRegex.lettersNumbersAndSpaces}
+          patternError="Postcode must contain only letters, numbers and spaces."
         />
 
         <Button
@@ -308,11 +284,10 @@ const ApplicantForm = () => {
           type={ButtonType.DEFAULT}
           text="Save and continue"
           href="/applicant/confirmation"
-          // handleClick={handleButtonClick}
           handleClick={() => {}}
         />
-    </form>
-    // </FormProvider>
+      </form>
+    </FormProvider>
   )
 }
 
