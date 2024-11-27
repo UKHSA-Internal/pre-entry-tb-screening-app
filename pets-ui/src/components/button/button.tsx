@@ -1,10 +1,5 @@
 import { MouseEventHandler } from 'react';
-
-export enum ButtonType {
-    DEFAULT = "govuk-button",
-    SECONDARY = "govuk-button govuk-button--secondary",
-    WARNING = "govuk-button govuk-button--warning"
-}
+import { ButtonType } from '@/utils/enums';
 
 export interface ButtonProps {
     id: string;

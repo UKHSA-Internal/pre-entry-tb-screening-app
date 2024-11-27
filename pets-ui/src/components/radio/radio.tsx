@@ -1,10 +1,6 @@
 import { useState, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
-
-export enum RadioIsInline {
-    TRUE = "govuk-radios govuk-radios--inline",
-    FALSE = "govuk-radios",
-}
+import { RadioIsInline } from "@/utils/enums";
 
 export interface RadioProps {
     id: string;
