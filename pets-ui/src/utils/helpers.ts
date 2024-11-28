@@ -997,4 +997,78 @@ const countryList = [
     }
 ];
 
-export default countryList;
+const attributeToComponentId: {[key:string]:string} = {
+  "fullName": "name",
+  "passportNumber": "passport-number",
+  "countryOfNationality": "country-of-nationality",
+  "countryOfIssue": "country-of-issue",
+  "issueDate": "passport-issue-date",
+  "expiryDate": "passport-expiry-date",
+  "dateOfBirth": "birth-date",
+  "sex": "sex",
+  "applicantHomeAddress1": "address-1",
+  "applicantHomeAddress2": "address-2",
+  "applicantHomeAddress3": "address-3",
+  "townOrCity": "town-or-city",
+  "provinceOrState": "province-or-state",
+  "country": "address-country",
+  "postcode": "postcode"
+}
+
+const validateFullName: (value?: string) => string | undefined = (value) => {
+  return value ? undefined : 'Please enter a first name';
+}
+
+const formRegex = {
+  "lettersAndNumbers": /^[A-Za-z0-9]+$/,
+  "lettersAndSpaces": /^[A-Za-z\s]+$/,
+  "lettersNumbersAndSpaces": /^[A-Za-z0-9\s]+$/,
+  "lettersSpacesAndPunctuation": /^[A-Za-z\s,-/()]+$/,
+  "lettersNumbersSpacesAndPunctuation": /^[A-Za-z0-9\s,-/()]+$/,
+}
+
+const dateValidationMessages = {
+    "passportIssueDate": {
+        "emptyFieldError": "Passport issue date must include a day, month and year.",
+        "invalidCharError": "Passport issue day and year must contain only numbers. Passport issue month must be a number, or the name of the month, or the first three letters of the month.",
+        "invalidDateError": "Passport issue date must be a valid date.",
+    },
+    "passportExpiryDate": {
+        "emptyFieldError": "Passport expiry date must include a day, month and year.",
+        "invalidCharError": "Passport expiry day and year must contain only numbers. Passport expiry month must be a number, or the name of the month, or the first three letters of the month.",
+        "invalidDateError": "Passport expiry date must be a valid date.",
+    },
+    "dateOfBirth": {
+        "emptyFieldError": "Date of birth must include a day, month and year.",
+        "invalidCharError": "Date of birth day and year must contain only numbers. Date of birth month must be a number, or the name of the month, or the first three letters of the month.",
+        "invalidDateError": "Date of birth date must be a valid date.",
+    }
+}
+
+const validMonthValues = [
+    "january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december",
+    "jan", "feb",  "mar",  "apr", "may", "jun", "jul", "aug",  "sep", "oct",  "nov", "dec",
+    "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"
+]
+
+function isValidDate(day: string, month: string, year: string) {
+    if (
+        parseInt(year) < 0 ||
+        parseInt(year) > 9999 ||
+        parseInt(day) < 1 ||
+        parseInt(day) > 31 ||
+        (parseInt(day) > 28 && parseInt(year) % 4 != 0 && (month == "february" || month == "feb" || month == "2")) ||
+        (parseInt(day) > 29 && parseInt(year) % 4 == 0 && (month == "february" || month == "feb" || month == "2")) ||
+        (parseInt(day) > 30 && (
+            month == "april" || month == "june" || month == "september" || month == "november" || 
+            month == "apr" || month == "jun" || month == "sep" || month == "nov" || 
+            month == "4" || month == "6" || month == "9" || month == "11"
+        ))
+    ) {
+        return false
+    } else {
+        return true
+    }
+}
+
+export { countryList, attributeToComponentId, validateFullName, formRegex, dateValidationMessages, validMonthValues, isValidDate };
