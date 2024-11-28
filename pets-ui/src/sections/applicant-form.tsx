@@ -70,12 +70,12 @@ const ApplicantForm = () => {
     dispatch(setPassportIssueDate(applicantData.passportIssueDate))
     dispatch(setPassportExpiryDate(applicantData.passportExpiryDate))
     dispatch(setApplicantHomeAddress1(applicantData.applicantHomeAddress1))
-    dispatch(setApplicantHomeAddress2(applicantData.applicantHomeAddress2))
-    dispatch(setApplicantHomeAddress3(applicantData.applicantHomeAddress3))
+    dispatch(setApplicantHomeAddress2(applicantData.applicantHomeAddress2 ?? ""))
+    dispatch(setApplicantHomeAddress3(applicantData.applicantHomeAddress3 ?? ""))
     dispatch(setTownOrCity(applicantData.townOrCity))
     dispatch(setProvinceOrState(applicantData.provinceOrState))
     dispatch(setCountry(applicantData.country))
-    dispatch(setPostcode(applicantData.postcode))
+    dispatch(setPostcode(applicantData.postcode ?? ""))
   }
 
   const onSubmit: SubmitHandler<ApplicantDetailsType> = async (data) => {

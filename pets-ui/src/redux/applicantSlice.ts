@@ -116,7 +116,6 @@ export const applicantSlice = createSlice({
 
 
 export const {
-  setApplicantDetails,
   setFullName,
   setSex,
   setDob,
