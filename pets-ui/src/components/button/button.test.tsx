@@ -1,10 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import Button, { ButtonType } from './button'
+import Button from './button'
+import { ButtonType } from '@/utils/enums'
 
 const handleClick = () => {}
 

@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { useForm, FormProvider } from "react-hook-form";
-import Radio, { RadioIsInline } from './radio'
+import Radio from './radio'
+import { RadioIsInline } from '@/utils/enums';
 
 type FormValues = {testValue: string}
 

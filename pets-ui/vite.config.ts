@@ -19,7 +19,8 @@ export default defineConfig({
       ],
       exclude: [
         ...coverageConfigDefaults.exclude,
-      ]
+      ],
+      reporter: ['text', 'html', 'clover', 'json', 'lcov'],
     },
   },
 });

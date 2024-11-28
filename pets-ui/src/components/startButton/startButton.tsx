@@ -1,4 +1,3 @@
-'use client'
 import { MouseEventHandler } from 'react';
 
 export interface StartButtonProps {

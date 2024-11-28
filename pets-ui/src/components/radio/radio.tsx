@@ -1,10 +1,6 @@
 import { useState, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
-
-export enum RadioIsInline {
-    TRUE = "govuk-radios govuk-radios--inline",
-    FALSE = "govuk-radios",
-}
+import { RadioIsInline } from "@/utils/enums";
 
 export interface RadioProps {
     id: string;
@@ -21,7 +17,7 @@ export interface RadioProps {
 export default function Radio(props: Readonly<RadioProps>) {
     
     const stringToJsxAttribute = (input: string) => {
-        return input.toLowerCase().replaceAll(" ", "-").replace(/[^a-z0-9 -]/g, "")
+        return input.toLowerCase().replace(/\s/g, "-").replace(/[^a-z0-9 -]/g, "")
     }
     
     const answerOptions: string[] = props.answerOptions
