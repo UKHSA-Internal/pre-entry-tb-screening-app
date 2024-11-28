@@ -3,11 +3,12 @@ import { useForm, SubmitHandler, FormProvider, Controller } from "react-hook-for
 import { useNavigate } from "react-router-dom";
 
 import { attributeToComponentId, formRegex, countryList, dateValidationMessages, validMonthValues, isValidDate } from "@/utils/helpers"
-import Button, { ButtonType } from "@/components/button/button"
+import Button from "@/components/button/button"
 import FreeText from "@/components/freeText/freeText"
-import Radio, { RadioIsInline } from "@/components/radio/radio";
+import Radio from "@/components/radio/radio";
 import DateTextInput, { DateType } from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
+import { ButtonType, RadioIsInline } from "@/utils/enums";
 
 type FormValues = {
   fullName: string
