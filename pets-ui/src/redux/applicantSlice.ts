@@ -56,10 +56,10 @@ export const applicantSlice = createSlice({
       state.countryOfIssue = action.payload;
     },
     setPassportIssueDate: (state, action: PayloadAction<DateType>) => {
-      state.dateOfBirth = action.payload;
+      state.passportIssueDate = action.payload;
     },
     setPassportExpiryDate: (state, action: PayloadAction<DateType>) => {
-      state.dateOfBirth = action.payload;
+      state.passportExpiryDate = action.payload;
     },
     setApplicantHomeAddress1: (state, action: PayloadAction<string>) => {
       state.applicantHomeAddress1 = action.payload;
@@ -116,6 +116,7 @@ export const applicantSlice = createSlice({
 
 
 export const {
+  setApplicantDetails,
   setFullName,
   setSex,
   setDob,

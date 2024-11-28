@@ -16,7 +16,7 @@ import DateTextInput, { DateType } from "@/components/dateTextInput/dateTextInpu
 import Dropdown from "@/components/dropdown/dropdown";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppDispatch } from "@/redux/hooks";
 import { 
   setFullName, 
   setApplicantHomeAddress1, 
@@ -34,8 +34,6 @@ import {
   setSex,
   setTownOrCity
 } from "@/redux/applicantSlice";
-// import { useDispatch } from "react-redux";
-// import { AppDispatch, RootState } from "@redux/store";
 
 export type ApplicantDetailsType = {
   fullName: string
@@ -59,23 +57,30 @@ const ApplicantForm = () => {
   const navigate = useNavigate();
 
   const methods = useForm<ApplicantDetailsType>({reValidateMode: 'onSubmit'})
-
   const { control, handleSubmit, formState: { errors } } = methods;
 
-  // const dispatch = useDispatch<AppDispatch>();
-  // const applicant = useSelector((state: RootState) => state.applicant);
-
+  const dispatch = useAppDispatch()
   const updateReduxStore = (applicantData: ApplicantDetailsType) => {
-    // dispatch(setPassportExpiryDate(applicantData.passportExpiryDate));
-    // useAppDispatch(setPassportNumber(applicantData.passportNumber))
-    // useAppDispatch(setDob(dob));
-    // useAppDispatch(setSex(sex));
+    dispatch(setFullName(applicantData.fullName))
+    dispatch(setSex(applicantData.sex))
+    dispatch(setDob(applicantData.dateOfBirth))
+    dispatch(setCountryOfNationality(applicantData.countryOfNationality))
+    dispatch(setPassportNumber(applicantData.passportNumber))
+    dispatch(setCountryOfIssue(applicantData.countryOfIssue))
+    dispatch(setPassportIssueDate(applicantData.passportIssueDate))
+    dispatch(setPassportExpiryDate(applicantData.passportExpiryDate))
+    dispatch(setApplicantHomeAddress1(applicantData.applicantHomeAddress1))
+    dispatch(setApplicantHomeAddress2(applicantData.applicantHomeAddress2))
+    dispatch(setApplicantHomeAddress3(applicantData.applicantHomeAddress3))
+    dispatch(setTownOrCity(applicantData.townOrCity))
+    dispatch(setProvinceOrState(applicantData.provinceOrState))
+    dispatch(setCountry(applicantData.country))
+    dispatch(setPostcode(applicantData.postcode))
   }
 
   const onSubmit: SubmitHandler<ApplicantDetailsType> = async (data) => {
-    console.log(data)
-    updateReduxStore(data);
     try {
+      updateReduxStore(data)
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
       await fetch("http://localhost:3005/dev/register-applicant", {
@@ -325,8 +330,6 @@ const ApplicantForm = () => {
           href="/applicant/confirmation"
           handleClick={() => {}}
         />
-
-        {/* <pre>{JSON.stringify(applicant, null, 2)}</pre> */}
       </form>
     </FormProvider>
   )
