@@ -4,21 +4,9 @@
     "passportNumber": "ABC1234JOHN",
     "countryOfNationality": "India",
     "countryOfIssue": "India",
-    "issueDate": {
-      "day": "5",
-      "month": "12",
-      "year": "2006"
-    },
-    "expiryDate": {
-      "day": "5",
-      "month": "12",
-      "year": "2006"
-    },
-    "dateOfBirth": {
-      "day": "5",
-      "month": "12",
-      "year": "2006"
-    },
+    "issueDate": "5-12-2006",
+    "expiryDate": "5-12-2006",
+    "dateOfBirth": "5-12-2006",
     "sex": "M",
     "typesOfVisa": "Family Reunion",
     "applicantHomeAddress1": "23 Long street",
@@ -34,21 +22,9 @@
     "passportNumber": "ABC1234JANE",
     "countryOfNationality": "India",
     "countryOfIssue": "India",
-    "issueDate": {
-      "day": "5",
-      "month": "12",
-      "year": "2007"
-    },
-    "expiryDate": {
-      "day": "5",
-      "month": "12",
-      "year": "2007"
-    },
-    "dateOfBirth": {
-      "day": "5",
-      "month": "12",
-      "year": "2007"
-    },
+    "issueDate": "5-12-2007",
+    "expiryDate": "5-12-2007",
+    "dateOfBirth": "5-12-2007",
     "sex": "F",
     "typesOfVisa": "Family Reunion",
     "applicantHomeAddress1": "23 Long street",
@@ -64,21 +40,9 @@
     "passportNumber": "ABC1234JANE",
     "countryOfNationality": "Argentina",
     "countryOfIssue": "Argentina",
-    "issueDate": {
-      "day": "5",
-      "month": "12",
-      "year": "2008"
-    },
-    "expiryDate": {
-      "day": "5",
-      "month": "12",
-      "year": "2008"
-    },
-    "dateOfBirth": {
-      "day": "5",
-      "month": "12",
-      "year": "2008"
-    },
+    "issueDate": "5-12-2008",
+    "expiryDate": "5-12-2008",
+    "dateOfBirth": "5-12-2008",
     "sex": "F",
     "typesOfVisa": "Family Reunion",
     "applicantHomeAddress1": "23 Long street",
