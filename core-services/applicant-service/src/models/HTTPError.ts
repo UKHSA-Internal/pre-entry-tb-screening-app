@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  * Defines a throwable subclass of Error used for signaling an HTTP status code.
  */
