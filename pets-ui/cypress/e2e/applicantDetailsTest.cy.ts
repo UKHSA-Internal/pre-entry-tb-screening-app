@@ -1,5 +1,14 @@
 import { countryList } from '../../src/utils/helpers';
 
+// Random number generator
+const randomElement = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
+const countryNames = countryList.map(country => country.value)
+const visaType = [
+    'Family Reunion','Settlement and Dependents', 'Students', 'Work', 'Working Holiday Maker','Government Sponsored'
+];
+
+//Scenario; Test Submission with valid data for all fields (Happy Path Testing)
+
 describe ('Fill out Applicant Details form', () => {
 
  
