@@ -21,7 +21,6 @@ const ApplicantSearchForm = () => {
   const { handleSubmit, formState: { errors } } = methods;
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    console.log(data)
     try {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -30,7 +29,7 @@ const ApplicantSearchForm = () => {
           headers: myHeaders,
       })
       .then((response) => {
-        // TO DO: set state here depending on value of response.ok to display results page correctly
+        // TO DO: set state here to retrieve on confirmation page
         navigate("/applicant-results")
       })
     } catch (error: unknown) {
