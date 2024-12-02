@@ -28,9 +28,9 @@ export const postPetsApplicant: Handler = async (event) => {
       && Object.keys(petsApplicantDetails[attribute]).includes("month")
       && Object.keys(petsApplicantDetails[attribute]).includes("year")
     ) {
-      petsApplicantDetails[attribute] = `${petsApplicantDetails[attribute]["year"]}
+      petsApplicantDetails[attribute] = `${petsApplicantDetails[attribute]["day"]}
         -${petsApplicantDetails[attribute]["month"]}
-        -${petsApplicantDetails[attribute]["day"]}`
+        -${petsApplicantDetails[attribute]["year"]}`
     }
   }
 
