@@ -9,7 +9,6 @@ jobs:
   test-and-linting:
     name: Run unit tests, linting & security checks
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -37,6 +36,7 @@ jobs:
           projectBaseDir: pets-ui/
 
   cypress-run:
+    name: Run cypress tests
     runs-on: ubuntu-latest
     if: false
     strategy:
@@ -64,3 +64,23 @@ jobs:
           build: pnpm run build
           start: pnpm run dev
           browser: ${{ matrix.browser }}
+
+  build:
+    name: Create UI build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23.x
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm i
+      - name: Create UI build
+        run: pnpm run build
+        working-directory: pets-ui
