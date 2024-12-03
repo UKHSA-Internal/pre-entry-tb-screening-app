@@ -149,3 +149,8 @@ jobs:
             --compatible-runtimes nodejs22.x)
           echo "LAYER_ARN=$(echo $LAYER_VERSION_INFO | jq -r .LayerVersionArn)" >> $GITHUB_ENV
       - run: echo $LAYER_ARN
+      - name: Attach new layer version to lambda function
+        run: |
+          aws lambda update-function-configuration \
+            --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:$LAMBDA \
+            --layers $LAYER_ARN
