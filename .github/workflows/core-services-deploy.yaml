@@ -142,7 +142,7 @@ jobs:
         run: aws lambda update-function-code --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:$LAMBDA --s3-bucket $BUCKET_SECRET --s3-key $ZIP_FILE
       - name: Create new lambda layer version
         run: |
-          LAYER_VERSION_INFO=$(aws publish-layer-version \
+          LAYER_VERSION_INFO=$(aws lambda publish-layer-version \
             --layer-name ${{ matrix.service }}-layer \
             --description "Lambda Layer containing node_modules for ${{ matrix.service }}" \
             --content S3Bucket=$BUCKET_SECRET,S3Key=nodejs.zip \
