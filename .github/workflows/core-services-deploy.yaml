@@ -148,7 +148,6 @@ jobs:
             --content S3Bucket=$BUCKET_SECRET,S3Key=nodejs.zip \
             --compatible-runtimes nodejs22.x)
           echo "LAYER_ARN=$(echo $LAYER_VERSION_INFO | jq -r .LayerVersionArn)" >> $GITHUB_ENV
-      - run: echo $LAYER_ARN
       - name: Attach new layer version to lambda function
         run: |
           aws lambda update-function-configuration \
