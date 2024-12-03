@@ -80,12 +80,5 @@ it('Should return errors for Date of Birth field', () => {
   cy.contains('Date of birth must include a day, month and year.').should('exist');
   
 
-
-
-
-
-
-
-    
-  })
-})
+});
+});
