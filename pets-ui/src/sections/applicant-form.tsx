@@ -64,7 +64,7 @@ const ApplicantForm = () => {
 
     if (!day || !month || !year) {
       return dateValidationMessages[fieldName as keyof typeof dateValidationMessages].emptyFieldError;
-    } else if ( isNaN(parseInt(day)) || isNaN(parseInt(year)) || !validMonthValues.includes(month.toLowerCase())) {
+    } else if ( day.search(/\D/g) > -1 || year.search(/\D/g) > -1 || !validMonthValues.includes(month.toLowerCase())) {
       return dateValidationMessages[fieldName as keyof typeof dateValidationMessages].invalidCharError;
     } else if (!isValidDate(day, month, year)) {
       return dateValidationMessages[fieldName as keyof typeof dateValidationMessages].invalidDateError;
