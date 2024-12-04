@@ -8,7 +8,7 @@ import FreeText from "@/components/freeText/freeText"
 import Dropdown from "@/components/dropdown/dropdown";
 import { ButtonType } from "@/utils/enums";
 
-type FormValues = {
+type ApplicantSearchFormType  = {
   passportNumber: string
   countryOfIssue: string
 }
@@ -16,11 +16,11 @@ type FormValues = {
 const ApplicantSearchForm = () => {
   const navigate = useNavigate();
 
-  const methods = useForm<FormValues>({reValidateMode: 'onSubmit'})
+  const methods = useForm<ApplicantSearchFormType>({reValidateMode: 'onSubmit'})
 
   const { handleSubmit, formState: { errors } } = methods;
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+  const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (data) => {
     try {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
