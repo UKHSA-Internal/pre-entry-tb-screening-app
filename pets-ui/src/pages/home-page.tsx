@@ -19,7 +19,7 @@ export default function HomePage() {
           <ul className="govuk-body">
             <li>enter the applicant details</li>
             <li>enter their travel information</li>
-            <li>Complete the TB medical screening</li>
+            <li>complete the TB medical screening</li>
             <li>upload and view X-ray images</li>
             <li>search for screening information for an existing UK visa applicant</li>
             <li>check on a TB screening applicant&apos;s progress</li>
