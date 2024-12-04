@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ApplicantDetailsType } from '@/sections/applicant-form';
-import { DateType } from '@/components/dateTextInput/dateTextInput';
+import { RootState } from '@redux/store';
 
 
 const initialState: ApplicantDetailsType = {
@@ -135,3 +134,5 @@ export const {
 } = applicantSlice.actions;
 
 export const applicantReducer = applicantSlice.reducer;
+
+export const selectApplicant = (state: RootState) => state.applicant
