@@ -3,23 +3,10 @@ export interface IPetsApplicant {
     "passportNumber": string
     "countryOfNationality": string
     "countryOfIssue": string
-    "issueDate": {
-        "day": string,
-        "month": string,
-        "year": string
-    },
-    "expiryDate": {
-        "day": string,
-        "month": string,
-        "year": string
-    },
-    "dateOfBirth": {
-        "day": string,
-        "month": string,
-        "year": string
-    },
+    "issueDate": string,
+    "expiryDate": string,
+    "dateOfBirth": string,
     "sex": string
-    "typesOfVisa": string
     "applicantHomeAddress1": string
     "applicantHomeAddress2": string
     "applicantHomeAddress3": string
