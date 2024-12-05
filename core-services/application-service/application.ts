@@ -10,7 +10,6 @@ const handler = async (
   event: EventBridgeEvent<any, any> | APIGatewayEvent,
   context: Context | void
 ): Promise<void | HTTPResponse> => {
-  console.log("handler called")
   // Request integrity checks
   if (!event) {
     return new HTTPResponse(400, HTTP_RESPONSE.AWS_EVENT_EMPTY);

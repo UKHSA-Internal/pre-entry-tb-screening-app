@@ -5,7 +5,6 @@ import { Handler } from "aws-lambda";
 import { ERRORS, HTTP_RESPONSE } from "@utils/Enum";
 
 export const getPetsApplication: Handler = async (event) => {
-  console.log("--> function getPetsApplication");
   const service = new PetsApplicationService();
 
   // if (!event.queryStringParameters) {
