@@ -36,7 +36,6 @@ const ApplicantForm = () => {
   const { control, handleSubmit, formState: { errors } } = methods;
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    console.log(data)
     try {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
