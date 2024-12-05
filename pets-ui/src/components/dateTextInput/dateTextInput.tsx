@@ -91,6 +91,7 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
                               {...autocompleteBDay.day}
                               className={dayMonthClass}
                               id={`${props.id}-day`}
+                              data-testid={`${props.id}-day`}
                               type="string"
                               value={day || ''}
                               onChange={handleDayChange}
@@ -106,6 +107,7 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
                               {...autocompleteBDay.month}
                               className={dayMonthClass}
                               id={`${props.id}-month`}
+                              data-testid={`${props.id}-month`}
                               type="string"
                               value={month || ''}
                               onChange={handleMonthChange}
@@ -121,6 +123,7 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
                               {...autocompleteBDay.year}
                               className={yearClass}
                               id={`${props.id}-year`} 
+                              data-testid={`${props.id}-year`}
                               type="string"
                               value={year || ''}
                               onChange={handleYearChange}
