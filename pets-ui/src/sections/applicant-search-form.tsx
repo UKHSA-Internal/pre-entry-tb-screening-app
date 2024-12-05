@@ -28,7 +28,7 @@ const ApplicantSearchForm = () => {
           method: "GET",
           headers: myHeaders,
       })
-      .then((response) => {
+      .then(() => {
         // TO DO: set state here to retrieve on confirmation page
         navigate("/applicant-results")
       })
