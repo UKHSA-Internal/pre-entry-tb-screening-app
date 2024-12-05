@@ -7,6 +7,13 @@ const randomCountry = randomElement(countryList);
 const countryName = randomCountry?.value;
 
 describe("Validate the error messages for the Free Text Boxes", () => {
+  beforeEach(() => {
+    cy.visit("http://localhost:3000");
+    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
+      statusCode: 200,
+      body: { success: true, message: "Data successfully posted" },
+    }).as("formSubmit");
+  });
   it("Should change error messages when incorrect format is used", () => {
     cy.visit("http://localhost:3000");
 

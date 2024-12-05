@@ -8,9 +8,16 @@ const countryName = randomCountry?.value;
 //Scenario; Test to check error message is displayed when a mandatory field is empty
 
 describe("Validate the errors for empty Mandatory Fields", () => {
+  beforeEach(() => {
+    cy.visit("http://localhost:3000");
+    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
+      statusCode: 200,
+      body: { success: true, message: "Data successfully posted" },
+    }).as("formSubmit");
+  });
   it("Should return errors for empty mandatory fields", () => {
 
-    cy.visit("http://localhost:3000");
+  
 
     //Enter valid data for 'Full name'
     cy.get('input[name="fullName"]').type("John Doe");
@@ -30,17 +37,17 @@ describe("Validate the errors for empty Mandatory Fields", () => {
     //Leave 'Applicant's Passport number' field EMPTY
     cy.get('input[name="passportNumber"]').should("have.value", "");
 
-    //Enter VALID data for 'Issue Date'
-    cy.get("input#passport-issue-date-day").type("20");
-    cy.get("input#passport-issue-date-month").type("11");
-    cy.get("input#passport-issue-date-year").type("2011");
+    //Leave 'Issue Date' field EMPTY
+    cy.get("input#passport-issue-date-day").should("have.value", "");
+    cy.get("input#passport-issue-date-month").should("have.value", "");
+    cy.get("input#passport-issue-date-year").should("have.value", "");
 
     //Enter VALID data for 'Expiry Date'
     cy.get("input#passport-expiry-date-day").type("19");
     cy.get("input#passport-expiry-date-month").type("11");
     cy.get("input#passport-expiry-date-year").type("2031");
 
-    //Enter valid address information
+    //Enter VALID address information
     cy.get("#address-1").type("1322");
     cy.get("#address-2").type("100th St");
     cy.get("#address-3").type("Apt 16");
