@@ -1,3 +1,5 @@
+import { DateType } from "@/components/dateTextInput/dateTextInput";
+
 const countryList = [
     {
         "value": "AFG",
@@ -1071,4 +1073,27 @@ function isValidDate(day: string, month: string, year: string) {
     }
 }
 
-export { countryList, attributeToComponentId, validateFullName, formRegex, dateValidationMessages, validMonthValues, isValidDate };
+const validateDate = (value: DateType, fieldName: string) => {
+    const { day, month, year } = value;
+
+    if (!day || !month || !year) {
+      return dateValidationMessages[fieldName as keyof typeof dateValidationMessages].emptyFieldError;
+    } else if ( day.search(/\D/g) > -1 || year.search(/\D/g) > -1 || !validMonthValues.includes(month.toLowerCase())) {
+      return dateValidationMessages[fieldName as keyof typeof dateValidationMessages].invalidCharError;
+    } else if (!isValidDate(day, month, year)) {
+      return dateValidationMessages[fieldName as keyof typeof dateValidationMessages].invalidDateError;
+    }
+
+    return true;
+}
+
+export {
+    countryList,
+    attributeToComponentId,
+    validateFullName,
+    formRegex,
+    dateValidationMessages,
+    validMonthValues,
+    isValidDate,
+    validateDate
+};

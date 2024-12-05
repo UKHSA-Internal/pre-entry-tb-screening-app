@@ -65,15 +65,10 @@ export class Configuration {
 
     // Not defining BRANCH will default to remote
     let env;
-    switch (process.env.BRANCH) {
-      case "local":
-        env = "local";
-        break;
-      case "local-global":
-        env = "local-global";
-        break;
-      default:
-        env = "remote";
+    if (process.env.BRANCH == "local") {
+      env = "local";
+    } else {
+      env = "remote";
     }
 
     return this.config.dynamodb[env];

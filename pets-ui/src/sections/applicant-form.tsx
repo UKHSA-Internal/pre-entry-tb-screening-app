@@ -2,7 +2,7 @@
 import { useForm, SubmitHandler, FormProvider, Controller } from "react-hook-form"
 import { useNavigate } from "react-router-dom";
 
-import { attributeToComponentId, formRegex, countryList, dateValidationMessages, validMonthValues, isValidDate } from "@/utils/helpers"
+import { attributeToComponentId, formRegex, countryList, validateDate } from "@/utils/helpers"
 import Button from "@/components/button/button"
 import FreeText from "@/components/freeText/freeText"
 import Radio from "@/components/radio/radio";
@@ -36,7 +36,6 @@ const ApplicantForm = () => {
   const { control, handleSubmit, formState: { errors } } = methods;
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    console.log(data)
     try {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -58,20 +57,6 @@ const ApplicantForm = () => {
   }
 
   const errorsToShow = Object.keys(errors);
-
-  const validateDate = (value: DateType, fieldName: string) => {
-    const { day, month, year } = value;
-
-    if (!day || !month || !year) {
-      return dateValidationMessages[fieldName as keyof typeof dateValidationMessages].emptyFieldError;
-    } else if ( isNaN(parseInt(day)) || isNaN(parseInt(year)) || !validMonthValues.includes(month.toLowerCase())) {
-      return dateValidationMessages[fieldName as keyof typeof dateValidationMessages].invalidCharError;
-    } else if (!isValidDate(day, month, year)) {
-      return dateValidationMessages[fieldName as keyof typeof dateValidationMessages].invalidDateError;
-    }
-
-    return true;
-  }
 
   return (
     <FormProvider {...methods}>
