@@ -1,11 +1,9 @@
 import { countryList } from '../../src/utils/helpers';
 
 // Random number generator
-const randomElement = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
-const countryNames = countryList.map(country => country.value)
-const visaType = [
-    'Family Reunion','Settlement and Dependents', 'Students', 'Work', 'Working Holiday Maker','Government Sponsored'
-];
+const randomElement = <T> (arr: T[]) : T => arr[Math.floor(Math.random() * arr.length)];
+const randomCountry = randomElement(countryList);
+const countryName = randomCountry?.value;
 
 //Scenario; Test Submission with valid data for all fields (Happy Path Testing)
 
@@ -31,8 +29,9 @@ it('Fill out the application form with valid data', () => {
   //Select a 'Sex'
   cy.get('input[name="sex"]').check('male');
 
-  //Randomly select a 'Country of Nationality'
-  cy.get('#country-of-nationality.govuk-select').select('ATA');
+  // Randomly Select 'Country of Nationality & Issue' 
+  cy.get('#country-of-nationality.govuk-select').select(countryName);
+  cy.get('#country-of-issue.govuk-select').select(countryName);
 
   //Enter valid data for 'date of birth'
   cy.get('input#birth-date-day').type('4');
@@ -44,8 +43,6 @@ it('Fill out the application form with valid data', () => {
   cy.get('input[name="passportNumber"]').type('AA1235467');
 
 
-  //Select a 'Country of Issue'
-  cy.get('#country-of-issue.govuk-select').select('ATA');
 
   //Enter valid data for 'Issue Date'
   cy.get('input#passport-issue-date-day').type('20');

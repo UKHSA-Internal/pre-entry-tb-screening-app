@@ -1,12 +1,10 @@
 import { countryList } from '../../src/utils/helpers';
 
 // Random number generator
-const randomElement = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
-const countryNames = countryList.map(country => country.value)
-const visaType = [
-    'Family Reunion','Settlement and Dependents', 'Students', 'Work', 'Working Holiday Maker','Government Sponsored'
-];
-
+const randomElement = <T> (arr: T[]) : T => arr[Math.floor(Math.random() * arr.length)];
+const randomCountry = randomElement(countryList);
+const countryName = randomCountry?.value;
+ 
 //Scenario; Test to check error message is displayed when a mandatory field (DOB) is empty
 
 describe ('Validate the errors for Date of Birth Field', () => {
@@ -22,7 +20,7 @@ describe ('Validate the errors for Date of Birth Field', () => {
 }).as('formSubmit');
 });
 
-it('Should return errors for Date of Birth field', () => { 
+it('Should return errors for empty Data for Date of Birth field', () => { 
 
   //Enter valid data for 'Full name'
   cy.get('input[name="fullName"]').type('John Doe');
@@ -31,21 +29,20 @@ it('Should return errors for Date of Birth field', () => {
   //Select a 'Sex'
   cy.get('input[name="sex"]').check('male');
 
-  //Randomly select a 'Country of Nationality'
-  cy.get('#country-of-nationality.govuk-select').select('ATA');
+ // Randomly Select 'Country of Nationality & Issue' 
+ cy.get('#country-of-nationality.govuk-select').select(countryName);
+ cy.get('#country-of-issue.govuk-select').select(countryName);
 
   //Omit data for 'date of birth'
-  /*cy.get('input#birth-date-day').type();
-  cy.get('input#birth-date-month').type();
-  cy.get('input#birth-date-year').type();*/
+  cy.get('input#birth-date-day').should('have.value','');
+  cy.get('input#birth-date-month').should('have.value','');
+  cy.get('input#birth-date-year').should('have.value','');
 
 
   //Enter valid data for 'Applicant's Passport number'
   cy.get('input[name="passportNumber"]').type('AA1235467');
 
 
-  //Select a 'Country of Issue'
-  cy.get('#country-of-issue.govuk-select').select('ATA');
 
   //Enter valid data for 'Issue Date'
   cy.get('input#passport-issue-date-day').type('20');
