@@ -8,15 +8,10 @@ const countryName = randomCountry?.value;
 //Scenario; Test to check error message is displayed when a mandatory field is empty
 
 describe("Validate the errors for empty Mandatory Fields", () => {
-  beforeEach(() => {
-    cy.visit("http://localhost:3000");
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
-  });
-
   it("Should return errors for empty mandatory fields", () => {
+
+    cy.visit("http://localhost:3000");
+
     //Enter valid data for 'Full name'
     cy.get('input[name="fullName"]').type("John Doe");
 
