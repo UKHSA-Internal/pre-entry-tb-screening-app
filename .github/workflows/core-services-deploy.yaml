@@ -88,7 +88,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 23.x
+          node-version: 18.x
           cache: "pnpm"
 
       - name: Install dependencies
@@ -140,3 +140,16 @@ jobs:
 
       - name: Update lambda code
         run: aws lambda update-function-code --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:$LAMBDA --s3-bucket $BUCKET_SECRET --s3-key $ZIP_FILE
+      - name: Create new lambda layer version
+        run: |
+          LAYER_VERSION_INFO=$(aws lambda publish-layer-version \
+            --layer-name ${{ matrix.service }}-layer \
+            --description "Lambda Layer containing node_modules for ${{ matrix.service }}" \
+            --content S3Bucket=$BUCKET_SECRET,S3Key=nodejs.zip \
+            --compatible-runtimes nodejs18.x)
+          echo "LAYER_ARN=$(echo $LAYER_VERSION_INFO | jq -r .LayerVersionArn)" >> $GITHUB_ENV
+      - name: Attach new layer version to lambda function
+        run: |
+          aws lambda update-function-configuration \
+            --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:$LAMBDA \
+            --layers $LAYER_ARN

@@ -19,7 +19,16 @@ describe("postPetsApplicant Handler", () => {
                 .fn()
                 .mockImplementation(mockFunction);
 
-            const event = { body: {"fullName": "Jonathon Doe"} };
+            const event = {
+                body: {
+                    "fullName": "Jonathon Doe",
+                    "dateOfBirth": {
+                        "day": "31",
+                        "month": "12",
+                        "year": "1901",
+                    }
+                }
+            };
             const res: HTTPResponse = await postPetsApplicant(event, ctx, () => {
                 return;
             });

@@ -16,9 +16,23 @@ export const postPetsApplicant: Handler = async (event) => {
     return new HTTPResponse(400, HTTP_RESPONSE.INVALID_BODY);
   }
 
-  const petsApplicantDetails = typeof(event.body) == "string"
+  let petsApplicantDetails = typeof(event.body) == "string"
     ? JSON.parse(event.body)
     : event.body;
+
+  // Flatten date objects
+  for (let attribute in petsApplicantDetails) {
+    if (
+      typeof petsApplicantDetails[attribute] == "object"
+      && Object.keys(petsApplicantDetails[attribute]).includes("day")
+      && Object.keys(petsApplicantDetails[attribute]).includes("month")
+      && Object.keys(petsApplicantDetails[attribute]).includes("year")
+    ) {
+      petsApplicantDetails[attribute] = `${petsApplicantDetails[attribute]["day"]}
+        -${petsApplicantDetails[attribute]["month"]}
+        -${petsApplicantDetails[attribute]["year"]}`
+    }
+  }
 
   try {
     const petsApplicant = await service.putPetsApplicant(petsApplicantDetails);
