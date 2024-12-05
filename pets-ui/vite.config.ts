@@ -23,6 +23,8 @@ export default defineConfig({
       ],
       exclude: [
         ...coverageConfigDefaults.exclude,
+        '**/src/components/devtools**',
+        '**/src/redux/**',
       ],
       reporter: ['text', 'html', 'clover', 'json', 'lcov'],
     },
