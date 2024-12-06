@@ -20,11 +20,11 @@ export default defineConfig({
     coverage: {
       include: [
         '**/src/components/**',
+        '**/src/sections/**',
       ],
       exclude: [
         ...coverageConfigDefaults.exclude,
         '**/src/components/devtools**',
-        '**/src/redux/**',
       ],
       reporter: ['text', 'html', 'clover', 'json', 'lcov'],
     },
