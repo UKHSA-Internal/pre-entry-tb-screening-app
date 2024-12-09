@@ -1,8 +1,13 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { useForm, SubmitHandler, FormProvider, Controller } from "react-hook-form"
 import { useNavigate } from "react-router-dom";
+import { 
+  attributeToComponentId, 
+  formRegex, 
+  countryList, 
+  validateDate,
+} from "@/utils/helpers"
 
-import { attributeToComponentId, formRegex, countryList, validateDate } from "@/utils/helpers"
 import Button from "@/components/button/button"
 import FreeText from "@/components/freeText/freeText"
 import Radio from "@/components/radio/radio";
@@ -10,33 +15,53 @@ import DateTextInput, { DateType } from "@/components/dateTextInput/dateTextInpu
 import Dropdown from "@/components/dropdown/dropdown";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 
-type FormValues = {
-  fullName: string
-  sex: string
-  dateOfBirth: DateType
-  countryOfNationality: string
-  passportNumber: string
-  countryOfIssue: string
-  passportIssueDate: DateType
-  passportExpiryDate: DateType 
-  applicantHomeAddress1: string
-  applicantHomeAddress2?: string
-  applicantHomeAddress3?: string
-  townOrCity: string
-  provinceOrState: string
-  country: string
-  postcode?: string
-}
+import { useAppDispatch } from "@/redux/hooks";
+import { 
+  setFullName, 
+  setApplicantHomeAddress1, 
+  setApplicantHomeAddress2,
+  setApplicantHomeAddress3,
+  setCountry,
+  setCountryOfIssue,
+  setCountryOfNationality,
+  setDob,
+  setPassportExpiryDate,
+  setPassportIssueDate,
+  setPassportNumber,
+  setPostcode,
+  setProvinceOrState,
+  setSex,
+  setTownOrCity
+} from "@/redux/applicantSlice";
 
 const ApplicantForm = () => {
   const navigate = useNavigate();
 
-  const methods = useForm<FormValues>({reValidateMode: 'onSubmit'})
-
+  const methods = useForm<ApplicantDetailsType>({reValidateMode: 'onSubmit'})
   const { control, handleSubmit, formState: { errors } } = methods;
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+  const dispatch = useAppDispatch()
+  const updateReduxStore = (applicantData: ApplicantDetailsType) => {
+    dispatch(setFullName(applicantData.fullName))
+    dispatch(setSex(applicantData.sex))
+    dispatch(setDob(applicantData.dateOfBirth))
+    dispatch(setCountryOfNationality(applicantData.countryOfNationality))
+    dispatch(setPassportNumber(applicantData.passportNumber))
+    dispatch(setCountryOfIssue(applicantData.countryOfIssue))
+    dispatch(setPassportIssueDate(applicantData.passportIssueDate))
+    dispatch(setPassportExpiryDate(applicantData.passportExpiryDate))
+    dispatch(setApplicantHomeAddress1(applicantData.applicantHomeAddress1))
+    dispatch(setApplicantHomeAddress2(applicantData.applicantHomeAddress2 ?? ""))
+    dispatch(setApplicantHomeAddress3(applicantData.applicantHomeAddress3 ?? ""))
+    dispatch(setTownOrCity(applicantData.townOrCity))
+    dispatch(setProvinceOrState(applicantData.provinceOrState))
+    dispatch(setCountry(applicantData.country))
+    dispatch(setPostcode(applicantData.postcode ?? ""))
+  }
+
+  const onSubmit: SubmitHandler<ApplicantDetailsType> = async (data) => {
     try {
+      updateReduxStore(data)
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
       await fetch("http://localhost:3005/dev/register-applicant", {
