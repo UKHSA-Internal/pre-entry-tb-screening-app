@@ -16,8 +16,8 @@ export const getPetsApplication: Handler = async (event) => {
     : undefined;
 
   try {
-    const petsApplicant = await service.getPetsApplication(petsApplicationDetails);
-    return new HTTPResponse(200, petsApplicant);
+    const petsApplication = await service.getPetsApplication(petsApplicationDetails);
+    return new HTTPResponse(200, petsApplication);
   } catch (error: any) {
     console.error(error);
     if (!(error instanceof HTTPError)) {

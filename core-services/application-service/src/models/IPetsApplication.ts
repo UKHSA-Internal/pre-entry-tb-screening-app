@@ -1,4 +1,15 @@
-interface IPetApplication {
+import {
+    ApplicationStatus,
+    BooleanOrNull,
+    Conditions,
+    CxrNotTakenReason,
+    NumberOrNull,
+    StringOrNull,
+    Symptoms,
+    YesNoNone
+} from "@models/index";
+
+ interface IPetApplication {
     // identifiers
     "applicantPassportNumber": string,
     "applicantCountryofIssue": string,
