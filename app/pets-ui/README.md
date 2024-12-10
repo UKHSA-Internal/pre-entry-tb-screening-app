@@ -46,13 +46,13 @@ To run a subset of tests append the names of files or folders to the command, i.
 
 ## Cypress Tests
 
-In one terminal, open up the UI in the background using 'pnpm run dev'
-Open a second terminal, CD to the e2e folder and run a 'pnpm cypress open' to open cypress.
-Once cypress is open click on the 'E2E Testing' option, it should say 'Configured' underneath in green.
+-In one terminal, open up the UI in the background using 'pnpm run dev'
+-Open a second terminal, CD to the e2e folder and run a 'pnpm cypress open' to open cypress.
+-Once cypress is open click on the 'E2E Testing' option, it should say 'Configured' underneath in green.
 Select your browser and then Select the test you wish to run;
-applicantDetailsDateValidationTest - This Test is validating applicant date fields will reject special characters.
-applicantDetailsPage- Happy path Test with VALID data enteredt in all fields (This test does not currently include submission validation which will be included at a later date. the scipt for it is  ( // Validate that the page navigates to the confirmation page 
+-applicantDetailsDateValidationTest - This Test is validating applicant date fields will reject special characters.
+-applicantDetailsPage- Happy path Test with VALID data enteredt in all fields (This test does not currently include submission validation which will be included at a later date. the scipt for it is  ( // Validate that the page navigates to the confirmation page 
         cy.url().should('include', 'http://localhost:3000/applicant/confirmation');)
-emptyMandatoryFieldTest - This Test checks error messages are displayed when a mandatory field is left empty at submission.
-textFieldValidation - This Test validates error messages are displayed when special characters are entered in the Free Text fields.
+-emptyMandatoryFieldTest - This Test checks error messages are displayed when a mandatory field is left empty at submission.
+-textFieldValidation - This Test validates error messages are displayed when special characters are entered in the Free Text fields.
 
