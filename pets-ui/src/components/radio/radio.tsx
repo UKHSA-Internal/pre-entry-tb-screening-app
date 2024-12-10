@@ -58,6 +58,7 @@ export default function Radio(props: Readonly<RadioProps>) {
                             <input
                                 className="govuk-radios__input"
                                 type="radio"
+                                data-testid={props.id}
                                 value={stringToJsxAttribute(answerOption)}
                                 {...register(props.formValue, { 
                                     required: props.required,

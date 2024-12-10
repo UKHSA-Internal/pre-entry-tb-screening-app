@@ -1,13 +1,17 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { HelmetProvider } from 'react-helmet-async'
+import { Provider } from 'react-redux'
+import { setupStore } from './redux/store.ts'
 
 import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
-  <HelmetProvider>
-    <StrictMode>
-      <App />
-    </StrictMode>
-  </HelmetProvider>,
+  <Provider store={setupStore()}>
+    <HelmetProvider>
+      <StrictMode>
+        <App />
+      </StrictMode>
+    </HelmetProvider>
+  </Provider>,
 )
