@@ -43,17 +43,3 @@ type CxrNotTakenReason = "Child" |
   "Other(specify)" |
   "N/A" |
   null
-
-
-export {
-   ApplicationStatus,
-   BooleanOrNull,
-   Conditions,
-   CxrNotTakenReason,
-   IDBConfig,
-   IFunctionConfig,
-   NumberOrNull,
-   StringOrNull,
-   Symptoms,
-   YesNoNone
-};
