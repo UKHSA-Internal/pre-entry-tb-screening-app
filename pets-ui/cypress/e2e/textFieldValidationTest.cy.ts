@@ -17,7 +17,7 @@ describe("Validate the error messages for the Free Text Boxes", () => {
   it("Should change error messages when incorrect format is used", () => {
     cy.visit("http://localhost:3000");
 
-    // Enter valid data for 'Full name'
+    // Enter VALID data for 'Full name'
     cy.get('input[name="fullName"]').type("J)hn D*e");
 
     //Select a 'Sex'

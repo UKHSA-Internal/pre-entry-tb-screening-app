@@ -19,7 +19,7 @@ describe("Validate the errors for empty Mandatory Fields", () => {
 
   
 
-    //Enter valid data for 'Full name'
+    //Enter VALID data for 'Full name'
     cy.get('input[name="fullName"]').type("John Doe");
 
     //Select a 'Sex'

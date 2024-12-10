@@ -17,7 +17,7 @@ describe("Validate error messages for Applicant Details Date Fields", () => {
   });
 
   it("Fill out the application date fields with invalid characters", () => {
-    //Enter valid data for 'Full name'
+    //Enter VALID data for 'Full name'
     cy.get('input[name="fullName"]').type("John Doe");
 
     //Select a 'Sex'
@@ -32,7 +32,7 @@ describe("Validate error messages for Applicant Details Date Fields", () => {
     cy.get("input#birth-date-month").type("JAN");
     cy.get("input#birth-date-year").type("19/8");
 
-    //Enter valid data for 'Applicant's Passport number'
+    //Enter VALID data for 'Applicant's Passport number'
     cy.get('input[name="passportNumber"]').type("AA1235467");
 
     //Enter INVALID data for 'Issue Date'
@@ -45,7 +45,7 @@ describe("Validate error messages for Applicant Details Date Fields", () => {
     cy.get("input#passport-expiry-date-month").type("10");
     cy.get("input#passport-expiry-date-year").type("20$1");
 
-    //Enter valid address information
+    //Enter VALID address information
     cy.get("#address-1").type("1322");
     cy.get("#address-2").type("100th St");
     cy.get("#address-3").type("Apt 16");
