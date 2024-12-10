@@ -44,6 +44,7 @@ export default function FreeText(props: Readonly<FreeTextProps>) {
             <input
                 className={inputClass} 
                 type="text" 
+                data-testid={props.id}
                 {...register(props.formValue, { 
                     required: props.required,
                     pattern: {
