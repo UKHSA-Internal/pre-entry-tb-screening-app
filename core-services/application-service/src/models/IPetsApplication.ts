@@ -1,15 +1,4 @@
-// field types could be more precise for at least drop-down components
-type Symptoms = "Cough" |
-    "Haemoptysis" |
-    "Weight loss" |
-    "Night sweats" |
-    "Fever" |
-    "Other symptoms" |
-    null
-
-type ApplicationStatus = "CREATED" | "CLOSED" | "COMPLETED_WT_PASS" | "COMPLETED_WT_FAIL"
-
-interface IPetApplication {
+ interface IPetApplication {
     // identifiers
     "applicantPassportNumber": string,
     "applicantCountryofIssue": string,
@@ -19,62 +8,63 @@ interface IPetApplication {
     "visaCategory": string,
     "ukAddressLine1": string,
     "ukAddressLine2": string,
-    "ukAddressLine3": string | undefined,
-    "ukAddressLine4": string | undefined,
+    "ukAddressLine3": StringOrNull,
+    "ukAddressLine4": StringOrNull,
     "ukAddressPostcode": string,
     "ukTelephoneNumber": string,
-    "ukMobileNumber": string | undefined,
+    "ukMobileNumber": StringOrNull,
     "ukEmailAddress": string,
 
     // medical-screening
-    "age": number,
-    "symptomsOfTb": boolean,
+    "age": NumberOrNull,
+    "symptomsOfTb": BooleanOrNull,
     "symptoms": Symptoms,
-    "symptomsOther": string | undefined,
-    "contactWithPersonWithTb": string,
-    "historyOfPreviousTb": string,
-    "previousTbDetails": string,
-    "pregnant": boolean,
-    "lastMenstralPeriod": string | undefined,
-    "physicalExaminationConducted": boolean,
-    "dateOfMedicalScreening": string | undefined,
+    "symptomsOther": StringOrNull,
+    "historyOfConditions": Conditions,
+    "contactWithPersonWithTb": YesNoNone,
+    "historyOfPreviousTb": YesNoNone,
+    "previousTbDetails": StringOrNull,
+    "pregnant": BooleanOrNull,
+    "lastMenstralPeriod": StringOrNull,
+    "physicalExaminationConducted": BooleanOrNull,
+    "dateOfMedicalScreening": StringOrNull,
 
     // chest_x-ray
-    "cxrTaken": boolean,
-    "posteriorAnterior": string,
-    "apicalLordotic": string | undefined,
-    "lateralDecubitus": string | undefined,
-    "reasonWhyCxrWasNotDone2": string,
-    "reasonWhyCxrWasNotDone3": string,
-    "dateOfCxr": string | undefined,
+    "cxrTaken": BooleanOrNull,
+    "posteriorAnterior": StringOrNull,
+    "apicalLordotic": StringOrNull,
+    "lateralDecubitus": StringOrNull,
+    "reasonWhyCxrWasNotDone2": CxrNotTakenReason,
+    "reasonWhyCxrWasNotDone3": StringOrNull,
+    "dateOfCxr": StringOrNull,
 
     // radiological-interpretation
-    "radiologicalFinding": string,
-    "radiologicalOutcome": string,
-    "radiologicalOutcomeNotes": string | undefined,
-    "dateOfRadiologicalInterpretation": string,
+    "radiologicalFinding": StringOrNull,
+    "radiologicalOutcome": StringOrNull,
+    "radiologicalOutcomeNotes": StringOrNull,
+    "dateOfRadiologicalInterpretation": StringOrNull,
 
     // sputum
-    "sputumCollection": string,
-    "dateOfSputumSample1": string,
-    "smearResult1": string,
-    "cultureResult1": string,
-    "dateOfSputumSample2": string,
-    "smearResult2": string,
-    "cultureResult2": string,
-    "dateOfSputumSample3": string,
-    "smearResult3": string,
-    "cultureResult3": string,
+    "sputumCollection": StringOrNull,
+    "dateOfSputumSample1": StringOrNull,
+    "smearResult1": StringOrNull,
+    "cultureResult1": StringOrNull,
+    "dateOfSputumSample2": StringOrNull,
+    "smearResult2": StringOrNull,
+    "cultureResult2": StringOrNull,
+    "dateOfSputumSample3": StringOrNull,
+    "smearResult3": StringOrNull,
+    "cultureResult3": StringOrNull,
 
     // medical-assessment
-    "tbSuspected": string,
-    "tbSuspectedBasedOn": string,
-    "clearanceCertificateIssued": string,
-    "reasonForNonIssue": string,
-    "reasonForNonIssue2": string,
-    "physiciansComments": string,
-    "issueDateofMedicalCertificate": string,
-    "clearanceCertificateNumber": string,
+    "tbSuspected": StringOrNull,
+    "tbSuspectedBasedOn": StringOrNull,
+    "clearanceCertificateIssued": StringOrNull,
+    "reasonForNonIssue": StringOrNull,
+    "reasonForNonIssue2": StringOrNull,
+    "physiciansComments": StringOrNull,
+    "issueDateofMedicalCertificate": StringOrNull,
+    "clearanceCertificateNumber": StringOrNull,
 
     "ApplicationStatus": ApplicationStatus,
 
