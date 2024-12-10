@@ -56,8 +56,5 @@ describe("Fill out Applicant Details form", () => {
 
     // Click the submit button
     cy.get('button[type="submit"]').click();
-
-  
-    
   });
 });

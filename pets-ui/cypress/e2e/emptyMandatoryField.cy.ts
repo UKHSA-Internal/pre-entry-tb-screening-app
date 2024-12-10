@@ -16,9 +16,6 @@ describe("Validate the errors for empty Mandatory Fields", () => {
     }).as("formSubmit");
   });
   it("Should return errors for empty mandatory fields", () => {
-
-  
-
     //Enter VALID data for 'Full name'
     cy.get('input[name="fullName"]').type("John Doe");
 
