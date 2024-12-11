@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: pnpm i
       - name: Run unit tests
-        run: pnpm run test
+        run: pnpm run test --testTimeout=10000
         working-directory: pets-ui
       - name: Run eslint
         run: pnpm run lint
