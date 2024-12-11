@@ -8,7 +8,7 @@ export default function HomePage() {
   return (
     <body className="govuk-template__body">
     <Helmet>
-      <title> Applicant Details Form</title>
+      <title>UK Pre-Entry Health Screening</title>
     </Helmet>
     <Header/>
       <div className="govuk-width-container">
