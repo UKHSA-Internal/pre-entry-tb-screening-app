@@ -1027,6 +1027,8 @@ const formRegex = {
   "lettersNumbersAndSpaces": /^[A-Za-z0-9\s]+$/,
   "lettersSpacesAndPunctuation": /^[A-Za-z\s,-/()]+$/,
   "lettersNumbersSpacesAndPunctuation": /^[A-Za-z0-9\s,-/()]+$/,
+  "numbersOnly": /^[0-9]+$/,
+  "emailAddress": /^[\w\-.]+@([\w-]+\.)+[\w-]{2,}$/,
 }
 
 const dateValidationMessages = {
