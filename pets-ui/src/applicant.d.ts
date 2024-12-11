@@ -21,3 +21,14 @@ type DateType = {
   month: string
   day: string
 }
+
+type TravelDetailsType = {
+  visaType: string
+  sex: string
+  applicantUkAddress1: string
+  applicantUkAddress2?: string
+  townOrCity: string
+  postcode: string
+  ukMobileNumber?: string
+  ukEmail: string
+}
