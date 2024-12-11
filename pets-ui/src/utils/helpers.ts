@@ -1017,10 +1017,6 @@ const attributeToComponentId: {[key:string]:string} = {
   "postcode": "postcode"
 }
 
-const validateFullName: (value?: string) => string | undefined = (value) => {
-  return value ? undefined : 'Please enter a first name';
-}
-
 const formRegex = {
   "lettersAndNumbers": /^[A-Za-z0-9]+$/,
   "lettersAndSpaces": /^[A-Za-z\s]+$/,
@@ -1092,7 +1088,6 @@ const validateDate = (value: DateType, fieldName: string) => {
 export {
     countryList,
     attributeToComponentId,
-    validateFullName,
     formRegex,
     dateValidationMessages,
     validMonthValues,
