@@ -1023,7 +1023,7 @@ const formRegex = {
   "lettersNumbersAndSpaces": /^[A-Za-z0-9\s]+$/,
   "lettersSpacesAndPunctuation": /^[A-Za-z\s,-/()]+$/,
   "lettersNumbersSpacesAndPunctuation": /^[A-Za-z0-9\s,-/()]+$/,
-  "numbersOnly": /^[0-9]+$/,
+  "numbersOnly": /^\d+$/,
   "emailAddress": /^[\w\-.]+@([\w-]+\.)+[\w-]{2,}$/,
 }
 
@@ -1085,6 +1085,33 @@ const validateDate = (value: DateType, fieldName: string) => {
     return true;
 }
 
+const visaOptions = [
+    {
+        value: "Family Reunion",
+        label: "Family Reunion"
+    },
+    {
+        value: "Settlement and Dependents",
+        label: "Settlement and Dependents"
+    },
+    {
+        value: "Students",
+        label: "Students"
+    },
+    {
+        value: "Work",
+        label: "Work"
+    },
+    {
+        value: "Working Holiday Maker",
+        label: "Working Holiday Maker"
+    },
+    {
+        value: "Government Sponsored",
+        label: "Government Sponsored"
+    },
+]
+
 export {
     countryList,
     attributeToComponentId,
@@ -1092,5 +1119,6 @@ export {
     dateValidationMessages,
     validMonthValues,
     isValidDate,
-    validateDate
+    validateDate,
+    visaOptions,
 };
