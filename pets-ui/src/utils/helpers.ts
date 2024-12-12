@@ -1014,7 +1014,12 @@ const attributeToComponentId: {[key:string]:string} = {
   "townOrCity": "town-or-city",
   "provinceOrState": "province-or-state",
   "country": "address-country",
-  "postcode": "postcode"
+  "postcode": "postcode",
+  "visaType": "visa-type",
+  "applicantUkAddress1": "address-1",
+  "applicantUkAddress2": "address-2",
+  "ukMobileNumber": "mobile-number",
+  "ukEmail": "email",
 }
 
 const formRegex = {
