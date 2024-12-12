@@ -10,6 +10,7 @@ export interface FreeTextProps {
     required: string | false;
     patternValue: RegExp;
     patternError: string;
+    defaultValue?: string;
 }
 
 export default function FreeText(props: Readonly<FreeTextProps>) {
@@ -52,6 +53,7 @@ export default function FreeText(props: Readonly<FreeTextProps>) {
                         message: props.patternError
                     }
                 })}
+                defaultValue={props.defaultValue ?? ""}
             />
         </div>
     )
