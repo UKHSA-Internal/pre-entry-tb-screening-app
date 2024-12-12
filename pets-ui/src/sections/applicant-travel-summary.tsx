@@ -25,7 +25,7 @@ const TravelReview = () => {
               {travelData.visaType}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" href="/travel-details#visa-type">
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/travel-details#visa-type")}>
                 Change<span className="govuk-visually-hidden"> visa type</span>
               </a>
             </dd>
@@ -38,7 +38,7 @@ const TravelReview = () => {
               {travelData.applicantUkAddress1}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" href="/travel-details#address-1">
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/travel-details#address-1")}>
                 Change<span className="govuk-visually-hidden"> UK address line 1</span>
               </a>
             </dd>
@@ -51,7 +51,7 @@ const TravelReview = () => {
               {travelData.applicantUkAddress2}
             </dd>
             <dd className="govuk-summary-list__actions">
-            <a className="govuk-link" href="/travel-details#address-2">
+            <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/travel-details#address-2")}>
                 Change<span className="govuk-visually-hidden"> UK address line 2</span>
               </a>
             </dd>
@@ -64,7 +64,7 @@ const TravelReview = () => {
               {travelData.townOrCity}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" href="/travel-details#town-or-city">
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/travel-details#random")}>
                 Change<span className="govuk-visually-hidden"> town or city</span>
               </a>
             </dd>
@@ -77,7 +77,7 @@ const TravelReview = () => {
               {travelData.postcode}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" href="/travel-details#postcode">
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/travel-details#postcode")}>
                 Change<span className="govuk-visually-hidden"> postcode</span>
               </a>
             </dd>
@@ -90,7 +90,7 @@ const TravelReview = () => {
               {travelData.ukMobileNumber}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" href="/travel-details#mobile-number">
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/travel-details#mobile-number")}>
                 Change<span className="govuk-visually-hidden"> UK mobile number</span>
               </a>
             </dd>
@@ -103,7 +103,7 @@ const TravelReview = () => {
               {travelData.ukEmail}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" href="/travel-details#email">
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/travel-details#email")}>
                 Change<span className="govuk-visually-hidden"> UK email address</span>
               </a>
             </dd>
