@@ -1,18 +1,19 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
+import { useEffect } from "react";
 import { useForm, SubmitHandler, FormProvider } from "react-hook-form"
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+
+import Button from "@/components/button/button"
+import FreeText from "@/components/freeText/freeText"
+import Dropdown from "@/components/dropdown/dropdown";
+import { ButtonType } from "@/utils/enums";
 import { 
   attributeToComponentId,
   formRegex,
   visaOptions,
 } from "@/utils/helpers"
 
-import Button from "@/components/button/button"
-import FreeText from "@/components/freeText/freeText"
-import Dropdown from "@/components/dropdown/dropdown";
-import { ButtonType } from "@/utils/enums";
-
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   setVisaType,
   setApplicantUkAddress1,
@@ -21,6 +22,7 @@ import {
   setPostcode,
   setUkMobileNumber,
   setUkEmail,
+  selectTravel,
 } from "@/redux/travelSlice"
 
 const ApplicantTravelForm = () => {
@@ -39,6 +41,7 @@ const ApplicantTravelForm = () => {
     dispatch(setUkMobileNumber(travelData.ukMobileNumber ?? ""))
     dispatch(setUkEmail(travelData.ukEmail))
   }
+  const travelData = useAppSelector(selectTravel);
 
   const onSubmit: SubmitHandler<TravelDetailsType> = (data) => {
     console.log(data)
@@ -47,6 +50,17 @@ const ApplicantTravelForm = () => {
   }
 
   const errorsToShow = Object.keys(errors);
+
+  // Required to scroll to the correct element when a change link on the summary page is clicked
+  const location = useLocation();
+  useEffect(() => {
+    if (location.hash) {
+      const element = document.getElementById(location.hash.substring(1));
+      if (element) {
+        element.scrollIntoView();
+      }
+    }
+  }, [location]);
 
   return (
     <FormProvider {...methods}>
@@ -75,12 +89,14 @@ const ApplicantTravelForm = () => {
         <h2 className="govuk-label govuk-label--m">
           Visa type
         </h2>
+
         <Dropdown
           id="visa-type"
           options={visaOptions}
           errorMessage={errors?.visaType?.message ?? ""}
           formValue="visaType"
           required="Select a visa type."
+          defaultValue={travelData.visaType}
         />
 
         <h2 className="govuk-label govuk-label--m">
@@ -95,6 +111,7 @@ const ApplicantTravelForm = () => {
           required="Enter address line 1, typically the building and street."
           patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
           patternError="Home address must contain only letters, numbers, spaces and punctuation."
+          defaultValue={travelData.applicantUkAddress1}
         />
 
         <FreeText
@@ -105,6 +122,7 @@ const ApplicantTravelForm = () => {
           required={false}
           patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
           patternError="Home address must contain only letters, numbers, spaces and punctuation."
+          defaultValue={travelData.applicantUkAddress2}
         />
 
         <FreeText
@@ -115,6 +133,7 @@ const ApplicantTravelForm = () => {
           required="Enter town or city."
           patternValue={formRegex.lettersSpacesAndPunctuation}
           patternError="Town name must contain only letters, spaces and punctuation."
+          defaultValue={travelData.townOrCity}
         />
 
         <FreeText
@@ -125,6 +144,7 @@ const ApplicantTravelForm = () => {
           required="Enter full UK postcode."
           patternValue={formRegex.lettersNumbersAndSpaces}
           patternError="Postcode must contain only letters, numbers and spaces."
+          defaultValue={travelData.postcode}
         />
 
         <h2 className="govuk-label govuk-label--m">
@@ -138,6 +158,7 @@ const ApplicantTravelForm = () => {
           required="Enter UK mobile number."
           patternValue={formRegex.numbersOnly}
           patternError="Full name must contain only letters and spaces."
+          defaultValue={travelData.ukMobileNumber}
         />
 
         <h2 className="govuk-label govuk-label--m">
@@ -151,6 +172,7 @@ const ApplicantTravelForm = () => {
           required="Enter UK email address."
           patternValue={formRegex.emailAddress}
           patternError="Email must be in correct format."
+          defaultValue={travelData.ukEmail}
         />
 
         <Button
