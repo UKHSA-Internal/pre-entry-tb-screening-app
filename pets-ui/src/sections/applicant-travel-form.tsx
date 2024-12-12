@@ -43,7 +43,7 @@ const ApplicantTravelForm = () => {
   const onSubmit: SubmitHandler<TravelDetailsType> = (data) => {
     console.log(data)
     updateReduxStore(data)
-    navigate("/travel-confirmation")
+    navigate("/travel-summary")
   }
 
   const errorsToShow = Object.keys(errors);
