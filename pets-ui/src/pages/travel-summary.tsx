@@ -8,7 +8,7 @@ export default function TravelSummaryPage() {
   return (
     <body className="govuk-template__body">
     <Helmet>
-      <title> Applicant Travel Information Form</title>
+      <title> Applicant Travel Information Summary</title>
     </Helmet>
     <Header/>
       <div className="govuk-width-container">
