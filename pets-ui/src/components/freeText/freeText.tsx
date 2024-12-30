@@ -23,7 +23,7 @@ export default function FreeText(props: Readonly<FreeTextProps>) {
     useEffect(() => {
         setErrorText(props.errorMessage)
         setWrapperClass("govuk-form-group " + `${props.errorMessage && "govuk-form-group--error"}`)
-        setInputClass("govuk-input " + `${props.errorMessage && "govuk-input--error"}` + `govuk-input--width-${props.inputWidth}`)
+        setInputClass(`govuk-input govuk-input--width-${props.inputWidth} ` + `${props.errorMessage && "govuk-input--error"}`)
     }, [props.errorMessage, props.inputWidth])
     
     return (
