@@ -10,19 +10,21 @@ export interface FreeTextProps {
     required: string | false;
     patternValue: RegExp;
     patternError: string;
+    inputWidth?: number;
+    suffixText?: string;
 }
 
 export default function FreeText(props: Readonly<FreeTextProps>) {
     const { register } = useFormContext()
     const [errorText, setErrorText] = useState("")
     const [wrapperClass, setWrapperClass] = useState("govuk-form-group")
-    const [inputClass, setInputClass] = useState("govuk-input")
+    const [inputClass, setInputClass] = useState(`govuk-input govuk-input--width-${props.inputWidth}`)
 
     useEffect(() => {
         setErrorText(props.errorMessage)
         setWrapperClass("govuk-form-group " + `${props.errorMessage && "govuk-form-group--error"}`)
-        setInputClass("govuk-input " + `${props.errorMessage && "govuk-input--error"}`)
-    }, [props.errorMessage])
+        setInputClass("govuk-input " + `${props.errorMessage && "govuk-input--error"}` + `govuk-input--width-${props.inputWidth}`)
+    }, [props.errorMessage, props.inputWidth])
     
     return (
         <div id={props.id} className={wrapperClass}>
@@ -41,18 +43,25 @@ export default function FreeText(props: Readonly<FreeTextProps>) {
                     <span className="govuk-visually-hidden">Error:</span> {errorText}
                 </p>
             }  
-            <input
-                className={inputClass} 
-                type="text" 
-                data-testid={props.id}
-                {...register(props.formValue, { 
-                    required: props.required,
-                    pattern: {
-                        value: props.patternValue,
-                        message: props.patternError
-                    }
-                })}
-            />
+            <div className="govuk-input__wrapper">
+                <input
+                    className={inputClass} 
+                    type="text" 
+                    data-testid={props.id}
+                    {...register(props.formValue, { 
+                        required: props.required,
+                        pattern: {
+                            value: props.patternValue,
+                            message: props.patternError
+                        }
+                    })}
+                />
+                {props.suffixText &&
+                    <div className="govuk-input__suffix" aria-hidden="true">
+                        {props.suffixText}
+                    </div>
+                }
+            </div>
         </div>
     )
 }
