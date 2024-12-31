@@ -9,6 +9,7 @@ import {
 import Button from "@/components/button/button"
 import FreeText from "@/components/freeText/freeText"
 import Radio from "@/components/radio/radio";
+import TextArea from "@/components/textArea/textArea";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 
 // import { useAppDispatch } from "@/redux/hooks";
@@ -127,16 +128,63 @@ const MedicalScreeningForm = () => {
           required="Select whether the applicant has any TB symptoms."
         />
 
+        <TextArea
+          id="other-symptoms-detail"
+          label='If you have selected "Other symptoms", list these'
+          errorMessage={errors?.otherSymptomsDetail?.message ?? ""}
+          formValue="otherSymptomsDetail"
+          required={false}
+          rows={4}
+        />
+
+        <TextArea
+          id="under-eleven-conditions-detail"
+          label='You can give details of the procedure or condition'
+          errorMessage={errors?.underElevenConditionsDetail?.message ?? ""}
+          formValue="underElevenConditionsDetail"
+          required={false}
+          rows={4}
+        />
+
+        <Radio
+          id="previous-tb"
+          legend="Has the applicant ever had tuberculosis?"
+          isInline={RadioIsInline.TRUE}
+          answerOptions={["Yes", "No"]}
+          sortAnswersAlphabetically={false}
+          errorMessage={errors?.previousTb?.message ?? ""}
+          formValue="previousTb"
+          required="Select whether the applicant has ever had tuberculosis."
+        />
+
+        <TextArea
+          id="previous-tb-detail"
+          label='If yes, give details'
+          errorMessage={errors?.previousTbDetail?.message ?? ""}
+          formValue="previousTbDetail"
+          required={false}
+          rows={4}
+        />
+
         <Radio
           id="close-contact-with-tb"
           legend="Has the applicant had close contact with any person with active pulmonary tuberculosis within the past year?"
-          hint=""
+          hint="This might be sharing the same enclosed air space or household or other enclosed environment for a prolonged period, such as days or weeks"
           isInline={RadioIsInline.TRUE}
           answerOptions={["Yes", "No"]}
           sortAnswersAlphabetically={false}
           errorMessage={errors?.closeContactWithTb?.message ?? ""}
           formValue="closeContactWithTb"
           required="Select whether the applicant has had close contact with any person with active pulmonary tuberculosis within the past year."
+        />
+
+        <TextArea
+          id="close-contact-with-tb-detail"
+          label='If yes, give details'
+          errorMessage={errors?.closeContactWithTbDetail?.message ?? ""}
+          formValue="closeContactWithTbDetail"
+          required={false}
+          rows={4}
         />
 
         <Radio
@@ -159,6 +207,15 @@ const MedicalScreeningForm = () => {
           errorMessage={errors?.menstrualPeriods?.message ?? ""}
           formValue="menstrualPeriods"
           required="Select whether the applicant has menstrual periods."
+        />
+
+        <TextArea
+          id="physical-exam-notes"
+          label='Physical examination notes'
+          errorMessage={errors?.physicalExamNotes?.message ?? ""}
+          formValue="physicalExamNotes"
+          required={false}
+          rows={4}
         />
 
         <Button
