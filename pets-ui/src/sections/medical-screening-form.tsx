@@ -7,6 +7,7 @@ import {
 } from "@/utils/helpers"
 
 import Button from "@/components/button/button"
+import Checkbox from "@/components/checkbox/checkbox";
 import FreeText from "@/components/freeText/freeText"
 import Radio from "@/components/radio/radio";
 import TextArea from "@/components/textArea/textArea";
@@ -128,6 +129,16 @@ const MedicalScreeningForm = () => {
           required="Select whether the applicant has any TB symptoms."
         />
 
+        <Checkbox
+          id="tb-symptoms-list"
+          legend="If yes, select which symptoms"
+          answerOptions={["Cough", "Night sweats", "Haemoptysis (coughing up blood)", "Weight loss", "Fever", "Other symptoms"]}
+          sortAnswersAlphabetically={false}
+          errorMessage={errors?.tbSymptomsList?.message ?? ""}
+          formValue="tbSymptomsList"
+          required={false}
+        />
+
         <TextArea
           id="other-symptoms-detail"
           label='If you have selected "Other symptoms", list these'
@@ -135,6 +146,17 @@ const MedicalScreeningForm = () => {
           formValue="otherSymptomsDetail"
           required={false}
           rows={4}
+        />
+
+        <Checkbox
+          id="under-eleven-conditions"
+          legend="If the applicant is a child aged under 11, have they ever had:"
+          answerOptions={["Thoracic surgery", "Cyanosis", "Chronic respiratory disease", "Respiratory insufficiency that limits activity"]}
+          exclusiveAnswerOptions={["None of these", "Not applicable - applicant is aged 11 or over"]}
+          sortAnswersAlphabetically={false}
+          errorMessage={errors?.underElevenConditions?.message ?? ""}
+          formValue="tbSymptomsList"
+          required={false}
         />
 
         <TextArea
