@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-export interface FreeTextProps {
+export interface TextAreaProps {
     id: string;
     label?: string;
     hint?: string;
@@ -11,7 +11,7 @@ export interface FreeTextProps {
     rows: number;
 }
 
-export default function TextArea(props: Readonly<FreeTextProps>) {
+export default function TextArea(props: Readonly<TextAreaProps>) {
     const { register } = useFormContext()
     const [errorText, setErrorText] = useState("")
     const [wrapperClass, setWrapperClass] = useState("govuk-form-group")
