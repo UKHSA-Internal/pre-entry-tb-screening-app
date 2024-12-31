@@ -113,7 +113,7 @@ const MedicalScreeningForm = () => {
           required="Enter applicant's age in years."
           patternValue={formRegex.numbersOnly}
           patternError="Age must be a number."
-          inputWidth={2}
+          inputWidth={3}
           suffixText="years"
         />
 
