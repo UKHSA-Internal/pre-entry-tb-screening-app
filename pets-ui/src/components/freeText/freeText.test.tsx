@@ -24,6 +24,7 @@ describe('FreeText component', () => {
                         required='This is required.'
                         patternValue={testRegex.lettersAndNumbers}
                         patternError='Pattern error'
+                        suffixText='test-suffix'
                     />
                 </FormProvider>
             )
@@ -32,10 +33,10 @@ describe('FreeText component', () => {
         expect(screen.getByRole('textbox')).toBeTruthy()
         expect(screen.getByText('test-label')).toBeTruthy()
         expect(screen.getByText('test-hint')).toBeTruthy()
+        expect(screen.getByText('test-suffix')).toBeTruthy()
     })
 
     it('renders correctly when all optional attributes are omitted', () => {
-        // render(<FreeText id='test-id' handleChange={handleChange} errorMessage=''/>)
         const FreetextToTest = () => {
             const methods = useForm<FormValues>()
             return (
