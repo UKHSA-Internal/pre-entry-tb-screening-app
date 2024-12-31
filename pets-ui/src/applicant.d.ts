@@ -21,3 +21,19 @@ type DateType = {
   month: string
   day: string
 }
+
+type MedicalScreeningType = {
+  age: string
+  tbSymptoms: string
+  tbSymptomsList: string
+  otherSymptomsDetail: string
+  underElevenConditions: string
+  underElevenConditionsDetail: string
+  previousTb: string
+  previousTbDetail: string
+  closeContactWithTb: string
+  closeContactWithTbDetail: string
+  pregnant: string
+  menstrualPeriods: string
+  physicalExamNotes: string
+}
