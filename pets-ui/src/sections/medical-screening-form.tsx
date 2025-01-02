@@ -155,7 +155,7 @@ const MedicalScreeningForm = () => {
           exclusiveAnswerOptions={["None of these", "Not applicable - applicant is aged 11 or over"]}
           sortAnswersAlphabetically={false}
           errorMessage={errors?.underElevenConditions?.message ?? ""}
-          formValue="tbSymptomsList"
+          formValue="underElevenConditions"
           required={false}
         />
 
