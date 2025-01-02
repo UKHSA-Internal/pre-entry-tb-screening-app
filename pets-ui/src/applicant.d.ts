@@ -25,9 +25,9 @@ type DateType = {
 type MedicalScreeningType = {
   age: string
   tbSymptoms: string
-  tbSymptomsList: string
+  tbSymptomsList: string[]
   otherSymptomsDetail: string
-  underElevenConditions: string
+  underElevenConditions: string[]
   underElevenConditionsDetail: string
   previousTb: string
   previousTbDetail: string
