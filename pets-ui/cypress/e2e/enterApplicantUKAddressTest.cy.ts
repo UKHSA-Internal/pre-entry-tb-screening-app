@@ -13,8 +13,17 @@ const visaType = [
   "Working Holiday Maker",
   "Government Sponsored",
 ];
+const errorMessages = [
+    "Town name must contain only letters, spaces and punctuation.",
+    "Home address must contain only letters, numbers, spaces and punctuation.",
 
-describe("Validate that the confirm button on the travel information page redirects to the Enter Travel Informmation Page", () => {
+];
+const urlFragment = [
+    "#address-2",
+    "#town-or-city",
+];
+
+describe("Validate the error message for the Address Fields", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/travel-details");
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
@@ -22,7 +31,7 @@ describe("Validate that the confirm button on the travel information page redire
       body: { success: true, message: "Data successfully posted" },
     }).as("formSubmit");
   });
-  it("should redirect user to travel confirmation url", () => {
+  it("Fill out the applicant address field with INVALID characters", () => {
     cy.visit("http://localhost:3000/travel-details");
 
     // Select a Visa Type
@@ -30,8 +39,8 @@ describe("Validate that the confirm button on the travel information page redire
 
     // Enter VALID Address Information
     cy.get("#address-1").type("17 Exmoor Rd.");
-    cy.get("#address-2").type("Southampton");
-    cy.get("#town-or-city").type("Hampshire");
+    cy.get("#address-2").type("!Southampton!");
+    cy.get("#town-or-city").type("Hamp@shire");
     cy.get("#postcode").type("SO14 0AR");
     cy.get("#mobile-number").type("00447811123456");
     cy.get("#email").type("Appvanceiq.efc1@aiq.ukhsa.gov.uk");
@@ -39,13 +48,16 @@ describe("Validate that the confirm button on the travel information page redire
     // Click the submit button
     cy.get('button[type="submit"]').click();
 
-    //Validate that page navigates to travel summary page
-    cy.url().should("include", "http://localhost:3000/travel-summary");
-
-    // Click the submit button
-    cy.get('button[type="submit"]').click();
-
-    // Validate that the page navigates to the travel confirmation page
-      cy.url().should("include", "http://localhost:3000/travel-confirmation");
+    // Validate the summary box appears at the top contains the correct error messages
+    cy.get('[data-module="govuk-error-summary"]').should('be.visible');
+    errorMessages.forEach(error => {
+            cy.get('.govuk-error-summary').should('contain.text', error);
+        });
+   
+    // Validate that user is navigated to correct error when clicking message in summary
+    cy.get('.govuk-error-summary a').each((link, index) => {
+        cy.wrap(link).click();
+        cy.url().should('include', urlFragment[index]);
     });
   });
+});
