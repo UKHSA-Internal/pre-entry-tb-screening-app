@@ -14,11 +14,8 @@ const visaType = [
   "Government Sponsored",
 ];
 // Validate the error messages above each text box are correct
-const errorMessages = [
-  "Enter full UK postcode.",
-];
-
-describe("Validate the error message is displayed when partial postcode is entered", () => {
+const errorMessages = ["Enter full UK postcode."];
+describe("Validate the error message is displayed when postcode is NOT entered", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/travel-details");
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
@@ -26,7 +23,7 @@ describe("Validate the error message is displayed when partial postcode is enter
       body: { success: true, message: "Data successfully posted" },
     }).as("formSubmit");
   });
-  it("Should display an error message when partial postcode is entered in the Postcode field", () => {
+  it("Should display an error message for missing postcode", () => {
     cy.visit("http://localhost:3000/travel-details");
 
     // Select a Visa Type
@@ -36,7 +33,7 @@ describe("Validate the error message is displayed when partial postcode is enter
     cy.get("#address-1").type("Flat 2, 26 Monmouth St.");
     cy.get("#address-2").type("Bath");
     cy.get("#town-or-city").type("Somerset");
-    cy.get("#postcode").type("BA1");
+    //cy.get("#postcode").should("");
     cy.get("#mobile-number").type("07123402876");
     cy.get("#email").type("Appvanceiq.efc1@aiq.ukhsa.gov.uk");
 
