@@ -1,8 +1,10 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import { applicantReducer } from './applicantSlice'
+import { medicalScreeningReducer } from './medicalScreeningSlice'
 
 const rootReducer = combineReducers({
   applicant: applicantReducer,
+  medicalScreening: medicalScreeningReducer,
 })
 
 export const setupStore = (preloadedState?: Partial<RootState>) => {
