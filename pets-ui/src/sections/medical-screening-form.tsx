@@ -13,10 +13,23 @@ import Radio from "@/components/radio/radio";
 import TextArea from "@/components/textArea/textArea";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 
-// import { useAppDispatch } from "@/redux/hooks";
-// import { 
-//   setFullName, 
-// } from "@/redux/applicantSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { selectApplicant } from "@/redux/applicantSlice";
+import {
+  setAge,
+  setCloseContactWithTb,
+  setCloseContactWithTbDetail,
+  setMenstrualPeriods,
+  setOtherSymptomsDetail,
+  setPhysicalExamNotes,
+  setPregnant,
+  setPreviousTb,
+  setPreviousTbDetail,
+  setTbSymptoms,
+  setTbSymptomsList,
+  setUnderElevenConditions,
+  setUnderElevenConditionsDetail
+} from "@/redux/medicalScreeningSlice";
 
 const MedicalScreeningForm = () => {
   const navigate = useNavigate();
@@ -24,14 +37,27 @@ const MedicalScreeningForm = () => {
   const methods = useForm<MedicalScreeningType>({reValidateMode: 'onSubmit'})
   const { handleSubmit, formState: { errors } } = methods;
 
-  // const dispatch = useAppDispatch()
-  // const updateReduxStore = (applicantData: ApplicantDetailsType) => {
-  //   dispatch(setFullName(applicantData.fullName))
-  // }
+  const applicantData = useAppSelector(selectApplicant)
+  const dispatch = useAppDispatch()
+  const updateReduxStore = (medicalScreeningData: MedicalScreeningType) => {
+    dispatch(setAge(medicalScreeningData.age))
+    dispatch(setTbSymptoms(medicalScreeningData.tbSymptoms))
+    dispatch(setTbSymptomsList(medicalScreeningData.tbSymptomsList))
+    dispatch(setOtherSymptomsDetail(medicalScreeningData.otherSymptomsDetail))
+    dispatch(setUnderElevenConditions(medicalScreeningData.underElevenConditions))
+    dispatch(setUnderElevenConditionsDetail(medicalScreeningData.underElevenConditionsDetail))
+    dispatch(setPreviousTb(medicalScreeningData.previousTb))
+    dispatch(setPreviousTbDetail(medicalScreeningData.previousTbDetail))
+    dispatch(setCloseContactWithTb(medicalScreeningData.closeContactWithTb))
+    dispatch(setCloseContactWithTbDetail(medicalScreeningData.closeContactWithTbDetail))
+    dispatch(setPregnant(medicalScreeningData.pregnant))
+    dispatch(setMenstrualPeriods(medicalScreeningData.menstrualPeriods))
+    dispatch(setPhysicalExamNotes(medicalScreeningData.physicalExamNotes))
+  }
 
   const onSubmit: SubmitHandler<MedicalScreeningType> = (data) => {
     try {
-      console.log(data) // updateReduxStore(data)
+      updateReduxStore(data)
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
       // await fetch("http://localhost:3005/dev/register-applicant", {
@@ -84,7 +110,7 @@ const MedicalScreeningForm = () => {
                 Name
               </dt>
               <dd className="govuk-summary-list__value">
-                APPLICANT NAME
+                {applicantData.fullName}
               </dd>
             </div>
             <div className="govuk-summary-list__row">
@@ -92,7 +118,7 @@ const MedicalScreeningForm = () => {
                 Date of Birth
               </dt>
               <dd className="govuk-summary-list__value">
-                APPLICANT DOB
+                {applicantData.dateOfBirth.day}/{applicantData.dateOfBirth.month}/{applicantData.dateOfBirth.year}
               </dd>
             </div>
             <div className="govuk-summary-list__row">
@@ -100,12 +126,12 @@ const MedicalScreeningForm = () => {
                 Passport Number
               </dt>
               <dd className="govuk-summary-list__value">
-                APPLICANT PASSPORT NUMBER
+                {applicantData.passportNumber}
               </dd>
             </div>
           </dl>
         </div>
-        
+
         <FreeText
           id="age"
           label="Applicant Age"
