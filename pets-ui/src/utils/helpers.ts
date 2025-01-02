@@ -1014,7 +1014,20 @@ const attributeToComponentId: {[key:string]:string} = {
   "townOrCity": "town-or-city",
   "provinceOrState": "province-or-state",
   "country": "address-country",
-  "postcode": "postcode"
+  "postcode": "postcode",
+  "age": "age",
+  "tbSymptoms": "tb-symptoms",
+  "tbSymptomsList": "tb-symptoms-list",
+  "otherSymptomsDetail": "other-symptoms-detail",
+  "underElevenConditions": "under-eleven-conditions",
+  "underElevenConditionsDetail": "under-eleven-conditions-detail",
+  "previousTb": "previous-tb",
+  "previousTbDetail": "previous-tb-detail",
+  "closeContactWithTb": "close-contact-with-tb",
+  "closeContactWithTbDetail": "close-contact-with-tb-detail",
+  "pregnant": "pregnant",
+  "menstrualPeriods": "menstrual-periods",
+  "physicalExamNotes": "physical-exam-notes",
 }
 
 const validateFullName: (value?: string) => string | undefined = (value) => {
