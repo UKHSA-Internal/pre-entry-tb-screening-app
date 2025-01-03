@@ -14,9 +14,7 @@ const visaType = [
   "Government Sponsored",
 ];
 // Validate the error messages above each text box are correct
-const errorMessages = [
-  "Enter UK mobile number.",
-];
+const errorMessages = ["Enter UK mobile number."];
 
 describe("Validate the error message is displayed when Applicant's UK phone number field is empty", () => {
   beforeEach(() => {
@@ -27,8 +25,6 @@ describe("Validate the error message is displayed when Applicant's UK phone numb
     }).as("formSubmit");
   });
   it("Should display an error message when telephone number field is empty", () => {
-    cy.visit("http://localhost:3000/travel-details");
-
     // Select a Visa Type
     cy.get("#visa-type.govuk-select").select(randomElement(visaType));
 
@@ -37,7 +33,7 @@ describe("Validate the error message is displayed when Applicant's UK phone numb
     cy.get("#address-2").type("Bath");
     cy.get("#town-or-city").type("Somerset");
     cy.get("#postcode").type("BA1 0AP");
-    cy.get("#mobile-number").should("have.value","");
+    cy.get("#mobile-number").should("have.value", "");
     cy.get("#email").type("Appvanceiq.efc1@aiq.ukhsa.gov.uk");
 
     // Click the submit button
