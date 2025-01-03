@@ -1,8 +1,10 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import { applicantReducer } from './applicantSlice'
+import { travelReducer } from './travelSlice'
 
 const rootReducer = combineReducers({
   applicant: applicantReducer,
+  travel: travelReducer,
 })
 
 export const setupStore = (preloadedState?: Partial<RootState>) => {

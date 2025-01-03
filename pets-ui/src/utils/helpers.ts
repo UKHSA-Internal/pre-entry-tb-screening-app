@@ -1014,11 +1014,12 @@ const attributeToComponentId: {[key:string]:string} = {
   "townOrCity": "town-or-city",
   "provinceOrState": "province-or-state",
   "country": "address-country",
-  "postcode": "postcode"
-}
-
-const validateFullName: (value?: string) => string | undefined = (value) => {
-  return value ? undefined : 'Please enter a first name';
+  "postcode": "postcode",
+  "visaType": "visa-type",
+  "applicantUkAddress1": "address-1",
+  "applicantUkAddress2": "address-2",
+  "ukMobileNumber": "mobile-number",
+  "ukEmail": "email",
 }
 
 const formRegex = {
@@ -1027,6 +1028,8 @@ const formRegex = {
   "lettersNumbersAndSpaces": /^[A-Za-z0-9\s]+$/,
   "lettersSpacesAndPunctuation": /^[A-Za-z\s,-/()]+$/,
   "lettersNumbersSpacesAndPunctuation": /^[A-Za-z0-9\s,-/()]+$/,
+  "numbersOnly": /^\d+$/,
+  "emailAddress": /^[\w\-.]+@([\w-]+\.)+[\w-]{2,}$/,
 }
 
 const dateValidationMessages = {
@@ -1087,13 +1090,40 @@ const validateDate = (value: DateType, fieldName: string) => {
     return true;
 }
 
+const visaOptions = [
+    {
+        value: "Family Reunion",
+        label: "Family Reunion"
+    },
+    {
+        value: "Settlement and Dependents",
+        label: "Settlement and Dependents"
+    },
+    {
+        value: "Students",
+        label: "Students"
+    },
+    {
+        value: "Work",
+        label: "Work"
+    },
+    {
+        value: "Working Holiday Maker",
+        label: "Working Holiday Maker"
+    },
+    {
+        value: "Government Sponsored",
+        label: "Government Sponsored"
+    },
+]
+
 export {
     countryList,
     attributeToComponentId,
-    validateFullName,
     formRegex,
     dateValidationMessages,
     validMonthValues,
     isValidDate,
-    validateDate
+    validateDate,
+    visaOptions,
 };
