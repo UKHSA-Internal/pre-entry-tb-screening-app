@@ -37,3 +37,13 @@ type MedicalScreeningType = {
   menstrualPeriods: string
   physicalExamNotes: string
 }
+
+type TravelDetailsType = {
+  visaType: string
+  applicantUkAddress1: string
+  applicantUkAddress2?: string
+  townOrCity: string
+  postcode: string
+  ukMobileNumber?: string
+  ukEmail: string
+}
