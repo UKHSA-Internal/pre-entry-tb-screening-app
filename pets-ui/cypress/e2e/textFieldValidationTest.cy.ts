@@ -8,15 +8,13 @@ const countryName = randomCountry?.value;
 
 describe("Validate the error messages for the Free Text Boxes", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:3000");
+    cy.visit("http://localhost:3000/contact");
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
       statusCode: 200,
       body: { success: true, message: "Data successfully posted" },
     }).as("formSubmit");
   });
   it("Should change error messages when incorrect format is used", () => {
-    cy.visit("http://localhost:3000");
-
     // Enter VALID data for 'Full name'
     cy.get('input[name="fullName"]').type("J)hn D*e");
 
@@ -71,6 +69,22 @@ describe("Validate the error messages for the Free Text Boxes", () => {
     cy.get(".govuk-error-summary").should("be.visible");
     errorMessages.forEach((error) => {
       cy.get(".govuk-error-summary").should("contain.text", error);
+
+      // Validate that user is navigated to correct error when clicking message in summary
+      const urlFragment = [
+        "#name",
+        "#passport-number",
+        "#address-1",
+        "#address-2",
+        "#address-3",
+        "#town-or-city",
+        "#province-or-state",
+      ];
+
+      cy.get(".govuk-error-summary a").each(($link, index) => {
+        cy.wrap($link).click();
+        cy.url().should("include", urlFragment[index]);
+      });
     });
   });
 });

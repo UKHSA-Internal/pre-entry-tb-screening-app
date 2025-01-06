@@ -25,11 +25,6 @@ describe("Validate the error message is displayed when Visa type is NOT selected
     }).as("formSubmit");
   });
   it("Should display an error message when visa type is not selected", () => {
-    cy.visit("http://localhost:3000/travel-details");
-
-    // Omit Visa Type
-    //cy.get('#visa-type.govuk-select').select(randomElement(visaType));
-
     // Enter VALID Address Information
     cy.get("#address-1").type("61 Legard Drive");
     cy.get("#address-2").type("Anlaby");
@@ -45,7 +40,6 @@ describe("Validate the error message is displayed when Visa type is NOT selected
     cy.get(".govuk-error-summary").should("be.visible");
     errorMessages.forEach((error) => {
       cy.get(".govuk-error-summary").should("contain.text", error);
-
     });
   });
 });

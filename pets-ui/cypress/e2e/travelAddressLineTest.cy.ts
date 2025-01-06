@@ -27,8 +27,6 @@ describe("Validate the error message is displayed when address field does not ha
     }).as("formSubmit");
   });
   it("Should display an error message when the address line 1 field is empty", () => {
-    cy.visit("http://localhost:3000/travel-details");
-
     // Select a Visa Type
     cy.get("#visa-type.govuk-select").select(randomElement(visaType));
 

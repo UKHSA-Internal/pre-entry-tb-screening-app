@@ -23,9 +23,8 @@ describe("Enter VALID Data for Applicant Travel Information", () => {
     }).as("formSubmit");
   });
   it("Should be redirected to travel confirmation page on submission", () => {
-    cy.visit("http://localhost:3000/travel-details");
-
-    // Omit Visa Type
+  
+    //Select a Visa Type
     cy.get('#visa-type.govuk-select').select(randomElement(visaType));
 
     // Enter VALID Address Information

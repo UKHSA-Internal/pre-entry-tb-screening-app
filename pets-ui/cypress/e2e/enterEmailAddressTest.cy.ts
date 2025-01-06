@@ -14,9 +14,7 @@ const visaType = [
   "Government Sponsored",
 ];
 // Validate the error messages above each text box are correct
-const errorMessages = [
-  "Email must be in correct format.",
-];
+const errorMessages = ["Email must be in correct format."];
 
 describe("Validate the error message is displayed when incorrect data is entered in Applicant's UK email field", () => {
   beforeEach(() => {
@@ -27,8 +25,6 @@ describe("Validate the error message is displayed when incorrect data is entered
     }).as("formSubmit");
   });
   it("Should display an error message", () => {
-    cy.visit("http://localhost:3000/travel-details");
-
     // Select a Visa Type
     cy.get("#visa-type.govuk-select").select(randomElement(visaType));
 

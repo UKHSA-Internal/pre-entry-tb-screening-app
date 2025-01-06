@@ -24,8 +24,6 @@ describe("Validate the error message is displayed when postcode is NOT entered",
     }).as("formSubmit");
   });
   it("Should display an error message for missing postcode", () => {
-    cy.visit("http://localhost:3000/travel-details");
-
     // Select a Visa Type
     cy.get("#visa-type.govuk-select").select(randomElement(visaType));
 
