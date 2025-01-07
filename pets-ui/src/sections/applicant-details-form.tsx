@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
+import { useEffect } from "react";
 import { useForm, SubmitHandler, FormProvider, Controller } from "react-hook-form"
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { 
   attributeToComponentId, 
   formRegex, 
@@ -15,7 +16,7 @@ import DateTextInput, { DateType } from "@/components/dateTextInput/dateTextInpu
 import Dropdown from "@/components/dropdown/dropdown";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { 
   setFullName, 
   setApplicantHomeAddress1, 
@@ -31,7 +32,8 @@ import {
   setPostcode,
   setProvinceOrState,
   setSex,
-  setTownOrCity
+  setTownOrCity,
+  selectApplicant
 } from "@/redux/applicantSlice";
 
 const ApplicantForm = () => {
@@ -59,12 +61,25 @@ const ApplicantForm = () => {
     dispatch(setPostcode(applicantData.postcode ?? ""))
   }
 
+  const applicantData = useAppSelector(selectApplicant)
+
   const onSubmit: SubmitHandler<ApplicantDetailsType> = (data) => {
     updateReduxStore(data)
     navigate("/applicant-summary")
   }
 
   const errorsToShow = Object.keys(errors);
+
+  // Required to scroll to the correct element when a change link on the summary page is clicked
+  const location = useLocation();
+  useEffect(() => {
+    if (location.hash) {
+      const element = document.getElementById(location.hash.substring(1));
+      if (element) {
+        element.scrollIntoView();
+      }
+    }
+  }, [location]);
 
   return (
     <FormProvider {...methods}>
@@ -102,6 +117,7 @@ const ApplicantForm = () => {
           required="Enter the applicant's full name."
           patternValue={formRegex.lettersAndSpaces}
           patternError="Full name must contain only letters and spaces."
+          defaultValue={applicantData.fullName}
         />
 
         <Radio
@@ -113,6 +129,7 @@ const ApplicantForm = () => {
           errorMessage={errors?.sex?.message ?? ""}
           formValue="sex"
           required="Select the applicant's sex."
+          defaultValue={applicantData.sex}
         />
 
         <Dropdown
@@ -122,12 +139,17 @@ const ApplicantForm = () => {
           errorMessage={errors?.countryOfNationality?.message ?? ""}
           formValue="countryOfNationality"
           required="Select a country."
+          defaultValue={applicantData.countryOfNationality}
         />
 
         <Controller
           name="dateOfBirth"
           control={control}
-          defaultValue={{ day: '', month: '', year: '' }} 
+          defaultValue={{
+            day: applicantData.dateOfBirth.day,
+            month: applicantData.dateOfBirth.month,
+            year: applicantData.dateOfBirth.year
+          }} 
           rules={{
             validate: (value: DateType) => validateDate(value, "dateOfBirth"),
           }}
@@ -152,6 +174,7 @@ const ApplicantForm = () => {
           required="Enter the applicant's passport number."
           patternValue={formRegex.lettersAndNumbers}
           patternError="Passport number must contain only letters and numbers."
+          defaultValue={applicantData.passportNumber}
         />
 
         <Dropdown
@@ -162,12 +185,17 @@ const ApplicantForm = () => {
           errorMessage={errors?.countryOfIssue?.message ?? ""}
           formValue="countryOfIssue"
           required="Select a country."
+          defaultValue={applicantData.countryOfIssue}
         />
 
         <Controller
           name="passportIssueDate"
           control={control}
-          defaultValue={{ day: '', month: '', year: '' }} 
+          defaultValue={{
+            day: applicantData.passportIssueDate.day,
+            month: applicantData.passportIssueDate.month,
+            year: applicantData.passportIssueDate.year
+          }} 
           rules={{
             validate: (value: DateType) => validateDate(value, "passportIssueDate"),
           }}
@@ -187,7 +215,11 @@ const ApplicantForm = () => {
         <Controller
           name="passportExpiryDate"
           control={control}
-          defaultValue={{ day: '', month: '', year: '' }} 
+          defaultValue={{
+            day: applicantData.passportExpiryDate.day,
+            month: applicantData.passportExpiryDate.month,
+            year: applicantData.passportExpiryDate.year
+          }} 
           rules={{
             validate: (value: DateType) => validateDate(value, "passportExpiryDate"),
           }}
@@ -212,6 +244,7 @@ const ApplicantForm = () => {
           required="Enter the first line of the applicant's home address."
           patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
           patternError="Home address must contain only letters, numbers, spaces and punctuation."
+          defaultValue={applicantData.applicantHomeAddress1}
         />
 
         <FreeText
@@ -222,6 +255,7 @@ const ApplicantForm = () => {
           required={false}
           patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
           patternError="Home address must contain only letters, numbers, spaces and punctuation."
+          defaultValue={applicantData.applicantHomeAddress2}
         />
 
         <FreeText
@@ -232,6 +266,7 @@ const ApplicantForm = () => {
           required={false}
           patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
           patternError="Home address must contain only letters, numbers, spaces and punctuation."
+          defaultValue={applicantData.applicantHomeAddress3}
         />
 
         <FreeText
@@ -242,6 +277,7 @@ const ApplicantForm = () => {
           required="Enter the town or city of the applicant's home address."
           patternValue={formRegex.lettersSpacesAndPunctuation}
           patternError="Town name must contain only letters, spaces and punctuation."
+          defaultValue={applicantData.townOrCity}
         />
         
         <FreeText
@@ -252,6 +288,7 @@ const ApplicantForm = () => {
           required="Enter the province or state of the applicant's home address."
           patternValue={formRegex.lettersSpacesAndPunctuation}
           patternError="Province/state name must contain only letters, spaces and punctuation."
+          defaultValue={applicantData.provinceOrState}
         />
 
         <Dropdown
@@ -261,6 +298,7 @@ const ApplicantForm = () => {
           errorMessage={errors?.country?.message ?? ""}
           formValue="country"
           required="Select a country."
+          defaultValue={applicantData.country}
         />
 
         <FreeText
@@ -271,6 +309,7 @@ const ApplicantForm = () => {
           required={false}
           patternValue={formRegex.lettersNumbersAndSpaces}
           patternError="Postcode must contain only letters, numbers and spaces."
+          defaultValue={applicantData.postcode}
         />
 
         <Button
