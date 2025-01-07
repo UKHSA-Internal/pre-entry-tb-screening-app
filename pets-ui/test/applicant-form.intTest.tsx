@@ -4,8 +4,9 @@ import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Mock } from 'vitest'
 import { renderWithProviders } from '@/utils/test-utils'
-import ApplicantForm from '@/sections/applicant-form'
-import ApplicantReview from '@sections/applicant-confirmation'
+import ApplicantForm from '@/sections/applicant-details-form'
+import ApplicantReview from '@/sections/applicant-details-summary'
+import { BrowserRouter as Router } from 'react-router-dom';
 
 const useNavigateMock: Mock = vi.fn();
 vi.mock(`react-router-dom`, async (): Promise<unknown> => {
@@ -37,10 +38,10 @@ afterAll(() => server.close())
 
 test('state is updated from ApplicantForm and then read by ApplicantReview', async () => {
   renderWithProviders(
-    <div>
+    <Router>
       <ApplicantForm /> 
       <ApplicantReview /> 
-    </div>
+    </Router>
   )
   
   const user = userEvent.setup()
@@ -90,7 +91,38 @@ test('state is updated from ApplicantForm and then read by ApplicantReview', asy
   expect(screen.getAllByRole('combobox')[2]).toHaveValue('ISL')
   expect(screen.getByTestId('postcode')).toHaveValue('101')
 
-  await user.click(screen.getByRole('button'))
+  await user.click(screen.getAllByRole('button')[0])
 
   expect(useNavigateMock).toBeCalled()
+
+  expect(screen.getAllByRole('term')[0]).toHaveTextContent('Name')
+  expect(screen.getAllByRole('definition')[0]).toHaveTextContent('Sigmund Sigmundson')
+  expect(screen.getAllByRole('term')[1]).toHaveTextContent('Sex')
+  expect(screen.getAllByRole('definition')[2]).toHaveTextContent('male')
+  expect(screen.getAllByRole('term')[2]).toHaveTextContent('Country of Nationality')
+  expect(screen.getAllByRole('definition')[4]).toHaveTextContent('NOR')
+  expect(screen.getAllByRole('term')[3]).toHaveTextContent('Date of Birth')
+  expect(screen.getAllByRole('definition')[6]).toHaveTextContent('1-1-1901')
+  expect(screen.getAllByRole('term')[4]).toHaveTextContent('Passport number')
+  expect(screen.getAllByRole('definition')[8]).toHaveTextContent('1234')
+  expect(screen.getAllByRole('term')[5]).toHaveTextContent('Country of Issue')
+  expect(screen.getAllByRole('definition')[10]).toHaveTextContent('FIN')
+  expect(screen.getAllByRole('term')[6]).toHaveTextContent('Passport Issue Date')
+  expect(screen.getAllByRole('definition')[12]).toHaveTextContent('2-feb-1902')
+  expect(screen.getAllByRole('term')[7]).toHaveTextContent('Passport Expiry Date')
+  expect(screen.getAllByRole('definition')[14]).toHaveTextContent('3-march-2103')
+  expect(screen.getAllByRole('term')[8]).toHaveTextContent('Home Address Line 1')
+  expect(screen.getAllByRole('definition')[16]).toHaveTextContent('The Bell Tower')
+  expect(screen.getAllByRole('term')[9]).toHaveTextContent('Home Address Line 2')
+  expect(screen.getAllByRole('definition')[18]).toHaveTextContent('Hallgrimskirkja')
+  expect(screen.getAllByRole('term')[10]).toHaveTextContent('Home Address Line 3')
+  expect(screen.getAllByRole('definition')[20]).toHaveTextContent('Hallgrimstorg 1')
+  expect(screen.getAllByRole('term')[11]).toHaveTextContent('Town or City')
+  expect(screen.getAllByRole('definition')[22]).toHaveTextContent('Reykjavik')
+  expect(screen.getAllByRole('term')[12]).toHaveTextContent('Province or State')
+  expect(screen.getAllByRole('definition')[24]).toHaveTextContent('Reykjavik')
+  expect(screen.getAllByRole('term')[13]).toHaveTextContent('Country')
+  expect(screen.getAllByRole('definition')[26]).toHaveTextContent('ISL')
+  expect(screen.getAllByRole('term')[14]).toHaveTextContent('Postcode')
+  expect(screen.getAllByRole('definition')[28]).toHaveTextContent('101')
 })
