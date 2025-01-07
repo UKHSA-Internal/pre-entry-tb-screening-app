@@ -92,7 +92,5 @@ test('state is updated from ApplicantForm and then read by ApplicantReview', asy
 
   await user.click(screen.getByRole('button'))
 
-  expect(screen.getAllByRole('paragraph')[0]).toHaveTextContent('Name: Sigmund Sigmundson')
-  expect(screen.getAllByRole('paragraph')[1]).toHaveTextContent('Country: ISL')
-  expect(screen.getAllByRole('paragraph')[2]).toHaveTextContent('DOB: 1-1-1901')
+  expect(useNavigateMock).toBeCalled()
 })

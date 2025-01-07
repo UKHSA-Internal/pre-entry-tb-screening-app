@@ -59,26 +59,9 @@ const ApplicantForm = () => {
     dispatch(setPostcode(applicantData.postcode ?? ""))
   }
 
-  const onSubmit: SubmitHandler<ApplicantDetailsType> = async (data) => {
-    try {
-      updateReduxStore(data)
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      await fetch("http://localhost:3005/dev/register-applicant", {
-          method: "POST",
-          body: JSON.stringify(data),
-          headers: myHeaders,
-      })
-      navigate("/applicant/confirmation")
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Error submitting POST request:")
-        console.error(error?.message);
-      } else {
-        console.error("Error submitting POST request: unknown error type")
-        console.error(error);
-      }
-    }
+  const onSubmit: SubmitHandler<ApplicantDetailsType> = (data) => {
+    updateReduxStore(data)
+    navigate("/applicant-summary")
   }
 
   const errorsToShow = Object.keys(errors);
@@ -294,7 +277,7 @@ const ApplicantForm = () => {
           id="save-and-continue"
           type={ButtonType.DEFAULT}
           text="Save and continue"
-          href="/applicant/confirmation"
+          href="/applicant-summary"
           handleClick={() => {}}
         />
       </form>
