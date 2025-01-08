@@ -144,7 +144,7 @@ const ApplicantReview = () => {
               {applicantData.applicantHomeAddress1}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/travel-details#address-1")}>
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#address-1")}>
                 Change<span className="govuk-visually-hidden"> home address line 1</span>
               </a>
             </dd>
@@ -157,7 +157,7 @@ const ApplicantReview = () => {
               {applicantData.applicantHomeAddress2}
             </dd>
             <dd className="govuk-summary-list__actions">
-            <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/travel-details#address-2")}>
+            <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#address-2")}>
                 Change<span className="govuk-visually-hidden"> home address line 2</span>
               </a>
             </dd>
@@ -170,7 +170,7 @@ const ApplicantReview = () => {
               {applicantData.applicantHomeAddress3}
             </dd>
             <dd className="govuk-summary-list__actions">
-            <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/travel-details#address-3")}>
+            <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#address-3")}>
                 Change<span className="govuk-visually-hidden"> home address line 3</span>
               </a>
             </dd>
@@ -183,7 +183,7 @@ const ApplicantReview = () => {
               {applicantData.townOrCity}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/travel-details#town-or-city")}>
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#town-or-city")}>
                 Change<span className="govuk-visually-hidden"> home town or city</span>
               </a>
             </dd>
@@ -196,7 +196,7 @@ const ApplicantReview = () => {
               {applicantData.provinceOrState}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/travel-details#province-or-state")}>
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#province-or-state")}>
                 Change<span className="govuk-visually-hidden"> home province or state</span>
               </a>
             </dd>
