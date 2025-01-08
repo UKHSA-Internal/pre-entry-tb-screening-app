@@ -20,7 +20,7 @@ const urlFragment = [
 // Validate the error messages above each text box are correct
 const errorMessages = ["Enter applicant's age in years."];
 
-describe("Validate error message is displayed when age field is empty", () => {
+describe("Test Applicant under 11 years with previous TB history and selected 'Other Symptoms'", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/medical-screening");
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
@@ -28,13 +28,13 @@ describe("Validate error message is displayed when age field is empty", () => {
       body: { success: true, message: "Data successfully posted" },
     }).as("formSubmit");
   });
-  it("Should display error message above the age test field", () => {
+  it("Should display error message where symptoms is selected", () => {
 
      //Enter applicant's age
-     cy.get('input[name="age"]').type("66");
+     cy.get('input[name="age"]').type("10");
 
      //Select applicants TB Status'
-     cy.get('input[name="tbSymptoms"]').check("yes");
+     cy.get('input[name="tbSymptoms"]').check("no");
    
      //Select applicant's symptons
      cy.get('input[name="tbSymptomsList"]').check("other-symptoms");
@@ -43,7 +43,7 @@ describe("Validate error message is displayed when age field is empty", () => {
      cy.get('#other-symptoms-detail').type("chest pains, headache and fatigue");
 
      //Select an option if applicant is a child under 11
-     cy.get('input[name="underElevenConditions"]').check("not-applicable---applicant-is-aged-11-or-over");
+     cy.get('input[name="underElevenConditions"]').check("cyanosis");
 
      //Select Applicant's previous TB status
      cy.get('input[name="previousTb"]').check("no");
@@ -52,7 +52,7 @@ describe("Validate error message is displayed when age field is empty", () => {
      cy.get('input[name="closeContactWithTb"]').check("no");
 
      //Indicate if applicant is pregnant
-     cy.get('input[name="pregnant"]').check("dont-know");
+     cy.get('input[name="pregnant"]').check("yes");
 
      //Select if applicant have menstrual periods
      cy.get('input[name="menstrualPeriods"]').check("yes");

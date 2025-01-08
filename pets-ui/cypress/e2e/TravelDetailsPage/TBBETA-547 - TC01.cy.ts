@@ -1,4 +1,4 @@
-import { countryList } from "../../src/utils/helpers";
+import { countryList } from "../../../src/utils/helpers";
 
 // Random number generator
 const randomElement = <T>(arr: T[]): T =>
@@ -13,8 +13,10 @@ const visaType = [
   "Working Holiday Maker",
   "Government Sponsored",
 ];
+// Validate the error messages above each text box are correct
+const errorMessages = ["Select a visa type."];
 
-describe("Enter VALID Data for Applicant Travel Information", () => {
+describe("Validate the error message is displayed when Visa type is NOT selected", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/travel-details");
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
@@ -22,11 +24,7 @@ describe("Enter VALID Data for Applicant Travel Information", () => {
       body: { success: true, message: "Data successfully posted" },
     }).as("formSubmit");
   });
-  it("Should be redirected to travel confirmation page on submission", () => {
-  
-    //Select a Visa Type
-    cy.get('#visa-type.govuk-select').select(randomElement(visaType));
-
+  it("Should display an error message when visa type is not selected", () => {
     // Enter VALID Address Information
     cy.get("#address-1").type("61 Legard Drive");
     cy.get("#address-2").type("Anlaby");
@@ -38,8 +36,10 @@ describe("Enter VALID Data for Applicant Travel Information", () => {
     // Click the submit button
     cy.get('button[type="submit"]').click();
 
-    // Validate that the page navigates to the confirmation page 
-    cy.url().should('include', 'http://localhost:3000/travel-confirmation'); 
+    // Validate the summary box appears at the top contains the correct error messages
+    cy.get(".govuk-error-summary").should("be.visible");
+    errorMessages.forEach((error) => {
+      cy.get(".govuk-error-summary").should("contain.text", error);
     });
   });
-
+});

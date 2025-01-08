@@ -7,7 +7,7 @@ export default defineConfig({
   reporterOptions: {     
     charts: true,     
     reportFilename: "[name]-report",       
-    timestamp: "yyyy-mm-dd-HH-MM", 
+    timestamp: "dd-mm-yy-HH-MM", 
     reportDir: "cypress/reports",     
     overwrite: false,     
     html: true,     
