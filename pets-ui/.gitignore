@@ -27,4 +27,5 @@ dist-ssr
 coverage
 
 #Cypress Reports
-cypress\reports
+**/reports
+**/screenshots
