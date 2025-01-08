@@ -286,8 +286,8 @@ importers:
         specifier: ^3.5.0
         version: 3.7.2(vite@5.4.11(@types/node@22.10.5)(sass@1.83.1))
       '@vitest/coverage-v8':
-        specifier: 2.1.5
-        version: 2.1.5(vitest@2.1.8(@types/node@22.10.5)(jsdom@25.0.1)(msw@2.7.0(@types/node@22.10.5)(typescript@5.6.3))(sass@1.83.1))
+        specifier: 2.1.8
+        version: 2.1.8(vitest@2.1.8(@types/node@22.10.5)(jsdom@25.0.1)(msw@2.7.0(@types/node@22.10.5)(typescript@5.6.3))(sass@1.83.1))
       cypress:
         specifier: ^13.15.2
         version: 13.17.0
@@ -2468,11 +2468,11 @@ packages:
     peerDependencies:
       vite: ^4 || ^5 || ^6
 
-  '@vitest/coverage-v8@2.1.5':
-    resolution: {integrity: sha512-/RoopB7XGW7UEkUndRXF87A9CwkoZAJW01pj8/3pgmDVsjMH2IKy6H1A38po9tmUlwhSyYs0az82rbKd9Yaynw==}
+  '@vitest/coverage-v8@2.1.8':
+    resolution: {integrity: sha512-2Y7BPlKH18mAZYAW1tYByudlCYrQyl5RGvnnDYJKW5tCiO5qg3KSAy3XAxcxKz900a0ZXxWtKrMuZLe3lKBpJw==}
     peerDependencies:
-      '@vitest/browser': 2.1.5
-      vitest: 2.1.5
+      '@vitest/browser': 2.1.8
+      vitest: 2.1.8
     peerDependenciesMeta:
       '@vitest/browser':
         optional: true
@@ -9171,7 +9171,7 @@ snapshots:
     transitivePeerDependencies:
       - '@swc/helpers'
 
-  '@vitest/coverage-v8@2.1.5(vitest@2.1.8(@types/node@22.10.5)(jsdom@25.0.1)(msw@2.7.0(@types/node@22.10.5)(typescript@5.6.3))(sass@1.83.1))':
+  '@vitest/coverage-v8@2.1.8(vitest@2.1.8(@types/node@22.10.5)(jsdom@25.0.1)(msw@2.7.0(@types/node@22.10.5)(typescript@5.6.3))(sass@1.83.1))':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 0.2.3
