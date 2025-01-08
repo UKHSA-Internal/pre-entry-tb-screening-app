@@ -4,15 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "security-checks": "git secrets --scan",
-    "test": "pnpm cypress run --reporter cypress-mochawesome-reporter",     
-    "test:open": "pnpm cypress open",
-    "clean:reports": "rimraf cypress/reports",     
-    "merge:reports": "mochawesome-merge cypress/reports/json/*.json > cypress/reports/report.json",     
-    "create:html:report": "marge cypress/reports/report.json -f report -o cypress/reports",
-    "test:report": "pnpm clean:reports && pnpm cypress run && pnpm merge:reports && pnpm create:html:report",     
-    "pretest:report": "mkdir cypress\\reports 2>nul || exit 0"
-    
+    "security-checks": "git secrets --scan"
   },
   "main": "index.js",
   "repository": "git@github.com:UKHSA-Internal/pre-entry-tb-screening-app.git",
