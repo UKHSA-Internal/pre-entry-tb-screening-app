@@ -20,7 +20,7 @@ export default function TravelConfirmation() {
   return (
     <body className="govuk-template__body">
     <Helmet>
-      <title> Travel Details Confirmation</title>
+      <title>Travel Details Confirmation</title>
     </Helmet>
     <Header/>
     <div className="govuk-width-container">
