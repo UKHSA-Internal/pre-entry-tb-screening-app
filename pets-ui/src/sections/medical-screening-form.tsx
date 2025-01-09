@@ -60,11 +60,7 @@ const MedicalScreeningForm = () => {
       updateReduxStore(data)
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
-      // await fetch("http://localhost:3005/dev/register-applicant", {
-      //     method: "POST",
-      //     body: JSON.stringify(data),
-      //     headers: myHeaders,
-      // })
+      // TO DO: post medical screening info using application service
       navigate("/medical-confirmation")
     } catch (error: unknown) {
       if (error instanceof Error) {
