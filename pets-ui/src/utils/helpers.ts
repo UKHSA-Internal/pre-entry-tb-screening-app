@@ -1050,11 +1050,24 @@ const dateValidationMessages = {
     }
 }
 
-const validMonthValues = [
-    "january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december",
-    "jan", "feb",  "mar",  "apr", "may", "jun", "jul", "aug",  "sep", "oct",  "nov", "dec",
-    "1", "01", "2", "02", "3", "03", "4", "04", "5", "05", "6", "06", "7", "07", "8", "08", "9", "09", "10", "11", "12"
-]
+const longMonthValues = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"]
+const shortMonthValues = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
+const longNumericStrings = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+const shortNumericStrings = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+
+const validMonthValues = [...longMonthValues, ...shortMonthValues, ...longNumericStrings, ...shortNumericStrings]
+
+function standardiseDayOrMonth(dayOrMonth: string) {
+    let standardisedDayOrMonth = dayOrMonth.toLowerCase()
+
+    for (const list of [longMonthValues, shortMonthValues, longNumericStrings]) {
+        if (list.includes(dayOrMonth.toLowerCase())) {
+            standardisedDayOrMonth = shortNumericStrings[list.indexOf(dayOrMonth.toLowerCase())]
+        }
+    }
+    
+    return standardisedDayOrMonth
+}
 
 function isValidDate(day: string, month: string, year: string) {
     if (
@@ -1123,6 +1136,7 @@ export {
     formRegex,
     dateValidationMessages,
     validMonthValues,
+    standardiseDayOrMonth,
     isValidDate,
     validateDate,
     visaOptions,
