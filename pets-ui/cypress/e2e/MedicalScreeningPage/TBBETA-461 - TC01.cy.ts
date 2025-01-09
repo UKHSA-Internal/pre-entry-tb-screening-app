@@ -37,7 +37,7 @@ describe("Validate that medical screening page is submitted successfully when al
      cy.get('input[name="tbSymptomsList"]').check("other-symptoms");
 
      //Enter 'Other symptons'
-     cy.get('#other-symptoms-detail').type("chest pains and vomitting");
+     cy.get('#other-symptoms-detail').type("chest pains, headache and vomitting");
 
      //Select an option if applicant is a child under 11
      cy.get('input[name="underElevenConditions"]').check("not-applicable---applicant-is-aged-11-or-over");
@@ -45,7 +45,7 @@ describe("Validate that medical screening page is submitted successfully when al
      //Enter details of procedure or condition
      cy.get('#under-eleven-conditions-detail').type("thoracic surgery");
 
-     //Select Applicant's previous TB status
+     //Select if applicant has ever had Tuberculosis
      cy.get('input[name="previousTb"]').check("yes");
 
      //Enter details of previous TB infection
@@ -66,9 +66,11 @@ describe("Validate that medical screening page is submitted successfully when al
      //Enter applicant physical examination notes
      cy.get('#physical-exam-notes').type("Applicant appears fit");
 
-
     // Click the submit button
     cy.get('button[type="submit"]').click();
+
+    //Validate that the page navigates to the confirmation page
+    cy.url().should('include','http://localhost:3000/medical-confirmation');
     });
   });
 
