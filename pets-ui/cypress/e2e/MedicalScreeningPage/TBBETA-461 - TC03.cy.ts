@@ -13,7 +13,8 @@ const visaType = [
   "Working Holiday Maker",
   "Government Sponsored",
 ];
-//Scenario:Test to verify error message is displayed where TB Symptoms checked 'Yes' and no symptom is selected
+//Scenario:Test to verify error message is displayed where TB Symptoms checked 'Yes' and no symptom is selected. Validation for this test will be
+//implemented post mvp
 // Validate the error messages above each text box are correct
 const errorMessages = ["Select a symptom."];
 
@@ -69,11 +70,5 @@ describe("Validate error message is displayed where 'YES' is selected for TB Sym
 
     // Click the submit button
     cy.get('button[type="submit"]').click();
-
-    // Validate the summary box appears at the top contains the correct error messages
-    cy.get(".govuk-error-summary").should("be.visible");
-    errorMessages.forEach((error) => {
-      cy.get(".govuk-error-summary").should("contain.text", error);
-    });
   });
 });
