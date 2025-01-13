@@ -58,7 +58,7 @@ jobs:
         run: pnpm run test
         working-directory: core-services/${{ matrix.service }}
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v4.1.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
