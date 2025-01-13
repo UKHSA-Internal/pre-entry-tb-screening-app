@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
+import { useEffect } from "react";
 import { useForm, SubmitHandler, FormProvider } from "react-hook-form"
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { 
   attributeToComponentId, 
   formRegex, 
@@ -16,6 +17,7 @@ import { ButtonType, RadioIsInline } from "@/utils/enums";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/applicantSlice";
 import {
+  selectMedicalScreening,
   setAge,
   setCloseContactWithTb,
   setCloseContactWithTbDetail,
@@ -38,6 +40,7 @@ const MedicalScreeningForm = () => {
   const { handleSubmit, formState: { errors } } = methods;
 
   const applicantData = useAppSelector(selectApplicant)
+  const medicalData = useAppSelector(selectMedicalScreening)
   const dispatch = useAppDispatch()
   const updateReduxStore = (medicalScreeningData: MedicalScreeningType) => {
     dispatch(setAge(medicalScreeningData.age))
@@ -61,7 +64,7 @@ const MedicalScreeningForm = () => {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
       // TO DO: post medical screening info using application service
-      navigate("/medical-confirmation")
+      navigate("/medical-summary")
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error("Error submitting POST request:")
@@ -74,6 +77,17 @@ const MedicalScreeningForm = () => {
   }
 
   const errorsToShow = Object.keys(errors);
+
+  // Required to scroll to the correct element when a change link on the summary page is clicked
+  const location = useLocation();
+  useEffect(() => {
+    if (location.hash) {
+      const element = document.getElementById(location.hash.substring(1));
+      if (element) {
+        element.scrollIntoView();
+      }
+    }
+  }, [location]);
 
   return (
     <FormProvider {...methods}>
@@ -138,6 +152,7 @@ const MedicalScreeningForm = () => {
           patternError="Age must be a number."
           inputWidth={3}
           suffixText="years"
+          defaultValue={medicalData.age}
         />
 
         <Radio
@@ -149,6 +164,7 @@ const MedicalScreeningForm = () => {
           errorMessage={errors?.tbSymptoms?.message ?? ""}
           formValue="tbSymptoms"
           required="Select whether the applicant has any TB symptoms."
+          defaultValue={medicalData.tbSymptoms}
         />
 
         <Checkbox
@@ -159,6 +175,7 @@ const MedicalScreeningForm = () => {
           errorMessage={errors?.tbSymptomsList?.message ?? ""}
           formValue="tbSymptomsList"
           required={false}
+          defaultValue={medicalData.tbSymptomsList}
         />
 
         <TextArea
@@ -168,6 +185,7 @@ const MedicalScreeningForm = () => {
           formValue="otherSymptomsDetail"
           required={false}
           rows={4}
+          defaultValue={medicalData.otherSymptomsDetail}
         />
 
         <Checkbox
@@ -179,6 +197,7 @@ const MedicalScreeningForm = () => {
           errorMessage={errors?.underElevenConditions?.message ?? ""}
           formValue="underElevenConditions"
           required={false}
+          defaultValue={medicalData.underElevenConditions}
         />
 
         <TextArea
@@ -188,6 +207,7 @@ const MedicalScreeningForm = () => {
           formValue="underElevenConditionsDetail"
           required={false}
           rows={4}
+          defaultValue={medicalData.underElevenConditionsDetail}
         />
 
         <Radio
@@ -199,6 +219,7 @@ const MedicalScreeningForm = () => {
           errorMessage={errors?.previousTb?.message ?? ""}
           formValue="previousTb"
           required="Select whether the applicant has ever had tuberculosis."
+          defaultValue={medicalData.previousTb}
         />
 
         <TextArea
@@ -208,6 +229,7 @@ const MedicalScreeningForm = () => {
           formValue="previousTbDetail"
           required={false}
           rows={4}
+          defaultValue={medicalData.previousTbDetail}
         />
 
         <Radio
@@ -220,6 +242,7 @@ const MedicalScreeningForm = () => {
           errorMessage={errors?.closeContactWithTb?.message ?? ""}
           formValue="closeContactWithTb"
           required="Select whether the applicant has had close contact with any person with active pulmonary tuberculosis within the past year."
+          defaultValue={medicalData.closeContactWithTb}
         />
 
         <TextArea
@@ -229,6 +252,7 @@ const MedicalScreeningForm = () => {
           formValue="closeContactWithTbDetail"
           required={false}
           rows={4}
+          defaultValue={medicalData.closeContactWithTbDetail}
         />
 
         <Radio
@@ -240,6 +264,7 @@ const MedicalScreeningForm = () => {
           errorMessage={errors?.pregnant?.message ?? ""}
           formValue="pregnant"
           required="Select whether the applicant is pregnant."
+          defaultValue={medicalData.pregnant}
         />
 
         <Radio
@@ -251,6 +276,7 @@ const MedicalScreeningForm = () => {
           errorMessage={errors?.menstrualPeriods?.message ?? ""}
           formValue="menstrualPeriods"
           required="Select whether the applicant has menstrual periods."
+          defaultValue={medicalData.menstrualPeriods}
         />
 
         <TextArea
@@ -260,13 +286,14 @@ const MedicalScreeningForm = () => {
           formValue="physicalExamNotes"
           required={false}
           rows={4}
+          defaultValue={medicalData.physicalExamNotes}
         />
 
         <Button
           id="save-and-continue"
           type={ButtonType.DEFAULT}
           text="Save and continue"
-          href="/applicant/confirmation"
+          href="/medical-summary"
           handleClick={() => {}}
         />
       </form>
