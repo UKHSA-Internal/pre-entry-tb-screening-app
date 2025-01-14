@@ -5,6 +5,7 @@ import { Mock } from 'vitest'
 import { renderWithProviders } from '@/utils/test-utils'
 import ApplicantTravelForm from '@/sections/applicant-travel-form'
 import TravelReview from '@/sections/applicant-travel-summary'
+import { BrowserRouter as Router } from 'react-router-dom'
 
 const useNavigateMock: Mock = vi.fn();
 vi.mock(`react-router-dom`, async (): Promise<unknown> => {
@@ -29,10 +30,10 @@ afterAll(() => server.close())
 
 test('state is updated from ApplicantTravelForm and then read by TravelReview', async () => {
   renderWithProviders(
-    <div>
+    <Router>
       <ApplicantTravelForm /> 
       <TravelReview /> 
-    </div>
+    </Router>
   )
   
   const user = userEvent.setup()
