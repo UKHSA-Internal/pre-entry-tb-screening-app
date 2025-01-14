@@ -60,7 +60,7 @@ const MedicalScreeningReview = () => {
                         TB symptoms
                     </dt>
                     <dd className="govuk-summary-list__value">
-                        {medicalData.tbSymptomsList.map((symptom: string) => symptom.replaceAll("-", " ")).join(", ")}
+                        {medicalData.tbSymptomsList.map((symptom: string) => symptom.replace(/-/g, " ")).join(", ")}
                     </dd>
                     <dd className="govuk-summary-list__actions">
                         <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#tb-symptoms-list")}>
@@ -86,7 +86,7 @@ const MedicalScreeningReview = () => {
                         Applicant history if under 11
                     </dt>
                     <dd className="govuk-summary-list__value">
-                        {medicalData.underElevenConditions.map((symptom: string) => symptom.replaceAll("-", " ")).join(", ")}
+                        {medicalData.underElevenConditions.map((symptom: string) => symptom.replace(/-/g, " ")).join(", ")}
                     </dd>
                     <dd className="govuk-summary-list__actions">
                         <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#under-eleven-conditions")}>

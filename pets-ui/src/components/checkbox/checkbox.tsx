@@ -11,7 +11,7 @@ export interface CheckboxProps {
     errorMessage: string;
     formValue: string;
     required: string | false;
-    defaultValue?: string;
+    defaultValue?: string[];
 }
 
 export default function Checkbox(props: Readonly<CheckboxProps>) {
