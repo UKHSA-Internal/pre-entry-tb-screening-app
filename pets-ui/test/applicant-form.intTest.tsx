@@ -110,7 +110,7 @@ test('state is updated from ApplicantForm and then read by ApplicantReview', asy
   expect(screen.getAllByRole('term')[6]).toHaveTextContent('Passport Issue Date')
   expect(screen.getAllByRole('definition')[12]).toHaveTextContent('2-feb-1902')
   expect(screen.getAllByRole('term')[7]).toHaveTextContent('Passport Expiry Date')
-  expect(screen.getAllByRole('definition')[14]).toHaveTextContent('3-march-2103')
+  expect(screen.getAllByRole('definition')[14]).toHaveTextContent('3-march-2053')
   expect(screen.getAllByRole('term')[8]).toHaveTextContent('Home Address Line 1')
   expect(screen.getAllByRole('definition')[16]).toHaveTextContent('The Bell Tower')
   expect(screen.getAllByRole('term')[9]).toHaveTextContent('Home Address Line 2')
