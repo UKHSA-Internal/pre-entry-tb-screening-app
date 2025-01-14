@@ -9,7 +9,7 @@ const countryName = randomCountry?.value;
 
 describe("Validate error messages for Applicant Details Date Fields", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:3000");
+    cy.visit("http://localhost:3000/contact");
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
       statusCode: 200,
       body: { success: true, message: "Data successfully posted" },
