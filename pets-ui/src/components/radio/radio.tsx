@@ -44,7 +44,7 @@ export default function Radio(props: Readonly<RadioProps>) {
                     </legend>
                 }
                 {props.hint &&
-                    <div id="changedName-hint" className="govuk-hint">
+                    <div className="govuk-hint">
                         {props.hint}
                     </div>
                 }
