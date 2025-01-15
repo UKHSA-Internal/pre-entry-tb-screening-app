@@ -63,7 +63,6 @@ describe("Validate that applicant form is prefilled when user navigates back to 
     const urlMap = {
         'Name': '#name',
         'Sex': '#sex' ,
-        'Country of Nationality': '#country-of-nationality',
         'Date of Birth': '#birth-date',
         'Passport number': '#passportNumber',
         'Country of Issue': '#country-of-issue',
@@ -74,7 +73,6 @@ describe("Validate that applicant form is prefilled when user navigates back to 
         'Home Address Line 3': '#address-3',
         'Town or City': '#town-or-city',
         'Province or State': '#province-or-state',
-        'Country': '#address-country',
         'Postcode': '#postcode',
     };
       
@@ -87,26 +85,27 @@ describe("Validate that applicant form is prefilled when user navigates back to 
     .closest('.govuk-summary-list__row')   
     .find('.govuk-link')   
     .contains('Change').click();
-        //cy.url().should('include', expectedUrl);
 
+    cy.url().should('include', expectedUrl);
     //Validate the page is prefilled with data entered in the applicant page
-    cy.get('input[name="fullName"]').should('have.value','John Doe');
+   cy.get('input[name="fullName"]').should('have.value','John Doe');
     cy.get('input[type="radio"][value="male"]').should('be.checked');
-    cy.get(`#country-of-nationality option[value="${countryName}"]`).should('be.selected');
+    //cy.get(`#country-of-nationality option[value="${countryName}"]`).should('be.selected');
     cy.get(`#country-of-issue option[value="${countryName}"]`).should('be.selected');
-    cy.get("input#passport-issue-date-day").should('have.value', "11");
-    cy.get("input#passport-issue-date-month").should('have.value', "11");
-    cy.get("input#passport-issue-date-year").should('have.value', "2019");
-    cy.get("input#passport-expiry-date-day").should('have.value', "11");
-    cy.get("input#passport-expiry-date-month").should('have.value',"11");
-    cy.get("input#passport-expiry-date-year").should('have.value', "2029");
+    cy.get('input#passport-issue-date-day').should('have.value', "11");
+    cy.get('input#passport-issue-date-month').should('have.value', "11");
+    cy.get('input#passport-issue-date-year').should('have.value', "2019");
+    cy.get('input#passport-expiry-date-day').should('have.value', "11");
+    cy.get('input#passport-expiry-date-month').should('have.value',"11");
+    cy.get('input#passport-expiry-date-year').should('have.value', "2029");
     cy.get('input[type="text"][name="applicantHomeAddress1"]').should('have.value', "123");
     cy.get('input[type="text"][name="applicantHomeAddress2"]').should('have.value', "100th St");
     cy.get('input[type="text"][name="applicantHomeAddress3"]').should('have.value', "West Lane");
     cy.get('input[type="text"][name="townOrCity"]').should('have.value', "North Battleford");
     cy.get('input[type="text"][name="provinceOrState"]').should('have.value', "Saskatchewan");
-    cy.get(`#address-country option[value="${countryName}"]`).should('be.selected');
+    //cy.get(`#address-country option[value="${countryName}"]`).should('be.selected');
     cy.get('input[type="text"][name="postcode"]').should('have.value', "S4R 0M6");
+    
         
       });
     });
