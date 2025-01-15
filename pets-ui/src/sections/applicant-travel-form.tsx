@@ -44,7 +44,6 @@ const ApplicantTravelForm = () => {
   const travelData = useAppSelector(selectTravel);
 
   const onSubmit: SubmitHandler<TravelDetailsType> = (data) => {
-    console.log(data)
     updateReduxStore(data)
     navigate("/travel-summary")
   }

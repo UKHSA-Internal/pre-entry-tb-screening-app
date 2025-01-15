@@ -9,7 +9,6 @@ const TravelReview = () => {
   const navigate = useNavigate()
 
   const handleSubmit = () => {
-    console.log(travelData)
     // TO DO: post travelData
     navigate("/travel-confirmation")
   }
