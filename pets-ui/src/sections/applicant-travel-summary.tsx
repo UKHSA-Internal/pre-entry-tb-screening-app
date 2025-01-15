@@ -63,7 +63,7 @@ const TravelReview = () => {
               {travelData.townOrCity}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/travel-details#random")}>
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/travel-details#town-or-city")}>
                 Change<span className="govuk-visually-hidden"> town or city</span>
               </a>
             </dd>
