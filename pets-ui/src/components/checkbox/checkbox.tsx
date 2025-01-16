@@ -1,20 +1,19 @@
 import { useState, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
-import { RadioIsInline } from "@/utils/enums";
 
-export interface RadioProps {
+export interface CheckboxProps {
     id: string;
     legend?: string;
     hint?: string;
-    isInline: RadioIsInline;
     answerOptions: string[];
+    exclusiveAnswerOptions?: string[];
     sortAnswersAlphabetically: boolean;
     errorMessage: string;
     formValue: string;
     required: string | false;
 }
 
-export default function Radio(props: Readonly<RadioProps>) {
+export default function Checkbox(props: Readonly<CheckboxProps>) {
     
     const stringToJsxAttribute = (input: string) => {
         return input.toLowerCase().replace(/\s/g, "-").replace(/[^a-z0-9 -]/g, "")
@@ -23,6 +22,10 @@ export default function Radio(props: Readonly<RadioProps>) {
     const answerOptions: string[] = props.answerOptions
     if (props.sortAnswersAlphabetically) {
         answerOptions.sort((a, b) => a.localeCompare(b))
+    }
+    const exclusiveAnswerOptions: string[] = props.exclusiveAnswerOptions ?? []
+    if (props.sortAnswersAlphabetically) {
+        exclusiveAnswerOptions.sort((a, b) => a.localeCompare(b))
     }
 
     const { register } = useFormContext()
@@ -52,21 +55,41 @@ export default function Radio(props: Readonly<RadioProps>) {
                         <span className="govuk-visually-hidden">Error:</span> {errorText}
                     </p>
                 }
-                <div className={props.isInline} data-module="govuk-radios">
+                <div className="govuk-checkboxes" data-module="govuk-checkboxes">
                     {answerOptions.map((answerOption: string, index: number) => (
-                        <div className="govuk-radios__item" key={`answer-option-${index + 1}`}>
+                        <div className="govuk-checkboxes__item" key={`answer-option-${index + 1}`}>
                             <input
-                                className="govuk-radios__input"
-                                type="radio"
+                                className="govuk-checkboxes__input"
+                                type="checkbox"
                                 data-testid={props.id}
                                 value={stringToJsxAttribute(answerOption)}
                                 {...register(props.formValue, { 
                                     required: props.required,
                                 })}
                             />
-                            <label className="govuk-label govuk-radios__label" htmlFor={props.id}>
+                            <label className="govuk-label govuk-checkboxes__label" htmlFor={props.id}>
                                 {answerOption}
                             </label>
+                        </div>
+                    ))}
+                    {exclusiveAnswerOptions.map((exclusiveAnswerOption: string, index: number) => (
+                        <div key={`exclusive-answer-option-${index + 1}`}>
+                            <div className="govuk-checkboxes__divider">or</div>
+                            <div className="govuk-checkboxes__item">
+                                <input
+                                    className="govuk-checkboxes__input"
+                                    type="checkbox"
+                                    data-testid={props.id}
+                                    value={stringToJsxAttribute(exclusiveAnswerOption)}
+                                    {...register(props.formValue, { 
+                                        required: props.required,
+                                    })}
+                                    data-behaviour="exclusive"
+                                />
+                                <label className="govuk-label govuk-checkboxes__label" htmlFor={props.id}>
+                                    {exclusiveAnswerOption}
+                                </label>
+                            </div>
                         </div>
                     ))}
                 </div>
