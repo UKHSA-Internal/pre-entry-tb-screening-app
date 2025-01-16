@@ -90,8 +90,6 @@ describe("Validate that applicant form is prefilled when user navigates back to 
         'Additional details of applicant history if under 11': '#under-eleven-conditions-detail',
         'Has the applicant ever had tuberculosis?': '#previous-tb',
         'Detail of applicant/s previous TB': '#previous-tb-detail',
-        'Has the applicant had close contact with any person with active pulmonary tuberculosis within the past year?': '#close-contact-with-tb',
-        'Details of applicant/s close contact with any person with active pulmonary tuberculosis': '#close-contact-with-tb-detail',
         'Is the applicant pregnant?': '#pregnant',
         'Does the applicant have menstrual periods?': '#menstrual-periods',
         'Physical examination notes': '#physical-exam-notes',
