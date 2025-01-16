@@ -1071,8 +1071,8 @@ const validMonthValues = [
 
 function isValidDate(day: string, month: string, year: string) {
     if (
-        parseInt(year) < 0 ||
-        parseInt(year) > 9999 ||
+        parseInt(year) <= 1900 ||
+        parseInt(year) >= 2100 ||
         parseInt(day) < 1 ||
         parseInt(day) > 31 ||
         (parseInt(day) > 28 && parseInt(year) % 4 != 0 && (month == "february" || month == "feb" || month == "2")) ||

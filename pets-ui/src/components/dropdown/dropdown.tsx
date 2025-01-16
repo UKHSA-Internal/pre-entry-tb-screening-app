@@ -14,6 +14,7 @@ interface DropdownProps {
     errorMessage: string;
     formValue: string;
     required: string | false;
+    defaultValue?: string;
 }
 
 export default function Dropdown(props: Readonly<DropdownProps>) {
@@ -49,7 +50,7 @@ export default function Dropdown(props: Readonly<DropdownProps>) {
                 id={props.id}
                 className={selectClass}
                 aria-describedby={`${props.id}-hint`}
-                defaultValue=""
+                defaultValue={props.defaultValue ?? ""}
                 {...register(props.formValue, { 
                     required: props.required,
                 })}
