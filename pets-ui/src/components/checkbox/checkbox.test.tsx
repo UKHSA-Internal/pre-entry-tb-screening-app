@@ -85,10 +85,9 @@ describe('Checkbox component', () => {
     })
 
     it('orders answers in the order specified when props.sortAnswersAlphabetically is false', () => {
-        const {container} = render(<DefaultCheckboxToTest/>)
-        const labels = container.getElementsByClassName('govuk-label govuk-checkboxes__label')
-        expect(labels[0].innerHTML).toEqual(expect.stringContaining('zzz Answer One'))
-        expect(labels[1].innerHTML).toEqual(expect.stringContaining('aaa Answer Two'))
+        render(<DefaultCheckboxToTest/>)
+        expect(screen.getAllByRole('checkbox')[0]).toHaveAttribute('value', 'zzz-answer-one')
+        expect(screen.getAllByRole('checkbox')[1]).toHaveAttribute('value', 'aaa-answer-two')
     })
 
     it('orders answers alphabetically when props.sortAnswersAlphabetically is true', () => {
@@ -108,11 +107,10 @@ describe('Checkbox component', () => {
                 </FormProvider>
             )
         }
-        const {container} = render(<CheckboxToTest/>)
-        const labels = container.getElementsByClassName('govuk-label govuk-checkboxes__label')
-        expect(labels[0].innerHTML).toEqual(expect.stringContaining('aaa Answer Two'))
-        expect(labels[1].innerHTML).toEqual(expect.stringContaining('zzz Answer One'))
-        expect(labels[2].innerHTML).toEqual(expect.stringContaining('Exclusive Answer'))
+        render(<CheckboxToTest/>)
+        expect(screen.getAllByRole('checkbox')[0]).toHaveAttribute('value', 'aaa-answer-two')
+        expect(screen.getAllByRole('checkbox')[1]).toHaveAttribute('value', 'zzz-answer-one')
+        expect(screen.getAllByRole('checkbox')[2]).toHaveAttribute('value', 'exclusive-answer')
     })
 
     it('renders with no answer selected and allows multiple answers to be selected', () => {
