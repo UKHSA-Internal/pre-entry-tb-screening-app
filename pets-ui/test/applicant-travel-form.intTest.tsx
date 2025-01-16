@@ -4,7 +4,8 @@ import userEvent from '@testing-library/user-event'
 import { Mock } from 'vitest'
 import { renderWithProviders } from '@/utils/test-utils'
 import ApplicantTravelForm from '@/sections/applicant-travel-form'
-import TravelReview from '@/sections/applicant-travel-confirmation'
+import TravelReview from '@/sections/applicant-travel-summary'
+import { BrowserRouter as Router } from 'react-router-dom'
 
 const useNavigateMock: Mock = vi.fn();
 vi.mock(`react-router-dom`, async (): Promise<unknown> => {
@@ -29,10 +30,10 @@ afterAll(() => server.close())
 
 test('state is updated from ApplicantTravelForm and then read by TravelReview', async () => {
   renderWithProviders(
-    <div>
+    <Router>
       <ApplicantTravelForm /> 
       <TravelReview /> 
-    </div>
+    </Router>
   )
   
   const user = userEvent.setup()
@@ -51,10 +52,20 @@ test('state is updated from ApplicantTravelForm and then read by TravelReview', 
   expect(screen.getByTestId('mobile-number')).toHaveValue('07321900900')
   expect(screen.getByTestId('email')).toHaveValue('sigmund.sigmundson@asgard.gov')
 
-  await user.click(screen.getByRole('button'))
+  await user.click(screen.getAllByRole('button')[0])
 
-  expect(screen.getAllByRole('paragraph')[0]).toHaveTextContent('Visa type: Government Sponsored')
-  expect(screen.getAllByRole('paragraph')[1]).toHaveTextContent('Address line 1: Edinburgh Castle, Castlehill')
-  expect(screen.getAllByRole('paragraph')[2]).toHaveTextContent('Phone number: 07321900900')
-  expect(screen.getAllByRole('paragraph')[3]).toHaveTextContent('Email address: sigmund.sigmundson@asgard.gov')
+  expect(screen.getAllByRole('term')[0]).toHaveTextContent('Visa type')
+  expect(screen.getAllByRole('definition')[0]).toHaveTextContent('Government Sponsored')
+  expect(screen.getAllByRole('term')[1]).toHaveTextContent('UK Address Line 1')
+  expect(screen.getAllByRole('definition')[2]).toHaveTextContent('Edinburgh Castle, Castlehill')
+  expect(screen.getAllByRole('term')[2]).toHaveTextContent('UK Address Line 2')
+  expect(screen.getAllByRole('definition')[4]).toHaveTextContent('')
+  expect(screen.getAllByRole('term')[3]).toHaveTextContent('UK Town or City')
+  expect(screen.getAllByRole('definition')[6]).toHaveTextContent('Edinburgh')
+  expect(screen.getAllByRole('term')[4]).toHaveTextContent('UK Postcode')
+  expect(screen.getAllByRole('definition')[8]).toHaveTextContent('EH1 2NG')
+  expect(screen.getAllByRole('term')[5]).toHaveTextContent('UK Mobile Number')
+  expect(screen.getAllByRole('definition')[10]).toHaveTextContent('07321900900')
+  expect(screen.getAllByRole('term')[6]).toHaveTextContent('UK Email Address')
+  expect(screen.getAllByRole('definition')[12]).toHaveTextContent('sigmund.sigmundson@asgard.gov')
 })
