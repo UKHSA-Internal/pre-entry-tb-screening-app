@@ -12,6 +12,7 @@ export interface FreeTextProps {
     patternError: string;
     inputWidth?: number;
     suffixText?: string;
+    defaultValue?: string;
 }
 
 export default function FreeText(props: Readonly<FreeTextProps>) {
@@ -55,6 +56,7 @@ export default function FreeText(props: Readonly<FreeTextProps>) {
                             message: props.patternError
                         }
                     })}
+                    defaultValue={props.defaultValue ?? ""}
                 />
                 {props.suffixText &&
                     <div className="govuk-input__suffix" aria-hidden="true">

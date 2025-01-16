@@ -6,6 +6,7 @@ import ApplicantSearchPage from './pages/applicant-search';
 import MedicalScreeningPage from './pages/medical-screening';
 import ApplicantConfirmation from './pages/applicant-confirmation';
 import TravelDetailsPage from './pages/travel-details';
+import TravelSummaryPage from './pages/travel-summary';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/applicant-confirmation" element={<ApplicantConfirmation />} />
         <Route path="/medical-screening" element={<MedicalScreeningPage />} />
         <Route path="/travel-details" element={<TravelDetailsPage />} />
+        <Route path="/travel-summary" element={<TravelSummaryPage />} />
       </Routes>
     </Router>
   )
