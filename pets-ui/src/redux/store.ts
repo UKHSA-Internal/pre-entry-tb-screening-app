@@ -1,9 +1,11 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import { applicantReducer } from './applicantSlice'
+import { medicalScreeningReducer } from './medicalScreeningSlice'
 import { travelReducer } from './travelSlice'
 
 const rootReducer = combineReducers({
   applicant: applicantReducer,
+  medicalScreening: medicalScreeningReducer,
   travel: travelReducer,
 })
 

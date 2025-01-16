@@ -1,18 +1,16 @@
 import { describe, it, expect } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { useForm, FormProvider } from "react-hook-form";
-import Radio from './radio'
-import { RadioIsInline } from '@/utils/enums';
+import Checkbox from './checkbox';
 
 type FormValues = {testValue: string}
 
-const DefaultRadioToTest = () => {
+const DefaultCheckboxToTest = () => {
     const methods = useForm<FormValues>()
     return (
         <FormProvider {...methods}>
-            <Radio
+            <Checkbox
                 id='test-id'
-                isInline={RadioIsInline.FALSE}
                 answerOptions={['zzz Answer One', 'aaa Answer Two']}
                 sortAnswersAlphabetically={false}
                 errorMessage=''
@@ -23,18 +21,18 @@ const DefaultRadioToTest = () => {
     )
 }
 
-describe('Radio component', () => {
+describe('Checkbox component', () => {
     it('renders correctly when all optional props are specified', () => {
-        const RadioToTest = () => {
+        const CheckboxToTest = () => {
             const methods = useForm<FormValues>()
             return (
                 <FormProvider {...methods}>
-                    <Radio
+                    <Checkbox
                         id='test-id'
                         legend='test-legend'
                         hint='test-hint'
-                        isInline={RadioIsInline.FALSE}
                         answerOptions={['zzz Answer One', 'aaa Answer Two']}
+                        exclusiveAnswerOptions={['Exclusive Answer']}
                         sortAnswersAlphabetically={false}
                         errorMessage=''
                         formValue='testValue'
@@ -43,17 +41,18 @@ describe('Radio component', () => {
                 </FormProvider>
             )
         }
-        render(<RadioToTest/>)
-        expect(screen.getAllByRole('radio')).toBeTruthy()
+        render(<CheckboxToTest/>)
+        expect(screen.getAllByRole('checkbox')).toBeTruthy()
         expect(screen.getByText('test-legend')).toBeTruthy()
         expect(screen.getByText('test-hint')).toBeTruthy()
         expect(screen.getByText('zzz Answer One')).toBeTruthy()
         expect(screen.getByText('aaa Answer Two')).toBeTruthy()
+        expect(screen.getByText('Exclusive Answer')).toBeTruthy()
     })
 
     it('renders correctly when all optional props are omitted', () => {
-        render(<DefaultRadioToTest/>)
-        expect(screen.getAllByRole('radio')).toBeTruthy()
+        render(<DefaultCheckboxToTest/>)
+        expect(screen.getAllByRole('checkbox')).toBeTruthy()
         expect(screen.queryByText('test-legend')).toBeNull()
         expect(screen.queryByText('test-hint')).toBeNull()
         expect(screen.getByText('zzz Answer One')).toBeTruthy()
@@ -61,13 +60,12 @@ describe('Radio component', () => {
     })
 
     it('renders correctly when in an errored state', () => {
-        const RadioToTest = () => {
+        const CheckboxToTest = () => {
             const methods = useForm<FormValues>()
             return (
                 <FormProvider {...methods}>
-                    <Radio
+                    <Checkbox
                         id='test-id'
-                        isInline={RadioIsInline.FALSE}
                         answerOptions={['zzz Answer One', 'aaa Answer Two']}
                         sortAnswersAlphabetically={false}
                         errorMessage='test error'
@@ -77,8 +75,8 @@ describe('Radio component', () => {
                 </FormProvider>
             )
         }
-        render(<RadioToTest/>)
-        expect(screen.getAllByRole('radio')).toBeTruthy()
+        render(<CheckboxToTest/>)
+        expect(screen.getAllByRole('checkbox')).toBeTruthy()
         expect(screen.queryByText('test-legend')).toBeNull()
         expect(screen.queryByText('test-hint')).toBeNull()
         expect(screen.queryByText('test error')).toBeTruthy()
@@ -86,49 +84,21 @@ describe('Radio component', () => {
         expect(screen.getByText('aaa Answer Two')).toBeTruthy()
     })
 
-    it('is not inline when props.isInline is FALSE', () => {
-        const {container} = render(<DefaultRadioToTest/>)
-        expect(container.getElementsByClassName('govuk-radios')).toHaveLength(1)
-        expect(container.getElementsByClassName('govuk-radios--inline')).toHaveLength(0)
-    })
-    
-    it('is inline when props.isInline is TRUE', () => {
-        const RadioToTest = () => {
-            const methods = useForm<FormValues>()
-            return (
-                <FormProvider {...methods}>
-                    <Radio
-                        id='test-id'
-                        isInline={RadioIsInline.TRUE}
-                        answerOptions={['zzz Answer One', 'aaa Answer Two']}
-                        sortAnswersAlphabetically={false}
-                        errorMessage=''
-                        formValue='testValue'
-                        required='This is required.'
-                    />
-                </FormProvider>
-            )
-        }
-        const {container} = render(<RadioToTest/>)
-        expect(container.getElementsByClassName('govuk-radios')).toHaveLength(1)
-        expect(container.getElementsByClassName('govuk-radios--inline')).toHaveLength(1)
-    })
-
     it('orders answers in the order specified when props.sortAnswersAlphabetically is false', () => {
-        render(<DefaultRadioToTest/>)
-        expect(screen.getAllByRole('radio')[0]).toHaveAttribute('value', 'zzz-answer-one')
-        expect(screen.getAllByRole('radio')[1]).toHaveAttribute('value', 'aaa-answer-two')
+        render(<DefaultCheckboxToTest/>)
+        expect(screen.getAllByRole('checkbox')[0]).toHaveAttribute('value', 'zzz-answer-one')
+        expect(screen.getAllByRole('checkbox')[1]).toHaveAttribute('value', 'aaa-answer-two')
     })
 
     it('orders answers alphabetically when props.sortAnswersAlphabetically is true', () => {
-        const RadioToTest = () => {
+        const CheckboxToTest = () => {
             const methods = useForm<FormValues>()
             return (
                 <FormProvider {...methods}>
-                    <Radio
+                    <Checkbox
                         id='test-id'
-                        isInline={RadioIsInline.FALSE}
                         answerOptions={['zzz Answer One', 'aaa Answer Two']}
+                        exclusiveAnswerOptions={['Exclusive Answer']}
                         sortAnswersAlphabetically={true}
                         errorMessage=''
                         formValue='testValue'
@@ -137,29 +107,34 @@ describe('Radio component', () => {
                 </FormProvider>
             )
         }
-        render(<RadioToTest/>)
-        expect(screen.getAllByRole('radio')[0]).toHaveAttribute('value', 'aaa-answer-two')
-        expect(screen.getAllByRole('radio')[1]).toHaveAttribute('value', 'zzz-answer-one')
+        render(<CheckboxToTest/>)
+        expect(screen.getAllByRole('checkbox')[0]).toHaveAttribute('value', 'aaa-answer-two')
+        expect(screen.getAllByRole('checkbox')[1]).toHaveAttribute('value', 'zzz-answer-one')
+        expect(screen.getAllByRole('checkbox')[2]).toHaveAttribute('value', 'exclusive-answer')
     })
 
-    it('renders with no answer selected and only selects a single answer at a time', () => {
-        render(<DefaultRadioToTest/>)
-        const radioOne = screen.getAllByRole('radio')[0]
-        const radioTwo = screen.getAllByRole('radio')[1]
+    it('renders with no answer selected and allows multiple answers to be selected', () => {
+        render(<DefaultCheckboxToTest/>)
+        const checkboxOne = screen.getAllByRole('checkbox')[0]
+        const checkboxTwo = screen.getAllByRole('checkbox')[1]
         
-        expect(radioOne).not.toBeChecked()
-        expect(radioTwo).not.toBeChecked()
+        expect(checkboxOne).not.toBeChecked()
+        expect(checkboxTwo).not.toBeChecked()
         
-        fireEvent.click(radioOne)
-        expect(radioOne).toBeChecked()
-        expect(radioTwo).not.toBeChecked()
+        fireEvent.click(checkboxOne)
+        expect(checkboxOne).toBeChecked()
+        expect(checkboxTwo).not.toBeChecked()
 
-        fireEvent.click(radioTwo)
-        expect(radioOne).not.toBeChecked()
-        expect(radioTwo).toBeChecked()
+        fireEvent.click(checkboxTwo)
+        expect(checkboxOne).toBeChecked()
+        expect(checkboxTwo).toBeChecked()
 
-        fireEvent.click(radioOne)
-        expect(radioOne).toBeChecked()
-        expect(radioTwo).not.toBeChecked()
+        fireEvent.click(checkboxOne)
+        expect(checkboxOne).not.toBeChecked()
+        expect(checkboxTwo).toBeChecked()
+
+        fireEvent.click(checkboxTwo)
+        expect(checkboxOne).not.toBeChecked()
+        expect(checkboxTwo).not.toBeChecked()
     })
 })

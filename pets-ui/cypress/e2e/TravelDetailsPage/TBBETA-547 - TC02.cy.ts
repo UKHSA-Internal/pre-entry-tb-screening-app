@@ -1,4 +1,4 @@
-import { countryList } from "../../src/utils/helpers";
+import { countryList } from "../../../src/utils/helpers";
 
 // Random number generator
 const randomElement = <T>(arr: T[]): T =>
@@ -38,8 +38,8 @@ describe("Enter VALID Data for Applicant Travel Information", () => {
     // Click the submit button
     cy.get('button[type="submit"]').click();
 
-    // Validate that the page navigates to the confirmation page 
-    cy.url().should('include', 'http://localhost:3000/travel-confirmation'); 
+    // Validate that the page navigates to the summary page 
+    cy.url().should('include', 'http://localhost:3000/travel-summary'); 
     });
   });
 

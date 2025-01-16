@@ -1,4 +1,4 @@
-import { countryList } from "../../src/utils/helpers";
+import { countryList } from "../../../src/utils/helpers";
 
 // Random number generator
 const randomElement = <T>(arr: T[]): T =>
@@ -14,9 +14,9 @@ const visaType = [
   "Government Sponsored",
 ];
 // Validate the error messages above each text box are correct
-const errorMessages = ["Enter UK mobile number."];
+const errorMessages = ["Select a visa type."];
 
-describe("Validate the error message is displayed when Applicant's UK phone number field is empty", () => {
+describe("Validate the error message is displayed when Visa type is NOT selected", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/travel-details");
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
@@ -24,16 +24,13 @@ describe("Validate the error message is displayed when Applicant's UK phone numb
       body: { success: true, message: "Data successfully posted" },
     }).as("formSubmit");
   });
-  it("Should display an error message when telephone number field is empty", () => {
-    // Select a Visa Type
-    cy.get("#visa-type.govuk-select").select(randomElement(visaType));
-
+  it("Should display an error message when visa type is not selected", () => {
     // Enter VALID Address Information
-    cy.get("#address-1").type("Flat 2, 26 Monmouth St.");
-    cy.get("#address-2").type("Bath");
-    cy.get("#town-or-city").type("Somerset");
-    cy.get("#postcode").type("BA1 0AP");
-    cy.get("#mobile-number").should("have.value", "");
+    cy.get("#address-1").type("61 Legard Drive");
+    cy.get("#address-2").type("Anlaby");
+    cy.get("#town-or-city").type("Hull");
+    cy.get("#postcode").type("HU10 6UH");
+    cy.get("#mobile-number").type("07123402876");
     cy.get("#email").type("Appvanceiq.efc1@aiq.ukhsa.gov.uk");
 
     // Click the submit button
