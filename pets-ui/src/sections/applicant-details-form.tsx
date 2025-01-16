@@ -95,7 +95,7 @@ const ApplicantForm = () => {
         'sex': sexRef.current,
         'country-of-nationality': countryOfNationalityRef.current,
         'birth-date': dateOfBirthRef.current,
-        'passportNumber': passportNumberRef.current,
+        'passport-number': passportNumberRef.current,
         'country-of-issue': countryOfIssueRef.current,
         'passport-issue-date': passportIssueDateRef.current,
         'passport-expiry-date': passportExpiryDateRef.current,
@@ -210,7 +210,7 @@ const ApplicantForm = () => {
 
         <div ref={passportNumberRef}>
           <FreeText
-            id="passportNumber"
+            id="passport-number"
             label="Applicant's Passport Number"
             errorMessage={errors?.passportNumber?.message ?? ""}
             formValue="passportNumber"
