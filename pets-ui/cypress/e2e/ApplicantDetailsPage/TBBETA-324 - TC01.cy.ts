@@ -1,4 +1,4 @@
-import { countryList } from "../../src/utils/helpers";
+import { countryList } from "../../../src/utils/helpers";
 
 // Random number generator
 const randomElement = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];

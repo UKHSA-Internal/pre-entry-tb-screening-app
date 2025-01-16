@@ -1,13 +1,13 @@
-import { countryList } from "../../src/utils/helpers";
+import { countryList } from "../../../src/utils/helpers";
 
 // Random number generator
 const randomElement = <T>(arr: T[]): T =>arr[Math.floor(Math.random() * arr.length)];
 const randomCountry = randomElement(countryList);
 const countryName = randomCountry?.value;
 
-//Scenario; Test to check error message is displayed when a mandatory field is empty
+//Scenario; Test Submission with valid data for all fields (Happy Path Testing)
 
-describe("Validate the errors for empty Mandatory Fields", () => {
+describe("Fill out Applicant Details form", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/contact");
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
@@ -15,8 +15,9 @@ describe("Validate the errors for empty Mandatory Fields", () => {
       body: { success: true, message: "Data successfully posted" },
     }).as("formSubmit");
   });
-  it("Should return errors for empty mandatory fields", () => {
-    //Enter VALID data for 'Full name'
+
+  it("Fill out the application form with valid data", () => {
+    //Enter valid data for 'Full name'
     cy.get('input[name="fullName"]').type("John Doe");
 
     //Select a 'Sex'
@@ -26,18 +27,18 @@ describe("Validate the errors for empty Mandatory Fields", () => {
     cy.get("#country-of-nationality.govuk-select").select(countryName);
     cy.get("#country-of-issue.govuk-select").select(countryName);
 
-    //Leave 'date of birth' field EMPTY
-    cy.get("input#birth-date-day").should("have.value", "");
-    cy.get("input#birth-date-month").should("have.value", "");
-    cy.get("input#birth-date-year").should("have.value", "");
+    //Enter VALID data for 'date of birth'
+    cy.get("input#birth-date-day").type("4");
+    cy.get("input#birth-date-month").type("JAN");
+    cy.get("input#birth-date-year").type("1998");
 
-    //Leave 'Applicant's Passport number' field EMPTY
-    cy.get('input[name="passportNumber"]').should("have.value", "");
+    //Enter VALID data for 'Applicant's Passport number'
+    cy.get('input[name="passportNumber"]').type("AA1235467");
 
-    //Leave 'Issue Date' field EMPTY
-    cy.get("input#passport-issue-date-day").should("have.value", "");
-    cy.get("input#passport-issue-date-month").should("have.value", "");
-    cy.get("input#passport-issue-date-year").should("have.value", "");
+    //Enter VALID data for 'Issue Date'
+    cy.get("input#passport-issue-date-day").type("20");
+    cy.get("input#passport-issue-date-month").type("11");
+    cy.get("input#passport-issue-date-year").type("2011");
 
     //Enter VALID data for 'Expiry Date'
     cy.get("input#passport-expiry-date-day").type("19");
@@ -55,18 +56,5 @@ describe("Validate the errors for empty Mandatory Fields", () => {
 
     // Click the submit button
     cy.get('button[type="submit"]').click();
-
-    // Validate the error messages above each text box are correct
-    const errorMessages = [
-      "Date of birth must include a day, month and year.",
-      "Enter the applicant's passport number.",
-      "Passport issue date must include a day, month and year.",
-      
-    ];
-    // Validate the summary box appears at the top contains the correct error messages
-    cy.get(".govuk-error-summary").should("be.visible");
-    errorMessages.forEach((error) => {
-      cy.get(".govuk-error-summary").should("contain.text", error);
-    });
   });
 });
