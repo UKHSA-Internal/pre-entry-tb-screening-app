@@ -10,6 +10,8 @@ export interface FreeTextProps {
     required: string | false;
     patternValue: RegExp;
     patternError: string;
+    inputWidth?: number;
+    suffixText?: string;
     defaultValue?: string;
     inputWidth?: number;
     suffixText?: string;
