@@ -13,8 +13,6 @@ export interface FreeTextProps {
     inputWidth?: number;
     suffixText?: string;
     defaultValue?: string;
-    inputWidth?: number;
-    suffixText?: string;
 }
 
 export default function FreeText(props: Readonly<FreeTextProps>) {
