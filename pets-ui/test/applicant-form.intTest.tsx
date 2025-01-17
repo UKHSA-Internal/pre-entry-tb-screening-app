@@ -93,7 +93,7 @@ test('state is updated from ApplicantForm and then read by ApplicantReview', asy
 
   await user.click(screen.getAllByRole('button')[0])
 
-  expect(useNavigateMock).toBeCalled()
+  expect(useNavigateMock).toHaveBeenCalledOnce()
 
   expect(screen.getAllByRole('term')[0]).toHaveTextContent('Name')
   expect(screen.getAllByRole('definition')[0]).toHaveTextContent('Sigmund Sigmundson')
@@ -125,4 +125,8 @@ test('state is updated from ApplicantForm and then read by ApplicantReview', asy
   expect(screen.getAllByRole('definition')[26]).toHaveTextContent('ISL')
   expect(screen.getAllByRole('term')[14]).toHaveTextContent('Postcode')
   expect(screen.getAllByRole('definition')[28]).toHaveTextContent('101')
+
+  await user.click(screen.getAllByRole('button')[1])
+
+  expect(useNavigateMock).toHaveBeenCalledTimes(2)
 })
