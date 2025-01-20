@@ -1,38 +1,14 @@
 import Button from '@/components/button/button';
 import { ButtonType } from '@/utils/enums';
-import { standardiseDayOrMonth } from '@/utils/helpers';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks'
-import { 
-  selectApplicant, 
-  setDob, 
-  setPassportExpiryDate, 
-  setPassportIssueDate, 
-} from '@/redux/applicantSlice';
+import { useAppSelector } from '@/redux/hooks'
+import { selectApplicant } from '@/redux/applicantSlice';
 import { useNavigate } from 'react-router-dom';
 
 const ApplicantReview = () => {
   const applicantData = useAppSelector(selectApplicant);
   const navigate = useNavigate()
-  const dispatch = useAppDispatch()
 
   const handleSubmit = async () => {
-    // Standardise days and months of date fields
-    dispatch(setDob({
-      day: standardiseDayOrMonth(applicantData.dateOfBirth.day),
-      month: standardiseDayOrMonth(applicantData.dateOfBirth.month),
-      year: applicantData.dateOfBirth.year
-    }))
-    dispatch(setPassportIssueDate({
-      day: standardiseDayOrMonth(applicantData.passportIssueDate.day),
-      month: standardiseDayOrMonth(applicantData.passportIssueDate.month),
-      year: applicantData.passportIssueDate.year
-    }))
-    dispatch(setPassportExpiryDate({
-      day: standardiseDayOrMonth(applicantData.passportExpiryDate.day),
-      month: standardiseDayOrMonth(applicantData.passportExpiryDate.month),
-      year: applicantData.passportExpiryDate.year
-    }))
-    
     try {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
