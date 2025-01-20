@@ -107,13 +107,14 @@ describe("Validate that applicant form is prefilled when user navigates back to 
 
     cy.url().should('include', expectedUrl);
     //Validate the page is prefilled with data entered in the applicant page
-    cy.get('input[name="age"]').should('have.value','29');
-    cy.get('input[type="radio"][name="tbSymptoms"]').should('be.checked');
+  cy.get('input[name="age"]').should('have.value','29');
+  cy.get('input[type="radio"][name="tbSymptoms"]').should('be.checked');
 	cy.get('input[type="checkbox"][value="cough"]').should('be.checked');
 	cy.get('input[type="checkbox"][value="other-symptoms"]').should('be.checked');
 	cy.get('input[type="radio"][name="previousTb"]').should('be.checked');
 	cy.get('input[type="checkbox"][value="not-applicable---applicant-is-aged-11-or-over"]').should('be.checked');
 	cy.get('input[type="radio"][name="pregnant"]').should('be.checked');
 	cy.get('input[type="radio"][name="menstrualPeriods"]').should('be.checked');
+  cy.get('#physical-exam-notes').should('contain.text', "Applicant appears fit");
     });
   });
