@@ -40,7 +40,7 @@ const ApplicantReview = () => {
               {applicantData.fullName}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#name")}>
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#name")} href="javascript:void(0);">
                 Change<span className="govuk-visually-hidden"> name</span>
               </a>
             </dd>
@@ -53,7 +53,7 @@ const ApplicantReview = () => {
               {applicantData.sex}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#sex")}>
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#sex")} href="javascript:void(0);">
                 Change<span className="govuk-visually-hidden"> sex</span>
               </a>
             </dd>
@@ -66,7 +66,7 @@ const ApplicantReview = () => {
               {applicantData.countryOfNationality}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#country-of-nationality")}>
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#country-of-nationality")} href="javascript:void(0);">
                 Change<span className="govuk-visually-hidden"> country of nationality</span>
               </a>
             </dd>
@@ -79,7 +79,7 @@ const ApplicantReview = () => {
               {applicantData.dateOfBirth.day}-{applicantData.dateOfBirth.month}-{applicantData.dateOfBirth.year}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#birth-date")}>
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#birth-date")} href="javascript:void(0);">
                 Change<span className="govuk-visually-hidden"> date of birth</span>
               </a>
             </dd>
@@ -92,7 +92,7 @@ const ApplicantReview = () => {
               {applicantData.passportNumber}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#passportNumber")}>
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#passportNumber")} href="javascript:void(0);">
                 Change<span className="govuk-visually-hidden"> passport number</span>
               </a>
             </dd>
@@ -105,7 +105,7 @@ const ApplicantReview = () => {
               {applicantData.countryOfIssue}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#country-of-issue")}>
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#country-of-issue")} href="javascript:void(0);">
                 Change<span className="govuk-visually-hidden"> country of issue</span>
               </a>
             </dd>
@@ -118,7 +118,7 @@ const ApplicantReview = () => {
               {applicantData.passportIssueDate.day}-{applicantData.passportIssueDate.month}-{applicantData.passportIssueDate.year}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#passport-issue-date")}>
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#passport-issue-date")} href="javascript:void(0);">
                 Change<span className="govuk-visually-hidden"> passport issue date</span>
               </a>
             </dd>
@@ -131,7 +131,7 @@ const ApplicantReview = () => {
               {applicantData.passportExpiryDate.day}-{applicantData.passportExpiryDate.month}-{applicantData.passportExpiryDate.year}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#passport-expiry-date")}>
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#passport-expiry-date")} href="javascript:void(0);">
                 Change<span className="govuk-visually-hidden"> passport expiry date</span>
               </a>
             </dd>
@@ -144,7 +144,7 @@ const ApplicantReview = () => {
               {applicantData.applicantHomeAddress1}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#address-1")}>
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#address-1")} href="javascript:void(0);">
                 Change<span className="govuk-visually-hidden"> home address line 1</span>
               </a>
             </dd>
@@ -157,7 +157,7 @@ const ApplicantReview = () => {
               {applicantData.applicantHomeAddress2}
             </dd>
             <dd className="govuk-summary-list__actions">
-            <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#address-2")}>
+            <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#address-2")} href="javascript:void(0);">
                 Change<span className="govuk-visually-hidden"> home address line 2</span>
               </a>
             </dd>
@@ -170,7 +170,7 @@ const ApplicantReview = () => {
               {applicantData.applicantHomeAddress3}
             </dd>
             <dd className="govuk-summary-list__actions">
-            <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#address-3")}>
+            <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#address-3")} href="javascript:void(0);">
                 Change<span className="govuk-visually-hidden"> home address line 3</span>
               </a>
             </dd>
@@ -183,7 +183,7 @@ const ApplicantReview = () => {
               {applicantData.townOrCity}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#town-or-city")}>
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#town-or-city")} href="javascript:void(0);">
                 Change<span className="govuk-visually-hidden"> home town or city</span>
               </a>
             </dd>
@@ -196,7 +196,7 @@ const ApplicantReview = () => {
               {applicantData.provinceOrState}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#province-or-state")}>
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#province-or-state")} href="javascript:void(0);">
                 Change<span className="govuk-visually-hidden"> home province or state</span>
               </a>
             </dd>
@@ -209,7 +209,7 @@ const ApplicantReview = () => {
               {applicantData.country}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#address-country")}>
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#address-country")} href="javascript:void(0);">
                 Change<span className="govuk-visually-hidden"> country</span>
               </a>
             </dd>
@@ -222,7 +222,7 @@ const ApplicantReview = () => {
               {applicantData.postcode}
             </dd>
             <dd className="govuk-summary-list__actions">
-              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#postcode")}>
+              <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/contact#postcode")} href="javascript:void(0);">
                 Change<span className="govuk-visually-hidden"> postcode</span>
               </a>
             </dd>
