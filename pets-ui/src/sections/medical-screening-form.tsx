@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useForm, SubmitHandler, FormProvider } from "react-hook-form"
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
@@ -80,11 +80,41 @@ const MedicalScreeningForm = () => {
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
   const location = useLocation();
+  const ageRef = useRef<HTMLDivElement | null>(null);
+  const tbSymptomsRef = useRef<HTMLDivElement | null>(null);
+  const tbSymptomsListRef = useRef<HTMLDivElement | null>(null);
+  const otherSymptomsDetailRef = useRef<HTMLDivElement | null>(null);
+  const underElevenConditionsRef = useRef<HTMLDivElement | null>(null);
+  const underElevenConditionsDetailRef = useRef<HTMLDivElement | null>(null);
+  const previousTbRef = useRef<HTMLDivElement | null>(null);
+  const previousTbDetailRef = useRef<HTMLDivElement | null>(null);
+  const closeContactWithTbRef = useRef<HTMLDivElement | null>(null);
+  const closeContactWithTbDetailRef = useRef<HTMLDivElement | null>(null);
+  const pregnantRef = useRef<HTMLDivElement | null>(null);
+  const menstrualPeriodsRef = useRef<HTMLDivElement | null>(null);
+  const physicalExamNotesRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (location.hash) {
-      const element = document.getElementById(location.hash.substring(1));
-      if (element) {
-        element.scrollIntoView();
+      const target = location.hash.substring(1);
+      const refMap: { [key: string]: HTMLElement | null } = {
+        'age': ageRef.current,
+        'tb-symptoms': tbSymptomsRef.current,
+        'tb-symptoms-list': tbSymptomsListRef.current,
+        'other-symptoms-detail': otherSymptomsDetailRef.current,
+        'under-eleven-conditions': underElevenConditionsRef.current,
+        'under-eleven-conditions-detail': underElevenConditionsDetailRef.current,
+        'previous-tb': previousTbRef.current,
+        'previous-tb-detail': previousTbDetailRef.current,
+        'close-contact-with-tb': closeContactWithTbRef.current,
+        'close-contact-with-tb-detail': closeContactWithTbDetailRef.current,
+        'pregnant': pregnantRef.current,
+        'menstrual-periods': menstrualPeriodsRef.current,
+        'physical-exam-notes': physicalExamNotesRef.current,
+      };
+
+      const targetRef = refMap[target];
+      if (targetRef) {
+        targetRef.scrollIntoView();
       }
     }
   }, [location]);
@@ -142,152 +172,178 @@ const MedicalScreeningForm = () => {
           </dl>
         </div>
 
-        <FreeText
-          id="age"
-          label="Applicant Age"
-          errorMessage={errors?.age?.message ?? ""}
-          formValue="age"
-          required="Enter applicant's age in years."
-          patternValue={formRegex.numbersOnly}
-          patternError="Age must be a number."
-          inputWidth={3}
-          suffixText="years"
-          defaultValue={medicalData.age}
-        />
+        <div ref={ageRef}>
+          <FreeText
+            id="age"
+            label="Applicant Age"
+            errorMessage={errors?.age?.message ?? ""}
+            formValue="age"
+            required="Enter applicant's age in years."
+            patternValue={formRegex.numbersOnly}
+            patternError="Age must be a number."
+            inputWidth={3}
+            suffixText="years"
+            defaultValue={medicalData.age}
+          />
+        </div>
 
-        <Radio
-          id="tb-symptoms"
-          legend="Does the applicant have any TB symptoms?"
-          isInline={RadioIsInline.TRUE}
-          answerOptions={["Yes", "No"]}
-          sortAnswersAlphabetically={false}
-          errorMessage={errors?.tbSymptoms?.message ?? ""}
-          formValue="tbSymptoms"
-          required="Select whether the applicant has any TB symptoms."
-          defaultValue={medicalData.tbSymptoms}
-        />
+        <div ref={tbSymptomsRef}>
+          <Radio
+            id="tb-symptoms"
+            legend="Does the applicant have any TB symptoms?"
+            isInline={RadioIsInline.TRUE}
+            answerOptions={["Yes", "No"]}
+            sortAnswersAlphabetically={false}
+            errorMessage={errors?.tbSymptoms?.message ?? ""}
+            formValue="tbSymptoms"
+            required="Select whether the applicant has any TB symptoms."
+            defaultValue={medicalData.tbSymptoms}
+          />
+        </div>
 
-        <Checkbox
-          id="tb-symptoms-list"
-          legend="If yes, select which symptoms"
-          answerOptions={["Cough", "Night sweats", "Haemoptysis (coughing up blood)", "Weight loss", "Fever", "Other symptoms"]}
-          sortAnswersAlphabetically={false}
-          errorMessage={errors?.tbSymptomsList?.message ?? ""}
-          formValue="tbSymptomsList"
-          required={false}
-          defaultValue={medicalData.tbSymptomsList}
-        />
+        <div ref={tbSymptomsListRef}>
+          <Checkbox
+            id="tb-symptoms-list"
+            legend="If yes, select which symptoms"
+            answerOptions={["Cough", "Night sweats", "Haemoptysis (coughing up blood)", "Weight loss", "Fever", "Other symptoms"]}
+            sortAnswersAlphabetically={false}
+            errorMessage={errors?.tbSymptomsList?.message ?? ""}
+            formValue="tbSymptomsList"
+            required={false}
+            defaultValue={medicalData.tbSymptomsList}
+          />
+        </div>
 
-        <TextArea
-          id="other-symptoms-detail"
-          label='If you have selected "Other symptoms", list these'
-          errorMessage={errors?.otherSymptomsDetail?.message ?? ""}
-          formValue="otherSymptomsDetail"
-          required={false}
-          rows={4}
-          defaultValue={medicalData.otherSymptomsDetail}
-        />
+        <div ref={otherSymptomsDetailRef}>
+          <TextArea
+            id="other-symptoms-detail"
+            label='If you have selected "Other symptoms", list these'
+            errorMessage={errors?.otherSymptomsDetail?.message ?? ""}
+            formValue="otherSymptomsDetail"
+            required={false}
+            rows={4}
+            defaultValue={medicalData.otherSymptomsDetail}
+          />
+        </div>
 
-        <Checkbox
-          id="under-eleven-conditions"
-          legend="If the applicant is a child aged under 11, have they ever had:"
-          answerOptions={["Thoracic surgery", "Cyanosis", "Chronic respiratory disease", "Respiratory insufficiency that limits activity"]}
-          exclusiveAnswerOptions={["None of these", "Not applicable - applicant is aged 11 or over"]}
-          sortAnswersAlphabetically={false}
-          errorMessage={errors?.underElevenConditions?.message ?? ""}
-          formValue="underElevenConditions"
-          required={false}
-          defaultValue={medicalData.underElevenConditions}
-        />
+        <div ref={underElevenConditionsRef}>
+          <Checkbox
+            id="under-eleven-conditions"
+            legend="If the applicant is a child aged under 11, have they ever had:"
+            answerOptions={["Thoracic surgery", "Cyanosis", "Chronic respiratory disease", "Respiratory insufficiency that limits activity"]}
+            exclusiveAnswerOptions={["None of these", "Not applicable - applicant is aged 11 or over"]}
+            sortAnswersAlphabetically={false}
+            errorMessage={errors?.underElevenConditions?.message ?? ""}
+            formValue="underElevenConditions"
+            required={false}
+            defaultValue={medicalData.underElevenConditions}
+          />
+        </div>
 
-        <TextArea
-          id="under-eleven-conditions-detail"
-          label='You can give details of the procedure or condition'
-          errorMessage={errors?.underElevenConditionsDetail?.message ?? ""}
-          formValue="underElevenConditionsDetail"
-          required={false}
-          rows={4}
-          defaultValue={medicalData.underElevenConditionsDetail}
-        />
+        <div ref={underElevenConditionsDetailRef}>
+          <TextArea
+            id="under-eleven-conditions-detail"
+            label='You can give details of the procedure or condition'
+            errorMessage={errors?.underElevenConditionsDetail?.message ?? ""}
+            formValue="underElevenConditionsDetail"
+            required={false}
+            rows={4}
+            defaultValue={medicalData.underElevenConditionsDetail}
+          />
+        </div>
 
-        <Radio
-          id="previous-tb"
-          legend="Has the applicant ever had tuberculosis?"
-          isInline={RadioIsInline.TRUE}
-          answerOptions={["Yes", "No"]}
-          sortAnswersAlphabetically={false}
-          errorMessage={errors?.previousTb?.message ?? ""}
-          formValue="previousTb"
-          required="Select whether the applicant has ever had tuberculosis."
-          defaultValue={medicalData.previousTb}
-        />
+        <div ref={previousTbRef}>
+          <Radio
+            id="previous-tb"
+            legend="Has the applicant ever had tuberculosis?"
+            isInline={RadioIsInline.TRUE}
+            answerOptions={["Yes", "No"]}
+            sortAnswersAlphabetically={false}
+            errorMessage={errors?.previousTb?.message ?? ""}
+            formValue="previousTb"
+            required="Select whether the applicant has ever had tuberculosis."
+            defaultValue={medicalData.previousTb}
+          />
+        </div>
 
-        <TextArea
-          id="previous-tb-detail"
-          label='If yes, give details'
-          errorMessage={errors?.previousTbDetail?.message ?? ""}
-          formValue="previousTbDetail"
-          required={false}
-          rows={4}
-          defaultValue={medicalData.previousTbDetail}
-        />
+        <div ref={previousTbDetailRef}>
+          <TextArea
+            id="previous-tb-detail"
+            label='If yes, give details'
+            errorMessage={errors?.previousTbDetail?.message ?? ""}
+            formValue="previousTbDetail"
+            required={false}
+            rows={4}
+            defaultValue={medicalData.previousTbDetail}
+          />
+        </div>
 
-        <Radio
-          id="close-contact-with-tb"
-          legend="Has the applicant had close contact with any person with active pulmonary tuberculosis within the past year?"
-          hint="This might be sharing the same enclosed air space or household or other enclosed environment for a prolonged period, such as days or weeks"
-          isInline={RadioIsInline.TRUE}
-          answerOptions={["Yes", "No"]}
-          sortAnswersAlphabetically={false}
-          errorMessage={errors?.closeContactWithTb?.message ?? ""}
-          formValue="closeContactWithTb"
-          required="Select whether the applicant has had close contact with any person with active pulmonary tuberculosis within the past year."
-          defaultValue={medicalData.closeContactWithTb}
-        />
+        <div ref={closeContactWithTbRef}>
+          <Radio
+            id="close-contact-with-tb"
+            legend="Has the applicant had close contact with any person with active pulmonary tuberculosis within the past year?"
+            hint="This might be sharing the same enclosed air space or household or other enclosed environment for a prolonged period, such as days or weeks"
+            isInline={RadioIsInline.TRUE}
+            answerOptions={["Yes", "No"]}
+            sortAnswersAlphabetically={false}
+            errorMessage={errors?.closeContactWithTb?.message ?? ""}
+            formValue="closeContactWithTb"
+            required="Select whether the applicant has had close contact with any person with active pulmonary tuberculosis within the past year."
+            defaultValue={medicalData.closeContactWithTb}
+          />
+        </div>
 
-        <TextArea
-          id="close-contact-with-tb-detail"
-          label='If yes, give details'
-          errorMessage={errors?.closeContactWithTbDetail?.message ?? ""}
-          formValue="closeContactWithTbDetail"
-          required={false}
-          rows={4}
-          defaultValue={medicalData.closeContactWithTbDetail}
-        />
+        <div ref={closeContactWithTbDetailRef}>
+          <TextArea
+            id="close-contact-with-tb-detail"
+            label='If yes, give details'
+            errorMessage={errors?.closeContactWithTbDetail?.message ?? ""}
+            formValue="closeContactWithTbDetail"
+            required={false}
+            rows={4}
+            defaultValue={medicalData.closeContactWithTbDetail}
+          />
+        </div>
 
-        <Radio
-          id="pregnant"
-          legend="Is the applicant pregnant?"
-          isInline={RadioIsInline.FALSE}
-          answerOptions={["Yes", "No", "Don't know", "N/A"]}
-          sortAnswersAlphabetically={false}
-          errorMessage={errors?.pregnant?.message ?? ""}
-          formValue="pregnant"
-          required="Select whether the applicant is pregnant."
-          defaultValue={medicalData.pregnant}
-        />
+        <div ref={pregnantRef}>
+          <Radio
+            id="pregnant"
+            legend="Is the applicant pregnant?"
+            isInline={RadioIsInline.FALSE}
+            answerOptions={["Yes", "No", "Don't know", "N/A"]}
+            sortAnswersAlphabetically={false}
+            errorMessage={errors?.pregnant?.message ?? ""}
+            formValue="pregnant"
+            required="Select whether the applicant is pregnant."
+            defaultValue={medicalData.pregnant}
+          />
+        </div>
 
-        <Radio
-          id="menstrual-periods"
-          legend="Does the applicant have menstrual periods?"
-          isInline={RadioIsInline.FALSE}
-          answerOptions={["Yes", "No", "N/A"]}
-          sortAnswersAlphabetically={false}
-          errorMessage={errors?.menstrualPeriods?.message ?? ""}
-          formValue="menstrualPeriods"
-          required="Select whether the applicant has menstrual periods."
-          defaultValue={medicalData.menstrualPeriods}
-        />
+        <div ref={menstrualPeriodsRef}>
+          <Radio
+            id="menstrual-periods"
+            legend="Does the applicant have menstrual periods?"
+            isInline={RadioIsInline.FALSE}
+            answerOptions={["Yes", "No", "N/A"]}
+            sortAnswersAlphabetically={false}
+            errorMessage={errors?.menstrualPeriods?.message ?? ""}
+            formValue="menstrualPeriods"
+            required="Select whether the applicant has menstrual periods."
+            defaultValue={medicalData.menstrualPeriods}
+          />
+        </div>
 
-        <TextArea
-          id="physical-exam-notes"
-          label='Physical examination notes'
-          errorMessage={errors?.physicalExamNotes?.message ?? ""}
-          formValue="physicalExamNotes"
-          required={false}
-          rows={4}
-          defaultValue={medicalData.physicalExamNotes}
-        />
+        <div ref={physicalExamNotesRef}>
+          <TextArea
+            id="physical-exam-notes"
+            label='Physical examination notes'
+            errorMessage={errors?.physicalExamNotes?.message ?? ""}
+            formValue="physicalExamNotes"
+            required={false}
+            rows={4}
+            defaultValue={medicalData.physicalExamNotes}
+          />
+        </div>
 
         <Button
           id="save-and-continue"

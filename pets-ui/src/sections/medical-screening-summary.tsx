@@ -37,7 +37,7 @@ const MedicalScreeningReview = () => {
                         {medicalData.age}
                     </dd>
                     <dd className="govuk-summary-list__actions">
-                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#age")}>
+                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#age")} href="javascript:void(0);">
                             Change<span className="govuk-visually-hidden"> age</span>
                         </a>
                     </dd>
@@ -50,7 +50,7 @@ const MedicalScreeningReview = () => {
                         {medicalData.tbSymptoms}
                     </dd>
                     <dd className="govuk-summary-list__actions">
-                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#tb-symptoms")}>
+                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#tb-symptoms")} href="javascript:void(0);">
                             Change<span className="govuk-visually-hidden"> TB symptoms</span>
                         </a>
                     </dd>
@@ -63,7 +63,7 @@ const MedicalScreeningReview = () => {
                         {medicalData.tbSymptomsList.map((symptom: string) => symptom.replace(/-/g, " ")).join(", ")}
                     </dd>
                     <dd className="govuk-summary-list__actions">
-                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#tb-symptoms-list")}>
+                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#tb-symptoms-list")} href="javascript:void(0);">
                             Change<span className="govuk-visually-hidden"> TB symptoms</span>
                         </a>
                     </dd>
@@ -76,7 +76,7 @@ const MedicalScreeningReview = () => {
                         {medicalData.otherSymptomsDetail}
                     </dd>
                     <dd className="govuk-summary-list__actions">
-                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#other-symptoms-detail")}>
+                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#other-symptoms-detail")} href="javascript:void(0);">
                             Change<span className="govuk-visually-hidden"> other symptoms</span>
                         </a>
                     </dd>
@@ -89,7 +89,7 @@ const MedicalScreeningReview = () => {
                         {medicalData.underElevenConditions.map((symptom: string) => symptom.replace(/-/g, " ")).join(", ")}
                     </dd>
                     <dd className="govuk-summary-list__actions">
-                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#under-eleven-conditions")}>
+                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#under-eleven-conditions")} href="javascript:void(0);">
                             Change<span className="govuk-visually-hidden"> applicant history if under 11</span>
                         </a>
                     </dd>
@@ -102,7 +102,7 @@ const MedicalScreeningReview = () => {
                         {medicalData.underElevenConditionsDetail}
                     </dd>
                     <dd className="govuk-summary-list__actions">
-                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#under-eleven-conditions-detail")}>
+                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#under-eleven-conditions-detail")} href="javascript:void(0);">
                             Change<span className="govuk-visually-hidden"> additional details of applicant history if under 11</span>
                         </a>
                     </dd>
@@ -115,7 +115,7 @@ const MedicalScreeningReview = () => {
                         {medicalData.previousTb}
                     </dd>
                     <dd className="govuk-summary-list__actions">
-                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#previous-tb")}>
+                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#previous-tb")} href="javascript:void(0);">
                             Change<span className="govuk-visually-hidden"> applicant&apos;s previous TB</span>
                         </a>
                     </dd>
@@ -128,7 +128,7 @@ const MedicalScreeningReview = () => {
                         {medicalData.previousTbDetail}
                     </dd>
                     <dd className="govuk-summary-list__actions">
-                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#previous-tb-detail")}>
+                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#previous-tb-detail")} href="javascript:void(0);">
                             Change<span className="govuk-visually-hidden"> applicant&apos;s previous TB</span>
                         </a>
                     </dd>
@@ -141,7 +141,7 @@ const MedicalScreeningReview = () => {
                         {medicalData.closeContactWithTb}
                     </dd>
                     <dd className="govuk-summary-list__actions">
-                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#close-contact-with-tb")}>
+                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#close-contact-with-tb")} href="javascript:void(0);">
                             Change<span className="govuk-visually-hidden"> applicant&apos;s close contact with TB in the past year</span>
                         </a>
                     </dd>
@@ -154,7 +154,7 @@ const MedicalScreeningReview = () => {
                         {medicalData.closeContactWithTbDetail}
                     </dd>
                     <dd className="govuk-summary-list__actions">
-                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#close-contact-with-tb-detail")}>
+                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#close-contact-with-tb-detail")} href="javascript:void(0);">
                             Change<span className="govuk-visually-hidden"> details of applicant&apos;s close contact with TB in the past year</span>
                         </a>
                     </dd>
@@ -167,7 +167,7 @@ const MedicalScreeningReview = () => {
                         {medicalData.pregnant}
                     </dd>
                     <dd className="govuk-summary-list__actions">
-                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#pregnant")}>
+                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#pregnant")} href="javascript:void(0);">
                             Change<span className="govuk-visually-hidden"> pregnancy</span>
                         </a>
                     </dd>
@@ -180,7 +180,7 @@ const MedicalScreeningReview = () => {
                         {medicalData.menstrualPeriods}
                     </dd>
                     <dd className="govuk-summary-list__actions">
-                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#menstrual-periods")}>
+                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#menstrual-periods")} href="javascript:void(0);">
                             Change<span className="govuk-visually-hidden"> menstrual periods</span>
                         </a>
                     </dd>
@@ -193,7 +193,7 @@ const MedicalScreeningReview = () => {
                         {medicalData.physicalExamNotes}
                     </dd>
                     <dd className="govuk-summary-list__actions">
-                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#physical-exam-notes")}>
+                        <a className="govuk-link" style={{color: "#1d70b8"}} onClick={() => navigate("/medical-screening#physical-exam-notes")} href="javascript:void(0);">
                             Change<span className="govuk-visually-hidden"> physical examination notes</span>
                         </a>
                     </dd>

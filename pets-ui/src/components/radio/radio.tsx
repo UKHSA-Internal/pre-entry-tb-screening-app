@@ -55,42 +55,23 @@ export default function Radio(props: Readonly<RadioProps>) {
                 }
                 <div className={props.isInline} data-module="govuk-radios">
                     {answerOptions.map((answerOption: string, index: number) => {
-                        if (props.defaultValue == stringToJsxAttribute(answerOption)) {
-                            return (
-                                <div className="govuk-radios__item" key={`answer-option-${index + 1}`}>
-                                    <input
-                                        className="govuk-radios__input"
-                                        type="radio"
-                                        data-testid={props.id}
-                                        value={stringToJsxAttribute(answerOption)}
-                                        {...register(props.formValue, { 
-                                            required: props.required,
-                                        })}
-                                        defaultChecked
-                                    />
-                                    <label className="govuk-label govuk-radios__label" htmlFor={props.id}>
-                                        {answerOption}
-                                    </label>
-                                </div>
-                            )
-                        } else {
-                            return (
-                                <div className="govuk-radios__item" key={`answer-option-${index + 1}`}>
-                                    <input
-                                        className="govuk-radios__input"
-                                        type="radio"
-                                        data-testid={props.id}
-                                        value={stringToJsxAttribute(answerOption)}
-                                        {...register(props.formValue, { 
-                                            required: props.required,
-                                        })}
-                                    />
-                                    <label className="govuk-label govuk-radios__label" htmlFor={props.id}>
-                                        {answerOption}
-                                    </label>
-                                </div>
-                            )
-                        }
+                        return (
+                            <div className="govuk-radios__item" key={`answer-option-${index + 1}`}>
+                                <input
+                                    className="govuk-radios__input"
+                                    type="radio"
+                                    data-testid={props.id}
+                                    value={stringToJsxAttribute(answerOption)}
+                                    {...register(props.formValue, { 
+                                        required: props.required,
+                                    })}
+                                    defaultChecked={props.defaultValue == stringToJsxAttribute(answerOption)}
+                                />
+                                <label className="govuk-label govuk-radios__label" htmlFor={props.id}>
+                                    {answerOption}
+                                </label>
+                            </div>
+                        )
                     })}
                 </div>
             </fieldset>

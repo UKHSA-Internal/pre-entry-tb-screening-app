@@ -28,13 +28,13 @@ export const medicalScreeningSlice = createSlice({
     setTbSymptoms: (state, action: PayloadAction<string>) => {
       state.tbSymptoms = action.payload;
     },
-    setTbSymptomsList: (state, action: PayloadAction<string[]>) => {
+    setTbSymptomsList: (state, action: PayloadAction<string[] | false>) => {
       state.tbSymptomsList = action.payload ? [...action.payload] : []
     },
     setOtherSymptomsDetail: (state, action: PayloadAction<string>) => {
       state.otherSymptomsDetail = action.payload;
     },
-    setUnderElevenConditions: (state, action: PayloadAction<string[]>) => {
+    setUnderElevenConditions: (state, action: PayloadAction<string[] | false>) => {
       state.underElevenConditions = action.payload ? [...action.payload] : []
     },
     setUnderElevenConditionsDetail: (state, action: PayloadAction<string>) => {
