@@ -55,7 +55,7 @@ const ApplicantSearchForm = () => {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <FreeText
-          id="passportNumber"
+          id="passport-number"
           label="Applicant's Passport Number"
           errorMessage={errors?.passportNumber?.message ?? ""}
           formValue="passportNumber"
