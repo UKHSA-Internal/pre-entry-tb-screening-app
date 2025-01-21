@@ -69,8 +69,8 @@ describe("Validate that medical screening page is submitted successfully when al
     // Click the submit button
     cy.get('button[type="submit"]').click();
 
-    //Validate that the page navigates to the confirmation page
-    cy.url().should('include','http://localhost:3000/medical-confirmation');
+    //Validate that the page navigates to the summary page
+    cy.url().should('include','http://localhost:3000/medical-summary');
     });
   });
 

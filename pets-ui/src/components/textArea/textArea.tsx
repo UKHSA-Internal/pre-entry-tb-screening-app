@@ -9,6 +9,7 @@ export interface TextAreaProps {
     formValue: string;
     required: string | false;
     rows: number;
+    defaultValue?: string;
 }
 
 export default function TextArea(props: Readonly<TextAreaProps>) {
@@ -47,6 +48,7 @@ export default function TextArea(props: Readonly<TextAreaProps>) {
                 {...register(props.formValue, { 
                     required: props.required,
                 })}
+                defaultValue={props.defaultValue ?? ""}
             />
         </div>
     )
