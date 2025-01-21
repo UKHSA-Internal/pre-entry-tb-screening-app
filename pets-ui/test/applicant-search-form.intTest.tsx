@@ -5,6 +5,8 @@ import userEvent from '@testing-library/user-event'
 import { Mock } from 'vitest'
 import { renderWithProviders } from '@/utils/test-utils'
 import ApplicantSearchForm from '@/sections/applicant-search-form'
+import ApplicantEmptyResult from '@/sections/applicant-no-results'
+import { BrowserRouter as Router } from 'react-router-dom'
 
 const useNavigateMock: Mock = vi.fn();
 vi.mock(`react-router-dom`, async (): Promise<unknown> => {
@@ -42,17 +44,23 @@ afterAll(() => server.close())
 
 test('/applicant-details endpoint is invoked when form is filled out and button is clicked', async () => {
   renderWithProviders(
-    <ApplicantSearchForm/>
+    <Router>
+      <ApplicantSearchForm/>
+      <ApplicantEmptyResult/>
+    </Router>
   )
   
   const user = userEvent.setup()
 
-  await user.type(screen.getByTestId('passportNumber'), '12345')
+  await user.type(screen.getByTestId('passport-number'), '12345')
   fireEvent.change(screen.getAllByRole('combobox')[0], {target: { value: 'AUS' }})
 
-  expect(screen.getByTestId('passportNumber')).toHaveValue('12345')
+  expect(screen.getByTestId('passport-number')).toHaveValue('12345')
   expect(screen.getAllByRole('combobox')[0]).toHaveValue('AUS')
 
-  await user.click(screen.getByRole('button'))
+  await user.click(screen.getAllByRole('button')[0])
   expect(useNavigateMock).toBeCalled()
+
+  expect(screen.getByText('No matching record found')).toBeInTheDocument()
+  expect(screen.getByText('No matches for passport number 12345')).toBeInTheDocument()
 })
