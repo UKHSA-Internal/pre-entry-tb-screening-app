@@ -8,6 +8,9 @@ import FreeText from "@/components/freeText/freeText"
 import Dropdown from "@/components/dropdown/dropdown";
 import { ButtonType } from "@/utils/enums";
 
+import { useAppDispatch } from "@/redux/hooks";
+import { setCountryOfIssue, setPassportNumber } from "@/redux/applicantSlice";
+
 type ApplicantSearchFormType  = {
   passportNumber: string
   countryOfIssue: string
@@ -17,8 +20,13 @@ const ApplicantSearchForm = () => {
   const navigate = useNavigate();
 
   const methods = useForm<ApplicantSearchFormType>({reValidateMode: 'onSubmit'})
-
   const { handleSubmit, formState: { errors } } = methods;
+
+  const dispatch = useAppDispatch()
+    const updateReduxStore = (applicantSearchData: ApplicantSearchFormType) => {
+      dispatch(setPassportNumber(applicantSearchData.passportNumber))
+      dispatch(setCountryOfIssue(applicantSearchData.countryOfIssue))
+    }
 
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (data) => {
     try {
@@ -29,7 +37,7 @@ const ApplicantSearchForm = () => {
           headers: myHeaders,
       })
       .then(() => {
-        // TO DO: set state here to retrieve on confirmation page
+        updateReduxStore(data)
         navigate("/applicant-results")
       })
     } catch (error: unknown) {
