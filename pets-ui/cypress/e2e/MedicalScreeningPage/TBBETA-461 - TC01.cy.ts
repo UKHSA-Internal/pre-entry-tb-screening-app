@@ -73,4 +73,3 @@ describe("Validate that medical screening page is submitted successfully when al
     cy.url().should('include','http://localhost:3000/medical-summary');
     });
   });
-
