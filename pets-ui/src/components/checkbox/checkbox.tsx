@@ -11,6 +11,7 @@ export interface CheckboxProps {
     errorMessage: string;
     formValue: string;
     required: string | false;
+    defaultValue?: string[];
 }
 
 export default function Checkbox(props: Readonly<CheckboxProps>) {
@@ -56,42 +57,48 @@ export default function Checkbox(props: Readonly<CheckboxProps>) {
                     </p>
                 }
                 <div className="govuk-checkboxes" data-module="govuk-checkboxes">
-                    {answerOptions.map((answerOption: string, index: number) => (
-                        <div className="govuk-checkboxes__item" key={`answer-option-${index + 1}`}>
-                            <input
-                                className="govuk-checkboxes__input"
-                                type="checkbox"
-                                data-testid={props.id}
-                                value={stringToJsxAttribute(answerOption)}
-                                {...register(props.formValue, { 
-                                    required: props.required,
-                                })}
-                            />
-                            <label className="govuk-label govuk-checkboxes__label" htmlFor={props.id}>
-                                {answerOption}
-                            </label>
-                        </div>
-                    ))}
-                    {exclusiveAnswerOptions.map((exclusiveAnswerOption: string, index: number) => (
-                        <div key={`exclusive-answer-option-${index + 1}`}>
-                            <div className="govuk-checkboxes__divider">or</div>
-                            <div className="govuk-checkboxes__item">
+                    {answerOptions.map((answerOption: string, index: number) => {
+                        return (
+                            <div className="govuk-checkboxes__item" key={`answer-option-${index + 1}`}>
                                 <input
                                     className="govuk-checkboxes__input"
                                     type="checkbox"
                                     data-testid={props.id}
-                                    value={stringToJsxAttribute(exclusiveAnswerOption)}
+                                    value={stringToJsxAttribute(answerOption)}
                                     {...register(props.formValue, { 
                                         required: props.required,
                                     })}
-                                    data-behaviour="exclusive"
+                                    defaultChecked={props.defaultValue?.includes(stringToJsxAttribute(answerOption))}
                                 />
                                 <label className="govuk-label govuk-checkboxes__label" htmlFor={props.id}>
-                                    {exclusiveAnswerOption}
+                                    {answerOption}
                                 </label>
                             </div>
-                        </div>
-                    ))}
+                        )
+                    })}
+                    {exclusiveAnswerOptions.map((exclusiveAnswerOption: string, index: number) => {
+                        return (
+                            <div key={`exclusive-answer-option-${index + 1}`}>
+                                <div className="govuk-checkboxes__divider">or</div>
+                                <div className="govuk-checkboxes__item">
+                                    <input
+                                        className="govuk-checkboxes__input"
+                                        type="checkbox"
+                                        data-testid={props.id}
+                                        value={stringToJsxAttribute(exclusiveAnswerOption)}
+                                        {...register(props.formValue, { 
+                                            required: props.required,
+                                        })}
+                                        data-behaviour="exclusive"
+                                        defaultChecked={props.defaultValue?.includes(stringToJsxAttribute(exclusiveAnswerOption))}
+                                    />
+                                    <label className="govuk-label govuk-checkboxes__label" htmlFor={props.id}>
+                                        {exclusiveAnswerOption}
+                                    </label>
+                                </div>
+                            </div>
+                        )
+                    })}
                 </div>
             </fieldset>
         </div>
