@@ -84,12 +84,12 @@ describe("Validate that applicant form is prefilled when user navigates back to 
     const urlMap = {
         'Age': '#age',
         'Does the applicant have TB symptoms?': '#tb-symptoms' ,
-        //'TB symptoms': '#tb-symptoms-list',
+        'TB symptoms': '#tb-symptoms',
         'Other symptoms': '#other-symptoms-detail',
         'Applicant history if under 11': '#under-eleven-conditions',
         'Additional details of applicant history if under 11': '#under-eleven-conditions-detail',
         'Has the applicant ever had tuberculosis?': '#previous-tb',
-       // 'Detail of applicants previous TB': '#previous-tb-detail',
+        'Detail of applicant\'s previous TB': '#previous-tb-detail',
         'Is the applicant pregnant?': '#pregnant',
         'Does the applicant have menstrual periods?': '#menstrual-periods',
         'Physical examination notes': '#physical-exam-notes',
@@ -110,7 +110,7 @@ describe("Validate that applicant form is prefilled when user navigates back to 
           cy.get('input[name="age"]').should('have.value','29');
           break;
         case "TB symptoms":
-          cy.get('input[type="radio"][name="tbSymptoms"]').should('be.checked');
+          cy.get('input[type="radio"][name="tbSymptoms"][value="yes"]').should('be.checked');
           break;
         case "Other symptoms":
           cy.get('input[type="checkbox"][name="tbSymptomsList"][value="other-symptoms"]').should('be.checked');
