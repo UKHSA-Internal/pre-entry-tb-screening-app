@@ -13,7 +13,7 @@ const visaType = [
   "Working Holiday Maker",
   "Government Sponsored",
 ];
-
+const selectedVisa = randomElement(visaType);
 describe("Validate that the continue to medical screening button navigates to the medical screening page", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/travel-details");
@@ -26,7 +26,16 @@ describe("Validate that the continue to medical screening button navigates to th
     cy.visit("http://localhost:3000/travel-details");
 
     // Select a Visa Type
-    cy.get("#visa-type.govuk-select").select(randomElement(visaType));
+    cy.get("#visa-type.govuk-select").select(selectedVisa);
+
+    cy.get("#visa-type.govuk-select").find('option').then(($options) => {
+    const optionTexts = $options.toArray().map(el => el.text);
+    
+    // Verify all visaType options exist in dropdown
+    visaType.forEach(visaType => {
+      expect(optionTexts).to.include(visaType);
+    });
+    
 
     // Enter VALID Address Information
     cy.get("#address-1").type("17 Exmoor Rd.");
@@ -65,7 +74,7 @@ describe("Validate that the continue to medical screening button navigates to th
 
       switch (summaryList) {
         case "Visa type":
-          cy.get("#visa-type.govuk-select").should("not.have.value", "");
+          cy.get("#visa-type.govuk-select").should("have.value", selectedVisa);
           break;
         case "UK Address Line 1":
           cy.get('input[type="text"][name="applicantUkAddress1"]').should("have.value","17 Exmoor Rd.");
@@ -105,4 +114,5 @@ describe("Validate that the continue to medical screening button navigates to th
     //Validate that page navigates to medical screening page
     cy.url().should("include", "http://localhost:3000/medical-screening");
   });
+});
 });
