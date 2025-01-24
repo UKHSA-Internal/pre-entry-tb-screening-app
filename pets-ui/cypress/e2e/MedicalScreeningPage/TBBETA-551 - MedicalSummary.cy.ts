@@ -84,37 +84,55 @@ describe("Validate that applicant form is prefilled when user navigates back to 
     const urlMap = {
         'Age': '#age',
         'Does the applicant have TB symptoms?': '#tb-symptoms' ,
-        'TB symptoms': '#tb-symptoms-list',
+        'TB symptoms': '#tb-symptoms',
         'Other symptoms': '#other-symptoms-detail',
         'Applicant history if under 11': '#under-eleven-conditions',
         'Additional details of applicant history if under 11': '#under-eleven-conditions-detail',
         'Has the applicant ever had tuberculosis?': '#previous-tb',
-        'Detail of applicant/s previous TB': '#previous-tb-detail',
+        'Detail of applicant\'s previous TB': '#previous-tb-detail',
         'Is the applicant pregnant?': '#pregnant',
         'Does the applicant have menstrual periods?': '#menstrual-periods',
         'Physical examination notes': '#physical-exam-notes',
     };
       
-    const fieldNames = Object.keys(urlMap);
-    const summaryList = fieldNames[Math.floor(Math.random() * fieldNames.length)];
-    const expectedUrl = urlMap[summaryList];
+    Object.entries(urlMap).forEach(([summaryList, expectedUrl]) => {
+      cy.get(".govuk-summary-list__key")
+        .contains(summaryList)
+        .closest(".govuk-summary-list__row")
+        .find(".govuk-link")
+        .contains("Change")
+        .click();
 
-    cy.get('.govuk-summary-list__key')   
-    .contains(summaryList)   
-    .closest('.govuk-summary-list__row')   
-    .find('.govuk-link')   
-    .contains('Change').click();
+      cy.url().should("include", expectedUrl);
 
-    cy.url().should('include', expectedUrl);
-    //Validate the page is prefilled with data entered in the applicant page
-  cy.get('input[name="age"]').should('have.value','29');
-  cy.get('input[type="radio"][name="tbSymptoms"]').should('be.checked');
-	cy.get('input[type="checkbox"][value="cough"]').should('be.checked');
-	cy.get('input[type="checkbox"][value="other-symptoms"]').should('be.checked');
-	cy.get('input[type="radio"][name="previousTb"]').should('be.checked');
-	cy.get('input[type="checkbox"][value="not-applicable---applicant-is-aged-11-or-over"]').should('be.checked');
-	cy.get('input[type="radio"][name="pregnant"]').should('be.checked');
-	cy.get('input[type="radio"][name="menstrualPeriods"]').should('be.checked');
-  cy.get('#physical-exam-notes').should('contain.text', "Applicant appears fit");
+      switch (summaryList) {
+        case "age":
+          cy.get('input[name="age"]').should('have.value','29');
+          break;
+        case "TB symptoms":
+          cy.get('input[type="radio"][name="tbSymptoms"][value="yes"]').should('be.checked');
+          break;
+        case "Other symptoms":
+          cy.get('input[type="checkbox"][name="tbSymptomsList"][value="other-symptoms"]').should('be.checked');
+          break;
+        case "Has the applicant ever had tuberculosis?":
+          cy.get('input[type="radio"][name="previousTb"]').should('be.checked');
+          break;
+        case "Applicant history if under 11":
+          cy.get('input[type="checkbox"][value="not-applicable---applicant-is-aged-11-or-over"]').should('be.checked');
+          break;
+        case "Is the applicant pregnant?":
+          cy.get('input[type="radio"][name="pregnant"]').should('be.checked');
+          break;
+        case "Does the applicant have menstrual periods?":
+          cy.get('input[type="radio"][name="menstrualPeriods"]').should('be.checked');
+          break;
+		case "Physical examination notes":
+		cy.get('#physical-exam-notes').should('contain.text', "Applicant appears fit");
+		  break;
+		}
+
+      cy.go("back");
+    });
     });
   });
