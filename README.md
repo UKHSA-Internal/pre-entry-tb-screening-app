@@ -156,6 +156,8 @@ To run end to end tests, please visit the pets UI [command section](./pets-ui/RE
 
 ### Deployment
 
+- Before proceeding, ensure you have access to the AWS environment. Kindly check this [guide](https://confluence.collab.test-and-trace.nhs.uk/display/TPT/Request+Access+to+AWS+Environments?src=contextnavpagetreemode) on raising the request.
+
 - Navigate to the [actions](https://github.com/UKHSA-Internal/pre-entry-tb-screening-app/actions) page.
 
 #### UI
