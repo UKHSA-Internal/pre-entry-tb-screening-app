@@ -42,4 +42,3 @@ describe("Enter VALID Data for Applicant Travel Information", () => {
     cy.url().should('include', 'http://localhost:3000/travel-summary'); 
     });
   });
-
