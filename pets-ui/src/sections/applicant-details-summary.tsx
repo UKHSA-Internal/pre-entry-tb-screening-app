@@ -233,7 +233,7 @@ const ApplicantReview = () => {
           type={ButtonType.DEFAULT}
           text="Confirm"
           href="/applicant-confirmation"
-          handleClick={() => handleSubmit}/>
+          handleClick={handleSubmit}/>
       </div>
   )
 }
