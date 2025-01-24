@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/home-page';
 import ContactDetailsPage from './pages/contact-details';
 import ApplicantSearchPage from './pages/applicant-search';
+import ProgressTrackerPage from './pages/progress-tracker';
 import ApplicantSummaryPage from './pages/applicant-summary';
 import ApplicantConfirmation from './pages/applicant-confirmation';
 import MedicalScreeningPage from './pages/medical-screening';
@@ -18,6 +19,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/contact" element={<ContactDetailsPage />} />
         <Route path="/applicant-search" element={<ApplicantSearchPage />} />
+        <Route path="/tracker" element={<ProgressTrackerPage />} />
         <Route path="/applicant-summary" element={<ApplicantSummaryPage />} />
         <Route path="/applicant-confirmation" element={<ApplicantConfirmation />} />
         <Route path="/medical-screening" element={<MedicalScreeningPage />} />
