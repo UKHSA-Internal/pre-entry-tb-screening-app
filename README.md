@@ -191,7 +191,7 @@ To deploy the Core services to a target environment {target-env}:
 - No finger pointing, the code is everyone’s responsibility, and we are all accountable for changes.
 - Ensure that all code is well-tested.
 - Encourage contribution from everyone.
-- Keep it short and simple.
+- Keep it simple and straighforward.
 
 [typescript.org]: https://img.shields.io/badge/typescript-20232A?style=for-the-badge&logo=typescript
 [Typescript-url]: https://frontendmasters.com/courses/typescript-v4/
