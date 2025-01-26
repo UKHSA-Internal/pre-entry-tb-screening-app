@@ -1,0 +1,21 @@
+{
+  "name": "pets-core-services",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.585.0",
+    "@aws-sdk/lib-dynamodb": "^3.585.0",
+    "@middy/core": "^6.0.0",
+    "@middy/http-router": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.145",
+    "aws-sdk-client-mock": "^4.0.1",
+    "ts-node": "^10.9.2",
+    "ts-patch": "^3.2.1",
+    "typescript": "5.5.4",
+    "typescript-transform-paths": "3.4.7",
+    "vitest": "^2.1.5"
+  },
+  "scripts": {}
+}
