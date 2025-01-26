@@ -4,5 +4,6 @@ packages:
   - 'core-services/applicant-service/**'
   - 'core-services/clinic-service/**'
   - 'core-services/lambda-authoriser/**'
+  - 'pets-backend/**' # TODO: Remove
   # if required, exclude some directories
   - '!**/app/pets-ui/**'
