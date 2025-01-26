@@ -6,14 +6,17 @@
   },
   "exclude": [
     "node_modules",
+    "cypress"
   ],
   "references": [
     {
       "path": "./pets-backend"
     },
-    /* TODO: Ensure PEts ui is getting linted appropriately */
     {
       "path": "./pets-ui"
     },
+    {
+      "path": "./pets-ui/cypress"
+    }
   ]
 }
