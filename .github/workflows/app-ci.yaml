@@ -59,7 +59,7 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           install: false
-          working-directory: pets-ui
+          working-directory: pets-ui/cypress
           build: pnpm run build
           start: pnpm run dev
           browser: ${{ matrix.browser }}
