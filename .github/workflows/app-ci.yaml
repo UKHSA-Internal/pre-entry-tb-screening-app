@@ -54,12 +54,10 @@ jobs:
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.cache/Cypress
-            pets-ui/node_modules
-          key: ${{ runner.os }}-cypress-${{ hashFiles('pets-ui/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-cypress-
+         path:  ~/.cache/Cypress
+         path: pets-ui/node_modules
+         key: ${{ runner.os }}-cypress-${{ hashFiles('pets-ui/pnpm-lock.yaml') }}
+         restore-keys: ${{ runner.os }}-cypress-
       - name: Install Dependencies
         run: |
           cd pets-ui
