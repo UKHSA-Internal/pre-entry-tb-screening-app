@@ -36,8 +36,8 @@ jobs:
           projectBaseDir: pets-ui/
 
   cypress-run:
-  name: Run cypress tests
-  runs-on: ubuntu-latest
+    name: Run Cypress tests
+        runs-on: ubuntu-latest
   strategy:
     matrix:
       browser: [chrome, firefox, edge]
