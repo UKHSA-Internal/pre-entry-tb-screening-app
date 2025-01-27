@@ -1,3 +1,4 @@
+import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import middy from "@middy/core";
 import httpRouterHandler from "@middy/http-router";
 import { APIGatewayEvent } from "aws-lambda";
@@ -11,6 +12,7 @@ import { fetchClinicsHandler } from "../handlers/fetchClinics";
 import { getClinicHandler } from "../handlers/getClinic";
 import { ClinicSchema } from "../types/zod-schema";
 
+extendZodWithOpenApi(z);
 // TODO: Add middlewares for validating request and response
 
 const routes: PetsRoute[] = [
@@ -46,6 +48,7 @@ const routes: PetsRoute[] = [
 export const swaggerConfig: SwaggerConfig = {
   lambdaArn: getEnvironmentVariable("CLINIC_SERVICE_LAMBDA"),
   routes,
+  tags: ["Clinic Service Endpoints"],
 };
 
 export const handler = middy<APIGatewayEvent>().handler(httpRouterHandler(routes));

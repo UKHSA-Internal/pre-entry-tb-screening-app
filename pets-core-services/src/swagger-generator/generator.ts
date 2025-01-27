@@ -33,10 +33,18 @@ const extractPathParams = (path: string) => {
 };
 
 const registerSwaggerConfig = (registry: OpenAPIRegistry, config: SwaggerConfig) => {
-  const { routes } = config;
+  const { routes, tags } = config;
   for (const route of routes) {
-    const { path, description, summary, requestBodySchema, queryParams, responseSchema, method } =
-      route;
+    const {
+      path,
+      description,
+      summary,
+      requestBodySchema,
+      queryParams,
+      headers,
+      responseSchema,
+      method,
+    } = route;
 
     const pathParams = extractPathParams(path);
     registry.registerPath({
@@ -47,6 +55,7 @@ const registerSwaggerConfig = (registry: OpenAPIRegistry, config: SwaggerConfig)
       request: {
         params: pathParams && z.object(pathParams),
         query: queryParams && z.object(queryParams),
+        headers: headers && z.object(headers),
         body: requestBodySchema && {
           content: {
             "application/json": {
@@ -71,6 +80,7 @@ const registerSwaggerConfig = (registry: OpenAPIRegistry, config: SwaggerConfig)
         httpMethod: "POST",
         uri: config.lambdaArn,
       },
+      tags,
     });
   }
   return registry;
