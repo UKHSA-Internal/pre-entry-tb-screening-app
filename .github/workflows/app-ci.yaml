@@ -51,10 +51,28 @@ jobs:
         with:
           node-version: 18.x
           cache: "pnpm"
-      - name: Cypress install dependencies
-        uses: cypress-io/github-action@v6
+
+      - name: Cache Cypress binary
+        uses: actions/cache@v4
         with:
-          runTests: false
+          path: ~/.cache/Cypress
+          key: cypress-binary-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
+          restore-keys: |
+            cypress-binary-${{ runner.os }}-
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: pets-ui/node_modules
+          key: deps-${{ runner.os }}-${{ hashFiles('pets-ui/pnpm-lock.yaml') }}
+
+      - name: Install Dependencies
+        run: |
+          cd pets-ui
+          pnpm install
+          pnpm exec cypress install --force
+          pnpm exec cypress verify
+
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
         with:
@@ -63,6 +81,14 @@ jobs:
           build: pnpm run build
           start: pnpm run dev
           browser: ${{ matrix.browser }}
+
+      - name: Upload Failed Tests Screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failed-tests-screenshots
+          path: pets-ui/cypress/screenshots
+
 
   build:
     name: Create UI build
