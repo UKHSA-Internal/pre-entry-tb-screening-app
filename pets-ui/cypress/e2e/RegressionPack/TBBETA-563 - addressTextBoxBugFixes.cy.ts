@@ -17,7 +17,7 @@ describe("Validate Applicant name and address fields accept punctuations and spe
   it("Should not throw error messages when special characters and punctuations are entered in name and address fields", () => {
   
     // Enter VALID data for 'Full name'
-    cy.get('input[name="fullName"]').type("John O'Sullivan");
+    cy.get('input[name="fullName"]').type("John O'Sullivan - Hantan");
 
     //Select a 'Sex'
     cy.get('input[name="sex"]').check("male");
@@ -48,7 +48,7 @@ describe("Validate Applicant name and address fields accept punctuations and spe
     cy.get("#address-1").type("123 Main St");
     cy.get("#address-2").type("Flat 1/2");
     cy.get("#address-3").type("West-Lane");
-    cy.get("#town-or-city").type("Springfield");
+    cy.get("#town-or-city").type("Springfield.");
     cy.get("#province-or-state").type("Stockholm");
     cy.get("#address-country.govuk-select").select(countryName);
     cy.get("#postcode").type("S4R 0M6");
