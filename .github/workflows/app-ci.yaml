@@ -37,11 +37,11 @@ jobs:
 
   cypress-run:
     name: Run Cypress tests
-        runs-on: ubuntu-latest
-  strategy:
+    runs-on: ubuntu-latest
+    strategy:
     matrix:
       browser: [chrome, firefox, edge]
-  steps:
+    steps:
     - name: Checkout
       uses: actions/checkout@v4
     
