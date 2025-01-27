@@ -7,8 +7,8 @@ import { Method } from "@middy/http-router";
 import { writeFileSync } from "fs";
 import { z } from "zod";
 
-import { errorResponses } from "./error-response";
 import { SwaggerConfig } from "./types";
+
 extendZodWithOpenApi(z);
 
 const methodMap: Record<Exclude<Method, "ANY">, Exclude<Lowercase<Method>, "any">> = {
@@ -21,18 +21,33 @@ const methodMap: Record<Exclude<Method, "ANY">, Exclude<Lowercase<Method>, "any"
   HEAD: "head",
 };
 
+const extractPathParams = (path: string) => {
+  const matches = path.match(/{(.*?)}/g);
+  if (!matches) return;
+
+  return matches.reduce((acc, param) => {
+    const name = param.replace(/[{}]/g, ""); // Remove curly braces
+    Object.assign(acc, { [name]: z.string() });
+    return acc;
+  }, {});
+};
+
 const registerSwaggerConfig = (registry: OpenAPIRegistry, config: SwaggerConfig) => {
   const { routes } = config;
   for (const route of routes) {
-    const { path, description, summary, requestBodySchema, responseSchema, method } = route;
+    const { path, description, summary, requestBodySchema, queryParams, responseSchema, method } =
+      route;
 
+    const pathParams = extractPathParams(path);
     registry.registerPath({
       method: methodMap[method],
       path,
       description,
       summary,
-      request: requestBodySchema && {
-        body: {
+      request: {
+        params: pathParams && z.object(pathParams),
+        query: queryParams && z.object(queryParams),
+        body: requestBodySchema && {
           content: {
             "application/json": {
               schema: requestBodySchema,
@@ -49,7 +64,6 @@ const registerSwaggerConfig = (registry: OpenAPIRegistry, config: SwaggerConfig)
             },
           },
         },
-        ...errorResponses,
       },
       "x-amazon-apigateway-integration": {
         type: "aws_proxy",
