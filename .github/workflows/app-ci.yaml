@@ -36,49 +36,54 @@ jobs:
           projectBaseDir: pets-ui/
 
   cypress-run:
-    name: Run cypress tests
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        browser: [chrome, firefox, edge]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
-          cache: "pnpm"
-      - name: Cache Cypress Binary
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/Cypress
-          key: cypress-${{ runner.os }}-${{ hashFiles('pets-ui/pnpm-lock.yaml') }}
-          restore-keys: |
-            cypress-${{ runner.os }}-
+  name: Run cypress tests
+  runs-on: ubuntu-latest
+  strategy:
+    matrix:
+      browser: [chrome, firefox, edge]
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18.x
+        cache: "pnpm"
+    
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/Cypress
+          pets-ui/node_modules
+        key: ${{ runner.os }}-cypress-${{ hashFiles('pets-ui/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-cypress-
 
-      - name: Install Dependencies
-        run: |
-          cd pets-ui
-          pnpm install
-          pnpm exec cypress verify
-      
-      - name: Cypress run tests
-        uses: cypress-io/github-action@v6
-        with:
-          working-directory: pets-ui
-          build: pnpm run build
-          start: pnpm run dev
-          browser: ${{ matrix.browser }}
-          
-      - name: Upload Failed Tests Screenshots
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: failed-tests-screenshots
-          path: pets-ui/cypress/screenshots
+    - name: Install Dependencies
+      run: |
+        cd pets-ui
+        pnpm install
+        pnpm exec cypress install
+    
+    - name: Cypress run tests
+      uses: cypress-io/github-action@v6
+      with:
+        working-directory: pets-ui
+        build: pnpm run build
+        start: pnpm run dev
+        browser: ${{ matrix.browser }}
+        
+    - name: Upload Failed Tests Screenshots
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: failed-tests-screenshots
+        path: pets-ui/cypress/screenshots
 
   build:
     name: Create UI build
