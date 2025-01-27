@@ -9,6 +9,7 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import pluginCypress from "eslint-plugin-cypress/flat";
 
 export default tseslint.config(
+  { ignores: ["core-services/**"] },
   {
     files: ["**/*.{ts,tsx}"],
     extends: [js.configs.recommended, ...tseslint.configs.recommendedTypeChecked],

@@ -6,11 +6,12 @@
   },
   "exclude": [
     "node_modules",
-    "cypress"
+    "cypress",
+    "core-services"
   ],
   "references": [
     {
-      "path": "./pets-backend"
+      "path": "./pets-core-services"
     },
     {
       "path": "./pets-ui"
