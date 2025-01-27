@@ -39,24 +39,24 @@ jobs:
     name: Run Cypress tests
     runs-on: ubuntu-latest
     strategy:
-    matrix:
-      browser: [chrome, firefox, edge]
+      matrix:
+        browser: [chrome, firefox, edge]
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
     
-    - name: Install pnpm
-      uses: pnpm/action-setup@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
     
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
         node-version: 18.x
         cache: "pnpm"
     
-    - name: Cache dependencies
-      uses: actions/cache@v4
-      with:
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
         path: |
           ~/.cache/Cypress
           pets-ui/node_modules
@@ -64,26 +64,26 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-cypress-
 
-    - name: Install Dependencies
-      run: |
-        cd pets-ui
-        pnpm install
-        pnpm exec cypress install
+      - name: Install Dependencies
+        run: |
+          cd pets-ui
+          pnpm install
+          pnpm exec cypress install
     
-    - name: Cypress run tests
-      uses: cypress-io/github-action@v6
-      with:
+      - name: Cypress run tests
+        uses: cypress-io/github-action@v6
+        with:
         working-directory: pets-ui
         build: pnpm run build
         start: pnpm run dev
         browser: ${{ matrix.browser }}
         
-    - name: Upload Failed Tests Screenshots
-      if: failure()
-      uses: actions/upload-artifact@v4
-      with:
-        name: failed-tests-screenshots
-        path: pets-ui/cypress/screenshots
+      - name: Upload Failed Tests Screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failed-tests-screenshots
+          path: pets-ui/cypress/screenshots
 
   build:
     name: Create UI build
