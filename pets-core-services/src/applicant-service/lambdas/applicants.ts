@@ -4,16 +4,14 @@ import httpRouterHandler from "@middy/http-router";
 import { APIGatewayEvent } from "aws-lambda";
 import { z } from "zod";
 
-import { getEnvironmentVariable } from "../../shared/config";
 import { PetsRoute } from "../../shared/types";
-import { SwaggerConfig } from "../../swagger-generator/types";
 import { getApplicantHandler } from "../handlers/getApplicant";
 import { postApplicantHandler } from "../handlers/postApplicant";
 import { ApplicantSchema } from "../types/zod-schema";
 
 extendZodWithOpenApi(z);
 
-const routes: PetsRoute[] = [
+export const routes: PetsRoute[] = [
   {
     method: "POST",
     path: "/v1/applicant/register",
@@ -34,11 +32,5 @@ const routes: PetsRoute[] = [
     }),
   },
 ];
-
-export const swaggerConfig: SwaggerConfig = {
-  lambdaArn: getEnvironmentVariable("APPLICANT_SERVICE_LAMBDA"),
-  routes,
-  tags: ["Applicant Service Endpoints"],
-};
 
 export const handler = middy<APIGatewayEvent>().handler(httpRouterHandler(routes));

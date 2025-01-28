@@ -4,9 +4,7 @@ import httpRouterHandler from "@middy/http-router";
 import { APIGatewayEvent } from "aws-lambda";
 import { z } from "zod";
 
-import { getEnvironmentVariable } from "../../shared/config";
 import { PetsRoute } from "../../shared/types";
-import { SwaggerConfig } from "../../swagger-generator/types";
 import { createClinicHandler } from "../handlers/createClinic";
 import { fetchClinicsHandler } from "../handlers/fetchClinics";
 import { getClinicHandler } from "../handlers/getClinic";
@@ -15,7 +13,7 @@ import { ClinicSchema } from "../types/zod-schema";
 extendZodWithOpenApi(z);
 // TODO: Add middlewares for validating request and response
 
-const routes: PetsRoute[] = [
+export const routes: PetsRoute[] = [
   {
     method: "POST",
     path: "/v1/clinic/{clinicId}",
@@ -44,11 +42,5 @@ const routes: PetsRoute[] = [
     },
   },
 ];
-
-export const swaggerConfig: SwaggerConfig = {
-  lambdaArn: getEnvironmentVariable("CLINIC_SERVICE_LAMBDA"),
-  routes,
-  tags: ["Clinic Service Endpoints"],
-};
 
 export const handler = middy<APIGatewayEvent>().handler(httpRouterHandler(routes));
