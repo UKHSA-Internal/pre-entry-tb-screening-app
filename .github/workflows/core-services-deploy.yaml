@@ -38,7 +38,7 @@ jobs:
 
     env:
       BUILD_FOLDER: '.build'
-      ZIP_NAME: 'deployment_package.zip'
+      ZIP_FILE: 'deployment_package.zip'
 
     strategy:
       matrix:
