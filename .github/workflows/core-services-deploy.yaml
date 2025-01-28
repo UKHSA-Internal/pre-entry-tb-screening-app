@@ -76,11 +76,7 @@ jobs:
         working-directory: pets-core-services
         env:
           BUILD_FOLDER: ${{ env.BUILD_FOLDER }}
-          PATH: ${{ matrix.lambda.path }}
-
-
-      - name: Include environment env in deployment package
-        run: cp configs/.env.${{ inputs.environment }} pets-core-services/$BUILD_FOLDER
+          path: ${{ matrix.lambda.path }}
 
       - name: Create zip
         run: zip -r $ZIP_FILE $BUILD_FOLDER

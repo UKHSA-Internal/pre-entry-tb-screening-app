@@ -22,7 +22,7 @@
     "vitest": "^2.1.5"
   },
   "scripts": {
-    "build": "esbuild $PATH --bundle '--external:@aws-sdk/*' --platform=node --target=node18 --minify --keep-names --sourcemap=external --outbase=src --outfile=$BUILD_FOLDER/index.js",
+    "build": "esbuild $path --bundle '--external:@aws-sdk/*' --platform=node --target=node18 --minify --keep-names --sourcemap=external --outbase=src --outfile=$BUILD_FOLDER/index.js",
     "build-watch": ""
   }
 }
