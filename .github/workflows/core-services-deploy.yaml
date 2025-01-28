@@ -72,11 +72,8 @@ jobs:
         run: pnpm i
 
       - name: Build lambda source code
-        run: pnpm run build
+        run: pnpm build-lambda ${{ matrix.lambda.path }} --outfile=$BUILD_FOLDER/index.js
         working-directory: pets-core-services
-        env:
-          BUILD_FOLDER: ${{ env.BUILD_FOLDER }}
-          path: ${{ matrix.lambda.path }}
 
       - name: Create zip
         run: zip -r $ZIP_FILE $BUILD_FOLDER
