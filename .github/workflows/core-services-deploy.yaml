@@ -8,39 +8,37 @@ on:
         required: true
 
 jobs:
-  changes:
-    name: Create strategy matrix
+
+  fetch-deployment-config:
+    name: Fetch deployment config for all lambdas
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    outputs:
-      service: ${{ steps.filter.outputs.changes }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          # Disabling shallow clone is recommended for improving relevancy of reporting
-          fetch-depth: 0
-      - name: Paths filter
-        uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            applicant-service:
-              - "core-services/applicant-service/**"
-            clinic-service:
-              - "core-services/clinic-service/**"
-            lambda-authoriser:
-              - "core-services/lambda-authoriser/**"
 
-  deploy:
-    name: Build, package & deploy services
+      - name: Read deployment config
+        run: |
+          config=$(cat deployment.config.json)
+          echo "::set-output name=config::$config"
+        shell: bash
+        working-directory: pets-core-services
+
+
+  deploy-lambdas:
+    name: Build, package & deploy all lambdas
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    needs: changes
+    needs: fetch-deployment-config
+
+    env:
+      BUILD_FOLDER: '.build'
+      ZIP_NAME: 'deployment_package.zip'
 
     strategy:
       matrix:
-        service: ${{ fromJSON(needs.changes.outputs.service) }}
+        lambda: ${{ fromJSON(needs.fetch-deployment-config.outputs.config) }}
 
     steps:
       - name: Configure AWS credentials
@@ -52,34 +50,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_PETS_CORE_SERVICES_ROLE_NAME }}"
           role-session-name: PETS-Core-Services-Deploy
-      - name: Get secrets from AWS
-        uses: aws-actions/aws-secretsmanager-get-secrets@v2
-        with:
-          secret-ids: |
-            CoreServicesDeploy
-            CoreServicesURIs
-          parse-json-secrets: true
-      - name: Create environment variables
-        run: |
-          if [ '${{ matrix.service }}' = 'applicant-service' ]; then
-            echo "ZIP_FILE=applicant-service-lambda.zip" >> $GITHUB_ENV
-            echo "BUILD_FOLDER=.build/*" >> $GITHUB_ENV
-            echo "BUCKET_SECRET=$CORESERVICESDEPLOY_APPLICANT_SERVICE_BUCKET_NAME" >> $GITHUB_ENV
-            echo "SSE_KEY_SECRET=$CORESERVICESDEPLOY_APPLICANT_SERVICE_SSE_KEY" >> $GITHUB_ENV
-            echo "LAMBDA=applicant-service-lambda" >> $GITHUB_ENV
-          elif [ '${{ matrix.service }}' = 'clinic-service' ]; then
-            echo "ZIP_FILE=clinic-service-lambda.zip" >> $GITHUB_ENV
-            echo "BUILD_FOLDER=.build/*" >> $GITHUB_ENV
-            echo "BUCKET_SECRET=$CORESERVICESDEPLOY_CLINIC_SERVICE_BUCKET_NAME" >> $GITHUB_ENV
-            echo "SSE_KEY_SECRET=$CORESERVICESDEPLOY_CLINIC_SERVICE_SSE_KEY" >> $GITHUB_ENV
-            echo "LAMBDA=clinic-service-lambda" >> $GITHUB_ENV
-          elif [ '${{ matrix.service }}' = 'lambda-authoriser' ]; then
-            echo "ZIP_FILE=lambda-authoriser.zip" >> $GITHUB_ENV
-            echo "BUILD_FOLDER=src/*" >> $GITHUB_ENV
-            echo "BUCKET_SECRET=$CORESERVICESDEPLOY_LAMBDA_AUTHORISER_BUCKET_NAME" >> $GITHUB_ENV
-            echo "SSE_KEY_SECRET=$CORESERVICESDEPLOY_LAMBDA_AUTHORISER_SSE_KEY" >> $GITHUB_ENV
-            echo "LAMBDA=api-gateway-authoriser" >> $GITHUB_ENV
-          fi
+
+      - name: Load environment config
+        run: cat configs/.env.${{ inputs.environment }} >> $GITHUB_ENV
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -92,64 +65,75 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
-        if: ${{ matrix.service != 'lambda-authoriser' }}
         run: pnpm i
-        working-directory: core-services/${{ matrix.service }}
-      - name: Build service
-        if: ${{ matrix.service != 'lambda-authoriser' }}
-        working-directory: core-services/${{ matrix.service }}
-        run: pnpm run build
+
+      - name: Build lambda source code
+        run: BUILD_FOLDER=$BUILD_FOLDER path=${{ matrix.lambda.path }} pnpm run build
+        working-directory: pets-core-services
+
+      - name: Include environment env in deployment package
+        run: cp configs/.env.${{ inputs.environment }} pets-core-services/$BUILD_FOLDER
 
       - name: Create zip
         run: zip -r $ZIP_FILE $BUILD_FOLDER
-        working-directory: core-services/${{ matrix.service }}
-
-      - name: Upload Service to S3
-        working-directory: core-services/${{ matrix.service }}
-        run: aws s3 cp $ZIP_FILE s3://$BUCKET_SECRET --sse aws:kms --sse-kms-key-id $SSE_KEY_SECRET
-
-      - name: Process Swagger file
-        if: ${{ matrix.service != 'lambda-authoriser' }}
-        uses: actions/github-script@v7
-        env:
-          AWS_ACCOUNT_ID: "${{ secrets.AWS_ACCOUNT_ID }}"
-        with:
-          script: |
-            const addIntegrationsToSwagger = require('./.github/scripts/add-integrations-to-swagger.js')
-            addIntegrationsToSwagger('${{ matrix.service }}')
-      - name: Upload Swagger file to S3
-        if: ${{ matrix.service != 'lambda-authoriser' }}
-        working-directory: core-services/${{ matrix.service }}
-        run: aws s3 cp swagger.json s3://$BUCKET_SECRET --sse aws:kms --sse-kms-key-id $SSE_KEY_SECRET
-
-      - name: Copy node modules to node-zip folder for ${{ matrix.service }}
-        run: mkdir -p node-zip/${{ matrix.service }}/nodejs && cp core-services/${{ matrix.service }}/package.json node-zip/${{ matrix.service }}
-      - name: Install prod dependencies
-        working-directory: node-zip/${{ matrix.service }}
-        run: pnpm i --ignore-workspace --prod --shamefully-hoist
-      - name: Copy node modules to nodejs folder
-        run: cp -Lr node-zip/${{ matrix.service }}/node_modules node-zip/${{ matrix.service }}/nodejs
-      - name: Remove .pnpm folder
-        run: rm -rf node-zip/${{ matrix.service }}/nodejs/node_modules/.pnpm
-      - name: Create nodejs zip file
-        working-directory: node-zip/${{ matrix.service }}
-        run: zip -r nodejs.zip nodejs
-      - name: Upload nodejs zip file to S3
-        working-directory: node-zip/${{ matrix.service }}
-        run: aws s3 cp nodejs.zip s3://$BUCKET_SECRET --sse aws:kms --sse-kms-key-id $SSE_KEY_SECRET
+        working-directory: pets-core-services
 
       - name: Update lambda code
-        run: aws lambda update-function-code --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:$LAMBDA --s3-bucket $BUCKET_SECRET --s3-key $ZIP_FILE
-      - name: Create new lambda layer version
-        run: |
-          LAYER_VERSION_INFO=$(aws lambda publish-layer-version \
-            --layer-name ${{ matrix.service }}-layer \
-            --description "Lambda Layer containing node_modules for ${{ matrix.service }}" \
-            --content S3Bucket=$BUCKET_SECRET,S3Key=nodejs.zip \
-            --compatible-runtimes nodejs18.x)
-          echo "LAYER_ARN=$(echo $LAYER_VERSION_INFO | jq -r .LayerVersionArn)" >> $GITHUB_ENV
-      - name: Attach new layer version to lambda function
-        run: |
-          aws lambda update-function-configuration \
-            --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:$LAMBDA \
-            --layers $LAYER_ARN
+        run: aws lambda update-function-code --function-name ${{ matrix.lambda.name }} --zip-file $ZIP_FILE
+        working-directory: pets-core-services
+
+
+      # TODO: Generate the swagger file
+
+      # - name: Upload Service to S3
+      #   working-directory: core-services/${{ matrix.service }}
+      #   run: aws s3 cp $ZIP_FILE s3://$BUCKET_SECRET --sse aws:kms --sse-kms-key-id $SSE_KEY_SECRET
+
+      # - name: Process Swagger file
+      #   if: ${{ matrix.service != 'lambda-authoriser' }}
+      #   uses: actions/github-script@v7
+      #   env:
+      #     AWS_ACCOUNT_ID: "${{ secrets.AWS_ACCOUNT_ID }}"
+      #   with:
+      #     script: |
+      #       const addIntegrationsToSwagger = require('./.github/scripts/add-integrations-to-swagger.js')
+      #       addIntegrationsToSwagger('${{ matrix.service }}')
+
+      # - name: Upload Swagger file to S3
+      #   if: ${{ matrix.service != 'lambda-authoriser' }}
+      #   working-directory: core-services/${{ matrix.service }}
+      #   run: aws s3 cp swagger.json s3://$BUCKET_SECRET --sse aws:kms --sse-kms-key-id $SSE_KEY_SECRET
+
+      # - name: Copy node modules to node-zip folder for ${{ matrix.service }}
+      #   run: mkdir -p node-zip/${{ matrix.service }}/nodejs && cp core-services/${{ matrix.service }}/package.json node-zip/${{ matrix.service }}
+
+      # - name: Install prod dependencies
+      #   working-directory: node-zip/${{ matrix.service }}
+      #   run: pnpm i --ignore-workspace --prod --shamefully-hoist
+
+      # - name: Copy node modules to nodejs folder
+      #   run: cp -Lr node-zip/${{ matrix.service }}/node_modules node-zip/${{ matrix.service }}/nodejs
+      # - name: Remove .pnpm folder
+      #   run: rm -rf node-zip/${{ matrix.service }}/nodejs/node_modules/.pnpm
+      # - name: Create nodejs zip file
+      #   working-directory: node-zip/${{ matrix.service }}
+      #   run: zip -r nodejs.zip nodejs
+      # - name: Upload nodejs zip file to S3
+      #   working-directory: node-zip/${{ matrix.service }}
+      #   run: aws s3 cp nodejs.zip s3://$BUCKET_SECRET --sse aws:kms --sse-kms-key-id $SSE_KEY_SECRET
+
+      # - name: Update lambda code
+      #   run: aws lambda update-function-code --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:$LAMBDA --s3-bucket $BUCKET_SECRET --s3-key $ZIP_FILE
+      # - name: Create new lambda layer version
+      #   run: |
+      #     LAYER_VERSION_INFO=$(aws lambda publish-layer-version \
+      #       --layer-name ${{ matrix.service }}-layer \
+      #       --description "Lambda Layer containing node_modules for ${{ matrix.service }}" \
+      #       --content S3Bucket=$BUCKET_SECRET,S3Key=nodejs.zip \
+      #       --compatible-runtimes nodejs18.x)
+      #     echo "LAYER_ARN=$(echo $LAYER_VERSION_INFO | jq -r .LayerVersionArn)" >> $GITHUB_ENV
+      # - name: Attach new layer version to lambda function
+      #   run: |
+      #     aws lambda update-function-configuration \
+      #       --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:$LAMBDA \
+      #       --layers $LAYER_ARN
