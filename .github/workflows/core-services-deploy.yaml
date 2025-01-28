@@ -76,7 +76,7 @@ jobs:
         working-directory: pets-core-services
 
       - name: Create zip
-        run: zip -r $ZIP_FILE $BUILD_FOLDER
+        run: zip -r $ZIP_FILE $BUILD_FOLDER/*
         working-directory: pets-core-services
 
       - name: Update lambda code
