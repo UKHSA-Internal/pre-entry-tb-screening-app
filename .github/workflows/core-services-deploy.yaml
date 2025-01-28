@@ -21,7 +21,7 @@ jobs:
       - name: Read deployment config
         run: |
           config=$(cat deployment.config.json)
-          echo "::set-output name=config::$config"
+          echo "config=$config" >> $GITHUB_OUTPUT
         shell: bash
         working-directory: pets-core-services
 
@@ -38,7 +38,7 @@ jobs:
 
     strategy:
       matrix:
-        lambda: ${{ fromJSON(needs.fetch-deployment-config.outputs.config) }}
+        lambda: ${{ needs.fetch-deployment-config.outputs.config }}
 
     steps:
       - name: Configure AWS credentials
