@@ -28,7 +28,7 @@ jobs:
       - name: Load Deployment config
         id: deployment-config
         run: |
-          pets_config=$(node pets-config.js)
+          pets_config=$(node pets-config.mjs)
           deploy_config=$(jq -c ".coreServicesDeployConfig" <<< $pets_config)
           echo "deploy_config=$deploy_config" >> $GITHUB_OUTPUT
         shell: bash
