@@ -1,4 +1,4 @@
-import { coreServices } from "../../../pets-config";
+import { coreServices } from "../../../pets-config.mjs";
 import { routes as applicantServiceRoutes } from "../applicant-service/lambdas/applicants";
 import { routes as clinicServiceRoutes } from "../clinic-service/lambdas/clinics";
 import { getEnvironmentVariable } from "../shared/config";

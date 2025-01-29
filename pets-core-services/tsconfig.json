@@ -36,7 +36,7 @@
   ],
   "include": [
     "src",
-    "../pets-config.js"
+    "../pets-config.mjs"
   ],
   "references": []
 }
