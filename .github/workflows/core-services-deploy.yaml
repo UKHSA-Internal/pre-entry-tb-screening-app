@@ -84,57 +84,43 @@ jobs:
         run: aws lambda update-function-code --function-name ${{ matrix.lambda.lambdaName }} --zip-file fileb://$ZIP_FILE
         working-directory: pets-core-services
 
-      # TODO: Generate the swagger file
+  deploy-swagger-spec:
+    name: Generate Swagger spec and deploy to API Gateway
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    needs: deploy-lambdas
 
-      # - name: Upload Service to S3
-      #   working-directory: core-services/${{ matrix.service }}
-      #   run: aws s3 cp $ZIP_FILE s3://$BUCKET_SECRET --sse aws:kms --sse-kms-key-id $SSE_KEY_SECRET
+    env:
+      AWS_ACCOUNT_ID: secrets.AWS_ACCOUNT_ID
+      SPEC_FILE: swagger.json
+      APP_DOMAIN: ${{ vars.APP_DOMAIN }}
 
-      # - name: Process Swagger file
-      #   if: ${{ matrix.service != 'lambda-authoriser' }}
-      #   uses: actions/github-script@v7
-      #   env:
-      #     AWS_ACCOUNT_ID: "${{ secrets.AWS_ACCOUNT_ID }}"
-      #   with:
-      #     script: |
-      #       const addIntegrationsToSwagger = require('./.github/scripts/add-integrations-to-swagger.js')
-      #       addIntegrationsToSwagger('${{ matrix.service }}')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "pnpm"
 
-      # - name: Upload Swagger file to S3
-      #   if: ${{ matrix.service != 'lambda-authoriser' }}
-      #   working-directory: core-services/${{ matrix.service }}
-      #   run: aws s3 cp swagger.json s3://$BUCKET_SECRET --sse aws:kms --sse-kms-key-id $SSE_KEY_SECRET
+      - name: Install dependencies
+        run: pnpm i
 
-      # - name: Copy node modules to node-zip folder for ${{ matrix.service }}
-      #   run: mkdir -p node-zip/${{ matrix.service }}/nodejs && cp core-services/${{ matrix.service }}/package.json node-zip/${{ matrix.service }}
+      - name: Generate Swagger spec
+        run: pnpm tsx index.ts
+        env: # Explicitly specifying envs for visibility
+          SPEC_FILE: env.SPEC_FILE
+          APP_DOMAIN: env.APP_DOMAIN
+        working-directory: pets-core-services/src/swagger-generator
 
-      # - name: Install prod dependencies
-      #   working-directory: node-zip/${{ matrix.service }}
-      #   run: pnpm i --ignore-workspace --prod --shamefully-hoist
 
-      # - name: Copy node modules to nodejs folder
-      #   run: cp -Lr node-zip/${{ matrix.service }}/node_modules node-zip/${{ matrix.service }}/nodejs
-      # - name: Remove .pnpm folder
-      #   run: rm -rf node-zip/${{ matrix.service }}/nodejs/node_modules/.pnpm
-      # - name: Create nodejs zip file
-      #   working-directory: node-zip/${{ matrix.service }}
-      #   run: zip -r nodejs.zip nodejs
-      # - name: Upload nodejs zip file to S3
-      #   working-directory: node-zip/${{ matrix.service }}
-      #   run: aws s3 cp nodejs.zip s3://$BUCKET_SECRET --sse aws:kms --sse-kms-key-id $SSE_KEY_SECRET
+      - name: Upload Spec to S3 # TODO: Delete this step as part of TBBETA-647, Only here to ensure platforms deployment don't overwrite dev deployment
+        run: aws s3 cp $SPEC_FILE s3://aw-pets-euw-dev-s3-clinicservicelambda --sse aws:kms --sse-kms-key-id secrets.SSE_KEY_SECRET
+        working-directory: pets-core-services/src/swagger-generator
 
-      # - name: Update lambda code
-      #   run: aws lambda update-function-code --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:$LAMBDA --s3-bucket $BUCKET_SECRET --s3-key $ZIP_FILE
-      # - name: Create new lambda layer version
-      #   run: |
-      #     LAYER_VERSION_INFO=$(aws lambda publish-layer-version \
-      #       --layer-name ${{ matrix.service }}-layer \
-      #       --description "Lambda Layer containing node_modules for ${{ matrix.service }}" \
-      #       --content S3Bucket=$BUCKET_SECRET,S3Key=nodejs.zip \
-      #       --compatible-runtimes nodejs18.x)
-      #     echo "LAYER_ARN=$(echo $LAYER_VERSION_INFO | jq -r .LayerVersionArn)" >> $GITHUB_ENV
-      # - name: Attach new layer version to lambda function
-      #   run: |
-      #     aws lambda update-function-configuration \
-      #       --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:$LAMBDA \
-      #       --layers $LAYER_ARN
+      - name: Deploy Spec to API Gateway
+        run: aws apigateway put-rest-api --rest-api-id --mode overwrite --body fileb://$SPEC_FILE
+        working-directory: pets-core-services/src/swagger-generator
