@@ -102,7 +102,11 @@ export const writeApiDocumentation = (configs: SwaggerConfig[]) => {
       version: "1.0.0",
       title: `aw-pets-euw-${getEnvironmentVariable("ENVIRONMENT")}-apigateway-coreservices`,
     },
-    servers: [{ url: `${getEnvironmentVariable("APP_DOMAIN")}/api` }],
+    servers: [
+      {
+        url: `${getEnvironmentVariable("APP_DOMAIN")}/${getEnvironmentVariable("API_GATEWAY_STAGE")}`,
+      },
+    ],
   });
   // eslint-disable-next-line no-console
   console.log(JSON.stringify(docs, null, 2));
