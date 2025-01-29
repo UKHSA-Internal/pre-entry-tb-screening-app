@@ -7,6 +7,7 @@ import { Method } from "@middy/http-router";
 import { writeFileSync } from "fs";
 import { z } from "zod";
 
+import { getEnvironmentVariable } from "../shared/config";
 import { SwaggerConfig } from "./types";
 
 extendZodWithOpenApi(z);
@@ -101,10 +102,12 @@ export const writeApiDocumentation = (configs: SwaggerConfig[]) => {
       version: "1.0.0",
       title: "PETS Core Services API",
     },
-    servers: [{ url: "https://golden.xyz/api" }], // TODO: Change to real api,
+    servers: [{ url: `${getEnvironmentVariable("APP_DOMAIN")}/api` }],
   });
+  console.log(JSON.stringify(docs, null, 2));
 
-  writeFileSync(`${__dirname}/openapi-docs.json`, JSON.stringify(docs));
+  const specName = process.env.SPEC_FILE ?? "openapi-docs.json";
+  writeFileSync(`${__dirname}/${specName}`, JSON.stringify(docs));
 
   return registry;
 };
