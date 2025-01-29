@@ -27,9 +27,16 @@
     "inlineSourceMap": true,
     "inlineSources": true,
     "declaration": true,
-    "composite": true
+    "composite": true,
+    "allowJs": true,
+    "emitDeclarationOnly": true,
   },
-  "exclude": ["node_modules"],
-  "include": [ "src" ],
+  "exclude": [
+    "node_modules",
+  ],
+  "include": [
+    "src",
+    "../pets-config.js"
+  ],
   "references": []
 }

@@ -1,4 +1,4 @@
-const coreServices = {
+export const coreServices = {
   clinicService: {
     lambdaName: "clinic-service-lambda",
     path: "src/clinic-service/lambdas/clinics.ts", // relative to pets-core-services folder
@@ -16,6 +16,5 @@ const config = {
   coreServicesDeployConfig,
 };
 
-// export
-module.exports = config;
 console.log(JSON.stringify(config, null, 2)); // exporting to stdout
+export default config; // export for JS callers
