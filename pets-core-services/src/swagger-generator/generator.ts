@@ -104,6 +104,7 @@ export const writeApiDocumentation = (configs: SwaggerConfig[]) => {
     },
     servers: [{ url: `${getEnvironmentVariable("APP_DOMAIN")}/api` }],
   });
+  // eslint-disable-next-line no-console
   console.log(JSON.stringify(docs, null, 2));
 
   const specName = process.env.SPEC_FILE ?? "openapi-docs.json";
