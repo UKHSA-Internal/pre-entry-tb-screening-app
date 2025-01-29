@@ -37,7 +37,7 @@ jobs:
         id: deployment-config
         run: |
           deploy_config=$(pnpm tsx deployment-config.ts)
-          echo "deploy_config=$deploy_config" >> $GITHUB_OUTPUT
+          echo "deploy_config=$(jq -cj . <<< $deploy_config)" >> $GITHUB_OUTPUT
         working-directory: pets-core-services
 
   deploy-lambdas:
