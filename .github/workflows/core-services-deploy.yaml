@@ -81,7 +81,7 @@ jobs:
         working-directory: pets-core-services
 
       - name: Update lambda code
-        run: aws lambda update-function-code --function-name ${{ matrix.lambda.name }} --zip-file fileb://$ZIP_FILE
+        run: aws lambda update-function-code --function-name ${{ matrix.lambda.lambdaName }} --zip-file fileb://$ZIP_FILE
         working-directory: pets-core-services
 
       # TODO: Generate the swagger file
