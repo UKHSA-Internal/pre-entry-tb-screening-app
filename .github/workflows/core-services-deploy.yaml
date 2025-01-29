@@ -9,7 +9,7 @@ on:
 
 jobs:
   load-deployment-config:
-    name: Fetch deployment config for all lambdas
+    name: Load deployment config for Core Services Lambda
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
 
@@ -24,8 +24,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
-          cache: "pnpm"
-
 
       - name: Load Deployment config
         id: deployment-config
