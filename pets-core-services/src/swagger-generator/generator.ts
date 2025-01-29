@@ -100,7 +100,7 @@ export const writeApiDocumentation = (configs: SwaggerConfig[]) => {
     openapi: "3.0.0",
     info: {
       version: "1.0.0",
-      title: "PETS Core Services API",
+      title: `aw-pets-euw-${getEnvironmentVariable("ENVIRONMENT")}-apigateway-coreservices`,
     },
     servers: [{ url: `${getEnvironmentVariable("APP_DOMAIN")}/api` }],
   });

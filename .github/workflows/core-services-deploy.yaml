@@ -25,13 +25,18 @@ jobs:
         with:
           node-version: 18.x
 
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Load environment config
+        run: cat configs/.env.${{ inputs.environment }} >> $GITHUB_ENV
+
       - name: Load Deployment config
         id: deployment-config
         run: |
-          pets_config=$(node pets-config.mjs)
-          deploy_config=$(jq -c ".coreServicesDeployConfig" <<< $pets_config)
+          deploy_config=$(pnpm tsx deployment-config.ts)
           echo "deploy_config=$deploy_config" >> $GITHUB_OUTPUT
-        shell: bash
+        working-directory: pets-core-services
 
   deploy-lambdas:
     name: Build, package & deploy lambda
@@ -72,6 +77,9 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
+      - name: Load environment config
+        run: cat configs/.env.${{ inputs.environment }} >> $GITHUB_ENV
+
       - name: Build lambda source code
         run: pnpm build-lambda ${{ matrix.lambda.path }} --outfile=$BUILD_FOLDER/index.js
         working-directory: pets-core-services
@@ -80,6 +88,7 @@ jobs:
         run: zip -r -j $ZIP_FILE $BUILD_FOLDER/*
         working-directory: pets-core-services
 
+      # TODO: Uploading to S3
       - name: Update lambda code
         run: aws lambda update-function-code --function-name ${{ matrix.lambda.lambdaName }} --zip-file fileb://$ZIP_FILE
         working-directory: pets-core-services
@@ -109,6 +118,9 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
+      - name: Load environment config
+        run: cat configs/.env.${{ inputs.environment }} >> $GITHUB_ENV
+
       - name: Generate Swagger spec
         run: pnpm tsx src/swagger-generator/index.ts
         working-directory: pets-core-services
@@ -132,4 +144,4 @@ jobs:
         working-directory: pets-core-services
 
       - name: Update API Gateway Stage
-        run: aws apigateway create-deployment --rest-api-id ${{ vars.API_GATEWAY_ID }} --stage-name ${{ inputs.environment }}
+        run: aws apigateway create-deployment --rest-api-id ${{ vars.API_GATEWAY_ID }} --stage-name ${{ inputs.environment }} # TODO: Likely to change to API
