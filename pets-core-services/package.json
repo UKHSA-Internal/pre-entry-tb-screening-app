@@ -22,7 +22,7 @@
     "vitest": "^2.1.5"
   },
   "scripts": {
-    "build-lambda": "esbuild --bundle '--external:@aws-sdk/*' --platform=node --target=node18 --sourcemap=external --format=cjs",
+    "build-lambda": "esbuild --bundle '--external:@aws-sdk/*' --platform=node --target=node18 --format=cjs",
     "build-watch": ""
   }
 }
