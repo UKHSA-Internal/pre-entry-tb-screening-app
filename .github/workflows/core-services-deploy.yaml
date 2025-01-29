@@ -112,8 +112,8 @@ jobs:
       - name: Generate Swagger spec
         run: pnpm tsx src/swagger-generator/index.ts
         env: # Explicitly specifying envs for visibility
-          SPEC_FILE: env.SPEC_FILE
-          APP_DOMAIN: env.APP_DOMAIN
+          SPEC_FILE: ${{ env.SPEC_FILE }}
+          APP_DOMAIN: ${{ env.APP_DOMAIN }}
         working-directory: pets-core-services
 
 
