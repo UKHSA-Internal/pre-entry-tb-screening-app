@@ -124,9 +124,9 @@ jobs:
           role-session-name: PETS-Core-Services-Deploy
 
       - name: Upload Spec to S3 # TODO: Delete this step as part of TBBETA-647, Only here to ensure platforms deployment don't overwrite dev deployment
-        run: aws s3 cp $SPEC_FILE s3://aw-pets-euw-dev-s3-clinicservicelambda --sse aws:kms --sse-kms-key-id secrets.SSE_KEY_SECRET
+        run: aws s3 cp $SPEC_FILE s3://aw-pets-euw-dev-s3-clinicservicelambda --sse aws:kms --sse-kms-key-id ${{ secrets.SSE_KEY_SECRET }}
         working-directory: pets-core-services
 
       - name: Deploy Spec to API Gateway
-        run: aws apigateway put-rest-api --rest-api-id --mode overwrite --body fileb://$SPEC_FILE
+        run: aws apigateway put-rest-api --rest-api-id ${{ vars.API_GATEWAY_ID }} --mode overwrite --body fileb://$SPEC_FILE
         working-directory: pets-core-services
