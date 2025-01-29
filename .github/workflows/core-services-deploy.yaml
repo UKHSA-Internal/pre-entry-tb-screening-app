@@ -130,3 +130,6 @@ jobs:
       - name: Deploy Spec to API Gateway
         run: aws apigateway put-rest-api --rest-api-id ${{ vars.API_GATEWAY_ID }} --mode overwrite --body fileb://$SPEC_FILE
         working-directory: pets-core-services
+
+      - name: Update API Gateway Stage
+        run: aws apigateway create-deployment --rest-api-id ${{ vars.API_GATEWAY_ID }} --stage-name ${{ inputs.environment }}
