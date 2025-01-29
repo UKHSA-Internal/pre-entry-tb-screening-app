@@ -107,7 +107,7 @@ export const writeApiDocumentation = (configs: SwaggerConfig[]) => {
   console.log(JSON.stringify(docs, null, 2));
 
   const specName = process.env.SPEC_FILE ?? "openapi-docs.json";
-  writeFileSync(`${__dirname}/${specName}`, JSON.stringify(docs));
+  writeFileSync(`./${specName}`, JSON.stringify(docs));
 
   return registry;
 };
