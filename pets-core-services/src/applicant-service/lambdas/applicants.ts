@@ -14,14 +14,14 @@ extendZodWithOpenApi(z);
 export const routes: PetsRoute[] = [
   {
     method: "POST",
-    path: "/v1/applicant/register",
+    path: "/applicant/register",
     handler: postApplicantHandler,
     requestBodySchema: ApplicantSchema.openapi({ description: "Details about an Applicant" }),
     responseSchema: ApplicantSchema.openapi({ description: "Saved Applicant Details" }),
   },
   {
     method: "GET",
-    path: "/v1/applicant",
+    path: "/applicant",
     handler: getApplicantHandler,
     headers: {
       passportNumber: z.string({ description: "Passport Number of Applicant" }),

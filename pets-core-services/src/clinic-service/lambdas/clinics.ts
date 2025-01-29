@@ -16,21 +16,21 @@ extendZodWithOpenApi(z);
 export const routes: PetsRoute[] = [
   {
     method: "POST",
-    path: "/v1/clinic/{clinicId}",
+    path: "/clinic/{clinicId}",
     handler: createClinicHandler,
     requestBodySchema: ClinicSchema.openapi({ description: "Clinic details to be saved in DB" }),
     responseSchema: ClinicSchema.openapi({ description: "Saved Clinic Details" }),
   },
   {
     method: "GET",
-    path: "/v1/clinic/{clinicId}",
+    path: "/clinic/{clinicId}",
     handler: getClinicHandler,
     responseSchema: ClinicSchema.openapi({ description: "Clinic Details" }),
   },
 
   {
     method: "GET",
-    path: "/v1/clinic",
+    path: "/clinic",
     handler: fetchClinicsHandler,
     responseSchema: z
       .array(ClinicSchema)
