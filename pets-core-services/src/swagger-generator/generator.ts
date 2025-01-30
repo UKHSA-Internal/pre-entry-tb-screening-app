@@ -8,6 +8,7 @@ import { writeFileSync } from "fs";
 import { z } from "zod";
 
 import { getEnvironmentVariable } from "../shared/config";
+import { errorResponses } from "./error-response";
 import { SwaggerConfig } from "./types";
 
 extendZodWithOpenApi(z);
@@ -74,6 +75,7 @@ const registerSwaggerConfig = (registry: OpenAPIRegistry, config: SwaggerConfig)
             },
           },
         },
+        ...errorResponses,
       },
       "x-amazon-apigateway-integration": {
         type: "aws_proxy",
