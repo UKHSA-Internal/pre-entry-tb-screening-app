@@ -52,26 +52,29 @@ jobs:
           node-version: 18.x
           cache: "pnpm"
 
-      - name: Cache Cypress binary
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/Cypress
-          key: cypress-binary-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
-          restore-keys: |
-            cypress-binary-${{ runner.os }}-
+      - name: Install dependencies
+        run: pnpm i
 
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: pets-ui/node_modules
-          key: deps-${{ runner.os }}-${{ hashFiles('pets-ui/pnpm-lock.yaml') }}
+      # - name: Cache Cypress binary
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: ~/.cache/Cypress
+      #     key: cypress-binary-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
+      #     restore-keys: |
+      #       cypress-binary-${{ runner.os }}-
 
-      - name: Install Dependencies
-        run: |
-          cd pets-ui
-          pnpm install
-          pnpm exec cypress install --force
-          pnpm exec cypress verify
+      # - name: Cache dependencies
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: pets-ui/node_modules
+      #     key: deps-${{ runner.os }}-${{ hashFiles('pets-ui/pnpm-lock.yaml') }}
+
+      # - name: Install Dependencies
+      #   run: |
+      #     cd pets-ui
+      #     pnpm install
+      #     pnpm exec cypress install --force
+      #     pnpm exec cypress verify
 
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
