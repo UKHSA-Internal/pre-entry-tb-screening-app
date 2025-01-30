@@ -150,7 +150,7 @@ const ApplicantForm = () => {
             errorMessage={errors?.fullName?.message ?? ""}
             formValue="fullName"
             required="Enter the applicant's full name."
-            patternValue={formRegex.lettersAndSpaces}
+            patternValue={formRegex.fullName}
             patternError="Full name must contain only letters and spaces."
             defaultValue={applicantData.fullName}
           />
