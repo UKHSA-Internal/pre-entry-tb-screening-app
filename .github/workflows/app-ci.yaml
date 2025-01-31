@@ -67,6 +67,7 @@ jobs:
       - name: Install Cypress Binary when missing
         if: steps.cache-cypress-binary.outputs.cache-hit != 'true'
         run: |
+          pnpm install
           pnpm exec cypress install --force
           pnpm exec cypress verify
         working-directory: pets-ui
