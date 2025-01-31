@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "amazonwebservices.aws-toolkit-vscode",
+        "davidanson.vscode-markdownlint",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "42Crunch.vscode-openapi",
+        "eamodio.gitlens",
+        "ms-vsliveshare.vsliveshare",
+    ]
+}

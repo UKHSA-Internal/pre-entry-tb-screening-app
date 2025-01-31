@@ -1039,10 +1039,11 @@ const formRegex = {
   "lettersAndNumbers": /^[A-Za-z0-9]+$/,
   "lettersAndSpaces": /^[A-Za-z\s]+$/,
   "lettersNumbersAndSpaces": /^[A-Za-z0-9\s]+$/,
-  "lettersSpacesAndPunctuation": /^[A-Za-z\s,-/()]+$/,
-  "lettersNumbersSpacesAndPunctuation": /^[A-Za-z0-9\s,-/()]+$/,
+  "lettersSpacesAndPunctuation": /^[A-Za-z\s,-/()']+$/,
+  "lettersNumbersSpacesAndPunctuation": /^[A-Za-z0-9\s,-/()']+$/,
   "numbersOnly": /^\d+$/,
   "emailAddress": /^[\w\-.]+@([\w-]+\.)+[\w-]{2,}$/,
+  "fullName": /^[A-Za-z\s-'.]+$/,
 }
 
 const dateValidationMessages = {
