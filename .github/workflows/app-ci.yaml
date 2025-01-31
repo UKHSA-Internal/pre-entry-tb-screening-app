@@ -9,6 +9,9 @@ jobs:
   test-and-linting:
     name: Run unit tests, linting & security checks
     runs-on: ubuntu-latest
+    env:
+      CYPRESS_INSTALL_BINARY: 0
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,6 +24,7 @@ jobs:
           cache: "pnpm"
       - name: Install dependencies
         run: pnpm i
+
       - name: Run unit tests
         run: pnpm run test --testTimeout=10000
         working-directory: pets-ui
@@ -54,27 +58,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm i
-
-      # - name: Cache Cypress binary
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: ~/.cache/Cypress
-      #     key: cypress-binary-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
-      #     restore-keys: |
-      #       cypress-binary-${{ runner.os }}-
-
-      # - name: Cache dependencies
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: pets-ui/node_modules
-      #     key: deps-${{ runner.os }}-${{ hashFiles('pets-ui/pnpm-lock.yaml') }}
-
-      # - name: Install Dependencies
-      #   run: |
-      #     cd pets-ui
-      #     pnpm install
-      #     pnpm exec cypress install --force
-      #     pnpm exec cypress verify
 
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
