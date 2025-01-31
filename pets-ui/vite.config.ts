@@ -12,9 +12,13 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        // silenceDeprecations: ["import"],
-        api: "modern-compiler",
+        quietDeps: true,
       },
+      // {
+      //   // silenceDeprecations: ["import"],
+      //   o
+      //   api: "modern-compiler",
+      // },
     },
   },
   test: {
