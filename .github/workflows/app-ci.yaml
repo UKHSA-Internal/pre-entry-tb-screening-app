@@ -46,7 +46,7 @@ jobs:
       matrix:
         browser: [chrome, firefox, edge]
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -55,6 +55,8 @@ jobs:
         with:
           node-version: 18.x
           cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm i
 
       - name: Cache Cypress binary
         id: cache-cypress-binary
@@ -63,11 +65,9 @@ jobs:
           path: ~/.cache/Cypress
           key: cypress-binary-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
 
-
-      - name: Install Cypress Binary when missing
+      - name: Install Cypress Binary
         if: steps.cache-cypress-binary.outputs.cache-hit != 'true'
         run: |
-          pnpm install
           pnpm exec cypress install --force
           pnpm exec cypress verify
         working-directory: pets-ui
