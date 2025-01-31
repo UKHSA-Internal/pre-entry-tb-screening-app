@@ -177,7 +177,7 @@ const ApplicantForm = () => {
             options={countryList}
             errorMessage={errors?.countryOfNationality?.message ?? ""}
             formValue="countryOfNationality"
-            required="Select a country."
+            required="Select the country of nationality."
             defaultValue={applicantData.countryOfNationality}
           />
         </div>
@@ -229,7 +229,7 @@ const ApplicantForm = () => {
             options={countryList}
             errorMessage={errors?.countryOfIssue?.message ?? ""}
             formValue="countryOfIssue"
-            required="Select a country."
+            required="Select the country of issue."
             defaultValue={applicantData.countryOfIssue}
           />
         </div>
@@ -358,7 +358,7 @@ const ApplicantForm = () => {
             options={countryList}
             errorMessage={errors?.country?.message ?? ""}
             formValue="country"
-            required="Select a country."
+            required="Enter the country of the applicant's home address."
             defaultValue={applicantData.country}
           />
         </div>
