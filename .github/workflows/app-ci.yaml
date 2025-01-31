@@ -62,7 +62,7 @@ jobs:
 
       - name: Install Cypress Binary when missing
         working-directory: pets-ui
-        run: pnpm i cypress
+        run: DEBUG=cypress:cli* pnpm cypress install
 
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
