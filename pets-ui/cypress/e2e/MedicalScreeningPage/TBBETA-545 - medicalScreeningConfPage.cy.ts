@@ -13,10 +13,6 @@ const visaType = [
   "Working Holiday Maker",
   "Government Sponsored",
 ];
-const urlFragment = [
-    "#age",
-    
-];
 /*As a Clinic user who has submitted all mandatory data in the Medical screening page
 I want to see a confirmation page
 So that I can confirm that the data entered is saved.
