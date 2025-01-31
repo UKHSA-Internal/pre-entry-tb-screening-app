@@ -52,17 +52,17 @@ jobs:
           node-version: 18.x
           cache: "pnpm"
 
-      - name: Cache Cypress binary
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/Cypress
-          key: cypress-binary-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
-          restore-keys: |
-            cypress-binary-${{ runner.os }}-
+      # - name: Cache Cypress binary
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: ~/.cache/Cypress
+      #     key: cypress-binary-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
+      #     restore-keys: |
+      #       cypress-binary-${{ runner.os }}-
 
       - name: Install Cypress Binary when missing
         working-directory: pets-ui
-        run: DEBUG=cypress:cli* pnpm i cypress
+        run: pnpm i cypress
 
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
