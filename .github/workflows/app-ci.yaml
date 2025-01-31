@@ -45,6 +45,9 @@ jobs:
     strategy:
       matrix:
         browser: [chrome, firefox, edge]
+    env:
+      CYPRESS_INSTALL_BINARY: 0
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
