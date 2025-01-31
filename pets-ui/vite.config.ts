@@ -9,24 +9,25 @@ export default defineConfig({
     host: true,
     port: 3000,
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        silenceDeprecations: ["import"],
+      },
+    },
+  },
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: './vitest.setup.ts',
-    include: [
-      ...defaultInclude,
-      "**/*.intTest.?(c|m)[jt]s?(x)"
-    ],
+    environment: "jsdom",
+    setupFiles: "./vitest.setup.ts",
+    include: [...defaultInclude, "**/*.intTest.?(c|m)[jt]s?(x)"],
     coverage: {
-      include: [
-        '**/src/components/**',
-        '**/src/sections/**',
-      ],
+      include: ["**/src/components/**", "**/src/sections/**"],
       exclude: [
         ...coverageConfigDefaults.exclude,
-        '**/src/components/devtools**',
+        "**/src/components/devtools**",
       ],
-      reporter: ['text', 'html', 'clover', 'json', 'lcov'],
+      reporter: ["text", "html", "clover", "json", "lcov"],
     },
   },
 });
