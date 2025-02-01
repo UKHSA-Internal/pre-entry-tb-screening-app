@@ -1,19 +1,4 @@
-import { countryList } from "../../../src/utils/helpers";
-
-// Random number generator
-const randomElement = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
-const randomCountry = randomElement(countryList);
-const countryName = randomCountry?.value;
-const visaType = [
-  "Family Reunion",
-  "Settlement and Dependents",
-  "Students",
-  "Work",
-  "Working Holiday Maker",
-  "Government Sponsored",
-];
 // Validate the error messages above each text box are correct
-const errorMessages = ["Select a visa type."];
 
 describe("Validate the error message is displayed when Visa type is NOT selected", () => {
   beforeEach(() => {

@@ -17,9 +17,7 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 });
 
 export const handlers = [
-  http.get("http://localhost:3005/dev/applicant-details", async ({ request }) => {
-    const newPost = await request.json();
-    console.log(newPost);
+  http.get("http://localhost:3005/dev/applicant-details", ({ request }) => {
     const url = new URL(request.url);
     const passportNumber = url.searchParams.get("passportNumber");
     const countryOfIssue = url.searchParams.get("countryOfIssue");

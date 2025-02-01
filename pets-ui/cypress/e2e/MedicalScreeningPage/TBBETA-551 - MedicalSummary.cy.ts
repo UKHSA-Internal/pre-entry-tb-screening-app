@@ -1,25 +1,3 @@
-import { countryList } from "../../../src/utils/helpers";
-
-// Random number generator
-const randomElement = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
-const randomCountry = randomElement(countryList);
-const countryName = randomCountry?.value;
-const visaType = [
-  "Family Reunion",
-  "Settlement and Dependents",
-  "Students",
-  "Work",
-  "Working Holiday Maker",
-  "Government Sponsored",
-];
-const urlFragment = ["#age"];
-/*Scenario:As a Clinic user who has entered all mandatory medical screening data
-    I want to see a summary screen of the data entered
-So that I can review/change data before submitting to the system.*/
-
-// Validate the error messages above each text box are correct
-const errorMessages = ["Enter applicant's age in years."];
-
 describe("Validate that applicant form is prefilled when user navigates back to applicant information page from applicant summary page", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/medical-screening");

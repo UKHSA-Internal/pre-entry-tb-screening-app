@@ -1,22 +1,3 @@
-import { countryList } from "../../../src/utils/helpers";
-
-// Random number generator
-const randomElement = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
-const randomCountry = randomElement(countryList);
-const countryName = randomCountry?.value;
-const visaType = [
-  "Family Reunion",
-  "Settlement and Dependents",
-  "Students",
-  "Work",
-  "Working Holiday Maker",
-  "Government Sponsored",
-];
-//Scenario:Test to verify error message is displayed where TB Symptoms checked 'Yes' and no symptom is selected. Validation for this test will be
-//implemented post mvp
-// Validate the error messages above each text box are correct
-const errorMessages = ["Select a symptom."];
-
 describe("Validate error message is displayed where 'YES' is selected for TB Symptoms but no symptoms is selected", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/medical-screening");

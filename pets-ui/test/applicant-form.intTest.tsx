@@ -19,9 +19,7 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 });
 
 export const handlers = [
-  http.post("http://localhost:3005/dev/register-applicant", async ({ request }) => {
-    const newPost = await request.json();
-    console.log(newPost);
+  http.post("http://localhost:3005/dev/register-applicant", () => {
     return HttpResponse.json({}, { status: 201 });
   }),
 ];

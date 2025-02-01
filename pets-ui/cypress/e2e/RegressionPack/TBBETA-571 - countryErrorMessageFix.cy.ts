@@ -1,10 +1,3 @@
-import { countryList } from "../../../src/utils/helpers";
-
-// Random number generator
-const randomElement = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
-const randomCountry = randomElement(countryList);
-const countryName = randomCountry?.value;
-
 //Scenario; Test Submission with valid data for all fields (Happy Path Testing)
 
 describe("Error messages displayed where country of nationality and issue is missing", () => {

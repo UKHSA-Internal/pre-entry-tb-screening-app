@@ -12,7 +12,6 @@ const MedicalScreeningReview = () => {
   const navigate = useNavigate();
 
   const handleSubmit = () => {
-    console.log(medicalData);
     // TO DO: post medicalData
     navigate("/medical-confirmation");
   };

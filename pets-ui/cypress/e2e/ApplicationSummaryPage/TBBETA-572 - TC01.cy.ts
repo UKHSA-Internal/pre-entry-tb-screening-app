@@ -1,7 +1,7 @@
 import { countryList } from "../../../src/utils/helpers";
+import { randomElement } from "../../support/test-utils";
 
 // Random number generator
-const randomElement = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
 const randomCountry = randomElement(countryList);
 const countryName = randomCountry?.value;
 
@@ -74,7 +74,8 @@ describe("Validate that applicant form is prefilled when user navigates back to 
       Postcode: "#postcode",
     };
 
-    const fieldNames = Object.keys(urlMap);
+    type UrlMapKeys = keyof typeof urlMap;
+    const fieldNames = Object.keys(urlMap) as UrlMapKeys[];
     const summaryList = fieldNames[Math.floor(Math.random() * fieldNames.length)];
     const expectedUrl = urlMap[summaryList];
 

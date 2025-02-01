@@ -1,21 +1,3 @@
-import { countryList } from "../../../src/utils/helpers";
-
-// Random number generator
-const randomElement = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
-const randomCountry = randomElement(countryList);
-const countryName = randomCountry?.value;
-const visaType = [
-  "Family Reunion",
-  "Settlement and Dependents",
-  "Students",
-  "Work",
-  "Working Holiday Maker",
-  "Government Sponsored",
-];
-//Scenario:Test to validate that when user selects 'No' to TB Symptoms and clicks save after entering mandatory fields, it should redirect to Medical Summary Page
-// Validate the error messages above each text box are correct
-const errorMessages = ["Select a symptom."];
-
 describe("Validate nagivates to Medical Summary Page where 'NO' is selected for TB Symptoms", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/medical-screening");

@@ -6,5 +6,8 @@
       "types": ["cypress", "node"],
       "composite": true
     },
-    "include": ["**/*.ts"]
+    "include": [
+      "**/*.ts",
+      "../src/utils/countryList.ts"
+    ]
   }

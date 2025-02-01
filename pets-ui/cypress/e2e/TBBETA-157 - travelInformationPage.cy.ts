@@ -1,9 +1,5 @@
-import { countryList } from "../../src/utils/helpers";
+import { randomElement } from "../support/test-utils";
 
-// Random number generator
-const randomElement = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
-const randomCountry = randomElement(countryList);
-const countryName = randomCountry?.value;
 const visaType = [
   "Family Reunion",
   "Settlement and Dependents",
@@ -13,6 +9,7 @@ const visaType = [
   "Government Sponsored",
 ];
 const selectedVisa = randomElement(visaType);
+
 describe("Validate that the continue to medical screening button navigates to the medical screening page", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/travel-details");

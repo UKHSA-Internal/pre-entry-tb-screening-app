@@ -10,24 +10,14 @@ const ApplicantReview = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    try {
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      await fetch("http://localhost:3005/dev/register-applicant", {
-        method: "POST",
-        body: JSON.stringify(applicantData),
-        headers: myHeaders,
-      });
-      navigate("/applicant-confirmation");
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Error submitting POST request:");
-        console.error(error?.message);
-      } else {
-        console.error("Error submitting POST request: unknown error type");
-        console.error(error);
-      }
-    }
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    await fetch("http://localhost:3005/dev/register-applicant", {
+      method: "POST",
+      body: JSON.stringify(applicantData),
+      headers: myHeaders,
+    });
+    navigate("/applicant-confirmation");
   };
 
   return (

@@ -57,21 +57,11 @@ const MedicalScreeningForm = () => {
   };
 
   const onSubmit: SubmitHandler<MedicalScreeningType> = (data) => {
-    try {
-      updateReduxStore(data);
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      // TO DO: post medical screening info using application service
-      navigate("/medical-summary");
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Error submitting POST request:");
-        console.error(error?.message);
-      } else {
-        console.error("Error submitting POST request: unknown error type");
-        console.error(error);
-      }
-    }
+    updateReduxStore(data);
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    // TO DO: post medical screening info using application service
+    navigate("/medical-summary");
   };
 
   const errorsToShow = Object.keys(errors);
