@@ -1,6 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '@redux/store';
-
+import { RootState } from "@redux/store";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: TravelDetailsType = {
   visaType: "",
@@ -13,7 +12,7 @@ const initialState: TravelDetailsType = {
 };
 
 export const travelSlice = createSlice({
-  name: 'travelDetails',
+  name: "travelDetails",
   initialState,
   reducers: {
     setVisaType: (state, action: PayloadAction<string>) => {
@@ -38,17 +37,16 @@ export const travelSlice = createSlice({
       state.ukEmail = action.payload;
     },
     clearTravelDetails: (state) => {
-      state.visaType = '';
-      state.applicantUkAddress1 = '';
-      state.applicantUkAddress2 = '';
-      state.townOrCity = '';
-      state.postcode = '';
-      state.ukMobileNumber = '';
-      state.ukEmail = '';
+      state.visaType = "";
+      state.applicantUkAddress1 = "";
+      state.applicantUkAddress2 = "";
+      state.townOrCity = "";
+      state.postcode = "";
+      state.ukMobileNumber = "";
+      state.ukEmail = "";
     },
   },
 });
-
 
 export const {
   setVisaType,
@@ -63,4 +61,4 @@ export const {
 
 export const travelReducer = travelSlice.reducer;
 
-export const selectTravel = (state: RootState) => state.travel
+export const selectTravel = (state: RootState) => state.travel;

@@ -1,8 +1,7 @@
 import { countryList } from "../../../src/utils/helpers";
 
 // Random number generator
-const randomElement = <T>(arr: T[]): T =>
-  arr[Math.floor(Math.random() * arr.length)];
+const randomElement = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
 const randomCountry = randomElement(countryList);
 const countryName = randomCountry?.value;
 const visaType = [
@@ -69,8 +68,8 @@ describe("Validate nagivates to Medical Summary Page where 'NO' is selected for 
 
     // Click the submit button
     cy.get('button[type="submit"]').click();
-    
+
     //Validate that the page navigates to the summary page
-    cy.url().should('include','http://localhost:3000/medical-summary');
+    cy.url().should("include", "http://localhost:3000/medical-summary");
   });
 });

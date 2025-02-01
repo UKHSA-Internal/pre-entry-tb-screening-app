@@ -1,8 +1,7 @@
 import { countryList } from "../../src/utils/helpers";
 
 // Random number generator
-const randomElement = <T>(arr: T[]): T =>
-  arr[Math.floor(Math.random() * arr.length)];
+const randomElement = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
 const randomCountry = randomElement(countryList);
 const countryName = randomCountry?.value;
 const visaType = [
@@ -43,10 +42,10 @@ describe("Validate formed is prefilled with data when user navigates back to the
     cy.url().should("include", "http://localhost:3000/travel-summary");
 
     //Click on a Change link
-   cy.get(".govuk-link").then((links) => {
-   const randomIndex = Math.floor(Math.random() * links.length);
-    const randomLink = links[randomIndex];
-     cy.wrap(randomLink).click();
+    cy.get(".govuk-link").then((links) => {
+      const randomIndex = Math.floor(Math.random() * links.length);
+      const randomLink = links[randomIndex];
+      cy.wrap(randomLink).click();
 
       // Validate that the page navigates to the prefilled travel information page
       cy.url().should("include", "http://localhost:3000/travel-details");

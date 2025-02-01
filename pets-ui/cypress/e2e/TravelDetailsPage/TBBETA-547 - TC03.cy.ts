@@ -1,8 +1,7 @@
 import { countryList } from "../../../src/utils/helpers";
 
 // Random number generator
-const randomElement = <T>(arr: T[]): T =>
-  arr[Math.floor(Math.random() * arr.length)];
+const randomElement = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
 const randomCountry = randomElement(countryList);
 const countryName = randomCountry?.value;
 const visaType = [
@@ -14,9 +13,7 @@ const visaType = [
   "Government Sponsored",
 ];
 // Validate the error messages above each text box are correct
-const errorMessages = [
-  "Enter address line 1, typically the building and street.",
-];
+const errorMessages = ["Enter address line 1, typically the building and street."];
 
 describe("Validate the error message is displayed when address field does not have a value", () => {
   beforeEach(() => {

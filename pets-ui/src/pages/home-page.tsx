@@ -1,20 +1,30 @@
-import { Helmet } from 'react-helmet-async';
-import Header from "@/components/header/header";
+import "./home-page.scss";
+
+import { Helmet } from "react-helmet-async";
+
 import Footer from "@/components/footer/footer";
-import StartButton from '@/components/startButton/startButton';
-import "./home-page.scss"
+import Header from "@/components/header/header";
+import StartButton from "@/components/startButton/startButton";
 
 export default function HomePage() {
   return (
     <body className="govuk-template__body">
-    <Helmet>
-      <title>UK Pre-Entry Health Screening</title>
-    </Helmet>
-    <Header/>
+      <Helmet>
+        <title>UK Pre-Entry Health Screening</title>
+      </Helmet>
+      <Header />
       <div className="govuk-width-container">
         <main className="govuk-main-wrapper">
           <h1 className="govuk-heading-l">Complete a UK visa applicant&apos;s TB screening</h1>
-          <p className="govuk-body">This service is for authorised staff to enter TB screening information for UK visa applicants. For advice and guidance on the process, visa applicants should visit <a href='https://www.gov.uk/tb-test-visa'>Tuberculosis tests for visa applicants: Check if you need a TB test for your visa application</a>.</p>
+          <p className="govuk-body">
+            This service is for authorised staff to enter TB screening information for UK visa
+            applicants. For advice and guidance on the process, visa applicants should visit{" "}
+            <a href="https://www.gov.uk/tb-test-visa">
+              Tuberculosis tests for visa applicants: Check if you need a TB test for your visa
+              application
+            </a>
+            .
+          </p>
           <p className="govuk-body">Use this service to:</p>
           <ul className="govuk-body">
             <li>enter the applicant details</li>
@@ -30,12 +40,14 @@ export default function HomePage() {
             <li>UK address</li>
             <li>UK visa type</li>
           </ul>
-          <p className="govuk-body">If you&apos;re a clinician you can also sign in to resume a medical screening case.</p>
+          <p className="govuk-body">
+            If you&apos;re a clinician you can also sign in to resume a medical screening case.
+          </p>
           <p className="govuk-body">Use the username and password you were assigned to sign in.</p>
-          <StartButton id="sign-in" text="Sign In" href='' handleClick={() => {}}/>
+          <StartButton id="sign-in" text="Sign In" href="" handleClick={() => {}} />
         </main>
       </div>
-      <Footer/>
+      <Footer />
     </body>
   );
 }

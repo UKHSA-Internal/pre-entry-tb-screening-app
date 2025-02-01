@@ -1,8 +1,7 @@
 import { countryList } from "../../../src/utils/helpers";
 
 // Random number generator
-const randomElement = <T>(arr: T[]): T =>
-  arr[Math.floor(Math.random() * arr.length)];
+const randomElement = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
 const randomCountry = randomElement(countryList);
 const countryName = randomCountry?.value;
 
@@ -15,7 +14,6 @@ describe("Validate Applicant name and address fields accept punctuations and spe
     }).as("formSubmit");
   });
   it("Should not throw error messages when special characters and punctuations are entered in name and address fields", () => {
-  
     // Enter VALID data for 'Full name'
     cy.get('input[name="fullName"]').type("John O'Sullivan - Hantan");
 
@@ -55,6 +53,5 @@ describe("Validate Applicant name and address fields accept punctuations and spe
 
     // Click the submit button
     cy.get('button[type="submit"]').click();
-   
-    });
   });
+});
