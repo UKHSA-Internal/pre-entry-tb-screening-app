@@ -1,4 +1,5 @@
 // Validate the error messages above each text box are correct
+const errorMessages = ["Select a visa type."];
 
 describe("Validate the error message is displayed when Visa type is NOT selected", () => {
   beforeEach(() => {
