@@ -9,8 +9,8 @@
       "isolatedModules": true,
       "noImplicitAny": true,
       "noImplicitThis": true,
-      "module": "NodeNext",
-      "moduleResolution": "nodenext"
+      "module": "ESNext",
+      "moduleResolution": "bundler"
     },
     "include": [
       "**/*.ts",
