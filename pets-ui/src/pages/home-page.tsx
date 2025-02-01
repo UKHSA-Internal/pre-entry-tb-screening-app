@@ -23,7 +23,7 @@ export default function HomePage() {
               Tuberculosis tests for visa applicants: Check if you need a TB test for your visa
               application
             </a>
-            .
+            {/* */}.
           </p>
           <p className="govuk-body">Use this service to:</p>
           <ul className="govuk-body">

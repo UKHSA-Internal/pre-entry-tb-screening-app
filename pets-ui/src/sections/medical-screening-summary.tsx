@@ -104,9 +104,8 @@ const MedicalScreeningReview = () => {
               style={{ color: "#1d70b8" }}
               to="/medical-screening#under-eleven-conditions-detail"
             >
-              Change
+              Change{" "}
               <span className="govuk-visually-hidden">
-                {" "}
                 additional details of applicant history if under 11
               </span>
             </Link>
@@ -150,7 +149,7 @@ const MedicalScreeningReview = () => {
               style={{ color: "#1d70b8" }}
               to="/medical-screening#close-contact-with-tb"
             >
-              Change
+              Change{" "}
               <span className="govuk-visually-hidden">
                 applicant&apos;s close contact with TB in the past year
               </span>
@@ -169,7 +168,7 @@ const MedicalScreeningReview = () => {
               style={{ color: "#1d70b8" }}
               to="/medical-screening#close-contact-with-tb-detail"
             >
-              Change
+              Change{" "}
               <span className="govuk-visually-hidden">
                 details of applicant&apos;s close contact with TB in the past year
               </span>
