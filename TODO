@@ -1,0 +1,186 @@
+# TODO
+
+- Ensure existing cypress tests is running and passing
+
+```js
+
+
+
+
+```
+
+- Linting fixes across all(Different PR)
+
+```js
+
+
+
+
+
+
+```
+
+- Local Dev Successfully (Different PR)
+- Run local dev successfully(Localstack), api docs included also
+- Deploy to  Deploy to localstack with cdk hot reloading
+
+```js
+
+
+
+
+
+
+```
+
+- Modify README.md of Pets-Core structure
+- Test coverage resolve(Green Pipeline at the end, then adding all status check to branch protection), include sonar-project.properties check, so it's checking well
+- Enforce lint across all ui and core services and cdk infra(Pipeline)
+- Add Commenting to Deployment Pipeline after it's done
+- Passing environment data to lambda deployment
+- GCP cloudfunction talks
+- Julio's Assignment
+- Sonar cloud error about js void
+
+```js
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+- New url routes needed by authoriser
+- Enforce linting boundaries
+- Mentuion PK and SK to Tomiwa  ✅
+- Ensure test is running, vitest fine(Next PR)
+- Delete everything serveless
+- Serverless autoswagger thingy
+- Swagger UI
+- Swagger Deployment to API gateway  ✅
+- Rough Order of things: Localstack Setup, New folder structure with all lambdas together, Swagger thingy
+  - serverless-dynamodb # localstack plus terraform
+  - serverless-plugin-tracing # getting removed
+  - serverless-auto-swagger # Zod Astea Solutions
+  - serverless-offline # localstack plus terraform
+  - serverless-offline-aws-eventbridge # localstack plus terraform
+  dynamodb:
+ local:
+   params:
+     region: localhost
+     endpoint: <http://127.0.0.1:8007>
+   table: pets-local-clinics
+ local-global:
+   params:
+     region: localhost
+     endpoint: <http://127.0.0.1:8007>
+   table: pets-local-global-clinics
+ remote:
+   params: {}
+   table: pets-clinics
+
+functions:
+
+- getPetsClinics:
+      method: GET
+      path: /clinics
+      proxy: null
+      function: getPetsClinics
+- getPetsClinic:
+      method: GET
+      path: /clinics/{+proxy}
+      proxy: :petsClinicId
+      function: getPetsClinic
+
+serverless:
+  basePath: /${BRANCH}
+  port: 3004
+
+  params:
+  default:
+    tableName: "pets-local-clinics"
+
+- Run all three services plus FE successfully with makefile or something similar
+- Write schema for all services existing  ✅
+- Remove Jest and use Vite everywhere
+import type { Config } from 'jest';
+
+const { pathsToModuleNameMapper } = require('ts-jest');
+const { compilerOptions } = require('./tsconfig');
+const paths = pathsToModuleNameMapper(compilerOptions.paths, { prefix: `<rootDir>${compilerOptions.baseUrl}`});
+
+const config: Config = {
+  collectCoverage: true,
+  coverageDirectory: "coverage",
+  coverageProvider: "v8",
+  testEnvironment: "node",
+  testMatch: ["**/*.unitTest.ts"],
+  moduleFileExtensions: ["js", "ts", "json"],
+  moduleNameMapper: paths,
+};
+
+export default config;
+
+- Seed the DB for Clinic service
+
+- Deploy to Apigateway  ✅
+- Bundle with esbuild  ✅
+    "build": "tspc -b tsconfig.json && pnpm run build:copy",
+    "build:copy": "find src -type f \\( -name \"*.yml\" -or -name \"*.json\" \\) | cpio -pdm .build && find test -type f \\( -name \"*.yml\" -or -name \"*.json\" \\)  | cpio -pdm .build",
+    "zip": "zip -r test-service.zip .build"
+
+- Rename Config to config  ✅
+- Skip aws-sdk in s3 build but include source map surely  ✅
+
+- Make sure everywhere is getting linted including in pipeline  ✅
+- Sonar cloud testcoverage errors
+- Add precommit to add PR number to commit message, also enforce correct branch number
+
+- Write an Article about deploying React app to cloudfront securely
+- Write an Article for using CDK and Localstack for local development, migrating from serverless.
+- Delete Swagger Spec Update Process
+- Switch from access key to github oauth
+
+## Done
+
+- Move clinic service to New folder structure, Add Middy at this point also✅
+- Add linter and anything else needed ✅
+- Esbuild it ✅
+- Move all remaining services to New folder structure, ensure concurrent running of all dev is present at this point ✅
+
+- Needed VsCode extension✅
+- Upload screenshot of Errors to artifact ✅
+- Automatically switch to node 18✅
+- Update ReadMe on the go✅
+- Swagger Definition across all services. - Add Middy and Zod docs, Open Api aws extensions ✅
+- Deploy to AWS, including pipeline changes,. Let them know that they don't need separate bucket for Lambda code ✅
+- Verify it works locally with Swagger Docs on FE all endpoint included ✅
+- Rename new folder structure to Core Service ✅
+
+## Standup Update
+
+- Completed the ticket ACs for 601
+- Found a couple of vulnerabilities that were otherwise missed.
+- Resolved them straightaway as I had enough time.
+
+## Weekly Note
+
+- Migrated client to Localstack from serverless to avoid vendor lock-in and future licensing fee
+  - Gist Rebecca
+
+- Finding that yml is actually the best config out there despite we shitting on it 😂
+- Actually rethinking the approach to using pure js
