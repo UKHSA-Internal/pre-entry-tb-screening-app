@@ -127,7 +127,7 @@ jobs:
         run: cat configs/.env.${{ inputs.environment }} >> $GITHUB_ENV
 
       - name: Generate Swagger spec
-        run: pnpm tsx src/swagger-generator/index.ts
+        run: pnpm generate:swagger-doc
         working-directory: pets-core-services
 
       - name: Configure AWS credentials
