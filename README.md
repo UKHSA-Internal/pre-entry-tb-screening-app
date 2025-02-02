@@ -30,15 +30,22 @@ This is currently available on [confluence](https://confluence.collab.test-and-t
  ┣ 📂src       # Source Code
  ┣ 📂test      # Integration Tests
 
- 📦core-services  # Core Services for the Backend
- ┣ 📂applicant-service   # Everything pertaining to Applicant
- ┣ 📂application-service      # Everything Application-related
- ┣ 📂clinic-service       # Everything Clinic-related
- ┣ 📂lambda-authoriser       # Authentication Service
+ 📦pets-core-services             # Core Services for the Backend
+ ┣ 📂applicant-service            # Everything pertaining to Applicant
+    ┣ 📂lambdas                   # Lambda code for Applicant service lambda
+ ┣ 📂application-service          # Everything Application-related
+    ┣ 📂lambdas                   # Lambda code for Application service lambda
+ ┣ 📂clinic-service               # Everything Clinic-related
+    ┣ 📂lambdas                   # Lambda code for Clinic service lambda
+ ┣ 📂lambda-authoriser            # Authentication Service
+    ┣ 📂lambdas                   # Lambda code for Authoriser lambda
+
+
+ 📦pets-local-infra             # Definition of lambdas, dynamodb, apigateway etc needed to emulate AWS services for local development
+ ┣ 📜lib/local-infra-stack.ts   # Local aws services definition
 
  📦Config                     # Project Configs
  ┣ 📜.env                     # configs for local environment
- ┣ 📜.env.local               # developer-specific env for local environment, please don't commit
  ┣ 📜.env.dev                 # configs for a Dev deployment
  ┣ 📜.env.test                # configs for a Test deployment
  ┣ 📜.env.test.local          # configs for unit and integration tests
@@ -74,32 +81,18 @@ Additional configs specific to a core service are defined in their directory
 npm install -g pnpm@9.15.4
 ```
 
-- Java 23
+- Docker
+  - Docker installation [guide](https://docs.docker.com/engine/install/)
 
-  - `Jabba` installation [guide](https://github.com/shyiko/jabba?tab=readme-ov-file#installation)
-
-  - In a new terminal, install Java 23
-
-    ```sh
-       jabba --version
-       jabba use openjdk@1.23.0
-       java --version
-    ```
-
-  - Add Java version to Path
-    - Open your terminal's configuration file:
-      - Bash: `~/.bashrc`
-      - Zsh: `~/.zshrc`
-      - PowerShell: Run `$PROFILE` to get the filepath.
-    - Add jabba use openjdk@1.23.0 to the configuration file.
-    - Run `java --version` in a new terminal to verify it returns `openjdk@1.23.0`.
+```sh
+npm install -g pnpm@9.15.4
+```
 
 - Git Secrets
   - Install
     - Linux: `apt-get install git-secrets`
     - Mac:  `brew install git-secrets`
     - Windows: `git secrets --install -f` # Use git terminal
-  -
 
 ### Installation
 
@@ -135,8 +128,10 @@ npm install -g pnpm@9.15.4
 1. Start up development environment
 
    ```sh
-   pnpm dev
+   pnpm start
    ```
+
+    Please note this would take a bit of time(roughly 45 seconds)
 
 2. Navigate to the React app on <http://localhost:3000/>
 
