@@ -10,6 +10,7 @@ import pluginCypress from "eslint-plugin-cypress/flat";
 
 export default tseslint.config(
   { ignores: ["core-services/**"] },
+  { ignores: ["pets-core-services/src/**/*.js"] },
   {
     files: ["**/*.{ts,tsx}"],
     extends: [js.configs.recommended, ...tseslint.configs.recommendedTypeChecked],
