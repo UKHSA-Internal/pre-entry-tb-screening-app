@@ -5,10 +5,19 @@ import { coverageConfigDefaults, defaultInclude, defineConfig } from "vitest/con
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
+  clearScreen: false,
   server: {
+    open: true,
     host: true,
     port: 3000,
+    proxy: {
+      "/api/": {
+        target: `https://${process.env.API_GATEWAY_NAME}.execute-api.localhost.localstack.cloud:4566/${process.env.API_GATEWAY_STAGE}/`,
+        changeOrigin: true,
+      },
+    },
   },
+  envDir: "../configs", // Automatically loads the .env in this directory.
   test: {
     globals: true,
     environment: "jsdom",
