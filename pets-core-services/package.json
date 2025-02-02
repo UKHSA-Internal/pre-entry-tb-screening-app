@@ -23,8 +23,6 @@
   },
   "scripts": {
     "generate:swagger-doc": "pnpm tsx src/swagger-generator/index.ts",
-    "build-lambda": "esbuild --bundle '--external:@aws-sdk/*' --platform=node --target=node18 --format=cjs",
-    "build-watch": "",
     "lint": "eslint ."
   }
 }

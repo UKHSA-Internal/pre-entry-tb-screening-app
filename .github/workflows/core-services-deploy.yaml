@@ -83,7 +83,7 @@ jobs:
         run: cat configs/.env.${{ inputs.environment }} >> $GITHUB_ENV
 
       - name: Build lambda source code
-        run: pnpm build-lambda ${{ matrix.lambda.path }} --outfile=$BUILD_FOLDER/index.js
+        run: node esbuild.config.js ${{ matrix.lambda.path }} $BUILD_FOLDER/index.js
         working-directory: pets-core-services
 
       - name: Create zip

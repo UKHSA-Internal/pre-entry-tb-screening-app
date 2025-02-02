@@ -8,6 +8,7 @@
     "watch": "tsc -w",
     "build": "tsc",
     "cdk": "cdklocal",
+    "build:core-services": "node esbuild.local.config.mjs",
     "bootstrap": "cdklocal bootstrap",
     "deploy:local": "cdklocal deploy LocalInfrastructureStack --require-approval never"
   },

@@ -6,7 +6,7 @@
     "preinstall": "npx only-allow pnpm",
     "security-checks": "git secrets --scan",
     "prepare": "husky",
-    "docker:start": "docker compose up -d --wait"
+    "start": "node start.mjs"
   },
   "main": "index.js",
   "repository": "git@github.com:UKHSA-Internal/pre-entry-tb-screening-app.git",

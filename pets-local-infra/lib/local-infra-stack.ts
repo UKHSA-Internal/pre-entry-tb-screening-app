@@ -2,21 +2,23 @@ import * as cdk from "aws-cdk-lib";
 import { Tags } from "aws-cdk-lib";
 import { ApiDefinition, SpecRestApi } from "aws-cdk-lib/aws-apigateway";
 import { AttributeType, Table, TableProps } from "aws-cdk-lib/aws-dynamodb";
-import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
+import { Code, Function, Runtime } from "aws-cdk-lib/aws-lambda";
+import { NodejsFunctionProps } from "aws-cdk-lib/aws-lambda-nodejs";
+import { Bucket } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
-import { join } from "path";
+import { basename, dirname, join } from "path";
 
 export class LocalInfrastructureStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     /** Lambda Functions for different services */
-    new NodejsFunction(this, "clinic-service-lambda", {
+    new HotReloadedLambda(this, "clinic-service-lambda", {
       entry: join(__dirname, "../../pets-core-services/src/clinic-service/lambdas/clinics.ts"),
       functionName: process.env.CLINIC_SERVICE_LAMBDA_NAME,
     });
 
-    new NodejsFunction(this, "applicant-service-lambda", {
+    new HotReloadedLambda(this, "applicant-service-lambda", {
       entry: join(__dirname, "../../pets-core-services/src/clinic-service/lambdas/clinics.ts"),
       functionName: process.env.APPLICANT_SERVICE_LAMBDA_NAME,
     });
@@ -48,6 +50,27 @@ export class LocalInfrastructureStack extends cdk.Stack {
     new Table(this, "applicant-service-table", {
       ...tableProps,
       tableName: process.env.APPLICANT_SERVICE_LAMBDA_NAME,
+    });
+  }
+}
+
+class HotReloadedLambda extends Function {
+  constructor(scope: Construct, id: string, props: NodejsFunctionProps) {
+    const hotReloadBucket = Bucket.fromBucketName(scope, `HotReloadingBucket-${id}`, "hot-reload");
+
+    if (!props.entry) throw new Error("Entry point is required");
+
+    const fileName = basename(props.entry, ".ts");
+    const codePath = dirname(props.entry);
+
+    super(scope, id, {
+      functionName: props.functionName,
+      code: Code.fromBucket(hotReloadBucket, codePath),
+      runtime: Runtime.NODEJS_18_X,
+      handler: `${fileName}.handler`,
+      environment: {
+        NODE_EXTRA_CA_CERTS: "/var/runtime/ca-cert.pem",
+      },
     });
   }
 }
