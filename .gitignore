@@ -40,3 +40,7 @@ pets.code-workspace
 
 # aws
 *.pkg
+
+# local development files
+.localstack-data
+openapi-docs.json
