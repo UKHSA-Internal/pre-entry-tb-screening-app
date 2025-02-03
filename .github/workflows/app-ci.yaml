@@ -30,6 +30,11 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
+      - name: Create a placeholder Swagger Docs file
+        run: |
+          echo '{"comment": "placeholder to be replaced at core-services build"}' > openapi-docs.json
+        working-directory: pets-core-services
+
       - name: Lint typescript code
         run: pnpm lint
         working-directory: pets-ui
@@ -77,6 +82,11 @@ jobs:
           pnpm exec cypress install --force
           pnpm exec cypress verify
         working-directory: pets-ui
+
+      - name: Create a placeholder Swagger Docs file
+        run: |
+          echo '{"comment": "placeholder to be replaced at core-services build"}' > openapi-docs.json
+        working-directory: pets-core-services
 
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
