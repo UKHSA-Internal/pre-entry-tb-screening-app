@@ -70,17 +70,20 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Add Comment to PR
+      - name: Deployment details
+        uses: actions/github-script@v7
         if: env.PR_NUMBER != ''
-        run: |
+        with:
+          script: |
             github.rest.issues.createComment({
-              issue_number: env.PR_NUMBER,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `🚀 Environment Deployed for ${{ env.ENVIRONMENT }}
-                - React app: ${{ vars.APP_DOMAIN }}
-                - API Docs: ${{ vars.APP_DOMAIN }}/api-docs
-              `
+            issue_number: ${{ env.PR_NUMBER }},
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `🚀 Environment Deployed for ${{ env.ENVIRONMENT }}
+
+              - React app: https://${{ steps.get_deployment_url.outputs.url }}
+              - API Docs: https://${{ steps.get_deployment_url.outputs.url }}/api-docs
+            `
             })
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
