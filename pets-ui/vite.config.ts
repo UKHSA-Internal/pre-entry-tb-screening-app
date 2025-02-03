@@ -9,6 +9,20 @@ export default defineConfig({
     host: true,
     port: 3000,
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        quietDeps: true,
+        silenceDeprecations: [
+          "import",
+          "mixed-decls",
+          "global-builtin",
+          "slash-div",
+          "legacy-js-api",
+        ],
+      },
+    },
+  },
   test: {
     globals: true,
     environment: "jsdom",
