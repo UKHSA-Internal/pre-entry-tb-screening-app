@@ -26,7 +26,7 @@ function App() {
         <Route path="/travel-details" element={<TravelDetailsPage />} />
         <Route path="/travel-summary" element={<TravelSummaryPage />} />
         <Route path="/travel-confirmation" element={<TravelConfirmation />} />
-        <Route path="/api-docs" element={<ApiDocs />} />
+        <Route path="/api-docs/" element={<ApiDocs />} />
       </Routes>
     </Router>
   );
