@@ -71,8 +71,8 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             body: `🚀 Environment Deployed for ${{ env.ENVIRONMENT }}
-              - React app: https://${{ vars.APP_DOMAIN }}
-              - API Docs: https://${{ vars.APP_DOMAIN }}/api-docs
+              - React app: ${{ vars.APP_DOMAIN }}
+              - API Docs: ${{ vars.APP_DOMAIN }}/api-docs
             `
             })
 
