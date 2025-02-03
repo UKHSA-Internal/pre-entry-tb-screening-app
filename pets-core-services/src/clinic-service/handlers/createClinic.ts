@@ -1,7 +1,7 @@
-import { APIGatewayEvent } from "aws-lambda";
+import { APIGatewayProxyEvent } from "aws-lambda";
 
 // eslint-disable-next-line @typescript-eslint/require-await
-export const createClinicHandler = async (event: APIGatewayEvent) => {
+export const createClinicHandler = async (event: APIGatewayProxyEvent) => {
   // eslint-disable-next-line no-console
   console.log(event, "Invokation got here");
 
