@@ -1,6 +1,7 @@
 import { execSync, spawn } from "child_process";
 import * as dotenv from "dotenv";
 import { resolve } from "path";
+import fs from "fs";
 
 function runCommand(cmd) {
   try {
@@ -30,7 +31,10 @@ dotenv.config({
   path: resolve(process.cwd(), "configs/.env"),
 });
 
-runCommand("pnpm rimraf pets-core-services/openapi-docs.json");
+fs.writeFileSync(
+  "pets-core-services/openapi-docs.json",
+  '{"comment": "placeholder to be replaced at core-services build"}',
+);
 runCommand("pnpm rimraf pets-local-infra/cdk.out");
 runCommand("docker compose down");
 runCommand("pnpm --filter pets-core-services generate:swagger-doc"); // Generate swagger file for backend
