@@ -131,6 +131,7 @@ npm install -g pnpm@9.15.4
    pnpm start
    ```
 
+    Please ensure Docker is running before you run this command.
     Please note this would take a bit of time(roughly 45 seconds)
 
 2. Navigate to the React app on <http://localhost:3000/>
@@ -157,10 +158,11 @@ To run end to end tests, please visit the pets UI [command section](./pets-ui/RE
 
 #### UI
 
-- To deploy the UI to a target environment {target-env}:
-  - At the side panel, Find on the workflow with name `Pets UI Deployment - {target-env}` and click on it.
-  - At top right corner, find the `Run Workflow` Button.
-  - Start the deployment workflow by clicking on the button and providing your branch name. Please note that this would overwrite any existing deployment at the target environment.
+To deploy the UI to a target environment {target-env}:
+
+- At the side panel, Find on the workflow with name `Pets UI Deployment - {target-env}` and click on it.
+- At top right corner, find the `Run Workflow` Button.
+- Start the deployment workflow by clicking on the button and providing your branch name. Please note that this would overwrite any existing deployment at the target environment.
 
 #### Core Services
 
