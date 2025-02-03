@@ -23,6 +23,10 @@ jobs:
         with:
           node-version: 18.x
           cache: "pnpm"
+
+      - name: Load environment config
+        run: cat configs/.env.${{ inputs.environment }} >> $GITHUB_ENV
+
       - name: Install dependencies
         run: pnpm i
 
