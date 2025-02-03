@@ -163,6 +163,7 @@ To deploy the UI to a target environment {target-env}:
 - At the side panel, Find on the workflow with name `Pets UI Deployment - {target-env}` and click on it.
 - At top right corner, find the `Run Workflow` Button.
 - Start the deployment workflow by clicking on the button and providing your branch name. Please note that this would overwrite any existing deployment at the target environment.
+- If a PR is already raised for your branch, after successful deployment, you should receive an email with the deployment url
 
 #### Core Services
 
