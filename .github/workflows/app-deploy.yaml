@@ -61,3 +61,26 @@ jobs:
       - name: Upload App to S3
         working-directory: pets-ui/dist
         run: aws s3 sync . s3://$APPDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $APPDEPLOY_SSE_KEY
+
+      - name: Get Pull Request Number
+        id: get_pr
+        run: |
+          PR_NUMBER=$(gh pr list --head ${{ github.ref_name }} --state open --json number --jq '.[0].number')
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add Comment to PR
+        if: env.PR_NUMBER != ''
+        run: |
+            github.rest.issues.createComment({
+              issue_number: env.PR_NUMBER,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🚀 Environment Deployed for ${{ env.ENVIRONMENT }}
+                - React app: ${{ vars.APP_DOMAIN }}
+                - API Docs: ${{ vars.APP_DOMAIN }}/api-docs
+              `
+            })
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
