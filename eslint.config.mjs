@@ -9,8 +9,7 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import pluginCypress from "eslint-plugin-cypress/flat";
 
 export default tseslint.config(
-  { ignores: ["core-services/**"] },
-  { ignores: ["pets-core-services/src/**/*.js"] },
+  { ignores: ["core-services/**", "pets-core-services/src/**/*.js", "pets-ui/dist/**"] },
   {
     files: ["**/*.{ts,tsx}"],
     extends: [js.configs.recommended, ...tseslint.configs.recommendedTypeChecked],
