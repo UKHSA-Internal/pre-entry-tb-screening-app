@@ -61,3 +61,18 @@ jobs:
       - name: Upload App to S3
         working-directory: pets-ui/dist
         run: aws s3 sync . s3://$APPDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id $APPDEPLOY_SSE_KEY
+
+      - name: Deployment details
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `🚀 Environment Deployed for ${{ env.ENVIRONMENT }}
+              - React app: https://${{ vars.APP_DOMAIN }}
+              - API Docs: https://${{ vars.APP_DOMAIN }}/api-docs
+            `
+            })
+
