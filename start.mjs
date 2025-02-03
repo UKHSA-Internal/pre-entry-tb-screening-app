@@ -39,10 +39,3 @@ runAsyncCommand("pnpm --filter pets-local-infra build:core-services");
 runCommand("pnpm --filter pets-local-infra bootstrap");
 runCommand("pnpm --filter pets-local-infra deploy:local"); // Deploy to localstack
 runAsyncCommand("pnpm --filter pets-ui dev"); // Starts Vite Server
-
-// TODO: Remove the List below
-// Generate swagger file
-// Docker
-// Cdk deploy
-// Potentially esbuild listeners
-// Front end dev
