@@ -46,7 +46,7 @@ jobs:
             --stage-name ${{ env.API_GATEWAY_STAGE }} \
             --export-type oas30 \
             --region eu-west-2 \
-            --output-file ./pets-core-services/openapi-docs.json
+            ./pets-core-services/openapi-docs.json
 
       - name: Build application
         run: pnpm run build
