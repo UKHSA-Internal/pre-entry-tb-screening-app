@@ -20,6 +20,20 @@ export default defineConfig({
     },
   },
   envDir: "../configs", // Automatically loads the .env in this directory.
+  css: {
+    preprocessorOptions: {
+      scss: {
+        quietDeps: true,
+        silenceDeprecations: [
+          "import",
+          "mixed-decls",
+          "global-builtin",
+          "slash-div",
+          "legacy-js-api",
+        ],
+      },
+    },
+  },
   test: {
     globals: true,
     environment: "jsdom",
