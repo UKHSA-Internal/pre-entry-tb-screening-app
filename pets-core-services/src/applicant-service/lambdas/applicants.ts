@@ -1,9 +1,11 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import middy from "@middy/core";
 import httpRouterHandler from "@middy/http-router";
-import { APIGatewayEvent } from "aws-lambda";
+import { APIGatewayProxyEvent } from "aws-lambda";
 import { z } from "zod";
 
+import { createHttpResponse } from "../../shared/http-response";
+import { validateRequest } from "../../shared/middlewares/validation";
 import { PetsRoute } from "../../shared/types";
 import { getApplicantHandler } from "../handlers/getApplicant";
 import { postApplicantHandler } from "../handlers/postApplicant";
@@ -24,8 +26,8 @@ export const routes: PetsRoute[] = [
     path: "/applicant",
     handler: getApplicantHandler,
     headers: {
-      passportNumber: z.string({ description: "Passport Number of Applicant" }),
-      countryOfIssue: z.string({ description: "Country of Issue" }),
+      passportnumber: z.string({ description: "Passport Number of Applicant" }),
+      countryofissue: z.string({ description: "Country of Issue" }),
     },
     responseSchema: ApplicantSchema.openapi("Applicant", {
       description: "Details about an Applicant",
@@ -33,4 +35,25 @@ export const routes: PetsRoute[] = [
   },
 ];
 
-export const handler = middy<APIGatewayEvent>().handler(httpRouterHandler(routes));
+const notFoundResponse = ({ method, path }: { method: string; path: string }) => {
+  // eslint-disable-next-line no-console
+  console.log(method, path, "\n\n\n\n");
+  return createHttpResponse(404, "Not Found");
+};
+
+const middyRoutes = routes.map((route) => ({
+  ...route,
+  handler: middy()
+    .use(
+      validateRequest({
+        requestSchema: route.requestBodySchema,
+        queryStringParametersSchema: route.queryParams,
+        headersSchema: route.headers,
+      }),
+    )
+    .handler(route.handler),
+}));
+
+export const handler = middy<APIGatewayProxyEvent>().handler(
+  httpRouterHandler({ routes: middyRoutes, notFoundResponse }),
+);

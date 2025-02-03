@@ -1,9 +1,28 @@
-import { APIGatewayEvent } from "aws-lambda";
+import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
+import { APIGatewayProxyEvent } from "aws-lambda";
 
-// eslint-disable-next-line @typescript-eslint/require-await
-export const postApplicantHandler = async (event: APIGatewayEvent) => {
-  // eslint-disable-next-line no-console
-  console.log(event, "Invokation got here");
+import { createHttpResponse } from "../../shared/http-response";
+import { Applicant } from "../models/applicant";
 
-  return { statusCode: 200, body: "Hello World Post Applicant" };
+export const postApplicantHandler = async (event: APIGatewayProxyEvent) => {
+  try {
+    // eslint-disable-next-line no-console
+    console.log(event, "Invokation got here");
+
+    const { parsedBody } = event;
+
+    try {
+      const applicant = new Applicant(parsedBody);
+      await applicant.save();
+    } catch (error) {
+      // logger.error(error, "Error saving Applicant details");
+      if (error instanceof ConditionalCheckFailedException)
+        return createHttpResponse(400, { message: "Applicant Details already saved" });
+      throw error;
+    }
+    return createHttpResponse(200, { message: "Applicant Details successfully saved" });
+  } catch (err: unknown) {
+    console.error(err);
+    return createHttpResponse(500, { message: "Something went wrong" });
+  }
 };

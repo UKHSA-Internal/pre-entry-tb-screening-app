@@ -1,9 +1,22 @@
-import { APIGatewayEvent } from "aws-lambda";
+import { APIGatewayProxyEvent } from "aws-lambda";
 
-// eslint-disable-next-line @typescript-eslint/require-await
-export const getApplicantHandler = async (event: APIGatewayEvent) => {
+import { createHttpResponse } from "../../shared/http-response";
+import { Applicant } from "../models/applicant";
+
+export const getApplicantHandler = async (event: APIGatewayProxyEvent) => {
   // eslint-disable-next-line no-console
   console.log(event, "Invokation got here");
 
-  return { statusCode: 200, body: "Hello World Applicant" };
+  const { parsedHeaders } = event;
+
+  const applicant = await Applicant.getByPassportNumber(
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+    parsedHeaders.countryofissue,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+    parsedHeaders.passportnumber,
+  );
+
+  if (!applicant) return createHttpResponse(404, { message: "Applicant does not exist" });
+
+  return createHttpResponse(200, { ...applicant.data });
 };
