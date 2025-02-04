@@ -40,7 +40,7 @@ export default defineConfig({
     setupFiles: "./vitest.setup.ts",
     include: [...defaultInclude, "**/*.intTest.?(c|m)[jt]s?(x)"],
     coverage: {
-      include: ["**/src/components/**", "**/src/sections/**"],
+      include: ["**/src/components/**", "**/src/sections/**", "**/src/pages/**"],
       exclude: [...coverageConfigDefaults.exclude, "**/src/components/devtools**"],
       reporter: ["text", "html", "clover", "json", "lcov"],
     },
