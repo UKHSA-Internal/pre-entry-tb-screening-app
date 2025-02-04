@@ -11,6 +11,7 @@ import MedicalConfirmation from './pages/medical-screening-confirmation';
 import TravelDetailsPage from './pages/travel-details';
 import TravelSummaryPage from './pages/travel-summary';
 import TravelConfirmation from './pages/travel-confirmation';
+import ApplicantSearchNotFound from './pages/applicant-search-notfound';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/contact" element={<ContactDetailsPage />} />
         <Route path="/applicant-search" element={<ApplicantSearchPage />} />
+        <Route path="/applicant-search/404" element={<ApplicantSearchNotFound />} />
         <Route path="/applicant-summary" element={<ApplicantSummaryPage />} />
         <Route path="/applicant-confirmation" element={<ApplicantConfirmation />} />
         <Route path="/medical-screening" element={<MedicalScreeningPage />} />

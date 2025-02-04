@@ -28,9 +28,20 @@ const ApplicantSearchForm = () => {
           method: "GET",
           headers: myHeaders,
       })
-      .then(() => {
+      .then((res) => {
         // TO DO: set state here to retrieve on confirmation page
-        navigate("/applicant-results")
+        if(res.status === 200){
+          navigate("/applicant-results")
+        
+        } else if(res.status === 404) {
+          navigate("/applicant-search/404", { state: { passportNumber: data.passportNumber } })
+        
+        } else {
+          //error or other codes
+          console.error(`Got unexpected status code ${res.status}`);
+        }
+
+
       })
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -40,6 +51,8 @@ const ApplicantSearchForm = () => {
         console.error("Error submitting POST request: unknown error type")
         console.error(error);
       }
+    } finally {
+      navigate("/applicant-search/404", { state: { passportNumber: data.passportNumber } })
     }
   }
 
