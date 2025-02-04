@@ -1,10 +1,5 @@
-import { countryList } from "../../../src/utils/helpers";
+import { randomElement } from "../../support/test-utils";
 
-// Random number generator
-const randomElement = <T>(arr: T[]): T =>
-  arr[Math.floor(Math.random() * arr.length)];
-const randomCountry = randomElement(countryList);
-const countryName = randomCountry?.value;
 const visaType = [
   "Family Reunion",
   "Settlement and Dependents",
@@ -15,6 +10,7 @@ const visaType = [
 ];
 // Validate the error messages above each text box are correct
 const errorMessages = ["Enter full UK postcode."];
+
 describe("Validate the error message is displayed when postcode is NOT entered", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/travel-details");

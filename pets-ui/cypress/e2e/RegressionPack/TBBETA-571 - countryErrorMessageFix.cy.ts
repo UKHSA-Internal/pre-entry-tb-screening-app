@@ -1,10 +1,3 @@
-import { countryList } from "../../../src/utils/helpers";
-
-// Random number generator
-const randomElement = <T>(arr: T[]): T =>arr[Math.floor(Math.random() * arr.length)];
-const randomCountry = randomElement(countryList);
-const countryName = randomCountry?.value;
-
 //Scenario; Test Submission with valid data for all fields (Happy Path Testing)
 
 describe("Error messages displayed where country of nationality and issue is missing", () => {
@@ -53,16 +46,12 @@ describe("Error messages displayed where country of nationality and issue is mis
     // Click the submit button
     cy.get('button[type="submit"]').click();
 
-     // Validate the error messages above each text box are correct
-     const errorMessages = [
-        "Select the country of nationality.",
-        "Select the country of issue.",
-        
-      ];
-      // Validate the summary box appears at the top contains the correct error messages
-      cy.get(".govuk-error-summary").should("be.visible");
-      errorMessages.forEach((error) => {
-        cy.get(".govuk-error-summary").should("contain.text", error);
-      });
+    // Validate the error messages above each text box are correct
+    const errorMessages = ["Select the country of nationality.", "Select the country of issue."];
+    // Validate the summary box appears at the top contains the correct error messages
+    cy.get(".govuk-error-summary").should("be.visible");
+    errorMessages.forEach((error) => {
+      cy.get(".govuk-error-summary").should("contain.text", error);
     });
   });
+});

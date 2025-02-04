@@ -1,9 +1,4 @@
 packages:
   # include packages in subfolders (e.g. apps/ and packages/)
   - "pets-ui/**"
-  - 'core-services/applicant-service/**'
-  - 'core-services/clinic-service/**'
-  - 'core-services/lambda-authoriser/**'
   - 'pets-core-services/**'
-  # if required, exclude some directories
-  - '!**/app/pets-ui/**'

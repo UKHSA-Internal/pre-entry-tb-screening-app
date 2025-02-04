@@ -1,6 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '@redux/store';
-
+import { RootState } from "@redux/store";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: MedicalScreeningType = {
   age: "",
@@ -19,7 +18,7 @@ const initialState: MedicalScreeningType = {
 };
 
 export const medicalScreeningSlice = createSlice({
-  name: 'medicalScreeningDetails',
+  name: "medicalScreeningDetails",
   initialState,
   reducers: {
     setAge: (state, action: PayloadAction<string>) => {
@@ -29,13 +28,13 @@ export const medicalScreeningSlice = createSlice({
       state.tbSymptoms = action.payload;
     },
     setTbSymptomsList: (state, action: PayloadAction<string[] | false>) => {
-      state.tbSymptomsList = action.payload ? [...action.payload] : []
+      state.tbSymptomsList = action.payload ? [...action.payload] : [];
     },
     setOtherSymptomsDetail: (state, action: PayloadAction<string>) => {
       state.otherSymptomsDetail = action.payload;
     },
     setUnderElevenConditions: (state, action: PayloadAction<string[] | false>) => {
-      state.underElevenConditions = action.payload ? [...action.payload] : []
+      state.underElevenConditions = action.payload ? [...action.payload] : [];
     },
     setUnderElevenConditionsDetail: (state, action: PayloadAction<string>) => {
       state.underElevenConditionsDetail = action.payload;
@@ -79,7 +78,6 @@ export const medicalScreeningSlice = createSlice({
   },
 });
 
-
 export const {
   setAge,
   setTbSymptoms,
@@ -99,4 +97,4 @@ export const {
 
 export const medicalScreeningReducer = medicalScreeningSlice.reducer;
 
-export const selectMedicalScreening = (state: RootState) => state.medicalScreening
+export const selectMedicalScreening = (state: RootState) => state.medicalScreening;

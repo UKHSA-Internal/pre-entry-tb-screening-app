@@ -1,10 +1,19 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-      "target": "es5",
+      "target": "es2022",
       "lib": ["es5", "dom"],
       "types": ["cypress", "node"],
-      "composite": true
+      "composite": true,
+      "alwaysStrict": true,
+      "isolatedModules": true,
+      "noImplicitAny": true,
+      "noImplicitThis": true,
+      "module": "ESNext",
+      "moduleResolution": "bundler"
     },
-    "include": ["**/*.ts"]
+    "include": [
+      "**/*.ts",
+      "../src/utils/countryList.ts"
+    ]
   }

@@ -23,6 +23,7 @@
   },
   "scripts": {
     "build-lambda": "esbuild --bundle '--external:@aws-sdk/*' --platform=node --target=node18 --format=cjs",
-    "build-watch": ""
+    "build-watch": "",
+    "lint": "eslint ."
   }
 }

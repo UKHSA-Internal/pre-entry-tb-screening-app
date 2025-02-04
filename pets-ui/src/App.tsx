@@ -1,16 +1,16 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-import HomePage from './pages/home-page';
-import ContactDetailsPage from './pages/contact-details';
-import ApplicantSearchPage from './pages/applicant-search';
-import ApplicantSummaryPage from './pages/applicant-summary';
-import ApplicantConfirmation from './pages/applicant-confirmation';
-import MedicalScreeningPage from './pages/medical-screening';
-import MedicalSummaryPage from './pages/medical-screening-summary';
-import MedicalConfirmation from './pages/medical-screening-confirmation';
-import TravelDetailsPage from './pages/travel-details';
-import TravelSummaryPage from './pages/travel-summary';
-import TravelConfirmation from './pages/travel-confirmation';
+import ApplicantConfirmation from "./pages/applicant-confirmation";
+import ApplicantSearchPage from "./pages/applicant-search";
+import ApplicantSummaryPage from "./pages/applicant-summary";
+import ContactDetailsPage from "./pages/contact-details";
+import HomePage from "./pages/home-page";
+import MedicalScreeningPage from "./pages/medical-screening";
+import MedicalConfirmation from "./pages/medical-screening-confirmation";
+import MedicalSummaryPage from "./pages/medical-screening-summary";
+import TravelConfirmation from "./pages/travel-confirmation";
+import TravelDetailsPage from "./pages/travel-details";
+import TravelSummaryPage from "./pages/travel-summary";
 
 function App() {
   return (
@@ -29,7 +29,7 @@ function App() {
         <Route path="/travel-confirmation" element={<TravelConfirmation />} />
       </Routes>
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;

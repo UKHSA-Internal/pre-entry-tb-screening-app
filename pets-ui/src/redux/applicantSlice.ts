@@ -1,6 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '@redux/store';
-
+import { RootState } from "@redux/store";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: ApplicantDetailsType = {
   fullName: "",
@@ -8,7 +7,7 @@ const initialState: ApplicantDetailsType = {
   dateOfBirth: {
     year: "",
     month: "",
-    day: ""
+    day: "",
   },
   countryOfNationality: "",
   passportNumber: "",
@@ -16,12 +15,12 @@ const initialState: ApplicantDetailsType = {
   passportIssueDate: {
     year: "",
     month: "",
-    day: ""
+    day: "",
   },
   passportExpiryDate: {
     year: "",
     month: "",
-    day: ""
+    day: "",
   },
   applicantHomeAddress1: "",
   applicantHomeAddress2: "",
@@ -29,11 +28,11 @@ const initialState: ApplicantDetailsType = {
   townOrCity: "",
   provinceOrState: "",
   country: "",
-  postcode: ""
+  postcode: "",
 };
 
 export const applicantSlice = createSlice({
-  name: 'applicantDetails',
+  name: "applicantDetails",
   initialState,
   reducers: {
     setFullName: (state, action: PayloadAction<string>) => {
@@ -82,12 +81,12 @@ export const applicantSlice = createSlice({
       state.postcode = action.payload;
     },
     clearApplicantDetails: (state) => {
-      state.fullName = '';
-      state.sex = '';
+      state.fullName = "";
+      state.sex = "";
       state.dateOfBirth = {
         year: "",
         month: "",
-        day: ""
+        day: "",
       };
       state.countryOfNationality = "";
       state.passportNumber = "";
@@ -95,12 +94,12 @@ export const applicantSlice = createSlice({
       state.passportIssueDate = {
         year: "",
         month: "",
-        day: ""
+        day: "",
       };
       state.passportExpiryDate = {
         year: "",
         month: "",
-        day: ""
+        day: "",
       };
       state.applicantHomeAddress1 = "";
       state.applicantHomeAddress2 = "";
@@ -112,7 +111,6 @@ export const applicantSlice = createSlice({
     },
   },
 });
-
 
 export const {
   setFullName,
@@ -135,4 +133,4 @@ export const {
 
 export const applicantReducer = applicantSlice.reducer;
 
-export const selectApplicant = (state: RootState) => state.applicant
+export const selectApplicant = (state: RootState) => state.applicant;

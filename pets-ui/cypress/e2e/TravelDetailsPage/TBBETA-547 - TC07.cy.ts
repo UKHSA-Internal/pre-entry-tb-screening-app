@@ -1,10 +1,5 @@
-import { countryList } from "../../../src/utils/helpers";
+import { randomElement } from "../../support/test-utils";
 
-// Random number generator
-const randomElement = <T>(arr: T[]): T =>
-  arr[Math.floor(Math.random() * arr.length)];
-const randomCountry = randomElement(countryList);
-const countryName = randomCountry?.value;
 const visaType = [
   "Family Reunion",
   "Settlement and Dependents",
