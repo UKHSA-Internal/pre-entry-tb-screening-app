@@ -16,6 +16,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
       - name: Setup Node.js
@@ -25,13 +29,16 @@ jobs:
           cache: "pnpm"
       - name: Install dependencies
         run: pnpm i
+
+      - name: Lint typescript code
+        run: pnpm lint
+        working-directory: pets-ui
+        continue-on-error: true # TODO: Understand Why and Take it out
+
       - name: Run unit tests
         run: pnpm run test --testTimeout=10000
         working-directory: pets-ui
-      - name: Run eslint
-        run: pnpm run lint
-        working-directory: pets-ui
-        continue-on-error: true
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v4.1.0
         env:
@@ -76,7 +83,7 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           install: false
-          working-directory: pets-ui
+          working-directory: pets-ui/cypress
           build: pnpm run build
           start: pnpm run dev
           browser: ${{ matrix.browser }}

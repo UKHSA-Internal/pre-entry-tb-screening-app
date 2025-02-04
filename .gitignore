@@ -3,7 +3,7 @@
 .history
 
 # Node specific files
-node_modules/**
+node_modules/
 
 # Serverless specific files
 .serverless
