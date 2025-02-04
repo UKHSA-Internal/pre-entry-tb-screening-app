@@ -71,7 +71,7 @@ const ApplicantSearchForm = () => {
           options={countryList}
           errorMessage={errors?.countryOfIssue?.message ?? ""}
           formValue="countryOfIssue"
-          required="Select a country."
+          required="Select the country of issue."
         />
 
         <Button

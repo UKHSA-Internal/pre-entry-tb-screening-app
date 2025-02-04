@@ -8,10 +8,24 @@
   },
   "main": "index.js",
   "repository": "git@github.com:UKHSA-Internal/pre-entry-tb-screening-app.git",
-  "author": "Tomide Fasugba",
+  "author": "PETS Engineering",
   "license": "MIT",
   "dependencies": {
     "prettier": "^3.3.3"
   },
-  "packageManager": "pnpm@9.12.3+sha512.cce0f9de9c5a7c95bef944169cc5dfe8741abfb145078c0d508b868056848a87c81e626246cb60967cbd7fd29a6c062ef73ff840d96b3c86c40ac92cf4a813ee"
+  "packageManager": "pnpm@9.15.4",
+  "os": [
+    "!win32"
+  ],
+  "volta": {
+    "node": "18.20.6"
+  },
+  "pnpm": {
+    "overrides": {
+      "cross-spawn": "^7.0.6",
+      "micromatch": "^4.0.8",
+      "nanoid": "^3.3.8",
+      "@eslint/plugin-kit": "^0.2.5"
+    }
+  }
 }

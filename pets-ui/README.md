@@ -13,13 +13,14 @@ To install dependencies, run `pnpm i`.
 
 ## Commands
 
-- To start the UI in development mode, run `pnpm run dev`.
-- To create a build in `/dist`, run `pnpm run build`.
-- To preview a build created locally, run `pnpm run preview`.
-
-- To run unit tests, run `pnpm run test`.
-- To open the cypress UI, run `pnpm run cypress`.
-- To run cypress E2E tests in the terminal, run `npx cypress run`.
+| Command      | Description |
+| ----------- | ----------- |
+| `pnpm run dev`        | Starts the UI in development mode,       |
+| `pnpm run build`      | Create a build in `/dist`        |
+| `pnpm run preview`    | Preview a build created locally        |
+| `pnpm run test`       | Run unit tests        |
+| `pnpm run cypress`    | Opens the Cypress UI        |
+| `npx cypress run`     | Run cypress E2E tests in the terminal        |
 
 ## Cypress Tests
 

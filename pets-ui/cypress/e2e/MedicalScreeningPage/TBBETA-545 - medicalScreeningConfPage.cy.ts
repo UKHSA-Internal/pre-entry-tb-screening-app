@@ -13,18 +13,19 @@ const visaType = [
   "Working Holiday Maker",
   "Government Sponsored",
 ];
-const urlFragment = [
-    "#age",
-    
-];
-/*Scenario:As a Clinic user who has entered all mandatory medical screening data
-    I want to see a summary screen of the data entered
-So that I can review/change data before submitting to the system.*/
+/*As a Clinic user who has submitted all mandatory data in the Medical screening page
+I want to see a confirmation page
+So that I can confirm that the data entered is saved.
+
+Given I am on the confirmation page
+When I click the "Continue to chest x-ray" button
+Then I am navigated to the "Chest x-ray" page
+*/
 
 // Validate the error messages above each text box are correct
 const errorMessages = ["Enter applicant's age in years."];
 
-describe("Validate that applicant form is prefilled when user navigates back to applicant information page from applicant summary page", () => {
+describe("Validate that page navigates to Chest x-ray page when user clicks on 'Continue to chest x-ray' button", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/medical-screening");
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
@@ -32,7 +33,7 @@ describe("Validate that applicant form is prefilled when user navigates back to 
       body: { success: true, message: "Data successfully posted" },
     }).as("formSubmit");
   });
-  it("Should be prefilled with the data that was entered initially", () => {
+  it("Should navigate to Chest x-ray page", () => {
 
      //Enter applicant's age
     cy.get('input[name="age"]').type("29");
@@ -134,5 +135,21 @@ describe("Validate that applicant form is prefilled when user navigates back to 
 
       cy.go("back");
     });
+
+      //Click the confirm button
+      cy.get('button[type="submit"]').click();
+
+      //validate that page navigates to Medical Confirmation page
+      cy.url().should("include", 'http://localhost:3000/medical-confirmation');
+
+      //Confirm Medical Screening Record is created
+	cy.get("h1").should("contain.text", "Medical screening record created");
+
+    //Click the confirm button
+    cy.get('button[type="submit"]').click();
+
+    //Validate the page navigates to 'Chest x-ray' page
+    cy.url().should('include', 'http://localhost:3000/chest-xray');
+
     });
-  });
+    });
