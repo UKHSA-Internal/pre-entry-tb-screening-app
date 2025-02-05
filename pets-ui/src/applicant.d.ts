@@ -1,5 +1,7 @@
+import { ApplicationStatus } from "./utils/enums"
+
 type ApplicantDetailsType = {
-  status: "Incomplete" | "Completed"
+  status: ApplicationStatus
   fullName: string
   sex: string
   dateOfBirth: DateType
@@ -24,7 +26,7 @@ type DateType = {
 }
 
 type MedicalScreeningType = {
-  status: "Incomplete" | "Completed"
+  status: ApplicationStatus
   age: string
   tbSymptoms: string
   tbSymptomsList: string[]
@@ -41,7 +43,7 @@ type MedicalScreeningType = {
 }
 
 type TravelDetailsType = {
-  status: "Incomplete" | "Completed"
+  status: ApplicationStatus
   visaType: string
   applicantUkAddress1: string
   applicantUkAddress2?: string
