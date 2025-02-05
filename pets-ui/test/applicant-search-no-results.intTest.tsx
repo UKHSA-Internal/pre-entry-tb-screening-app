@@ -3,7 +3,7 @@ import { setupServer } from "msw/node";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
-import ApplicantEmptyResult from "@/sections/applicant-no-results";
+import ApplicantResultsPage from "@/pages/applicant-results";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -14,6 +14,10 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
     useNavigate: (): Mock => useNavigateMock,
   };
 });
+vi.mock("react-helmet-async", () => ({
+  Helmet: () => <>{}</>,
+  HelmetProvider: () => <>{}</>,
+}));
 
 export const handlers = [];
 
@@ -63,7 +67,7 @@ test("No results section is correctly displayed with information from the Redux 
 
   renderWithProviders(
     <Router>
-      <ApplicantEmptyResult />
+      <ApplicantResultsPage />
     </Router>,
     { preloadedState },
   );
