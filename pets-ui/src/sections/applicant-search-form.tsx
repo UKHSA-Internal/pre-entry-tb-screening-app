@@ -5,7 +5,11 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
 import FreeText from "@/components/freeText/freeText";
-import { clearApplicantDetails } from "@/redux/applicantSlice";
+import {
+  clearApplicantDetails,
+  setCountryOfIssue,
+  setPassportNumber,
+} from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   clearMedicalScreeningDetails,
@@ -44,35 +48,6 @@ type ApplicantSearchFormType = {
   countryOfIssue: string;
 };
 
-const populateMedicalScreening = (
-  dispatch: AppDispatch,
-  medicalScreeningData: MedicalScreeningType,
-) => {
-  dispatch(setAge(medicalScreeningData.age));
-  dispatch(setTbSymptoms(medicalScreeningData.tbSymptoms));
-  dispatch(setTbSymptomsList(medicalScreeningData.tbSymptomsList));
-  dispatch(setOtherSymptomsDetail(medicalScreeningData.otherSymptomsDetail));
-  dispatch(setUnderElevenConditions(medicalScreeningData.underElevenConditions));
-  dispatch(setUnderElevenConditionsDetail(medicalScreeningData.underElevenConditionsDetail));
-  dispatch(setPreviousTb(medicalScreeningData.previousTb));
-  dispatch(setPreviousTbDetail(medicalScreeningData.previousTbDetail));
-  dispatch(setCloseContactWithTb(medicalScreeningData.closeContactWithTb));
-  dispatch(setCloseContactWithTbDetail(medicalScreeningData.closeContactWithTbDetail));
-  dispatch(setPregnant(medicalScreeningData.pregnant));
-  dispatch(setMenstrualPeriods(medicalScreeningData.menstrualPeriods));
-  dispatch(setPhysicalExamNotes(medicalScreeningData.physicalExamNotes));
-};
-
-const populateTravelDetails = (dispatch: AppDispatch, travelData: TravelDetailsType) => {
-  dispatch(setVisaType(travelData.visaType));
-  dispatch(setApplicantUkAddress1(travelData.applicantUkAddress1));
-  dispatch(setApplicantUkAddress2(travelData.applicantUkAddress2 ?? ""));
-  dispatch(setTownOrCity(travelData.townOrCity));
-  dispatch(setPostcode(travelData.postcode));
-  dispatch(setUkMobileNumber(travelData.ukMobileNumber ?? ""));
-  dispatch(setUkEmail(travelData.ukEmail));
-};
-
 const ApplicantSearchForm = () => {
   const navigate = useNavigate();
 
@@ -80,9 +55,6 @@ const ApplicantSearchForm = () => {
 
   // on load, clear redux store
   const dispatch = useAppDispatch();
-
-  const applicantData = useAppSelector(selectTravel);
-  console.log(applicantData);
 
   useEffect(() => {
     dispatch(clearApplicantDetails());
@@ -97,6 +69,37 @@ const ApplicantSearchForm = () => {
     formState: { errors },
   } = methods;
 
+  const updateReduxStore = (applicantSearchData: ApplicantSearchFormType) => {
+    dispatch(setPassportNumber(applicantSearchData.passportNumber));
+    dispatch(setCountryOfIssue(applicantSearchData.countryOfIssue));
+  };
+
+  const updateReduxStoreMedical = (medicalScreeningData: MedicalScreeningType) => {
+    dispatch(setAge(medicalScreeningData.age));
+    dispatch(setTbSymptoms(medicalScreeningData.tbSymptoms));
+    dispatch(setTbSymptomsList(medicalScreeningData.tbSymptomsList));
+    dispatch(setOtherSymptomsDetail(medicalScreeningData.otherSymptomsDetail));
+    dispatch(setUnderElevenConditions(medicalScreeningData.underElevenConditions));
+    dispatch(setUnderElevenConditionsDetail(medicalScreeningData.underElevenConditionsDetail));
+    dispatch(setPreviousTb(medicalScreeningData.previousTb));
+    dispatch(setPreviousTbDetail(medicalScreeningData.previousTbDetail));
+    dispatch(setCloseContactWithTb(medicalScreeningData.closeContactWithTb));
+    dispatch(setCloseContactWithTbDetail(medicalScreeningData.closeContactWithTbDetail));
+    dispatch(setPregnant(medicalScreeningData.pregnant));
+    dispatch(setMenstrualPeriods(medicalScreeningData.menstrualPeriods));
+    dispatch(setPhysicalExamNotes(medicalScreeningData.physicalExamNotes));
+  };
+
+  const updateReduxStoreTravel = (travelData: TravelDetailsType) => {
+    dispatch(setVisaType(travelData.visaType));
+    dispatch(setApplicantUkAddress1(travelData.applicantUkAddress1));
+    dispatch(setApplicantUkAddress2(travelData.applicantUkAddress2 ?? ""));
+    dispatch(setTownOrCity(travelData.townOrCity));
+    dispatch(setPostcode(travelData.postcode));
+    dispatch(setUkMobileNumber(travelData.ukMobileNumber ?? ""));
+    dispatch(setUkEmail(travelData.ukEmail));
+  };
+
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (data) => {
     try {
       const myHeaders = new Headers();
@@ -108,6 +111,8 @@ const ApplicantSearchForm = () => {
           headers: myHeaders,
         },
       ).then(async (res) => {
+        updateReduxStore(data);
+
         if (res.status === 200) {
           await mockFetch(
             `http://localhost:3000/api/application?passportNumber=${data.passportNumber}`,
@@ -116,19 +121,20 @@ const ApplicantSearchForm = () => {
               headers: myHeaders,
             },
           ).then((res) => {
-            if (res.status === 200 || res.status === 404) {
-              if (res.status === 200) {
-                // populate
-                populateMedicalScreening(dispatch, res.medicalScreening);
-                populateTravelDetails(dispatch, res.travelInformation);
-              }
-              navigate("/tracker");
+            if (res.status === 200) {
+              // populate
+              updateReduxStoreMedical(dispatch, res.medicalScreening);
+              updateReduxStoreTravel(dispatch, res.travelInformation);
             } else {
               console.error(`Got unexpected status code ${res.status}`);
             }
+
+            if (res.status === 200 || res.status === 404) {
+              navigate("/tracker");
+            }
           });
         } else if (res.status === 404) {
-          navigate("/applicant-search/404", { state: { passportNumber: data.passportNumber } });
+          navigate("/applicant-results");
         } else {
           //error or other codes
           console.error(`Got unexpected status code ${res.status}`);
@@ -149,7 +155,7 @@ const ApplicantSearchForm = () => {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <FreeText
-          id="passportNumber"
+          id="passport-number"
           label="Applicant's Passport Number"
           errorMessage={errors?.passportNumber?.message ?? ""}
           formValue="passportNumber"
