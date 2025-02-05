@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
+import ApiDocs from "./pages/api-docs";
 import HomePage from './pages/home-page';
 import ApplicantSearchPage from './pages/applicant-search';
 import ApplicantResultsPage from './pages/applicant-results';
@@ -29,9 +30,10 @@ function App() {
         <Route path="/travel-details" element={<TravelDetailsPage />} />
         <Route path="/travel-summary" element={<TravelSummaryPage />} />
         <Route path="/travel-confirmation" element={<TravelConfirmation />} />
+        <Route path="/api-docs/" element={<ApiDocs />} />
       </Routes>
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;

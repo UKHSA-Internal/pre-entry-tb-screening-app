@@ -3,7 +3,7 @@
 .history
 
 # Node specific files
-node_modules/**
+node_modules/
 
 # Serverless specific files
 .serverless
@@ -40,3 +40,7 @@ pets.code-workspace
 
 # aws
 *.pkg
+
+# local development files
+.localstack-data
+openapi-docs.json

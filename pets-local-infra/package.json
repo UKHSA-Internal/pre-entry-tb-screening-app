@@ -1,0 +1,27 @@
+{
+  "name": "pets-local-infra",
+  "version": "0.1.0",
+  "bin": {
+    "local-infrastructure": "bin/local-infrastructure.js"
+  },
+  "scripts": {
+    "watch": "tsc -w",
+    "build": "tsc",
+    "cdk": "cdklocal",
+    "build:core-services": "node esbuild.local.config.mjs",
+    "bootstrap": "cdklocal bootstrap",
+    "deploy:local": "cdklocal deploy LocalInfrastructureStack --require-approval never"
+  },
+  "devDependencies": {
+    "@types/node": "22.7.9",
+    "aws-cdk": "2.176.0",
+    "aws-cdk-lib": "2.176.0",
+    "aws-cdk-local": "2.19.0",
+    "esbuild": "^0.24.2",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.6.3"
+  },
+  "dependencies": {
+    "constructs": "^10.0.0"
+  }
+}

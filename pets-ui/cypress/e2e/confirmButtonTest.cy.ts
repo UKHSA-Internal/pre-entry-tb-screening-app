@@ -1,10 +1,4 @@
-import { countryList } from "../../src/utils/helpers";
-
-// Random number generator
-const randomElement = <T>(arr: T[]): T =>
-  arr[Math.floor(Math.random() * arr.length)];
-const randomCountry = randomElement(countryList);
-const countryName = randomCountry?.value;
+import { randomElement } from "../support/test-utils";
 const visaType = [
   "Family Reunion",
   "Settlement and Dependents",
@@ -46,6 +40,6 @@ describe("Validate that the confirm button on the travel information page redire
     cy.get('button[type="submit"]').click();
 
     // Validate that the page navigates to the travel confirmation page
-      cy.url().should("include", "http://localhost:3000/travel-confirmation");
-    });
+    cy.url().should("include", "http://localhost:3000/travel-confirmation");
   });
+});

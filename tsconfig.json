@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "resolveJsonModule": true
+  },
+  "exclude": [
+    "node_modules",
+    "cypress",
+    "core-services"
+  ],
+  "references": [
+    {
+      "path": "./pets-core-services"
+    },
+    {
+      "path": "./pets-ui"
+    },
+    {
+      "path": "./pets-ui/cypress"
+    }
+  ]
+}

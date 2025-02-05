@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
-import { useForm, SubmitHandler, FormProvider } from "react-hook-form"
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import { formRegex, countryList } from "@/utils/helpers"
-import Button from "@/components/button/button"
-import FreeText from "@/components/freeText/freeText"
+import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
+import FreeText from "@/components/freeText/freeText";
 import { ButtonType } from "@/utils/enums";
+import { countryList, formRegex } from "@/utils/helpers";
 
 import { useAppDispatch } from "@/redux/hooks";
 import { setCountryOfIssue, setPassportNumber } from "@/redux/applicantSlice";
@@ -83,7 +82,7 @@ const ApplicantSearchForm = () => {
         />
       </form>
     </FormProvider>
-  )
-}
+  );
+};
 
 export default ApplicantSearchForm;
