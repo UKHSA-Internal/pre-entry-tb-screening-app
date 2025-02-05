@@ -1,29 +1,31 @@
-import { Helmet } from 'react-helmet-async';
-import Header from "@/components/header/header";
-import Footer from "@/components/footer/footer";
+import "./applicant-results.scss";
+
+import { Helmet } from "react-helmet-async";
+
 import Breadcrumb, { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
-import ApplicantEmptyResult from '@/sections/applicant-no-results';
-import "./applicant-results.scss"
+import Footer from "@/components/footer/footer";
+import Header from "@/components/header/header";
+import ApplicantEmptyResult from "@/sections/applicant-no-results";
 
 export default function ApplicantResultsPage() {
   const breadcrumbItems: IBreadcrumbItem[] = [
     {
       text: "Home",
-      href: "#"
-    }
-  ]
-  
+      href: "#",
+    },
+  ];
+
   return (
     <body className="govuk-template__body">
       <Helmet>
         <title>Applicant Results</title>
       </Helmet>
-      <Header/>
+      <Header />
       <div className="govuk-width-container">
-        <Breadcrumb items={breadcrumbItems}/>
-        <ApplicantEmptyResult/>
+        <Breadcrumb items={breadcrumbItems} />
+        <ApplicantEmptyResult />
       </div>
-      <Footer/>
+      <Footer />
     </body>
   );
 }

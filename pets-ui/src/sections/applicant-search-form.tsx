@@ -4,51 +4,55 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
 import FreeText from "@/components/freeText/freeText";
+import { setCountryOfIssue, setPassportNumber } from "@/redux/applicantSlice";
+import { useAppDispatch } from "@/redux/hooks";
 import { ButtonType } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/helpers";
 
-import { useAppDispatch } from "@/redux/hooks";
-import { setCountryOfIssue, setPassportNumber } from "@/redux/applicantSlice";
-
-type ApplicantSearchFormType  = {
-  passportNumber: string
-  countryOfIssue: string
-}
+type ApplicantSearchFormType = {
+  passportNumber: string;
+  countryOfIssue: string;
+};
 
 const ApplicantSearchForm = () => {
   const navigate = useNavigate();
 
-  const methods = useForm<ApplicantSearchFormType>({reValidateMode: 'onSubmit'})
-  const { handleSubmit, formState: { errors } } = methods;
+  const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
+  const {
+    handleSubmit,
+    formState: { errors },
+  } = methods;
 
-  const dispatch = useAppDispatch()
-    const updateReduxStore = (applicantSearchData: ApplicantSearchFormType) => {
-      dispatch(setPassportNumber(applicantSearchData.passportNumber))
-      dispatch(setCountryOfIssue(applicantSearchData.countryOfIssue))
-    }
+  const dispatch = useAppDispatch();
+  const updateReduxStore = (applicantSearchData: ApplicantSearchFormType) => {
+    dispatch(setPassportNumber(applicantSearchData.passportNumber));
+    dispatch(setCountryOfIssue(applicantSearchData.countryOfIssue));
+  };
 
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (data) => {
     try {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
-      await fetch(`http://localhost:3005/dev/applicant-details?passportNumber=${data.passportNumber}&countryOfIssue=${data.countryOfIssue}`, {
+      await fetch(
+        `http://localhost:3005/dev/applicant-details?passportNumber=${data.passportNumber}&countryOfIssue=${data.countryOfIssue}`,
+        {
           method: "GET",
           headers: myHeaders,
-      })
-      .then(() => {
-        updateReduxStore(data)
-        navigate("/applicant-results")
-      })
+        },
+      ).then(() => {
+        updateReduxStore(data);
+        navigate("/applicant-results");
+      });
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error("Error submitting POST request:")
+        console.error("Error submitting POST request:");
         console.error(error?.message);
       } else {
-        console.error("Error submitting POST request: unknown error type")
+        console.error("Error submitting POST request: unknown error type");
         console.error(error);
       }
     }
-  }
+  };
 
   return (
     <FormProvider {...methods}>

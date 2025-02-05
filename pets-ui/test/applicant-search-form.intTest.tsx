@@ -9,8 +9,7 @@ import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
 vi.mock(`react-router-dom`, async (): Promise<unknown> => {
-  const actual: Record<string, unknown> =
-    await vi.importActual(`react-router-dom`);
+  const actual: Record<string, unknown> = await vi.importActual(`react-router-dom`);
   return {
     ...actual,
     useNavigate: (): Mock => useNavigateMock,

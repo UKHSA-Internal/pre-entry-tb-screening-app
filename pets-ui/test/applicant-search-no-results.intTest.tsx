@@ -1,14 +1,14 @@
-import { setupServer } from "msw/node";
 import { screen } from "@testing-library/react";
-import { Mock } from "vitest";
-import { renderWithProviders } from "@/utils/test-utils";
-import ApplicantEmptyResult from "@/sections/applicant-no-results";
+import { setupServer } from "msw/node";
 import { BrowserRouter as Router } from "react-router-dom";
+import { Mock } from "vitest";
+
+import ApplicantEmptyResult from "@/sections/applicant-no-results";
+import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
 vi.mock(`react-router-dom`, async (): Promise<unknown> => {
-  const actual: Record<string, unknown> =
-    await vi.importActual(`react-router-dom`);
+  const actual: Record<string, unknown> = await vi.importActual(`react-router-dom`);
   return {
     ...actual,
     useNavigate: (): Mock => useNavigateMock,
@@ -69,7 +69,5 @@ test("No results section is correctly displayed with information from the Redux 
   );
 
   expect(screen.getByText("No matching record found")).toBeInTheDocument();
-  expect(
-    screen.getByText("No matches for passport number 12345"),
-  ).toBeInTheDocument();
+  expect(screen.getByText("No matches for passport number 12345")).toBeInTheDocument();
 });
