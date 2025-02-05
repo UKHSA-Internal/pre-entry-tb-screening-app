@@ -15,6 +15,7 @@ import Radio from "@/components/radio/radio";
 import DateTextInput, { DateType } from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { ApplicantDetailsType } from "@/applicant";
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { 

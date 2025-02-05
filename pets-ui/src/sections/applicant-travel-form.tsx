@@ -12,6 +12,7 @@ import {
   formRegex,
   visaOptions,
 } from "@/utils/helpers"
+import { TravelDetailsType } from "@/applicant";
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
