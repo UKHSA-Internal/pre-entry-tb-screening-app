@@ -3,6 +3,7 @@ import { RootState } from '@redux/store';
 
 
 const initialState: TravelDetailsType = {
+  status: "Incomplete",
   visaType: "",
   applicantUkAddress1: "",
   applicantUkAddress2: "",
@@ -16,6 +17,9 @@ export const travelSlice = createSlice({
   name: 'travelDetails',
   initialState,
   reducers: {
+    setTravelDetailsStatus: (state, action: PayloadAction<"Incomplete" | "Completed">) => {
+      state.status = action.payload;
+    },
     setVisaType: (state, action: PayloadAction<string>) => {
       state.visaType = action.payload;
     },
@@ -38,6 +42,7 @@ export const travelSlice = createSlice({
       state.ukEmail = action.payload;
     },
     clearTravelDetails: (state) => {
+      state.status = "Incomplete";
       state.visaType = '';
       state.applicantUkAddress1 = '';
       state.applicantUkAddress2 = '';
@@ -51,6 +56,7 @@ export const travelSlice = createSlice({
 
 
 export const {
+  setTravelDetailsStatus,
   setVisaType,
   setApplicantUkAddress1,
   setApplicantUkAddress2,

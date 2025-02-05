@@ -1,4 +1,5 @@
 type ApplicantDetailsType = {
+  status: "Incomplete" | "Completed"
   fullName: string
   sex: string
   dateOfBirth: DateType
@@ -23,6 +24,7 @@ type DateType = {
 }
 
 type MedicalScreeningType = {
+  status: "Incomplete" | "Completed"
   age: string
   tbSymptoms: string
   tbSymptomsList: string[]
@@ -39,6 +41,7 @@ type MedicalScreeningType = {
 }
 
 type TravelDetailsType = {
+  status: "Incomplete" | "Completed"
   visaType: string
   applicantUkAddress1: string
   applicantUkAddress2?: string

@@ -3,6 +3,7 @@ import { RootState } from '@redux/store';
 
 
 const initialState: ApplicantDetailsType = {
+  status: "Incomplete",
   fullName: "",
   sex: "",
   dateOfBirth: {
@@ -36,6 +37,9 @@ export const applicantSlice = createSlice({
   name: 'applicantDetails',
   initialState,
   reducers: {
+    setApplicantDetailsStatus: (state, action: PayloadAction<"Incomplete" | "Completed">) => {
+      state.status = action.payload;
+    },
     setFullName: (state, action: PayloadAction<string>) => {
       state.fullName = action.payload;
     },
@@ -82,6 +86,7 @@ export const applicantSlice = createSlice({
       state.postcode = action.payload;
     },
     clearApplicantDetails: (state) => {
+      state.status = "Incomplete";
       state.fullName = '';
       state.sex = '';
       state.dateOfBirth = {
@@ -115,6 +120,7 @@ export const applicantSlice = createSlice({
 
 
 export const {
+  setApplicantDetailsStatus,
   setFullName,
   setSex,
   setDob,
