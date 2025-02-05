@@ -48,5 +48,8 @@
     "msw": "^2.6.6",
     "vite": "^5.4.12",
     "vite-tsconfig-paths": "^5.1.2"
+  },
+  "scarfSettings": {
+    "enabled": false
   }
 }
