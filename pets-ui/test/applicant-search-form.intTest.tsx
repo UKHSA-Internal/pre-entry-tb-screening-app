@@ -44,10 +44,10 @@ test("/applicant-details endpoint is invoked when form is filled out and button 
 
   const user = userEvent.setup();
 
-  await user.type(screen.getByTestId("passportNumber"), "12345");
+  await user.type(screen.getByTestId("passport-number"), "12345");
   fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
 
-  expect(screen.getByTestId("passportNumber")).toHaveValue("12345");
+  expect(screen.getByTestId("passport-number")).toHaveValue("12345");
   expect(screen.getAllByRole("combobox")[0]).toHaveValue("AUS");
 
   await user.click(screen.getByRole("button"));
