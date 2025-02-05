@@ -43,4 +43,3 @@ pets.code-workspace
 
 # local development files
 .localstack-data
-openapi-docs.json
