@@ -1,5 +1,10 @@
+/* eslint-disable @typescript-eslint/require-await */
+
 // this mock function is for dev purposes, to change when API path is available
-export const mockFetch = async (link: string, other?) => {
+// will be deleted when API is available
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const mockFetch = async (link: string, header: { [key: string]: any }) => {
   const baseUrl = "http://localhost:3000/api/";
   if (link.startsWith(baseUrl)) {
     const path = link.slice(baseUrl.length);

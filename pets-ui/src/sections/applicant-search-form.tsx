@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useEffect } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +11,7 @@ import {
   setCountryOfIssue,
   setPassportNumber,
 } from "@/redux/applicantSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppDispatch } from "@/redux/hooks";
 import {
   clearMedicalScreeningDetails,
   setAge,
@@ -27,10 +28,8 @@ import {
   setUnderElevenConditions,
   setUnderElevenConditionsDetail,
 } from "@/redux/medicalScreeningSlice";
-import { AppDispatch } from "@/redux/store";
 import {
   clearTravelDetails,
-  selectTravel,
   setApplicantUkAddress1,
   setApplicantUkAddress2,
   setPostcode,
