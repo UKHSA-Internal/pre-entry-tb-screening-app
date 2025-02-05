@@ -30,28 +30,18 @@ const ApplicantSearchForm = () => {
   };
 
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (data) => {
-    try {
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      await fetch(
-        `http://localhost:3005/dev/applicant-details?passportNumber=${data.passportNumber}&countryOfIssue=${data.countryOfIssue}`,
-        {
-          method: "GET",
-          headers: myHeaders,
-        },
-      ).then(() => {
-        updateReduxStore(data);
-        navigate("/applicant-results");
-      });
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Error submitting POST request:");
-        console.error(error?.message);
-      } else {
-        console.error("Error submitting POST request: unknown error type");
-        console.error(error);
-      }
-    }
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    await fetch(
+      `http://localhost:3005/dev/applicant-details?passportNumber=${data.passportNumber}&countryOfIssue=${data.countryOfIssue}`,
+      {
+        method: "GET",
+        headers: myHeaders,
+      },
+    ).then(() => {
+      updateReduxStore(data);
+      navigate("/applicant-results");
+    });
   };
 
   return (

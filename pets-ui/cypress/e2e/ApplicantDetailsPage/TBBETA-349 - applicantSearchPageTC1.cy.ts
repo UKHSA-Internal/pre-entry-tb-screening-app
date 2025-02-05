@@ -1,15 +1,9 @@
-import { countryList } from "../../../src/utils/helpers";
-
-
 /*Scenario:As a Clinic user
 I want to view the results from the applicant search
 So that I can see applicants that match the criteria entered during the search process.*/
 
 // Validate the error messages above each text box are correct
-const errorMessages = [
-  "Enter the applicant\'s passport number.",
-  "Select the country of issue.",
-];
+const errorMessages1 = ["Enter the applicant's passport number.", "Select the country of issue."];
 
 describe("Validate that error message is displayed when user clicks the search button without entering a search criteria", () => {
   beforeEach(() => {
@@ -25,8 +19,7 @@ describe("Validate that error message is displayed when user clicks the search b
 
     // Validate that error message is displayed above each field
     cy.get(".govuk-error-message").each((message, index) => {
-    
-      cy.wrap(message).should("contain.text", errorMessages[index]);
+      cy.wrap(message).should("contain.text", errorMessages1[index]);
     });
   });
 });
