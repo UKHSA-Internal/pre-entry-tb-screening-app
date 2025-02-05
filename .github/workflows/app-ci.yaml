@@ -30,6 +30,11 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
+      - name: Create a placeholder Swagger Docs file
+        run: |
+          echo '{"comment": "placeholder to be replaced at core-services build"}' > openapi-docs.json
+        working-directory: pets-core-services
+
       - name: Lint typescript code
         run: pnpm lint
         working-directory: pets-ui
@@ -39,7 +44,7 @@ jobs:
         working-directory: pets-ui
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v4.1.0
+        uses: SonarSource/sonarqube-scan-action@v4.2.1
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
@@ -78,6 +83,11 @@ jobs:
           pnpm exec cypress verify
         working-directory: pets-ui
 
+      - name: Create a placeholder Swagger Docs file
+        run: |
+          echo '{"comment": "placeholder to be replaced at core-services build"}' > openapi-docs.json
+        working-directory: pets-core-services
+
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
         with:
@@ -92,7 +102,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: failed-tests-screenshots
-          path: pets-ui/cypress/screenshots
+          path: pets-ui/cypress/cypress/screenshots
 
 
   build:
@@ -111,6 +121,12 @@ jobs:
           cache: "pnpm"
       - name: Install dependencies
         run: pnpm i
+
+      - name: Create a placeholder Swagger Docs file
+        run: |
+          echo '{"comment": "placeholder to be replaced at core-services build"}' > openapi-docs.json
+        working-directory: pets-core-services
+
       - name: Create UI build
         run: pnpm run build
         working-directory: pets-ui
