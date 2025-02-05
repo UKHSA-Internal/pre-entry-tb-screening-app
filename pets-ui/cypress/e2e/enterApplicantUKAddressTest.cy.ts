@@ -1,10 +1,5 @@
-import { countryList } from "../../src/utils/helpers";
+import { randomElement } from "../support/test-utils";
 
-// Random number generator
-const randomElement = <T>(arr: T[]): T =>
-  arr[Math.floor(Math.random() * arr.length)];
-const randomCountry = randomElement(countryList);
-const countryName = randomCountry?.value;
 const visaType = [
   "Family Reunion",
   "Settlement and Dependents",
@@ -13,15 +8,12 @@ const visaType = [
   "Working Holiday Maker",
   "Government Sponsored",
 ];
-const errorMessages = [
-    "Town name must contain only letters, spaces and punctuation.",
-    "Home address must contain only letters, numbers, spaces and punctuation.",
 
+const errorMessages = [
+  "Town name must contain only letters, spaces and punctuation.",
+  "Home address must contain only letters, numbers, spaces and punctuation.",
 ];
-const urlFragment = [
-    "#address-2",
-    "#town-or-city",
-];
+const urlFragment = ["#address-2", "#town-or-city"];
 
 describe("Validate the error message for the Address Fields", () => {
   beforeEach(() => {
@@ -49,15 +41,15 @@ describe("Validate the error message for the Address Fields", () => {
     cy.get('button[type="submit"]').click();
 
     // Validate the summary box appears at the top contains the correct error messages
-    cy.get('[data-module="govuk-error-summary"]').should('be.visible');
-    errorMessages.forEach(error => {
-            cy.get('.govuk-error-summary').should('contain.text', error);
-        });
-   
+    cy.get('[data-module="govuk-error-summary"]').should("be.visible");
+    errorMessages.forEach((error) => {
+      cy.get(".govuk-error-summary").should("contain.text", error);
+    });
+
     // Validate that user is navigated to correct error when clicking message in summary
-    cy.get('.govuk-error-summary a').each((link, index) => {
-        cy.wrap(link).click();
-        cy.url().should('include', urlFragment[index]);
+    cy.get(".govuk-error-summary a").each((link, index) => {
+      cy.wrap(link).click();
+      cy.url().should("include", urlFragment[index]);
     });
   });
 });

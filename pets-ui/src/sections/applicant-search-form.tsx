@@ -1,60 +1,60 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
-import { useForm, SubmitHandler, FormProvider } from "react-hook-form"
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import { formRegex, countryList } from "@/utils/helpers"
-import Button from "@/components/button/button"
-import FreeText from "@/components/freeText/freeText"
+import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
+import FreeText from "@/components/freeText/freeText";
 import { ButtonType } from "@/utils/enums";
+import { countryList, formRegex } from "@/utils/helpers";
 
-type ApplicantSearchFormType  = {
-  passportNumber: string
-  countryOfIssue: string
-}
+type ApplicantSearchFormType = {
+  passportNumber: string;
+  countryOfIssue: string;
+};
 
 const ApplicantSearchForm = () => {
   const navigate = useNavigate();
 
-  const methods = useForm<ApplicantSearchFormType>({reValidateMode: 'onSubmit'})
+  const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
 
-  const { handleSubmit, formState: { errors } } = methods;
+  const {
+    handleSubmit,
+    formState: { errors },
+  } = methods;
 
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (data) => {
     try {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
-      await fetch(`http://localhost:3005/dev/applicant-details?passportNumber=${data.passportNumber}&countryOfIssue=${data.countryOfIssue}`, {
+      await fetch(
+        `http://localhost:3005/dev/applicant-details?passportNumber=${data.passportNumber}&countryOfIssue=${data.countryOfIssue}`,
+        {
           method: "GET",
           headers: myHeaders,
-      })
-      .then((res) => {
+        },
+      ).then((res) => {
         // TO DO: set state here to retrieve on confirmation page
-        if(res.status === 200){
-          navigate("/applicant-results")
-        
-        } else if(res.status === 404) {
-          navigate("/applicant-search/404", { state: { passportNumber: data.passportNumber } })
-        
+        if (res.status === 200) {
+          navigate("/applicant-results");
+        } else if (res.status === 404) {
+          navigate("/applicant-search/404", { state: { passportNumber: data.passportNumber } });
         } else {
           //error or other codes
           console.error(`Got unexpected status code ${res.status}`);
         }
-
-
-      })
+      });
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error("Error submitting POST request:")
+        console.error("Error submitting POST request:");
         console.error(error?.message);
       } else {
-        console.error("Error submitting POST request: unknown error type")
+        console.error("Error submitting POST request: unknown error type");
         console.error(error);
       }
     } finally {
-      navigate("/applicant-search/404", { state: { passportNumber: data.passportNumber } })
+      navigate("/applicant-search/404", { state: { passportNumber: data.passportNumber } });
     }
-  }
+  };
 
   return (
     <FormProvider {...methods}>
@@ -88,7 +88,7 @@ const ApplicantSearchForm = () => {
         />
       </form>
     </FormProvider>
-  )
-}
+  );
+};
 
 export default ApplicantSearchForm;

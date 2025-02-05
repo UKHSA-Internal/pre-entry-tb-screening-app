@@ -1,40 +1,42 @@
-import { Helmet } from 'react-helmet-async';
-import Header from "@/components/header/header";
-import Footer from "@/components/footer/footer";
+import "./travel-summary.scss";
+
+import { Helmet } from "react-helmet-async";
+
 import Breadcrumb, { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
-import TravelReview from '@/sections/applicant-travel-summary';
-import "./travel-summary.scss"
+import Footer from "@/components/footer/footer";
+import Header from "@/components/header/header";
+import TravelReview from "@/sections/applicant-travel-summary";
 
 export default function TravelSummaryPage() {
   const breadcrumbItems: IBreadcrumbItem[] = [
     {
       text: "Home",
-      href: "#"
+      href: "#",
     },
     {
       text: "New Applicant",
-      href: "#"
+      href: "#",
     },
     {
       text: "Travel information",
-      href: "#"
+      href: "#",
     },
-  ]
-  
+  ];
+
   return (
     <body className="govuk-template__body">
-    <Helmet>
-      <title> Applicant Travel Information Summary</title>
-    </Helmet>
-    <Header/>
+      <Helmet>
+        <title> Applicant Travel Information Summary</title>
+      </Helmet>
+      <Header />
       <div className="govuk-width-container">
-        <Breadcrumb items={breadcrumbItems}/>
+        <Breadcrumb items={breadcrumbItems} />
         <main className="govuk-main-wrapper">
           <h1 className="govuk-heading-l">Check travel information</h1>
-          <TravelReview/>
+          <TravelReview />
         </main>
       </div>
-      <Footer/>
+      <Footer />
     </body>
   );
 }

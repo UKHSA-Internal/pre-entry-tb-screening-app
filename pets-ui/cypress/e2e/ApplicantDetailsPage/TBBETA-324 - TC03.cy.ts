@@ -1,7 +1,7 @@
 import { countryList } from "../../../src/utils/helpers";
+import { randomElement } from "../../support/test-utils";
 
 // Random number generator
-const randomElement = <T>(arr: T[]): T =>arr[Math.floor(Math.random() * arr.length)];
 const randomCountry = randomElement(countryList);
 const countryName = randomCountry?.value;
 
@@ -61,7 +61,6 @@ describe("Validate the errors for empty Mandatory Fields", () => {
       "Date of birth must include a day, month and year.",
       "Enter the applicant's passport number.",
       "Passport issue date must include a day, month and year.",
-      
     ];
     // Validate the summary box appears at the top contains the correct error messages
     cy.get(".govuk-error-summary").should("be.visible");
