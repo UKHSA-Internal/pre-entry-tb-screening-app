@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
 import FreeText from "@/components/freeText/freeText";
+import { setCountryOfIssue, setPassportNumber } from "@/redux/applicantSlice";
+import { useAppDispatch } from "@/redux/hooks";
 import { ButtonType } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/helpers";
 
@@ -16,11 +18,16 @@ const ApplicantSearchForm = () => {
   const navigate = useNavigate();
 
   const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
-
   const {
     handleSubmit,
     formState: { errors },
   } = methods;
+
+  const dispatch = useAppDispatch();
+  const updateReduxStore = (applicantSearchData: ApplicantSearchFormType) => {
+    dispatch(setPassportNumber(applicantSearchData.passportNumber));
+    dispatch(setCountryOfIssue(applicantSearchData.countryOfIssue));
+  };
 
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (data) => {
     const myHeaders = new Headers();
@@ -32,7 +39,7 @@ const ApplicantSearchForm = () => {
         headers: myHeaders,
       },
     ).then(() => {
-      // TO DO: set state here to retrieve on confirmation page
+      updateReduxStore(data);
       navigate("/applicant-results");
     });
   };
@@ -41,7 +48,7 @@ const ApplicantSearchForm = () => {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <FreeText
-          id="passportNumber"
+          id="passport-number"
           label="Applicant's Passport Number"
           errorMessage={errors?.passportNumber?.message ?? ""}
           formValue="passportNumber"
