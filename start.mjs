@@ -31,10 +31,7 @@ dotenv.config({
   path: resolve(process.cwd(), "configs/.env"),
 });
 
-fs.writeFileSync(
-  "pets-core-services/openapi-docs.json",
-  '{"comment": "placeholder to be replaced at core-services build"}',
-);
+runCommand("git update-index --assume-unchanged pets-core-services/openapi-docs.json");
 runCommand("pnpm rimraf pets-local-infra/cdk.out");
 runCommand("docker compose down");
 runCommand("pnpm --filter pets-core-services generate:swagger-doc"); // Generate swagger file for backend
