@@ -26,7 +26,6 @@ const months = [
   "November",
   "December",
 ];
-// end of temporary
 
 function getMonthName(monthNumber?: number | string): string | null {
   const month = parseInt(monthNumber?.toString() || "", 10);
@@ -44,6 +43,7 @@ function formatDate(dateDict: {
 }): string {
   return `${dateDict.day} ${getMonthName(dateDict.month)} ${dateDict.year}`;
 }
+// end of temporary
 
 const formTop = (
   fullName: string,
@@ -81,6 +81,15 @@ const ChestXrayForm = () => {
   const onSubmit: SubmitHandler<MedicalScreeningType> = (data) => {
     console.log("submit!");
     console.log(data);
+
+    // Access the uploaded files
+    const posteroAnteriorFile = data.postero_anterior_view?.[0];
+    const apicalLordoticFile = data.apical_lordotic_view?.[0];
+    const lateralDecubitusFile = data.lateral_decubitus_view?.[0];
+
+    console.log("Postero-Anterior File:", posteroAnteriorFile);
+    console.log("Apical Lordotic File:", apicalLordoticFile);
+    console.log("Lateral Decubitus File:", lateralDecubitusFile);
   };
 
   const methods = useForm({ reValidateMode: "onSubmit" });
@@ -124,6 +133,8 @@ const ChestXrayForm = () => {
                   formValue="postero_anterior_view"
                   required="Please upload postero-anterior X-ray"
                   errorMessage={errors?.postero_anterior_view?.message || ""}
+                  accept="jpg,jpeg,png,pdf"
+                  maxSize="5"
                 />
               </dd>
             </div>
@@ -160,6 +171,8 @@ const ChestXrayForm = () => {
                   formValue="apical_lordotic_view"
                   errorMessage={errors?.apical_lordotic_view?.message || ""}
                   required={hasApicalLordotic ? "Please upload Apical lordotic X-ray" : false}
+                  accept="jpg,jpeg,png,pdf"
+                  maxSize="5"
                 />
               </dd>
             </div>
@@ -196,6 +209,8 @@ const ChestXrayForm = () => {
                   formValue="lateral_decubitus_view"
                   errorMessage={errors?.lateral_decubitus_view?.message || ""}
                   required={hasLateralDecubitus ? "Please upload Lateral Decubitus X-ray" : false}
+                  accept="jpg,jpeg,png,pdf"
+                  maxSize="5"
                 />
               </dd>
             </div>
