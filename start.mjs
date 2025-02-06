@@ -42,4 +42,4 @@ runCommand("docker compose up -d --wait");
 runAsyncCommand("pnpm --filter pets-local-infra build:core-services");
 runCommand("pnpm --filter pets-local-infra bootstrap");
 runCommand("pnpm --filter pets-local-infra deploy:local"); // Deploy to localstack
-runAsyncCommand("pnpm --filter pets-ui dev"); // Starts Vite Server
+runCommand("pnpm --filter pets-ui dev"); // Starts Vite Server
