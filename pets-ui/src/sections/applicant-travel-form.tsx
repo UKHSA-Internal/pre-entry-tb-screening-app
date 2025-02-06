@@ -1,53 +1,50 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
 import { useEffect, useRef } from "react";
-import { useForm, SubmitHandler, FormProvider } from "react-hook-form"
-import { useNavigate, useLocation } from "react-router-dom";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import Button from "@/components/button/button"
-import FreeText from "@/components/freeText/freeText"
-import Dropdown from "@/components/dropdown/dropdown";
-import { ButtonType } from "@/utils/enums";
-import { 
-  attributeToComponentId,
-  formRegex,
-  visaOptions,
-} from "@/utils/helpers"
 import { TravelDetailsType } from "@/applicant";
-
+import Button from "@/components/button/button";
+import Dropdown from "@/components/dropdown/dropdown";
+import FreeText from "@/components/freeText/freeText";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
-  setVisaType,
+  selectTravel,
   setApplicantUkAddress1,
   setApplicantUkAddress2,
-  setTownOrCity,
   setPostcode,
-  setUkMobileNumber,
+  setTownOrCity,
   setUkEmail,
-  selectTravel,
-} from "@/redux/travelSlice"
+  setUkMobileNumber,
+  setVisaType,
+} from "@/redux/travelSlice";
+import { ButtonType } from "@/utils/enums";
+import { attributeToComponentId, formRegex, visaOptions } from "@/utils/helpers";
 
 const ApplicantTravelForm = () => {
   const navigate = useNavigate();
 
-  const methods = useForm<TravelDetailsType>({reValidateMode: 'onSubmit'})
-  const { handleSubmit, formState: { errors } } = methods;
+  const methods = useForm<TravelDetailsType>({ reValidateMode: "onSubmit" });
+  const {
+    handleSubmit,
+    formState: { errors },
+  } = methods;
 
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   const updateReduxStore = (travelData: TravelDetailsType) => {
-    dispatch(setVisaType(travelData.visaType))
-    dispatch(setApplicantUkAddress1(travelData.applicantUkAddress1))
-    dispatch(setApplicantUkAddress2(travelData.applicantUkAddress2 ?? ""))
-    dispatch(setTownOrCity(travelData.townOrCity))
-    dispatch(setPostcode(travelData.postcode))
-    dispatch(setUkMobileNumber(travelData.ukMobileNumber ?? ""))
-    dispatch(setUkEmail(travelData.ukEmail))
-  }
+    dispatch(setVisaType(travelData.visaType));
+    dispatch(setApplicantUkAddress1(travelData.applicantUkAddress1));
+    dispatch(setApplicantUkAddress2(travelData.applicantUkAddress2 ?? ""));
+    dispatch(setTownOrCity(travelData.townOrCity));
+    dispatch(setPostcode(travelData.postcode));
+    dispatch(setUkMobileNumber(travelData.ukMobileNumber ?? ""));
+    dispatch(setUkEmail(travelData.ukEmail));
+  };
   const travelData = useAppSelector(selectTravel);
 
   const onSubmit: SubmitHandler<TravelDetailsType> = (data) => {
-    updateReduxStore(data)
-    navigate("/travel-summary")
-  }
+    updateReduxStore(data);
+    navigate("/travel-summary");
+  };
 
   const errorsToShow = Object.keys(errors);
 
@@ -64,15 +61,15 @@ const ApplicantTravelForm = () => {
     if (location.hash) {
       const target = location.hash.substring(1);
       const refMap: { [key: string]: HTMLElement | null } = {
-        'visa-type': visaTypeRef.current,
-        'address-1': addressLine1Ref.current,
-        'address-2': addressLine2Ref.current,
-        'town-or-city': townRef.current,
-        'postcode': postcodeRef.current,
-        'mobile-number': mobileNumberRef.current,
-        'email': emailRef.current,
+        "visa-type": visaTypeRef.current,
+        "address-1": addressLine1Ref.current,
+        "address-2": addressLine2Ref.current,
+        "town-or-city": townRef.current,
+        postcode: postcodeRef.current,
+        "mobile-number": mobileNumberRef.current,
+        email: emailRef.current,
       };
-  
+
       const targetRef = refMap[target];
       if (targetRef) {
         targetRef.scrollIntoView();
@@ -83,12 +80,10 @@ const ApplicantTravelForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {!!errorsToShow?.length &&
+        {!!errorsToShow?.length && (
           <div className="govuk-error-summary" data-module="govuk-error-summary">
             <div role="alert">
-              <h2 className="govuk-error-summary__title">
-              There is a problem
-              </h2>
+              <h2 className="govuk-error-summary__title">There is a problem</h2>
               <div className="govuk-error-summary__body">
                 <ul className="govuk-list govuk-error-summary__list">
                   {errorsToShow.map((error) => (
@@ -102,12 +97,10 @@ const ApplicantTravelForm = () => {
               </div>
             </div>
           </div>
-        }
-        
+        )}
+
         <div ref={visaTypeRef}>
-          <h2 className="govuk-label govuk-label--m">
-            Visa type
-          </h2>
+          <h2 className="govuk-label govuk-label--m">Visa type</h2>
           <Dropdown
             id="visa-type"
             options={visaOptions}
@@ -118,9 +111,7 @@ const ApplicantTravelForm = () => {
           />
         </div>
 
-        <h2 className="govuk-label govuk-label--m">
-          Applicant&apos;s UK address
-        </h2>
+        <h2 className="govuk-label govuk-label--m">Applicant&apos;s UK address</h2>
 
         <div ref={addressLine1Ref}>
           <FreeText
@@ -175,9 +166,7 @@ const ApplicantTravelForm = () => {
         </div>
 
         <div ref={mobileNumberRef}>
-          <h2 className="govuk-label govuk-label--m">
-            Applicant&apos;s UK phone number
-          </h2>
+          <h2 className="govuk-label govuk-label--m">Applicant&apos;s UK phone number</h2>
           <FreeText
             id="mobile-number"
             errorMessage={errors?.ukMobileNumber?.message ?? ""}
@@ -190,9 +179,7 @@ const ApplicantTravelForm = () => {
         </div>
 
         <div ref={emailRef}>
-          <h2 className="govuk-label govuk-label--m">
-            Applicant&apos;s UK email
-          </h2>
+          <h2 className="govuk-label govuk-label--m">Applicant&apos;s UK email</h2>
           <FreeText
             id="email"
             errorMessage={errors?.ukEmail?.message ?? ""}
@@ -213,7 +200,7 @@ const ApplicantTravelForm = () => {
         />
       </form>
     </FormProvider>
-  )
-}
+  );
+};
 
 export default ApplicantTravelForm;

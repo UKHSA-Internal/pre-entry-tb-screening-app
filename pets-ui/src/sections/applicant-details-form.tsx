@@ -1,32 +1,23 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
 import { useEffect, useRef } from "react";
-import { useForm, SubmitHandler, FormProvider, Controller } from "react-hook-form"
-import { useNavigate, useLocation } from "react-router-dom";
-import { 
-  attributeToComponentId, 
-  formRegex, 
-  countryList, 
-  validateDate,
-} from "@/utils/helpers"
+import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import Button from "@/components/button/button"
-import FreeText from "@/components/freeText/freeText"
-import Radio from "@/components/radio/radio";
+import { ApplicantDetailsType } from "@/applicant";
+import Button from "@/components/button/button";
 import DateTextInput, { DateType } from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
-import { ButtonType, RadioIsInline } from "@/utils/enums";
-import { ApplicantDetailsType } from "@/applicant";
-
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { 
-  setFullName, 
-  setApplicantHomeAddress1, 
+import FreeText from "@/components/freeText/freeText";
+import Radio from "@/components/radio/radio";
+import {
+  selectApplicant,
+  setApplicantHomeAddress1,
   setApplicantHomeAddress2,
   setApplicantHomeAddress3,
   setCountry,
   setCountryOfIssue,
   setCountryOfNationality,
   setDob,
+  setFullName,
   setPassportExpiryDate,
   setPassportIssueDate,
   setPassportNumber,
@@ -34,40 +25,46 @@ import {
   setProvinceOrState,
   setSex,
   setTownOrCity,
-  selectApplicant
 } from "@/redux/applicantSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { attributeToComponentId, countryList, formRegex, validateDate } from "@/utils/helpers";
 
 const ApplicantForm = () => {
   const navigate = useNavigate();
 
-  const methods = useForm<ApplicantDetailsType>({reValidateMode: 'onSubmit'})
-  const { control, handleSubmit, formState: { errors } } = methods;
+  const methods = useForm<ApplicantDetailsType>({ reValidateMode: "onSubmit" });
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = methods;
 
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   const updateReduxStore = (applicantData: ApplicantDetailsType) => {
-    dispatch(setFullName(applicantData.fullName))
-    dispatch(setSex(applicantData.sex))
-    dispatch(setDob(applicantData.dateOfBirth))
-    dispatch(setCountryOfNationality(applicantData.countryOfNationality))
-    dispatch(setPassportNumber(applicantData.passportNumber))
-    dispatch(setCountryOfIssue(applicantData.countryOfIssue))
-    dispatch(setPassportIssueDate(applicantData.passportIssueDate))
-    dispatch(setPassportExpiryDate(applicantData.passportExpiryDate))
-    dispatch(setApplicantHomeAddress1(applicantData.applicantHomeAddress1))
-    dispatch(setApplicantHomeAddress2(applicantData.applicantHomeAddress2 ?? ""))
-    dispatch(setApplicantHomeAddress3(applicantData.applicantHomeAddress3 ?? ""))
-    dispatch(setTownOrCity(applicantData.townOrCity))
-    dispatch(setProvinceOrState(applicantData.provinceOrState))
-    dispatch(setCountry(applicantData.country))
-    dispatch(setPostcode(applicantData.postcode ?? ""))
-  }
+    dispatch(setFullName(applicantData.fullName));
+    dispatch(setSex(applicantData.sex));
+    dispatch(setDob(applicantData.dateOfBirth));
+    dispatch(setCountryOfNationality(applicantData.countryOfNationality));
+    dispatch(setPassportNumber(applicantData.passportNumber));
+    dispatch(setCountryOfIssue(applicantData.countryOfIssue));
+    dispatch(setPassportIssueDate(applicantData.passportIssueDate));
+    dispatch(setPassportExpiryDate(applicantData.passportExpiryDate));
+    dispatch(setApplicantHomeAddress1(applicantData.applicantHomeAddress1));
+    dispatch(setApplicantHomeAddress2(applicantData.applicantHomeAddress2 ?? ""));
+    dispatch(setApplicantHomeAddress3(applicantData.applicantHomeAddress3 ?? ""));
+    dispatch(setTownOrCity(applicantData.townOrCity));
+    dispatch(setProvinceOrState(applicantData.provinceOrState));
+    dispatch(setCountry(applicantData.country));
+    dispatch(setPostcode(applicantData.postcode ?? ""));
+  };
 
-  const applicantData = useAppSelector(selectApplicant)
+  const applicantData = useAppSelector(selectApplicant);
 
   const onSubmit: SubmitHandler<ApplicantDetailsType> = (data) => {
-    updateReduxStore(data)
-    navigate("/applicant-summary")
-  }
+    updateReduxStore(data);
+    navigate("/applicant-summary");
+  };
 
   const errorsToShow = Object.keys(errors);
 
@@ -92,21 +89,21 @@ const ApplicantForm = () => {
     if (location.hash) {
       const target = location.hash.substring(1);
       const refMap: { [key: string]: HTMLElement | null } = {
-        'name': nameRef.current,
-        'sex': sexRef.current,
-        'country-of-nationality': countryOfNationalityRef.current,
-        'birth-date': dateOfBirthRef.current,
-        'passport-number': passportNumberRef.current,
-        'country-of-issue': countryOfIssueRef.current,
-        'passport-issue-date': passportIssueDateRef.current,
-        'passport-expiry-date': passportExpiryDateRef.current,
-        'address-1': addressLine1Ref.current,
-        'address-2': addressLine2Ref.current,
-        'address-3': addressLine3Ref.current,
-        'town-or-city': townRef.current,
-        'province-or-state': provinceRef.current,
-        'address-country': addressCountryRef.current,
-        'postcode': postcodeRef.current,
+        name: nameRef.current,
+        sex: sexRef.current,
+        "country-of-nationality": countryOfNationalityRef.current,
+        "birth-date": dateOfBirthRef.current,
+        "passport-number": passportNumberRef.current,
+        "country-of-issue": countryOfIssueRef.current,
+        "passport-issue-date": passportIssueDateRef.current,
+        "passport-expiry-date": passportExpiryDateRef.current,
+        "address-1": addressLine1Ref.current,
+        "address-2": addressLine2Ref.current,
+        "address-3": addressLine3Ref.current,
+        "town-or-city": townRef.current,
+        "province-or-state": provinceRef.current,
+        "address-country": addressCountryRef.current,
+        postcode: postcodeRef.current,
       };
 
       const targetRef = refMap[target];
@@ -119,12 +116,10 @@ const ApplicantForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {!!errorsToShow?.length &&
+        {!!errorsToShow?.length && (
           <div className="govuk-error-summary" data-module="govuk-error-summary">
             <div role="alert">
-              <h2 className="govuk-error-summary__title">
-              There is a problem
-              </h2>
+              <h2 className="govuk-error-summary__title">There is a problem</h2>
               <div className="govuk-error-summary__body">
                 <ul className="govuk-list govuk-error-summary__list">
                   {errorsToShow.map((error) => (
@@ -138,11 +133,9 @@ const ApplicantForm = () => {
               </div>
             </div>
           </div>
-        }
-        
-        <h2 className="govuk-label govuk-label--m">
-          Applicant&apos;s Personal Details
-        </h2>
+        )}
+
+        <h2 className="govuk-label govuk-label--m">Applicant&apos;s Personal Details</h2>
 
         <div ref={nameRef}>
           <FreeText
@@ -151,7 +144,7 @@ const ApplicantForm = () => {
             errorMessage={errors?.fullName?.message ?? ""}
             formValue="fullName"
             required="Enter the applicant's full name."
-            patternValue={formRegex.lettersAndSpaces}
+            patternValue={formRegex.fullName}
             patternError="Full name must contain only letters and spaces."
             defaultValue={applicantData.fullName}
           />
@@ -178,7 +171,7 @@ const ApplicantForm = () => {
             options={countryList}
             errorMessage={errors?.countryOfNationality?.message ?? ""}
             formValue="countryOfNationality"
-            required="Select a country."
+            required="Select the country of nationality."
             defaultValue={applicantData.countryOfNationality}
           />
         </div>
@@ -190,16 +183,16 @@ const ApplicantForm = () => {
             defaultValue={{
               day: applicantData.dateOfBirth.day,
               month: applicantData.dateOfBirth.month,
-              year: applicantData.dateOfBirth.year
-            }} 
+              year: applicantData.dateOfBirth.year,
+            }}
             rules={{
               validate: (value: DateType) => validateDate(value, "dateOfBirth"),
             }}
             render={({ field: { value, onChange } }) => (
-              <DateTextInput 
+              <DateTextInput
                 legend="Date of Birth"
                 hint="For example, 31 3 2019"
-                value={value} 
+                value={value}
                 setDateValue={onChange}
                 id={"birth-date"}
                 autocomplete={false}
@@ -230,7 +223,7 @@ const ApplicantForm = () => {
             options={countryList}
             errorMessage={errors?.countryOfIssue?.message ?? ""}
             formValue="countryOfIssue"
-            required="Select a country."
+            required="Select the country of issue."
             defaultValue={applicantData.countryOfIssue}
           />
         </div>
@@ -242,16 +235,16 @@ const ApplicantForm = () => {
             defaultValue={{
               day: applicantData.passportIssueDate.day,
               month: applicantData.passportIssueDate.month,
-              year: applicantData.passportIssueDate.year
-            }} 
+              year: applicantData.passportIssueDate.year,
+            }}
             rules={{
               validate: (value: DateType) => validateDate(value, "passportIssueDate"),
             }}
             render={({ field: { value, onChange } }) => (
-              <DateTextInput 
+              <DateTextInput
                 legend="Issue Date"
                 hint="For example, 31 3 2019"
-                value={value} 
+                value={value}
                 setDateValue={onChange}
                 id={"passport-issue-date"}
                 autocomplete={false}
@@ -268,16 +261,16 @@ const ApplicantForm = () => {
             defaultValue={{
               day: applicantData.passportExpiryDate.day,
               month: applicantData.passportExpiryDate.month,
-              year: applicantData.passportExpiryDate.year
-            }} 
+              year: applicantData.passportExpiryDate.year,
+            }}
             rules={{
               validate: (value: DateType) => validateDate(value, "passportExpiryDate"),
             }}
             render={({ field: { value, onChange } }) => (
-              <DateTextInput 
+              <DateTextInput
                 legend="Expiry Date"
                 hint="For example, 31 3 2019"
-                value={value} 
+                value={value}
                 setDateValue={onChange}
                 id="passport-expiry-date"
                 autocomplete={false}
@@ -338,7 +331,7 @@ const ApplicantForm = () => {
             defaultValue={applicantData.townOrCity}
           />
         </div>
-        
+
         <div ref={provinceRef}>
           <FreeText
             id="province-or-state"
@@ -359,7 +352,7 @@ const ApplicantForm = () => {
             options={countryList}
             errorMessage={errors?.country?.message ?? ""}
             formValue="country"
-            required="Select a country."
+            required="Enter the country of the applicant's home address."
             defaultValue={applicantData.country}
           />
         </div>
@@ -386,7 +379,7 @@ const ApplicantForm = () => {
         />
       </form>
     </FormProvider>
-  )
-}
+  );
+};
 
 export default ApplicantForm;

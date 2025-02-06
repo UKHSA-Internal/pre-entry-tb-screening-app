@@ -1,22 +1,15 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
 import { useEffect, useRef } from "react";
-import { useForm, SubmitHandler, FormProvider } from "react-hook-form"
-import { useNavigate, useLocation } from "react-router-dom";
-import { 
-  attributeToComponentId, 
-  formRegex, 
-} from "@/utils/helpers"
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import Button from "@/components/button/button"
+import { MedicalScreeningType } from "@/applicant";
+import Button from "@/components/button/button";
 import Checkbox from "@/components/checkbox/checkbox";
-import FreeText from "@/components/freeText/freeText"
+import FreeText from "@/components/freeText/freeText";
 import Radio from "@/components/radio/radio";
 import TextArea from "@/components/textArea/textArea";
-import { ButtonType, RadioIsInline } from "@/utils/enums";
-import { MedicalScreeningType } from "@/applicant";
-
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/applicantSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   selectMedicalScreening,
   setAge,
@@ -31,51 +24,46 @@ import {
   setTbSymptoms,
   setTbSymptomsList,
   setUnderElevenConditions,
-  setUnderElevenConditionsDetail
+  setUnderElevenConditionsDetail,
 } from "@/redux/medicalScreeningSlice";
+import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { attributeToComponentId, formRegex } from "@/utils/helpers";
 
 const MedicalScreeningForm = () => {
   const navigate = useNavigate();
 
-  const methods = useForm<MedicalScreeningType>({reValidateMode: 'onSubmit'})
-  const { handleSubmit, formState: { errors } } = methods;
+  const methods = useForm<MedicalScreeningType>({ reValidateMode: "onSubmit" });
+  const {
+    handleSubmit,
+    formState: { errors },
+  } = methods;
 
-  const applicantData = useAppSelector(selectApplicant)
-  const medicalData = useAppSelector(selectMedicalScreening)
-  const dispatch = useAppDispatch()
+  const applicantData = useAppSelector(selectApplicant);
+  const medicalData = useAppSelector(selectMedicalScreening);
+  const dispatch = useAppDispatch();
   const updateReduxStore = (medicalScreeningData: MedicalScreeningType) => {
-    dispatch(setAge(medicalScreeningData.age))
-    dispatch(setTbSymptoms(medicalScreeningData.tbSymptoms))
-    dispatch(setTbSymptomsList(medicalScreeningData.tbSymptomsList))
-    dispatch(setOtherSymptomsDetail(medicalScreeningData.otherSymptomsDetail))
-    dispatch(setUnderElevenConditions(medicalScreeningData.underElevenConditions))
-    dispatch(setUnderElevenConditionsDetail(medicalScreeningData.underElevenConditionsDetail))
-    dispatch(setPreviousTb(medicalScreeningData.previousTb))
-    dispatch(setPreviousTbDetail(medicalScreeningData.previousTbDetail))
-    dispatch(setCloseContactWithTb(medicalScreeningData.closeContactWithTb))
-    dispatch(setCloseContactWithTbDetail(medicalScreeningData.closeContactWithTbDetail))
-    dispatch(setPregnant(medicalScreeningData.pregnant))
-    dispatch(setMenstrualPeriods(medicalScreeningData.menstrualPeriods))
-    dispatch(setPhysicalExamNotes(medicalScreeningData.physicalExamNotes))
-  }
+    dispatch(setAge(medicalScreeningData.age));
+    dispatch(setTbSymptoms(medicalScreeningData.tbSymptoms));
+    dispatch(setTbSymptomsList(medicalScreeningData.tbSymptomsList));
+    dispatch(setOtherSymptomsDetail(medicalScreeningData.otherSymptomsDetail));
+    dispatch(setUnderElevenConditions(medicalScreeningData.underElevenConditions));
+    dispatch(setUnderElevenConditionsDetail(medicalScreeningData.underElevenConditionsDetail));
+    dispatch(setPreviousTb(medicalScreeningData.previousTb));
+    dispatch(setPreviousTbDetail(medicalScreeningData.previousTbDetail));
+    dispatch(setCloseContactWithTb(medicalScreeningData.closeContactWithTb));
+    dispatch(setCloseContactWithTbDetail(medicalScreeningData.closeContactWithTbDetail));
+    dispatch(setPregnant(medicalScreeningData.pregnant));
+    dispatch(setMenstrualPeriods(medicalScreeningData.menstrualPeriods));
+    dispatch(setPhysicalExamNotes(medicalScreeningData.physicalExamNotes));
+  };
 
   const onSubmit: SubmitHandler<MedicalScreeningType> = (data) => {
-    try {
-      updateReduxStore(data)
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      // TO DO: post medical screening info using application service
-      navigate("/medical-summary")
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Error submitting POST request:")
-        console.error(error?.message);
-      } else {
-        console.error("Error submitting POST request: unknown error type")
-        console.error(error);
-      }
-    }
-  }
+    updateReduxStore(data);
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    // TO DO: post medical screening info using application service
+    navigate("/medical-summary");
+  };
 
   const errorsToShow = Object.keys(errors);
 
@@ -98,19 +86,19 @@ const MedicalScreeningForm = () => {
     if (location.hash) {
       const target = location.hash.substring(1);
       const refMap: { [key: string]: HTMLElement | null } = {
-        'age': ageRef.current,
-        'tb-symptoms': tbSymptomsRef.current,
-        'tb-symptoms-list': tbSymptomsListRef.current,
-        'other-symptoms-detail': otherSymptomsDetailRef.current,
-        'under-eleven-conditions': underElevenConditionsRef.current,
-        'under-eleven-conditions-detail': underElevenConditionsDetailRef.current,
-        'previous-tb': previousTbRef.current,
-        'previous-tb-detail': previousTbDetailRef.current,
-        'close-contact-with-tb': closeContactWithTbRef.current,
-        'close-contact-with-tb-detail': closeContactWithTbDetailRef.current,
-        'pregnant': pregnantRef.current,
-        'menstrual-periods': menstrualPeriodsRef.current,
-        'physical-exam-notes': physicalExamNotesRef.current,
+        age: ageRef.current,
+        "tb-symptoms": tbSymptomsRef.current,
+        "tb-symptoms-list": tbSymptomsListRef.current,
+        "other-symptoms-detail": otherSymptomsDetailRef.current,
+        "under-eleven-conditions": underElevenConditionsRef.current,
+        "under-eleven-conditions-detail": underElevenConditionsDetailRef.current,
+        "previous-tb": previousTbRef.current,
+        "previous-tb-detail": previousTbDetailRef.current,
+        "close-contact-with-tb": closeContactWithTbRef.current,
+        "close-contact-with-tb-detail": closeContactWithTbDetailRef.current,
+        pregnant: pregnantRef.current,
+        "menstrual-periods": menstrualPeriodsRef.current,
+        "physical-exam-notes": physicalExamNotesRef.current,
       };
 
       const targetRef = refMap[target];
@@ -123,12 +111,10 @@ const MedicalScreeningForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {!!errorsToShow?.length &&
+        {!!errorsToShow?.length && (
           <div className="govuk-error-summary" data-module="govuk-error-summary">
             <div role="alert">
-              <h2 className="govuk-error-summary__title">
-              There is a problem
-              </h2>
+              <h2 className="govuk-error-summary__title">There is a problem</h2>
               <div className="govuk-error-summary__body">
                 <ul className="govuk-list govuk-error-summary__list">
                   {errorsToShow.map((error) => (
@@ -142,33 +128,24 @@ const MedicalScreeningForm = () => {
               </div>
             </div>
           </div>
-        }
+        )}
 
         <div>
           <dl className="govuk-summary-list">
             <div className="govuk-summary-list__row">
-              <dt className="govuk-summary-list__key">
-                Name
-              </dt>
+              <dt className="govuk-summary-list__key">Name</dt>
+              <dd className="govuk-summary-list__value">{applicantData.fullName}</dd>
+            </div>
+            <div className="govuk-summary-list__row">
+              <dt className="govuk-summary-list__key">Date of Birth</dt>
               <dd className="govuk-summary-list__value">
-                {applicantData.fullName}
+                {applicantData.dateOfBirth.day}/{applicantData.dateOfBirth.month}/
+                {applicantData.dateOfBirth.year}
               </dd>
             </div>
             <div className="govuk-summary-list__row">
-              <dt className="govuk-summary-list__key">
-                Date of Birth
-              </dt>
-              <dd className="govuk-summary-list__value">
-                {applicantData.dateOfBirth.day}/{applicantData.dateOfBirth.month}/{applicantData.dateOfBirth.year}
-              </dd>
-            </div>
-            <div className="govuk-summary-list__row">
-              <dt className="govuk-summary-list__key">
-                Passport Number
-              </dt>
-              <dd className="govuk-summary-list__value">
-                {applicantData.passportNumber}
-              </dd>
+              <dt className="govuk-summary-list__key">Passport Number</dt>
+              <dd className="govuk-summary-list__value">{applicantData.passportNumber}</dd>
             </div>
           </dl>
         </div>
@@ -206,7 +183,14 @@ const MedicalScreeningForm = () => {
           <Checkbox
             id="tb-symptoms-list"
             legend="If yes, select which symptoms"
-            answerOptions={["Cough", "Night sweats", "Haemoptysis (coughing up blood)", "Weight loss", "Fever", "Other symptoms"]}
+            answerOptions={[
+              "Cough",
+              "Night sweats",
+              "Haemoptysis (coughing up blood)",
+              "Weight loss",
+              "Fever",
+              "Other symptoms",
+            ]}
             sortAnswersAlphabetically={false}
             errorMessage={errors?.tbSymptomsList?.message ?? ""}
             formValue="tbSymptomsList"
@@ -231,8 +215,16 @@ const MedicalScreeningForm = () => {
           <Checkbox
             id="under-eleven-conditions"
             legend="If the applicant is a child aged under 11, have they ever had:"
-            answerOptions={["Thoracic surgery", "Cyanosis", "Chronic respiratory disease", "Respiratory insufficiency that limits activity"]}
-            exclusiveAnswerOptions={["None of these", "Not applicable - applicant is aged 11 or over"]}
+            answerOptions={[
+              "Thoracic surgery",
+              "Cyanosis",
+              "Chronic respiratory disease",
+              "Respiratory insufficiency that limits activity",
+            ]}
+            exclusiveAnswerOptions={[
+              "None of these",
+              "Not applicable - applicant is aged 11 or over",
+            ]}
             sortAnswersAlphabetically={false}
             errorMessage={errors?.underElevenConditions?.message ?? ""}
             formValue="underElevenConditions"
@@ -244,7 +236,7 @@ const MedicalScreeningForm = () => {
         <div ref={underElevenConditionsDetailRef}>
           <TextArea
             id="under-eleven-conditions-detail"
-            label='You can give details of the procedure or condition'
+            label="You can give details of the procedure or condition"
             errorMessage={errors?.underElevenConditionsDetail?.message ?? ""}
             formValue="underElevenConditionsDetail"
             required={false}
@@ -270,7 +262,7 @@ const MedicalScreeningForm = () => {
         <div ref={previousTbDetailRef}>
           <TextArea
             id="previous-tb-detail"
-            label='If yes, give details'
+            label="If yes, give details"
             errorMessage={errors?.previousTbDetail?.message ?? ""}
             formValue="previousTbDetail"
             required={false}
@@ -297,7 +289,7 @@ const MedicalScreeningForm = () => {
         <div ref={closeContactWithTbDetailRef}>
           <TextArea
             id="close-contact-with-tb-detail"
-            label='If yes, give details'
+            label="If yes, give details"
             errorMessage={errors?.closeContactWithTbDetail?.message ?? ""}
             formValue="closeContactWithTbDetail"
             required={false}
@@ -337,7 +329,7 @@ const MedicalScreeningForm = () => {
         <div ref={physicalExamNotesRef}>
           <TextArea
             id="physical-exam-notes"
-            label='Physical examination notes'
+            label="Physical examination notes"
             errorMessage={errors?.physicalExamNotes?.message ?? ""}
             formValue="physicalExamNotes"
             required={false}
@@ -355,7 +347,7 @@ const MedicalScreeningForm = () => {
         />
       </form>
     </FormProvider>
-  )
-}
+  );
+};
 
 export default MedicalScreeningForm;

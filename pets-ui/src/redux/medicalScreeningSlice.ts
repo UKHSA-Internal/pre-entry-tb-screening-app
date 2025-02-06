@@ -1,7 +1,8 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '@redux/store';
-import { MedicalScreeningType } from '@/applicant';
-import { ApplicationStatus } from '@/utils/enums';
+import { RootState } from "@redux/store";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+import { MedicalScreeningType } from "@/applicant";
+import { ApplicationStatus } from "@/utils/enums";
 
 const initialState: MedicalScreeningType = {
   status: ApplicationStatus.INCOMPLETE,
@@ -21,7 +22,7 @@ const initialState: MedicalScreeningType = {
 };
 
 export const medicalScreeningSlice = createSlice({
-  name: 'medicalScreeningDetails',
+  name: "medicalScreeningDetails",
   initialState,
   reducers: {
     setMedicalScreeningStatus: (state, action: PayloadAction<ApplicationStatus>) => {
@@ -34,13 +35,13 @@ export const medicalScreeningSlice = createSlice({
       state.tbSymptoms = action.payload;
     },
     setTbSymptomsList: (state, action: PayloadAction<string[] | false>) => {
-      state.tbSymptomsList = action.payload ? [...action.payload] : []
+      state.tbSymptomsList = action.payload ? [...action.payload] : [];
     },
     setOtherSymptomsDetail: (state, action: PayloadAction<string>) => {
       state.otherSymptomsDetail = action.payload;
     },
     setUnderElevenConditions: (state, action: PayloadAction<string[] | false>) => {
-      state.underElevenConditions = action.payload ? [...action.payload] : []
+      state.underElevenConditions = action.payload ? [...action.payload] : [];
     },
     setUnderElevenConditionsDetail: (state, action: PayloadAction<string>) => {
       state.underElevenConditionsDetail = action.payload;
@@ -85,7 +86,6 @@ export const medicalScreeningSlice = createSlice({
   },
 });
 
-
 export const {
   setMedicalScreeningStatus,
   setAge,
@@ -106,4 +106,4 @@ export const {
 
 export const medicalScreeningReducer = medicalScreeningSlice.reducer;
 
-export const selectMedicalScreening = (state: RootState) => state.medicalScreening
+export const selectMedicalScreening = (state: RootState) => state.medicalScreening;

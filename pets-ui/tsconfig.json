@@ -1,5 +1,11 @@
 {
   "files": [],
+  "compilerOptions": {
+    "composite": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+  },
+  "exclude": ["cypress", "node_modules"],
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.vite.json" }

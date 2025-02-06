@@ -1,7 +1,8 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '@redux/store';
-import { ApplicationStatus } from '@/utils/enums';
-import { ApplicantDetailsType, DateType } from '@/applicant';
+import { RootState } from "@redux/store";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+import { ApplicantDetailsType, DateType } from "@/applicant";
+import { ApplicationStatus } from "@/utils/enums";
 
 const initialState: ApplicantDetailsType = {
   status: ApplicationStatus.INCOMPLETE,
@@ -10,7 +11,7 @@ const initialState: ApplicantDetailsType = {
   dateOfBirth: {
     year: "",
     month: "",
-    day: ""
+    day: "",
   },
   countryOfNationality: "",
   passportNumber: "",
@@ -18,12 +19,12 @@ const initialState: ApplicantDetailsType = {
   passportIssueDate: {
     year: "",
     month: "",
-    day: ""
+    day: "",
   },
   passportExpiryDate: {
     year: "",
     month: "",
-    day: ""
+    day: "",
   },
   applicantHomeAddress1: "",
   applicantHomeAddress2: "",
@@ -31,11 +32,11 @@ const initialState: ApplicantDetailsType = {
   townOrCity: "",
   provinceOrState: "",
   country: "",
-  postcode: ""
+  postcode: "",
 };
 
 export const applicantSlice = createSlice({
-  name: 'applicantDetails',
+  name: "applicantDetails",
   initialState,
   reducers: {
     setApplicantDetailsStatus: (state, action: PayloadAction<ApplicationStatus>) => {
@@ -88,12 +89,12 @@ export const applicantSlice = createSlice({
     },
     clearApplicantDetails: (state) => {
       state.status = ApplicationStatus.INCOMPLETE;
-      state.fullName = '';
-      state.sex = '';
+      state.fullName = "";
+      state.sex = "";
       state.dateOfBirth = {
         year: "",
         month: "",
-        day: ""
+        day: "",
       };
       state.countryOfNationality = "";
       state.passportNumber = "";
@@ -101,12 +102,12 @@ export const applicantSlice = createSlice({
       state.passportIssueDate = {
         year: "",
         month: "",
-        day: ""
+        day: "",
       };
       state.passportExpiryDate = {
         year: "",
         month: "",
-        day: ""
+        day: "",
       };
       state.applicantHomeAddress1 = "";
       state.applicantHomeAddress2 = "";
@@ -118,7 +119,6 @@ export const applicantSlice = createSlice({
     },
   },
 });
-
 
 export const {
   setApplicantDetailsStatus,
@@ -142,4 +142,4 @@ export const {
 
 export const applicantReducer = applicantSlice.reducer;
 
-export const selectApplicant = (state: RootState) => state.applicant
+export const selectApplicant = (state: RootState) => state.applicant;

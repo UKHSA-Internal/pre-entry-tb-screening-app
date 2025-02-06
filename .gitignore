@@ -1,8 +1,9 @@
 # Idea specific hidden files
 .idea/**
+.history
 
 # Node specific files
-node_modules/**
+node_modules/
 
 # Serverless specific files
 .serverless
@@ -32,10 +33,14 @@ Temporary Items
 .apdisk
 
 # env
-.env
+.env.local
 
 # jest
 pets.code-workspace
 
 # aws
 *.pkg
+
+# local development files
+.localstack-data
+openapi-docs.json

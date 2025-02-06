@@ -1,53 +1,54 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
-import { useForm, SubmitHandler, FormProvider } from "react-hook-form"
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import { formRegex, countryList } from "@/utils/helpers"
-import Button from "@/components/button/button"
-import FreeText from "@/components/freeText/freeText"
+import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
+import FreeText from "@/components/freeText/freeText";
+import { setCountryOfIssue, setPassportNumber } from "@/redux/applicantSlice";
+import { useAppDispatch } from "@/redux/hooks";
 import { ButtonType } from "@/utils/enums";
+import { countryList, formRegex } from "@/utils/helpers";
 
-type ApplicantSearchFormType  = {
-  passportNumber: string
-  countryOfIssue: string
-}
+type ApplicantSearchFormType = {
+  passportNumber: string;
+  countryOfIssue: string;
+};
 
 const ApplicantSearchForm = () => {
   const navigate = useNavigate();
 
-  const methods = useForm<ApplicantSearchFormType>({reValidateMode: 'onSubmit'})
+  const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
+  const {
+    handleSubmit,
+    formState: { errors },
+  } = methods;
 
-  const { handleSubmit, formState: { errors } } = methods;
+  const dispatch = useAppDispatch();
+  const updateReduxStore = (applicantSearchData: ApplicantSearchFormType) => {
+    dispatch(setPassportNumber(applicantSearchData.passportNumber));
+    dispatch(setCountryOfIssue(applicantSearchData.countryOfIssue));
+  };
 
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (data) => {
-    try {
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      await fetch(`http://localhost:3005/dev/applicant-details?passportNumber=${data.passportNumber}&countryOfIssue=${data.countryOfIssue}`, {
-          method: "GET",
-          headers: myHeaders,
-      })
-      .then(() => {
-        // TO DO: set state here to retrieve on confirmation page
-        navigate("/applicant-results")
-      })
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Error submitting POST request:")
-        console.error(error?.message);
-      } else {
-        console.error("Error submitting POST request: unknown error type")
-        console.error(error);
-      }
-    }
-  }
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    await fetch(
+      `http://localhost:3005/dev/applicant-details?passportNumber=${data.passportNumber}&countryOfIssue=${data.countryOfIssue}`,
+      {
+        method: "GET",
+        headers: myHeaders,
+      },
+    ).then(() => {
+      updateReduxStore(data);
+      navigate("/applicant-results");
+    });
+  };
 
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <FreeText
-          id="passportNumber"
+          id="passport-number"
           label="Applicant's Passport Number"
           errorMessage={errors?.passportNumber?.message ?? ""}
           formValue="passportNumber"
@@ -63,7 +64,7 @@ const ApplicantSearchForm = () => {
           options={countryList}
           errorMessage={errors?.countryOfIssue?.message ?? ""}
           formValue="countryOfIssue"
-          required="Select a country."
+          required="Select the country of issue."
         />
 
         <Button
@@ -75,7 +76,7 @@ const ApplicantSearchForm = () => {
         />
       </form>
     </FormProvider>
-  )
-}
+  );
+};
 
 export default ApplicantSearchForm;

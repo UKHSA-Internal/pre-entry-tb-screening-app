@@ -1,7 +1,8 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '@redux/store';
-import { TravelDetailsType } from '@/applicant';
-import { ApplicationStatus } from '@/utils/enums';
+import { RootState } from "@redux/store";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+import { TravelDetailsType } from "@/applicant";
+import { ApplicationStatus } from "@/utils/enums";
 
 const initialState: TravelDetailsType = {
   status: ApplicationStatus.INCOMPLETE,
@@ -15,7 +16,7 @@ const initialState: TravelDetailsType = {
 };
 
 export const travelSlice = createSlice({
-  name: 'travelDetails',
+  name: "travelDetails",
   initialState,
   reducers: {
     setTravelDetailsStatus: (state, action: PayloadAction<ApplicationStatus>) => {
@@ -44,17 +45,16 @@ export const travelSlice = createSlice({
     },
     clearTravelDetails: (state) => {
       state.status = ApplicationStatus.INCOMPLETE;
-      state.visaType = '';
-      state.applicantUkAddress1 = '';
-      state.applicantUkAddress2 = '';
-      state.townOrCity = '';
-      state.postcode = '';
-      state.ukMobileNumber = '';
-      state.ukEmail = '';
+      state.visaType = "";
+      state.applicantUkAddress1 = "";
+      state.applicantUkAddress2 = "";
+      state.townOrCity = "";
+      state.postcode = "";
+      state.ukMobileNumber = "";
+      state.ukEmail = "";
     },
   },
 });
-
 
 export const {
   setTravelDetailsStatus,
@@ -70,4 +70,4 @@ export const {
 
 export const travelReducer = travelSlice.reducer;
 
-export const selectTravel = (state: RootState) => state.travel
+export const selectTravel = (state: RootState) => state.travel;

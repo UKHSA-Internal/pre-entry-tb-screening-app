@@ -13,10 +13,10 @@ export default function Header() {
         </div>
         <div className="govuk-header__content">
           <a href="/" className="govuk-header__link govuk-header__service-name">
-          Complete UK Pre-Entry Health Screening
+            Complete UK Pre-Entry Health Screening
           </a>
         </div>
       </div>
     </header>
-  )
+  );
 }

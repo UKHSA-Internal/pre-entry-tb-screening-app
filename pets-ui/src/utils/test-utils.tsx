@@ -1,14 +1,12 @@
-import React, { PropsWithChildren } from 'react'
-import { render } from '@testing-library/react'
-import type { RenderOptions } from '@testing-library/react'
-import { Provider } from 'react-redux'
-import type { AppStore, RootState } from '@/redux/store'
-import { setupStore } from '@/redux/store'
+import { render, RenderOptions } from "@testing-library/react";
+import React, { PropsWithChildren } from "react";
+import { Provider } from "react-redux";
 
+import { AppStore, RootState, setupStore } from "@/redux/store";
 
-interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
-  preloadedState?: Partial<RootState>
-  store?: AppStore
+interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
+  preloadedState?: Partial<RootState>;
+  store?: AppStore;
 }
 
 export function renderWithProviders(
@@ -17,14 +15,14 @@ export function renderWithProviders(
     preloadedState = {},
     store = setupStore(preloadedState),
     ...renderOptions
-  }: ExtendedRenderOptions = {}
+  }: ExtendedRenderOptions = {},
 ) {
   function Wrapper({ children }: PropsWithChildren<object>): JSX.Element {
-    return <Provider store={store}>{children}</Provider>
+    return <Provider store={store}>{children}</Provider>;
   }
 
   return {
     store,
-    ...render(ui, { wrapper: Wrapper, ...renderOptions })
-  }
+    ...render(ui, { wrapper: Wrapper, ...renderOptions }),
+  };
 }
