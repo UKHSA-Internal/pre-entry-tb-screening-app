@@ -98,7 +98,7 @@ const ChestXrayForm = () => {
   const onSubmit: SubmitHandler<ChestXrayType> = (data) => {
     updateReduxStore(data);
     // upload files to API
-    navigate("/tracker");
+    navigate("/radiology-results");
   };
 
   const methods = useForm<ChestXrayType>({ reValidateMode: "onSubmit" });
@@ -192,7 +192,6 @@ const ChestXrayForm = () => {
           <div>
             <Radio
               id="lateralDecubitus"
-              // legend="Does the applicant require a lateral decubitus  X-ray?"
               isInline={RadioIsInline.TRUE}
               answerOptions={["Yes", "No"]}
               sortAnswersAlphabetically={false}

@@ -61,6 +61,7 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
               id="fileInput"
               className="govuk-file-upload"
               type="file"
+              data-testid={props.id}
               accept={props.accept} // Set the accept attribute
               {...register(props.formValue, {
                 required: props.required,
