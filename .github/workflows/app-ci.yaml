@@ -2,7 +2,6 @@ name: Pets UI CI
 
 on:
   pull_request:
-    paths: "pets-ui/**"
   workflow_dispatch:
 
 concurrency:
@@ -103,7 +102,6 @@ jobs:
         with:
           name: failed-tests-screenshots
           path: pets-ui/cypress/cypress/screenshots
-
 
   build:
     name: Create UI build
