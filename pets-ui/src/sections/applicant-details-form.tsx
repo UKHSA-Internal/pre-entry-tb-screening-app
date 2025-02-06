@@ -10,6 +10,7 @@ import FreeText from "@/components/freeText/freeText";
 import Radio from "@/components/radio/radio";
 import {
   selectApplicant,
+  setApplicantDetailsStatus,
   setApplicantHomeAddress1,
   setApplicantHomeAddress2,
   setApplicantHomeAddress3,
@@ -27,7 +28,7 @@ import {
   setTownOrCity,
 } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { ApplicationStatus, ButtonType, RadioIsInline } from "@/utils/enums";
 import { attributeToComponentId, countryList, formRegex, validateDate } from "@/utils/helpers";
 
 const ApplicantForm = () => {
@@ -42,6 +43,7 @@ const ApplicantForm = () => {
 
   const dispatch = useAppDispatch();
   const updateReduxStore = (applicantData: ApplicantDetailsType) => {
+    dispatch(setApplicantDetailsStatus(ApplicationStatus.COMPLETE));
     dispatch(setFullName(applicantData.fullName));
     dispatch(setSex(applicantData.sex));
     dispatch(setDob(applicantData.dateOfBirth));
