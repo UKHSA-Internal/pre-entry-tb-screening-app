@@ -1,1 +1,1 @@
-echo "resetting file"
+git checkout -q -- pets-core-services/openapi-docs.json
