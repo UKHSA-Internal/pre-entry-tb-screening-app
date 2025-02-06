@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/button/button";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { ButtonType } from "@/utils/enums";
+import { ApplicationStatus, ButtonType } from "@/utils/enums";
 
 const ProgressTracker = () => {
   const navigate = useNavigate();
@@ -43,21 +43,14 @@ const ProgressTracker = () => {
               Applicant Details
             </a>
           </div>
-          <div className="govuk-task-list__status">Completed</div>
-        </li>
-        <li className="govuk-task-list__item govuk-task-list__item--with-link">
-          <div className="govuk-task-list__name-and-hint">
-            <a
-              className="govuk-link govuk-task-list__link"
-              href="/contact"
-              onClick={() => navigate("/contact")}
-            >
-              Styling for incomplete
-            </a>
-          </div>
-          <div className="govuk-task-list__status">
-            <strong className="govuk-tag govuk-tag--blue">Incomplete</strong>
-          </div>
+          {applicantData.status == ApplicationStatus.INCOMPLETE && (
+            <div className="govuk-task-list__status">
+              <strong className="govuk-tag govuk-tag--blue">Incomplete</strong>
+            </div>
+          )}
+          {applicantData.status == ApplicationStatus.COMPLETE && (
+            <div className="govuk-task-list__status">Completed</div>
+          )}
         </li>
       </ul>
 
