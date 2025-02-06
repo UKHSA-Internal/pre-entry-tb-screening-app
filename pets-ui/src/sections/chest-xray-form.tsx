@@ -6,7 +6,14 @@ import Button from "@/components/button/button";
 import FileUpload from "@/components/fileUpload/fileUpload";
 import Radio from "@/components/radio/radio";
 import { selectApplicant } from "@/redux/applicantSlice";
-import { useAppSelector } from "@/redux/hooks";
+import {
+  setApicalLordoticXray,
+  setApicalLordoticXrayFile,
+  setLateralDecubitus,
+  setLateralDecubitusFile,
+  setPosteroAnteriorFile,
+} from "@/redux/chestXraySlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 // import { formatDate } from "@/utils/dates";
 // Dates to be pulled in from utils from another branch
 import { ButtonType, RadioIsInline } from "@/utils/enums";
@@ -76,23 +83,25 @@ const formTop = (
 
 const ChestXrayForm = () => {
   const applicantData = useAppSelector(selectApplicant);
-  // const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-  const onSubmit: SubmitHandler<MedicalScreeningType> = (data) => {
-    console.log("submit!");
-    console.log(data);
+  const updateReduxStore = (chestXrayData: ChestXrayType) => {
+    // TODO : Files, upload files ?
 
-    // Access the uploaded files
-    const posteroAnteriorFile = data.postero_anterior_view?.[0];
-    const apicalLordoticFile = data.apical_lordotic_view?.[0];
-    const lateralDecubitusFile = data.lateral_decubitus_view?.[0];
-
-    console.log("Postero-Anterior File:", posteroAnteriorFile);
-    console.log("Apical Lordotic File:", apicalLordoticFile);
-    console.log("Lateral Decubitus File:", lateralDecubitusFile);
+    // apical lordotic
+    dispatch(setApicalLordoticXray(chestXrayData.apicalLordoticXray));
+    // lateral decubitus
+    dispatch(setLateralDecubitus(chestXrayData.lateralDecubitus));
   };
 
-  const methods = useForm({ reValidateMode: "onSubmit" });
+  const onSubmit: SubmitHandler<ChestXrayType> = (data) => {
+    updateReduxStore(data);
+    // upload files to API
+    navigate("/tracker");
+  };
+
+  const methods = useForm<ChestXrayType>({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,
     formState: { errors },
@@ -103,8 +112,8 @@ const ChestXrayForm = () => {
   const [hasLateralDecubitus, setHaslateralDecubitus] = useState(false);
 
   // Watch the value of the radio button
-  const watchedApicalLordotic = watch("apical_lordotic");
-  const watchedLateralDecubitus = watch("lateral_decubitus");
+  const watchedApicalLordotic = watch("apicalLordoticXray") as unknown as string;
+  const watchedLateralDecubitus = watch("lateralDecubitus") as unknown as string;
 
   useEffect(() => {
     setHasApicalLordotic(watchedApicalLordotic === "yes" ? true : false);
@@ -129,12 +138,12 @@ const ChestXrayForm = () => {
               <dt className="govuk-summary-list__value">Postero-anterior view</dt>
               <dd className="govuk-summary-list__value">
                 <FileUpload
-                  id="postero_anterior_view"
-                  formValue="postero_anterior_view"
+                  id="posteroAnteriorFile"
+                  formValue="posteroAnteriorFile"
                   required="Please upload postero-anterior X-ray"
-                  errorMessage={errors?.postero_anterior_view?.message || ""}
+                  errorMessage={errors?.posteroAnteriorFile?.message || ""}
                   accept="jpg,jpeg,png,pdf"
-                  maxSize="5"
+                  maxSize={5}
                 />
               </dd>
             </div>
@@ -144,13 +153,13 @@ const ChestXrayForm = () => {
 
           <div>
             <Radio
-              id="apical_lordotic"
+              id="apicalLordoticXray"
               // legend="Does the applicant require an apical lordotic X-ray?"
               isInline={RadioIsInline.TRUE}
               answerOptions={["Yes", "No"]}
               sortAnswersAlphabetically={false}
-              errorMessage={errors?.apical_lordotic?.message || ""}
-              formValue="apical_lordotic"
+              errorMessage={errors?.apicalLordoticXray?.message || ""}
+              formValue="apicalLordoticXray"
               required="Please select whether the applicant require an apical lordotic X-ray."
             />
           </div>
@@ -167,12 +176,12 @@ const ChestXrayForm = () => {
               <dt className="govuk-summary-list__value">Apical lordotic view</dt>
               <dd className="govuk-summary-list__value">
                 <FileUpload
-                  id="apical_lordotic_view"
-                  formValue="apical_lordotic_view"
-                  errorMessage={errors?.apical_lordotic_view?.message || ""}
+                  id="apicalLordoticXrayFile"
+                  formValue="apicalLordoticXrayFile"
+                  errorMessage={errors?.apicalLordoticXrayFile?.message || ""}
                   required={hasApicalLordotic ? "Please upload Apical lordotic X-ray" : false}
                   accept="jpg,jpeg,png,pdf"
-                  maxSize="5"
+                  maxSize={5}
                 />
               </dd>
             </div>
@@ -182,13 +191,13 @@ const ChestXrayForm = () => {
 
           <div>
             <Radio
-              id="lateral_decubitus"
+              id="lateralDecubitus"
               // legend="Does the applicant require a lateral decubitus  X-ray?"
               isInline={RadioIsInline.TRUE}
               answerOptions={["Yes", "No"]}
               sortAnswersAlphabetically={false}
-              errorMessage={errors?.lateral_decubitus?.message || ""}
-              formValue="lateral_decubitus"
+              errorMessage={errors?.lateralDecubitus?.message || ""}
+              formValue="lateralDecubitus"
               required="Please select whether the applicant require a lateral decubitus X-ray."
             />
           </div>
@@ -205,12 +214,12 @@ const ChestXrayForm = () => {
               <dt className="govuk-summary-list__value">Lateral decubitus view</dt>
               <dd className="govuk-summary-list__value">
                 <FileUpload
-                  id="lateral_decubitus_view"
-                  formValue="lateral_decubitus_view"
-                  errorMessage={errors?.lateral_decubitus_view?.message || ""}
+                  id="lateralDecubitusFile"
+                  formValue="lateralDecubitusFile"
+                  errorMessage={errors?.lateralDecubitusFile?.message || ""}
                   required={hasLateralDecubitus ? "Please upload Lateral Decubitus X-ray" : false}
                   accept="jpg,jpeg,png,pdf"
-                  maxSize="5"
+                  maxSize={5}
                 />
               </dd>
             </div>

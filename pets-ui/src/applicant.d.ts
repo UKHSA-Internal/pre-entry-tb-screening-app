@@ -47,3 +47,11 @@ type TravelDetailsType = {
   ukMobileNumber?: string;
   ukEmail: string;
 };
+
+type ChestXrayType = {
+  posteroAnteriorFile: string;
+  apicalLordoticXray: boolean | string; // allows for yes -> true, no -> false
+  apicalLordoticXrayFile: string;
+  lateralDecubitus: boolean | string; // allows for yes -> true, no -> false
+  lateralDecubitusFile: string;
+};
