@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 import Button from "@/components/button/button";
+import FileUpload from "@/components/fileUpload/fileUpload";
 import Radio from "@/components/radio/radio";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { useAppSelector } from "@/redux/hooks";
@@ -78,13 +80,27 @@ const ChestXrayForm = () => {
 
   const onSubmit: SubmitHandler<MedicalScreeningType> = (data) => {
     console.log("submit!");
+    console.log(data);
   };
 
   const methods = useForm({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,
     formState: { errors },
+    watch,
   } = methods;
+
+  const [hasApicalLordotic, setHasApicalLordotic] = useState(false);
+  const [hasLateralDecubitus, setHaslateralDecubitus] = useState(false);
+
+  // Watch the value of the radio button
+  const watchedApicalLordotic = watch("apical_lordotic");
+  const watchedLateralDecubitus = watch("lateral_decubitus");
+
+  useEffect(() => {
+    setHasApicalLordotic(watchedApicalLordotic === "yes" ? true : false);
+    setHaslateralDecubitus(watchedLateralDecubitus === "yes" ? true : false);
+  }, [watchedApicalLordotic, watchedLateralDecubitus]);
 
   return (
     <FormProvider {...methods}>
@@ -103,11 +119,11 @@ const ChestXrayForm = () => {
             <div className="govuk-summary-list__row">
               <dt className="govuk-summary-list__value">Postero-anterior view</dt>
               <dd className="govuk-summary-list__value">
-                <input
-                  className="govuk-file-upload"
-                  id="file-upload-1"
-                  name="fileUpload1"
-                  type="file"
+                <FileUpload
+                  id="postero_anterior_view"
+                  formValue="postero_anterior_view"
+                  required="Please upload postero-anterior X-ray"
+                  errorMessage={errors?.postero_anterior_view?.message || ""}
                 />
               </dd>
             </div>
@@ -124,7 +140,7 @@ const ChestXrayForm = () => {
               sortAnswersAlphabetically={false}
               errorMessage={errors?.apical_lordotic?.message || ""}
               formValue="apical_lordotic"
-              required="Select whether the applicant require an apical lordotic X-ray."
+              required="Please select whether the applicant require an apical lordotic X-ray."
             />
           </div>
 
@@ -139,11 +155,11 @@ const ChestXrayForm = () => {
             <div className="govuk-summary-list__row">
               <dt className="govuk-summary-list__value">Apical lordotic view</dt>
               <dd className="govuk-summary-list__value">
-                <input
-                  className="govuk-file-upload"
-                  id="file-upload-1"
-                  name="fileUpload1"
-                  type="file"
+                <FileUpload
+                  id="apical_lordotic_view"
+                  formValue="apical_lordotic_view"
+                  errorMessage={errors?.apical_lordotic_view?.message || ""}
+                  required={hasApicalLordotic ? "Please upload Apical lordotic X-ray" : false}
                 />
               </dd>
             </div>
@@ -160,8 +176,7 @@ const ChestXrayForm = () => {
               sortAnswersAlphabetically={false}
               errorMessage={errors?.lateral_decubitus?.message || ""}
               formValue="lateral_decubitus"
-              required="Select whether the applicant require a lateral decubitus X-ray."
-              // defaultValue={""}
+              required="Please select whether the applicant require a lateral decubitus X-ray."
             />
           </div>
 
@@ -176,11 +191,11 @@ const ChestXrayForm = () => {
             <div className="govuk-summary-list__row">
               <dt className="govuk-summary-list__value">Lateral decubitus view</dt>
               <dd className="govuk-summary-list__value">
-                <input
-                  className="govuk-file-upload"
-                  id="file-upload-1"
-                  name="fileUpload1"
-                  type="file"
+                <FileUpload
+                  id="lateral_decubitus_view"
+                  formValue="lateral_decubitus_view"
+                  errorMessage={errors?.lateral_decubitus_view?.message || ""}
+                  required={hasLateralDecubitus ? "Please upload Lateral Decubitus X-ray" : false}
                 />
               </dd>
             </div>
@@ -191,7 +206,7 @@ const ChestXrayForm = () => {
             type={ButtonType.DEFAULT}
             text="Continue"
             href=""
-            // handleClick={() => ()}
+            handleClick={() => {}}
           />
         </div>
       </form>
