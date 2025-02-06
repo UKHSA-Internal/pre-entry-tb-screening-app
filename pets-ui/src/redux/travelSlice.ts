@@ -1,8 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@redux/store';
-
+import { TravelDetailsType } from '@/applicant';
+import { ApplicationStatus } from '@/utils/enums';
 
 const initialState: TravelDetailsType = {
+  status: ApplicationStatus.INCOMPLETE,
   visaType: "",
   applicantUkAddress1: "",
   applicantUkAddress2: "",
@@ -16,6 +18,9 @@ export const travelSlice = createSlice({
   name: 'travelDetails',
   initialState,
   reducers: {
+    setTravelDetailsStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+      state.status = action.payload;
+    },
     setVisaType: (state, action: PayloadAction<string>) => {
       state.visaType = action.payload;
     },
@@ -38,6 +43,7 @@ export const travelSlice = createSlice({
       state.ukEmail = action.payload;
     },
     clearTravelDetails: (state) => {
+      state.status = ApplicationStatus.INCOMPLETE;
       state.visaType = '';
       state.applicantUkAddress1 = '';
       state.applicantUkAddress2 = '';
@@ -51,6 +57,7 @@ export const travelSlice = createSlice({
 
 
 export const {
+  setTravelDetailsStatus,
   setVisaType,
   setApplicantUkAddress1,
   setApplicantUkAddress2,

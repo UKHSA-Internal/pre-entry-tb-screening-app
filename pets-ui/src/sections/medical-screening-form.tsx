@@ -13,6 +13,7 @@ import FreeText from "@/components/freeText/freeText"
 import Radio from "@/components/radio/radio";
 import TextArea from "@/components/textArea/textArea";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { MedicalScreeningType } from "@/applicant";
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/applicantSlice";
