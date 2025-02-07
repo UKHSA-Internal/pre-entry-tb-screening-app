@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import Button from "@/components/button/button";
 import { selectApplicant } from "@/redux/applicantSlice";
@@ -35,13 +35,16 @@ const ProgressTracker = () => {
       <ul className="govuk-task-list">
         <li className="govuk-task-list__item govuk-task-list__item--with-link">
           <div className="govuk-task-list__name-and-hint">
-            <a
-              className="govuk-link govuk-task-list__link"
-              href="/contact"
-              onClick={() => navigate("/contact")}
-            >
-              Applicant Details
-            </a>
+            {applicantData.status == ApplicationStatus.INCOMPLETE && (
+              <Link className="govuk-link govuk-task-list__link" to="/contact">
+                Applicant Details
+              </Link>
+            )}
+            {applicantData.status == ApplicationStatus.COMPLETE && (
+              <Link className="govuk-link govuk-task-list__link" to="/applicant-summary">
+                Applicant Details
+              </Link>
+            )}
           </div>
           {applicantData.status == ApplicationStatus.INCOMPLETE && (
             <div className="govuk-task-list__status">
