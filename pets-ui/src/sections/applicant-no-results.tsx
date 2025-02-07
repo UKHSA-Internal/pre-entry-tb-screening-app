@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 
 import StartButton from "@/components/startButton/startButton";
 import { selectApplicant } from "@/redux/applicantSlice";
@@ -22,14 +23,9 @@ const ApplicantEmptyResult = () => {
         handleClick={() => navigate("/contact")}
       />
       <br />
-      <a
-        className="govuk-link"
-        style={{ color: "#1d70b8" }}
-        onClick={() => navigate("/applicant-search")}
-        href="javascript:void(0);"
-      >
+      <Link className="govuk-link" style={{ color: "#1d70b8" }} to="/applicant-search">
         Search again
-      </a>
+      </Link>
     </main>
   );
 };
