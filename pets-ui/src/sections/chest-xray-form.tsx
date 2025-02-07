@@ -181,8 +181,7 @@ const ChestXrayForm = (props: Readonly<{ nextpage: string }>) => {
             id="continue"
             type={ButtonType.DEFAULT}
             text="Continue"
-            href=""
-            data-testid="continue"
+            href={props.nextpage}
             handleClick={() => {}}
           />
         </div>
