@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 import Button from "@/components/button/button";
@@ -7,7 +7,6 @@ import FileUpload from "@/components/fileUpload/fileUpload";
 import Radio from "@/components/radio/radio";
 import { selectApplicant } from "@/redux/applicantSlice";
 import {
-  selectChestXray,
   setApicalLordoticXray,
   setApicalLordoticXrayFile,
   setLateralDecubitus,
@@ -15,104 +14,57 @@ import {
   setPosteroAnteriorFile,
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-// import { formatDate } from "@/utils/dates";
-// Dates to be pulled in from utils from another branch
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 
-// This is temporarily needed here
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
-function getMonthName(monthNumber?: number | string): string | null {
-  const month = parseInt(monthNumber?.toString() || "", 10);
-
-  if (!isNaN(month) && month <= 12) {
-    return months[month - 1];
-  }
-  return "";
-}
-
-function formatDate(dateDict: {
-  year: number | string;
-  month: number | string;
-  day: number | string;
-}): string {
-  return `${dateDict.day} ${getMonthName(dateDict.month)} ${dateDict.year}`;
-}
-// end of temporary
-
-const formTop = (
-  fullName: string,
-  dateOfBirth: {
-    year: number | string;
-    month: number | string;
-    day: number | string;
-  },
-  passportNumber: string,
+const FileUploadModule = (
+  props: Readonly<{
+    id: string;
+    name: string;
+    setFileState: Dispatch<SetStateAction<string | null>>;
+    required: boolean;
+    errors: FieldErrors<ChestXrayType>;
+    accept?: string;
+    maxSize?: number;
+  }>,
 ) => {
   return (
-    <dl className="govuk-summary-list">
-      <div className="govuk-summary-list__row">
-        <dt className="govuk-summary-list__key">Name</dt>
-        <dd className="govuk-summary-list__value">NAME{fullName}</dd>
-      </div>
+    <div>
+      <dl className="govuk-summary-list">
+        <div className="govuk-summary-list__row">
+          <dt className="govuk-summary-list__key">Type of X-ray</dt>
+          <dt className="govuk-summary-list__key">File uploaded</dt>
+        </div>
 
-      <div className="govuk-summary-list__row">
-        <dt className="govuk-summary-list__key">Date of Birth</dt>
-        <dd className="govuk-summary-list__value">DOB{formatDate(dateOfBirth)}</dd>
-      </div>
-
-      <div className="govuk-summary-list__row">
-        <dt className="govuk-summary-list__key">Passport Number</dt>
-        <dd className="govuk-summary-list__value">PASSPORT{passportNumber}</dd>
-      </div>
-    </dl>
+        <div className="govuk-summary-list__row">
+          <dt className="govuk-summary-list__value">{props.name} view</dt>
+          <dd className="govuk-summary-list__value">
+            <FileUpload
+              id={props.id}
+              formValue={props.id}
+              required={props.required ? `Please upload ${props.name} X-ray` : false}
+              errorMessage={props.errors[props.id as keyof ChestXrayType]?.message || ""}
+              accept={props.accept || "jpg,jpeg,png,pdf"}
+              maxSize={props.maxSize || 5}
+              setFileState={props.setFileState}
+            />
+          </dd>
+        </div>
+      </dl>
+    </div>
   );
 };
 
-const ChestXrayForm = () => {
+const ChestXrayForm = (props: Readonly<{ nextpage: string }>) => {
   const applicantData = useAppSelector(selectApplicant);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const CXRData = useAppSelector(selectChestXray);
+
+  const [hasApicalLordotic, setHasApicalLordotic] = useState(false);
+  const [hasLateralDecubitus, setHaslateralDecubitus] = useState(false);
 
   const [PAFile, setPAFile] = useState<string | null>(null);
   const [ALFile, setALFile] = useState<string | null>(null);
   const [LDFile, setLDFile] = useState<string | null>(null);
-
-  const updateReduxStore = (chestXrayData: ChestXrayType) => {
-    // apical lordotic
-    dispatch(setApicalLordoticXray(chestXrayData.apicalLordoticXray));
-    // lateral decubitus
-    dispatch(setLateralDecubitus(chestXrayData.lateralDecubitus));
-
-    // set PA File
-    dispatch(setPosteroAnteriorFile(PAFile));
-    if (chestXrayData.apicalLordoticXray) {
-      dispatch(setApicalLordoticXrayFile(ALFile));
-    }
-    if (chestXrayData.lateralDecubitus) {
-      dispatch(setLateralDecubitusFile(LDFile));
-    }
-  };
-
-  const onSubmit: SubmitHandler<ChestXrayType> = (data) => {
-    updateReduxStore(data);
-    console.log(CXRData);
-    // navigate("/radiology-results");
-  };
 
   const methods = useForm<ChestXrayType>({ reValidateMode: "onSubmit" });
   const {
@@ -121,10 +73,23 @@ const ChestXrayForm = () => {
     watch,
   } = methods;
 
-  const [hasApicalLordotic, setHasApicalLordotic] = useState(false);
-  const [hasLateralDecubitus, setHaslateralDecubitus] = useState(false);
+  const onSubmit: SubmitHandler<ChestXrayType> = (data) => {
+    updateReduxStore(data);
+    navigate(props.nextpage);
+  };
 
-  // Watch the value of the radio button
+  const updateReduxStore = (chestXrayData: ChestXrayType) => {
+    // set Files
+    dispatch(setPosteroAnteriorFile(PAFile));
+    dispatch(setApicalLordoticXrayFile(ALFile));
+    dispatch(setLateralDecubitusFile(LDFile));
+
+    // set radio flags
+    dispatch(setApicalLordoticXray(chestXrayData.apicalLordoticXray));
+    dispatch(setLateralDecubitus(chestXrayData.lateralDecubitus));
+  };
+
+  // Watch the value of the radio button for required checks
   const watchedApicalLordotic = watch("apicalLordoticXray") as unknown as string;
   const watchedLateralDecubitus = watch("lateralDecubitus") as unknown as string;
 
@@ -137,31 +102,34 @@ const ChestXrayForm = () => {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
-          {formTop(applicantData.fullName, applicantData.dateOfBirth, applicantData.passportNumber)}
-
-          <h3 className="govuk-heading-m">Upload the postero-anterior X-ray</h3>
-
           <dl className="govuk-summary-list">
             <div className="govuk-summary-list__row">
-              <dt className="govuk-summary-list__key">Type of X-ray</dt>
-              <dt className="govuk-summary-list__key">File uploaded</dt>
+              <dt className="govuk-summary-list__key">Name</dt>
+              <dd className="govuk-summary-list__value">{applicantData.fullName}</dd>
             </div>
 
             <div className="govuk-summary-list__row">
-              <dt className="govuk-summary-list__value">Postero-anterior view</dt>
+              <dt className="govuk-summary-list__key">Date of Birth</dt>
               <dd className="govuk-summary-list__value">
-                <FileUpload
-                  id="posteroAnteriorFile"
-                  formValue="posteroAnteriorFile"
-                  required="Please upload postero-anterior X-ray"
-                  errorMessage={errors?.posteroAnteriorFile?.message || ""}
-                  accept="jpg,jpeg,png,pdf"
-                  maxSize={5}
-                  setFileState={setPAFile}
-                />
+                {applicantData.dateOfBirth.day}/{applicantData.dateOfBirth.month}/
+                {applicantData.dateOfBirth.year}
               </dd>
             </div>
+
+            <div className="govuk-summary-list__row">
+              <dt className="govuk-summary-list__key">Passport Number</dt>
+              <dd className="govuk-summary-list__value">{applicantData.passportNumber}</dd>
+            </div>
           </dl>
+
+          <h3 className="govuk-heading-m">Upload the postero-anterior X-ray</h3>
+          <FileUploadModule
+            id="posteroAnteriorFile"
+            name="Postero-anterior"
+            setFileState={setPAFile}
+            required={true}
+            errors={errors}
+          />
 
           <h3 className="govuk-heading-m">Was an apical lordotic X-ray required ?</h3>
 
@@ -178,28 +146,13 @@ const ChestXrayForm = () => {
           </div>
 
           <h3 className="govuk-heading-m">If yes, upload the apical lordotic X-ray</h3>
-
-          <dl className="govuk-summary-list">
-            <div className="govuk-summary-list__row">
-              <dt className="govuk-summary-list__key">Type of X-ray</dt>
-              <dt className="govuk-summary-list__key">File uploaded</dt>
-            </div>
-
-            <div className="govuk-summary-list__row">
-              <dt className="govuk-summary-list__value">Apical lordotic view</dt>
-              <dd className="govuk-summary-list__value">
-                <FileUpload
-                  id="apicalLordoticXrayFile"
-                  formValue="apicalLordoticXrayFile"
-                  errorMessage={errors?.apicalLordoticXrayFile?.message || ""}
-                  required={hasApicalLordotic ? "Please upload Apical lordotic X-ray" : false}
-                  accept="jpg,jpeg,png,pdf"
-                  maxSize={5}
-                  setFileState={setALFile}
-                />
-              </dd>
-            </div>
-          </dl>
+          <FileUploadModule
+            id="apicalLordoticXrayFile"
+            name="Apical lordotic"
+            setFileState={setALFile}
+            required={hasApicalLordotic}
+            errors={errors}
+          />
 
           <h3 className="govuk-heading-m">Was a lateral decubitus X-ray required ?</h3>
 
@@ -216,28 +169,13 @@ const ChestXrayForm = () => {
           </div>
 
           <h3 className="govuk-heading-m">If yes, upload the lateral decubitus X-ray</h3>
-
-          <dl className="govuk-summary-list">
-            <div className="govuk-summary-list__row">
-              <dt className="govuk-summary-list__key">Type of X-ray</dt>
-              <dt className="govuk-summary-list__key">File uploaded</dt>
-            </div>
-
-            <div className="govuk-summary-list__row">
-              <dt className="govuk-summary-list__value">Lateral decubitus view</dt>
-              <dd className="govuk-summary-list__value">
-                <FileUpload
-                  id="lateralDecubitusFile"
-                  formValue="lateralDecubitusFile"
-                  errorMessage={errors?.lateralDecubitusFile?.message || ""}
-                  required={hasLateralDecubitus ? "Please upload Lateral Decubitus X-ray" : false}
-                  accept="jpg,jpeg,png,pdf"
-                  maxSize={5}
-                  setFileState={setLDFile}
-                />
-              </dd>
-            </div>
-          </dl>
+          <FileUploadModule
+            id="lateralDecubitusFile"
+            name="Lateral decubitus"
+            setFileState={setLDFile}
+            required={hasLateralDecubitus}
+            errors={errors}
+          />
 
           <Button
             id="continue"

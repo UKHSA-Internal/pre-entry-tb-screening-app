@@ -33,7 +33,7 @@ export default function ChestXrayUploadPage() {
         <Breadcrumb items={breadcrumbItems} />
         <main className="govuk-main-wrapper">
           <h1 className="govuk-heading-l">Applicant progress tracker</h1>
-          <ChestXrayForm />
+          <ChestXrayForm nextpage="#" />
         </main>
       </div>
       <Footer />
