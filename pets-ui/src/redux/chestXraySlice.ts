@@ -13,7 +13,7 @@ export const chestXraySlice = createSlice({
   name: "chestXrayDetails",
   initialState,
   reducers: {
-    setPosteroAnteriorFile: (state, action: PayloadAction<string>) => {
+    setPosteroAnteriorFile: (state, action: PayloadAction<string | null>) => {
       state.posteroAnteriorFile = action.payload;
     },
     setApicalLordoticXray: (state, action: PayloadAction<boolean | string>) => {
@@ -27,7 +27,7 @@ export const chestXraySlice = createSlice({
         state.apicalLordoticXray = action.payload;
       }
     },
-    setApicalLordoticXrayFile: (state, action: PayloadAction<string>) => {
+    setApicalLordoticXrayFile: (state, action: PayloadAction<string | null>) => {
       state.apicalLordoticXrayFile = action.payload;
     },
     setLateralDecubitus: (state, action: PayloadAction<boolean | string>) => {
@@ -41,7 +41,7 @@ export const chestXraySlice = createSlice({
         state.lateralDecubitus = action.payload;
       }
     },
-    setLateralDecubitusFile: (state, action: PayloadAction<string>) => {
+    setLateralDecubitusFile: (state, action: PayloadAction<string | null>) => {
       state.lateralDecubitusFile = action.payload;
     },
 

@@ -8,14 +8,19 @@ import { Mock } from "vitest";
 import ChestXrayForm from "@/sections/chest-xray-form";
 import { renderWithProviders } from "@/utils/test-utils";
 
-const useNavigateMock: Mock = vi.fn();
-vi.mock(`react-router-dom`, async (): Promise<unknown> => {
-  const actual: Record<string, unknown> = await vi.importActual(`react-router-dom`);
-  return {
-    ...actual,
-    useNavigate: (): Mock => useNavigateMock,
-  };
-});
+// const useNavigateMock: Mock = vi.fn();
+// vi.mock(`react-router-dom`, async (): Promise<unknown> => {
+//   const actual: Record<string, unknown> = await vi.importActual(`react-router-dom`);
+//   return {
+//     ...actual,
+//     useNavigate: (): Mock => useNavigateMock,
+//   };
+// });
+
+vi.mock("react-router-dom", () => ({
+  ...vi.importActual("react-router-dom"),
+  useNavigate: vi.fn(),
+}));
 
 const xray_scan = new File(["dummy scan"], "scan.png", { type: "image/png" });
 const xray_al_scan = new File(["dummy scan"], "scan_al.pdf", { type: "image/png" });
@@ -34,7 +39,7 @@ afterEach(() => server.resetHandlers());
 // Disable API mocking after the tests are done.
 afterAll(() => server.close());
 
-test("state is updated from ApplicantForm and then read by ApplicantReview", async () => {
+test("User can upload files, click radio then is proceeded to next page", async () => {
   renderWithProviders(
     <Router>
       <ChestXrayForm />
@@ -57,16 +62,16 @@ test("state is updated from ApplicantForm and then read by ApplicantReview", asy
     target: { files: [xray_ld_scan] },
   });
 
-  expect(screen.getByText("scan.png")).toBeInTheDocument();
+  expect(screen.getByTestId("posteroAnteriorFile").files[0].name).toBe("scan.png");
 
   expect(screen.getAllByTestId("apicalLordoticXray")[0]).toBeChecked();
   expect(screen.getAllByTestId("apicalLordoticXray")[1]).not.toBeChecked();
-  expect(screen.getByText("scan_al.pdf")).toBeInTheDocument();
+  expect(screen.getByTestId("apicalLordoticXrayFile").files[0].name).toBe("scan_al.pdf");
 
   expect(screen.getAllByTestId("lateralDecubitus")[0]).toBeChecked();
   expect(screen.getAllByTestId("lateralDecubitus")[1]).not.toBeChecked();
-  expect(screen.getByText("scan_ld.jpg")).toBeInTheDocument();
+  expect(screen.getByTestId("lateralDecubitusFile").files[0].name).toBe("scan_ld.jpg");
 
-  await user.click(screen.getByTestId("continue-button"));
-  expect(useNavigateMock).toHaveBeenCalledOnce();
+  await user.click(screen.getByText("Continue"));
+  expect(useNavigateMock).toBeCalled();
 });

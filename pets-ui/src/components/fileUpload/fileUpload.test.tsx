@@ -30,16 +30,9 @@ describe("FileUpload Component", () => {
     expect(screen.getByText("Please upload a file")).toBeInTheDocument();
   });
 
-  it("displays an error message when file is not uploaded", async () => {
-    renderWithFormProvider(<FileUpload {...defaultProps} />);
-    const input = screen.getByLabelText("Upload a file");
-    fireEvent.change(input, { target: { files: [] } });
-    expect(await screen.findByText("File is required")).toBeInTheDocument();
-  });
-
   it("validates the file type", async () => {
     renderWithFormProvider(<FileUpload {...defaultProps} />);
-    const input = screen.getByLabelText("Upload a file");
+    const input = screen.getByTestId("test-file-upload");
     const file = new File(["dummy content"], "example.txt", { type: "text/plain" });
     fireEvent.change(input, { target: { files: [file] } });
     expect(await screen.findByText("File type should be jpg, jpeg, png, pdf")).toBeInTheDocument();
@@ -47,15 +40,22 @@ describe("FileUpload Component", () => {
 
   it("validates the file size", async () => {
     renderWithFormProvider(<FileUpload {...defaultProps} />);
-    const input = screen.getByLabelText("Upload a file");
+    const input = screen.getByTestId("test-file-upload");
     const file = new File(["a".repeat(6 * 1024 * 1024)], "example.jpg", { type: "image/jpeg" }); // 6 MB file
     fireEvent.change(input, { target: { files: [file] } });
     expect(await screen.findByText("File size should be less than 5 MB")).toBeInTheDocument();
   });
 
+  it("displays an error message when file is not uploaded", async () => {
+    renderWithFormProvider(<FileUpload {...defaultProps} />);
+    const input = screen.getByTestId("test-file-upload");
+    fireEvent.change(input, { target: { files: [] } });
+    expect(await screen.findByText("File is required")).toBeInTheDocument();
+  });
+
   it("accepts a valid file", () => {
     renderWithFormProvider(<FileUpload {...defaultProps} />);
-    const input = screen.getByLabelText("Upload a file");
+    const input = screen.getByTestId("test-file-upload");
     const file = new File(["dummy content"], "example.jpg", { type: "image/jpeg" });
     fireEvent.change(input, { target: { files: [file] } });
     expect(screen.queryByText("File type should be jpg, jpeg, png, pdf")).not.toBeInTheDocument();

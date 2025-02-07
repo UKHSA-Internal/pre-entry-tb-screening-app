@@ -7,6 +7,7 @@ import FileUpload from "@/components/fileUpload/fileUpload";
 import Radio from "@/components/radio/radio";
 import { selectApplicant } from "@/redux/applicantSlice";
 import {
+  selectChestXray,
   setApicalLordoticXray,
   setApicalLordoticXrayFile,
   setLateralDecubitus,
@@ -85,20 +86,32 @@ const ChestXrayForm = () => {
   const applicantData = useAppSelector(selectApplicant);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const CXRData = useAppSelector(selectChestXray);
+
+  const [PAFile, setPAFile] = useState<string | null>(null);
+  const [ALFile, setALFile] = useState<string | null>(null);
+  const [LDFile, setLDFile] = useState<string | null>(null);
 
   const updateReduxStore = (chestXrayData: ChestXrayType) => {
-    // TODO : Files, upload files ?
-
     // apical lordotic
     dispatch(setApicalLordoticXray(chestXrayData.apicalLordoticXray));
     // lateral decubitus
     dispatch(setLateralDecubitus(chestXrayData.lateralDecubitus));
+
+    // set PA File
+    dispatch(setPosteroAnteriorFile(PAFile));
+    if (chestXrayData.apicalLordoticXray) {
+      dispatch(setApicalLordoticXrayFile(ALFile));
+    }
+    if (chestXrayData.lateralDecubitus) {
+      dispatch(setLateralDecubitusFile(LDFile));
+    }
   };
 
   const onSubmit: SubmitHandler<ChestXrayType> = (data) => {
     updateReduxStore(data);
-    // upload files to API
-    navigate("/radiology-results");
+    console.log(CXRData);
+    // navigate("/radiology-results");
   };
 
   const methods = useForm<ChestXrayType>({ reValidateMode: "onSubmit" });
@@ -144,6 +157,7 @@ const ChestXrayForm = () => {
                   errorMessage={errors?.posteroAnteriorFile?.message || ""}
                   accept="jpg,jpeg,png,pdf"
                   maxSize={5}
+                  setFileState={setPAFile}
                 />
               </dd>
             </div>
@@ -154,7 +168,6 @@ const ChestXrayForm = () => {
           <div>
             <Radio
               id="apicalLordoticXray"
-              // legend="Does the applicant require an apical lordotic X-ray?"
               isInline={RadioIsInline.TRUE}
               answerOptions={["Yes", "No"]}
               sortAnswersAlphabetically={false}
@@ -182,6 +195,7 @@ const ChestXrayForm = () => {
                   required={hasApicalLordotic ? "Please upload Apical lordotic X-ray" : false}
                   accept="jpg,jpeg,png,pdf"
                   maxSize={5}
+                  setFileState={setALFile}
                 />
               </dd>
             </div>
@@ -219,6 +233,7 @@ const ChestXrayForm = () => {
                   required={hasLateralDecubitus ? "Please upload Lateral Decubitus X-ray" : false}
                   accept="jpg,jpeg,png,pdf"
                   maxSize={5}
+                  setFileState={setLDFile}
                 />
               </dd>
             </div>
@@ -229,6 +244,7 @@ const ChestXrayForm = () => {
             type={ButtonType.DEFAULT}
             text="Continue"
             href=""
+            data-testid="continue"
             handleClick={() => {}}
           />
         </div>

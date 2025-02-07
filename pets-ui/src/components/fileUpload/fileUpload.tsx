@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 export interface FileUploadProps {
@@ -10,6 +10,7 @@ export interface FileUploadProps {
   required: string | false;
   accept?: string; // Add accept prop for file types
   maxSize?: number; // Size in MB
+  setFileState?: Dispatch<SetStateAction<string | null>>;
 }
 
 export default function FileUpload(props: Readonly<FileUploadProps>) {
@@ -40,9 +41,59 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
     return true;
   };
 
+  const readBlobAsText = (blob: Blob): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error("Failed to read file"));
+      reader.readAsText(blob); // Read the blob as text
+    });
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const fileTypeError = validateFileType(files);
+      const fileSizeError = validateFileSize(files);
+      if (fileTypeError !== true) {
+        // file type doesn't match
+        displayError(fileTypeError);
+        return;
+      } else if (fileSizeError !== true) {
+        // file size doesn't match
+        displayError(fileSizeError);
+        return;
+      } else {
+        // if everything is ok, don't display errors and callback
+        displayError(null);
+
+        // if set state callback is present
+        // e.g. if page wants file to be set to a state
+        if (props.setFileState) {
+          try {
+            const fileBlob = await readBlobAsText(files[0]);
+            props.setFileState(fileBlob);
+          } catch {
+            displayError("There's been an error reading your file, please try a different file");
+            props.setFileState(null);
+          }
+        }
+      }
+    }
+  };
+
+  const displayError = (errorText: string | null) => {
+    if (errorText) {
+      setErrorText(errorText);
+      setWrapperClass("govuk-form-group govuk-form-group--error");
+    } else {
+      setErrorText("");
+      setWrapperClass("");
+    }
+  };
+
   useEffect(() => {
-    setErrorText(props.errorMessage);
-    setWrapperClass("govuk-form-group " + `${props.errorMessage && "govuk-form-group--error"}`);
+    displayError(props.errorMessage);
   }, [props.errorMessage]);
 
   return (
@@ -62,7 +113,7 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
               className="govuk-file-upload"
               type="file"
               data-testid={props.id}
-              accept={props.accept} // Set the accept attribute
+              accept={props.accept} // The file types accepted
               {...register(props.formValue, {
                 required: props.required,
                 validate: {
@@ -70,6 +121,9 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
                   fileSize: validateFileSize,
                 },
               })}
+              onChange={async (event) => {
+                await handleFileChange(event);
+              }} // Add onChange handler
             />
           </div>
         </div>

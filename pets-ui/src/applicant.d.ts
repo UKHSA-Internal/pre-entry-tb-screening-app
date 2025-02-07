@@ -49,9 +49,9 @@ type TravelDetailsType = {
 };
 
 type ChestXrayType = {
-  posteroAnteriorFile: string;
+  posteroAnteriorFile: string | null;
   apicalLordoticXray: boolean | string; // allows for yes -> true, no -> false
-  apicalLordoticXrayFile: string;
+  apicalLordoticXrayFile: string | null;
   lateralDecubitus: boolean | string; // allows for yes -> true, no -> false
-  lateralDecubitusFile: string;
+  lateralDecubitusFile: string | null;
 };
