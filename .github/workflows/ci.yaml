@@ -166,7 +166,7 @@ jobs:
 
   sonar-scan:
     runs-on: ubuntu-latest
-    needs: [ui-tests, core-services-test]
+    needs: [ui-tests, core-services-tests]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
