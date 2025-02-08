@@ -184,17 +184,17 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: coverage-ui
-          path: pets-ui/coverage/
+          path: coverage/
 
       - name: Download Core Services coverage reports
         uses: actions/download-artifact@v4
         with:
           name: coverage-core-services
-          path: pets-core-services/coverage/
+          path: coverage/
 
       - name: Merge coverage reports
         run: |
-          pnpm nyc merge pets-ui/coverage/ pets-core-services/coverage/ merged-output/merged-coverage.json
+          pnpm nyc merge coverage merged-output/merged-coverage.json
 
       - name: Run SonarQube scan
         uses: SonarSource/sonarqube-scan-action@v2
