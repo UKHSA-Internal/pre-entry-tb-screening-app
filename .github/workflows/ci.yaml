@@ -1,17 +1,42 @@
-name: Pets UI CI
+name: Pets CI
 
 on:
   pull_request:
-    paths: "pets-ui/**"
+    branches:
+    - main
+
   workflow_dispatch:
 
 concurrency:
-  group: ci-${{ github.event.pull_request.number }}
+  group: ci-${{ github.ref_name }}
   cancel-in-progress: true
 
+
 jobs:
-  test-and-linting:
-    name: Run unit tests, linting & security checks
+  linting:
+    name: Run linting checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Lint typescript code
+        run: pnpm -r lint
+
+  ui-tests-and-sonar-scan:
+    name: Run unit tests, security checks for ui
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -30,25 +55,16 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
-      - name: Create a placeholder Swagger Docs file
-        run: |
-          echo '{"comment": "placeholder to be replaced at core-services build"}' > openapi-docs.json
-        working-directory: pets-core-services
-
-      - name: Lint typescript code
-        run: pnpm lint
-        working-directory: pets-ui
-
       - name: Run unit tests
         run: pnpm run test --testTimeout=10000
         working-directory: pets-ui
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v4.2.1
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          projectBaseDir: pets-ui/
+      # - name: SonarCloud Scan
+      #   uses: SonarSource/sonarqube-scan-action@v4.1.0
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #   with:
+      #     projectBaseDir: pets-ui/
 
   cypress-run:
     name: Run cypress tests
@@ -83,11 +99,6 @@ jobs:
           pnpm exec cypress verify
         working-directory: pets-ui
 
-      - name: Create a placeholder Swagger Docs file
-        run: |
-          echo '{"comment": "placeholder to be replaced at core-services build"}' > openapi-docs.json
-        working-directory: pets-core-services
-
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
         with:
@@ -104,6 +115,55 @@ jobs:
           name: failed-tests-screenshots
           path: pets-ui/cypress/cypress/screenshots
 
+  core-services-test-and-sonar-scan:
+    name: Run unit tests security checks for core services
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Pull docker dependencies
+        run: docker compose pull localstack
+
+      - name: Run tests
+        run: pnpm test
+        working-directory: pets-core-services
+
+      - name: Capture Docker Compose logs
+        if: failure() || success()
+        run: |
+          mkdir -p logs
+          docker compose logs > logs/docker-compose.log
+          docker compose down
+
+      - name: Upload Docker Compose logs
+        if: failure() || success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-compose-logs
+          path: logs/docker-compose.log
+
+      # - name: SonarCloud Scan
+      #   uses: SonarSource/sonarqube-scan-action@v4.2.1
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #   with:
+      #     projectBaseDir: pets-core-services
 
   build:
     name: Create UI build
@@ -121,11 +181,6 @@ jobs:
           cache: "pnpm"
       - name: Install dependencies
         run: pnpm i
-
-      - name: Create a placeholder Swagger Docs file
-        run: |
-          echo '{"comment": "placeholder to be replaced at core-services build"}' > openapi-docs.json
-        working-directory: pets-core-services
 
       - name: Create UI build
         run: pnpm run build
