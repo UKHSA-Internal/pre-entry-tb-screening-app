@@ -33,8 +33,7 @@
     "node_modules",
   ],
   "include": [
-    "src",
-    "./deployment-config.ts"
+    "**/*.ts"
   ],
   "references": []
 }
