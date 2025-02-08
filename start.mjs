@@ -1,7 +1,6 @@
 import { execSync, spawn } from "child_process";
 import * as dotenv from "dotenv";
 import { resolve } from "path";
-import fs from "fs";
 
 function runCommand(cmd) {
   try {
@@ -40,4 +39,4 @@ runAsyncCommand("pnpm --filter pets-local-infra build:core-services");
 runCommand("pnpm --filter pets-local-infra bootstrap");
 runCommand("pnpm --filter pets-local-infra deploy:local"); // Deploy to localstack
 runCommand("pnpm --filter pets-core-services preload:db");
-runAsyncCommand("pnpm --filter pets-ui dev"); // Starts Vite Server
+runCommand("pnpm --filter pets-ui dev"); // Starts Vite Server
