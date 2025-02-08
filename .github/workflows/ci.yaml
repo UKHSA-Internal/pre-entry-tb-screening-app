@@ -36,7 +36,7 @@ jobs:
         run: pnpm -r lint
 
   ui-tests:
-    name: Run unit tests, security checks for ui
+    name: Run unit tests for ui
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -115,7 +115,7 @@ jobs:
           path: pets-ui/cypress/cypress/screenshots
 
   core-services-tests:
-    name: Run unit tests security checks for core services
+    name: Run tests for core services
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
