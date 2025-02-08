@@ -5,6 +5,8 @@ import { APIGatewayProxyEvent } from "aws-lambda";
 import { z } from "zod";
 
 import { createHttpResponse } from "../../shared/http-response";
+import { logger } from "../../shared/logger";
+import { setRequestLoggingContext } from "../../shared/middlewares/logger";
 import { validateRequest } from "../../shared/middlewares/validation";
 import { PetsRoute } from "../../shared/types";
 import { getApplicantHandler } from "../handlers/getApplicant";
@@ -36,8 +38,7 @@ export const routes: PetsRoute[] = [
 ];
 
 const notFoundResponse = ({ method, path }: { method: string; path: string }) => {
-  // eslint-disable-next-line no-console
-  console.log(method, path, "\n\n\n\n");
+  logger.error({ method, path }, "Missing Handler");
   return createHttpResponse(404, "Not Found");
 };
 
@@ -54,6 +55,6 @@ const middyRoutes = routes.map((route) => ({
     .handler(route.handler),
 }));
 
-export const handler = middy<APIGatewayProxyEvent>().handler(
-  httpRouterHandler({ routes: middyRoutes, notFoundResponse }),
-);
+export const handler = middy<APIGatewayProxyEvent>()
+  .before(setRequestLoggingContext)
+  .handler(httpRouterHandler({ routes: middyRoutes, notFoundResponse }));

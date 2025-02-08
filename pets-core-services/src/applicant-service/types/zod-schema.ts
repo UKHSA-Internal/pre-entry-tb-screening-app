@@ -1,6 +1,9 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 
+import { CountryCode } from "../../shared/country";
+import { AllowedSex } from "./enums";
+
 extendZodWithOpenApi(z);
 
 export const ApplicantSchema = z.object({
@@ -10,10 +13,10 @@ export const ApplicantSchema = z.object({
   passportNumber: z.string().openapi({
     description: "PassportNumber of Applicant",
   }),
-  countryOfNationality: z.string().openapi({
+  countryOfNationality: z.nativeEnum(CountryCode).openapi({
     description: "Applicant's nationality",
   }),
-  countryOfIssue: z.string().openapi({
+  countryOfIssue: z.nativeEnum(CountryCode).openapi({
     description: "Passport Issue Country",
   }),
   issueDate: z.string().date().openapi({
@@ -25,16 +28,19 @@ export const ApplicantSchema = z.object({
   dateOfBirth: z.string().date().openapi({
     description: "Date of Birth in ISO Format",
   }),
-  sex: z.string(),
+  sex: z.nativeEnum(AllowedSex).openapi({
+    description: "Applicant's Sex Information",
+  }),
   applicantHomeAddress1: z.string().openapi({
-    description: "First line of Applicant's UK Address",
+    description: "First line of Applicant's Address",
   }),
   applicantHomeAddress2: z.string().optional().openapi({
-    description: "Second line of Applicant's UK Address",
+    description: "Second line of Applicant's Address",
   }),
   townOrCity: z.string(),
-  country: z.string().optional(),
+  provinceOrState: z.string(),
   postcode: z.string(),
+  country: z.nativeEnum(CountryCode).openapi({
+    description: "Country of Applican't Address",
+  }),
 });
-
-// TODO: Eagle eyed viewer would notice applicant phone number and email is missing

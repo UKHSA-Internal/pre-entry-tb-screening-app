@@ -3,6 +3,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { z } from "zod";
 
 import { createHttpResponse } from "../http-response";
+import { logger } from "../logger";
 import { RouteParam } from "../types";
 
 export type ValidateRequestType = {
@@ -24,17 +25,20 @@ export const validateRequest = ({
 
       try {
         if (requestSchema) {
+          logger.info("Validating Request Body");
           const { body } = event;
           const parsedResult = requestSchema.safeParse(JSON.parse(body || "{}"));
 
-          if (parsedResult.error)
+          if (parsedResult.error) {
+            logger.error("Failed Validation");
             return createHttpResponse(400, {
               message: "Request Body failed validation",
               validationError: parsedResult.error.flatten().fieldErrors,
             });
+          }
 
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          Object.assign(request.event, { parsedBody: parsedResult.data }); // TODO: Fix the typings for this, Propagate the parsed to the handler, also let sonar cloud flag TODOs
+          Object.assign(request.event, { parsedBody: parsedResult.data });
         }
 
         if (queryStringParametersSchema) {
@@ -43,28 +47,32 @@ export const validateRequest = ({
             .object(queryStringParametersSchema)
             .safeParse(queryStringParameters);
 
-          if (parsedResult.error)
+          if (parsedResult.error) {
+            logger.error("Request Parameters failed validation");
             return createHttpResponse(400, {
               message: "Request Parameters failed validation",
-              validationError: parsedResult.error.issues,
+              validationError: parsedResult.error.flatten().fieldErrors,
             });
+          }
 
-          Object.assign(request.event, { parsedQueryParams: parsedResult.data }); // TODO: Fix the typings for this, Propagate the parsed to the handler, also let sonar cloud flag TODOs
+          Object.assign(request.event, { parsedQueryParams: parsedResult.data });
         }
 
         if (headersSchema) {
           const { headers } = event;
           const parsedResult = z.object(headersSchema).safeParse(headers);
 
-          if (parsedResult.error)
+          if (parsedResult.error) {
+            logger.error("Headers failed validation");
             return createHttpResponse(400, {
               message: "Headers failed validation",
-              validationError: parsedResult.error.issues,
+              validationError: parsedResult.error.flatten().fieldErrors,
             });
-          Object.assign(request.event, { parsedHeaders: parsedResult.data }); // TODO: Fix the typings for this, Propagate the parsed to the handler, also let sonar cloud flag TODOs
+          }
+          Object.assign(request.event, { parsedHeaders: parsedResult.data });
         }
       } catch (error) {
-        console.error(error);
+        logger.error(error, "Validation Failed");
         return createHttpResponse(500, {
           message: "Something went wrong",
         });

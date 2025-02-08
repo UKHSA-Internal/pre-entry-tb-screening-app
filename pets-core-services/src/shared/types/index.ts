@@ -9,7 +9,7 @@ export type RouteParam = Record<
 
 export type PetsRoute = {
   path: string;
-  handler: (event: APIGatewayProxyEvent) => Promise<APIGatewayProxyResult>;
+  handler: (event: APIGatewayProxyEvent) => Promise<APIGatewayProxyResult> | APIGatewayProxyResult;
   method: Extract<Method, "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "OPTIONS" | "HEAD">;
   requestBodySchema?: z.ZodTypeAny;
   queryParams?: RouteParam;

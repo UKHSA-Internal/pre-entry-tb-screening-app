@@ -1,28 +1,53 @@
 import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
 import { APIGatewayProxyEvent } from "aws-lambda";
+import { GlobalContextStorageProvider } from "pino-lambda";
+import { z } from "zod";
 
 import { createHttpResponse } from "../../shared/http-response";
+import { logger } from "../../shared/logger";
 import { Applicant } from "../models/applicant";
+import { ApplicantSchema } from "../types/zod-schema";
 
-export const postApplicantHandler = async (event: APIGatewayProxyEvent) => {
+export type ApplicantRequestSchema = z.infer<typeof ApplicantSchema>;
+
+export type PostApplicantEvent = APIGatewayProxyEvent & {
+  parsedBody?: ApplicantRequestSchema;
+};
+
+export const postApplicantHandler = async (event: PostApplicantEvent) => {
   try {
-    // eslint-disable-next-line no-console
-    console.log(event, "Invokation got here");
+    logger.info("Post applicant details handler triggered");
 
     const { parsedBody } = event;
 
+    if (!parsedBody) {
+      logger.error("Event missing parsed body");
+
+      return createHttpResponse(500, {
+        message: "Internal Server Error: Request not parsed correctly",
+      });
+    }
+
+    GlobalContextStorageProvider.updateContext({
+      countryOfIssue: parsedBody.countryOfIssue,
+      passportNumber: parsedBody.passportNumber.slice(-4),
+    });
+
+    let applicant: Applicant;
+
     try {
-      const applicant = new Applicant(parsedBody);
-      await applicant.save();
+      applicant = await Applicant.createNewApplicant({ ...parsedBody, clinicId: "Apollo Clinic" });
     } catch (error) {
-      // logger.error(error, "Error saving Applicant details");
       if (error instanceof ConditionalCheckFailedException)
         return createHttpResponse(400, { message: "Applicant Details already saved" });
       throw error;
     }
-    return createHttpResponse(200, { message: "Applicant Details successfully saved" });
+
+    return createHttpResponse(200, {
+      ...applicant.toJson(),
+    });
   } catch (err: unknown) {
-    console.error(err);
+    logger.error(err, "Error saving Applicant details");
     return createHttpResponse(500, { message: "Something went wrong" });
   }
 };
