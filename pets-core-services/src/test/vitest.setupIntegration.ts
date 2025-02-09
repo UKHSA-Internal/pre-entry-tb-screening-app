@@ -6,7 +6,7 @@ import { createTable } from "./db-ops";
 import { seedDatabase } from "./seed-data";
 
 beforeAll(() => {
-  execSync(" docker compose up -d --wait", { stdio: "inherit" });
+  execSync("docker compose up -d --wait", { stdio: "inherit" });
 });
 
 beforeEach(async () => {

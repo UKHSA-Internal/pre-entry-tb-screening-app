@@ -5,7 +5,6 @@ export const seedDatabase = async () => {
   for (const applicantDetails of seededApplicants) {
     await Applicant.createNewApplicant(applicantDetails);
   }
-  return;
 };
 export default seedDatabase;
 

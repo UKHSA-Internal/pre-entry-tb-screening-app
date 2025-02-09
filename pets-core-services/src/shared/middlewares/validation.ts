@@ -27,7 +27,7 @@ export const validateRequest = ({
         if (requestSchema) {
           logger.info("Validating Request Body");
           const { body } = event;
-          const parsedResult = requestSchema.safeParse(JSON.parse(body || "{}"));
+          const parsedResult = requestSchema.safeParse(JSON.parse(body ?? "{}"));
 
           if (parsedResult.error) {
             logger.error("Failed Validation");

@@ -57,12 +57,12 @@ export type NewApplicant = Omit<
 };
 
 export class Applicant extends IApplicant {
-  static getPk = (country: string, passportNumber: string) =>
+  static readonly getPk = (country: string, passportNumber: string) =>
     `COUNTRY#${country}#PASSPORT#${passportNumber}`;
 
   static readonly sk = "APPLICANT#DETAILS";
 
-  static getTableName = () => process.env.APPLICANT_SERVICE_DATABASE_NAME;
+  static readonly getTableName = () => process.env.APPLICANT_SERVICE_DATABASE_NAME;
 
   private constructor(details: IApplicant) {
     super(details);
@@ -104,7 +104,7 @@ export class Applicant extends IApplicant {
       const command = new PutCommand(params);
       const response = await docClient.send(command);
 
-      logger.info({ response }, "Applicant details saved successfully"); // TODO: Verify no PII is returned
+      logger.info({ response }, "Applicant details saved successfully");
 
       return applicant;
     } catch (error) {
