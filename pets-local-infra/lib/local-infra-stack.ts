@@ -26,6 +26,14 @@ export class LocalInfrastructureStack extends cdk.Stack {
       functionName: process.env.APPLICANT_SERVICE_LAMBDA_NAME,
     });
 
+    new HotReloadedLambda(this, "application-service-lambda", {
+      entry: join(
+        __dirname,
+        "../../pets-core-services/src/application-service/lambdas/application.ts",
+      ),
+      functionName: process.env.APPLICATION_SERVICE_LAMBDA_NAME,
+    });
+
     /**API Gateway */
     const swaggerSpecPath = join(__dirname, "../../pets-core-services/openapi-docs.json");
 
@@ -53,6 +61,11 @@ export class LocalInfrastructureStack extends cdk.Stack {
     new Table(this, "applicant-service-table", {
       ...tableProps,
       tableName: process.env.APPLICANT_SERVICE_DATABASE_NAME,
+    });
+
+    new Table(this, "application-service-table", {
+      ...tableProps,
+      tableName: process.env.APPLICATION_SERVICE_DATABASE_NAME,
     });
   }
 }
