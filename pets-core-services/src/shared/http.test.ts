@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createHttpResponse } from "./http-response";
+import { createHttpResponse } from "./http";
 
 describe("create http response", () => {
   it.each([{ sample: "response" }, "sample response"])(

@@ -2,7 +2,7 @@ import middy from "@middy/core";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { z } from "zod";
 
-import { createHttpResponse } from "../http-response";
+import { createHttpResponse } from "../http";
 import { logger } from "../logger";
 import { RouteParam } from "../types";
 

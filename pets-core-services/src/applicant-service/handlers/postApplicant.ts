@@ -3,7 +3,7 @@ import { APIGatewayProxyEvent } from "aws-lambda";
 import { GlobalContextStorageProvider } from "pino-lambda";
 import { z } from "zod";
 
-import { createHttpResponse } from "../../shared/http-response";
+import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Applicant } from "../models/applicant";
 import { ApplicantSchema } from "../types/zod-schema";

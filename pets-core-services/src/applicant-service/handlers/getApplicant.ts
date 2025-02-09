@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent } from "aws-lambda";
 import { GlobalContextStorageProvider } from "pino-lambda";
 
 import { CountryCode } from "../../shared/country";
-import { createHttpResponse } from "../../shared/http-response";
+import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Applicant } from "../models/applicant";
 
