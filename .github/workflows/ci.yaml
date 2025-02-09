@@ -184,26 +184,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: coverage-ui
-          path: coverage/
+          path: pets-ui/coverage/
 
       - name: Download Core Services coverage reports
         uses: actions/download-artifact@v4
         with:
           name: coverage-core-services
-          path: coverage/
-
-      - name: Merge coverage reports
-        run: |
-          pnpm nyc merge coverage merged-output/merged-coverage.json
+          path: pets-core-services/coverage/
 
       - name: Run SonarQube scan
         uses: SonarSource/sonarqube-scan-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: "https://sonarcloud.io"
-        with:
-          args: >
-            -Dsonar.javascript.lcov.reportPaths=coverage-final/coverage.json
 
   build:
     name: Create UI build
