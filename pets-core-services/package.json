@@ -26,7 +26,7 @@
   },
   "scripts": {
     "generate:swagger-doc": "pnpm tsx src/swagger-generator/index.ts",
-    "preload:db": "node src/test/seed-data.ts seed",
+    "preload:db": "pnpm tsx src/test/seed-data.ts seed",
     "lint": "eslint .",
     "test": "vitest run --coverage"
   }

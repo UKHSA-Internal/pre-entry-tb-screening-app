@@ -15,7 +15,17 @@ const options = {
   define,
 };
 
-let ctx = await esbuild.context(options);
+const main = async () => {
+  const watchMode = process.argv.includes("--watch");
 
-await ctx.watch();
-console.log("watching pets core services changes...");
+  if (!watchMode) {
+    await esbuild.build(options);
+    return;
+  }
+
+  let ctx = await esbuild.context(options);
+  await ctx.watch();
+  console.log("watching pets core services changes...");
+};
+
+await main();
