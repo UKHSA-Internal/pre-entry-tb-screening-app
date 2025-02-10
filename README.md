@@ -91,8 +91,13 @@ Additional configs specific to a core service are defined in their directory
 - Git Secrets
   - Install
     - Linux: `apt-get install git-secrets`
-    - Mac:  `brew install git-secrets`
-    - Windows: `git secrets --install -f` # Use git terminal
+    - Mac: `brew install git-secrets`
+    - Windows:
+      1.  Ensure git is configured in your windows OS
+      2.  Clone awslabs/git-secrets repo by executing `git clone https://github.com/awslabs/git-secrets.git` in Git Bash
+      3.  Open Powershell and 'run as administrator' and go to the path where the repo is cloned - e.g. `C:\user\...\ttn\git-secrets`
+      4.  Execute the installation script by executing `./install.ps1`
+      5.  Now that you have git secrets in your windows OS, go cd to the project repo and execute `git secrets --install` to add a git secrets hook to the local repository
 
 ### Installation
 
@@ -112,16 +117,16 @@ Additional configs specific to a core service are defined in their directory
    This would pull Node dependencies for frontend and core services.
 
 3. Install recommended VsCode extensions present in `.vscode/extensions.json`
-  ![alt text](docs/image.png)
+   ![alt text](docs/image.png)
 
    This would install recommended extensions for linting and formatting.
 
 4. Configure Git Secrets
 
-    ```sh
-      git secrets --install
-      git secrets --register-aws
-    ```
+   ```sh
+     git secrets --install
+     git secrets --register-aws
+   ```
 
 5. Configure End of Line
 
@@ -145,8 +150,8 @@ Additional configs specific to a core service are defined in their directory
    pnpm start
    ```
 
-    Please ensure Docker is running before you run this command.
-    Please note this would take a bit of time(roughly 45 seconds)
+   Please ensure Docker is running before you run this command.
+   Please note this would take a bit of time(roughly 45 seconds)
 
 2. Navigate to the React app on <http://localhost:3000/>
 
@@ -199,7 +204,7 @@ To deploy the Core services to a target environment {target-env}:
 
 ## Culture
 
-***As Engineers, we commit to…***
+**_As Engineers, we commit to…_**
 
 - Create a learning-focused working environment.
 - No finger pointing, the code is everyone’s responsibility, and we are all accountable for changes.
