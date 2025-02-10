@@ -14,7 +14,7 @@ An electronic data capture system designed to address inconsistencies and fraud 
 
 [![AWS][aws.com]][AWS-url]
 
-[![Serverless][serverless.com]][Serverless-url]
+[![LocalStack][localstack.cloud]][Localstack-url]
 
 [![Cypress][cypress.com]][Cypress-url]
 
@@ -77,16 +77,16 @@ Additional configs specific to a core service are defined in their directory
 
 - Pnpm
 
-```sh
-npm install -g pnpm@9.15.4
-```
+   ```sh
+   npm install -g pnpm@9.15.4
+   ```
 
 - Docker
   - Docker installation [guide](https://docs.docker.com/engine/install/)
 
-```sh
-npm install -g pnpm@9.15.4
-```
+   ```sh
+   npm install -g pnpm@9.15.4
+   ```
 
 - Git Secrets
   - Install
@@ -215,7 +215,7 @@ To deploy the Core services to a target environment {target-env}:
 [Vite-url]: https://v2.vitejs.dev/
 [aws.com]: https://img.shields.io/badge/Aws-20232A?style=for-the-badge&logo=amazon
 [AWS-url]: https://aws.amazon.com/getting-started/
-[serverless.com]: https://img.shields.io/badge/serverless-20232A?style=for-the-badge&logo=serverless
-[Serverless-url]: https://www.serverless.com/
+[localstack.cloud]: https://img.shields.io/badge/localstack-20232A?style=for-the-badge&logo=localstack
+[Localstack-url]: https://www.localstack.cloud/
 [cypress.com]: https://img.shields.io/badge/Cypress-20232A?style=for-the-badge&logo=cypress
 [Cypress-url]: https://docs.cypress.io/app/get-started/why-cypress
