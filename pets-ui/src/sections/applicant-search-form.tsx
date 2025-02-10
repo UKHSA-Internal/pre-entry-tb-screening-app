@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { useEffect } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -103,51 +102,36 @@ const ApplicantSearchForm = () => {
     try {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
-      await mockFetch(
+      updateReduxStore(data);
+
+      const res = await mockFetch(
         `http://localhost:3000/api/applicant?passportNumber=${data.passportNumber}&countryOfIssue=${data.countryOfIssue}`,
-        {
-          method: "GET",
-          headers: myHeaders,
-        },
-      ).then(async (res) => {
-        updateReduxStore(data);
+        { method: "GET", headers: myHeaders },
+      );
 
-        if (res.status === 200) {
-          await mockFetch(
-            `http://localhost:3000/api/application?passportNumber=${data.passportNumber}`,
-            {
-              method: "GET",
-              headers: myHeaders,
-            },
-          ).then((res) => {
-            if (res.status === 200) {
-              // populate
-              updateReduxStoreMedical(dispatch, res.medicalScreening);
-              updateReduxStoreTravel(dispatch, res.travelInformation);
-            } else {
-              console.error(`Got unexpected status code ${res.status}`);
-            }
+      if (res.status === 200) {
+        const resApplication = await mockFetch(
+          `http://localhost:3000/api/application?passportNumber=${data.passportNumber}`,
+          { method: "GET", headers: myHeaders },
+        );
 
-            if (res.status === 200 || res.status === 404) {
-              console.log("calling tracker");
-              navigate("/tracker");
-            }
-          });
-        } else if (res.status === 404) {
-          navigate("/applicant-results");
-        } else {
-          //error or other codes
-          console.error(`Got unexpected status code ${res.status}`);
+        if (resApplication.status !== 200 && resApplication.status !== 404) {
+          throw new Error(); // Error needs to be properly handled in further versions
         }
-      });
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Error submitting POST request:");
-        console.error(error?.message);
+
+        if (resApplication.status === 200) {
+          updateReduxStoreMedical(dispatch, resApplication.medicalScreening); // populate
+          updateReduxStoreTravel(dispatch, resApplication.travelInformation); // populate
+        }
+
+        navigate("/tracker");
+      } else if (res.status === 404) {
+        navigate("/applicant-results");
       } else {
-        console.error("Error submitting POST request: unknown error type");
-        console.error(error);
+        throw new Error(); // Error needs to be properly handled in further versions
       }
+    } catch {
+      throw new Error(); // Error needs to be properly handled in further versions
     }
   };
 
