@@ -120,8 +120,8 @@ const ApplicantSearchForm = () => {
         }
 
         if (resApplication.status === 200) {
-          updateReduxStoreMedical(dispatch, resApplication.medicalScreening); // populate
-          updateReduxStoreTravel(dispatch, resApplication.travelInformation); // populate
+          updateReduxStoreMedical(resApplication.medicalScreening); // populate
+          updateReduxStoreTravel(resApplication.travelInformation); // populate
         }
 
         navigate("/tracker");
