@@ -123,6 +123,20 @@ npm install -g pnpm@9.15.4
       git secrets --register-aws
     ```
 
+5. Configure End of Line
+
+   - Open the User Settings from the Command Palette and search for "end of line"
+
+   - Ensure "Prettier: End Of Line" is set to "lf"
+
+   - Ensure "Files: Eol" is set to "\n"
+
+   - Run the following:
+
+   ```sh
+      git config --global core.autocrlf input
+   ```
+
 ### Running Development Environment
 
 1. Start up development environment
