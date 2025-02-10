@@ -1,7 +1,5 @@
-import { fireEvent, screen } from "@testing-library/react";
+import { act, fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
-import { setupServer } from "msw/node";
 import { Mock } from "vitest";
 
 import ApplicantSearchForm from "@/sections/applicant-search-form";
@@ -16,29 +14,6 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
   };
 });
 
-export const handlers = [
-  http.get("http://localhost:3005/dev/applicant-details", ({ request }) => {
-    const url = new URL(request.url);
-    const passportNumber = url.searchParams.get("passportNumber");
-    const countryOfIssue = url.searchParams.get("countryOfIssue");
-    if (passportNumber != "12345" || countryOfIssue != "AUS") {
-      throw new Error("Unexpected query parameters");
-    }
-    return HttpResponse.json({}, { status: 200 });
-  }),
-];
-
-const server = setupServer(...handlers);
-
-// Enable API mocking before tests.
-beforeAll(() => server.listen());
-
-// Reset any runtime request handlers we may add during the tests.
-afterEach(() => server.resetHandlers());
-
-// Disable API mocking after the tests are done.
-afterAll(() => server.close());
-
 test("/applicant-details endpoint is invoked when form is filled out and button is clicked", async () => {
   renderWithProviders(<ApplicantSearchForm />);
 
@@ -52,4 +27,52 @@ test("/applicant-details endpoint is invoked when form is filled out and button 
 
   await user.click(screen.getByRole("button"));
   expect(useNavigateMock).toBeCalled();
+});
+
+test("submits the form and handles successful applicant with an application (Passport 007)", async () => {
+  renderWithProviders(<ApplicantSearchForm />);
+
+  const user = userEvent.setup();
+
+  await user.type(screen.getByTestId("passport-number"), "007");
+  fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+
+  await act(async () => {
+    fireEvent.click(screen.getByText("Search"));
+  });
+
+  expect(useNavigateMock).toBeCalled();
+  expect(useNavigateMock).toHaveBeenCalledWith("/tracker");
+});
+
+test("submits the form and handles successful applicant without an application (Passport 008)", async () => {
+  renderWithProviders(<ApplicantSearchForm />);
+
+  const user = userEvent.setup();
+
+  await user.type(screen.getByTestId("passport-number"), "009");
+  fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+
+  await act(async () => {
+    fireEvent.click(screen.getByText("Search"));
+  });
+
+  expect(useNavigateMock).toBeCalled();
+  expect(useNavigateMock).toHaveBeenCalledWith("/tracker");
+});
+
+test("handles applicant not found (Passport 009)", async () => {
+  renderWithProviders(<ApplicantSearchForm />);
+
+  const user = userEvent.setup();
+
+  await user.type(screen.getByTestId("passport-number"), "009");
+  fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+
+  await act(async () => {
+    fireEvent.click(screen.getByText("Search"));
+  });
+
+  expect(useNavigateMock).toBeCalled();
+  expect(useNavigateMock).toHaveBeenCalledWith("/applicant-results");
 });

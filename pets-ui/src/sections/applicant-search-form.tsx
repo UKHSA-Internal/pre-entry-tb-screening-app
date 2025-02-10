@@ -129,6 +129,7 @@ const ApplicantSearchForm = () => {
             }
 
             if (res.status === 200 || res.status === 404) {
+              console.log("calling tracker");
               navigate("/tracker");
             }
           });
