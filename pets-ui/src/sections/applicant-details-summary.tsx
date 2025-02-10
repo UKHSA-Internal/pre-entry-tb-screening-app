@@ -1,22 +1,25 @@
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
 import Button from "@/components/button/button";
-import { selectApplicant } from "@/redux/applicantSlice";
+import { selectApplicant, setApplicantDetailsStatus } from "@/redux/applicantSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { ApplicationStatus, ButtonType } from "@/utils/enums";
 
 const ApplicantReview = () => {
   const applicantData = useAppSelector(selectApplicant);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    await fetch("http://localhost:3005/dev/register-applicant", {
-      method: "POST",
-      body: JSON.stringify(applicantData),
-      headers: myHeaders,
-    });
+    // await fetch("http://localhost:3005/applicant/register", {
+    //   method: "POST",
+    //   body: JSON.stringify(applicantData),
+    //   headers: myHeaders,
+    // });
+    dispatch(setApplicantDetailsStatus(ApplicationStatus.COMPLETE));
     navigate("/applicant-confirmation");
   };
 
