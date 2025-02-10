@@ -131,7 +131,8 @@ const ApplicantSearchForm = () => {
         throw new Error(); // Error needs to be properly handled in further versions
       }
     } catch {
-      throw new Error(); // Error needs to be properly handled in further versions
+      // Error needs to be properly handled in further versions
+      navigate("/error");
     }
   };
 

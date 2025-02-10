@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/require-await */
 
 // this mock function is for dev purposes, to change when API path is available
 // will be deleted when API is available
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const mockFetch = async (link: string, header: { [key: string]: any }) => {
   const baseUrl = "http://localhost:3000/api/";
   if (link.startsWith(baseUrl)) {
@@ -38,7 +38,12 @@ export const mockFetch = async (link: string, header: { [key: string]: any }) =>
           expiryDate: "2028-02-04",
           dateOfBirth: "1980-02-04",
         };
+      } else if (queryParams.passportNumber === `SPECIALTriggerErrorApplicant`) {
+        return {
+          status: 500,
+        };
       }
+
       return {
         status: 404,
       };
@@ -123,6 +128,10 @@ export const mockFetch = async (link: string, header: { [key: string]: any }) =>
             ApplicationStatus: "ApplicationStatus",
           },
         };
+      } else if (queryParams.passportNumber === `SPECIALTriggerErrorApplication`) {
+        return {
+          status: 500,
+        };
       }
 
       return {
@@ -130,4 +139,8 @@ export const mockFetch = async (link: string, header: { [key: string]: any }) =>
       };
     }
   }
+
+  return {
+    status: 500,
+  };
 };

@@ -38,7 +38,7 @@ test("submits the form and handles successful applicant with an application (Pas
   fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
 
   await act(async () => {
-    fireEvent.click(screen.getByText("Search"));
+    await user.click(screen.getByText("Search"));
   });
 
   expect(useNavigateMock).toBeCalled();
@@ -54,7 +54,7 @@ test("submits the form and handles successful applicant without an application (
   fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
 
   await act(async () => {
-    fireEvent.click(screen.getByText("Search"));
+    await user.click(screen.getByText("Search"));
   });
 
   expect(useNavigateMock).toBeCalled();
@@ -70,9 +70,47 @@ test("handles applicant not found (Passport 009)", async () => {
   fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
 
   await act(async () => {
-    fireEvent.click(screen.getByText("Search"));
+    await user.click(screen.getByText("Search"));
   });
 
   expect(useNavigateMock).toBeCalled();
   expect(useNavigateMock).toHaveBeenCalledWith("/applicant-results");
+});
+
+test("trigger server error on applicant", async () => {
+  renderWithProviders(<ApplicantSearchForm />);
+
+  const user = userEvent.setup();
+
+  await user.type(screen.getByTestId("passport-number"), "SPECIALTriggerErrorApplicant");
+  fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+
+  const submitSearch = screen.getByText("Search");
+
+  await act(async () => {
+    await user.click(submitSearch);
+  });
+
+  // expect it to navigate to error page
+  expect(useNavigateMock).toBeCalled();
+  expect(useNavigateMock).toHaveBeenCalledWith("/error");
+});
+
+test("trigger server error on application", async () => {
+  renderWithProviders(<ApplicantSearchForm />);
+
+  const user = userEvent.setup();
+
+  await user.type(screen.getByTestId("passport-number"), "SPECIALTriggerErrorApplication");
+  fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+
+  const submitSearch = screen.getByText("Search");
+
+  await act(async () => {
+    await user.click(submitSearch);
+  });
+
+  // expect it to navigate to error page
+  expect(useNavigateMock).toBeCalled();
+  expect(useNavigateMock).toHaveBeenCalledWith("/error");
 });
