@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/require-await */
 
 // this mock function is for dev purposes, to change when API path is available
@@ -24,6 +23,7 @@ export const mockFetch = async (link: string, header: { [key: string]: any }) =>
       if (queryParams.passportNumber === "007" || queryParams.passportNumber === "008") {
         return {
           status: 200,
+          header: header,
           applicantHomeAddress1: "10 Kuala Lumpur Lane",
           applicantHomeAddress2: "string",
           issueDate: "2024-02-04",
@@ -53,6 +53,7 @@ export const mockFetch = async (link: string, header: { [key: string]: any }) =>
       if (queryParams.passportNumber === "007") {
         return {
           status: 200,
+          header: header,
           travelInformation: {
             visaCategory: "string",
             ukAddressLine1: "string",
