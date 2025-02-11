@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
+import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import FileUpload from "@/components/fileUpload/fileUpload";
 import Radio from "@/components/radio/radio";
@@ -102,25 +103,7 @@ const ChestXrayForm = (props: Readonly<{ nextpage: string }>) => {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
-          <dl className="govuk-summary-list">
-            <div className="govuk-summary-list__row">
-              <dt className="govuk-summary-list__key">Name</dt>
-              <dd className="govuk-summary-list__value">{applicantData.fullName}</dd>
-            </div>
-
-            <div className="govuk-summary-list__row">
-              <dt className="govuk-summary-list__key">Date of Birth</dt>
-              <dd className="govuk-summary-list__value">
-                {applicantData.dateOfBirth.day}/{applicantData.dateOfBirth.month}/
-                {applicantData.dateOfBirth.year}
-              </dd>
-            </div>
-
-            <div className="govuk-summary-list__row">
-              <dt className="govuk-summary-list__key">Passport Number</dt>
-              <dd className="govuk-summary-list__value">{applicantData.passportNumber}</dd>
-            </div>
-          </dl>
+          <ApplicantDataHeader applicantData={applicantData} />
 
           <h3 className="govuk-heading-m">Upload the postero-anterior X-ray</h3>
           <FileUploadModule
