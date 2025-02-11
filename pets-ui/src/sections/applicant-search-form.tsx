@@ -13,30 +13,9 @@ import {
 import { useAppDispatch } from "@/redux/hooks";
 import {
   clearMedicalScreeningDetails,
-  setAge,
-  setCloseContactWithTb,
-  setCloseContactWithTbDetail,
-  setMenstrualPeriods,
-  setOtherSymptomsDetail,
-  setPhysicalExamNotes,
-  setPregnant,
-  setPreviousTb,
-  setPreviousTbDetail,
-  setTbSymptoms,
-  setTbSymptomsList,
-  setUnderElevenConditions,
-  setUnderElevenConditionsDetail,
+  setMedicalScreeningDetails,
 } from "@/redux/medicalScreeningSlice";
-import {
-  clearTravelDetails,
-  setApplicantUkAddress1,
-  setApplicantUkAddress2,
-  setPostcode,
-  setTownOrCity,
-  setUkEmail,
-  setUkMobileNumber,
-  setVisaType,
-} from "@/redux/travelSlice";
+import { clearTravelDetails, setTravelDetails } from "@/redux/travelSlice";
 import { ButtonType } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/helpers";
 import { mockFetch } from "@/utils/mockFetch";
@@ -48,12 +27,10 @@ type ApplicantSearchFormType = {
 
 const ApplicantSearchForm = () => {
   const navigate = useNavigate();
-
   const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
-
-  // on load, clear redux store
   const dispatch = useAppDispatch();
 
+  // on load, clear redux store
   useEffect(() => {
     dispatch(clearApplicantDetails());
     dispatch(clearMedicalScreeningDetails());
@@ -67,46 +44,24 @@ const ApplicantSearchForm = () => {
     formState: { errors },
   } = methods;
 
-  const updateReduxStore = (applicantSearchData: ApplicantSearchFormType) => {
+  const updateReduxStoreSearch = (applicantSearchData: ApplicantSearchFormType) => {
     dispatch(setPassportNumber(applicantSearchData.passportNumber));
     dispatch(setCountryOfIssue(applicantSearchData.countryOfIssue));
   };
 
-  const updateReduxStoreMedical = (medicalScreeningData?: MedicalScreeningType) => {
-    if (medicalScreeningData) {
-      dispatch(setAge(medicalScreeningData.age));
-      dispatch(setTbSymptoms(medicalScreeningData.tbSymptoms));
-      dispatch(setTbSymptomsList(medicalScreeningData.tbSymptomsList));
-      dispatch(setOtherSymptomsDetail(medicalScreeningData.otherSymptomsDetail));
-      dispatch(setUnderElevenConditions(medicalScreeningData.underElevenConditions));
-      dispatch(setUnderElevenConditionsDetail(medicalScreeningData.underElevenConditionsDetail));
-      dispatch(setPreviousTb(medicalScreeningData.previousTb));
-      dispatch(setPreviousTbDetail(medicalScreeningData.previousTbDetail));
-      dispatch(setCloseContactWithTb(medicalScreeningData.closeContactWithTb));
-      dispatch(setCloseContactWithTbDetail(medicalScreeningData.closeContactWithTbDetail));
-      dispatch(setPregnant(medicalScreeningData.pregnant));
-      dispatch(setMenstrualPeriods(medicalScreeningData.menstrualPeriods));
-      dispatch(setPhysicalExamNotes(medicalScreeningData.physicalExamNotes));
-    }
-  };
-
-  const updateReduxStoreTravel = (travelData?: TravelDetailsType) => {
-    if (travelData) {
-      dispatch(setVisaType(travelData.visaType));
-      dispatch(setApplicantUkAddress1(travelData.applicantUkAddress1));
-      dispatch(setApplicantUkAddress2(travelData.applicantUkAddress2 ?? ""));
-      dispatch(setTownOrCity(travelData.townOrCity));
-      dispatch(setPostcode(travelData.postcode));
-      dispatch(setUkMobileNumber(travelData.ukMobileNumber ?? ""));
-      dispatch(setUkEmail(travelData.ukEmail));
-    }
+  const updateReduxStoreApplication = (
+    medicalScreeningData?: MedicalScreeningType,
+    travelData?: TravelDetailsType,
+  ) => {
+    if (medicalScreeningData) dispatch(setMedicalScreeningDetails(medicalScreeningData));
+    if (travelData) dispatch(setTravelDetails(travelData));
   };
 
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (data) => {
     try {
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
-      updateReduxStore(data);
+      updateReduxStoreSearch(data);
 
       const res = await mockFetch(
         `http://localhost:3000/api/applicant?passportNumber=${data.passportNumber}&countryOfIssue=${data.countryOfIssue}`,
@@ -114,18 +69,17 @@ const ApplicantSearchForm = () => {
       );
 
       if (res.status === 200) {
-        const resApplication = await mockFetch(
+        const resApp = await mockFetch(
           `http://localhost:3000/api/application?passportNumber=${data.passportNumber}`,
           { method: "GET", headers: myHeaders },
         );
 
-        if (resApplication.status !== 200 && resApplication.status !== 404) {
+        if (resApp.status !== 200 && resApp.status !== 404) {
           throw new Error(); // Error needs to be properly handled in further versions
         }
 
-        if (resApplication.status === 200) {
-          updateReduxStoreMedical(resApplication.medicalScreening); // populate
-          updateReduxStoreTravel(resApplication.travelInformation); // populate
+        if (resApp.status === 200) {
+          updateReduxStoreApplication(resApp.medicalScreening, resApp.travelInformation); // populate
         }
 
         navigate("/tracker");

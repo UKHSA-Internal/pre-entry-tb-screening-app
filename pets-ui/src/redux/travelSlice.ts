@@ -36,6 +36,15 @@ export const travelSlice = createSlice({
     setUkEmail: (state, action: PayloadAction<string>) => {
       state.ukEmail = action.payload;
     },
+    setTravelDetails: (state, action: PayloadAction<TravelDetailsType>) => {
+      state.visaType = action.payload.visaType;
+      state.applicantUkAddress1 = action.payload.applicantUkAddress1;
+      state.applicantUkAddress2 = action.payload.applicantUkAddress1;
+      state.townOrCity = action.payload.townOrCity;
+      state.postcode = action.payload.postcode;
+      state.ukMobileNumber = action.payload.ukMobileNumber;
+      state.ukEmail = action.payload.ukEmail;
+    },
     clearTravelDetails: (state) => {
       state.visaType = "";
       state.applicantUkAddress1 = "";
@@ -57,6 +66,7 @@ export const {
   setUkMobileNumber,
   setUkEmail,
   clearTravelDetails,
+  setTravelDetails,
 } = travelSlice.actions;
 
 export const travelReducer = travelSlice.reducer;
