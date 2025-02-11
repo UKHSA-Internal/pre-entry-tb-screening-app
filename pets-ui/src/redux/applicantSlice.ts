@@ -90,12 +90,12 @@ export const applicantSlice = createSlice({
       state.passportIssueDate = action.payload.passportIssueDate;
       state.passportExpiryDate = action.payload.passportExpiryDate;
       state.applicantHomeAddress1 = action.payload.applicantHomeAddress1;
-      state.applicantHomeAddress2 = action.payload.applicantHomeAddress2;
-      state.applicantHomeAddress3 = action.payload.applicantHomeAddress3;
+      state.applicantHomeAddress2 = action.payload.applicantHomeAddress2 ?? "";
+      state.applicantHomeAddress3 = action.payload.applicantHomeAddress3 ?? "";
       state.townOrCity = action.payload.townOrCity;
       state.provinceOrState = action.payload.provinceOrState;
       state.country = action.payload.country;
-      state.postcode = action.payload.postcode;
+      state.postcode = action.payload.postcode ?? "";
     },
     clearApplicantDetails: (state) => {
       state.fullName = "";
