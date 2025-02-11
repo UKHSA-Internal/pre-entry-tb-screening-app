@@ -5,7 +5,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import FileUpload, { FileUploadProps } from "./fileUpload";
 
 const renderWithFormProvider = (ui: React.ReactElement) => {
-  const Wrapper: React.FC = ({ children }) => {
+  const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const methods = useForm();
     return <FormProvider {...methods}>{children}</FormProvider>;
   };
