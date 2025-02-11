@@ -63,9 +63,13 @@ export const medicalScreeningSlice = createSlice({
     setMedicalScreeningDetails: (state, action: PayloadAction<MedicalScreeningType>) => {
       state.age = action.payload.age;
       state.tbSymptoms = action.payload.tbSymptoms;
-      state.tbSymptomsList = action.payload.tbSymptomsList ?? [];
+      state.tbSymptomsList = action.payload.tbSymptomsList
+        ? [...action.payload.tbSymptomsList]
+        : [];
       state.otherSymptomsDetail = action.payload.otherSymptomsDetail;
-      state.underElevenConditions = action.payload.underElevenConditions ?? [];
+      state.underElevenConditions = action.payload.underElevenConditions
+        ? [...action.payload.underElevenConditions]
+        : [];
       state.underElevenConditionsDetail = action.payload.underElevenConditionsDetail;
       state.previousTb = action.payload.previousTb;
       state.previousTbDetail = action.payload.previousTbDetail;
