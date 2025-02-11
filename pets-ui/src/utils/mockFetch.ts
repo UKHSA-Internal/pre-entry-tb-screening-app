@@ -3,7 +3,31 @@
 // this mock function is for dev purposes, to change when API path is available
 // will be deleted when API is available
 
-export const mockFetch = async (link: string, header: { [key: string]: any }) => {
+interface MockResponseType {
+  status: number;
+  header?: { [key: string]: any };
+  medicalScreening?: MedicalScreeningType;
+  travelInformation?: TravelDetailsType;
+  chestXrays?: ChestXrayDetailsType;
+  sputumCollection?: SputumCollectionDetailsType;
+  certification?: CertificationDetailsType;
+  applicantHomeAddress1?: string;
+  applicantHomeAddress2?: string;
+  countryOfIssue?: string;
+  postcode?: string;
+  townOrCity?: string;
+  sex?: string;
+  passportNumber?: string;
+  fullName?: string;
+  country?: string;
+  countryOfNationality?: string;
+  dateOfBirth?: DateType;
+}
+
+export const mockFetch = async (
+  link: string,
+  header: { [key: string]: any },
+): Promise<MockResponseType> => {
   const baseUrl = "http://localhost:3000/api/";
   if (link.startsWith(baseUrl)) {
     const path = link.slice(baseUrl.length);
@@ -26,7 +50,6 @@ export const mockFetch = async (link: string, header: { [key: string]: any }) =>
           header: header,
           applicantHomeAddress1: "10 Kuala Lumpur Lane",
           applicantHomeAddress2: "string",
-          issueDate: "2024-02-04",
           countryOfIssue: "Laos",
           postcode: "Z12 7LK",
           townOrCity: "",
@@ -35,8 +58,11 @@ export const mockFetch = async (link: string, header: { [key: string]: any }) =>
           fullName: "James Bond",
           country: "Laos",
           countryOfNationality: "Goa",
-          expiryDate: "2028-02-04",
-          dateOfBirth: "1980-02-04",
+          dateOfBirth: {
+            year: "1980",
+            month: "02",
+            day: "04",
+          },
         };
       } else if (queryParams.passportNumber === `SPECIALTriggerErrorApplicant`) {
         return {
@@ -55,34 +81,33 @@ export const mockFetch = async (link: string, header: { [key: string]: any }) =>
           status: 200,
           header: header,
           travelInformation: {
-            visaCategory: "string",
-            ukAddressLine1: "string",
-            ukAddressLine2: "string",
-            ukAddressLine3: "string or null",
-            ukAddressLine4: "string or null",
-            ukAddressPostcode: "string",
-            ukTelephoneNumber: "string",
+            visaType: "string",
+            applicantUkAddress1: "string",
+            applicantUkAddress2: "string",
+            applicantUkAddress3: "string or null",
+            applicantUkAddress4: "string or null",
+            townOrCity: "string or null",
+            postcode: "string",
             ukMobileNumber: "string or null",
-            ukEmailAddress: "string",
+            ukEmail: "string",
           },
           medicalScreening: {
-            age: "number or null",
-            symptomsOfTb: "boolean or null",
-            symptoms: "multiple options from valid symptoms",
-            symptomsOther: "string or null",
-            historyOfConditionsUnder11: "one of valid conditons",
-            historyOfConditionsUnder11Details: "string or null",
-            historyOfPreviousTb: "YesNoNone",
-            previousTbDetails: "string or null",
-            contactWithPersonWithTb: "YesNoNone",
-            contactWithTbDetails: "YesNoNone",
-            pregnant: "boolean or null",
-            lastMenstralPeriod: "string or null",
-            physicalExaminationConducted: "boolean or null",
-            dateOfMedicalScreening: "string or null",
+            age: "30",
+            tbSymptoms: "string",
+            tbSymptomsList: ["string"],
+            otherSymptomsDetail: "string",
+            underElevenConditions: ["string"],
+            underElevenConditionsDetail: "string",
+            previousTb: "string",
+            previousTbDetail: "string",
+            closeContactWithTb: "string",
+            closeContactWithTbDetail: "string",
+            pregnant: "string",
+            menstrualPeriods: "string",
+            physicalExamNotes: "string",
           },
           chestXrays: {
-            cxrTaken: "boolean",
+            cxrTaken: true,
             posteriorAnterior: "bucket-path or null if cxrTaken is No",
             apicalLordotic: "bucket-path or null",
             lateralDecubitus: "bucket-path or null",
@@ -93,7 +118,7 @@ export const mockFetch = async (link: string, header: { [key: string]: any }) =>
             radiologicalOutcomeNotes: "string or null",
             radiologicalFinding: "string or null",
             dateOfRadiologicalInterpretation: "string or null",
-            sputumCollected: "boolean",
+            sputumCollected: true,
             reasonWhySputumNotRequired: "string or null",
           },
           sputumCollection: {
@@ -112,13 +137,13 @@ export const mockFetch = async (link: string, header: { [key: string]: any }) =>
             collectionMethodOtherSample3: "string or null",
             smearResult3: "string or null",
             cultureResult3: "string or null",
-            dstConducted: "boolean",
+            dstConducted: false,
             drugTested: "Multiple Options from List or null",
-            drugResistance: "Yes or No or Not applicable",
+            drugResistance: "No",
             drugResistanceDetails: "string or null",
           },
           certification: {
-            tbSuspected: "boolean or null",
+            tbSuspected: false,
             tbSuspectedBasedOn: "string or null",
             clearanceCertificateIssued: "string or null",
             reasonForNonIssue: "string or null",

@@ -72,30 +72,34 @@ const ApplicantSearchForm = () => {
     dispatch(setCountryOfIssue(applicantSearchData.countryOfIssue));
   };
 
-  const updateReduxStoreMedical = (medicalScreeningData: MedicalScreeningType) => {
-    dispatch(setAge(medicalScreeningData.age));
-    dispatch(setTbSymptoms(medicalScreeningData.tbSymptoms));
-    dispatch(setTbSymptomsList(medicalScreeningData.tbSymptomsList));
-    dispatch(setOtherSymptomsDetail(medicalScreeningData.otherSymptomsDetail));
-    dispatch(setUnderElevenConditions(medicalScreeningData.underElevenConditions));
-    dispatch(setUnderElevenConditionsDetail(medicalScreeningData.underElevenConditionsDetail));
-    dispatch(setPreviousTb(medicalScreeningData.previousTb));
-    dispatch(setPreviousTbDetail(medicalScreeningData.previousTbDetail));
-    dispatch(setCloseContactWithTb(medicalScreeningData.closeContactWithTb));
-    dispatch(setCloseContactWithTbDetail(medicalScreeningData.closeContactWithTbDetail));
-    dispatch(setPregnant(medicalScreeningData.pregnant));
-    dispatch(setMenstrualPeriods(medicalScreeningData.menstrualPeriods));
-    dispatch(setPhysicalExamNotes(medicalScreeningData.physicalExamNotes));
+  const updateReduxStoreMedical = (medicalScreeningData?: MedicalScreeningType) => {
+    if (medicalScreeningData) {
+      dispatch(setAge(medicalScreeningData.age));
+      dispatch(setTbSymptoms(medicalScreeningData.tbSymptoms));
+      dispatch(setTbSymptomsList(medicalScreeningData.tbSymptomsList));
+      dispatch(setOtherSymptomsDetail(medicalScreeningData.otherSymptomsDetail));
+      dispatch(setUnderElevenConditions(medicalScreeningData.underElevenConditions));
+      dispatch(setUnderElevenConditionsDetail(medicalScreeningData.underElevenConditionsDetail));
+      dispatch(setPreviousTb(medicalScreeningData.previousTb));
+      dispatch(setPreviousTbDetail(medicalScreeningData.previousTbDetail));
+      dispatch(setCloseContactWithTb(medicalScreeningData.closeContactWithTb));
+      dispatch(setCloseContactWithTbDetail(medicalScreeningData.closeContactWithTbDetail));
+      dispatch(setPregnant(medicalScreeningData.pregnant));
+      dispatch(setMenstrualPeriods(medicalScreeningData.menstrualPeriods));
+      dispatch(setPhysicalExamNotes(medicalScreeningData.physicalExamNotes));
+    }
   };
 
-  const updateReduxStoreTravel = (travelData: TravelDetailsType) => {
-    dispatch(setVisaType(travelData.visaType));
-    dispatch(setApplicantUkAddress1(travelData.applicantUkAddress1));
-    dispatch(setApplicantUkAddress2(travelData.applicantUkAddress2 ?? ""));
-    dispatch(setTownOrCity(travelData.townOrCity));
-    dispatch(setPostcode(travelData.postcode));
-    dispatch(setUkMobileNumber(travelData.ukMobileNumber ?? ""));
-    dispatch(setUkEmail(travelData.ukEmail));
+  const updateReduxStoreTravel = (travelData?: TravelDetailsType) => {
+    if (travelData) {
+      dispatch(setVisaType(travelData.visaType));
+      dispatch(setApplicantUkAddress1(travelData.applicantUkAddress1));
+      dispatch(setApplicantUkAddress2(travelData.applicantUkAddress2 ?? ""));
+      dispatch(setTownOrCity(travelData.townOrCity));
+      dispatch(setPostcode(travelData.postcode));
+      dispatch(setUkMobileNumber(travelData.ukMobileNumber ?? ""));
+      dispatch(setUkEmail(travelData.ukEmail));
+    }
   };
 
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (data) => {
