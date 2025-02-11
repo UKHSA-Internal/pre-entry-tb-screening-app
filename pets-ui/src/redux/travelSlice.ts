@@ -39,10 +39,10 @@ export const travelSlice = createSlice({
     setTravelDetails: (state, action: PayloadAction<TravelDetailsType>) => {
       state.visaType = action.payload.visaType;
       state.applicantUkAddress1 = action.payload.applicantUkAddress1;
-      state.applicantUkAddress2 = action.payload.applicantUkAddress1;
+      state.applicantUkAddress2 = action.payload.applicantUkAddress2 ?? "";
       state.townOrCity = action.payload.townOrCity;
       state.postcode = action.payload.postcode;
-      state.ukMobileNumber = action.payload.ukMobileNumber;
+      state.ukMobileNumber = action.payload.ukMobileNumber ?? "";
       state.ukEmail = action.payload.ukEmail;
     },
     clearTravelDetails: (state) => {
