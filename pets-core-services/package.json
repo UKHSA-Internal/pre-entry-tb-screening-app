@@ -9,7 +9,7 @@
     "@middy/core": "^6.0.0",
     "@middy/http-router": "^6.0.0",
     "aws-xray-sdk": "^3.10.1",
-    "esbuild": "^0.24.2",
+    "esbuild": "^0.25.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {
