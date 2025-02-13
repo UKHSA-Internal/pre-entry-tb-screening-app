@@ -3,7 +3,7 @@ import { GlobalContextStorageProvider } from "pino-lambda";
 
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
-import { Application } from "../models/application";
+import { Application } from "../../shared/models/application";
 import { TravelInformation } from "../models/travel-information";
 
 export const getApplicationHandler = async (event: APIGatewayProxyEvent) => {
@@ -22,7 +22,6 @@ export const getApplicationHandler = async (event: APIGatewayProxyEvent) => {
 
     return createHttpResponse(200, {
       applicationId,
-      application: application.toJson(),
       travelInformation: travelInformation?.toJson(),
     });
   } catch (error) {

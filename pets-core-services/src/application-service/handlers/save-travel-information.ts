@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
-import { Application } from "../models/application";
+import { Application } from "../../shared/models/application";
 import { TravelInformation } from "../models/travel-information";
 import { TravelInformationRequestSchema } from "../types/zod-schema";
 

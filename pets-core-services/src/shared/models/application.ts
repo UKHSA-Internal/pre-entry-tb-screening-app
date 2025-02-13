@@ -1,23 +1,13 @@
-import {
-  GetCommand,
-  PutCommand,
-  PutCommandInput,
-  QueryCommand,
-  QueryCommandInput,
-} from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
 import crypto from "crypto";
 
-import awsClients from "../../shared/clients/aws";
-import { assertEnvExists } from "../../shared/config";
-import { CountryCode } from "../../shared/country";
-import { logger } from "../../shared/logger";
+import awsClients from "../clients/aws";
+import { logger } from "../logger";
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
 export abstract class IApplication {
   applicationId: string;
-  passportNumber: string;
-  countryOfIssue: CountryCode;
 
   clinicId: string;
   dateCreated: Date;
@@ -25,9 +15,6 @@ export abstract class IApplication {
 
   constructor(details: IApplication) {
     this.applicationId = details.applicationId;
-    this.passportNumber = details.passportNumber;
-    this.countryOfIssue = details.countryOfIssue;
-
     this.clinicId = details.clinicId;
     this.dateCreated = details.dateCreated;
     this.createdBy = details.createdBy;
@@ -86,41 +73,6 @@ export class Application extends IApplication {
     }
   }
 
-  static async findByPassportDetails(countryOfIssue: CountryCode, passportNumber: string) {
-    try {
-      logger.info("Finding applications linked to Passport number");
-
-      const params: QueryCommandInput = {
-        TableName: Application.getTableName(),
-        IndexName: assertEnvExists(process.env.APPLICANT_SERVICE_DB_PASSPORT_DETAILS_INDEX),
-        KeyConditionExpression:
-          "passportNumber = :passportNumber AND countryOfIssue = :countryOfIssue",
-        ExpressionAttributeValues: {
-          ":passportNumber": passportNumber,
-          ":countryOfIssue": countryOfIssue,
-        },
-      };
-
-      const command = new QueryCommand(params);
-      const data = await docClient.send(command);
-
-      if (!data.Items) {
-        logger.info("No application found");
-        return [];
-      }
-      logger.info({ resultCount: data.Items.length }, "Applications fetched successfully");
-
-      const results = data.Items as ReturnType<Application["todbItem"]>[];
-
-      return results.map(
-        (dbItem) => new Application({ ...dbItem, dateCreated: new Date(dbItem.dateCreated) }),
-      );
-    } catch (error) {
-      logger.error(error, "Error finding applications linked to passport number");
-      throw error;
-    }
-  }
-
   static async getByApplicationId(applicationId: string) {
     try {
       logger.info("fetching Application Details");
@@ -160,8 +112,6 @@ export class Application extends IApplication {
   toJson() {
     return {
       applicationId: this.applicationId,
-      passportNumber: this.passportNumber,
-      countryOfIssue: this.countryOfIssue,
       dateCreated: this.dateCreated,
     };
   }

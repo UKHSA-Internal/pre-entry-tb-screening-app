@@ -2,8 +2,8 @@ import { GetCommand, PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
 
 import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
+import { Application } from "../../shared/models/application";
 import { ProgressStatus, VisaOptions } from "../types/enums";
-import { Application } from "./application";
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
