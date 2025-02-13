@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
+import { Application } from "../../shared/models/application";
 import { Applicant } from "../models/applicant";
 import { ApplicantSchema } from "../types/zod-schema";
 
@@ -31,12 +32,33 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
     GlobalContextStorageProvider.updateContext({
       countryOfIssue: parsedBody.countryOfIssue,
       passportNumber: parsedBody.passportNumber.slice(-4),
+      applicationId: parsedBody.applicationId,
     });
+
+    const application = await Application.getByApplicationId(parsedBody.applicationId);
+    if (!application) {
+      logger.error("Application does not exist");
+      return createHttpResponse(400, {
+        message: `Application with ID: ${parsedBody.applicationId} does not exist`,
+      });
+    }
+
+    const existingApplicants = await Applicant.findByPassportNumber(
+      parsedBody.countryOfIssue,
+      parsedBody.passportNumber,
+    );
+
+    if (existingApplicants.length) {
+      logger.error("An applicant with similar information already exists");
+      return createHttpResponse(400, { message: "Applicant Details already saved" });
+    }
+
+    // TODO: Compare application clinic with one on payload
 
     let applicant: Applicant;
 
     try {
-      applicant = await Applicant.createNewApplicant({ ...parsedBody, clinicId: "Apollo Clinic" });
+      applicant = await Applicant.createNewApplicant({ ...parsedBody, clinicId: "Apollo Clinic" }); // TODO: Use clinicId from context
     } catch (error) {
       if (error instanceof ConditionalCheckFailedException)
         return createHttpResponse(400, { message: "Applicant Details already saved" });

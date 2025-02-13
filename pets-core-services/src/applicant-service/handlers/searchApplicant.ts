@@ -10,13 +10,13 @@ export type Header = {
   passportnumber: string;
   countryofissue: CountryCode;
 };
-export type GetApplicantEvent = APIGatewayProxyEvent & {
+export type SearchApplicantEvent = APIGatewayProxyEvent & {
   parsedHeaders?: Header;
 };
 
-export const getApplicantHandler = async (event: GetApplicantEvent) => {
+export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
   try {
-    logger.info("Get applicant details handler triggered");
+    logger.info("Search applicant details handler triggered");
 
     const { parsedHeaders } = event;
 
@@ -32,18 +32,28 @@ export const getApplicantHandler = async (event: GetApplicantEvent) => {
       passportNumber: parsedHeaders.passportnumber.slice(-4),
     });
 
-    const applicant = await Applicant.getByPassportNumber(
+    const applicants = await Applicant.findByPassportNumber(
       parsedHeaders.countryofissue,
       parsedHeaders.passportnumber,
     );
 
-    if (!applicant) return createHttpResponse(404, { message: "Applicant does not exist" });
+    if (!applicants.length) return createHttpResponse(404, { message: "Applicant does not exist" });
 
-    return createHttpResponse(200, {
-      ...applicant.toJson(),
-    });
+    // Note: This check would need to be modified Post-MVP, For MVP, only a single applicant should exist for passport and country combination
+    if (applicants.length > 1) {
+      logger.error("Duplicate applicants found");
+      return createHttpResponse(500, { message: "Unexpected duplicate results found" });
+    }
+
+    const applicant = applicants[0];
+
+    return createHttpResponse(200, [
+      {
+        ...applicant.toJson(),
+      },
+    ]);
   } catch (error) {
-    logger.error(error, "Getting Applicant Details Failed");
+    logger.error(error, "Searching Applicant Details Failed");
     return createHttpResponse(500, { message: "Something went wrong" });
   }
 };

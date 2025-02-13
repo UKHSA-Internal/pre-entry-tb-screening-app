@@ -1,7 +1,6 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 
-import { CountryCode } from "../../shared/country";
 import {
   HistoryOfConditionsUnder11,
   MenstrualPeriods,
@@ -19,14 +18,7 @@ extendZodWithOpenApi(z);
 // Verify travel exists for medical
 // Duplicate checks across
 
-export const CreateApplicationRequestSchema = z.object({
-  passportNumber: z.string({ description: "Passport Number of Applicant" }),
-  countryOfIssue: z.nativeEnum(CountryCode).openapi({
-    description: "Passport Issue Country",
-  }),
-});
-
-export const CreateApplicationResponseSchema = CreateApplicationRequestSchema.extend({
+export const CreateApplicationResponseSchema = z.object({
   applicationId: z.string().openapi({
     description: "ID of newly created application",
   }),
