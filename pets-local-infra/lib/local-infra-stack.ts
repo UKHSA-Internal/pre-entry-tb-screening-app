@@ -63,9 +63,21 @@ export class LocalInfrastructureStack extends cdk.Stack {
       tableName: process.env.APPLICANT_SERVICE_DATABASE_NAME,
     });
 
-    new Table(this, "application-service-table", {
+    const applicationServiceTable = new Table(this, "application-service-table", {
       ...tableProps,
       tableName: process.env.APPLICATION_SERVICE_DATABASE_NAME,
+    });
+
+    applicationServiceTable.addGlobalSecondaryIndex({
+      indexName: process.env.APPLICANT_SERVICE_DB_PASSPORT_DETAILS_INDEX || "",
+      partitionKey: {
+        name: "passportNumber",
+        type: AttributeType.STRING,
+      },
+      sortKey: {
+        name: "countryOfIssue",
+        type: AttributeType.STRING,
+      },
     });
   }
 }
