@@ -19,14 +19,23 @@ extendZodWithOpenApi(z);
 // Verify travel exists for medical
 // Duplicate checks across
 
-export const TravelInformationRequestSchema = z.object({
-  passportNumber: z.string().openapi({
-    description: "PassportNumber of Applicant",
-  }),
+export const CreateApplicationRequestSchema = z.object({
+  passportNumber: z.string({ description: "Passport Number of Applicant" }),
   countryOfIssue: z.nativeEnum(CountryCode).openapi({
     description: "Passport Issue Country",
   }),
+});
 
+export const CreateApplicationResponseSchema = CreateApplicationRequestSchema.extend({
+  applicationId: z.string().openapi({
+    description: "ID of newly created application",
+  }),
+  dateCreated: z.string().date().openapi({
+    description: "Creation Date in UTC timezone",
+  }),
+});
+
+export const TravelInformationRequestSchema = z.object({
   visaCategory: z.nativeEnum(VisaOptions).openapi({
     description: "Visa Option",
   }),
@@ -49,16 +58,13 @@ export const TravelInformationRequestSchema = z.object({
 
 export const TravelInformationResponseSchema = TravelInformationRequestSchema.extend({
   applicationId: z.string().openapi({
-    description: "ID of newly created application",
+    description: "ID of application",
   }),
   dateCreated: z.string().date().openapi({
     description: "Creation Date in UTC timezone",
   }),
   status: z.nativeEnum(ProgressStatus).openapi({
     description: "Status of Task",
-  }),
-  clinicId: z.string().openapi({
-    description: "ID of the Clinic",
   }),
 });
 
@@ -111,14 +117,11 @@ export const MedicalScreeningResponseSchema = MedicalScreeningRequestSchema.exte
   status: z.nativeEnum(ProgressStatus).openapi({
     description: "Status of Task",
   }),
-  clinicId: z.string().openapi({
-    description: "ID of the Clinic",
-  }),
 });
 
 export const ApplicationSchema = z.object({
   applicationId: z.string().openapi({
-    description: "ID of newly created application",
+    description: "application id",
   }),
   travelInformation: TravelInformationResponseSchema,
   MedicalScreening: MedicalScreeningResponseSchema,

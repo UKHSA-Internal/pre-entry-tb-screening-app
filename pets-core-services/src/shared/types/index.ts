@@ -4,7 +4,7 @@ import { z } from "zod";
 
 export type RouteParam = Record<
   string,
-  z.ZodOptional<z.ZodString | z.ZodNumber> | z.ZodString | z.ZodNumber
+  z.ZodOptional<z.ZodString | z.ZodNumber> | z.ZodString | z.ZodNumber | z.ZodNativeEnum<any>
 >;
 
 export type PetsRoute = {
