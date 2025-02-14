@@ -36,8 +36,8 @@ export const saveTravelInformationHandler = async (event: SaveTravelInformationE
 
     const application = await Application.getByApplicationId(applicationId);
     if (!application) {
-      logger.error("No application created for travel details");
-      return createHttpResponse(400, { message: "No application created for travel details" });
+      logger.error("Application does not exist");
+      return createHttpResponse(400, { message: "Application does not exist" });
     }
 
     const clinicId = "Apollo Clinic";

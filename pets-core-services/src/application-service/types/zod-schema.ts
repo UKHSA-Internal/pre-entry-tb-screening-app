@@ -94,7 +94,7 @@ export const MedicalScreeningRequestSchema = z.object({
   pregnant: z.nativeEnum(PregnancyStatus).openapi({
     description: "Pregnancy Status",
   }),
-  HaveMenstralPeriod: z.nativeEnum(MenstrualPeriods).openapi({
+  haveMenstralPeriod: z.nativeEnum(MenstrualPeriods).openapi({
     description: "Menstrual Periods?",
   }),
   physicalExaminationConducted: z.string().openapi({

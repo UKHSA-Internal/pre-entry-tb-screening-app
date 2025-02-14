@@ -4,6 +4,7 @@ import { GlobalContextStorageProvider } from "pino-lambda";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
+import { MedicalScreening } from "../models/medical-screening";
 import { TravelInformation } from "../models/travel-information";
 
 export const getApplicationHandler = async (event: APIGatewayProxyEvent) => {
@@ -19,10 +20,12 @@ export const getApplicationHandler = async (event: APIGatewayProxyEvent) => {
     const application = await Application.getByApplicationId(applicationId);
     if (!application) return createHttpResponse(404, { message: "Application does not exist" });
     const travelInformation = await TravelInformation.getByApplicationId(applicationId);
+    const medicalScreening = await MedicalScreening.getByApplicationId(applicationId);
 
     return createHttpResponse(200, {
       applicationId,
       travelInformation: travelInformation?.toJson(),
+      medicalScreening: medicalScreening?.toJson(),
     });
   } catch (error) {
     logger.error(error, "Error retrieving application details");

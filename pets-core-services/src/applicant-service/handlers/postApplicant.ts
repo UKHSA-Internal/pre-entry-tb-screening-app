@@ -43,6 +43,12 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
       });
     }
 
+    const clinicId = "Apollo Clinic";
+    if (application.clinicId != clinicId) {
+      logger.error("ClinicId mismatch with existing application");
+      return createHttpResponse(403, { message: "Clinic Id mismatch" });
+    }
+
     const existingApplicants = await Applicant.findByPassportNumber(
       parsedBody.countryOfIssue,
       parsedBody.passportNumber,
