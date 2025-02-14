@@ -1,7 +1,11 @@
 import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+import { MedicalScreeningType } from "@/applicant";
+import { ApplicationStatus } from "@/utils/enums";
+
 const initialState: MedicalScreeningType = {
+  status: ApplicationStatus.INCOMPLETE,
   age: "",
   tbSymptoms: "",
   tbSymptomsList: [],
@@ -21,6 +25,9 @@ export const medicalScreeningSlice = createSlice({
   name: "medicalScreeningDetails",
   initialState,
   reducers: {
+    setMedicalScreeningStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+      state.status = action.payload;
+    },
     setAge: (state, action: PayloadAction<string>) => {
       state.age = action.payload;
     },
@@ -61,6 +68,7 @@ export const medicalScreeningSlice = createSlice({
       state.physicalExamNotes = action.payload;
     },
     clearMedicalScreeningDetails: (state) => {
+      state.status = ApplicationStatus.INCOMPLETE;
       state.age = "";
       state.tbSymptoms = "";
       state.tbSymptomsList = [];
@@ -79,6 +87,7 @@ export const medicalScreeningSlice = createSlice({
 });
 
 export const {
+  setMedicalScreeningStatus,
   setAge,
   setTbSymptoms,
   setTbSymptomsList,

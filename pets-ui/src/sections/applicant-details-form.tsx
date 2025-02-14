@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { ApplicantDetailsType } from "@/applicant";
 import Button from "@/components/button/button";
 import DateTextInput, { DateType } from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
