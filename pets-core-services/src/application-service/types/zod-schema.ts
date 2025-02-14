@@ -13,11 +13,6 @@ import {
 
 extendZodWithOpenApi(z);
 
-// TODO:
-// Verify applicant exists
-// Verify travel exists for medical
-// Duplicate checks across
-
 export const CreateApplicationResponseSchema = z.object({
   applicationId: z.string().openapi({
     description: "ID of newly created application",
