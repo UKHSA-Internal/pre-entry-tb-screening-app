@@ -14,7 +14,7 @@ export type SaveMedicalScreeningEvent = APIGatewayProxyEvent & {
   parsedBody?: MedicalScreeningRequestSchema;
 };
 
-export const saveMedicalScreening = async (event: SaveMedicalScreeningEvent) => {
+export const saveMedicalScreeningHandler = async (event: SaveMedicalScreeningEvent) => {
   try {
     const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
 
@@ -37,7 +37,9 @@ export const saveMedicalScreening = async (event: SaveMedicalScreeningEvent) => 
     const application = await Application.getByApplicationId(applicationId);
     if (!application) {
       logger.error("Application does not exist");
-      return createHttpResponse(400, { message: "Application does not exist" });
+      return createHttpResponse(400, {
+        message: `Application with ID: ${applicationId} does not exist`,
+      });
     }
 
     const clinicId = "Apollo Clinic";

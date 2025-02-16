@@ -3,11 +3,11 @@ import { GetCommand, PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
 import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
+import { TaskStatus } from "../../shared/types/enum";
 import {
   HistoryOfConditionsUnder11,
   MenstrualPeriods,
   PregnancyStatus,
-  ProgressStatus,
   TbSymptomsOptions,
   YesOrNo,
 } from "../types/enums";
@@ -16,7 +16,7 @@ const { dynamoDBDocClient: docClient } = awsClients;
 
 export abstract class IMedicalScreening {
   applicationId: string;
-  progressStatus: ProgressStatus;
+  status: TaskStatus;
 
   age: number;
   symptomsOfTb: YesOrNo;
@@ -30,14 +30,14 @@ export abstract class IMedicalScreening {
   contactWithTbDetails?: string;
   pregnant: PregnancyStatus;
   haveMenstralPeriod: MenstrualPeriods;
-  physicalExaminationConducted: string;
+  physicalExaminationNotes: string;
 
   dateCreated: Date;
   createdBy: string;
 
   constructor(details: IMedicalScreening) {
     this.applicationId = details.applicationId;
-    this.progressStatus = details.progressStatus;
+    this.status = details.status;
 
     this.age = details.age;
     this.symptomsOfTb = details.symptomsOfTb;
@@ -51,7 +51,7 @@ export abstract class IMedicalScreening {
     this.contactWithTbDetails = details.contactWithTbDetails;
     this.pregnant = details.pregnant;
     this.haveMenstralPeriod = details.haveMenstralPeriod;
-    this.physicalExaminationConducted = details.physicalExaminationConducted;
+    this.physicalExaminationNotes = details.physicalExaminationNotes;
     // Audit
     this.dateCreated = details.dateCreated;
     this.createdBy = details.createdBy;
@@ -79,16 +79,14 @@ export class MedicalScreening extends IMedicalScreening {
     return dbItem;
   }
 
-  static async createMedicalScreening(
-    details: Omit<IMedicalScreening, "dateCreated" | "progressStatus">,
-  ) {
+  static async createMedicalScreening(details: Omit<IMedicalScreening, "dateCreated" | "status">) {
     try {
       logger.info("Saving Medical Screening to DB");
 
       const updatedDetails: IMedicalScreening = {
         ...details,
         dateCreated: new Date(),
-        progressStatus: ProgressStatus.completed,
+        status: TaskStatus.completed,
       };
 
       const medicalScreening = new MedicalScreening(updatedDetails);
@@ -149,7 +147,7 @@ export class MedicalScreening extends IMedicalScreening {
   toJson() {
     return {
       applicationId: this.applicationId,
-      progressStatus: this.progressStatus,
+      status: this.status,
       age: this.age,
       symptomsOfTb: this.symptomsOfTb,
       symptoms: this.symptoms,
@@ -162,7 +160,7 @@ export class MedicalScreening extends IMedicalScreening {
       contactWithTbDetails: this.contactWithTbDetails,
       pregnant: this.pregnant,
       haveMenstralPeriod: this.haveMenstralPeriod,
-      physicalExaminationConducted: this.physicalExaminationConducted,
+      physicalExaminationNotes: this.physicalExaminationNotes,
       // Audit
       dateCreated: this.dateCreated,
     };

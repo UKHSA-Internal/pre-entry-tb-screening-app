@@ -5,7 +5,7 @@ import { boostrapLambdaRoutes } from "../../shared/http";
 import { PetsRoute } from "../../shared/types";
 import { createApplicationHandler } from "../handlers/create-application";
 import { getApplicationHandler } from "../handlers/get-application";
-import { saveMedicalScreening } from "../handlers/save-medical-screening";
+import { saveMedicalScreeningHandler } from "../handlers/save-medical-screening";
 import { saveTravelInformationHandler } from "../handlers/save-travel-information";
 import {
   ApplicationSchema,
@@ -47,7 +47,7 @@ export const routes: PetsRoute[] = [
   {
     method: "POST",
     path: "/application/{applicationId}/medical-screening",
-    handler: saveMedicalScreening,
+    handler: saveMedicalScreeningHandler,
     requestBodySchema: MedicalScreeningRequestSchema.openapi({
       description: "Medical Screening Details of an Applicant",
     }),

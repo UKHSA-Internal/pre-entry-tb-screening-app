@@ -1,11 +1,11 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 
+import { TaskStatus } from "../../shared/types/enum";
 import {
   HistoryOfConditionsUnder11,
   MenstrualPeriods,
   PregnancyStatus,
-  ProgressStatus,
   TbSymptomsOptions,
   VisaOptions,
   YesOrNo,
@@ -50,7 +50,7 @@ export const TravelInformationResponseSchema = TravelInformationRequestSchema.ex
   dateCreated: z.string().date().openapi({
     description: "Creation Date in UTC timezone",
   }),
-  status: z.nativeEnum(ProgressStatus).openapi({
+  status: z.nativeEnum(TaskStatus).openapi({
     description: "Status of Task",
   }),
 });
@@ -92,7 +92,7 @@ export const MedicalScreeningRequestSchema = z.object({
   haveMenstralPeriod: z.nativeEnum(MenstrualPeriods).openapi({
     description: "Menstrual Periods?",
   }),
-  physicalExaminationConducted: z.string().openapi({
+  physicalExaminationNotes: z.string().openapi({
     description: "Notes from Physical Examination",
   }),
 });
@@ -101,7 +101,7 @@ export const MedicalScreeningResponseSchema = MedicalScreeningRequestSchema.exte
   dateCreated: z.string().date().openapi({
     description: "Creation Date in UTC timezone",
   }),
-  status: z.nativeEnum(ProgressStatus).openapi({
+  status: z.nativeEnum(TaskStatus).openapi({
     description: "Status of Task",
   }),
 });

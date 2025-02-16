@@ -42,8 +42,3 @@ export enum YesOrNo {
   Yes = "Yes",
   No = "No",
 }
-
-export enum ProgressStatus {
-  completed = "completed",
-  incompleted = "incompleted",
-}

@@ -3,13 +3,14 @@ import { GetCommand, PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
 import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
-import { ProgressStatus, VisaOptions } from "../types/enums";
+import { TaskStatus } from "../../shared/types/enum";
+import { VisaOptions } from "../types/enums";
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
 export abstract class ITravelInformation {
   applicationId: string;
-  progressStatus: ProgressStatus;
+  status: TaskStatus;
 
   visaCategory: VisaOptions;
   ukAddressLine1: string;
@@ -29,7 +30,7 @@ export abstract class ITravelInformation {
     this.ukAddressPostcode = details.ukAddressPostcode;
     this.ukMobileNumber = details.ukMobileNumber;
     this.ukEmailAddress = details.ukEmailAddress;
-    this.progressStatus = details.progressStatus;
+    this.status = details.status;
 
     // Audit
     this.dateCreated = details.dateCreated;
@@ -59,7 +60,7 @@ export class TravelInformation extends ITravelInformation {
   }
 
   static async createTravelInformation(
-    details: Omit<ITravelInformation, "dateCreated" | "progressStatus">,
+    details: Omit<ITravelInformation, "dateCreated" | "status">,
   ) {
     try {
       logger.info("Saving Travel Information to DB");
@@ -67,7 +68,7 @@ export class TravelInformation extends ITravelInformation {
       const updatedDetails: ITravelInformation = {
         ...details,
         dateCreated: new Date(),
-        progressStatus: ProgressStatus.completed,
+        status: TaskStatus.completed,
       };
 
       const travelInformation = new TravelInformation(updatedDetails);
@@ -128,13 +129,15 @@ export class TravelInformation extends ITravelInformation {
 
   toJson() {
     return {
+      applicationId: this.applicationId,
+      status: this.status,
+
       visaCategory: this.visaCategory,
       ukAddressLine1: this.ukAddressLine1,
       ukAddressLine2: this.ukAddressLine2,
       ukAddressPostcode: this.ukAddressPostcode,
       ukMobileNumber: this.ukMobileNumber,
       ukEmailAddress: this.ukEmailAddress,
-      progressStatus: this.progressStatus,
       dateCreated: this.dateCreated,
     };
   }

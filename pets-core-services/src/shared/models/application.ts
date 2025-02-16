@@ -1,5 +1,4 @@
 import { GetCommand, PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
-import crypto from "crypto";
 
 import awsClients from "../clients/aws";
 import { logger } from "../logger";
@@ -7,7 +6,7 @@ import { logger } from "../logger";
 const { dynamoDBDocClient: docClient } = awsClients;
 
 export abstract class IApplication {
-  applicationId: string;
+  readonly applicationId: string;
 
   clinicId: string;
   dateCreated: Date;
@@ -20,7 +19,7 @@ export abstract class IApplication {
     this.createdBy = details.createdBy;
   }
 }
-type NewApplication = Omit<IApplication, "dateCreated" | "applicationId" | "passportId">;
+export type NewApplication = Omit<IApplication, "dateCreated">;
 
 export class Application extends IApplication {
   static readonly getPk = (applicationId: string) => `APPLICATION#${applicationId}`;
@@ -46,11 +45,8 @@ export class Application extends IApplication {
   static async createNewApplication(details: NewApplication) {
     try {
       logger.info("Saving new Applicaton to DB");
-
-      const newApplicationId = crypto.randomUUID();
       const updatedDetails: IApplication = {
         ...details,
-        applicationId: newApplicationId,
         dateCreated: new Date(),
       };
       const newApplication = new Application(updatedDetails);

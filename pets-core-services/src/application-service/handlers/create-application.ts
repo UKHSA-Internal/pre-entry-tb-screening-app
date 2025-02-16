@@ -1,3 +1,5 @@
+import crypto from "crypto";
+
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
@@ -10,6 +12,7 @@ export const createApplicationHandler = async () => {
   const newApplication = await Application.createNewApplication({
     clinicId,
     createdBy,
+    applicationId: crypto.randomUUID(),
   });
 
   return createHttpResponse(200, { ...newApplication.toJson() });
