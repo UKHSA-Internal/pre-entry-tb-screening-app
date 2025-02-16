@@ -29,17 +29,19 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
       });
     }
 
+    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
+
     GlobalContextStorageProvider.updateContext({
       countryOfIssue: parsedBody.countryOfIssue,
       passportNumber: parsedBody.passportNumber.slice(-4),
-      applicationId: parsedBody.applicationId,
+      applicationId,
     });
 
-    const application = await Application.getByApplicationId(parsedBody.applicationId);
+    const application = await Application.getByApplicationId(applicationId);
     if (!application) {
       logger.error("Application does not exist");
       return createHttpResponse(400, {
-        message: `Application with ID: ${parsedBody.applicationId} does not exist`,
+        message: `Application with ID: ${applicationId} does not exist`,
       });
     }
 
@@ -49,22 +51,26 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
       return createHttpResponse(403, { message: "Clinic Id mismatch" });
     }
 
-    const existingApplicants = await Applicant.findByPassportNumber(
+    const existingApplicants = await Applicant.findByPassportId(
       parsedBody.countryOfIssue,
       parsedBody.passportNumber,
     );
 
     if (existingApplicants.length) {
       logger.error("An applicant with similar information already exists");
-      return createHttpResponse(400, { message: "Applicant Details already saved" });
+      return createHttpResponse(400, {
+        message: "A record with this applicant details has already been saved",
+      });
     }
 
-    // TODO: Compare application clinic with one on payload
-
     let applicant: Applicant;
-
     try {
-      applicant = await Applicant.createNewApplicant({ ...parsedBody, clinicId: "Apollo Clinic" }); // TODO: Use clinicId from context
+      const createdBy = "hardcoded@user.com";
+      applicant = await Applicant.createNewApplicant({
+        ...parsedBody,
+        applicationId,
+        createdBy,
+      });
     } catch (error) {
       if (error instanceof ConditionalCheckFailedException)
         return createHttpResponse(400, { message: "Applicant Details already saved" });

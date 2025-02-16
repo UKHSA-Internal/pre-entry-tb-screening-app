@@ -32,7 +32,7 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
       passportNumber: parsedHeaders.passportnumber.slice(-4),
     });
 
-    const applicants = await Applicant.findByPassportNumber(
+    const applicants = await Applicant.findByPassportId(
       parsedHeaders.countryofissue,
       parsedHeaders.passportnumber,
     );
