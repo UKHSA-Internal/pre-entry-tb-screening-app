@@ -7,9 +7,6 @@ import { AllowedSex } from "./enums";
 extendZodWithOpenApi(z);
 
 export const ApplicantSchema = z.object({
-  applicationId: z.string().openapi({
-    description: "Unique Application ID",
-  }),
   fullName: z.string().openapi({
     description: "Full name of Applicant",
   }),
