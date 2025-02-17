@@ -1,13 +1,24 @@
+import { useEffect } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
 import FreeText from "@/components/freeText/freeText";
-import { setCountryOfIssue, setPassportNumber } from "@/redux/applicantSlice";
+import {
+  clearApplicantDetails,
+  setCountryOfIssue,
+  setPassportNumber,
+} from "@/redux/applicantSlice";
 import { useAppDispatch } from "@/redux/hooks";
+import {
+  clearMedicalScreeningDetails,
+  setMedicalScreeningDetails,
+} from "@/redux/medicalScreeningSlice";
+import { clearTravelDetails, setTravelDetails } from "@/redux/travelSlice";
 import { ButtonType } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/helpers";
+import { mockFetch } from "@/utils/mockFetch";
 
 type ApplicantSearchFormType = {
   passportNumber: string;
@@ -16,32 +27,71 @@ type ApplicantSearchFormType = {
 
 const ApplicantSearchForm = () => {
   const navigate = useNavigate();
-
   const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
+  const dispatch = useAppDispatch();
+
+  // on load, clear redux store
+  useEffect(() => {
+    dispatch(clearApplicantDetails());
+    dispatch(clearMedicalScreeningDetails());
+    dispatch(clearTravelDetails());
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // run once
+
   const {
     handleSubmit,
     formState: { errors },
   } = methods;
 
-  const dispatch = useAppDispatch();
-  const updateReduxStore = (applicantSearchData: ApplicantSearchFormType) => {
+  const updateReduxStoreSearch = (applicantSearchData: ApplicantSearchFormType) => {
     dispatch(setPassportNumber(applicantSearchData.passportNumber));
     dispatch(setCountryOfIssue(applicantSearchData.countryOfIssue));
   };
 
+  const updateReduxStoreApplication = (
+    medicalScreeningData?: MedicalScreeningType,
+    travelData?: TravelDetailsType,
+  ) => {
+    if (medicalScreeningData) dispatch(setMedicalScreeningDetails(medicalScreeningData));
+    if (travelData) dispatch(setTravelDetails(travelData));
+  };
+
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (data) => {
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    await fetch(
-      `http://localhost:3005/dev/applicant-details?passportNumber=${data.passportNumber}&countryOfIssue=${data.countryOfIssue}`,
-      {
-        method: "GET",
-        headers: myHeaders,
-      },
-    ).then(() => {
-      updateReduxStore(data);
-      navigate("/applicant-results");
-    });
+    try {
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      updateReduxStoreSearch(data);
+
+      const res = await mockFetch(
+        `http://localhost:3000/api/applicant?passportNumber=${data.passportNumber}&countryOfIssue=${data.countryOfIssue}`,
+        { method: "GET", headers: myHeaders },
+      );
+
+      if (res.status === 200) {
+        const resApp = await mockFetch(
+          `http://localhost:3000/api/application?passportNumber=${data.passportNumber}`,
+          { method: "GET", headers: myHeaders },
+        );
+
+        if (resApp.status !== 200 && resApp.status !== 404) {
+          throw new Error(); // Error needs to be properly handled in further versions
+        }
+
+        if (resApp.status === 200) {
+          updateReduxStoreApplication(resApp.medicalScreening, resApp.travelInformation); // populate
+        }
+
+        navigate("/tracker");
+      } else if (res.status === 404) {
+        navigate("/applicant-results");
+      } else {
+        throw new Error(); // Error needs to be properly handled in further versions
+      }
+    } catch {
+      // Error needs to be properly handled in further versions
+      navigate("/error");
+    }
   };
 
   return (

@@ -67,6 +67,25 @@ export const medicalScreeningSlice = createSlice({
     setPhysicalExamNotes: (state, action: PayloadAction<string>) => {
       state.physicalExamNotes = action.payload;
     },
+    setMedicalScreeningDetails: (state, action: PayloadAction<MedicalScreeningType>) => {
+      state.age = action.payload.age;
+      state.tbSymptoms = action.payload.tbSymptoms;
+      state.tbSymptomsList = action.payload.tbSymptomsList
+        ? [...action.payload.tbSymptomsList]
+        : [];
+      state.otherSymptomsDetail = action.payload.otherSymptomsDetail;
+      state.underElevenConditions = action.payload.underElevenConditions
+        ? [...action.payload.underElevenConditions]
+        : [];
+      state.underElevenConditionsDetail = action.payload.underElevenConditionsDetail;
+      state.previousTb = action.payload.previousTb;
+      state.previousTbDetail = action.payload.previousTbDetail;
+      state.closeContactWithTb = action.payload.closeContactWithTb;
+      state.closeContactWithTbDetail = action.payload.closeContactWithTbDetail;
+      state.pregnant = action.payload.pregnant;
+      state.menstrualPeriods = action.payload.menstrualPeriods;
+      state.physicalExamNotes = action.payload.physicalExamNotes;
+    },
     clearMedicalScreeningDetails: (state) => {
       state.status = ApplicationStatus.INCOMPLETE;
       state.age = "";
@@ -102,6 +121,7 @@ export const {
   setMenstrualPeriods,
   setPhysicalExamNotes,
   clearMedicalScreeningDetails,
+  setMedicalScreeningDetails,
 } = medicalScreeningSlice.actions;
 
 export const medicalScreeningReducer = medicalScreeningSlice.reducer;
