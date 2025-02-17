@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
+import { MedicalScreeningType, TravelDetailsType } from "@/applicant";
 import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
 import FreeText from "@/components/freeText/freeText";
@@ -30,14 +31,12 @@ const ApplicantSearchForm = () => {
   const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
   const dispatch = useAppDispatch();
 
-  // on load, clear redux store
   useEffect(() => {
     dispatch(clearApplicantDetails());
     dispatch(clearMedicalScreeningDetails());
     dispatch(clearTravelDetails());
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // run once
+  }, []);
 
   const {
     handleSubmit,
@@ -79,7 +78,7 @@ const ApplicantSearchForm = () => {
         }
 
         if (resApp.status === 200) {
-          updateReduxStoreApplication(resApp.medicalScreening, resApp.travelInformation); // populate
+          updateReduxStoreApplication(resApp.medicalScreening, resApp.travelInformation);
         }
 
         navigate("/tracker");

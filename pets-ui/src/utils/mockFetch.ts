@@ -1,5 +1,16 @@
 /* eslint-disable @typescript-eslint/require-await */
 
+import {
+  CertificationDetailsType,
+  ChestXrayDetailsType,
+  DateType,
+  MedicalScreeningType,
+  SputumCollectionDetailsType,
+  TravelDetailsType,
+} from "@/applicant";
+
+import { ApplicationStatus } from "./enums";
+
 // this mock function is for dev purposes, to change when API path is available
 // will be deleted when API is available
 
@@ -90,6 +101,7 @@ export const mockFetch = async (
             postcode: "string",
             ukMobileNumber: "string or null",
             ukEmail: "string",
+            status: ApplicationStatus.COMPLETE,
           },
           medicalScreening: {
             age: "30",
@@ -105,6 +117,7 @@ export const mockFetch = async (
             pregnant: "string",
             menstrualPeriods: "string",
             physicalExamNotes: "string",
+            status: ApplicationStatus.COMPLETE,
           },
           chestXrays: {
             cxrTaken: true,
