@@ -8,3 +8,8 @@ export enum RadioIsInline {
   TRUE = "govuk-radios govuk-radios--inline",
   FALSE = "govuk-radios",
 }
+
+export enum ApplicationStatus {
+  INCOMPLETE = "Incomplete",
+  COMPLETE = "Complete",
+}

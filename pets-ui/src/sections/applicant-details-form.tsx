@@ -2,29 +2,13 @@ import { useEffect, useRef } from "react";
 import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { ApplicantDetailsType } from "@/applicant";
 import Button from "@/components/button/button";
 import DateTextInput, { DateType } from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
 import FreeText from "@/components/freeText/freeText";
 import Radio from "@/components/radio/radio";
-import {
-  selectApplicant,
-  setApplicantHomeAddress1,
-  setApplicantHomeAddress2,
-  setApplicantHomeAddress3,
-  setCountry,
-  setCountryOfIssue,
-  setCountryOfNationality,
-  setDob,
-  setFullName,
-  setPassportExpiryDate,
-  setPassportIssueDate,
-  setPassportNumber,
-  setPostcode,
-  setProvinceOrState,
-  setSex,
-  setTownOrCity,
-} from "@/redux/applicantSlice";
+import { selectApplicant, setApplicantDetails } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 import { attributeToComponentId, countryList, formRegex, validateDate } from "@/utils/helpers";
@@ -41,21 +25,7 @@ const ApplicantForm = () => {
 
   const dispatch = useAppDispatch();
   const updateReduxStore = (applicantData: ApplicantDetailsType) => {
-    dispatch(setFullName(applicantData.fullName));
-    dispatch(setSex(applicantData.sex));
-    dispatch(setDob(applicantData.dateOfBirth));
-    dispatch(setCountryOfNationality(applicantData.countryOfNationality));
-    dispatch(setPassportNumber(applicantData.passportNumber));
-    dispatch(setCountryOfIssue(applicantData.countryOfIssue));
-    dispatch(setPassportIssueDate(applicantData.passportIssueDate));
-    dispatch(setPassportExpiryDate(applicantData.passportExpiryDate));
-    dispatch(setApplicantHomeAddress1(applicantData.applicantHomeAddress1));
-    dispatch(setApplicantHomeAddress2(applicantData.applicantHomeAddress2 ?? ""));
-    dispatch(setApplicantHomeAddress3(applicantData.applicantHomeAddress3 ?? ""));
-    dispatch(setTownOrCity(applicantData.townOrCity));
-    dispatch(setProvinceOrState(applicantData.provinceOrState));
-    dispatch(setCountry(applicantData.country));
-    dispatch(setPostcode(applicantData.postcode ?? ""));
+    dispatch(setApplicantDetails(applicantData));
   };
 
   const applicantData = useAppSelector(selectApplicant);

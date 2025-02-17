@@ -4,6 +4,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import ApplicantResultsPage from "@/pages/applicant-results";
+import { ApplicationStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -35,6 +36,7 @@ afterAll(() => server.close());
 test("No results section is correctly displayed with information from the Redux store", () => {
   const preloadedState = {
     applicant: {
+      status: ApplicationStatus.INCOMPLETE,
       fullName: "",
       sex: "",
       dateOfBirth: {
