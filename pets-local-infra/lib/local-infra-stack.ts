@@ -63,7 +63,6 @@ export class LocalInfrastructureStack extends cdk.Stack {
       tableName: process.env.APPLICANT_SERVICE_DATABASE_NAME,
     });
 
-    // TODO: Tell Oghosa about this
     applicantServiceDb.addGlobalSecondaryIndex({
       indexName: process.env.PASSPORT_ID_INDEX || "",
       partitionKey: {
