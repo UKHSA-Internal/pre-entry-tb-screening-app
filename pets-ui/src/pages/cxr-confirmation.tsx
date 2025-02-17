@@ -39,8 +39,9 @@ export default function CxrConfirmation() {
               <p className="govuk-body">
                 Continue to TB certificate declaration or go to{" "}
                 <Link to={"/tracker"} className="govuk-link" style={{ color: "#1d70b8" }}>
-                  TB screening progress tracker.
+                  TB screening progress tracker
                 </Link>
+                .
               </p>
               <Button
                 id="continue"
