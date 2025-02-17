@@ -1,4 +1,0 @@
-roleToResources:
-  - roleName: "TechRecord.View"
-    associatedResources:
-      - "/vehicles/*"
