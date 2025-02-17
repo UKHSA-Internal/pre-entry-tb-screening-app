@@ -77,7 +77,7 @@ test("Progress tracker page displays incomplete application sections correctly &
 
   const user = userEvent.setup();
 
-  expect(screen.getByText("Application Progress Tracker")).toBeInTheDocument();
+  expect(screen.getByText("TB screening progress tracker")).toBeInTheDocument();
 
   expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
   expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Reginald Backwaters");
@@ -141,7 +141,7 @@ test("Progress tracker page displays complete application sections correctly & l
 
   const user = userEvent.setup();
 
-  expect(screen.getByText("Application Progress Tracker")).toBeInTheDocument();
+  expect(screen.getByText("TB screening progress tracker")).toBeInTheDocument();
 
   expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
   expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Chelsea Cummerbund");
