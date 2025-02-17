@@ -6,6 +6,7 @@ import ApplicantResultsPage from "./pages/applicant-results";
 import ApplicantSearchPage from "./pages/applicant-search";
 import ApplicantSummaryPage from "./pages/applicant-summary";
 import ContactDetailsPage from "./pages/contact-details";
+import CxrConfirmation from "./pages/cxr-confirmation";
 import HomePage from "./pages/home-page";
 import MedicalScreeningPage from "./pages/medical-screening";
 import MedicalConfirmation from "./pages/medical-screening-confirmation";
@@ -14,7 +15,6 @@ import ProgressTrackerPage from "./pages/progress-tracker";
 import TravelConfirmation from "./pages/travel-confirmation";
 import TravelDetailsPage from "./pages/travel-details";
 import TravelSummaryPage from "./pages/travel-summary";
-import CxrConfirmation from "./pages/cxr-confirmation";
 
 function App() {
   return (

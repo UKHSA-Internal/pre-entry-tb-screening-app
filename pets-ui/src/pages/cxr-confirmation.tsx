@@ -4,10 +4,10 @@ import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 
 import Breadcrumb, { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
-import Header from "@/components/header/header";
 import Button from "@/components/button/button";
-import { ButtonType } from "@/utils/enums";
 import Footer from "@/components/footer/footer";
+import Header from "@/components/header/header";
+import { ButtonType } from "@/utils/enums";
 
 export default function CxrConfirmation() {
   const breadcrumbItems: IBreadcrumbItem[] = [
