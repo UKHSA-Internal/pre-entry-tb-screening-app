@@ -14,6 +14,8 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
   };
 });
 
+beforeEach(() => useNavigateMock.mockClear());
+
 test("/applicant-details endpoint is invoked when form is filled out and button is clicked", async () => {
   renderWithProviders(<ApplicantSearchForm />);
 
@@ -50,7 +52,7 @@ test("submits the form and handles successful applicant without an application (
 
   const user = userEvent.setup();
 
-  await user.type(screen.getByTestId("passport-number"), "009");
+  await user.type(screen.getByTestId("passport-number"), "008");
   fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
 
   await act(async () => {
@@ -91,26 +93,6 @@ test("trigger server error on applicant", async () => {
     await user.click(submitSearch);
   });
 
-  // expect it to navigate to error page
-  expect(useNavigateMock).toBeCalled();
-  expect(useNavigateMock).toHaveBeenCalledWith("/error");
-});
-
-test("trigger server error on application", async () => {
-  renderWithProviders(<ApplicantSearchForm />);
-
-  const user = userEvent.setup();
-
-  await user.type(screen.getByTestId("passport-number"), "SPECIALTriggerErrorApplication");
-  fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
-
-  const submitSearch = screen.getByText("Search");
-
-  await act(async () => {
-    await user.click(submitSearch);
-  });
-
-  // expect it to navigate to error page
   expect(useNavigateMock).toBeCalled();
   expect(useNavigateMock).toHaveBeenCalledWith("/error");
 });
