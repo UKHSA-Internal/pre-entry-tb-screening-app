@@ -19,7 +19,10 @@ export class LocalInfrastructureStack extends cdk.Stack {
     });
 
     new HotReloadedLambda(this, "applicant-service-lambda", {
-      entry: join(__dirname, "../../pets-core-services/src/clinic-service/lambdas/clinics.ts"),
+      entry: join(
+        __dirname,
+        "../../pets-core-services/src/applicant-service/lambdas/applicants.ts",
+      ),
       functionName: process.env.APPLICANT_SERVICE_LAMBDA_NAME,
     });
 
@@ -49,7 +52,7 @@ export class LocalInfrastructureStack extends cdk.Stack {
 
     new Table(this, "applicant-service-table", {
       ...tableProps,
-      tableName: process.env.APPLICANT_SERVICE_LAMBDA_NAME,
+      tableName: process.env.APPLICANT_SERVICE_DATABASE_NAME,
     });
   }
 }

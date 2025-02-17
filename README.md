@@ -157,6 +157,15 @@ Additional configs specific to a core service are defined in their directory
 
 See individual folder READMEs for more information
 
+### Debugging Core Services Locally
+
+For core services, we rely on localstack for emulating AWS services. For debugging Lambda functions, you can access detailed logs directly from the docker container where the Lambda is running. This can be done using:
+
+- Docker Desktop
+
+![Container Lists](./docs/container_list.png)
+![Container Logs](./docs/container_logs.png)
+
 ### Testing
 
 To run all unit and integration tests for all [packages](#monorepo-organization):
@@ -168,6 +177,14 @@ pnpm -r test
 Under the hood, the command runs `pnpm test` in each packages. Alternatively to run unit tests for a single package, you can `cd` into its directory and run `pnpm test`.
 
 To run end to end tests, please visit the pets UI [command section](./pets-ui/README.md#commands)
+
+By default, backend logs are hidden in tests as they could get noisy. To view your backend log messages and errors in tests, add the line below to `configs/.env.test.local`:
+
+```sh
+LOG_LEVEL=info
+```
+
+Don't forget to remove afterwards🫣
 
 ### Deployment
 

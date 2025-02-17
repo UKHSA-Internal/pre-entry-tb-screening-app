@@ -9,7 +9,14 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import pluginCypress from "eslint-plugin-cypress/flat";
 
 export default tseslint.config(
-  { ignores: ["core-services/**", "pets-core-services/src/**/*.js", "pets-ui/dist/**"] },
+  {
+    ignores: [
+      "core-services/**",
+      "pets-core-services/src/**/*.js",
+      "pets-ui/dist/**",
+      "**/coverage/**",
+    ],
+  },
   {
     files: ["**/*.{ts,tsx}"],
     extends: [js.configs.recommended, ...tseslint.configs.recommendedTypeChecked],
@@ -27,6 +34,7 @@ export default tseslint.config(
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
       "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unsafe-assignment": "warn",
       "@typescript-eslint/naming-convention": [
         "warn",
         {
