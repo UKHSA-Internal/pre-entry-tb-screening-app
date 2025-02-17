@@ -195,7 +195,6 @@ const ApplicantReview = () => {
               <Link
                 className="govuk-link"
                 style={{ color: "#1d70b8" }}
-                onClick={() => navigate("")}
                 to="/contact#province-or-state"
               >
                 Change<span className="govuk-visually-hidden"> home province or state</span>

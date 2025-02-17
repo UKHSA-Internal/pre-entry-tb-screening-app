@@ -32,17 +32,19 @@ const ProgressTracker = () => {
         </dl>
       </div>
 
+      <p className="govuk-body">Complete all sections.</p>
+
       <ul className="govuk-task-list">
         <li className="govuk-task-list__item govuk-task-list__item--with-link">
           <div className="govuk-task-list__name-and-hint">
             {applicantData.status == ApplicationStatus.INCOMPLETE && (
               <Link className="govuk-link govuk-task-list__link" to="/contact">
-                Applicant Details
+                Visa applicant details
               </Link>
             )}
             {applicantData.status == ApplicationStatus.COMPLETE && (
               <Link className="govuk-link govuk-task-list__link" to="/applicant-summary">
-                Applicant Details
+                Visa applicant details
               </Link>
             )}
           </div>
@@ -56,6 +58,8 @@ const ProgressTracker = () => {
           )}
         </li>
       </ul>
+
+      <p className="govuk-body">You cannot currently log sputum test information in this system.</p>
 
       <Button
         id="search-again"
