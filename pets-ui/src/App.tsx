@@ -14,6 +14,7 @@ import ProgressTrackerPage from "./pages/progress-tracker";
 import TravelConfirmation from "./pages/travel-confirmation";
 import TravelDetailsPage from "./pages/travel-details";
 import TravelSummaryPage from "./pages/travel-summary";
+import CxrConfirmation from "./pages/cxr-confirmation";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/travel-details" element={<TravelDetailsPage />} />
         <Route path="/travel-summary" element={<TravelSummaryPage />} />
         <Route path="/travel-confirmation" element={<TravelConfirmation />} />
+        <Route path="/cxr-confirmation" element={<CxrConfirmation />} />
         <Route path="/api-docs/" element={<ApiDocs />} />
       </Routes>
     </Router>
