@@ -1,4 +1,0 @@
-roleToResources:
-  - roleName: "a-role"
-    associatedResources:
-      - "/a-resource/with-child"
