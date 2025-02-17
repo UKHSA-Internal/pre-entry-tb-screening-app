@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { MedicalScreeningType } from "@/applicant";
 import Button from "@/components/button/button";
 import Checkbox from "@/components/checkbox/checkbox";
 import FreeText from "@/components/freeText/freeText";
