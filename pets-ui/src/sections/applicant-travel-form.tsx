@@ -2,20 +2,12 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { TravelDetailsType } from "@/applicant";
 import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
 import FreeText from "@/components/freeText/freeText";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import {
-  selectTravel,
-  setApplicantUkAddress1,
-  setApplicantUkAddress2,
-  setPostcode,
-  setTownOrCity,
-  setUkEmail,
-  setUkMobileNumber,
-  setVisaType,
-} from "@/redux/travelSlice";
+import { selectTravel, setTravelDetails } from "@/redux/travelSlice";
 import { ButtonType } from "@/utils/enums";
 import { attributeToComponentId, formRegex, visaOptions } from "@/utils/helpers";
 
@@ -30,13 +22,7 @@ const ApplicantTravelForm = () => {
 
   const dispatch = useAppDispatch();
   const updateReduxStore = (travelData: TravelDetailsType) => {
-    dispatch(setVisaType(travelData.visaType));
-    dispatch(setApplicantUkAddress1(travelData.applicantUkAddress1));
-    dispatch(setApplicantUkAddress2(travelData.applicantUkAddress2 ?? ""));
-    dispatch(setTownOrCity(travelData.townOrCity));
-    dispatch(setPostcode(travelData.postcode));
-    dispatch(setUkMobileNumber(travelData.ukMobileNumber ?? ""));
-    dispatch(setUkEmail(travelData.ukEmail));
+    dispatch(setTravelDetails(travelData));
   };
   const travelData = useAppSelector(selectTravel);
 

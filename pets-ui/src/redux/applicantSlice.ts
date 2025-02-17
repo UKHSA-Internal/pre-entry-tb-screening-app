@@ -1,7 +1,11 @@
 import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+import { ApplicantDetailsType, DateType } from "@/applicant";
+import { ApplicationStatus } from "@/utils/enums";
+
 const initialState: ApplicantDetailsType = {
+  status: ApplicationStatus.INCOMPLETE,
   fullName: "",
   sex: "",
   dateOfBirth: {
@@ -35,6 +39,9 @@ export const applicantSlice = createSlice({
   name: "applicantDetails",
   initialState,
   reducers: {
+    setApplicantDetailsStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+      state.status = action.payload;
+    },
     setFullName: (state, action: PayloadAction<string>) => {
       state.fullName = action.payload;
     },
@@ -80,7 +87,25 @@ export const applicantSlice = createSlice({
     setPostcode: (state, action: PayloadAction<string>) => {
       state.postcode = action.payload;
     },
+    setApplicantDetails: (state, action: PayloadAction<ApplicantDetailsType>) => {
+      state.fullName = action.payload.fullName;
+      state.sex = action.payload.sex;
+      state.dateOfBirth = action.payload.dateOfBirth;
+      state.countryOfNationality = action.payload.countryOfNationality;
+      state.passportNumber = action.payload.passportNumber;
+      state.countryOfIssue = action.payload.countryOfIssue;
+      state.passportIssueDate = action.payload.passportIssueDate;
+      state.passportExpiryDate = action.payload.passportExpiryDate;
+      state.applicantHomeAddress1 = action.payload.applicantHomeAddress1;
+      state.applicantHomeAddress2 = action.payload.applicantHomeAddress2 ?? "";
+      state.applicantHomeAddress3 = action.payload.applicantHomeAddress3 ?? "";
+      state.townOrCity = action.payload.townOrCity;
+      state.provinceOrState = action.payload.provinceOrState;
+      state.country = action.payload.country;
+      state.postcode = action.payload.postcode ?? "";
+    },
     clearApplicantDetails: (state) => {
+      state.status = ApplicationStatus.INCOMPLETE;
       state.fullName = "";
       state.sex = "";
       state.dateOfBirth = {
@@ -113,6 +138,7 @@ export const applicantSlice = createSlice({
 });
 
 export const {
+  setApplicantDetailsStatus,
   setFullName,
   setSex,
   setDob,
@@ -129,6 +155,7 @@ export const {
   setCountry,
   setPostcode,
   clearApplicantDetails,
+  setApplicantDetails,
 } = applicantSlice.actions;
 
 export const applicantReducer = applicantSlice.reducer;

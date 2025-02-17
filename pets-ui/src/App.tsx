@@ -10,6 +10,7 @@ import HomePage from "./pages/home-page";
 import MedicalScreeningPage from "./pages/medical-screening";
 import MedicalConfirmation from "./pages/medical-screening-confirmation";
 import MedicalSummaryPage from "./pages/medical-screening-summary";
+import ProgressTrackerPage from "./pages/progress-tracker";
 import TravelConfirmation from "./pages/travel-confirmation";
 import TravelDetailsPage from "./pages/travel-details";
 import TravelSummaryPage from "./pages/travel-summary";
@@ -20,6 +21,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/applicant-search" element={<ApplicantSearchPage />} />
+        <Route path="/tracker" element={<ProgressTrackerPage />} />
         <Route path="/applicant-results" element={<ApplicantResultsPage />} />
         <Route path="/contact" element={<ContactDetailsPage />} />
         <Route path="/applicant-summary" element={<ApplicantSummaryPage />} />
