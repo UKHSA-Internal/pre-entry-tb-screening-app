@@ -1,11 +1,28 @@
-import { countryList } from "../../../src/utils/helpers";
+import { countryList } from "../../../src/utils/countryList";
+import { testData } from "../../support/test-data";
 import { randomElement } from "../../support/test-utils";
 
-// Random number generator
-const randomCountry = randomElement(countryList);
-const countryName = randomCountry?.value;
 
-describe("Validate that applicant form is prefilled when user navigates back to applicant information page from applicant summary page", () => {
+describe("Applicant Form Pre-fill Validation", () => {
+  const randomCountry = randomElement(countryList);
+  const countryName = randomCountry?.value;
+
+  const urlMap = {
+    Name: "#name",
+    Sex: "#sex",
+    "Date of Birth": "#birth-date",
+    "Passport number": "#passportNumber",
+    "Country of Issue": "#country-of-issue",
+    "Passport Issue Date": "#passport-issue-date",
+    "Passport Expiry Date": "#passport-expiry-date",
+    "Home Address Line 1": "#address-1",
+    "Home Address Line 2": "#address-2",
+    "Home Address Line 3": "#address-3",
+    "Town or City": "#town-or-city",
+    "Province or State": "#province-or-state",
+    Postcode: "#postcode",
+  } as const;
+
   beforeEach(() => {
     cy.visit("http://localhost:3000/contact");
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
@@ -13,70 +30,48 @@ describe("Validate that applicant form is prefilled when user navigates back to 
       body: { success: true, message: "Data successfully posted" },
     }).as("formSubmit");
   });
-  it("Should be prefilled with the data that was entered initially", () => {
-    // Enter VALID data for 'Full name'
-    cy.get('input[name="fullName"]').type("John Doe");
 
-    //Select a 'Sex'
-    cy.get('input[name="sex"]').check("male");
+  it("should preserve form data when navigating back from summary page", () => {
+    // Fill personal information
+    cy.get('input[name="fullName"]').type(testData.fullName);
+    cy.get('input[name="sex"]').check(testData.sex);
 
-    //Enter VALID data for 'date of birth'
-    cy.get("input#birth-date-day").type("04");
-    cy.get("input#birth-date-month").type("01");
-    cy.get("input#birth-date-year").type("2001");
+    // Fill birth date
+    cy.get("input#birth-date-day").type(testData.birthDate.day);
+    cy.get("input#birth-date-month").type(testData.birthDate.month);
+    cy.get("input#birth-date-year").type(testData.birthDate.year);
 
-    //Enter data for 'Applicant's Passport number'
-    cy.get('input[name="passportNumber"]').type("AA1235467");
-
-    // Randomly Select 'Country of Nationality & Issue'
+    // Fill passport details
+    cy.get('input[name="passportNumber"]').type(testData.passport.number);
     cy.get("#country-of-nationality.govuk-select").select(countryName);
     cy.get("#country-of-issue.govuk-select").select(countryName);
 
-    //Enter VALID data for 'Issue Date'
-    cy.get("input#passport-issue-date-day").type("11");
-    cy.get("input#passport-issue-date-month").type("11");
-    cy.get("input#passport-issue-date-year").type("2019");
+    // Fill passport dates
+    cy.get("input#passport-issue-date-day").type(testData.passport.issueDate.day);
+    cy.get("input#passport-issue-date-month").type(testData.passport.issueDate.month);
+    cy.get("input#passport-issue-date-year").type(testData.passport.issueDate.year);
 
-    //Enter VALID data for 'Expiry Date'
-    cy.get("input#passport-expiry-date-day").type("11");
-    cy.get("input#passport-expiry-date-month").type("11");
-    cy.get("input#passport-expiry-date-year").type("2029");
+    cy.get("input#passport-expiry-date-day").type(testData.passport.expiryDate.day);
+    cy.get("input#passport-expiry-date-month").type(testData.passport.expiryDate.month);
+    cy.get("input#passport-expiry-date-year").type(testData.passport.expiryDate.year);
 
-    // Enter VALID Address Information
-    cy.get("#address-1").type("123");
-    cy.get("#address-2").type("100th St");
-    cy.get("#address-3").type("West Lane");
-    cy.get("#town-or-city").type("North Battleford");
-    cy.get("#province-or-state").type("Saskatchewan");
+    // Fill address information
+    cy.get("#address-1").type(testData.address.line1);
+    cy.get("#address-2").type(testData.address.line2);
+    cy.get("#address-3").type(testData.address.line3);
+    cy.get("#town-or-city").type(testData.address.town);
+    cy.get("#province-or-state").type(testData.address.province);
     cy.get("#address-country.govuk-select").select(countryName);
-    cy.get("#postcode").type("S4R 0M6");
+    cy.get("#postcode").type(testData.address.postcode);
 
-    // Click the submit button
+    // Submit form and verify navigation
     cy.get('button[type="submit"]').click();
-
-    // Validate that the page navigates to the confirmation page
     cy.url().should("include", "http://localhost:3000/applicant-summary");
 
-    // Validate that user is navigated to correct url when clicking on link in summary page
-    const urlMap = {
-      Name: "#name",
-      Sex: "#sex",
-      "Date of Birth": "#birth-date",
-      "Passport number": "#passportNumber",
-      "Country of Issue": "#country-of-issue",
-      "Passport Issue Date": "#passport-issue-date",
-      "Passport Expiry Date": "#passport-expiry-date",
-      "Home Address Line 1": "#address-1",
-      "Home Address Line 2": "#address-2",
-      "Home Address Line 3": "#address-3",
-      "Town or City": "#town-or-city",
-      "Province or State": "#province-or-state",
-      Postcode: "#postcode",
-    };
-
+    // Click random "Change" link and verify navigation
     type UrlMapKeys = keyof typeof urlMap;
     const fieldNames = Object.keys(urlMap) as UrlMapKeys[];
-    const summaryList = fieldNames[Math.floor(Math.random() * fieldNames.length)];
+    const summaryList = randomElement(fieldNames);
     const expectedUrl = urlMap[summaryList];
 
     cy.get(".govuk-summary-list__key")
@@ -86,24 +81,52 @@ describe("Validate that applicant form is prefilled when user navigates back to 
       .contains("Change")
       .click();
 
+    // Verify navigation and form pre-fill
     cy.url().should("include", expectedUrl);
-    //Validate the page is prefilled with data entered in the applicant page
-    cy.get('input[name="fullName"]').should("have.value", "John Doe");
+
+    // Verify personal information
+    cy.get('input[name="fullName"]').should("have.value", testData.fullName);
     cy.get('input[type="radio"][value="male"]').should("be.checked");
-    //cy.get(`#country-of-nationality option[value="${countryName}"]`).should('be.selected');
+
+    // Verify country selections
     cy.get(`#country-of-issue option[value="${countryName}"]`).should("be.selected");
-    cy.get("input#passport-issue-date-day").should("have.value", "11");
-    cy.get("input#passport-issue-date-month").should("have.value", "11");
-    cy.get("input#passport-issue-date-year").should("have.value", "2019");
-    cy.get("input#passport-expiry-date-day").should("have.value", "11");
-    cy.get("input#passport-expiry-date-month").should("have.value", "11");
-    cy.get("input#passport-expiry-date-year").should("have.value", "2029");
-    cy.get('input[type="text"][name="applicantHomeAddress1"]').should("have.value", "123");
-    cy.get('input[type="text"][name="applicantHomeAddress2"]').should("have.value", "100th St");
-    cy.get('input[type="text"][name="applicantHomeAddress3"]').should("have.value", "West Lane");
-    cy.get('input[type="text"][name="townOrCity"]').should("have.value", "North Battleford");
-    cy.get('input[type="text"][name="provinceOrState"]').should("have.value", "Saskatchewan");
-    //cy.get(`#address-country option[value="${countryName}"]`).should('be.selected');
-    cy.get('input[type="text"][name="postcode"]').should("have.value", "S4R 0M6");
+
+    // Verify passport dates
+    cy.get("input#passport-issue-date-day").should("have.value", testData.passport.issueDate.day);
+    cy.get("input#passport-issue-date-month").should(
+      "have.value",
+      testData.passport.issueDate.month,
+    );
+    cy.get("input#passport-issue-date-year").should("have.value", testData.passport.issueDate.year);
+
+    cy.get("input#passport-expiry-date-day").should("have.value", testData.passport.expiryDate.day);
+    cy.get("input#passport-expiry-date-month").should(
+      "have.value",
+      testData.passport.expiryDate.month,
+    );
+    cy.get("input#passport-expiry-date-year").should(
+      "have.value",
+      testData.passport.expiryDate.year,
+    );
+
+    // Verify address information
+    cy.get('input[type="text"][name="applicantHomeAddress1"]').should(
+      "have.value",
+      testData.address.line1,
+    );
+    cy.get('input[type="text"][name="applicantHomeAddress2"]').should(
+      "have.value",
+      testData.address.line2,
+    );
+    cy.get('input[type="text"][name="applicantHomeAddress3"]').should(
+      "have.value",
+      testData.address.line3,
+    );
+    cy.get('input[type="text"][name="townOrCity"]').should("have.value", testData.address.town);
+    cy.get('input[type="text"][name="provinceOrState"]').should(
+      "have.value",
+      testData.address.province,
+    );
+    cy.get('input[type="text"][name="postcode"]').should("have.value", testData.address.postcode);
   });
 });
