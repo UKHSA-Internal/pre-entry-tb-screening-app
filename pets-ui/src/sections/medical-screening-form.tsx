@@ -10,22 +10,7 @@ import Radio from "@/components/radio/radio";
 import TextArea from "@/components/textArea/textArea";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import {
-  selectMedicalScreening,
-  setAge,
-  setCloseContactWithTb,
-  setCloseContactWithTbDetail,
-  setMenstrualPeriods,
-  setOtherSymptomsDetail,
-  setPhysicalExamNotes,
-  setPregnant,
-  setPreviousTb,
-  setPreviousTbDetail,
-  setTbSymptoms,
-  setTbSymptomsList,
-  setUnderElevenConditions,
-  setUnderElevenConditionsDetail,
-} from "@/redux/medicalScreeningSlice";
+import { selectMedicalScreening, setMedicalScreeningDetails } from "@/redux/medicalScreeningSlice";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 import { attributeToComponentId, formRegex } from "@/utils/helpers";
 
@@ -42,19 +27,7 @@ const MedicalScreeningForm = () => {
   const medicalData = useAppSelector(selectMedicalScreening);
   const dispatch = useAppDispatch();
   const updateReduxStore = (medicalScreeningData: MedicalScreeningType) => {
-    dispatch(setAge(medicalScreeningData.age));
-    dispatch(setTbSymptoms(medicalScreeningData.tbSymptoms));
-    dispatch(setTbSymptomsList(medicalScreeningData.tbSymptomsList));
-    dispatch(setOtherSymptomsDetail(medicalScreeningData.otherSymptomsDetail));
-    dispatch(setUnderElevenConditions(medicalScreeningData.underElevenConditions));
-    dispatch(setUnderElevenConditionsDetail(medicalScreeningData.underElevenConditionsDetail));
-    dispatch(setPreviousTb(medicalScreeningData.previousTb));
-    dispatch(setPreviousTbDetail(medicalScreeningData.previousTbDetail));
-    dispatch(setCloseContactWithTb(medicalScreeningData.closeContactWithTb));
-    dispatch(setCloseContactWithTbDetail(medicalScreeningData.closeContactWithTbDetail));
-    dispatch(setPregnant(medicalScreeningData.pregnant));
-    dispatch(setMenstrualPeriods(medicalScreeningData.menstrualPeriods));
-    dispatch(setPhysicalExamNotes(medicalScreeningData.physicalExamNotes));
+    dispatch(setMedicalScreeningDetails(medicalScreeningData));
   };
 
   const onSubmit: SubmitHandler<MedicalScreeningType> = (data) => {

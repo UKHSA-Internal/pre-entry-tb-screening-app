@@ -1,9 +1,7 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
-import middy from "@middy/core";
-import httpRouterHandler from "@middy/http-router";
-import { APIGatewayEvent } from "aws-lambda";
 import { z } from "zod";
 
+import { boostrapLambdaRoutes } from "../../shared/http";
 import { PetsRoute } from "../../shared/types";
 import { getApplicantHandler } from "../handlers/getApplicant";
 import { postApplicantHandler } from "../handlers/postApplicant";
@@ -24,8 +22,8 @@ export const routes: PetsRoute[] = [
     path: "/applicant",
     handler: getApplicantHandler,
     headers: {
-      passportNumber: z.string({ description: "Passport Number of Applicant" }),
-      countryOfIssue: z.string({ description: "Country of Issue" }),
+      passportnumber: z.string({ description: "Passport Number of Applicant" }),
+      countryofissue: z.string({ description: "Country of Issue" }),
     },
     responseSchema: ApplicantSchema.openapi("Applicant", {
       description: "Details about an Applicant",
@@ -33,4 +31,4 @@ export const routes: PetsRoute[] = [
   },
 ];
 
-export const handler = middy<APIGatewayEvent>().handler(httpRouterHandler(routes));
+export const handler = boostrapLambdaRoutes(routes);

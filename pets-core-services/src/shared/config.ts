@@ -1,13 +1,8 @@
-export const getEnvironmentVariable = (variableName: string) => {
-  const value = process.env[variableName];
+import assert from "assert";
 
-  if (value === undefined) {
-    throw new Error(`Environment variable ${variableName} is undefined`);
-  }
+export const isLocal = () => assertEnvExists(process.env.ENVIRONMENT) === "local";
 
-  if (value === "") {
-    throw new Error(`Environment variable ${variableName} is empty`);
-  }
-
-  return value;
+export const assertEnvExists = (envValue: string | undefined) => {
+  assert(envValue);
+  return envValue;
 };
