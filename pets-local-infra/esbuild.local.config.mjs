@@ -2,6 +2,9 @@ import * as esbuild from "esbuild";
 
 const define = {};
 
+delete process.env['ProgramFiles(x86)']
+delete process.env['CommonProgramFiles(x86)']
+
 for (const k in process.env) {
   define[`process.env.${k}`] = JSON.stringify(process.env[k]);
 }
