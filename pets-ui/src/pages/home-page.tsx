@@ -17,7 +17,7 @@ export default function HomePage() {
         scopes: loginRequest.scopes,
         storeInCache: loginRequest.storeInCache,
       })
-      .catch(() => new Error("Login failed"));
+      .catch(() => new Error("Failed to initialize sign in"));
   };
 
   return (

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import {
   AuthenticationResult,
   AuthError,
@@ -13,7 +14,7 @@ import { msalConfig } from "./authConfig";
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
-await msalInstance.initialize();
+msalInstance.initialize();
 
 const isAuthError = (error: unknown): error is AuthError => {
   return (error as AuthError).errorCode !== undefined;
@@ -60,7 +61,7 @@ const AuthProvider = ({ children, instance = msalInstance }: AuthProviderProps) 
         });
 
         // handle redirect upon successful login
-        await instance.handleRedirectPromise().then((response) => {
+        instance.handleRedirectPromise().then((response) => {
           if (response && response.account) {
             navigate("/applicant-search", { replace: true });
           }
@@ -81,7 +82,7 @@ const AuthProvider = ({ children, instance = msalInstance }: AuthProviderProps) 
       }
     };
 
-    authenticate().catch(() => new Error("Authentication failed"));
+    authenticate();
   }, [instance, location.pathname, navigate]);
 
   return <MsalProvider instance={instance}>{children}</MsalProvider>;
