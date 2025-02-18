@@ -6,18 +6,19 @@ import { z } from "zod";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
-import { Applicant } from "../models/applicant";
-import { ApplicantSchema } from "../types/zod-schema";
+import { MedicalScreening } from "../models/medical-screening";
+import { MedicalScreeningRequestSchema } from "../types/zod-schema";
 
-export type ApplicantRequestSchema = z.infer<typeof ApplicantSchema>;
-
-export type PostApplicantEvent = APIGatewayProxyEvent & {
-  parsedBody?: ApplicantRequestSchema;
+export type MedicalScreeningRequestSchema = z.infer<typeof MedicalScreeningRequestSchema>;
+export type SaveMedicalScreeningEvent = APIGatewayProxyEvent & {
+  parsedBody?: MedicalScreeningRequestSchema;
 };
 
-export const postApplicantHandler = async (event: PostApplicantEvent) => {
+export const saveMedicalScreeningHandler = async (event: SaveMedicalScreeningEvent) => {
   try {
-    logger.info("Post applicant details handler triggered");
+    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
+
+    logger.info({ applicationId }, "Save Medical Screening handler triggered");
 
     const { parsedBody } = event;
 
@@ -29,11 +30,7 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
       });
     }
 
-    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
-
     GlobalContextStorageProvider.updateContext({
-      countryOfIssue: parsedBody.countryOfIssue,
-      passportNumber: parsedBody.passportNumber.slice(-4),
       applicationId,
     });
 
@@ -51,37 +48,25 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
       return createHttpResponse(403, { message: "Clinic Id mismatch" });
     }
 
-    const existingApplicants = await Applicant.findByPassportId(
-      parsedBody.countryOfIssue,
-      parsedBody.passportNumber,
-    );
-
-    if (existingApplicants.length) {
-      logger.error("An applicant with similar information already exists");
-      return createHttpResponse(400, {
-        message: "A record with this applicant details has already been saved",
-      });
-    }
-
-    let applicant: Applicant;
+    let medicalScreening: MedicalScreening;
     try {
       const createdBy = "hardcoded@user.com";
-      applicant = await Applicant.createNewApplicant({
+      medicalScreening = await MedicalScreening.createMedicalScreening({
         ...parsedBody,
-        applicationId,
         createdBy,
+        applicationId,
       });
     } catch (error) {
       if (error instanceof ConditionalCheckFailedException)
-        return createHttpResponse(400, { message: "Applicant Details already saved" });
+        return createHttpResponse(400, { message: "Medical Screening already saved" });
       throw error;
     }
 
     return createHttpResponse(200, {
-      ...applicant.toJson(),
+      ...medicalScreening.toJson(),
     });
-  } catch (err: unknown) {
-    logger.error(err, "Error saving Applicant details");
+  } catch (err) {
+    logger.error(err, "Error saving Medical Screening");
     return createHttpResponse(500, { message: "Something went wrong" });
   }
 };
