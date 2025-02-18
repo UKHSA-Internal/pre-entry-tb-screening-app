@@ -1,6 +1,7 @@
+import { useNavigate } from "react-router-dom";
+
 import Button from "@/components/button/button";
 import { ButtonType } from "@/utils/enums";
-import { useNavigate } from "react-router-dom";
 
 export interface ConfirmationProps {
   confirmationText: string;

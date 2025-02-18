@@ -3,9 +3,9 @@ import "./medical-screening-confirmation.scss";
 import { Helmet } from "react-helmet-async";
 
 import Breadcrumb, { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
+import Confirmation from "@/components/confirmation/confirmation";
 import Footer from "@/components/footer/footer";
 import Header from "@/components/header/header";
-import Confirmation from "@/components/confirmation/confirmation";
 
 export default function MedicalConfirmation() {
   const breadcrumbItems: IBreadcrumbItem[] = [

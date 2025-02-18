@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { BrowserRouter as Router, Link } from "react-router-dom";
+import { describe, expect, it, Mock } from "vitest";
+
 import Confirmation from "./confirmation";
-import { Link, BrowserRouter as Router } from "react-router-dom";
-import { Mock } from "vitest";
 
 const furtherInfo = [
   "Further Information Test Text",
