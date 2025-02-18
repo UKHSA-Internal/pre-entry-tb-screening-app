@@ -1,12 +1,25 @@
 import "./home-page.scss";
 
+import { useMsal } from "@azure/msal-react";
 import { Helmet } from "react-helmet-async";
 
+import { loginRequest } from "@/auth/authConfig";
 import Footer from "@/components/footer/footer";
 import Header from "@/components/header/header";
 import StartButton from "@/components/startButton/startButton";
 
 export default function HomePage() {
+  const { instance } = useMsal();
+
+  const initializeSignIn = () => {
+    instance
+      .loginRedirect({
+        scopes: loginRequest.scopes,
+        storeInCache: loginRequest.storeInCache,
+      })
+      .catch(() => new Error("Login failed"));
+  };
+
   return (
     <body className="govuk-template__body">
       <Helmet>
@@ -44,7 +57,7 @@ export default function HomePage() {
             If you&apos;re a clinician you can also sign in to resume a medical screening case.
           </p>
           <p className="govuk-body">Use the username and password you were assigned to sign in.</p>
-          <StartButton id="sign-in" text="Sign In" href="" handleClick={() => {}} />
+          <StartButton id="sign-in" text="Sign In" href="" handleClick={initializeSignIn} />
         </main>
       </div>
       <Footer />
