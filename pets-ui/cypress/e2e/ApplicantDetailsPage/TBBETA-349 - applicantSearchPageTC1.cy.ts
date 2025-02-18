@@ -4,9 +4,6 @@ import { errorMessages } from "../../support/test-utils";
 I want to view the results from the applicant search
 So that I can see applicants that match the criteria entered during the search process.*/
 
-// Validate the error messages above each text box are correct
-//const errorMessages = ["Enter the applicant's passport number.", "Select the country of issue."];
-
 describe("Validate that error message is displayed when user clicks the search button without entering a search criteria", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/applicant-search");
