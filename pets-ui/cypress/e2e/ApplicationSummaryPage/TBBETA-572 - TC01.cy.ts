@@ -2,7 +2,6 @@ import { countryList } from "../../../src/utils/countryList";
 import { testData } from "../../support/test-data";
 import { randomElement } from "../../support/test-utils";
 
-
 describe("Applicant Form Pre-fill Validation", () => {
   const randomCountry = randomElement(countryList);
   const countryName = randomCountry?.value;

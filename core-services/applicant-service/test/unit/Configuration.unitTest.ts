@@ -106,3 +106,7 @@ const getMockedConfig: () => Configuration = () => {
   const ConfImp = require("../../src/utils/Configuration");
   return ConfImp.Configuration.getInstance();
 };
+function expect(arg0: string[]) {
+  throw new Error("Function not implemented.");
+}
+

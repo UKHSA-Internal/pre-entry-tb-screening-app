@@ -68,7 +68,7 @@ describe("Validate that page navigates to Chest x-ray page when user clicks on '
 
     // Validate that user is navigated to correct url when clicking on link in summary page
     const urlMap = {
-      "Age": "#age",
+      Age: "#age",
       "Does the applicant have TB symptoms?": "#tb-symptoms",
       "TB symptoms": "#tb-symptoms",
       "Other symptoms": "#other-symptoms-detail",
