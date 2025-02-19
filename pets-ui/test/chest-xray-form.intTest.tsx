@@ -2,14 +2,25 @@ import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter as Router } from "react-router-dom";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, Mock } from "vitest";
 
 import ChestXrayUploadPage from "@/pages/chest-xray-upload";
 import ChestXrayForm from "@/sections/chest-xray-form";
 import { renderWithProviders } from "@/utils/test-utils";
 
+const useNavigateMock: Mock = vi.fn();
+vi.mock(`react-router-dom`, async (): Promise<unknown> => {
+  const actual: Record<string, unknown> = await vi.importActual(`react-router-dom`);
+  return {
+    ...actual,
+    useNavigate: (): Mock => useNavigateMock,
+  };
+});
+
+beforeEach(() => useNavigateMock.mockClear());
+
 describe("ChestXrayUploadPage", () => {
-  it("Shows the breadcrums", () => {
+  it("displays breadcrumb correctly", () => {
     renderWithProviders(
       <Router>
         <HelmetProvider>
@@ -17,73 +28,71 @@ describe("ChestXrayUploadPage", () => {
         </HelmetProvider>
       </Router>,
     );
-    const breadcrumbItems = [
-      { text: "Home", href: "/" },
-      { text: "Application Search", href: "/applicant-search" },
-      { text: "Medical Screening", href: "#" },
-    ];
 
-    breadcrumbItems.forEach((item) => {
-      const breadcrumbElement = screen.getByText(item.text);
-      expect(breadcrumbElement).toBeInTheDocument();
-      expect(breadcrumbElement.closest("a")).toHaveAttribute("href", item.href);
-    });
+    const breadcrumbElement = screen.getByText("Application progress tracker");
+    expect(breadcrumbElement).toBeInTheDocument();
+    expect(breadcrumbElement.closest("a")).toHaveAttribute("href", "/tracker");
   });
 });
-describe("ChestXrayForm Component", () => {
-  it("renders the component and loads from redux", () => {
+describe("ChestXrayForm Section", () => {
+  it("renders components correctly", () => {
     renderWithProviders(
       <Router>
-        <ChestXrayForm nextpage="/next" />
+        <ChestXrayForm />
       </Router>,
     );
-    expect(screen.getByText("Upload the postero-anterior X-ray")).toBeInTheDocument();
-    expect(screen.getByText("Was an apical lordotic X-ray required ?")).toBeInTheDocument();
-    expect(screen.getByText("Was a lateral decubitus X-ray required ?")).toBeInTheDocument();
+    expect(screen.getByText("Postero-anterior X-ray")).toBeInTheDocument();
+    expect(screen.getByText("Apical lordotic X-ray (optional)")).toBeInTheDocument();
+    expect(screen.getByText("Lateral decubitus X-ray (optional)")).toBeInTheDocument();
+    expect(screen.getAllByText("Type of X-ray")).toHaveLength(3);
+    expect(screen.getAllByText("File uploaded")).toHaveLength(3);
+    expect(screen.getAllByRole("group")).toHaveLength(3);
   });
 
-  it("uploads a postero-anterior X-ray file", async () => {
+  it("uploads three X-ray files", () => {
     renderWithProviders(
       <Router>
-        <ChestXrayForm nextpage="/next" />
+        <ChestXrayForm />
       </Router>,
     );
-    const input: HTMLInputElement = screen.getByTestId("posteroAnteriorFile");
+
+    const posteroAnteriorInput: HTMLInputElement = screen.getByTestId("postero-anterior-xray");
+    const apicalLordoticInput: HTMLInputElement = screen.getByTestId("apical-lordotic-xray");
+    const lateralDecubitusInput: HTMLInputElement = screen.getByTestId("lateral-decubitus-xray");
     const file = new File(["dummy content"], "example.jpg", { type: "image/jpeg" });
-    fireEvent.change(input, { target: { files: [file] } });
 
-    fireEvent.click(screen.getAllByTestId("apicalLordoticXray")[1]);
-    fireEvent.click(screen.getAllByTestId("lateralDecubitus")[1]);
+    expect(posteroAnteriorInput).toBeInTheDocument();
+    expect(apicalLordoticInput).toBeInTheDocument();
+    expect(lateralDecubitusInput).toBeInTheDocument();
+    expect(posteroAnteriorInput.files).toHaveLength(0);
+    expect(apicalLordoticInput.files).toHaveLength(0);
+    expect(lateralDecubitusInput.files).toHaveLength(0);
 
-    // expect file to be in the box
-    expect(input.files?.length).toBe(1);
+    fireEvent.change(posteroAnteriorInput, { target: { files: [file] } });
+    fireEvent.change(apicalLordoticInput, { target: { files: [file] } });
+    fireEvent.change(lateralDecubitusInput, { target: { files: [file] } });
 
+    expect(posteroAnteriorInput.files).toHaveLength(1);
+    expect(apicalLordoticInput.files).toHaveLength(1);
+    expect(lateralDecubitusInput.files).toHaveLength(1);
+  });
+
+  it("errors when postero anterior xray is missing", async () => {
+    renderWithProviders(
+      <Router>
+        <ChestXrayForm />
+      </Router>,
+    );
+
+    const user = userEvent.setup({ applyAccept: false });
+    const posteroAnteriorInput: HTMLInputElement = screen.getByTestId("postero-anterior-xray");
     const submitButton = screen.getByRole("button", { name: /continue/i });
-    const user = userEvent.setup();
+
+    expect(posteroAnteriorInput).toBeInTheDocument();
+    expect(posteroAnteriorInput.files).toHaveLength(0);
+
     await user.click(submitButton);
-
-    // has the file (fize count = 1)
-    expect(input.files?.length).toBe(1);
-  });
-
-  it("Missing upload for AL and LD", async () => {
-    renderWithProviders(
-      <Router>
-        <ChestXrayForm nextpage="/next" />
-      </Router>,
-    );
-    const input = screen.getByTestId("posteroAnteriorFile");
-    const file = new File(["dummy content"], "example.jpg", { type: "image/jpeg" });
-    fireEvent.change(input, { target: { files: [file] } });
-
-    fireEvent.click(screen.getAllByTestId("apicalLordoticXray")[0]);
-    fireEvent.click(screen.getAllByTestId("lateralDecubitus")[0]);
-
-    const submit = screen.getByRole("button", { name: /continue/i });
-    const user = userEvent.setup();
-    await user.click(submit);
-
-    // errors
-    expect(screen.getAllByText(/Please Upload/i)).not.toBeNull();
+    expect(useNavigateMock).not.toHaveBeenCalled();
+    expect(screen.getByText("Please upload postero-anterior X-ray")).toBeInTheDocument();
   });
 });
