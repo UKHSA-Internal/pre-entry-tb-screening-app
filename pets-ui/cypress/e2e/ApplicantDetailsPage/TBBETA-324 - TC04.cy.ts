@@ -1,5 +1,5 @@
-import { countryList } from "../../../src/utils/helpers";
-import { randomElement } from "../../support/test-utils";
+import { countryList } from "../../../src/utils/countryList";
+import { errorMessages, randomElement } from "../../support/test-utils";
 
 // Random number generator
 const randomCountry = randomElement(countryList);
@@ -55,15 +55,6 @@ describe("Validate the error messages for the Free Text Boxes", () => {
     cy.get('button[type="submit"]').click();
 
     // Validate the error messages above each text box are correct
-    const errorMessages = [
-      "Full name must contain only letters and spaces.",
-      "Passport number must contain only letters and numbers.",
-      "Home address must contain only letters, numbers, spaces and punctuation.",
-      "Home address must contain only letters, numbers, spaces and punctuation.",
-      "Home address must contain only letters, numbers, spaces and punctuation.",
-      "Town name must contain only letters, spaces and punctuation.",
-      "Province/state name must contain only letters, spaces and punctuation",
-    ];
     // Validate the summary box appears at the top contains the correct error messages
     cy.get(".govuk-error-summary").should("be.visible");
     errorMessages.forEach((error) => {

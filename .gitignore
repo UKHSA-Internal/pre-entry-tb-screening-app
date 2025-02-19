@@ -35,8 +35,9 @@ Temporary Items
 # env
 .env.local
 
-# jest
+# Tests
 pets.code-workspace
+coverage
 
 # aws
 *.pkg

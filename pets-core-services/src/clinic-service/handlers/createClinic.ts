@@ -1,9 +1,6 @@
-import { APIGatewayEvent } from "aws-lambda";
+import { APIGatewayProxyEvent } from "aws-lambda";
 
 // eslint-disable-next-line @typescript-eslint/require-await
-export const createClinicHandler = async (event: APIGatewayEvent) => {
-  // eslint-disable-next-line no-console
-  console.log(event, "Invokation got here");
-
-  return { statusCode: 200, body: "Hello World Clinic Creator" };
+export const createClinicHandler = async (event: APIGatewayProxyEvent) => {
+  return { statusCode: 200, body: JSON.stringify(event) };
 };

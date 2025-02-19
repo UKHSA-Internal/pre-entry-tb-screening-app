@@ -6,7 +6,7 @@ import { Code, Function, Runtime } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunctionProps } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Bucket } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
-import { basename, dirname, join } from "path";
+import { basename, dirname, join, relative } from "path";
 
 export class LocalInfrastructureStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -19,8 +19,19 @@ export class LocalInfrastructureStack extends cdk.Stack {
     });
 
     new HotReloadedLambda(this, "applicant-service-lambda", {
-      entry: join(__dirname, "../../pets-core-services/src/clinic-service/lambdas/clinics.ts"),
+      entry: join(
+        __dirname,
+        "../../pets-core-services/src/applicant-service/lambdas/applicants.ts",
+      ),
       functionName: process.env.APPLICANT_SERVICE_LAMBDA_NAME,
+    });
+
+    new HotReloadedLambda(this, "application-service-lambda", {
+      entry: join(
+        __dirname,
+        "../../pets-core-services/src/application-service/lambdas/application.ts",
+      ),
+      functionName: process.env.APPLICATION_SERVICE_LAMBDA_NAME,
     });
 
     /**API Gateway */
@@ -47,9 +58,22 @@ export class LocalInfrastructureStack extends cdk.Stack {
       tableName: process.env.CLINIC_SERVICE_DATABASE_NAME,
     });
 
-    new Table(this, "applicant-service-table", {
+    const applicantServiceDb = new Table(this, "applicant-service-table", {
       ...tableProps,
-      tableName: process.env.APPLICANT_SERVICE_LAMBDA_NAME,
+      tableName: process.env.APPLICANT_SERVICE_DATABASE_NAME,
+    });
+
+    applicantServiceDb.addGlobalSecondaryIndex({
+      indexName: process.env.PASSPORT_ID_INDEX || "",
+      partitionKey: {
+        name: "passportId",
+        type: AttributeType.STRING,
+      },
+    });
+
+    new Table(this, "application-service-table", {
+      ...tableProps,
+      tableName: process.env.APPLICATION_SERVICE_DATABASE_NAME,
     });
   }
 }
@@ -61,7 +85,11 @@ class HotReloadedLambda extends Function {
     if (!props.entry) throw new Error("Entry point is required");
 
     const fileName = basename(props.entry, ".ts");
-    const codePath = dirname(props.entry);
+
+    const repoRoot = join(__dirname, "../../");
+    const buildRoot = join(__dirname, "../build");
+    const relativePath = relative(repoRoot, dirname(props.entry));
+    const codePath = join(buildRoot, relativePath);
 
     super(scope, id, {
       functionName: props.functionName,

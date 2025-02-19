@@ -1,9 +1,87 @@
-import { APIGatewayEvent } from "aws-lambda";
+import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
+import { APIGatewayProxyEvent } from "aws-lambda";
+import { GlobalContextStorageProvider } from "pino-lambda";
+import { z } from "zod";
 
-// eslint-disable-next-line @typescript-eslint/require-await
-export const postApplicantHandler = async (event: APIGatewayEvent) => {
-  // eslint-disable-next-line no-console
-  console.log(event, "Invokation got here");
+import { createHttpResponse } from "../../shared/http";
+import { logger } from "../../shared/logger";
+import { Application } from "../../shared/models/application";
+import { Applicant } from "../models/applicant";
+import { ApplicantSchema } from "../types/zod-schema";
 
-  return { statusCode: 200, body: "Hello World Post Applicant" };
+export type ApplicantRequestSchema = z.infer<typeof ApplicantSchema>;
+
+export type PostApplicantEvent = APIGatewayProxyEvent & {
+  parsedBody?: ApplicantRequestSchema;
+};
+
+export const postApplicantHandler = async (event: PostApplicantEvent) => {
+  try {
+    logger.info("Post applicant details handler triggered");
+
+    const { parsedBody } = event;
+
+    if (!parsedBody) {
+      logger.error("Event missing parsed body");
+
+      return createHttpResponse(500, {
+        message: "Internal Server Error: Request not parsed correctly",
+      });
+    }
+
+    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
+
+    GlobalContextStorageProvider.updateContext({
+      countryOfIssue: parsedBody.countryOfIssue,
+      passportNumber: parsedBody.passportNumber.slice(-4),
+      applicationId,
+    });
+
+    const application = await Application.getByApplicationId(applicationId);
+    if (!application) {
+      logger.error("Application does not exist");
+      return createHttpResponse(400, {
+        message: `Application with ID: ${applicationId} does not exist`,
+      });
+    }
+
+    const clinicId = "Apollo Clinic";
+    if (application.clinicId != clinicId) {
+      logger.error("ClinicId mismatch with existing application");
+      return createHttpResponse(403, { message: "Clinic Id mismatch" });
+    }
+
+    const existingApplicants = await Applicant.findByPassportId(
+      parsedBody.countryOfIssue,
+      parsedBody.passportNumber,
+    );
+
+    if (existingApplicants.length) {
+      logger.error("An applicant with similar information already exists");
+      return createHttpResponse(400, {
+        message: "A record with this applicant details has already been saved",
+      });
+    }
+
+    let applicant: Applicant;
+    try {
+      const createdBy = "hardcoded@user.com";
+      applicant = await Applicant.createNewApplicant({
+        ...parsedBody,
+        applicationId,
+        createdBy,
+      });
+    } catch (error) {
+      if (error instanceof ConditionalCheckFailedException)
+        return createHttpResponse(400, { message: "Applicant Details already saved" });
+      throw error;
+    }
+
+    return createHttpResponse(200, {
+      ...applicant.toJson(),
+    });
+  } catch (err: unknown) {
+    logger.error(err, "Error saving Applicant details");
+    return createHttpResponse(500, { message: "Something went wrong" });
+  }
 };

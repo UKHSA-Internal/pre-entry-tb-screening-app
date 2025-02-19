@@ -7,7 +7,7 @@ import { Method } from "@middy/http-router";
 import { writeFileSync } from "fs";
 import { z } from "zod";
 
-import { getEnvironmentVariable } from "../shared/config";
+import { assertEnvExists } from "../shared/config";
 import { errorResponses } from "./error-response";
 import { SwaggerConfig } from "./types";
 
@@ -89,7 +89,7 @@ const registerSwaggerConfig = (registry: OpenAPIRegistry, config: SwaggerConfig)
   return registry;
 };
 
-export const writeApiDocumentation = (configs: SwaggerConfig[]) => {
+export const writeApiDocumentation = (configs: SwaggerConfig[]): any => {
   let registry = new OpenAPIRegistry();
 
   for (const config of configs) {
@@ -97,20 +97,20 @@ export const writeApiDocumentation = (configs: SwaggerConfig[]) => {
   }
 
   const generator = new OpenApiGeneratorV3(registry.definitions);
-
   const docs = generator.generateDocument({
     openapi: "3.0.0",
     info: {
       version: "1.0.0",
-      title: `aw-pets-euw-${getEnvironmentVariable("ENVIRONMENT")}-apigateway-coreservices`,
+      title: `aw-pets-euw-${assertEnvExists(process.env.ENVIRONMENT)}-apigateway-coreservices`,
     },
     servers: [],
   });
+
   // eslint-disable-next-line no-console
   console.log(JSON.stringify(docs, null, 2));
 
   const specName = process.env.SPEC_FILE ?? "openapi-docs.json";
   writeFileSync(`./${specName}`, JSON.stringify(docs));
 
-  return registry;
+  return docs;
 };

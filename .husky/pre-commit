@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+git checkout -q -- pets-core-services/openapi-docs.json

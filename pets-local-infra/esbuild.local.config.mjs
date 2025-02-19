@@ -1,21 +1,38 @@
 import * as esbuild from "esbuild";
+import { join } from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const define = {};
-
 for (const k in process.env) {
   define[`process.env.${k}`] = JSON.stringify(process.env[k]);
 }
 
+const outbase = join(__dirname, "..");
 const options = {
   entryPoints: ["../pets-core-services/src/**/lambdas/*.ts"],
-  outdir: "../pets-core-services/src",
+  outdir: "build",
+  outbase,
   bundle: true,
   platform: "node",
   target: "node18",
   define,
 };
 
-let ctx = await esbuild.context(options);
+const main = async () => {
+  const watchMode = process.argv.includes("--watch");
 
-await ctx.watch();
-console.log("watching pets core services changes...");
+  if (!watchMode) {
+    await esbuild.build(options);
+    return;
+  }
+
+  let ctx = await esbuild.context(options);
+  await ctx.watch();
+  console.log("watching pets core services changes...");
+};
+
+await main();
