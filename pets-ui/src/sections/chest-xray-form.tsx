@@ -41,9 +41,9 @@ const FileUploadModule = (
               id={props.id}
               formValue={props.id}
               required={props.required ? `Please upload ${props.name.toLowerCase()} X-ray` : false}
-              errorMessage={props.errors[props.id as keyof ChestXrayDetailsType]?.message || ""}
-              accept={props.accept || "jpg,jpeg,png,pdf"}
-              maxSize={props.maxSize || 5}
+              errorMessage={props.errors[props.id as keyof ChestXrayDetailsType]?.message ?? ""}
+              accept={props.accept ?? "jpg,jpeg,png,pdf"}
+              maxSize={props.maxSize ?? 5}
               setFileState={props.setFileState}
             />
           </dd>
