@@ -1,3 +1,5 @@
+import { ApplicantDetailsType } from "@/applicant";
+
 interface ApplicantDataHeaderProps {
   applicantData: ApplicantDetailsType;
 }
