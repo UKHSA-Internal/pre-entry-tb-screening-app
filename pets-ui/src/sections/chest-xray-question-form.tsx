@@ -27,9 +27,11 @@ const CxrQuestionForm = () => {
 
   const onSubmit: SubmitHandler<ChestXrayDetailsType> = (data) => {
     updateReduxStore(data);
-    data.chestXrayTaken === "yes"
-      ? navigate("/chest-xray-upload")
-      : navigate("/chest-xray-not-taken");
+    if (data.chestXrayTaken === "yes") {
+      navigate("/chest-xray-upload");
+    } else {
+      navigate("/chest-xray-not-taken");
+    }
   };
 
   const updateReduxStore = (chestXrayData: ChestXrayDetailsType) => {
@@ -40,7 +42,11 @@ const CxrQuestionForm = () => {
 
   const chestXrayTakenRef = useRef<HTMLDivElement | null>(null);
 
-  watchedChestXrayTaken === "yes" ? setChestXrayTaken(true) : setChestXrayTaken(false);
+  if (watchedChestXrayTaken === "yes") {
+    setChestXrayTaken(true);
+  } else {
+    setChestXrayTaken(false);
+  }
 
   return (
     <FormProvider {...methods}>
