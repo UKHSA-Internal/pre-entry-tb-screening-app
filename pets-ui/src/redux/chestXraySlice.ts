@@ -1,67 +1,75 @@
 import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState: ChestXrayType = {
-  posteroAnteriorFile: "",
-  apicalLordoticXray: false,
-  apicalLordoticXrayFile: "",
-  lateralDecubitus: false,
-  lateralDecubitusFile: "",
+import { ChestXrayDetailsType } from "@/applicant";
+
+const initialState: ChestXrayDetailsType = {
+  cxrTaken: false,
+  posteroAnteriorXray: null,
+  apicalLordoticXray: null,
+  lateralDecubitusXray: null,
+  reasonXrayNotTaken: "",
+  reasonXrayNotTakenDetail: "",
+  xrayResult: "",
+  xrayResultDetail: "",
+  xrayFindingsList: [],
 };
 
 export const chestXraySlice = createSlice({
   name: "chestXrayDetails",
   initialState,
   reducers: {
-    setPosteroAnteriorFile: (state, action: PayloadAction<string | null>) => {
-      state.posteroAnteriorFile = action.payload;
+    setCxrTaken: (state, action: PayloadAction<boolean>) => {
+      state.cxrTaken = action.payload;
     },
-    setApicalLordoticXray: (state, action: PayloadAction<boolean | string>) => {
-      if (typeof action.payload === "string") {
-        if (action.payload === "yes") {
-          state.apicalLordoticXray = true;
-        } else {
-          state.apicalLordoticXray = false;
-        }
-      } else {
-        state.apicalLordoticXray = action.payload;
-      }
+    setPosteroAnteriorXray: (state, action: PayloadAction<string | null>) => {
+      state.posteroAnteriorXray = action.payload;
     },
-    setApicalLordoticXrayFile: (state, action: PayloadAction<string | null>) => {
-      state.apicalLordoticXrayFile = action.payload;
+    setApicalLordoticXray: (state, action: PayloadAction<string | null>) => {
+      state.apicalLordoticXray = action.payload;
     },
-    setLateralDecubitus: (state, action: PayloadAction<boolean | string>) => {
-      if (typeof action.payload === "string") {
-        if (action.payload === "yes") {
-          state.lateralDecubitus = true;
-        } else {
-          state.lateralDecubitus = false;
-        }
-      } else {
-        state.lateralDecubitus = action.payload;
-      }
+    setLateralDecubitusXray: (state, action: PayloadAction<string | null>) => {
+      state.lateralDecubitusXray = action.payload;
     },
-    setLateralDecubitusFile: (state, action: PayloadAction<string | null>) => {
-      state.lateralDecubitusFile = action.payload;
+    setReasonXrayNotTaken: (state, action: PayloadAction<string>) => {
+      state.reasonXrayNotTaken = action.payload;
     },
-
+    setReasonXrayNotTakenDetail: (state, action: PayloadAction<string>) => {
+      state.reasonXrayNotTakenDetail = action.payload;
+    },
+    setXrayResult: (state, action: PayloadAction<string>) => {
+      state.xrayResult = action.payload;
+    },
+    setXrayResultDetail: (state, action: PayloadAction<string>) => {
+      state.xrayResultDetail = action.payload;
+    },
+    setXrayFindingsList: (state, action: PayloadAction<string[]>) => {
+      state.xrayFindingsList = action.payload;
+    },
     clearChestXrayDetails: (state) => {
-      state.posteroAnteriorFile = "";
-      state.apicalLordoticXray = false;
-      state.apicalLordoticXrayFile = "";
-      state.lateralDecubitus = false;
-      state.lateralDecubitusFile = "";
+      state.cxrTaken = false;
+      state.posteroAnteriorXray = null;
+      state.apicalLordoticXray = null;
+      state.lateralDecubitusXray = null;
+      state.reasonXrayNotTaken = "";
+      state.reasonXrayNotTakenDetail = "";
+      state.xrayResult = "";
+      state.xrayResultDetail = "";
+      state.xrayFindingsList = [];
     },
   },
 });
 
 export const {
-  setPosteroAnteriorFile,
+  setCxrTaken,
+  setPosteroAnteriorXray,
   setApicalLordoticXray,
-  setApicalLordoticXrayFile,
-  setLateralDecubitus,
-  setLateralDecubitusFile,
-  clearChestXrayDetails,
+  setLateralDecubitusXray,
+  setReasonXrayNotTaken,
+  setReasonXrayNotTakenDetail,
+  setXrayResult,
+  setXrayResultDetail,
+  setXrayFindingsList,
 } = chestXraySlice.actions;
 
 export const chestXrayReducer = chestXraySlice.reducer;
