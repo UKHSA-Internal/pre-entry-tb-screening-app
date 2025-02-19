@@ -6,6 +6,7 @@ import ApplicantResultsPage from "./pages/applicant-results";
 import ApplicantSearchPage from "./pages/applicant-search";
 import ApplicantSummaryPage from "./pages/applicant-summary";
 import ContactDetailsPage from "./pages/contact-details";
+import ChestXrayQuestionPage from "./pages/chest-xray-question";
 import HomePage from "./pages/home-page";
 import MedicalScreeningPage from "./pages/medical-screening";
 import MedicalConfirmation from "./pages/medical-screening-confirmation";
@@ -24,6 +25,7 @@ function App() {
         <Route path="/tracker" element={<ProgressTrackerPage />} />
         <Route path="/applicant-results" element={<ApplicantResultsPage />} />
         <Route path="/contact" element={<ContactDetailsPage />} />
+        <Route path="/chest-xray-question" element={<ChestXrayQuestionPage />} />
         <Route path="/applicant-summary" element={<ApplicantSummaryPage />} />
         <Route path="/applicant-confirmation" element={<ApplicantConfirmation />} />
         <Route path="/medical-screening" element={<MedicalScreeningPage />} />

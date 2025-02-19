@@ -57,10 +57,12 @@ type TravelDetailsType = {
 };
 
 type ChestXrayDetailsType = {
-  cxrTaken: boolean;
-  posteriorAnterior: string | null;
-  apicalLordotic: string | null;
-  lateralDecubitus: string | null;
+  chestXrayTaken: boolean | string;
+  posteroAnteriorFile: string | null;
+  apicalLordoticXray: boolean | string; // allows for yes -> true, no -> false
+  apicalLordoticXrayFile: string | null;
+  lateralDecubitus: boolean | string; // allows for yes -> true, no -> false
+  lateralDecubitusFile: string | null;
   reasonWhyCxrWasNotDone2: string | null;
   reasonWhyCxrWasNotDone3: string | null;
   dateOfCxr: string | null;
