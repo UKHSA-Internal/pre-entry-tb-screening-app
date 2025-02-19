@@ -1,21 +1,19 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
+import { ChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import FileUpload from "@/components/fileUpload/fileUpload";
-import Radio from "@/components/radio/radio";
 import { selectApplicant } from "@/redux/applicantSlice";
 import {
   setApicalLordoticXray,
-  setApicalLordoticXrayFile,
-  setLateralDecubitus,
-  setLateralDecubitusFile,
-  setPosteroAnteriorFile,
+  setLateralDecubitusXray,
+  setPosteroAnteriorXray,
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { ButtonType } from "@/utils/enums";
 
 const FileUploadModule = (
   props: Readonly<{
@@ -23,7 +21,7 @@ const FileUploadModule = (
     name: string;
     setFileState: Dispatch<SetStateAction<string | null>>;
     required: boolean;
-    errors: FieldErrors<ChestXrayType>;
+    errors: FieldErrors<ChestXrayDetailsType>;
     accept?: string;
     maxSize?: number;
   }>,
@@ -42,8 +40,8 @@ const FileUploadModule = (
             <FileUpload
               id={props.id}
               formValue={props.id}
-              required={props.required ? `Please upload ${props.name} X-ray` : false}
-              errorMessage={props.errors[props.id as keyof ChestXrayType]?.message || ""}
+              required={props.required ? `Please upload ${props.name.toLowerCase()} X-ray` : false}
+              errorMessage={props.errors[props.id as keyof ChestXrayDetailsType]?.message || ""}
               accept={props.accept || "jpg,jpeg,png,pdf"}
               maxSize={props.maxSize || 5}
               setFileState={props.setFileState}
@@ -55,49 +53,31 @@ const FileUploadModule = (
   );
 };
 
-const ChestXrayForm = (props: Readonly<{ nextpage: string }>) => {
+const ChestXrayForm = () => {
   const applicantData = useAppSelector(selectApplicant);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
-  const [hasApicalLordotic, setHasApicalLordotic] = useState(false);
-  const [hasLateralDecubitus, setHaslateralDecubitus] = useState(false);
 
   const [PAFile, setPAFile] = useState<string | null>(null);
   const [ALFile, setALFile] = useState<string | null>(null);
   const [LDFile, setLDFile] = useState<string | null>(null);
 
-  const methods = useForm<ChestXrayType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ChestXrayDetailsType>({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,
     formState: { errors },
-    watch,
   } = methods;
 
-  const onSubmit: SubmitHandler<ChestXrayType> = (data) => {
-    updateReduxStore(data);
-    navigate(props.nextpage);
+  const onSubmit: SubmitHandler<ChestXrayDetailsType> = () => {
+    updateReduxStore();
+    navigate("/chest-xray-findings");
   };
 
-  const updateReduxStore = (chestXrayData: ChestXrayType) => {
-    // set Files
-    dispatch(setPosteroAnteriorFile(PAFile));
-    dispatch(setApicalLordoticXrayFile(ALFile));
-    dispatch(setLateralDecubitusFile(LDFile));
-
-    // set radio flags
-    dispatch(setApicalLordoticXray(chestXrayData.apicalLordoticXray));
-    dispatch(setLateralDecubitus(chestXrayData.lateralDecubitus));
+  const updateReduxStore = () => {
+    dispatch(setPosteroAnteriorXray(PAFile));
+    dispatch(setApicalLordoticXray(ALFile));
+    dispatch(setLateralDecubitusXray(LDFile));
   };
-
-  // Watch the value of the radio button for required checks
-  const watchedApicalLordotic = watch("apicalLordoticXray") as unknown as string;
-  const watchedLateralDecubitus = watch("lateralDecubitus") as unknown as string;
-
-  useEffect(() => {
-    setHasApicalLordotic(watchedApicalLordotic === "yes" ? true : false);
-    setHaslateralDecubitus(watchedLateralDecubitus === "yes" ? true : false);
-  }, [watchedApicalLordotic, watchedLateralDecubitus]);
 
   return (
     <FormProvider {...methods}>
@@ -105,58 +85,30 @@ const ChestXrayForm = (props: Readonly<{ nextpage: string }>) => {
         <div>
           <ApplicantDataHeader applicantData={applicantData} />
 
-          <h3 className="govuk-heading-m">Upload the postero-anterior X-ray</h3>
+          <h3 className="govuk-heading-m">Postero-anterior X-ray</h3>
           <FileUploadModule
-            id="posteroAnteriorFile"
+            id="postero-anterior-xray"
             name="Postero-anterior"
             setFileState={setPAFile}
             required={true}
             errors={errors}
           />
 
-          <h3 className="govuk-heading-m">Was an apical lordotic X-ray required ?</h3>
-
-          <div>
-            <Radio
-              id="apicalLordoticXray"
-              isInline={RadioIsInline.TRUE}
-              answerOptions={["Yes", "No"]}
-              sortAnswersAlphabetically={false}
-              errorMessage={errors?.apicalLordoticXray?.message || ""}
-              formValue="apicalLordoticXray"
-              required="Please select whether the applicant require an apical lordotic X-ray."
-            />
-          </div>
-
-          <h3 className="govuk-heading-m">If yes, upload the apical lordotic X-ray</h3>
+          <h3 className="govuk-heading-m">Apical lordotic X-ray (optional)</h3>
           <FileUploadModule
-            id="apicalLordoticXrayFile"
+            id="apical-lordotic-xray"
             name="Apical lordotic"
             setFileState={setALFile}
-            required={hasApicalLordotic}
+            required={false}
             errors={errors}
           />
 
-          <h3 className="govuk-heading-m">Was a lateral decubitus X-ray required ?</h3>
-
-          <div>
-            <Radio
-              id="lateralDecubitus"
-              isInline={RadioIsInline.TRUE}
-              answerOptions={["Yes", "No"]}
-              sortAnswersAlphabetically={false}
-              errorMessage={errors?.lateralDecubitus?.message || ""}
-              formValue="lateralDecubitus"
-              required="Please select whether the applicant require a lateral decubitus X-ray."
-            />
-          </div>
-
-          <h3 className="govuk-heading-m">If yes, upload the lateral decubitus X-ray</h3>
+          <h3 className="govuk-heading-m">Lateral decubitus X-ray (optional)</h3>
           <FileUploadModule
-            id="lateralDecubitusFile"
+            id="lateral-decubitus-xray"
             name="Lateral decubitus"
             setFileState={setLDFile}
-            required={hasLateralDecubitus}
+            required={false}
             errors={errors}
           />
 
@@ -164,7 +116,7 @@ const ChestXrayForm = (props: Readonly<{ nextpage: string }>) => {
             id="continue"
             type={ButtonType.DEFAULT}
             text="Continue"
-            href={props.nextpage}
+            href="/chest-xray-findings"
             handleClick={() => {}}
           />
         </div>
