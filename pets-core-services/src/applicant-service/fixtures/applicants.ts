@@ -1,27 +1,11 @@
 import { CountryCode } from "../../shared/country";
+import { seededApplications } from "../../shared/fixtures/application";
 import { NewApplicant } from "../models/applicant";
 import { AllowedSex } from "../types/enums";
 
 export const seededApplicants: NewApplicant[] = [
   {
-    clinicId: "Apollo",
-    fullName: "John Doe",
-    passportNumber: "ABC1234JOHN",
-    countryOfNationality: CountryCode.IND,
-    countryOfIssue: CountryCode.IND,
-    issueDate: "2006-05-12",
-    expiryDate: "2010-05-12",
-    dateOfBirth: "2000-05-12",
-    sex: AllowedSex.Male,
-    applicantHomeAddress1: "23 Long street",
-    applicantHomeAddress2: "River Valley",
-    townOrCity: "Mumbai",
-    provinceOrState: "Mumbai",
-    country: CountryCode.IND,
-    postcode: "1234",
-  },
-  {
-    clinicId: "IOM-Laos",
+    applicationId: seededApplications[1].applicationId,
     fullName: "Jane Doe",
     passportNumber: "ABC1234JANE",
     countryOfNationality: CountryCode.BRB,
@@ -36,9 +20,10 @@ export const seededApplicants: NewApplicant[] = [
     provinceOrState: "Mumbai",
     country: CountryCode.BRB,
     postcode: "1234",
+    createdBy: "shane.park@iom.com",
   },
   {
-    clinicId: "Zeus-Clinic",
+    applicationId: seededApplications[2].applicationId,
     fullName: "Dave Jones",
     passportNumber: "ABC1234DAVE",
     countryOfNationality: CountryCode.MAR,
@@ -53,5 +38,6 @@ export const seededApplicants: NewApplicant[] = [
     provinceOrState: "",
     country: CountryCode.ARG,
     postcode: "1234",
+    createdBy: "shawn.jones@clinic.com",
   },
 ];

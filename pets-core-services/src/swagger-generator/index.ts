@@ -1,4 +1,5 @@
 import { routes as applicantServiceRoutes } from "../applicant-service/lambdas/applicants";
+import { routes as ApplicationServiceRoutes } from "../application-service/lambdas/application";
 import { routes as clinicServiceRoutes } from "../clinic-service/lambdas/clinics";
 import { assertEnvExists } from "../shared/config";
 import { writeApiDocumentation } from "./generator";
@@ -20,4 +21,15 @@ export const applicantServiceSwaggerConfig: SwaggerConfig = {
   tags: ["Applicant Service Endpoints"],
 };
 
-writeApiDocumentation([clinicServiceSwaggerConfig, applicantServiceSwaggerConfig]);
+const applicationServiceLambda = assertEnvExists(process.env.APPLICATION_SERVICE_LAMBDA_NAME);
+export const applicationServiceSwaggerConfig: SwaggerConfig = {
+  lambdaArn: `arn:aws:apigateway:eu-west-2:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-2:${awsAccountId}:function:${applicationServiceLambda}/invocations`,
+  routes: ApplicationServiceRoutes,
+  tags: ["Application Service Endpoints"],
+};
+
+writeApiDocumentation([
+  clinicServiceSwaggerConfig,
+  applicantServiceSwaggerConfig,
+  applicationServiceSwaggerConfig,
+]);

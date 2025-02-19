@@ -6,18 +6,19 @@ import { z } from "zod";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
-import { Applicant } from "../models/applicant";
-import { ApplicantSchema } from "../types/zod-schema";
+import { TravelInformation } from "../models/travel-information";
+import { TravelInformationRequestSchema } from "../types/zod-schema";
 
-export type ApplicantRequestSchema = z.infer<typeof ApplicantSchema>;
-
-export type PostApplicantEvent = APIGatewayProxyEvent & {
-  parsedBody?: ApplicantRequestSchema;
+export type TravelInformationRequestSchema = z.infer<typeof TravelInformationRequestSchema>;
+export type SaveTravelInformationEvent = APIGatewayProxyEvent & {
+  parsedBody?: TravelInformationRequestSchema;
 };
 
-export const postApplicantHandler = async (event: PostApplicantEvent) => {
+export const saveTravelInformationHandler = async (event: SaveTravelInformationEvent) => {
   try {
-    logger.info("Post applicant details handler triggered");
+    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
+
+    logger.info({ applicationId }, "Save Travel Information handler triggered");
 
     const { parsedBody } = event;
 
@@ -29,11 +30,7 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
       });
     }
 
-    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
-
     GlobalContextStorageProvider.updateContext({
-      countryOfIssue: parsedBody.countryOfIssue,
-      passportNumber: parsedBody.passportNumber.slice(-4),
       applicationId,
     });
 
@@ -51,37 +48,25 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
       return createHttpResponse(403, { message: "Clinic Id mismatch" });
     }
 
-    const existingApplicants = await Applicant.findByPassportId(
-      parsedBody.countryOfIssue,
-      parsedBody.passportNumber,
-    );
-
-    if (existingApplicants.length) {
-      logger.error("An applicant with similar information already exists");
-      return createHttpResponse(400, {
-        message: "A record with this applicant details has already been saved",
-      });
-    }
-
-    let applicant: Applicant;
+    let travelInformation: TravelInformation;
     try {
       const createdBy = "hardcoded@user.com";
-      applicant = await Applicant.createNewApplicant({
+      travelInformation = await TravelInformation.createTravelInformation({
         ...parsedBody,
-        applicationId,
         createdBy,
+        applicationId,
       });
     } catch (error) {
       if (error instanceof ConditionalCheckFailedException)
-        return createHttpResponse(400, { message: "Applicant Details already saved" });
+        return createHttpResponse(400, { message: "Travel Details already saved" });
       throw error;
     }
 
     return createHttpResponse(200, {
-      ...applicant.toJson(),
+      ...travelInformation.toJson(),
     });
-  } catch (err: unknown) {
-    logger.error(err, "Error saving Applicant details");
+  } catch (err) {
+    logger.error(err, "Error saving travel information");
     return createHttpResponse(500, { message: "Something went wrong" });
   }
 };
