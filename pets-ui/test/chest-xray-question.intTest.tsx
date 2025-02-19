@@ -4,8 +4,8 @@ import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter as Router } from "react-router-dom";
 import { describe, expect, it, Mock } from "vitest";
 
-import { renderWithProviders } from "@/utils/test-utils";
 import ChestXrayQuestionPage from "@/pages/chest-xray-question";
+import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
 vi.mock(`react-router-dom`, async (): Promise<unknown> => {
