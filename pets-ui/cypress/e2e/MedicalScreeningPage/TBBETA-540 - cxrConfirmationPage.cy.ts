@@ -19,7 +19,9 @@ describe("Verify Go to TB screening progress tracker link navigates to the Appli
     cy.get("h1").should("contain.text", "Chest X-ray information recorded");
 
     //Validate that TB screening progress tracker link exists and is visible
-    cy.contains(".govuk-body a", "TB screening progress tracker").should("be.visible").and("have.attr", "href");
+    cy.contains(".govuk-body a", "TB screening progress tracker")
+      .should("be.visible")
+      .and("have.attr", "href");
 
     //Validate that TB screening progress tracker link is clickable
     cy.contains(".govuk-body a", "TB screening progress tracker").click();
