@@ -12,8 +12,8 @@ import { ButtonType } from "@/utils/enums";
 export default function MedicalConfirmation() {
   const breadcrumbItems: IBreadcrumbItem[] = [
     {
-      text: "Home",
-      href: "#",
+      text: "Application progress tracker",
+      href: "/tracker",
     },
   ];
   const navigate = useNavigate();

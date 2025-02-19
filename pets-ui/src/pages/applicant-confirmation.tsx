@@ -12,8 +12,8 @@ import { ButtonType } from "@/utils/enums";
 export default function ApplicantConfirmation() {
   const breadcrumbItems: IBreadcrumbItem[] = [
     {
-      text: "Home",
-      href: "/applicant-search",
+      text: "Application progress tracker",
+      href: "/tracker",
     },
   ];
   const navigate = useNavigate();

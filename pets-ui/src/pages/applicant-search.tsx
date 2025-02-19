@@ -8,16 +8,7 @@ import Header from "@/components/header/header";
 import ApplicantSearchForm from "@/sections/applicant-search-form";
 
 export default function ApplicantSearchPage() {
-  const breadcrumbItems: IBreadcrumbItem[] = [
-    {
-      text: "Home",
-      href: "/",
-    },
-    {
-      text: "Applicant Search",
-      href: "#",
-    },
-  ];
+  const breadcrumbItems: IBreadcrumbItem[] = [];
 
   return (
     <body className="govuk-template__body">

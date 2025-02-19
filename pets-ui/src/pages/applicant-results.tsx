@@ -8,12 +8,7 @@ import Header from "@/components/header/header";
 import ApplicantEmptyResult from "@/sections/applicant-no-results";
 
 export default function ApplicantResultsPage() {
-  const breadcrumbItems: IBreadcrumbItem[] = [
-    {
-      text: "Home",
-      href: "#",
-    },
-  ];
+  const breadcrumbItems: IBreadcrumbItem[] = [];
 
   return (
     <body className="govuk-template__body">

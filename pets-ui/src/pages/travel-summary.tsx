@@ -10,16 +10,8 @@ import TravelReview from "@/sections/applicant-travel-summary";
 export default function TravelSummaryPage() {
   const breadcrumbItems: IBreadcrumbItem[] = [
     {
-      text: "Home",
-      href: "#",
-    },
-    {
-      text: "New Applicant",
-      href: "#",
-    },
-    {
-      text: "Travel information",
-      href: "#",
+      text: "Application progress tracker",
+      href: "/tracker",
     },
   ];
 
