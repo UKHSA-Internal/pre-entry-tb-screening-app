@@ -1,13 +1,5 @@
-import { randomElement } from "../support/test-utils";
+import { randomElement, visaType } from "../support/test-utils";
 
-const visaType = [
-  "Family Reunion",
-  "Settlement and Dependents",
-  "Students",
-  "Work",
-  "Working Holiday Maker",
-  "Government Sponsored",
-];
 const selectedVisa = randomElement(visaType);
 
 describe("Validate that the continue to medical screening button navigates to the medical screening page", () => {
