@@ -8,7 +8,7 @@ Then I am navigated to the "Application progress tracker" page
 
 describe("Verify Go to TB screening progress tracker link navigates to the Application progress tracker page", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:3000/cxr-confirmation");
+    cy.visit("http://localhost:3000/chest-xray-confirmation");
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
       statusCode: 200,
       body: { success: true, message: "Data successfully posted" },
