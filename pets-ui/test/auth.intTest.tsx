@@ -1,4 +1,5 @@
 import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MsalReactTester, MsalReactTesterPlugin } from "msal-react-tester";
 import { MemoryRouter } from "react-router-dom";
 import { expect, test, vi } from "vitest";
@@ -91,6 +92,28 @@ test("In unauthenticated state, user is taken to redirect to B2C page if they tr
       ,
     </MemoryRouter>,
   );
+
+  await waitFor(() => {
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(msalTester.client.handleRedirectPromise).toBeCalled();
+  });
+});
+
+test("In unauthenticated state, user is taken to redirect to B2C page if they click sign-in on landing page", async () => {
+  await msalTester.isNotLogged();
+
+  renderWithProviders(
+    <MemoryRouter initialEntries={["/"]}>
+      <AuthProvider instance={msalTester.client}>
+        <App />
+      </AuthProvider>
+    </MemoryRouter>,
+  );
+
+  await msalTester.waitForRedirect();
+
+  const signin = screen.getByRole("button", { name: /Sign In/i });
+  await userEvent.click(signin);
 
   await waitFor(() => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
