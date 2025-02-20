@@ -1,13 +1,4 @@
-import { randomElement } from "../../support/test-utils";
-
-const visaType = [
-  "Family Reunion",
-  "Settlement and Dependents",
-  "Students",
-  "Work",
-  "Working Holiday Maker",
-  "Government Sponsored",
-];
+import { randomElement, visaType } from "../../support/test-utils";
 
 describe("Enter VALID Data for Applicant Travel Information", () => {
   beforeEach(() => {

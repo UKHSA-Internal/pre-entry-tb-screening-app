@@ -1,7 +1,6 @@
-const urlFragment = ["#age"];
+import { errorMessages, urlFragment } from "../../support/test-utils";
+
 //Scenario:validate age field and corresponding error message - this field is mandatory.
-// Validate the error messages above each text box are correct
-const errorMessages = ["Enter applicant's age in years."];
 
 describe("Test to validate applicant AGE field and corresponding error message", () => {
   beforeEach(() => {

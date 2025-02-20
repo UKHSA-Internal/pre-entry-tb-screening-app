@@ -2,18 +2,19 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { describe, expect, test } from "vitest";
 
 import { CountryCode } from "../../shared/country";
+import { seededApplications } from "../../shared/fixtures/application";
 import { context, mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicants } from "../fixtures/applicants";
 import { AllowedSex } from "../types/enums";
-import { handler } from "./applicants.ts";
+import { handler } from "./applicants";
 
 describe("Test for Applicant Lambda", () => {
-  test("Validating GET Applicant Successfully", async () => {
+  test("Validating Search Applicant Successfully", async () => {
     // Arrange
     const event: APIGatewayProxyEvent = {
       ...mockAPIGwEvent,
-      resource: "/applicant",
-      path: "/applicant",
+      resource: "/applicant/search",
+      path: "/applicant/search",
       httpMethod: "GET",
     };
 
@@ -35,8 +36,8 @@ describe("Test for Applicant Lambda", () => {
     // Arrange
     const event: APIGatewayProxyEvent = {
       ...mockAPIGwEvent,
-      resource: "/applicant",
-      path: "/applicant",
+      resource: "/applicant/search",
+      path: "/applicant/search",
       httpMethod: "GET",
       headers: {
         passportnumber: seededApplicants[0].passportNumber,
@@ -55,8 +56,8 @@ describe("Test for Applicant Lambda", () => {
     // Arrange
     const event: APIGatewayProxyEvent = {
       ...mockAPIGwEvent,
-      resource: "/register/applicant",
-      path: "/applicant/register",
+      resource: "/applicant/register/{applicationId}",
+      path: `/applicant/register/${seededApplications[0].applicationId}`,
       httpMethod: "POST",
     };
 
@@ -78,8 +79,8 @@ describe("Test for Applicant Lambda", () => {
     // Arrange;
     const event: APIGatewayProxyEvent = {
       ...mockAPIGwEvent,
-      resource: "/register/applicant",
-      path: "/applicant/register",
+      resource: "/applicant/register/{applicationId}",
+      path: `/applicant/register/${seededApplications[0].applicationId}`,
       httpMethod: "POST",
       body: JSON.stringify({
         fullName: "John Doe",

@@ -1,13 +1,4 @@
-import { randomElement } from "../support/test-utils";
-
-const visaType = [
-  "Family Reunion",
-  "Settlement and Dependents",
-  "Students",
-  "Work",
-  "Working Holiday Maker",
-  "Government Sponsored",
-];
+import { randomElement, visaType } from "../support/test-utils";
 
 describe("Validate formed is prefilled with data when user navigates back to the Enter Travel Information", () => {
   beforeEach(() => {

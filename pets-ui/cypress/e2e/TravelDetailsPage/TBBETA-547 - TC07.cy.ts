@@ -1,15 +1,6 @@
-import { randomElement } from "../../support/test-utils";
+import { errorMessages, randomElement, visaType } from "../../support/test-utils";
 
-const visaType = [
-  "Family Reunion",
-  "Settlement and Dependents",
-  "Students",
-  "Work",
-  "Working Holiday Maker",
-  "Government Sponsored",
-];
 // Validate the error messages above each text box are correct
-const errorMessages = ["Enter UK mobile number."];
 
 describe("Validate the error message is displayed when Applicant's UK phone number field is empty", () => {
   beforeEach(() => {
