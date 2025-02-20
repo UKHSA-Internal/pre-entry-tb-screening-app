@@ -1,4 +1,4 @@
-import "./cxr-confirmation.scss";
+import "./chest-xray-confirmation.scss";
 
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
@@ -8,11 +8,11 @@ import Confirmation from "@/components/confirmation/confirmation";
 import Footer from "@/components/footer/footer";
 import Header from "@/components/header/header";
 
-export default function CxrConfirmation() {
+export default function ChestXrayConfirmation() {
   const breadcrumbItems: IBreadcrumbItem[] = [
     {
-      text: "Home",
-      href: "#",
+      text: "Application progress tracker",
+      href: "/tracker",
     },
   ];
 

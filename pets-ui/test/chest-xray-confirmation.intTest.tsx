@@ -4,7 +4,7 @@ import { setupServer } from "msw/node";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
-import CxrConfirmation from "@/pages/cxr-confirmation";
+import ChestXrayConfirmation from "@/pages/chest-xray-confirmation";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -36,7 +36,7 @@ afterAll(() => server.close());
 test("Chest X-ray Information confirmation page renders correctly & redirects on button click", async () => {
   renderWithProviders(
     <Router>
-      <CxrConfirmation />
+      <ChestXrayConfirmation />
     </Router>,
   );
 
