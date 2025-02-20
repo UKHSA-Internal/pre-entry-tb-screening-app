@@ -1,11 +1,6 @@
-import {
-  AuthenticatedTemplate,
-  UnauthenticatedTemplate,
-  useIsAuthenticated,
-} from "@azure/msal-react";
-import { ReactNode } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
+import { AuthenticatedRoute, UnauthenticatedRoute } from "./auth/routes";
 import ApiDocs from "./pages/api-docs";
 import ApplicantConfirmation from "./pages/applicant-confirmation";
 import ApplicantResultsPage from "./pages/applicant-results";
@@ -20,19 +15,6 @@ import ProgressTrackerPage from "./pages/progress-tracker";
 import TravelConfirmation from "./pages/travel-confirmation";
 import TravelDetailsPage from "./pages/travel-details";
 import TravelSummaryPage from "./pages/travel-summary";
-
-const AuthenticatedRoute = ({ children }: { children: ReactNode }) => {
-  return <AuthenticatedTemplate>{children}</AuthenticatedTemplate>;
-};
-
-const UnauthenticatedRoute = ({ children }: { children: ReactNode }) => {
-  const isAuthenticated = useIsAuthenticated();
-
-  if (isAuthenticated) {
-    return <Navigate to="/applicant-search" />;
-  }
-  return <UnauthenticatedTemplate>{children}</UnauthenticatedTemplate>;
-};
 
 function App() {
   return (
@@ -141,7 +123,14 @@ function App() {
           </AuthenticatedRoute>
         }
       />
-      <Route path="/api-docs/" element={<ApiDocs />} />
+      <Route
+        path="/api-docs"
+        element={
+          <AuthenticatedRoute>
+            <ApiDocs />
+          </AuthenticatedRoute>
+        }
+      />
     </Routes>
   );
 }

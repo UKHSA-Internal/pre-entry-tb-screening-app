@@ -1,20 +1,13 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
 import {
   AuthenticationResult,
   AuthError,
   EventMessage,
   EventType,
-  PublicClientApplication,
+  IPublicClientApplication,
 } from "@azure/msal-browser";
 import { MsalProvider } from "@azure/msal-react";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
-import { msalConfig } from "./authConfig";
-
-const msalInstance = new PublicClientApplication(msalConfig);
-
-msalInstance.initialize();
 
 const isAuthError = (error: unknown): error is AuthError => {
   return (error as AuthError).errorCode !== undefined;
@@ -22,32 +15,20 @@ const isAuthError = (error: unknown): error is AuthError => {
 
 type AuthProviderProps = {
   children: React.ReactNode;
-  instance?: PublicClientApplication;
+  instance: IPublicClientApplication;
 };
 
-const AuthProvider = ({ children, instance = msalInstance }: AuthProviderProps) => {
+const AuthProvider = ({ children, instance }: AuthProviderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    const authenticatedPaths = [
-      "/applicant-search",
-      "/tracker",
-      "/applicant-results",
-      "/contact",
-      "/applicant-summary",
-      "/applicant-confirmation",
-      "/medical-screening",
-      "/medical-summary",
-      "/medical-confirmation",
-      "/travel-details",
-      "/travel-summary",
-      "/travel-confirmation",
-    ];
-
-    const authenticate = async () => {
+    const authenticate = () => {
       try {
-        await instance.initialize();
+        const accounts = instance.getAllAccounts();
+        if (accounts.length > 0) {
+          instance.setActiveAccount(accounts[0]);
+        }
 
         // event callback to determine authentication status
         instance.addEventCallback((event: EventMessage) => {
@@ -59,20 +40,6 @@ const AuthProvider = ({ children, instance = msalInstance }: AuthProviderProps) 
             throw new Error("Login failed");
           }
         });
-
-        // handle redirect upon successful login
-        instance.handleRedirectPromise().then((response) => {
-          if (response && response.account) {
-            navigate("/applicant-search", { replace: true });
-          }
-        });
-
-        // redirects to root page if no active session is found
-        const account = instance.getActiveAccount();
-        if (!account && authenticatedPaths.includes(location.pathname)) {
-          navigate("/", { replace: true });
-          await instance.clearCache();
-        }
       } catch (error) {
         if (isAuthError(error)) {
           throw error;
