@@ -53,7 +53,7 @@ jobs:
         run: pnpm i
 
       - name: Run unit tests
-        run: pnpm run test --testTimeout=10000
+        run: pnpm run test-coverage --testTimeout=10000
         working-directory: pets-ui
 
       - name: Upload coverage artifact
@@ -97,7 +97,7 @@ jobs:
 
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
-        continue-on-error: true 
+        continue-on-error: true
         with:
           install: false
           working-directory: pets-ui/cypress
@@ -145,7 +145,7 @@ jobs:
         run: docker compose pull localstack
 
       - name: Run tests
-        run: pnpm test
+        run: pnpm test-coverage
         working-directory: pets-core-services
 
       - name: Capture Docker Compose logs
