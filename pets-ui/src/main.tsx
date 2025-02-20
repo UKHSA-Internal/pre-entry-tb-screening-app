@@ -12,7 +12,8 @@ import { setupStore } from "./redux/store.ts";
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
-await msalInstance.initialize();
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
+msalInstance.initialize();
 
 createRoot(document.getElementById("root")!).render(
   <Provider store={setupStore()}>
