@@ -9,10 +9,6 @@ import CxrQuestionForm from "@/sections/chest-xray-question-form";
 
 export default function ChestXrayQuestionPage() {
   const breadcrumbItems: IBreadcrumbItem[] = [
-    {
-      text: "Home",
-      href: "/",
-    },
     { text: "Application progress tracker", href: "/tracker" },
   ];
 
