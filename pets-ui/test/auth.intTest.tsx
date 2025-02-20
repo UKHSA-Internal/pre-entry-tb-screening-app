@@ -1,8 +1,10 @@
-import { MsalProvider } from "@azure/msal-react";
-import { render, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { MsalReactTester, MsalReactTesterPlugin } from "msal-react-tester";
 import { MemoryRouter } from "react-router-dom";
 import { expect, test, vi } from "vitest";
+
+import AuthProvider from "@/auth/authProvider";
+import { renderWithProviders } from "@/utils/test-utils";
 
 import App from "../src/App";
 
@@ -12,6 +14,11 @@ MsalReactTesterPlugin.init({
   resetAllMocks: vi.resetAllMocks,
   waitingFor: waitFor,
 });
+
+vi.mock("react-helmet-async", () => ({
+  Helmet: () => <>{}</>,
+  HelmetProvider: () => <>{}</>,
+}));
 
 let msalTester: MsalReactTester;
 
@@ -25,81 +32,68 @@ afterEach(() => {
   msalTester.resetSpyMsal();
 });
 
-test("Redirects to Applicant Search page ('/applicant-search') page after successful authentication", async () => {
+test("In authenticated state, user is taken to Applicant Search page ('/applicant-search') when accessing landing page ('/') via browser", async () => {
   await msalTester.isLogged();
 
-  render(
-    <MsalProvider instance={msalTester.client}>
-      <MemoryRouter initialEntries={["/"]}>
+  renderWithProviders(
+    <MemoryRouter initialEntries={["/"]}>
+      <AuthProvider instance={msalTester.client}>
         <App />
-      </MemoryRouter>
-    </MsalProvider>,
+      </AuthProvider>
+    </MemoryRouter>,
   );
 
   await msalTester.waitForRedirect();
-  await waitFor(() => expect(window.location.pathname).toBe("/applicant-search"));
+
+  expect(screen.getByText("Search for a visa applicant")).toBeVisible();
 });
 
 test("In authenticated state, user is able to access authenticated paths", async () => {
   await msalTester.isLogged();
 
-  render(
-    <MsalProvider instance={msalTester.client}>
-      <MemoryRouter initialEntries={["/applicant-results"]}>
+  renderWithProviders(
+    <MemoryRouter initialEntries={["/applicant-results"]}>
+      <AuthProvider instance={msalTester.client}>
         <App />
-      </MemoryRouter>
-    </MsalProvider>,
+      </AuthProvider>
+    </MemoryRouter>,
   );
 
   await msalTester.waitForRedirect();
 
-  await waitFor(() => expect(window.location.pathname).toBe("/applicant-results"));
-});
-
-test("In authenticated state, user is taken to Applicant Search page ('/applicant-search') when accessing landing page ('/') via browser", async () => {
-  await msalTester.isLogged();
-
-  render(
-    <MsalProvider instance={msalTester.client}>
-      <MemoryRouter initialEntries={["/"]}>
-        <App />
-      </MemoryRouter>
-    </MsalProvider>,
-  );
-
-  await msalTester.waitForRedirect();
-
-  await waitFor(() => expect(window.location.pathname).toBe("/applicant-search"));
+  expect(screen.getByText("No matching record found")).toBeVisible();
 });
 
 test("In unauthenticated state, user is taken to landing page ('/') when accessing landing page via browser", async () => {
   await msalTester.isNotLogged();
 
-  render(
-    <MsalProvider instance={msalTester.client}>
-      <MemoryRouter initialEntries={["/"]}>
+  renderWithProviders(
+    <MemoryRouter initialEntries={["/"]}>
+      <AuthProvider instance={msalTester.client}>
         <App />
-      </MemoryRouter>
-    </MsalProvider>,
+      </AuthProvider>
+    </MemoryRouter>,
   );
 
   await msalTester.waitForRedirect();
 
-  await waitFor(() => expect(window.location.pathname).toBe("/"));
+  expect(screen.getByRole("button", { name: /Sign In/i })).toBeInTheDocument();
 });
 
-test("In unauthenticated state, user is taken to landing page ('/') if they try to access an authenticated path", async () => {
+test("In unauthenticated state, user is taken to redirect to B2C page if they try to access an authenticated path", async () => {
   await msalTester.isNotLogged();
 
-  render(
-    <MsalProvider instance={msalTester.client}>
-      <MemoryRouter initialEntries={["/applicant-results"]}>
+  renderWithProviders(
+    <MemoryRouter initialEntries={["/applicant-results"]}>
+      <AuthProvider instance={msalTester.client}>
         <App />
-      </MemoryRouter>
-    </MsalProvider>,
+      </AuthProvider>
+      ,
+    </MemoryRouter>,
   );
 
-  await msalTester.waitForRedirect();
-
-  await waitFor(() => expect(window.location.pathname).toBe("/"));
+  await waitFor(() => {
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(msalTester.client.handleRedirectPromise).toBeCalled();
+  });
 });
