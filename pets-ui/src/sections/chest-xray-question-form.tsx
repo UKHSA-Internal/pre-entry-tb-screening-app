@@ -7,7 +7,7 @@ import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataH
 import Button from "@/components/button/button";
 import Radio from "@/components/radio/radio";
 import { selectApplicant } from "@/redux/applicantSlice";
-import { selectChestXray, setChestXrayTaken } from "@/redux/chestXraySlice";
+import { setChestXrayTaken } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 import { attributeToComponentId } from "@/utils/helpers";
@@ -16,7 +16,6 @@ const CxrQuestionForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const applicantData = useAppSelector(selectApplicant);
-  useAppSelector(selectChestXray);
 
   const methods = useForm<ChestXrayDetailsType>({ reValidateMode: "onSubmit" });
   const {
