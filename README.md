@@ -157,6 +157,8 @@ Additional configs specific to a core service are defined in their directory
 
 See individual folder READMEs for more information
 
+Alternatively, for slow PCs, you can start only the UI without the backend with this command `pnpm start:ui`.
+
 ### Debugging Core Services Locally
 
 For core services, we rely on localstack for emulating AWS services. For debugging Lambda functions, you can access detailed logs directly from the docker container where the Lambda is running. This can be done using:
