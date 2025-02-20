@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 import { attributeToComponentId } from "@/utils/helpers";
 
-const CxrQuestionForm = () => {
+const ChestXrayQuestionForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const applicantData = useAppSelector(selectApplicant);
@@ -92,4 +92,4 @@ const CxrQuestionForm = () => {
   );
 };
 
-export default CxrQuestionForm;
+export default ChestXrayQuestionForm;
