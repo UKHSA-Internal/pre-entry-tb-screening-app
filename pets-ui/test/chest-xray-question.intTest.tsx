@@ -30,10 +30,7 @@ describe("ChestXrayUploadPage", () => {
   const user = userEvent.setup();
 
   it("shows the breadcrumbs", () => {
-    const breadcrumbItems = [
-      { text: "Home", href: "/" },
-      { text: "Application progress tracker", href: "/tracker" },
-    ];
+    const breadcrumbItems = [{ text: "Application progress tracker", href: "/tracker" }];
 
     breadcrumbItems.forEach((item) => {
       const breadcrumbElement = screen.getByText(item.text);
