@@ -1,15 +1,4 @@
-import { randomElement } from "../../support/test-utils";
-
-const visaType = [
-  "Family Reunion",
-  "Settlement and Dependents",
-  "Students",
-  "Work",
-  "Working Holiday Maker",
-  "Government Sponsored",
-];
-
-const errorMessages = ["Email must be in correct format."];
+import { errorMessages, randomElement, visaType } from "../../support/test-utils";
 
 describe("Validate the error message is displayed when incorrect data is entered in Applicant's UK email field", () => {
   beforeEach(() => {

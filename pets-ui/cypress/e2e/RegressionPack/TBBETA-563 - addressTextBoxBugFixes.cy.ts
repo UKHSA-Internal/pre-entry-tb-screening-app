@@ -1,4 +1,4 @@
-import { countryList } from "../../../src/utils/helpers";
+import { countryList } from "../../../src/utils/countryList";
 import { randomElement } from "../../support/test-utils";
 
 // Random number generator
