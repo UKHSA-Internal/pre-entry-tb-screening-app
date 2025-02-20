@@ -12,5 +12,5 @@ jobs:
   pets-ui:
     uses: ./.github/workflows/app-deploy.yaml
     with:
-      environment: "test"
+      environment: "qat"
     secrets: inherit
