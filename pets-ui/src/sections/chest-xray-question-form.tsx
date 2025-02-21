@@ -21,7 +21,6 @@ const ChestXrayQuestionForm = () => {
   const {
     handleSubmit,
     formState: { errors },
-    watch,
   } = methods;
 
   const onSubmit: SubmitHandler<ChestXrayDetailsType> = (data) => {
@@ -37,15 +36,7 @@ const ChestXrayQuestionForm = () => {
     dispatch(setChestXrayTaken(chestXrayData.chestXrayTaken));
   };
 
-  const watchedChestXrayTaken = watch("chestXrayTaken") as unknown as string;
-
   const chestXrayTakenRef = useRef<HTMLDivElement | null>(null);
-
-  if (watchedChestXrayTaken === "yes") {
-    setChestXrayTaken(true);
-  } else {
-    setChestXrayTaken(false);
-  }
 
   return (
     <FormProvider {...methods}>
