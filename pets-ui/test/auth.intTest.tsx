@@ -81,7 +81,7 @@ test("In unauthenticated state, user is taken to landing page ('/') when accessi
   expect(screen.getByRole("button", { name: /Sign In/i })).toBeInTheDocument();
 });
 
-test("In unauthenticated state, user is taken to redirect to B2C page if they try to access an authenticated path", async () => {
+test("In unauthenticated state, user is taken to landing page ('/') if they try to access an authenticated path", async () => {
   await msalTester.isNotLogged();
 
   renderWithProviders(
@@ -94,8 +94,7 @@ test("In unauthenticated state, user is taken to redirect to B2C page if they tr
   );
 
   await waitFor(() => {
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(msalTester.client.handleRedirectPromise).toBeCalled();
+    expect(screen.getByRole("button", { name: /Sign In/i })).toBeInTheDocument();
   });
 });
 
