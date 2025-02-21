@@ -105,3 +105,58 @@ type CertificationDetailsType = {
   clearanceCertificateNumber: string | null;
   ApplicationStatus: string;
 };
+
+type ApplicantReturnedDetailsType = {
+  applicationId?: string;
+  dateCreated?: string;
+  status: string;
+  fullName: string;
+  sex: string;
+  dateOfBirth: string;
+  countryOfNationality: string;
+  passportNumber: string;
+  countryOfIssue: string;
+  issueDate: string;
+  expiryDate: string;
+  applicantHomeAddress1: string;
+  applicantHomeAddress2?: string;
+  applicantHomeAddress3?: string;
+  applicantHomeAddress4?: string;
+  townOrCity: string;
+  provinceOrState: string;
+  country: string;
+  postcode?: string;
+};
+
+type TravelReturnedDetailsType = {
+  applicationId: string;
+  dateCreated: string;
+  status: string;
+  ukAddressLine1: string;
+  ukAddressLine2?: string;
+  ukAddressLine3?: string;
+  ukAddressLine4?: string;
+  ukAddressPostcode: string;
+  ukEmailAddress: string;
+  ukMobileNumber?: string;
+  visaCategory: string;
+};
+
+type MedicalReturnedScreeningType = {
+  applicationId: string;
+  dateCreated: string;
+  status: string;
+  age: number;
+  contactWithPersonWithTb: string;
+  contactWithTbDetails: string;
+  haveMenstralPeriod: string;
+  historyOfConditionsUnder11: string[];
+  historyOfConditionsUnder11Details: string;
+  historyOfPreviousTb: string;
+  physicalExaminationNotes: string;
+  pregnant: string;
+  previousTbDetails: string;
+  symptoms: string[];
+  symptomsOfTb: string;
+  symptomsOther: string;
+};

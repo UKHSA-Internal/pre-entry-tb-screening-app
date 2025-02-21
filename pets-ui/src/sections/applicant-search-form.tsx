@@ -1,13 +1,24 @@
+import axios from "axios";
 import { useEffect } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import { MedicalScreeningType, TravelDetailsType } from "@/applicant";
+import {
+  ApplicantDetailsType,
+  ApplicantReturnedDetailsType,
+  DateType,
+  MedicalReturnedScreeningType,
+  MedicalScreeningType,
+  TravelDetailsType,
+  TravelReturnedDetailsType,
+} from "@/applicant";
 import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
 import FreeText from "@/components/freeText/freeText";
 import {
   clearApplicantDetails,
+  setApplicantDetails,
+  setApplicantDetailsStatus,
   setCountryOfIssue,
   setPassportNumber,
 } from "@/redux/applicantSlice";
@@ -15,11 +26,11 @@ import { useAppDispatch } from "@/redux/hooks";
 import {
   clearMedicalScreeningDetails,
   setMedicalScreeningDetails,
+  setMedicalScreeningStatus,
 } from "@/redux/medicalScreeningSlice";
-import { clearTravelDetails, setTravelDetails } from "@/redux/travelSlice";
-import { ButtonType } from "@/utils/enums";
+import { clearTravelDetails, setTravelDetails, setTravelDetailsStatus } from "@/redux/travelSlice";
+import { ApplicationStatus, ButtonType } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/helpers";
-import { mockFetch } from "@/utils/mockFetch";
 
 type ApplicantSearchFormType = {
   passportNumber: string;
@@ -43,52 +54,143 @@ const ApplicantSearchForm = () => {
     formState: { errors },
   } = methods;
 
-  const updateReduxStoreSearch = (applicantSearchData: ApplicantSearchFormType) => {
+  const updateReduxPassportDetails = (applicantSearchData: ApplicantSearchFormType) => {
     dispatch(setPassportNumber(applicantSearchData.passportNumber));
     dispatch(setCountryOfIssue(applicantSearchData.countryOfIssue));
   };
 
-  const updateReduxStoreApplication = (
-    medicalScreeningData?: MedicalScreeningType,
-    travelData?: TravelDetailsType,
+  const updateReduxApplicantDetails = (applicantData: ApplicantReturnedDetailsType) => {
+    const dateOfBirthObj: DateType = {
+      year: applicantData.dateOfBirth.split("-")[0],
+      month: applicantData.dateOfBirth.split("-")[1],
+      day: applicantData.dateOfBirth.split("-")[2],
+    };
+    const expiryDateObj: DateType = {
+      year: applicantData.expiryDate.split("-")[0],
+      month: applicantData.expiryDate.split("-")[1],
+      day: applicantData.expiryDate.split("-")[2],
+    };
+    const issueDateObj: DateType = {
+      year: applicantData.issueDate.split("-")[0],
+      month: applicantData.issueDate.split("-")[1],
+      day: applicantData.issueDate.split("-")[2],
+    };
+    const reduxApplicantData: ApplicantDetailsType = {
+      status: ApplicationStatus.INCOMPLETE,
+      fullName: applicantData.fullName,
+      sex: applicantData.sex,
+      dateOfBirth: dateOfBirthObj,
+      countryOfNationality: applicantData.countryOfNationality,
+      passportNumber: applicantData.passportNumber,
+      countryOfIssue: applicantData.countryOfIssue,
+      passportIssueDate: issueDateObj,
+      passportExpiryDate: expiryDateObj,
+      applicantHomeAddress1: applicantData.applicantHomeAddress1,
+      applicantHomeAddress2: applicantData.applicantHomeAddress2,
+      applicantHomeAddress3: applicantData.applicantHomeAddress3,
+      applicantHomeAddress4: applicantData.applicantHomeAddress4,
+      townOrCity: applicantData.townOrCity,
+      provinceOrState: applicantData.provinceOrState,
+      country: applicantData.country,
+      postcode: applicantData.postcode,
+    };
+    dispatch(setApplicantDetails(reduxApplicantData));
+    if (applicantData.status == "completed") {
+      dispatch(setApplicantDetailsStatus(ApplicationStatus.COMPLETE));
+    } else {
+      dispatch(setApplicantDetailsStatus(ApplicationStatus.INCOMPLETE));
+    }
+  };
+
+  const updateReduxApplicationDetails = (
+    travelData: TravelReturnedDetailsType | undefined,
+    medicalScreeningData: MedicalReturnedScreeningType | undefined,
   ) => {
-    if (medicalScreeningData) dispatch(setMedicalScreeningDetails(medicalScreeningData));
-    if (travelData) dispatch(setTravelDetails(travelData));
+    if (travelData) {
+      const reduxTravelData: TravelDetailsType = {
+        status: ApplicationStatus.INCOMPLETE,
+        visaType: travelData.visaCategory,
+        applicantUkAddress1: travelData.ukAddressLine1,
+        applicantUkAddress2: travelData.ukAddressLine2,
+        applicantUkAddress3: travelData.ukAddressLine3,
+        applicantUkAddress4: travelData.ukAddressLine4,
+        townOrCity: "", // Bug, missing from BE
+        postcode: travelData.ukAddressPostcode,
+        ukMobileNumber: travelData.ukMobileNumber,
+        ukEmail: travelData.ukEmailAddress,
+      };
+      dispatch(setTravelDetails(reduxTravelData));
+      if (travelData.status == "completed") {
+        dispatch(setTravelDetailsStatus(ApplicationStatus.COMPLETE));
+      } else {
+        dispatch(setTravelDetailsStatus(ApplicationStatus.INCOMPLETE));
+      }
+    }
+
+    if (medicalScreeningData) {
+      const reduxMedicalScreeningData: MedicalScreeningType = {
+        status: ApplicationStatus.INCOMPLETE,
+        age: medicalScreeningData.age.toString(),
+        tbSymptoms: medicalScreeningData.symptomsOfTb,
+        tbSymptomsList: medicalScreeningData.symptoms,
+        otherSymptomsDetail: medicalScreeningData.symptomsOther,
+        underElevenConditions: medicalScreeningData.historyOfConditionsUnder11,
+        underElevenConditionsDetail: medicalScreeningData.historyOfConditionsUnder11Details,
+        previousTb: medicalScreeningData.historyOfPreviousTb,
+        previousTbDetail: medicalScreeningData.previousTbDetails,
+        closeContactWithTb: medicalScreeningData.contactWithPersonWithTb,
+        closeContactWithTbDetail: medicalScreeningData.contactWithTbDetails,
+        pregnant: medicalScreeningData.pregnant,
+        menstrualPeriods: medicalScreeningData.haveMenstralPeriod,
+        physicalExamNotes: medicalScreeningData.physicalExaminationNotes,
+      };
+      dispatch(setMedicalScreeningDetails(reduxMedicalScreeningData));
+      if (medicalScreeningData.status == "completed") {
+        dispatch(setMedicalScreeningStatus(ApplicationStatus.COMPLETE));
+      } else {
+        dispatch(setMedicalScreeningStatus(ApplicationStatus.INCOMPLETE));
+      }
+    }
   };
 
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (data) => {
     try {
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      updateReduxStoreSearch(data);
-
-      const res = await mockFetch(
-        `http://localhost:3000/api/applicant?passportNumber=${data.passportNumber}&countryOfIssue=${data.countryOfIssue}`,
-        { method: "GET", headers: myHeaders },
-      );
-
-      if (res.status === 200) {
-        const resApp = await mockFetch(
-          `http://localhost:3000/api/application?passportNumber=${data.passportNumber}`,
-          { method: "GET", headers: myHeaders },
-        );
-
-        if (resApp.status !== 200 && resApp.status !== 404) {
-          throw new Error(); // Error needs to be properly handled in further versions
+      updateReduxPassportDetails(data);
+      try {
+        const applicantRes = await axios.get("/api/applicant/search", {
+          headers: {
+            passportnumber: data.passportNumber,
+            countryofissue: data.countryOfIssue,
+          },
+        });
+        updateReduxApplicantDetails(applicantRes.data[0]);
+        try {
+          const applicationId = applicantRes.data[0].applicationId;
+          const applicationRes = await axios.get(`/api/application/${applicationId}`);
+          updateReduxApplicationDetails(
+            applicationRes.data.travelInformation,
+            applicationRes.data.medicalScreening,
+          );
+          navigate("/tracker");
+        } catch (error) {
+          if (axios.isAxiosError(error) && error.status == 404) {
+            navigate("/tracker");
+          } else {
+            navigate("/error");
+          }
         }
-
-        if (resApp.status === 200) {
-          updateReduxStoreApplication(resApp.medicalScreening, resApp.travelInformation);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.status == 404) {
+            navigate("/applicant-results");
+          } else {
+            navigate("/error");
+          }
+        } else {
+          navigate("/error");
         }
-
-        navigate("/tracker");
-      } else if (res.status === 404) {
-        navigate("/applicant-results");
-      } else {
-        throw new Error(); // Error needs to be properly handled in further versions
       }
     } catch {
-      // Error needs to be properly handled in further versions
       navigate("/error");
     }
   };
