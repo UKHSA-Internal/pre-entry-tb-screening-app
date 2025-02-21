@@ -1,21 +1,31 @@
-import "./medical-screening-confirmation.scss";
+import "./chest-xray-confirmation.scss";
 
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 
 import Breadcrumb, { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
 import Confirmation from "@/components/confirmation/confirmation";
 import Footer from "@/components/footer/footer";
 import Header from "@/components/header/header";
 
-export default function MedicalConfirmation() {
+export default function ChestXrayConfirmation() {
   const breadcrumbItems: IBreadcrumbItem[] = [
     {
-      text: "Home",
-      href: "#",
+      text: "Application progress tracker",
+      href: "/tracker",
     },
   ];
 
-  const furtherInfo = ["The applicant is now ready to conduct their chest x-ray or sputum test."];
+  const furtherInfo = [
+    "You cannot currently log sputum test information in this service.",
+    <>
+      Continue to TB certificate declaration or go to{" "}
+      <Link to={"/tracker"} className="govuk-link" style={{ color: "#1d70b8" }}>
+        TB screening progress tracker
+      </Link>
+      .
+    </>,
+  ];
 
   return (
     <body className="govuk-template__body">
@@ -26,10 +36,10 @@ export default function MedicalConfirmation() {
       <div className="govuk-width-container">
         <Breadcrumb items={breadcrumbItems} />
         <Confirmation
-          confirmationText={"Medical screening record created"}
+          confirmationText={"Chest X-ray information recorded"}
           furtherInfo={furtherInfo}
-          buttonText={"Continue to chest x-ray"}
-          buttonLink={"/chest-xray"}
+          buttonText={"Continue"}
+          buttonLink={"/tb-declaration"}
         />
       </div>
       <Footer />
