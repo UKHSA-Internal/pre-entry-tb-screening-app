@@ -13,15 +13,9 @@ export const AuthenticatedRoute = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      if (inProgress === InteractionStatus.None && accounts.length === 0) {
-        await instance.clearCache();
-        navigate("/", { replace: true });
-      }
-    };
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    checkAuth();
+    if (inProgress === InteractionStatus.None && accounts.length === 0) {
+      navigate("/", { replace: true });
+    }
   }, [accounts, inProgress, instance, navigate, children]);
 
   if (accounts.length) return <AuthenticatedTemplate>{children}</AuthenticatedTemplate>;

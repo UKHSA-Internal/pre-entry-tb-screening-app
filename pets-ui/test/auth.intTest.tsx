@@ -89,13 +89,12 @@ test("In unauthenticated state, user is taken to landing page ('/') if they try 
       <AuthProvider instance={msalTester.client}>
         <App />
       </AuthProvider>
-      ,
     </MemoryRouter>,
   );
 
-  await waitFor(() => {
-    expect(screen.getByRole("button", { name: /Sign In/i })).toBeInTheDocument();
-  });
+  await msalTester.waitForRedirect();
+
+  expect(screen.getByRole("button", { name: /Sign In/i })).toBeInTheDocument();
 });
 
 test("In unauthenticated state, user is taken to redirect to B2C page if they click sign-in on landing page", async () => {
