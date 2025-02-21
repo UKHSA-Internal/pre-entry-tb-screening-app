@@ -89,7 +89,9 @@ const ChestXrayNotTakenForm = () => {
             label="If other, give further details"
             errorMessage={errors?.xrayWasNotTakenFurtherDetails?.message ?? ""}
             formValue="xrayWasNotTakenFurtherDetails"
-            required={watchedReasonXrayNotTaken === "other" ? "Please Provide Details" : false}
+            required={
+              watchedReasonXrayNotTaken === "other" ? "Enter reason X-ray not taken." : false
+            }
             rows={4}
             defaultValue={chestXrayData.xrayWasNotTakenFurtherDetails ?? ""}
           />
