@@ -114,5 +114,5 @@ export const ApplicationSchema = z.object({
     description: "application id",
   }),
   travelInformation: TravelInformationResponseSchema,
-  MedicalScreening: MedicalScreeningResponseSchema,
+  medicalScreening: MedicalScreeningResponseSchema,
 });
