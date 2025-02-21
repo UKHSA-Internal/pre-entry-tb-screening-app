@@ -1,11 +1,11 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
-import { renderWithProviders } from "@/utils/test-utils";
-import { HelmetProvider } from "react-helmet-async";
 import ChestXrayNotTaken from "@/pages/chest-xray-not-taken";
+import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
 vi.mock(`react-router-dom`, async (): Promise<unknown> => {
