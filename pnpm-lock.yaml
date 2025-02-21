@@ -166,6 +166,9 @@ importers:
       '@types/swagger-ui-react':
         specifier: ^5.18.0
         version: 5.18.0
+      axios:
+        specifier: ^1.7.9
+        version: 1.7.9
       govuk-frontend:
         specifier: ^5.7.1
         version: 5.7.1
