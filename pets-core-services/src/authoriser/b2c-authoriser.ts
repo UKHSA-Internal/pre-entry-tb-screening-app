@@ -9,10 +9,11 @@ import {
 
 import { logger, withRequest } from "../shared/logger";
 
-export const handler = (
+export const handler = async (
   event: APIGatewayRequestAuthorizerEvent,
   context: Context,
   callback: Callback,
+  // eslint-disable-next-line @typescript-eslint/require-await
 ) => {
   try {
     logger.info("Authorizer lambda triggered");
@@ -47,7 +48,7 @@ export const handler = (
     }
   } catch (error) {
     logger.error(error, "Authorizer lambda failed");
-    return callback("Error: Invalid token");
+    callback("Error: Invalid token");
   }
 };
 
@@ -56,6 +57,8 @@ const generatePolicy = (
   effect: StatementEffect,
   resource: string,
 ): APIGatewayAuthorizerResult => {
+  logger.info({ effect, resource, principalId }, "Generating Policy");
+
   const policyDocument: PolicyDocument = {
     Version: "2012-10-17",
     Statement: [
