@@ -6,22 +6,23 @@ import {
   useMsal,
 } from "@azure/msal-react";
 import { ReactNode, useEffect } from "react";
-import { Navigate } from "react-router";
-
-import { loginRequest } from "./authConfig";
+import { Navigate, useNavigate } from "react-router";
 
 export const AuthenticatedRoute = ({ children }: { children: ReactNode }) => {
   const { accounts, instance, inProgress } = useMsal();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (inProgress === InteractionStatus.None && accounts.length === 0) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      instance.loginRedirect({
-        scopes: loginRequest.scopes,
-        storeInCache: loginRequest.storeInCache,
-      });
-    }
-  }, [accounts, inProgress, instance]);
+    const checkAuth = async () => {
+      if (inProgress === InteractionStatus.None && accounts.length === 0) {
+        await instance.clearCache();
+        navigate("/", { replace: true });
+      }
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    checkAuth();
+  }, [accounts, inProgress, instance, navigate, children]);
 
   if (accounts.length) return <AuthenticatedTemplate>{children}</AuthenticatedTemplate>;
 };
