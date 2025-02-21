@@ -5,11 +5,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { TravelDetailsType } from "@/applicant";
 import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
+import ErrorDisplay from "@/components/errorDisplay/errorDisplay";
 import FreeText from "@/components/freeText/freeText";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectTravel, setTravelDetails } from "@/redux/travelSlice";
 import { ButtonType } from "@/utils/enums";
-import { attributeToComponentId, formRegex, visaOptions } from "@/utils/helpers";
+import { formRegex, visaOptions } from "@/utils/helpers";
 
 const ApplicantTravelForm = () => {
   const navigate = useNavigate();
@@ -65,24 +66,7 @@ const ApplicantTravelForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {!!errorsToShow?.length && (
-          <div className="govuk-error-summary" data-module="govuk-error-summary">
-            <div role="alert">
-              <h2 className="govuk-error-summary__title">There is a problem</h2>
-              <div className="govuk-error-summary__body">
-                <ul className="govuk-list govuk-error-summary__list">
-                  {errorsToShow.map((error) => (
-                    <li key={attributeToComponentId[error]}>
-                      <a href={"#" + attributeToComponentId[error]}>
-                        {errors[error as keyof typeof errors]?.message}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
+        {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
 
         <div ref={visaTypeRef}>
           <h2 className="govuk-label govuk-label--m">Visa type</h2>

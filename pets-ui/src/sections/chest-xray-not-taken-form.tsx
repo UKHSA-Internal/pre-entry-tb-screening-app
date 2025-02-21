@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { ChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
+import ErrorDisplay from "@/components/errorDisplay/errorDisplay";
 import Radio from "@/components/radio/radio";
 import TextArea from "@/components/textArea/textArea";
 import { selectApplicant } from "@/redux/applicantSlice";
@@ -15,7 +16,6 @@ import {
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
-import { attributeToComponentId } from "@/utils/helpers";
 
 const ChestXrayNotTakenForm = () => {
   const dispatch = useAppDispatch();
@@ -50,24 +50,7 @@ const ChestXrayNotTakenForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {!!errorsToShow?.length && (
-          <div className="govuk-error-summary" data-module="govuk-error-summary">
-            <div role="alert">
-              <h2 className="govuk-error-summary__title">There is a problem</h2>
-              <div className="govuk-error-summary__body">
-                <ul className="govuk-list govuk-error-summary__list">
-                  {errorsToShow.map((error) => (
-                    <li key={attributeToComponentId[error]}>
-                      <a href={"#" + attributeToComponentId[error]}>
-                        {errors[error as keyof typeof errors]?.message}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
+        {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
         <ApplicantDataHeader applicantData={applicantData} />
         <h1>Reason X-ray not taken</h1>
         <div ref={reasonXrayNotTakenRef}>
