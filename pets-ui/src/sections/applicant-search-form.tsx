@@ -163,12 +163,16 @@ const ApplicantSearchForm = () => {
             countryofissue: data.countryOfIssue,
           },
         });
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
         updateReduxApplicantDetails(applicantRes.data[0]);
         try {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
           const applicationId = applicantRes.data[0].applicationId;
           const applicationRes = await axios.get(`/api/application/${applicationId}`);
           updateReduxApplicationDetails(
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
             applicationRes.data.travelInformation,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
             applicationRes.data.medicalScreening,
           );
           navigate("/tracker");
