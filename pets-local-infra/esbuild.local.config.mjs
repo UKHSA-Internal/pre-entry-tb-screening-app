@@ -13,7 +13,10 @@ for (const k in process.env) {
 
 const outbase = join(__dirname, "..");
 const options = {
-  entryPoints: ["../pets-core-services/src/**/lambdas/*.ts"],
+  entryPoints: [
+    "../pets-core-services/src/**/lambdas/*.ts",
+    "../pets-core-services/src/authoriser/b2c-authoriser.ts",
+  ],
   outdir: "build",
   outbase,
   bundle: true,
