@@ -4,10 +4,12 @@ import {
   Callback,
   Context,
   PolicyDocument,
+  Statement,
   StatementEffect,
 } from "aws-lambda";
 
 import { logger, withRequest } from "../shared/logger";
+import { policyMapping, Roles } from "./enum";
 
 export const handler = async (
   event: APIGatewayRequestAuthorizerEvent,
@@ -32,13 +34,22 @@ export const handler = async (
       throw new Error("Authorization Headers missing");
     }
 
+    // TODO: Replace the array with valid role from token
+    const roles = [
+      Roles.ApplicantsRead,
+      Roles.ApplicantsWrite,
+      Roles.ApplicationRead,
+      Roles.ApplicantsWrite,
+      Roles.ClinicsRead,
+    ];
+
     // TODO: Replace the code below with correct check
     switch (token) {
       case "allow":
-        callback(null, generatePolicy("user", "Allow", event.methodArn));
+        callback(null, generatePolicy("user", "Allow", roles));
         break;
       case "deny":
-        callback(null, generatePolicy("user", "Deny", event.methodArn));
+        callback(null, generatePolicy("user", "Deny", roles));
         break;
       case "unauthorized":
         callback("Unauthorized"); // Return a 401 Unauthorized response
@@ -55,22 +66,28 @@ export const handler = async (
 const generatePolicy = (
   principalId: string,
   effect: StatementEffect,
-  resource: string,
+  b2cRoles: string[],
 ): APIGatewayAuthorizerResult => {
-  logger.info({ effect, resource, principalId }, "Generating Policy");
+  logger.info({ effect, principalId, b2cRoles }, "Generating Policy");
+
+  const filterPredicate = (role: string): role is Roles => {
+    const validRole = role in policyMapping;
+    if (!validRole) logger.error({ role }, "Invalid role found");
+    return validRole;
+  };
+
+  const statements: Statement[] = b2cRoles.filter(filterPredicate).map((role) => ({
+    Action: "execute-api:Invoke",
+    Effect: effect,
+    Resource: policyMapping[role],
+  }));
 
   const policyDocument: PolicyDocument = {
     Version: "2012-10-17",
-    Statement: [
-      {
-        Action: "execute-api:Invoke",
-        Effect: effect,
-        Resource: resource,
-      },
-    ],
+    Statement: statements,
   };
 
-  const clinicId = "Apollo Clinic";
+  const clinicId = "Apollo Clinic"; // TODO: Add middleware to validate this
   const createdBy = "hardcoded@user.com";
   const context = {
     clinicId,
@@ -82,6 +99,8 @@ const generatePolicy = (
     policyDocument,
     context,
   };
+
+  logger.info({ authResponse }, "Generated authRespose");
 
   return authResponse;
 };

@@ -2,7 +2,7 @@ import react from "@vitejs/plugin-react-swc";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { coverageConfigDefaults, defaultInclude, defineConfig } from "vitest/config";
 
-const coreServicesUrl = `https://${process.env.API_GATEWAY_NAME}.execute-api.localhost.localstack.cloud:4566`;
+const coreServicesUrl = `https://${process.env.API_GATEWAY_ID}.execute-api.localhost.localstack.cloud:4566`;
 
 // https://vitejs.dev/config/
 export default defineConfig({

@@ -50,7 +50,7 @@ export class LocalInfrastructureStack extends cdk.Stack {
       },
     });
 
-    Tags.of(apiGateway).add("_custom_id_", process.env.API_GATEWAY_NAME || "");
+    Tags.of(apiGateway).add("_custom_id_", process.env.API_GATEWAY_ID || "");
 
     /** DynamoDB for different services */
     const tableProps: TableProps = {
