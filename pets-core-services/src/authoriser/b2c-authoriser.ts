@@ -9,7 +9,7 @@ import {
 } from "aws-lambda";
 
 import { logger, withRequest } from "../shared/logger";
-import { policyMapping, Roles } from "./enum";
+import { policyMapping, Roles } from "./constants";
 
 export const handler = async (
   event: APIGatewayRequestAuthorizerEvent,
