@@ -57,6 +57,8 @@ jobs:
     env:
       BUILD_FOLDER: ".build"
       ZIP_FILE: "deployment_package.zip"
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
 
     strategy:
       matrix:
@@ -110,6 +112,8 @@ jobs:
     env:
       SPEC_FILE: swagger.json
       APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
 
     steps:
       - name: Checkout code
