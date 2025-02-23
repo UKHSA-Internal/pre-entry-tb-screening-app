@@ -30,6 +30,6 @@ export const policyMapping: Record<Roles, string[]> = {
   ],
   [Roles.ClinicsRead]: [
     `arn:aws:execute-api:eu-west-2:${process.env.AWS_ACCOUNT_ID}:${process.env.API_GATEWAY_ID}/*/GET/clinics`,
-    `arn:aws:execute-api:eu-west-2:${process.env.AWS_ACCOUNT_ID}:${process.env.API_GATEWAY_ID}/*/GET/clinics/*`,
+    // `arn:aws:execute-api:eu-west-2:${process.env.AWS_ACCOUNT_ID}:${process.env.API_GATEWAY_ID}/*/GET/clinics/*`,
   ],
 };
