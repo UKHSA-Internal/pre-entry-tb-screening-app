@@ -1,11 +1,13 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
 import { applicantReducer } from "./applicantSlice";
+import { applicationReducer } from "./applicationSlice";
 import { medicalScreeningReducer } from "./medicalScreeningSlice";
 import { travelReducer } from "./travelSlice";
 
 const rootReducer = combineReducers({
   applicant: applicantReducer,
+  application: applicationReducer,
   medicalScreening: medicalScreeningReducer,
   travel: travelReducer,
 });

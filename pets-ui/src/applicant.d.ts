@@ -20,6 +20,11 @@ type ApplicantDetailsType = {
   postcode?: string;
 };
 
+type ApplicationDetailsType = {
+  applicationId: string;
+  dateCreated: string;
+};
+
 type DateType = {
   year: string;
   month: string;
