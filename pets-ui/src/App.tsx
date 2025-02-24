@@ -6,6 +6,7 @@ import ApplicantConfirmation from "./pages/applicant-confirmation";
 import ApplicantResultsPage from "./pages/applicant-results";
 import ApplicantSearchPage from "./pages/applicant-search";
 import ApplicantSummaryPage from "./pages/applicant-summary";
+import ChestXrayConfirmation from "./pages/chest-xray-confirmation";
 import ContactDetailsPage from "./pages/contact-details";
 import HomePage from "./pages/home-page";
 import MedicalScreeningPage from "./pages/medical-screening";
@@ -120,6 +121,14 @@ function App() {
         element={
           <AuthenticatedRoute>
             <TravelConfirmation />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/chest-xray-confirmation"
+        element={
+          <AuthenticatedRoute>
+            <ChestXrayConfirmation />
           </AuthenticatedRoute>
         }
       />
