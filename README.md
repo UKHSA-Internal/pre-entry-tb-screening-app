@@ -46,6 +46,7 @@ This is currently available on [confluence](https://confluence.collab.test-and-t
 
  📦Config                     # Project Configs
  ┣ 📜.env                     # configs for local environment
+ ┣ 📜.env.local               # developer-specific env for local environment, please don't commit
  ┣ 📜.env.dev                 # configs for a Dev deployment
  ┣ 📜.env.test                # configs for a Test deployment
  ┣ 📜.env.test.local          # configs for unit and integration tests
