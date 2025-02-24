@@ -87,7 +87,7 @@ const generatePolicy = (
     Statement: statements,
   };
 
-  const clinicId = "Apollo Clinic"; // TODO: Add middleware to validate this
+  const clinicId = "Apollo Clinic"; // TODO: Validate clinic-id and createdby fields
   const createdBy = "hardcoded@user.com";
   const context = {
     clinicId,
