@@ -1,5 +1,5 @@
 import { Method } from "@middy/http-router";
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import { APIGatewayProxyEvent, APIGatewayProxyEventBase, APIGatewayProxyResult } from "aws-lambda";
 import { z } from "zod";
 
 export type RouteParam = Record<
@@ -18,3 +18,8 @@ export type PetsRoute = {
   description?: string;
   summary?: string;
 };
+
+export type PetsAPIGatewayProxyEvent = APIGatewayProxyEventBase<{
+  clinicId: string;
+  createdBy: string;
+}>;

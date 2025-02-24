@@ -1,16 +1,17 @@
-import { APIGatewayProxyEvent } from "aws-lambda";
 import { GlobalContextStorageProvider } from "pino-lambda";
 
 import { CountryCode } from "../../shared/country";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
+import { Application } from "../../shared/models/application";
+import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { Applicant } from "../models/applicant";
 
 export type Header = {
   passportnumber: string;
   countryofissue: CountryCode;
 };
-export type SearchApplicantEvent = APIGatewayProxyEvent & {
+export type SearchApplicantEvent = PetsAPIGatewayProxyEvent & {
   parsedHeaders?: Header;
 };
 
@@ -46,6 +47,19 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
     }
 
     const applicant = applicants[0];
+    const application = await Application.getByApplicationId(applicant.applicationId); // TODO: Write tests
+    if (!application) {
+      logger.error("Edge-Case: Applicant has been created without an application");
+      return createHttpResponse(400, {
+        message: `Matched Applicant has been created without an application`,
+      });
+    }
+
+    const { clinicId } = event.requestContext.authorizer;
+    if (application.clinicId != clinicId) {
+      logger.error("ClinicId mismatch");
+      return createHttpResponse(403, { message: "Clinic Id mismatch" });
+    }
 
     return createHttpResponse(200, [
       {
