@@ -22,6 +22,7 @@ import {
   setCountryOfIssue,
   setPassportNumber,
 } from "@/redux/applicantSlice";
+import { clearApplicationDetails } from "@/redux/applicationSlice";
 import { useAppDispatch } from "@/redux/hooks";
 import {
   clearMedicalScreeningDetails,
@@ -44,6 +45,7 @@ const ApplicantSearchForm = () => {
 
   useEffect(() => {
     dispatch(clearApplicantDetails());
+    dispatch(clearApplicationDetails());
     dispatch(clearMedicalScreeningDetails());
     dispatch(clearTravelDetails());
     // eslint-disable-next-line react-hooks/exhaustive-deps
