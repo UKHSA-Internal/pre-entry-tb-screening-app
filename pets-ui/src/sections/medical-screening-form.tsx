@@ -26,15 +26,9 @@ const MedicalScreeningForm = () => {
   const applicantData = useAppSelector(selectApplicant);
   const medicalData = useAppSelector(selectMedicalScreening);
   const dispatch = useAppDispatch();
-  const updateReduxStore = (medicalScreeningData: MedicalScreeningType) => {
-    dispatch(setMedicalScreeningDetails(medicalScreeningData));
-  };
 
-  const onSubmit: SubmitHandler<MedicalScreeningType> = (data) => {
-    updateReduxStore(data);
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    // TO DO: post medical screening info using application service
+  const onSubmit: SubmitHandler<MedicalScreeningType> = (medicalScreeningData) => {
+    dispatch(setMedicalScreeningDetails(medicalScreeningData));
     navigate("/medical-summary");
   };
 

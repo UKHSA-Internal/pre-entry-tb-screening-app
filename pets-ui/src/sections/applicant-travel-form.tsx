@@ -21,13 +21,10 @@ const ApplicantTravelForm = () => {
   } = methods;
 
   const dispatch = useAppDispatch();
-  const updateReduxStore = (travelData: TravelDetailsType) => {
-    dispatch(setTravelDetails(travelData));
-  };
   const travelData = useAppSelector(selectTravel);
 
-  const onSubmit: SubmitHandler<TravelDetailsType> = (data) => {
-    updateReduxStore(data);
+  const onSubmit: SubmitHandler<TravelDetailsType> = (travelData) => {
+    dispatch(setTravelDetails(travelData));
     navigate("/travel-summary");
   };
 
