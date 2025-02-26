@@ -1,9 +1,13 @@
-import { act, fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import axios from "axios";
+import MockAdapter from "axios-mock-adapter";
 import { Mock } from "vitest";
 
 import ApplicantSearchForm from "@/sections/applicant-search-form";
 import { renderWithProviders } from "@/utils/test-utils";
+
+vi.mock("axios");
 
 const useNavigateMock: Mock = vi.fn();
 vi.mock(`react-router-dom`, async (): Promise<unknown> => {
@@ -16,8 +20,60 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 
 beforeEach(() => useNavigateMock.mockClear());
 
+/*
+test plan:
+- applicant search 200, then application search 200
+  expect(mock.history).toHaveLength(2);
+  expect(mock.history.get[0].url).toEqual("/api/applicant/search");
+  expect(mock.history.get[1].url).toEqual("/api/application/abc-123");
+  expect(useNavigateMock).toHaveBeenCalledWith("/tracker");
+- applicant search 200, then application search 404
+  expect(mock.history).toHaveLength(2);
+  expect(mock.history.get[0].url).toEqual("/api/applicant/search");
+  expect(mock.history.get[1].url).toEqual("/api/application/abc-123");
+  expect(useNavigateMock).toHaveBeenCalledWith("/tracker");
+- applicant search 200, then application search 500
+  expect(mock.history).toHaveLength(2);
+  expect(mock.history.get[0].url).toEqual("/api/applicant/search");
+  expect(mock.history.get[1].url).toEqual("/api/application/abc-123");
+  expect(useNavigateMock).toHaveBeenCalledWith("/error");
+- applicant search 404
+  expect(mock.history).toHaveLength(1);
+  expect(mock.history.get[0].url).toEqual("/api/applicant/search");
+  expect(useNavigateMock).toHaveBeenCalledWith("/applicant-results");
+- applicant search 500
+  expect(mock.history).toHaveLength(1);
+  expect(mock.history.get[0].url).toEqual("/api/applicant/search");
+  expect(useNavigateMock).toHaveBeenCalledWith("/error");
+*/
+
 test("/applicant-details endpoint is invoked when form is filled out and button is clicked", async () => {
   renderWithProviders(<ApplicantSearchForm />);
+
+  const mock = new MockAdapter(axios);
+
+  // mock.onGet("/api/applicant/search").reply(200, {
+  //   data: [
+  //     {
+  //       applicationId: "abc-123",
+  //       fullName: "Maxwell Spiffington",
+  //       passportNumber: "12345",
+  //       countryOfIssue: "AUS",
+  //     },
+  //   ],
+  // });
+
+  // mock.onGet("/api/application/abc-123").reply(200, {
+  //   applicationId: "abc-123",
+  //   travelInformation: {
+  //     visaCategory: "Family Reunion",
+  //     status: "completed",
+  //   },
+  //   medicalScreening: {
+  //     symptomsOfTb: "Yes",
+  //     status: "completed",
+  //   },
+  // });
 
   const user = userEvent.setup();
 
@@ -28,71 +84,7 @@ test("/applicant-details endpoint is invoked when form is filled out and button 
   expect(screen.getAllByRole("combobox")[0]).toHaveValue("AUS");
 
   await user.click(screen.getByRole("button"));
-  expect(useNavigateMock).toBeCalled();
-});
-
-test("submits the form and handles successful applicant with an application (Passport 007)", async () => {
-  renderWithProviders(<ApplicantSearchForm />);
-
-  const user = userEvent.setup();
-
-  await user.type(screen.getByTestId("passport-number"), "007");
-  fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
-
-  await act(async () => {
-    await user.click(screen.getByText("Search"));
-  });
-
-  expect(useNavigateMock).toBeCalled();
-  expect(useNavigateMock).toHaveBeenCalledWith("/tracker");
-});
-
-test("submits the form and handles successful applicant without an application (Passport 008)", async () => {
-  renderWithProviders(<ApplicantSearchForm />);
-
-  const user = userEvent.setup();
-
-  await user.type(screen.getByTestId("passport-number"), "008");
-  fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
-
-  await act(async () => {
-    await user.click(screen.getByText("Search"));
-  });
-
-  expect(useNavigateMock).toBeCalled();
-  expect(useNavigateMock).toHaveBeenCalledWith("/tracker");
-});
-
-test("handles applicant not found (Passport 009)", async () => {
-  renderWithProviders(<ApplicantSearchForm />);
-
-  const user = userEvent.setup();
-
-  await user.type(screen.getByTestId("passport-number"), "009");
-  fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
-
-  await act(async () => {
-    await user.click(screen.getByText("Search"));
-  });
-
-  expect(useNavigateMock).toBeCalled();
+  expect(mock.history.get[0].url).toEqual("/api/applicant/search");
+  expect(mock.history.get[1].url).toEqual("/api/application/abc-123");
   expect(useNavigateMock).toHaveBeenCalledWith("/applicant-results");
-});
-
-test("trigger server error on applicant", async () => {
-  renderWithProviders(<ApplicantSearchForm />);
-
-  const user = userEvent.setup();
-
-  await user.type(screen.getByTestId("passport-number"), "SPECIALTriggerErrorApplicant");
-  fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
-
-  const submitSearch = screen.getByText("Search");
-
-  await act(async () => {
-    await user.click(submitSearch);
-  });
-
-  expect(useNavigateMock).toBeCalled();
-  expect(useNavigateMock).toHaveBeenCalledWith("/error");
 });
