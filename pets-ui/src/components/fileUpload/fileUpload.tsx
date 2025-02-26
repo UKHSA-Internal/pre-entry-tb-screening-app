@@ -123,7 +123,7 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
               })}
               onChange={async (event) => {
                 await handleFileChange(event);
-              }} // Add onChange handler
+              }}
             />
           </div>
         </div>
