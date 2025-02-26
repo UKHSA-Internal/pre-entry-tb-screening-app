@@ -114,7 +114,6 @@ jobs:
 
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
-        continue-on-error: true
         with:
           install: false
           working-directory: pets-ui/cypress
