@@ -7,7 +7,13 @@ export default defineConfig({
     specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
     experimentalStudio: true,
     setupNodeEvents(on, config) {
-      // implement node event listeners here
+      on("before:browser:launch", (browser, launchOptions) => {
+        if (browser.family === "firefox") {
+          launchOptions.preferences["network.proxy.testing_localhost_is_secure_when_hijacked"] =
+            true;
+        }
+        return launchOptions;
+      });
     },
     experimentalModifyObstructiveThirdPartyCode: true,
     //chromeWebSecurity: false,
