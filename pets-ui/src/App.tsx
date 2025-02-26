@@ -11,6 +11,7 @@ import ChestXrayFindingsPage from "./pages/chest-xray-findings";
 import ChestXrayNotTaken from "./pages/chest-xray-not-taken";
 import ChestXrayQuestionPage from "./pages/chest-xray-question";
 import ChestXrayUploadPage from "./pages/chest-xray-upload";
+import ChestXraySummaryPage from "./pages/chest-xray-summary";
 import ContactDetailsPage from "./pages/contact-details";
 import HomePage from "./pages/home-page";
 import MedicalScreeningPage from "./pages/medical-screening";
@@ -157,6 +158,14 @@ function App() {
         element={
           <AuthenticatedRoute>
             <ChestXrayQuestionPage />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/chest-xray-summary"
+        element={
+          <AuthenticatedRoute>
+            <ChestXraySummaryPage />
           </AuthenticatedRoute>
         }
       />
