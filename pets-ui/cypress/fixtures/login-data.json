@@ -1,0 +1,26 @@
+[
+    {
+      "email": "pets.tester@hotmail.com",
+      "password": "qa!T3ster1"
+    },
+    {
+      "email": "pets.tester1@hotmail.com",
+      "password": "qa!T3ster1"
+    },
+    {
+      "email": "pets.tester2@hotmail.com",
+      "password": "qa!T3ster1"
+    },
+    {
+      "email": "pets.tester3@hotmail.com",
+      "password": "qa!T3ster1"
+    },
+    {
+      "email": "pets.tester4@hotmail.com",
+      "password": "qa!T3ster1"
+    },
+    {
+      "email": "pets.tester5@hotmail.com",
+      "password": "qa!T3ster1"
+    }
+  ]
