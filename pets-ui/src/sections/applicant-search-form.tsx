@@ -116,7 +116,7 @@ const ApplicantSearchForm = () => {
         applicantUkAddress2: travelData.ukAddressLine2,
         applicantUkAddress3: travelData.ukAddressLine3,
         applicantUkAddress4: travelData.ukAddressLine4,
-        townOrCity: "", // Bug, missing from BE
+        townOrCity: travelData.ukAddressTownOrCity,
         postcode: travelData.ukAddressPostcode,
         ukMobileNumber: travelData.ukMobileNumber,
         ukEmail: travelData.ukEmailAddress,

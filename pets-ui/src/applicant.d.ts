@@ -141,6 +141,7 @@ type TravelReturnedDetailsType = {
   ukAddressLine2?: string;
   ukAddressLine3?: string;
   ukAddressLine4?: string;
+  ukAddressTownOrCity: string;
   ukAddressPostcode: string;
   ukEmailAddress: string;
   ukMobileNumber?: string;
