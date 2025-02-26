@@ -116,10 +116,11 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           install: false
-          working-directory: pets-ui/cypress
+          working-directory: pets-ui
           build: pnpm run build
           start: pnpm run dev
           browser: ${{ matrix.browser }}
+          config-file: cypress/cypress.config.mjs
 
       - name: Retry if failed
         if: failure()
@@ -130,6 +131,7 @@ jobs:
           build: pnpm run build
           start: pnpm run dev
           browser: ${{ matrix.browser }}
+          config-file: cypress/cypress.config.mjs
 
       - name: Upload Failed Tests Screenshots
         if: failure()
