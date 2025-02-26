@@ -97,7 +97,7 @@ const ChestXrayForm = () => {
           <h3 className="govuk-heading-m">Apical lordotic X-ray (optional)</h3>
           <FileUploadModule
             id="apical-lordotic-xray"
-            name="Apical lordotic"
+            name="Apical-lordotic"
             setFileState={setALFile}
             required={false}
             errors={errors}
@@ -106,7 +106,7 @@ const ChestXrayForm = () => {
           <h3 className="govuk-heading-m">Lateral decubitus X-ray (optional)</h3>
           <FileUploadModule
             id="lateral-decubitus-xray"
-            name="Lateral decubitus"
+            name="Lateral-decubitus"
             setFileState={setLDFile}
             required={false}
             errors={errors}
