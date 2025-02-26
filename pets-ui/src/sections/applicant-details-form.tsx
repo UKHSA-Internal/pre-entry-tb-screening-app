@@ -24,14 +24,10 @@ const ApplicantForm = () => {
   } = methods;
 
   const dispatch = useAppDispatch();
-  const updateReduxStore = (applicantData: ApplicantDetailsType) => {
-    dispatch(setApplicantDetails(applicantData));
-  };
-
   const applicantData = useAppSelector(selectApplicant);
 
-  const onSubmit: SubmitHandler<ApplicantDetailsType> = (data) => {
-    updateReduxStore(data);
+  const onSubmit: SubmitHandler<ApplicantDetailsType> = (applicantData) => {
+    dispatch(setApplicantDetails(applicantData));
     navigate("/applicant-summary");
   };
 
