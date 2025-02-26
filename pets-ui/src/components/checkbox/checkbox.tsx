@@ -15,13 +15,6 @@ export interface CheckboxProps {
 }
 
 export default function Checkbox(props: Readonly<CheckboxProps>) {
-  const stringToJsxAttribute = (input: string) => {
-    return input
-      .toLowerCase()
-      .replace(/\s/g, "-")
-      .replace(/[^a-z0-9 -]/g, "");
-  };
-
   const answerOptions: string[] = props.answerOptions;
   if (props.sortAnswersAlphabetically) {
     answerOptions.sort((a, b) => a.localeCompare(b));
@@ -58,11 +51,11 @@ export default function Checkbox(props: Readonly<CheckboxProps>) {
                   className="govuk-checkboxes__input"
                   type="checkbox"
                   data-testid={props.id}
-                  value={stringToJsxAttribute(answerOption)}
+                  value={answerOption}
                   {...register(props.formValue, {
                     required: props.required,
                   })}
-                  defaultChecked={props.defaultValue?.includes(stringToJsxAttribute(answerOption))}
+                  defaultChecked={props.defaultValue?.includes(answerOption)}
                 />
                 <label className="govuk-label govuk-checkboxes__label" htmlFor={props.id}>
                   {answerOption}
@@ -79,14 +72,12 @@ export default function Checkbox(props: Readonly<CheckboxProps>) {
                     className="govuk-checkboxes__input"
                     type="checkbox"
                     data-testid={props.id}
-                    value={stringToJsxAttribute(exclusiveAnswerOption)}
+                    value={exclusiveAnswerOption}
                     {...register(props.formValue, {
                       required: props.required,
                     })}
                     data-behaviour="exclusive"
-                    defaultChecked={props.defaultValue?.includes(
-                      stringToJsxAttribute(exclusiveAnswerOption),
-                    )}
+                    defaultChecked={props.defaultValue?.includes(exclusiveAnswerOption)}
                   />
                   <label className="govuk-label govuk-checkboxes__label" htmlFor={props.id}>
                     {exclusiveAnswerOption}
