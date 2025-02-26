@@ -118,8 +118,8 @@ describe("Radio component", () => {
 
   it("orders answers in the order specified when props.sortAnswersAlphabetically is false", () => {
     render(<DefaultRadioToTest />);
-    expect(screen.getAllByRole("radio")[0]).toHaveAttribute("value", "zzz-answer-one");
-    expect(screen.getAllByRole("radio")[1]).toHaveAttribute("value", "aaa-answer-two");
+    expect(screen.getAllByRole("radio")[0]).toHaveAttribute("value", "zzz Answer One");
+    expect(screen.getAllByRole("radio")[1]).toHaveAttribute("value", "aaa Answer Two");
   });
 
   it("orders answers alphabetically when props.sortAnswersAlphabetically is true", () => {
@@ -140,8 +140,8 @@ describe("Radio component", () => {
       );
     };
     render(<RadioToTest />);
-    expect(screen.getAllByRole("radio")[0]).toHaveAttribute("value", "aaa-answer-two");
-    expect(screen.getAllByRole("radio")[1]).toHaveAttribute("value", "zzz-answer-one");
+    expect(screen.getAllByRole("radio")[0]).toHaveAttribute("value", "aaa Answer Two");
+    expect(screen.getAllByRole("radio")[1]).toHaveAttribute("value", "zzz Answer One");
   });
 
   it("renders with no answer selected and only selects a single answer at a time", () => {
