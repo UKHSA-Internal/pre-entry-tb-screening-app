@@ -31,4 +31,3 @@ export const visaType = [
 ];
 
 export const urlFragment = ["#age"];
-
