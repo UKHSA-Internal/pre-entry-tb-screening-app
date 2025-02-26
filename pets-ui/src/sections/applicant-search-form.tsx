@@ -186,12 +186,8 @@ const ApplicantSearchForm = () => {
           }
         }
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          if (error.status == 404) {
-            navigate("/applicant-results");
-          } else {
-            navigate("/error");
-          }
+        if (axios.isAxiosError(error) && error.status == 404) {
+          navigate("/applicant-results");
         } else {
           navigate("/error");
         }
