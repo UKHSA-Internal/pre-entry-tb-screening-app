@@ -132,7 +132,7 @@ const ApplicantSearchForm = () => {
     if (medicalScreeningData) {
       const reduxMedicalScreeningData: MedicalScreeningType = {
         status: ApplicationStatus.INCOMPLETE,
-        age: medicalScreeningData.age.toString(),
+        age: medicalScreeningData.age,
         tbSymptoms: medicalScreeningData.symptomsOfTb,
         tbSymptomsList: medicalScreeningData.symptoms,
         otherSymptomsDetail: medicalScreeningData.symptomsOther,
@@ -155,14 +155,14 @@ const ApplicantSearchForm = () => {
     }
   };
 
-  const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (data) => {
+  const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (passportDetails) => {
     try {
-      updateReduxPassportDetails(data);
+      updateReduxPassportDetails(passportDetails);
       try {
         const applicantRes = await axios.get("/api/applicant/search", {
           headers: {
-            passportnumber: data.passportNumber,
-            countryofissue: data.countryOfIssue,
+            passportnumber: passportDetails.passportNumber,
+            countryofissue: passportDetails.countryOfIssue,
           },
         });
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access

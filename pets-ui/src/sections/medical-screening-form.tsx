@@ -28,6 +28,9 @@ const MedicalScreeningForm = () => {
   const dispatch = useAppDispatch();
 
   const onSubmit: SubmitHandler<MedicalScreeningType> = (medicalScreeningData) => {
+    if (typeof medicalScreeningData.age == "string") {
+      medicalScreeningData.age = parseInt(medicalScreeningData.age);
+    }
     dispatch(setMedicalScreeningDetails(medicalScreeningData));
     navigate("/medical-summary");
   };
@@ -128,7 +131,7 @@ const MedicalScreeningForm = () => {
             patternError="Age must be a number."
             inputWidth={3}
             suffixText="years"
-            defaultValue={medicalData.age}
+            defaultValue={medicalData.age.toString()}
           />
         </div>
 

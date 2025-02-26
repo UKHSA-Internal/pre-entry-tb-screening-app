@@ -33,7 +33,7 @@ type DateType = {
 
 type MedicalScreeningType = {
   status: ApplicationStatus;
-  age: string;
+  age: number | "";
   tbSymptoms: string;
   tbSymptomsList: string[];
   otherSymptomsDetail: string;

@@ -28,7 +28,7 @@ export const medicalScreeningSlice = createSlice({
     setMedicalScreeningStatus: (state, action: PayloadAction<ApplicationStatus>) => {
       state.status = action.payload;
     },
-    setAge: (state, action: PayloadAction<string>) => {
+    setAge: (state, action: PayloadAction<number | "">) => {
       state.age = action.payload;
     },
     setTbSymptoms: (state, action: PayloadAction<string>) => {
