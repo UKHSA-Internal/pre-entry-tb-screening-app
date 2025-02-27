@@ -30,13 +30,11 @@ import {
   setMedicalScreeningStatus,
 } from "@/redux/medicalScreeningSlice";
 import { clearTravelDetails, setTravelDetails, setTravelDetailsStatus } from "@/redux/travelSlice";
+import { ApplicantSearchFormType } from "@/types/applicant";
 import { ApplicationStatus, ButtonType } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/helpers";
 
-type ApplicantSearchFormType = {
-  passportNumber: string;
-  countryOfIssue: string;
-};
+import { getApplicants } from "../../api/api";
 
 const ApplicantSearchForm = () => {
   const navigate = useNavigate();
@@ -159,12 +157,7 @@ const ApplicantSearchForm = () => {
     try {
       updateReduxPassportDetails(passportDetails);
       try {
-        const applicantRes = await axios.get("/api/applicant/search", {
-          headers: {
-            passportnumber: passportDetails.passportNumber,
-            countryofissue: passportDetails.countryOfIssue,
-          },
-        });
+        const applicantRes = await getApplicants(passportDetails);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
         updateReduxApplicantDetails(applicantRes.data[0]);
         try {
