@@ -5,12 +5,12 @@ import { useNavigate } from "react-router-dom";
 
 import {
   ApplicantDetailsType,
-  ApplicantReturnedDetailsType,
+  ApplicantResponseDetailsType,
   DateType,
-  MedicalReturnedScreeningType,
+  MedicalResponseScreeningType,
   MedicalScreeningType,
   TravelDetailsType,
-  TravelReturnedDetailsType,
+  TravelResponseDetailsType,
 } from "@/applicant";
 import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
@@ -59,7 +59,7 @@ const ApplicantSearchForm = () => {
     dispatch(setCountryOfIssue(applicantSearchData.countryOfIssue));
   };
 
-  const updateReduxApplicantDetails = (applicantData: ApplicantReturnedDetailsType) => {
+  const updateReduxApplicantDetails = (applicantData: ApplicantResponseDetailsType) => {
     const dateOfBirthObj: DateType = {
       year: applicantData.dateOfBirth.split("-")[0],
       month: applicantData.dateOfBirth.split("-")[1],
@@ -103,8 +103,8 @@ const ApplicantSearchForm = () => {
   };
 
   const updateReduxApplicationDetails = (
-    travelData: TravelReturnedDetailsType | undefined,
-    medicalScreeningData: MedicalReturnedScreeningType | undefined,
+    travelData: TravelResponseDetailsType | undefined,
+    medicalScreeningData: MedicalResponseScreeningType | undefined,
   ) => {
     if (travelData) {
       const reduxTravelData: TravelDetailsType = {

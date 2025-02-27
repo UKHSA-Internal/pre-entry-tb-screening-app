@@ -111,7 +111,7 @@ type CertificationDetailsType = {
   ApplicationStatus: string;
 };
 
-type ApplicantReturnedDetailsType = {
+type ApplicantResponseDetailsType = {
   applicationId?: string;
   dateCreated?: string;
   status: string;
@@ -133,7 +133,7 @@ type ApplicantReturnedDetailsType = {
   postcode?: string;
 };
 
-type TravelReturnedDetailsType = {
+type TravelResponseDetailsType = {
   applicationId: string;
   dateCreated: string;
   status: string;
@@ -148,7 +148,7 @@ type TravelReturnedDetailsType = {
   visaCategory: string;
 };
 
-type MedicalReturnedScreeningType = {
+type MedicalResponseScreeningType = {
   applicationId: string;
   dateCreated: string;
   status: string;
