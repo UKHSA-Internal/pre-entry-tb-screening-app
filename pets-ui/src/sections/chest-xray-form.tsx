@@ -8,9 +8,9 @@ import Button from "@/components/button/button";
 import FileUpload from "@/components/fileUpload/fileUpload";
 import { selectApplicant } from "@/redux/applicantSlice";
 import {
-  setPosteroAnteriorXrayFile,
   setApicalLordoticXrayFile,
   setLateralDecubitusXrayFile,
+  setPosteroAnteriorXrayFile,
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType } from "@/utils/enums";
