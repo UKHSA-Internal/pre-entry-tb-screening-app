@@ -8,9 +8,9 @@ import Button from "@/components/button/button";
 import FileUpload from "@/components/fileUpload/fileUpload";
 import { selectApplicant } from "@/redux/applicantSlice";
 import {
-  setApicalLordoticXray,
-  setLateralDecubitusXray,
-  setPosteroAnteriorXray,
+  setPosteroAnteriorXrayFile,
+  setApicalLordoticXrayFile,
+  setLateralDecubitusXrayFile,
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType } from "@/utils/enums";
@@ -74,9 +74,9 @@ const ChestXrayForm = () => {
   };
 
   const updateReduxStore = () => {
-    dispatch(setPosteroAnteriorXray(PAFile));
-    dispatch(setApicalLordoticXray(ALFile));
-    dispatch(setLateralDecubitusXray(LDFile));
+    dispatch(setPosteroAnteriorXrayFile(PAFile));
+    dispatch(setApicalLordoticXrayFile(ALFile));
+    dispatch(setLateralDecubitusXrayFile(LDFile));
   };
 
   return (

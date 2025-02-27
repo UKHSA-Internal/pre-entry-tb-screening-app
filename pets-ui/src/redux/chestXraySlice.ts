@@ -5,11 +5,12 @@ import { ChestXrayDetailsType } from "@/applicant";
 
 const initialState: ChestXrayDetailsType = {
   chestXrayTaken: false,
-  posteroAnteriorFile: "",
+  posteroAnteriorXray: false,
+  posteroAnteriorXrayFile: "",
   apicalLordoticXray: false,
   apicalLordoticXrayFile: "",
   lateralDecubitusXray: false,
-  lateralDecubitusFile: "",
+  lateralDecubitusXrayFile: "",
   reasonXrayNotTaken: null,
   reasonXrayNotTakenDetail: null,
   dateOfCxr: null,
@@ -19,7 +20,6 @@ const initialState: ChestXrayDetailsType = {
   dateOfRadiologicalInterpretation: null,
   sputumCollected: false,
   reasonWhySputumNotRequired: null,
-  posteroAnteriorXray: "",
   xrayResult: "",
   xrayResultDetail: "",
   xrayFindingsList: [],
@@ -41,6 +41,15 @@ export const chestXraySlice = createSlice({
     setLateralDecubitusXray: (state, action: PayloadAction<string | boolean>) => {
       state.lateralDecubitusXray = action.payload;
     },
+    setPosteroAnteriorXrayFile: (state, action: PayloadAction<string | null>) => {
+      state.posteroAnteriorXrayFile = action.payload;
+    },
+    setApicalLordoticXrayFile: (state, action: PayloadAction<string | null>) => {
+      state.apicalLordoticXrayFile = action.payload;
+    },
+    setLateralDecubitusXrayFile: (state, action: PayloadAction<string | null>) => {
+      state.lateralDecubitusXrayFile = action.payload;
+    },
     setReasonXrayNotTaken: (state, action: PayloadAction<string>) => {
       state.reasonXrayNotTaken = action.payload;
     },
@@ -61,6 +70,9 @@ export const chestXraySlice = createSlice({
       state.posteroAnteriorXray = false;
       state.apicalLordoticXray = false;
       state.lateralDecubitusXray = false;
+      state.posteroAnteriorXrayFile = "";
+      state.apicalLordoticXrayFile = "";
+      state.lateralDecubitusXrayFile = "";
       state.reasonXrayNotTaken = "";
       state.reasonXrayNotTakenDetail = "";
       state.xrayResult = "";
@@ -75,6 +87,9 @@ export const {
   setPosteroAnteriorXray,
   setApicalLordoticXray,
   setLateralDecubitusXray,
+  setPosteroAnteriorXrayFile,
+  setApicalLordoticXrayFile,
+  setLateralDecubitusXrayFile,
   setReasonXrayNotTaken,
   setReasonXrayNotTakenDetail,
   setXrayResult,
