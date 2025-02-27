@@ -58,7 +58,7 @@ const ChestXrayQuestionForm = () => {
           </div>
         )}
         <ApplicantDataHeader applicantData={applicantData} />
-        <h2 className="govuk-heading-l">Has the visa applicant had a chest X-ray?</h2>
+        <h2>Has the visa applicant had a chest X-ray?</h2>
         <div ref={chestXrayTakenRef}>
           <Radio
             id="chest-xray-taken"
