@@ -93,6 +93,6 @@ describe("ChestXrayForm Section", () => {
 
     await user.click(submitButton);
     expect(useNavigateMock).not.toHaveBeenCalled();
-    expect(screen.getByText("Please upload postero-anterior X-ray")).toBeInTheDocument();
+    expect(screen.getByText("Select a postero-anterior X-ray image file")).toBeInTheDocument();
   });
 });
