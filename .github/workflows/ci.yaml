@@ -139,7 +139,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: failed-tests-screenshots
-          path: pets-ui/cypress/cypress/screenshots
+          path: pets-ui/cypress/screenshots
 
   core-services-tests:
     name: Run tests for core services
