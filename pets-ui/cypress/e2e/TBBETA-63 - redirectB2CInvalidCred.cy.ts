@@ -6,44 +6,49 @@
  */
 
 describe("Validate that user cannot access the application with non-existent credentials", () => {
-  beforeEach(() => {
-    cy.visit("http://localhost:3000");
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
+  Cypress.env("SKIP_AUTH", "true");
+});
 
-    // Test naviagtion to applicant search page
-    cy.intercept("GET", "**/applicant-search*").as("applicantSearchPage");
-  });
+after(() => {
+  Cypress.env("SKIP_AUTH", "false");
+});
+beforeEach(() => {
+  cy.visit("http://localhost:3000");
+  cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
+    statusCode: 200,
+    body: { success: true, message: "Data successfully posted" },
+  }).as("formSubmit");
 
-  it("should show error message when email does not exist", () => {
-    // Click the sign-in button
-    cy.get("#sign-in").click();
+  // Test naviagtion to applicant search page
+  cy.intercept("GET", "**/applicant-search*").as("applicantSearchPage");
+});
 
-    // Enter invalid credentials
-    const nonExistentEmail = "nonexistent.user@example.com";
-    const password = "AnyPassword123!";
+it("should show error message when email does not exist", () => {
+  // Click the sign-in button
+  cy.get("#sign-in").click();
 
-    // Input login details on the B2C login page
-    cy.origin(
-      "https://petsb2cdev.ciamlogin.com",
-      { args: { nonExistentEmail, password } },
-      ({ nonExistentEmail, password }) => {
-        cy.get('input[type="email"]').type(nonExistentEmail);
-        cy.get("#idSIButton9").click();
-        cy.get("#i0118").type(password, { force: true });
-        cy.get("#idSIButton9").click();
+  // Enter invalid credentials
+  const nonExistentEmail = "nonexistent.user@example.com";
+  const password = "AnyPassword123!";
 
-        // Verify that error message is displayed
-        cy.contains("We couldn't find an account with this email address.").should("be.visible");
+  // Input login details on the B2C login page
+  cy.origin(
+    "https://petsb2cdev.ciamlogin.com",
+    { args: { nonExistentEmail, password } },
+    ({ nonExistentEmail, password }) => {
+      cy.get('input[type="email"]').type(nonExistentEmail);
+      cy.get("#idSIButton9").click();
+      cy.get("#i0118").type(password, { force: true });
+      cy.get("#idSIButton9").click();
 
-        // Verify user is still on the login page
-        cy.url().should("include", "petsb2cdev.ciamlogin.com");
-      },
-    );
+      // Verify that error message is displayed
+      cy.contains("We couldn't find an account with this email address.").should("be.visible");
 
-    // Verify that user is NOT redirected to the applicant search page
-    cy.get("@applicantSearchPage.all").should("have.length", 0);
-  });
+      // Verify user is still on the login page
+      cy.url().should("include", "petsb2cdev.ciamlogin.com");
+    },
+  );
+
+  // Verify that user is NOT redirected to the applicant search page
+  cy.get("@applicantSearchPage.all").should("have.length", 0);
 });

@@ -8,7 +8,7 @@ describe("Validate error message is displayed where 'YES' is selected for TB Sym
   });
   it("Should display error for not selecting a symptom", () => {
     //Enter applicant's age
-    cy.get('input[name="age"]').type("29");
+    cy.get('input[data-testid="age"]').type("29");
 
     //Select applicants TB Status'
     cy.get('input[name="tbSymptoms"]').check("yes");
