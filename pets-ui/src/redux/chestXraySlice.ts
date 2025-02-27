@@ -1,15 +1,24 @@
+import { ChestXrayDetailsType } from "@/applicant";
 import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ChestXrayDetailsType } from "@/applicant";
-
 const initialState: ChestXrayDetailsType = {
-  cxrTaken: false,
-  posteroAnteriorXray: null,
-  apicalLordoticXray: null,
-  lateralDecubitusXray: null,
-  reasonXrayNotTaken: "",
-  reasonXrayNotTakenDetail: "",
+  chestXrayTaken: false,
+  posteroAnteriorFile: "",
+  apicalLordoticXray: false,
+  apicalLordoticXrayFile: "",
+  lateralDecubitusXray: false,
+  lateralDecubitusFile: "",
+  reasonXrayNotTaken: null,
+  reasonXrayNotTakenDetail: null,
+  dateOfCxr: null,
+  radiologicalOutcome: "",
+  radiologicalOutcomeNotes: null,
+  radiologicalFinding: null,
+  dateOfRadiologicalInterpretation: null,
+  sputumCollected: false,
+  reasonWhySputumNotRequired: null,
+  posteroAnteriorXray: "",
   xrayResult: "",
   xrayResultDetail: "",
   xrayFindingsList: [],
@@ -19,16 +28,16 @@ export const chestXraySlice = createSlice({
   name: "chestXrayDetails",
   initialState,
   reducers: {
-    setCxrTaken: (state, action: PayloadAction<boolean>) => {
-      state.cxrTaken = action.payload;
+    setChestXrayTaken: (state, action: PayloadAction<boolean | string>) => {
+      state.chestXrayTaken = action.payload;
     },
-    setPosteroAnteriorXray: (state, action: PayloadAction<string | null>) => {
+    setPosteroAnteriorXray: (state, action: PayloadAction<string | boolean>) => {
       state.posteroAnteriorXray = action.payload;
     },
-    setApicalLordoticXray: (state, action: PayloadAction<string | null>) => {
+    setApicalLordoticXray: (state, action: PayloadAction<string | boolean>) => {
       state.apicalLordoticXray = action.payload;
     },
-    setLateralDecubitusXray: (state, action: PayloadAction<string | null>) => {
+    setLateralDecubitusXray: (state, action: PayloadAction<string | boolean>) => {
       state.lateralDecubitusXray = action.payload;
     },
     setReasonXrayNotTaken: (state, action: PayloadAction<string>) => {
@@ -47,10 +56,10 @@ export const chestXraySlice = createSlice({
       state.xrayFindingsList = action.payload;
     },
     clearChestXrayDetails: (state) => {
-      state.cxrTaken = false;
-      state.posteroAnteriorXray = null;
-      state.apicalLordoticXray = null;
-      state.lateralDecubitusXray = null;
+      state.chestXrayTaken = false;
+      state.posteroAnteriorXray = false;
+      state.apicalLordoticXray = false;
+      state.lateralDecubitusXray = false;
       state.reasonXrayNotTaken = "";
       state.reasonXrayNotTakenDetail = "";
       state.xrayResult = "";
@@ -61,7 +70,7 @@ export const chestXraySlice = createSlice({
 });
 
 export const {
-  setCxrTaken,
+  setChestXrayTaken,
   setPosteroAnteriorXray,
   setApicalLordoticXray,
   setLateralDecubitusXray,
@@ -70,6 +79,7 @@ export const {
   setXrayResult,
   setXrayResultDetail,
   setXrayFindingsList,
+  clearChestXrayDetails,
 } = chestXraySlice.actions;
 
 export const chestXrayReducer = chestXraySlice.reducer;
