@@ -92,6 +92,9 @@ importers:
       '@middy/http-router':
         specifier: ^6.0.0
         version: 6.0.0
+      aws-jwt-verify:
+        specifier: ^5.0.0
+        version: 5.0.0
       aws-xray-sdk:
         specifier: ^3.10.1
         version: 3.10.2
@@ -2409,6 +2412,10 @@ packages:
     resolution: {integrity: sha512-TiBoyE5wMB5q4jX1bELwkklgbs5eLY1Phjfnb4Mof0K9tOSRJ9UEq6xEamF0esMS+TuYU7a/ESTpmKX3iYqA3w==}
     engines: {node: '>= 14.15.0'}
     hasBin: true
+
+  aws-jwt-verify@5.0.0:
+    resolution: {integrity: sha512-FQM5EYEm7AnVJ3oeTpvBZQm7hYnpI067Em1oopHBs7cCNAcw8Aw8NFbojFjkNXifsOzyYe1ks+bg7Q9fMsTZSA==}
+    engines: {node: '>=16.0.0'}
 
   aws-sdk-client-mock@4.1.0:
     resolution: {integrity: sha512-h/tOYTkXEsAcV3//6C1/7U4ifSpKyJvb6auveAepqqNJl6TdZaPFEtKjBQNf8UxQdDP850knB2i/whq4zlsxJw==}
@@ -8439,6 +8446,8 @@ snapshots:
   aws-cdk@2.177.0:
     optionalDependencies:
       fsevents: 2.3.2
+
+  aws-jwt-verify@5.0.0: {}
 
   aws-sdk-client-mock@4.1.0:
     dependencies:
