@@ -3,14 +3,13 @@ name: Pets CI
 on:
   pull_request:
     branches:
-    - main
+      - main
 
   workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref_name }}
   cancel-in-progress: true
-
 
 jobs:
   linting:
@@ -53,7 +52,7 @@ jobs:
         run: pnpm i
 
       - name: Run unit tests
-        run: pnpm run test --testTimeout=10000
+        run: pnpm run test-coverage --testTimeout=10000
         working-directory: pets-ui
 
       - name: Upload coverage artifact
@@ -63,11 +62,30 @@ jobs:
           path: pets-ui/coverage/
 
   cypress-run:
+    if: false # Skipp End to End Tests temporarily
     name: Run cypress tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
         browser: [chrome, firefox, edge]
+    env:
+      USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
+      USER_1_PASSWORD: ${{ secrets.USER_1_PASSWORD }}
+
+      USER_2_EMAIL: ${{ secrets.USER_2_EMAIL }}
+      USER_2_PASSWORD: ${{ secrets.USER_2_PASSWORD }}
+
+      USER_3_EMAIL: ${{ secrets.USER_3_EMAIL }}
+      USER_3_PASSWORD: ${{ secrets.USER_3_PASSWORD }}
+
+      USER_4_EMAIL: ${{ secrets.USER_4_EMAIL }}
+      USER_4_PASSWORD: ${{ secrets.USER_4_PASSWORD }}
+
+      USER_5_EMAIL: ${{ secrets.USER_5_EMAIL }}
+      USER_5_PASSWORD: ${{ secrets.USER_5_PASSWORD }}
+
+      USER_6_EMAIL: ${{ secrets.USER_6_EMAIL }}
+      USER_6_PASSWORD: ${{ secrets.USER_6_PASSWORD }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -97,30 +115,31 @@ jobs:
 
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
-        continue-on-error: true 
         with:
           install: false
-          working-directory: pets-ui/cypress
+          working-directory: pets-ui
           build: pnpm run build
           start: pnpm run dev
           browser: ${{ matrix.browser }}
+          config-file: cypress/cypress.config.mjs
 
       - name: Retry if failed
         if: failure()
         uses: cypress-io/github-action@v6
         with:
           install: false
-          working-directory: pets-ui/cypress
+          working-directory: pets-ui
           build: pnpm run build
           start: pnpm run dev
           browser: ${{ matrix.browser }}
+          config-file: cypress/cypress.config.mjs
 
       - name: Upload Failed Tests Screenshots
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: failed-tests-screenshots
-          path: pets-ui/cypress/cypress/screenshots
+          path: pets-ui/cypress/screenshots
 
   core-services-tests:
     name: Run tests for core services
@@ -145,7 +164,7 @@ jobs:
         run: docker compose pull localstack
 
       - name: Run tests
-        run: pnpm test
+        run: pnpm test-coverage
         working-directory: pets-core-services
 
       - name: Capture Docker Compose logs

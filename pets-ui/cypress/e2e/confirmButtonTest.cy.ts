@@ -8,19 +8,22 @@ const visaType = [
   "Government Sponsored",
 ];
 
-describe("Validate that the confirm button on the travel information page redirects to the Enter Travel Informmation Page", () => {
+describe("Validate that the confirm button on the travel information page redirects to the Enter Travel Information Page", () => {
+  before(() => {
+    cy.clearAllSessions();
+  });
+
   beforeEach(() => {
     cy.visit("http://localhost:3000/travel-details");
+
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
       statusCode: 200,
       body: { success: true, message: "Data successfully posted" },
     }).as("formSubmit");
   });
   it("should redirect user to travel confirmation url", () => {
-    cy.visit("http://localhost:3000/travel-details");
-
     // Select a Visa Type
-    cy.get("#visa-type.govuk-select").select(randomElement(visaType));
+    cy.get(".govuk-select ").select(randomElement(visaType));
 
     // Enter VALID Address Information
     cy.get("#address-1").type("17 Exmoor Rd.");
