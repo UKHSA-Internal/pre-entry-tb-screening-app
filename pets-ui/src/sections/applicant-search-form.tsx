@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import {
   ApplicantDetailsType,
   ApplicantResponseDetailsType,
+  ApplicantSearchFormType,
   DateType,
   MedicalResponseScreeningType,
   MedicalScreeningType,
@@ -30,11 +31,10 @@ import {
   setMedicalScreeningStatus,
 } from "@/redux/medicalScreeningSlice";
 import { clearTravelDetails, setTravelDetails, setTravelDetailsStatus } from "@/redux/travelSlice";
-import { ApplicantSearchFormType } from "@/types/applicant";
 import { ApplicationStatus, ButtonType } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/helpers";
 
-import { getApplicants } from "../api/api";
+import { getApplicants, getApplication } from "../api/api";
 
 const ApplicantSearchForm = () => {
   const navigate = useNavigate();
@@ -158,12 +158,10 @@ const ApplicantSearchForm = () => {
       updateReduxPassportDetails(passportDetails);
       try {
         const applicantRes = await getApplicants(passportDetails);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
         updateReduxApplicantDetails(applicantRes.data[0]);
         try {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-          const applicationId = applicantRes.data[0].applicationId;
-          const applicationRes = await axios.get(`/api/application/${applicationId}`);
+          const applicationId = applicantRes.data[0].applicationId ?? "undefined";
+          const applicationRes = await getApplication(applicationId);
           updateReduxApplicationDetails(
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
             applicationRes.data.travelInformation,

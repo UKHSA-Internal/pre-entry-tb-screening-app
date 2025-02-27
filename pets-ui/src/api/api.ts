@@ -1,6 +1,6 @@
-import axios, { AxiosError, isAxiosError } from "axios";
+import axios, { AxiosError, AxiosResponse, isAxiosError } from "axios";
 
-import { ApplicantSearchFormType } from "../types/applicant";
+import { ApplicantResponseDetailsType, ApplicantSearchFormType } from "@/applicant";
 
 export const petsApi = axios.create({
   baseURL: "/api",
@@ -14,7 +14,25 @@ export const getApplicants = async (passportDetails: ApplicantSearchFormType) =>
         countryofissue: passportDetails.countryOfIssue,
       },
     });
-    return result;
+    return result as AxiosResponse<ApplicantResponseDetailsType[]>;
+  } catch (_error) {
+    if (isAxiosError(_error)) {
+      throw new AxiosError(
+        _error.message,
+        _error.code,
+        _error.config,
+        _error.request,
+        _error.response,
+      );
+    } else {
+      throw new Error(_error as string);
+    }
+  }
+};
+
+export const getApplication = async (applicationId: string) => {
+  try {
+    return await petsApi.get(`/api/application/${applicationId}`);
   } catch (_error) {
     if (isAxiosError(_error)) {
       throw new AxiosError(
