@@ -1,6 +1,7 @@
-import { ChestXrayDetailsType } from "@/applicant";
 import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+import { ChestXrayDetailsType } from "@/applicant";
 
 const initialState: ChestXrayDetailsType = {
   chestXrayTaken: false,

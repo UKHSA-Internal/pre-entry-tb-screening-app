@@ -1,3 +1,7 @@
+import { useRef } from "react";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+
 import { ChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
@@ -6,9 +10,6 @@ import { selectApplicant } from "@/redux/applicantSlice";
 import { selectChestXray, setChestXrayTaken } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
-import { useRef } from "react";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { attributeToComponentId } from "@/utils/helpers";
 
 const CxrQuestionForm = () => {
