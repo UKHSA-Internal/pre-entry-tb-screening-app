@@ -10,8 +10,8 @@ import Header from "@/components/header/header";
 export default function TravelConfirmation() {
   const breadcrumbItems: IBreadcrumbItem[] = [
     {
-      text: "Home",
-      href: "#",
+      text: "Application progress tracker",
+      href: "/tracker",
     },
   ];
   const furtherInfo = [

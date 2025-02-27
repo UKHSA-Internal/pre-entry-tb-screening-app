@@ -10,8 +10,8 @@ import MedicalScreeningReview from "@/sections/medical-screening-summary";
 export default function MedicalSummaryPage() {
   const breadcrumbItems: IBreadcrumbItem[] = [
     {
-      text: "Home",
-      href: "#",
+      text: "Application progress tracker",
+      href: "/tracker",
     },
   ];
 

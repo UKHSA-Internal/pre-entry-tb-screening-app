@@ -10,8 +10,8 @@ import Header from "@/components/header/header";
 export default function MedicalConfirmation() {
   const breadcrumbItems: IBreadcrumbItem[] = [
     {
-      text: "Home",
-      href: "#",
+      text: "Application progress tracker",
+      href: "/tracker",
     },
   ];
 

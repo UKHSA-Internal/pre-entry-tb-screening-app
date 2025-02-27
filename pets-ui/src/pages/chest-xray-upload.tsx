@@ -1,13 +1,13 @@
-import "./applicant-confirmation.scss";
+import "./chest-xray-upload.scss";
 
 import { Helmet } from "react-helmet-async";
 
 import Breadcrumb, { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
-import Confirmation from "@/components/confirmation/confirmation";
 import Footer from "@/components/footer/footer";
 import Header from "@/components/header/header";
+import ChestXrayForm from "@/sections/chest-xray-form";
 
-export default function ApplicantConfirmation() {
+export default function ChestXrayUploadPage() {
   const breadcrumbItems: IBreadcrumbItem[] = [
     {
       text: "Application progress tracker",
@@ -15,22 +15,18 @@ export default function ApplicantConfirmation() {
     },
   ];
 
-  const furtherInfo = ["You can now add travel information for this applicant."];
-
   return (
     <body className="govuk-template__body">
       <Helmet>
-        <title> Applicant Details Confirmation</title>
+        <title>Upload Chest X-rays</title>
       </Helmet>
       <Header />
       <div className="govuk-width-container">
         <Breadcrumb items={breadcrumbItems} />
-        <Confirmation
-          confirmationText={"Applicant record created"}
-          furtherInfo={furtherInfo}
-          buttonText={"Continue to travel information"}
-          buttonLink={"/travel-details"}
-        />
+        <main className="govuk-main-wrapper">
+          <h1 className="govuk-heading-l">Upload chest X-ray images</h1>
+          <ChestXrayForm />
+        </main>
       </div>
       <Footer />
     </body>
