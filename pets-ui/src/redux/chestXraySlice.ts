@@ -22,7 +22,9 @@ const initialState: ChestXrayDetailsType = {
   reasonWhySputumNotRequired: null,
   xrayResult: "",
   xrayResultDetail: "",
-  xrayFindingsList: [],
+  xrayMinorFindings: [],
+  xrayAssociatedMinorFindings: [],
+  xrayActiveTbFindings: [],
 };
 
 export const chestXraySlice = createSlice({
@@ -62,8 +64,14 @@ export const chestXraySlice = createSlice({
     setXrayResultDetail: (state, action: PayloadAction<string>) => {
       state.xrayResultDetail = action.payload;
     },
-    setXrayFindingsList: (state, action: PayloadAction<string[]>) => {
-      state.xrayFindingsList = action.payload;
+    setXrayMinorFindings: (state, action: PayloadAction<string[]>) => {
+      state.xrayMinorFindings = action.payload;
+    },
+    setXrayAssociatedMinorFindings: (state, action: PayloadAction<string[]>) => {
+      state.xrayAssociatedMinorFindings = action.payload;
+    },
+    setXrayActiveTbFindings: (state, action: PayloadAction<string[]>) => {
+      state.xrayActiveTbFindings = action.payload;
     },
     clearChestXrayDetails: (state) => {
       state.chestXrayTaken = false;
@@ -77,7 +85,9 @@ export const chestXraySlice = createSlice({
       state.reasonXrayNotTakenDetail = "";
       state.xrayResult = "";
       state.xrayResultDetail = "";
-      state.xrayFindingsList = [];
+      state.xrayMinorFindings = [];
+      state.xrayAssociatedMinorFindings = [];
+      state.xrayActiveTbFindings = [];
     },
   },
 });
@@ -94,7 +104,9 @@ export const {
   setReasonXrayNotTakenDetail,
   setXrayResult,
   setXrayResultDetail,
-  setXrayFindingsList,
+  setXrayMinorFindings,
+  setXrayAssociatedMinorFindings,
+  setXrayActiveTbFindings,
   clearChestXrayDetails,
 } = chestXraySlice.actions;
 

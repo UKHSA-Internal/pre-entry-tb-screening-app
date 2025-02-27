@@ -75,7 +75,9 @@ type ChestXrayDetailsType = {
   reasonWhySputumNotRequired: string | null;
   xrayResult: string;
   xrayResultDetail: string;
-  xrayFindingsList: string[];
+  xrayMinorFindings: string[];
+  xrayAssociatedMinorFindings: string[];
+  xrayActiveTbFindings: string[];
 };
 
 type SputumCollectionDetailsType = {

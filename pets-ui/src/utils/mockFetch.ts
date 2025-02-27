@@ -138,7 +138,9 @@ export const mockFetch = async (
             reasonWhySputumNotRequired: "string or null",
             xrayResult: "",
             xrayResultDetail: "",
-            xrayFindingsList: [],
+            xrayMinorFindings: [],
+            xrayAssociatedMinorFindings: [],
+            xrayActiveTbFindings: [],
           },
           sputumCollection: {
             dateOfSputumSample1: "string or null",
