@@ -1,20 +1,30 @@
 import { countryList } from "../../../src/utils/countryList";
-import { errorMessages, randomElement } from "../../support/test-utils";
+import { randomElement } from "../../support/test-utils";
 
 // Random number generator
 const randomCountry = randomElement(countryList);
 const countryName = randomCountry?.value;
 
+// Define only the error messages relevant to this specific test for empty mandatory fields
+const mandatoryFieldErrorMessages = [
+  "Date of birth must include a day, month and year.",
+  "Enter the applicant's passport number.",
+  "Passport issue date must include a day, month and year.",
+];
+
 //Scenario; Test to check error message is displayed when a mandatory field is empty
 
 describe("Validate the errors for empty Mandatory Fields", () => {
   beforeEach(() => {
+    // After successful login, navigate to the contact page
     cy.visit("http://localhost:3000/contact");
+
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
       statusCode: 200,
       body: { success: true, message: "Data successfully posted" },
     }).as("formSubmit");
   });
+
   it("Should return errors for empty mandatory fields", () => {
     //Enter VALID data for 'Full name'
     cy.get('input[name="fullName"]').type("John Doe");
@@ -56,9 +66,11 @@ describe("Validate the errors for empty Mandatory Fields", () => {
     // Click the submit button
     cy.get('button[type="submit"]').click();
 
-    // Validate the error messages above each text box are correct & the summary box appears at the top contains the correct error messages
+    // Validate the error messages above each text box are correct & the summary box appears at the top
     cy.get(".govuk-error-summary").should("be.visible");
-    errorMessages.forEach((error) => {
+
+    //Verify mandatory field error are displayed
+    mandatoryFieldErrorMessages.forEach((error) => {
       cy.get(".govuk-error-summary").should("contain.text", error);
     });
   });
