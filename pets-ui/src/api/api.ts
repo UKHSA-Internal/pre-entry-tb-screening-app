@@ -1,6 +1,6 @@
 import axios, { AxiosError, isAxiosError } from "axios";
 
-import { ApplicantSearchFormType } from "../src/types/applicant";
+import { ApplicantSearchFormType } from "../types/applicant";
 
 export const petsApi = axios.create({
   baseURL: "/api",
