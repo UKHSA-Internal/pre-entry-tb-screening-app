@@ -29,7 +29,7 @@ export default function MedicalConfirmation() {
           confirmationText={"Medical screening record created"}
           furtherInfo={furtherInfo}
           buttonText={"Continue to chest x-ray"}
-          buttonLink={"/chest-xray"}
+          buttonLink={"/chest-xray-question"}
         />
       </div>
       <Footer />

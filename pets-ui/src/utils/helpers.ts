@@ -36,6 +36,7 @@ const attributeToComponentId: { [key: string]: string } = {
   applicantUkAddress2: "address-2",
   ukMobileNumber: "mobile-number",
   ukEmail: "email",
+  chestXrayTaken: "chest-xray-taken",
 };
 
 const formRegex = {
