@@ -27,9 +27,7 @@ function App() {
         path="/"
         element={
           <UnauthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <HomePage />
-            </RedirectedRouteIfReduxEmpty>
+            <HomePage />
           </UnauthenticatedRoute>
         }
       />
@@ -37,9 +35,7 @@ function App() {
         path="/applicant-search"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <ApplicantSearchPage />
-            </RedirectedRouteIfReduxEmpty>
+            <ApplicantSearchPage />
           </AuthenticatedRoute>
         }
       />
@@ -177,7 +173,9 @@ function App() {
         path="/chest-xray-question"
         element={
           <AuthenticatedRoute>
-            <ChestXrayQuestionPage />
+            <RedirectedRouteIfReduxEmpty>
+              <ChestXrayQuestionPage />
+            </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
       />
@@ -185,7 +183,9 @@ function App() {
         path="/chest-xray-upload"
         element={
           <AuthenticatedRoute>
-            <ChestXrayUploadPage />{" "}
+            <RedirectedRouteIfReduxEmpty>
+              <ChestXrayUploadPage />
+            </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
       />
