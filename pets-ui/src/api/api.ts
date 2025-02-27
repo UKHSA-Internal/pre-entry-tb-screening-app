@@ -1,6 +1,10 @@
 import axios, { AxiosError, AxiosResponse, isAxiosError } from "axios";
 
-import { ApplicantResponseDetailsType, ApplicantSearchFormType } from "@/applicant";
+import {
+  ApplicantResponseDetailsType,
+  ApplicantSearchFormType,
+  ApplicationResponseDetailsType,
+} from "@/applicant";
 
 export const petsApi = axios.create({
   baseURL: "/api",
@@ -32,7 +36,8 @@ export const getApplicants = async (passportDetails: ApplicantSearchFormType) =>
 
 export const getApplication = async (applicationId: string) => {
   try {
-    return await petsApi.get(`/api/application/${applicationId}`);
+    const result = await petsApi.get(`/api/application/${applicationId}`);
+    return result as AxiosResponse<ApplicationResponseDetailsType>;
   } catch (_error) {
     if (isAxiosError(_error)) {
       throw new AxiosError(

@@ -163,9 +163,7 @@ const ApplicantSearchForm = () => {
           const applicationId = applicantRes.data[0].applicationId ?? "undefined";
           const applicationRes = await getApplication(applicationId);
           updateReduxApplicationDetails(
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
             applicationRes.data.travelInformation,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
             applicationRes.data.medicalScreening,
           );
           navigate("/tracker");

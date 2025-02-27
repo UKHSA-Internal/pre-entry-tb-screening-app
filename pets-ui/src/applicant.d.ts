@@ -25,7 +25,7 @@ type ApplicationDetailsType = {
   dateCreated: string;
 };
 
-export type ApplicantSearchFormType = {
+type ApplicantSearchFormType = {
   passportNumber: string;
   countryOfIssue: string;
 };
@@ -176,4 +176,10 @@ type MedicalResponseScreeningType = {
   symptoms: string[];
   symptomsOfTb: string;
   symptomsOther: string;
+};
+
+type ApplicationResponseDetailsType = {
+  applicationId: string;
+  travelInformation: TravelResponseDetailsType | undefined;
+  medicalScreening: MedicalResponseScreeningType | undefined;
 };
