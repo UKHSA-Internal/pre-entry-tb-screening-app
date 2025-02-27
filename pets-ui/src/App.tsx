@@ -1,10 +1,13 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
+import { AuthenticatedRoute, UnauthenticatedRoute } from "./auth/routes";
 import ApiDocs from "./pages/api-docs";
 import ApplicantConfirmation from "./pages/applicant-confirmation";
 import ApplicantResultsPage from "./pages/applicant-results";
 import ApplicantSearchPage from "./pages/applicant-search";
 import ApplicantSummaryPage from "./pages/applicant-summary";
+import ChestXrayConfirmation from "./pages/chest-xray-confirmation";
+import ChestXrayUploadPage from "./pages/chest-xray-upload";
 import ContactDetailsPage from "./pages/contact-details";
 import HomePage from "./pages/home-page";
 import MedicalScreeningPage from "./pages/medical-screening";
@@ -18,101 +21,166 @@ import { RedirectedRouteIfReduxEmpty } from "./utils/redirect";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/applicant-search" element={<ApplicantSearchPage />} />
-        <Route
-          path="/tracker"
-          element={
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <UnauthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <HomePage />
+            </RedirectedRouteIfReduxEmpty>
+          </UnauthenticatedRoute>
+        }
+      />
+      <Route
+        path="/applicant-search"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <ApplicantSearchPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/tracker"
+        element={
+          <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <ProgressTrackerPage />
             </RedirectedRouteIfReduxEmpty>
-          }
-        />
-        <Route
-          path="/applicant-results"
-          element={
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/applicant-results"
+        element={
+          <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <ApplicantResultsPage />
             </RedirectedRouteIfReduxEmpty>
-          }
-        />
-        <Route
-          path="/contact"
-          element={
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/contact"
+        element={
+          <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <ContactDetailsPage />
             </RedirectedRouteIfReduxEmpty>
-          }
-        />
-        <Route
-          path="/applicant-summary"
-          element={
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/applicant-summary"
+        element={
+          <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <ApplicantSummaryPage />
             </RedirectedRouteIfReduxEmpty>
-          }
-        />
-        <Route
-          path="/applicant-confirmation"
-          element={
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/applicant-confirmation"
+        element={
+          <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <ApplicantConfirmation />
             </RedirectedRouteIfReduxEmpty>
-          }
-        />
-        <Route
-          path="/medical-screening"
-          element={
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/medical-screening"
+        element={
+          <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <MedicalScreeningPage />
             </RedirectedRouteIfReduxEmpty>
-          }
-        />
-        <Route
-          path="/medical-summary"
-          element={
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/medical-summary"
+        element={
+          <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <MedicalSummaryPage />
             </RedirectedRouteIfReduxEmpty>
-          }
-        />
-        <Route
-          path="/medical-confirmation"
-          element={
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/medical-confirmation"
+        element={
+          <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <MedicalConfirmation />
             </RedirectedRouteIfReduxEmpty>
-          }
-        />
-        <Route
-          path="/travel-details"
-          element={
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/travel-details"
+        element={
+          <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <TravelDetailsPage />
             </RedirectedRouteIfReduxEmpty>
-          }
-        />
-        <Route
-          path="/travel-summary"
-          element={
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/travel-summary"
+        element={
+          <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <TravelSummaryPage />
             </RedirectedRouteIfReduxEmpty>
-          }
-        />
-        <Route
-          path="/travel-confirmation"
-          element={
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/travel-confirmation"
+        element={
+          <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <TravelConfirmation />
             </RedirectedRouteIfReduxEmpty>
-          }
-        />
-        <Route path="/api-docs/" element={<ApiDocs />} />
-      </Routes>
-    </Router>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/chest-xray-upload"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <ChestXrayUploadPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/chest-xray-confirmation"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <ChestXrayConfirmation />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/api-docs"
+        element={
+          <AuthenticatedRoute>
+            <ApiDocs />
+          </AuthenticatedRoute>
+        }
+      />
+    </Routes>
   );
 }
 

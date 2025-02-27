@@ -1,15 +1,22 @@
 import { countryList } from "../../../src/utils/countryList";
-import { errorMessages, randomElement } from "../../support/test-utils";
+import { randomElement } from "../../support/test-utils";
 
 // Random number generator
 const randomCountry = randomElement(countryList);
 const countryName = randomCountry?.value;
 
-//Scenario; Test to validate applicant details date fields will reject special characters
+// Define only the error messages relevant to this specific test
+const dateFieldErrorMessages = [
+  "Date of birth day and year must contain only numbers. Date of birth month must be a number, or the name of the month, or the first three letters of the month.",
+  "Passport issue day and year must contain only numbers. Passport issue month must be a number, or the name of the month, or the first three letters of the month.",
+  "Passport expiry day and year must contain only numbers. Passport expiry month must be a number, or the name of the month, or the first three letters of the month.",
+];
 
 describe("Validate error messages for Applicant Details Date Fields", () => {
   beforeEach(() => {
+    // After successful login, navigate to the contact page
     cy.visit("http://localhost:3000/contact");
+
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
       statusCode: 200,
       body: { success: true, message: "Data successfully posted" },
@@ -54,16 +61,13 @@ describe("Validate error messages for Applicant Details Date Fields", () => {
     cy.get("#address-country.govuk-select").select("CAN");
     cy.get("#postcode").type("S4R 0M6");
 
-    // Click the submit button
-    cy.get('button[type="submit"]').click();
-
-    // Click the submit button
+    // Click the submit button (only need one click)
     cy.get('button[type="submit"]').click();
 
     // Validate the error messages above each text box are correct
     // Validate the summary box appears at the top contains the correct error messages
     cy.get(".govuk-error-summary").should("be.visible");
-    errorMessages.forEach((error) => {
+    dateFieldErrorMessages.forEach((error) => {
       cy.get(".govuk-error-summary").should("contain.text", error);
     });
   });

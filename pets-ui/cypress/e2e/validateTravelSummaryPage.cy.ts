@@ -12,8 +12,7 @@ describe("Validate formed is prefilled with data when user navigates back to the
     cy.visit("http://localhost:3000/travel-details");
 
     // Select a Visa Type
-    cy.get("#visa-type.govuk-select").select(randomElement(visaType));
-
+    cy.get(".govuk-select ").select(randomElement(visaType));
     // Enter VALID Address Information
     cy.get("#address-1").type("Flat 2, 26 Monmouth St.");
     cy.get("#address-2").type("Bath");

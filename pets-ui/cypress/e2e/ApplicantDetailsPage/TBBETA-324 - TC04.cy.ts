@@ -1,20 +1,43 @@
 import { countryList } from "../../../src/utils/countryList";
-import { errorMessages, randomElement } from "../../support/test-utils";
+import { randomElement } from "../../support/test-utils";
 
 // Random number generator
 const randomCountry = randomElement(countryList);
 const countryName = randomCountry?.value;
 
+// Define the expected error messages
+const expectedErrorMessages = [
+  "Full name must contain only letters and spaces.",
+  "Passport number must contain only letters and numbers.",
+  "Home address must contain only letters, numbers, spaces and punctuation.",
+  "Town name must contain only letters, spaces and punctuation.",
+  "Province/state name must contain only letters, spaces and punctuation",
+];
+
+// URL fragments for each field with errors
+const urlFragments = [
+  "#name",
+  "#passport-number",
+  "#address-1",
+  "#address-2",
+  "#address-3",
+  "#town-or-city",
+  "#province-or-state",
+];
+
 describe("Validate the error messages for the Free Text Boxes", () => {
   beforeEach(() => {
+    // After successful login, navigate to the contact page
     cy.visit("http://localhost:3000/contact");
+
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
       statusCode: 200,
       body: { success: true, message: "Data successfully posted" },
     }).as("formSubmit");
   });
+
   it("Should change error messages when incorrect format is used", () => {
-    // Enter VALID data for 'Full name'
+    // Enter INVALID data for 'Full name'
     cy.get('input[name="fullName"]').type("J)hn D*e");
 
     //Select a 'Sex'
@@ -54,27 +77,19 @@ describe("Validate the error messages for the Free Text Boxes", () => {
     // Click the submit button
     cy.get('button[type="submit"]').click();
 
-    // Validate the error messages above each text box are correct
-    // Validate the summary box appears at the top contains the correct error messages
+    // Validate the error summary is visible
     cy.get(".govuk-error-summary").should("be.visible");
-    errorMessages.forEach((error) => {
+
+    // Check for each expected error message
+    expectedErrorMessages.forEach((error) => {
       cy.get(".govuk-error-summary").should("contain.text", error);
-
-      // Validate that user is navigated to correct error when clicking message in summary
-      const urlFragment = [
-        "#name",
-        "#passport-number",
-        "#address-1",
-        "#address-2",
-        "#address-3",
-        "#town-or-city",
-        "#province-or-state",
-      ];
-
-      cy.get(".govuk-error-summary a").each(($link, index) => {
+    });
+    cy.get(".govuk-error-summary a").each(($link, index) => {
+      // check links that correspond to the error messages
+      if (index < urlFragments.length) {
         cy.wrap($link).click();
-        cy.url().should("include", urlFragment[index]);
-      });
+        cy.url().should("include", urlFragments[index]);
+      }
     });
   });
 });

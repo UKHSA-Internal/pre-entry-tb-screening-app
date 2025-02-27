@@ -46,6 +46,7 @@ This is currently available on [confluence](https://confluence.collab.test-and-t
 
  📦Config                     # Project Configs
  ┣ 📜.env                     # configs for local environment
+ ┣ 📜.env.local               # developer-specific env for local environment, please don't commit
  ┣ 📜.env.dev                 # configs for a Dev deployment
  ┣ 📜.env.test                # configs for a Test deployment
  ┣ 📜.env.test.local          # configs for unit and integration tests
@@ -156,6 +157,8 @@ Additional configs specific to a core service are defined in their directory
 2. Navigate to the React app on <http://localhost:3000/>
 
 See individual folder READMEs for more information
+
+Alternatively, for slow PCs, you can start only the UI without the backend with this command `pnpm start:ui`.
 
 ### Debugging Core Services Locally
 
