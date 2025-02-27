@@ -8,7 +8,7 @@ import { Mock } from "vitest";
 import ApplicantSearchForm from "@/sections/applicant-search-form";
 import { renderWithProviders } from "@/utils/test-utils";
 
-import { petsApi } from "../api/api";
+import { petsApi } from "../axios/api";
 
 const useNavigateMock: Mock = vi.fn();
 vi.mock(`react-router-dom`, async (): Promise<unknown> => {

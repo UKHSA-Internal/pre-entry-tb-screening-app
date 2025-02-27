@@ -34,7 +34,7 @@ import { ApplicantSearchFormType } from "@/types/applicant";
 import { ApplicationStatus, ButtonType } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/helpers";
 
-import { getApplicants } from "../../api/api";
+import { getApplicants } from "../../axios/api";
 
 const ApplicantSearchForm = () => {
   const navigate = useNavigate();

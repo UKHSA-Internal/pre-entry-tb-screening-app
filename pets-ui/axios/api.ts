@@ -1,14 +1,12 @@
 import axios, { AxiosError, isAxiosError } from "axios";
 
-import { ApplicantSearchFormResultType, ApplicantSearchFormType } from "../src/types/applicant";
+import { ApplicantSearchFormType } from "../src/types/applicant";
 
 export const petsApi = axios.create({
   baseURL: "/api",
 });
 
-export const getApplicants = async (
-  passportDetails: ApplicantSearchFormType,
-): Promise<ApplicantSearchFormResultType> => {
+export const getApplicants = async (passportDetails: ApplicantSearchFormType) => {
   try {
     const result = await petsApi.get("/applicant/search", {
       headers: {
@@ -16,7 +14,7 @@ export const getApplicants = async (
         countryofissue: passportDetails.countryOfIssue,
       },
     });
-    return result.data as ApplicantSearchFormResultType;
+    return result;
   } catch (_error) {
     if (isAxiosError(_error)) {
       throw new AxiosError(
