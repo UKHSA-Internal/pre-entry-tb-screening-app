@@ -27,7 +27,6 @@ const ApplicantForm = () => {
   const applicantData = useAppSelector(selectApplicant);
 
   const onSubmit: SubmitHandler<ApplicantDetailsType> = (applicantData) => {
-    applicantData.sex = applicantData.sex.toLowerCase();
     dispatch(setApplicantDetails(applicantData));
     navigate("/applicant-summary");
   };
