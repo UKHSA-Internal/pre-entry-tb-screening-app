@@ -3,7 +3,7 @@ import axios from "axios";
 import { ApplicantSearchFormResultType, ApplicantSearchFormType } from "../src/types/applicant";
 
 export const petsApi = axios.create({
-  baseURL: "https://d2q7kn0pslm6ld.cloudfront.net/api",
+  baseURL: "/api",
 });
 
 export const getApplicants = async (
