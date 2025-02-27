@@ -28,6 +28,7 @@
     "generate:swagger-doc": "pnpm tsx src/swagger-generator/index.ts",
     "preload:db": "pnpm tsx src/test/seed-data.ts seed",
     "lint": "eslint --quiet .",
-    "test": "vitest run --coverage"
+    "test": "vitest run",
+    "test-coverage": "vitest run --coverage"
   }
 }

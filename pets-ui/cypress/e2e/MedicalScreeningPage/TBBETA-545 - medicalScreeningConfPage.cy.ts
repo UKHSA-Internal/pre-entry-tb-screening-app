@@ -19,7 +19,7 @@ describe("Validate that page navigates to Chest x-ray page when user clicks on '
   });
   it("Should navigate to Chest x-ray page", () => {
     //Enter applicant's age
-    cy.get('input[name="age"]').type("29");
+    cy.get('input[data-testid="age"]').type("29");
 
     //Select applicants TB Status'
     cy.get('input[name="tbSymptoms"]').check("yes");
