@@ -6,6 +6,7 @@ import ApplicantResultsPage from "./pages/applicant-results";
 import ApplicantSearchPage from "./pages/applicant-search";
 import ApplicantSummaryPage from "./pages/applicant-summary";
 import ChestXrayConfirmation from "./pages/chest-xray-confirmation";
+import ChestXrayUploadPage from "./pages/chest-xray-upload";
 import ContactDetailsPage from "./pages/contact-details";
 import HomePage from "./pages/home-page";
 import MedicalScreeningPage from "./pages/medical-screening";
@@ -33,6 +34,7 @@ function App() {
         <Route path="/travel-details" element={<TravelDetailsPage />} />
         <Route path="/travel-summary" element={<TravelSummaryPage />} />
         <Route path="/travel-confirmation" element={<TravelConfirmation />} />
+        <Route path="/chest-xray-upload" element={<ChestXrayUploadPage />} />
         <Route path="/chest-xray-confirmation" element={<ChestXrayConfirmation />} />
         <Route path="/api-docs/" element={<ApiDocs />} />
       </Routes>

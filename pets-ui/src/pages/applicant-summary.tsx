@@ -10,8 +10,8 @@ import ApplicantReview from "@/sections/applicant-details-summary";
 export default function ApplicantSummaryPage() {
   const breadcrumbItems: IBreadcrumbItem[] = [
     {
-      text: "Home",
-      href: "#",
+      text: "Application progress tracker",
+      href: "/tracker",
     },
   ];
 
