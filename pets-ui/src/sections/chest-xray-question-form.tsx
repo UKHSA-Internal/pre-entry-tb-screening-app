@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { ChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
+import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { setChestXrayTaken } from "@/redux/chestXraySlice";
@@ -58,7 +59,7 @@ const ChestXrayQuestionForm = () => {
           </div>
         )}
         <ApplicantDataHeader applicantData={applicantData} />
-        <h2>Has the visa applicant had a chest X-ray?</h2>
+        <Heading level={2} title="Has the visa applicant had a chest X-ray?" size="m" />
         <div ref={chestXrayTakenRef}>
           <Radio
             id="chest-xray-taken"

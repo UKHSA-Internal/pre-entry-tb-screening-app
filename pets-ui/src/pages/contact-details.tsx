@@ -1,29 +1,18 @@
 import "./contact-details.scss";
 
-import { Helmet } from "react-helmet-async";
-
-import Footer from "@/components/footer/footer";
-import Header from "@/components/header/header";
+import Container from "@/components/container/container";
+import Heading from "@/components/heading/heading";
 import ApplicantForm from "@/sections/applicant-details-form";
 
 export default function ContactDetailsPage() {
   return (
-    <body className="govuk-template__body">
-      <Helmet>
-        <title> Applicant Details Form</title>
-      </Helmet>
-      <Header />
-      <div className="govuk-width-container">
-        <main className="govuk-main-wrapper">
-          <h1 className="govuk-heading-l">Enter Applicant Information</h1>
-          <p className="govuk-body">
-            Enter the applicant&apos;s profile information below. Select &apos;Save and
-            continue&apos; to save any information added.
-          </p>
-          <ApplicantForm />
-        </main>
-      </div>
-      <Footer />
-    </body>
+    <Container title="Applicant Details Form">
+      <Heading level={1} size="l" title="Enter Applicant Information" />
+      <p className="govuk-body">
+        Enter the applicant&apos;s profile information below. Select &apos;Save and continue&apos;
+        to save any information added.
+      </p>
+      <ApplicantForm />
+    </Container>
   );
 }

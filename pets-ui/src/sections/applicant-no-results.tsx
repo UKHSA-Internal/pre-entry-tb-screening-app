@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 
+import Heading from "@/components/heading/heading";
 import StartButton from "@/components/startButton/startButton";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { useAppSelector } from "@/redux/hooks";
@@ -10,8 +11,8 @@ const ApplicantEmptyResult = () => {
   const navigate = useNavigate();
 
   return (
-    <main className="govuk-main-wrapper">
-      <h1 className="govuk-heading-l">No matching record found</h1>
+    <>
+      <Heading level={1} size="l" title="No matching record found" />
       <p className="govuk-body">
         No matches for passport number {applicantSearchData.passportNumber}
       </p>
@@ -26,7 +27,7 @@ const ApplicantEmptyResult = () => {
       <Link className="govuk-link" style={{ color: "#1d70b8" }} to="/applicant-search">
         Search again
       </Link>
-    </main>
+    </>
   );
 };
 

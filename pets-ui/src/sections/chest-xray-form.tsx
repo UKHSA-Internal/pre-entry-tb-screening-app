@@ -6,6 +6,7 @@ import { ChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import FileUpload from "@/components/fileUpload/fileUpload";
+import Heading from "@/components/heading/heading";
 import { selectApplicant } from "@/redux/applicantSlice";
 import {
   setApicalLordoticXrayFile,
@@ -87,7 +88,7 @@ const ChestXrayForm = () => {
         <div>
           <ApplicantDataHeader applicantData={applicantData} />
 
-          <h3 className="govuk-heading-m">Postero-anterior X-ray</h3>
+          <Heading level={3} size="m" title="Postero-anterior X-ray" />
           <FileUploadModule
             id="postero-anterior-xray"
             name="Postero-anterior"
@@ -96,7 +97,7 @@ const ChestXrayForm = () => {
             errors={errors}
           />
 
-          <h3 className="govuk-heading-m">Apical lordotic X-ray (optional)</h3>
+          <Heading level={3} size="m" title="Apical lordotic X-ray (optional)" />
           <FileUploadModule
             id="apical-lordotic-xray"
             name="Apical-lordotic"
@@ -105,7 +106,7 @@ const ChestXrayForm = () => {
             errors={errors}
           />
 
-          <h3 className="govuk-heading-m">Lateral decubitus X-ray (optional)</h3>
+          <Heading size="m" level={3} title="Lateral decubitus X-ray (optional)" />
           <FileUploadModule
             id="lateral-decubitus-xray"
             name="Lateral-decubitus"

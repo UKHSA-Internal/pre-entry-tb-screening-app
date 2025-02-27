@@ -1,10 +1,8 @@
 import "./chest-xray-upload.scss";
 
-import { Helmet } from "react-helmet-async";
-
-import Breadcrumb, { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
-import Footer from "@/components/footer/footer";
-import Header from "@/components/header/header";
+import { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
+import Container from "@/components/container/container";
+import Heading from "@/components/heading/heading";
 import ChestXrayForm from "@/sections/chest-xray-form";
 
 export default function ChestXrayUploadPage() {
@@ -16,19 +14,9 @@ export default function ChestXrayUploadPage() {
   ];
 
   return (
-    <body className="govuk-template__body">
-      <Helmet>
-        <title>Upload Chest X-rays</title>
-      </Helmet>
-      <Header />
-      <div className="govuk-width-container">
-        <Breadcrumb items={breadcrumbItems} />
-        <main className="govuk-main-wrapper">
-          <h1 className="govuk-heading-l">Upload chest X-ray images</h1>
-          <ChestXrayForm />
-        </main>
-      </div>
-      <Footer />
-    </body>
+    <Container title="Upload Chest X-rays" breadcrumbItems={breadcrumbItems}>
+      <Heading level={1} size="l" title="Upload chest X-ray images" />
+      <ChestXrayForm />
+    </Container>
   );
 }

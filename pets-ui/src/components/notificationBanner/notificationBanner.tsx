@@ -25,10 +25,14 @@ export default function NotificationBanner({
       </div>
       <div className="govuk-notification-banner__content">
         {(bannerText || list) && (
-          <div className="govuk-body">
-            {bannerText && <span>{bannerText}</span>}
-            {list && <List items={list} />}
-          </div>
+          <>
+            {bannerText && (
+              <p className="govuk-body" style={{ display: "inline" }}>
+                {bannerText}
+              </p>
+            )}
+            {list && <List items={list} style={{ marginBottom: 0 }} />}
+          </>
         )}
       </div>
     </div>

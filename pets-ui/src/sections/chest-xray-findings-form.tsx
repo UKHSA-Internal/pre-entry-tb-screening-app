@@ -6,6 +6,7 @@ import { ChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import Checkbox from "@/components/checkbox/checkbox";
+import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import TextArea from "@/components/textArea/textArea";
 import { selectApplicant } from "@/redux/applicantSlice";
@@ -91,9 +92,14 @@ const ChestXrayFindingsForm = () => {
         <ApplicantDataHeader applicantData={applicantData} />
 
         <div ref={xrayResult}>
+          <Heading
+            level={3}
+            size="m"
+            style={{ marginBottom: 20, marginTop: 40 }}
+            title="X-ray result"
+          />
           <Radio
             id="xray-result"
-            legend="X-ray result"
             isInline={RadioIsInline.FALSE}
             answerOptions={["Chest X-ray normal", "Non-TB abnormality", "Old or active TB"]}
             sortAnswersAlphabetically={false}
@@ -104,9 +110,7 @@ const ChestXrayFindingsForm = () => {
           />
         </div>
 
-        <h3 className="govuk-heading-m" style={{ marginBottom: 10 }}>
-          Details
-        </h3>
+        <Heading level={4} size="s" style={{ marginBottom: 20, marginTop: 40 }} title="Details" />
         <TextArea
           id="xray-result-detail"
           label="Add details if X-ray results are abnormal"
@@ -117,13 +121,21 @@ const ChestXrayFindingsForm = () => {
           defaultValue={chestXrayData.xrayResultDetail}
         />
 
-        <h2 className="govuk-heading-l" style={{ marginBottom: 10, marginTop: 30 }}>
-          X-ray findings
-        </h2>
+        <Heading
+          level={2}
+          size="l"
+          style={{ marginBottom: 20, marginTop: 40 }}
+          title="X-ray findings"
+        />
 
+        <Heading
+          level={3}
+          size="m"
+          style={{ marginBottom: 20, marginTop: 40 }}
+          title="Minor findings"
+        />
         <Checkbox
           id="xray-minor-findings"
-          legend="Minor findings"
           answerOptions={[
             "1.1 Single fibrous streak or band or scar",
             "1.2 Bony islets",
@@ -138,9 +150,14 @@ const ChestXrayFindingsForm = () => {
           defaultValue={chestXrayData.xrayMinorFindings}
         />
 
+        <Heading
+          size="m"
+          level={3}
+          title="Minor findings (occasionally associated with TB infection)"
+          style={{ marginBottom: 20, marginTop: 40 }}
+        />
         <Checkbox
           id="xray-associated-minor-findings"
-          legend="Minor findings (occasionally associated with TB infection)"
           answerOptions={[
             "3.1 Solitary granuloma (less than 1cm and of any lobe) with an unremarkable hilum",
             "3.2 Solitary granuloma (less than 1cm and of any lobe) with calcified or enlarged hilar lymph nodes",
@@ -155,9 +172,14 @@ const ChestXrayFindingsForm = () => {
           defaultValue={chestXrayData.xrayAssociatedMinorFindings}
         />
 
+        <Heading
+          level={3}
+          size="m"
+          title="Findings sometimes seen in active TB (or other conditions)"
+          style={{ marginBottom: 20, marginTop: 40 }}
+        />
         <Checkbox
           id="xray-active-tb-findings"
-          legend="Findings sometimes seen in active TB (or other conditions)"
           answerOptions={[
             "4.0 Notable apical pleural capping (rough or ragged inferior border an/or equal or greater than 1cm thick at any point)",
             "4.1 Apical fibronodular or fibrocalcific lesions or apical microcalcifications",
@@ -188,5 +210,3 @@ const ChestXrayFindingsForm = () => {
 };
 
 export default ChestXrayFindingsForm;
-
-// ignore styling?
