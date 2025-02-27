@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError, isAxiosError } from "axios";
 
 import { ApplicantSearchFormResultType, ApplicantSearchFormType } from "../src/types/applicant";
 
@@ -18,8 +18,16 @@ export const getApplicants = async (
     });
     return result.data as ApplicantSearchFormResultType;
   } catch (_error) {
-    // How do we want to handle errors?
-    const error = _error as { message: string };
-    throw new Error(`Error in getApplicants with message: ${error.message}`);
+    if (isAxiosError(_error)) {
+      throw new AxiosError(
+        _error.message,
+        _error.code,
+        _error.config,
+        _error.request,
+        _error.response,
+      );
+    } else {
+      throw new Error(_error as string);
+    }
   }
 };
