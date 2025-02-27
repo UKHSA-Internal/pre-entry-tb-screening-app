@@ -25,6 +25,11 @@ type ApplicationDetailsType = {
   dateCreated: string;
 };
 
+export type ApplicantSearchFormType = {
+  passportNumber: string;
+  countryOfIssue: string;
+};
+
 type DateType = {
   year: string;
   month: string;
