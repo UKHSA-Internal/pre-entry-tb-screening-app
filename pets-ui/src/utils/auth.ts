@@ -79,3 +79,11 @@ export const acquireTokenSilently = async (): Promise<AuthenticationResult | nul
 
   return accessToken;
 };
+
+export const swaggerAuth = async (swagger: any) => {
+  const tokenResponse = await acquireTokenSilently();
+  const idToken = tokenResponse?.idToken;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  swagger.preauthorizeApiKey("authorizer", `Bearer ${idToken}`);
+};
