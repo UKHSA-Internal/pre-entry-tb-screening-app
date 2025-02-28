@@ -1,7 +1,7 @@
-import axios from "axios";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
+import { postMedicalDetails } from "@/api/api";
 import Button from "@/components/button/button";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { selectApplication } from "@/redux/applicationSlice";
@@ -18,7 +18,10 @@ const MedicalScreeningReview = () => {
 
   const handleSubmit = async () => {
     try {
-      await axios.post(`/api/application/${applicationData.applicationId}/medical-screening`, {
+      await postMedicalDetails(applicationData.applicationId, {
+        applicationId: applicationData.applicationId,
+        dateCreated: applicationData.dateCreated,
+        status: ApplicationStatus.COMPLETE,
         age: medicalData.age,
         symptomsOfTb: medicalData.tbSymptoms,
         symptoms: medicalData.tbSymptomsList,

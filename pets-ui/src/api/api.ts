@@ -5,6 +5,8 @@ import {
   ApplicantSearchFormType,
   ApplicationDetailsType,
   ApplicationResponseDetailsType,
+  MedicalResponseScreeningType,
+  TravelResponseDetailsType,
 } from "@/applicant";
 
 export const petsApi = axios.create({
@@ -79,6 +81,48 @@ export const postApplicantDetails = async (
 ) => {
   try {
     await petsApi.post(`/applicant/register/${applicationId}`, applicantDetails);
+  } catch (_error) {
+    if (isAxiosError(_error)) {
+      throw new AxiosError(
+        _error.message,
+        _error.code,
+        _error.config,
+        _error.request,
+        _error.response,
+      );
+    } else {
+      throw new Error(_error as string);
+    }
+  }
+};
+
+export const postTravelDetails = async (
+  applicationId: string,
+  travelDetails: TravelResponseDetailsType,
+) => {
+  try {
+    await petsApi.post(`/application/${applicationId}/travel-information`, travelDetails);
+  } catch (_error) {
+    if (isAxiosError(_error)) {
+      throw new AxiosError(
+        _error.message,
+        _error.code,
+        _error.config,
+        _error.request,
+        _error.response,
+      );
+    } else {
+      throw new Error(_error as string);
+    }
+  }
+};
+
+export const postMedicalDetails = async (
+  applicationId: string,
+  medicalScreeningDetails: MedicalResponseScreeningType,
+) => {
+  try {
+    await petsApi.post(`/application/${applicationId}/medical-screening`, medicalScreeningDetails);
   } catch (_error) {
     if (isAxiosError(_error)) {
       throw new AxiosError(
