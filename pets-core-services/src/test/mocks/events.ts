@@ -2,7 +2,9 @@
  * Sample APIGatewayProxyEvent to mock request data.
  */
 
-import { APIGatewayEvent, APIGatewayRequestAuthorizerEvent, Context } from "aws-lambda";
+import { APIGatewayRequestAuthorizerEvent, Context } from "aws-lambda";
+
+import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 
 export const context: Context = {
   callbackWaitsForEmptyEventLoop: false,
@@ -27,7 +29,7 @@ export const context: Context = {
   },
 };
 
-export const mockAPIGwEvent: APIGatewayEvent = {
+export const mockAPIGwEvent: PetsAPIGatewayProxyEvent = {
   body: null,
   headers: {
     "User-Agent": "sample-user-agent",
@@ -43,7 +45,7 @@ export const mockAPIGwEvent: APIGatewayEvent = {
   requestContext: {
     accountId: "",
     apiId: "",
-    authorizer: null,
+    authorizer: { clinicId: "Apollo Clinic", createdBy: "hardcoded@user.com" },
     domainName: "sample-domain-name",
     httpMethod: "sample-http-method",
     identity: {
