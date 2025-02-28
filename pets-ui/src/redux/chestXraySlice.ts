@@ -11,7 +11,8 @@ const initialState: ChestXrayDetailsType = {
   apicalLordoticXrayFile: "",
   lateralDecubitusXray: false,
   lateralDecubitusXrayFile: "",
-  reasonXrayNotTaken: null,
+  reasonXrayWasNotTaken: null,
+  xrayWasNotTakenFurtherDetails: "",
   reasonXrayNotTakenDetail: null,
   dateOfCxr: null,
   radiologicalOutcome: "",
@@ -51,7 +52,7 @@ export const chestXraySlice = createSlice({
       state.lateralDecubitusXrayFile = action.payload;
     },
     setReasonXrayNotTaken: (state, action: PayloadAction<string>) => {
-      state.reasonXrayNotTaken = action.payload;
+      state.reasonXrayWasNotTaken = action.payload;
     },
     setReasonXrayNotTakenDetail: (state, action: PayloadAction<string>) => {
       state.reasonXrayNotTakenDetail = action.payload;
@@ -65,6 +66,12 @@ export const chestXraySlice = createSlice({
     setXrayFindingsList: (state, action: PayloadAction<string[]>) => {
       state.xrayFindingsList = action.payload;
     },
+    setReasonXrayWasNotTaken: (state, action: PayloadAction<string | null>) => {
+      state.reasonXrayWasNotTaken = action.payload;
+    },
+    setXrayWasNotTakenFurtherDetails: (state, action: PayloadAction<string | null>) => {
+      state.xrayWasNotTakenFurtherDetails = action.payload;
+    },
     clearChestXrayDetails: (state) => {
       state.chestXrayTaken = false;
       state.posteroAnteriorXray = false;
@@ -73,8 +80,9 @@ export const chestXraySlice = createSlice({
       state.posteroAnteriorXrayFile = "";
       state.apicalLordoticXrayFile = "";
       state.lateralDecubitusXrayFile = "";
-      state.reasonXrayNotTaken = "";
+      state.reasonXrayWasNotTaken = "";
       state.reasonXrayNotTakenDetail = "";
+      state.xrayWasNotTakenFurtherDetails = "";
       state.xrayResult = "";
       state.xrayResultDetail = "";
       state.xrayFindingsList = [];
@@ -92,6 +100,7 @@ export const {
   setLateralDecubitusXrayFile,
   setReasonXrayNotTaken,
   setReasonXrayNotTakenDetail,
+  setXrayWasNotTakenFurtherDetails,
   setXrayResult,
   setXrayResultDetail,
   setXrayFindingsList,

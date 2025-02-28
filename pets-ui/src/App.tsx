@@ -9,6 +9,7 @@ import ApplicantSummaryPage from "./pages/applicant-summary";
 import ChestXrayConfirmation from "./pages/chest-xray-confirmation";
 import ChestXrayQuestionPage from "./pages/chest-xray-question";
 import ChestXrayUploadPage from "./pages/chest-xray-upload";
+import ChestXrayNotTaken from "./pages/chest-xray-not-taken";
 import ContactDetailsPage from "./pages/contact-details";
 import HomePage from "./pages/home-page";
 import MedicalScreeningPage from "./pages/medical-screening";
@@ -131,6 +132,14 @@ function App() {
         element={
           <AuthenticatedRoute>
             <ChestXrayConfirmation />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/chest-xray-not-taken"
+        element={
+          <AuthenticatedRoute>
+            <ChestXrayNotTaken />
           </AuthenticatedRoute>
         }
       />
