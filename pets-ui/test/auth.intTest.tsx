@@ -4,7 +4,7 @@ import { MsalReactTester, MsalReactTesterPlugin } from "msal-react-tester";
 import { MemoryRouter } from "react-router-dom";
 import { expect, test, vi } from "vitest";
 
-import AuthProvider from "@/auth/authProvider";
+import AuthProvider from "@/components/auth/authProvider";
 import { renderWithProviders } from "@/utils/test-utils";
 
 import App from "../src/App";

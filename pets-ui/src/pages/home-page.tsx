@@ -3,10 +3,10 @@ import "./home-page.scss";
 import { useMsal } from "@azure/msal-react";
 import { Helmet } from "react-helmet-async";
 
-import { loginRequest } from "@/auth/authConfig";
 import Footer from "@/components/footer/footer";
 import Header from "@/components/header/header";
 import StartButton from "@/components/startButton/startButton";
+import { loginRequest } from "@/utils/auth";
 
 export default function HomePage() {
   const { instance } = useMsal();
