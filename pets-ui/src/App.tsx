@@ -180,16 +180,6 @@ function App() {
         }
       />
       <Route
-        path="/chest-xray-upload"
-        element={
-          <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <ChestXrayUploadPage />
-            </RedirectedRouteIfReduxEmpty>
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
         path="/api-docs"
         element={
           <AuthenticatedRoute>
