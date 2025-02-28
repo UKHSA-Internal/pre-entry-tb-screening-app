@@ -88,7 +88,7 @@ const preloadedState = {
   },
 };
 
-describe("ApplicantTravelForm", () => {
+describe("TravelReview", () => {
   let mock: MockAdapter;
   beforeEach(() => {
     mock = new MockAdapter(petsApi);
