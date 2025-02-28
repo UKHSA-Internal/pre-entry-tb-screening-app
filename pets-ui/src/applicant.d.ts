@@ -163,7 +163,7 @@ type MedicalResponseScreeningType = {
   applicationId: string;
   dateCreated: string;
   status: string;
-  age: number;
+  age: number | "";
   contactWithPersonWithTb: string;
   contactWithTbDetails: string;
   haveMenstralPeriod: string;
