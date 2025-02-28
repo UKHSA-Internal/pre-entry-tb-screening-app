@@ -23,7 +23,7 @@ const ApplicantReview = () => {
       const issueDateStr = `${applicantData.passportIssueDate.year}-${standardiseDayOrMonth(applicantData.passportIssueDate.month)}-${standardiseDayOrMonth(applicantData.passportIssueDate.day)}`;
       const expiryDateStr = `${applicantData.passportExpiryDate.year}-${standardiseDayOrMonth(applicantData.passportExpiryDate.month)}-${standardiseDayOrMonth(applicantData.passportExpiryDate.day)}`;
       await postApplicantDetails(applicationRes.data.applicationId, {
-        status: applicantData.status,
+        status: ApplicationStatus.COMPLETE,
         fullName: applicantData.fullName,
         sex: applicantData.sex,
         dateOfBirth: dateOfBirthStr,
