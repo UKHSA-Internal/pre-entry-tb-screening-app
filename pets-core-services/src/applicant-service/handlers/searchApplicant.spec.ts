@@ -87,6 +87,33 @@ describe("Test for Getting Applicant", () => {
     });
   });
 
+  test("Verify Clinic ID", async () => {
+    const existingApplicant = seededApplicants[1]; // Already preloaded into DB,
+
+    const event: SearchApplicantEvent = {
+      ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: {
+          ...mockAPIGwEvent.requestContext.authorizer,
+          clinicId: "compromised-clinic-id",
+        },
+      },
+      parsedHeaders: {
+        passportnumber: existingApplicant.passportNumber,
+        countryofissue: existingApplicant.countryOfIssue,
+      },
+    };
+
+    // Act
+    const response = await searchApplicantHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(403);
+
+    expect(JSON.parse(response.body)).toMatchObject({ message: "Clinic Id mismatch" });
+  });
+
   test("Missing required Headers returns a 500 response", async () => {
     // Arrange
     const event: SearchApplicantEvent = {

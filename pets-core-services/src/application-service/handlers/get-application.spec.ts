@@ -1,14 +1,14 @@
-import { APIGatewayProxyEvent } from "aws-lambda";
 import { describe, expect, test } from "vitest";
 
 import { seededApplications } from "../../shared/fixtures/application";
+import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { getApplicationHandler } from "./get-application";
 
 describe("Getting Application Handler", () => {
   test("Missing application returns 404", async () => {
     // Arrange
-    const event: APIGatewayProxyEvent = {
+    const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: "non-existing-application-ids" },
     };
@@ -21,9 +21,10 @@ describe("Getting Application Handler", () => {
       message: "Application does not exist",
     });
   });
+
   test("Fetch application successfully", async () => {
     // Arrange
-    const event: APIGatewayProxyEvent = {
+    const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[1].applicationId },
     };
@@ -65,5 +66,27 @@ describe("Getting Application Handler", () => {
         status: "completed",
       },
     });
+  });
+
+  test("Verify Clinic ID", async () => {
+    // Arrange
+    const event: PetsAPIGatewayProxyEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[1].applicationId },
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: {
+          ...mockAPIGwEvent.requestContext.authorizer,
+          clinicId: "compromised-clinic-id",
+        },
+      },
+    };
+
+    // Act
+    const response = await getApplicationHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(403);
+    expect(JSON.parse(response.body)).toMatchObject({ message: "Clinic Id mismatch" });
   });
 });
