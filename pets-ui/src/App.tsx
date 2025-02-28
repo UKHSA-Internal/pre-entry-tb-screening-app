@@ -7,6 +7,7 @@ import ApplicantResultsPage from "./pages/applicant-results";
 import ApplicantSearchPage from "./pages/applicant-search";
 import ApplicantSummaryPage from "./pages/applicant-summary";
 import ChestXrayConfirmation from "./pages/chest-xray-confirmation";
+import ChestXrayNotTaken from "./pages/chest-xray-not-taken";
 import ChestXrayQuestionPage from "./pages/chest-xray-question";
 import ChestXrayUploadPage from "./pages/chest-xray-upload";
 import ContactDetailsPage from "./pages/contact-details";
@@ -146,6 +147,28 @@ function App() {
             <RedirectedRouteIfReduxEmpty>
               <TravelConfirmation />
             </RedirectedRouteIfReduxEmpty>
+            <TravelConfirmation />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/chest-xray-question"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <ChestXrayQuestionPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+
+      <Route
+        path="/chest-xray-not-taken"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <ChestXrayNotTaken />
+            </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
       />
@@ -165,16 +188,6 @@ function App() {
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <ChestXrayConfirmation />
-            </RedirectedRouteIfReduxEmpty>
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/chest-xray-question"
-        element={
-          <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <ChestXrayQuestionPage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }

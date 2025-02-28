@@ -74,7 +74,8 @@ type ChestXrayDetailsType = {
   apicalLordoticXrayFile: string | null;
   lateralDecubitusXray: boolean | string; // allows for yes -> true, no -> false
   lateralDecubitusXrayFile: string | null;
-  reasonXrayNotTaken: string | null;
+  reasonXrayWasNotTaken: string | null;
+  xrayWasNotTakenFurtherDetails: string | null;
   reasonXrayNotTakenDetail: string | null;
   dateOfCxr: string | null;
   radiologicalOutcome: string;
