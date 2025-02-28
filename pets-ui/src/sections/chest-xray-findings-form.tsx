@@ -35,13 +35,11 @@ const ChestXrayFindingsForm = () => {
   } = methods;
 
   const updateReduxStore = () => {
-    const values = methods.getValues();
-
-    dispatch(setXrayResult(values.xrayResult));
-    dispatch(setXrayResultDetail(values.xrayResultDetail));
-    dispatch(setXrayMinorFindings(values.xrayMinorFindings));
-    dispatch(setXrayAssociatedMinorFindings(values.xrayAssociatedMinorFindings));
-    dispatch(setXrayActiveTbFindings(values.xrayActiveTbFindings));
+    dispatch(setXrayResult(chestXrayData.xrayResult));
+    dispatch(setXrayResultDetail(chestXrayData.xrayResultDetail));
+    dispatch(setXrayMinorFindings(chestXrayData.xrayMinorFindings));
+    dispatch(setXrayAssociatedMinorFindings(chestXrayData.xrayAssociatedMinorFindings));
+    dispatch(setXrayActiveTbFindings(chestXrayData.xrayActiveTbFindings));
   };
 
   const onSubmit: SubmitHandler<ChestXrayDetailsType> = () => {

@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +9,7 @@ import { ChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import ErrorDisplay from "@/components/errorSummary/errorSummary";
+import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import TextArea from "@/components/textArea/textArea";
 import { selectApplicant } from "@/redux/applicantSlice";
@@ -30,9 +34,13 @@ const ChestXrayNotTakenForm = () => {
     watch,
   } = methods;
 
-  const onSubmit: SubmitHandler<ChestXrayDetailsType> = (chestXrayData: ChestXrayDetailsType) => {
+  const updateReduxStore = () => {
     dispatch(setReasonXrayWasNotTaken(chestXrayData.reasonXrayWasNotTaken));
     dispatch(setXrayWasNotTakenFurtherDetails(chestXrayData.xrayWasNotTakenFurtherDetails));
+  };
+
+  const onSubmit: SubmitHandler<ChestXrayDetailsType> = () => {
+    updateReduxStore();
     navigate("/xray-not-taken-summary");
   };
 
@@ -48,7 +56,7 @@ const ChestXrayNotTakenForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
         <ApplicantDataHeader applicantData={applicantData} />
-        <h2>Reason X-ray not taken</h2>
+        <Heading level={2} title="Reason X-ray not taken" />
         <div ref={reasonXrayNotTakenRef}>
           <Radio
             id="reason-xray-not-taken"
@@ -61,7 +69,7 @@ const ChestXrayNotTakenForm = () => {
             required="Select the reason why the chest X-ray was not taken."
           />
         </div>
-        <h2>Notes</h2>
+        <Heading level={2} title="Notes" />
         <div ref={xrayNotTakenFurtherDetailsRef}>
           <TextArea
             id="xray-not-taken-further-details"
@@ -69,7 +77,7 @@ const ChestXrayNotTakenForm = () => {
             errorMessage={errors?.xrayWasNotTakenFurtherDetails?.message ?? ""}
             formValue="xrayWasNotTakenFurtherDetails"
             required={
-              watchedReasonXrayNotTaken === "other" ? "Enter reason X-ray not taken." : false
+              watchedReasonXrayNotTaken === "Other" ? "Enter reason X-ray not taken." : false
             }
             rows={4}
             defaultValue={chestXrayData.xrayWasNotTakenFurtherDetails ?? ""}
