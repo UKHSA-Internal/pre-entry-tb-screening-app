@@ -34,7 +34,7 @@ export const simulateLambdaAuthorizer = async (request: { event: APIGatewayProxy
       Object.assign(request.event, { requestContext: { authorizer: { ...payload.context } } });
     } catch (err) {
       logger.error("Authorization failed:", err);
-      return createHttpResponse(500, "Invalid token");
+      return createHttpResponse(500, { message: "Invalid token" });
     }
   }
 };
