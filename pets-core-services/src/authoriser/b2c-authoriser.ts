@@ -1,3 +1,6 @@
+import assert from "assert";
+import { JwtVerifier } from "aws-jwt-verify";
+import { JwtPayload } from "aws-jwt-verify/jwt-model";
 import {
   APIGatewayAuthorizerResult,
   APIGatewayRequestAuthorizerEvent,
@@ -8,6 +11,7 @@ import {
   StatementEffect,
 } from "aws-lambda";
 
+import { assertEnvExists } from "../shared/config";
 import { logger, withRequest } from "../shared/logger";
 import { policyMapping, Roles } from "./constants";
 
@@ -15,7 +19,6 @@ export const handler = async (
   event: APIGatewayRequestAuthorizerEvent,
   context: Context,
   callback: Callback,
-  // eslint-disable-next-line @typescript-eslint/require-await
 ) => {
   try {
     logger.info("Authorizer lambda triggered");
@@ -34,41 +37,34 @@ export const handler = async (
       throw new Error("Authorization Headers missing");
     }
 
-    // TODO: Replace the array with valid role from token
-    const roles = [
-      Roles.ApplicantsRead,
-      Roles.ApplicantsWrite,
-      Roles.ApplicationRead,
-      Roles.ApplicantsWrite,
-      Roles.ClinicsRead,
-    ];
+    const TENANT_ID = assertEnvExists(process.env.VITE_MSAL_TENANT_ID);
+    const CLIENT_ID = assertEnvExists(process.env.VITE_MSAL_CLIENT_ID);
 
-    // TODO: Replace the code below with correct check
-    switch (token) {
-      case "allow":
-        callback(null, generatePolicy("user", "Allow", roles));
-        break;
-      case "deny":
-        callback(null, generatePolicy("user", "Deny", roles));
-        break;
-      case "unauthorized":
-        callback("Unauthorized"); // Return a 401 Unauthorized response
-        break;
-      default:
-        callback("Error: Invalid token"); // Return a 500 Invalid token response
-    }
+    const verifier = JwtVerifier.create({
+      issuer: `https://${TENANT_ID}.ciamlogin.com/${TENANT_ID}/v2.0`,
+      audience: CLIENT_ID,
+      jwksUri: `https://login.microsoftonline.com/${TENANT_ID}/discovery/keys`,
+    });
+
+    const payload = await verifier.verify(token);
+    callback(null, generatePolicy("user", "Allow", payload));
   } catch (error) {
-    logger.error(error, "Authorizer lambda failed");
-    callback("Error: Invalid token");
+    logger.error(error, "Authorization failed");
+    callback("Unauthorized");
   }
 };
 
 const generatePolicy = (
   principalId: string,
   effect: StatementEffect,
-  b2cRoles: string[],
+  payload: JwtPayload,
 ): APIGatewayAuthorizerResult => {
-  logger.info({ effect, principalId, b2cRoles }, "Generating Policy");
+  logger.info({ effect, principalId }, "Generating Policy");
+
+  assert(payload.roles);
+  const b2cRoles = payload.roles as string[];
+
+  const b2cRolesLowerCase = b2cRoles.map((role) => role.toLowerCase());
 
   const filterPredicate = (role: string): role is Roles => {
     const validRole = role in policyMapping;
@@ -76,7 +72,7 @@ const generatePolicy = (
     return validRole;
   };
 
-  const statements: Statement[] = b2cRoles.filter(filterPredicate).map((role) => ({
+  const statements: Statement[] = b2cRolesLowerCase.filter(filterPredicate).map((role) => ({
     Action: "execute-api:Invoke",
     Effect: effect,
     Resource: policyMapping[role],
@@ -87,8 +83,9 @@ const generatePolicy = (
     Statement: statements,
   };
 
-  const clinicId = "Apollo Clinic"; // TODO: Validate clinic-id and createdby fields
-  const createdBy = "hardcoded@user.com";
+  const clinicId = "Apollo Clinic"; // TODO: Replace with payload.ClinicID
+  assert(payload.email);
+  const createdBy = payload.email as string;
   const context = {
     clinicId,
     createdBy,
@@ -100,7 +97,7 @@ const generatePolicy = (
     context,
   };
 
-  logger.info({ authResponse }, "Generated authRespose");
+  logger.info("Generated authRespose successfully");
 
   return authResponse;
 };

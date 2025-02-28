@@ -1,10 +1,11 @@
 export enum Roles {
-  ApplicationWrite = "Application.Write",
-  ApplicationRead = "Application.Read",
-  ApplicantsWrite = "Applicants.Write",
-  ApplicantsRead = "Applicants.Read",
-  ClinicsRead = "Clinics.Readb2cRole",
-  // TODO: Ask Sanj about delete(cancelling), clinic write
+  ApplicationWrite = "application.write",
+  ApplicationRead = "application.read",
+  ApplicantsWrite = "applicants.write",
+  ApplicantsRead = "applicants.read",
+  ClinicsRead = "clinics.read",
+  // ImagingRead = "imaging.read",
+  // ImagingWrite = "imaging.write",
 }
 
 export const policyMapping: Record<Roles, string[]> = {
