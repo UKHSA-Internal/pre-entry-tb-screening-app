@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 
 import { CountryCode } from "../../shared/country";
+import { seededApplications } from "../../shared/fixtures/application";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicants } from "../fixtures/applicants";
 import { Applicant } from "../models/applicant";
@@ -13,6 +14,13 @@ describe("Test for Getting Applicant", () => {
 
     const event: SearchApplicantEvent = {
       ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: {
+          ...mockAPIGwEvent.requestContext.authorizer,
+          clinicId: seededApplications[2].clinicId,
+        },
+      },
       parsedHeaders: {
         passportnumber: existingApplicant.passportNumber,
         countryofissue: existingApplicant.countryOfIssue,
