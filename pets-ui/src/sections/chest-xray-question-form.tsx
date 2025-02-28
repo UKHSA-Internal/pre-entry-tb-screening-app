@@ -25,7 +25,7 @@ const ChestXrayQuestionForm = () => {
 
   const onSubmit: SubmitHandler<ChestXrayDetailsType> = (data) => {
     updateReduxStore(data);
-    if (data.chestXrayTaken === "yes") {
+    if (data.chestXrayTaken === "Yes") {
       navigate("/chest-xray-upload");
     } else {
       navigate("/chest-xray-not-taken");
