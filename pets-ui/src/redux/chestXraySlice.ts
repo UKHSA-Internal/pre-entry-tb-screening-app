@@ -51,7 +51,7 @@ export const chestXraySlice = createSlice({
     setLateralDecubitusXrayFile: (state, action: PayloadAction<string | null>) => {
       state.lateralDecubitusXrayFile = action.payload;
     },
-    setReasonXrayNotTaken: (state, action: PayloadAction<string>) => {
+    setReasonXrayWasNotTaken: (state, action: PayloadAction<string | null>) => {
       state.reasonXrayWasNotTaken = action.payload;
     },
     setReasonXrayNotTakenDetail: (state, action: PayloadAction<string>) => {
@@ -65,9 +65,6 @@ export const chestXraySlice = createSlice({
     },
     setXrayFindingsList: (state, action: PayloadAction<string[]>) => {
       state.xrayFindingsList = action.payload;
-    },
-    setReasonXrayWasNotTaken: (state, action: PayloadAction<string | null>) => {
-      state.reasonXrayWasNotTaken = action.payload;
     },
     setXrayWasNotTakenFurtherDetails: (state, action: PayloadAction<string | null>) => {
       state.xrayWasNotTakenFurtherDetails = action.payload;
@@ -98,7 +95,7 @@ export const {
   setPosteroAnteriorXrayFile,
   setApicalLordoticXrayFile,
   setLateralDecubitusXrayFile,
-  setReasonXrayNotTaken,
+  setReasonXrayWasNotTaken,
   setReasonXrayNotTakenDetail,
   setXrayWasNotTakenFurtherDetails,
   setXrayResult,
