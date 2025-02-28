@@ -16,7 +16,7 @@ export const setupStore = (preloadedState?: Partial<RootState>) => {
   return configureStore({
     reducer: rootReducer,
     preloadedState,
-    // devTools: process.env.NODE_ENV !== 'production',
+    devTools: import.meta.env.DEV,
   });
 };
 
