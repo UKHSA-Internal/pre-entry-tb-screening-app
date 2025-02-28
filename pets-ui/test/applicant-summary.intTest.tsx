@@ -22,6 +22,7 @@ describe("ApplicantReview", () => {
   let mock: MockAdapter;
   beforeEach(() => {
     mock = new MockAdapter(petsApi);
+    useNavigateMock.mockClear();
   });
 
   test("state is displayed correctly & user is navigated to confirmation page when both api calls are successful", async () => {

@@ -16,6 +16,10 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 });
 
 describe("ApplicantForm", () => {
+  beforeEach(() => {
+    useNavigateMock.mockClear();
+  });
+
   test("when ApplicantForm is not filled then errors are displayed", async () => {
     renderWithProviders(
       <Router>
