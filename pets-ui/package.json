@@ -8,10 +8,10 @@
     "build": "tsc -b && vite build",
     "lint": "eslint --quiet .",
     "preview": "vite preview",
-    "cypress": "cypress open",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
-    "cypress:open": "cypress open -C cypress/cypress.config.mjs"
+    "cypress:open": "cypress open -C cypress/cypress.config.mjs",
+    "cypress:run": "cypress run -C cypress/cypress.config.mjs"
   },
   "dependencies": {
     "@azure/msal-browser": "^4.2.1",
