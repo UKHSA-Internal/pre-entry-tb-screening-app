@@ -17,13 +17,6 @@ export interface RadioProps {
 }
 
 export default function Radio(props: Readonly<RadioProps>) {
-  const stringToJsxAttribute = (input: string) => {
-    return input
-      .toLowerCase()
-      .replace(/\s/g, "-")
-      .replace(/[^a-z0-9 -]/g, "");
-  };
-
   const answerOptions: string[] = props.answerOptions;
   if (props.sortAnswersAlphabetically) {
     answerOptions.sort((a, b) => a.localeCompare(b));
@@ -56,11 +49,11 @@ export default function Radio(props: Readonly<RadioProps>) {
                   className="govuk-radios__input"
                   type="radio"
                   data-testid={props.id}
-                  value={stringToJsxAttribute(answerOption)}
+                  value={answerOption}
                   {...register(props.formValue, {
                     required: props.required,
                   })}
-                  defaultChecked={props.defaultValue == stringToJsxAttribute(answerOption)}
+                  defaultChecked={props.defaultValue == answerOption}
                 />
                 <label className="govuk-label govuk-radios__label" htmlFor={props.id}>
                   {answerOption}

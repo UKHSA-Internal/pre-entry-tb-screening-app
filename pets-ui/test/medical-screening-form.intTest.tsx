@@ -109,13 +109,13 @@ test("state is updated from MedicalScreeningForm and then read by MedicalScreeni
   expect(screen.getAllByRole("term")[10]).toHaveTextContent(
     "Has the applicant ever had tuberculosis?",
   );
-  expect(screen.getAllByRole("definition")[17]).toHaveTextContent("yes");
+  expect(screen.getAllByRole("definition")[17]).toHaveTextContent("Yes");
   expect(screen.getAllByRole("term")[11]).toHaveTextContent("Detail of applicant's previous TB");
   expect(screen.getAllByRole("definition")[19]).toHaveTextContent("Details of previous TB.");
   expect(screen.getAllByRole("term")[12]).toHaveTextContent(
     "Has the applicant had close contact with any person with active pulmonary tuberculosis within the past year?",
   );
-  expect(screen.getAllByRole("definition")[21]).toHaveTextContent("no");
+  expect(screen.getAllByRole("definition")[21]).toHaveTextContent("No");
   expect(screen.getAllByRole("term")[13]).toHaveTextContent(
     "Details of applicant's close contact with any person with active pulmonary tuberculosis",
   );
@@ -125,7 +125,7 @@ test("state is updated from MedicalScreeningForm and then read by MedicalScreeni
   expect(screen.getAllByRole("term")[15]).toHaveTextContent(
     "Does the applicant have menstrual periods?",
   );
-  expect(screen.getAllByRole("definition")[27]).toHaveTextContent("no");
+  expect(screen.getAllByRole("definition")[27]).toHaveTextContent("No");
   expect(screen.getAllByRole("term")[16]).toHaveTextContent("Physical examination notes");
   expect(screen.getAllByRole("definition")[29]).toHaveTextContent(
     "Details of physical examination.",
