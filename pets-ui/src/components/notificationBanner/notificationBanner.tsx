@@ -10,7 +10,7 @@ export default function NotificationBanner({
   bannerTitle,
   bannerText,
   list,
-}: NotificationBannerProps) {
+}: Readonly<NotificationBannerProps>) {
   return (
     <div
       className="govuk-notification-banner"
