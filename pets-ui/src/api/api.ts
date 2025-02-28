@@ -3,6 +3,7 @@ import axios, { AxiosError, AxiosResponse, isAxiosError } from "axios";
 import {
   ApplicantResponseDetailsType,
   ApplicantSearchFormType,
+  ApplicationDetailsType,
   ApplicationResponseDetailsType,
 } from "@/applicant";
 
@@ -36,8 +37,48 @@ export const getApplicants = async (passportDetails: ApplicantSearchFormType) =>
 
 export const getApplication = async (applicationId: string) => {
   try {
-    const result = await petsApi.get(`/api/application/${applicationId}`);
+    const result = await petsApi.get(`/application/${applicationId}`);
     return result as AxiosResponse<ApplicationResponseDetailsType>;
+  } catch (_error) {
+    if (isAxiosError(_error)) {
+      throw new AxiosError(
+        _error.message,
+        _error.code,
+        _error.config,
+        _error.request,
+        _error.response,
+      );
+    } else {
+      throw new Error(_error as string);
+    }
+  }
+};
+
+export const createNewApplication = async () => {
+  try {
+    const result = await petsApi.post("/application");
+    return result as AxiosResponse<ApplicationDetailsType>;
+  } catch (_error) {
+    if (isAxiosError(_error)) {
+      throw new AxiosError(
+        _error.message,
+        _error.code,
+        _error.config,
+        _error.request,
+        _error.response,
+      );
+    } else {
+      throw new Error(_error as string);
+    }
+  }
+};
+
+export const postApplicantDetails = async (
+  applicationId: string,
+  applicantDetails: ApplicantResponseDetailsType,
+) => {
+  try {
+    await petsApi.post(`/applicant/register/${applicationId}`, applicantDetails);
   } catch (_error) {
     if (isAxiosError(_error)) {
       throw new AxiosError(
