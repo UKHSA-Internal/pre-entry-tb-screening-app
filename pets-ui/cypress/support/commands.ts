@@ -113,6 +113,6 @@ Cypress.Commands.add("loginViaB2C", () => {
   cy.log("Checking redirection to applicant search");
   cy.url({ timeout: 30000 }).should("include", "/applicant-search");
 });
-Cypress.Commands.add("clearAllSessions", () => {
-  Cypress.session.clearAllSavedSessions();
+Cypress.Commands.add("clearAllSessions", async () => {
+  await Cypress.session.clearAllSavedSessions();
 });
