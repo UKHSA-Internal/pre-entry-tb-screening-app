@@ -100,7 +100,7 @@ test("state is updated from MedicalScreeningForm and then read by MedicalScreeni
   expect(screen.getAllByRole("definition")[11]).toHaveTextContent("");
   expect(screen.getAllByRole("term")[8]).toHaveTextContent("Applicant history if under 11");
   expect(screen.getAllByRole("definition")[13]).toHaveTextContent(
-    "Not applicable - applicant is aged 11 or over",
+    "Not applicable applicant is aged 11 or over",
   );
   expect(screen.getAllByRole("term")[9]).toHaveTextContent(
     "Additional details of applicant history if under 11",
