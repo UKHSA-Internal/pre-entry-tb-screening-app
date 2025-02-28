@@ -6,7 +6,7 @@ import { ApplicantDetailsType } from "@/applicant";
 import Button from "@/components/button/button";
 import DateTextInput, { DateType } from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
-import ErrorDisplay from "@/components/errorDisplay/errorDisplay";
+import ErrorDisplay from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Radio from "@/components/radio/radio";
 import { selectApplicant, setApplicantDetails } from "@/redux/applicantSlice";

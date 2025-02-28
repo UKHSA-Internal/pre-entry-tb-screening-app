@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { ChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
-import ErrorDisplay from "@/components/errorDisplay/errorDisplay";
+import ErrorDisplay from "@/components/errorSummary/errorSummary";
 import Radio from "@/components/radio/radio";
 import TextArea from "@/components/textArea/textArea";
 import { selectApplicant } from "@/redux/applicantSlice";
@@ -30,14 +30,10 @@ const ChestXrayNotTakenForm = () => {
     watch,
   } = methods;
 
-  const onSubmit: SubmitHandler<ChestXrayDetailsType> = (data) => {
-    updateReduxStore(data);
-    navigate("/xray-not-taken-summary");
-  };
-
-  const updateReduxStore = (chestXrayData: ChestXrayDetailsType) => {
+  const onSubmit: SubmitHandler<ChestXrayDetailsType> = (chestXrayData: ChestXrayDetailsType) => {
     dispatch(setReasonXrayWasNotTaken(chestXrayData.reasonXrayWasNotTaken));
     dispatch(setXrayWasNotTakenFurtherDetails(chestXrayData.xrayWasNotTakenFurtherDetails));
+    navigate("/xray-not-taken-summary");
   };
 
   const errorsToShow = Object.keys(errors);
@@ -52,7 +48,7 @@ const ChestXrayNotTakenForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
         <ApplicantDataHeader applicantData={applicantData} />
-        <h1>Reason X-ray not taken</h1>
+        <h2>Reason X-ray not taken</h2>
         <div ref={reasonXrayNotTakenRef}>
           <Radio
             id="reason-xray-not-taken"
@@ -65,7 +61,7 @@ const ChestXrayNotTakenForm = () => {
             required="Select the reason why the chest X-ray was not taken."
           />
         </div>
-        <h1>Notes</h1>
+        <h2>Notes</h2>
         <div ref={xrayNotTakenFurtherDetailsRef}>
           <TextArea
             id="xray-not-taken-further-details"
@@ -84,7 +80,7 @@ const ChestXrayNotTakenForm = () => {
           id="Continue"
           type={ButtonType.DEFAULT}
           text="Continue"
-          href="/"
+          href="/xray-not-taken-summary"
           handleClick={() => {}}
         />
       </form>

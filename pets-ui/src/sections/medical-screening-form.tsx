@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { MedicalScreeningType } from "@/applicant";
 import Button from "@/components/button/button";
 import Checkbox from "@/components/checkbox/checkbox";
-import ErrorDisplay from "@/components/errorDisplay/errorDisplay";
+import ErrorDisplay from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Radio from "@/components/radio/radio";
 import TextArea from "@/components/textArea/textArea";

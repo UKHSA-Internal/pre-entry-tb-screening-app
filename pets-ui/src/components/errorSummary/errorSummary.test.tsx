@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import ErrorDisplay from "./errorDisplay";
+import ErrorDisplay from "./errorSummary";
 
 const errorsToShow = ["errorToDisplay"];
 const errors = {

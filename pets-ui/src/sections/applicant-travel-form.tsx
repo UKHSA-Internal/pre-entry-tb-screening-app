@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { TravelDetailsType } from "@/applicant";
 import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
-import ErrorDisplay from "@/components/errorDisplay/errorDisplay";
+import ErrorDisplay from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectTravel, setTravelDetails } from "@/redux/travelSlice";

@@ -7,7 +7,7 @@ interface ErrorDisplayProps {
   errors: FieldErrors;
 }
 
-export default function ErrorDisplay(props: Readonly<ErrorDisplayProps>) {
+export default function ErrorSummary(props: Readonly<ErrorDisplayProps>) {
   return (
     <div className="govuk-error-summary" data-module="govuk-error-summary">
       <div role="alert">
