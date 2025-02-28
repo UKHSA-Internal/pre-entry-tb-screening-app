@@ -38,6 +38,8 @@ const attributeToComponentId: { [key: string]: string } = {
   ukEmail: "email",
   chestXrayTaken: "chest-xray-taken",
   xrayResult: "xray-result",
+  reasonXrayWasNotTaken: "reason-xray-not-taken",
+  xrayWasNotTakenFurtherDetails: "xray-not-taken-further-details",
 };
 
 const formRegex = {
