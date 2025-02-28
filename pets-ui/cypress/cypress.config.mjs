@@ -1,4 +1,17 @@
 import { defineConfig } from "cypress";
+import * as dotenv from "dotenv";
+import { resolve } from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// TODO: Move this out of here
+// TODO: Git Secrets also
+dotenv.config({
+  path: resolve(__dirname, "../../configs/.env.local"),
+});
 
 export default defineConfig({
   e2e: {
@@ -16,7 +29,6 @@ export default defineConfig({
       });
     },
     experimentalModifyObstructiveThirdPartyCode: true,
-    //chromeWebSecurity: false,
     modifyObstructiveCode: true,
   },
   component: {
@@ -26,4 +38,5 @@ export default defineConfig({
       bundler: "vite",
     },
   },
+  env: { ...process.env },
 });
