@@ -4,8 +4,7 @@ export enum Roles {
   ApplicantsWrite = "applicants.write",
   ApplicantsRead = "applicants.read",
   ClinicsRead = "clinics.read",
-  // ImagingRead = "imaging.read",
-  // ImagingWrite = "imaging.write",
+  ImagingWrite = "imaging.write",
 }
 
 export const policyMapping: Record<Roles, string[]> = {
@@ -28,6 +27,9 @@ export const policyMapping: Record<Roles, string[]> = {
     `arn:aws:execute-api:eu-west-2:${process.env.AWS_ACCOUNT_ID}:${process.env.API_GATEWAY_ID}/*/POST/application/*`,
     `arn:aws:execute-api:eu-west-2:${process.env.AWS_ACCOUNT_ID}:${process.env.API_GATEWAY_ID}/*/PUT/application`,
     `arn:aws:execute-api:eu-west-2:${process.env.AWS_ACCOUNT_ID}:${process.env.API_GATEWAY_ID}/*/PUT/application/*`,
+  ],
+  [Roles.ImagingWrite]: [
+    `arn:aws:execute-api:eu-west-2:${process.env.AWS_ACCOUNT_ID}:${process.env.API_GATEWAY_ID}/*/POST/application/*`, // TODO: Change this when 506 is picked
   ],
   [Roles.ClinicsRead]: [
     `arn:aws:execute-api:eu-west-2:${process.env.AWS_ACCOUNT_ID}:${process.env.API_GATEWAY_ID}/*/GET/clinics`,

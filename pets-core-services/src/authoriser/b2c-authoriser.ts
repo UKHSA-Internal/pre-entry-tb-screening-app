@@ -47,6 +47,7 @@ export const handler = async (
     });
 
     const payload = await verifier.verify(token);
+    logger.info("token verified successfully");
     callback(null, generatePolicy("user", "Allow", payload));
   } catch (error) {
     logger.error(error, "Authorization failed");
@@ -66,6 +67,7 @@ const generatePolicy = (
 
   const b2cRolesLowerCase = b2cRoles.map((role) => role.toLowerCase());
 
+  logger.info("Filtering invalid roles");
   const filterPredicate = (role: string): role is Roles => {
     const validRole = role in policyMapping;
     if (!validRole) logger.error({ role }, "Invalid role found");
@@ -97,7 +99,7 @@ const generatePolicy = (
     context,
   };
 
-  logger.info("Generated authRespose successfully");
+  logger.info("Generated policy successfully");
 
   return authResponse;
 };
