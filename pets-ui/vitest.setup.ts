@@ -7,7 +7,10 @@ expect.extend(matchers);
 vi.mock("@azure/msal-browser", async (importOriginal) => {
   return {
     ...(await importOriginal<typeof import("@azure/msal-browser")>()),
-    PublicClientApplication: vi.fn(),
+    PublicClientApplication: vi.fn().mockReturnValue({
+      getAllAccounts: vi.fn(),
+      acquireTokenSilent: vi.fn(),
+    }),
   };
 });
 
