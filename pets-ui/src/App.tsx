@@ -161,7 +161,6 @@ function App() {
           </AuthenticatedRoute>
         }
       />
-
       <Route
         path="/chest-xray-not-taken"
         element={
