@@ -16,13 +16,6 @@ MsalReactTesterPlugin.init({
   waitingFor: waitFor,
 });
 
-vi.mock("@azure/msal-browser", async (importOriginal) => {
-  return {
-    ...(await importOriginal<typeof import("@azure/msal-browser")>()),
-    PublicClientApplication: vi.fn(),
-  };
-});
-
 vi.mock("react-helmet-async", () => ({
   Helmet: () => <>{}</>,
   HelmetProvider: () => <>{}</>,
