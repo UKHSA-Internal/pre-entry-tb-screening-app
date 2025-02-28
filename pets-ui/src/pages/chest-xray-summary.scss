@@ -1,0 +1,16 @@
+@import "../globals.scss";
+
+@import "../../node_modules/govuk-frontend/dist/govuk/components/breadcrumbs/index";
+@import "../../node_modules/govuk-frontend/dist/govuk/components/button/index";
+@import "../../node_modules/govuk-frontend/dist/govuk/components/fieldset/index";
+@import "../../node_modules/govuk-frontend/dist/govuk/components/footer/index";
+@import "../../node_modules/govuk-frontend/dist/govuk/components/header/index";
+@import "../../node_modules/govuk-frontend/dist/govuk/components/label/index";
+@import "../../node_modules/govuk-frontend/dist/govuk/components/summary-list/index";
+
+
+.govuk-summary-value-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
