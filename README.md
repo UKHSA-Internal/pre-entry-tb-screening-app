@@ -145,7 +145,7 @@ Additional configs specific to a core service are defined in their directory
 
 ### Pulling Secrets for local development
 
-Skip this section if you are not running E2E tests on your machine. As a prerequisite, please ensure you have administrator access to the **pre-entry-tb-screening-nl-develop** account. // TODO: Add dev request guide
+Skip this section if you are not running E2E tests on your machine. As a prerequisite, please ensure you have administrator access to the **pre-entry-tb-screening-nl-develop** account.
 
 1. Navigate to [Halo page](https://halopr.awsapps.com/start/#/?tab=accounts).
 
