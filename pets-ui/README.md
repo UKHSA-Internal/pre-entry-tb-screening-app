@@ -23,24 +23,31 @@ To install dependencies, run `pnpm i`.
 | `pnpm run cypress`    | Opens the Cypress UI        |
 | `npx cypress run`     | Run cypress E2E tests in the terminal        |
 
-## Cypress Tests
+## Cypress End to End Tests
 
-- First time ? Run the command below to download the cypress binary.
+### Prerequisites
+
+- Download the cypress binary
 
 ```sh
 cd pets-ui
 pnpm exec cypress install --force
 ```
 
+- Pull local enviroment secrets using this [guide](../README.md#pulling-secrets-for-local-development).
+
+### Running the test
+
 - In one terminal, start up the Dev Environment in the background using `pnpm start`
+
 - Please contine to either running via Cypress UI or via the CLI
 
-### Running via Cypress UI(Please note this might not work on Mac, use CLI if that's the case)
+#### Running via Cypress UI(Please note this might not work on Mac, use CLI if that's the case)
 
 - Open a second terminal, run the commands below to open the cypress UI:
 
     ```sh
-        cd pets-ui/cypress
+        cd pets-ui
         pnpm cypress:open
     ```
 
@@ -54,9 +61,9 @@ pnpm exec cypress install --force
   - emptyMandatoryFieldTest - This Test checks error messages are displayed when a mandatory field is left empty at submission.
   - textFieldValidation - This Test validates error messages are displayed when special characters are entered in the Free Text fields.
 
-### Running via CLI
+#### Running via CLI
 
-- Open a second terminal, CD to `pets-ui` folder.
+- On a second terminal, run `cd pets-ui`.
 
 - To run all tests in browser mode:
     `pnpm cypress:run --headed`
@@ -64,7 +71,9 @@ pnpm exec cypress install --force
 - To run test for a single file: `pnpm cypress:run --spec '[the/relative/path/to/test/]' --headed`
 
     For example:
+
     `pnpm cypress:run --spec 'cypress/e2e/ApplicantDetailsPage/TBBETA-324 - TC04.cy.ts' --headed`
+
     `pnpm cypress:run --spec 'cypress/e2e/TravelDetailsPage/TBBETA-547 - TC02.cy.ts' --headed`
--
+
 - See [cypress-run](https://docs.cypress.io/app/references/command-line#cypress-run) for more options

@@ -7,10 +7,8 @@ import { dirname } from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// TODO: Move this out of here
-// TODO: Git Secrets also
 dotenv.config({
-  path: resolve(__dirname, "../../configs/.env.local"),
+  path: resolve(__dirname, "../../configs/.env.local.secrets"), // Required only for local runs, CI environment secrets are retrieved from Actions Secrets
 });
 
 export default defineConfig({

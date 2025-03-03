@@ -6,8 +6,8 @@ import { dirname } from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-delete process.env['ProgramFiles(x86)']
-delete process.env['CommonProgramFiles(x86)']
+delete process.env["ProgramFiles(x86)"];
+delete process.env["CommonProgramFiles(x86)"];
 
 const define = {};
 for (const k in process.env) {
