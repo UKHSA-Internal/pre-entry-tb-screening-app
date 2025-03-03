@@ -92,7 +92,7 @@ describe("Validate data fields on x-ray results page", () => {
       // Get all checkboxes and verify the count matches expected options
       cy.get(".govuk-checkboxes__item").should("have.length", options.length);
 
-      // Then verify each input has the right value (without relying on exact visible text match)
+      // Verify each input has the right value
       cy.get(".govuk-checkboxes__input").each(($input, index) => {
         cy.wrap($input).should("exist").should("have.value", options[index]);
       });
