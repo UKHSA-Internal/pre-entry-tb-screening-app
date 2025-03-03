@@ -46,7 +46,7 @@ This is currently available on [confluence](https://confluence.collab.test-and-t
 
  📦Config                     # Project Configs
  ┣ 📜.env                     # configs for local environment
- ┣ 📜.env.local               # developer-specific env for local environment, please don't commit
+ ┣ 📜.env.local.secrets       # environment secrets for local environment, generated when you run `pnpm pull:secrets`. Please don't commit 🙅🏽!
  ┣ 📜.env.dev                 # configs for a Dev deployment
  ┣ 📜.env.test                # configs for a Test deployment
  ┣ 📜.env.test.local          # configs for unit and integration tests
@@ -143,7 +143,28 @@ Additional configs specific to a core service are defined in their directory
       git config --global core.autocrlf input
    ```
 
-### Running Development Environment
+### Pulling Secrets for local development
+
+Skip this section if you are not running E2E tests on your machine. As a prerequisite, please ensure you have administrator access to the **pre-entry-tb-screening-nl-develop** account. // TODO: Add dev request guide
+
+1. Navigate to [Halo page](https://halopr.awsapps.com/start/#/?tab=accounts).
+
+2. Select Administrator Access Keys for **pre-entry-tb-screening-nl-develop** account.
+
+3. Copy the commands under option to Set AWS environment Variables. Be sure to check the OS tab is set correctly beforehand.
+![Halo Creds Page](<./docs/halo_creds.png>)
+
+4. Open a new shell and run the commands.
+
+5. Pull the secrets with the commands below:
+
+   ```sh
+   pnpm pull:secrets
+   ```
+
+6. Verify `.env.local.secrets` has been created in `configs` directory. Double check this file is not committed.
+
+## Running Development Environment
 
 1. Start up development environment
 
@@ -169,7 +190,7 @@ For core services, we rely on localstack for emulating AWS services. For debuggi
 ![Container Lists](./docs/container_list.png)
 ![Container Logs](./docs/container_logs.png)
 
-### Testing
+## Testing
 
 To run all unit and integration tests for all [packages](#monorepo-organization):
 
@@ -179,7 +200,7 @@ pnpm -r test
 
 Under the hood, the command runs `pnpm test` in each packages. Alternatively to run unit tests for a single package, you can `cd` into its directory and run `pnpm test`.
 
-To run end to end tests, please visit the pets UI [command section](./pets-ui/README.md#commands)
+To run end to end tests, please visit the pets UI [Cypress Section](./pets-ui/README.md#cypress-end-to-end-tests)
 
 By default, backend logs are hidden in tests as they could get noisy. To view your backend log messages and errors in tests, add the line below to `configs/.env.test.local`:
 
@@ -189,13 +210,17 @@ LOG_LEVEL=info
 
 Don't forget to remove afterwards🫣
 
-### Deployment
+### Preloaded Test Data
+
+Kindly check `pets-core-services/src/applicant-service/fixtures/applicants.ts` for list of preloaded applicants.
+
+## Deployment
 
 - Before proceeding, ensure you have access to the AWS environment. Kindly check this [guide](https://confluence.collab.test-and-trace.nhs.uk/display/TPT/Request+Access+to+AWS+Environments?src=contextnavpagetreemode) on raising the request.
 
 - Navigate to the [actions](https://github.com/UKHSA-Internal/pre-entry-tb-screening-app/actions) page.
 
-#### UI
+### UI
 
 To deploy the UI to a target environment {target-env}:
 
@@ -204,7 +229,7 @@ To deploy the UI to a target environment {target-env}:
 - Start the deployment workflow by clicking on the button and providing your branch name. Please note that this would overwrite any existing deployment at the target environment.
 - If a PR is already raised for your branch, after successful deployment, you should receive an email with the deployment url
 
-#### Core Services
+### Core Services
 
 Before you proceed with the core services deployment, please note that this would deploy only services with changes.
 
@@ -244,3 +269,7 @@ To deploy the Core services to a target environment {target-env}:
 [Localstack-url]: https://www.localstack.cloud/
 [cypress.com]: https://img.shields.io/badge/Cypress-20232A?style=for-the-badge&logo=cypress
 [Cypress-url]: https://docs.cypress.io/app/get-started/why-cypress
+
+## CI/CD Workflows
+
+<https://confluence.collab.test-and-trace.nhs.uk/pages/viewpage.action?pageId=374193469>
