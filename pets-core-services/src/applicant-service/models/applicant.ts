@@ -194,6 +194,7 @@ export class Applicant extends IApplicant {
         return [];
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       logger.info({ resultCount: data.Items.length }, "Applicant details fetched successfully");
 
       const results = data.Items as ReturnType<Applicant["todbItem"]>[];
