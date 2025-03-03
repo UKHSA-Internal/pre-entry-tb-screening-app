@@ -7,6 +7,8 @@ import ApplicantResultsPage from "./pages/applicant-results";
 import ApplicantSearchPage from "./pages/applicant-search";
 import ApplicantSummaryPage from "./pages/applicant-summary";
 import ChestXrayConfirmation from "./pages/chest-xray-confirmation";
+import ChestXrayNotTaken from "./pages/chest-xray-not-taken";
+import ChestXrayQuestionPage from "./pages/chest-xray-question";
 import ChestXrayUploadPage from "./pages/chest-xray-upload";
 import ContactDetailsPage from "./pages/contact-details";
 import HomePage from "./pages/home-page";
@@ -126,18 +128,34 @@ function App() {
         }
       />
       <Route
-        path="/chest-xray-upload"
-        element={
-          <AuthenticatedRoute>
-            <ChestXrayUploadPage />{" "}
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
         path="/chest-xray-confirmation"
         element={
           <AuthenticatedRoute>
             <ChestXrayConfirmation />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/chest-xray-not-taken"
+        element={
+          <AuthenticatedRoute>
+            <ChestXrayNotTaken />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/chest-xray-question"
+        element={
+          <AuthenticatedRoute>
+            <ChestXrayQuestionPage />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/chest-xray-upload"
+        element={
+          <AuthenticatedRoute>
+            <ChestXrayUploadPage />{" "}
           </AuthenticatedRoute>
         }
       />

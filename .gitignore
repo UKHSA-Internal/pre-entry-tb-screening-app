@@ -47,3 +47,6 @@ coverage
 # local development files
 .localstack-data
 openapi-docs.json
+
+# Dependency lock files
+package-lock.json

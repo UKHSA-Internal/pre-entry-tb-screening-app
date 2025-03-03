@@ -1,13 +1,13 @@
-import "./medical-screening-confirmation.scss";
+import "./applicant-summary.scss";
 
 import { Helmet } from "react-helmet-async";
 
 import Breadcrumb, { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
-import Confirmation from "@/components/confirmation/confirmation";
 import Footer from "@/components/footer/footer";
 import Header from "@/components/header/header";
+import ChestXrayNotTakenForm from "@/sections/chest-xray-not-taken-form";
 
-export default function MedicalConfirmation() {
+export default function ChestXrayNotTaken() {
   const breadcrumbItems: IBreadcrumbItem[] = [
     {
       text: "Application progress tracker",
@@ -15,22 +15,18 @@ export default function MedicalConfirmation() {
     },
   ];
 
-  const furtherInfo = ["The applicant is now ready to conduct their chest x-ray or sputum test."];
-
   return (
     <body className="govuk-template__body">
       <Helmet>
-        <title> Medical Screening Confirmation</title>
+        <title> Chest X-ray Not Taken</title>
       </Helmet>
       <Header />
       <div className="govuk-width-container">
         <Breadcrumb items={breadcrumbItems} />
-        <Confirmation
-          confirmationText={"Medical screening record created"}
-          furtherInfo={furtherInfo}
-          buttonText={"Continue to chest x-ray"}
-          buttonLink={"/chest-xray-question"}
-        />
+        <main className="govuk-main-wrapper">
+          <h1 className="govuk-heading-l">Enter reason X-ray not taken</h1>
+          <ChestXrayNotTakenForm />
+        </main>
       </div>
       <Footer />
     </body>
