@@ -20,11 +20,11 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 const chestXrayTakenState: ChestXrayDetailsType = {
   chestXrayTaken: true,
   posteroAnteriorXray: true,
-  posteroAnteriorXrayFile: "FileName",
+  posteroAnteriorXrayFile: "Example FileName",
   apicalLordoticXray: true,
-  apicalLordoticXrayFile: "FileName",
+  apicalLordoticXrayFile: "Example FileName",
   lateralDecubitusXray: true,
-  lateralDecubitusXrayFile: "FileName",
+  lateralDecubitusXrayFile: "Example FileName",
   reasonXrayWasNotTaken: null,
   xrayWasNotTakenFurtherDetails: null,
   reasonXrayNotTakenDetail: null,
@@ -35,9 +35,9 @@ const chestXrayTakenState: ChestXrayDetailsType = {
   dateOfRadiologicalInterpretation: null,
   sputumCollected: false,
   reasonWhySputumNotRequired: null,
-  xrayResult: "",
-  xrayResultDetail: "",
-  xrayFindingsList: [],
+  xrayResult: "Chest X-ray normal",
+  xrayResultDetail: "Extra Details on Chest X-ray",
+  xrayFindingsList: ["Single fibrous streak or band or scar"],
 };
 
 const chestXrayNotTakenState: ChestXrayDetailsType = {
@@ -113,8 +113,11 @@ describe("ChestXraySummaryPage", () => {
       );
     });
     it("renders the page titles and descriptions ", () => {
-      expect(screen.getByText("Upload chest X-ray images")).toBeInTheDocument();
-      expect(screen.getByText("Enter X-ray Results and Findings")).toBeInTheDocument();
+      expect(screen.getByText("Postero anterior X-ray")).toBeInTheDocument();
+      expect(screen.getByText("Apical lordotic X-ray")).toBeInTheDocument();
+      expect(screen.getByText("Lateral decubitus X-ray")).toBeInTheDocument();
+      expect(screen.getByText("Chest X-ray Result")).toBeInTheDocument();
+      expect(screen.getByText("Chest X-ray Findings")).toBeInTheDocument();
     });
   });
   describe("Chest Not X-ray Taken", () => {

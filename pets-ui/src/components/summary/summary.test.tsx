@@ -1,0 +1,40 @@
+import { render, screen } from "@testing-library/react";
+import { BrowserRouter as Router } from "react-router-dom";
+import { describe, expect, it } from "vitest";
+
+import { renderWithProviders } from "@/utils/test-utils";
+
+import Summary from "./summary";
+
+const summaryData = [
+  {
+    key: "Example Title",
+    value: "A typical value",
+    link: "/example-link",
+    hiddenLabel: "Hidden Label Example",
+  },
+];
+
+describe("Summary Component", () => {
+  it("renders correctly when props are specified", () => {
+    renderWithProviders(
+      <Router>
+        <Summary summaryElements={summaryData} />
+      </Router>,
+    );
+    expect(screen.getByText("Example Title")).toBeInTheDocument();
+    expect(screen.getByText("A typical value")).toBeInTheDocument();
+    expect(screen.getByText("Hidden Label Example")).toBeInTheDocument();
+  });
+  it("renders a link attached to the word 'Change'", () => {
+    render(
+      <Router>
+        <Summary summaryElements={summaryData} />
+      </Router>,
+    );
+    expect(screen.getByText("Change")).toBeInTheDocument();
+    expect(screen.getAllByRole("link")).toHaveLength(1);
+    const changeLink = screen.getAllByRole("link")[0];
+    expect(changeLink.getAttribute("href")).toEqual("/example-link");
+  });
+});

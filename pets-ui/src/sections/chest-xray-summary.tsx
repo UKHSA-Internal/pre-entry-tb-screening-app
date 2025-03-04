@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import { ChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
+import Summary, { SummaryElement } from "@/components/summary/summary";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { selectChestXray } from "@/redux/chestXraySlice";
 import { useAppSelector } from "@/redux/hooks";
@@ -13,10 +13,61 @@ const ChestXraySummary = () => {
   const chestXrayData = useAppSelector(selectChestXray);
   const navigate = useNavigate();
 
+  const xrayTakenSummary = [
+    {
+      key: "Select X-ray Status",
+      value: chestXrayData.chestXrayTaken ? "Yes" : "No",
+      link: "/chest-xray-question#chestXrayTaken",
+      hiddenLabel: "Chest X-ray Status",
+    },
+    {
+      key: "Postero anterior X-ray",
+      value: chestXrayData.posteroAnteriorXrayFile,
+      link: "/chest-xray-upload",
+      hiddenLabel: "Postero-anterior X-ray",
+    },
+    {
+      key: "Apical lordotic X-ray",
+      value: chestXrayData.apicalLordoticXrayFile,
+      link: "/chest-xray-upload",
+      hiddenLabel: "Postero-anterior X-ray",
+    },
+    {
+      key: "Lateral decubitus X-ray",
+      value: chestXrayData.lateralDecubitusXrayFile,
+      link: "/chest-xray-upload",
+      hiddenLabel: "Postero-anterior X-ray",
+    },
+    {
+      key: "Chest X-ray Result",
+      value: chestXrayData.xrayResult,
+      link: "/chest-xray-findings",
+      hiddenLabel: "X-ray Result",
+    },
+    {
+      key: "Chest X-ray Findings",
+      value: chestXrayData.xrayResultDetail,
+      link: "/chest-xray-findings",
+      hiddenLabel: "X-ray Findings",
+    },
+    {
+      key: "Enter reason X-ray not taken",
+      value: chestXrayData.reasonXrayWasNotTaken,
+      link: "/chest-xray-not-taken#reasonXrayWasNotTaken",
+      hiddenLabel: "Reason X-ray not taken",
+    },
+  ];
+
+  const isDataPresent = (
+    summaryElement: Partial<SummaryElement>,
+  ): summaryElement is SummaryElement => {
+    return !!summaryElement.value;
+  };
+
   return (
     <div>
       <ApplicantDataHeader applicantData={applicantData} />
-      <ChestXrayTakenSummaryDetails chestXrayData={chestXrayData} />
+      <Summary summaryElements={xrayTakenSummary.filter(isDataPresent)} />
       <Button
         id="save-and-continue"
         type={ButtonType.DEFAULT}
@@ -25,67 +76,6 @@ const ChestXraySummary = () => {
         handleClick={() => navigate("/chest-xray-confirmation")}
       />
     </div>
-  );
-};
-
-const ChestXrayTakenSummaryDetails = ({
-  chestXrayData,
-}: {
-  chestXrayData: ChestXrayDetailsType;
-}) => {
-  return (
-    <dl className="govuk-summary-list">
-      <div className="govuk-summary-list__row">
-        <dt className="govuk-summary-list__key">Select X-ray Status</dt>
-        <dd className="govuk-summary-list__value">{chestXrayData.chestXrayTaken}</dd>
-        <dd className="govuk-summary-list__actions">
-          <Link
-            className="govuk-link"
-            style={{ color: "#1d70b8" }}
-            to="/chest-xray-question#chestXrayTaken"
-          >
-            Change<span className="govuk-visually-hidden">Chest X-ray Status</span>
-          </Link>
-        </dd>
-      </div>
-      {chestXrayData.chestXrayTaken ? (
-        <>
-          <div className="govuk-summary-list__row">
-            <dt className="govuk-summary-list__key">Upload chest X-ray images</dt>
-            <dd className="govuk-summary-list__value">{chestXrayData.posteroAnteriorXrayFile}</dd>
-            <dd className="govuk-summary-list__actions">
-              <Link className="govuk-link" style={{ color: "#1d70b8" }} to="/chest-xray-upload">
-                Change<span className="govuk-visually-hidden">Upload Chest X-ray Images</span>
-              </Link>
-            </dd>
-          </div>
-          <div className="govuk-summary-list__row">
-            <dt className="govuk-summary-list__key">Enter X-ray Results and Findings</dt>
-            <dd className="govuk-summary-list__value">{chestXrayData.xrayResult}</dd>
-            <dd className="govuk-summary-list__actions">
-              <Link className="govuk-link" style={{ color: "#1d70b8" }} to="/chest-xray-findings">
-                Change
-                <span className="govuk-visually-hidden">X-ray Results and Findings</span>
-              </Link>
-            </dd>
-          </div>
-        </>
-      ) : (
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Enter reason X-ray not taken</dt>
-          <dd className="govuk-summary-list__value">{chestXrayData.reasonXrayWasNotTaken}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link
-              className="govuk-link"
-              style={{ color: "#1d70b8" }}
-              to="/chest-xray-not-taken#reasonXrayWasNotTaken"
-            >
-              Change<span className="govuk-visually-hidden">Reason X-ray not taken</span>
-            </Link>
-          </dd>
-        </div>
-      )}
-    </dl>
   );
 };
 
