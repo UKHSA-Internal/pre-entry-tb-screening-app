@@ -11,6 +11,7 @@ import ChestXrayNotTaken from "./pages/chest-xray-not-taken";
 import ChestXrayQuestionPage from "./pages/chest-xray-question";
 import ChestXrayUploadPage from "./pages/chest-xray-upload";
 import ContactDetailsPage from "./pages/contact-details";
+import ErrorPage from "./pages/error-page";
 import HomePage from "./pages/home-page";
 import MedicalScreeningPage from "./pages/medical-screening";
 import MedicalConfirmation from "./pages/medical-screening-confirmation";
@@ -196,6 +197,14 @@ function App() {
         element={
           <AuthenticatedRoute>
             <ApiDocs />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/error"
+        element={
+          <AuthenticatedRoute>
+            <ErrorPage />
           </AuthenticatedRoute>
         }
       />
