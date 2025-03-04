@@ -80,7 +80,8 @@ export const postApplicantDetails = async (
   applicantDetails: ApplicantResponseDetailsType,
 ) => {
   try {
-    await petsApi.post(`/applicant/register/${applicationId}`, applicantDetails);
+    const result = await petsApi.post(`/applicant/register/${applicationId}`, applicantDetails);
+    return { status: result.status, statusText: result.statusText };
   } catch (_error) {
     if (isAxiosError(_error)) {
       throw new AxiosError(
@@ -101,7 +102,11 @@ export const postTravelDetails = async (
   travelDetails: TravelResponseDetailsType,
 ) => {
   try {
-    await petsApi.post(`/application/${applicationId}/travel-information`, travelDetails);
+    const result = await petsApi.post(
+      `/application/${applicationId}/travel-information`,
+      travelDetails,
+    );
+    return { status: result.status, statusText: result.statusText };
   } catch (_error) {
     if (isAxiosError(_error)) {
       throw new AxiosError(
@@ -122,7 +127,11 @@ export const postMedicalDetails = async (
   medicalScreeningDetails: MedicalResponseScreeningType,
 ) => {
   try {
-    await petsApi.post(`/application/${applicationId}/medical-screening`, medicalScreeningDetails);
+    const result = await petsApi.post(
+      `/application/${applicationId}/medical-screening`,
+      medicalScreeningDetails,
+    );
+    return { status: result.status, statusText: result.statusText };
   } catch (_error) {
     if (isAxiosError(_error)) {
       throw new AxiosError(
