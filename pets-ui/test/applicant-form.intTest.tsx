@@ -98,7 +98,7 @@ test("state is updated from ApplicantForm and then read by ApplicantReview", asy
   expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Sigmund Sigmundson");
   expect(screen.getAllByRole("term")[1]).toHaveTextContent("Sex");
   expect(screen.getAllByRole("definition")[2]).toHaveTextContent("Male");
-  expect(screen.getAllByRole("definition")[3]).toHaveTextContent("Other");
+  expect(screen.getAllByRole("definition")[2]).toHaveTextContent("Other");
   expect(screen.getAllByRole("term")[2]).toHaveTextContent("Country of Nationality");
   expect(screen.getAllByRole("definition")[4]).toHaveTextContent("NOR");
   expect(screen.getAllByRole("term")[3]).toHaveTextContent("Date of Birth");
