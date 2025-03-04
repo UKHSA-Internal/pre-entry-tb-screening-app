@@ -1,10 +1,8 @@
 import "./medical-screening-summary.scss";
 
-import { Helmet } from "react-helmet-async";
-
-import Breadcrumb, { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
-import Footer from "@/components/footer/footer";
-import Header from "@/components/header/header";
+import { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
+import Container from "@/components/container/container";
+import Heading from "@/components/heading/heading";
 import MedicalScreeningReview from "@/sections/medical-screening-summary";
 
 export default function MedicalSummaryPage() {
@@ -16,19 +14,9 @@ export default function MedicalSummaryPage() {
   ];
 
   return (
-    <body className="govuk-template__body">
-      <Helmet>
-        <title> Medical Screening Summary</title>
-      </Helmet>
-      <Header />
-      <div className="govuk-width-container">
-        <Breadcrumb items={breadcrumbItems} />
-        <main className="govuk-main-wrapper">
-          <h1 className="govuk-heading-l">Check medical screening</h1>
-          <MedicalScreeningReview />
-        </main>
-      </div>
-      <Footer />
-    </body>
+    <Container title="Medical Screening Summary" breadcrumbItems={breadcrumbItems}>
+      <Heading level={1} size="l" title="Check medical screening" />
+      <MedicalScreeningReview />
+    </Container>
   );
 }

@@ -7,6 +7,7 @@ import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorDisplay from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
+import Heading from "@/components/heading/heading";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectTravel, setTravelDetails } from "@/redux/travelSlice";
 import { ButtonType } from "@/utils/enums";
@@ -69,7 +70,12 @@ const ApplicantTravelForm = () => {
         {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
 
         <div ref={visaTypeRef}>
-          <h2 className="govuk-label govuk-label--m">Visa type</h2>
+          <Heading
+            level={2}
+            size="m"
+            title="Visa type"
+            style={{ marginTop: 40, marginBottom: 10 }}
+          />
           <Dropdown
             id="visa-type"
             options={visaOptions}
@@ -80,7 +86,12 @@ const ApplicantTravelForm = () => {
           />
         </div>
 
-        <h2 className="govuk-label govuk-label--m">Applicant&apos;s UK address</h2>
+        <Heading
+          level={2}
+          size="m"
+          title="Applicant's UK address"
+          style={{ marginTop: 40, marginBottom: 10 }}
+        />
 
         <div ref={addressLine1Ref}>
           <FreeText
@@ -135,7 +146,12 @@ const ApplicantTravelForm = () => {
         </div>
 
         <div ref={mobileNumberRef}>
-          <h2 className="govuk-label govuk-label--m">Applicant&apos;s UK phone number</h2>
+          <Heading
+            level={2}
+            size="m"
+            title="Applicant's UK phone number"
+            style={{ marginTop: 40, marginBottom: 10 }}
+          />
           <FreeText
             id="mobile-number"
             errorMessage={errors?.ukMobileNumber?.message ?? ""}
@@ -148,7 +164,12 @@ const ApplicantTravelForm = () => {
         </div>
 
         <div ref={emailRef}>
-          <h2 className="govuk-label govuk-label--m">Applicant&apos;s UK email</h2>
+          <Heading
+            level={2}
+            size="m"
+            title="Applicant's UK email"
+            style={{ marginTop: 40, marginBottom: 10 }}
+          />
           <FreeText
             id="email"
             errorMessage={errors?.ukEmail?.message ?? ""}
