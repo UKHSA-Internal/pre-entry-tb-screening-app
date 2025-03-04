@@ -15,7 +15,7 @@ export default function ChestXrayFindingsPage() {
   ];
 
   return (
-    <Container breadcrumbItems={breadcrumbItems} title="Enter Chest X-Ray Findings">
+    <Container breadcrumbItems={breadcrumbItems} title="Enter radiological outcome and findings">
       <NotificationBanner
         bannerTitle="Important"
         bannerText="If a visa applicant's chest X-rays indicate that they have pulmonary TB, give them a referral letter and copies of the:"
