@@ -30,9 +30,14 @@ const MedicalScreeningForm = () => {
 
   const onSubmit: SubmitHandler<MedicalScreeningType> = (medicalScreeningData) => {
     if (typeof medicalScreeningData.age == "string") {
-      medicalScreeningData.age = parseInt(medicalScreeningData.age);
+      const updatedMedicalScreeningData = {
+        ...medicalScreeningData,
+        age: parseInt(medicalScreeningData.age),
+      };
+      dispatch(setMedicalScreeningDetails(updatedMedicalScreeningData));
+    } else {
+      dispatch(setMedicalScreeningDetails(medicalScreeningData));
     }
-    dispatch(setMedicalScreeningDetails(medicalScreeningData));
     navigate("/medical-summary");
   };
 
