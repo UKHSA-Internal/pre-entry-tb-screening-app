@@ -108,7 +108,7 @@ const ApplicantForm = () => {
             id="sex"
             legend="Sex"
             isInline={RadioIsInline.TRUE}
-            answerOptions={["Female", "Male"]}
+            answerOptions={["Female", "Male", "Other"]}
             sortAnswersAlphabetically={false}
             errorMessage={errors?.sex?.message ?? ""}
             formValue="sex"
