@@ -6,6 +6,7 @@ import { ChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import ErrorDisplay from "@/components/errorSummary/errorSummary";
+import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import TextArea from "@/components/textArea/textArea";
 import { selectApplicant } from "@/redux/applicantSlice";
@@ -30,7 +31,7 @@ const ChestXrayNotTakenForm = () => {
     watch,
   } = methods;
 
-  const onSubmit: SubmitHandler<ChestXrayDetailsType> = (chestXrayData: ChestXrayDetailsType) => {
+  const onSubmit: SubmitHandler<ChestXrayDetailsType> = () => {
     dispatch(setReasonXrayWasNotTaken(chestXrayData.reasonXrayWasNotTaken));
     dispatch(setXrayWasNotTakenFurtherDetails(chestXrayData.xrayWasNotTakenFurtherDetails));
     navigate("/xray-not-taken-summary");
@@ -48,7 +49,7 @@ const ChestXrayNotTakenForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
         <ApplicantDataHeader applicantData={applicantData} />
-        <h2>Reason X-ray not taken</h2>
+        <Heading level={2} title="Reason X-ray not taken" />
         <div ref={reasonXrayNotTakenRef}>
           <Radio
             id="reason-xray-not-taken"
@@ -61,7 +62,7 @@ const ChestXrayNotTakenForm = () => {
             required="Select the reason why the chest X-ray was not taken."
           />
         </div>
-        <h2>Notes</h2>
+        <Heading level={2} title="Notes" />
         <div ref={xrayNotTakenFurtherDetailsRef}>
           <TextArea
             id="xray-not-taken-further-details"

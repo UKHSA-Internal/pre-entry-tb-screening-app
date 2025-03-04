@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/button/button";
 import { ButtonType } from "@/utils/enums";
 
+import Heading from "../heading/heading";
+
 export interface ConfirmationProps {
   confirmationText: string;
   furtherInfo: Array<string | JSX.Element>;
@@ -19,7 +21,7 @@ export default function Confirmation(props: Readonly<ConfirmationProps>) {
           <div className="govuk-panel govuk-panel--confirmation">
             <h1 className="govuk-panel__title">{props.confirmationText}</h1>
           </div>
-          <h2 className="govuk-heading-m">What happens next</h2>
+          <Heading level={2} size="m" title="What happens next" />
           {props.furtherInfo.map((info, i) => {
             return (
               <p className="govuk-body" key={i}>
