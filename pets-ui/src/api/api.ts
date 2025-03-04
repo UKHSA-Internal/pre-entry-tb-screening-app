@@ -37,7 +37,7 @@ export const getApplicants = async (passportDetails: ApplicantSearchFormType) =>
   }
 };
 
-export const getApplication = async (applicationId: string) => {
+export const getApplication = async (applicationId: string | undefined) => {
   try {
     const result = await petsApi.get(`/application/${applicationId}`);
     return result as AxiosResponse<ApplicationResponseDetailsType>;
