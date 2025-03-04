@@ -49,6 +49,7 @@ test("state is updated from ApplicantTravelForm and then read by TravelReview", 
   await user.type(screen.getByTestId("email"), "sigmund.sigmundson@asgard.gov");
 
   expect(screen.getAllByRole("combobox")[0]).toHaveValue("Government Sponsored");
+  expect(screen.getAllByRole("combobox")[0]).toHaveValue("British National (Overseas)");
   expect(screen.getByTestId("address-1")).toHaveValue("Edinburgh Castle, Castlehill");
   expect(screen.getByTestId("town-or-city")).toHaveValue("Edinburgh");
   expect(screen.getByTestId("postcode")).toHaveValue("EH1 2NG");
@@ -59,6 +60,7 @@ test("state is updated from ApplicantTravelForm and then read by TravelReview", 
 
   expect(screen.getAllByRole("term")[0]).toHaveTextContent("Visa type");
   expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Government Sponsored");
+  expect(screen.getAllByRole("definition")[0]).toHaveTextContent("British National (Overseas)");
   expect(screen.getAllByRole("term")[1]).toHaveTextContent("UK Address Line 1");
   expect(screen.getAllByRole("definition")[2]).toHaveTextContent("Edinburgh Castle, Castlehill");
   expect(screen.getAllByRole("term")[2]).toHaveTextContent("UK Address Line 2");
