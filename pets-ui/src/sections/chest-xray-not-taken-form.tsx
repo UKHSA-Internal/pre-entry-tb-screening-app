@@ -31,13 +31,9 @@ const ChestXrayNotTakenForm = () => {
     watch,
   } = methods;
 
-  const updateReduxStore = () => {
+  const onSubmit: SubmitHandler<ChestXrayDetailsType> = () => {
     dispatch(setReasonXrayWasNotTaken(chestXrayData.reasonXrayWasNotTaken));
     dispatch(setXrayWasNotTakenFurtherDetails(chestXrayData.xrayWasNotTakenFurtherDetails));
-  };
-
-  const onSubmit: SubmitHandler<ChestXrayDetailsType> = () => {
-    updateReduxStore();
     navigate("/xray-not-taken-summary");
   };
 

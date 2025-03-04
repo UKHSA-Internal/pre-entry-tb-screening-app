@@ -88,7 +88,7 @@ const ChestXrayForm = () => {
         <div>
           <ApplicantDataHeader applicantData={applicantData} />
 
-          <Heading level={3} size="m" title="Postero-anterior X-ray" />
+          <Heading level={2} size="m" title="Postero-anterior X-ray" />
           <FileUploadModule
             id="postero-anterior-xray"
             name="Postero-anterior"
@@ -97,7 +97,7 @@ const ChestXrayForm = () => {
             errors={errors}
           />
 
-          <Heading level={3} size="m" title="Apical lordotic X-ray (optional)" />
+          <Heading level={2} size="m" title="Apical lordotic X-ray (optional)" />
           <FileUploadModule
             id="apical-lordotic-xray"
             name="Apical-lordotic"
@@ -106,7 +106,7 @@ const ChestXrayForm = () => {
             errors={errors}
           />
 
-          <Heading size="m" level={3} title="Lateral decubitus X-ray (optional)" />
+          <Heading level={2} size="m" title="Lateral decubitus X-ray (optional)" />
           <FileUploadModule
             id="lateral-decubitus-xray"
             name="Lateral-decubitus"
