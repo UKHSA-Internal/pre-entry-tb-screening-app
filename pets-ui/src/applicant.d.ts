@@ -1,4 +1,4 @@
-import { ApplicationStatus } from "./utils/enums";
+import { ApplicationStatus, BackendApplicationStatus } from "./utils/enums";
 
 type ApplicantDetailsType = {
   status: ApplicationStatus;
@@ -126,7 +126,7 @@ type CertificationDetailsType = {
 type ApplicantResponseDetailsType = {
   applicationId?: string;
   dateCreated?: string;
-  status: string;
+  status: BackendApplicationStatus;
   fullName: string;
   sex: string;
   dateOfBirth: string;
@@ -148,7 +148,7 @@ type ApplicantResponseDetailsType = {
 type TravelResponseDetailsType = {
   applicationId: string;
   dateCreated: string;
-  status: string;
+  status: BackendApplicationStatus;
   ukAddressLine1: string;
   ukAddressLine2?: string;
   ukAddressLine3?: string;
@@ -163,7 +163,7 @@ type TravelResponseDetailsType = {
 type MedicalResponseScreeningType = {
   applicationId: string;
   dateCreated: string;
-  status: string;
+  status: BackendApplicationStatus;
   age: number | "";
   contactWithPersonWithTb: string;
   contactWithTbDetails: string;

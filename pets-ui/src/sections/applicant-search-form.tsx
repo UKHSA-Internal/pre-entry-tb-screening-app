@@ -35,6 +35,7 @@ import { ApplicationStatus, ButtonType } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/helpers";
 
 import { getApplicants, getApplication } from "../api/api";
+import { BackendApplicationStatus } from "../utils/enums";
 
 const ApplicantSearchForm = () => {
   const navigate = useNavigate();
@@ -95,7 +96,7 @@ const ApplicantSearchForm = () => {
       postcode: applicantData.postcode,
     };
     dispatch(setApplicantDetails(reduxApplicantData));
-    if (applicantData.status == "completed") {
+    if (applicantData.status == BackendApplicationStatus.COMPLETE) {
       dispatch(setApplicantDetailsStatus(ApplicationStatus.COMPLETE));
     } else {
       dispatch(setApplicantDetailsStatus(ApplicationStatus.INCOMPLETE));
@@ -120,7 +121,7 @@ const ApplicantSearchForm = () => {
         ukEmail: travelData.ukEmailAddress,
       };
       dispatch(setTravelDetails(reduxTravelData));
-      if (travelData.status == "completed") {
+      if (travelData.status == BackendApplicationStatus.COMPLETE) {
         dispatch(setTravelDetailsStatus(ApplicationStatus.COMPLETE));
       } else {
         dispatch(setTravelDetailsStatus(ApplicationStatus.INCOMPLETE));
@@ -145,7 +146,7 @@ const ApplicantSearchForm = () => {
         physicalExamNotes: medicalScreeningData.physicalExaminationNotes,
       };
       dispatch(setMedicalScreeningDetails(reduxMedicalScreeningData));
-      if (medicalScreeningData.status == "completed") {
+      if (medicalScreeningData.status == BackendApplicationStatus.COMPLETE) {
         dispatch(setMedicalScreeningStatus(ApplicationStatus.COMPLETE));
       } else {
         dispatch(setMedicalScreeningStatus(ApplicationStatus.INCOMPLETE));
