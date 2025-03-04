@@ -6,7 +6,7 @@ import Button from "@/components/button/button";
 import { selectApplicant, setApplicantDetailsStatus } from "@/redux/applicantSlice";
 import { setApplicationDetails } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus, BackendApplicationStatus, ButtonType } from "@/utils/enums";
 import { standardiseDayOrMonth } from "@/utils/helpers";
 
 const ApplicantReview = () => {
@@ -23,7 +23,7 @@ const ApplicantReview = () => {
       const issueDateStr = `${applicantData.passportIssueDate.year}-${standardiseDayOrMonth(applicantData.passportIssueDate.month)}-${standardiseDayOrMonth(applicantData.passportIssueDate.day)}`;
       const expiryDateStr = `${applicantData.passportExpiryDate.year}-${standardiseDayOrMonth(applicantData.passportExpiryDate.month)}-${standardiseDayOrMonth(applicantData.passportExpiryDate.day)}`;
       await postApplicantDetails(applicationRes.data.applicationId, {
-        status: ApplicationStatus.COMPLETE,
+        status: BackendApplicationStatus.COMPLETE,
         fullName: applicantData.fullName,
         sex: applicantData.sex,
         dateOfBirth: dateOfBirthStr,

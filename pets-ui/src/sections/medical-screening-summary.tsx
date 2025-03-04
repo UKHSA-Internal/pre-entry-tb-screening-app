@@ -7,7 +7,7 @@ import { selectApplicant } from "@/redux/applicantSlice";
 import { selectApplication } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectMedicalScreening, setMedicalScreeningStatus } from "@/redux/medicalScreeningSlice";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus, BackendApplicationStatus, ButtonType } from "@/utils/enums";
 
 const MedicalScreeningReview = () => {
   const applicantData = useAppSelector(selectApplicant);
@@ -21,7 +21,7 @@ const MedicalScreeningReview = () => {
       await postMedicalDetails(applicationData.applicationId, {
         applicationId: applicationData.applicationId,
         dateCreated: applicationData.dateCreated,
-        status: ApplicationStatus.COMPLETE,
+        status: BackendApplicationStatus.COMPLETE,
         age: medicalData.age,
         symptomsOfTb: medicalData.tbSymptoms,
         symptoms: medicalData.tbSymptomsList,

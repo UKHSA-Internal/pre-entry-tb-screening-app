@@ -6,7 +6,7 @@ import Button from "@/components/button/button";
 import { selectApplication } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectTravel, setTravelDetailsStatus } from "@/redux/travelSlice";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus, BackendApplicationStatus, ButtonType } from "@/utils/enums";
 
 const TravelReview = () => {
   const applicationData = useAppSelector(selectApplication);
@@ -19,7 +19,7 @@ const TravelReview = () => {
       await postTravelDetails(applicationData.applicationId, {
         applicationId: applicationData.applicationId,
         dateCreated: applicationData.dateCreated,
-        status: ApplicationStatus.COMPLETE,
+        status: BackendApplicationStatus.COMPLETE,
         visaCategory: travelData.visaType,
         ukAddressLine1: travelData.applicantUkAddress1,
         ukAddressLine2: travelData.applicantUkAddress2,
