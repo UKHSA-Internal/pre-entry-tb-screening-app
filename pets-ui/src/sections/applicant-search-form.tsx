@@ -4,14 +4,14 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 import {
-  ApplicantDetailsType,
-  ApplicantResponseDetailsType,
   ApplicantSearchFormType,
   DateType,
-  MedicalResponseScreeningType,
-  MedicalScreeningType,
-  TravelDetailsType,
-  TravelResponseDetailsType,
+  ReceivedApplicantDetailsType,
+  ReceivedMedicalScreeningType,
+  ReceivedTravelDetailsType,
+  ReduxApplicantDetailsType,
+  ReduxMedicalScreeningType,
+  ReduxTravelDetailsType,
 } from "@/applicant";
 import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
@@ -60,7 +60,7 @@ const ApplicantSearchForm = () => {
     dispatch(setCountryOfIssue(applicantSearchData.countryOfIssue));
   };
 
-  const updateReduxApplicantDetails = (applicantData: ApplicantResponseDetailsType) => {
+  const updateReduxApplicantDetails = (applicantData: ReceivedApplicantDetailsType) => {
     const dateOfBirthObj: DateType = {
       year: applicantData.dateOfBirth.split("-")[0],
       month: applicantData.dateOfBirth.split("-")[1],
@@ -76,7 +76,7 @@ const ApplicantSearchForm = () => {
       month: applicantData.issueDate.split("-")[1],
       day: applicantData.issueDate.split("-")[2],
     };
-    const reduxApplicantData: ApplicantDetailsType = {
+    const reduxApplicantData: ReduxApplicantDetailsType = {
       status: ApplicationStatus.INCOMPLETE,
       fullName: applicantData.fullName,
       sex: applicantData.sex,
@@ -104,11 +104,11 @@ const ApplicantSearchForm = () => {
   };
 
   const updateReduxApplicationDetails = (
-    travelData: TravelResponseDetailsType | undefined,
-    medicalScreeningData: MedicalResponseScreeningType | undefined,
+    travelData: ReceivedTravelDetailsType | undefined,
+    medicalScreeningData: ReceivedMedicalScreeningType | undefined,
   ) => {
     if (travelData) {
-      const reduxTravelData: TravelDetailsType = {
+      const reduxTravelData: ReduxTravelDetailsType = {
         status: ApplicationStatus.INCOMPLETE,
         visaType: travelData.visaCategory,
         applicantUkAddress1: travelData.ukAddressLine1,
@@ -129,7 +129,7 @@ const ApplicantSearchForm = () => {
     }
 
     if (medicalScreeningData) {
-      const reduxMedicalScreeningData: MedicalScreeningType = {
+      const reduxMedicalScreeningData: ReduxMedicalScreeningType = {
         status: ApplicationStatus.INCOMPLETE,
         age: medicalScreeningData.age.toString(),
         tbSymptoms: medicalScreeningData.symptomsOfTb,

@@ -1,9 +1,9 @@
 import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ApplicationDetailsType } from "@/applicant";
+import { ApplicationIdAndDateCreatedType } from "@/applicant";
 
-const initialState: ApplicationDetailsType = {
+const initialState: ApplicationIdAndDateCreatedType = {
   applicationId: "",
   dateCreated: "",
 };
@@ -18,7 +18,7 @@ export const applicationSlice = createSlice({
     setDateCreated: (state, action: PayloadAction<string>) => {
       state.dateCreated = action.payload;
     },
-    setApplicationDetails: (state, action: PayloadAction<ApplicationDetailsType>) => {
+    setApplicationDetails: (state, action: PayloadAction<ApplicationIdAndDateCreatedType>) => {
       state.applicationId = action.payload.applicationId;
       state.dateCreated = action.payload.dateCreated;
     },

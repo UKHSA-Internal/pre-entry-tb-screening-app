@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import { ChestXrayDetailsType } from "@/applicant";
+import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import FileUpload from "@/components/fileUpload/fileUpload";
@@ -22,7 +22,7 @@ const FileUploadModule = (
     name: string;
     setFileState: Dispatch<SetStateAction<string | null>>;
     required: boolean;
-    errors: FieldErrors<ChestXrayDetailsType>;
+    errors: FieldErrors<ReduxChestXrayDetailsType>;
     accept?: string;
     maxSize?: number;
   }>,
@@ -44,7 +44,9 @@ const FileUploadModule = (
               required={
                 props.required ? `Select a ${props.name.toLowerCase()} X-ray image file` : false
               }
-              errorMessage={props.errors[props.id as keyof ChestXrayDetailsType]?.message ?? ""}
+              errorMessage={
+                props.errors[props.id as keyof ReduxChestXrayDetailsType]?.message ?? ""
+              }
               accept={props.accept ?? "jpg,jpeg,png,pdf"}
               maxSize={props.maxSize ?? 5}
               setFileState={props.setFileState}
@@ -65,13 +67,13 @@ const ChestXrayForm = () => {
   const [ALFile, setALFile] = useState<string | null>(null);
   const [LDFile, setLDFile] = useState<string | null>(null);
 
-  const methods = useForm<ChestXrayDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,
     formState: { errors },
   } = methods;
 
-  const onSubmit: SubmitHandler<ChestXrayDetailsType> = () => {
+  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = () => {
     updateReduxStore();
     navigate("/chest-xray-findings");
   };

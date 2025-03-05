@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { MedicalScreeningType } from "@/applicant";
+import { ReduxMedicalScreeningType } from "@/applicant";
 import Button from "@/components/button/button";
 import Checkbox from "@/components/checkbox/checkbox";
 import ErrorDisplay from "@/components/errorSummary/errorSummary";
@@ -18,7 +18,7 @@ import { formRegex } from "@/utils/helpers";
 const MedicalScreeningForm = () => {
   const navigate = useNavigate();
 
-  const methods = useForm<MedicalScreeningType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxMedicalScreeningType>({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,
     formState: { errors },
@@ -28,7 +28,7 @@ const MedicalScreeningForm = () => {
   const medicalData = useAppSelector(selectMedicalScreening);
   const dispatch = useAppDispatch();
 
-  const onSubmit: SubmitHandler<MedicalScreeningType> = (medicalScreeningData) => {
+  const onSubmit: SubmitHandler<ReduxMedicalScreeningType> = (medicalScreeningData) => {
     dispatch(setMedicalScreeningDetails(medicalScreeningData));
     navigate("/medical-summary");
   };

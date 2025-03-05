@@ -1,10 +1,10 @@
 import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { TravelDetailsType } from "@/applicant";
+import { ReduxTravelDetailsType } from "@/applicant";
 import { ApplicationStatus } from "@/utils/enums";
 
-const initialState: TravelDetailsType = {
+const initialState: ReduxTravelDetailsType = {
   status: ApplicationStatus.INCOMPLETE,
   visaType: "",
   applicantUkAddress1: "",
@@ -43,7 +43,7 @@ export const travelSlice = createSlice({
     setUkEmail: (state, action: PayloadAction<string>) => {
       state.ukEmail = action.payload;
     },
-    setTravelDetails: (state, action: PayloadAction<TravelDetailsType>) => {
+    setTravelDetails: (state, action: PayloadAction<ReduxTravelDetailsType>) => {
       state.visaType = action.payload.visaType;
       state.applicantUkAddress1 = action.payload.applicantUkAddress1;
       state.applicantUkAddress2 = action.payload.applicantUkAddress2 ?? "";

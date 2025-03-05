@@ -1,12 +1,13 @@
 import axios, { AxiosResponse } from "axios";
 
 import {
-  ApplicantResponseDetailsType,
   ApplicantSearchFormType,
-  ApplicationDetailsType,
-  ApplicationResponseDetailsType,
-  MedicalResponseScreeningType,
-  TravelResponseDetailsType,
+  ApplicationIdAndDateCreatedType,
+  PostedApplicantDetailsType,
+  PostedMedicalScreeningType,
+  PostedTravelDetailsType,
+  ReceivedApplicantDetailsType,
+  ReceivedApplicationDetailsType,
 } from "@/applicant";
 
 export const petsApi = axios.create({
@@ -20,13 +21,13 @@ export const getApplicants = async (passportDetails: ApplicantSearchFormType) =>
       countryofissue: passportDetails.countryOfIssue,
     },
   });
-  return result as AxiosResponse<ApplicantResponseDetailsType[]>;
+  return result as AxiosResponse<ReceivedApplicantDetailsType[]>;
 };
 
-export const getApplication = async (applicantData: ApplicantResponseDetailsType[]) => {
+export const getApplication = async (applicantData: ReceivedApplicantDetailsType[]) => {
   if (applicantData[0]) {
     const result = await petsApi.get(`/application/${applicantData[0].applicationId}`);
-    return result as AxiosResponse<ApplicationResponseDetailsType>;
+    return result as AxiosResponse<ReceivedApplicationDetailsType>;
   } else {
     throw new Error("Applicant data in unexpected format or does not exist");
   }
@@ -34,12 +35,12 @@ export const getApplication = async (applicantData: ApplicantResponseDetailsType
 
 export const createNewApplication = async () => {
   const result = await petsApi.post("/application");
-  return result as AxiosResponse<ApplicationDetailsType>;
+  return result as AxiosResponse<ApplicationIdAndDateCreatedType>;
 };
 
 export const postApplicantDetails = async (
   applicationId: string,
-  applicantDetails: ApplicantResponseDetailsType,
+  applicantDetails: PostedApplicantDetailsType,
 ) => {
   const result = await petsApi.post(`/applicant/register/${applicationId}`, applicantDetails);
   return { status: result.status, statusText: result.statusText };
@@ -47,7 +48,7 @@ export const postApplicantDetails = async (
 
 export const postTravelDetails = async (
   applicationId: string,
-  travelDetails: TravelResponseDetailsType,
+  travelDetails: PostedTravelDetailsType,
 ) => {
   const result = await petsApi.post(
     `/application/${applicationId}/travel-information`,
@@ -58,7 +59,7 @@ export const postTravelDetails = async (
 
 export const postMedicalDetails = async (
   applicationId: string,
-  medicalScreeningDetails: MedicalResponseScreeningType,
+  medicalScreeningDetails: PostedMedicalScreeningType,
 ) => {
   const result = await petsApi.post(
     `/application/${applicationId}/medical-screening`,
