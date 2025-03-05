@@ -32,6 +32,9 @@ export const TravelInformationRequestSchema = z.object({
   ukAddressLine2: z.string().optional().openapi({
     description: "Second line of Travel Address",
   }),
+  ukAddressTownOrCity: z.string().openapi({
+    description: "Town or City of Travel Address",
+  }),
   ukAddressPostcode: z.string().openapi({
     description: "Postcode of Travel Address",
   }),
@@ -111,5 +114,5 @@ export const ApplicationSchema = z.object({
     description: "application id",
   }),
   travelInformation: TravelInformationResponseSchema,
-  MedicalScreening: MedicalScreeningResponseSchema,
+  medicalScreening: MedicalScreeningResponseSchema,
 });

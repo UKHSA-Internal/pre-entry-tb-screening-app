@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { MedicalScreeningType } from "@/applicant";
+import { ReduxMedicalScreeningType } from "@/applicant";
 import Button from "@/components/button/button";
 import Checkbox from "@/components/checkbox/checkbox";
 import ErrorDisplay from "@/components/errorSummary/errorSummary";
@@ -18,7 +18,7 @@ import { formRegex } from "@/utils/helpers";
 const MedicalScreeningForm = () => {
   const navigate = useNavigate();
 
-  const methods = useForm<MedicalScreeningType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxMedicalScreeningType>({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,
     formState: { errors },
@@ -27,15 +27,9 @@ const MedicalScreeningForm = () => {
   const applicantData = useAppSelector(selectApplicant);
   const medicalData = useAppSelector(selectMedicalScreening);
   const dispatch = useAppDispatch();
-  const updateReduxStore = (medicalScreeningData: MedicalScreeningType) => {
-    dispatch(setMedicalScreeningDetails(medicalScreeningData));
-  };
 
-  const onSubmit: SubmitHandler<MedicalScreeningType> = (data) => {
-    updateReduxStore(data);
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    // TO DO: post medical screening info using application service
+  const onSubmit: SubmitHandler<ReduxMedicalScreeningType> = (medicalScreeningData) => {
+    dispatch(setMedicalScreeningDetails(medicalScreeningData));
     navigate("/medical-summary");
   };
 
@@ -118,7 +112,7 @@ const MedicalScreeningForm = () => {
             patternError="Age must be a number."
             inputWidth={3}
             suffixText="years"
-            defaultValue={medicalData.age}
+            defaultValue={medicalData.age.toString()}
           />
         </div>
 
