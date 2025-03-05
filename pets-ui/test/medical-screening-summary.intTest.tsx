@@ -40,7 +40,7 @@ const preloadedState = {
   application: { applicationId: "abc-123", dateCreated: "" },
   medicalScreening: {
     status: ApplicationStatus.COMPLETE,
-    age: 99,
+    age: "99",
     closeContactWithTb: "No",
     closeContactWithTbDetail: "",
     menstrualPeriods: "No",

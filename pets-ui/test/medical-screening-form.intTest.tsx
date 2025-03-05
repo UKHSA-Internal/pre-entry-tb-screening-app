@@ -105,7 +105,7 @@ describe("MedicalScreeningForm", () => {
     await user.click(screen.getByRole("button"));
 
     expect(store.getState().medicalScreening).toEqual({
-      age: 99,
+      age: "99",
       closeContactWithTb: "No",
       closeContactWithTbDetail: "",
       menstrualPeriods: "No",

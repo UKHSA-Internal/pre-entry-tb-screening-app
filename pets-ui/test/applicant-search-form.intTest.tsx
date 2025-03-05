@@ -192,7 +192,7 @@ describe("ApplicantSearchForm", () => {
       visaType: "Family Reunion",
     });
     expect(store.getState().medicalScreening).toEqual({
-      age: 43,
+      age: "43",
       closeContactWithTb: "Yes",
       closeContactWithTbDetail: "details1",
       menstrualPeriods: "No",

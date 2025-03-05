@@ -38,7 +38,7 @@ type DateType = {
 
 type MedicalScreeningType = {
   status: ApplicationStatus;
-  age: number | "";
+  age: string;
   tbSymptoms: string;
   tbSymptomsList: string[];
   otherSymptomsDetail: string;
@@ -166,7 +166,7 @@ type MedicalResponseScreeningType = {
   applicationId: string;
   dateCreated: string;
   status: BackendApplicationStatus;
-  age: number | "";
+  age: number;
   contactWithPersonWithTb: string;
   contactWithTbDetails: string;
   haveMenstralPeriod: string;

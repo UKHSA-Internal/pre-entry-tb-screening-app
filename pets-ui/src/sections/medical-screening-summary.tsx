@@ -22,7 +22,7 @@ const MedicalScreeningReview = () => {
         applicationId: applicationData.applicationId,
         dateCreated: applicationData.dateCreated,
         status: BackendApplicationStatus.COMPLETE,
-        age: medicalData.age,
+        age: parseInt(medicalData.age),
         symptomsOfTb: medicalData.tbSymptoms,
         symptoms: medicalData.tbSymptomsList,
         symptomsOther: medicalData.otherSymptomsDetail,

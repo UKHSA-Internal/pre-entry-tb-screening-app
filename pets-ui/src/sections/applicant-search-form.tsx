@@ -131,7 +131,7 @@ const ApplicantSearchForm = () => {
     if (medicalScreeningData) {
       const reduxMedicalScreeningData: MedicalScreeningType = {
         status: ApplicationStatus.INCOMPLETE,
-        age: medicalScreeningData.age,
+        age: medicalScreeningData.age.toString(),
         tbSymptoms: medicalScreeningData.symptomsOfTb,
         tbSymptomsList: medicalScreeningData.symptoms,
         otherSymptomsDetail: medicalScreeningData.symptomsOther,
