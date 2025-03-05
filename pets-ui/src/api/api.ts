@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse, isAxiosError } from "axios";
+import axios, { AxiosResponse } from "axios";
 
 import {
   ApplicantResponseDetailsType,
@@ -14,135 +14,51 @@ export const petsApi = axios.create({
 });
 
 export const getApplicants = async (passportDetails: ApplicantSearchFormType) => {
-  try {
-    const result = await petsApi.get("/applicant/search", {
-      headers: {
-        passportnumber: passportDetails.passportNumber,
-        countryofissue: passportDetails.countryOfIssue,
-      },
-    });
-    return result as AxiosResponse<ApplicantResponseDetailsType[]>;
-  } catch (_error) {
-    if (isAxiosError(_error)) {
-      throw new AxiosError(
-        _error.message,
-        _error.code,
-        _error.config,
-        _error.request,
-        _error.response,
-      );
-    } else {
-      throw new Error(_error as string);
-    }
-  }
+  const result = await petsApi.get("/applicant/search", {
+    headers: {
+      passportnumber: passportDetails.passportNumber,
+      countryofissue: passportDetails.countryOfIssue,
+    },
+  });
+  return result as AxiosResponse<ApplicantResponseDetailsType[]>;
 };
 
 export const getApplication = async (applicationId: string | undefined) => {
-  try {
-    const result = await petsApi.get(`/application/${applicationId}`);
-    return result as AxiosResponse<ApplicationResponseDetailsType>;
-  } catch (_error) {
-    if (isAxiosError(_error)) {
-      throw new AxiosError(
-        _error.message,
-        _error.code,
-        _error.config,
-        _error.request,
-        _error.response,
-      );
-    } else {
-      throw new Error(_error as string);
-    }
-  }
+  const result = await petsApi.get(`/application/${applicationId}`);
+  return result as AxiosResponse<ApplicationResponseDetailsType>;
 };
 
 export const createNewApplication = async () => {
-  try {
-    const result = await petsApi.post("/application");
-    return result as AxiosResponse<ApplicationDetailsType>;
-  } catch (_error) {
-    if (isAxiosError(_error)) {
-      throw new AxiosError(
-        _error.message,
-        _error.code,
-        _error.config,
-        _error.request,
-        _error.response,
-      );
-    } else {
-      throw new Error(_error as string);
-    }
-  }
+  const result = await petsApi.post("/application");
+  return result as AxiosResponse<ApplicationDetailsType>;
 };
 
 export const postApplicantDetails = async (
   applicationId: string,
   applicantDetails: ApplicantResponseDetailsType,
 ) => {
-  try {
-    const result = await petsApi.post(`/applicant/register/${applicationId}`, applicantDetails);
-    return { status: result.status, statusText: result.statusText };
-  } catch (_error) {
-    if (isAxiosError(_error)) {
-      throw new AxiosError(
-        _error.message,
-        _error.code,
-        _error.config,
-        _error.request,
-        _error.response,
-      );
-    } else {
-      throw new Error(_error as string);
-    }
-  }
+  const result = await petsApi.post(`/applicant/register/${applicationId}`, applicantDetails);
+  return { status: result.status, statusText: result.statusText };
 };
 
 export const postTravelDetails = async (
   applicationId: string,
   travelDetails: TravelResponseDetailsType,
 ) => {
-  try {
-    const result = await petsApi.post(
-      `/application/${applicationId}/travel-information`,
-      travelDetails,
-    );
-    return { status: result.status, statusText: result.statusText };
-  } catch (_error) {
-    if (isAxiosError(_error)) {
-      throw new AxiosError(
-        _error.message,
-        _error.code,
-        _error.config,
-        _error.request,
-        _error.response,
-      );
-    } else {
-      throw new Error(_error as string);
-    }
-  }
+  const result = await petsApi.post(
+    `/application/${applicationId}/travel-information`,
+    travelDetails,
+  );
+  return { status: result.status, statusText: result.statusText };
 };
 
 export const postMedicalDetails = async (
   applicationId: string,
   medicalScreeningDetails: MedicalResponseScreeningType,
 ) => {
-  try {
-    const result = await petsApi.post(
-      `/application/${applicationId}/medical-screening`,
-      medicalScreeningDetails,
-    );
-    return { status: result.status, statusText: result.statusText };
-  } catch (_error) {
-    if (isAxiosError(_error)) {
-      throw new AxiosError(
-        _error.message,
-        _error.code,
-        _error.config,
-        _error.request,
-        _error.response,
-      );
-    } else {
-      throw new Error(_error as string);
-    }
-  }
+  const result = await petsApi.post(
+    `/application/${applicationId}/medical-screening`,
+    medicalScreeningDetails,
+  );
+  return { status: result.status, statusText: result.statusText };
 };
