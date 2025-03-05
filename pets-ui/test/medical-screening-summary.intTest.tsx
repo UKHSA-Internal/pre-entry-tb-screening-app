@@ -85,6 +85,9 @@ const preloadedState = {
     xrayResult: "",
     xrayResultDetail: "",
     xrayFindingsList: [],
+    xrayMinorFindings: [],
+    xrayAssociatedMinorFindings: [],
+    xrayActiveTbFindings: [],
   },
 };
 
