@@ -34,7 +34,7 @@ const ChestXrayNotTakenForm = () => {
   const onSubmit: SubmitHandler<ChestXrayDetailsType> = () => {
     dispatch(setReasonXrayWasNotTaken(chestXrayData.reasonXrayWasNotTaken));
     dispatch(setXrayWasNotTakenFurtherDetails(chestXrayData.xrayWasNotTakenFurtherDetails));
-    navigate("/xray-not-taken-summary");
+    navigate("/chest-xray-summary");
   };
 
   const errorsToShow = Object.keys(errors);
@@ -81,7 +81,7 @@ const ChestXrayNotTakenForm = () => {
           id="Continue"
           type={ButtonType.DEFAULT}
           text="Continue"
-          href="/xray-not-taken-summary"
+          href="/chest-xray-summary"
           handleClick={() => {}}
         />
       </form>
