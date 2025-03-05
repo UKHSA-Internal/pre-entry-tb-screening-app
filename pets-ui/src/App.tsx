@@ -213,9 +213,9 @@ function App() {
       <Route
         path="/error"
         element={
-          <AuthenticatedRoute>
+          <UnauthenticatedRoute>
             <ErrorPage />
-          </AuthenticatedRoute>
+          </UnauthenticatedRoute>
         }
       />
     </Routes>
