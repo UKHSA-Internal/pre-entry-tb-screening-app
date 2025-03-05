@@ -21,7 +21,7 @@ describe("Validate User Journey for New Applicants", () => {
     cy.get('input[name="fullName"]').type("John Doe");
 
     //Select a 'Sex'
-    cy.get('input[name="sex"]').check("male");
+    cy.get('input[name="sex"]').check("Male");
 
     // Randomly Select 'Country of Nationality & Issue'
     cy.get("#country-of-nationality.govuk-select").select(countryName);
