@@ -87,8 +87,8 @@ describe("Checkbox component", () => {
 
   it("orders answers in the order specified when props.sortAnswersAlphabetically is false", () => {
     render(<DefaultCheckboxToTest />);
-    expect(screen.getAllByRole("checkbox")[0]).toHaveAttribute("value", "zzz-answer-one");
-    expect(screen.getAllByRole("checkbox")[1]).toHaveAttribute("value", "aaa-answer-two");
+    expect(screen.getAllByRole("checkbox")[0]).toHaveAttribute("value", "zzz Answer One");
+    expect(screen.getAllByRole("checkbox")[1]).toHaveAttribute("value", "aaa Answer Two");
   });
 
   it("orders answers alphabetically when props.sortAnswersAlphabetically is true", () => {
@@ -109,9 +109,9 @@ describe("Checkbox component", () => {
       );
     };
     render(<CheckboxToTest />);
-    expect(screen.getAllByRole("checkbox")[0]).toHaveAttribute("value", "aaa-answer-two");
-    expect(screen.getAllByRole("checkbox")[1]).toHaveAttribute("value", "zzz-answer-one");
-    expect(screen.getAllByRole("checkbox")[2]).toHaveAttribute("value", "exclusive-answer");
+    expect(screen.getAllByRole("checkbox")[0]).toHaveAttribute("value", "aaa Answer Two");
+    expect(screen.getAllByRole("checkbox")[1]).toHaveAttribute("value", "zzz Answer One");
+    expect(screen.getAllByRole("checkbox")[2]).toHaveAttribute("value", "Exclusive Answer");
   });
 
   it("renders with no answer selected and allows multiple answers to be selected", () => {
