@@ -23,9 +23,13 @@ export const getApplicants = async (passportDetails: ApplicantSearchFormType) =>
   return result as AxiosResponse<ApplicantResponseDetailsType[]>;
 };
 
-export const getApplication = async (applicationId: string | undefined) => {
-  const result = await petsApi.get(`/application/${applicationId}`);
-  return result as AxiosResponse<ApplicationResponseDetailsType>;
+export const getApplication = async (applicantData: ApplicantResponseDetailsType[]) => {
+  if (applicantData[0]) {
+    const result = await petsApi.get(`/application/${applicantData[0].applicationId}`);
+    return result as AxiosResponse<ApplicationResponseDetailsType>;
+  } else {
+    throw new Error("Applicant data in unexpected format or does not exist");
+  }
 };
 
 export const createNewApplication = async () => {

@@ -161,8 +161,7 @@ const ApplicantSearchForm = () => {
         const applicantRes = await getApplicants(passportDetails);
         updateReduxApplicantDetails(applicantRes.data[0]);
         try {
-          const applicationId = applicantRes.data[0].applicationId;
-          const applicationRes = await getApplication(applicationId);
+          const applicationRes = await getApplication(applicantRes.data);
           updateReduxApplicationDetails(
             applicationRes.data.travelInformation,
             applicationRes.data.medicalScreening,
