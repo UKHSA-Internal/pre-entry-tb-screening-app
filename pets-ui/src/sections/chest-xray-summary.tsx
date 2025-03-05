@@ -13,10 +13,10 @@ const ChestXraySummary = () => {
   const chestXrayData = useAppSelector(selectChestXray);
   const navigate = useNavigate();
 
-  const xrayTakenSummary = [
+  const xraySummaryData = [
     {
       key: "Select X-ray Status",
-      value: chestXrayData.chestXrayTaken ? "Yes" : "No",
+      value: chestXrayData.chestXrayTaken ? "Taken" : "Not Taken",
       link: "/chest-xray-question#chestXrayTaken",
       hiddenLabel: "Chest X-ray Status",
     },
@@ -67,7 +67,7 @@ const ChestXraySummary = () => {
   return (
     <div>
       <ApplicantDataHeader applicantData={applicantData} />
-      <Summary summaryElements={xrayTakenSummary.filter(isDataPresent)} />
+      <Summary summaryElements={xraySummaryData.filter(isDataPresent)} />
       <Button
         id="save-and-continue"
         type={ButtonType.DEFAULT}
