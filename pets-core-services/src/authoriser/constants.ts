@@ -33,7 +33,7 @@ export const policyMapping: Record<Roles, string[]> = {
     `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/PUT/application/*`,
   ],
   [Roles.ImagingWrite]: [
-    `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/POST/application/*`, // TODO: Change this when 506 is picked
+    `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/POST/application/*`, // TBBETA-506: Change this when 506 is picked
   ],
   [Roles.ClinicsRead]: [
     `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/GET/clinics`,

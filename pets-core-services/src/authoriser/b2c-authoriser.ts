@@ -85,7 +85,7 @@ const generatePolicy = (
     Statement: statements,
   };
 
-  const clinicId = "Apollo Clinic"; // TODO: Replace with payload.ClinicID
+  const clinicId = "Apollo Clinic"; // TBBETA-101: Replace with payload.ClinicID
   assert(payload.email);
   const createdBy = payload.email as string;
   const context = {

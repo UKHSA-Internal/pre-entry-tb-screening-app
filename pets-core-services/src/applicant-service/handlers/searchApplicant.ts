@@ -47,7 +47,7 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
     }
 
     const applicant = applicants[0];
-    const application = await Application.getByApplicationId(applicant.applicationId); // TODO: Write tests
+    const application = await Application.getByApplicationId(applicant.applicationId);
     if (!application) {
       logger.error("Edge-Case: Applicant has been created without an application");
       return createHttpResponse(400, {
