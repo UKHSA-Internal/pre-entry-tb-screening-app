@@ -34,7 +34,6 @@ const ApplicantReview = () => {
         applicantHomeAddress1: applicantData.applicantHomeAddress1,
         applicantHomeAddress2: applicantData.applicantHomeAddress2,
         applicantHomeAddress3: applicantData.applicantHomeAddress3,
-        applicantHomeAddress4: applicantData.applicantHomeAddress4,
         townOrCity: applicantData.townOrCity,
         provinceOrState: applicantData.provinceOrState,
         country: applicantData.country,

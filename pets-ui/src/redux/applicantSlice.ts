@@ -1,8 +1,13 @@
 import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { DateType, ReduxApplicantDetailsType } from "@/applicant";
-import { ApplicationStatus } from "@/utils/enums";
+import {
+  ApplicantSearchFormType,
+  DateType,
+  ReceivedApplicantDetailsType,
+  ReduxApplicantDetailsType,
+} from "@/applicant";
+import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
 
 const initialState: ReduxApplicantDetailsType = {
   status: ApplicationStatus.INCOMPLETE,
@@ -87,6 +92,10 @@ export const applicantSlice = createSlice({
     setPostcode: (state, action: PayloadAction<string>) => {
       state.postcode = action.payload;
     },
+    setApplicantPassportDetails: (state, action: PayloadAction<ApplicantSearchFormType>) => {
+      state.passportNumber = action.payload.passportNumber;
+      state.countryOfIssue = action.payload.countryOfIssue;
+    },
     setApplicantDetails: (state, action: PayloadAction<ReduxApplicantDetailsType>) => {
       state.fullName = action.payload.fullName;
       state.sex = action.payload.sex;
@@ -134,6 +143,42 @@ export const applicantSlice = createSlice({
       state.country = "";
       state.postcode = "";
     },
+    setApplicantDetailsFromApiResponse: (
+      state,
+      action: PayloadAction<ReceivedApplicantDetailsType>,
+    ) => {
+      state.status =
+        action.payload.status == BackendApplicationStatus.COMPLETE
+          ? ApplicationStatus.COMPLETE
+          : ApplicationStatus.INCOMPLETE;
+      state.fullName = action.payload.fullName;
+      state.sex = action.payload.sex;
+      state.countryOfNationality = action.payload.countryOfNationality;
+      state.passportNumber = action.payload.passportNumber;
+      state.countryOfIssue = action.payload.countryOfIssue;
+      state.dateOfBirth = {
+        year: action.payload.dateOfBirth.split("-")[0],
+        month: action.payload.dateOfBirth.split("-")[1],
+        day: action.payload.dateOfBirth.split("-")[2],
+      };
+      state.passportIssueDate = {
+        year: action.payload.issueDate.split("-")[0],
+        month: action.payload.issueDate.split("-")[1],
+        day: action.payload.issueDate.split("-")[2],
+      };
+      state.passportExpiryDate = {
+        year: action.payload.expiryDate.split("-")[0],
+        month: action.payload.expiryDate.split("-")[1],
+        day: action.payload.expiryDate.split("-")[2],
+      };
+      state.applicantHomeAddress1 = action.payload.applicantHomeAddress1;
+      state.applicantHomeAddress2 = action.payload.applicantHomeAddress2 ?? "";
+      state.applicantHomeAddress3 = action.payload.applicantHomeAddress3 ?? "";
+      state.townOrCity = action.payload.townOrCity;
+      state.provinceOrState = action.payload.provinceOrState;
+      state.country = action.payload.country;
+      state.postcode = action.payload.postcode ?? "";
+    },
   },
 });
 
@@ -154,8 +199,10 @@ export const {
   setProvinceOrState,
   setCountry,
   setPostcode,
-  clearApplicantDetails,
+  setApplicantPassportDetails,
   setApplicantDetails,
+  clearApplicantDetails,
+  setApplicantDetailsFromApiResponse,
 } = applicantSlice.actions;
 
 export const applicantReducer = applicantSlice.reducer;

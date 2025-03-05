@@ -38,7 +38,6 @@ type ReduxApplicantDetailsType = {
   applicantHomeAddress1: string;
   applicantHomeAddress2?: string;
   applicantHomeAddress3?: string;
-  applicantHomeAddress4?: string;
   townOrCity: string;
   provinceOrState: string;
   country: string;
@@ -60,7 +59,6 @@ type ReceivedApplicantDetailsType = {
   applicantHomeAddress1: string;
   applicantHomeAddress2?: string;
   applicantHomeAddress3?: string;
-  applicantHomeAddress4?: string;
   townOrCity: string;
   provinceOrState: string;
   country: string;
@@ -79,7 +77,6 @@ type PostedApplicantDetailsType = {
   applicantHomeAddress1: string;
   applicantHomeAddress2?: string;
   applicantHomeAddress3?: string;
-  applicantHomeAddress4?: string;
   townOrCity: string;
   provinceOrState: string;
   country: string;
@@ -93,7 +90,6 @@ type ReduxTravelDetailsType = {
   applicantUkAddress1: string;
   applicantUkAddress2?: string;
   applicantUkAddress3?: string;
-  applicantUkAddress4?: string;
   townOrCity: string;
   postcode: string;
   ukMobileNumber?: string;
@@ -107,7 +103,6 @@ type ReceivedTravelDetailsType = {
   ukAddressLine1: string;
   ukAddressLine2?: string;
   ukAddressLine3?: string;
-  ukAddressLine4?: string;
   ukAddressTownOrCity: string;
   ukAddressPostcode: string;
   ukEmailAddress: string;
@@ -119,7 +114,6 @@ type PostedTravelDetailsType = {
   ukAddressLine1: string;
   ukAddressLine2?: string;
   ukAddressLine3?: string;
-  ukAddressLine4?: string;
   ukAddressTownOrCity: string;
   ukAddressPostcode: string;
   ukEmailAddress: string;

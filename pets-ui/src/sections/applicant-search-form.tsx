@@ -3,39 +3,26 @@ import { useEffect } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import {
-  ApplicantSearchFormType,
-  DateType,
-  ReceivedApplicantDetailsType,
-  ReceivedMedicalScreeningType,
-  ReceivedTravelDetailsType,
-  ReduxApplicantDetailsType,
-  ReduxMedicalScreeningType,
-  ReduxTravelDetailsType,
-} from "@/applicant";
+import { ApplicantSearchFormType } from "@/applicant";
 import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
 import FreeText from "@/components/freeText/freeText";
 import {
   clearApplicantDetails,
-  setApplicantDetails,
-  setApplicantDetailsStatus,
-  setCountryOfIssue,
-  setPassportNumber,
+  setApplicantDetailsFromApiResponse,
+  setApplicantPassportDetails,
 } from "@/redux/applicantSlice";
 import { clearApplicationDetails } from "@/redux/applicationSlice";
 import { useAppDispatch } from "@/redux/hooks";
 import {
   clearMedicalScreeningDetails,
-  setMedicalScreeningDetails,
-  setMedicalScreeningStatus,
+  setMedicalScreeningDetailsFromApiResponse,
 } from "@/redux/medicalScreeningSlice";
-import { clearTravelDetails, setTravelDetails, setTravelDetailsStatus } from "@/redux/travelSlice";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
+import { ButtonType } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/helpers";
 
 import { getApplicants, getApplication } from "../api/api";
-import { BackendApplicationStatus } from "../utils/enums";
 
 const ApplicantSearchForm = () => {
   const navigate = useNavigate();
@@ -55,117 +42,22 @@ const ApplicantSearchForm = () => {
     formState: { errors },
   } = methods;
 
-  const updateReduxPassportDetails = (applicantSearchData: ApplicantSearchFormType) => {
-    dispatch(setPassportNumber(applicantSearchData.passportNumber));
-    dispatch(setCountryOfIssue(applicantSearchData.countryOfIssue));
-  };
-
-  const updateReduxApplicantDetails = (applicantData: ReceivedApplicantDetailsType) => {
-    const dateOfBirthObj: DateType = {
-      year: applicantData.dateOfBirth.split("-")[0],
-      month: applicantData.dateOfBirth.split("-")[1],
-      day: applicantData.dateOfBirth.split("-")[2],
-    };
-    const expiryDateObj: DateType = {
-      year: applicantData.expiryDate.split("-")[0],
-      month: applicantData.expiryDate.split("-")[1],
-      day: applicantData.expiryDate.split("-")[2],
-    };
-    const issueDateObj: DateType = {
-      year: applicantData.issueDate.split("-")[0],
-      month: applicantData.issueDate.split("-")[1],
-      day: applicantData.issueDate.split("-")[2],
-    };
-    const reduxApplicantData: ReduxApplicantDetailsType = {
-      status: ApplicationStatus.INCOMPLETE,
-      fullName: applicantData.fullName,
-      sex: applicantData.sex,
-      dateOfBirth: dateOfBirthObj,
-      countryOfNationality: applicantData.countryOfNationality,
-      passportNumber: applicantData.passportNumber,
-      countryOfIssue: applicantData.countryOfIssue,
-      passportIssueDate: issueDateObj,
-      passportExpiryDate: expiryDateObj,
-      applicantHomeAddress1: applicantData.applicantHomeAddress1,
-      applicantHomeAddress2: applicantData.applicantHomeAddress2,
-      applicantHomeAddress3: applicantData.applicantHomeAddress3,
-      applicantHomeAddress4: applicantData.applicantHomeAddress4,
-      townOrCity: applicantData.townOrCity,
-      provinceOrState: applicantData.provinceOrState,
-      country: applicantData.country,
-      postcode: applicantData.postcode,
-    };
-    dispatch(setApplicantDetails(reduxApplicantData));
-    if (applicantData.status == BackendApplicationStatus.COMPLETE) {
-      dispatch(setApplicantDetailsStatus(ApplicationStatus.COMPLETE));
-    } else {
-      dispatch(setApplicantDetailsStatus(ApplicationStatus.INCOMPLETE));
-    }
-  };
-
-  const updateReduxApplicationDetails = (
-    travelData: ReceivedTravelDetailsType | undefined,
-    medicalScreeningData: ReceivedMedicalScreeningType | undefined,
-  ) => {
-    if (travelData) {
-      const reduxTravelData: ReduxTravelDetailsType = {
-        status: ApplicationStatus.INCOMPLETE,
-        visaType: travelData.visaCategory,
-        applicantUkAddress1: travelData.ukAddressLine1,
-        applicantUkAddress2: travelData.ukAddressLine2,
-        applicantUkAddress3: travelData.ukAddressLine3,
-        applicantUkAddress4: travelData.ukAddressLine4,
-        townOrCity: travelData.ukAddressTownOrCity,
-        postcode: travelData.ukAddressPostcode,
-        ukMobileNumber: travelData.ukMobileNumber,
-        ukEmail: travelData.ukEmailAddress,
-      };
-      dispatch(setTravelDetails(reduxTravelData));
-      if (travelData.status == BackendApplicationStatus.COMPLETE) {
-        dispatch(setTravelDetailsStatus(ApplicationStatus.COMPLETE));
-      } else {
-        dispatch(setTravelDetailsStatus(ApplicationStatus.INCOMPLETE));
-      }
-    }
-
-    if (medicalScreeningData) {
-      const reduxMedicalScreeningData: ReduxMedicalScreeningType = {
-        status: ApplicationStatus.INCOMPLETE,
-        age: medicalScreeningData.age.toString(),
-        tbSymptoms: medicalScreeningData.symptomsOfTb,
-        tbSymptomsList: medicalScreeningData.symptoms,
-        otherSymptomsDetail: medicalScreeningData.symptomsOther,
-        underElevenConditions: medicalScreeningData.historyOfConditionsUnder11,
-        underElevenConditionsDetail: medicalScreeningData.historyOfConditionsUnder11Details,
-        previousTb: medicalScreeningData.historyOfPreviousTb,
-        previousTbDetail: medicalScreeningData.previousTbDetails,
-        closeContactWithTb: medicalScreeningData.contactWithPersonWithTb,
-        closeContactWithTbDetail: medicalScreeningData.contactWithTbDetails,
-        pregnant: medicalScreeningData.pregnant,
-        menstrualPeriods: medicalScreeningData.haveMenstralPeriod,
-        physicalExamNotes: medicalScreeningData.physicalExaminationNotes,
-      };
-      dispatch(setMedicalScreeningDetails(reduxMedicalScreeningData));
-      if (medicalScreeningData.status == BackendApplicationStatus.COMPLETE) {
-        dispatch(setMedicalScreeningStatus(ApplicationStatus.COMPLETE));
-      } else {
-        dispatch(setMedicalScreeningStatus(ApplicationStatus.INCOMPLETE));
-      }
-    }
-  };
-
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (passportDetails) => {
     try {
-      updateReduxPassportDetails(passportDetails);
+      dispatch(setApplicantPassportDetails(passportDetails));
       try {
         const applicantRes = await getApplicants(passportDetails);
-        updateReduxApplicantDetails(applicantRes.data[0]);
+        dispatch(setApplicantDetailsFromApiResponse(applicantRes.data[0]));
         try {
           const applicationRes = await getApplication(applicantRes.data);
-          updateReduxApplicationDetails(
-            applicationRes.data.travelInformation,
-            applicationRes.data.medicalScreening,
-          );
+          if (applicationRes.data.travelInformation) {
+            dispatch(setTravelDetailsFromApiResponse(applicationRes.data.travelInformation));
+          }
+          if (applicationRes.data.medicalScreening) {
+            dispatch(
+              setMedicalScreeningDetailsFromApiResponse(applicationRes.data.medicalScreening),
+            );
+          }
           navigate("/tracker");
         } catch (error) {
           if (axios.isAxiosError(error) && error.status == 404) {
