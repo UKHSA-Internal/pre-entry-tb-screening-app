@@ -45,8 +45,8 @@ type ReduxApplicantDetailsType = {
 };
 
 type ReceivedApplicantDetailsType = {
-  applicationId?: string;
-  dateCreated?: string;
+  applicationId: string;
+  dateCreated: string;
   status: BackendApplicationStatus;
   fullName: string;
   sex: string;
