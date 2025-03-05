@@ -149,7 +149,6 @@ function App() {
             <RedirectedRouteIfReduxEmpty>
               <TravelConfirmation />
             </RedirectedRouteIfReduxEmpty>
-            <TravelConfirmation />
           </AuthenticatedRoute>
         }
       />
