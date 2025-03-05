@@ -19,33 +19,31 @@ export default function Confirmation({
 }: Readonly<ConfirmationProps>) {
   const navigate = useNavigate();
   return (
-    <main className="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
-      <div className="govuk-grid-row">
-        <div className="govuk-grid-column-two-thirds">
-          <div className="govuk-panel govuk-panel--confirmation" style={{ marginBottom: 40 }}>
-            <h1 className="govuk-panel__title" style={{ marginBlock: 30, marginInline: 20 }}>
-              {props.confirmationText}
-            </h1>
-          </div>
-          {whatHappensNext === true && <Heading level={2} size="m" title="What happens next" />}
-          {props.furtherInfo.map((info, i) => {
-            return (
-              <p className="govuk-body" key={i}>
-                {info}
-              </p>
-            );
-          })}
-          <Button
-            id="continue"
-            type={ButtonType.DEFAULT}
-            text={props.buttonText}
-            href={props.buttonLink}
-            handleClick={() => {
-              navigate(props.buttonLink);
-            }}
-          />
+    <div className="govuk-grid-row">
+      <div className="govuk-grid-column-two-thirds">
+        <div className="govuk-panel govuk-panel--confirmation" style={{ marginBottom: 40 }}>
+          <h1 className="govuk-panel__title" style={{ marginBlock: 30, marginInline: 20 }}>
+            {props.confirmationText}
+          </h1>
         </div>
+        {whatHappensNext === true && <Heading level={2} size="m" title="What happens next" />}
+        {props.furtherInfo.map((info, i) => {
+          return (
+            <p className="govuk-body" key={i}>
+              {info}
+            </p>
+          );
+        })}
+        <Button
+          id="continue"
+          type={ButtonType.DEFAULT}
+          text={props.buttonText}
+          href={props.buttonLink}
+          handleClick={() => {
+            navigate(props.buttonLink);
+          }}
+        />
       </div>
-    </main>
+    </div>
   );
 }
