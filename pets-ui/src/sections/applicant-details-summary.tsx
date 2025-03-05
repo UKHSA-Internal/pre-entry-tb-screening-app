@@ -1,26 +1,50 @@
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
+import { createNewApplication, postApplicantDetails } from "@/api/api";
 import Button from "@/components/button/button";
 import { selectApplicant, setApplicantDetailsStatus } from "@/redux/applicantSlice";
+import { setApplicationDetails } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { standardiseDayOrMonth } from "@/utils/helpers";
 
 const ApplicantReview = () => {
   const applicantData = useAppSelector(selectApplicant);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    // await fetch("http://localhost:3005/applicant/register", {
-    //   method: "POST",
-    //   body: JSON.stringify(applicantData),
-    //   headers: myHeaders,
-    // });
-    dispatch(setApplicantDetailsStatus(ApplicationStatus.COMPLETE));
-    navigate("/applicant-confirmation");
+  const handleSubmit = async () => {
+    try {
+      const applicationRes = await createNewApplication();
+      dispatch(setApplicationDetails(applicationRes.data));
+
+      const dateOfBirthStr = `${applicantData.dateOfBirth.year}-${standardiseDayOrMonth(applicantData.dateOfBirth.month)}-${standardiseDayOrMonth(applicantData.dateOfBirth.day)}`;
+      const issueDateStr = `${applicantData.passportIssueDate.year}-${standardiseDayOrMonth(applicantData.passportIssueDate.month)}-${standardiseDayOrMonth(applicantData.passportIssueDate.day)}`;
+      const expiryDateStr = `${applicantData.passportExpiryDate.year}-${standardiseDayOrMonth(applicantData.passportExpiryDate.month)}-${standardiseDayOrMonth(applicantData.passportExpiryDate.day)}`;
+      await postApplicantDetails(applicationRes.data.applicationId, {
+        fullName: applicantData.fullName,
+        sex: applicantData.sex,
+        dateOfBirth: dateOfBirthStr,
+        countryOfNationality: applicantData.countryOfNationality,
+        passportNumber: applicantData.passportNumber,
+        countryOfIssue: applicantData.countryOfIssue,
+        issueDate: issueDateStr,
+        expiryDate: expiryDateStr,
+        applicantHomeAddress1: applicantData.applicantHomeAddress1,
+        applicantHomeAddress2: applicantData.applicantHomeAddress2,
+        applicantHomeAddress3: applicantData.applicantHomeAddress3,
+        townOrCity: applicantData.townOrCity,
+        provinceOrState: applicantData.provinceOrState,
+        country: applicantData.country,
+        postcode: applicantData.postcode,
+      });
+
+      dispatch(setApplicantDetailsStatus(ApplicationStatus.COMPLETE));
+      navigate("/applicant-confirmation");
+    } catch {
+      navigate("/error");
+    }
   };
 
   return (

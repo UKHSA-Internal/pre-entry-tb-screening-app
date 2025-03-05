@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { TravelDetailsType } from "@/applicant";
+import { ReduxTravelDetailsType } from "@/applicant";
 import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorDisplay from "@/components/errorSummary/errorSummary";
@@ -16,20 +16,17 @@ import { formRegex, visaOptions } from "@/utils/helpers";
 const ApplicantTravelForm = () => {
   const navigate = useNavigate();
 
-  const methods = useForm<TravelDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxTravelDetailsType>({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,
     formState: { errors },
   } = methods;
 
   const dispatch = useAppDispatch();
-  const updateReduxStore = (travelData: TravelDetailsType) => {
-    dispatch(setTravelDetails(travelData));
-  };
   const travelData = useAppSelector(selectTravel);
 
-  const onSubmit: SubmitHandler<TravelDetailsType> = (data) => {
-    updateReduxStore(data);
+  const onSubmit: SubmitHandler<ReduxTravelDetailsType> = (travelData) => {
+    dispatch(setTravelDetails(travelData));
     navigate("/travel-summary");
   };
 
