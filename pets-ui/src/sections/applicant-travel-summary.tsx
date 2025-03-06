@@ -1,17 +1,36 @@
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
+import { postTravelDetails } from "@/api/api";
 import Button from "@/components/button/button";
+import { selectApplication } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { selectTravel } from "@/redux/travelSlice";
-import { ButtonType } from "@/utils/enums";
+import { selectTravel, setTravelDetailsStatus } from "@/redux/travelSlice";
+import { ApplicationStatus, ButtonType } from "@/utils/enums";
 
 const TravelReview = () => {
+  const applicationData = useAppSelector(selectApplication);
   const travelData = useAppSelector(selectTravel);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    // TO DO: post travelData
-    navigate("/travel-confirmation");
+  const handleSubmit = async () => {
+    try {
+      await postTravelDetails(applicationData.applicationId, {
+        visaCategory: travelData.visaType,
+        ukAddressLine1: travelData.applicantUkAddress1,
+        ukAddressLine2: travelData.applicantUkAddress2,
+        ukAddressTownOrCity: travelData.townOrCity,
+        ukAddressPostcode: travelData.postcode,
+        ukMobileNumber: travelData.ukMobileNumber,
+        ukEmailAddress: travelData.ukEmail,
+      });
+
+      dispatch(setTravelDetailsStatus(ApplicationStatus.COMPLETE));
+      navigate("/travel-confirmation");
+    } catch {
+      navigate("/error");
+    }
   };
 
   return (

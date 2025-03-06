@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { ApplicantDetailsType } from "@/applicant";
+import { ReduxApplicantDetailsType } from "@/applicant";
 import Button from "@/components/button/button";
 import DateTextInput, { DateType } from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
@@ -17,7 +17,7 @@ import { countryList, formRegex, validateDate } from "@/utils/helpers";
 const ApplicantForm = () => {
   const navigate = useNavigate();
 
-  const methods = useForm<ApplicantDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxApplicantDetailsType>({ reValidateMode: "onSubmit" });
   const {
     control,
     handleSubmit,
@@ -25,14 +25,10 @@ const ApplicantForm = () => {
   } = methods;
 
   const dispatch = useAppDispatch();
-  const updateReduxStore = (applicantData: ApplicantDetailsType) => {
-    dispatch(setApplicantDetails(applicantData));
-  };
-
   const applicantData = useAppSelector(selectApplicant);
 
-  const onSubmit: SubmitHandler<ApplicantDetailsType> = (data) => {
-    updateReduxStore(data);
+  const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = (applicantData) => {
+    dispatch(setApplicantDetails(applicantData));
     navigate("/applicant-summary");
   };
 
@@ -108,7 +104,7 @@ const ApplicantForm = () => {
             id="sex"
             legend="Sex"
             isInline={RadioIsInline.TRUE}
-            answerOptions={["Female", "Male"]}
+            answerOptions={["Female", "Male", "Other"]}
             sortAnswersAlphabetically={false}
             errorMessage={errors?.sex?.message ?? ""}
             formValue="sex"

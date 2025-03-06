@@ -53,7 +53,7 @@ test("In authenticated state, user is able to access authenticated paths", async
   await msalTester.isLogged();
 
   renderWithProviders(
-    <MemoryRouter initialEntries={["/applicant-results"]}>
+    <MemoryRouter initialEntries={["/applicant-search"]}>
       <AuthProvider instance={msalTester.client}>
         <App />
       </AuthProvider>
@@ -62,7 +62,7 @@ test("In authenticated state, user is able to access authenticated paths", async
 
   await msalTester.waitForRedirect();
 
-  expect(screen.getByText("No matching record found")).toBeVisible();
+  expect(screen.getByText("Search for a visa applicant")).toBeVisible();
 });
 
 test("In unauthenticated state, user is taken to landing page ('/') when accessing landing page via browser", async () => {

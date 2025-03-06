@@ -1,0 +1,147 @@
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import MockAdapter from "axios-mock-adapter";
+import { BrowserRouter as Router } from "react-router-dom";
+import { Mock } from "vitest";
+
+import { petsApi } from "@/api/api";
+import ApplicantReview from "@/sections/applicant-details-summary";
+import { ApplicationStatus } from "@/utils/enums";
+import { renderWithProviders } from "@/utils/test-utils";
+
+const useNavigateMock: Mock = vi.fn();
+vi.mock(`react-router-dom`, async (): Promise<unknown> => {
+  const actual: Record<string, unknown> = await vi.importActual(`react-router-dom`);
+  return {
+    ...actual,
+    useNavigate: (): Mock => useNavigateMock,
+  };
+});
+
+describe("ApplicantReview", () => {
+  let mock: MockAdapter;
+  beforeEach(() => {
+    mock = new MockAdapter(petsApi);
+    useNavigateMock.mockClear();
+  });
+
+  test("state is displayed correctly & user is navigated to confirmation page when both api calls are successful", async () => {
+    const preloadedState = {
+      applicant: {
+        status: ApplicationStatus.INCOMPLETE,
+        fullName: "Sigmund Sigmundson",
+        sex: "Male",
+        dateOfBirth: {
+          year: "1901",
+          month: "1",
+          day: "1",
+        },
+        countryOfNationality: "NOR",
+        passportNumber: "1234",
+        countryOfIssue: "FIN",
+        passportIssueDate: {
+          year: "1902",
+          month: "feb",
+          day: "2",
+        },
+        passportExpiryDate: {
+          year: "2053",
+          month: "march",
+          day: "3",
+        },
+        applicantHomeAddress1: "The Bell Tower",
+        applicantHomeAddress2: "Hallgrimskirkja",
+        applicantHomeAddress3: "Hallgrimstorg 1",
+        townOrCity: "Reykjavik",
+        provinceOrState: "Reykjavik",
+        country: "ISL",
+        postcode: "101",
+      },
+    };
+
+    renderWithProviders(
+      <Router>
+        <ApplicantReview />
+      </Router>,
+      { preloadedState },
+    );
+    const user = userEvent.setup();
+
+    mock.onPost("/application").reply(200, { applicationId: "abc-123" });
+    mock.onPost("/applicant/register/abc-123").reply(200);
+
+    expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
+    expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Sigmund Sigmundson");
+    expect(screen.getAllByRole("term")[1]).toHaveTextContent("Sex");
+    expect(screen.getAllByRole("definition")[2]).toHaveTextContent("Male");
+    expect(screen.getAllByRole("term")[2]).toHaveTextContent("Country of Nationality");
+    expect(screen.getAllByRole("definition")[4]).toHaveTextContent("NOR");
+    expect(screen.getAllByRole("term")[3]).toHaveTextContent("Date of Birth");
+    expect(screen.getAllByRole("definition")[6]).toHaveTextContent("1/1/1901");
+    expect(screen.getAllByRole("term")[4]).toHaveTextContent("Passport number");
+    expect(screen.getAllByRole("definition")[8]).toHaveTextContent("1234");
+    expect(screen.getAllByRole("term")[5]).toHaveTextContent("Country of Issue");
+    expect(screen.getAllByRole("definition")[10]).toHaveTextContent("FIN");
+    expect(screen.getAllByRole("term")[6]).toHaveTextContent("Passport Issue Date");
+    expect(screen.getAllByRole("definition")[12]).toHaveTextContent("2/feb/1902");
+    expect(screen.getAllByRole("term")[7]).toHaveTextContent("Passport Expiry Date");
+    expect(screen.getAllByRole("definition")[14]).toHaveTextContent("3/march/2053");
+    expect(screen.getAllByRole("term")[8]).toHaveTextContent("Home Address Line 1");
+    expect(screen.getAllByRole("definition")[16]).toHaveTextContent("The Bell Tower");
+    expect(screen.getAllByRole("term")[9]).toHaveTextContent("Home Address Line 2");
+    expect(screen.getAllByRole("definition")[18]).toHaveTextContent("Hallgrimskirkja");
+    expect(screen.getAllByRole("term")[10]).toHaveTextContent("Home Address Line 3");
+    expect(screen.getAllByRole("definition")[20]).toHaveTextContent("Hallgrimstorg 1");
+    expect(screen.getAllByRole("term")[11]).toHaveTextContent("Town or City");
+    expect(screen.getAllByRole("definition")[22]).toHaveTextContent("Reykjavik");
+    expect(screen.getAllByRole("term")[12]).toHaveTextContent("Province or State");
+    expect(screen.getAllByRole("definition")[24]).toHaveTextContent("Reykjavik");
+    expect(screen.getAllByRole("term")[13]).toHaveTextContent("Country");
+    expect(screen.getAllByRole("definition")[26]).toHaveTextContent("ISL");
+    expect(screen.getAllByRole("term")[14]).toHaveTextContent("Postcode");
+    expect(screen.getAllByRole("definition")[28]).toHaveTextContent("101");
+
+    await user.click(screen.getByRole("button"));
+
+    expect(mock.history[0].url).toEqual("/application");
+    expect(mock.history[1].url).toEqual("/applicant/register/abc-123");
+    expect(mock.history).toHaveLength(2);
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-confirmation");
+  });
+
+  test("user is navigated to error page when first api call is unsuccessful", async () => {
+    renderWithProviders(
+      <Router>
+        <ApplicantReview />
+      </Router>,
+    );
+    const user = userEvent.setup();
+
+    mock.onPost("/application").reply(500);
+
+    await user.click(screen.getByRole("button"));
+
+    expect(mock.history[0].url).toEqual("/application");
+    expect(mock.history).toHaveLength(1);
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
+  });
+
+  test("user is navigated to error page when second api call is unsuccessful", async () => {
+    renderWithProviders(
+      <Router>
+        <ApplicantReview />
+      </Router>,
+    );
+    const user = userEvent.setup();
+
+    mock.onPost("/application").reply(200, { applicationId: "abc-123" });
+    mock.onPost("/applicant/register/abc-123").reply(500);
+
+    await user.click(screen.getByRole("button"));
+
+    expect(mock.history[0].url).toEqual("/application");
+    expect(mock.history[1].url).toEqual("/applicant/register/abc-123");
+    expect(mock.history).toHaveLength(2);
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
+  });
+});

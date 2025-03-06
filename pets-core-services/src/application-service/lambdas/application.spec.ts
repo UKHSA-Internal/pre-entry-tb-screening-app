@@ -75,6 +75,8 @@ describe("Test for Application Lambda", () => {
       body: JSON.stringify({
         visaCategory: VisaOptions.Students,
         ukAddressLine1: "first line",
+        ukAddressLine2: "second line",
+        ukAddressTownOrCity: "town or city",
         ukAddressPostcode: "uk address postcode",
         ukMobileNumber: "uk mobile number",
         ukEmailAddress: "uk email address",

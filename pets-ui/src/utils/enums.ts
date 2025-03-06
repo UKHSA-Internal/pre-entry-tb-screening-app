@@ -13,3 +13,8 @@ export enum ApplicationStatus {
   INCOMPLETE = "Incomplete",
   COMPLETE = "Complete",
 }
+
+export enum BackendApplicationStatus {
+  INCOMPLETE = "incompleted",
+  COMPLETE = "completed",
+}
