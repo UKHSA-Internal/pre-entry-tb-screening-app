@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import { ChestXrayDetailsType } from "@/applicant";
+import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import ErrorDisplay from "@/components/errorSummary/errorSummary";
@@ -24,14 +24,14 @@ const ChestXrayNotTakenForm = () => {
   const applicantData = useAppSelector(selectApplicant);
   const chestXrayData = useAppSelector(selectChestXray);
 
-  const methods = useForm<ChestXrayDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,
     formState: { errors },
     watch,
   } = methods;
 
-  const onSubmit: SubmitHandler<ChestXrayDetailsType> = () => {
+  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = () => {
     dispatch(setReasonXrayWasNotTaken(chestXrayData.reasonXrayWasNotTaken));
     dispatch(setXrayWasNotTakenFurtherDetails(chestXrayData.xrayWasNotTakenFurtherDetails));
     navigate("/xray-not-taken-summary");
