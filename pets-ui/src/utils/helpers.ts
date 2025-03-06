@@ -201,6 +201,10 @@ const visaOptions = [
     value: "Government Sponsored",
     label: "Government Sponsored",
   },
+  {
+    value: "British National (Overseas)",
+    label: "British National (Overseas)",
+  },
 ];
 
 export {

@@ -5,6 +5,7 @@ export enum VisaOptions {
   Work = "Work",
   WorkingHolidayMaker = "Working Holiday Maker",
   GovernmentSponsored = "Government Sponsored",
+  BritishNationalOverseas = "British National (Overseas)",
 }
 
 export enum TbSymptomsOptions {
