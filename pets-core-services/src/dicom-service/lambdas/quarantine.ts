@@ -8,6 +8,8 @@ import { logger } from "../../shared/logger";
 const QUARANTINE_BUCKET = assertEnvExists(process.env.QUARANTINE_BUCKET);
 
 export const handler = (event: EventBridgeEvent<string, object>) => {
+  logger.info({ event }, "Received Quarantine event");
+
   const { detail } = event;
   let bucketName: string | undefined;
   let fileName: string | undefined;
@@ -42,7 +44,7 @@ export const handler = (event: EventBridgeEvent<string, object>) => {
   const { s3Client } = awsClients;
 
   // @ts-expect-error Property 'scanResultDetails' does not exist on type 'object'.
-  if (detail?.scanResultDetails !== "NO_THREATS_FOUND") {
+  if (detail?.scanResultDetails === "NO_THREATS_FOUND") {
     logger.info("EventBridge rule is not properly set");
   } else {
     logger.info({ event }, "Received Quarantine event");
