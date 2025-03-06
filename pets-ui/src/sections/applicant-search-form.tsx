@@ -57,23 +57,14 @@ const ApplicantSearchForm = () => {
         throw error;
       }
 
-      let applicationRes;
-      try {
-        applicationRes = await getApplication(applicantRes.data);
-        if (applicationRes.data.travelInformation) {
-          dispatch(setTravelDetailsFromApiResponse(applicationRes.data.travelInformation));
-        }
-        if (applicationRes.data.medicalScreening) {
-          dispatch(setMedicalScreeningDetailsFromApiResponse(applicationRes.data.medicalScreening));
-        }
-        navigate("/tracker");
-      } catch (error) {
-        if (axios.isAxiosError(error) && error.status == 404) {
-          navigate("/applicant-results");
-          return;
-        }
-        throw error;
+      const applicationRes = await getApplication(applicantRes.data);
+      if (applicationRes.data.travelInformation) {
+        dispatch(setTravelDetailsFromApiResponse(applicationRes.data.travelInformation));
       }
+      if (applicationRes.data.medicalScreening) {
+        dispatch(setMedicalScreeningDetailsFromApiResponse(applicationRes.data.medicalScreening));
+      }
+      navigate("/tracker");
     } catch (error) {
       console.error(error);
       navigate("/error");

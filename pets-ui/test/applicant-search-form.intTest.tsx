@@ -211,7 +211,7 @@ describe("ApplicantSearchForm", () => {
     expect(useNavigateMock).toHaveBeenLastCalledWith("/tracker");
   });
 
-  test("store is correctly populated and user is navigated to tracker page when applicant search is successful & application search returns 404", async () => {
+  test("store is correctly populated and user is navigated to error page when applicant search is successful & application search returns a non-200 response", async () => {
     const { store } = renderWithProviders(
       <Router>
         <ApplicantSearchForm />
@@ -238,7 +238,7 @@ describe("ApplicantSearchForm", () => {
       },
     ]);
 
-    mock.onGet("/application/abc-123").reply(404);
+    mock.onGet("/application/abc-123").reply(403);
 
     await user.type(screen.getByTestId("passport-number"), "12345");
     fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
@@ -284,7 +284,7 @@ describe("ApplicantSearchForm", () => {
     expect(store.getState().travel).toEqual(emptyTravelSlice);
     expect(store.getState().medicalScreening).toEqual(emptyMedicalSlice);
 
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/tracker");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
   });
 
   test("store is correctly populated and user is navigated to error page when applicant search is successful & application search returns 500", async () => {
