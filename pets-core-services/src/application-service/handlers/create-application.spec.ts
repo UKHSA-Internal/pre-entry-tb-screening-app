@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 
+import { mockAPIGwEvent } from "../../test/mocks/events";
 import { createApplicationHandler } from "./create-application";
 
 describe("Test for create applicantion handler", () => {
@@ -7,7 +8,7 @@ describe("Test for create applicantion handler", () => {
     // Arrange
 
     // Act
-    const response = await createApplicationHandler();
+    const response = await createApplicationHandler(mockAPIGwEvent);
 
     // Assert
     expect(response.statusCode).toBe(200);
@@ -19,8 +20,8 @@ describe("Test for create applicantion handler", () => {
 
   test("No duplicate Application is generated", async () => {
     // Act
-    const responseOne = await createApplicationHandler();
-    const responseTwo = await createApplicationHandler();
+    const responseOne = await createApplicationHandler(mockAPIGwEvent);
+    const responseTwo = await createApplicationHandler(mockAPIGwEvent);
 
     // Assert
     const responseBodyOne = JSON.parse(responseOne.body);

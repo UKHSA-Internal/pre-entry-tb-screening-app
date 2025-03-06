@@ -6,7 +6,8 @@
     "preinstall": "npx only-allow pnpm",
     "security-checks": "git secrets --scan",
     "prepare": "husky",
-    "start": "node start.mjs",
+    "start": "node scripts/start.mjs",
+    "pull:secrets": "node scripts/pull-secrets.mjs",
     "start:ui": "pnpm --filter pets-ui dev"
   },
   "main": "index.js",
@@ -14,6 +15,7 @@
   "author": "PETS Engineering",
   "license": "MIT",
   "devDependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.758.0",
     "@eslint/compat": "^1.2.5",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.14.0",

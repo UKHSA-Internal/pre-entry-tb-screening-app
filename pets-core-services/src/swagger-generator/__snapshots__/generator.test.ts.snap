@@ -5,6 +5,24 @@ exports[`writeApiDocumentation > should generate API documentation and write to 
   "components": {
     "parameters": {},
     "schemas": {},
+    "securitySchemes": {
+      "authorizer": {
+        "in": "header",
+        "name": "Authorization",
+        "type": "apiKey",
+        "x-amazon-apigateway-authorizer": {
+          "authorizerCredentials": "arn:aws:iam::000000000000:role/api_gateway_auth_invocation",
+          "authorizerResultTtlInSeconds": 0,
+          "authorizerUri": "arn:aws:apigateway:eu-west-2:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-2:000000000000:function:test-lambda-name/invocations",
+          "identitySource": "method.request.header.Authorization",
+          "requestTemplates": {
+            "application/json": "{ "authorization": "$input.params('Authorization')", "staticValue": "HelloWorld", "stage": "$context.stage", "requestTime": "$context.requestTime", "requestId": "$context.requestId" }",
+          },
+          "type": "request",
+        },
+        "x-amazon-apigateway-authtype": "custom",
+      },
+    },
   },
   "info": {
     "title": "aw-pets-euw-ENVIRONMENT-apigateway-coreservices",
@@ -81,6 +99,11 @@ exports[`writeApiDocumentation > should generate API documentation and write to 
             "description": "500 response",
           },
         },
+        "security": [
+          {
+            "authorizer": [],
+          },
+        ],
         "summary": "New post",
         "tags": [
           "Posts",
@@ -161,6 +184,11 @@ exports[`writeApiDocumentation > should generate API documentation and write to 
             "description": "500 response",
           },
         },
+        "security": [
+          {
+            "authorizer": [],
+          },
+        ],
         "summary": "Fetch user",
         "tags": [
           "Users",

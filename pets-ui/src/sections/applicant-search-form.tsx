@@ -45,35 +45,28 @@ const ApplicantSearchForm = () => {
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (passportDetails) => {
     try {
       dispatch(setApplicantPassportDetails(passportDetails));
+      let applicantRes;
       try {
-        const applicantRes = await getApplicants(passportDetails);
+        applicantRes = await getApplicants(passportDetails);
         dispatch(setApplicantDetailsFromApiResponse(applicantRes.data[0]));
-        try {
-          const applicationRes = await getApplication(applicantRes.data);
-          if (applicationRes.data.travelInformation) {
-            dispatch(setTravelDetailsFromApiResponse(applicationRes.data.travelInformation));
-          }
-          if (applicationRes.data.medicalScreening) {
-            dispatch(
-              setMedicalScreeningDetailsFromApiResponse(applicationRes.data.medicalScreening),
-            );
-          }
-          navigate("/tracker");
-        } catch (error) {
-          if (axios.isAxiosError(error) && error.status == 404) {
-            navigate("/tracker");
-          } else {
-            navigate("/error");
-          }
-        }
       } catch (error) {
         if (axios.isAxiosError(error) && error.status == 404) {
           navigate("/applicant-results");
-        } else {
-          navigate("/error");
+          return;
         }
+        throw error;
       }
-    } catch {
+
+      const applicationRes = await getApplication(applicantRes.data);
+      if (applicationRes.data.travelInformation) {
+        dispatch(setTravelDetailsFromApiResponse(applicationRes.data.travelInformation));
+      }
+      if (applicationRes.data.medicalScreening) {
+        dispatch(setMedicalScreeningDetailsFromApiResponse(applicationRes.data.medicalScreening));
+      }
+      navigate("/tracker");
+    } catch (error) {
+      console.error(error);
       navigate("/error");
     }
   };

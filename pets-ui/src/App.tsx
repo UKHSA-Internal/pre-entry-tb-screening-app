@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 
-import { AuthenticatedRoute, UnauthenticatedRoute } from "./auth/routes";
+import { AuthenticatedRoute, UnauthenticatedRoute } from "./components/auth/routes";
 import ApiDocs from "./pages/api-docs";
 import ApplicantConfirmation from "./pages/applicant-confirmation";
 import ApplicantResultsPage from "./pages/applicant-results";
@@ -210,14 +210,7 @@ function App() {
           </AuthenticatedRoute>
         }
       />
-      <Route
-        path="/error"
-        element={
-          <UnauthenticatedRoute>
-            <ErrorPage />
-          </UnauthenticatedRoute>
-        }
-      />
+      <Route path="/error" element={<ErrorPage />} />
     </Routes>
   );
 }
