@@ -7,6 +7,7 @@ const __dirname = dirname(__filename);
 
 delete process.env["ProgramFiles(x86)"];
 delete process.env["CommonProgramFiles(x86)"];
+
 const define = {};
 for (const k in process.env) {
   define[`process.env.${k}`] = JSON.stringify(process.env[k]);

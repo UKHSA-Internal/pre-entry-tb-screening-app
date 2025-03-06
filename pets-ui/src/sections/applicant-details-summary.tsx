@@ -42,7 +42,8 @@ const ApplicantReview = () => {
 
       dispatch(setApplicantDetailsStatus(ApplicationStatus.COMPLETE));
       navigate("/applicant-confirmation");
-    } catch {
+    } catch (error) {
+      console.error(error);
       navigate("/error");
     }
   };

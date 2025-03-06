@@ -18,6 +18,7 @@ import MedicalScreeningPage from "./pages/medical-screening";
 import MedicalConfirmation from "./pages/medical-screening-confirmation";
 import MedicalSummaryPage from "./pages/medical-screening-summary";
 import ProgressTrackerPage from "./pages/progress-tracker";
+import TbConfirmationPage from "./pages/tb-confirmation";
 import TravelConfirmation from "./pages/travel-confirmation";
 import TravelDetailsPage from "./pages/travel-details";
 import TravelSummaryPage from "./pages/travel-summary";
@@ -203,6 +204,16 @@ function App() {
         }
       />
       <Route
+        path="/tb-confirmation"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <TbConfirmationPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
         path="/api-docs"
         element={
           <AuthenticatedRoute>
@@ -210,14 +221,7 @@ function App() {
           </AuthenticatedRoute>
         }
       />
-      <Route
-        path="/error"
-        element={
-          <UnauthenticatedRoute>
-            <ErrorPage />
-          </UnauthenticatedRoute>
-        }
-      />
+      <Route path="/error" element={<ErrorPage />} />
     </Routes>
   );
 }

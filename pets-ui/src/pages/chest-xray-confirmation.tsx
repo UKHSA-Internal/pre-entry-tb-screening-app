@@ -32,6 +32,7 @@ export default function ChestXrayConfirmation() {
         furtherInfo={furtherInfo}
         buttonText={"Continue"}
         buttonLink={"/tb-declaration"}
+        whatHappensNext
       />
     </Container>
   );

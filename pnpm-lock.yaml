@@ -98,15 +98,9 @@ importers:
       aws-jwt-verify:
         specifier: ^5.0.0
         version: 5.0.0
-      aws-sdk-client-mock:
-        specifier: ^4.1.0
-        version: 4.1.0
       aws-xray-sdk:
         specifier: ^3.10.1
         version: 3.10.2
-      esbuild:
-        specifier: ^0.25.0
-        version: 0.25.0
       pino:
         specifier: ^9.6.0
         version: 9.6.0
@@ -123,6 +117,12 @@ importers:
       '@types/aws-lambda':
         specifier: ^8.10.145
         version: 8.10.147
+      aws-sdk-client-mock:
+        specifier: ^4.1.0
+        version: 4.1.0
+      esbuild:
+        specifier: ^0.25.0
+        version: 0.25.0
       ts-patch:
         specifier: ^3.2.1
         version: 3.3.0

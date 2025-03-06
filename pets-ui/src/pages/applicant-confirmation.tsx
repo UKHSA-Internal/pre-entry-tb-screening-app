@@ -21,6 +21,7 @@ export default function ApplicantConfirmation() {
         furtherInfo={furtherInfo}
         buttonText={"Continue to travel information"}
         buttonLink={"/travel-details"}
+        whatHappensNext
       />
     </Container>
   );

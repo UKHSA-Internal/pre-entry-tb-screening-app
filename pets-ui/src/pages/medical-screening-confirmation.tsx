@@ -21,6 +21,7 @@ export default function MedicalConfirmation() {
         furtherInfo={furtherInfo}
         buttonText={"Continue to chest x-ray"}
         buttonLink={"/chest-xray-question"}
+        whatHappensNext
       />
     </Container>
   );

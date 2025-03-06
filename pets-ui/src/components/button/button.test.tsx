@@ -85,4 +85,19 @@ describe("Button component", () => {
     expect(container.getElementsByClassName("govuk-button--secondary")).toHaveLength(0);
     expect(container.getElementsByClassName("govuk-button--warning")).toHaveLength(1);
   });
+
+  it("renders button with marginTop style", () => {
+    render(
+      <Button
+        id="test-id"
+        text="test-text-default"
+        href="/test-href"
+        type={ButtonType.DEFAULT}
+        handleClick={handleClick}
+      />,
+    );
+
+    const buttonElement = screen.getByText("test-text-default");
+    expect(buttonElement).toHaveStyle("margin-top: 30px");
+  });
 });
