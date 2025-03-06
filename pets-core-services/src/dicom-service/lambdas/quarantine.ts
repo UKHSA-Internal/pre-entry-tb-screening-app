@@ -1,4 +1,8 @@
-import { CopyObjectCommand, CopyObjectCommandInput } from "@aws-sdk/client-s3";
+import {
+  CopyObjectCommand,
+  CopyObjectCommandInput,
+  CopyObjectCommandOutput,
+} from "@aws-sdk/client-s3";
 import { EventBridgeEvent } from "aws-lambda";
 
 import awsClients from "../../shared/clients/aws";
@@ -27,6 +31,7 @@ export const handler = (event: EventBridgeEvent<string, object>) => {
         bucketName = s3ObjDetails?.bucketName;
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         fileName = s3ObjDetails?.objectKey;
+        logger.info(`bucketName => ${bucketName} / fileName => ${fileName}`);
 
         if (typeof bucketName !== "string" || typeof fileName !== "string") {
           logger.info("EventBridge event doesn't contain correct bucketName or objectKey");
@@ -36,7 +41,8 @@ export const handler = (event: EventBridgeEvent<string, object>) => {
       }
     }
   } else {
-    logger.info("EventBridge event object doesn't contain 'detail' property");
+    // This should never happen
+    logger.error("EventBridge event object doesn't contain 'detail' property");
 
     return;
   }
@@ -57,10 +63,14 @@ export const handler = (event: EventBridgeEvent<string, object>) => {
 
     const copyCommand = new CopyObjectCommand(params);
     const promise = s3Client.send(copyCommand);
-    const response = promise.then((result) => result).catch((error) => logger.error(error));
-
-    logger.info("Result of copying a file:", response);
-    logger.info("response type:", typeof response);
+    promise
+      .then((result: CopyObjectCommandOutput) => {
+        logger.info(`The files has been copied ${QUARANTINE_BUCKET}`);
+        logger.info(`Result of copy: ${JSON.stringify(result)}`);
+      })
+      .catch((error) => {
+        logger.error(error);
+      });
 
     return;
   }
