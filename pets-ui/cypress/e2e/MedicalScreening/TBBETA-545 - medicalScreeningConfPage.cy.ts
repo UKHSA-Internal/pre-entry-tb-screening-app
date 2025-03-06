@@ -67,8 +67,6 @@ describe("Validate that medical screening page is submitted successfully when al
 
       cy.url().should("include", expectedUrl);
 
-      // While on the edit page, we still need to use direct Cypress commands
-      // because the page object doesn't have methods to verify existing values
       switch (summaryList) {
         case "Age":
           cy.contains("label", "Applicant Age")
