@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import { ChestXrayDetailsType } from "@/applicant";
+import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import ErrorDisplay from "@/components/errorSummary/errorSummary";
@@ -18,13 +18,13 @@ const ChestXrayQuestionForm = () => {
   const navigate = useNavigate();
   const applicantData = useAppSelector(selectApplicant);
 
-  const methods = useForm<ChestXrayDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,
     formState: { errors },
   } = methods;
 
-  const onSubmit: SubmitHandler<ChestXrayDetailsType> = (data) => {
+  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = (data) => {
     updateReduxStore(data);
     if (data.chestXrayTaken === "Yes") {
       navigate("/chest-xray-upload");
@@ -33,7 +33,7 @@ const ChestXrayQuestionForm = () => {
     }
   };
 
-  const updateReduxStore = (chestXrayData: ChestXrayDetailsType) => {
+  const updateReduxStore = (chestXrayData: ReduxChestXrayDetailsType) => {
     dispatch(setChestXrayTaken(chestXrayData.chestXrayTaken));
   };
   const errorsToShow = Object.keys(errors);

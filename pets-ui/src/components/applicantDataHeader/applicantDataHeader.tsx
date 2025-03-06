@@ -1,7 +1,7 @@
-import { ApplicantDetailsType } from "@/applicant";
+import { ReduxApplicantDetailsType } from "@/applicant";
 
 interface ApplicantDataHeaderProps {
-  applicantData: ApplicantDetailsType;
+  applicantData: ReduxApplicantDetailsType;
 }
 
 export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderProps>) {
