@@ -15,18 +15,23 @@ const TravelReview = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    await postTravelDetails(applicationData.applicationId, {
-      visaCategory: travelData.visaType,
-      ukAddressLine1: travelData.applicantUkAddress1,
-      ukAddressLine2: travelData.applicantUkAddress2,
-      ukAddressTownOrCity: travelData.townOrCity,
-      ukAddressPostcode: travelData.postcode,
-      ukMobileNumber: travelData.ukMobileNumber,
-      ukEmailAddress: travelData.ukEmail,
-    });
+    try {
+      await postTravelDetails(applicationData.applicationId, {
+        visaCategory: travelData.visaType,
+        ukAddressLine1: travelData.applicantUkAddress1,
+        ukAddressLine2: travelData.applicantUkAddress2,
+        ukAddressTownOrCity: travelData.townOrCity,
+        ukAddressPostcode: travelData.postcode,
+        ukMobileNumber: travelData.ukMobileNumber,
+        ukEmailAddress: travelData.ukEmail,
+      });
 
-    dispatch(setTravelDetailsStatus(ApplicationStatus.COMPLETE));
-    navigate("/travel-confirmation");
+      dispatch(setTravelDetailsStatus(ApplicationStatus.COMPLETE));
+      navigate("/travel-confirmation");
+    } catch (error) {
+      console.error(error);
+      navigate("/error");
+    }
   };
 
   return (

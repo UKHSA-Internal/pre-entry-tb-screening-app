@@ -43,36 +43,40 @@ const ApplicantSearchForm = () => {
   } = methods;
 
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (passportDetails) => {
-    dispatch(setApplicantPassportDetails(passportDetails));
-
-    let applicantRes;
     try {
-      applicantRes = await getApplicants(passportDetails);
-      dispatch(setApplicantDetailsFromApiResponse(applicantRes.data[0]));
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.status == 404) {
+      dispatch(setApplicantPassportDetails(passportDetails));
+      let applicantRes;
+      try {
+        applicantRes = await getApplicants(passportDetails);
+        dispatch(setApplicantDetailsFromApiResponse(applicantRes.data[0]));
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.status == 404) {
+          navigate("/applicant-results");
+          return;
+        }
+        throw error;
+      }
+
+      let applicationRes;
+      try {
+        applicationRes = await getApplication(applicantRes.data);
+        if (applicationRes.data.travelInformation) {
+          dispatch(setTravelDetailsFromApiResponse(applicationRes.data.travelInformation));
+        }
+        if (applicationRes.data.medicalScreening) {
+          dispatch(setMedicalScreeningDetailsFromApiResponse(applicationRes.data.medicalScreening));
+        }
         navigate("/tracker");
-        return;
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.status == 404) {
+          navigate("/applicant-results");
+          return;
+        }
+        throw error;
       }
-      throw error;
-    }
-
-    let applicationRes;
-    try {
-      applicationRes = await getApplication(applicantRes.data);
-      if (applicationRes.data.travelInformation) {
-        dispatch(setTravelDetailsFromApiResponse(applicationRes.data.travelInformation));
-      }
-      if (applicationRes.data.medicalScreening) {
-        dispatch(setMedicalScreeningDetailsFromApiResponse(applicationRes.data.medicalScreening));
-      }
-      navigate("/tracker");
     } catch (error) {
-      if (axios.isAxiosError(error) && error.status == 404) {
-        navigate("/applicant-results");
-        return;
-      }
-      throw error;
+      console.error(error);
+      navigate("/error");
     }
   };
 

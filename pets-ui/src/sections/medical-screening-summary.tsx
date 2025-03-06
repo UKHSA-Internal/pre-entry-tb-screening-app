@@ -1,3 +1,4 @@
+import { error } from "console";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -17,24 +18,29 @@ const MedicalScreeningReview = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    await postMedicalDetails(applicationData.applicationId, {
-      age: parseInt(medicalData.age),
-      symptomsOfTb: medicalData.tbSymptoms,
-      symptoms: medicalData.tbSymptomsList,
-      symptomsOther: medicalData.otherSymptomsDetail,
-      historyOfConditionsUnder11: medicalData.underElevenConditions,
-      historyOfConditionsUnder11Details: medicalData.underElevenConditionsDetail,
-      historyOfPreviousTb: medicalData.previousTb,
-      previousTbDetails: medicalData.previousTbDetail,
-      contactWithPersonWithTb: medicalData.closeContactWithTb,
-      contactWithTbDetails: medicalData.closeContactWithTbDetail,
-      pregnant: medicalData.pregnant,
-      haveMenstralPeriod: medicalData.menstrualPeriods,
-      physicalExaminationNotes: medicalData.physicalExamNotes,
-    });
+    try {
+      await postMedicalDetails(applicationData.applicationId, {
+        age: parseInt(medicalData.age),
+        symptomsOfTb: medicalData.tbSymptoms,
+        symptoms: medicalData.tbSymptomsList,
+        symptomsOther: medicalData.otherSymptomsDetail,
+        historyOfConditionsUnder11: medicalData.underElevenConditions,
+        historyOfConditionsUnder11Details: medicalData.underElevenConditionsDetail,
+        historyOfPreviousTb: medicalData.previousTb,
+        previousTbDetails: medicalData.previousTbDetail,
+        contactWithPersonWithTb: medicalData.closeContactWithTb,
+        contactWithTbDetails: medicalData.closeContactWithTbDetail,
+        pregnant: medicalData.pregnant,
+        haveMenstralPeriod: medicalData.menstrualPeriods,
+        physicalExaminationNotes: medicalData.physicalExamNotes,
+      });
 
-    dispatch(setMedicalScreeningStatus(ApplicationStatus.COMPLETE));
-    navigate("/medical-confirmation");
+      dispatch(setMedicalScreeningStatus(ApplicationStatus.COMPLETE));
+      navigate("/medical-confirmation");
+    } catch (error) {
+      console.error(error);
+      navigate("/error");
+    }
   };
 
   return (
