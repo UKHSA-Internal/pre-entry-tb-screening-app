@@ -75,7 +75,7 @@ const ChestXrayForm = () => {
   } = methods;
 
   const errorsToShow = Object.keys(errors);
-  
+
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = () => {
     dispatch(setPosteroAnteriorXrayFile(PAFile));
     dispatch(setApicalLordoticXrayFile(ALFile));
