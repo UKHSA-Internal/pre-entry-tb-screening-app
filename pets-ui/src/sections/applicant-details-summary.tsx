@@ -15,36 +15,32 @@ const ApplicantReview = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    try {
-      const applicationRes = await createNewApplication();
-      dispatch(setApplicationDetails(applicationRes.data));
+    const applicationRes = await createNewApplication();
+    dispatch(setApplicationDetails(applicationRes.data));
 
-      const dateOfBirthStr = `${applicantData.dateOfBirth.year}-${standardiseDayOrMonth(applicantData.dateOfBirth.month)}-${standardiseDayOrMonth(applicantData.dateOfBirth.day)}`;
-      const issueDateStr = `${applicantData.passportIssueDate.year}-${standardiseDayOrMonth(applicantData.passportIssueDate.month)}-${standardiseDayOrMonth(applicantData.passportIssueDate.day)}`;
-      const expiryDateStr = `${applicantData.passportExpiryDate.year}-${standardiseDayOrMonth(applicantData.passportExpiryDate.month)}-${standardiseDayOrMonth(applicantData.passportExpiryDate.day)}`;
-      await postApplicantDetails(applicationRes.data.applicationId, {
-        fullName: applicantData.fullName,
-        sex: applicantData.sex,
-        dateOfBirth: dateOfBirthStr,
-        countryOfNationality: applicantData.countryOfNationality,
-        passportNumber: applicantData.passportNumber,
-        countryOfIssue: applicantData.countryOfIssue,
-        issueDate: issueDateStr,
-        expiryDate: expiryDateStr,
-        applicantHomeAddress1: applicantData.applicantHomeAddress1,
-        applicantHomeAddress2: applicantData.applicantHomeAddress2,
-        applicantHomeAddress3: applicantData.applicantHomeAddress3,
-        townOrCity: applicantData.townOrCity,
-        provinceOrState: applicantData.provinceOrState,
-        country: applicantData.country,
-        postcode: applicantData.postcode,
-      });
+    const dateOfBirthStr = `${applicantData.dateOfBirth.year}-${standardiseDayOrMonth(applicantData.dateOfBirth.month)}-${standardiseDayOrMonth(applicantData.dateOfBirth.day)}`;
+    const issueDateStr = `${applicantData.passportIssueDate.year}-${standardiseDayOrMonth(applicantData.passportIssueDate.month)}-${standardiseDayOrMonth(applicantData.passportIssueDate.day)}`;
+    const expiryDateStr = `${applicantData.passportExpiryDate.year}-${standardiseDayOrMonth(applicantData.passportExpiryDate.month)}-${standardiseDayOrMonth(applicantData.passportExpiryDate.day)}`;
+    await postApplicantDetails(applicationRes.data.applicationId, {
+      fullName: applicantData.fullName,
+      sex: applicantData.sex,
+      dateOfBirth: dateOfBirthStr,
+      countryOfNationality: applicantData.countryOfNationality,
+      passportNumber: applicantData.passportNumber,
+      countryOfIssue: applicantData.countryOfIssue,
+      issueDate: issueDateStr,
+      expiryDate: expiryDateStr,
+      applicantHomeAddress1: applicantData.applicantHomeAddress1,
+      applicantHomeAddress2: applicantData.applicantHomeAddress2,
+      applicantHomeAddress3: applicantData.applicantHomeAddress3,
+      townOrCity: applicantData.townOrCity,
+      provinceOrState: applicantData.provinceOrState,
+      country: applicantData.country,
+      postcode: applicantData.postcode,
+    });
 
-      dispatch(setApplicantDetailsStatus(ApplicationStatus.COMPLETE));
-      navigate("/applicant-confirmation");
-    } catch {
-      navigate("/error");
-    }
+    dispatch(setApplicantDetailsStatus(ApplicationStatus.COMPLETE));
+    navigate("/applicant-confirmation");
   };
 
   return (

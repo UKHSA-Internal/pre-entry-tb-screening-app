@@ -210,14 +210,7 @@ function App() {
           </AuthenticatedRoute>
         }
       />
-      <Route
-        path="/error"
-        element={
-          <UnauthenticatedRoute>
-            <ErrorPage />
-          </UnauthenticatedRoute>
-        }
-      />
+      <Route path="/error" element={<ErrorPage />} />
     </Routes>
   );
 }
