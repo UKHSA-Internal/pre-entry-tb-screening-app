@@ -39,6 +39,7 @@ describe("Confirmation component", () => {
     expect(screen.getByText("Confirmation GreenBox Text")).toBeTruthy();
     expect(screen.getByText("Further Information Test Text")).toBeTruthy();
     expect(screen.getByText("Additional Information")).toBeTruthy();
+    expect(screen.queryByText("What happens next")).not.toBeInTheDocument();
   });
   it("Renders the JSX Elements with a working Link", () => {
     const paragraphs = screen.getAllByRole("paragraph");
@@ -52,5 +53,20 @@ describe("Confirmation component", () => {
     expect(button).toHaveTextContent("Continue to next step");
     fireEvent.click(button);
     expect(useNavigateMock).toHaveBeenCalledWith("/next-step");
+  });
+  it("Renders the title 'What happens next' when whatHappensNext is true", () => {
+    render(
+      <Router>
+        <Confirmation
+          confirmationText={"Confirmation GreenBox Text"}
+          furtherInfo={furtherInfo}
+          buttonText={"Continue to next step"}
+          buttonLink={"/next-step"}
+          whatHappensNext={true}
+        />
+      </Router>,
+    );
+
+    expect(screen.getByText("What happens next")).toBeInTheDocument();
   });
 });
