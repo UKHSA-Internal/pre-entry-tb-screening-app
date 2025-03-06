@@ -16,7 +16,7 @@ export const petsApi = axios.create({
 });
 
 petsApi.interceptors.request.use(async (config) => {
-  if (process.env.VITE_AZURE_SKIP_TOKEN_ACQUISITION === "true") {
+  if (import.meta.env.VITE_AZURE_SKIP_TOKEN_ACQUISITION === "true") {
     return config; // Skip token acquisition in unit tests
   }
 
