@@ -18,7 +18,19 @@ export default function Summary(props: Readonly<SummaryProps>) {
         return (
           <div className="govuk-summary-list__row" key={summaryElement.key}>
             <dt className="govuk-summary-list__key">{summaryElement.key}</dt>
-            <dd className="govuk-summary-list__value">{summaryElement.value}</dd>
+            {Array.isArray(summaryElement.value) ? (
+              <div>
+                {summaryElement.value.map((value) => {
+                  return (
+                    <dd className="govuk-summary-value-column" key={value}>
+                      {value}
+                    </dd>
+                  );
+                })}
+              </div>
+            ) : (
+              <dd className="govuk-summary-list__value">{summaryElement.value}</dd>
+            )}
             <dd className="govuk-summary-list__actions">
               <Link className="govuk-link" style={{ color: "#1d70b8" }} to={summaryElement.link}>
                 Change<span className="govuk-visually-hidden">{summaryElement.hiddenLabel}</span>

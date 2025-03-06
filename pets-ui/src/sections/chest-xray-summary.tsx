@@ -16,7 +16,7 @@ const ChestXraySummary = () => {
   const xraySummaryData = [
     {
       key: "Select X-ray Status",
-      value: chestXrayData.chestXrayTaken ? "Taken" : "Not Taken",
+      value: chestXrayData.chestXrayTaken ? "Yes" : "No",
       link: "/chest-xray-question#chestXrayTaken",
       hiddenLabel: "Chest X-ray Status",
     },
@@ -45,10 +45,28 @@ const ChestXraySummary = () => {
       hiddenLabel: "X-ray Result",
     },
     {
-      key: "Chest X-ray Findings",
+      key: "Chest X-ray Details",
       value: chestXrayData.xrayResultDetail,
       link: "/chest-xray-findings",
-      hiddenLabel: "X-ray Findings",
+      hiddenLabel: "X-ray Details",
+    },
+    {
+      key: "Minor Findings",
+      value: chestXrayData.xrayMinorFindings,
+      link: "/chest-xray-findings",
+      hiddenLabel: "X-ray Minor Findings",
+    },
+    {
+      key: "Minor Findings Occasionally Associated with TB",
+      value: chestXrayData.xrayAssociatedMinorFindings,
+      link: "/chest-xray-findings",
+      hiddenLabel: "X-ray Minor Findings TB Assoc",
+    },
+    {
+      key: "Findings Sometimes Seen in Active TB (or Other Conditions)",
+      value: chestXrayData.xrayActiveTbFindings,
+      link: "/chest-xray-findings",
+      hiddenLabel: "X-ray Minor Findings Active TB",
     },
     {
       key: "Enter reason X-ray not taken",
@@ -61,7 +79,8 @@ const ChestXraySummary = () => {
   const isDataPresent = (
     summaryElement: Partial<SummaryElement>,
   ): summaryElement is SummaryElement => {
-    return !!summaryElement.value;
+    const { value } = summaryElement;
+    return Array.isArray(value) ? value.length > 0 : !!value;
   };
 
   return (
