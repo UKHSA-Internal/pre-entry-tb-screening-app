@@ -1,10 +1,10 @@
 import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { MedicalScreeningType } from "@/applicant";
-import { ApplicationStatus } from "@/utils/enums";
+import { ReceivedMedicalScreeningType, ReduxMedicalScreeningType } from "@/applicant";
+import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
 
-const initialState: MedicalScreeningType = {
+const initialState: ReduxMedicalScreeningType = {
   status: ApplicationStatus.INCOMPLETE,
   age: "",
   tbSymptoms: "",
@@ -67,7 +67,7 @@ export const medicalScreeningSlice = createSlice({
     setPhysicalExamNotes: (state, action: PayloadAction<string>) => {
       state.physicalExamNotes = action.payload;
     },
-    setMedicalScreeningDetails: (state, action: PayloadAction<MedicalScreeningType>) => {
+    setMedicalScreeningDetails: (state, action: PayloadAction<ReduxMedicalScreeningType>) => {
       state.age = action.payload.age;
       state.tbSymptoms = action.payload.tbSymptoms;
       state.tbSymptomsList = action.payload.tbSymptomsList
@@ -102,6 +102,30 @@ export const medicalScreeningSlice = createSlice({
       state.menstrualPeriods = "";
       state.physicalExamNotes = "";
     },
+    setMedicalScreeningDetailsFromApiResponse: (
+      state,
+      action: PayloadAction<ReceivedMedicalScreeningType>,
+    ) => {
+      state.status =
+        action.payload.status == BackendApplicationStatus.COMPLETE
+          ? ApplicationStatus.COMPLETE
+          : ApplicationStatus.INCOMPLETE;
+      state.age = action.payload.age.toString();
+      state.tbSymptoms = action.payload.symptomsOfTb;
+      state.tbSymptomsList = action.payload.symptoms ? [...action.payload.symptoms] : [];
+      state.otherSymptomsDetail = action.payload.symptomsOther;
+      state.underElevenConditions = action.payload.historyOfConditionsUnder11
+        ? [...action.payload.historyOfConditionsUnder11]
+        : [];
+      state.underElevenConditionsDetail = action.payload.historyOfConditionsUnder11Details;
+      state.previousTb = action.payload.historyOfPreviousTb;
+      state.previousTbDetail = action.payload.previousTbDetails;
+      state.closeContactWithTb = action.payload.contactWithPersonWithTb;
+      state.closeContactWithTbDetail = action.payload.contactWithTbDetails;
+      state.pregnant = action.payload.pregnant;
+      state.menstrualPeriods = action.payload.haveMenstralPeriod;
+      state.physicalExamNotes = action.payload.physicalExaminationNotes;
+    },
   },
 });
 
@@ -122,6 +146,7 @@ export const {
   setPhysicalExamNotes,
   clearMedicalScreeningDetails,
   setMedicalScreeningDetails,
+  setMedicalScreeningDetailsFromApiResponse,
 } = medicalScreeningSlice.actions;
 
 export const medicalScreeningReducer = medicalScreeningSlice.reducer;
