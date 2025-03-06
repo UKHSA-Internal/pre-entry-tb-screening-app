@@ -9,9 +9,26 @@ import {
   ReceivedApplicantDetailsType,
   ReceivedApplicationDetailsType,
 } from "@/applicant";
+import { acquireTokenSilently } from "@/utils/auth";
 
 export const petsApi = axios.create({
   baseURL: "/api",
+});
+
+petsApi.interceptors.request.use(async (config) => {
+  if (process.env.VITE_AZURE_SKIP_TOKEN_ACQUISITION === "true") {
+    return config; // Skip token acquisition in unit tests
+  }
+
+  const tokenResponse = await acquireTokenSilently();
+
+  const idToken = tokenResponse?.idToken;
+
+  if (idToken) {
+    config.headers.Authorization = `Bearer ${idToken}`;
+  }
+
+  return config;
 });
 
 export const getApplicants = async (passportDetails: ApplicantSearchFormType) => {
