@@ -109,7 +109,7 @@ export const MedicalScreeningResponseSchema = MedicalScreeningRequestSchema.exte
   }),
 });
 
-export const TbCerificationRequestSchema = z.object({
+export const TbCertificateRequestSchema = z.object({
   certificateIssued: z.nativeEnum(YesOrNo).openapi({
     description: "Whether a clearance certificate has been issued",
   }),
@@ -124,7 +124,7 @@ export const TbCerificationRequestSchema = z.object({
   }),
 });
 
-export const TbCertificationResponseSchema = TbCerificationRequestSchema.extend({
+export const TbCertificateResponseSchema = TbCertificateRequestSchema.extend({
   applicationId: z.string().openapi({
     description: "ID of application",
   }),
@@ -142,5 +142,5 @@ export const ApplicationSchema = z.object({
   }),
   travelInformation: TravelInformationResponseSchema,
   medicalScreening: MedicalScreeningResponseSchema,
-  tbCertification: TbCertificationResponseSchema,
+  tbCertification: TbCertificateResponseSchema,
 });
