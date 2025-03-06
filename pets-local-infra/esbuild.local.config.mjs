@@ -7,6 +7,7 @@ const __dirname = dirname(__filename);
 
 delete process.env["ProgramFiles(x86)"];
 delete process.env["CommonProgramFiles(x86)"];
+
 const define = {};
 for (const k in process.env) {
   define[`process.env.${k}`] = JSON.stringify(process.env[k]);
@@ -14,7 +15,10 @@ for (const k in process.env) {
 
 const outbase = join(__dirname, "..");
 const options = {
-  entryPoints: ["../pets-core-services/src/**/lambdas/*.ts"],
+  entryPoints: [
+    "../pets-core-services/src/**/lambdas/*.ts",
+    "../pets-core-services/src/authoriser/b2c-authoriser.ts",
+  ],
   outdir: "build",
   outbase,
   bundle: true,

@@ -36,7 +36,8 @@ const MedicalScreeningReview = () => {
 
       dispatch(setMedicalScreeningStatus(ApplicationStatus.COMPLETE));
       navigate("/medical-confirmation");
-    } catch {
+    } catch (error) {
+      console.error(error);
       navigate("/error");
     }
   };

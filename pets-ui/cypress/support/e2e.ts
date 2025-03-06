@@ -9,11 +9,11 @@ beforeEach(function () {
     cy.log("Skipping authentication as SKIP_AUTH is true");
     return;
   }
-  void cy.session(
+  cy.session(
     "authenticatedSession",
     () => {
       cy.log("Creating new authentication session");
-      void cy.loginViaB2C();
+      cy.loginViaB2C();
     },
     {
       cacheAcrossSpecs: true,

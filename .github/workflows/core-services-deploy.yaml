@@ -17,6 +17,9 @@ jobs:
     name: Load deployment config for Core Services Lambda
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    env:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
 
     outputs:
       config: ${{ steps.deployment-config.outputs.deploy_config }}
@@ -55,6 +58,7 @@ jobs:
       BUILD_FOLDER: ".build"
       ZIP_FILE: "deployment_package.zip"
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
 
     strategy:
       matrix:
@@ -106,9 +110,10 @@ jobs:
     needs: deploy-lambdas
 
     env:
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       SPEC_FILE: swagger.json
       APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
 
     steps:
       - name: Checkout code
