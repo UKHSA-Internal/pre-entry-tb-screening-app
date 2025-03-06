@@ -12,6 +12,7 @@ import {
 const newTravelDetails: SaveTravelInformationEvent["parsedBody"] = {
   visaCategory: VisaOptions.Students,
   ukAddressLine1: "first line",
+  ukAddressTownOrCity: "uk address town",
   ukAddressPostcode: "uk address postcode",
   ukMobileNumber: "uk mobile number",
   ukEmailAddress: "uk email address",
