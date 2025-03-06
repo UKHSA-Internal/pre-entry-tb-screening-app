@@ -80,7 +80,6 @@ const MedicalScreeningForm = () => {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
-
         <div>
           <dl className="govuk-summary-list">
             <div className="govuk-summary-list__row">
