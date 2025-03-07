@@ -142,5 +142,5 @@ export const ApplicationSchema = z.object({
   }),
   travelInformation: TravelInformationResponseSchema,
   medicalScreening: MedicalScreeningResponseSchema,
-  tbCertification: TbCertificateResponseSchema,
+  tbCertificate: TbCertificateResponseSchema,
 });
