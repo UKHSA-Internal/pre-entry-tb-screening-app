@@ -55,14 +55,10 @@ describe("ChestXrayUploadPage", () => {
 
     expect(screen.getByText("There is a problem")).toBeInTheDocument();
     expect(
-      screen.getAllByText(
-        "Select yes if the visa applicant has had a chest X-ray or no if they have not.",
-      )[0],
+      screen.getAllByText("Select whether the applicant has had a chest X-ray")[0],
     ).toBeInTheDocument();
     expect(
-      screen.getAllByText(
-        "Select yes if the visa applicant has had a chest X-ray or no if they have not.",
-      )[1],
+      screen.getAllByText("Select whether the applicant has had a chest X-ray")[1],
     ).toBeInTheDocument();
   });
   it("does not render an error if continue button not clicked with no answer provided", () => {
