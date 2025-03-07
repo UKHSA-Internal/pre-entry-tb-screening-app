@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { ChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
@@ -82,38 +82,66 @@ const ChestXrayForm = () => {
     dispatch(setLateralDecubitusXrayFile(LDFile));
   };
 
+  // Required to scroll to the correct element when a change link on the summary page is clicked
+  const location = useLocation();
+  const paXray = useRef<HTMLDivElement | null>(null);
+  const alXray = useRef<HTMLDivElement | null>(null);
+  const ldXray = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (location.hash) {
+      const target = location.hash.substring(1);
+      const refMap: { [key: string]: HTMLElement | null } = {
+        "postero-anterior-xray": paXray.current,
+        "apical-lordotic-xray": alXray.current,
+        "lateral-decubitus-xray": ldXray.current,
+      };
+
+      const targetRef = refMap[target];
+      if (targetRef) {
+        targetRef.scrollIntoView();
+      }
+    }
+  }, [location]);
+
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <ApplicantDataHeader applicantData={applicantData} />
 
-          <Heading level={2} size="m" title="Postero-anterior X-ray" />
-          <FileUploadModule
-            id="postero-anterior-xray"
-            name="Postero-anterior"
-            setFileState={setPAFile}
-            required={true}
-            errors={errors}
-          />
+          <div ref={paXray}>
+            <Heading level={2} size="m" title="Postero-anterior X-ray" />
+            <FileUploadModule
+              id="postero-anterior-xray"
+              name="Postero-anterior"
+              setFileState={setPAFile}
+              required={true}
+              errors={errors}
+            />
+          </div>
 
-          <Heading level={2} size="m" title="Apical lordotic X-ray (optional)" />
-          <FileUploadModule
-            id="apical-lordotic-xray"
-            name="Apical-lordotic"
-            setFileState={setALFile}
-            required={false}
-            errors={errors}
-          />
+          <div ref={alXray}>
+            <Heading level={2} size="m" title="Apical lordotic X-ray (optional)" />
+            <FileUploadModule
+              id="apical-lordotic-xray"
+              name="Apical-lordotic"
+              setFileState={setALFile}
+              required={false}
+              errors={errors}
+            />
+          </div>
 
-          <Heading level={2} size="m" title="Lateral decubitus X-ray (optional)" />
-          <FileUploadModule
-            id="lateral-decubitus-xray"
-            name="Lateral-decubitus"
-            setFileState={setLDFile}
-            required={false}
-            errors={errors}
-          />
+          <div ref={ldXray}>
+            <Heading level={2} size="m" title="Lateral decubitus X-ray (optional)" />
+            <FileUploadModule
+              id="lateral-decubitus-xray"
+              name="Lateral-decubitus"
+              setFileState={setLDFile}
+              required={false}
+              errors={errors}
+            />
+          </div>
 
           <Button
             id="continue"

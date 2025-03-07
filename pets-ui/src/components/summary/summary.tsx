@@ -19,10 +19,10 @@ export default function Summary(props: Readonly<SummaryProps>) {
           <div className="govuk-summary-list__row" key={summaryElement.key}>
             <dt className="govuk-summary-list__key">{summaryElement.key}</dt>
             {Array.isArray(summaryElement.value) ? (
-              <div>
+              <div className="govuk-summary-value-column">
                 {summaryElement.value.map((value) => {
                   return (
-                    <dd className="govuk-summary-value-column" key={value}>
+                    <dd className="govuk-summary-list__value" key={value}>
                       {value}
                     </dd>
                   );
