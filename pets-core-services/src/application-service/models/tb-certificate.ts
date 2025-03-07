@@ -35,15 +35,6 @@ export abstract class ITbCertificate {
   }
 }
 
-// export type NewApplicant = Omit<
-//   IApplicant,
-//   "dateCreated" | "issueDate" | "expiryDate" | "dateOfBirth" | "passportId" | "status"
-// > & {
-//   issueDate: Date | string;
-//   expiryDate: Date | string;
-//   dateOfBirth: Date | string;
-// };
-
 export type TbCertificateDetails = Omit<
   ITbCertificate,
   "dateCreated" | "certificateIssueDate" | "status"
