@@ -15,6 +15,15 @@ const summaryData = [
   },
 ];
 
+const summaryArrayData = [
+  {
+    key: "Example Title",
+    value: ["A typical value", "Another value", "A third value"],
+    link: "/example-link",
+    hiddenLabel: "Hidden Label Example",
+  },
+];
+
 describe("Summary Component", () => {
   it("renders correctly when props are specified", () => {
     renderWithProviders(
@@ -25,6 +34,16 @@ describe("Summary Component", () => {
     expect(screen.getByText("Example Title")).toBeInTheDocument();
     expect(screen.getByText("A typical value")).toBeInTheDocument();
     expect(screen.getByText("Hidden Label Example")).toBeInTheDocument();
+  });
+  it("renders an array of strings", () => {
+    render(
+      <Router>
+        <Summary summaryElements={summaryArrayData} />
+      </Router>,
+    );
+    expect(screen.getByText("A typical value")).toBeInTheDocument();
+    expect(screen.getByText("Another value")).toBeInTheDocument();
+    expect(screen.getByText("A third value")).toBeInTheDocument();
   });
   it("renders a link attached to the word 'Change'", () => {
     render(

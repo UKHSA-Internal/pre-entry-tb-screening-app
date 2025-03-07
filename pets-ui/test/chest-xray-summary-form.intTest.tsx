@@ -4,7 +4,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
-import { ChestXrayDetailsType } from "@/applicant";
+import { ReduxChestXrayDetailsType } from "@/applicant";
 import ChestXraySummaryPage from "@/pages/chest-xray-summary";
 import { renderWithProviders } from "@/utils/test-utils";
 
@@ -17,14 +17,14 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
   };
 });
 
-const chestXrayTakenState: ChestXrayDetailsType = {
+const chestXrayTakenState: ReduxChestXrayDetailsType = {
   chestXrayTaken: true,
   posteroAnteriorXray: true,
-  posteroAnteriorXrayFile: "Example FileName",
+  posteroAnteriorXrayFile: "PA Example FileName",
   apicalLordoticXray: true,
-  apicalLordoticXrayFile: "Example FileName",
+  apicalLordoticXrayFile: "AL Example FileName",
   lateralDecubitusXray: true,
-  lateralDecubitusXrayFile: "Example FileName",
+  lateralDecubitusXrayFile: "LD Example FileName",
   reasonXrayWasNotTaken: null,
   xrayWasNotTakenFurtherDetails: null,
   reasonXrayNotTakenDetail: null,
@@ -37,10 +37,12 @@ const chestXrayTakenState: ChestXrayDetailsType = {
   reasonWhySputumNotRequired: null,
   xrayResult: "Chest X-ray normal",
   xrayResultDetail: "Extra Details on Chest X-ray",
-  xrayFindingsList: ["Single fibrous streak or band or scar"],
+  xrayMinorFindings: ["Single fibrous streak or band or scar", "Bony Islets"],
+  xrayAssociatedMinorFindings: [],
+  xrayActiveTbFindings: [],
 };
 
-const chestXrayNotTakenState: ChestXrayDetailsType = {
+const chestXrayNotTakenState: ReduxChestXrayDetailsType = {
   chestXrayTaken: false,
   posteroAnteriorXray: false,
   posteroAnteriorXrayFile: "",
@@ -60,7 +62,9 @@ const chestXrayNotTakenState: ChestXrayDetailsType = {
   reasonWhySputumNotRequired: null,
   xrayResult: "",
   xrayResultDetail: "",
-  xrayFindingsList: [],
+  xrayMinorFindings: [],
+  xrayAssociatedMinorFindings: [],
+  xrayActiveTbFindings: [],
 };
 
 describe("ChestXraySummaryPage", () => {
@@ -112,12 +116,24 @@ describe("ChestXraySummaryPage", () => {
         { preloadedState },
       );
     });
-    it("renders the page titles and descriptions ", () => {
+    it("renders the page titles and data ", () => {
       expect(screen.getByText("Postero anterior X-ray")).toBeInTheDocument();
+      expect(screen.getByText("PA Example FileName")).toBeInTheDocument();
       expect(screen.getByText("Apical lordotic X-ray")).toBeInTheDocument();
+      expect(screen.getByText("AL Example FileName")).toBeInTheDocument();
       expect(screen.getByText("Lateral decubitus X-ray")).toBeInTheDocument();
+      expect(screen.getByText("LD Example FileName")).toBeInTheDocument();
       expect(screen.getByText("Chest X-ray Result")).toBeInTheDocument();
-      expect(screen.getByText("Chest X-ray Findings")).toBeInTheDocument();
+      expect(screen.getByText("Chest X-ray normal")).toBeInTheDocument();
+      //Array Data
+      expect(screen.getByText("Minor Findings")).toBeInTheDocument();
+      expect(screen.getByText("Single fibrous streak or band or scar")).toBeInTheDocument();
+      expect(screen.getByText("Bony Islets")).toBeInTheDocument();
+    });
+    it("does not render title when provided with an empty array", () => {
+      expect(
+        screen.queryByText("Findings Sometimes Seen in Active TB (or Other Conditions)"),
+      ).not.toBeInTheDocument();
     });
   });
   describe("Chest Not X-ray Taken", () => {
