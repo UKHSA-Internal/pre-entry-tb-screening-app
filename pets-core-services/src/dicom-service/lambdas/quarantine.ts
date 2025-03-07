@@ -3,42 +3,30 @@ import {
   CopyObjectCommandInput,
   CopyObjectCommandOutput,
 } from "@aws-sdk/client-s3";
-import { EventBridgeEvent } from "aws-lambda";
 
 import awsClients from "../../shared/clients/aws";
 import { assertEnvExists } from "../../shared/config";
 import { logger } from "../../shared/logger";
+import { EventBridgeEvent, EventBridgeEventDetails } from "./types";
 
 const QUARANTINE_BUCKET = assertEnvExists(process.env.QUARANTINE_BUCKET);
 
-export const handler = (event: EventBridgeEvent<string, object>) => {
+export const handler = (event: EventBridgeEvent<string, EventBridgeEventDetails>) => {
   logger.info({ event }, "Received Quarantine event");
 
   const { detail } = event;
-  let bucketName: string | undefined;
-  let fileName: string | undefined;
+  let bucketName: string = "";
+  let fileName: string = "";
 
   if (detail) {
-    // @ts-expect-error Property 'scanResultDetails' does not exist on type 'object'
     if (detail?.s3ObjectDetails) {
-      // @ts-expect-error Property 'scanResultDetails' does not exist on type 'object'
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const s3ObjDetails = detail.s3ObjectDetails;
+      bucketName = detail.s3ObjectDetails?.bucketName || "";
+      fileName = detail.s3ObjectDetails?.objectKey || "";
 
-      if (s3ObjDetails) {
-        logger.info("s3ObjectDetails:", s3ObjDetails);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-        bucketName = s3ObjDetails?.bucketName;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-        fileName = s3ObjDetails?.objectKey;
-        logger.info(`bucketName => ${bucketName} / fileName => ${fileName}`);
+      logger.info(`bucketName => ${bucketName} / fileName => ${fileName}`);
 
-        if (typeof bucketName !== "string" || typeof fileName !== "string") {
-          logger.info("EventBridge event doesn't contain correct bucketName or objectKey");
-
-          return;
-        }
-      }
+      // Do nothing if there's no proper names
+      if (!bucketName || !fileName) return;
     }
   } else {
     // This should never happen
@@ -53,7 +41,7 @@ export const handler = (event: EventBridgeEvent<string, object>) => {
   if (detail?.scanResultDetails === "NO_THREATS_FOUND") {
     logger.info("EventBridge rule is not properly set");
   } else {
-    logger.info({ event }, "Received Quarantine event");
+    logger.info(`Copying the file: ${bucketName}/${fileName}`);
 
     const params: CopyObjectCommandInput = {
       Bucket: QUARANTINE_BUCKET,
@@ -62,14 +50,13 @@ export const handler = (event: EventBridgeEvent<string, object>) => {
     };
 
     const copyCommand = new CopyObjectCommand(params);
-    const promise = s3Client.send(copyCommand);
-    promise
+    s3Client
+      .send(copyCommand)
       .then((result: CopyObjectCommandOutput) => {
-        logger.info(`The files has been copied ${QUARANTINE_BUCKET}`);
         logger.info(`Result of copy: ${JSON.stringify(result)}`);
       })
       .catch((error) => {
-        logger.error(error);
+        logger.error(`Error message while calling CopyObjectCommand: ${error}`);
       });
 
     return;
