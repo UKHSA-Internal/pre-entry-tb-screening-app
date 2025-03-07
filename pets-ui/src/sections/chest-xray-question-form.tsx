@@ -54,7 +54,7 @@ const ChestXrayQuestionForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.chestXrayTaken?.message ?? ""}
             formValue="chestXrayTaken"
-            required="Select whether the applicant has had a chest X-ray"
+            required="Select yes if the visa applicant has had a chest X-ray or no if they have not."
           />
         </div>
         <Button
