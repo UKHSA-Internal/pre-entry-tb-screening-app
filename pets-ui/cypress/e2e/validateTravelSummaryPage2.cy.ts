@@ -89,7 +89,7 @@ describe("Validate form is prefilled with data when user navigates back to the E
     ];
 
     // Test each field by clicking its change link and verifying the form is prefilled
-    fieldMappings.forEach((mapping, index) => {
+    fieldMappings.forEach((mapping) => {
       cy.get(".govuk-summary-list__key")
         .contains(mapping.key)
         .closest(".govuk-summary-list__row")
