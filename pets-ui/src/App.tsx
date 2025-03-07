@@ -68,9 +68,9 @@ function App() {
         path="/contact"
         element={
           <AuthenticatedRoute>
-            {/* <RedirectedRouteIfReduxEmpty> */}
-            <ContactDetailsPage />
-            {/* </RedirectedRouteIfReduxEmpty> */}
+            <RedirectedRouteIfReduxEmpty>
+              <ContactDetailsPage />
+            </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
       />
@@ -208,9 +208,9 @@ function App() {
         path="/tb-certificate-declaration"
         element={
           <AuthenticatedRoute>
-            {/* <RedirectedRouteIfReduxEmpty> */}
-            <TbCertificateDeclarationPage />
-            {/* </RedirectedRouteIfReduxEmpty> */}
+            <RedirectedRouteIfReduxEmpty>
+              <TbCertificateDeclarationPage />
+            </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
       />

@@ -124,9 +124,6 @@ const TbCertificateDeclarationForm = () => {
           title="If a clearance certificate has been issued, give:"
         />
 
-        {/* TODO: Check scss file */}
-        {/* TODO: unit tests */}
-
         <div ref={tbCertificateDate}>
           <Heading
             level={2}
