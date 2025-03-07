@@ -74,7 +74,7 @@ const ApplicantReview = () => {
           )}
         </div>
         <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Country of Nationality</dt>
+          <dt className="govuk-summary-list__key">Country of nationality</dt>
           <dd className="govuk-summary-list__value">{applicantData.countryOfNationality}</dd>
           {applicantData.status == ApplicationStatus.INCOMPLETE && (
             <dd className="govuk-summary-list__actions">
@@ -89,7 +89,7 @@ const ApplicantReview = () => {
           )}
         </div>
         <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Date of Birth</dt>
+          <dt className="govuk-summary-list__key">Date of birth</dt>
           <dd className="govuk-summary-list__value">
             {applicantData.dateOfBirth.day}/{applicantData.dateOfBirth.month}/
             {applicantData.dateOfBirth.year}
@@ -118,7 +118,7 @@ const ApplicantReview = () => {
           )}
         </div>
         <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Country of Issue</dt>
+          <dt className="govuk-summary-list__key">Country of issue</dt>
           <dd className="govuk-summary-list__value">{applicantData.countryOfIssue}</dd>
           {applicantData.status == ApplicationStatus.INCOMPLETE && (
             <dd className="govuk-summary-list__actions">
@@ -133,7 +133,7 @@ const ApplicantReview = () => {
           )}
         </div>
         <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Passport Issue Date</dt>
+          <dt className="govuk-summary-list__key">Passport issue date</dt>
           <dd className="govuk-summary-list__value">
             {applicantData.passportIssueDate.day}/{applicantData.passportIssueDate.month}/
             {applicantData.passportIssueDate.year}
@@ -151,7 +151,7 @@ const ApplicantReview = () => {
           )}
         </div>
         <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Passport Expiry Date</dt>
+          <dt className="govuk-summary-list__key">Passport expiry date</dt>
           <dd className="govuk-summary-list__value">
             {applicantData.passportExpiryDate.day}/{applicantData.passportExpiryDate.month}/
             {applicantData.passportExpiryDate.year}
@@ -169,7 +169,7 @@ const ApplicantReview = () => {
           )}
         </div>
         <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Home Address Line 1</dt>
+          <dt className="govuk-summary-list__key">Home address line 1</dt>
           <dd className="govuk-summary-list__value">{applicantData.applicantHomeAddress1}</dd>
           {applicantData.status == ApplicationStatus.INCOMPLETE && (
             <dd className="govuk-summary-list__actions">
@@ -180,7 +180,7 @@ const ApplicantReview = () => {
           )}
         </div>
         <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Home Address Line 2</dt>
+          <dt className="govuk-summary-list__key">Home address line 2</dt>
           <dd className="govuk-summary-list__value">{applicantData.applicantHomeAddress2}</dd>
           {applicantData.status == ApplicationStatus.INCOMPLETE && (
             <dd className="govuk-summary-list__actions">
@@ -191,7 +191,7 @@ const ApplicantReview = () => {
           )}
         </div>
         <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Home Address Line 3</dt>
+          <dt className="govuk-summary-list__key">Home address line 3</dt>
           <dd className="govuk-summary-list__value">{applicantData.applicantHomeAddress3}</dd>
           {applicantData.status == ApplicationStatus.INCOMPLETE && (
             <dd className="govuk-summary-list__actions">
@@ -202,7 +202,7 @@ const ApplicantReview = () => {
           )}
         </div>
         <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Town or City</dt>
+          <dt className="govuk-summary-list__key">Town or city</dt>
           <dd className="govuk-summary-list__value">{applicantData.townOrCity}</dd>
           {applicantData.status == ApplicationStatus.INCOMPLETE && (
             <dd className="govuk-summary-list__actions">
@@ -213,7 +213,7 @@ const ApplicantReview = () => {
           )}
         </div>
         <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Province or State</dt>
+          <dt className="govuk-summary-list__key">Province or state</dt>
           <dd className="govuk-summary-list__value">{applicantData.provinceOrState}</dd>
           {applicantData.status == ApplicationStatus.INCOMPLETE && (
             <dd className="govuk-summary-list__actions">
@@ -267,7 +267,7 @@ const ApplicantReview = () => {
         <Button
           id="back-to-tracker"
           type={ButtonType.DEFAULT}
-          text="Return to Tracker"
+          text="Return to tracker"
           href="/tracker"
           handleClick={() => navigate("/tracker")}
         />
