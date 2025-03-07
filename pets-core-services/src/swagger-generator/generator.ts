@@ -13,6 +13,8 @@ import { SwaggerConfig } from "./types";
 
 extendZodWithOpenApi(z);
 
+const awsAccountId = assertEnvExists(process.env.AWS_ACCOUNT_ID);
+
 const methodMap: Record<Exclude<Method, "ANY">, Exclude<Lowercase<Method>, "any">> = {
   GET: "get",
   POST: "post",
@@ -34,7 +36,11 @@ const extractPathParams = (path: string) => {
   }, {});
 };
 
-const registerSwaggerConfig = (registry: OpenAPIRegistry, config: SwaggerConfig) => {
+const registerSwaggerConfig = (
+  registry: OpenAPIRegistry,
+  config: SwaggerConfig,
+  authorizer: { name: string },
+) => {
   const { routes, tags } = config;
   for (const route of routes) {
     const {
@@ -83,6 +89,11 @@ const registerSwaggerConfig = (registry: OpenAPIRegistry, config: SwaggerConfig)
         httpMethod: "POST",
         uri: config.lambdaArn,
       },
+      security: [
+        {
+          [authorizer.name]: [],
+        },
+      ],
       tags,
     });
   }
@@ -92,8 +103,27 @@ const registerSwaggerConfig = (registry: OpenAPIRegistry, config: SwaggerConfig)
 export const writeApiDocumentation = (configs: SwaggerConfig[]): any => {
   let registry = new OpenAPIRegistry();
 
+  const authorizerIdentity = "Authorization";
+  const authorizer = registry.registerComponent("securitySchemes", "authorizer", {
+    type: "apiKey",
+    name: authorizerIdentity,
+    in: "header",
+    "x-amazon-apigateway-authtype": "custom",
+    "x-amazon-apigateway-authorizer": {
+      type: "request",
+      identitySource: `method.request.header.${authorizerIdentity}`,
+      authorizerUri: `arn:aws:apigateway:eu-west-2:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-2:${awsAccountId}:function:${assertEnvExists(process.env.AUTHORISER_LAMBDA_NAME)}/invocations`,
+      authorizerCredentials: `arn:aws:iam::${awsAccountId}:role/api_gateway_auth_invocation`,
+      authorizerResultTtlInSeconds: 0,
+      requestTemplates: {
+        "application/json":
+          '{ "authorization": "$input.params(\'Authorization\')", "staticValue": "HelloWorld", "stage": "$context.stage", "requestTime": "$context.requestTime", "requestId": "$context.requestId" }',
+      },
+    },
+  });
+
   for (const config of configs) {
-    registry = registerSwaggerConfig(registry, config);
+    registry = registerSwaggerConfig(registry, config, authorizer);
   }
 
   const generator = new OpenApiGeneratorV3(registry.definitions);

@@ -17,6 +17,7 @@ export default function Button(props: Readonly<ButtonProps>) {
       className={props.type}
       data-module="govuk-button"
       onClick={props.handleClick}
+      style={{ marginTop: 30 }}
     >
       {props.text}
     </button>

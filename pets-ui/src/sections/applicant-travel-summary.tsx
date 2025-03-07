@@ -28,7 +28,8 @@ const TravelReview = () => {
 
       dispatch(setTravelDetailsStatus(ApplicationStatus.COMPLETE));
       navigate("/travel-confirmation");
-    } catch {
+    } catch (error) {
+      console.error(error);
       navigate("/error");
     }
   };

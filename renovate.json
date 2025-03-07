@@ -8,8 +8,7 @@
     }
   ],
   "vulnerabilityAlerts": {
-    "enabled": false,
-    "_comment": "false because renovate does not have access to vulnerability alert"
+    "enabled": false
   },
   "osvVulnerabilityAlerts": true
 }

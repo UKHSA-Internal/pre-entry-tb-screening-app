@@ -42,7 +42,12 @@ export default tseslint.config(
           format: ["camelCase", "UPPER_CASE", "PascalCase"],
         },
       ],
-      "no-console": ["error"],
+      "no-console": [
+        "error",
+        {
+          allow: ["info", "warn", "error"],
+        },
+      ],
     },
   },
   eslintPluginPrettier,

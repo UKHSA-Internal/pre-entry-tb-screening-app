@@ -34,6 +34,11 @@ export class LocalInfrastructureStack extends cdk.Stack {
       functionName: process.env.APPLICATION_SERVICE_LAMBDA_NAME,
     });
 
+    new HotReloadedLambda(this, "authoriser-lambda", {
+      entry: join(__dirname, "../../pets-core-services/src/authoriser/b2c-authoriser.ts"),
+      functionName: process.env.AUTHORISER_LAMBDA_NAME,
+    });
+
     /**API Gateway */
     const swaggerSpecPath = join(__dirname, "../../pets-core-services/openapi-docs.json");
 
@@ -45,7 +50,7 @@ export class LocalInfrastructureStack extends cdk.Stack {
       },
     });
 
-    Tags.of(apiGateway).add("_custom_id_", process.env.API_GATEWAY_NAME || "");
+    Tags.of(apiGateway).add("_custom_id_", process.env.API_GATEWAY_ID || "");
 
     /** DynamoDB for different services */
     const tableProps: TableProps = {
