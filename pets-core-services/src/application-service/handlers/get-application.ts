@@ -5,6 +5,7 @@ import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { MedicalScreening } from "../models/medical-screening";
+import { TbCertificate } from "../models/tb-certificate";
 import { TravelInformation } from "../models/travel-information";
 
 export const getApplicationHandler = async (event: APIGatewayProxyEvent) => {
@@ -21,11 +22,13 @@ export const getApplicationHandler = async (event: APIGatewayProxyEvent) => {
     if (!application) return createHttpResponse(404, { message: "Application does not exist" });
     const travelInformation = await TravelInformation.getByApplicationId(applicationId);
     const medicalScreening = await MedicalScreening.getByApplicationId(applicationId);
+    const tbCertificate = await TbCertificate.getByApplicationId(applicationId);
 
     return createHttpResponse(200, {
       applicationId,
       travelInformation: travelInformation?.toJson(),
       medicalScreening: medicalScreening?.toJson(),
+      tbCertificate: tbCertificate?.toJson(),
     });
   } catch (error) {
     logger.error(error, "Error retrieving application details");
