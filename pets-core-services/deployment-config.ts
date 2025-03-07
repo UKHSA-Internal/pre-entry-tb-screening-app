@@ -22,6 +22,11 @@ const config: DeploymentConfig[] = [
     s3Bucket: process.env.APPLICATION_SERVICE_LAMBDA_BUCKET,
     path: join(__dirname, "./src/application-service/lambdas/application.ts"),
   },
+  {
+    lambdaName: process.env.AUTHORISER_LAMBDA_NAME,
+    s3Bucket: process.env.APPLICATION_SERVICE_LAMBDA_BUCKET,
+    path: join(__dirname, "./src/authoriser/b2c-authoriser.ts"),
+  },
 ];
 
 // eslint-disable-next-line no-console

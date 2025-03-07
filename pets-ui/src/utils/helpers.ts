@@ -115,9 +115,9 @@ const validMonthValues = [
 function standardiseDayOrMonth(dayOrMonth: string) {
   let standardisedDayOrMonth = dayOrMonth.toLowerCase();
 
-  for (const list of [longMonthValues, shortMonthValues, longNumericStrings]) {
+  for (const list of [longMonthValues, shortMonthValues, shortNumericStrings]) {
     if (list.includes(dayOrMonth.toLowerCase())) {
-      standardisedDayOrMonth = shortNumericStrings[list.indexOf(dayOrMonth.toLowerCase())];
+      standardisedDayOrMonth = longNumericStrings[list.indexOf(dayOrMonth.toLowerCase())];
     }
   }
 
@@ -200,6 +200,10 @@ const visaOptions = [
   {
     value: "Government Sponsored",
     label: "Government Sponsored",
+  },
+  {
+    value: "British National (Overseas)",
+    label: "British National (Overseas)",
   },
 ];
 

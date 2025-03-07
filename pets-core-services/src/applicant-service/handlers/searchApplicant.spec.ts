@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 
 import { CountryCode } from "../../shared/country";
+import { seededApplications } from "../../shared/fixtures/application";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicants } from "../fixtures/applicants";
 import { Applicant } from "../models/applicant";
@@ -13,6 +14,13 @@ describe("Test for Getting Applicant", () => {
 
     const event: SearchApplicantEvent = {
       ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: {
+          ...mockAPIGwEvent.requestContext.authorizer,
+          clinicId: seededApplications[2].clinicId,
+        },
+      },
       parsedHeaders: {
         passportnumber: existingApplicant.passportNumber,
         countryofissue: existingApplicant.countryOfIssue,
@@ -77,6 +85,33 @@ describe("Test for Getting Applicant", () => {
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Unexpected duplicate results found",
     });
+  });
+
+  test("Verify Clinic ID", async () => {
+    const existingApplicant = seededApplicants[1]; // Already preloaded into DB,
+
+    const event: SearchApplicantEvent = {
+      ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: {
+          ...mockAPIGwEvent.requestContext.authorizer,
+          clinicId: "compromised-clinic-id",
+        },
+      },
+      parsedHeaders: {
+        passportnumber: existingApplicant.passportNumber,
+        countryofissue: existingApplicant.countryOfIssue,
+      },
+    };
+
+    // Act
+    const response = await searchApplicantHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(403);
+
+    expect(JSON.parse(response.body)).toMatchObject({ message: "Clinic Id mismatch" });
   });
 
   test("Missing required Headers returns a 500 response", async () => {

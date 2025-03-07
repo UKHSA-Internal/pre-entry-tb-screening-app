@@ -1,19 +1,45 @@
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
+import { postMedicalDetails } from "@/api/api";
 import Button from "@/components/button/button";
 import { selectApplicant } from "@/redux/applicantSlice";
+import { selectApplication } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { selectMedicalScreening } from "@/redux/medicalScreeningSlice";
-import { ButtonType } from "@/utils/enums";
+import { selectMedicalScreening, setMedicalScreeningStatus } from "@/redux/medicalScreeningSlice";
+import { ApplicationStatus, ButtonType } from "@/utils/enums";
 
 const MedicalScreeningReview = () => {
   const applicantData = useAppSelector(selectApplicant);
+  const applicationData = useAppSelector(selectApplication);
   const medicalData = useAppSelector(selectMedicalScreening);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    // TO DO: post medicalData
-    navigate("/medical-confirmation");
+  const handleSubmit = async () => {
+    try {
+      await postMedicalDetails(applicationData.applicationId, {
+        age: parseInt(medicalData.age),
+        symptomsOfTb: medicalData.tbSymptoms,
+        symptoms: medicalData.tbSymptomsList,
+        symptomsOther: medicalData.otherSymptomsDetail,
+        historyOfConditionsUnder11: medicalData.underElevenConditions,
+        historyOfConditionsUnder11Details: medicalData.underElevenConditionsDetail,
+        historyOfPreviousTb: medicalData.previousTb,
+        previousTbDetails: medicalData.previousTbDetail,
+        contactWithPersonWithTb: medicalData.closeContactWithTb,
+        contactWithTbDetails: medicalData.closeContactWithTbDetail,
+        pregnant: medicalData.pregnant,
+        haveMenstralPeriod: medicalData.menstrualPeriods,
+        physicalExaminationNotes: medicalData.physicalExamNotes,
+      });
+
+      dispatch(setMedicalScreeningStatus(ApplicationStatus.COMPLETE));
+      navigate("/medical-confirmation");
+    } catch (error) {
+      console.error(error);
+      navigate("/error");
+    }
   };
 
   return (
@@ -48,11 +74,7 @@ const MedicalScreeningReview = () => {
         </div>
         <div className="govuk-summary-list__row">
           <dt className="govuk-summary-list__key">TB symptoms</dt>
-          <dd className="govuk-summary-list__value">
-            {medicalData.tbSymptomsList
-              .map((symptom: string) => symptom.replace(/-/g, " "))
-              .join(", ")}
-          </dd>
+          <dd className="govuk-summary-list__value">{medicalData.tbSymptomsList.join(", ")}</dd>
           <dd className="govuk-summary-list__actions">
             <Link
               className="govuk-link"
@@ -79,9 +101,7 @@ const MedicalScreeningReview = () => {
         <div className="govuk-summary-list__row">
           <dt className="govuk-summary-list__key">Applicant history if under 11</dt>
           <dd className="govuk-summary-list__value">
-            {medicalData.underElevenConditions
-              .map((symptom: string) => symptom.replace(/-/g, " "))
-              .join(", ")}
+            {medicalData.underElevenConditions.join(", ")}
           </dd>
           <dd className="govuk-summary-list__actions">
             <Link

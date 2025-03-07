@@ -1,16 +1,17 @@
 import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
-import { APIGatewayProxyEvent } from "aws-lambda";
 import { GlobalContextStorageProvider } from "pino-lambda";
 import { z } from "zod";
 
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
+import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { TravelInformation } from "../models/travel-information";
 import { TravelInformationRequestSchema } from "../types/zod-schema";
 
 export type TravelInformationRequestSchema = z.infer<typeof TravelInformationRequestSchema>;
-export type SaveTravelInformationEvent = APIGatewayProxyEvent & {
+
+export type SaveTravelInformationEvent = PetsAPIGatewayProxyEvent & {
   parsedBody?: TravelInformationRequestSchema;
 };
 
@@ -42,7 +43,7 @@ export const saveTravelInformationHandler = async (event: SaveTravelInformationE
       });
     }
 
-    const clinicId = "Apollo Clinic";
+    const { clinicId } = event.requestContext.authorizer;
     if (application.clinicId != clinicId) {
       logger.error("ClinicId mismatch with existing application");
       return createHttpResponse(403, { message: "Clinic Id mismatch" });
@@ -50,7 +51,7 @@ export const saveTravelInformationHandler = async (event: SaveTravelInformationE
 
     let travelInformation: TravelInformation;
     try {
-      const createdBy = "hardcoded@user.com";
+      const { createdBy } = event.requestContext.authorizer;
       travelInformation = await TravelInformation.createTravelInformation({
         ...parsedBody,
         createdBy,

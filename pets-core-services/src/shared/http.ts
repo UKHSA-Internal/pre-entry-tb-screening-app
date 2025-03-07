@@ -3,6 +3,7 @@ import httpRouterHandler from "@middy/http-router";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 
 import { logger } from "./logger";
+import { simulateLambdaAuthorizer } from "./middlewares/local-auth";
 import { setRequestLoggingContext } from "./middlewares/logger";
 import { validateRequest } from "./middlewares/validation";
 import { PetsRoute } from "./types";
@@ -46,5 +47,6 @@ export const boostrapLambdaRoutes = (routes: PetsRoute[]) => {
 
   return middy<APIGatewayProxyEvent>()
     .before(setRequestLoggingContext)
+    .before(simulateLambdaAuthorizer) // Local environment auth, not used on AWS
     .handler(httpRouterHandler({ routes: middyRoutes, notFoundResponse }));
 };

@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 
-import { ChestXrayDetailsType } from "@/applicant";
+import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import Checkbox from "@/components/checkbox/checkbox";
@@ -28,7 +28,7 @@ const ChestXrayFindingsForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const methods = useForm<ChestXrayDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,
     formState: { errors },
@@ -42,7 +42,7 @@ const ChestXrayFindingsForm = () => {
     dispatch(setXrayActiveTbFindings(chestXrayData.xrayActiveTbFindings));
   };
 
-  const onSubmit: SubmitHandler<ChestXrayDetailsType> = () => {
+  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = () => {
     updateReduxStore();
     navigate("/chest-xray-summary");
   };

@@ -1,4 +1,5 @@
 import { countryList } from "../../src/utils/countryList";
+import { testCredentials } from "./test-data";
 import { randomElement } from "./test-utils";
 
 Cypress.Commands.add("setupApplicationForm", () => {
@@ -59,71 +60,59 @@ Cypress.Commands.add("setupApplicationForm", () => {
   //verify url navigates to applicant confirmation page
   cy.url().should("include", "http://localhost:3000/applicant-confirmation");
 });
-import { logCredentialInfo, testCredentials, validateCredentials } from "./test-data";
 
 Cypress.Commands.add("loginViaB2C", () => {
   cy.log("Starting B2C authentication");
 
-  void logCredentialInfo();
+  cy.visit("http://localhost:3000");
 
-  const credentialsValid = validateCredentials();
-
-  if (!credentialsValid) {
-    cy.log("ERROR: Invalid credentials detected");
-    throw new Error("Test credentials are invalid or missing. Check your cypress.env.json file.");
-  }
-
-  void cy.visit("http://localhost:3000");
-
-  void cy.get("button#sign-in").click({ force: true });
+  cy.get("button#sign-in").click({ force: true });
 
   // Select a random credential
   const randomIndex = Math.floor(Math.random() * testCredentials.length);
   const { email, password } = testCredentials[randomIndex];
   cy.log(`Using credentials: ${email}`);
 
-  void cy.origin(
+  cy.origin(
     "https://petsb2cdev.ciamlogin.com",
     { args: { email, password } },
     ({ email, password }) => {
       cy.log("Inside B2C login page");
 
-      void cy.wait(2000);
-      void cy.document().then((doc) => {
+      cy.wait(2000);
+      cy.document().then((doc) => {
         cy.log(`Page title: ${doc.title}`);
       });
 
-      void cy
-        .get("#i0116", { timeout: 15000 })
+      cy.get("#i0116", { timeout: 15000 })
         .should("be.visible")
         .scrollIntoView()
         .clear()
         .type(email, { force: true });
 
-      void cy.get("#idSIButton9").should("be.visible").click({ force: true });
-      void cy.wait(3000);
+      cy.get("#idSIButton9").should("be.visible").click({ force: true });
+      cy.wait(3000);
 
-      void cy
-        .get('input[type="password"],#i0118,#passwordInput', { timeout: 15000 })
+      cy.get('input[type="password"],#i0118,#passwordInput', { timeout: 15000 })
         .should("be.visible")
         .scrollIntoView()
         .clear()
         .type(password, { force: true });
 
-      void cy.get("#idSIButton9").should("be.visible").click({ force: true });
+      cy.get("#idSIButton9").should("be.visible").click({ force: true });
 
-      void cy.contains("Stay signed in?", { timeout: 20000 }).should("be.visible");
+      cy.contains("Stay signed in?", { timeout: 20000 }).should("be.visible");
 
       // Click on the "Yes" button
-      void cy.contains("Yes").should("be.visible").click({ force: true });
+      cy.contains("Yes").should("be.visible").click({ force: true });
 
       cy.log("Completed B2C authentication flow");
     },
   );
 
   cy.log("Checking redirection to applicant search");
-  void cy.url({ timeout: 30000 }).should("include", "/applicant-search");
+  cy.url({ timeout: 30000 }).should("include", "/applicant-search");
 });
-Cypress.Commands.add("clearAllSessions", () => {
-  void Cypress.session.clearAllSavedSessions();
+Cypress.Commands.add("clearAllSessions", async () => {
+  await Cypress.session.clearAllSavedSessions();
 });

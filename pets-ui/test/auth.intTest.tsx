@@ -1,10 +1,10 @@
+import { MsalProvider } from "@azure/msal-react";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MsalReactTester, MsalReactTesterPlugin } from "msal-react-tester";
 import { MemoryRouter } from "react-router-dom";
 import { expect, test, vi } from "vitest";
 
-import AuthProvider from "@/auth/authProvider";
 import { renderWithProviders } from "@/utils/test-utils";
 
 import App from "../src/App";
@@ -38,9 +38,9 @@ test("In authenticated state, user is taken to Applicant Search page ('/applican
 
   renderWithProviders(
     <MemoryRouter initialEntries={["/"]}>
-      <AuthProvider instance={msalTester.client}>
+      <MsalProvider instance={msalTester.client}>
         <App />
-      </AuthProvider>
+      </MsalProvider>
     </MemoryRouter>,
   );
 
@@ -53,16 +53,16 @@ test("In authenticated state, user is able to access authenticated paths", async
   await msalTester.isLogged();
 
   renderWithProviders(
-    <MemoryRouter initialEntries={["/applicant-results"]}>
-      <AuthProvider instance={msalTester.client}>
+    <MemoryRouter initialEntries={["/applicant-search"]}>
+      <MsalProvider instance={msalTester.client}>
         <App />
-      </AuthProvider>
+      </MsalProvider>
     </MemoryRouter>,
   );
 
   await msalTester.waitForRedirect();
 
-  expect(screen.getByText("No matching record found")).toBeVisible();
+  expect(screen.getByText("Search for a visa applicant")).toBeVisible();
 });
 
 test("In unauthenticated state, user is taken to landing page ('/') when accessing landing page via browser", async () => {
@@ -70,9 +70,9 @@ test("In unauthenticated state, user is taken to landing page ('/') when accessi
 
   renderWithProviders(
     <MemoryRouter initialEntries={["/"]}>
-      <AuthProvider instance={msalTester.client}>
+      <MsalProvider instance={msalTester.client}>
         <App />
-      </AuthProvider>
+      </MsalProvider>
     </MemoryRouter>,
   );
 
@@ -86,9 +86,9 @@ test("In unauthenticated state, user is taken to landing page ('/') if they try 
 
   renderWithProviders(
     <MemoryRouter initialEntries={["/applicant-results"]}>
-      <AuthProvider instance={msalTester.client}>
+      <MsalProvider instance={msalTester.client}>
         <App />
-      </AuthProvider>
+      </MsalProvider>
     </MemoryRouter>,
   );
 
@@ -102,9 +102,9 @@ test("In unauthenticated state, user is taken to redirect to B2C page if they cl
 
   renderWithProviders(
     <MemoryRouter initialEntries={["/"]}>
-      <AuthProvider instance={msalTester.client}>
+      <MsalProvider instance={msalTester.client}>
         <App />
-      </AuthProvider>
+      </MsalProvider>
     </MemoryRouter>,
   );
 

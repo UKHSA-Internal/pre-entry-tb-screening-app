@@ -9,8 +9,8 @@ const visaType = [
 ];
 
 describe("Validate that the confirm button on the travel information page redirects to the Enter Travel Information Page", () => {
-  before(() => {
-    cy.clearAllSessions();
+  before(async () => {
+    await cy.clearAllSessions();
   });
 
   beforeEach(() => {

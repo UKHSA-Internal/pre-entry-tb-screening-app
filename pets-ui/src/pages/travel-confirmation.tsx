@@ -22,6 +22,7 @@ export default function TravelConfirmation() {
         furtherInfo={furtherInfo}
         buttonText={"Continue to medical screening"}
         buttonLink={"/medical-screening"}
+        whatHappensNext
       />
     </Container>
   );

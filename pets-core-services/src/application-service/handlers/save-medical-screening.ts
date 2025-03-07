@@ -1,16 +1,17 @@
 import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
-import { APIGatewayProxyEvent } from "aws-lambda";
 import { GlobalContextStorageProvider } from "pino-lambda";
 import { z } from "zod";
 
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
+import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { MedicalScreening } from "../models/medical-screening";
 import { MedicalScreeningRequestSchema } from "../types/zod-schema";
 
 export type MedicalScreeningRequestSchema = z.infer<typeof MedicalScreeningRequestSchema>;
-export type SaveMedicalScreeningEvent = APIGatewayProxyEvent & {
+
+export type SaveMedicalScreeningEvent = PetsAPIGatewayProxyEvent & {
   parsedBody?: MedicalScreeningRequestSchema;
 };
 
@@ -42,7 +43,7 @@ export const saveMedicalScreeningHandler = async (event: SaveMedicalScreeningEve
       });
     }
 
-    const clinicId = "Apollo Clinic";
+    const { clinicId, createdBy } = event.requestContext.authorizer;
     if (application.clinicId != clinicId) {
       logger.error("ClinicId mismatch with existing application");
       return createHttpResponse(403, { message: "Clinic Id mismatch" });
@@ -50,7 +51,6 @@ export const saveMedicalScreeningHandler = async (event: SaveMedicalScreeningEve
 
     let medicalScreening: MedicalScreening;
     try {
-      const createdBy = "hardcoded@user.com";
       medicalScreening = await MedicalScreening.createMedicalScreening({
         ...parsedBody,
         createdBy,

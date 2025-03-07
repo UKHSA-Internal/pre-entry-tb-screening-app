@@ -15,6 +15,7 @@ export abstract class ITravelInformation {
   visaCategory: VisaOptions;
   ukAddressLine1: string;
   ukAddressLine2?: string;
+  ukAddressTownOrCity: string;
   ukAddressPostcode: string;
   ukMobileNumber: string;
   ukEmailAddress: string;
@@ -27,6 +28,7 @@ export abstract class ITravelInformation {
     this.visaCategory = details.visaCategory;
     this.ukAddressLine1 = details.ukAddressLine1;
     this.ukAddressLine2 = details.ukAddressLine2;
+    this.ukAddressTownOrCity = details.ukAddressTownOrCity;
     this.ukAddressPostcode = details.ukAddressPostcode;
     this.ukMobileNumber = details.ukMobileNumber;
     this.ukEmailAddress = details.ukEmailAddress;
@@ -135,6 +137,7 @@ export class TravelInformation extends ITravelInformation {
       visaCategory: this.visaCategory,
       ukAddressLine1: this.ukAddressLine1,
       ukAddressLine2: this.ukAddressLine2,
+      ukAddressTownOrCity: this.ukAddressTownOrCity,
       ukAddressPostcode: this.ukAddressPostcode,
       ukMobileNumber: this.ukMobileNumber,
       ukEmailAddress: this.ukEmailAddress,
