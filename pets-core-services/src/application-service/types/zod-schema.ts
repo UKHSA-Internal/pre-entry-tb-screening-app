@@ -101,6 +101,9 @@ export const MedicalScreeningRequestSchema = z.object({
 });
 
 export const MedicalScreeningResponseSchema = MedicalScreeningRequestSchema.extend({
+  applicationId: z.string().openapi({
+    description: "ID of application",
+  }),
   dateCreated: z.string().date().openapi({
     description: "Creation Date in UTC timezone",
   }),
