@@ -25,7 +25,7 @@ export const handler = (event: EventBridgeEvent<string, EventBridgeEventDetails>
 
       logger.info(`bucketName => ${bucketName} / fileName => ${fileName}`);
 
-      // Do nothing if there's no proper names
+      // Do nothing if there are no proper names
       if (!bucketName || !fileName) return;
     }
   } else {
@@ -41,12 +41,13 @@ export const handler = (event: EventBridgeEvent<string, EventBridgeEventDetails>
   if (detail?.scanResultDetails === "NO_THREATS_FOUND") {
     logger.info("EventBridge rule is not properly set");
   } else {
-    logger.info(`Copying the file: ${bucketName}/${fileName}`);
+    logger.info(`Copying the file: ${bucketName}/${fileName} to the bucket: ${QUARANTINE_BUCKET}`);
 
     const params: CopyObjectCommandInput = {
       Bucket: QUARANTINE_BUCKET,
       CopySource: `${bucketName}/${fileName}`,
       Key: fileName,
+      ServerSideEncryption: "AES256",
     };
 
     const copyCommand = new CopyObjectCommand(params);
