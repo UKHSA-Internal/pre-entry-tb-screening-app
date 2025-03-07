@@ -1,5 +1,5 @@
+import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
 import { randomElement, visaType } from "../../support/test-utils";
-import { TravelInformationPage } from "../../support/travelInformationPage";
 
 const emailErrorMessage = "Email must be in correct format.";
 
@@ -37,7 +37,7 @@ describe("Validate the error message is displayed when incorrect data is entered
     // Validate the error summary
     travelInformationPage.validateErrorSummaryVisible();
 
-    // Check for only the email error message
+    // Validate email error message
     travelInformationPage.validateErrorMessage(emailErrorMessage);
   });
 });

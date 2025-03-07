@@ -1,4 +1,4 @@
-import { MedicalScreeningPage } from "../../support/medicalScreeningPage";
+import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 
 describe("Validate that medical screening page is submitted successfully when all Mandatory fields have VALID data", () => {
   const medicalScreeningPage: MedicalScreeningPage = new MedicalScreeningPage();

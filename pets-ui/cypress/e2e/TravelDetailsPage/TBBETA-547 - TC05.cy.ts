@@ -1,43 +1,37 @@
-import { randomElement } from "../../support/test-utils";
+import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
+import { randomElement, visaType } from "../../support/test-utils";
 
-const visaType = [
-  "Family Reunion",
-  "Settlement and Dependents",
-  "Students",
-  "Work",
-  "Working Holiday Maker",
-  "Government Sponsored",
-];
-// Validate the error messages above each text box are correct
-const errorMessages = ["Enter full UK postcode."];
+// Error message for missing postcode
+const errorMessage = "Enter full UK postcode.";
 
 describe("Validate the error message is displayed when postcode is NOT entered", () => {
+  const travelInformationPage = new TravelInformationPage();
+
   beforeEach(() => {
-    cy.visit("http://localhost:3000/travel-details");
+    travelInformationPage.visit();
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
       statusCode: 200,
       body: { success: true, message: "Data successfully posted" },
     }).as("formSubmit");
   });
+
   it("Should display an error message for missing postcode", () => {
-    // Select a Visa Type
-    cy.get("#visa-type.govuk-select").select(randomElement(visaType));
+    travelInformationPage.selectVisaType(randomElement(visaType));
 
-    // Enter VALID Address Information
-    cy.get("#address-1").type("Flat 2, 26 Monmouth St.");
-    cy.get("#address-2").type("Bath");
-    cy.get("#town-or-city").type("Somerset");
-    //cy.get("#postcode").should("");
-    cy.get("#mobile-number").type("07123402876");
-    cy.get("#email").type("Appvanceiq.efc1@aiq.ukhsa.gov.uk");
+    // Enter VALID Address Information (skipping postcode)
+    travelInformationPage.fillAddressLine1("Flat 2, 26 Monmouth St.");
+    travelInformationPage.fillAddressLine2("Bath");
+    travelInformationPage.fillTownOrCity("Somerset");
 
-    // Click the submit button
-    cy.get('button[type="submit"]').click();
+    travelInformationPage.fillMobileNumber("07123402876");
+    travelInformationPage.fillEmail("Appvanceiq.efc1@aiq.ukhsa.gov.uk");
 
-    // Validate the summary box appears at the top contains the correct error messages
-    cy.get(".govuk-error-summary").should("be.visible");
-    errorMessages.forEach((error) => {
-      cy.get(".govuk-error-summary").should("contain.text", error);
-    });
+    travelInformationPage.submitForm();
+
+    travelInformationPage.validateErrorSummaryVisible();
+    travelInformationPage.validateErrorMessage(errorMessage);
+
+    // Validate the postcode field error is displayed
+    travelInformationPage.validatePostcodeError();
   });
 });

@@ -28,6 +28,7 @@ export const visaType = [
   "Work",
   "Working Holiday Maker",
   "Government Sponsored",
+  "British National (Overseas)",
 ];
 
 export const urlFragment = ["#age"];

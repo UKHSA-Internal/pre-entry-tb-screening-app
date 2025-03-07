@@ -1,7 +1,7 @@
 export class TravelInformationPage {
   // Visit the Travel Information page
   visit(): void {
-    cy.visit("/travel-information");
+    cy.visit("http://localhost:3000/travel-details");
   }
 
   // Verify page is loaded
@@ -85,7 +85,7 @@ export class TravelInformationPage {
     cy.get(".govuk-error-summary__list").should("contain.text", expectedText);
   }
 
-  // Validate specific field errors
+  // Validate field errors
   validateVisaTypeError(): void {
     cy.contains("label", "Visa type")
       .parents(".govuk-form-group")

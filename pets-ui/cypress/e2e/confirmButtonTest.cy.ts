@@ -1,48 +1,39 @@
-import { randomElement } from "../support/test-utils";
-const visaType = [
-  "Family Reunion",
-  "Settlement and Dependents",
-  "Students",
-  "Work",
-  "Working Holiday Maker",
-  "Government Sponsored",
-];
+import { TravelInformationPage } from "../support/page-objects/travelInformationPage";
+import { TravelSummaryPage } from "../support/page-objects/travelSummaryPage";
+import { randomElement, visaType } from "../support/test-utils";
 
 describe("Validate that the confirm button on the travel information page redirects to the Enter Travel Information Page", () => {
-  before(async () => {
-    await cy.clearAllSessions();
+  const travelInformationPage = new TravelInformationPage();
+  const travelSummaryPage = new TravelSummaryPage();
+
+  before(() => {
+    void cy.clearAllSessions();
   });
 
   beforeEach(() => {
-    cy.visit("http://localhost:3000/travel-details");
+    travelInformationPage.visit();
 
+    // Intercept form submission
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
       statusCode: 200,
       body: { success: true, message: "Data successfully posted" },
     }).as("formSubmit");
   });
+
   it("should redirect user to travel confirmation url", () => {
     // Select a Visa Type
-    cy.get(".govuk-select ").select(randomElement(visaType));
+    travelInformationPage.selectVisaType(randomElement(visaType));
 
     // Enter VALID Address Information
-    cy.get("#address-1").type("17 Exmoor Rd.");
-    cy.get("#address-2").type("Southampton");
-    cy.get("#town-or-city").type("Hampshire");
-    cy.get("#postcode").type("SO14 0AR");
-    cy.get("#mobile-number").type("00447811123456");
-    cy.get("#email").type("Appvanceiq.efc1@aiq.ukhsa.gov.uk");
-
-    // Click the submit button
-    cy.get('button[type="submit"]').click();
-
-    //Validate that page navigates to travel summary page
-    cy.url().should("include", "http://localhost:3000/travel-summary");
-
-    // Click the submit button
-    cy.get('button[type="submit"]').click();
-
-    // Validate that the page navigates to the travel confirmation page
-    cy.url().should("include", "http://localhost:3000/travel-confirmation");
+    travelInformationPage.fillAddressLine1("17 Exmoor Rd.");
+    travelInformationPage.fillAddressLine2("Southampton");
+    travelInformationPage.fillTownOrCity("Hampshire");
+    travelInformationPage.fillPostcode("SO14 0AR");
+    travelInformationPage.fillMobileNumber("00447811123456");
+    travelInformationPage.fillEmail("Appvanceiq.efc1@aiq.ukhsa.gov.uk");
+    travelInformationPage.submitForm();
+    travelSummaryPage.verifyPageLoaded();
+    travelSummaryPage.submitForm();
+    travelSummaryPage.verifyRedirectionToConfirmationPage();
   });
 });

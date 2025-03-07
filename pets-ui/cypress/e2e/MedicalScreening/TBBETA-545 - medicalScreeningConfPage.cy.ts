@@ -1,4 +1,4 @@
-import { MedicalScreeningPage } from "../../support/medicalScreeningPage";
+import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 
 /*As a Clinic user who has submitted all mandatory data in the Medical screening page
 I want to see a confirmation page

@@ -1,36 +1,35 @@
+import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
 import { randomElement, visaType } from "../../support/test-utils";
 
-// Validate the error messages above each text box are correct
-const errorMessages = ["Enter address line 1, typically the building and street."];
+const errorMessage = "Enter address line 1, typically the building and street.";
 
-// Random number generator
 describe("Validate the error message is displayed when address field does not have a value", () => {
+  const travelInformationPage = new TravelInformationPage();
+
   beforeEach(() => {
-    cy.visit("http://localhost:3000/travel-details");
+    travelInformationPage.visit();
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
       statusCode: 200,
       body: { success: true, message: "Data successfully posted" },
     }).as("formSubmit");
   });
+
   it("Should display an error message when the address line 1 field is empty", () => {
-    // Select a Visa Type
-    cy.get("#visa-type.govuk-select").select(randomElement(visaType));
+    travelInformationPage.selectVisaType(randomElement(visaType));
 
-    // Enter VALID Address Information
-    cy.get("#address-1").should("have.value", "");
-    cy.get("#address-2").type("Anlaby");
-    cy.get("#town-or-city").type("Hull");
-    cy.get("#postcode").type("HU10 6UH");
-    cy.get("#mobile-number").type("07923402876");
-    cy.get("#email").type("Appvanceiq.efc1@aiq.ukhsa.gov.uk");
+    // Skip Address Line 1 (leaving it empty)
 
-    // Click the submit button
-    cy.get('button[type="submit"]').click();
+    // Enter other address information
+    travelInformationPage.fillAddressLine2("Anlaby");
+    travelInformationPage.fillTownOrCity("Hull");
+    travelInformationPage.fillPostcode("HU10 6UH");
+    travelInformationPage.fillMobileNumber("07923402876");
+    travelInformationPage.fillEmail("Appvanceiq.efc1@aiq.ukhsa.gov.uk");
+    travelInformationPage.submitForm();
+    travelInformationPage.validateErrorSummaryVisible();
+    travelInformationPage.validateErrorMessage(errorMessage);
 
-    // Validate the summary box appears at the top contains the correct error messages
-    cy.get(".govuk-error-summary").should("be.visible");
-    errorMessages.forEach((error) => {
-      cy.get(".govuk-error-summary").should("contain.text", error);
-    });
+    // Validate the address line 1 error message
+    travelInformationPage.validateAddressLine1Error();
   });
 });

@@ -187,8 +187,6 @@ export class MedicalScreeningPage {
         .and("contain.text", expectedErrorMessages.menstrualPeriods);
     }
   }
-
-  // Additional error-related methods
   getCurrentUrl(): Cypress.Chainable<string> {
     return cy.url();
   }

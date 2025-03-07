@@ -1,4 +1,4 @@
-import { MedicalScreeningPage } from "../../support/medicalScreeningPage";
+import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 
 //Scenario:validate age field and corresponding error message - this field is mandatory.
 
