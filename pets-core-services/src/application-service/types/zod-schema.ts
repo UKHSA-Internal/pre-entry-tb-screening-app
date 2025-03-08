@@ -110,15 +110,7 @@ export const MedicalScreeningResponseSchema = MedicalScreeningRequestSchema.exte
   }),
 });
 
-export const ApplicationSchema = z.object({
-  applicationId: z.string().openapi({
-    description: "application id",
-  }),
-  travelInformation: TravelInformationResponseSchema,
-  medicalScreening: MedicalScreeningResponseSchema,
-});
-
-export const ChestXRayNotTakenSchema = z.object({
+export const ChestXRayNotTakenRequestSchema = z.object({
   chestXrayTaken: z.literal(YesOrNo.No),
   reasonXrayWasNotTaken: z.nativeEnum(ChestXRayNotTakenReason).openapi({
     description: "Reason X-ray was not taken",
@@ -128,7 +120,7 @@ export const ChestXRayNotTakenSchema = z.object({
   }),
 });
 
-export const ChestXRayTakenSchema = z.object({
+export const ChestXRayTakenRequestSchema = z.object({
   chestXrayTaken: z.literal(YesOrNo.Yes),
   posteroAnteriorXray: z.string().openapi({
     description: "S3 Bucket Object key for the Postero Anterior X-Ray",
@@ -141,4 +133,39 @@ export const ChestXRayTakenSchema = z.object({
   }),
 });
 
-export const ChestXRayRequestSchema = z.union([ChestXRayNotTakenSchema, ChestXRayTakenSchema]);
+export const ChestXRayRequestSchema = z.union([
+  ChestXRayNotTakenRequestSchema,
+  ChestXRayTakenRequestSchema,
+]);
+
+const ChestXRayNotTakenResponseSchema = ChestXRayNotTakenRequestSchema.extend({
+  dateCreated: z.string().date().openapi({
+    description: "Creation Date in UTC timezone",
+  }),
+  status: z.nativeEnum(TaskStatus).openapi({
+    description: "Status of Task",
+  }),
+});
+
+const ChestXRayTakenResponseSchema = ChestXRayTakenRequestSchema.extend({
+  dateCreated: z.string().date().openapi({
+    description: "Creation Date in UTC timezone",
+  }),
+  status: z.nativeEnum(TaskStatus).openapi({
+    description: "Status of Task",
+  }),
+});
+
+export const ChestXRayResponseSchema = z.union([
+  ChestXRayNotTakenResponseSchema,
+  ChestXRayTakenResponseSchema,
+]);
+
+export const ApplicationSchema = z.object({
+  applicationId: z.string().openapi({
+    description: "application id",
+  }),
+  travelInformation: TravelInformationResponseSchema,
+  medicalScreening: MedicalScreeningResponseSchema,
+  chestXray: ChestXRayResponseSchema,
+});
