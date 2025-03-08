@@ -11,6 +11,7 @@ import { saveTravelInformationHandler } from "../handlers/save-travel-informatio
 import {
   ApplicationSchema,
   ChestXRayRequestSchema,
+  ChestXRayResponseSchema,
   CreateApplicationResponseSchema,
   MedicalScreeningRequestSchema,
   MedicalScreeningResponseSchema,
@@ -64,7 +65,9 @@ export const routes: PetsRoute[] = [
     requestBodySchema: ChestXRayRequestSchema.openapi({
       description: "Chest Xray of an Applicant",
     }),
-    responseSchema: z.string(), // TODO: Change this
+    responseSchema: ChestXRayResponseSchema.openapi({
+      description: "Saved Chest Xray of an Applicant",
+    }),
   },
 ];
 

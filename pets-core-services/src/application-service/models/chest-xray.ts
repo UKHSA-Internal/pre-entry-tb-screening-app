@@ -37,7 +37,7 @@ type IChestXRayTaken = {
   lateralDecubitusXray?: string;
 };
 
-type NewChestXRayTaken = Omit<IChestXRayTaken, "dateCreated" | "status">;
+export type NewChestXRayTaken = Omit<IChestXRayTaken, "dateCreated" | "status">;
 
 export class ChestXRayTaken extends ChestXRayBase {
   chestXrayTaken: YesOrNo.Yes;
@@ -79,7 +79,7 @@ type IChestXRayNotTaken = {
   xrayWasNotTakenFurtherDetails?: string;
 };
 
-type NewChestXRayNotTaken = Omit<IChestXRayNotTaken, "dateCreated" | "status">;
+export type NewChestXRayNotTaken = Omit<IChestXRayNotTaken, "dateCreated" | "status">;
 
 export class ChestXRayNotTaken extends ChestXRayBase {
   chestXrayTaken: YesOrNo.No;

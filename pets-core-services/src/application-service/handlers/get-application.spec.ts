@@ -66,6 +66,15 @@ describe("Getting Application Handler", () => {
         dateCreated: expect.any(String),
         status: "completed",
       },
+      chestXray: {
+        chestXrayTaken: "Yes",
+        posteroAnteriorXray: "saved/bucket/path/for/posterior/anterior",
+        apicalLordoticXray: "saved/bucket/path/for/apical/lordotic",
+        lateralDecubitusXray: "saved/bucket/path/for/lateral-decubitus",
+        applicationId: seededApplications[1].applicationId,
+        dateCreated: expect.any(String),
+        status: "completed",
+      },
     });
   });
 
