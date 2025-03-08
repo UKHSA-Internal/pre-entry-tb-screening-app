@@ -13,7 +13,6 @@ const initialState: ReduxChestXrayDetailsType = {
   lateralDecubitusXrayFile: "",
   reasonXrayWasNotTaken: null,
   xrayWasNotTakenFurtherDetails: "",
-  reasonXrayNotTakenDetail: null,
   dateOfCxr: null,
   radiologicalOutcome: "",
   radiologicalOutcomeNotes: null,
@@ -56,9 +55,6 @@ export const chestXraySlice = createSlice({
     setReasonXrayWasNotTaken: (state, action: PayloadAction<string | null>) => {
       state.reasonXrayWasNotTaken = action.payload;
     },
-    setReasonXrayNotTakenDetail: (state, action: PayloadAction<string>) => {
-      state.reasonXrayNotTakenDetail = action.payload;
-    },
     setXrayResult: (state, action: PayloadAction<string>) => {
       state.xrayResult = action.payload;
     },
@@ -86,7 +82,6 @@ export const chestXraySlice = createSlice({
       state.apicalLordoticXrayFile = "";
       state.lateralDecubitusXrayFile = "";
       state.reasonXrayWasNotTaken = "";
-      state.reasonXrayNotTakenDetail = "";
       state.xrayWasNotTakenFurtherDetails = "";
       state.xrayResult = "";
       state.xrayResultDetail = "";
@@ -106,7 +101,6 @@ export const {
   setApicalLordoticXrayFile,
   setLateralDecubitusXrayFile,
   setReasonXrayWasNotTaken,
-  setReasonXrayNotTakenDetail,
   setXrayWasNotTakenFurtherDetails,
   setXrayResult,
   setXrayResultDetail,
