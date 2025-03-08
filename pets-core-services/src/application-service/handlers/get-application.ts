@@ -4,6 +4,7 @@ import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
+import { ChestXRayDbOps } from "../models/chest-xray";
 import { MedicalScreening } from "../models/medical-screening";
 import { TravelInformation } from "../models/travel-information";
 
@@ -27,11 +28,13 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
 
     const travelInformation = await TravelInformation.getByApplicationId(applicationId);
     const medicalScreening = await MedicalScreening.getByApplicationId(applicationId);
+    const chestXray = await ChestXRayDbOps.getByApplicationId(applicationId);
 
     return createHttpResponse(200, {
       applicationId,
       travelInformation: travelInformation?.toJson(),
       medicalScreening: medicalScreening?.toJson(),
+      chestXray: chestXray?.toJson(),
     });
   } catch (error) {
     logger.error(error, "Error retrieving application details");

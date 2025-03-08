@@ -43,3 +43,9 @@ export enum YesOrNo {
   Yes = "Yes",
   No = "No",
 }
+
+export enum ChestXRayNotTakenReason {
+  Child = "Child",
+  Pregnant = "Pregnant",
+  Other = "Other",
+}

@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { TaskStatus } from "../../shared/types/enum";
 import {
+  ChestXRayNotTakenReason,
   HistoryOfConditionsUnder11,
   MenstrualPeriods,
   PregnancyStatus,
@@ -116,3 +117,28 @@ export const ApplicationSchema = z.object({
   travelInformation: TravelInformationResponseSchema,
   medicalScreening: MedicalScreeningResponseSchema,
 });
+
+export const ChestXRayNotTakenSchema = z.object({
+  chestXrayTaken: z.literal(YesOrNo.No),
+  reasonXrayWasNotTaken: z.nativeEnum(ChestXRayNotTakenReason).openapi({
+    description: "Reason X-ray was not taken",
+  }),
+  xrayWasNotTakenFurtherDetails: z.string().optional().openapi({
+    description: "Further details on why X-ray was not taken",
+  }),
+});
+
+export const ChestXRayTakenSchema = z.object({
+  chestXrayTaken: z.literal(YesOrNo.Yes),
+  posteroAnteriorXray: z.string().openapi({
+    description: "S3 Bucket Object key for the Postero Anterior X-Ray",
+  }),
+  apicalLordoticXray: z.string().optional().openapi({
+    description: "S3 Bucket Object key for the Apical Lordotic X-Ray",
+  }),
+  lateralDecubitusXray: z.string().optional().openapi({
+    description: "S3 Bucket Object key for the Lateral Decubitus X-Ray",
+  }),
+});
+
+export const ChestXRayRequestSchema = z.union([ChestXRayNotTakenSchema, ChestXRayTakenSchema]);

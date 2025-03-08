@@ -5,10 +5,12 @@ import { boostrapLambdaRoutes } from "../../shared/http";
 import { PetsRoute } from "../../shared/types";
 import { createApplicationHandler } from "../handlers/create-application";
 import { getApplicationHandler } from "../handlers/get-application";
+import { saveChestXRayHandler } from "../handlers/save-chest-ray";
 import { saveMedicalScreeningHandler } from "../handlers/save-medical-screening";
 import { saveTravelInformationHandler } from "../handlers/save-travel-information";
 import {
   ApplicationSchema,
+  ChestXRayRequestSchema,
   CreateApplicationResponseSchema,
   MedicalScreeningRequestSchema,
   MedicalScreeningResponseSchema,
@@ -54,6 +56,15 @@ export const routes: PetsRoute[] = [
     responseSchema: MedicalScreeningResponseSchema.openapi({
       description: "Saved Medical Screening Details",
     }),
+  },
+  {
+    method: "POST",
+    path: "/application/{applicationId}/chest-xray",
+    handler: saveChestXRayHandler,
+    requestBodySchema: ChestXRayRequestSchema.openapi({
+      description: "Chest Xray of an Applicant",
+    }),
+    responseSchema: z.string(), // TODO: Change this
   },
 ];
 
