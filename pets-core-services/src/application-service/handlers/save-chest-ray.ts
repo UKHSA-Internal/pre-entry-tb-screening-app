@@ -14,7 +14,7 @@ export type SaveChestXrayEvent = PetsAPIGatewayProxyEvent & {
 
 export const saveChestXRayHandler = async (event: SaveChestXrayEvent) => {
   try {
-    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
+    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
 
     logger.info({ applicationId }, "Save Chest X-ray Information handler triggered");
 

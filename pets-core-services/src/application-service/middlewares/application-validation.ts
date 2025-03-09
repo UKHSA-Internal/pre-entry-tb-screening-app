@@ -6,7 +6,7 @@ import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 export const validateApplication = async (request: { event: PetsAPIGatewayProxyEvent }) => {
   try {
     const event = request.event;
-    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
+    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
 
     const application = await Application.getByApplicationId(applicationId);
     if (!application) {
