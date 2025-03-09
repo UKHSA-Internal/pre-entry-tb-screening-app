@@ -239,5 +239,3 @@ describe("Test for Application Lambda", () => {
     });
   });
 });
-
-// TODO: Add tests for this as well as tb certs
