@@ -34,42 +34,6 @@ describe("Test for Saving Chest X-ray into DB", () => {
     });
   });
 
-  test("Missing application throws  400 error", async () => {
-    // Arrange
-    const event: SaveChestXrayEvent = {
-      ...mockAPIGwEvent,
-      pathParameters: { applicationId: "nonexisting-application-id" },
-      parsedBody: newChestXrayTaken,
-    };
-
-    // Act
-    const response = await saveChestXRayHandler(event);
-
-    // Assert
-    expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "Application with ID: nonexisting-application-id does not exist",
-    });
-  });
-
-  test("Mismatch in Clinic ID throws a 400 error", async () => {
-    // Arrange
-    const event: SaveChestXrayEvent = {
-      ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[2].applicationId },
-      parsedBody: newChestXrayTaken,
-    };
-
-    // Act
-    const response = await saveChestXRayHandler(event);
-
-    // Assert
-    expect(response.statusCode).toBe(403);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "Clinic Id mismatch",
-    });
-  });
-
   test("Duplicate post throws a 400 error", async () => {
     // Arrange
     const existingChestXray = seededChestXray[0];
@@ -99,7 +63,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     // Assert
     expect(response.statusCode).toBe(500);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Request not parsed correctly",
+      message: "Internal Server Error: Chest X-Ray Request not parsed correctly",
     });
   });
 

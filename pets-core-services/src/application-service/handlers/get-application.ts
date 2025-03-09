@@ -1,5 +1,3 @@
-import { GlobalContextStorageProvider } from "pino-lambda";
-
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
@@ -11,10 +9,6 @@ import { TravelInformation } from "../models/travel-information";
 export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => {
   try {
     const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
-
-    GlobalContextStorageProvider.updateContext({
-      applicationId,
-    });
 
     logger.info({ applicationId }, "Retrieve Application handler triggered");
 
