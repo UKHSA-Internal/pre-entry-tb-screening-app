@@ -12,6 +12,12 @@ type DateType = {
   day: string;
 };
 
+type ReceivedApplicationAttributesType = {
+  applicationId: string;
+  dateCreated: string;
+  status: BackendApplicationStatus;
+};
+
 // Application types
 type ApplicationIdAndDateCreatedType = {
   applicationId: string;
@@ -45,27 +51,6 @@ type ReduxApplicantDetailsType = {
   postcode?: string;
 };
 
-type ReceivedApplicantDetailsType = {
-  applicationId: string;
-  dateCreated: string;
-  status: BackendApplicationStatus;
-  fullName: string;
-  sex: string;
-  dateOfBirth: string;
-  countryOfNationality: string;
-  passportNumber: string;
-  countryOfIssue: string;
-  issueDate: string;
-  expiryDate: string;
-  applicantHomeAddress1: string;
-  applicantHomeAddress2?: string;
-  applicantHomeAddress3?: string;
-  townOrCity: string;
-  provinceOrState: string;
-  country: string;
-  postcode?: string;
-};
-
 type PostedApplicantDetailsType = {
   fullName: string;
   sex: string;
@@ -84,6 +69,8 @@ type PostedApplicantDetailsType = {
   postcode?: string;
 };
 
+type ReceivedApplicantDetailsType = PostedApplicantDetailsType & ReceivedApplicationAttributesType;
+
 // Travel types
 type ReduxTravelDetailsType = {
   status: ApplicationStatus;
@@ -97,20 +84,6 @@ type ReduxTravelDetailsType = {
   ukEmail: string;
 };
 
-type ReceivedTravelDetailsType = {
-  applicationId: string;
-  dateCreated: string;
-  status: BackendApplicationStatus;
-  ukAddressLine1: string;
-  ukAddressLine2?: string;
-  ukAddressLine3?: string;
-  ukAddressTownOrCity: string;
-  ukAddressPostcode: string;
-  ukEmailAddress: string;
-  ukMobileNumber?: string;
-  visaCategory: string;
-};
-
 type PostedTravelDetailsType = {
   ukAddressLine1: string;
   ukAddressLine2?: string;
@@ -121,6 +94,8 @@ type PostedTravelDetailsType = {
   ukMobileNumber?: string;
   visaCategory: string;
 };
+
+type ReceivedTravelDetailsType = PostedTravelDetailsType & ReceivedApplicationAttributesType;
 
 // Medical Screening types
 type ReduxMedicalScreeningType = {
@@ -140,25 +115,6 @@ type ReduxMedicalScreeningType = {
   physicalExamNotes: string;
 };
 
-type ReceivedMedicalScreeningType = {
-  applicationId: string;
-  dateCreated: string;
-  status: BackendApplicationStatus;
-  age: number;
-  contactWithPersonWithTb: string;
-  contactWithTbDetails: string;
-  haveMenstralPeriod: string;
-  historyOfConditionsUnder11: string[];
-  historyOfConditionsUnder11Details: string;
-  historyOfPreviousTb: string;
-  physicalExaminationNotes: string;
-  pregnant: string;
-  previousTbDetails: string;
-  symptoms: string[];
-  symptomsOfTb: string;
-  symptomsOther: string;
-};
-
 type PostedMedicalScreeningType = {
   age: number;
   contactWithPersonWithTb: string;
@@ -174,6 +130,8 @@ type PostedMedicalScreeningType = {
   symptomsOfTb: string;
   symptomsOther: string;
 };
+
+type ReceivedMedicalScreeningType = PostedMedicalScreeningType & ReceivedApplicationAttributesType;
 
 // Chest X-ray types
 type ReduxChestXrayDetailsType = {
@@ -233,19 +191,11 @@ type ReduxTbCertificateType = {
   tbCertificateNumber: string;
 };
 
-type ReceivedTbCertificateType = {
-  applicationId: string;
-  dateCreated: string;
-  status: BackendApplicationStatus;
-  certificateIssued: string;
-  certificateComments: string;
-  certificateIssueDate: string;
-  certificateNumber: string;
-};
-
 type PostedTbCertificateType = {
   certificateIssued: string;
   certificateComments: string;
   certificateIssueDate: string;
   certificateNumber: string;
 };
+
+type ReceivedTbCertificateType = PostedTbCertificateType & ReceivedApplicationAttributesType;
