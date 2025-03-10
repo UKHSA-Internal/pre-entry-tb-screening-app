@@ -22,6 +22,7 @@ type ReceivedApplicationDetailsType = {
   applicationId: string;
   travelInformation: ReceivedTravelDetailsType | undefined;
   medicalScreening: ReceivedMedicalScreeningType | undefined;
+  tbCertificate: ReceivedTbCertificateType | undefined;
 };
 
 // Applicant types
@@ -230,4 +231,21 @@ type ReduxTbCertificateType = {
   physicianComments: string;
   tbCertificateDate: DateType;
   tbCertificateNumber: string;
+};
+
+type ReceivedTbCertificateType = {
+  applicationId: string;
+  dateCreated: string;
+  status: BackendApplicationStatus;
+  certificateIssued: string;
+  certificateComments: string;
+  certificateIssueDate: string;
+  certificateNumber: string;
+};
+
+type PostedTbCertificateType = {
+  certificateIssued: string;
+  certificateComments: string;
+  certificateIssueDate: string;
+  certificateNumber: string;
 };

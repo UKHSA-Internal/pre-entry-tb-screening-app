@@ -1,8 +1,8 @@
 import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { DateType, ReduxTbCertificateType } from "@/applicant";
-import { ApplicationStatus } from "@/utils/enums";
+import { DateType, ReceivedTbCertificateType, ReduxTbCertificateType } from "@/applicant";
+import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
 
 const initialState: ReduxTbCertificateType = {
   status: ApplicationStatus.INCOMPLETE,
@@ -42,6 +42,20 @@ export const tbCertificateSlice = createSlice({
       state.tbCertificateDate = { year: "", month: "", day: "" };
       state.tbCertificateNumber = "";
     },
+    setTbCertificateFromApiResponse: (state, action: PayloadAction<ReceivedTbCertificateType>) => {
+      state.status =
+        action.payload.status == BackendApplicationStatus.COMPLETE
+          ? ApplicationStatus.COMPLETE
+          : ApplicationStatus.INCOMPLETE;
+      state.tbClearanceIssued = action.payload.certificateIssued;
+      state.physicianComments = action.payload.certificateComments;
+      state.tbCertificateDate = {
+        year: action.payload.certificateIssueDate.split("-")[0],
+        month: action.payload.certificateIssueDate.split("-")[1],
+        day: action.payload.certificateIssueDate.split("-")[2],
+      };
+      state.tbCertificateNumber = action.payload.certificateNumber;
+    },
   },
 });
 
@@ -52,6 +66,7 @@ export const {
   setTbCertificateDate,
   setTbCertificateNumber,
   cleartbCertificateDetails,
+  setTbCertificateFromApiResponse,
 } = tbCertificateSlice.actions;
 
 export const tbCertificateReducer = tbCertificateSlice.reducer;
