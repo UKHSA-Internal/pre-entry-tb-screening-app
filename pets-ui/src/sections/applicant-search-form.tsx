@@ -18,6 +18,7 @@ import {
   clearMedicalScreeningDetails,
   setMedicalScreeningDetailsFromApiResponse,
 } from "@/redux/medicalScreeningSlice";
+import { setTbCertificateFromApiResponse } from "@/redux/tbCertificateSlice";
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
 import { ButtonType } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/helpers";
@@ -63,6 +64,9 @@ const ApplicantSearchForm = () => {
       }
       if (applicationRes.data.medicalScreening) {
         dispatch(setMedicalScreeningDetailsFromApiResponse(applicationRes.data.medicalScreening));
+      }
+      if (applicationRes.data.tbCertificate) {
+        dispatch(setTbCertificateFromApiResponse(applicationRes.data.tbCertificate));
       }
       navigate("/tracker");
     } catch (error) {
