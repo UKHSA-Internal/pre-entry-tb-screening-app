@@ -69,7 +69,7 @@ const ChestXraySummary = () => {
       hiddenLabel: "X-ray Minor Findings Active TB",
     },
     {
-      key: "Enter reason X-ray not taken",
+      key: "Enter reason x-ray not taken",
       value: chestXrayData.reasonXrayWasNotTaken,
       link: "/chest-xray-not-taken#reasonXrayWasNotTaken",
       hiddenLabel: "Reason X-ray not taken",

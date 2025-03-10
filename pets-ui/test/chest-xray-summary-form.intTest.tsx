@@ -95,7 +95,7 @@ describe("ChestXraySummaryPage", () => {
     });
     it("renders the page titles and descriptions ", () => {
       expect(screen.getByText("Check chest X-ray information")).toBeInTheDocument();
-      expect(screen.getByText("Select X-ray Status")).toBeInTheDocument();
+      expect(screen.getByText("Select x-ray status")).toBeInTheDocument();
     });
     it("when continue pressed, it navigates to /chest-xray-confirmation", async () => {
       await user.click(screen.getByRole("button"));
@@ -117,22 +117,22 @@ describe("ChestXraySummaryPage", () => {
       );
     });
     it("renders the page titles and data ", () => {
-      expect(screen.getByText("Postero anterior X-ray")).toBeInTheDocument();
+      expect(screen.getByText("Postero anterior x-ray")).toBeInTheDocument();
       expect(screen.getByText("PA Example FileName")).toBeInTheDocument();
-      expect(screen.getByText("Apical lordotic X-ray")).toBeInTheDocument();
+      expect(screen.getByText("Apical lordotic x-ray")).toBeInTheDocument();
       expect(screen.getByText("AL Example FileName")).toBeInTheDocument();
-      expect(screen.getByText("Lateral decubitus X-ray")).toBeInTheDocument();
+      expect(screen.getByText("Lateral decubitus x-ray")).toBeInTheDocument();
       expect(screen.getByText("LD Example FileName")).toBeInTheDocument();
-      expect(screen.getByText("Chest X-ray Result")).toBeInTheDocument();
+      expect(screen.getByText("Enter radiological outcome")).toBeInTheDocument();
       expect(screen.getByText("Chest X-ray normal")).toBeInTheDocument();
       //Array Data
-      expect(screen.getByText("Minor Findings")).toBeInTheDocument();
+      expect(screen.getByText("Minor findings")).toBeInTheDocument();
       expect(screen.getByText("Single fibrous streak or band or scar")).toBeInTheDocument();
       expect(screen.getByText("Bony Islets")).toBeInTheDocument();
     });
     it("does not render title when provided with an empty array", () => {
       expect(
-        screen.queryByText("Findings Sometimes Seen in Active TB (or Other Conditions)"),
+        screen.queryByText("Findings sometimes seen in active TB (or other conditions)"),
       ).not.toBeInTheDocument();
     });
   });
@@ -151,7 +151,7 @@ describe("ChestXraySummaryPage", () => {
       );
     });
     it("renders the page titles and descriptions ", () => {
-      expect(screen.getByText("Enter reason X-ray not taken")).toBeInTheDocument();
+      expect(screen.getByText("Enter reason x-ray not taken")).toBeInTheDocument();
       expect(screen.getByText("Pregnant")).toBeInTheDocument();
     });
   });
