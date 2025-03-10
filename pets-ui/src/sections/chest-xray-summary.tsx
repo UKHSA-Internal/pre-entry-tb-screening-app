@@ -22,19 +22,19 @@ const ChestXraySummary = () => {
     },
     {
       key: "Postero anterior X-ray",
-      value: chestXrayData.posteroAnteriorXrayFile,
+      value: chestXrayData.posteroAnteriorXrayFileName,
       link: "/chest-xray-upload#postero-anterior-xray",
       hiddenLabel: "Postero-anterior X-ray",
     },
     {
       key: "Apical lordotic X-ray",
-      value: chestXrayData.apicalLordoticXrayFile,
+      value: chestXrayData.apicalLordoticXrayFileName,
       link: "/chest-xray-upload#apical-lordotic-xray",
       hiddenLabel: "Postero-anterior X-ray",
     },
     {
       key: "Lateral decubitus X-ray",
-      value: chestXrayData.lateralDecubitusXrayFile,
+      value: chestXrayData.lateralDecubitusXrayFileName,
       link: "/chest-xray-upload#lateral-decubitus-xray",
       hiddenLabel: "Postero-anterior X-ray",
     },

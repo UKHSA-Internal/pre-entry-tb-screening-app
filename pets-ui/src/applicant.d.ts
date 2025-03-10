@@ -177,11 +177,11 @@ type PostedMedicalScreeningType = {
 // Chest X-ray types
 type ReduxChestXrayDetailsType = {
   chestXrayTaken: boolean | string;
-  posteroAnteriorXray: boolean | string; // allows for yes -> true, no -> false
+  posteroAnteriorXrayFileName: string | null;
   posteroAnteriorXrayFile: string | null;
-  apicalLordoticXray: boolean | string; // allows for yes -> true, no -> false
+  apicalLordoticXrayFileName: string | null;
   apicalLordoticXrayFile: string | null;
-  lateralDecubitusXray: boolean | string; // allows for yes -> true, no -> false
+  lateralDecubitusXrayFileName: string | null;
   lateralDecubitusXrayFile: string | null;
   reasonXrayWasNotTaken: string | null;
   xrayWasNotTakenFurtherDetails: string | null;

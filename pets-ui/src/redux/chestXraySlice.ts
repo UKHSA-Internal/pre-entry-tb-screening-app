@@ -5,11 +5,11 @@ import { ReduxChestXrayDetailsType } from "@/applicant";
 
 const initialState: ReduxChestXrayDetailsType = {
   chestXrayTaken: false,
-  posteroAnteriorXray: false,
+  posteroAnteriorXrayFileName: "",
   posteroAnteriorXrayFile: "",
-  apicalLordoticXray: false,
+  apicalLordoticXrayFileName: "",
   apicalLordoticXrayFile: "",
-  lateralDecubitusXray: false,
+  lateralDecubitusXrayFileName: "",
   lateralDecubitusXrayFile: "",
   reasonXrayWasNotTaken: null,
   xrayWasNotTakenFurtherDetails: "",
@@ -35,14 +35,14 @@ export const chestXraySlice = createSlice({
     setChestXrayTaken: (state, action: PayloadAction<boolean | string>) => {
       state.chestXrayTaken = action.payload;
     },
-    setPosteroAnteriorXray: (state, action: PayloadAction<string | boolean>) => {
-      state.posteroAnteriorXray = action.payload;
+    setPosteroAnteriorXrayFileName: (state, action: PayloadAction<string | null>) => {
+      state.posteroAnteriorXrayFileName = action.payload;
     },
-    setApicalLordoticXray: (state, action: PayloadAction<string | boolean>) => {
-      state.apicalLordoticXray = action.payload;
+    setApicalLordoticXrayFileName: (state, action: PayloadAction<string | null>) => {
+      state.apicalLordoticXrayFileName = action.payload;
     },
-    setLateralDecubitusXray: (state, action: PayloadAction<string | boolean>) => {
-      state.lateralDecubitusXray = action.payload;
+    setLateralDecubitusXrayFileName: (state, action: PayloadAction<string | null>) => {
+      state.lateralDecubitusXrayFileName = action.payload;
     },
     setPosteroAnteriorXrayFile: (state, action: PayloadAction<string | null>) => {
       state.posteroAnteriorXrayFile = action.payload;
@@ -79,9 +79,9 @@ export const chestXraySlice = createSlice({
     },
     clearChestXrayDetails: (state) => {
       state.chestXrayTaken = false;
-      state.posteroAnteriorXray = false;
-      state.apicalLordoticXray = false;
-      state.lateralDecubitusXray = false;
+      state.posteroAnteriorXrayFileName = "";
+      state.apicalLordoticXrayFileName = "";
+      state.lateralDecubitusXrayFileName = "";
       state.posteroAnteriorXrayFile = "";
       state.apicalLordoticXrayFile = "";
       state.lateralDecubitusXrayFile = "";
@@ -99,9 +99,9 @@ export const chestXraySlice = createSlice({
 
 export const {
   setChestXrayTaken,
-  setPosteroAnteriorXray,
-  setApicalLordoticXray,
-  setLateralDecubitusXray,
+  setPosteroAnteriorXrayFileName,
+  setApicalLordoticXrayFileName,
+  setLateralDecubitusXrayFileName,
   setPosteroAnteriorXrayFile,
   setApicalLordoticXrayFile,
   setLateralDecubitusXrayFile,

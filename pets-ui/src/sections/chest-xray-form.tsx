@@ -10,8 +10,11 @@ import Heading from "@/components/heading/heading";
 import { selectApplicant } from "@/redux/applicantSlice";
 import {
   setApicalLordoticXrayFile,
+  setApicalLordoticXrayFileName,
   setLateralDecubitusXrayFile,
+  setLateralDecubitusXrayFileName,
   setPosteroAnteriorXrayFile,
+  setPosteroAnteriorXrayFileName,
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType } from "@/utils/enums";
@@ -20,11 +23,12 @@ const FileUploadModule = (
   props: Readonly<{
     id: string;
     name: string;
-    setFileState: Dispatch<SetStateAction<string | null>>;
     required: boolean;
     errors: FieldErrors<ReduxChestXrayDetailsType>;
     accept?: string;
     maxSize?: number;
+    setFileState: Dispatch<SetStateAction<string | null>>;
+    setFileName: Dispatch<SetStateAction<string | null>>;
   }>,
 ) => {
   return (
@@ -50,6 +54,7 @@ const FileUploadModule = (
               accept={props.accept ?? "jpg,jpeg,png,pdf"}
               maxSize={props.maxSize ?? 5}
               setFileState={props.setFileState}
+              setFileName={props.setFileName}
             />
           </dd>
         </div>
@@ -66,6 +71,9 @@ const ChestXrayForm = () => {
   const [PAFile, setPAFile] = useState<string | null>(null);
   const [ALFile, setALFile] = useState<string | null>(null);
   const [LDFile, setLDFile] = useState<string | null>(null);
+  const [PAFileName, setPAFileName] = useState<string | null>(null);
+  const [ALFileName, setALFileName] = useState<string | null>(null);
+  const [LDFileName, setLDFileName] = useState<string | null>(null);
 
   const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
   const {
@@ -82,6 +90,9 @@ const ChestXrayForm = () => {
     dispatch(setPosteroAnteriorXrayFile(PAFile));
     dispatch(setApicalLordoticXrayFile(ALFile));
     dispatch(setLateralDecubitusXrayFile(LDFile));
+    dispatch(setPosteroAnteriorXrayFileName(PAFileName));
+    dispatch(setApicalLordoticXrayFileName(ALFileName));
+    dispatch(setLateralDecubitusXrayFileName(LDFileName));
   };
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
@@ -118,6 +129,7 @@ const ChestXrayForm = () => {
               id="postero-anterior-xray"
               name="Postero-anterior"
               setFileState={setPAFile}
+              setFileName={setPAFileName}
               required={true}
               errors={errors}
             />
@@ -129,6 +141,7 @@ const ChestXrayForm = () => {
               id="apical-lordotic-xray"
               name="Apical-lordotic"
               setFileState={setALFile}
+              setFileName={setALFileName}
               required={false}
               errors={errors}
             />
@@ -140,6 +153,7 @@ const ChestXrayForm = () => {
               id="lateral-decubitus-xray"
               name="Lateral-decubitus"
               setFileState={setLDFile}
+              setFileName={setLDFileName}
               required={false}
               errors={errors}
             />

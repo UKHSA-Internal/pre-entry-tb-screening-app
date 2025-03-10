@@ -1,10 +1,8 @@
 import "./chest-xray-summary.scss";
 
-import { Helmet } from "react-helmet-async";
-
-import Breadcrumb, { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
-import Footer from "@/components/footer/footer";
-import Header from "@/components/header/header";
+import { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
+import Container from "@/components/container/container";
+import Heading from "@/components/heading/heading";
 import ChestXraySummary from "@/sections/chest-xray-summary";
 
 export default function ChestXraySummaryPage() {
@@ -15,19 +13,9 @@ export default function ChestXraySummaryPage() {
     },
   ];
   return (
-    <body className="govuk-template__body">
-      <Helmet>
-        <title>Chest X-ray Summary</title>
-      </Helmet>
-      <Header />
-      <div className="govuk-width-container">
-        <Breadcrumb items={breadcrumbItems} />
-        <main className="govuk-main-wrapper">
-          <h1 className="govuk-heading-l">Check chest X-ray information</h1>
-          <ChestXraySummary />
-        </main>
-      </div>
-      <Footer />
-    </body>
+    <Container title="Check chest X-ray information" breadcrumbItems={breadcrumbItems}>
+      <Heading level={1} size="l" title="Check chest X-ray information" />
+      <ChestXraySummary />
+    </Container>
   );
 }

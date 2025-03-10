@@ -11,6 +11,7 @@ export interface FileUploadProps {
   accept?: string; // Add accept prop for file types
   maxSize?: number; // Size in MB
   setFileState?: Dispatch<SetStateAction<string | null>>;
+  setFileName?: Dispatch<SetStateAction<string | null>>;
 }
 
 export default function FileUpload(props: Readonly<FileUploadProps>) {
@@ -69,10 +70,11 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
 
         // if set state callback is present
         // e.g. if page wants file to be set to a state
-        if (props.setFileState) {
+        if (props.setFileState && props.setFileName) {
           try {
             const fileBlob = await readBlobAsText(files[0]);
             props.setFileState(fileBlob);
+            props.setFileName(files[0].name);
           } catch {
             displayError("There's been an error reading your file, please try a different file");
             props.setFileState(null);
