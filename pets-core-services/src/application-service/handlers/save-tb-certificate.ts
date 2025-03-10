@@ -1,16 +1,16 @@
 import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
-import { APIGatewayProxyEvent } from "aws-lambda";
 import { GlobalContextStorageProvider } from "pino-lambda";
 import { z } from "zod";
 
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
+import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { TbCertificate } from "../models/tb-certificate";
 import { TbCertificateRequestSchema } from "../types/zod-schema";
 
 export type TbCertificateRequestSchema = z.infer<typeof TbCertificateRequestSchema>;
-export type SaveTbCertificateEvent = APIGatewayProxyEvent & {
+export type SaveTbCertificateEvent = PetsAPIGatewayProxyEvent & {
   parsedBody?: TbCertificateRequestSchema;
 };
 
@@ -42,7 +42,7 @@ export const saveTbCertificateHandler = async (event: SaveTbCertificateEvent) =>
       });
     }
 
-    const clinicId = "Apollo Clinic";
+    const { clinicId } = event.requestContext.authorizer;
     if (application.clinicId != clinicId) {
       logger.error("ClinicId mismatch with existing application");
       return createHttpResponse(403, { message: "Clinic Id mismatch" });
@@ -50,7 +50,7 @@ export const saveTbCertificateHandler = async (event: SaveTbCertificateEvent) =>
 
     let tbCertificate: TbCertificate;
     try {
-      const createdBy = "hardcoded@user.com";
+      const { createdBy } = event.requestContext.authorizer;
       tbCertificate = await TbCertificate.createTbCertificate({
         ...parsedBody,
         createdBy,
