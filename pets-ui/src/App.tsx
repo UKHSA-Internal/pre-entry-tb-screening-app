@@ -208,9 +208,9 @@ function App() {
         path="/tb-certificate-declaration"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <TbCertificateDeclarationPage />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <TbCertificateDeclarationPage />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
