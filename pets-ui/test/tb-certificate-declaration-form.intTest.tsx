@@ -33,7 +33,7 @@ describe("TB Certificate Declaration Page", () => {
     expect(screen.getByText("Date of Birth")).toBeInTheDocument;
     expect(screen.getByText("Has a TB clearance certificate been issued?")).toBeInTheDocument;
     expect(screen.getByText("Yes")).toBeInTheDocument;
-    expect(screen.getByText("Physicians comments")).toBeInTheDocument;
+    expect(screen.getByText("Physician comments")).toBeInTheDocument;
     expect(screen.getByText("If a clearance certificate has been issued, give:")).toBeInTheDocument;
     expect(screen.getByText("Date of TB clearance certificate")).toBeInTheDocument;
     expect(screen.getByText("For example, 30 3 2024")).toBeInTheDocument;
