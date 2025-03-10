@@ -4,6 +4,7 @@ import {
   CopyObjectCommandOutput,
   DeleteObjectCommand,
   DeleteObjectCommandInput,
+  waitUntilObjectExists,
 } from "@aws-sdk/client-s3";
 
 import awsClients from "../../shared/clients/aws";
@@ -63,6 +64,17 @@ export const handler = (event: EventBridgeEvent<string, EventBridgeEventDetails>
       .send(copyCommand)
       .then((result: CopyObjectCommandOutput) => {
         logger.info(`Result of copy: ${JSON.stringify(result)}`);
+
+        waitUntilObjectExists(
+          { client: s3Client, maxWaitTime: 30 },
+          { Bucket: QUARANTINE_BUCKET, Key: fileName },
+        )
+          .then((result) => {
+            logger.info(`Successfully copied: ${JSON.stringify(result)}`);
+          })
+          .catch((error) => {
+            logger.error(`Error while calling waitUntilObjectExists: ${error}`);
+          });
 
         const deleteCommand = new DeleteObjectCommand(deleteParams);
         s3Client
