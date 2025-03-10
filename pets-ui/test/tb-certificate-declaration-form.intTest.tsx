@@ -36,6 +36,7 @@ describe("TB Certificate Declaration Page", () => {
     expect(screen.getByText("Physicians comments")).toBeInTheDocument;
     expect(screen.getByText("If a clearance certificate has been issued, give:")).toBeInTheDocument;
     expect(screen.getByText("Date of TB clearance certificate")).toBeInTheDocument;
+    expect(screen.getByText("For example, 30 3 2024")).toBeInTheDocument;
     expect(screen.getByText("Month")).toBeInTheDocument;
     expect(screen.getByText("TB clearance certificate number")).toBeInTheDocument;
   });
@@ -51,7 +52,9 @@ describe("TB Certificate Declaration Page", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Select whether TB clearance certificate has been issued."),
+        screen.getByText(
+          "Select yes if a TB clearance certificate has been issued or no if it has not.",
+        ),
       ).toBeInTheDocument();
     });
   });

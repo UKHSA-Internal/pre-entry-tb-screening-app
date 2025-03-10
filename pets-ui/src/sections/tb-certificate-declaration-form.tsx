@@ -96,7 +96,7 @@ const TbCertificateDeclarationForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.tbClearanceIssued?.message ?? ""}
             formValue="tbClearanceIssued"
-            required="Select whether TB clearance certificate has been issued."
+            required="Select yes if a TB clearance certificate has been issued or no if it has not."
             defaultValue={tbCertificateData.tbClearanceIssued}
           />
         </div>
@@ -152,6 +152,7 @@ const TbCertificateDeclarationForm = () => {
                 setDateValue={onChange}
                 id={"tb-certificate-date"}
                 autocomplete={false}
+                hint="For example, 30 3 2024"
                 errorMessage={errors?.tbCertificateDate?.message ?? ""}
               />
             )}
