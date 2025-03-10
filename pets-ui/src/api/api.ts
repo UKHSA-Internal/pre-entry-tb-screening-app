@@ -5,6 +5,7 @@ import {
   ApplicationIdAndDateCreatedType,
   PostedApplicantDetailsType,
   PostedMedicalScreeningType,
+  PostedTbCertificateType,
   PostedTravelDetailsType,
   ReceivedApplicantDetailsType,
   ReceivedApplicationDetailsType,
@@ -81,6 +82,17 @@ export const postMedicalDetails = async (
   const result = await petsApi.post(
     `/application/${applicationId}/medical-screening`,
     medicalScreeningDetails,
+  );
+  return { status: result.status, statusText: result.statusText };
+};
+
+export const postTbCerificateDetails = async (
+  applicationId: string,
+  tbCertificateDetails: PostedTbCertificateType,
+) => {
+  const result = await petsApi.post(
+    `/application/${applicationId}/tb-certificate`,
+    tbCertificateDetails,
   );
   return { status: result.status, statusText: result.statusText };
 };
