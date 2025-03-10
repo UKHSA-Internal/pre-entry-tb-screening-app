@@ -6,7 +6,6 @@ import { DateType, ReduxTbCertificateDeclarationType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import DateTextInput from "@/components/dateTextInput/dateTextInput";
-// import DateTextInput from "@/components/dateTextInput/dateTextInput";
 import ErrorDisplay from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
