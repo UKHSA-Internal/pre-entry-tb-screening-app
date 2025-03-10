@@ -1,10 +1,9 @@
+//This holds all fields on Applicant Details Page
 export class ApplicantDetailsPage {
   // Navigation
   visit(): void {
     cy.visit("http://localhost:3000/contact");
   }
-
-  // Intercept API Calls
   interceptFormSubmission(): void {
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
       statusCode: 200,
@@ -18,7 +17,7 @@ export class ApplicantDetailsPage {
   }
 
   selectSex(sex: string): void {
-    // Match the exact value case in the DOM (Female, Male, or Other)
+    // Match the exact value case (Female, Male, or Other)
     cy.get(`input[name="sex"][value="${sex}"]`).should("exist").check().should("be.checked");
   }
 
@@ -94,9 +93,7 @@ export class ApplicantDetailsPage {
     cy.get('button[type="submit"]').should("be.visible").click();
   }
 
-  // Convenience methods for filling out the entire form
   fillFormWithValidData(countryName: string): void {
-    // Call methods directly without 'this'
     cy.get('input[name="fullName"]').should("be.visible").clear().type("John Doe");
     cy.get(`input[name="sex"][value="Male"]`).should("exist").check().should("be.checked");
     cy.get("#country-of-nationality.govuk-select").should("be.visible").select(countryName);
@@ -243,8 +240,6 @@ export class ApplicantDetailsPage {
         .and("contain.text", expectedErrorMessages.passportExpiryDate);
     }
   }
-
-  // Additional utility methods
   verifyPageLoaded(): void {
     cy.contains("h1", "Enter Applicant Information").should("be.visible");
   }

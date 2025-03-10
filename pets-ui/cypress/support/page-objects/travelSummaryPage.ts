@@ -1,6 +1,5 @@
-// travelSummaryPage.ts
+// This holds all the fields on the Travel Summary Page
 export class TravelSummaryPage {
-  // Navigation
   visit(): void {
     cy.visit("http://localhost:3000/travel-summary");
   }
@@ -34,7 +33,7 @@ export class TravelSummaryPage {
   verifyFieldValueOnChangePage(fieldName: string, expectedValue: string): void {
     switch (fieldName) {
       case "Visa type":
-        cy.get("#visa-type.govuk-select").should("have.value", expectedValue);
+        cy.get("#visa-type select").should("have.value", expectedValue);
         break;
       case "UK Address Line 1":
         cy.get('input[type="text"][name="applicantUkAddress1"]').should(
@@ -69,5 +68,36 @@ export class TravelSummaryPage {
   // Verify URL after clicking change
   verifyUrlOnChangePage(expectedUrl: string): void {
     cy.url().should("include", expectedUrl);
+  }
+
+  getSummaryValue(summaryItemKey: string): Cypress.Chainable<string> {
+    return cy
+      .get(".govuk-summary-list__key")
+      .contains(summaryItemKey)
+      .closest(".govuk-summary-list__row")
+      .find(".govuk-summary-list__value")
+      .invoke("text");
+  }
+
+  // Verify summary value
+  verifySummaryValue(summaryItemKey: string, expectedValue: string): void {
+    this.getSummaryValue(summaryItemKey).should("eq", expectedValue);
+  }
+
+  // Verify all required summary values are present
+  verifyRequiredSummaryValues(
+    visaType: string,
+    address1: string,
+    townOrCity: string,
+    postcode: string,
+    mobileNumber: string,
+    email: string,
+  ): void {
+    this.verifySummaryValue("Visa type", visaType);
+    this.verifySummaryValue("UK Address Line 1", address1);
+    this.verifySummaryValue("UK Town or City", townOrCity);
+    this.verifySummaryValue("UK Postcode", postcode);
+    this.verifySummaryValue("UK Mobile Number", mobileNumber);
+    this.verifySummaryValue("UK Email Address", email);
   }
 }

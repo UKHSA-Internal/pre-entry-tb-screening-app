@@ -1,4 +1,4 @@
-// travelConfirmationPage.ts
+//This holds all fields on the Travel Confirmation Page
 export class TravelConfirmationPage {
   // Navigation
   visit(): void {

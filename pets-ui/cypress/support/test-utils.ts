@@ -32,3 +32,57 @@ export const visaType = [
 ];
 
 export const urlFragment = ["#age"];
+export const passportNumber = {
+  passportNumber: [
+    "AA123456789",
+    "AA987654321",
+    "AA456789012",
+    "AA234567890",
+    "AA678901234",
+    "AA345678901",
+    "AA567890123",
+    "AA789012345",
+    "AA234567890",
+    "AA123987654",
+    "BB234567891",
+    "BB345678902",
+    "BB456789013",
+    "BB567890124",
+    "BB678901235",
+    "BB789012346",
+    "BB123456789",
+    "BB987654322",
+    "BB234567893",
+    "BB345678903",
+    "CC123456787",
+    "CC234567890",
+    "CC345678901",
+    "CC456789012",
+    "CC567890123",
+    "CC678901234",
+    "CC789012345",
+    "CC234567895",
+    "CC345678904",
+    "CC456789014",
+    "HH123456789",
+    "HH987654321",
+    "HH456789012",
+    "HH234567890",
+    "HH678901234",
+    "HH345678901",
+    "HH567890123",
+    "HH789012345",
+    "HH234567890",
+    "HH123987654",
+    "HH234567891",
+    "HH345678902",
+    "HH456789013",
+    "HH567890124",
+    "HH678901235",
+  ],
+};
+export function getRandomPassportNumber(): string {
+  const passportArray = passportNumber.passportNumber;
+  const randomIndex = Math.floor(Math.random() * passportArray.length);
+  return passportArray[randomIndex];
+}

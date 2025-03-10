@@ -1,3 +1,4 @@
+//This holds all fields on the Travel Information Page
 export class TravelInformationPage {
   // Visit the Travel Information page
   visit(): void {
@@ -7,72 +8,43 @@ export class TravelInformationPage {
   // Verify page is loaded
   verifyPageLoaded(): void {
     cy.contains("h1", "Travel Information").should("be.visible");
+    cy.contains("p", "Enter the applicant's travel information below.").should("be.visible");
   }
 
   // Select Visa Type
   selectVisaType(visaType: string): void {
-    cy.contains("label", "Visa type").siblings("select").select(visaType);
+    cy.get("#visa-type select").select(visaType);
   }
 
   // Fill UK Address Details
   fillAddressLine1(address: string): void {
-    cy.contains("label", "Address line 1")
-      .siblings(".govuk-input__wrapper")
-      .find("input")
-      .should("be.visible")
-      .clear()
-      .type(address);
+    cy.get("#address-1 input").clear().type(address);
   }
 
   fillAddressLine2(address: string): void {
-    cy.contains("label", "Address line 2 (optional)")
-      .siblings(".govuk-input__wrapper")
-      .find("input")
-      .should("be.visible")
-      .clear()
-      .type(address);
+    cy.get("#address-2 input").clear().type(address);
   }
 
   fillTownOrCity(townOrCity: string): void {
-    cy.contains("label", "Town/City")
-      .siblings(".govuk-input__wrapper")
-      .find("input")
-      .should("be.visible")
-      .clear()
-      .type(townOrCity);
+    cy.get("#town-or-city input").clear().type(townOrCity);
   }
 
   fillPostcode(postcode: string): void {
-    cy.contains("label", "Postcode")
-      .siblings(".govuk-input__wrapper")
-      .find("input")
-      .should("be.visible")
-      .clear()
-      .type(postcode);
+    cy.get("#postcode input").clear().type(postcode);
   }
 
   // Fill Contact Details
   fillMobileNumber(mobileNumber: string): void {
-    cy.contains("h2", "Applicant's UK phone number")
-      .siblings(".govuk-form-group")
-      .find("input")
-      .should("be.visible")
-      .clear()
-      .type(mobileNumber);
+    cy.get("#mobile-number input").clear().type(mobileNumber);
   }
 
   fillEmail(email: string): void {
-    cy.contains("h2", "Applicant's UK email")
-      .siblings(".govuk-form-group")
-      .find("input")
-      .should("be.visible")
-      .clear()
-      .type(email);
+    cy.get("#email input").clear().type(email);
   }
 
   // Submit Form
   submitForm(): void {
-    cy.contains("button", "Save and continue").should("be.visible").click();
+    cy.contains("button", "Save and continue").click();
   }
 
   // Error Validation Methods
@@ -87,26 +59,35 @@ export class TravelInformationPage {
 
   // Validate field errors
   validateVisaTypeError(): void {
-    cy.contains("label", "Visa type")
-      .parents(".govuk-form-group")
-      .should("have.class", "govuk-form-group--error");
+    cy.get("#visa-type").should("have.class", "govuk-form-group--error");
   }
 
   validateAddressLine1Error(): void {
-    cy.contains("label", "Address line 1")
-      .parents(".govuk-form-group")
-      .should("have.class", "govuk-form-group--error");
+    cy.get("#address-1").should("have.class", "govuk-form-group--error");
   }
 
   validateTownOrCityError(): void {
-    cy.contains("label", "Town/City")
-      .parents(".govuk-form-group")
-      .should("have.class", "govuk-form-group--error");
+    cy.get("#town-or-city").should("have.class", "govuk-form-group--error");
   }
 
   validatePostcodeError(): void {
-    cy.contains("label", "Postcode")
-      .parents(".govuk-form-group")
-      .should("have.class", "govuk-form-group--error");
+    cy.get("#postcode").should("have.class", "govuk-form-group--error");
+  }
+
+  // Fill all required fields with valid data
+  fillAllRequiredFields(
+    visaType: string,
+    addressLine1: string,
+    townOrCity: string,
+    postcode: string,
+    mobileNumber: string,
+    email: string,
+  ): void {
+    this.selectVisaType(visaType);
+    this.fillAddressLine1(addressLine1);
+    this.fillTownOrCity(townOrCity);
+    this.fillPostcode(postcode);
+    this.fillMobileNumber(mobileNumber);
+    this.fillEmail(email);
   }
 }
