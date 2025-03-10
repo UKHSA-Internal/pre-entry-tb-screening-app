@@ -35,8 +35,31 @@ const medicalScreeningState = {
   underElevenConditionsDetail: "",
 };
 
+const applicationState = { applicationId: "abc-123", dateCreated: "" };
+
+const applicantState = {
+  status: ApplicationStatus.INCOMPLETE,
+  fullName: "Full Name",
+  sex: "",
+  dateOfBirth: { year: "", month: "", day: "" },
+  countryOfNationality: "",
+  passportNumber: "",
+  countryOfIssue: "",
+  passportIssueDate: { year: "", month: "", day: "" },
+  passportExpiryDate: { year: "", month: "", day: "" },
+  applicantHomeAddress1: "",
+  applicantHomeAddress2: "",
+  applicantHomeAddress3: "",
+  townOrCity: "",
+  provinceOrState: "",
+  country: "",
+  postcode: "",
+};
+
 const preloadedState = {
   medicalScreening: { ...medicalScreeningState },
+  application: { ...applicationState },
+  applicant: { ...applicantState },
 };
 
 describe("MedicalScreeningReview", () => {

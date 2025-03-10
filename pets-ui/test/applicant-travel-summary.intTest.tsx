@@ -29,8 +29,11 @@ const travelState = {
   visaType: "Government Sponsored",
 };
 
+const applicationState = { applicationId: "abc-123", dateCreated: "" };
+
 const preloadedState = {
   travel: { ...travelState },
+  application: { ...applicationState },
 };
 
 describe("TravelReview", () => {
