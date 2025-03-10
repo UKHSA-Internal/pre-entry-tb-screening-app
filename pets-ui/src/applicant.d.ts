@@ -235,3 +235,11 @@ type ReduxCertificationDetailsType = {
   clearanceCertificateNumber: string | null;
   ApplicationStatus: string;
 };
+
+// TB Declaration certificate type
+type ReduxTbCertificateDeclarationType = {
+  tbClearanceIssued: string;
+  physicianComments: string;
+  tbCertificateDate: DateType;
+  tbCertificateNumber: string;
+};

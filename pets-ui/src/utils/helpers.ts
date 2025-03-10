@@ -1,4 +1,5 @@
 import { DateType } from "@/components/dateTextInput/dateTextInput";
+import { SummaryElement } from "@/components/summary/summary";
 
 import { countryList } from "./countryList";
 
@@ -206,6 +207,23 @@ const visaOptions = [
     label: "British National (Overseas)",
   },
 ];
+
+export const formatDateType = (date: DateType): string => {
+  const { day, month, year } = date;
+
+  if (!day || !month || !year) {
+    return "";
+  }
+
+  return `${day}/${month}/${year}`;
+};
+
+export const isDataPresent = (
+  summaryElement: Partial<SummaryElement>,
+): summaryElement is SummaryElement => {
+  const { value } = summaryElement;
+  return Array.isArray(value) ? value.length > 0 : !!value;
+};
 
 export {
   attributeToComponentId,
