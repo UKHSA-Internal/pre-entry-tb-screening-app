@@ -1,11 +1,14 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import MockAdapter from "axios-mock-adapter";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
-import { ReduxTbCertificateDeclarationType } from "@/applicant";
+import { petsApi } from "@/api/api";
+import { ReduxTbCertificateType } from "@/applicant";
 import TbSummaryPage from "@/pages/tb-summary";
+import { ApplicationStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -17,7 +20,8 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
   };
 });
 
-const TbState: ReduxTbCertificateDeclarationType = {
+const tbState: ReduxTbCertificateType = {
+  status: ApplicationStatus.COMPLETE,
   tbClearanceIssued: "Yes",
   physicianComments: "Extra Details",
   tbCertificateDate: {
@@ -29,6 +33,7 @@ const TbState: ReduxTbCertificateDeclarationType = {
 };
 
 describe("TBSummaryPage", () => {
+  let mock: MockAdapter;
   const user = userEvent.setup();
   describe("General UI Tests", () => {
     beforeEach(() => {
@@ -57,14 +62,11 @@ describe("TBSummaryPage", () => {
     it("renders the page titles and descriptions ", () => {
       expect(screen.getByText("Check TB clearance certificate declaration")).toBeInTheDocument();
     });
-    it("when continue pressed, it navigates to /chest-xray-confirmation", async () => {
-      await user.click(screen.getByRole("button"));
-      expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-confirmation");
-    });
   });
-  describe("TB Summary Data", () => {
+  describe("TB Summary Data & post request", () => {
     const preloadedState = {
-      tbCertificate: { ...TbState },
+      application: { applicationId: "abc-123", dateCreated: "" },
+      tbCertificate: { ...tbState },
     };
     beforeEach(() => {
       renderWithProviders(
@@ -75,6 +77,8 @@ describe("TBSummaryPage", () => {
         </Router>,
         { preloadedState },
       );
+      mock = new MockAdapter(petsApi);
+      useNavigateMock.mockClear();
     });
     it("renders the page titles and data ", () => {
       expect(screen.getByText("TB clearance certificate issued?")).toBeInTheDocument();
@@ -85,6 +89,14 @@ describe("TBSummaryPage", () => {
       expect(screen.getByText("25/03/2025")).toBeInTheDocument();
       expect(screen.getByText("TB clearance certificate number")).toBeInTheDocument();
       expect(screen.getByText("12345")).toBeInTheDocument();
+    });
+    it("when continue pressed, it navigates to /tb-confirmation", async () => {
+      mock.onPost("/application/abc-123/tb-certificate").reply(200);
+      await user.click(screen.getByRole("button"));
+
+      expect(mock.history[0].url).toEqual("/application/abc-123/tb-certificate");
+      expect(mock.history).toHaveLength(1);
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-confirmation");
     });
   });
 });
