@@ -8,8 +8,20 @@ interface ErrorSummaryProps {
 }
 
 export default function ErrorSummary(props: Readonly<ErrorSummaryProps>) {
+  const setErrorSummaryRef = (element: HTMLDivElement | null) => {
+    if (element && props.errorsToShow.length > 0) {
+      setTimeout(() => element.focus(), 0);
+    }
+  };
+
   return (
-    <div className="govuk-error-summary" data-module="govuk-error-summary">
+    <div
+      className="govuk-error-summary"
+      data-module="govuk-error-summary"
+      aria-labelledby="error-summary-title"
+      tabIndex={-1}
+      ref={setErrorSummaryRef}
+    >
       <div role="alert">
         <h2 className="govuk-error-summary__title">There is a problem</h2>
         <div className="govuk-error-summary__body">

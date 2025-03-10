@@ -77,11 +77,7 @@ const ApplicantSearchForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {!!errorsToShow?.length && (
-          <div id="errorSummary">
-            <ErrorSummary errorsToShow={errorsToShow} errors={errors} />
-          </div>
-        )}
+        {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
         <FreeText
           id="passport-number"
           label="Applicant's Passport Number"
