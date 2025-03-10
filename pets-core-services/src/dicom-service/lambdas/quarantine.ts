@@ -53,51 +53,29 @@ export const handler = (event: EventBridgeEvent<string, EventBridgeEventDetails>
       Key: fileName,
     };
 
-    const copyCommand = new CopyObjectCommand(copyParams);
-    s3Client
-      .send(copyCommand)
-      .then((result: CopyObjectCommandOutput) => {
-        logger.info(`Result of copy: ${JSON.stringify(result)}`);
-      })
-      .catch((error) => {
-        logger.error(`Error message while calling CopyObjectCommand: ${error}`);
-      });
-
-    waitUntilObjectExists(
-      { client: s3Client, maxWaitTime: 5 },
-      { Bucket: QUARANTINE_BUCKET, Key: fileName },
-    )
-      .then((result) => {
-        logger.info(`Successfully copied: ${JSON.stringify(result)}`);
-      })
-      .catch((error) => {
-        logger.error(`Error while calling waitUntilObjectExists: ${error}`);
-      });
-
     const deleteParams: DeleteObjectCommandInput = {
       Bucket: bucketName,
       Key: fileName,
     };
 
-    const deleteCommand = new DeleteObjectCommand(deleteParams);
+    const copyCommand = new CopyObjectCommand(copyParams);
     s3Client
-      .send(deleteCommand)
-      .then((result) => {
-        logger.info(`Result of delete: ${JSON.stringify(result)}`);
-      })
-      .catch((error) => {
-        logger.error(`Error while calling DeleteObjectCommand: ${error}`);
-      });
+      .send(copyCommand)
+      .then((result: CopyObjectCommandOutput) => {
+        logger.info(`Result of copy: ${JSON.stringify(result)}`);
 
-    waitUntilObjectNotExists(
-      { client: s3Client, maxWaitTime: 5 },
-      { Bucket: QUARANTINE_BUCKET, Key: fileName },
-    )
-      .then((result) => {
-        logger.info(`Successfully deleted: ${JSON.stringify(result)}`);
+        const deleteCommand = new DeleteObjectCommand(deleteParams);
+        s3Client
+          .send(deleteCommand)
+          .then((result) => {
+            logger.info(`Result of delete: ${JSON.stringify(result)}`);
+          })
+          .catch((error) => {
+            logger.error(`Error while calling DeleteObjectCommand: ${error}`);
+          });
       })
       .catch((error) => {
-        logger.error(`Error while calling waitUntilObjectNotExists: ${error}`);
+        logger.error(`Error message while calling CopyObjectCommand: ${error}`);
       });
 
     return;
