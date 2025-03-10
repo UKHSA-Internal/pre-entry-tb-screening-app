@@ -19,12 +19,12 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 
 const chestXrayTakenState: ReduxChestXrayDetailsType = {
   chestXrayTaken: true,
-  posteroAnteriorXray: true,
-  posteroAnteriorXrayFile: "PA Example FileName",
-  apicalLordoticXray: true,
-  apicalLordoticXrayFile: "AL Example FileName",
-  lateralDecubitusXray: true,
-  lateralDecubitusXrayFile: "LD Example FileName",
+  posteroAnteriorXrayFileName: "PA Example FileName",
+  posteroAnteriorXrayFile: "PA Example File",
+  apicalLordoticXrayFileName: "AL Example FileName",
+  apicalLordoticXrayFile: "AL Example File",
+  lateralDecubitusXrayFileName: "LD Example FileName",
+  lateralDecubitusXrayFile: "LD Example File",
   reasonXrayWasNotTaken: null,
   xrayWasNotTakenFurtherDetails: null,
   reasonXrayNotTakenDetail: null,
@@ -44,11 +44,11 @@ const chestXrayTakenState: ReduxChestXrayDetailsType = {
 
 const chestXrayNotTakenState: ReduxChestXrayDetailsType = {
   chestXrayTaken: false,
-  posteroAnteriorXray: false,
+  posteroAnteriorXrayFileName: "",
   posteroAnteriorXrayFile: "",
-  apicalLordoticXray: false,
+  apicalLordoticXrayFileName: "",
   apicalLordoticXrayFile: "",
-  lateralDecubitusXray: false,
+  lateralDecubitusXrayFileName: "",
   lateralDecubitusXrayFile: "",
   reasonXrayWasNotTaken: "Pregnant",
   xrayWasNotTakenFurtherDetails: null,
