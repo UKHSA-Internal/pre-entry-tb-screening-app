@@ -223,21 +223,9 @@ type ReduxSputumCollectionDetailsType = {
   drugResistanceDetails: string | null;
 };
 
-// Certificatation types
-type ReduxCertificationDetailsType = {
-  tbSuspected: boolean | null;
-  tbSuspectedBasedOn: string | null;
-  clearanceCertificateIssued: string | null;
-  reasonForNonIssue: string | null;
-  reasonForNonIssue2: string | null;
-  physiciansComments: string | null;
-  issueDateofMedicalCertificate: string | null;
-  clearanceCertificateNumber: string | null;
-  ApplicationStatus: string;
-};
-
 // TB Declaration certificate type
-type ReduxTbCertificateDeclarationType = {
+type ReduxTbCertificateType = {
+  status: ApplicationStatus;
   tbClearanceIssued: string;
   physicianComments: string;
   tbCertificateDate: DateType;
