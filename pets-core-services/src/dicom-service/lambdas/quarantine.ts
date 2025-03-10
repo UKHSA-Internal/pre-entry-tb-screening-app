@@ -4,8 +4,6 @@ import {
   CopyObjectCommandOutput,
   DeleteObjectCommand,
   DeleteObjectCommandInput,
-  waitUntilObjectExists,
-  waitUntilObjectNotExists,
 } from "@aws-sdk/client-s3";
 
 import awsClients from "../../shared/clients/aws";
@@ -51,6 +49,8 @@ export const handler = (event: EventBridgeEvent<string, EventBridgeEventDetails>
       Bucket: QUARANTINE_BUCKET,
       CopySource: `${bucketName}/${fileName}`,
       Key: fileName,
+      SSEKMSKeyId: "arn:aws:kms:eu-west-2:108782068086:key/e9d62629-f651-4cfc-bab3-7b63563f2f82",
+      ServerSideEncryption: "aws:kms",
     };
 
     const deleteParams: DeleteObjectCommandInput = {
