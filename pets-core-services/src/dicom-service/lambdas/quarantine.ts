@@ -2,6 +2,10 @@ import {
   CopyObjectCommand,
   CopyObjectCommandInput,
   CopyObjectCommandOutput,
+  DeleteObjectCommand,
+  DeleteObjectCommandInput,
+  waitUntilObjectExists,
+  waitUntilObjectNotExists,
 } from "@aws-sdk/client-s3";
 
 import awsClients from "../../shared/clients/aws";
@@ -43,14 +47,13 @@ export const handler = (event: EventBridgeEvent<string, EventBridgeEventDetails>
   } else {
     logger.info(`Copying the file: ${bucketName}/${fileName} to the bucket: ${QUARANTINE_BUCKET}`);
 
-    const params: CopyObjectCommandInput = {
+    const copyParams: CopyObjectCommandInput = {
       Bucket: QUARANTINE_BUCKET,
       CopySource: `${bucketName}/${fileName}`,
       Key: fileName,
-      ServerSideEncryption: "AES256",
     };
 
-    const copyCommand = new CopyObjectCommand(params);
+    const copyCommand = new CopyObjectCommand(copyParams);
     s3Client
       .send(copyCommand)
       .then((result: CopyObjectCommandOutput) => {
@@ -58,6 +61,43 @@ export const handler = (event: EventBridgeEvent<string, EventBridgeEventDetails>
       })
       .catch((error) => {
         logger.error(`Error message while calling CopyObjectCommand: ${error}`);
+      });
+
+    waitUntilObjectExists(
+      { client: s3Client, maxWaitTime: 5 },
+      { Bucket: QUARANTINE_BUCKET, Key: fileName },
+    )
+      .then((result) => {
+        logger.info(`Successfully copied: ${JSON.stringify(result)}`);
+      })
+      .catch((error) => {
+        logger.error(`Error while calling waitUntilObjectExists: ${error}`);
+      });
+
+    const deleteParams: DeleteObjectCommandInput = {
+      Bucket: bucketName,
+      Key: fileName,
+    };
+
+    const deleteCommand = new DeleteObjectCommand(deleteParams);
+    s3Client
+      .send(deleteCommand)
+      .then((result) => {
+        logger.info(`Result of delete: ${JSON.stringify(result)}`);
+      })
+      .catch((error) => {
+        logger.error(`Error while calling DeleteObjectCommand: ${error}`);
+      });
+
+    waitUntilObjectNotExists(
+      { client: s3Client, maxWaitTime: 5 },
+      { Bucket: QUARANTINE_BUCKET, Key: fileName },
+    )
+      .then((result) => {
+        logger.info(`Successfully deleted: ${JSON.stringify(result)}`);
+      })
+      .catch((error) => {
+        logger.error(`Error while calling waitUntilObjectNotExists: ${error}`);
       });
 
     return;
