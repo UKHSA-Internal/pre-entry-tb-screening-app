@@ -39,15 +39,11 @@ const TbCertificateDeclarationForm = () => {
 
   const isTbClearanceIssued = watch("tbClearanceIssued") as unknown as string;
 
-  const updateReduxStore = () => {
+  const onSubmit: SubmitHandler<ReduxTbCertificateDeclarationType> = () => {
     dispatch(setTbClearanceIssued(tbCertificateData.tbClearanceIssued));
     dispatch(setPhysicianComments(tbCertificateData.physicianComments));
     dispatch(setTbCertificateDate(tbCertificateData.tbCertificateDate));
     dispatch(setTbCertificateNumber(tbCertificateData.tbCertificateNumber));
-  };
-
-  const onSubmit: SubmitHandler<ReduxTbCertificateDeclarationType> = () => {
-    updateReduxStore();
     navigate("/tb-certificate-summary");
   };
 
@@ -96,7 +92,7 @@ const TbCertificateDeclarationForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.tbClearanceIssued?.message ?? ""}
             formValue="tbClearanceIssued"
-            required="Select yes if a TB clearance certificate has been issued or no if it has not."
+            required="Select yes if a TB clearance certificate has been issued or no if it has not"
             defaultValue={tbCertificateData.tbClearanceIssued}
           />
         </div>
@@ -105,7 +101,7 @@ const TbCertificateDeclarationForm = () => {
           level={2}
           size="m"
           style={{ marginBottom: 20, marginTop: 40 }}
-          title="Physicians comments"
+          title="Physician comments"
         />
         <TextArea
           id="physician-comments"
@@ -171,10 +167,10 @@ const TbCertificateDeclarationForm = () => {
             errorMessage={errors?.tbCertificateNumber?.message ?? ""}
             formValue="tbCertificateNumber"
             patternValue={formRegex.lettersAndNumbers}
-            patternError="TB clearance certificate number must contain only letters and numbers."
+            patternError="TB clearance certificate number must contain only letters and numbers"
             defaultValue={tbCertificateData.tbCertificateNumber}
             required={
-              isTbClearanceIssued === "Yes" ? "Enter the TB clearance certificate number." : false
+              isTbClearanceIssued === "Yes" ? "Enter the TB clearance certificate number" : false
             }
           />
         </div>

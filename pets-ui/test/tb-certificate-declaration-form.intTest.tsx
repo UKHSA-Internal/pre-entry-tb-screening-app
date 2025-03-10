@@ -53,7 +53,7 @@ describe("TB Certificate Declaration Page", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Select yes if a TB clearance certificate has been issued or no if it has not.",
+          "Select yes if a TB clearance certificate has been issued or no if it has not",
         ),
       ).toBeInTheDocument();
     });
@@ -73,9 +73,9 @@ describe("TB Certificate Declaration Page", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("TB clearance certificate date must include a day, month and year."),
+        screen.getByText("TB clearance certificate date must include a day, month and year"),
       ).toBeInTheDocument();
-      expect(screen.getByText("Enter the TB clearance certificate number.")).toBeInTheDocument();
+      expect(screen.getByText("Enter the TB clearance certificate number")).toBeInTheDocument();
     });
   });
 

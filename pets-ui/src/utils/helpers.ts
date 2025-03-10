@@ -76,10 +76,10 @@ const dateValidationMessages = {
     invalidDateError: "Date of birth date must be a valid date.",
   },
   tbCertificateDate: {
-    emptyFieldError: "TB clearance certificate date must include a day, month and year.",
+    emptyFieldError: "TB clearance certificate date must include a day, month and year",
     invalidCharError:
-      "TB clearance certificate day and year must contain only numbers. TB clearance certificate month must be a number, or the name of the month, or the first three letters of the month.",
-    invalidDateError: "TB clearance certificate date must be a valid date.",
+      "TB clearance certificate day and year must contain only numbers. TB clearance certificate month must be a number, or the name of the month, or the first three letters of the month",
+    invalidDateError: "TB clearance certificate date must be a valid date",
   },
 };
 
