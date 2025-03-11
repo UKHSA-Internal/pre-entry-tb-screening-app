@@ -80,6 +80,11 @@ export class ChestXRayTaken extends ChestXRayBase {
       posteroAnteriorXray: this.posteroAnteriorXray,
       apicalLordoticXray: this.apicalLordoticXray,
       lateralDecubitusXray: this.lateralDecubitusXray,
+      xrayResult: this.xrayResult,
+      xrayResultDetail: this.xrayResultDetail,
+      xrayMinorFindings: this.xrayMinorFindings,
+      xrayAssociatedMinorFindings: this.xrayAssociatedMinorFindings,
+      xrayActiveTbFindings: this.xrayActiveTbFindings,
       dateCreated: this.dateCreated,
     };
   }

@@ -150,8 +150,8 @@ export const ChestXRayTakenRequestSchema = z.object({
 });
 
 export const ChestXRayRequestSchema = z.union([
-  ChestXRayNotTakenRequestSchema,
   ChestXRayTakenRequestSchema,
+  ChestXRayNotTakenRequestSchema,
 ]);
 
 const ChestXRayNotTakenResponseSchema = ChestXRayNotTakenRequestSchema.extend({
@@ -173,8 +173,8 @@ const ChestXRayTakenResponseSchema = ChestXRayTakenRequestSchema.extend({
 });
 
 export const ChestXRayResponseSchema = z.union([
-  ChestXRayNotTakenResponseSchema,
   ChestXRayTakenResponseSchema,
+  ChestXRayNotTakenResponseSchema,
 ]);
 
 export const ApplicationSchema = z.object({
