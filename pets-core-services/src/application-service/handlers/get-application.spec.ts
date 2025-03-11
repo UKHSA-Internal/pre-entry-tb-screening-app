@@ -66,6 +66,19 @@ describe("Getting Application Handler", () => {
         dateCreated: expect.any(String),
         status: "completed",
       },
+      chestXray: {
+        chestXrayTaken: "Yes",
+        posteroAnteriorXray: "saved/bucket/path/for/posterior/anterior",
+        apicalLordoticXray: "saved/bucket/path/for/apical/lordotic",
+        lateralDecubitusXray: "saved/bucket/path/for/lateral-decubitus",
+        xrayResult: "Chest X-ray normal",
+        xrayActiveTbFindings: [],
+        xrayAssociatedMinorFindings: [],
+        xrayMinorFindings: [],
+        applicationId: seededApplications[1].applicationId,
+        dateCreated: expect.any(String),
+        status: "completed",
+      },
       // Defined in pets-core-services\src\application-service\fixtures\tb-certificate.ts
       tbCertificate: {
         applicationId: "generated-app-id-2",

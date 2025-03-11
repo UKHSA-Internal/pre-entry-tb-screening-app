@@ -35,7 +35,7 @@ export abstract class ITbCertificate {
   }
 }
 
-export type TbCertificateDetails = Omit<
+export type NewTbCertificateDetails = Omit<
   ITbCertificate,
   "dateCreated" | "certificateIssueDate" | "status"
 > & {
@@ -64,7 +64,7 @@ export class TbCertificate extends ITbCertificate {
     return dbItem;
   }
 
-  static async createTbCertificate(details: TbCertificateDetails) {
+  static async createTbCertificate(details: NewTbCertificateDetails) {
     try {
       logger.info("Saving TB Certificate information to DB");
 

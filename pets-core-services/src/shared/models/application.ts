@@ -55,7 +55,7 @@ export class Application extends IApplication {
       const params: PutCommandInput = {
         TableName: Application.getTableName(),
         Item: { ...dbItem },
-        ConditionExpression: "attribute_not_exists(pk) AND attribute_not_exists(sk)", // Check to ensure crypto.randomUUID has generated a truly unique value
+        ConditionExpression: "attribute_not_exists(pk) AND attribute_not_exists(sk)", // Check to ensure the pk is truly a unique value
       };
       const command = new PutCommand(params);
       const response = await docClient.send(command);
