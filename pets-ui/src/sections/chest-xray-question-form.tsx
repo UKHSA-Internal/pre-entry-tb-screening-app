@@ -26,7 +26,8 @@ const ChestXrayQuestionForm = () => {
   } = methods;
 
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = (data) => {
-    updateReduxStore(data);
+    dispatch(setChestXrayTaken(data.chestXrayTaken));
+
     if (data.chestXrayTaken === "Yes") {
       navigate("/chest-xray-upload");
     } else {
@@ -34,9 +35,6 @@ const ChestXrayQuestionForm = () => {
     }
   };
 
-  const updateReduxStore = (chestXrayData: ReduxChestXrayDetailsType) => {
-    dispatch(setChestXrayTaken(chestXrayData.chestXrayTaken));
-  };
   const errorsToShow = Object.keys(errors);
   const chestXrayTakenRef = useRef<HTMLDivElement | null>(null);
 

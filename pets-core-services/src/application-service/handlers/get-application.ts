@@ -5,6 +5,7 @@ import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { MedicalScreening } from "../models/medical-screening";
+import { TbCertificate } from "../models/tb-certificate";
 import { TravelInformation } from "../models/travel-information";
 
 export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => {
@@ -27,11 +28,13 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
 
     const travelInformation = await TravelInformation.getByApplicationId(applicationId);
     const medicalScreening = await MedicalScreening.getByApplicationId(applicationId);
+    const tbCertificate = await TbCertificate.getByApplicationId(applicationId);
 
     return createHttpResponse(200, {
       applicationId,
       travelInformation: travelInformation?.toJson(),
       medicalScreening: medicalScreening?.toJson(),
+      tbCertificate: tbCertificate?.toJson(),
     });
   } catch (error) {
     logger.error(error, "Error retrieving application details");

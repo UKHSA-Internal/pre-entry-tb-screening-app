@@ -6,12 +6,15 @@ import { PetsRoute } from "../../shared/types";
 import { createApplicationHandler } from "../handlers/create-application";
 import { getApplicationHandler } from "../handlers/get-application";
 import { saveMedicalScreeningHandler } from "../handlers/save-medical-screening";
+import { saveTbCertificateHandler } from "../handlers/save-tb-certificate";
 import { saveTravelInformationHandler } from "../handlers/save-travel-information";
 import {
   ApplicationSchema,
   CreateApplicationResponseSchema,
   MedicalScreeningRequestSchema,
   MedicalScreeningResponseSchema,
+  TbCertificateRequestSchema,
+  TbCertificateResponseSchema,
   TravelInformationRequestSchema,
   TravelInformationResponseSchema,
 } from "../types/zod-schema";
@@ -53,6 +56,17 @@ export const routes: PetsRoute[] = [
     }),
     responseSchema: MedicalScreeningResponseSchema.openapi({
       description: "Saved Medical Screening Details",
+    }),
+  },
+  {
+    method: "POST",
+    path: "/application/{applicationId}/tb-certificate",
+    handler: saveTbCertificateHandler,
+    requestBodySchema: TbCertificateRequestSchema.openapi({
+      description: "TB Certificate Details of an Applicant",
+    }),
+    responseSchema: TbCertificateResponseSchema.openapi({
+      description: "Saved TB Certificate Details",
     }),
   },
 ];

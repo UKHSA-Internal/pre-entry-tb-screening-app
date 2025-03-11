@@ -82,17 +82,13 @@ const ChestXrayForm = () => {
   } = methods;
 
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = () => {
-    updateReduxStore();
-    navigate("/chest-xray-findings");
-  };
-
-  const updateReduxStore = () => {
     dispatch(setPosteroAnteriorXrayFile(PAFile));
     dispatch(setApicalLordoticXrayFile(ALFile));
     dispatch(setLateralDecubitusXrayFile(LDFile));
     dispatch(setPosteroAnteriorXrayFileName(PAFileName));
     dispatch(setApicalLordoticXrayFileName(ALFileName));
     dispatch(setLateralDecubitusXrayFileName(LDFileName));
+    navigate("/chest-xray-findings");
   };
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
