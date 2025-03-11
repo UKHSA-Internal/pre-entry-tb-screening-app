@@ -18,6 +18,7 @@ import MedicalScreeningPage from "./pages/medical-screening";
 import MedicalConfirmation from "./pages/medical-screening-confirmation";
 import MedicalSummaryPage from "./pages/medical-screening-summary";
 import ProgressTrackerPage from "./pages/progress-tracker";
+import TbCertificateDeclarationPage from "./pages/tb-certificate-declaration";
 import TbConfirmationPage from "./pages/tb-confirmation";
 import TbSummaryPage from "./pages/tb-summary";
 import TravelConfirmation from "./pages/travel-confirmation";
@@ -200,6 +201,16 @@ function App() {
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <ChestXrayConfirmation />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/tb-certificate-declaration"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <TbCertificateDeclarationPage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
