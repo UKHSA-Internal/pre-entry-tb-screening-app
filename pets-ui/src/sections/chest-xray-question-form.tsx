@@ -9,7 +9,7 @@ import ErrorDisplay from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import { selectApplicant } from "@/redux/applicantSlice";
-import { setChestXrayTaken } from "@/redux/chestXraySlice";
+import { selectChestXray, setChestXrayTaken } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 
@@ -17,6 +17,7 @@ const ChestXrayQuestionForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const applicantData = useAppSelector(selectApplicant);
+  const chestXrayData = useAppSelector(selectChestXray);
 
   const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
   const {
@@ -54,6 +55,7 @@ const ChestXrayQuestionForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.chestXrayTaken?.message ?? ""}
             formValue="chestXrayTaken"
+            defaultValue={chestXrayData.chestXrayTaken as string}
             required="Select yes if the visa applicant has had a chest X-ray or no if they have not."
           />
         </div>

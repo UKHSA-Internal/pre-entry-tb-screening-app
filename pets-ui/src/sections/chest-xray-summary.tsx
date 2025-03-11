@@ -21,14 +21,22 @@ const ChestXraySummary = () => {
       hiddenLabel: "Chest X-ray Status",
     },
     {
-      key: "Upload chest x-ray images",
-      value: [
-        chestXrayData.posteroAnteriorXrayFileName ?? "",
-        chestXrayData.apicalLordoticXrayFileName ?? "",
-        chestXrayData.lateralDecubitusXrayFileName ?? "",
-      ],
-      link: "/chest-xray-upload",
-      hiddenLabel: "Chest x-ray images",
+      key: "Postero anterior x-ray",
+      value: chestXrayData.posteroAnteriorXrayFileName,
+      link: "/chest-xray-upload#postero-anterior-xray",
+      hiddenLabel: "Postero-anterior X-ray",
+    },
+    {
+      key: "Apical lordotic x-ray",
+      value: chestXrayData.apicalLordoticXrayFileName,
+      link: "/chest-xray-upload#apical-lordotic-xray",
+      hiddenLabel: "Postero-anterior X-ray",
+    },
+    {
+      key: "Lateral decubitus x-ray",
+      value: chestXrayData.lateralDecubitusXrayFileName,
+      link: "/chest-xray-upload#lateral-decubitus-xray",
+      hiddenLabel: "Postero-anterior X-ray",
     },
     {
       key: "Enter radiological outcome",
@@ -39,7 +47,7 @@ const ChestXraySummary = () => {
     {
       key: "Radiological details",
       value: chestXrayData.xrayResultDetail,
-      link: "/chest-xray-findings#xray-result-detail",
+      link: "/chest-xray-findings#xray-minor-findings",
       hiddenLabel: "X-ray Details",
     },
     {

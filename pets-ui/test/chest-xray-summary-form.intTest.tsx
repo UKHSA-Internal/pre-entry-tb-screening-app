@@ -117,9 +117,11 @@ describe("ChestXraySummaryPage", () => {
       );
     });
     it("renders the page titles and data ", () => {
-      expect(screen.getByText("Upload chest x-ray images")).toBeInTheDocument();
+      expect(screen.getByText("Postero anterior x-ray")).toBeInTheDocument();
       expect(screen.getByText("PA Example FileName")).toBeInTheDocument();
+      expect(screen.getByText("Apical lordotic x-ray")).toBeInTheDocument();
       expect(screen.getByText("AL Example FileName")).toBeInTheDocument();
+      expect(screen.getByText("Lateral decubitus x-ray")).toBeInTheDocument();
       expect(screen.getByText("LD Example FileName")).toBeInTheDocument();
       expect(screen.getByText("Enter radiological outcome")).toBeInTheDocument();
       expect(screen.getByText("Chest X-ray normal")).toBeInTheDocument();

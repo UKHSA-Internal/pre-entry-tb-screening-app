@@ -59,6 +59,7 @@ const ChestXrayNotTakenForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.reasonXrayWasNotTaken?.message ?? ""}
             formValue="reasonXrayWasNotTaken"
+            defaultValue={chestXrayData.reasonXrayWasNotTaken as string}
             required="Select the reason why the chest X-ray was not taken."
           />
         </div>
