@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 
-import { DateType, ReduxTbCertificateDeclarationType } from "@/applicant";
+import { DateType, ReduxTbCertificateType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import DateTextInput from "@/components/dateTextInput/dateTextInput";
@@ -29,7 +29,7 @@ const TbCertificateDeclarationForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const methods = useForm<ReduxTbCertificateDeclarationType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxTbCertificateType>({ reValidateMode: "onSubmit" });
   const {
     control,
     handleSubmit,
@@ -39,7 +39,7 @@ const TbCertificateDeclarationForm = () => {
 
   const isTbClearanceIssued = watch("tbClearanceIssued") as unknown as string;
 
-  const onSubmit: SubmitHandler<ReduxTbCertificateDeclarationType> = () => {
+  const onSubmit: SubmitHandler<ReduxTbCertificateType> = () => {
     dispatch(setTbClearanceIssued(tbCertificateData.tbClearanceIssued));
     dispatch(setPhysicianComments(tbCertificateData.physicianComments));
     dispatch(setTbCertificateDate(tbCertificateData.tbCertificateDate));
