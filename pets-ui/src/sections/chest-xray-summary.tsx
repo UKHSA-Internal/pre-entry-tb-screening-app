@@ -47,7 +47,7 @@ const ChestXraySummary = () => {
     {
       key: "Radiological details",
       value: chestXrayData.xrayResultDetail,
-      link: "/chest-xray-findings#xray-minor-findings",
+      link: "/chest-xray-findings#xray-result-detail",
       hiddenLabel: "X-ray Details",
     },
     {
@@ -57,8 +57,8 @@ const ChestXraySummary = () => {
         ...chestXrayData.xrayAssociatedMinorFindings,
         ...chestXrayData.xrayActiveTbFindings,
       ],
-      link: "/chest-xray-findings",
-      hiddenLabel: "X-ray Minor Findings",
+      link: "/chest-xray-findings#xray-minor-findings",
+      hiddenLabel: "Radiographic Findings",
     },
     {
       key: "Enter reason x-ray not taken",
