@@ -216,6 +216,10 @@ const visaOptions = [
   },
 ];
 
+export const spreadArrayIfNotEmpty = (...arrays: string[][]) => {
+  return arrays.flatMap((array) => (array?.length ? array : []));
+};
+
 export {
   attributeToComponentId,
   countryList,

@@ -7,6 +7,7 @@ import { selectApplicant } from "@/redux/applicantSlice";
 import { selectChestXray } from "@/redux/chestXraySlice";
 import { useAppSelector } from "@/redux/hooks";
 import { ButtonType } from "@/utils/enums";
+import { spreadArrayIfNotEmpty } from "@/utils/helpers";
 
 const ChestXraySummary = () => {
   const applicantData = useAppSelector(selectApplicant);
@@ -30,19 +31,19 @@ const ChestXraySummary = () => {
       key: "Apical lordotic x-ray",
       value: chestXrayData.apicalLordoticXrayFileName,
       link: "/chest-xray-upload#apical-lordotic-xray",
-      hiddenLabel: "Postero-anterior X-ray",
+      hiddenLabel: "Apical lordotic X-ray",
     },
     {
       key: "Lateral decubitus x-ray",
       value: chestXrayData.lateralDecubitusXrayFileName,
       link: "/chest-xray-upload#lateral-decubitus-xray",
-      hiddenLabel: "Postero-anterior X-ray",
+      hiddenLabel: "Lateral decubitus X-ray",
     },
     {
       key: "Enter radiological outcome",
       value: chestXrayData.xrayResult,
       link: "/chest-xray-findings#xray-result",
-      hiddenLabel: "X-ray Result",
+      hiddenLabel: "Radiological outcome",
     },
     {
       key: "Radiological details",
@@ -52,11 +53,11 @@ const ChestXraySummary = () => {
     },
     {
       key: "Enter radiographic findings",
-      value: [
-        ...chestXrayData.xrayMinorFindings,
-        ...chestXrayData.xrayAssociatedMinorFindings,
-        ...chestXrayData.xrayActiveTbFindings,
-      ],
+      value: spreadArrayIfNotEmpty(
+        chestXrayData.xrayMinorFindings,
+        chestXrayData.xrayAssociatedMinorFindings,
+        chestXrayData.xrayActiveTbFindings,
+      ),
       link: "/chest-xray-findings#xray-minor-findings",
       hiddenLabel: "Radiographic Findings",
     },

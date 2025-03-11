@@ -34,7 +34,7 @@ const ChestXrayFindingsForm = () => {
     formState: { errors },
   } = methods;
 
-  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = () => {
+  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = (chestXrayData) => {
     dispatch(setXrayResult(chestXrayData.xrayResult));
     dispatch(setXrayResultDetail(chestXrayData.xrayResultDetail));
     dispatch(setXrayMinorFindings(chestXrayData.xrayMinorFindings));
