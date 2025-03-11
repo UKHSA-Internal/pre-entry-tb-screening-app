@@ -3,7 +3,7 @@ import { describe, expect, test, vi } from "vitest";
 import { seededApplications } from "../../shared/fixtures/application";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededChestXray } from "../fixtures/chest-xray";
-import { YesOrNo } from "../types/enums";
+import { ChestXRayResult, YesOrNo } from "../types/enums";
 import { SaveChestXrayEvent, saveChestXRayHandler } from "./save-chest-ray";
 
 const newChestXrayTaken: SaveChestXrayEvent["parsedBody"] = {
@@ -11,6 +11,10 @@ const newChestXrayTaken: SaveChestXrayEvent["parsedBody"] = {
   posteroAnteriorXray: "test/bucket/path/for/posterior/anterior",
   apicalLordoticXray: "test/bucket/path/for/apical/lordotic",
   lateralDecubitusXray: "test/bucket/path/for/lateral-decubitus",
+  xrayResult: ChestXRayResult.NonTbAbnormal,
+  xrayMinorFindings: ["test", "minor", "findings"],
+  xrayAssociatedMinorFindings: ["test", "associated", "minor", "findings"],
+  xrayActiveTbFindings: ["test", "active", "tb", "findings"],
 };
 
 describe("Test for Saving Chest X-ray into DB", () => {

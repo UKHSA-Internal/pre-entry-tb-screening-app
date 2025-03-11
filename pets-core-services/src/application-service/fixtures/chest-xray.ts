@@ -1,6 +1,6 @@
 import { seededApplications } from "../../shared/fixtures/application";
 import { NewChestXRayNotTaken, NewChestXRayTaken } from "../models/chest-xray";
-import { ChestXRayNotTakenReason, YesOrNo } from "../types/enums";
+import { ChestXRayNotTakenReason, ChestXRayResult, YesOrNo } from "../types/enums";
 
 export const seededChestXray: Array<NewChestXRayTaken | NewChestXRayNotTaken> = [
   {
@@ -10,6 +10,10 @@ export const seededChestXray: Array<NewChestXRayTaken | NewChestXRayNotTaken> = 
     apicalLordoticXray: "saved/bucket/path/for/apical/lordotic",
     lateralDecubitusXray: "saved/bucket/path/for/lateral-decubitus",
     createdBy: "shane.park@iom.com",
+    xrayResult: ChestXRayResult.Normal,
+    xrayMinorFindings: [],
+    xrayAssociatedMinorFindings: [],
+    xrayActiveTbFindings: [],
   },
   {
     applicationId: seededApplications[2].applicationId,

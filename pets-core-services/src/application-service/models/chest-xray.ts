@@ -4,7 +4,7 @@ import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { TaskStatus } from "../../shared/types/enum";
-import { ChestXRayNotTakenReason, YesOrNo } from "../types/enums";
+import { ChestXRayNotTakenReason, ChestXRayResult, YesOrNo } from "../types/enums";
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
@@ -35,6 +35,12 @@ type IChestXRayTaken = {
   posteroAnteriorXray: string;
   apicalLordoticXray?: string;
   lateralDecubitusXray?: string;
+
+  xrayResult: ChestXRayResult;
+  xrayResultDetail?: string;
+  xrayMinorFindings: string[];
+  xrayAssociatedMinorFindings: string[];
+  xrayActiveTbFindings: string[];
 };
 
 export type NewChestXRayTaken = Omit<IChestXRayTaken, "dateCreated" | "status">;
@@ -44,6 +50,11 @@ export class ChestXRayTaken extends ChestXRayBase {
   posteroAnteriorXray: string;
   apicalLordoticXray?: string;
   lateralDecubitusXray?: string;
+  xrayResult: ChestXRayResult;
+  xrayResultDetail?: string;
+  xrayMinorFindings: string[];
+  xrayAssociatedMinorFindings: string[];
+  xrayActiveTbFindings: string[];
 
   constructor(details: IChestXRayTaken) {
     super(details);
@@ -53,6 +64,12 @@ export class ChestXRayTaken extends ChestXRayBase {
     this.posteroAnteriorXray = details.posteroAnteriorXray;
     this.apicalLordoticXray = details.apicalLordoticXray;
     this.lateralDecubitusXray = details.lateralDecubitusXray;
+
+    this.xrayResult = details.xrayResult;
+    this.xrayResultDetail = details.xrayResultDetail;
+    this.xrayMinorFindings = details.xrayMinorFindings;
+    this.xrayAssociatedMinorFindings = details.xrayAssociatedMinorFindings;
+    this.xrayActiveTbFindings = details.xrayActiveTbFindings;
   }
 
   toJson() {

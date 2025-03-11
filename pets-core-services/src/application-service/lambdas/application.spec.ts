@@ -4,7 +4,13 @@ import { describe, expect, test } from "vitest";
 import { seededApplications } from "../../shared/fixtures/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { context, mockAPIGwEvent } from "../../test/mocks/events";
-import { MenstrualPeriods, PregnancyStatus, VisaOptions, YesOrNo } from "../types/enums";
+import {
+  ChestXRayResult,
+  MenstrualPeriods,
+  PregnancyStatus,
+  VisaOptions,
+  YesOrNo,
+} from "../types/enums";
 import { handler } from "./application";
 
 describe("Test for Application Lambda", () => {
@@ -207,6 +213,10 @@ describe("Test for Application Lambda", () => {
           posteroAnteriorXray: "test/bucket/path/for/posterior/anterior",
           apicalLordoticXray: "test/bucket/path/for/apical/lordotic",
           lateralDecubitusXray: "test/bucket/path/for/lateral-decubitus",
+          xrayResult: ChestXRayResult.Normal,
+          xrayMinorFindings: [],
+          xrayAssociatedMinorFindings: [],
+          xrayActiveTbFindings: [],
         }),
       };
 

@@ -3,7 +3,7 @@ import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
-import { ChestXRayNotTakenReason, YesOrNo } from "../types/enums";
+import { ChestXRayNotTakenReason, ChestXRayResult, YesOrNo } from "../types/enums";
 import { ChestXRayDbOps, NewChestXRayNotTaken, NewChestXRayTaken } from "./chest-xray";
 
 describe("Test for Chest X-Ray Db Ops Class", () => {
@@ -20,6 +20,11 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     posteroAnteriorXray: "test/bucket/path/for/posterior/anterior",
     apicalLordoticXray: "test/bucket/path/for/apical/lordotic",
     lateralDecubitusXray: "test/bucket/path/for/lateral-decubitus",
+    xrayResult: ChestXRayResult.NonTbAbnormal,
+    xrayResultDetail: "more details of result",
+    xrayMinorFindings: ["minor", "findings"],
+    xrayAssociatedMinorFindings: ["associated", "minor", "findings"],
+    xrayActiveTbFindings: ["active", "tb", "findings"],
   };
 
   const newChestXrayNotTaken: NewChestXRayNotTaken = {

@@ -49,3 +49,9 @@ export enum ChestXRayNotTakenReason {
   Pregnant = "Pregnant",
   Other = "Other",
 }
+
+export enum ChestXRayResult {
+  Normal = "Chest X-ray normal",
+  NonTbAbnormal = "Non-TB abnormality",
+  OldActive = "Old or active TB",
+}
