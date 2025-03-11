@@ -74,14 +74,10 @@ const ChestXrayForm = () => {
   } = methods;
 
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = () => {
-    updateReduxStore();
-    navigate("/chest-xray-findings");
-  };
-
-  const updateReduxStore = () => {
     dispatch(setPosteroAnteriorXrayFile(PAFile));
     dispatch(setApicalLordoticXrayFile(ALFile));
     dispatch(setLateralDecubitusXrayFile(LDFile));
+    navigate("/chest-xray-findings");
   };
 
   return (
