@@ -2,53 +2,48 @@ import { describe, expect, test, vi } from "vitest";
 
 import { seededApplications } from "../../shared/fixtures/application";
 import { mockAPIGwEvent } from "../../test/mocks/events";
-import { seededTravelInformation } from "../fixtures/travel-information";
-import { VisaOptions } from "../types/enums";
-import {
-  SaveTravelInformationEvent,
-  saveTravelInformationHandler,
-} from "./save-travel-information";
+import { seededTbCertificate } from "../fixtures/tb-certificate";
+import { YesOrNo } from "../types/enums";
+import { SaveTbCertificateEvent, saveTbCertificateHandler } from "./save-tb-certificate";
 
-const newTravelDetails: SaveTravelInformationEvent["parsedBody"] = {
-  visaCategory: VisaOptions.Students,
-  ukAddressLine1: "first line",
-  ukAddressTownOrCity: "uk address town",
-  ukAddressPostcode: "uk address postcode",
-  ukMobileNumber: "uk mobile number",
-  ukEmailAddress: "uk email address",
+const newTbCertificate: SaveTbCertificateEvent["parsedBody"] = {
+  certificateIssued: YesOrNo.Yes,
+  certificateComments: "comments",
+  certificateIssueDate: "2025-01-21",
+  certificateNumber: "123456",
 };
 
-describe("Test for Saving Travel Information into DB", () => {
-  test("Saving a new travel Information Successfully", async () => {
+describe("Test for Saving TB Certificate into DB", () => {
+  test("Saving a new TB Certificate Successfully", async () => {
     // Arrange
-    const event: SaveTravelInformationEvent = {
+    const event: SaveTbCertificateEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[0].applicationId },
-      parsedBody: newTravelDetails,
+      parsedBody: newTbCertificate,
     };
 
     // Act
-    const response = await saveTravelInformationHandler(event);
+    const response = await saveTbCertificateHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toMatchObject({
       applicationId: seededApplications[0].applicationId,
-      ...newTravelDetails,
+      ...newTbCertificate,
       dateCreated: expect.any(String),
     });
   });
 
   test("Missing application throws a 400 error", async () => {
     // Arrange
-    const event: SaveTravelInformationEvent = {
+    const event: SaveTbCertificateEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: "nonexisting-application-id" },
-      parsedBody: newTravelDetails,
+      parsedBody: newTbCertificate,
     };
 
     // Act
-    const response = await saveTravelInformationHandler(event);
+    const response = await saveTbCertificateHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(400);
@@ -59,14 +54,14 @@ describe("Test for Saving Travel Information into DB", () => {
 
   test("Mismatch in Clinic ID throws a 400 error", async () => {
     // Arrange
-    const event: SaveTravelInformationEvent = {
+    const event: SaveTbCertificateEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[2].applicationId },
-      parsedBody: newTravelDetails,
+      parsedBody: newTbCertificate,
     };
 
     // Act
-    const response = await saveTravelInformationHandler(event);
+    const response = await saveTbCertificateHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(403);
@@ -77,29 +72,29 @@ describe("Test for Saving Travel Information into DB", () => {
 
   test("Duplicate post throws a 400 error", async () => {
     // Arrange
-    const existingTravelInformation = seededTravelInformation[0];
-    const event: SaveTravelInformationEvent = {
+    const existingTbCertificate = seededTbCertificate[0];
+    const event: SaveTbCertificateEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[1].applicationId },
-      parsedBody: existingTravelInformation,
+      parsedBody: existingTbCertificate,
     };
 
     // Act
-    const response = await saveTravelInformationHandler(event);
+    const response = await saveTbCertificateHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toMatchObject({ message: "Travel Details already saved" });
+    expect(JSON.parse(response.body)).toMatchObject({ message: "TB Certificate already saved" });
   });
 
   test("Missing required body returns a 500 response", async () => {
     // Arrange
-    const event: SaveTravelInformationEvent = {
+    const event: SaveTbCertificateEvent = {
       ...mockAPIGwEvent,
     };
 
     // Act
-    const response = await saveTravelInformationHandler(event);
+    const response = await saveTbCertificateHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(500);
@@ -113,12 +108,12 @@ describe("Test for Saving Travel Information into DB", () => {
     vi.spyOn(global, "decodeURIComponent").mockImplementationOnce(() => {
       throw new Error("Malformed URI");
     });
-    const event: SaveTravelInformationEvent = {
+    const event: SaveTbCertificateEvent = {
       ...mockAPIGwEvent,
     };
 
     // Act
-    const response = await saveTravelInformationHandler(event);
+    const response = await saveTbCertificateHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(500);
