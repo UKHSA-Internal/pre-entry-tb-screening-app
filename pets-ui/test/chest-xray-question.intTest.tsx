@@ -73,6 +73,11 @@ describe("ChestXrayUploadPage", () => {
       "Select yes if the visa applicant has had a chest X-ray or no if they have not",
     );
   });
+  it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
+    await user.click(screen.getByRole("button"));
+    const errorSummaryDiv = screen.getByTestId("error-summary");
+    expect(errorSummaryDiv).toHaveFocus();
+  });
   it("does not render an error if continue button not clicked with no answer provided", () => {
     expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
     expect(

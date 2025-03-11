@@ -20,6 +20,8 @@ describe("MedicalScreeningForm", () => {
     useNavigateMock.mockClear();
   });
 
+  const user = userEvent.setup();
+
   it("when MedicalScreeningForm is filled correctly then state is updated and user is navigated to summary page", async () => {
     const { store } = renderWithProviders(
       <Router>
@@ -103,7 +105,6 @@ describe("MedicalScreeningForm", () => {
       </Router>,
     );
 
-    const user = userEvent.setup();
     const submitButton = screen.getByRole("button", { name: /Save and Continue/i });
 
     await user.click(submitButton);
@@ -121,5 +122,15 @@ describe("MedicalScreeningForm", () => {
       expect(screen.getAllByText(error)).toHaveLength(2);
       expect(screen.getAllByText(error)[0]).toHaveAttribute("aria-label", error);
     });
+  });
+  it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
+    renderWithProviders(
+      <Router>
+        <MedicalScreeningForm />
+      </Router>,
+    );
+    await user.click(screen.getByRole("button"));
+    const errorSummaryDiv = screen.getByTestId("error-summary");
+    expect(errorSummaryDiv).toHaveFocus();
   });
 });

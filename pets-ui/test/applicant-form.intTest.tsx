@@ -20,6 +20,8 @@ describe("ApplicantForm", () => {
     useNavigateMock.mockClear();
   });
 
+  const user = userEvent.setup();
+
   it("when ApplicantForm is not filled then errors are displayed", async () => {
     renderWithProviders(
       <Router>
@@ -63,8 +65,6 @@ describe("ApplicantForm", () => {
         <ApplicantForm />
       </Router>,
     );
-
-    const user = userEvent.setup();
 
     await user.type(screen.getByTestId("name"), "Sigmund Sigmundson");
     await user.click(screen.getAllByTestId("sex")[1]);
@@ -141,7 +141,6 @@ describe("ApplicantForm", () => {
       </Router>,
     );
 
-    const user = userEvent.setup();
     const submitButton = screen.getByRole("button", { name: /Save and Continue/i });
 
     await user.click(submitButton);
@@ -165,5 +164,15 @@ describe("ApplicantForm", () => {
       expect(screen.getAllByText(error)).toHaveLength(2);
       expect(screen.getAllByText(error)[0]).toHaveAttribute("aria-label", error);
     });
+  });
+  it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
+    renderWithProviders(
+      <Router>
+        <ApplicantForm />
+      </Router>,
+    );
+    await user.click(screen.getByRole("button"));
+    const errorSummaryDiv = screen.getByTestId("error-summary");
+    expect(errorSummaryDiv).toHaveFocus();
   });
 });

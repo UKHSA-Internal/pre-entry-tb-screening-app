@@ -67,6 +67,18 @@ describe("ChestXrayFindings Form", () => {
       );
     });
   });
+  it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
+    renderWithProviders(
+      <Router>
+        <ChestXrayFindingsForm />
+      </Router>,
+    );
+    fireEvent.click(screen.getByText("Save and continue"));
+    await waitFor(() => {
+      const errorSummaryDiv = screen.getByTestId("error-summary");
+      expect(errorSummaryDiv).toHaveFocus();
+    });
+  });
 
   it("renders page elements correctly", () => {
     renderWithProviders(

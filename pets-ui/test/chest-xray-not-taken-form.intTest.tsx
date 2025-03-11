@@ -102,6 +102,11 @@ describe("ChestXrayNotTakenPage", () => {
       "Enter reason X-ray not taken",
     );
   });
+  it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
+    await user.click(screen.getByRole("button"));
+    const errorSummaryDiv = screen.getByTestId("error-summary");
+    expect(errorSummaryDiv).toHaveFocus();
+  });
   it("does not render an error if 'Other' option chosen, further details entered, and continue clicked", async () => {
     const radioButtons = screen.getAllByRole("radio");
     await user.click(radioButtons[2]);
