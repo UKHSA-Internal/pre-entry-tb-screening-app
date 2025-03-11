@@ -34,16 +34,12 @@ const ChestXrayFindingsForm = () => {
     formState: { errors },
   } = methods;
 
-  const updateReduxStore = () => {
+  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = () => {
     dispatch(setXrayResult(chestXrayData.xrayResult));
     dispatch(setXrayResultDetail(chestXrayData.xrayResultDetail));
     dispatch(setXrayMinorFindings(chestXrayData.xrayMinorFindings));
     dispatch(setXrayAssociatedMinorFindings(chestXrayData.xrayAssociatedMinorFindings));
     dispatch(setXrayActiveTbFindings(chestXrayData.xrayActiveTbFindings));
-  };
-
-  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = () => {
-    updateReduxStore();
     navigate("/chest-xray-summary");
   };
 

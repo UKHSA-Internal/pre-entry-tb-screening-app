@@ -4,6 +4,7 @@ import { applicantReducer } from "./applicantSlice";
 import { applicationReducer } from "./applicationSlice";
 import { chestXrayReducer } from "./chestXraySlice";
 import { medicalScreeningReducer } from "./medicalScreeningSlice";
+import { tbCertificateReducer } from "./tbCertificateSlice";
 import { travelReducer } from "./travelSlice";
 
 const rootReducer = combineReducers({
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
   medicalScreening: medicalScreeningReducer,
   travel: travelReducer,
   chestXray: chestXrayReducer,
+  tbCertificate: tbCertificateReducer,
 });
 
 export const setupStore = (preloadedState?: Partial<RootState>) => {

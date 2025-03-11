@@ -248,4 +248,51 @@ describe("Test for Application Lambda", () => {
       expect(response.statusCode).toBe(200);
     });
   });
+
+  test("Validating creating TB certificate successfully", async () => {
+    // Arrange
+    const event: APIGatewayProxyEvent = {
+      ...mockAPIGwEvent,
+      resource: "/application/{applicationId}/tb-certificate",
+      path: `/application/${seededApplications[0].applicationId}/tb-certificate`,
+      httpMethod: "POST",
+    };
+
+    // Act
+    const response: APIGatewayProxyResult = await handler(event, context);
+
+    // Assert
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Request Body failed validation",
+      validationError: {
+        certificateComments: ["Required"],
+        certificateIssueDate: ["Required"],
+        certificateIssued: ["Required"],
+        certificateNumber: ["Required"],
+      },
+    });
+  });
+
+  test("Saving TB certificate successfully", async () => {
+    // Arrange;
+    const event: APIGatewayProxyEvent = {
+      ...mockAPIGwEvent,
+      resource: "/application/{applicationId}/tb-certificate",
+      path: `/application/${seededApplications[0].applicationId}/tb-certificate`,
+      httpMethod: "POST",
+      body: JSON.stringify({
+        certificateComments: "comments",
+        certificateIssueDate: "2025-01-01",
+        certificateIssued: YesOrNo.Yes,
+        certificateNumber: "123456",
+      }),
+    };
+
+    // Act
+    const response: APIGatewayProxyResult = await handler(event, context);
+
+    // Assert
+    expect(response.statusCode).toBe(200);
+  });
 });

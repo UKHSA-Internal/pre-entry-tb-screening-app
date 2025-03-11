@@ -8,6 +8,7 @@ import { createApplicationHandler } from "../handlers/create-application";
 import { getApplicationHandler } from "../handlers/get-application";
 import { saveChestXRayHandler } from "../handlers/save-chest-ray";
 import { saveMedicalScreeningHandler } from "../handlers/save-medical-screening";
+import { saveTbCertificateHandler } from "../handlers/save-tb-certificate";
 import { saveTravelInformationHandler } from "../handlers/save-travel-information";
 import { setApplicationIdContext } from "../middlewares/application-logger-context";
 import { validateApplication } from "../middlewares/application-validation";
@@ -18,6 +19,8 @@ import {
   CreateApplicationResponseSchema,
   MedicalScreeningRequestSchema,
   MedicalScreeningResponseSchema,
+  TbCertificateRequestSchema,
+  TbCertificateResponseSchema,
   TravelInformationRequestSchema,
   TravelInformationResponseSchema,
 } from "../types/zod-schema";
@@ -81,6 +84,17 @@ export const routes: PetsRoute[] = [
     }),
     responseSchema: ChestXRayResponseSchema.openapi({
       description: "Saved Chest Xray of an Applicant",
+    }),
+  },
+  {
+    method: "POST",
+    path: "/application/{applicationId}/tb-certificate",
+    handler: saveTbCertificateHandler,
+    requestBodySchema: TbCertificateRequestSchema.openapi({
+      description: "TB Certificate Details of an Applicant",
+    }),
+    responseSchema: TbCertificateResponseSchema.openapi({
+      description: "Saved TB Certificate Details",
     }),
   },
 ];
