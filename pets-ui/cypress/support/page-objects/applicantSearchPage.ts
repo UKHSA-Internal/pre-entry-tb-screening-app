@@ -3,7 +3,7 @@ import { countryList } from "../../../src/utils/countryList";
 export class ApplicantSearchPage {
   // Navigation
   visit(): void {
-    cy.visit("http://localhost:3000");
+    cy.visit("/");
   }
 
   // Verify page loaded

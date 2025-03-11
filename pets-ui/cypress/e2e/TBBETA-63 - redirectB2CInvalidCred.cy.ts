@@ -13,7 +13,7 @@ after(() => {
   Cypress.env("SKIP_AUTH", "false");
 });
 beforeEach(() => {
-  cy.visit("http://localhost:3000");
+  cy.visit("/");
   cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
     statusCode: 200,
     body: { success: true, message: "Data successfully posted" },

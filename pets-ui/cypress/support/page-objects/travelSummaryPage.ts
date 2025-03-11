@@ -1,7 +1,7 @@
 // This holds all the fields on the Travel Summary Page
 export class TravelSummaryPage {
   visit(): void {
-    cy.visit("http://localhost:3000/travel-summary");
+    cy.visit("/travel-summary");
   }
 
   // Verify page loaded
@@ -16,7 +16,7 @@ export class TravelSummaryPage {
 
   // Verify redirection to confirmation page
   verifyRedirectionToConfirmationPage(): void {
-    cy.url().should("include", "http://localhost:3000/travel-confirmation");
+    cy.url().should("include", "/travel-confirmation");
   }
 
   // Click the change link for a specific summary entry

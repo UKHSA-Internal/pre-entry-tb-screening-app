@@ -1,7 +1,7 @@
 //This holds all fields of the Medical Summary Page
 export class MedicalSummaryPage {
   visit(): void {
-    cy.visit("http://localhost:3000/medical-summary");
+    cy.visit("/medical-summary");
   }
 
   // Verify page loaded

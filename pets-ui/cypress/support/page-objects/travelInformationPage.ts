@@ -2,7 +2,7 @@
 export class TravelInformationPage {
   // Visit the Travel Information page
   visit(): void {
-    cy.visit("http://localhost:3000/travel-details");
+    cy.visit("/travel-details");
   }
 
   // Verify page is loaded

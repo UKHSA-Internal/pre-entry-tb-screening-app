@@ -2,7 +2,7 @@
 export class ApplicantConfirmationPage {
   // Navigation
   visit(): void {
-    cy.visit("http://localhost:3000/applicant-confirmation");
+    cy.visit("/applicant-confirmation");
   }
 
   // Verify page loaded

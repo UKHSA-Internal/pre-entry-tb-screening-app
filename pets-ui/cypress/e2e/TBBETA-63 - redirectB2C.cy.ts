@@ -15,7 +15,7 @@ after(() => {
 });
 
 beforeEach(() => {
-  cy.visit("http://localhost:3000");
+  cy.visit("/");
   cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
     statusCode: 200,
     body: { success: true, message: "Data successfully posted" },
@@ -50,5 +50,5 @@ it("should allow login and navigate to Applicant Search page", () => {
   );
 
   // Validate that user is redirected to the Application Search page
-  cy.url().should("include", "http://localhost:3000/applicant-search");
+  cy.url().should("include", "/applicant-search");
 });

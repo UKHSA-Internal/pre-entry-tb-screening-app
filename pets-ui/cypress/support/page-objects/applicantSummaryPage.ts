@@ -1,7 +1,7 @@
 //This holds all fields of the Applicant Summary Page
 export class ApplicantSummaryPage {
   visit(): void {
-    cy.visit("http://localhost:3000/applicant-summary");
+    cy.visit("/applicant-summary");
   }
   // Verify page loaded
   verifyPageLoaded(): void {

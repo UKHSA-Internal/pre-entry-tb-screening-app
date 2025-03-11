@@ -112,7 +112,7 @@ describe("Visa Application End-to-End Tests", () => {
 
     // Fill contact details
     travelInformationPage.fillMobileNumber("07700900123");
-    travelInformationPage.fillEmail("jane.smith@example.com");
+    travelInformationPage.fillEmail("pets.tester@ukhsa.gov.uk");
 
     // Submit form
     travelInformationPage.submitForm();

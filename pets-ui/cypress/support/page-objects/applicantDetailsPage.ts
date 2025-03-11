@@ -2,7 +2,7 @@
 export class ApplicantDetailsPage {
   // Navigation
   visit(): void {
-    cy.visit("http://localhost:3000/contact");
+    cy.visit("/contact");
   }
   interceptFormSubmission(): void {
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {

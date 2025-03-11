@@ -2,7 +2,7 @@
 export class TravelConfirmationPage {
   // Navigation
   visit(): void {
-    cy.visit("http://localhost:3000/travel-confirmation");
+    cy.visit("/travel-confirmation");
   }
 
   // Verify page loaded
@@ -18,6 +18,6 @@ export class TravelConfirmationPage {
 
   // Verify redirection to medical screening page
   verifyRedirectionToMedicalScreening(): void {
-    cy.url().should("include", "http://localhost:3000/medical-screening");
+    cy.url().should("include", "/medical-screening");
   }
 }

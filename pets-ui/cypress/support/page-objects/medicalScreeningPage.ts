@@ -1,7 +1,7 @@
 // This holds all fields for the Medical Screening Page
 export class MedicalScreeningPage {
   visit(): void {
-    cy.visit("http://localhost:3000/medical-screening");
+    cy.visit("/medical-screening");
   }
 
   verifyPageLoaded(): void {
@@ -119,7 +119,7 @@ export class MedicalScreeningPage {
   }
 
   verifyRedirectedToSummary(): void {
-    cy.url().should("include", "http://localhost:3000/medical-summary");
+    cy.url().should("include", "/medical-summary");
   }
   validateErrorSummary(expectedErrors: string[]): void {
     // Verify error summary is visible
