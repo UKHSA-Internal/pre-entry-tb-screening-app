@@ -251,7 +251,7 @@ describe("Test for Application Lambda", () => {
 
   test("Validating creating TB certificate successfully", async () => {
     // Arrange
-    const event: APIGatewayProxyEvent = {
+    const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
       resource: "/application/{applicationId}/tb-certificate",
       path: `/application/${seededApplications[0].applicationId}/tb-certificate`,
@@ -276,7 +276,7 @@ describe("Test for Application Lambda", () => {
 
   test("Saving TB certificate successfully", async () => {
     // Arrange;
-    const event: APIGatewayProxyEvent = {
+    const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
       resource: "/application/{applicationId}/tb-certificate",
       path: `/application/${seededApplications[0].applicationId}/tb-certificate`,

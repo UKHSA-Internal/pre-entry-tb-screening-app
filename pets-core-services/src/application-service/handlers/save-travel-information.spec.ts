@@ -15,7 +15,6 @@ const newTravelDetails: SaveTravelInformationEvent["parsedBody"] = {
   ukAddressTownOrCity: "uk address town",
   ukAddressPostcode: "uk address postcode",
   ukMobileNumber: "uk mobile number",
-  ukAddressTownOrCity: "uk address city",
   ukEmailAddress: "uk email address",
 };
 

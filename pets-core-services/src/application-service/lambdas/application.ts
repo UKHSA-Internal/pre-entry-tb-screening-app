@@ -89,7 +89,10 @@ export const routes: PetsRoute[] = [
   {
     method: "POST",
     path: "/application/{applicationId}/tb-certificate",
-    handler: saveTbCertificateHandler,
+    handler: middy<PetsAPIGatewayProxyEvent>()
+      .before(setApplicationIdContext)
+      .before(validateApplication)
+      .handler(saveTbCertificateHandler),
     requestBodySchema: TbCertificateRequestSchema.openapi({
       description: "TB Certificate Details of an Applicant",
     }),
