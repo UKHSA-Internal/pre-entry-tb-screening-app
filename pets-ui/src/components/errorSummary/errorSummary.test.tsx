@@ -43,4 +43,10 @@ describe("Error Summary Component", () => {
       "There is an error on this page",
     );
   });
+  it("has screen focus when an error is found", () => {
+    render(<ErrorSummary errorsToShow={multipleErrorsToShow} errors={multipleErrors} />);
+    const errorSummaryDiv = screen.getByTestId("error-summary");
+    expect(errorSummaryDiv).toHaveAttribute("tabIndex", "-1");
+    expect(errorSummaryDiv).toHaveAttribute("aria-labelledby", "error-summary-title");
+  });
 });

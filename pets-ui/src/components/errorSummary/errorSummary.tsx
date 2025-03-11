@@ -21,6 +21,7 @@ export default function ErrorSummary(props: Readonly<ErrorSummaryProps>) {
       aria-labelledby="error-summary-title"
       tabIndex={-1}
       ref={setErrorSummaryRef}
+      data-testid="error-summary"
     >
       <div role="alert">
         <h2 className="govuk-error-summary__title">There is a problem</h2>
