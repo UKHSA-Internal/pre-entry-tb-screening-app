@@ -21,22 +21,14 @@ const ChestXraySummary = () => {
       hiddenLabel: "Chest X-ray Status",
     },
     {
-      key: "Postero anterior x-ray",
-      value: chestXrayData.posteroAnteriorXrayFileName,
-      link: "/chest-xray-upload#postero-anterior-xray",
-      hiddenLabel: "Postero-anterior X-ray",
-    },
-    {
-      key: "Apical lordotic x-ray",
-      value: chestXrayData.apicalLordoticXrayFileName,
-      link: "/chest-xray-upload#apical-lordotic-xray",
-      hiddenLabel: "Postero-anterior X-ray",
-    },
-    {
-      key: "Lateral decubitus x-ray",
-      value: chestXrayData.lateralDecubitusXrayFileName,
-      link: "/chest-xray-upload#lateral-decubitus-xray",
-      hiddenLabel: "Postero-anterior X-ray",
+      key: "Upload chest x-ray images",
+      value: [
+        chestXrayData.posteroAnteriorXrayFileName ?? "",
+        chestXrayData.apicalLordoticXrayFileName ?? "",
+        chestXrayData.lateralDecubitusXrayFileName ?? "",
+      ],
+      link: "/chest-xray-upload",
+      hiddenLabel: "Chest x-ray images",
     },
     {
       key: "Enter radiological outcome",
@@ -51,22 +43,14 @@ const ChestXraySummary = () => {
       hiddenLabel: "X-ray Details",
     },
     {
-      key: "Minor findings",
-      value: chestXrayData.xrayMinorFindings,
+      key: "Enter radiographic findings",
+      value: [
+        ...chestXrayData.xrayMinorFindings,
+        ...chestXrayData.xrayAssociatedMinorFindings,
+        ...chestXrayData.xrayActiveTbFindings,
+      ],
       link: "/chest-xray-findings#xray-result-detail",
       hiddenLabel: "X-ray Minor Findings",
-    },
-    {
-      key: "Minor findings occasionally associated with TB",
-      value: chestXrayData.xrayAssociatedMinorFindings,
-      link: "/chest-xray-findings#xray-associated-minor-findings",
-      hiddenLabel: "X-ray Minor Findings TB Assoc",
-    },
-    {
-      key: "Findings sometimes seen in active TB (or other conditions)",
-      value: chestXrayData.xrayActiveTbFindings,
-      link: "/chest-xray-findings#xray-active-tb-findings",
-      hiddenLabel: "X-ray Minor Findings Active TB",
     },
     {
       key: "Enter reason x-ray not taken",
