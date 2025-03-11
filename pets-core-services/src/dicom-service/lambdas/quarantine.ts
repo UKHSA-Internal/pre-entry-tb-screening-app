@@ -13,6 +13,7 @@ import { logger } from "../../shared/logger";
 import { EventBridgeEvent, EventBridgeEventDetails } from "./types";
 
 export const QUARANTINE_BUCKET = assertEnvExists(process.env.QUARANTINE_BUCKET);
+const S3_SSE_KMS_KEY_ID = assertEnvExists(process.env.S3_SSE_KMS_KEY_ID);
 
 export const handler = (
   event: EventBridgeEvent<string, EventBridgeEventDetails>,
@@ -52,7 +53,7 @@ export const handler = (
       Bucket: QUARANTINE_BUCKET,
       CopySource: `${bucketName}/${fileName}`,
       Key: fileName,
-      SSEKMSKeyId: "arn:aws:kms:eu-west-2:108782068086:key/e9d62629-f651-4cfc-bab3-7b63563f2f82",
+      SSEKMSKeyId: S3_SSE_KMS_KEY_ID,
       ServerSideEncryption: "aws:kms",
     };
 
