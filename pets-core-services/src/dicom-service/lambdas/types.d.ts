@@ -8,7 +8,7 @@ export interface s3ObjectDetailsObject {
 
 export interface scanResultDetailsObject {
   scanResultStatus: string;
-  threats: string | undefined;
+  threats: object[];
 }
 
 export interface EventBridgeEventDetails {

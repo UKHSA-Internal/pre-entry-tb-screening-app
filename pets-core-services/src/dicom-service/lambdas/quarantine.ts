@@ -12,9 +12,11 @@ import { assertEnvExists } from "../../shared/config";
 import { logger } from "../../shared/logger";
 import { EventBridgeEvent, EventBridgeEventDetails } from "./types";
 
-const QUARANTINE_BUCKET = assertEnvExists(process.env.QUARANTINE_BUCKET);
+export const QUARANTINE_BUCKET = assertEnvExists(process.env.QUARANTINE_BUCKET);
 
-export const handler = (event: EventBridgeEvent<string, EventBridgeEventDetails>) => {
+export const handler = (
+  event: EventBridgeEvent<string, EventBridgeEventDetails>,
+): void | object => {
   logger.info({ event }, "Received Quarantine event");
 
   const { detail } = event;
@@ -74,6 +76,7 @@ export const handler = (event: EventBridgeEvent<string, EventBridgeEventDetails>
           })
           .catch((error) => {
             logger.error(`Error while calling waitUntilObjectExists: ${error}`);
+            return;
           });
 
         const deleteCommand = new DeleteObjectCommand(deleteParams);
@@ -84,12 +87,19 @@ export const handler = (event: EventBridgeEvent<string, EventBridgeEventDetails>
           })
           .catch((error) => {
             logger.error(`Error while calling DeleteObjectCommand: ${error}`);
+            return;
           });
       })
       .catch((error) => {
         logger.error(`Error message while calling CopyObjectCommand: ${error}`);
+        return;
       });
 
-    return;
+    return {
+      sourceBucket: bucketName,
+      destinationBucket: QUARANTINE_BUCKET,
+      fileName: fileName,
+      status: "OK",
+    };
   }
 };
