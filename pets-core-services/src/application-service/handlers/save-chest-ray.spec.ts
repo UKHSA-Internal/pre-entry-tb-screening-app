@@ -33,7 +33,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toMatchObject({
       applicationId: seededApplications[0].applicationId,
-      ...saveChestXRayHandler,
+      ...newChestXrayTaken,
       dateCreated: expect.any(String),
     });
   });
