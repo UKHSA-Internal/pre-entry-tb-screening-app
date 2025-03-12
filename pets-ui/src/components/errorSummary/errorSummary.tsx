@@ -1,6 +1,6 @@
 import { FieldErrors } from "react-hook-form";
 
-import { attributeToComponentId } from "@/utils/helpers";
+import { attributeToComponentId } from "@/utils/records";
 
 interface ErrorDisplayProps {
   errorsToShow: string[];

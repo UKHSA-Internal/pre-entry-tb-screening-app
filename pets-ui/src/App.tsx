@@ -64,16 +64,7 @@ function App() {
           </AuthenticatedRoute>
         }
       />
-      <Route
-        path="/contact"
-        element={
-          <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <ContactDetailsPage />
-            </RedirectedRouteIfReduxEmpty>
-          </AuthenticatedRoute>
-        }
-      />
+      <Route path="/contact" element={<ContactDetailsPage />} />
       <Route
         path="/applicant-summary"
         element={

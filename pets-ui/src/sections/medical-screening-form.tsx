@@ -13,7 +13,7 @@ import { selectApplicant } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectMedicalScreening, setMedicalScreeningDetails } from "@/redux/medicalScreeningSlice";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
-import { formRegex } from "@/utils/helpers";
+import { formRegex } from "@/utils/records";
 
 const MedicalScreeningForm = () => {
   const navigate = useNavigate();

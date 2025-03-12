@@ -12,7 +12,8 @@ import Radio from "@/components/radio/radio";
 import { selectApplicant, setApplicantDetails } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
-import { countryList, formRegex, validateDate } from "@/utils/helpers";
+import { validateDate } from "@/utils/helpers";
+import { countryList, formRegex } from "@/utils/records";
 
 const ApplicantForm = () => {
   const navigate = useNavigate();
@@ -150,7 +151,6 @@ const ApplicantForm = () => {
             )}
           />
         </div>
-
         <div ref={passportNumberRef}>
           <FreeText
             id="passport-number"

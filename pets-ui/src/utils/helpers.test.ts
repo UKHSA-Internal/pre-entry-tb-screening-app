@@ -1,4 +1,4 @@
-import { standardiseDayOrMonth } from "./helpers";
+import { standardiseDayOrMonth, validateDate } from "./helpers";
 
 describe("standardiseDayOrMonth function", () => {
   test.each([
@@ -67,5 +67,51 @@ describe("standardiseDayOrMonth function", () => {
     ["december", "12"],
   ])("%s standardises to %s", (input, expected) => {
     expect(standardiseDayOrMonth(input)).toEqual(expected);
+  });
+});
+
+describe("validateDate function", () => {
+  it("should provide the emptyFieldError when provided with all empty date fields", () => {
+    expect(validateDate({ day: "", month: "", year: "" }, "dateOfBirth")).toBe(
+      "Date of birth must include a day, month and year.",
+    );
+  });
+  it("should provide the a missing Fields error message when provided with partially completed date fields", () => {
+    const testCases = [
+      {
+        value: { day: "01", month: "", year: "" },
+        field: "dateOfBirth",
+        expected: "Date of birth must include a month and year",
+      },
+      {
+        value: { day: "", month: "02", year: "" },
+        field: "dateOfBirth",
+        expected: "Date of birth must include a day and year",
+      },
+      {
+        value: { day: "", month: "", year: "2000" },
+        field: "dateOfBirth",
+        expected: "Date of birth must include a day and month",
+      },
+      {
+        value: { day: "01", month: "02", year: "" },
+        field: "dateOfBirth",
+        expected: "Date of birth must include a year",
+      },
+      {
+        value: { day: "", month: "02", year: "2000" },
+        field: "dateOfBirth",
+        expected: "Date of birth must include a day",
+      },
+      {
+        value: { day: "01", month: "", year: "2000" },
+        field: "dateOfBirth",
+        expected: "Date of birth must include a month",
+      },
+    ];
+
+    testCases.forEach(({ value, field, expected }) => {
+      expect(validateDate(value, field)).toBe(expected);
+    });
   });
 });
