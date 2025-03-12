@@ -11,7 +11,7 @@ export interface FileUploadProps {
   accept?: string; // Add accept prop for file types
   maxSize?: number; // Size in MB
   setFileState?: Dispatch<SetStateAction<string | null>>;
-  setFileName?: Dispatch<SetStateAction<string | null>>;
+  setFileName?: Dispatch<SetStateAction<string>>;
 }
 
 export default function FileUpload(props: Readonly<FileUploadProps>) {

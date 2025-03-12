@@ -184,22 +184,17 @@ type PostedMedicalScreeningType = {
 // Chest X-ray types
 type ReduxChestXrayDetailsType = {
   status: ApplicationStatus;
-  chestXrayTaken: boolean | string;
-  posteroAnteriorXrayFileName: string | null;
+  chestXrayTaken: string;
+  posteroAnteriorXrayFileName: string;
   posteroAnteriorXrayFile: string | null;
-  apicalLordoticXrayFileName: string | null;
+  apicalLordoticXrayFileName: string;
   apicalLordoticXrayFile: string | null;
-  lateralDecubitusXrayFileName: string | null;
+  lateralDecubitusXrayFileName: string;
   lateralDecubitusXrayFile: string | null;
-  reasonXrayWasNotTaken: string | null;
-  xrayWasNotTakenFurtherDetails: string | null;
-  dateOfCxr: string | null;
+  reasonXrayWasNotTaken: string;
+  xrayWasNotTakenFurtherDetails: string;
   radiologicalOutcome: string;
-  radiologicalOutcomeNotes: string | null;
-  radiologicalFinding: string | null;
-  dateOfRadiologicalInterpretation: string | null;
-  sputumCollected: boolean;
-  reasonWhySputumNotRequired: string | null;
+  radiologicalOutcomeNotes: string;
   xrayResult: string;
   xrayResultDetail: string;
   xrayMinorFindings: string[];

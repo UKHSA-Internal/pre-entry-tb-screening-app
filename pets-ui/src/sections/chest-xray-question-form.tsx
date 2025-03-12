@@ -53,7 +53,7 @@ const ChestXrayQuestionForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.chestXrayTaken?.message ?? ""}
             formValue="chestXrayTaken"
-            defaultValue={chestXrayData.chestXrayTaken as string}
+            defaultValue={chestXrayData.chestXrayTaken}
             required="Select yes if the visa applicant has had a chest X-ray or no if they have not."
           />
         </div>

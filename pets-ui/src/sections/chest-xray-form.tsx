@@ -28,7 +28,7 @@ const FileUploadModule = (
     accept?: string;
     maxSize?: number;
     setFileState: Dispatch<SetStateAction<string | null>>;
-    setFileName: Dispatch<SetStateAction<string | null>>;
+    setFileName: Dispatch<SetStateAction<string>>;
   }>,
 ) => {
   return (
@@ -71,9 +71,9 @@ const ChestXrayForm = () => {
   const [PAFile, setPAFile] = useState<string | null>(null);
   const [ALFile, setALFile] = useState<string | null>(null);
   const [LDFile, setLDFile] = useState<string | null>(null);
-  const [PAFileName, setPAFileName] = useState<string | null>(null);
-  const [ALFileName, setALFileName] = useState<string | null>(null);
-  const [LDFileName, setLDFileName] = useState<string | null>(null);
+  const [PAFileName, setPAFileName] = useState<string>("");
+  const [ALFileName, setALFileName] = useState<string>("");
+  const [LDFileName, setLDFileName] = useState<string>("");
 
   const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
   const {
