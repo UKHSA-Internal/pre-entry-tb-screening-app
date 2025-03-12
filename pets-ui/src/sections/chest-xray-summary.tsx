@@ -1,23 +1,50 @@
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
+import { postChestXrayDetails } from "@/api/api";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import Summary, { SummaryElement } from "@/components/summary/summary";
 import { selectApplicant } from "@/redux/applicantSlice";
-import { selectChestXray } from "@/redux/chestXraySlice";
+import { selectApplication } from "@/redux/applicationSlice";
+import { selectChestXray, setChestXrayStatus } from "@/redux/chestXraySlice";
 import { useAppSelector } from "@/redux/hooks";
-import { ButtonType } from "@/utils/enums";
+import { ApplicationStatus, ButtonType } from "@/utils/enums";
 import { spreadArrayIfNotEmpty } from "@/utils/helpers";
 
 const ChestXraySummary = () => {
   const applicantData = useAppSelector(selectApplicant);
+  const applicationData = useAppSelector(selectApplication);
   const chestXrayData = useAppSelector(selectChestXray);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const handleSubmit = async () => {
+    try {
+      await postChestXrayDetails(applicationData.applicationId, {
+        chestXrayTaken: chestXrayData.chestXrayTaken,
+        posteroAnteriorXray: chestXrayData.posteroAnteriorXrayFileName,
+        apicalLordoticXray: chestXrayData.apicalLordoticXrayFileName,
+        lateralDecubitusXray: chestXrayData.lateralDecubitusXrayFileName,
+        xrayResult: chestXrayData.xrayResult,
+        xrayResultDetail: chestXrayData.xrayResultDetail,
+        xrayMinorFindings: chestXrayData.xrayMinorFindings,
+        xrayAssociatedMinorFindings: chestXrayData.xrayAssociatedMinorFindings,
+        xrayActiveTbFindings: chestXrayData.xrayActiveTbFindings,
+      });
+
+      dispatch(setChestXrayStatus(ApplicationStatus.COMPLETE));
+      navigate("/chest-xray-confirmation");
+    } catch (error) {
+      console.error(error);
+      navigate("/error");
+    }
+  };
 
   const xraySummaryData = [
     {
       key: "Select x-ray status",
-      value: chestXrayData.chestXrayTaken ? "Yes" : "No",
+      value: chestXrayData.chestXrayTaken,
       link: "/chest-xray-question#chestXrayTaken",
       hiddenLabel: "Chest X-ray Status",
     },
@@ -85,7 +112,7 @@ const ChestXraySummary = () => {
         type={ButtonType.DEFAULT}
         text="Save and continue"
         href="/chest-xray-confirmation"
-        handleClick={() => navigate("/chest-xray-confirmation")}
+        handleClick={handleSubmit}
       />
     </div>
   );
