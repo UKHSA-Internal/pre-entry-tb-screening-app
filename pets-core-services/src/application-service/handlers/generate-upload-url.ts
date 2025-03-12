@@ -1,4 +1,4 @@
-import { ChecksumAlgorithm, PutObjectCommand } from "@aws-sdk/client-s3";
+import { ChecksumAlgorithm, PutObjectCommand, ServerSideEncryption } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { z } from "zod";
 
@@ -44,7 +44,7 @@ export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
 
   const fileName = parsedBody.fileName;
 
-  // TODO: Move to clinic
+  // TODO: Move to clinic directory
   const objectkey = `${UPLOAD_CLOUDFRONT_PATH}/temp/${applicationId}/${fileName}`; // TODO: Document temp as well as the esbuild thingy
 
   const client = awsClients.s3Client;
@@ -55,6 +55,8 @@ export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
     IfNoneMatch: "*",
     ChecksumAlgorithm: ChecksumAlgorithm.CRC32,
     ChecksumCRC32: parsedBody.checksumCRC32,
+    SSEKMSKeyId: "arn:aws:kms:eu-west-2:108782068086:key/e9d62629-f651-4cfc-bab3-7b63563f2f82", // TODO: Change to Github secrets
+    ServerSideEncryption: ServerSideEncryption.aws_kms,
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
@@ -66,3 +68,10 @@ export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
 
   return createHttpResponse(200, { uploadUrl: domainUploadUrl });
 };
+
+/**
+ * // DEVOPS Notes
+ * - Don't sign request
+ * - Caching should be changed for upload
+ * - OAC behaviour should be different for frontend web browser
+ */
