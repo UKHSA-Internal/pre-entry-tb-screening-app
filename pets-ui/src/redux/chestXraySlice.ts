@@ -2,11 +2,11 @@ import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { ReceivedChestXrayDetailsType, ReduxChestXrayDetailsType } from "@/applicant";
-import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
+import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "@/utils/enums";
 
 const initialState: ReduxChestXrayDetailsType = {
   status: ApplicationStatus.INCOMPLETE,
-  chestXrayTaken: "",
+  chestXrayTaken: YesOrNo.NO,
   posteroAnteriorXrayFileName: "",
   posteroAnteriorXrayFile: "",
   apicalLordoticXrayFileName: "",
@@ -29,7 +29,7 @@ export const chestXraySlice = createSlice({
     setChestXrayStatus: (state, action: PayloadAction<ApplicationStatus>) => {
       state.status = action.payload;
     },
-    setChestXrayTaken: (state, action: PayloadAction<string>) => {
+    setChestXrayTaken: (state, action: PayloadAction<YesOrNo>) => {
       state.chestXrayTaken = action.payload;
     },
     setPosteroAnteriorXrayFileName: (state, action: PayloadAction<string>) => {
@@ -95,7 +95,7 @@ export const chestXraySlice = createSlice({
     },
     clearChestXrayDetails: (state) => {
       state.status = ApplicationStatus.INCOMPLETE;
-      state.chestXrayTaken = "";
+      state.chestXrayTaken = YesOrNo.NO;
       state.posteroAnteriorXrayFileName = "";
       state.apicalLordoticXrayFileName = "";
       state.lateralDecubitusXrayFileName = "";

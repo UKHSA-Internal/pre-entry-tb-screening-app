@@ -1,4 +1,4 @@
-import { ApplicationStatus, BackendApplicationStatus } from "./utils/enums";
+import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "./utils/enums";
 
 // Misc types
 type ApplicantSearchFormType = {
@@ -184,7 +184,7 @@ type PostedMedicalScreeningType = {
 // Chest X-ray types
 type ReduxChestXrayDetailsType = {
   status: ApplicationStatus;
-  chestXrayTaken: string;
+  chestXrayTaken: YesOrNo;
   posteroAnteriorXrayFileName: string;
   posteroAnteriorXrayFile: string | null;
   apicalLordoticXrayFileName: string;
@@ -201,7 +201,7 @@ type ReduxChestXrayDetailsType = {
 };
 
 type PostedChestXrayDetailsType = {
-  chestXrayTaken: string;
+  chestXrayTaken: YesOrNo;
   posteroAnteriorXray: string;
   apicalLordoticXray: string;
   lateralDecubitusXray: string;

@@ -18,3 +18,8 @@ export enum BackendApplicationStatus {
   INCOMPLETE = "incompleted",
   COMPLETE = "completed",
 }
+
+export enum YesOrNo {
+  YES = "Yes",
+  NO = "No",
+}

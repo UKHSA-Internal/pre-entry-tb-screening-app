@@ -11,7 +11,7 @@ import Radio from "@/components/radio/radio";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { selectChestXray, setChestXrayTaken } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
 
 const ChestXrayQuestionForm = () => {
   const dispatch = useAppDispatch();
@@ -28,7 +28,7 @@ const ChestXrayQuestionForm = () => {
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = (data) => {
     dispatch(setChestXrayTaken(data.chestXrayTaken));
 
-    if (data.chestXrayTaken === "Yes") {
+    if (data.chestXrayTaken === YesOrNo.YES) {
       navigate("/chest-xray-upload");
     } else {
       navigate("/chest-xray-not-taken");
