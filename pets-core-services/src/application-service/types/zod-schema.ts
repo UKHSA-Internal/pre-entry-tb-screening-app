@@ -221,8 +221,8 @@ export const DicomUploadUrlRequestSchema = z.object({
   fileName: z.string().openapi({
     description: "Name of file on S3",
   }),
-  checksumCRC32: z.string().openapi({
-    description: "CRC32 Checksum of file",
+  checksum: z.string().openapi({
+    description: "Checksum of file",
   }),
 });
 

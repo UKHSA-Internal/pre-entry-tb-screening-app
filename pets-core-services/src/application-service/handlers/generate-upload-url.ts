@@ -15,7 +15,7 @@ export type GenerateUploadEvent = PetsAPIGatewayProxyEvent & {
 };
 
 const IMAGE_BUCKET = assertEnvExists(process.env.IMAGE_BUCKET);
-const APP_DOMAIN = assertEnvExists(process.env.APP_DOMAIN); // TODO: CI pipeline thingy
+const APP_DOMAIN = assertEnvExists(process.env.APP_DOMAIN); // // TODO: App domain change to route53 Qs
 const UPLOAD_CLOUDFRONT_PATH = "upload";
 
 export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
@@ -53,8 +53,8 @@ export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
     Key: objectkey,
     ContentType: "application/octet-stream",
     IfNoneMatch: "*",
-    ChecksumAlgorithm: ChecksumAlgorithm.CRC32,
-    ChecksumCRC32: parsedBody.checksumCRC32, // TODO: Use sha 256
+    ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
+    ChecksumSHA256: parsedBody.checksum,
     SSEKMSKeyId: "arn:aws:kms:eu-west-2:108782068086:key/e9d62629-f651-4cfc-bab3-7b63563f2f82", // TODO: Change to Github secrets
     ServerSideEncryption: ServerSideEncryption.aws_kms,
   });
@@ -65,6 +65,8 @@ export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
     hoistableHeaders: new Set([
       "x-amz-server-side-encryption",
       "x-amz-server-side-encryption-aws-kms-key-id",
+      "x-amz-sdk-checksum-algorithm",
+      "x-amz-checksum-sha256",
     ]),
     unhoistableHeaders: new Set(["x-amz-checksum-sha256"]),
   });
