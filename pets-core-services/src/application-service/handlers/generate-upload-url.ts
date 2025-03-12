@@ -54,13 +54,20 @@ export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
     ContentType: "application/octet-stream",
     IfNoneMatch: "*",
     ChecksumAlgorithm: ChecksumAlgorithm.CRC32,
-    ChecksumCRC32: parsedBody.checksumCRC32,
+    ChecksumCRC32: parsedBody.checksumCRC32, // TODO: Use sha 256
     SSEKMSKeyId: "arn:aws:kms:eu-west-2:108782068086:key/e9d62629-f651-4cfc-bab3-7b63563f2f82", // TODO: Change to Github secrets
     ServerSideEncryption: ServerSideEncryption.aws_kms,
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-  const s3EndpointUploadUrl = await getSignedUrl(client, command, { expiresIn: 5 * 60 * 60 }); // TODO: Change to 2 minutes
+  const s3EndpointUploadUrl = await getSignedUrl(client, command, {
+    expiresIn: 5 * 60 * 60, // TODO: Change to 2 minutes
+    hoistableHeaders: new Set([
+      "x-amz-server-side-encryption",
+      "x-amz-server-side-encryption-aws-kms-key-id",
+    ]),
+    unhoistableHeaders: new Set(["x-amz-checksum-sha256"]),
+  });
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const parsedUrl = new URL(s3EndpointUploadUrl);
