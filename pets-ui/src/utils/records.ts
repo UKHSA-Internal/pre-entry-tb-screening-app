@@ -172,6 +172,8 @@ const visaOptions = [
 export {
   attributeToComponentId,
   countryList,
+  dateEntryMustBeInTheFuture,
+  dateEntryMustBeInThePast,
   dateEntryNames,
   dateValidationMessages,
   formRegex,
@@ -181,6 +183,4 @@ export {
   shortNumericStrings,
   validMonthValues,
   visaOptions,
-  dateEntryMustBeInThePast,
-  dateEntryMustBeInTheFuture,
 };

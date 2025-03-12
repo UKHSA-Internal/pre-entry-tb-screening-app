@@ -124,11 +124,11 @@ const validateDate = (value: DateType, fieldName: string) => {
 };
 
 export {
-  isValidDate,
   hasInvalidCharacters,
+  isDateInTheFuture,
+  isDateInThePast,
+  isValidDate,
+  missingFieldsMessage,
   standardiseDayOrMonth,
   validateDate,
-  isDateInThePast,
-  isDateInTheFuture,
-  missingFieldsMessage,
 };
