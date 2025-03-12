@@ -144,7 +144,6 @@ type ReduxChestXrayDetailsType = {
   lateralDecubitusXrayFile: string | null;
   reasonXrayWasNotTaken: string | null;
   xrayWasNotTakenFurtherDetails: string | null;
-  reasonXrayNotTakenDetail: string | null;
   dateOfCxr: string | null;
   radiologicalOutcome: string;
   radiologicalOutcomeNotes: string | null;

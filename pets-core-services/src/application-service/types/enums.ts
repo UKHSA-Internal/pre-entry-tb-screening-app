@@ -43,3 +43,15 @@ export enum YesOrNo {
   Yes = "Yes",
   No = "No",
 }
+
+export enum ChestXRayNotTakenReason {
+  Child = "Child",
+  Pregnant = "Pregnant",
+  Other = "Other",
+}
+
+export enum ChestXRayResult {
+  Normal = "Chest X-ray normal",
+  NonTbAbnormal = "Non-TB abnormality",
+  OldActive = "Old or active TB",
+}
