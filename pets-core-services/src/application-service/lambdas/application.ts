@@ -5,6 +5,7 @@ import { z } from "zod";
 import { boostrapLambdaRoutes } from "../../shared/http";
 import { PetsAPIGatewayProxyEvent, PetsRoute } from "../../shared/types";
 import { createApplicationHandler } from "../handlers/create-application";
+import { generateUploadUrlHandler } from "../handlers/generate-upload-url";
 import { getApplicationHandler } from "../handlers/get-application";
 import { saveChestXRayHandler } from "../handlers/save-chest-ray";
 import { saveMedicalScreeningHandler } from "../handlers/save-medical-screening";
@@ -17,6 +18,8 @@ import {
   ChestXRayRequestSchema,
   ChestXRayResponseSchema,
   CreateApplicationResponseSchema,
+  DicomUploadUrlRequestSchema,
+  DicomUploadUrlResponseSchema,
   MedicalScreeningRequestSchema,
   MedicalScreeningResponseSchema,
   TbCertificateRequestSchema,
@@ -98,6 +101,20 @@ export const routes: PetsRoute[] = [
     }),
     responseSchema: TbCertificateResponseSchema.openapi({
       description: "Saved TB Certificate Details",
+    }),
+  },
+  {
+    method: "PUT",
+    path: "/application/{applicationId}/generate-dicom-upload-url",
+    handler: middy<PetsAPIGatewayProxyEvent>()
+      .before(setApplicationIdContext)
+      .before(validateApplication)
+      .handler(generateUploadUrlHandler),
+    requestBodySchema: DicomUploadUrlRequestSchema.openapi({
+      description: "Details of the Dicom to be uploaded",
+    }),
+    responseSchema: DicomUploadUrlResponseSchema.openapi({
+      description: "The upload url",
     }),
   },
 ];
