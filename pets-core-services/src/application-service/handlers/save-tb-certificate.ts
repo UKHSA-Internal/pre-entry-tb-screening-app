@@ -4,20 +4,19 @@ import { z } from "zod";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { TravelInformation } from "../models/travel-information";
-import { TravelInformationRequestSchema } from "../types/zod-schema";
+import { TbCertificate } from "../models/tb-certificate";
+import { TbCertificateRequestSchema } from "../types/zod-schema";
 
-export type TravelInformationRequestSchema = z.infer<typeof TravelInformationRequestSchema>;
-
-export type SaveTravelInformationEvent = PetsAPIGatewayProxyEvent & {
-  parsedBody?: TravelInformationRequestSchema;
+export type TbCertificateRequestSchema = z.infer<typeof TbCertificateRequestSchema>;
+export type SaveTbCertificateEvent = PetsAPIGatewayProxyEvent & {
+  parsedBody?: TbCertificateRequestSchema;
 };
 
-export const saveTravelInformationHandler = async (event: SaveTravelInformationEvent) => {
+export const saveTbCertificateHandler = async (event: SaveTbCertificateEvent) => {
   try {
     const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
 
-    logger.info({ applicationId }, "Save Travel Information handler triggered");
+    logger.info({ applicationId }, "Save TB Certificate handler triggered");
 
     const { parsedBody } = event;
 
@@ -25,29 +24,29 @@ export const saveTravelInformationHandler = async (event: SaveTravelInformationE
       logger.error("Event missing parsed body");
 
       return createHttpResponse(500, {
-        message: "Internal Server Error: Travel Information Request not parsed correctly",
+        message: "Internal Server Error: TB Certificate Request not parsed correctly",
       });
     }
 
-    let travelInformation: TravelInformation;
+    let tbCertificate: TbCertificate;
     try {
       const { createdBy } = event.requestContext.authorizer;
-      travelInformation = await TravelInformation.createTravelInformation({
+      tbCertificate = await TbCertificate.createTbCertificate({
         ...parsedBody,
         createdBy,
         applicationId,
       });
     } catch (error) {
       if (error instanceof ConditionalCheckFailedException)
-        return createHttpResponse(400, { message: "Travel Details already saved" });
+        return createHttpResponse(400, { message: "TB Certificate already saved" });
       throw error;
     }
 
     return createHttpResponse(200, {
-      ...travelInformation.toJson(),
+      ...tbCertificate.toJson(),
     });
   } catch (err) {
-    logger.error(err, "Error saving travel information");
+    logger.error(err, "Error saving TB Certificate information");
     return createHttpResponse(500, { message: "Something went wrong" });
   }
 };
