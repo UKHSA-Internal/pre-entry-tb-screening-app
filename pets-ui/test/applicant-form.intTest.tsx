@@ -73,10 +73,10 @@ describe("ApplicantForm", () => {
     await user.type(screen.getByTestId("passport-number"), "1234");
     fireEvent.change(screen.getAllByRole("combobox")[1], { target: { value: "FIN" } });
     await user.type(screen.getByTestId("passport-issue-date-day"), "2");
-    await user.type(screen.getByTestId("passport-issue-date-month"), "feb");
+    await user.type(screen.getByTestId("passport-issue-date-month"), "2");
     await user.type(screen.getByTestId("passport-issue-date-year"), "1902");
     await user.type(screen.getByTestId("passport-expiry-date-day"), "3");
-    await user.type(screen.getByTestId("passport-expiry-date-month"), "march");
+    await user.type(screen.getByTestId("passport-expiry-date-month"), "3");
     await user.type(screen.getByTestId("passport-expiry-date-year"), "2053");
     await user.type(screen.getByTestId("address-1"), "The Bell Tower");
     await user.type(screen.getByTestId("address-2"), "Hallgrimskirkja");
@@ -96,10 +96,10 @@ describe("ApplicantForm", () => {
     expect(screen.getByTestId("passport-number")).toHaveValue("1234");
     expect(screen.getAllByRole("combobox")[1]).toHaveValue("FIN");
     expect(screen.getByTestId("passport-issue-date-day")).toHaveValue("2");
-    expect(screen.getByTestId("passport-issue-date-month")).toHaveValue("feb");
+    expect(screen.getByTestId("passport-issue-date-month")).toHaveValue("2");
     expect(screen.getByTestId("passport-issue-date-year")).toHaveValue("1902");
     expect(screen.getByTestId("passport-expiry-date-day")).toHaveValue("3");
-    expect(screen.getByTestId("passport-expiry-date-month")).toHaveValue("march");
+    expect(screen.getByTestId("passport-expiry-date-month")).toHaveValue("3");
     expect(screen.getByTestId("passport-expiry-date-year")).toHaveValue("2053");
     expect(screen.getByTestId("address-1")).toHaveValue("The Bell Tower");
     expect(screen.getByTestId("address-2")).toHaveValue("Hallgrimskirkja");
@@ -119,8 +119,8 @@ describe("ApplicantForm", () => {
       countryOfNationality: "NOR",
       passportNumber: "1234",
       countryOfIssue: "FIN",
-      passportIssueDate: { day: "2", month: "feb", year: "1902" },
-      passportExpiryDate: { day: "3", month: "march", year: "2053" },
+      passportIssueDate: { day: "2", month: "2", year: "1902" },
+      passportExpiryDate: { day: "3", month: "3", year: "2053" },
       applicantHomeAddress1: "The Bell Tower",
       applicantHomeAddress2: "Hallgrimskirkja",
       applicantHomeAddress3: "Hallgrimstorg 1",
