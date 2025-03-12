@@ -1,4 +1,12 @@
-import { standardiseDayOrMonth, validateDate } from "./helpers";
+import {
+  hasInvalidCharacters,
+  isDateInTheFuture,
+  isDateInThePast,
+  missingFieldsMessage,
+  standardiseDayOrMonth,
+  validateDate,
+} from "./helpers";
+import { validMonthValues } from "./records";
 
 describe("standardiseDayOrMonth function", () => {
   test.each([
@@ -198,6 +206,93 @@ describe("validateDate function", () => {
 
     dateTestCases.forEach(({ value, field, expected }) => {
       expect(validateDate(value, field)).toContain(expected);
+    });
+  });
+});
+
+describe("isDateInTheFuture function", () => {
+  it("should return false if date is in the past", () => {
+    expect(isDateInTheFuture("04", "02", "2000")).toBeFalsy();
+  });
+  it("should return true if date is in the future", () => {
+    expect(isDateInTheFuture("04", "02", "3000")).toBeTruthy();
+  });
+});
+
+describe("isDateInThePast function", () => {
+  it("should return false if date is in the future", () => {
+    expect(isDateInThePast("04", "02", "3000")).toBeFalsy();
+  });
+  it("should return true if date is in the past", () => {
+    expect(isDateInThePast("04", "02", "2000")).toBeTruthy();
+  });
+  it("should return true if date provided is today", () => {
+    const today = new Date();
+    const day = today.getDay().toString();
+    const month = today.getMonth().toString();
+    const year = today.getFullYear().toString();
+    expect(isDateInThePast(day, month, year)).toBeTruthy();
+  });
+});
+
+describe("hasInvalidCharacters function", () => {
+  it("should return false if date is valid", () => {
+    expect(hasInvalidCharacters("05", "02", "2025", validMonthValues)).toBeFalsy();
+  });
+  it("should return true if date has invalid characters", () => {
+    expect(hasInvalidCharacters("$$", "02", "3000", validMonthValues)).toBeTruthy();
+    expect(hasInvalidCharacters("02", "$$", "3000", validMonthValues)).toBeTruthy();
+    expect(hasInvalidCharacters("02", "02", "$$", validMonthValues)).toBeTruthy();
+  });
+  it("should return true if date has invalid month", () => {
+    expect(hasInvalidCharacters("01", "22", "3000", validMonthValues)).toBeTruthy();
+  });
+});
+
+describe("missingFieldsMessage function", () => {
+  const testCases = [
+    { fieldName: "dateOfBirth", missing: ["day"], expected: "Date of birth must include a day" },
+    {
+      fieldName: "dateOfBirth",
+      missing: ["month"],
+      expected: "Date of birth must include a month",
+    },
+    { fieldName: "dateOfBirth", missing: ["year"], expected: "Date of birth must include a year" },
+    {
+      fieldName: "dateOfBirth",
+      missing: ["day", "year"],
+      expected: "Date of birth must include a day and year",
+    },
+    {
+      fieldName: "dateOfBirth",
+      missing: ["month", "year"],
+      expected: "Date of birth must include a month and year",
+    },
+    {
+      fieldName: "dateOfBirth",
+      missing: ["day", "month"],
+      expected: "Date of birth must include a day and month",
+    },
+    {
+      fieldName: "passportIssueDate",
+      missing: ["day"],
+      expected: "Passport issue date must include a day",
+    },
+    {
+      fieldName: "passportExpiryDate",
+      missing: ["day"],
+      expected: "Passport expiry date must include a day",
+    },
+    {
+      fieldName: "tbCertificateDate",
+      missing: ["day"],
+      expected: "TB clearance certificate date must include a day",
+    },
+  ];
+
+  testCases.forEach(({ fieldName, missing, expected }) => {
+    it(`should return "${expected}" for fieldName: "${fieldName}" with missing: ${missing.join(", ")}`, () => {
+      expect(missingFieldsMessage(fieldName, missing)).toBe(expected);
     });
   });
 });

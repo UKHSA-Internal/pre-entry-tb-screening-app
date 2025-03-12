@@ -60,24 +60,28 @@ const dateValidationMessages: Record<string, Record<string, string>> = {
     invalidCharError:
       "Passport issue day and year must contain only numbers. Passport issue month must be a number, or the name of the month, or the first three letters of the month",
     invalidDateError: "Passport issue date must be a valid date",
+    dateMustBeInPastError: "Passport issue date must be today or in the past",
   },
   passportExpiryDate: {
     emptyFieldError: "Passport expiry date must include a day, month and year",
     invalidCharError:
       "Passport expiry day and year must contain only numbers. Passport expiry month must be a number, or the name of the month, or the first three letters of the month",
     invalidDateError: "Passport expiry date must be a valid date",
+    dateMustBeInFutureError: "Passport expiry date must be in the future",
   },
   dateOfBirth: {
     emptyFieldError: "Date of birth must include a day, month and year",
     invalidCharError:
       "Date of birth day and year must contain only numbers. Date of birth month must be a number, or the name of the month, or the first three letters of the month",
     invalidDateError: "Date of birth date must be a valid date",
+    dateMustBeInPastError: "Date of birth date must in the past",
   },
   tbCertificateDate: {
     emptyFieldError: "TB clearance certificate date must include a day, month and year",
     invalidCharError:
       "TB clearance certificate day and year must contain only numbers. TB clearance certificate month must be a number, or the name of the month, or the first three letters of the month",
     invalidDateError: "TB clearance certificate date must be a valid date",
+    dateMustBeInPastError: "TB clearance certificate date must be today or in the past",
   },
 };
 
@@ -126,6 +130,14 @@ const dateEntryNames: Record<string, string> = {
   tbCertificateDate: "TB clearance certificate date",
 };
 
+const dateEntryMustBeInThePast: string[] = [
+  "dateOfBirth",
+  "passportIssueDate",
+  "tbCertificateDate",
+];
+
+const dateEntryMustBeInTheFuture: string[] = ["passportExpiryDate"];
+
 const visaOptions = [
   {
     value: "Family Reunion",
@@ -169,4 +181,6 @@ export {
   shortNumericStrings,
   validMonthValues,
   visaOptions,
+  dateEntryMustBeInThePast,
+  dateEntryMustBeInTheFuture,
 };

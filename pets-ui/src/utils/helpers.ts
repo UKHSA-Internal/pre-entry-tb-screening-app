@@ -1,6 +1,8 @@
 import { DateType } from "@/components/dateTextInput/dateTextInput";
 
 import {
+  dateEntryMustBeInTheFuture,
+  dateEntryMustBeInThePast,
   dateEntryNames,
   dateValidationMessages,
   longMonthValues,
@@ -67,6 +69,26 @@ const hasInvalidCharacters = (day: string, month: string, year: string, validMon
   return /\D/.test(day) || /\D/.test(year) || !validMonths.includes(month.toLowerCase());
 };
 
+const isDateInThePast = (day: string, month: string, year: string): boolean => {
+  const inputDate = new Date(Number(year), Number(month) - 1, Number(day));
+  const today = new Date();
+
+  today.setHours(0, 0, 0, 0);
+  inputDate.setHours(0, 0, 0, 0);
+
+  return inputDate <= today;
+};
+
+const isDateInTheFuture = (day: string, month: string, year: string): boolean => {
+  const inputDate = new Date(Number(year), Number(month) - 1, Number(day));
+  const today = new Date();
+
+  today.setHours(0, 0, 0, 0);
+  inputDate.setHours(0, 0, 0, 0);
+
+  return inputDate > today;
+};
+
 const validateDate = (value: DateType, fieldName: string) => {
   const { day, month, year } = value;
   const missingFields: Record<string, boolean> = { day: !day, month: !month, year: !year };
@@ -88,7 +110,25 @@ const validateDate = (value: DateType, fieldName: string) => {
     return dateValidationMessages[fieldName].invalidDateError;
   }
 
+  //Past Check
+  if (dateEntryMustBeInThePast.includes(fieldName) && !isDateInThePast(day, month, year)) {
+    return dateValidationMessages[fieldName].dateMustBeInPastError;
+  }
+
+  //Future Check
+  if (dateEntryMustBeInTheFuture.includes(fieldName) && !isDateInTheFuture(day, month, year)) {
+    return dateValidationMessages[fieldName].dateMustBeInFutureError;
+  }
+
   return true;
 };
 
-export { isValidDate, standardiseDayOrMonth, validateDate };
+export {
+  isValidDate,
+  hasInvalidCharacters,
+  standardiseDayOrMonth,
+  validateDate,
+  isDateInThePast,
+  isDateInTheFuture,
+  missingFieldsMessage,
+};
