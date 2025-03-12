@@ -185,7 +185,6 @@ type ReduxChestXrayDetailsType = {
   lateralDecubitusXrayFile: string | null;
   reasonXrayWasNotTaken: string | null;
   xrayWasNotTakenFurtherDetails: string | null;
-  reasonXrayNotTakenDetail: string | null;
   dateOfCxr: string | null;
   radiologicalOutcome: string;
   radiologicalOutcomeNotes: string | null;
@@ -223,15 +222,10 @@ type ReduxSputumCollectionDetailsType = {
   drugResistanceDetails: string | null;
 };
 
-// Certificatation types
-type ReduxCertificationDetailsType = {
-  tbSuspected: boolean | null;
-  tbSuspectedBasedOn: string | null;
-  clearanceCertificateIssued: string | null;
-  reasonForNonIssue: string | null;
-  reasonForNonIssue2: string | null;
-  physiciansComments: string | null;
-  issueDateofMedicalCertificate: string | null;
-  clearanceCertificateNumber: string | null;
-  ApplicationStatus: string;
+// TB Declaration certificate type
+type ReduxTbCertificateDeclarationType = {
+  tbClearanceIssued: string;
+  physicianComments: string;
+  tbCertificateDate: DateType;
+  tbCertificateNumber: string;
 };

@@ -3,28 +3,26 @@ import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
-import { VisaOptions } from "../types/enums";
-import { ITravelInformation, TravelInformation } from "./travel-information";
+import { YesOrNo } from "../types/enums";
+import { NewTbCertificateDetails, TbCertificate } from "./tb-certificate";
 
-describe("Tests for Travel Information Model", () => {
+describe("Tests for TB Certificate Model", () => {
   const ddbMock = mockClient(awsClients.dynamoDBDocClient);
 
   beforeEach(() => {
     ddbMock.reset();
   });
 
-  const newTravelInformation: Omit<ITravelInformation, "dateCreated" | "status"> = {
+  const newTbCertificate: NewTbCertificateDetails = {
     applicationId: "test-application-id",
-    visaCategory: VisaOptions.Students,
-    ukAddressLine1: "first line",
-    ukAddressTownOrCity: "uk address town",
-    ukAddressPostcode: "uk address postcode",
-    ukMobileNumber: "uk mobile number",
-    ukEmailAddress: "uk email address",
-    createdBy: "test-travel-information-creator",
+    certificateIssued: YesOrNo.Yes,
+    certificateComments: "comments",
+    certificateIssueDate: "2025-01-21",
+    certificateNumber: "123456",
+    createdBy: "test-tb-certificate-creator",
   };
 
-  test("Creating new travel information", async () => {
+  test("Creating new tb certificate", async () => {
     // Arrange
     ddbMock.on(PutCommand);
     vi.useFakeTimers();
@@ -32,21 +30,23 @@ describe("Tests for Travel Information Model", () => {
     vi.setSystemTime(expectedDateTime);
 
     // Act
-    const travelInformation = await TravelInformation.createTravelInformation(newTravelInformation);
+    const tbCertificate = await TbCertificate.createTbCertificate(newTbCertificate);
 
     // Assert
-    expect(travelInformation).toMatchObject({
-      ...newTravelInformation,
+    expect(tbCertificate).toMatchObject({
+      ...newTbCertificate,
       dateCreated: new Date(expectedDateTime),
+      certificateIssueDate: new Date("2025-01-21"),
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(ddbMock.commandCalls(PutCommand)[0].firstArg.input).toMatchObject({
       TableName: "test-application-details",
       Item: {
-        ...newTravelInformation,
+        ...newTbCertificate,
+        certificateIssueDate: "2025-01-21T00:00:00.000Z",
         pk: "APPLICATION#test-application-id",
-        sk: "APPLICATION#TRAVEL#INFORMATION",
+        sk: "APPLICATION#TB#CERTIFICATE",
       },
     });
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -55,26 +55,25 @@ describe("Tests for Travel Information Model", () => {
     });
   });
 
-  test("Getting travel information by application ID", async () => {
+  test("Getting tb certificate by application ID", async () => {
     const dateCreated = "2025-02-07";
     ddbMock.on(GetCommand).resolves({
       Item: {
-        ...newTravelInformation,
+        ...newTbCertificate,
         dateCreated,
         pk: "APPLICATION#test-application-id",
-        sk: "APPLICATION#TRAVEL#INFORMATION",
+        sk: "APPLICATION#TB#CERTIFICATE",
       },
     });
 
     // Act
-    const travelInformation = await TravelInformation.getByApplicationId(
-      newTravelInformation.applicationId,
-    );
+    const tbCertificate = await TbCertificate.getByApplicationId(newTbCertificate.applicationId);
 
     // Assert
-    expect(travelInformation).toMatchObject({
-      ...newTravelInformation,
+    expect(tbCertificate).toMatchObject({
+      ...newTbCertificate,
       dateCreated: new Date("2025-02-07"),
+      certificateIssueDate: new Date("2025-01-21"),
     });
   });
 });
