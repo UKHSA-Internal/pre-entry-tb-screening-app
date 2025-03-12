@@ -1,4 +1,4 @@
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { ChecksumAlgorithm, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { z } from "zod";
 
@@ -44,6 +44,7 @@ export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
 
   const fileName = parsedBody.fileName;
 
+  // TODO: Move to clinic
   const objectkey = `${UPLOAD_CLOUDFRONT_PATH}/temp/${applicationId}/${fileName}`; // TODO: Document temp as well as the esbuild thingy
 
   const client = awsClients.s3Client;
@@ -52,10 +53,11 @@ export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
     Key: objectkey,
     ContentType: "application/octet-stream",
     IfNoneMatch: "*",
+    ChecksumAlgorithm: ChecksumAlgorithm.CRC32,
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-  const s3EndpointUploadUrl = await getSignedUrl(client, command, { expiresIn: 120 });
+  const s3EndpointUploadUrl = await getSignedUrl(client, command, { expiresIn: 5 * 60 * 60 }); // TODO: Change to 2 minutes
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const parsedUrl = new URL(s3EndpointUploadUrl);

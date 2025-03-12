@@ -190,6 +190,9 @@ importers:
       axios:
         specifier: ^1.7.9
         version: 1.7.9
+      crc-32:
+        specifier: ^1.2.2
+        version: 1.2.2
       govuk-frontend:
         specifier: ^5.7.1
         version: 5.7.1
@@ -2547,6 +2550,11 @@ packages:
 
   core-util-is@1.0.2:
     resolution: {integrity: sha512-3lqz5YjWTYnW6dlDa5TLaTCcShfar1e40rmcJVwCBJC6mWlFuj0eCHIElmG1g5kyuJ/GD+8Wn4FFCcz4gJPfaQ==}
+
+  crc-32@1.2.2:
+    resolution: {integrity: sha512-ROmzCKrTnOwybPcJApAA6WBWij23HVfGVNKqqrZpuyZOHqK2CwHSvpGuyt/UNNvaIjEd8X5IFGp4Mh+Ie1IHJQ==}
+    engines: {node: '>=0.8'}
+    hasBin: true
 
   create-require@1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
@@ -8314,6 +8322,8 @@ snapshots:
   core-js-pure@3.40.0: {}
 
   core-util-is@1.0.2: {}
+
+  crc-32@1.2.2: {}
 
   create-require@1.1.1: {}
 
