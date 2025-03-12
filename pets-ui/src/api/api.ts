@@ -4,6 +4,7 @@ import {
   ApplicantSearchFormType,
   ApplicationIdAndDateCreatedType,
   PostedApplicantDetailsType,
+  PostedChestXrayDetailsType,
   PostedMedicalScreeningType,
   PostedTravelDetailsType,
   ReceivedApplicantDetailsType,
@@ -82,5 +83,13 @@ export const postMedicalDetails = async (
     `/application/${applicationId}/medical-screening`,
     medicalScreeningDetails,
   );
+  return { status: result.status, statusText: result.statusText };
+};
+
+export const postChestXrayDetails = async (
+  applicationId: string,
+  chestXrayDetails: PostedChestXrayDetailsType,
+) => {
+  const result = await petsApi.post(`/application/${applicationId}/chest-xray`, chestXrayDetails);
   return { status: result.status, statusText: result.statusText };
 };

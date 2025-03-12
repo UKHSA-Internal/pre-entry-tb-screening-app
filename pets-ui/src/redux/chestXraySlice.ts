@@ -1,8 +1,8 @@
 import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ReduxChestXrayDetailsType } from "@/applicant";
-import { ApplicationStatus } from "@/utils/enums";
+import { ReceivedChestXrayDetailsType, ReduxChestXrayDetailsType } from "@/applicant";
+import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
 
 const initialState: ReduxChestXrayDetailsType = {
   status: ApplicationStatus.INCOMPLETE,
@@ -33,6 +33,9 @@ export const chestXraySlice = createSlice({
   name: "chestXrayDetails",
   initialState,
   reducers: {
+    setChestXrayStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+      state.status = action.payload;
+    },
     setChestXrayTaken: (state, action: PayloadAction<boolean | string>) => {
       state.chestXrayTaken = action.payload;
     },
@@ -75,7 +78,30 @@ export const chestXraySlice = createSlice({
     setXrayWasNotTakenFurtherDetails: (state, action: PayloadAction<string | null>) => {
       state.xrayWasNotTakenFurtherDetails = action.payload;
     },
+    setChestXrayDetails: (state, action: PayloadAction<ReduxChestXrayDetailsType>) => {
+      state.chestXrayTaken = action.payload.chestXrayTaken;
+      state.posteroAnteriorXrayFileName = action.payload.posteroAnteriorXrayFileName;
+      state.apicalLordoticXrayFileName = action.payload.apicalLordoticXrayFileName;
+      state.lateralDecubitusXrayFileName = action.payload.lateralDecubitusXrayFileName;
+      state.posteroAnteriorXrayFile = action.payload.posteroAnteriorXrayFile;
+      state.apicalLordoticXrayFile = action.payload.apicalLordoticXrayFile;
+      state.lateralDecubitusXrayFile = action.payload.lateralDecubitusXrayFile;
+      state.reasonXrayWasNotTaken = action.payload.reasonXrayWasNotTaken;
+      state.xrayWasNotTakenFurtherDetails = action.payload.xrayWasNotTakenFurtherDetails;
+      state.xrayResult = action.payload.xrayResult;
+      state.xrayResultDetail = action.payload.xrayResultDetail;
+      state.xrayMinorFindings = action.payload.xrayMinorFindings
+        ? [...action.payload.xrayMinorFindings]
+        : [];
+      state.xrayAssociatedMinorFindings = action.payload.xrayAssociatedMinorFindings
+        ? [...action.payload.xrayAssociatedMinorFindings]
+        : [];
+      state.xrayActiveTbFindings = action.payload.xrayActiveTbFindings
+        ? [...action.payload.xrayActiveTbFindings]
+        : [];
+    },
     clearChestXrayDetails: (state) => {
+      state.status = ApplicationStatus.INCOMPLETE;
       state.chestXrayTaken = false;
       state.posteroAnteriorXrayFileName = "";
       state.apicalLordoticXrayFileName = "";
@@ -91,10 +117,32 @@ export const chestXraySlice = createSlice({
       state.xrayAssociatedMinorFindings = [];
       state.xrayActiveTbFindings = [];
     },
+    setChestXrayFromApiResponse: (state, action: PayloadAction<ReceivedChestXrayDetailsType>) => {
+      state.status =
+        action.payload.status == BackendApplicationStatus.COMPLETE
+          ? ApplicationStatus.COMPLETE
+          : ApplicationStatus.INCOMPLETE;
+      state.chestXrayTaken = action.payload.chestXrayTaken;
+      state.posteroAnteriorXrayFileName = action.payload.posteroAnteriorXray;
+      state.apicalLordoticXrayFileName = action.payload.apicalLordoticXray;
+      state.lateralDecubitusXrayFileName = action.payload.lateralDecubitusXray;
+      state.xrayResult = action.payload.xrayResult;
+      state.xrayResultDetail = action.payload.xrayResultDetail;
+      state.xrayMinorFindings = action.payload.xrayMinorFindings
+        ? [...action.payload.xrayMinorFindings]
+        : [];
+      state.xrayAssociatedMinorFindings = action.payload.xrayAssociatedMinorFindings
+        ? [...action.payload.xrayAssociatedMinorFindings]
+        : [];
+      state.xrayActiveTbFindings = action.payload.xrayActiveTbFindings
+        ? [...action.payload.xrayActiveTbFindings]
+        : [];
+    },
   },
 });
 
 export const {
+  setChestXrayStatus,
   setChestXrayTaken,
   setPosteroAnteriorXrayFileName,
   setApicalLordoticXrayFileName,
@@ -110,6 +158,7 @@ export const {
   setXrayAssociatedMinorFindings,
   setXrayActiveTbFindings,
   clearChestXrayDetails,
+  setChestXrayFromApiResponse,
 } = chestXraySlice.actions;
 
 export const chestXrayReducer = chestXraySlice.reducer;
