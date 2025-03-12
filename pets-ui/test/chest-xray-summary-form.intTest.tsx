@@ -6,6 +6,7 @@ import { Mock } from "vitest";
 
 import { ReduxChestXrayDetailsType } from "@/applicant";
 import ChestXraySummaryPage from "@/pages/chest-xray-summary";
+import { ApplicationStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -18,6 +19,7 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 });
 
 const chestXrayTakenState: ReduxChestXrayDetailsType = {
+  status: ApplicationStatus.INCOMPLETE,
   chestXrayTaken: true,
   posteroAnteriorXrayFileName: "PA Example FileName",
   posteroAnteriorXrayFile: "PA Example File",
@@ -42,6 +44,7 @@ const chestXrayTakenState: ReduxChestXrayDetailsType = {
 };
 
 const chestXrayNotTakenState: ReduxChestXrayDetailsType = {
+  status: ApplicationStatus.INCOMPLETE,
   chestXrayTaken: false,
   posteroAnteriorXrayFileName: "",
   posteroAnteriorXrayFile: "",

@@ -2,8 +2,10 @@ import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { ReduxChestXrayDetailsType } from "@/applicant";
+import { ApplicationStatus } from "@/utils/enums";
 
 const initialState: ReduxChestXrayDetailsType = {
+  status: ApplicationStatus.INCOMPLETE,
   chestXrayTaken: false,
   posteroAnteriorXrayFileName: "",
   posteroAnteriorXrayFile: "",

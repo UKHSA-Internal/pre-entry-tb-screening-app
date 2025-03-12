@@ -176,6 +176,7 @@ type PostedMedicalScreeningType = {
 
 // Chest X-ray types
 type ReduxChestXrayDetailsType = {
+  status: ApplicationStatus;
   chestXrayTaken: boolean | string;
   posteroAnteriorXrayFileName: string | null;
   posteroAnteriorXrayFile: string | null;
