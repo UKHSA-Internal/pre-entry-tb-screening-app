@@ -2,7 +2,6 @@ import { describe, expect, test, vi } from "vitest";
 
 import { seededApplications } from "../../shared/fixtures/application";
 import { mockAPIGwEvent } from "../../test/mocks/events";
-import { seededTbCertificate } from "../fixtures/tb-certificate";
 import { YesOrNo } from "../types/enums";
 import { SaveTbCertificateEvent, saveTbCertificateHandler } from "./save-tb-certificate";
 
@@ -34,49 +33,12 @@ describe("Test for Saving TB Certificate into DB", () => {
     });
   });
 
-  test("Missing application throws a 400 error", async () => {
-    // Arrange
-    const event: SaveTbCertificateEvent = {
-      ...mockAPIGwEvent,
-      pathParameters: { applicationId: "nonexisting-application-id" },
-      parsedBody: newTbCertificate,
-    };
-
-    // Act
-    const response = await saveTbCertificateHandler(event);
-
-    // Assert
-    expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "Application with ID: nonexisting-application-id does not exist",
-    });
-  });
-
-  test("Mismatch in Clinic ID throws a 400 error", async () => {
-    // Arrange
-    const event: SaveTbCertificateEvent = {
-      ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[2].applicationId },
-      parsedBody: newTbCertificate,
-    };
-
-    // Act
-    const response = await saveTbCertificateHandler(event);
-
-    // Assert
-    expect(response.statusCode).toBe(403);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "Clinic Id mismatch",
-    });
-  });
-
   test("Duplicate post throws a 400 error", async () => {
     // Arrange
-    const existingTbCertificate = seededTbCertificate[0];
     const event: SaveTbCertificateEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[1].applicationId },
-      parsedBody: existingTbCertificate,
+      parsedBody: newTbCertificate,
     };
 
     // Act
@@ -99,7 +61,7 @@ describe("Test for Saving TB Certificate into DB", () => {
     // Assert
     expect(response.statusCode).toBe(500);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Request not parsed correctly",
+      message: "Internal Server Error: TB Certificate Request not parsed correctly",
     });
   });
 

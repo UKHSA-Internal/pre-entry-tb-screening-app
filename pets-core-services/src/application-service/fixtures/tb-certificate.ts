@@ -1,8 +1,8 @@
 import { seededApplications } from "../../shared/fixtures/application";
-import { TbCertificateDetails } from "../models/tb-certificate";
+import { NewTbCertificateDetails } from "../models/tb-certificate";
 import { YesOrNo } from "../types/enums";
 
-export const seededTbCertificate: Omit<TbCertificateDetails, "dateCreated" | "status">[] = [
+export const seededTbCertificate: NewTbCertificateDetails[] = [
   {
     applicationId: seededApplications[1].applicationId,
     certificateIssued: YesOrNo.Yes,

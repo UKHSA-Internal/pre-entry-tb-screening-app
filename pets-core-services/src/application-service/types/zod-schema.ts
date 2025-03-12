@@ -3,6 +3,8 @@ import { z } from "zod";
 
 import { TaskStatus } from "../../shared/types/enum";
 import {
+  ChestXRayNotTakenReason,
+  ChestXRayResult,
   HistoryOfConditionsUnder11,
   MenstrualPeriods,
   PregnancyStatus,
@@ -139,11 +141,78 @@ export const TbCertificateResponseSchema = TbCertificateRequestSchema.extend({
   }),
 });
 
+export const ChestXRayNotTakenRequestSchema = z.object({
+  chestXrayTaken: z.literal(YesOrNo.No),
+  reasonXrayWasNotTaken: z.nativeEnum(ChestXRayNotTakenReason).openapi({
+    description: "Reason X-ray was not taken",
+  }),
+  xrayWasNotTakenFurtherDetails: z.string().optional().openapi({
+    description: "Further details on why X-ray was not taken",
+  }),
+});
+
+export const ChestXRayTakenRequestSchema = z.object({
+  chestXrayTaken: z.literal(YesOrNo.Yes),
+  posteroAnteriorXray: z.string().openapi({
+    description: "S3 Bucket Object key for the Postero Anterior X-Ray",
+  }),
+  apicalLordoticXray: z.string().optional().openapi({
+    description: "S3 Bucket Object key for the Apical Lordotic X-Ray",
+  }),
+  lateralDecubitusXray: z.string().optional().openapi({
+    description: "S3 Bucket Object key for the Lateral Decubitus X-Ray",
+  }),
+  xrayResult: z.nativeEnum(ChestXRayResult).openapi({
+    description: "Chest X-Ray Result",
+  }),
+  xrayResultDetail: z.string().optional().openapi({
+    description: "Result Details",
+  }),
+  xrayMinorFindings: z.array(z.string()).openapi({
+    description: "Minor findings",
+  }),
+  xrayAssociatedMinorFindings: z.array(z.string()).openapi({
+    description: "Minor findings (occasionally associated with TB infection)",
+  }),
+  xrayActiveTbFindings: z.array(z.string()).openapi({
+    description: "Findings sometimes seen in active TB (or other conditions)",
+  }),
+});
+
+export const ChestXRayRequestSchema = z.union([
+  ChestXRayTakenRequestSchema,
+  ChestXRayNotTakenRequestSchema,
+]);
+
+const ChestXRayNotTakenResponseSchema = ChestXRayNotTakenRequestSchema.extend({
+  dateCreated: z.string().date().openapi({
+    description: "Creation Date in UTC timezone",
+  }),
+  status: z.nativeEnum(TaskStatus).openapi({
+    description: "Status of Task",
+  }),
+});
+
+const ChestXRayTakenResponseSchema = ChestXRayTakenRequestSchema.extend({
+  dateCreated: z.string().date().openapi({
+    description: "Creation Date in UTC timezone",
+  }),
+  status: z.nativeEnum(TaskStatus).openapi({
+    description: "Status of Task",
+  }),
+});
+
+export const ChestXRayResponseSchema = z.union([
+  ChestXRayTakenResponseSchema,
+  ChestXRayNotTakenResponseSchema,
+]);
+
 export const ApplicationSchema = z.object({
   applicationId: z.string().openapi({
     description: "application id",
   }),
   travelInformation: TravelInformationResponseSchema,
   medicalScreening: MedicalScreeningResponseSchema,
+  chestXray: ChestXRayResponseSchema,
   tbCertificate: TbCertificateResponseSchema,
 });

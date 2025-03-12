@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
 import { YesOrNo } from "../types/enums";
-import { TbCertificate, TbCertificateDetails } from "./tb-certificate";
+import { NewTbCertificateDetails, TbCertificate } from "./tb-certificate";
 
 describe("Tests for TB Certificate Model", () => {
   const ddbMock = mockClient(awsClients.dynamoDBDocClient);
@@ -13,7 +13,7 @@ describe("Tests for TB Certificate Model", () => {
     ddbMock.reset();
   });
 
-  const newTbCertificate: TbCertificateDetails = {
+  const newTbCertificate: NewTbCertificateDetails = {
     applicationId: "test-application-id",
     certificateIssued: YesOrNo.Yes,
     certificateComments: "comments",
