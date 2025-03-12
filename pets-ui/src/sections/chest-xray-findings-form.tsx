@@ -137,7 +137,9 @@ const ChestXrayFindingsForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.xrayMinorFindings?.message ?? ""}
             formValue="xrayMinorFindings"
-            defaultValue={chestXrayData.xrayMinorFindings}
+            defaultValue={
+              chestXrayData.xrayMinorFindings.length ? chestXrayData.xrayMinorFindings : []
+            }
           />
         </div>
 
@@ -161,7 +163,11 @@ const ChestXrayFindingsForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.xrayAssociatedMinorFindings?.message ?? ""}
             formValue="xrayAssociatedMinorFindings"
-            defaultValue={chestXrayData.xrayAssociatedMinorFindings}
+            defaultValue={
+              chestXrayData.xrayAssociatedMinorFindings.length
+                ? chestXrayData.xrayAssociatedMinorFindings
+                : []
+            }
           />
         </div>
 
@@ -188,7 +194,9 @@ const ChestXrayFindingsForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.xrayActiveTbFindings?.message ?? ""}
             formValue="xrayActiveTbFindings"
-            defaultValue={chestXrayData.xrayActiveTbFindings}
+            defaultValue={
+              chestXrayData.xrayActiveTbFindings.length ? chestXrayData.xrayActiveTbFindings : []
+            }
           />
         </div>
 
