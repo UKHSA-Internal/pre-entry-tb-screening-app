@@ -54,6 +54,7 @@ export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
     ContentType: "application/octet-stream",
     IfNoneMatch: "*",
     ChecksumAlgorithm: ChecksumAlgorithm.CRC32,
+    ChecksumCRC32: parsedBody.checksumCRC32,
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
