@@ -12,6 +12,12 @@ type DateType = {
   day: string;
 };
 
+type ReceivedApplicationAttributesType = {
+  applicationId: string;
+  dateCreated: string;
+  status: BackendApplicationStatus;
+};
+
 // Application types
 type ApplicationIdAndDateCreatedType = {
   applicationId: string;
@@ -22,6 +28,7 @@ type ReceivedApplicationDetailsType = {
   applicationId: string;
   travelInformation: ReceivedTravelDetailsType | undefined;
   medicalScreening: ReceivedMedicalScreeningType | undefined;
+  chestXray: ReceivedChestXrayDetailsType | undefined;
 };
 
 // Applicant types
@@ -176,6 +183,7 @@ type PostedMedicalScreeningType = {
 
 // Chest X-ray types
 type ReduxChestXrayDetailsType = {
+  status: ApplicationStatus;
   chestXrayTaken: boolean | string;
   posteroAnteriorXrayFileName: string | null;
   posteroAnteriorXrayFile: string | null;
@@ -198,6 +206,20 @@ type ReduxChestXrayDetailsType = {
   xrayAssociatedMinorFindings: string[];
   xrayActiveTbFindings: string[];
 };
+
+type PostedChestXrayDetailsType = {
+  chestXrayTaken: string;
+  posteroAnteriorXray: string;
+  apicalLordoticXray: string;
+  lateralDecubitusXray: string;
+  xrayResult: string;
+  xrayResultDetail: string;
+  xrayMinorFindings: string[];
+  xrayAssociatedMinorFindings: string[];
+  xrayActiveTbFindings: string[];
+};
+
+type ReceivedChestXrayDetailsType = PostedChestXrayDetailsType & ReceivedApplicationAttributesType;
 
 // Sputum types
 type ReduxSputumCollectionDetailsType = {
