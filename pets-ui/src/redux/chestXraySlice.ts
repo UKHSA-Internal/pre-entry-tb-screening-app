@@ -15,8 +15,6 @@ const initialState: ReduxChestXrayDetailsType = {
   lateralDecubitusXrayFile: "",
   reasonXrayWasNotTaken: "",
   xrayWasNotTakenFurtherDetails: "",
-  radiologicalOutcome: "",
-  radiologicalOutcomeNotes: "",
   xrayResult: "",
   xrayResultDetail: "",
   xrayMinorFindings: [],
