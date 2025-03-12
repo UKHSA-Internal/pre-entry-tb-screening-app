@@ -59,6 +59,7 @@ jobs:
       ZIP_FILE: "deployment_package.zip"
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
+      APP_DOMAIN: ${{ vars.APP_DOMAIN }}
 
     strategy:
       matrix:
