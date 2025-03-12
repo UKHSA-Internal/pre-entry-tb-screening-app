@@ -6,14 +6,14 @@ import {
   QueryCommandInput,
 } from "@aws-sdk/lib-dynamodb";
 
-import awsClients from "../../shared/clients/aws";
-import { assertEnvExists } from "../../shared/config";
-import { CountryCode } from "../../shared/country";
-import { getDateWithoutTime } from "../../shared/date";
-import { logger } from "../../shared/logger";
-import { Application } from "../../shared/models/application";
-import { TaskStatus } from "../../shared/types/enum";
-import { AllowedSex } from "../types/enums";
+import { AllowedSex } from "../../applicant-service/types/enums";
+import awsClients from "../clients/aws";
+import { assertEnvExists } from "../config";
+import { CountryCode } from "../country";
+import { getDateWithoutTime } from "../date";
+import { logger } from "../logger";
+import { TaskStatus } from "../types/enum";
+import { Application } from "./application";
 
 const { dynamoDBDocClient: docClient } = awsClients;
 export abstract class IApplicant {
@@ -194,7 +194,6 @@ export class Applicant extends IApplicant {
         return [];
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       logger.info({ resultCount: data.Items.length }, "Applicant details fetched successfully");
 
       const results = data.Items as ReturnType<Applicant["todbItem"]>[];

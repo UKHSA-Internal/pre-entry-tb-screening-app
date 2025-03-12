@@ -1,6 +1,6 @@
 import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
-import { NewApplicant } from "../models/applicant";
+import { NewApplicant } from "../../shared/models/applicant";
 import { AllowedSex } from "../types/enums";
 
 export const seededApplicants: NewApplicant[] = [

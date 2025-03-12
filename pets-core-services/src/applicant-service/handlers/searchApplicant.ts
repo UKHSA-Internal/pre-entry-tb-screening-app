@@ -3,9 +3,9 @@ import { GlobalContextStorageProvider } from "pino-lambda";
 import { CountryCode } from "../../shared/country";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
+import { Applicant } from "../../shared/models/applicant";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { Applicant } from "../models/applicant";
 
 export type Header = {
   passportnumber: string;
