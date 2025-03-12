@@ -7,7 +7,6 @@ import { NodejsFunctionProps } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Bucket } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
 import { basename, dirname, join, relative } from "path";
-
 export class LocalInfrastructureStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -79,6 +78,10 @@ export class LocalInfrastructureStack extends cdk.Stack {
     new Table(this, "application-service-table", {
       ...tableProps,
       tableName: process.env.APPLICATION_SERVICE_DATABASE_NAME,
+    });
+
+    new Bucket(this, "image-bucket", {
+      bucketName: process.env.IMAGE_BUCKET,
     });
   }
 }
