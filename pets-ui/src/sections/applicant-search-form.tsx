@@ -18,7 +18,10 @@ import {
   clearMedicalScreeningDetails,
   setMedicalScreeningDetailsFromApiResponse,
 } from "@/redux/medicalScreeningSlice";
-import { setTbCertificateFromApiResponse } from "@/redux/tbCertificateSlice";
+import {
+  clearTbCertificateDetails,
+  setTbCertificateFromApiResponse,
+} from "@/redux/tbCertificateSlice";
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
 import { ButtonType } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/helpers";
@@ -35,6 +38,7 @@ const ApplicantSearchForm = () => {
     dispatch(clearApplicationDetails());
     dispatch(clearMedicalScreeningDetails());
     dispatch(clearTravelDetails());
+    dispatch(clearTbCertificateDetails());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -35,7 +35,7 @@ export const tbCertificateSlice = createSlice({
     setTbCertificateNumber: (state, action: PayloadAction<string>) => {
       state.tbCertificateNumber = action.payload;
     },
-    cleartbCertificateDetails: (state) => {
+    clearTbCertificateDetails: (state) => {
       state.status = ApplicationStatus.INCOMPLETE;
       state.tbClearanceIssued = "";
       state.physicianComments = "";
@@ -65,7 +65,7 @@ export const {
   setPhysicianComments,
   setTbCertificateDate,
   setTbCertificateNumber,
-  cleartbCertificateDetails,
+  clearTbCertificateDetails,
   setTbCertificateFromApiResponse,
 } = tbCertificateSlice.actions;
 
