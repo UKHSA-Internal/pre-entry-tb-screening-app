@@ -65,10 +65,7 @@ export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
     hoistableHeaders: new Set([
       "x-amz-server-side-encryption",
       "x-amz-server-side-encryption-aws-kms-key-id",
-      "x-amz-sdk-checksum-algorithm",
-      "x-amz-checksum-sha256",
     ]),
-    unhoistableHeaders: new Set(["x-amz-checksum-sha256"]),
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -83,4 +80,5 @@ export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
  * - Don't sign request
  * - Caching should be changed for upload
  * - OAC behaviour should be different for frontend web browser
+ * - Content policy failing
  */
