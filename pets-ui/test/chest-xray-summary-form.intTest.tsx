@@ -1,12 +1,14 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import MockAdapter from "axios-mock-adapter";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
+import { petsApi } from "@/api/api";
 import { ReduxChestXrayDetailsType } from "@/applicant";
 import ChestXraySummaryPage from "@/pages/chest-xray-summary";
-import { ApplicationStatus } from "@/utils/enums";
+import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -18,24 +20,19 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
   };
 });
 
+const applicationState = { applicationId: "abc-123", dateCreated: "" };
+
 const chestXrayTakenState: ReduxChestXrayDetailsType = {
   status: ApplicationStatus.INCOMPLETE,
-  chestXrayTaken: true,
+  chestXrayTaken: YesOrNo.YES,
   posteroAnteriorXrayFileName: "PA Example FileName",
   posteroAnteriorXrayFile: "PA Example File",
   apicalLordoticXrayFileName: "AL Example FileName",
   apicalLordoticXrayFile: "AL Example File",
   lateralDecubitusXrayFileName: "LD Example FileName",
   lateralDecubitusXrayFile: "LD Example File",
-  reasonXrayWasNotTaken: null,
-  xrayWasNotTakenFurtherDetails: null,
-  dateOfCxr: null,
-  radiologicalOutcome: "",
-  radiologicalOutcomeNotes: null,
-  radiologicalFinding: null,
-  dateOfRadiologicalInterpretation: null,
-  sputumCollected: false,
-  reasonWhySputumNotRequired: null,
+  reasonXrayWasNotTaken: "",
+  xrayWasNotTakenFurtherDetails: "",
   xrayResult: "Chest X-ray normal",
   xrayResultDetail: "Extra Details on Chest X-ray",
   xrayMinorFindings: ["Single fibrous streak or band or scar", "Bony Islets"],
@@ -45,7 +42,7 @@ const chestXrayTakenState: ReduxChestXrayDetailsType = {
 
 const chestXrayNotTakenState: ReduxChestXrayDetailsType = {
   status: ApplicationStatus.INCOMPLETE,
-  chestXrayTaken: false,
+  chestXrayTaken: YesOrNo.NO,
   posteroAnteriorXrayFileName: "",
   posteroAnteriorXrayFile: "",
   apicalLordoticXrayFileName: "",
@@ -53,14 +50,7 @@ const chestXrayNotTakenState: ReduxChestXrayDetailsType = {
   lateralDecubitusXrayFileName: "",
   lateralDecubitusXrayFile: "",
   reasonXrayWasNotTaken: "Pregnant",
-  xrayWasNotTakenFurtherDetails: null,
-  dateOfCxr: null,
-  radiologicalOutcome: "",
-  radiologicalOutcomeNotes: null,
-  radiologicalFinding: null,
-  dateOfRadiologicalInterpretation: null,
-  sputumCollected: false,
-  reasonWhySputumNotRequired: null,
+  xrayWasNotTakenFurtherDetails: "Further details",
   xrayResult: "",
   xrayResultDetail: "",
   xrayMinorFindings: [],
@@ -70,14 +60,22 @@ const chestXrayNotTakenState: ReduxChestXrayDetailsType = {
 
 describe("ChestXraySummaryPage", () => {
   const user = userEvent.setup();
+  const preloadedState = {
+    chestXray: { ...chestXrayTakenState },
+    application: { ...applicationState },
+  };
   describe("General UI Tests", () => {
+    let mock: MockAdapter;
     beforeEach(() => {
+      mock = new MockAdapter(petsApi);
+      useNavigateMock.mockClear();
       renderWithProviders(
         <Router>
           <HelmetProvider>
             <ChestXraySummaryPage />
           </HelmetProvider>
         </Router>,
+        { preloadedState },
       );
     });
     it("shows the breadcrumbs", () => {
@@ -98,14 +96,18 @@ describe("ChestXraySummaryPage", () => {
       expect(screen.getByText("Check chest X-ray information")).toBeInTheDocument();
       expect(screen.getByText("Select x-ray status")).toBeInTheDocument();
     });
-    it("when continue pressed, it navigates to /chest-xray-confirmation", async () => {
+    it("when continue pressed, data is posted & user is navigated to /chest-xray-confirmation", async () => {
+      mock.onPost("/application/abc-123/chest-xray").reply(200);
       await user.click(screen.getByRole("button"));
+      expect(mock.history[0].url).toEqual("/application/abc-123/chest-xray");
+      expect(mock.history).toHaveLength(1);
       expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-confirmation");
     });
   });
   describe("Chest X-ray Taken", () => {
     const preloadedState = {
       chestXray: { ...chestXrayTakenState },
+      application: { ...applicationState },
     };
     beforeEach(() => {
       renderWithProviders(
@@ -140,6 +142,7 @@ describe("ChestXraySummaryPage", () => {
   describe("Chest Not X-ray Taken", () => {
     const preloadedState = {
       chestXray: { ...chestXrayNotTakenState },
+      application: { ...applicationState },
     };
     beforeEach(() => {
       renderWithProviders(
@@ -152,7 +155,7 @@ describe("ChestXraySummaryPage", () => {
       );
     });
     it("renders the page titles and descriptions ", () => {
-      expect(screen.getByText("Enter reason x-ray not taken")).toBeInTheDocument();
+      expect(screen.getByText("Enter reason X-ray not taken")).toBeInTheDocument();
       expect(screen.getByText("Pregnant")).toBeInTheDocument();
     });
   });
