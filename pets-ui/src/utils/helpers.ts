@@ -36,6 +36,13 @@ const attributeToComponentId: { [key: string]: string } = {
   applicantUkAddress2: "address-2",
   ukMobileNumber: "mobile-number",
   ukEmail: "email",
+  chestXrayTaken: "chest-xray-taken",
+  xrayResult: "xray-result",
+  reasonXrayWasNotTaken: "reason-xray-not-taken",
+  xrayWasNotTakenFurtherDetails: "xray-not-taken-further-details",
+  tbClearanceIssued: "tb-clearance-issued",
+  tbCertificateDate: "tb-certificate-date",
+  tbCertificateNumber: "tb-certificate-number",
 };
 
 const formRegex = {
@@ -67,6 +74,12 @@ const dateValidationMessages = {
     invalidCharError:
       "Date of birth day and year must contain only numbers. Date of birth month must be a number, or the name of the month, or the first three letters of the month.",
     invalidDateError: "Date of birth date must be a valid date.",
+  },
+  tbCertificateDate: {
+    emptyFieldError: "TB clearance certificate date must include a day, month and year",
+    invalidCharError:
+      "TB clearance certificate day and year must contain only numbers. TB clearance certificate month must be a number, or the name of the month, or the first three letters of the month",
+    invalidDateError: "TB clearance certificate date must be a valid date",
   },
 };
 
@@ -111,9 +124,9 @@ const validMonthValues = [
 function standardiseDayOrMonth(dayOrMonth: string) {
   let standardisedDayOrMonth = dayOrMonth.toLowerCase();
 
-  for (const list of [longMonthValues, shortMonthValues, longNumericStrings]) {
+  for (const list of [longMonthValues, shortMonthValues, shortNumericStrings]) {
     if (list.includes(dayOrMonth.toLowerCase())) {
-      standardisedDayOrMonth = shortNumericStrings[list.indexOf(dayOrMonth.toLowerCase())];
+      standardisedDayOrMonth = longNumericStrings[list.indexOf(dayOrMonth.toLowerCase())];
     }
   }
 
@@ -196,6 +209,10 @@ const visaOptions = [
   {
     value: "Government Sponsored",
     label: "Government Sponsored",
+  },
+  {
+    value: "British National (Overseas)",
+    label: "British National (Overseas)",
   },
 ];
 

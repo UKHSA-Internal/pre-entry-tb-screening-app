@@ -1,3 +1,4 @@
+import assert from "assert";
 export const testData = {
   fullName: "John Doe",
   sex: "male",
@@ -16,3 +17,36 @@ export const testData = {
     postcode: "S4R 0M6",
   },
 };
+
+const stringAssert = (value: any) => {
+  assert(value);
+  assert(typeof value === "string");
+  return value;
+};
+
+export const testCredentials: Array<{ email: string; password: string }> = [
+  {
+    email: stringAssert(Cypress.env("USER_1_EMAIL")),
+    password: stringAssert(Cypress.env("USER_1_PASSWORD")),
+  },
+  {
+    email: stringAssert(Cypress.env("USER_2_EMAIL")),
+    password: stringAssert(Cypress.env("USER_2_PASSWORD")),
+  },
+  {
+    email: stringAssert(Cypress.env("USER_3_EMAIL")),
+    password: stringAssert(Cypress.env("USER_3_PASSWORD")),
+  },
+  {
+    email: stringAssert(Cypress.env("USER_4_EMAIL")),
+    password: stringAssert(Cypress.env("USER_4_PASSWORD")),
+  },
+  {
+    email: stringAssert(Cypress.env("USER_5_EMAIL")),
+    password: stringAssert(Cypress.env("USER_5_PASSWORD")),
+  },
+  {
+    email: stringAssert(Cypress.env("USER_6_EMAIL")),
+    password: stringAssert(Cypress.env("USER_6_PASSWORD")),
+  },
+];

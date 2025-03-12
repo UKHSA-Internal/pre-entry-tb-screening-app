@@ -34,6 +34,8 @@ Temporary Items
 
 # env
 .env.local
+# Cypress environment variables
+.env.local.secrets
 
 # Tests
 pets.code-workspace
@@ -45,3 +47,6 @@ coverage
 # local development files
 .localstack-data
 openapi-docs.json
+
+# Dependency lock files
+package-lock.json

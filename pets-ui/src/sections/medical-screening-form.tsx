@@ -2,9 +2,10 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { MedicalScreeningType } from "@/applicant";
+import { ReduxMedicalScreeningType } from "@/applicant";
 import Button from "@/components/button/button";
 import Checkbox from "@/components/checkbox/checkbox";
+import ErrorDisplay from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Radio from "@/components/radio/radio";
 import TextArea from "@/components/textArea/textArea";
@@ -12,12 +13,12 @@ import { selectApplicant } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectMedicalScreening, setMedicalScreeningDetails } from "@/redux/medicalScreeningSlice";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
-import { attributeToComponentId, formRegex } from "@/utils/helpers";
+import { formRegex } from "@/utils/helpers";
 
 const MedicalScreeningForm = () => {
   const navigate = useNavigate();
 
-  const methods = useForm<MedicalScreeningType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxMedicalScreeningType>({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,
     formState: { errors },
@@ -26,15 +27,9 @@ const MedicalScreeningForm = () => {
   const applicantData = useAppSelector(selectApplicant);
   const medicalData = useAppSelector(selectMedicalScreening);
   const dispatch = useAppDispatch();
-  const updateReduxStore = (medicalScreeningData: MedicalScreeningType) => {
-    dispatch(setMedicalScreeningDetails(medicalScreeningData));
-  };
 
-  const onSubmit: SubmitHandler<MedicalScreeningType> = (data) => {
-    updateReduxStore(data);
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    // TO DO: post medical screening info using application service
+  const onSubmit: SubmitHandler<ReduxMedicalScreeningType> = (medicalScreeningData) => {
+    dispatch(setMedicalScreeningDetails(medicalScreeningData));
     navigate("/medical-summary");
   };
 
@@ -84,24 +79,7 @@ const MedicalScreeningForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {!!errorsToShow?.length && (
-          <div className="govuk-error-summary" data-module="govuk-error-summary">
-            <div role="alert">
-              <h2 className="govuk-error-summary__title">There is a problem</h2>
-              <div className="govuk-error-summary__body">
-                <ul className="govuk-list govuk-error-summary__list">
-                  {errorsToShow.map((error) => (
-                    <li key={attributeToComponentId[error]}>
-                      <a href={"#" + attributeToComponentId[error]}>
-                        {errors[error as keyof typeof errors]?.message}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
+        {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
 
         <div>
           <dl className="govuk-summary-list">
@@ -134,7 +112,7 @@ const MedicalScreeningForm = () => {
             patternError="Age must be a number."
             inputWidth={3}
             suffixText="years"
-            defaultValue={medicalData.age}
+            defaultValue={medicalData.age.toString()}
           />
         </div>
 

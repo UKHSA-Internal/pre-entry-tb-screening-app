@@ -1,0 +1,115 @@
+import { RootState } from "@redux/store";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+import { ReduxChestXrayDetailsType } from "@/applicant";
+
+const initialState: ReduxChestXrayDetailsType = {
+  chestXrayTaken: false,
+  posteroAnteriorXray: false,
+  posteroAnteriorXrayFile: "",
+  apicalLordoticXray: false,
+  apicalLordoticXrayFile: "",
+  lateralDecubitusXray: false,
+  lateralDecubitusXrayFile: "",
+  reasonXrayWasNotTaken: null,
+  xrayWasNotTakenFurtherDetails: "",
+  dateOfCxr: null,
+  radiologicalOutcome: "",
+  radiologicalOutcomeNotes: null,
+  radiologicalFinding: null,
+  dateOfRadiologicalInterpretation: null,
+  sputumCollected: false,
+  reasonWhySputumNotRequired: null,
+  xrayResult: "",
+  xrayResultDetail: "",
+  xrayMinorFindings: [],
+  xrayAssociatedMinorFindings: [],
+  xrayActiveTbFindings: [],
+};
+
+export const chestXraySlice = createSlice({
+  name: "chestXrayDetails",
+  initialState,
+  reducers: {
+    setChestXrayTaken: (state, action: PayloadAction<boolean | string>) => {
+      state.chestXrayTaken = action.payload;
+    },
+    setPosteroAnteriorXray: (state, action: PayloadAction<string | boolean>) => {
+      state.posteroAnteriorXray = action.payload;
+    },
+    setApicalLordoticXray: (state, action: PayloadAction<string | boolean>) => {
+      state.apicalLordoticXray = action.payload;
+    },
+    setLateralDecubitusXray: (state, action: PayloadAction<string | boolean>) => {
+      state.lateralDecubitusXray = action.payload;
+    },
+    setPosteroAnteriorXrayFile: (state, action: PayloadAction<string | null>) => {
+      state.posteroAnteriorXrayFile = action.payload;
+    },
+    setApicalLordoticXrayFile: (state, action: PayloadAction<string | null>) => {
+      state.apicalLordoticXrayFile = action.payload;
+    },
+    setLateralDecubitusXrayFile: (state, action: PayloadAction<string | null>) => {
+      state.lateralDecubitusXrayFile = action.payload;
+    },
+    setReasonXrayWasNotTaken: (state, action: PayloadAction<string | null>) => {
+      state.reasonXrayWasNotTaken = action.payload;
+    },
+    setXrayResult: (state, action: PayloadAction<string>) => {
+      state.xrayResult = action.payload;
+    },
+    setXrayResultDetail: (state, action: PayloadAction<string>) => {
+      state.xrayResultDetail = action.payload;
+    },
+    setXrayMinorFindings: (state, action: PayloadAction<string[]>) => {
+      state.xrayMinorFindings = action.payload;
+    },
+    setXrayAssociatedMinorFindings: (state, action: PayloadAction<string[]>) => {
+      state.xrayAssociatedMinorFindings = action.payload;
+    },
+    setXrayActiveTbFindings: (state, action: PayloadAction<string[]>) => {
+      state.xrayActiveTbFindings = action.payload;
+    },
+    setXrayWasNotTakenFurtherDetails: (state, action: PayloadAction<string | null>) => {
+      state.xrayWasNotTakenFurtherDetails = action.payload;
+    },
+    clearChestXrayDetails: (state) => {
+      state.chestXrayTaken = false;
+      state.posteroAnteriorXray = false;
+      state.apicalLordoticXray = false;
+      state.lateralDecubitusXray = false;
+      state.posteroAnteriorXrayFile = "";
+      state.apicalLordoticXrayFile = "";
+      state.lateralDecubitusXrayFile = "";
+      state.reasonXrayWasNotTaken = "";
+      state.xrayWasNotTakenFurtherDetails = "";
+      state.xrayResult = "";
+      state.xrayResultDetail = "";
+      state.xrayMinorFindings = [];
+      state.xrayAssociatedMinorFindings = [];
+      state.xrayActiveTbFindings = [];
+    },
+  },
+});
+
+export const {
+  setChestXrayTaken,
+  setPosteroAnteriorXray,
+  setApicalLordoticXray,
+  setLateralDecubitusXray,
+  setPosteroAnteriorXrayFile,
+  setApicalLordoticXrayFile,
+  setLateralDecubitusXrayFile,
+  setReasonXrayWasNotTaken,
+  setXrayWasNotTakenFurtherDetails,
+  setXrayResult,
+  setXrayResultDetail,
+  setXrayMinorFindings,
+  setXrayAssociatedMinorFindings,
+  setXrayActiveTbFindings,
+  clearChestXrayDetails,
+} = chestXraySlice.actions;
+
+export const chestXrayReducer = chestXraySlice.reducer;
+
+export const selectChestXray = (state: RootState) => state.chestXray;

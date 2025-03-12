@@ -6,18 +6,21 @@
     "preinstall": "npx only-allow pnpm",
     "security-checks": "git secrets --scan",
     "prepare": "husky",
-    "start": "node start.mjs"
+    "start": "node scripts/start.mjs",
+    "pull:secrets": "node scripts/pull-secrets.mjs",
+    "start:ui": "pnpm --filter pets-ui dev"
   },
   "main": "index.js",
   "repository": "git@github.com:UKHSA-Internal/pre-entry-tb-screening-app.git",
   "author": "PETS Engineering",
   "license": "MIT",
   "devDependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.758.0",
     "@eslint/compat": "^1.2.5",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.14.0",
     "@types/node": "^22.10.10",
-    "@vitest/coverage-v8": "2.1.8",
+    "@vitest/coverage-v8": "^2.1.9",
     "concurrently": "^9.1.2",
     "dotenv": "^16.4.7",
     "eslint": "^9.14.0",

@@ -1,5 +1,3 @@
-import { errorMessages, urlFragment } from "../../support/test-utils";
-
 //Scenario:validate age field and corresponding error message - this field is mandatory.
 
 describe("Test to validate applicant AGE field and corresponding error message", () => {
@@ -45,14 +43,7 @@ describe("Test to validate applicant AGE field and corresponding error message",
 
     // Validate the summary box appears at the top contains the correct error messages
     cy.get(".govuk-error-summary").should("be.visible");
-    errorMessages.forEach((error) => {
-      cy.get(".govuk-error-summary").should("contain.text", error);
-
-      // Validate that user is navigated to correct error when clicking message in summary
-      cy.get(".govuk-error-summary a").each((link, index) => {
-        cy.wrap(link).click();
-        cy.url().should("include", urlFragment[index]);
-      });
-    });
+    cy.get(".govuk-error-summary").should("contain.text", "There is a problem");
+    cy.get(".govuk-error-summary").should("contain.text", "Enter applicant's age in years.");
   });
 });

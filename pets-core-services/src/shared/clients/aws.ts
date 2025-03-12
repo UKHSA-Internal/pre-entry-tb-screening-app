@@ -1,11 +1,13 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { S3Client } from "@aws-sdk/client-s3";
+import { LambdaClient } from "@aws-sdk/client-lambda";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
 class AWSClients {
   private static instance: AWSClients;
   private _dynamoDBDocClient?: DynamoDBDocumentClient;
   private _s3Client?: S3Client;
+  private _lambdaClient?: LambdaClient;
 
   static getInstance(): AWSClients {
     if (!AWSClients.instance) {
@@ -20,6 +22,13 @@ class AWSClients {
     const client = new DynamoDBClient({ region: "eu-west-2" });
     this._dynamoDBDocClient = DynamoDBDocumentClient.from(client);
     return this._dynamoDBDocClient;
+  }
+
+  get lambdaClient(): LambdaClient {
+    if (!this._lambdaClient) {
+      this._lambdaClient = new LambdaClient({ region: "eu-west-2" });
+    }
+    return this._lambdaClient;
   }
 
   get s3Client(): S3Client {

@@ -1,12 +1,10 @@
 import "./chest-xray-confirmation.scss";
 
-import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 
-import Breadcrumb, { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
+import { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
 import Confirmation from "@/components/confirmation/confirmation";
-import Footer from "@/components/footer/footer";
-import Header from "@/components/header/header";
+import Container from "@/components/container/container";
 
 export default function ChestXrayConfirmation() {
   const breadcrumbItems: IBreadcrumbItem[] = [
@@ -28,21 +26,14 @@ export default function ChestXrayConfirmation() {
   ];
 
   return (
-    <body className="govuk-template__body">
-      <Helmet>
-        <title> Medical Screening Confirmation</title>
-      </Helmet>
-      <Header />
-      <div className="govuk-width-container">
-        <Breadcrumb items={breadcrumbItems} />
-        <Confirmation
-          confirmationText={"Chest X-ray information recorded"}
-          furtherInfo={furtherInfo}
-          buttonText={"Continue"}
-          buttonLink={"/tb-declaration"}
-        />
-      </div>
-      <Footer />
-    </body>
+    <Container title="Medical Screening Confirmation" breadcrumbItems={breadcrumbItems}>
+      <Confirmation
+        confirmationText={"Chest X-ray information recorded"}
+        furtherInfo={furtherInfo}
+        buttonText={"Continue"}
+        buttonLink={"/tb-declaration"}
+        whatHappensNext
+      />
+    </Container>
   );
 }

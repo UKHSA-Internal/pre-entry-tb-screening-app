@@ -1,20 +1,26 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
 import { applicantReducer } from "./applicantSlice";
+import { applicationReducer } from "./applicationSlice";
+import { chestXrayReducer } from "./chestXraySlice";
 import { medicalScreeningReducer } from "./medicalScreeningSlice";
+import { tbCertificateReducer } from "./tbCertificateSlice";
 import { travelReducer } from "./travelSlice";
 
 const rootReducer = combineReducers({
   applicant: applicantReducer,
+  application: applicationReducer,
   medicalScreening: medicalScreeningReducer,
   travel: travelReducer,
+  chestXray: chestXrayReducer,
+  tbCertificate: tbCertificateReducer,
 });
 
 export const setupStore = (preloadedState?: Partial<RootState>) => {
   return configureStore({
     reducer: rootReducer,
     preloadedState,
-    // devTools: process.env.NODE_ENV !== 'production',
+    devTools: import.meta.env.DEV,
   });
 };
 

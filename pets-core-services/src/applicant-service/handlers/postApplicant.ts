@@ -1,17 +1,17 @@
 import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
-import { APIGatewayProxyEvent } from "aws-lambda";
 import { GlobalContextStorageProvider } from "pino-lambda";
 import { z } from "zod";
 
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
+import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { Applicant } from "../models/applicant";
 import { ApplicantSchema } from "../types/zod-schema";
 
 export type ApplicantRequestSchema = z.infer<typeof ApplicantSchema>;
 
-export type PostApplicantEvent = APIGatewayProxyEvent & {
+export type PostApplicantEvent = PetsAPIGatewayProxyEvent & {
   parsedBody?: ApplicantRequestSchema;
 };
 
@@ -45,7 +45,7 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
       });
     }
 
-    const clinicId = "Apollo Clinic";
+    const { clinicId, createdBy } = event.requestContext.authorizer;
     if (application.clinicId != clinicId) {
       logger.error("ClinicId mismatch with existing application");
       return createHttpResponse(403, { message: "Clinic Id mismatch" });
@@ -65,7 +65,6 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
 
     let applicant: Applicant;
     try {
-      const createdBy = "hardcoded@user.com";
       applicant = await Applicant.createNewApplicant({
         ...parsedBody,
         applicationId,

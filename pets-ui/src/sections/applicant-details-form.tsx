@@ -2,21 +2,22 @@ import { useEffect, useRef } from "react";
 import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { ApplicantDetailsType } from "@/applicant";
+import { ReduxApplicantDetailsType } from "@/applicant";
 import Button from "@/components/button/button";
 import DateTextInput, { DateType } from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
+import ErrorDisplay from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Radio from "@/components/radio/radio";
 import { selectApplicant, setApplicantDetails } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
-import { attributeToComponentId, countryList, formRegex, validateDate } from "@/utils/helpers";
+import { countryList, formRegex, validateDate } from "@/utils/helpers";
 
 const ApplicantForm = () => {
   const navigate = useNavigate();
 
-  const methods = useForm<ApplicantDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxApplicantDetailsType>({ reValidateMode: "onSubmit" });
   const {
     control,
     handleSubmit,
@@ -24,14 +25,10 @@ const ApplicantForm = () => {
   } = methods;
 
   const dispatch = useAppDispatch();
-  const updateReduxStore = (applicantData: ApplicantDetailsType) => {
-    dispatch(setApplicantDetails(applicantData));
-  };
-
   const applicantData = useAppSelector(selectApplicant);
 
-  const onSubmit: SubmitHandler<ApplicantDetailsType> = (data) => {
-    updateReduxStore(data);
+  const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = (applicantData) => {
+    dispatch(setApplicantDetails(applicantData));
     navigate("/applicant-summary");
   };
 
@@ -85,24 +82,7 @@ const ApplicantForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {!!errorsToShow?.length && (
-          <div className="govuk-error-summary" data-module="govuk-error-summary">
-            <div role="alert">
-              <h2 className="govuk-error-summary__title">There is a problem</h2>
-              <div className="govuk-error-summary__body">
-                <ul className="govuk-list govuk-error-summary__list">
-                  {errorsToShow.map((error) => (
-                    <li key={attributeToComponentId[error]}>
-                      <a href={"#" + attributeToComponentId[error]}>
-                        {errors[error as keyof typeof errors]?.message}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
+        {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
 
         <h2 className="govuk-label govuk-label--m">Applicant&apos;s Personal Details</h2>
 
@@ -124,7 +104,7 @@ const ApplicantForm = () => {
             id="sex"
             legend="Sex"
             isInline={RadioIsInline.TRUE}
-            answerOptions={["Female", "Male"]}
+            answerOptions={["Female", "Male", "Other"]}
             sortAnswersAlphabetically={false}
             errorMessage={errors?.sex?.message ?? ""}
             formValue="sex"

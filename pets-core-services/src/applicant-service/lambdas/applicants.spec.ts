@@ -1,8 +1,9 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import { APIGatewayProxyResult } from "aws-lambda";
 import { describe, expect, test } from "vitest";
 
 import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
+import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { context, mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicants } from "../fixtures/applicants";
 import { AllowedSex } from "../types/enums";
@@ -11,7 +12,7 @@ import { handler } from "./applicants";
 describe("Test for Applicant Lambda", () => {
   test("Validating Search Applicant Successfully", async () => {
     // Arrange
-    const event: APIGatewayProxyEvent = {
+    const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
       resource: "/applicant/search",
       path: "/applicant/search",
@@ -34,7 +35,7 @@ describe("Test for Applicant Lambda", () => {
 
   test("Fetching an existing Applicant", async () => {
     // Arrange
-    const event: APIGatewayProxyEvent = {
+    const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
       resource: "/applicant/search",
       path: "/applicant/search",
@@ -54,7 +55,7 @@ describe("Test for Applicant Lambda", () => {
 
   test("Validating POST Applicant Successfully", async () => {
     // Arrange
-    const event: APIGatewayProxyEvent = {
+    const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
       resource: "/applicant/register/{applicationId}",
       path: `/applicant/register/${seededApplications[0].applicationId}`,
@@ -77,7 +78,7 @@ describe("Test for Applicant Lambda", () => {
 
   test("Posting an Applicant Successfully", async () => {
     // Arrange;
-    const event: APIGatewayProxyEvent = {
+    const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
       resource: "/applicant/register/{applicationId}",
       path: `/applicant/register/${seededApplications[0].applicationId}`,

@@ -23,6 +23,11 @@ const config: DeploymentConfig[] = [
     path: join(__dirname, "./src/application-service/lambdas/application.ts"),
   },
   {
+    lambdaName: process.env.AUTHORISER_LAMBDA_NAME,
+    s3Bucket: process.env.APPLICATION_SERVICE_LAMBDA_BUCKET,
+    path: join(__dirname, "./src/authoriser/b2c-authoriser.ts"),
+  },
+  {
     lambdaName: process.env.QUARANTINE_LAMBDA_NAME,
     s3Bucket: process.env.QUARANTINE_LAMBDA_BUCKET,
     path: join(__dirname, "./src/dicom-service/lambdas/quarantine.ts"),

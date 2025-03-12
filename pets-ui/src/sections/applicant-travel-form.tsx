@@ -2,32 +2,31 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { TravelDetailsType } from "@/applicant";
+import { ReduxTravelDetailsType } from "@/applicant";
 import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
+import ErrorDisplay from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
+import Heading from "@/components/heading/heading";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectTravel, setTravelDetails } from "@/redux/travelSlice";
 import { ButtonType } from "@/utils/enums";
-import { attributeToComponentId, formRegex, visaOptions } from "@/utils/helpers";
+import { formRegex, visaOptions } from "@/utils/helpers";
 
 const ApplicantTravelForm = () => {
   const navigate = useNavigate();
 
-  const methods = useForm<TravelDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxTravelDetailsType>({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,
     formState: { errors },
   } = methods;
 
   const dispatch = useAppDispatch();
-  const updateReduxStore = (travelData: TravelDetailsType) => {
-    dispatch(setTravelDetails(travelData));
-  };
   const travelData = useAppSelector(selectTravel);
 
-  const onSubmit: SubmitHandler<TravelDetailsType> = (data) => {
-    updateReduxStore(data);
+  const onSubmit: SubmitHandler<ReduxTravelDetailsType> = (travelData) => {
+    dispatch(setTravelDetails(travelData));
     navigate("/travel-summary");
   };
 
@@ -65,27 +64,15 @@ const ApplicantTravelForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {!!errorsToShow?.length && (
-          <div className="govuk-error-summary" data-module="govuk-error-summary">
-            <div role="alert">
-              <h2 className="govuk-error-summary__title">There is a problem</h2>
-              <div className="govuk-error-summary__body">
-                <ul className="govuk-list govuk-error-summary__list">
-                  {errorsToShow.map((error) => (
-                    <li key={attributeToComponentId[error]}>
-                      <a href={"#" + attributeToComponentId[error]}>
-                        {errors[error as keyof typeof errors]?.message}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
+        {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
 
         <div ref={visaTypeRef}>
-          <h2 className="govuk-label govuk-label--m">Visa type</h2>
+          <Heading
+            level={2}
+            size="m"
+            title="Visa type"
+            style={{ marginTop: 40, marginBottom: 10 }}
+          />
           <Dropdown
             id="visa-type"
             options={visaOptions}
@@ -96,7 +83,12 @@ const ApplicantTravelForm = () => {
           />
         </div>
 
-        <h2 className="govuk-label govuk-label--m">Applicant&apos;s UK address</h2>
+        <Heading
+          level={2}
+          size="m"
+          title="Applicant's UK address"
+          style={{ marginTop: 40, marginBottom: 10 }}
+        />
 
         <div ref={addressLine1Ref}>
           <FreeText
@@ -151,7 +143,12 @@ const ApplicantTravelForm = () => {
         </div>
 
         <div ref={mobileNumberRef}>
-          <h2 className="govuk-label govuk-label--m">Applicant&apos;s UK phone number</h2>
+          <Heading
+            level={2}
+            size="m"
+            title="Applicant's UK phone number"
+            style={{ marginTop: 40, marginBottom: 10 }}
+          />
           <FreeText
             id="mobile-number"
             errorMessage={errors?.ukMobileNumber?.message ?? ""}
@@ -164,7 +161,12 @@ const ApplicantTravelForm = () => {
         </div>
 
         <div ref={emailRef}>
-          <h2 className="govuk-label govuk-label--m">Applicant&apos;s UK email</h2>
+          <Heading
+            level={2}
+            size="m"
+            title="Applicant's UK email"
+            style={{ marginTop: 40, marginBottom: 10 }}
+          />
           <FreeText
             id="email"
             errorMessage={errors?.ukEmail?.message ?? ""}

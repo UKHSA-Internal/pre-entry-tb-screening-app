@@ -1,16 +1,15 @@
 import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
-import { APIGatewayProxyEvent } from "aws-lambda";
-import { GlobalContextStorageProvider } from "pino-lambda";
 import { z } from "zod";
 
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
-import { Application } from "../../shared/models/application";
+import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { MedicalScreening } from "../models/medical-screening";
 import { MedicalScreeningRequestSchema } from "../types/zod-schema";
 
 export type MedicalScreeningRequestSchema = z.infer<typeof MedicalScreeningRequestSchema>;
-export type SaveMedicalScreeningEvent = APIGatewayProxyEvent & {
+
+export type SaveMedicalScreeningEvent = PetsAPIGatewayProxyEvent & {
   parsedBody?: MedicalScreeningRequestSchema;
 };
 
@@ -26,31 +25,13 @@ export const saveMedicalScreeningHandler = async (event: SaveMedicalScreeningEve
       logger.error("Event missing parsed body");
 
       return createHttpResponse(500, {
-        message: "Internal Server Error: Request not parsed correctly",
+        message: "Internal Server Error: Medical Screening Request not parsed correctly",
       });
     }
 
-    GlobalContextStorageProvider.updateContext({
-      applicationId,
-    });
-
-    const application = await Application.getByApplicationId(applicationId);
-    if (!application) {
-      logger.error("Application does not exist");
-      return createHttpResponse(400, {
-        message: `Application with ID: ${applicationId} does not exist`,
-      });
-    }
-
-    const clinicId = "Apollo Clinic";
-    if (application.clinicId != clinicId) {
-      logger.error("ClinicId mismatch with existing application");
-      return createHttpResponse(403, { message: "Clinic Id mismatch" });
-    }
-
+    const { createdBy } = event.requestContext.authorizer;
     let medicalScreening: MedicalScreening;
     try {
-      const createdBy = "hardcoded@user.com";
       medicalScreening = await MedicalScreening.createMedicalScreening({
         ...parsedBody,
         createdBy,

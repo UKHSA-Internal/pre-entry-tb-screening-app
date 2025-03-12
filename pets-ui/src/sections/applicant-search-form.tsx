@@ -1,30 +1,28 @@
+import axios from "axios";
 import { useEffect } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import { MedicalScreeningType, TravelDetailsType } from "@/applicant";
+import { ApplicantSearchFormType } from "@/applicant";
 import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
 import FreeText from "@/components/freeText/freeText";
 import {
   clearApplicantDetails,
-  setCountryOfIssue,
-  setPassportNumber,
+  setApplicantDetailsFromApiResponse,
+  setApplicantPassportDetails,
 } from "@/redux/applicantSlice";
+import { clearApplicationDetails } from "@/redux/applicationSlice";
 import { useAppDispatch } from "@/redux/hooks";
 import {
   clearMedicalScreeningDetails,
-  setMedicalScreeningDetails,
+  setMedicalScreeningDetailsFromApiResponse,
 } from "@/redux/medicalScreeningSlice";
-import { clearTravelDetails, setTravelDetails } from "@/redux/travelSlice";
+import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
 import { ButtonType } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/helpers";
-import { mockFetch } from "@/utils/mockFetch";
 
-type ApplicantSearchFormType = {
-  passportNumber: string;
-  countryOfIssue: string;
-};
+import { getApplicants, getApplication } from "../api/api";
 
 const ApplicantSearchForm = () => {
   const navigate = useNavigate();
@@ -33,6 +31,7 @@ const ApplicantSearchForm = () => {
 
   useEffect(() => {
     dispatch(clearApplicantDetails());
+    dispatch(clearApplicationDetails());
     dispatch(clearMedicalScreeningDetails());
     dispatch(clearTravelDetails());
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -43,52 +42,31 @@ const ApplicantSearchForm = () => {
     formState: { errors },
   } = methods;
 
-  const updateReduxStoreSearch = (applicantSearchData: ApplicantSearchFormType) => {
-    dispatch(setPassportNumber(applicantSearchData.passportNumber));
-    dispatch(setCountryOfIssue(applicantSearchData.countryOfIssue));
-  };
-
-  const updateReduxStoreApplication = (
-    medicalScreeningData?: MedicalScreeningType,
-    travelData?: TravelDetailsType,
-  ) => {
-    if (medicalScreeningData) dispatch(setMedicalScreeningDetails(medicalScreeningData));
-    if (travelData) dispatch(setTravelDetails(travelData));
-  };
-
-  const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (data) => {
+  const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (passportDetails) => {
     try {
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      updateReduxStoreSearch(data);
-
-      const res = await mockFetch(
-        `http://localhost:3000/api/applicant?passportNumber=${data.passportNumber}&countryOfIssue=${data.countryOfIssue}`,
-        { method: "GET", headers: myHeaders },
-      );
-
-      if (res.status === 200) {
-        const resApp = await mockFetch(
-          `http://localhost:3000/api/application?passportNumber=${data.passportNumber}`,
-          { method: "GET", headers: myHeaders },
-        );
-
-        if (resApp.status !== 200 && resApp.status !== 404) {
-          throw new Error(); // Error needs to be properly handled in further versions
+      dispatch(setApplicantPassportDetails(passportDetails));
+      let applicantRes;
+      try {
+        applicantRes = await getApplicants(passportDetails);
+        dispatch(setApplicantDetailsFromApiResponse(applicantRes.data[0]));
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.status == 404) {
+          navigate("/applicant-results");
+          return;
         }
-
-        if (resApp.status === 200) {
-          updateReduxStoreApplication(resApp.medicalScreening, resApp.travelInformation);
-        }
-
-        navigate("/tracker");
-      } else if (res.status === 404) {
-        navigate("/applicant-results");
-      } else {
-        throw new Error(); // Error needs to be properly handled in further versions
+        throw error;
       }
-    } catch {
-      // Error needs to be properly handled in further versions
+
+      const applicationRes = await getApplication(applicantRes.data);
+      if (applicationRes.data.travelInformation) {
+        dispatch(setTravelDetailsFromApiResponse(applicationRes.data.travelInformation));
+      }
+      if (applicationRes.data.medicalScreening) {
+        dispatch(setMedicalScreeningDetailsFromApiResponse(applicationRes.data.medicalScreening));
+      }
+      navigate("/tracker");
+    } catch (error) {
+      console.error(error);
       navigate("/error");
     }
   };

@@ -3,6 +3,7 @@
 ## Setup
 
 This project uses:
+
 - [Vite](https://vite.dev/) with [React](https://react.dev/) and [TypeScript](https://www.typescriptlang.org/docs/)
 - [govuk-frontend](https://github.com/alphagov/govuk-frontend) for GDS-compliant sass styling
 - [Vitest](https://vitest.dev/) and [Cypress](https://www.cypress.io/) for testing
@@ -22,34 +23,57 @@ To install dependencies, run `pnpm i`.
 | `pnpm run cypress`    | Opens the Cypress UI        |
 | `npx cypress run`     | Run cypress E2E tests in the terminal        |
 
-## Cypress Tests
+## Cypress End to End Tests
 
-- First time ? Run the command below to download the cypress binary.
+### Prerequisites
+
+- Download the cypress binary
 
 ```sh
 cd pets-ui
 pnpm exec cypress install --force
 ```
 
+- Pull local enviroment secrets using this [guide](../README.md#pulling-secrets-for-local-development).
+
+### Running the test
+
 - In one terminal, start up the Dev Environment in the background using `pnpm start`
+
 - Please contine to either running via Cypress UI or via the CLI
 
-### Running via Cypress UI(Please note this might not work on Mac, use CLI if that's the case)
+#### Running via Cypress UI(Please note this might not work on Mac, use CLI if that's the case)
 
-- Open a second terminal, CD to `pets-ui/cypress` folder and run a `pnpm cypress open -C cypress.config.mjs` to open cypress.
-- Once cypress is open click on the 'E2E Testing' option, it should say 'Configured' underneath in green. 
+- Open a second terminal, run the commands below to open the cypress UI:
+
+    ```sh
+        cd pets-ui
+        pnpm cypress:open
+    ```
+
+- Once cypress is open click on the 'E2E Testing' option, it should say 'Configured' underneath in green.
 - Select your browser and then Select the test you wish to run;
-- applicantDetailsDateValidationTest - This Test is validating applicant date fields will reject special characters.
-- applicantDetailsPage- Happy path Test with VALID data enteredt in all fields (This test does not currently include submission validation which will - be included at a later date. the scipt for it is ( // Validate that the page navigates to the confirmation page cy.url().should('include', 'http://localhost:3000/applicant/confirmation');)
-- emptyMandatoryFieldTest - This Test checks error messages are displayed when a mandatory field is left empty at submission.
-- textFieldValidation - This Test validates error messages are displayed when special characters are entered in the Free Text fields.
+  - Electron and Mozilla are highly recommended due to enforced organization policy on Chrome and Edge that might affect your test run.
 
-### Running via CLI
+- See below for information on existing test;
+  - applicantDetailsDateValidationTest - This Test is validating applicant date fields will reject special characters.
+  - applicantDetailsPage- Happy path Test with VALID data enteredt in all fields (This test does not currently include submission validation which will - be included at a later date. the scipt for it is ( // Validate that the page navigates to the confirmation page cy.url().should('include', '<http://localhost:3000/applicant/confirmation>');)
+  - emptyMandatoryFieldTest - This Test checks error messages are displayed when a mandatory field is left empty at submission.
+  - textFieldValidation - This Test validates error messages are displayed when special characters are entered in the Free Text fields.
 
-- Open a second terminal, CD to `pets-ui/cypress` folder.
+#### Running via CLI
 
-- To run test for a single file, `pnpm cypress run -C cypress.config.mjs --spec '[the/relative/path/to/test/]' --headed`
+- On a second terminal, run `cd pets-ui`.
+
+- To run all tests in browser mode:
+    `pnpm cypress:run --headed`
+
+- To run test for a single file: `pnpm cypress:run --spec '[the/relative/path/to/test/]' --headed`
 
     For example:
-    `pnpm cypress run -C cypress.config.mjs --spec 'cypress/e2e/ApplicantDetailsPage/TBBETA-324 - TC04.cy.ts' --headed`
-    `pnpm cypress run -C cypress.config.mjs --spec 'cypress/e2e/TravelDetailsPage/TBBETA-547 - TC02.cy.ts' --headed`
+
+    `pnpm cypress:run --spec 'cypress/e2e/ApplicantDetailsPage/TBBETA-324 - TC04.cy.ts' --headed`
+
+    `pnpm cypress:run --spec 'cypress/e2e/TravelDetailsPage/TBBETA-547 - TC02.cy.ts' --headed`
+
+- See [cypress-run](https://docs.cypress.io/app/references/command-line#cypress-run) for more options
