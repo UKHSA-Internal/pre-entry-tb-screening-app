@@ -13,6 +13,7 @@ import {
   setApplicantPassportDetails,
 } from "@/redux/applicantSlice";
 import { clearApplicationDetails } from "@/redux/applicationSlice";
+import { clearChestXrayDetails, setChestXrayFromApiResponse } from "@/redux/chestXraySlice";
 import { useAppDispatch } from "@/redux/hooks";
 import {
   clearMedicalScreeningDetails,
@@ -34,6 +35,7 @@ const ApplicantSearchForm = () => {
     dispatch(clearApplicationDetails());
     dispatch(clearMedicalScreeningDetails());
     dispatch(clearTravelDetails());
+    dispatch(clearChestXrayDetails());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -63,6 +65,9 @@ const ApplicantSearchForm = () => {
       }
       if (applicationRes.data.medicalScreening) {
         dispatch(setMedicalScreeningDetailsFromApiResponse(applicationRes.data.medicalScreening));
+      }
+      if (applicationRes.data.chestXray) {
+        dispatch(setChestXrayFromApiResponse(applicationRes.data.chestXray));
       }
       navigate("/tracker");
     } catch (error) {
