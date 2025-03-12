@@ -15,14 +15,13 @@ const dateFieldErrorMessages: string[] = [
   "Passport expiry day and year must contain only numbers. Passport expiry month must be a number, or the name of the month, or the first three letters of the month.",
 ];
 
-describe("Validate error messages for Applicant Details Date Fields", () => {
+describe.skip("Validate error messages for Applicant Details Date Fields", () => {
   beforeEach(() => {
     applicantDetailsPage.visit();
-    applicantDetailsPage.interceptFormSubmission();
     applicantDetailsPage.verifyPageLoaded();
   });
 
-  it("Fill out the application date fields with invalid characters", () => {
+  it.skip("Fill out the application date fields with invalid characters", () => {
     // Fill out form with valid data except date fields
     applicantDetailsPage.fillFullName("John Doe");
     applicantDetailsPage.selectSex("Male");

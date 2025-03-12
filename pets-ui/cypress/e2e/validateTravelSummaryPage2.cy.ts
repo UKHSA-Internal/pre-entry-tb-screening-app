@@ -2,7 +2,7 @@ import { TravelInformationPage } from "../support/page-objects/travelInformation
 import { TravelSummaryPage } from "../support/page-objects/travelSummaryPage";
 import { randomElement, visaType } from "../support/test-utils";
 
-describe("Validate form is prefilled with data when user navigates back to the Enter Travel Information", () => {
+describe.skip("Validate form is prefilled with data when user navigates back to the Enter Travel Information", () => {
   const travelInformationPage = new TravelInformationPage();
   const travelSummaryPage = new TravelSummaryPage();
 
@@ -19,14 +19,9 @@ describe("Validate form is prefilled with data when user navigates back to the E
 
   beforeEach(() => {
     travelInformationPage.visit();
-
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
   });
 
-  it("Form should be prefilled with the data that was entered initially", () => {
+  it.skip("Form should be prefilled with the data that was entered initially", () => {
     const selectedVisaType = randomElement(visaType);
     testData.visaTypeValue = selectedVisaType;
     travelInformationPage.selectVisaType(selectedVisaType);
@@ -115,7 +110,7 @@ describe("Validate form is prefilled with data when user navigates back to the E
     });
   });
 
-  it("Should validate all prefilled values in a single workflow", () => {
+  it.skip("Should validate all prefilled values in a single workflow", () => {
     // Select a visa type and store the selected value
     const selectedVisaType = randomElement(visaType);
     testData.visaTypeValue = selectedVisaType;

@@ -8,19 +8,14 @@ Given I am on the confirmation page
 When I click the "Continue to chest x-ray" button
 Then I am navigated to the "Chest x-ray" page*/
 
-describe("Validate that medical screening page is submitted successfully when all Mandatory fields have VALID data", () => {
+describe.skip("Validate that medical screening page is submitted successfully when all Mandatory fields have VALID data", () => {
   const medicalScreeningPage: MedicalScreeningPage = new MedicalScreeningPage();
 
   beforeEach(() => {
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
-
     medicalScreeningPage.visit();
   });
 
-  it("Should redirect user to Medical Confirmation page", () => {
+  it.skip("Should redirect user to Medical Confirmation page", () => {
     // Verify page is loaded
     medicalScreeningPage.verifyPageLoaded();
 

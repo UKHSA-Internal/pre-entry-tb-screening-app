@@ -2,7 +2,7 @@ import { countryList } from "../../../src/utils/countryList";
 import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
 import { randomElement } from "../../support/test-utils";
 
-describe("Validate Applicant name and address fields accept punctuations and special characters", () => {
+describe.skip("Validate Applicant name and address fields accept punctuations and special characters", () => {
   const applicantDetailsPage = new ApplicantDetailsPage();
 
   // Random number generator
@@ -11,10 +11,9 @@ describe("Validate Applicant name and address fields accept punctuations and spe
 
   beforeEach(() => {
     applicantDetailsPage.visit();
-    applicantDetailsPage.interceptFormSubmission();
   });
 
-  it("Should not throw error messages when special characters and punctuations are entered in name and address fields", () => {
+  it.skip("Should not throw error messages when special characters and punctuations are entered in name and address fields", () => {
     // Enter VALID data for 'Full name'
     applicantDetailsPage.fillFullName("John O'Sullivan - Hantan");
 

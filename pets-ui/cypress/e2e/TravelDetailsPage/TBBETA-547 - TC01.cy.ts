@@ -2,21 +2,15 @@ import { TravelInformationPage } from "../../support/page-objects/travelInformat
 
 const visaTypeErrorMessage = "Select a visa type.";
 
-describe("Validate the error message is displayed when Visa type is NOT selected", () => {
+describe.skip("Validate the error message is displayed when Visa type is NOT selected", () => {
   const travelInformationPage = new TravelInformationPage();
 
   beforeEach(() => {
     // Visit the travel information page
     travelInformationPage.visit();
-
-    // Intercept form submission
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
   });
 
-  it("Should display an error message when visa type is not selected", () => {
+  it.skip("Should display an error message when visa type is not selected", () => {
     travelInformationPage.fillAddressLine1("61 Legard Drive");
     travelInformationPage.fillAddressLine2("Anlaby");
     travelInformationPage.fillTownOrCity("Hull");

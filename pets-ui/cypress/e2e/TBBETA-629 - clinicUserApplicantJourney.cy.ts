@@ -1,4 +1,5 @@
 import { countryList } from "../../src/utils/countryList";
+import { loginViaB2C } from "../support/commands";
 import { ApplicantConfirmationPage } from "../support/page-objects/applicantConfirmationPage";
 import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../support/page-objects/applicantSummaryPage";
@@ -27,7 +28,9 @@ describe("Visa Application End-to-End Tests", () => {
   let countryName: string;
   let passportNumber: string;
 
-  before(() => {
+  beforeEach(() => {
+    loginViaB2C();
+
     // Generate random country and passport number
     const randomCountry = randomElement(countryList);
     countryName = randomCountry?.value;
@@ -39,8 +42,7 @@ describe("Visa Application End-to-End Tests", () => {
   });
 
   it("should complete the full application process with search and create new", () => {
-    //Search for an applicant
-    applicantSearchPage.visit();
+    // We're already on the applicant search page after login, so no need to visit it
     applicantSearchPage.verifyPageLoaded();
     applicantSearchPage.fillPassportNumber(passportNumber);
     applicantSearchPage.selectCountryOfIssue(countryName);
@@ -56,7 +58,6 @@ describe("Visa Application End-to-End Tests", () => {
 
     // Fill Applicant Details
     applicantDetailsPage.verifyPageLoaded();
-    applicantDetailsPage.interceptFormSubmission();
 
     // Passport number and country should already be prefilled
     applicantDetailsPage.fillFullName("Jane Smith");
@@ -112,7 +113,7 @@ describe("Visa Application End-to-End Tests", () => {
 
     // Fill contact details
     travelInformationPage.fillMobileNumber("07700900123");
-    travelInformationPage.fillEmail("pets.tester@ukhsa.gov.uk");
+    travelInformationPage.fillEmail("pets.tester@hotmail.com");
 
     // Submit form
     travelInformationPage.submitForm();

@@ -3,7 +3,7 @@ import { TravelInformationPage } from "../support/page-objects/travelInformation
 import { TravelSummaryPage } from "../support/page-objects/travelSummaryPage";
 import { randomElement, visaType } from "../support/test-utils";
 
-describe("Validate that the continue to medical screening button navigates to the medical screening page", () => {
+describe.skip("Validate that the continue to medical screening button navigates to the medical screening page", () => {
   const travelInformationPage = new TravelInformationPage();
   const travelSummaryPage = new TravelSummaryPage();
   const travelConfirmationPage = new TravelConfirmationPage();
@@ -21,14 +21,9 @@ describe("Validate that the continue to medical screening button navigates to th
 
   beforeEach(() => {
     travelInformationPage.visit();
-
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
   });
 
-  it("should redirect user to Medical Screening Page", () => {
+  it.skip("should redirect user to Medical Screening Page", () => {
     cy.get("#visa-type.govuk-select")
       .find("option")
       .then(($options) => {

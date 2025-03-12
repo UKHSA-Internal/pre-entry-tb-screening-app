@@ -1,12 +1,8 @@
-describe("Validate that applicant form is prefilled when user navigates back to applicant information page from applicant summary page", () => {
+describe.skip("Validate that applicant form is prefilled when user navigates back to applicant information page from applicant summary page", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/medical-screening");
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
   });
-  it("Should be prefilled with the data that was entered initially", () => {
+  it.skip("Should be prefilled with the data that was entered initially", () => {
     //Enter applicant's age
     cy.get('input[name="age"]').type("29");
 

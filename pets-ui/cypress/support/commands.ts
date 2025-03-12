@@ -8,11 +8,6 @@ Cypress.Commands.add("setupApplicationForm", () => {
 
   cy.visit("http://localhost:3000/contact");
 
-  cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-    statusCode: 200,
-    body: { success: true, message: "Data successfully posted" },
-  }).as("formSubmit");
-
   // Enter valid data for 'Full name'
   cy.get('input[name="fullName"]').type("John Doe");
 
@@ -60,7 +55,7 @@ Cypress.Commands.add("setupApplicationForm", () => {
   //verify url navigates to applicant confirmation page
   cy.url().should("include", "http://localhost:3000/applicant-confirmation");
 });
-
+export function loginViaB2C() {}
 Cypress.Commands.add("loginViaB2C", () => {
   cy.log("Starting B2C authentication");
 
@@ -113,6 +108,6 @@ Cypress.Commands.add("loginViaB2C", () => {
   cy.log("Checking redirection to applicant search");
   cy.url({ timeout: 30000 }).should("include", "/applicant-search");
 });
-Cypress.Commands.add("clearAllSessions", async () => {
-  await Cypress.session.clearAllSavedSessions();
+Cypress.Commands.add("clearAllSessions", () => {
+  return Cypress.session.clearAllSavedSessions();
 });

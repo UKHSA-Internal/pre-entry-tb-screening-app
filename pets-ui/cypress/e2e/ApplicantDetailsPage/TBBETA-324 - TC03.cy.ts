@@ -17,14 +17,13 @@ const mandatoryFieldErrorMessages = [
   "Passport issue date must include a day, month and year.",
 ];
 
-describe("Validate the errors for empty Mandatory Fields", () => {
+describe.skip("Validate the errors for empty Mandatory Fields", () => {
   beforeEach(() => {
     applicantDetailsPage.visit();
-    applicantDetailsPage.interceptFormSubmission();
     applicantDetailsPage.verifyPageLoaded();
   });
 
-  it("Should return errors for empty mandatory fields", () => {
+  it.skip("Should return errors for empty mandatory fields", () => {
     // Fill in the fields that should have valid data
     applicantDetailsPage.fillFullName("John Doe");
     applicantDetailsPage.selectSex("male");

@@ -13,7 +13,7 @@ dotenv.config({
 
 export default defineConfig({
   e2e: {
-    baseUrl: "https://d5jrf294anprd.cloudfront.net/",
+    baseUrl: "http://localhost:3000/",
     supportFile: "cypress/support/e2e.ts",
     specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
     experimentalStudio: true,

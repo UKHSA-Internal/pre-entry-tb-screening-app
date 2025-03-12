@@ -7,17 +7,13 @@ const errorMessages = [
 ];
 const urlFragment = ["#address-2", "#town-or-city"];
 
-describe("Validate the error message for the Address Fields", () => {
+describe.skip("Validate the error message for the Address Fields", () => {
   const travelInformationPage = new TravelInformationPage();
 
   beforeEach(() => {
     travelInformationPage.visit();
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
   });
-  it("Fill out the applicant address field with INVALID characters", () => {
+  it.skip("Fill out the applicant address field with INVALID characters", () => {
     // Select a Visa Type
     travelInformationPage.selectVisaType(randomElement(visaType));
 

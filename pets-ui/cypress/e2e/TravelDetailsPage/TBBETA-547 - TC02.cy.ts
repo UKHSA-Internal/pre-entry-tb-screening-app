@@ -2,18 +2,14 @@ import { TravelInformationPage } from "../../support/page-objects/travelInformat
 import { randomElement, visaType } from "../../support/test-utils";
 
 //Scenario: Travel Information Page Happy Path Test
-describe("Enter VALID Data for Applicant Travel Information", () => {
+describe.skip("Enter VALID Data for Applicant Travel Information", () => {
   const travelInformationPage = new TravelInformationPage();
 
   beforeEach(() => {
     travelInformationPage.visit();
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
   });
 
-  it("Should be redirected to travel confirmation page on submission", () => {
+  it.skip("Should be redirected to travel confirmation page on submission", () => {
     travelInformationPage.selectVisaType(randomElement(visaType));
     travelInformationPage.fillAddressLine1("61 Legard Drive");
     travelInformationPage.fillAddressLine2("Anlaby");

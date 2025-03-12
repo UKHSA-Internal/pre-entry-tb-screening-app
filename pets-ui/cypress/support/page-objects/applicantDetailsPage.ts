@@ -4,12 +4,6 @@ export class ApplicantDetailsPage {
   visit(): void {
     cy.visit("/contact");
   }
-  interceptFormSubmission(): void {
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
-  }
 
   // Personal Details Actions
   fillFullName(name: string): void {
@@ -246,9 +240,5 @@ export class ApplicantDetailsPage {
 
   getCurrentUrl(): Cypress.Chainable<string> {
     return cy.url();
-  }
-
-  waitForSubmissionResponse(): void {
-    cy.wait("@formSubmit");
   }
 }

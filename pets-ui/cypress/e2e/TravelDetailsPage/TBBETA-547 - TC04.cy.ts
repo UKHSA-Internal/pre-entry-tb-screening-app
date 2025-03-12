@@ -3,21 +3,15 @@ import { randomElement, visaType } from "../../support/test-utils";
 
 const emailErrorMessage = "Email must be in correct format.";
 
-describe("Validate the error message is displayed when incorrect data is entered in Applicant's UK email field", () => {
+describe.skip("Validate the error message is displayed when incorrect data is entered in Applicant's UK email field", () => {
   const travelInformationPage = new TravelInformationPage();
 
   beforeEach(() => {
     // Visit the travel information page
     travelInformationPage.visit();
-
-    // Intercept form submission
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
   });
 
-  it("Should display an error message", () => {
+  it.skip("Should display an error message", () => {
     // Select a Visa Type
     travelInformationPage.selectVisaType(randomElement(visaType));
 

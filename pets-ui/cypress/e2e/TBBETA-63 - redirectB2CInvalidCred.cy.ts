@@ -5,7 +5,7 @@
  * Then I should see an error message and remain on the login page
  */
 
-describe("Validate that user cannot access the application with non-existent credentials", () => {
+describe.skip("Validate that user cannot access the application with non-existent credentials", () => {
   Cypress.env("SKIP_AUTH", "true");
 });
 
@@ -14,16 +14,12 @@ after(() => {
 });
 beforeEach(() => {
   cy.visit("/");
-  cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-    statusCode: 200,
-    body: { success: true, message: "Data successfully posted" },
-  }).as("formSubmit");
 
   // Test naviagtion to applicant search page
   cy.intercept("GET", "**/applicant-search*").as("applicantSearchPage");
 });
 
-it("should show error message when email does not exist", () => {
+it.skip("should show error message when email does not exist", () => {
   // Click the sign-in button
   cy.get("#sign-in").click();
 

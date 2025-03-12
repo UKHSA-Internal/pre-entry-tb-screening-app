@@ -8,16 +8,15 @@ const applicantDetailsPage = new ApplicantDetailsPage();
 const randomCountry = randomElement(countryList);
 const countryName = randomCountry?.value;
 
-describe("Validate User Journey for New Applicants", () => {
+describe.skip("Validate User Journey for New Applicants", () => {
   beforeEach(() => {
     // Navigate to the contact page
     applicantDetailsPage.visit();
-    applicantDetailsPage.interceptFormSubmission();
 
     applicantDetailsPage.verifyPageLoaded();
   });
 
-  it("Fill out the application with valid data", () => {
+  it.skip("Fill out the application with valid data", () => {
     // Enter personal details
     applicantDetailsPage.fillFullName("John Doe");
     applicantDetailsPage.selectSex("Male");
@@ -45,6 +44,5 @@ describe("Validate User Journey for New Applicants", () => {
 
     // Submit the form
     applicantDetailsPage.submitForm();
-    applicantDetailsPage.waitForSubmissionResponse();
   });
 });

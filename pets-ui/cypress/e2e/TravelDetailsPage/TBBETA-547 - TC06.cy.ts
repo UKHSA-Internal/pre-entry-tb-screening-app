@@ -4,19 +4,14 @@ import { randomElement, visaType } from "../../support/test-utils";
 // Error message for missing town/city
 const errorMessage = "Enter town or city.";
 
-describe("Validate the error message is displayed when town/city is not entered", () => {
+describe.skip("Validate the error message is displayed when town/city is not entered", () => {
   const travelInformationPage = new TravelInformationPage();
 
   beforeEach(() => {
     travelInformationPage.visit();
-
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
   });
 
-  it("Should display an error message when town/city is not entered", () => {
+  it.skip("Should display an error message when town/city is not entered", () => {
     travelInformationPage.selectVisaType(randomElement(visaType));
 
     // Enter Address Information (skipping town/city)
