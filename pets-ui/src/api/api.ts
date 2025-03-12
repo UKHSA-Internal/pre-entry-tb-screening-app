@@ -5,6 +5,7 @@ import {
   ApplicationIdAndDateCreatedType,
   PostedApplicantDetailsType,
   PostedChestXrayDetailsType,
+  PostedChestXrayNotTakenType,
   PostedMedicalScreeningType,
   PostedTravelDetailsType,
   ReceivedApplicantDetailsType,
@@ -88,7 +89,7 @@ export const postMedicalDetails = async (
 
 export const postChestXrayDetails = async (
   applicationId: string,
-  chestXrayDetails: PostedChestXrayDetailsType,
+  chestXrayDetails: PostedChestXrayDetailsType | PostedChestXrayNotTakenType,
 ) => {
   const result = await petsApi.post(`/application/${applicationId}/chest-xray`, chestXrayDetails);
   return { status: result.status, statusText: result.statusText };

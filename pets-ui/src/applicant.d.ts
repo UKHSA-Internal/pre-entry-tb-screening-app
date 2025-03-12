@@ -214,6 +214,14 @@ type PostedChestXrayDetailsType = {
 
 type ReceivedChestXrayDetailsType = PostedChestXrayDetailsType & ReceivedApplicationAttributesType;
 
+type PostedChestXrayNotTakenType = {
+  reasonXrayWasNotTaken: string;
+  xrayWasNotTakenFurtherDetails: string;
+};
+
+type ReceivedChestXrayNotTakenType = PostedChestXrayNotTakenType &
+  ReceivedApplicationAttributesType;
+
 // Sputum types
 type ReduxSputumCollectionDetailsType = {
   dateOfSputumSample1: string | null;
