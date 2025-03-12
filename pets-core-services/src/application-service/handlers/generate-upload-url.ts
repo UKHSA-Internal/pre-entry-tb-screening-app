@@ -17,6 +17,7 @@ export type GenerateUploadEvent = PetsAPIGatewayProxyEvent & {
 const IMAGE_BUCKET = assertEnvExists(process.env.IMAGE_BUCKET);
 const APP_DOMAIN = assertEnvExists(process.env.APP_DOMAIN); // // TODO: App domain change to route53 Qs
 const UPLOAD_CLOUDFRONT_PATH = "upload";
+const EXPIRY_TIME = 2 * 60; // 2 minutes
 
 export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
   const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
@@ -61,10 +62,14 @@ export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
   const s3EndpointUploadUrl = await getSignedUrl(client, command, {
-    expiresIn: 5 * 60 * 60, // TODO: Change to 2 minutes
-    hoistableHeaders: new Set([
+    expiresIn: EXPIRY_TIME,
+    unhoistableHeaders: new Set([
+      // Undocumented fix in the signing url library: https://github.com/aws/aws-sdk-js-v3/issues/1576
+      "x-amz-checksum-sha256",
+      "x-amz-sdk-checksum-algorithm",
       "x-amz-server-side-encryption",
       "x-amz-server-side-encryption-aws-kms-key-id",
+      "If-None-Match",
     ]),
   });
 
