@@ -73,11 +73,11 @@ describe("standardiseDayOrMonth function", () => {
 describe("validateDate function", () => {
   it("should provide the emptyFieldError when provided with all empty date fields", () => {
     expect(validateDate({ day: "", month: "", year: "" }, "dateOfBirth")).toBe(
-      "Date of birth must include a day, month and year.",
+      "Date of birth must include a day, month and year",
     );
   });
   it("should provide the a missing Fields error message when provided with partially completed date fields", () => {
-    const testCases = [
+    const dateTestCases = [
       {
         value: { day: "01", month: "", year: "" },
         field: "dateOfBirth",
@@ -110,8 +110,94 @@ describe("validateDate function", () => {
       },
     ];
 
-    testCases.forEach(({ value, field, expected }) => {
+    dateTestCases.forEach(({ value, field, expected }) => {
       expect(validateDate(value, field)).toBe(expected);
+    });
+  });
+  it("should provide the invalidCharError when provided with all date fields containing invalid charcters", () => {
+    const invalidCharError =
+      "Date of birth day and year must contain only numbers. Date of birth month must be a number, or the name of the month, or the first three letters of the month";
+
+    const dateTestCases = [
+      {
+        value: { day: "05", month: "02", year: "$$" },
+        field: "dateOfBirth",
+        expected: invalidCharError,
+      },
+      {
+        value: { day: "05", month: "$$", year: "2000" },
+        field: "dateOfBirth",
+        expected: invalidCharError,
+      },
+      {
+        value: { day: "$$", month: "02", year: "2000" },
+        field: "dateOfBirth",
+        expected: invalidCharError,
+      },
+      {
+        value: { day: "not", month: "02", year: "2000" },
+        field: "dateOfBirth",
+        expected: invalidCharError,
+      },
+      {
+        value: { day: "01", month: "not", year: "2000" },
+        field: "dateOfBirth",
+        expected: invalidCharError,
+      },
+      {
+        value: { day: "01", month: "05", year: "not" },
+        field: "dateOfBirth",
+        expected: invalidCharError,
+      },
+    ];
+    dateTestCases.forEach(({ value, field, expected }) => {
+      expect(validateDate(value, field)).toBe(expected);
+    });
+  });
+  it("should provide the invalidDateError when provided an invalid date", () => {
+    const dateTestCases = [
+      {
+        value: { day: "09", month: "12", year: "1888" },
+        field: "dateOfBirth",
+        expected: "Date of birth date must be a valid date",
+      },
+      {
+        value: { day: "09", month: "12", year: "3000" },
+        field: "dateOfBirth",
+        expected: "Date of birth date must be a valid date",
+      },
+    ];
+
+    dateTestCases.forEach(({ value, field, expected }) => {
+      expect(validateDate(value, field)).toBe(expected);
+    });
+  });
+  it("should provide specific wordings based on the error field and the type of date", () => {
+    const dateTestCases = [
+      {
+        value: { day: "09", month: "12", year: "3000" },
+        field: "dateOfBirth",
+        expected: "Date of birth",
+      },
+      {
+        value: { day: "09", month: "12", year: "3000" },
+        field: "passportIssueDate",
+        expected: "Passport issue date",
+      },
+      {
+        value: { day: "09", month: "12", year: "3000" },
+        field: "passportExpiryDate",
+        expected: "Passport expiry date",
+      },
+      {
+        value: { day: "09", month: "12", year: "3000" },
+        field: "tbCertificateDate",
+        expected: "TB clearance certificate date",
+      },
+    ];
+
+    dateTestCases.forEach(({ value, field, expected }) => {
+      expect(validateDate(value, field)).toContain(expected);
     });
   });
 });
