@@ -32,16 +32,14 @@ describe("ApplicantForm", () => {
     expect(screen.getAllByText("Enter the applicant's full name.")).toHaveLength(2);
     expect(screen.getAllByText("Select the applicant's sex.")).toHaveLength(2);
     expect(screen.getAllByText("Select the country of nationality.")).toHaveLength(2);
-    expect(screen.getAllByText("Date of birth must include a day, month and year.")).toHaveLength(
-      2,
-    );
+    expect(screen.getAllByText("Date of birth must include a day, month and year")).toHaveLength(2);
     expect(screen.getAllByText("Enter the applicant's passport number.")).toHaveLength(2);
     expect(screen.getAllByText("Select the country of issue.")).toHaveLength(2);
     expect(
-      screen.getAllByText("Passport issue date must include a day, month and year."),
+      screen.getAllByText("Passport issue date must include a day, month and year"),
     ).toHaveLength(2);
     expect(
-      screen.getAllByText("Passport expiry date must include a day, month and year."),
+      screen.getAllByText("Passport expiry date must include a day, month and year"),
     ).toHaveLength(2);
     expect(
       screen.getAllByText("Enter the first line of the applicant's home address."),
