@@ -114,7 +114,7 @@ jobs:
 
       - name: Start Local Environment
         run: |
-          pnpm start & sleep 120
+          pnpm start & sleep 150
 
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
