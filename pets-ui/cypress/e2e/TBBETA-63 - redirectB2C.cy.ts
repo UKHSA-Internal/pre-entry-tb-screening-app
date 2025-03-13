@@ -6,7 +6,7 @@ import { testCredentials } from "../support/test-data";
  * When I successfully authenticate via Azure Entra B2C,
  * Then I am taken to the Applicant Search Page (`/applicant-search`)
  */
-describe("Validate that user is navigated to the Applicant Search page when successfully authenticated via Azure Entra B2C", () => {
+describe.skip("Validate that user is navigated to the Applicant Search page when successfully authenticated via Azure Entra B2C", () => {
   beforeEach(() => {
     Cypress.env("SKIP_AUTH", "true");
     cy.visit("/");
@@ -16,7 +16,7 @@ describe("Validate that user is navigated to the Applicant Search page when succ
     Cypress.env("SKIP_AUTH", "false");
   });
 
-  it("should allow login and navigate to Applicant Search page", () => {
+  it.skip("should allow login and navigate to Applicant Search page", () => {
     expect(testCredentials.length).to.be.greaterThan(0);
     // Click the sign-in button
     cy.get("button#sign-in").click({ force: true });

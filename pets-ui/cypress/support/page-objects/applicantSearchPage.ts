@@ -9,8 +9,8 @@ export class ApplicantSearchPage {
 
   // Verify page loaded
   verifyPageLoaded(): void {
-    cy.contains("h1", "Search for a visa applicant").should("exist").and("be.visible");
-    /* cy.get("h1.govuk-heading-l").should("exist").and("have.text", "Search for a visa applicant"); */
+    //cy.contains("h1", "Search for a visa applicant").should("exist").and("be.visible");
+    cy.get("h1.govuk-heading-l").should("exist").and("have.text", "Search for a visa applicant");
     cy.contains(
       "p",
       "Enter the applicant's passport number and the passport's country of issue.",

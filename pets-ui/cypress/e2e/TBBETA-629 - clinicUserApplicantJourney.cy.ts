@@ -30,7 +30,8 @@ describe("Visa Application End-to-End Tests", () => {
 
   beforeEach(() => {
     loginViaB2C();
-
+    applicantSearchPage.visit();
+    applicantSearchPage.verifyPageLoaded();
     // Generate random country and passport number
     const randomCountry = randomElement(countryList);
     countryName = randomCountry?.value;
@@ -42,8 +43,6 @@ describe("Visa Application End-to-End Tests", () => {
   });
 
   it("should complete the full application process with search and create new", () => {
-    // We're already on the applicant search page after login, so no need to visit it
-    applicantSearchPage.verifyPageLoaded();
     applicantSearchPage.fillPassportNumber(passportNumber);
     applicantSearchPage.selectCountryOfIssue(countryName);
     applicantSearchPage.submitSearch();
