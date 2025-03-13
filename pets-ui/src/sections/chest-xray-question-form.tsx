@@ -34,10 +34,10 @@ const ChestXrayQuestionForm = () => {
     dispatch(setChestXrayTaken(data.chestXrayTaken));
 
     if (data.chestXrayTaken === YesOrNo.YES) {
-      clearChestXrayNotTakenDetails();
+      dispatch(clearChestXrayNotTakenDetails());
       navigate("/chest-xray-upload");
     } else {
-      clearChestXrayTakenDetails();
+      dispatch(clearChestXrayTakenDetails());
       navigate("/chest-xray-not-taken");
     }
   };
