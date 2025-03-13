@@ -9,7 +9,12 @@ import ErrorDisplay from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import { selectApplicant } from "@/redux/applicantSlice";
-import { selectChestXray, setChestXrayTaken } from "@/redux/chestXraySlice";
+import {
+  clearChestXrayNotTakenDetails,
+  clearChestXrayTakenDetails,
+  selectChestXray,
+  setChestXrayTaken,
+} from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
 
@@ -29,8 +34,10 @@ const ChestXrayQuestionForm = () => {
     dispatch(setChestXrayTaken(data.chestXrayTaken));
 
     if (data.chestXrayTaken === YesOrNo.YES) {
+      clearChestXrayNotTakenDetails();
       navigate("/chest-xray-upload");
     } else {
+      clearChestXrayTakenDetails();
       navigate("/chest-xray-not-taken");
     }
   };
