@@ -62,7 +62,6 @@ jobs:
           path: pets-ui/coverage/
 
   cypress-run:
-    if: false # Skip End to End Tests temporarily
     name: Run cypress tests
     runs-on: ubuntu-latest
     strategy:
@@ -113,24 +112,14 @@ jobs:
           pnpm exec cypress verify
         working-directory: pets-ui
 
+      - name: Start Local Environment
+        run: pnpm start
+
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
         with:
           install: false
           working-directory: pets-ui
-          build: pnpm run build
-          start: pnpm run dev
-          browser: ${{ matrix.browser }}
-          config-file: cypress/cypress.config.mjs
-
-      - name: Retry if failed
-        if: failure()
-        uses: cypress-io/github-action@v6
-        with:
-          install: false
-          working-directory: pets-ui
-          build: pnpm run build
-          start: pnpm run dev
           browser: ${{ matrix.browser }}
           config-file: cypress/cypress.config.mjs
 
