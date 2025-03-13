@@ -106,11 +106,11 @@ describe("ChestXrayNotTakenPage", () => {
     expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
     expect(screen.queryByText("Enter reason X-ray not taken.")).not.toBeInTheDocument();
   });
-  it("when continue pressed, it navigates to /xray-not-taken-summary", async () => {
+  it("when continue pressed, it navigates to /chest-xray-summary", async () => {
     const radioButtons = screen.getAllByRole("radio");
 
     await user.click(radioButtons[0]);
     await user.click(screen.getByRole("button"));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/xray-not-taken-summary");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-summary");
   });
 });
