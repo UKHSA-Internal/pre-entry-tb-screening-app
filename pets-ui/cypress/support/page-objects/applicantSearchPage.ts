@@ -1,5 +1,6 @@
-//This holds all fields for the Applicant Search Page - this page may become redundant once navigation issue is fixed
+// This holds all fields on the Applicant Search Page
 import { countryList } from "../../../src/utils/countryList";
+
 export class ApplicantSearchPage {
   // Navigation
   visit(): void {
@@ -8,10 +9,8 @@ export class ApplicantSearchPage {
 
   // Verify page loaded
   verifyPageLoaded(): void {
-    //cy.contains("h1", "Search for a visa applicant").should("be.visible");
-    cy.get("h1.govuk-heading-l")
-      .should("be.visible")
-      .and("have.text", "Search for a visa applicant");
+    cy.contains("h1", "Search for a visa applicant").should("exist").and("be.visible");
+    /* cy.get("h1.govuk-heading-l").should("exist").and("have.text", "Search for a visa applicant"); */
     cy.contains(
       "p",
       "Enter the applicant's passport number and the passport's country of issue.",
@@ -20,7 +19,8 @@ export class ApplicantSearchPage {
 
   // Fill Passport Number
   fillPassportNumber(passportNumber: string): void {
-    cy.contains("label", "Applicant's Passport Number")
+    cy.get("label.govuk-label")
+      .contains("Applicant's Passport Number")
       .siblings(".govuk-input__wrapper")
       .find("input[name='passportNumber']")
       .should("be.visible")
@@ -35,7 +35,7 @@ export class ApplicantSearchPage {
 
   // Submit search form
   submitSearch(): void {
-    cy.contains("button", "Search").should("be.visible").click();
+    cy.get("button[type='submit']").should("be.visible").and("contain", "Search").click();
   }
 
   // Click Create New Applicant button
@@ -98,6 +98,16 @@ export class ApplicantSearchPage {
     }
   }
 
+  // Verify country of issue hint text
+  verifyCountryOfIssueHintText(): void {
+    cy.get("#country-of-issue-hint")
+      .should("be.visible")
+      .and(
+        "contain.text",
+        "If you have more than one, use the nationality in the primary passport submitted by the applicant",
+      );
+  }
+
   // Search and create new if not found - new applicant
   searchAndCreateNewIfNotFound(passportNumber: string, countryCode: string): void {
     this.fillPassportNumber(passportNumber);
@@ -127,6 +137,11 @@ export class ApplicantSearchPage {
     return country ? country.label : countryCode;
   }
 
+  // Verify country dropdown has all expected options
+  verifyCountryDropdownOptions(): void {
+    cy.get("select[name='countryOfIssue'] option").should("have.length.greaterThan", 200);
+  }
+
   getCurrentUrl(): Cypress.Chainable<string> {
     return cy.url();
   }
@@ -144,5 +159,12 @@ export class ApplicantSearchPage {
   // Get page title
   getPageTitle(): Cypress.Chainable<string> {
     return cy.title();
+  }
+
+  // Verify page header
+  verifyPageHeader(): void {
+    cy.get(".govuk-header__service-name")
+      .should("be.visible")
+      .and("contain", "Complete UK Pre-Entry Health Screening");
   }
 }
