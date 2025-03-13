@@ -62,7 +62,6 @@ jobs:
           path: pets-ui/coverage/
 
   cypress-run:
-    if: false # Skip End to End Tests temporarily
     name: Run cypress tests
     runs-on: ubuntu-latest
     strategy:
