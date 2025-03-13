@@ -21,6 +21,7 @@ const ChestXrayNotTakenSummary = () => {
   const handleSubmit = async () => {
     try {
       await postChestXrayDetails(applicationData.applicationId, {
+        chestXrayTaken: chestXrayData.chestXrayTaken,
         reasonXrayWasNotTaken: chestXrayData.reasonXrayWasNotTaken,
         xrayWasNotTakenFurtherDetails: chestXrayData.xrayWasNotTakenFurtherDetails,
       });
