@@ -104,7 +104,7 @@ export const routes: PetsRoute[] = [
     }),
   },
   {
-    method: "POST",
+    method: "PUT",
     path: "/application/{applicationId}/generate-dicom-upload-url",
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(setApplicationIdContext)

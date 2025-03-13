@@ -1,5 +1,17 @@
-import { ChecksumAlgorithm, PutObjectCommand, ServerSideEncryption } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import {
+  ChecksumAlgorithm,
+  PutObjectCommand,
+  S3Client,
+  ServerSideEncryption,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl, S3RequestPresigner } from "@aws-sdk/s3-request-presigner";
+import { formatUrl } from "@aws-sdk/util-format-url";
+import { HttpRequest } from "@smithy/protocol-http";
+import { parseUrl } from "@smithy/url-parser";
 import { z } from "zod";
 
 import awsClients from "../../shared/clients/aws";
@@ -47,31 +59,35 @@ export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
 
   // TODO: Move to clinic directory
   const objectkey = `${UPLOAD_CLOUDFRONT_PATH}/temp/${applicationId}/${fileName}`; // TODO: Document temp as well as the esbuild thingy
+  // TODO: think about the issue with moving file to a different directory, duplicate etc
 
   const client = awsClients.s3Client;
-  const command = new PutObjectCommand({
-    Bucket: IMAGE_BUCKET,
-    Key: objectkey,
-    ContentType: "application/octet-stream",
-    IfNoneMatch: "*",
-    ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
-    ChecksumSHA256: parsedBody.checksum,
-    SSEKMSKeyId: "arn:aws:kms:eu-west-2:108782068086:key/e9d62629-f651-4cfc-bab3-7b63563f2f82", // TODO: Change to Github secrets
-    ServerSideEncryption: ServerSideEncryption.aws_kms,
-  });
+  // const command = new PutObjectCommand({
+  //   Bucket: IMAGE_BUCKET,
+  //   Key: objectkey,
+  //   ContentType: "application/octet-stream",
+  //   ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
+  //   ChecksumSHA256: parsedBody.checksum,
+  //   SSEKMSKeyId: "e9d62629-f651-4cfc-bab3-7b63563f2f82", // TODO: Change to Github secrets
+  //   ServerSideEncryption: ServerSideEncryption.aws_kms,
+  // });
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-  const s3EndpointUploadUrl = await getSignedUrl(client, command, {
-    expiresIn: EXPIRY_TIME,
-    unhoistableHeaders: new Set([
-      // Undocumented fix in the signing url library: https://github.com/aws/aws-sdk-js-v3/issues/1576
-      "x-amz-checksum-sha256",
-      "x-amz-sdk-checksum-algorithm",
-      "x-amz-server-side-encryption",
-      "x-amz-server-side-encryption-aws-kms-key-id",
-      "If-None-Match",
-    ]),
-  });
+  const s3EndpointUploadUrl = await createPresignedUrlWithoutClient(
+    client,
+    objectkey,
+    parsedBody.checksum,
+  );
+
+  // await getSignedUrl(client, command, {
+  //   expiresIn: EXPIRY_TIME,
+  //   unhoistableHeaders: new Set([
+  //     // Undocumented fix in the signing url library: https://github.com/aws/aws-sdk-js-v3/issues/1576
+  //     "x-amz-checksum-sha256",
+  //     "x-amz-sdk-checksum-algorithm",
+  //     "x-amz-server-side-encryption",
+  //     "x-amz-server-side-encryption-aws-kms-key-id",
+  //   ]),
+  // });
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const parsedUrl = new URL(s3EndpointUploadUrl);
@@ -86,4 +102,49 @@ export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
  * - Caching should be changed for upload
  * - OAC behaviour should be different for frontend web browser
  * - Content policy failing
+ * - We might need to have a custom origin policy or worse go with a cloudfront function and include host in signature
+ * - Custom origin policy to strip out host
+ * {
+            "Effect": "Allow",
+            "Action": [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:GenerateDataKey*"
+            ],
+            "Resource": [
+                "arn:aws:kms:eu-west-2:108782068086:key/e9d62629-f651-4cfc-bab3-7b63563f2f82"
+            ]
+        }
  */
+
+const createPresignedUrlWithoutClient = async (client: S3Client, key: string, checksum: string) => {
+  const url = parseUrl(`https://aw-pets-euw-dev-s3-imageservice.s3.eu-west-2.amazonaws.com/${key}`);
+  const presigner = new S3RequestPresigner(client.config);
+
+  const signedUrlObject = await presigner.presign(
+    new HttpRequest({
+      ...url,
+      method: "PUT",
+      headers: {
+        host: "aw-pets-euw-dev-s3-imageservice.s3.eu-west-2.amazonaws.com", // Force the Host header
+        "x-amz-checksum-sha256": checksum,
+        "x-amz-sdk-checksum-algorithm": ChecksumAlgorithm.SHA256,
+        "x-amz-server-side-encryption-aws-kms-key-id": "e9d62629-f651-4cfc-bab3-7b63563f2f82",
+        "x-amz-server-side-encryption": ServerSideEncryption.aws_kms,
+      },
+    }),
+    {
+      unhoistableHeaders: new Set([
+        "x-amz-checksum-sha256",
+        "x-amz-sdk-checksum-algorithm",
+        "x-amz-server-side-encryption",
+        "x-amz-server-side-encryption-aws-kms-key-id",
+      ]),
+
+      unsignableHeaders: new Set(["content-type"]),
+
+      expiresIn: EXPIRY_TIME,
+    },
+  );
+  return formatUrl(signedUrlObject);
+};
