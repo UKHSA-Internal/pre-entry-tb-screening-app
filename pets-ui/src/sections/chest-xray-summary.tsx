@@ -9,7 +9,7 @@ import { selectApplicant } from "@/redux/applicantSlice";
 import { selectApplication } from "@/redux/applicationSlice";
 import { selectChestXray, setChestXrayStatus } from "@/redux/chestXraySlice";
 import { useAppSelector } from "@/redux/hooks";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
 import { spreadArrayIfNotEmpty } from "@/utils/helpers";
 
 const ChestXraySummary = () => {
@@ -21,17 +21,25 @@ const ChestXraySummary = () => {
 
   const handleSubmit = async () => {
     try {
-      await postChestXrayDetails(applicationData.applicationId, {
-        chestXrayTaken: chestXrayData.chestXrayTaken,
-        posteroAnteriorXray: chestXrayData.posteroAnteriorXrayFileName,
-        apicalLordoticXray: chestXrayData.apicalLordoticXrayFileName,
-        lateralDecubitusXray: chestXrayData.lateralDecubitusXrayFileName,
-        xrayResult: chestXrayData.xrayResult,
-        xrayResultDetail: chestXrayData.xrayResultDetail,
-        xrayMinorFindings: chestXrayData.xrayMinorFindings,
-        xrayAssociatedMinorFindings: chestXrayData.xrayAssociatedMinorFindings,
-        xrayActiveTbFindings: chestXrayData.xrayActiveTbFindings,
-      });
+      if (chestXrayData.chestXrayTaken == YesOrNo.YES) {
+        await postChestXrayDetails(applicationData.applicationId, {
+          chestXrayTaken: chestXrayData.chestXrayTaken,
+          posteroAnteriorXray: chestXrayData.posteroAnteriorXrayFileName,
+          apicalLordoticXray: chestXrayData.apicalLordoticXrayFileName,
+          lateralDecubitusXray: chestXrayData.lateralDecubitusXrayFileName,
+          xrayResult: chestXrayData.xrayResult,
+          xrayResultDetail: chestXrayData.xrayResultDetail,
+          xrayMinorFindings: chestXrayData.xrayMinorFindings,
+          xrayAssociatedMinorFindings: chestXrayData.xrayAssociatedMinorFindings,
+          xrayActiveTbFindings: chestXrayData.xrayActiveTbFindings,
+        });
+      } else {
+        await postChestXrayDetails(applicationData.applicationId, {
+          chestXrayTaken: chestXrayData.chestXrayTaken,
+          reasonXrayWasNotTaken: chestXrayData.reasonXrayWasNotTaken,
+          xrayWasNotTakenFurtherDetails: chestXrayData.xrayWasNotTakenFurtherDetails,
+        });
+      }
 
       dispatch(setChestXrayStatus(ApplicationStatus.COMPLETE));
       navigate("/chest-xray-confirmation");
@@ -41,7 +49,7 @@ const ChestXraySummary = () => {
     }
   };
 
-  const xraySummaryData = [
+  const xrayTakenSummaryData = [
     {
       key: "Select x-ray status",
       value: chestXrayData.chestXrayTaken,
@@ -88,11 +96,20 @@ const ChestXraySummary = () => {
       link: "/chest-xray-findings#xray-minor-findings",
       hiddenLabel: "Radiographic Findings",
     },
+  ];
+
+  const xrayNotTakenSummaryData = [
     {
-      key: "Enter reason x-ray not taken",
+      key: "Select x-ray status",
+      value: chestXrayData.chestXrayTaken,
+      link: "/chest-xray-question#chestXrayTaken",
+      hiddenLabel: "Chest X-ray Status",
+    },
+    {
+      key: "Enter reason X-ray not taken",
       value: chestXrayData.reasonXrayWasNotTaken,
       link: "/chest-xray-not-taken#reasonXrayWasNotTaken",
-      hiddenLabel: "Reason X-ray not taken",
+      hiddenLabel: "Reason why X-ray was not taken",
     },
   ];
 
@@ -106,7 +123,12 @@ const ChestXraySummary = () => {
   return (
     <div>
       <ApplicantDataHeader applicantData={applicantData} />
-      <Summary summaryElements={xraySummaryData.filter(isDataPresent)} />
+      {chestXrayData.chestXrayTaken == YesOrNo.YES && (
+        <Summary summaryElements={xrayTakenSummaryData.filter(isDataPresent)} />
+      )}
+      {chestXrayData.chestXrayTaken == YesOrNo.NO && (
+        <Summary summaryElements={xrayNotTakenSummaryData.filter(isDataPresent)} />
+      )}
       <Button
         id="save-and-continue"
         type={ButtonType.DEFAULT}
