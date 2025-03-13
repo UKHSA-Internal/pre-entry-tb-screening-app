@@ -6,7 +6,7 @@ import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "@/utils/en
 
 const initialState: ReduxChestXrayDetailsType = {
   status: ApplicationStatus.INCOMPLETE,
-  chestXrayTaken: YesOrNo.NO,
+  chestXrayTaken: YesOrNo.NULL,
   posteroAnteriorXrayFileName: "",
   posteroAnteriorXrayFile: "",
   apicalLordoticXrayFileName: "",
@@ -95,7 +95,7 @@ export const chestXraySlice = createSlice({
     },
     clearChestXrayDetails: (state) => {
       state.status = ApplicationStatus.INCOMPLETE;
-      state.chestXrayTaken = YesOrNo.NO;
+      state.chestXrayTaken = YesOrNo.NULL;
       state.posteroAnteriorXrayFileName = "";
       state.apicalLordoticXrayFileName = "";
       state.lateralDecubitusXrayFileName = "";

@@ -22,4 +22,5 @@ export enum BackendApplicationStatus {
 export enum YesOrNo {
   YES = "Yes",
   NO = "No",
+  NULL = "",
 }
