@@ -60,13 +60,13 @@ export const chestXraySlice = createSlice({
       state.xrayResultDetail = action.payload;
     },
     setXrayMinorFindings: (state, action: PayloadAction<string[]>) => {
-      state.xrayMinorFindings = action.payload;
+      state.xrayMinorFindings = action.payload ? [...action.payload] : [];
     },
     setXrayAssociatedMinorFindings: (state, action: PayloadAction<string[]>) => {
-      state.xrayAssociatedMinorFindings = action.payload;
+      state.xrayAssociatedMinorFindings = action.payload ? [...action.payload] : [];
     },
     setXrayActiveTbFindings: (state, action: PayloadAction<string[]>) => {
-      state.xrayActiveTbFindings = action.payload;
+      state.xrayActiveTbFindings = action.payload ? [...action.payload] : [];
     },
     setXrayWasNotTakenFurtherDetails: (state, action: PayloadAction<string>) => {
       state.xrayWasNotTakenFurtherDetails = action.payload;
@@ -92,6 +92,23 @@ export const chestXraySlice = createSlice({
       state.xrayActiveTbFindings = action.payload.xrayActiveTbFindings
         ? [...action.payload.xrayActiveTbFindings]
         : [];
+    },
+    clearChestXrayTakenDetails: (state) => {
+      state.posteroAnteriorXrayFileName = "";
+      state.apicalLordoticXrayFileName = "";
+      state.lateralDecubitusXrayFileName = "";
+      state.posteroAnteriorXrayFile = "";
+      state.apicalLordoticXrayFile = "";
+      state.lateralDecubitusXrayFile = "";
+      state.xrayResult = "";
+      state.xrayResultDetail = "";
+      state.xrayMinorFindings = [];
+      state.xrayAssociatedMinorFindings = [];
+      state.xrayActiveTbFindings = [];
+    },
+    clearChestXrayNotTakenDetails: (state) => {
+      state.reasonXrayWasNotTaken = "";
+      state.xrayWasNotTakenFurtherDetails = "";
     },
     clearChestXrayDetails: (state) => {
       state.status = ApplicationStatus.INCOMPLETE;
@@ -150,6 +167,8 @@ export const {
   setXrayMinorFindings,
   setXrayAssociatedMinorFindings,
   setXrayActiveTbFindings,
+  clearChestXrayTakenDetails,
+  clearChestXrayNotTakenDetails,
   clearChestXrayDetails,
   setChestXrayFromApiResponse,
 } = chestXraySlice.actions;
