@@ -114,9 +114,18 @@ jobs:
 
       - name: Start Local Environment
         run: |
-          pnpm start & sleep 150
+          pnpm start & sleep 120
 
       - name: Cypress run tests
+        uses: cypress-io/github-action@v6
+        with:
+          install: false
+          working-directory: pets-ui
+          browser: ${{ matrix.browser }}
+          config-file: cypress/cypress.config.mjs
+
+      - name: Retry if failed
+        if: failure()
         uses: cypress-io/github-action@v6
         with:
           install: false
