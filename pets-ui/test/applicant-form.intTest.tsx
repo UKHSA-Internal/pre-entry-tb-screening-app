@@ -4,6 +4,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import ApplicantForm from "@/sections/applicant-details-form";
+import { ApplicationStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -15,6 +16,39 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
   };
 });
 
+const preloadedState = {
+  applicant: {
+    status: ApplicationStatus.INCOMPLETE,
+    fullName: "",
+    sex: "",
+    dateOfBirth: {
+      year: "",
+      month: "",
+      day: "",
+    },
+    countryOfNationality: "",
+    passportNumber: "12345",
+    countryOfIssue: "BRB",
+    passportIssueDate: {
+      year: "",
+      month: "",
+      day: "",
+    },
+    passportExpiryDate: {
+      year: "",
+      month: "",
+      day: "",
+    },
+    applicantHomeAddress1: "",
+    applicantHomeAddress2: "",
+    applicantHomeAddress3: "",
+    townOrCity: "",
+    provinceOrState: "",
+    country: "",
+    postcode: "",
+  },
+};
+
 describe("ApplicantForm", () => {
   beforeEach(() => {
     useNavigateMock.mockClear();
@@ -25,6 +59,7 @@ describe("ApplicantForm", () => {
       <Router>
         <ApplicantForm />
       </Router>,
+      { preloadedState },
     );
     const user = userEvent.setup();
     await user.click(screen.getByRole("button"));
@@ -35,8 +70,6 @@ describe("ApplicantForm", () => {
     expect(screen.getAllByText("Date of birth must include a day, month and year.")).toHaveLength(
       2,
     );
-    expect(screen.getAllByText("Enter the applicant's passport number.")).toHaveLength(2);
-    expect(screen.getAllByText("Select the country of issue.")).toHaveLength(2);
     expect(
       screen.getAllByText("Passport issue date must include a day, month and year."),
     ).toHaveLength(2);
