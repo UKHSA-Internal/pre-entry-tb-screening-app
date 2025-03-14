@@ -227,10 +227,10 @@ export const DicomUploadUrlRequestSchema = z.object({
 });
 
 export const DicomUploadUrlResponseSchema = z.object({
-  applicationId: z.string().openapi({
-    description: "application id",
-  }),
   uploadUrl: z.string().openapi({
     description: "The upload url",
+  }),
+  fields: z.record(z.string(), z.string()).openapi({
+    description: "Required fields in file upload request",
   }),
 });
