@@ -1,5 +1,6 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
 
 import Breadcrumb, { IBreadcrumbItem } from "../breadcrumb/breadcrumb";
 import Footer from "../footer/footer";
@@ -10,25 +11,35 @@ interface ContainerProps {
   title: string;
   breadcrumbItems?: IBreadcrumbItem[];
   children: ReactNode;
-  skipLinkHref: string;
 }
 
-const Container = ({
-  title,
-  children,
-  breadcrumbItems = [],
-  skipLinkHref = "",
-}: ContainerProps) => {
+const Container = ({ title, children, breadcrumbItems = [] }: ContainerProps) => {
+  const mainContent = useRef<HTMLDivElement | null>(null);
+  const location = useLocation();
+  useEffect(() => {
+    if (location.hash) {
+      const target = location.hash.substring(1);
+      const refMap: { [key: string]: HTMLElement | null } = {
+        mainContent: mainContent.current,
+      };
+
+      const targetRef = refMap[target];
+      if (targetRef) {
+        targetRef.scrollIntoView();
+      }
+    }
+  }, [location]);
+
   return (
     <>
       <Helmet>
         <title>{title}</title>
       </Helmet>
-      <SkipLink href={skipLinkHref} />
+      <SkipLink />
       <Header />
       <div className="govuk-width-container">
         {breadcrumbItems && <Breadcrumb items={breadcrumbItems} />}
-        <main className="govuk-main-wrapper" id="main-content" role="main">
+        <main className="govuk-main-wrapper" id="main-content" role="main" ref={mainContent}>
           {children}
         </main>
       </div>
