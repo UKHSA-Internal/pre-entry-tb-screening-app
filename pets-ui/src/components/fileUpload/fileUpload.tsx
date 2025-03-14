@@ -12,6 +12,7 @@ export interface FileUploadProps {
   maxSize?: number; // Size in MB
   setFileState?: Dispatch<SetStateAction<string | null>>;
   setFileName?: Dispatch<SetStateAction<string>>;
+  existingFileName?: string;
 }
 
 export default function FileUpload(props: Readonly<FileUploadProps>) {
@@ -110,23 +111,47 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
         )}
         <div data-module="govuk-file-upload">
           <div key={`file-upload-${props.id}`}>
-            <input
-              id="fileInput"
-              className="govuk-file-upload"
-              type="file"
-              data-testid={props.id}
-              accept={props.accept} // The file types accepted
-              {...register(props.formValue, {
-                required: props.required,
-                validate: {
-                  fileType: validateFileType,
-                  fileSize: validateFileSize,
-                },
-              })}
-              onChange={async (event) => {
-                await handleFileChange(event);
-              }}
-            />
+            {!props.existingFileName && (
+              <input
+                id="fileInput"
+                className="govuk-file-upload"
+                type="file"
+                data-testid={props.id}
+                accept={props.accept} // The file types accepted
+                {...register(props.formValue, {
+                  required: props.required,
+                  validate: {
+                    fileType: validateFileType,
+                    fileSize: validateFileSize,
+                  },
+                })}
+                onChange={async (event) => {
+                  await handleFileChange(event);
+                }}
+              />
+            )}
+            {props.existingFileName && (
+              <div>
+                <input
+                  id="fileInput"
+                  className="govuk-file-upload hide-text"
+                  type="file"
+                  data-testid={props.id}
+                  accept={props.accept} // The file types accepted
+                  {...register(props.formValue, {
+                    required: props.required,
+                    validate: {
+                      fileType: validateFileType,
+                      fileSize: validateFileSize,
+                    },
+                  })}
+                  onChange={async (event) => {
+                    await handleFileChange(event);
+                  }}
+                />
+                {props.existingFileName}
+              </div>
+            )}
           </div>
         </div>
       </fieldset>

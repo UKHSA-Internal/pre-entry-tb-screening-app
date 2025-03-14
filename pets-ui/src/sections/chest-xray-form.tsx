@@ -9,6 +9,7 @@ import FileUpload from "@/components/fileUpload/fileUpload";
 import Heading from "@/components/heading/heading";
 import { selectApplicant } from "@/redux/applicantSlice";
 import {
+  selectChestXray,
   setApicalLordoticXrayFile,
   setApicalLordoticXrayFileName,
   setLateralDecubitusXrayFile,
@@ -29,6 +30,7 @@ const FileUploadModule = (
     maxSize?: number;
     setFileState: Dispatch<SetStateAction<string | null>>;
     setFileName: Dispatch<SetStateAction<string>>;
+    existingFileName: string;
   }>,
 ) => {
   return (
@@ -55,6 +57,7 @@ const FileUploadModule = (
               maxSize={props.maxSize ?? 5}
               setFileState={props.setFileState}
               setFileName={props.setFileName}
+              existingFileName={props.existingFileName}
             />
           </dd>
         </div>
@@ -65,6 +68,7 @@ const FileUploadModule = (
 
 const ChestXrayForm = () => {
   const applicantData = useAppSelector(selectApplicant);
+  const chestXrayData = useAppSelector(selectChestXray);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -119,6 +123,7 @@ const ChestXrayForm = () => {
         <div>
           <ApplicantDataHeader applicantData={applicantData} />
 
+          <p>{JSON.stringify(chestXrayData)}</p>
           <div ref={paXray}>
             <Heading level={2} size="m" title="Postero-anterior X-ray" />
             <FileUploadModule
@@ -128,6 +133,7 @@ const ChestXrayForm = () => {
               setFileName={setPAFileName}
               required={true}
               errors={errors}
+              existingFileName={chestXrayData.posteroAnteriorXrayFileName}
             />
           </div>
 
@@ -140,6 +146,7 @@ const ChestXrayForm = () => {
               setFileName={setALFileName}
               required={false}
               errors={errors}
+              existingFileName={chestXrayData.apicalLordoticXrayFileName}
             />
           </div>
 
@@ -152,6 +159,7 @@ const ChestXrayForm = () => {
               setFileName={setLDFileName}
               required={false}
               errors={errors}
+              existingFileName={chestXrayData.lateralDecubitusXrayFileName}
             />
           </div>
 
