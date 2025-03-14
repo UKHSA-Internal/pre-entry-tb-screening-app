@@ -81,9 +81,9 @@ test("Progress tracker page displays incomplete application sections correctly &
 
   expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
   expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Reginald Backwaters");
-  expect(screen.getAllByRole("term")[1]).toHaveTextContent("Date of Birth");
+  expect(screen.getAllByRole("term")[1]).toHaveTextContent("Date of birth");
   expect(screen.getAllByRole("definition")[1]).toHaveTextContent("31/12/1970");
-  expect(screen.getAllByRole("term")[2]).toHaveTextContent("Passport Number");
+  expect(screen.getAllByRole("term")[2]).toHaveTextContent("Passport number");
   expect(screen.getAllByRole("definition")[2]).toHaveTextContent("12345");
 
   const applicantDetailsLink = screen.getByRole("link", { name: /Applicant Details/i });
@@ -145,9 +145,9 @@ test("Progress tracker page displays complete application sections correctly & l
 
   expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
   expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Chelsea Cummerbund");
-  expect(screen.getAllByRole("term")[1]).toHaveTextContent("Date of Birth");
+  expect(screen.getAllByRole("term")[1]).toHaveTextContent("Date of birth");
   expect(screen.getAllByRole("definition")[1]).toHaveTextContent("30/11/1971");
-  expect(screen.getAllByRole("term")[2]).toHaveTextContent("Passport Number");
+  expect(screen.getAllByRole("term")[2]).toHaveTextContent("Passport number");
   expect(screen.getAllByRole("definition")[2]).toHaveTextContent("54321");
 
   const applicantDetailsLink = screen.getByRole("link", { name: /Applicant Details/i });

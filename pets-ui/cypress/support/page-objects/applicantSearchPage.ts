@@ -20,7 +20,7 @@ export class ApplicantSearchPage {
   // Fill Passport Number
   fillPassportNumber(passportNumber: string): void {
     cy.get("label.govuk-label")
-      .contains("Applicant's Passport Number")
+      .contains("Applicant's passport number")
       .siblings(".govuk-input__wrapper")
       .find("input[name='passportNumber']")
       .should("be.visible")

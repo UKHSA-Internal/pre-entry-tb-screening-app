@@ -35,28 +35,28 @@ export class TravelSummaryPage {
       case "Visa type":
         cy.get("#visa-type select").should("have.value", expectedValue);
         break;
-      case "UK Address Line 1":
+      case "UK address line 1":
         cy.get('input[type="text"][name="applicantUkAddress1"]').should(
           "have.value",
           expectedValue,
         );
         break;
-      case "UK Address Line 2":
+      case "UK address line 2":
         cy.get('input[type="text"][name="applicantUkAddress2"]').should(
           "have.value",
           expectedValue,
         );
         break;
-      case "UK Town or City":
+      case "UK town or city":
         cy.get('input[type="text"][name="townOrCity"]').should("have.value", expectedValue);
         break;
-      case "UK Postcode":
+      case "UK postcode":
         cy.get('input[type="text"][name="postcode"]').should("have.value", expectedValue);
         break;
-      case "UK Mobile Number":
+      case "UK mobile number":
         cy.get('input[type="text"][name="ukMobileNumber"]').should("have.value", expectedValue);
         break;
-      case "UK Email Address":
+      case "UK email address":
         cy.get('input[type="text"][name="ukEmail"]').should("have.value", expectedValue);
         break;
     }
@@ -94,10 +94,10 @@ export class TravelSummaryPage {
     email: string,
   ): void {
     this.verifySummaryValue("Visa type", visaType);
-    this.verifySummaryValue("UK Address Line 1", address1);
-    this.verifySummaryValue("UK Town or City", townOrCity);
-    this.verifySummaryValue("UK Postcode", postcode);
-    this.verifySummaryValue("UK Mobile Number", mobileNumber);
-    this.verifySummaryValue("UK Email Address", email);
+    this.verifySummaryValue("UK address line 1", address1);
+    this.verifySummaryValue("UK town or city", townOrCity);
+    this.verifySummaryValue("UK postcode", postcode);
+    this.verifySummaryValue("UK mobile number", mobileNumber);
+    this.verifySummaryValue("UK email address", email);
   }
 }

@@ -7,7 +7,7 @@ export class TravelInformationPage {
 
   // Verify page is loaded
   verifyPageLoaded(): void {
-    cy.contains("h1", "Travel Information").should("be.visible");
+    cy.contains("h1", "Travel information").should("be.visible");
     cy.contains("p", "Enter the applicant's travel information below.").should("be.visible");
   }
 

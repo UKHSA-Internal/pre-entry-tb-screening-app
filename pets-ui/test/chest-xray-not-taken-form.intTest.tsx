@@ -40,8 +40,8 @@ describe("ChestXrayNotTakenPage", () => {
   });
   it("renders the applicantDataHeader component ", () => {
     expect(screen.getByText("Name")).toBeInTheDocument();
-    expect(screen.getByText("Date of Birth")).toBeInTheDocument();
-    expect(screen.getByText("Passport Number")).toBeInTheDocument();
+    expect(screen.getByText("Date of birth")).toBeInTheDocument();
+    expect(screen.getByText("Passport number")).toBeInTheDocument();
   });
   it("renders the page titles and descriptions ", () => {
     expect(screen.getByText("Enter reason X-ray not taken")).toBeInTheDocument();
@@ -55,11 +55,14 @@ describe("ChestXrayNotTakenPage", () => {
 
     expect(screen.getByText("There is a problem")).toBeInTheDocument();
     expect(
-      screen.getAllByText("Select the reason why the chest X-ray was not taken.")[0],
+      screen.getAllByText("Select the reason why the chest X-ray was not taken")[0],
     ).toBeInTheDocument();
     expect(
-      screen.getAllByText("Select the reason why the chest X-ray was not taken.")[1],
+      screen.getAllByText("Select the reason why the chest X-ray was not taken")[1],
     ).toBeInTheDocument();
+    expect(
+      screen.getAllByText("Select the reason why the chest X-ray was not taken")[0],
+    ).toHaveAttribute("aria-label", "Error: Select the reason why the chest X-ray was not taken");
   });
   it("does not render an error if continue button not clicked", () => {
     expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
@@ -92,8 +95,17 @@ describe("ChestXrayNotTakenPage", () => {
     await user.click(screen.getByRole("button"));
 
     expect(screen.queryByText("There is a problem")).toBeInTheDocument();
-    expect(screen.getAllByText("Enter reason X-ray not taken.")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("Enter reason X-ray not taken.")[1]).toBeInTheDocument();
+    expect(screen.getAllByText("Enter reason X-ray not taken")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("Enter reason X-ray not taken")[1]).toBeInTheDocument();
+    expect(screen.getAllByText("Enter reason X-ray not taken")[1]).toHaveAttribute(
+      "aria-label",
+      "Error: Enter reason X-ray not taken",
+    );
+  });
+  it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
+    await user.click(screen.getByRole("button"));
+    const errorSummaryDiv = screen.getByTestId("error-summary");
+    expect(errorSummaryDiv).toHaveFocus();
   });
   it("does not render an error if 'Other' option chosen, further details entered, and continue clicked", async () => {
     const radioButtons = screen.getAllByRole("radio");
@@ -104,7 +116,7 @@ describe("ChestXrayNotTakenPage", () => {
     await user.click(screen.getByRole("button"));
 
     expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
-    expect(screen.queryByText("Enter reason X-ray not taken.")).not.toBeInTheDocument();
+    expect(screen.queryAllByText("Enter reason X-ray not taken")).toHaveLength(1); //Only the title with no errors
   });
   it("when continue pressed, it navigates to /xray-not-taken-summary", async () => {
     const radioButtons = screen.getAllByRole("radio");

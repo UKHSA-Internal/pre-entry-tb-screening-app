@@ -5,7 +5,7 @@ import ApplicantEmptyResult from "@/sections/applicant-no-results";
 
 export default function ApplicantResultsPage() {
   return (
-    <Container title="Applicant Results">
+    <Container title="Applicant results">
       <ApplicantEmptyResult />
     </Container>
   );
