@@ -83,7 +83,7 @@ const ChestXrayFindingsForm = () => {
             level={3}
             size="m"
             style={{ marginBottom: 20, marginTop: 40 }}
-            title="X-ray result"
+            title="Radiological outcome"
           />
           <Radio
             id="xray-result"
@@ -113,7 +113,7 @@ const ChestXrayFindingsForm = () => {
             level={2}
             size="l"
             style={{ marginBottom: 20, marginTop: 40 }}
-            title="X-ray findings"
+            title="Radiographic findings"
           />
         </div>
 
