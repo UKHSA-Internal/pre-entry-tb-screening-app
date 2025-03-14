@@ -1,0 +1,23 @@
+//This holds all fields on the Travel Confirmation Page
+export class TravelConfirmationPage {
+  // Navigation
+  visit(): void {
+    cy.visit("/travel-confirmation");
+  }
+
+  // Verify page loaded
+  verifyPageLoaded(): void {
+    cy.url().should("include", "/travel-confirmation");
+    cy.get("h1").should("have.text", "Travel Information record created");
+  }
+
+  // Submit Form to continue to medical screening
+  submitForm(): void {
+    cy.get('button[type="submit"]').should("be.visible").click();
+  }
+
+  // Verify redirection to medical screening page
+  verifyRedirectionToMedicalScreening(): void {
+    cy.url().should("include", "/medical-screening");
+  }
+}

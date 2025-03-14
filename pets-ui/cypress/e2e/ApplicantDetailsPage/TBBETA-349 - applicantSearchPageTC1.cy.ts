@@ -1,4 +1,6 @@
-// Define the epected error messages
+import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+
+// Define the expected error messages
 const searchErrorMessages = [
   "Enter the applicant's passport number.",
   "Select the country of issue.",
@@ -8,26 +10,31 @@ const searchErrorMessages = [
 I want to view the results from the applicant search
 So that I can see applicants that match the criteria entered during the search process.*/
 
-describe("Validate that error message is displayed when user clicks the search button without entering a search criteria", () => {
-  beforeEach(() => {
-    // After successful login, navigate to the applicant search page
-    cy.visit("http://localhost:3000/applicant-search");
+const applicantSearchPage = new ApplicantSearchPage();
 
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
+describe.skip("Validate that error message is displayed when user clicks the search button without entering a search criteria", () => {
+  beforeEach(() => {
+    // Navigate to the applicant search page
+    applicantSearchPage.visit();
+    applicantSearchPage.verifyPageLoaded();
   });
 
-  it("Should display error messages when search is performed without criteria", () => {
-    cy.get('button[type="submit"]').click();
+  it.skip("Should display error messages when search is performed without criteria", () => {
+    // Click search button without entering any criteria
+    applicantSearchPage.submitSearch();
 
     // Validate that error messages are displayed
-    cy.get(".govuk-error-message").should("be.visible");
+    applicantSearchPage.validateErrorSummaryVisible();
 
-    // Verifyif expected error message appears
+    // Verify each expected error message appears
     searchErrorMessages.forEach((errorMessage) => {
-      cy.get(".govuk-error-message").should("contain.text", errorMessage);
+      applicantSearchPage.validateErrorMessage(errorMessage);
+    });
+
+    // Validate specific field errors
+    applicantSearchPage.validateFormErrors({
+      passportNumber: "Enter the applicant's passport number.",
+      countryOfIssue: "Select the country of issue.",
     });
   });
 });

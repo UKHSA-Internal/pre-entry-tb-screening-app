@@ -1,3 +1,4 @@
+import { MiddyfiedHandler } from "@middy/core";
 import { Method } from "@middy/http-router";
 import { APIGatewayProxyEventBase, APIGatewayProxyResult } from "aws-lambda";
 import { z } from "zod";
@@ -9,9 +10,9 @@ export type RouteParam = Record<
 
 export type PetsRoute = {
   path: string;
-  handler: (
-    event: PetsAPIGatewayProxyEvent,
-  ) => Promise<APIGatewayProxyResult> | APIGatewayProxyResult;
+  handler:
+    | MiddyfiedHandler<PetsAPIGatewayProxyEvent>
+    | ((event: PetsAPIGatewayProxyEvent) => Promise<APIGatewayProxyResult> | APIGatewayProxyResult);
   method: Extract<Method, "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "OPTIONS" | "HEAD">;
   requestBodySchema?: z.ZodTypeAny;
   queryParams?: RouteParam;

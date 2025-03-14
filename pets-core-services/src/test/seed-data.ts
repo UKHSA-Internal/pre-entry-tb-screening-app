@@ -1,8 +1,12 @@
 import { seededApplicants } from "../applicant-service/fixtures/applicants";
 import { Applicant } from "../applicant-service/models/applicant";
+import { seededChestXray } from "../application-service/fixtures/chest-xray";
 import { seededMedicalScreening } from "../application-service/fixtures/medical-screening";
+import { seededTbCertificate } from "../application-service/fixtures/tb-certificate";
 import { seededTravelInformation } from "../application-service/fixtures/travel-information";
+import { ChestXRayDbOps } from "../application-service/models/chest-xray";
 import { MedicalScreening } from "../application-service/models/medical-screening";
+import { TbCertificate } from "../application-service/models/tb-certificate";
 import { TravelInformation } from "../application-service/models/travel-information";
 import { seededApplications } from "../shared/fixtures/application";
 import { Application } from "../shared/models/application";
@@ -20,6 +24,12 @@ export const seedDatabase = async () => {
   }
   for (const medicalScreening of seededMedicalScreening) {
     await MedicalScreening.createMedicalScreening(medicalScreening);
+  }
+  for (const chestXray of seededChestXray) {
+    await ChestXRayDbOps.createChestXray(chestXray);
+  }
+  for (const tbCertificate of seededTbCertificate) {
+    await TbCertificate.createTbCertificate(tbCertificate);
   }
 };
 

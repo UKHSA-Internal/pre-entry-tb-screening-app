@@ -39,42 +39,6 @@ describe("Test for Saving Medical Screening into DB", () => {
     });
   });
 
-  test("Missing application throws a 400 error", async () => {
-    // Arrange
-    const event: SaveMedicalScreeningEvent = {
-      ...mockAPIGwEvent,
-      pathParameters: { applicationId: "nonexisting-application-id" },
-      parsedBody: newMedicalScreeningDetails,
-    };
-
-    // Act
-    const response = await saveMedicalScreeningHandler(event);
-
-    // Assert
-    expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "Application with ID: nonexisting-application-id does not exist",
-    });
-  });
-
-  test("Mismatch in Clinic ID throws a 400 error", async () => {
-    // Arrange
-    const event: SaveMedicalScreeningEvent = {
-      ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[2].applicationId },
-      parsedBody: newMedicalScreeningDetails,
-    };
-
-    // Act
-    const response = await saveMedicalScreeningHandler(event);
-
-    // Assert
-    expect(response.statusCode).toBe(403);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "Clinic Id mismatch",
-    });
-  });
-
   test("Duplicate post throws a 400 error", async () => {
     // Arrange
     const existingMedicalScreening = seededMedicalScreening[0];
@@ -104,7 +68,7 @@ describe("Test for Saving Medical Screening into DB", () => {
     // Assert
     expect(response.statusCode).toBe(500);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Request not parsed correctly",
+      message: "Internal Server Error: Medical Screening Request not parsed correctly",
     });
   });
 

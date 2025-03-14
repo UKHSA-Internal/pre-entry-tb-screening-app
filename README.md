@@ -16,6 +16,8 @@ An electronic data capture system designed to address inconsistencies and fraud 
 
 [![LocalStack][localstack.cloud]][Localstack-url]
 
+[![MiddyJS][middy.js]][Middy-url]
+
 [![Cypress][cypress.com]][Cypress-url]
 
 ### Architecture
@@ -267,6 +269,8 @@ To deploy the Core services to a target environment {target-env}:
 [AWS-url]: https://aws.amazon.com/getting-started/
 [localstack.cloud]: https://img.shields.io/badge/localstack-20232A?style=for-the-badge&logo=localstack
 [Localstack-url]: https://www.localstack.cloud/
+[middy.js]: https://img.shields.io/badge/middyJs-20232A?style=for-the-badge
+[Middy-url]: https://middy.js.org/
 [cypress.com]: https://img.shields.io/badge/Cypress-20232A?style=for-the-badge&logo=cypress
 [Cypress-url]: https://docs.cypress.io/app/get-started/why-cypress
 

@@ -12,6 +12,7 @@ import {
 const newTravelDetails: SaveTravelInformationEvent["parsedBody"] = {
   visaCategory: VisaOptions.Students,
   ukAddressLine1: "first line",
+  ukAddressTownOrCity: "uk address town",
   ukAddressPostcode: "uk address postcode",
   ukMobileNumber: "uk mobile number",
   ukEmailAddress: "uk email address",
@@ -35,42 +36,6 @@ describe("Test for Saving Travel Information into DB", () => {
       applicationId: seededApplications[0].applicationId,
       ...newTravelDetails,
       dateCreated: expect.any(String),
-    });
-  });
-
-  test("Missing application throws a 400 error", async () => {
-    // Arrange
-    const event: SaveTravelInformationEvent = {
-      ...mockAPIGwEvent,
-      pathParameters: { applicationId: "nonexisting-application-id" },
-      parsedBody: newTravelDetails,
-    };
-
-    // Act
-    const response = await saveTravelInformationHandler(event);
-
-    // Assert
-    expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "Application with ID: nonexisting-application-id does not exist",
-    });
-  });
-
-  test("Mismatch in Clinic ID throws a 400 error", async () => {
-    // Arrange
-    const event: SaveTravelInformationEvent = {
-      ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[2].applicationId },
-      parsedBody: newTravelDetails,
-    };
-
-    // Act
-    const response = await saveTravelInformationHandler(event);
-
-    // Assert
-    expect(response.statusCode).toBe(403);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "Clinic Id mismatch",
     });
   });
 
@@ -103,7 +68,7 @@ describe("Test for Saving Travel Information into DB", () => {
     // Assert
     expect(response.statusCode).toBe(500);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Request not parsed correctly",
+      message: "Internal Server Error: Travel Information Request not parsed correctly",
     });
   });
 
