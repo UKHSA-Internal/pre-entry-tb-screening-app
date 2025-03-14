@@ -21,7 +21,7 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 beforeEach(() => useNavigateMock.mockClear());
 
 describe("ChestXrayFindings Form", () => {
-  test("renders form correctly", () => {
+  it("renders form correctly", () => {
     renderWithProviders(
       <Router>
         <ChestXrayFindingsForm />
@@ -50,7 +50,7 @@ describe("ChestXrayFindings Form", () => {
     ).toBeInTheDocument;
   });
 
-  test("errors when x-ray result selection is missing", async () => {
+  it("errors when x-ray result selection is missing", async () => {
     renderWithProviders(
       <Router>
         <ChestXrayFindingsForm />
@@ -60,11 +60,27 @@ describe("ChestXrayFindings Form", () => {
     fireEvent.click(screen.getByText("Save and continue"));
 
     await waitFor(() => {
-      expect(screen.getByText("Select radiological outcome")).toBeInTheDocument();
+      expect(screen.getAllByText("Select radiological outcome")).toHaveLength(2);
+      expect(screen.getAllByText("Select radiological outcome")[0]).toHaveAttribute(
+        "aria-label",
+        "Error: Select radiological outcome",
+      );
+    });
+  });
+  it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
+    renderWithProviders(
+      <Router>
+        <ChestXrayFindingsForm />
+      </Router>,
+    );
+    fireEvent.click(screen.getByText("Save and continue"));
+    await waitFor(() => {
+      const errorSummaryDiv = screen.getByTestId("error-summary");
+      expect(errorSummaryDiv).toHaveFocus();
     });
   });
 
-  test("renders page elements correctly", () => {
+  it("renders page elements correctly", () => {
     renderWithProviders(
       <Router>
         <HelmetProvider>

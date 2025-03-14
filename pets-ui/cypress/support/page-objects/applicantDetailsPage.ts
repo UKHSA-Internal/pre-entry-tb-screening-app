@@ -235,7 +235,7 @@ export class ApplicantDetailsPage {
     }
   }
   verifyPageLoaded(): void {
-    cy.contains("h1", "Enter Applicant Information").should("be.visible");
+    cy.contains("h1", "Enter applicant information").should("be.visible");
   }
 
   getCurrentUrl(): Cypress.Chainable<string> {

@@ -20,34 +20,9 @@ describe("MedicalScreeningForm", () => {
     useNavigateMock.mockClear();
   });
 
-  test("when MedicalScreeningForm is not filled then errors are displayed", async () => {
-    renderWithProviders(
-      <Router>
-        <MedicalScreeningForm />
-      </Router>,
-    );
-    const user = userEvent.setup();
-    await user.click(screen.getByRole("button"));
+  const user = userEvent.setup();
 
-    expect(screen.getAllByText("Enter applicant's age in years.")).toHaveLength(2);
-    expect(screen.getAllByText("Select whether the applicant has any TB symptoms.")).toHaveLength(
-      2,
-    );
-    expect(
-      screen.getAllByText("Select whether the applicant has ever had tuberculosis."),
-    ).toHaveLength(2);
-    expect(
-      screen.getAllByText(
-        "Select whether the applicant has had close contact with any person with active pulmonary tuberculosis within the past year.",
-      ),
-    ).toHaveLength(2);
-    expect(screen.getAllByText("Select whether the applicant is pregnant.")).toHaveLength(2);
-    expect(screen.getAllByText("Select whether the applicant has menstrual periods.")).toHaveLength(
-      2,
-    );
-  });
-
-  test("when MedicalScreeningForm is filled correctly then state is updated and user is navigated to summary page", async () => {
+  it("when MedicalScreeningForm is filled correctly then state is updated and user is navigated to summary page", async () => {
     const { store } = renderWithProviders(
       <Router>
         <MedicalScreeningForm />
@@ -121,5 +96,41 @@ describe("MedicalScreeningForm", () => {
       underElevenConditionsDetail: "",
     });
     expect(useNavigateMock).toHaveBeenLastCalledWith("/medical-summary");
+  });
+
+  it("state is updated from MedicalScreeningForm and then read by MedicalScreeningReview", async () => {
+    renderWithProviders(
+      <Router>
+        <MedicalScreeningForm />
+      </Router>,
+    );
+
+    const submitButton = screen.getByRole("button", { name: /Save and Continue/i });
+
+    await user.click(submitButton);
+
+    const errorMessages = [
+      "Error: Enter applicant's age in years",
+      "Error: Select whether the applicant has any TB symptoms",
+      "Error: Select whether the applicant has ever had tuberculosis",
+      "Error: Select whether the applicant has had close contact with any person with active pulmonary tuberculosis within the past year",
+      "Error: Select whether the applicant is pregnant",
+      "Error: Select whether the applicant has menstrual periods",
+    ];
+
+    errorMessages.forEach((error) => {
+      expect(screen.getAllByText(error.slice(7))).toHaveLength(2);
+      expect(screen.getAllByText(error.slice(7))[0]).toHaveAttribute("aria-label", error);
+    });
+  });
+  it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
+    renderWithProviders(
+      <Router>
+        <MedicalScreeningForm />
+      </Router>,
+    );
+    await user.click(screen.getByRole("button"));
+    const errorSummaryDiv = screen.getByTestId("error-summary");
+    expect(errorSummaryDiv).toHaveFocus();
   });
 });

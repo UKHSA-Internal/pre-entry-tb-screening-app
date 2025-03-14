@@ -1,10 +1,10 @@
 import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
 import { randomElement, visaType } from "../../support/test-utils";
 
-const errorMessage = "Enter address line 1, typically the building and street.";
-
 describe.skip("Validate the error message is displayed when address field does not have a value", () => {
   const travelInformationPage = new TravelInformationPage();
+  // Validate the error messages above each text box are correct
+  const errorMessage = ["Enter address line 1, typically the building and street"];
 
   beforeEach(() => {
     travelInformationPage.visit();
