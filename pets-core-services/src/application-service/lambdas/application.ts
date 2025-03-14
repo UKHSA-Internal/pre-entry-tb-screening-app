@@ -5,7 +5,7 @@ import { z } from "zod";
 import { boostrapLambdaRoutes } from "../../shared/http";
 import { PetsAPIGatewayProxyEvent, PetsRoute } from "../../shared/types";
 import { createApplicationHandler } from "../handlers/create-application";
-import { generateUploadUrlHandler } from "../handlers/generate-upload-url";
+import { generateDicomUploadUrlHandler } from "../handlers/generate-dicom-upload-url";
 import { getApplicationHandler } from "../handlers/get-application";
 import { saveChestXRayHandler } from "../handlers/save-chest-ray";
 import { saveMedicalScreeningHandler } from "../handlers/save-medical-screening";
@@ -109,7 +109,7 @@ export const routes: PetsRoute[] = [
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(setApplicationIdContext)
       .before(validateApplication)
-      .handler(generateUploadUrlHandler),
+      .handler(generateDicomUploadUrlHandler),
     requestBodySchema: DicomUploadUrlRequestSchema.openapi({
       description: "Details of the Dicom to be uploaded",
     }),
