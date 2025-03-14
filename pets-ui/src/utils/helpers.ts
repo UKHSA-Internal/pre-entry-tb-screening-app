@@ -12,7 +12,6 @@ import {
   validMonthValues,
 } from "./records";
 
-
 const standardiseDayOrMonth = (dayOrMonth: string) => {
   let standardisedDayOrMonth = dayOrMonth.toLowerCase();
 
