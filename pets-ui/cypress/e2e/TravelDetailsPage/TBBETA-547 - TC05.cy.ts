@@ -7,15 +7,6 @@ const errorMessage = "Enter full UK postcode";
 describe.skip("Validate the error message is displayed when postcode is NOT entered", () => {
   const travelInformationPage = new TravelInformationPage();
 
-  const visaType = [
-    "Family Reunion",
-    "Settlement and Dependents",
-    "Students",
-    "Work",
-    "Working Holiday Maker",
-    "Government Sponsored",
-  ];
-
   beforeEach(() => {
     travelInformationPage.visit();
   });
