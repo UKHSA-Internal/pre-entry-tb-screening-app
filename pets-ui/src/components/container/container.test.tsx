@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
-import { describe, expect } from "vitest";
 import { BrowserRouter as Router } from "react-router-dom";
+import { describe, expect } from "vitest";
 
 import Container from "../container/container";
 

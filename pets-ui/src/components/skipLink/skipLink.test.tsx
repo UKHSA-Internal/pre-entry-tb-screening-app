@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+
 import SkipLink from "./skipLink";
 
 describe("SkipLink component", () => {
