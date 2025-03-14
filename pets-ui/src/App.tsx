@@ -189,7 +189,9 @@ function App() {
         path="/chest-xray-summary"
         element={
           <AuthenticatedRoute>
-            <ChestXraySummaryPage />
+            <RedirectedRouteIfReduxEmpty>
+              <ChestXraySummaryPage />
+            </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
       />
