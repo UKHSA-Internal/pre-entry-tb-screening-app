@@ -66,12 +66,10 @@ describe("ApplicantForm", () => {
     const user = userEvent.setup();
     await user.click(screen.getByRole("button"));
 
-    expect(screen.getAllByText("Enter the applicant's full name.")).toHaveLength(2);
-    expect(screen.getAllByText("Select the applicant's sex.")).toHaveLength(2);
-    expect(screen.getAllByText("Select the country of nationality.")).toHaveLength(2);
-    expect(screen.getAllByText("Date of birth must include a day, month and year.")).toHaveLength(
-      2,
-    );
+    expect(screen.getAllByText("Enter the applicant's full name")).toHaveLength(2);
+    expect(screen.getAllByText("Select the applicant's sex")).toHaveLength(2);
+    expect(screen.getAllByText("Select the country of nationality")).toHaveLength(2);
+    expect(screen.getAllByText("Date of birth must include a day, month and year")).toHaveLength(2);
     expect(
       screen.getAllByText("Passport issue date must include a day, month and year"),
     ).toHaveLength(2);
