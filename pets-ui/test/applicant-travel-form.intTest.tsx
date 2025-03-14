@@ -20,26 +20,7 @@ describe("ApplicantTravelForm", () => {
     useNavigateMock.mockClear();
   });
 
-  test("when ApplicantTravelForm is not filled then errors are displayed", async () => {
-    renderWithProviders(
-      <Router>
-        <ApplicantTravelForm />
-      </Router>,
-    );
-    const user = userEvent.setup();
-    await user.click(screen.getByRole("button"));
-
-    expect(screen.getAllByText("Select a visa type.")).toHaveLength(2);
-    expect(
-      screen.getAllByText("Enter address line 1, typically the building and street."),
-    ).toHaveLength(2);
-    expect(screen.getAllByText("Enter town or city.")).toHaveLength(2);
-    expect(screen.getAllByText("Enter full UK postcode.")).toHaveLength(2);
-    expect(screen.getAllByText("Enter UK mobile number.")).toHaveLength(2);
-    expect(screen.getAllByText("Enter UK email address.")).toHaveLength(2);
-  });
-
-  test("when ApplicantTravelForm is filled correctly then state is updated and user is navigated to summary page", async () => {
+  it("when ApplicantTravelForm is filled correctly then state is updated and user is navigated to summary page", async () => {
     const { store } = renderWithProviders(
       <Router>
         <ApplicantTravelForm />
@@ -77,5 +58,33 @@ describe("ApplicantTravelForm", () => {
       visaType: "Government Sponsored",
     });
     expect(useNavigateMock).toHaveBeenLastCalledWith("/travel-summary");
+  });
+
+  it("errors when travel details are missing", async () => {
+    renderWithProviders(
+      <Router>
+        <ApplicantTravelForm />
+      </Router>,
+    );
+
+    const user = userEvent.setup();
+
+    const submitButton = screen.getByRole("button", { name: /Save and Continue/i });
+
+    await user.click(submitButton);
+
+    const errorMessages = [
+      "Select a visa type",
+      "Enter address line 1, typically the building and street",
+      "Enter town or city",
+      "Enter full UK postcode",
+      "Enter UK mobile number",
+      "Enter UK email address",
+    ];
+
+    errorMessages.forEach((error) => {
+      expect(screen.getAllByText(error)).toHaveLength(2);
+      expect(screen.getAllByText(error)[0]).toHaveAttribute("aria-label", error);
+    });
   });
 });

@@ -55,11 +55,14 @@ describe("ChestXrayNotTakenPage", () => {
 
     expect(screen.getByText("There is a problem")).toBeInTheDocument();
     expect(
-      screen.getAllByText("Select the reason why the chest X-ray was not taken.")[0],
+      screen.getAllByText("Select the reason why the chest X-ray was not taken")[0],
     ).toBeInTheDocument();
     expect(
-      screen.getAllByText("Select the reason why the chest X-ray was not taken.")[1],
+      screen.getAllByText("Select the reason why the chest X-ray was not taken")[1],
     ).toBeInTheDocument();
+    expect(
+      screen.getAllByText("Select the reason why the chest X-ray was not taken")[0],
+    ).toHaveAttribute("aria-label", "Select the reason why the chest X-ray was not taken");
   });
   it("does not render an error if continue button not clicked", () => {
     expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
@@ -92,8 +95,12 @@ describe("ChestXrayNotTakenPage", () => {
     await user.click(screen.getByRole("button"));
 
     expect(screen.queryByText("There is a problem")).toBeInTheDocument();
-    expect(screen.getAllByText("Enter reason X-ray not taken.")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("Enter reason X-ray not taken.")[1]).toBeInTheDocument();
+    expect(screen.getAllByText("Enter reason X-ray not taken")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("Enter reason X-ray not taken")[1]).toBeInTheDocument();
+    expect(screen.getAllByText("Enter reason X-ray not taken")[1]).toHaveAttribute(
+      "aria-label",
+      "Enter reason X-ray not taken",
+    );
   });
   it("does not render an error if 'Other' option chosen, further details entered, and continue clicked", async () => {
     const radioButtons = screen.getAllByRole("radio");
@@ -104,7 +111,7 @@ describe("ChestXrayNotTakenPage", () => {
     await user.click(screen.getByRole("button"));
 
     expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
-    expect(screen.queryByText("Enter reason X-ray not taken.")).not.toBeInTheDocument();
+    expect(screen.queryAllByText("Enter reason X-ray not taken")).toHaveLength(1); //Only the title with no errors
   });
   it("when continue pressed, it navigates to /xray-not-taken-summary", async () => {
     const radioButtons = screen.getAllByRole("radio");

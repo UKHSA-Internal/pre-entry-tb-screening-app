@@ -20,7 +20,7 @@ describe("ApplicantForm", () => {
     useNavigateMock.mockClear();
   });
 
-  test("when ApplicantForm is not filled then errors are displayed", async () => {
+  it("when ApplicantForm is not filled then errors are displayed", async () => {
     renderWithProviders(
       <Router>
         <ApplicantForm />
@@ -57,7 +57,7 @@ describe("ApplicantForm", () => {
     );
   });
 
-  test("when ApplicantForm is filled correctly then state is updated and user is navigated to summary page", async () => {
+  it("when ApplicantForm is filled correctly then state is updated and user is navigated to summary page", async () => {
     const { store } = renderWithProviders(
       <Router>
         <ApplicantForm />
@@ -132,5 +132,38 @@ describe("ApplicantForm", () => {
       postcode: "101",
     });
     expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-summary");
+  });
+
+  it("errors when applicant details are missing", async () => {
+    renderWithProviders(
+      <Router>
+        <ApplicantForm />
+      </Router>,
+    );
+
+    const user = userEvent.setup();
+    const submitButton = screen.getByRole("button", { name: /Save and Continue/i });
+
+    await user.click(submitButton);
+
+    const errorMessages = [
+      "Enter the applicant's full name",
+      "Select the applicant's sex",
+      "Select the country of nationality",
+      "Date of birth must include a day, month and year",
+      "Enter the applicant's passport number",
+      "Select the country of issue",
+      "Passport issue date must include a day, month and year",
+      "Passport expiry date must include a day, month and year",
+      "Enter the first line of the applicant's home address",
+      "Enter the town or city of the applicant's home address",
+      "Enter the province or state of the applicant's home address",
+      "Enter the country of the applicant's home address",
+    ];
+
+    errorMessages.forEach((error) => {
+      expect(screen.getAllByText(error)).toHaveLength(2);
+      expect(screen.getAllByText(error)[0]).toHaveAttribute("aria-label", error);
+    });
   });
 });

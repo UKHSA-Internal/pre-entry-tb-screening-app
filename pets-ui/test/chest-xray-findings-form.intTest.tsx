@@ -21,7 +21,7 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 beforeEach(() => useNavigateMock.mockClear());
 
 describe("ChestXrayFindings Form", () => {
-  test("renders form correctly", () => {
+  it("renders form correctly", () => {
     renderWithProviders(
       <Router>
         <ChestXrayFindingsForm />
@@ -50,7 +50,7 @@ describe("ChestXrayFindings Form", () => {
     ).toBeInTheDocument;
   });
 
-  test("errors when x-ray result selection is missing", async () => {
+  it("errors when x-ray result selection is missing", async () => {
     renderWithProviders(
       <Router>
         <ChestXrayFindingsForm />
@@ -60,11 +60,15 @@ describe("ChestXrayFindings Form", () => {
     fireEvent.click(screen.getByText("Save and continue"));
 
     await waitFor(() => {
-      expect(screen.getByText("Select an X-ray result.")).toBeInTheDocument();
+      expect(screen.getAllByText("Select an X-ray result")).toHaveLength(2);
+      expect(screen.getAllByText("Select an X-ray result")[0]).toHaveAttribute(
+        "aria-label",
+        "Select an X-ray result",
+      );
     });
   });
 
-  test("renders page elements correctly", () => {
+  it("renders page elements correctly", () => {
     renderWithProviders(
       <Router>
         <HelmetProvider>

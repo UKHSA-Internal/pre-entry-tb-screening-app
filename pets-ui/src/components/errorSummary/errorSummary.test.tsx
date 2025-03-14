@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import ErrorDisplay from "./errorSummary";
+import ErrorSummary from "./errorSummary";
 
 const errorsToShow = ["errorToDisplay"];
 const errors = {
@@ -23,16 +23,24 @@ const multipleErrors = {
   },
 };
 
-describe("Error Display Component", () => {
+describe("Error Summary Component", () => {
   it("renders correctly when props are specified", () => {
-    render(<ErrorDisplay errorsToShow={errorsToShow} errors={errors} />);
+    render(<ErrorSummary errorsToShow={errorsToShow} errors={errors} />);
     expect(screen.getByText("There is a problem")).toBeInTheDocument();
     expect(screen.getByText("There is an error on this page")).toBeInTheDocument();
   });
   it("renders multiple errors correctly when props are specified", () => {
-    render(<ErrorDisplay errorsToShow={multipleErrorsToShow} errors={multipleErrors} />);
+    render(<ErrorSummary errorsToShow={multipleErrorsToShow} errors={multipleErrors} />);
     expect(screen.getByText("There is a problem")).toBeInTheDocument();
     expect(screen.getByText("There is an error on this page")).toBeInTheDocument();
     expect(screen.getByText("There is an additonal error on this page")).toBeInTheDocument();
+  });
+  it("has an aria-label with the error message for screen readers", () => {
+    render(<ErrorSummary errorsToShow={multipleErrorsToShow} errors={multipleErrors} />);
+    expect(screen.getByText("There is a problem")).toBeInTheDocument();
+    expect(screen.getByText("There is an error on this page")).toHaveAttribute(
+      "aria-label",
+      "There is an error on this page",
+    );
   });
 });

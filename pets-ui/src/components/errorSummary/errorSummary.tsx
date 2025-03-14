@@ -2,12 +2,12 @@ import { FieldErrors } from "react-hook-form";
 
 import { attributeToComponentId } from "@/utils/helpers";
 
-interface ErrorDisplayProps {
+interface ErrorSummaryProps {
   errorsToShow: string[];
   errors: FieldErrors;
 }
 
-export default function ErrorSummary(props: Readonly<ErrorDisplayProps>) {
+export default function ErrorSummary(props: Readonly<ErrorSummaryProps>) {
   return (
     <div className="govuk-error-summary" data-module="govuk-error-summary">
       <div role="alert">
@@ -16,7 +16,10 @@ export default function ErrorSummary(props: Readonly<ErrorDisplayProps>) {
           <ul className="govuk-list govuk-error-summary__list">
             {props.errorsToShow.map((error) => (
               <li key={attributeToComponentId[error]}>
-                <a href={"#" + attributeToComponentId[error]}>
+                <a
+                  href={"#" + attributeToComponentId[error]}
+                  aria-label={props.errors[error]?.message as string}
+                >
                   {props.errors[error]?.message as string}
                 </a>
               </li>

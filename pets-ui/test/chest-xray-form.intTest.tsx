@@ -93,6 +93,10 @@ describe("ChestXrayForm Section", () => {
 
     await user.click(submitButton);
     expect(useNavigateMock).not.toHaveBeenCalled();
-    expect(screen.getByText("Select a postero-anterior X-ray image file")).toBeInTheDocument();
+    expect(screen.getAllByText("Select a postero-anterior X-ray image file")).toHaveLength(2);
+    expect(screen.getAllByText("Select a postero-anterior X-ray image file")[0]).toHaveAttribute(
+      "aria-label",
+      "Select a postero-anterior X-ray image file",
+    );
   });
 });
