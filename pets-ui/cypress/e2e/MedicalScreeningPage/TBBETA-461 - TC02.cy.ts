@@ -10,7 +10,7 @@ describe("Test to validate applicant AGE field and corresponding error message",
   });
   it("Should display error message where AGE field is empty", () => {
     //Select applicants TB Status'
-    cy.get('input[name="tb-symptoms"]').check("no");
+    cy.get('input[name="tbSymptoms"]').check("no");
 
     //Select applicant's symptoms if applicant selects 'YES' to above
     cy.get("#tb-symptoms-list").should("be.visible");
