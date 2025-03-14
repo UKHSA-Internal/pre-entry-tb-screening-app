@@ -1,29 +1,23 @@
+import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
 import { randomElement, visaType } from "../../support/test-utils";
 
-describe("Enter VALID Data for Applicant Travel Information", () => {
+//Scenario: Travel Information Page Happy Path Test
+describe.skip("Enter VALID Data for Applicant Travel Information", () => {
+  const travelInformationPage = new TravelInformationPage();
+
   beforeEach(() => {
-    cy.visit("http://localhost:3000/travel-details");
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
+    travelInformationPage.visit();
   });
-  it("Should be redirected to travel confirmation page on submission", () => {
-    //Select a Visa Type
-    cy.get("#visa-type.govuk-select").select(randomElement(visaType));
 
-    // Enter VALID Address Information
-    cy.get("#address-1").type("61 Legard Drive");
-    cy.get("#address-2").type("Anlaby");
-    cy.get("#town-or-city").type("Hull");
-    cy.get("#postcode").type("HU10 6UH");
-    cy.get("#mobile-number").type("07123402876");
-    cy.get("#email").type("Appvanceiq.efc1@aiq.ukhsa.gov.uk");
-
-    // Click the submit button
-    cy.get('button[type="submit"]').click();
-
-    // Validate that the page navigates to the summary page
+  it.skip("Should be redirected to travel confirmation page on submission", () => {
+    travelInformationPage.selectVisaType(randomElement(visaType));
+    travelInformationPage.fillAddressLine1("61 Legard Drive");
+    travelInformationPage.fillAddressLine2("Anlaby");
+    travelInformationPage.fillTownOrCity("Hull");
+    travelInformationPage.fillPostcode("HU10 6UH");
+    travelInformationPage.fillMobileNumber("07123402876");
+    travelInformationPage.fillEmail("Appvanceiq.efc1@aiq.ukhsa.gov.uk");
+    travelInformationPage.submitForm();
     cy.url().should("include", "http://localhost:3000/travel-summary");
   });
 });

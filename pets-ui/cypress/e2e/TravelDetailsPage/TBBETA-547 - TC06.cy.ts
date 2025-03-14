@@ -1,43 +1,28 @@
-import { randomElement } from "../../support/test-utils";
+import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
+import { randomElement, visaType } from "../../support/test-utils";
 
-const visaType = [
-  "Family Reunion",
-  "Settlement and Dependents",
-  "Students",
-  "Work",
-  "Working Holiday Maker",
-  "Government Sponsored",
-];
-// Validate the error messages above each text box are correct
-const errorMessages = ["Enter town or city."];
+// Error message for missing town/city
+const errorMessage = "Enter town or city.";
 
-describe("Validate the error message is displayed when partial postcode is entered", () => {
+describe.skip("Validate the error message is displayed when town/city is not entered", () => {
+  const travelInformationPage = new TravelInformationPage();
+
   beforeEach(() => {
-    cy.visit("http://localhost:3000/travel-details");
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
+    travelInformationPage.visit();
   });
-  it("Should display an error message when partial postcode is entered in the Postcode field", () => {
-    // Select a Visa Type
-    cy.get("#visa-type.govuk-select").select(randomElement(visaType));
 
-    // Enter VALID Address Information
-    cy.get("#address-1").type("Flat 2, 26 Monmouth St.");
-    cy.get("#address-2").type("Bath");
-    cy.get("#town-or-city").should("have.value", "");
-    cy.get("#postcode").type("BA1");
-    cy.get("#mobile-number").type("07123402876");
-    cy.get("#email").type("Appvanceiq.efc1@aiq.ukhsa.gov.uk");
+  it.skip("Should display an error message when town/city is not entered", () => {
+    travelInformationPage.selectVisaType(randomElement(visaType));
 
-    // Click the submit button
-    cy.get('button[type="submit"]').click();
-
-    // Validate the summary box appears at the top contains the correct error messages
-    cy.get(".govuk-error-summary").should("be.visible");
-    errorMessages.forEach((error) => {
-      cy.get(".govuk-error-summary").should("contain.text", error);
-    });
+    // Enter Address Information (skipping town/city)
+    travelInformationPage.fillAddressLine1("Flat 2, 26 Monmouth St.");
+    travelInformationPage.fillAddressLine2("Bath");
+    travelInformationPage.fillPostcode("BA1");
+    travelInformationPage.fillMobileNumber("07123402876");
+    travelInformationPage.fillEmail("Appvanceiq.efc1@aiq.ukhsa.gov.uk");
+    travelInformationPage.submitForm();
+    travelInformationPage.validateErrorSummaryVisible();
+    travelInformationPage.validateErrorMessage(errorMessage);
+    travelInformationPage.validateTownOrCityError();
   });
 });

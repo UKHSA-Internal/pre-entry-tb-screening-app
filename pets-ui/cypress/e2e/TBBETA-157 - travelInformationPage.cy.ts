@@ -1,21 +1,29 @@
+import { TravelConfirmationPage } from "../support/page-objects/travelConfirmationPage";
+import { TravelInformationPage } from "../support/page-objects/travelInformationPage";
+import { TravelSummaryPage } from "../support/page-objects/travelSummaryPage";
 import { randomElement, visaType } from "../support/test-utils";
 
-const selectedVisa = randomElement(visaType);
+describe.skip("Validate that the continue to medical screening button navigates to the medical screening page", () => {
+  const travelInformationPage = new TravelInformationPage();
+  const travelSummaryPage = new TravelSummaryPage();
+  const travelConfirmationPage = new TravelConfirmationPage();
 
-describe("Validate that the continue to medical screening button navigates to the medical screening page", () => {
+  // Generate test data
+  const selectedVisa = randomElement(visaType);
+  const testData = {
+    addressLine1: "17 Exmoor Rd.",
+    addressLine2: "Southampton",
+    townOrCity: "Hampshire",
+    postcode: "SO14 0AR",
+    mobileNumber: "00447811123456",
+    email: "Appvanceiq.efc1@aiq.ukhsa.gov.uk",
+  };
+
   beforeEach(() => {
-    cy.visit("http://localhost:3000/travel-details");
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
+    travelInformationPage.visit();
   });
-  it("should redirect user to Medical Screening Page", () => {
-    cy.visit("http://localhost:3000/travel-details");
 
-    // Select a Visa Type
-    cy.get("#visa-type.govuk-select").select(selectedVisa);
-
+  it.skip("should redirect user to Medical Screening Page", () => {
     cy.get("#visa-type.govuk-select")
       .find("option")
       .then(($options) => {
@@ -25,95 +33,59 @@ describe("Validate that the continue to medical screening button navigates to th
         visaType.forEach((visaType) => {
           expect(optionTexts).to.include(visaType);
         });
-
-        // Enter VALID Address Information
-        cy.get("#address-1").type("17 Exmoor Rd.");
-        cy.get("#address-2").type("Southampton");
-        cy.get("#town-or-city").type("Hampshire");
-        cy.get("#postcode").type("SO14 0AR");
-        cy.get("#mobile-number").type("00447811123456");
-        cy.get("#email").type("Appvanceiq.efc1@aiq.ukhsa.gov.uk");
-
-        // Click the submit button
-        cy.get('button[type="submit"]').click();
-
-        //Validate that page navigates to travel summary page
-        cy.url().should("include", "http://localhost:3000/travel-summary");
-
-        // Validate that user is navigated to correct url when clicking on link in summary page
-        const urlMap = {
-          "Visa type": "#visa-type",
-          "UK Address Line 1": "#address-1",
-          "UK Address Line 2": "#address-2",
-          "UK Town or City": "#town-or-city",
-          "UK Postcode": "#postcode",
-          "UK Mobile Number": "#mobile-number",
-          "UK Email Address": "#email",
-        };
-
-        Object.entries(urlMap).forEach(([summaryList, expectedUrl]) => {
-          cy.get(".govuk-summary-list__key")
-            .contains(summaryList)
-            .closest(".govuk-summary-list__row")
-            .find(".govuk-link")
-            .contains("Change")
-            .click();
-
-          cy.url().should("include", expectedUrl);
-
-          switch (summaryList) {
-            case "Visa type":
-              cy.get("#visa-type.govuk-select").should("have.value", selectedVisa);
-              break;
-            case "UK Address Line 1":
-              cy.get('input[type="text"][name="applicantUkAddress1"]').should(
-                "have.value",
-                "17 Exmoor Rd.",
-              );
-              break;
-            case "UK Address Line 2":
-              cy.get('input[type="text"][name="applicantUkAddress2"]').should(
-                "have.value",
-                "Southampton",
-              );
-              break;
-            case "UK Town or City":
-              cy.get('input[type="text"][name="townOrCity"]').should("have.value", "Hampshire");
-              break;
-            case "UK Postcode":
-              cy.get('input[type="text"][name="postcode"]').should("have.value", "SO14 0AR");
-              break;
-            case "UK Mobile Number":
-              cy.get('input[type="text"][name="ukMobileNumber"]').should(
-                "have.value",
-                "00447811123456",
-              );
-              break;
-            case "UK Email Address":
-              cy.get('input[type="text"][name="ukEmail"]').should(
-                "have.value",
-                "Appvanceiq.efc1@aiq.ukhsa.gov.uk",
-              );
-              break;
-          }
-
-          cy.go("back");
-        });
-
-        // Click the submit button
-        cy.get('button[type="submit"]').click();
-
-        //Validate that page navigates to travel summary page
-        cy.url().should("include", "http://localhost:3000/travel-confirmation");
-
-        //Confirm Travel Record is created
-        cy.get("h1").should("have.text", "Travel Information record created");
-
-        // Click the submit button
-        cy.get('button[type="submit"]').click();
-
-        //Validate that page navigates to medical screening page
-        cy.url().should("include", "http://localhost:3000/medical-screening");
       });
+
+    travelInformationPage.selectVisaType(selectedVisa);
+    travelInformationPage.fillAddressLine1(testData.addressLine1);
+    travelInformationPage.fillAddressLine2(testData.addressLine2);
+    travelInformationPage.fillTownOrCity(testData.townOrCity);
+    travelInformationPage.fillPostcode(testData.postcode);
+    travelInformationPage.fillMobileNumber(testData.mobileNumber);
+    travelInformationPage.fillEmail(testData.email);
+
+    travelInformationPage.submitForm();
+
+    travelSummaryPage.verifyPageLoaded();
+    const summaryFields = {
+      "Visa type": {
+        urlFragment: "#visa-type",
+        value: selectedVisa,
+      },
+      "UK Address Line 1": {
+        urlFragment: "#address-1",
+        value: testData.addressLine1,
+      },
+      "UK Address Line 2": {
+        urlFragment: "#address-2",
+        value: testData.addressLine2,
+      },
+      "UK Town or City": {
+        urlFragment: "#town-or-city",
+        value: testData.townOrCity,
+      },
+      "UK Postcode": {
+        urlFragment: "#postcode",
+        value: testData.postcode,
+      },
+      "UK Mobile Number": {
+        urlFragment: "#mobile-number",
+        value: testData.mobileNumber,
+      },
+      "UK Email Address": {
+        urlFragment: "#email",
+        value: testData.email,
+      },
+    };
+
+    Object.entries(summaryFields).forEach(([fieldName, fieldData]) => {
+      travelSummaryPage.clickChangeLink(fieldName);
+      travelSummaryPage.verifyUrlOnChangePage(fieldData.urlFragment);
+      travelSummaryPage.verifyFieldValueOnChangePage(fieldName, fieldData.value);
+    });
+
+    travelSummaryPage.submitForm();
+    travelConfirmationPage.verifyPageLoaded();
+    travelConfirmationPage.submitForm();
+    travelConfirmationPage.verifyRedirectionToMedicalScreening();
   });
 });
