@@ -25,7 +25,7 @@ const Container = ({ title, children, breadcrumbItems = [] }: ContainerProps) =>
 
       const targetRef = refMap[target];
       if (targetRef) {
-        targetRef.scrollIntoView();
+        targetRef.focus({ preventScroll: true });
       }
     }
   }, [location]);
@@ -39,7 +39,13 @@ const Container = ({ title, children, breadcrumbItems = [] }: ContainerProps) =>
       <Header />
       <div className="govuk-width-container">
         {breadcrumbItems && <Breadcrumb items={breadcrumbItems} />}
-        <main className="govuk-main-wrapper" id="main-content" role="main" ref={mainContent}>
+        <main
+          className="govuk-main-wrapper"
+          id="main-content"
+          role="main"
+          ref={mainContent}
+          tabIndex={-1}
+        >
           {children}
         </main>
       </div>

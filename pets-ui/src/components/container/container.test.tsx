@@ -4,11 +4,14 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { describe, expect } from "vitest";
 
 import Container from "../container/container";
+import userEvent from "@testing-library/user-event";
 
 const mockBreadcrumb = [
   { text: "Home", href: "/" },
   { text: "Applicants", href: "/applicants" },
 ];
+
+const user = userEvent.setup();
 
 describe("Container Component", () => {
   test("renders title inside Helmet", async () => {
@@ -62,5 +65,29 @@ describe("Container Component", () => {
       </Router>,
     );
     expect(screen.queryByText("Home")).not.toBeInTheDocument();
+  });
+  test("main element has tabIndex of -1", () => {
+    render(
+      <Router>
+        <HelmetProvider>
+          <Container title="No Breadcrumbs">Test Content</Container>
+        </HelmetProvider>
+      </Router>,
+    );
+    const mainElement = screen.getByRole("main");
+    expect(mainElement).toHaveAttribute("tabIndex", "-1");
+  });
+  test("main element is in focus when skipLink is clicked", async () => {
+    render(
+      <Router>
+        <HelmetProvider>
+          <Container title="No Breadcrumbs">Test Content</Container>
+        </HelmetProvider>
+      </Router>,
+    );
+    const skipLink = screen.getByText("Skip to main content");
+    await user.click(skipLink);
+    const mainElement = screen.getByRole("main");
+    expect(mainElement).toHaveFocus();
   });
 });

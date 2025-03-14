@@ -6,8 +6,8 @@ import ApplicantSearchForm from "@/sections/applicant-search-form";
 
 export default function ApplicantSearchPage() {
   return (
-    <Container title="Applicant Search" skipLinkHref={""}>
-      <Heading level={1} size="l" title="Search for a visa applicant" />
+    <Container title="Applicant Search">
+      <Heading level={1} size="l" title="Search for a visa applicant"/>
       <p className="govuk-heading-s">
         Enter the applicant&apos;s passport number and the passport&apos;s country of issue.
       </p>
