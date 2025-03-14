@@ -60,10 +60,9 @@ export class ChestXrayPage {
   }
 
   // Check if X-ray option is selected
-  isXrayOptionSelected(): Cypress.Chainable<boolean> {
+  isXrayOptionSelected(): Cypress.Chainable<JQuery<HTMLElement>> {
     return cy.get('input[name="chestXrayTaken"]:checked').should("exist");
   }
-
   // Click continue button
   clickContinue(): void {
     cy.contains("button", "Continue").click();
