@@ -63,7 +63,7 @@ describe("ChestXrayFindings Form", () => {
       expect(screen.getAllByText("Select an X-ray result")).toHaveLength(2);
       expect(screen.getAllByText("Select an X-ray result")[0]).toHaveAttribute(
         "aria-label",
-        "Select an X-ray result",
+        "Error: Select an X-ray result",
       );
     });
   });

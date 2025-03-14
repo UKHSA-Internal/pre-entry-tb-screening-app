@@ -40,7 +40,7 @@ describe("Error Summary Component", () => {
     expect(screen.getByText("There is a problem")).toBeInTheDocument();
     expect(screen.getByText("There is an error on this page")).toHaveAttribute(
       "aria-label",
-      "There is an error on this page",
+      "Error: There is an error on this page",
     );
   });
   it("has screen focus when an error is found", () => {

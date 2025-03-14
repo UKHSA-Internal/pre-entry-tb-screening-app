@@ -87,7 +87,7 @@ describe("ChestXrayForm Section", () => {
     expect(screen.getAllByText("Select a postero-anterior X-ray image file")).toHaveLength(2);
     expect(screen.getAllByText("Select a postero-anterior X-ray image file")[0]).toHaveAttribute(
       "aria-label",
-      "Select a postero-anterior X-ray image file",
+      "Error: Select a postero-anterior X-ray image file",
     );
   });
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {

@@ -70,7 +70,7 @@ describe("ChestXrayUploadPage", () => {
       )[0],
     ).toHaveAttribute(
       "aria-label",
-      "Select yes if the visa applicant has had a chest X-ray or no if they have not",
+      "Error: Select yes if the visa applicant has had a chest X-ray or no if they have not",
     );
   });
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {

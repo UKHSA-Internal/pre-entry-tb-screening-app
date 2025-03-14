@@ -62,7 +62,7 @@ describe("ChestXrayNotTakenPage", () => {
     ).toBeInTheDocument();
     expect(
       screen.getAllByText("Select the reason why the chest X-ray was not taken")[0],
-    ).toHaveAttribute("aria-label", "Select the reason why the chest X-ray was not taken");
+    ).toHaveAttribute("aria-label", "Error: Select the reason why the chest X-ray was not taken");
   });
   it("does not render an error if continue button not clicked", () => {
     expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
@@ -99,7 +99,7 @@ describe("ChestXrayNotTakenPage", () => {
     expect(screen.getAllByText("Enter reason X-ray not taken")[1]).toBeInTheDocument();
     expect(screen.getAllByText("Enter reason X-ray not taken")[1]).toHaveAttribute(
       "aria-label",
-      "Enter reason X-ray not taken",
+      "Error: Enter reason X-ray not taken",
     );
   });
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {

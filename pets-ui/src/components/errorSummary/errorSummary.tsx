@@ -28,11 +28,11 @@ export default function ErrorSummary(props: Readonly<ErrorSummaryProps>) {
         <div className="govuk-error-summary__body">
           <ul className="govuk-list govuk-error-summary__list">
             {props.errorsToShow.map((error) => (
-              <li
-                key={attributeToComponentId[error]}
-                aria-label={`Error: ${props.errors[error]?.message as string}`}
-              >
-                <a href={"#" + attributeToComponentId[error]}>
+              <li key={attributeToComponentId[error]}>
+                <a
+                  href={"#" + attributeToComponentId[error]}
+                  aria-label={`Error: ${props.errors[error]?.message as string}`}
+                >
                   {props.errors[error]?.message as string}
                 </a>
               </li>

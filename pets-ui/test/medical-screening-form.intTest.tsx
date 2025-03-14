@@ -110,17 +110,17 @@ describe("MedicalScreeningForm", () => {
     await user.click(submitButton);
 
     const errorMessages = [
-      "Enter applicant's age in years",
-      "Select whether the applicant has any TB symptoms",
-      "Select whether the applicant has ever had tuberculosis",
-      "Select whether the applicant has had close contact with any person with active pulmonary tuberculosis within the past year",
-      "Select whether the applicant is pregnant",
-      "Select whether the applicant has menstrual periods",
+      "Error: Enter applicant's age in years",
+      "Error: Select whether the applicant has any TB symptoms",
+      "Error: Select whether the applicant has ever had tuberculosis",
+      "Error: Select whether the applicant has had close contact with any person with active pulmonary tuberculosis within the past year",
+      "Error: Select whether the applicant is pregnant",
+      "Error: Select whether the applicant has menstrual periods",
     ];
 
     errorMessages.forEach((error) => {
-      expect(screen.getAllByText(error)).toHaveLength(2);
-      expect(screen.getAllByText(error)[0]).toHaveAttribute("aria-label", error);
+      expect(screen.getAllByText(error.slice(7))).toHaveLength(2);
+      expect(screen.getAllByText(error.slice(7))[0]).toHaveAttribute("aria-label", error);
     });
   });
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
