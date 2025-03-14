@@ -6,7 +6,7 @@ import { ReduxApplicantDetailsType } from "@/applicant";
 import Button from "@/components/button/button";
 import DateTextInput, { DateType } from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
-import ErrorDisplay from "@/components/errorSummary/errorSummary";
+import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Radio from "@/components/radio/radio";
 import { selectApplicant, setApplicantDetails } from "@/redux/applicantSlice";
@@ -83,19 +83,19 @@ const ApplicantForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
+        {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
-        <h2 className="govuk-label govuk-label--m">Applicant&apos;s Personal Details</h2>
+        <h2 className="govuk-label govuk-label--m">Applicant&apos;s personal details</h2>
 
         <div ref={nameRef}>
           <FreeText
             id="name"
-            label="Full Name"
+            label="Full name"
             errorMessage={errors?.fullName?.message ?? ""}
             formValue="fullName"
-            required="Enter the applicant's full name."
+            required="Enter the applicant's full name"
             patternValue={formRegex.fullName}
-            patternError="Full name must contain only letters and spaces."
+            patternError="Full name must contain only letters and spaces"
             defaultValue={applicantData.fullName}
           />
         </div>
@@ -109,7 +109,7 @@ const ApplicantForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.sex?.message ?? ""}
             formValue="sex"
-            required="Select the applicant's sex."
+            required="Select the applicant's sex"
             defaultValue={applicantData.sex}
           />
         </div>
@@ -117,11 +117,11 @@ const ApplicantForm = () => {
         <div ref={countryOfNationalityRef}>
           <Dropdown
             id="country-of-nationality"
-            label="Country of Nationality"
+            label="Country of nationality"
             options={countryList}
             errorMessage={errors?.countryOfNationality?.message ?? ""}
             formValue="countryOfNationality"
-            required="Select the country of nationality."
+            required="Select the country of nationality"
             defaultValue={applicantData.countryOfNationality}
           />
         </div>
@@ -140,7 +140,7 @@ const ApplicantForm = () => {
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
-                legend="Date of Birth"
+                legend="Date of birth"
                 hint="For example, 31 3 2019"
                 value={value}
                 setDateValue={onChange}
@@ -154,12 +154,12 @@ const ApplicantForm = () => {
         <div ref={passportNumberRef}>
           <FreeText
             id="passport-number"
-            label="Applicant's Passport Number"
+            label="Applicant's passport number"
             errorMessage={errors?.passportNumber?.message ?? ""}
             formValue="passportNumber"
-            required="Enter the applicant's passport number."
+            required="Enter the applicant's passport number"
             patternValue={formRegex.lettersAndNumbers}
-            patternError="Passport number must contain only letters and numbers."
+            patternError="Passport number must contain only letters and numbers"
             defaultValue={applicantData.passportNumber}
           />
         </div>
@@ -167,12 +167,12 @@ const ApplicantForm = () => {
         <div ref={countryOfIssueRef}>
           <Dropdown
             id="country-of-issue"
-            label="Country of Issue"
+            label="Country of issue"
             hint="This is usually shown on the first page of the passport, at the top. Use the English spelling or the country code."
             options={countryList}
             errorMessage={errors?.countryOfIssue?.message ?? ""}
             formValue="countryOfIssue"
-            required="Select the country of issue."
+            required="Select the country of issue"
             defaultValue={applicantData.countryOfIssue}
           />
         </div>
@@ -191,7 +191,7 @@ const ApplicantForm = () => {
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
-                legend="Issue Date"
+                legend="Issue date"
                 hint="For example, 31 3 2019"
                 value={value}
                 setDateValue={onChange}
@@ -217,7 +217,7 @@ const ApplicantForm = () => {
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
-                legend="Expiry Date"
+                legend="Expiry date"
                 hint="For example, 31 3 2019"
                 value={value}
                 setDateValue={onChange}
@@ -235,9 +235,9 @@ const ApplicantForm = () => {
             label="Address line 1"
             errorMessage={errors?.applicantHomeAddress1?.message ?? ""}
             formValue="applicantHomeAddress1"
-            required="Enter the first line of the applicant's home address."
+            required="Enter the first line of the applicant's home address"
             patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
-            patternError="Home address must contain only letters, numbers, spaces and punctuation."
+            patternError="Home address must contain only letters, numbers, spaces and punctuation"
             defaultValue={applicantData.applicantHomeAddress1}
           />
         </div>
@@ -250,7 +250,7 @@ const ApplicantForm = () => {
             formValue="applicantHomeAddress2"
             required={false}
             patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
-            patternError="Home address must contain only letters, numbers, spaces and punctuation."
+            patternError="Home address must contain only letters, numbers, spaces and punctuation"
             defaultValue={applicantData.applicantHomeAddress2}
           />
         </div>
@@ -263,7 +263,7 @@ const ApplicantForm = () => {
             formValue="applicantHomeAddress3"
             required={false}
             patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
-            patternError="Home address must contain only letters, numbers, spaces and punctuation."
+            patternError="Home address must contain only letters, numbers, spaces and punctuation"
             defaultValue={applicantData.applicantHomeAddress3}
           />
         </div>
@@ -271,12 +271,12 @@ const ApplicantForm = () => {
         <div ref={townRef}>
           <FreeText
             id="town-or-city"
-            label="Town/City"
+            label="Town/city"
             errorMessage={errors?.townOrCity?.message ?? ""}
             formValue="townOrCity"
-            required="Enter the town or city of the applicant's home address."
+            required="Enter the town or city of the applicant's home address"
             patternValue={formRegex.lettersSpacesAndPunctuation}
-            patternError="Town name must contain only letters, spaces and punctuation."
+            patternError="Town name must contain only letters, spaces and punctuation"
             defaultValue={applicantData.townOrCity}
           />
         </div>
@@ -284,12 +284,12 @@ const ApplicantForm = () => {
         <div ref={provinceRef}>
           <FreeText
             id="province-or-state"
-            label="Province/State"
+            label="Province/state"
             errorMessage={errors?.provinceOrState?.message ?? ""}
             formValue="provinceOrState"
-            required="Enter the province or state of the applicant's home address."
+            required="Enter the province or state of the applicant's home address"
             patternValue={formRegex.lettersSpacesAndPunctuation}
-            patternError="Province/state name must contain only letters, spaces and punctuation."
+            patternError="Province/state name must contain only letters, spaces and punctuation"
             defaultValue={applicantData.provinceOrState}
           />
         </div>
@@ -301,7 +301,7 @@ const ApplicantForm = () => {
             options={countryList}
             errorMessage={errors?.country?.message ?? ""}
             formValue="country"
-            required="Enter the country of the applicant's home address."
+            required="Enter the country of the applicant's home address"
             defaultValue={applicantData.country}
           />
         </div>
@@ -314,7 +314,7 @@ const ApplicantForm = () => {
             formValue="postcode"
             required={false}
             patternValue={formRegex.lettersNumbersAndSpaces}
-            patternError="Postcode must contain only letters, numbers and spaces."
+            patternError="Postcode must contain only letters, numbers and spaces"
             defaultValue={applicantData.postcode}
           />
         </div>

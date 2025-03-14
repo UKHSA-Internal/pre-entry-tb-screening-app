@@ -6,8 +6,8 @@ import MedicalScreeningForm from "@/sections/medical-screening-form";
 
 export default function MedicalScreeningPage() {
   return (
-    <Container title="Medical Screening Form">
-      <Heading level={1} size="l" title="Medical Screening" />
+    <Container title="Medical screening form">
+      <Heading level={1} size="l" title="Medical screening" />
       <p className="govuk-body">
         Enter the applicant&apos;s profile information. You should answer every question.
       </p>

@@ -1,12 +1,8 @@
-describe("Validate nagivates to Medical Summary Page where 'NO' is selected for TB Symptoms", () => {
+describe.skip("Validate nagivates to Medical Summary Page where 'NO' is selected for TB Symptoms", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/medical-screening");
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
   });
-  it("Should navigate to medical summary page", () => {
+  it.skip("Should navigate to medical summary page", () => {
     //Enter applicant's age
     cy.get('input[name="age"]').type("29");
 

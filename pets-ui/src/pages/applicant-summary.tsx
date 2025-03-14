@@ -14,7 +14,7 @@ export default function ApplicantSummaryPage() {
   ];
 
   return (
-    <Container title="Applicant Details Summary" breadcrumbItems={breadcrumbItems}>
+    <Container title="Applicant details summary" breadcrumbItems={breadcrumbItems}>
       <Heading level={1} size="l" title="Check applicant details" />
       <ApplicantReview />
     </Container>

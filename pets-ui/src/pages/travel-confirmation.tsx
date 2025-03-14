@@ -16,9 +16,9 @@ export default function TravelConfirmation() {
   ];
 
   return (
-    <Container title="Travel Details Confirmation" breadcrumbItems={breadcrumbItems}>
+    <Container title="Travel details confirmation" breadcrumbItems={breadcrumbItems}>
       <Confirmation
-        confirmationText={"Travel Information record created"}
+        confirmationText={"Travel information record created"}
         furtherInfo={furtherInfo}
         buttonText={"Continue to medical screening"}
         buttonLink={"/medical-screening"}

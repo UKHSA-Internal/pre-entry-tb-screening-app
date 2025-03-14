@@ -20,7 +20,9 @@ describe("ApplicantForm", () => {
     useNavigateMock.mockClear();
   });
 
-  test("when ApplicantForm is not filled then errors are displayed", async () => {
+  const user = userEvent.setup();
+
+  it("when ApplicantForm is not filled then errors are displayed", async () => {
     renderWithProviders(
       <Router>
         <ApplicantForm />
@@ -29,12 +31,12 @@ describe("ApplicantForm", () => {
     const user = userEvent.setup();
     await user.click(screen.getByRole("button"));
 
-    expect(screen.getAllByText("Enter the applicant's full name.")).toHaveLength(2);
-    expect(screen.getAllByText("Select the applicant's sex.")).toHaveLength(2);
-    expect(screen.getAllByText("Select the country of nationality.")).toHaveLength(2);
+    expect(screen.getAllByText("Enter the applicant's full name")).toHaveLength(2);
+    expect(screen.getAllByText("Select the applicant's sex")).toHaveLength(2);
+    expect(screen.getAllByText("Select the country of nationality")).toHaveLength(2);
     expect(screen.getAllByText("Date of birth must include a day, month and year")).toHaveLength(2);
-    expect(screen.getAllByText("Enter the applicant's passport number.")).toHaveLength(2);
-    expect(screen.getAllByText("Select the country of issue.")).toHaveLength(2);
+    expect(screen.getAllByText("Enter the applicant's passport number")).toHaveLength(2);
+    expect(screen.getAllByText("Select the country of issue")).toHaveLength(2);
     expect(
       screen.getAllByText("Passport issue date must include a day, month and year"),
     ).toHaveLength(2);
@@ -42,27 +44,25 @@ describe("ApplicantForm", () => {
       screen.getAllByText("Passport expiry date must include a day, month and year"),
     ).toHaveLength(2);
     expect(
-      screen.getAllByText("Enter the first line of the applicant's home address."),
+      screen.getAllByText("Enter the first line of the applicant's home address"),
     ).toHaveLength(2);
     expect(
-      screen.getAllByText("Enter the town or city of the applicant's home address."),
+      screen.getAllByText("Enter the town or city of the applicant's home address"),
     ).toHaveLength(2);
     expect(
-      screen.getAllByText("Enter the province or state of the applicant's home address."),
+      screen.getAllByText("Enter the province or state of the applicant's home address"),
     ).toHaveLength(2);
-    expect(screen.getAllByText("Enter the country of the applicant's home address.")).toHaveLength(
+    expect(screen.getAllByText("Enter the country of the applicant's home address")).toHaveLength(
       2,
     );
   });
 
-  test("when ApplicantForm is filled correctly then state is updated and user is navigated to summary page", async () => {
+  it("when ApplicantForm is filled correctly then state is updated and user is navigated to summary page", async () => {
     const { store } = renderWithProviders(
       <Router>
         <ApplicantForm />
       </Router>,
     );
-
-    const user = userEvent.setup();
 
     await user.type(screen.getByTestId("name"), "Sigmund Sigmundson");
     await user.click(screen.getAllByTestId("sex")[1]);
@@ -130,5 +130,47 @@ describe("ApplicantForm", () => {
       postcode: "101",
     });
     expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-summary");
+  });
+
+  it("errors when applicant details are missing", async () => {
+    renderWithProviders(
+      <Router>
+        <ApplicantForm />
+      </Router>,
+    );
+
+    const submitButton = screen.getByRole("button", { name: /Save and Continue/i });
+
+    await user.click(submitButton);
+
+    const errorMessages = [
+      "Error: Enter the applicant's full name",
+      "Error: Select the applicant's sex",
+      "Error: Select the country of nationality",
+      "Error: Date of birth must include a day, month and year",
+      "Error: Enter the applicant's passport number",
+      "Error: Select the country of issue",
+      "Error: Passport issue date must include a day, month and year",
+      "Error: Passport expiry date must include a day, month and year",
+      "Error: Enter the first line of the applicant's home address",
+      "Error: Enter the town or city of the applicant's home address",
+      "Error: Enter the province or state of the applicant's home address",
+      "Error: Enter the country of the applicant's home address",
+    ];
+
+    errorMessages.forEach((error) => {
+      expect(screen.getAllByText(error.slice(7))).toHaveLength(2);
+      expect(screen.getAllByText(error.slice(7))[0]).toHaveAttribute("aria-label", error);
+    });
+  });
+  it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
+    renderWithProviders(
+      <Router>
+        <ApplicantForm />
+      </Router>,
+    );
+    await user.click(screen.getByRole("button"));
+    const errorSummaryDiv = screen.getByTestId("error-summary");
+    expect(errorSummaryDiv).toHaveFocus();
   });
 });
