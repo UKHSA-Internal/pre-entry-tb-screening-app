@@ -46,7 +46,7 @@ export const generateDicomUploadUrlHandler = async (event: GenerateUploadEvent) 
   const fileName = parsedBody.fileName;
 
   // TODO: Move to clinic directory
-  const objectkey = `/${UPLOAD_TEMPORARY_FOLDER}/${applicationId}/${fileName}`; // TODO: Document temp path as well as the esbuild thingy with Envs and also we depend on the aws sdk in runtime
+  const objectkey = `${UPLOAD_TEMPORARY_FOLDER}/${applicationId}/${fileName}`; // TODO: Document temp path as well as the esbuild thingy with Envs and also we depend on the aws sdk in runtime
 
   const client = awsClients.s3Client;
 
@@ -54,6 +54,7 @@ export const generateDicomUploadUrlHandler = async (event: GenerateUploadEvent) 
     Bucket: IMAGE_BUCKET,
     Key: objectkey,
     Fields: {
+      "Content-Type": "application/octet-stream",
       "x-amz-checksum-sha256": parsedBody.checksum,
       "x-amz-sdk-checksum-algorithm": ChecksumAlgorithm.SHA256,
       "x-amz-server-side-encryption": ServerSideEncryption.aws_kms,
