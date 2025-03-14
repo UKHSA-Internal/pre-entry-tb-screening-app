@@ -1,10 +1,10 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter as Router } from "react-router-dom";
 import { describe, expect } from "vitest";
 
 import Container from "../container/container";
-import userEvent from "@testing-library/user-event";
 
 const mockBreadcrumb = [
   { text: "Home", href: "/" },
