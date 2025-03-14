@@ -92,7 +92,7 @@ const ChestXrayFindingsForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.xrayResult?.message ?? ""}
             formValue="xrayResult"
-            required="Select an X-ray result."
+            required="Select radiological outcome"
             defaultValue={chestXrayData.xrayResult}
           />
         </div>
