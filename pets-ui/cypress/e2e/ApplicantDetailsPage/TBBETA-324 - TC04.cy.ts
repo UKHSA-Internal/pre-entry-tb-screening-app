@@ -10,10 +10,10 @@ const countryName = randomCountry?.value;
 
 // Define the expected error messages
 const expectedErrorMessages = [
-  "Full name must contain only letters and spaces.",
-  "Passport number must contain only letters and numbers.",
-  "Home address must contain only letters, numbers, spaces and punctuation.",
-  "Town name must contain only letters, spaces and punctuation.",
+  "Full name must contain only letters and spaces",
+  "Passport number must contain only letters and numbers",
+  "Home address must contain only letters, numbers, spaces and punctuation",
+  "Town name must contain only letters, spaces and punctuation",
   "Province/state name must contain only letters, spaces and punctuation",
 ];
 

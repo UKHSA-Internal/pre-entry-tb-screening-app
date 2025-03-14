@@ -2,8 +2,8 @@ import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchP
 
 // Define the expected error messages
 const searchErrorMessages = [
-  "Enter the applicant's passport number.",
-  "Select the country of issue.",
+  "Enter the applicant's passport number",
+  "Select the country of issue",
 ];
 
 /*Scenario: As a Clinic user

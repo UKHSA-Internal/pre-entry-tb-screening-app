@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ReduxTravelDetailsType } from "@/applicant";
 import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
-import ErrorDisplay from "@/components/errorSummary/errorSummary";
+import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -64,7 +64,7 @@ const ApplicantTravelForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
+        {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
         <div ref={visaTypeRef}>
           <Heading
@@ -78,7 +78,7 @@ const ApplicantTravelForm = () => {
             options={visaOptions}
             errorMessage={errors?.visaType?.message ?? ""}
             formValue="visaType"
-            required="Select a visa type."
+            required="Select a visa type"
             defaultValue={travelData.visaType}
           />
         </div>
@@ -96,9 +96,9 @@ const ApplicantTravelForm = () => {
             label="Address line 1"
             errorMessage={errors?.applicantUkAddress1?.message ?? ""}
             formValue="applicantUkAddress1"
-            required="Enter address line 1, typically the building and street."
+            required="Enter address line 1, typically the building and street"
             patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
-            patternError="Home address must contain only letters, numbers, spaces and punctuation."
+            patternError="Home address must contain only letters, numbers, spaces and punctuation"
             defaultValue={travelData.applicantUkAddress1}
           />
         </div>
@@ -111,7 +111,7 @@ const ApplicantTravelForm = () => {
             formValue="applicantUkAddress2"
             required={false}
             patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
-            patternError="Home address must contain only letters, numbers, spaces and punctuation."
+            patternError="Home address must contain only letters, numbers, spaces and punctuation"
             defaultValue={travelData.applicantUkAddress2}
           />
         </div>
@@ -122,9 +122,9 @@ const ApplicantTravelForm = () => {
             label="Town/city"
             errorMessage={errors?.townOrCity?.message ?? ""}
             formValue="townOrCity"
-            required="Enter town or city."
+            required="Enter town or city"
             patternValue={formRegex.lettersSpacesAndPunctuation}
-            patternError="Town name must contain only letters, spaces and punctuation."
+            patternError="Town name must contain only letters, spaces and punctuation"
             defaultValue={travelData.townOrCity}
           />
         </div>
@@ -135,9 +135,9 @@ const ApplicantTravelForm = () => {
             label="Postcode"
             errorMessage={errors?.postcode?.message ?? ""}
             formValue="postcode"
-            required="Enter full UK postcode."
+            required="Enter full UK postcode"
             patternValue={formRegex.lettersNumbersAndSpaces}
-            patternError="Postcode must contain only letters, numbers and spaces."
+            patternError="Postcode must contain only letters, numbers and spaces"
             defaultValue={travelData.postcode}
           />
         </div>
@@ -153,9 +153,9 @@ const ApplicantTravelForm = () => {
             id="mobile-number"
             errorMessage={errors?.ukMobileNumber?.message ?? ""}
             formValue="ukMobileNumber"
-            required="Enter UK mobile number."
+            required="Enter UK mobile number"
             patternValue={formRegex.numbersOnly}
-            patternError="Full name must contain only letters and spaces."
+            patternError="Full name must contain only letters and spaces"
             defaultValue={travelData.ukMobileNumber}
           />
         </div>
@@ -171,9 +171,9 @@ const ApplicantTravelForm = () => {
             id="email"
             errorMessage={errors?.ukEmail?.message ?? ""}
             formValue="ukEmail"
-            required="Enter UK email address."
+            required="Enter UK email address"
             patternValue={formRegex.emailAddress}
-            patternError="Email must be in correct format."
+            patternError="Email must be in correct format"
             defaultValue={travelData.ukEmail}
           />
         </div>

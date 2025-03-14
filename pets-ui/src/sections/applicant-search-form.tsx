@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { ApplicantSearchFormType } from "@/applicant";
 import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
+import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import {
   clearApplicantDetails,
@@ -42,6 +43,8 @@ const ApplicantSearchForm = () => {
     formState: { errors },
   } = methods;
 
+  const errorsToShow = Object.keys(errors);
+
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (passportDetails) => {
     try {
       dispatch(setApplicantPassportDetails(passportDetails));
@@ -74,14 +77,15 @@ const ApplicantSearchForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
+        {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
         <FreeText
           id="passport-number"
           label="Applicant's passport number"
           errorMessage={errors?.passportNumber?.message ?? ""}
           formValue="passportNumber"
-          required="Enter the applicant's passport number."
+          required="Enter the applicant's passport number"
           patternValue={formRegex.lettersAndNumbers}
-          patternError="Passport number must contain only letters and numbers."
+          patternError="Passport number must contain only letters and numbers"
         />
 
         <Dropdown

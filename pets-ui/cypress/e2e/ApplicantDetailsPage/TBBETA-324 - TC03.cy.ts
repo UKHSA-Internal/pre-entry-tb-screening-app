@@ -12,9 +12,9 @@ const countryName = randomCountry?.value;
 
 // Define only the error messages to test for empty mandatory fields
 const mandatoryFieldErrorMessages = [
-  "Date of birth must include a day, month and year.",
-  "Enter the applicant's passport number.",
-  "Passport issue date must include a day, month and year.",
+  "Date of birth must include a day, month and year",
+  "Enter the applicant's passport number",
+  "Passport issue date must include a day, month and year",
 ];
 
 describe.skip("Validate the errors for empty Mandatory Fields", () => {
