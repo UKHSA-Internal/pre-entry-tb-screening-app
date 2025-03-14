@@ -80,7 +80,7 @@ const ApplicantSearchForm = () => {
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
         <FreeText
           id="passport-number"
-          label="Applicant's Passport Number"
+          label="Applicant's passport number"
           errorMessage={errors?.passportNumber?.message ?? ""}
           formValue="passportNumber"
           required="Enter the applicant's passport number"
@@ -90,7 +90,7 @@ const ApplicantSearchForm = () => {
 
         <Dropdown
           id="country-of-issue"
-          label="Country of Issue"
+          label="Country of issue"
           hint="If you have more than one, use the nationality in the primary passport submitted by the applicant. Use the English spelling or the country code."
           options={countryList}
           errorMessage={errors?.countryOfIssue?.message ?? ""}

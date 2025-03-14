@@ -14,7 +14,7 @@ export default function TravelSummaryPage() {
   ];
 
   return (
-    <Container title="Applicant Travel Information Summary" breadcrumbItems={breadcrumbItems}>
+    <Container title="Applicant travel information summary" breadcrumbItems={breadcrumbItems}>
       <Heading level={1} size="l" title="Check travel information" />
       <TravelReview />
     </Container>

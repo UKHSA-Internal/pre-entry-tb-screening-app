@@ -119,7 +119,7 @@ const ApplicantTravelForm = () => {
         <div ref={townRef}>
           <FreeText
             id="town-or-city"
-            label="Town/City"
+            label="Town/city"
             errorMessage={errors?.townOrCity?.message ?? ""}
             formValue="townOrCity"
             required="Enter town or city"

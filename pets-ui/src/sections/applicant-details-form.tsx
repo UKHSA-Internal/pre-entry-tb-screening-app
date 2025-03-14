@@ -84,12 +84,12 @@ const ApplicantForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
-        <h2 className="govuk-label govuk-label--m">Applicant&apos;s Personal Details</h2>
+        <h2 className="govuk-label govuk-label--m">Applicant&apos;s personal details</h2>
 
         <div ref={nameRef}>
           <FreeText
             id="name"
-            label="Full Name"
+            label="Full name"
             errorMessage={errors?.fullName?.message ?? ""}
             formValue="fullName"
             required="Enter the applicant's full name"
@@ -116,7 +116,7 @@ const ApplicantForm = () => {
         <div ref={countryOfNationalityRef}>
           <Dropdown
             id="country-of-nationality"
-            label="Country of Nationality"
+            label="Country of nationality"
             options={countryList}
             errorMessage={errors?.countryOfNationality?.message ?? ""}
             formValue="countryOfNationality"
@@ -139,7 +139,7 @@ const ApplicantForm = () => {
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
-                legend="Date of Birth"
+                legend="Date of birth"
                 hint="For example, 31 3 2019"
                 value={value}
                 setDateValue={onChange}
@@ -154,7 +154,7 @@ const ApplicantForm = () => {
         <div ref={passportNumberRef}>
           <FreeText
             id="passport-number"
-            label="Applicant's Passport Number"
+            label="Applicant's passport number"
             errorMessage={errors?.passportNumber?.message ?? ""}
             formValue="passportNumber"
             required="Enter the applicant's passport number"
@@ -167,7 +167,7 @@ const ApplicantForm = () => {
         <div ref={countryOfIssueRef}>
           <Dropdown
             id="country-of-issue"
-            label="Country of Issue"
+            label="Country of issue"
             hint="This is usually shown on the first page of the passport, at the top. Use the English spelling or the country code."
             options={countryList}
             errorMessage={errors?.countryOfIssue?.message ?? ""}
@@ -191,7 +191,7 @@ const ApplicantForm = () => {
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
-                legend="Issue Date"
+                legend="Issue date"
                 hint="For example, 31 3 2019"
                 value={value}
                 setDateValue={onChange}
@@ -217,7 +217,7 @@ const ApplicantForm = () => {
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
-                legend="Expiry Date"
+                legend="Expiry date"
                 hint="For example, 31 3 2019"
                 value={value}
                 setDateValue={onChange}
@@ -271,7 +271,7 @@ const ApplicantForm = () => {
         <div ref={townRef}>
           <FreeText
             id="town-or-city"
-            label="Town/City"
+            label="Town/city"
             errorMessage={errors?.townOrCity?.message ?? ""}
             formValue="townOrCity"
             required="Enter the town or city of the applicant's home address"
@@ -284,7 +284,7 @@ const ApplicantForm = () => {
         <div ref={provinceRef}>
           <FreeText
             id="province-or-state"
-            label="Province/State"
+            label="Province/state"
             errorMessage={errors?.provinceOrState?.message ?? ""}
             formValue="provinceOrState"
             required="Enter the province or state of the applicant's home address"
