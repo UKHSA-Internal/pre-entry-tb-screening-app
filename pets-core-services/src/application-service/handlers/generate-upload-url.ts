@@ -1,17 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import {
-  ChecksumAlgorithm,
-  PutObjectCommand,
-  S3Client,
-  ServerSideEncryption,
-} from "@aws-sdk/client-s3";
-import { getSignedUrl, S3RequestPresigner } from "@aws-sdk/s3-request-presigner";
-import { formatUrl } from "@aws-sdk/util-format-url";
-import { HttpRequest } from "@smithy/protocol-http";
-import { parseUrl } from "@smithy/url-parser";
+import { ChecksumAlgorithm, ServerSideEncryption } from "@aws-sdk/client-s3";
+import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 import { z } from "zod";
 
 import awsClients from "../../shared/clients/aws";
@@ -29,7 +17,7 @@ export type GenerateUploadEvent = PetsAPIGatewayProxyEvent & {
 const IMAGE_BUCKET = assertEnvExists(process.env.IMAGE_BUCKET);
 const APP_DOMAIN = assertEnvExists(process.env.APP_DOMAIN); // // TODO: App domain change to route53 Qs
 const UPLOAD_CLOUDFRONT_PATH = "upload";
-const EXPIRY_TIME = 2 * 60; // 2 minutes
+const EXPIRY_TIME = 2 * 6000; // 2 minutes TODO: Change this to expiry
 
 export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
   const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
@@ -58,27 +46,38 @@ export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
   const fileName = parsedBody.fileName;
 
   // TODO: Move to clinic directory
-  const objectkey = `${UPLOAD_CLOUDFRONT_PATH}/temp/${applicationId}/${fileName}`; // TODO: Document temp as well as the esbuild thingy
-  // TODO: think about the issue with moving file to a different directory, duplicate etc
+  const objectkey = `${UPLOAD_CLOUDFRONT_PATH}/temp/${applicationId}/${fileName}`; // TODO: Document temp path as well as the esbuild thingy
 
   const client = awsClients.s3Client;
   // const command = new PutObjectCommand({
   //   Bucket: IMAGE_BUCKET,
   //   Key: objectkey,
   //   ContentType: "application/octet-stream",
+  //   IfNoneMatch: "*",
   //   ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
   //   ChecksumSHA256: parsedBody.checksum,
-  //   SSEKMSKeyId: "e9d62629-f651-4cfc-bab3-7b63563f2f82", // TODO: Change to Github secrets
+  //   SSEKMSKeyId: "arn:aws:kms:eu-west-2:108782068086:key/e9d62629-f651-4cfc-bab3-7b63563f2f82", // TODO: Change to Github secrets
   //   ServerSideEncryption: ServerSideEncryption.aws_kms,
   // });
 
-  const s3EndpointUploadUrl = await createPresignedUrlWithoutClient(
-    client,
-    objectkey,
-    parsedBody.checksum,
-  );
+  const { url, fields } = await createPresignedPost(client, {
+    Bucket: IMAGE_BUCKET,
+    Key: objectkey,
+    Fields: {
+      "Content-Type": "application/octet-stream",
+      "x-amz-checksum-sha256": parsedBody.checksum, // ✅ Add checksum field
+      "x-amz-sdk-checksum-algorithm": ChecksumAlgorithm.SHA256,
+      "x-amz-server-side-encryption": ServerSideEncryption.aws_kms,
+      "x-amz-server-side-encryption-aws-kms-key-id": "e9d62629-f651-4cfc-bab3-7b63563f2f82",
+    },
+    Conditions: [
+      // ["starts-with", "$Content-Type", "application/octet-stream"], // ✅ Allow any application/* content type
+      // ["eq", "$x-amz-checksum-sha256", parsedBody.checksum], // ✅ Enforce exact checksum value
+    ],
+    Expires: EXPIRY_TIME,
+  });
 
-  // await getSignedUrl(client, command, {
+  // const s3EndpointUploadUrl = await getSignedUrl(client, command, {
   //   expiresIn: EXPIRY_TIME,
   //   unhoistableHeaders: new Set([
   //     // Undocumented fix in the signing url library: https://github.com/aws/aws-sdk-js-v3/issues/1576
@@ -86,14 +85,14 @@ export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
   //     "x-amz-sdk-checksum-algorithm",
   //     "x-amz-server-side-encryption",
   //     "x-amz-server-side-encryption-aws-kms-key-id",
+  //     "If-None-Match",
   //   ]),
   // });
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  const parsedUrl = new URL(s3EndpointUploadUrl);
+  const parsedUrl = new URL(url);
   const domainUploadUrl = `${APP_DOMAIN}${parsedUrl.pathname}${parsedUrl.search}`;
 
-  return createHttpResponse(200, { uploadUrl: domainUploadUrl });
+  return createHttpResponse(200, { uploadUrl: domainUploadUrl, s3EndpointUploadUrl: url, fields });
 };
 
 /**
@@ -102,49 +101,4 @@ export const generateUploadUrlHandler = async (event: GenerateUploadEvent) => {
  * - Caching should be changed for upload
  * - OAC behaviour should be different for frontend web browser
  * - Content policy failing
- * - We might need to have a custom origin policy or worse go with a cloudfront function and include host in signature
- * - Custom origin policy to strip out host
- * {
-            "Effect": "Allow",
-            "Action": [
-                "kms:Encrypt",
-                "kms:Decrypt",
-                "kms:GenerateDataKey*"
-            ],
-            "Resource": [
-                "arn:aws:kms:eu-west-2:108782068086:key/e9d62629-f651-4cfc-bab3-7b63563f2f82"
-            ]
-        }
  */
-
-const createPresignedUrlWithoutClient = async (client: S3Client, key: string, checksum: string) => {
-  const url = parseUrl(`https://aw-pets-euw-dev-s3-imageservice.s3.eu-west-2.amazonaws.com/${key}`);
-  const presigner = new S3RequestPresigner(client.config);
-
-  const signedUrlObject = await presigner.presign(
-    new HttpRequest({
-      ...url,
-      method: "PUT",
-      headers: {
-        host: "aw-pets-euw-dev-s3-imageservice.s3.eu-west-2.amazonaws.com", // Force the Host header
-        "x-amz-checksum-sha256": checksum,
-        "x-amz-sdk-checksum-algorithm": ChecksumAlgorithm.SHA256,
-        "x-amz-server-side-encryption-aws-kms-key-id": "e9d62629-f651-4cfc-bab3-7b63563f2f82",
-        "x-amz-server-side-encryption": ServerSideEncryption.aws_kms,
-      },
-    }),
-    {
-      unhoistableHeaders: new Set([
-        "x-amz-checksum-sha256",
-        "x-amz-sdk-checksum-algorithm",
-        "x-amz-server-side-encryption",
-        "x-amz-server-side-encryption-aws-kms-key-id",
-      ]),
-
-      unsignableHeaders: new Set(["content-type"]),
-
-      expiresIn: EXPIRY_TIME,
-    },
-  );
-  return formatUrl(signedUrlObject);
-};
