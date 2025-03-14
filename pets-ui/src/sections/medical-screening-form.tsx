@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ReduxMedicalScreeningType } from "@/applicant";
 import Button from "@/components/button/button";
 import Checkbox from "@/components/checkbox/checkbox";
-import ErrorDisplay from "@/components/errorSummary/errorSummary";
+import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Radio from "@/components/radio/radio";
 import TextArea from "@/components/textArea/textArea";
@@ -79,8 +79,7 @@ const MedicalScreeningForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
-
+        {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
         <div>
           <dl className="govuk-summary-list">
             <div className="govuk-summary-list__row">
@@ -88,14 +87,14 @@ const MedicalScreeningForm = () => {
               <dd className="govuk-summary-list__value">{applicantData.fullName}</dd>
             </div>
             <div className="govuk-summary-list__row">
-              <dt className="govuk-summary-list__key">Date of Birth</dt>
+              <dt className="govuk-summary-list__key">Date of birth</dt>
               <dd className="govuk-summary-list__value">
                 {applicantData.dateOfBirth.day}/{applicantData.dateOfBirth.month}/
                 {applicantData.dateOfBirth.year}
               </dd>
             </div>
             <div className="govuk-summary-list__row">
-              <dt className="govuk-summary-list__key">Passport Number</dt>
+              <dt className="govuk-summary-list__key">Passport number</dt>
               <dd className="govuk-summary-list__value">{applicantData.passportNumber}</dd>
             </div>
           </dl>
@@ -104,10 +103,10 @@ const MedicalScreeningForm = () => {
         <div ref={ageRef}>
           <FreeText
             id="age"
-            label="Applicant Age"
+            label="Applicant age"
             errorMessage={errors?.age?.message ?? ""}
             formValue="age"
-            required="Enter applicant's age in years."
+            required="Enter applicant's age in years"
             patternValue={formRegex.numbersOnly}
             patternError="Age must be a number."
             inputWidth={3}
@@ -125,7 +124,7 @@ const MedicalScreeningForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.tbSymptoms?.message ?? ""}
             formValue="tbSymptoms"
-            required="Select whether the applicant has any TB symptoms."
+            required="Select whether the applicant has any TB symptoms"
             defaultValue={medicalData.tbSymptoms}
           />
         </div>
@@ -205,7 +204,7 @@ const MedicalScreeningForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.previousTb?.message ?? ""}
             formValue="previousTb"
-            required="Select whether the applicant has ever had tuberculosis."
+            required="Select whether the applicant has ever had tuberculosis"
             defaultValue={medicalData.previousTb}
           />
         </div>
@@ -232,7 +231,7 @@ const MedicalScreeningForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.closeContactWithTb?.message ?? ""}
             formValue="closeContactWithTb"
-            required="Select whether the applicant has had close contact with any person with active pulmonary tuberculosis within the past year."
+            required="Select whether the applicant has had close contact with any person with active pulmonary tuberculosis within the past year"
             defaultValue={medicalData.closeContactWithTb}
           />
         </div>
@@ -258,7 +257,7 @@ const MedicalScreeningForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.pregnant?.message ?? ""}
             formValue="pregnant"
-            required="Select whether the applicant is pregnant."
+            required="Select whether the applicant is pregnant"
             defaultValue={medicalData.pregnant}
           />
         </div>
@@ -272,7 +271,7 @@ const MedicalScreeningForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.menstrualPeriods?.message ?? ""}
             formValue="menstrualPeriods"
-            required="Select whether the applicant has menstrual periods."
+            required="Select whether the applicant has menstrual periods"
             defaultValue={medicalData.menstrualPeriods}
           />
         </div>

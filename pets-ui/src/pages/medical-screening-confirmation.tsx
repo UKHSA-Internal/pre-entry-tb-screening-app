@@ -15,11 +15,11 @@ export default function MedicalConfirmation() {
   const furtherInfo = ["The applicant is now ready to conduct their chest x-ray or sputum test."];
 
   return (
-    <Container title="Medical Screening Confirmation" breadcrumbItems={breadcrumbItems}>
+    <Container title="Medical screening confirmation" breadcrumbItems={breadcrumbItems}>
       <Confirmation
         confirmationText={"Medical screening record created"}
         furtherInfo={furtherInfo}
-        buttonText={"Continue to chest x-ray"}
+        buttonText={"Continue to chest X-ray"}
         buttonLink={"/chest-xray-question"}
         whatHappensNext
       />

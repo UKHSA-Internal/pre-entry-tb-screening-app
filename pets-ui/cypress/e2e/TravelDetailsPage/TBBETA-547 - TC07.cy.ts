@@ -2,7 +2,7 @@ import { TravelInformationPage } from "../../support/page-objects/travelInformat
 import { randomElement, visaType } from "../../support/test-utils";
 
 // Error message for missing phone number
-const errorMessage = "Enter UK mobile number.";
+const errorMessage = "Enter UK mobile number";
 
 describe.skip("Validate the error message is displayed when Applicant's UK phone number field is empty", () => {
   const travelInformationPage = new TravelInformationPage();
