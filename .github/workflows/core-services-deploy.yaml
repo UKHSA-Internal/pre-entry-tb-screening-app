@@ -116,6 +116,7 @@ jobs:
       APP_DOMAIN: ${{ vars.APP_DOMAIN }}
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
+      SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
 
     steps:
       - name: Checkout code
