@@ -13,7 +13,7 @@ export default function TbConfirmationPage() {
   ];
 
   return (
-    <Container title="TB Screening Complete" breadcrumbItems={breadcrumbItems}>
+    <Container title="TB screening complete" breadcrumbItems={breadcrumbItems}>
       <Confirmation
         confirmationText="TB screening complete"
         furtherInfo={["Thank you for recording the visa applicant's TB screening."]}

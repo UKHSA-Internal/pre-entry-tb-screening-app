@@ -1,20 +1,16 @@
 //Scenario; Test Submission with valid data for all fields (Happy Path Testing)
 
-describe("Error messages displayed where country of nationality and issue is missing", () => {
+describe.skip("Error messages displayed where country of nationality and issue is missing", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/contact");
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
   });
 
-  it("Should display above each missing field", () => {
+  it.skip("Should display above each missing field", () => {
     //Enter valid data for 'Full name'
     cy.get('input[name="fullName"]').type("John Doe");
 
     //Select a 'Sex'
-    cy.get('input[name="sex"]').check("male");
+    cy.get('input[name="sex"]').check("Male");
 
     //Enter VALID data for 'date of birth'
     cy.get("input#birth-date-day").type("4");

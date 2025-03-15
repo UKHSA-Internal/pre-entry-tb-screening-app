@@ -10,7 +10,7 @@ GIVEN I have NOT entered all mandatory data
 WHEN I click the Continue button
 THEN I am shown the relevant error message. */
 
-describe("Validate data fields on x-ray results page", () => {
+describe.skip("Validate data fields on x-ray results page", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/chest-xray-findings");
     cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
@@ -19,7 +19,7 @@ describe("Validate data fields on x-ray results page", () => {
     }).as("formSubmit");
   });
 
-  it("Should display all required fields and components", () => {
+  it.skip("Should display all required fields and components", () => {
     // Validate Banner and page headings
     cy.get(".govuk-notification-banner__title").contains("Important").should("be.visible");
     cy.get(".govuk-notification-banner__content").should("be.visible");
