@@ -21,6 +21,7 @@ const defaultProps: FileUploadProps = {
   required: "File is required",
   accept: "jpg,jpeg,png,pdf",
   maxSize: 5, // 5 MB
+  setFileState: vi.fn(),
 };
 
 describe("FileUpload Component", () => {
