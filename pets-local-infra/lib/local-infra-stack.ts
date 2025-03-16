@@ -4,7 +4,7 @@ import { ApiDefinition, SpecRestApi } from "aws-cdk-lib/aws-apigateway";
 import { AttributeType, Table, TableProps } from "aws-cdk-lib/aws-dynamodb";
 import { Code, Function, Runtime } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunctionProps } from "aws-cdk-lib/aws-lambda-nodejs";
-import { Bucket } from "aws-cdk-lib/aws-s3";
+import { Bucket, HttpMethods } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
 import { basename, dirname, join, relative } from "path";
 export class LocalInfrastructureStack extends cdk.Stack {
@@ -82,6 +82,19 @@ export class LocalInfrastructureStack extends cdk.Stack {
 
     new Bucket(this, "image-bucket", {
       bucketName: process.env.IMAGE_BUCKET,
+      cors: [
+        {
+          allowedMethods: [
+            HttpMethods.PUT,
+            HttpMethods.DELETE,
+            HttpMethods.POST,
+            HttpMethods.GET,
+            HttpMethods.HEAD,
+          ],
+          allowedOrigins: ["*"],
+          allowedHeaders: ["*"],
+        },
+      ],
     });
   }
 }
