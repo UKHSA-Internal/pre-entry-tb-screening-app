@@ -229,3 +229,14 @@ type ReduxTbCertificateDeclarationType = {
   tbCertificateDate: DateType;
   tbCertificateNumber: string;
 };
+
+type GenerateDicomUploadUrlRequest = {
+  fileName: string;
+  checksum?: string;
+};
+
+type GenerateDicomUploadUrlResponse = {
+  uploadUrl: string;
+  bucketPath: string;
+  fields: Record<string, string>;
+};

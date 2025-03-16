@@ -3,6 +3,8 @@ import axios, { AxiosResponse } from "axios";
 import {
   ApplicantSearchFormType,
   ApplicationIdAndDateCreatedType,
+  GenerateDicomUploadUrlRequest,
+  GenerateDicomUploadUrlResponse,
   PostedApplicantDetailsType,
   PostedMedicalScreeningType,
   PostedTravelDetailsType,
@@ -83,4 +85,15 @@ export const postMedicalDetails = async (
     medicalScreeningDetails,
   );
   return { status: result.status, statusText: result.statusText };
+};
+
+export const generateDicomUploadUrl = async (
+  applicationId: string,
+  dicomDetails: GenerateDicomUploadUrlRequest,
+) => {
+  const result = await petsApi.put(
+    `/application/${applicationId}/generate-dicom-upload-url`,
+    dicomDetails,
+  );
+  return result as AxiosResponse<GenerateDicomUploadUrlResponse>;
 };

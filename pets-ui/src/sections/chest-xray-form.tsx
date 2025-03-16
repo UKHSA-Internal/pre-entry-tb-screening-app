@@ -1,7 +1,9 @@
+import axios from "axios";
 import { Dispatch, SetStateAction, useState } from "react";
 import { FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
+import { generateDicomUploadUrl } from "@/api/api";
 import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
@@ -9,6 +11,7 @@ import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FileUpload from "@/components/fileUpload/fileUpload";
 import Heading from "@/components/heading/heading";
 import { selectApplicant } from "@/redux/applicantSlice";
+import { selectApplication } from "@/redux/applicationSlice";
 import {
   setApicalLordoticXrayFile,
   setLateralDecubitusXrayFile,
@@ -21,7 +24,7 @@ const FileUploadModule = (
   props: Readonly<{
     id: string;
     name: string;
-    setFileState: Dispatch<SetStateAction<string | null>>;
+    setFileState: Dispatch<SetStateAction<File | undefined>>;
     required: boolean;
     errors: FieldErrors<ReduxChestXrayDetailsType>;
     accept?: string;
@@ -48,8 +51,8 @@ const FileUploadModule = (
               errorMessage={
                 props.errors[props.id as keyof ReduxChestXrayDetailsType]?.message ?? ""
               }
-              accept={props.accept ?? "jpg,jpeg,png,pdf"}
-              maxSize={props.maxSize ?? 5}
+              accept={props.accept}
+              maxSize={props.maxSize}
               setFileState={props.setFileState}
             />
           </dd>
@@ -59,14 +62,23 @@ const FileUploadModule = (
   );
 };
 
+async function computeBase64SHA256(file: File) {
+  const arrayBuffer = await file.arrayBuffer();
+  const hashBuffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hash = btoa(String.fromCharCode(...hashArray));
+  return hash;
+}
+
 const ChestXrayForm = () => {
   const applicantData = useAppSelector(selectApplicant);
+  const applicationData = useAppSelector(selectApplication);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const [PAFile, setPAFile] = useState<string | null>(null);
-  const [ALFile, setALFile] = useState<string | null>(null);
-  const [LDFile, setLDFile] = useState<string | null>(null);
+  const [PAFile, setPAFile] = useState<File>();
+  const [ALFile, setALFile] = useState<File>();
+  const [LDFile, setLDFile] = useState<File>();
 
   const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
   const {
@@ -76,10 +88,44 @@ const ChestXrayForm = () => {
 
   const errorsToShow = Object.keys(errors);
 
-  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = () => {
-    dispatch(setPosteroAnteriorXrayFile(PAFile));
-    dispatch(setApicalLordoticXrayFile(ALFile));
-    dispatch(setLateralDecubitusXrayFile(LDFile));
+  const uploadFile = async (file: File, bucketFileName: string) => {
+    const { data } = await generateDicomUploadUrl(applicationData.applicationId, {
+      fileName: bucketFileName,
+      checksum: await computeBase64SHA256(file),
+    });
+
+    const { uploadUrl, bucketPath, fields } = data;
+
+    const form = new FormData();
+    Object.entries(fields).forEach(([field, value]) => {
+      form.append(field, value);
+    });
+    form.append("file", file);
+
+    await axios.post(uploadUrl, form, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    return bucketPath;
+  };
+
+  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = async () => {
+    // TBBETA-163: Loaders Loaders Loaders
+    if (PAFile) {
+      const bucketPath = await uploadFile(PAFile, "postero-anterior.dcm");
+      dispatch(setPosteroAnteriorXrayFile(bucketPath));
+    }
+
+    if (ALFile) {
+      const bucketPath = await uploadFile(ALFile, "apical-lordotic.dcm");
+      dispatch(setApicalLordoticXrayFile(bucketPath));
+    }
+
+    if (LDFile) {
+      const bucketPath = await uploadFile(LDFile, "lateral-decubitus.dcm");
+      dispatch(setLateralDecubitusXrayFile(bucketPath));
+    }
+
     navigate("/chest-xray-findings");
   };
 
