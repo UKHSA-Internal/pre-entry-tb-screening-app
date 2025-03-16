@@ -13,7 +13,7 @@ import {
   setApplicantDetailsFromApiResponse,
   setApplicantPassportDetails,
 } from "@/redux/applicantSlice";
-import { clearApplicationDetails } from "@/redux/applicationSlice";
+import { clearApplicationDetails, setApplicationId } from "@/redux/applicationSlice";
 import { useAppDispatch } from "@/redux/hooks";
 import {
   clearMedicalScreeningDetails,
@@ -52,6 +52,7 @@ const ApplicantSearchForm = () => {
       try {
         applicantRes = await getApplicants(passportDetails);
         dispatch(setApplicantDetailsFromApiResponse(applicantRes.data[0]));
+        dispatch(setApplicationId(applicantRes.data[0].applicationId));
       } catch (error) {
         if (axios.isAxiosError(error) && error.status == 404) {
           navigate("/applicant-results");
