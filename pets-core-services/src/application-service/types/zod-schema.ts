@@ -230,6 +230,9 @@ export const DicomUploadUrlResponseSchema = z.object({
   uploadUrl: z.string().openapi({
     description: "The upload url",
   }),
+  bucketPath: z.string().openapi({
+    description: "Bucket Path for Uploaded File",
+  }),
   fields: z.record(z.string(), z.string()).openapi({
     description: "Required fields in file upload request",
   }),
