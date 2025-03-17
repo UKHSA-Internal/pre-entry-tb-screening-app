@@ -4,9 +4,14 @@ export class ChestXrayFindingsPage {
     cy.visit("/chest-xray-findings");
   }
 
-  // Verify page loaded
+  // Verify page loaded - updated to match the actual page content
   verifyPageLoaded(): void {
-    cy.contains("h1", "Enter radiological outcome and findings").should("be.visible");
+    // Check for the heading with class govuk-heading-l
+    cy.get("h1.govuk-heading-l")
+      .should("be.visible")
+      .and("contain", "Enter radiological outcome and findings");
+
+    // Also check for the summary list which should be present
     cy.get(".govuk-summary-list").should("be.visible");
   }
 

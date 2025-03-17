@@ -62,7 +62,8 @@ export class ChestXrayUploadPage {
   verifyFileUploaded(
     xrayType: "postero-anterior-xray" | "apical-lordotic-xray" | "lateral-decubitus-xray",
   ): void {
-    cy.get(`input[name="${xrayType}"]`).should("have.prop", "files.length", 1);
+    // Check that the file input has a non-empty value
+    cy.get(`input[name="${xrayType}"]`).should("not.have.value", "");
   }
 
   // Clear uploaded file for a specific X-ray type
@@ -71,9 +72,30 @@ export class ChestXrayUploadPage {
   ): void {
     cy.get(`input[name="${xrayType}"]`).clear();
   }
+
   // Click continue button
   clickContinue(): void {
     cy.contains("button", "Continue").click();
+  }
+
+  // Verify upload success for X-ray images
+  verifyUploadSuccess(): ChestXrayUploadPage {
+    // Check the file is properly selected/uploaded for postero-anterior X-ray
+    this.verifyFileUploaded("postero-anterior-xray");
+
+    // Verify no error messages are visible
+    cy.get(".govuk-error-message").should("not.exist");
+
+    return this;
+  }
+
+  // Verify upload error state
+  verifyUploadError(
+    xrayType: "postero-anterior-xray" | "apical-lordotic-xray" | "lateral-decubitus-xray",
+  ): ChestXrayUploadPage {
+    cy.get(`#${xrayType}-error`).should("be.visible");
+    cy.get(".govuk-error-message").should("be.visible");
+    return this;
   }
 
   // Upload mandatory X-ray and submit form

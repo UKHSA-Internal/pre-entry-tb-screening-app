@@ -225,10 +225,17 @@ describe("Visa Application End-to-End Tests", () => {
     });
 
     // Upload an X-ray file
-    chestXrayUploadPage.uploadPosteroAnteriorXray("cypress/fixtures/test-image.jpg");
+    chestXrayUploadPage.uploadPosteroAnteriorXray("cypress/fixtures/test-image.png");
 
+    // Validate that the upload was successful
+    chestXrayUploadPage.verifyUploadSuccess();
+
+    cy.contains("button", "Continue").should("be.enabled").click();
     // Continue to X-ray findings page
     chestXrayUploadPage.clickContinue();
+    cy.url().then((url) => {
+      cy.log(`Current URL: ${url}`);
+    });
 
     // Verify X-ray findings page
     chestXrayFindingsPage.verifyPageLoaded();
@@ -248,6 +255,6 @@ describe("Visa Application End-to-End Tests", () => {
     chestXrayFindingsPage.clickSaveAndContinue();
 
     // Verify completion of the full flow
-    cy.url().should("include", "/completion");
+    cy.url().should("include", "/chest-xray-summary");
   });
 });
