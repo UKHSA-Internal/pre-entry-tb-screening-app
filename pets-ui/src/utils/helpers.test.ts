@@ -1,4 +1,9 @@
-import { formatDateType, isDataPresent, standardiseDayOrMonth, spreadArrayIfNotEmpty, standardiseDayOrMonth } from "./helpers";
+import {
+  formatDateType,
+  isDataPresent,
+  spreadArrayIfNotEmpty,
+  standardiseDayOrMonth,
+} from "./helpers";
 
 describe("standardiseDayOrMonth function", () => {
   test.each([
@@ -120,6 +125,8 @@ describe("isDataPresent function", () => {
       hiddenLabel: "label",
     };
     expect(isDataPresent(summaryElementEmptyArrayExmaple)).toBeFalsy();
+  });
+});
 
 describe("spreadIfNotEmpty", () => {
   test("should spread non-empty string arrays", () => {

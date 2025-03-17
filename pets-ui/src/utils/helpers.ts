@@ -234,7 +234,7 @@ export const isDataPresent = (
 ): summaryElement is SummaryElement => {
   const { value } = summaryElement;
   return Array.isArray(value) ? value.length > 0 : !!value;
-}
+};
 
 export const spreadArrayIfNotEmpty = (...arrays: string[][]) => {
   return arrays.flatMap((array) => (array?.length ? array : []));
