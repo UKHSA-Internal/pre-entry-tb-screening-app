@@ -29,6 +29,7 @@ concurrently(
   [
     "pnpm --filter pets-local-infra watch:core-services",
     "pnpm --filter pets-ui dev", // Starts Vite Server
+    "pnpm watch:lambda-logs", // Logs of Backend Services
   ],
   {
     killOthers: ["failure", "success"],
