@@ -89,6 +89,12 @@ describe("ChestXrayForm Section", () => {
   });
 
   it("uploads three X-ray files", () => {
+    renderWithProviders(
+      <Router>
+        <ChestXrayForm />
+      </Router>,
+    );
+
     const posteroAnteriorInput: HTMLInputElement = screen.getByTestId("postero-anterior-xray");
     const apicalLordoticInput: HTMLInputElement = screen.getByTestId("apical-lordotic-xray");
     const lateralDecubitusInput: HTMLInputElement = screen.getByTestId("lateral-decubitus-xray");
@@ -111,6 +117,12 @@ describe("ChestXrayForm Section", () => {
   });
 
   it("errors when postero anterior xray is missing", async () => {
+    renderWithProviders(
+      <Router>
+        <ChestXrayForm />
+      </Router>,
+    );
+
     const posteroAnteriorInput: HTMLInputElement = screen.getByTestId("postero-anterior-xray");
     const submitButton = screen.getByRole("button", { name: /continue/i });
 
@@ -126,6 +138,12 @@ describe("ChestXrayForm Section", () => {
     );
   });
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
+    renderWithProviders(
+      <Router>
+        <ChestXrayForm />
+      </Router>,
+    );
+
     const submitButton = screen.getByRole("button", { name: /continue/i });
     await user.click(submitButton);
     const errorSummaryDiv = screen.getByTestId("error-summary");
