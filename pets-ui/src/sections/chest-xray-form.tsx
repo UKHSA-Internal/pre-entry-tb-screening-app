@@ -86,12 +86,18 @@ const ChestXrayForm = () => {
   } = methods;
 
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = () => {
-    dispatch(setPosteroAnteriorXrayFile(PAFile));
-    dispatch(setApicalLordoticXrayFile(ALFile));
-    dispatch(setLateralDecubitusXrayFile(LDFile));
-    dispatch(setPosteroAnteriorXrayFileName(PAFileName));
-    dispatch(setApicalLordoticXrayFileName(ALFileName));
-    dispatch(setLateralDecubitusXrayFileName(LDFileName));
+    if (!chestXrayData.posteroAnteriorXrayFileName) {
+      dispatch(setPosteroAnteriorXrayFileName(PAFileName));
+      dispatch(setPosteroAnteriorXrayFile(PAFile));
+    }
+    if (!chestXrayData.apicalLordoticXrayFileName) {
+      dispatch(setApicalLordoticXrayFileName(ALFileName));
+      dispatch(setApicalLordoticXrayFile(ALFile));
+    }
+    if (!chestXrayData.lateralDecubitusXrayFileName) {
+      dispatch(setLateralDecubitusXrayFileName(LDFileName));
+      dispatch(setLateralDecubitusXrayFile(LDFile));
+    }
     navigate("/chest-xray-findings");
   };
 
@@ -125,15 +131,27 @@ const ChestXrayForm = () => {
 
           <div ref={paXray}>
             <Heading level={2} size="m" title="Postero-anterior X-ray" />
-            <FileUploadModule
-              id="postero-anterior-xray"
-              name="Postero-anterior"
-              setFileState={setPAFile}
-              setFileName={setPAFileName}
-              required={true}
-              errors={errors}
-              existingFileName={chestXrayData.posteroAnteriorXrayFileName}
-            />
+            {chestXrayData.posteroAnteriorXrayFile ? (
+              <FileUploadModule
+                id="postero-anterior-xray"
+                name="Postero-anterior"
+                setFileState={setPAFile}
+                setFileName={setPAFileName}
+                required={false}
+                errors={errors}
+                existingFileName={chestXrayData.posteroAnteriorXrayFileName}
+              />
+            ) : (
+              <FileUploadModule
+                id="postero-anterior-xray"
+                name="Postero-anterior"
+                setFileState={setPAFile}
+                setFileName={setPAFileName}
+                required={true}
+                errors={errors}
+                existingFileName={chestXrayData.posteroAnteriorXrayFileName}
+              />
+            )}
           </div>
 
           <div ref={alXray}>
