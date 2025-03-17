@@ -86,15 +86,15 @@ const ChestXrayForm = () => {
   } = methods;
 
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = () => {
-    if (!chestXrayData.posteroAnteriorXrayFileName) {
+    if (PAFile && PAFile.length > 0) {
       dispatch(setPosteroAnteriorXrayFileName(PAFileName));
       dispatch(setPosteroAnteriorXrayFile(PAFile));
     }
-    if (!chestXrayData.apicalLordoticXrayFileName) {
+    if (ALFile && ALFile.length > 0) {
       dispatch(setApicalLordoticXrayFileName(ALFileName));
       dispatch(setApicalLordoticXrayFile(ALFile));
     }
-    if (!chestXrayData.lateralDecubitusXrayFileName) {
+    if (LDFile && LDFile.length > 0) {
       dispatch(setLateralDecubitusXrayFileName(LDFileName));
       dispatch(setLateralDecubitusXrayFile(LDFile));
     }
