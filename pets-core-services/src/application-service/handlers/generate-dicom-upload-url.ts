@@ -6,7 +6,9 @@ import awsClients from "../../shared/clients/aws";
 import { assertEnvExists, isLocal } from "../../shared/config";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
+import { Applicant } from "../../shared/models/applicant";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
+import { generateDicomObjectkey } from "../helpers/upload";
 import { DicomUploadUrlRequestSchema } from "../types/zod-schema";
 
 export type DicomUploadUrlRequestSchema = z.infer<typeof DicomUploadUrlRequestSchema>;
@@ -17,7 +19,6 @@ export type GenerateUploadEvent = PetsAPIGatewayProxyEvent & {
 const IMAGE_BUCKET = assertEnvExists(process.env.IMAGE_BUCKET);
 const SSE_KEY_ID = assertEnvExists(process.env.SSE_KEY_ID);
 const EXPIRY_TIME = 5 * 60; // 5 minutes
-const UPLOAD_TEMPORARY_FOLDER = "temp";
 
 export const generateDicomUploadUrlHandler = async (event: GenerateUploadEvent) => {
   try {
@@ -33,27 +34,24 @@ export const generateDicomUploadUrlHandler = async (event: GenerateUploadEvent) 
       });
     }
 
-    // const applicant = await Applicant.getByApplicationId(applicationId);
-    // if (!applicant) {
-    //   logger.error("Application does not have an applicant");
-    //   return createHttpResponse(400, { message: "Invalid Application - No Applicant" });
-    // }
+    const applicant = await Applicant.getByApplicationId(applicationId);
+    if (!applicant) {
+      logger.error("Application does not have an applicant");
+      return createHttpResponse(400, { message: "Invalid Application - No Applicant" });
+    }
 
-    // const countryOfIssue = applicant.countryOfIssue; // TODO: Inform platform about another dynamodb changes
-    // const passportNumber = applicant.passportNumber;
-    // const { clinicId } = event.requestContext.authorizer;
-    // const clinicIDFormatted = clinicId.replaceAll("/", "-"); // Replace
-
-    const fileName = parsedBody.fileName;
-
-    // TODO: Move to clinic directory
-    const objectkey = `${UPLOAD_TEMPORARY_FOLDER}/${applicationId}/${fileName}`; // TODO: Document temp path as well as the esbuild thingy with Envs and also we depend on the aws sdk in runtime
+    const objectKey = generateDicomObjectkey({
+      applicant,
+      clinicId: event.requestContext.authorizer.clinicId,
+      fileName: parsedBody.fileName,
+      applicationId,
+    });
 
     const client = awsClients.s3Client;
 
     const signedPost = await createPresignedPost(client, {
       Bucket: IMAGE_BUCKET,
-      Key: objectkey,
+      Key: objectKey,
       Fields: {
         "Content-Type": "application/octet-stream",
         "x-amz-checksum-sha256": parsedBody.checksum,
@@ -72,7 +70,7 @@ export const generateDicomUploadUrlHandler = async (event: GenerateUploadEvent) 
     }
 
     const { fields } = signedPost;
-    return createHttpResponse(200, { uploadUrl: url, bucketPath: objectkey, fields });
+    return createHttpResponse(200, { uploadUrl: url, bucketPath: objectKey, fields });
   } catch (error) {
     logger.error(error, "Error generating uploading url");
     return createHttpResponse(500, { message: "Something went wrong" });
@@ -81,8 +79,6 @@ export const generateDicomUploadUrlHandler = async (event: GenerateUploadEvent) 
 
 /**
  * // DEVOPS Notes
- * - Don't sign request
- * - Caching should be changed for upload
  * - OAC behaviour should be different for frontend web browser
  * - Content policy failing
  * - Delete the upload behaviour
