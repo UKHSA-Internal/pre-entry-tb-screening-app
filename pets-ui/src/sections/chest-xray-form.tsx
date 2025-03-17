@@ -123,7 +123,6 @@ const ChestXrayForm = () => {
         <div>
           <ApplicantDataHeader applicantData={applicantData} />
 
-          <p>{JSON.stringify(chestXrayData)}</p>
           <div ref={paXray}>
             <Heading level={2} size="m" title="Postero-anterior X-ray" />
             <FileUploadModule
