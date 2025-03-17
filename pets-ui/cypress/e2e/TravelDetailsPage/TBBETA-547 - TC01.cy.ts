@@ -1,6 +1,6 @@
 import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
 
-const visaTypeErrorMessage = "Select a visa type.";
+const visaTypeErrorMessage = "Select a visa type";
 
 describe.skip("Validate the error message is displayed when Visa type is NOT selected", () => {
   const travelInformationPage = new TravelInformationPage();

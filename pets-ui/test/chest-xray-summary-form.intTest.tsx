@@ -89,8 +89,8 @@ describe("ChestXraySummaryPage", () => {
     });
     it("renders the applicantDataHeader component ", () => {
       expect(screen.getByText("Name")).toBeInTheDocument();
-      expect(screen.getByText("Date of Birth")).toBeInTheDocument();
-      expect(screen.getByText("Passport Number")).toBeInTheDocument();
+      expect(screen.getByText("Date of birth")).toBeInTheDocument();
+      expect(screen.getByText("Passport number")).toBeInTheDocument();
     });
     it("renders the page titles and descriptions ", () => {
       expect(screen.getByText("Check chest X-ray information")).toBeInTheDocument();

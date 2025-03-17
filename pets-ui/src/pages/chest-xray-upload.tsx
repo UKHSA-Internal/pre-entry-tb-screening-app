@@ -14,7 +14,7 @@ export default function ChestXrayUploadPage() {
   ];
 
   return (
-    <Container title="Upload Chest X-rays" breadcrumbItems={breadcrumbItems}>
+    <Container title="Upload chest X-rays" breadcrumbItems={breadcrumbItems}>
       <Heading level={1} size="l" title="Upload chest X-ray images" />
       <ChestXrayForm />
     </Container>
