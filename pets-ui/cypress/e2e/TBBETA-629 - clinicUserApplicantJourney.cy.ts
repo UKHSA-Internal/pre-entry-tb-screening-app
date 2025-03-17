@@ -5,6 +5,7 @@ import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage
 import { ApplicantSummaryPage } from "../support/page-objects/applicantSummaryPage";
 import { ChestXrayFindingsPage } from "../support/page-objects/chestXrayFindingsPage";
 import { ChestXrayPage } from "../support/page-objects/chestXrayQuestionPage";
+import { ChestXraySummaryPage } from "../support/page-objects/chestXraySummaryPage";
 import { ChestXrayUploadPage } from "../support/page-objects/chestXrayUploadPage";
 import { MedicalConfirmationPage } from "../support/page-objects/medicalConfirmationPage";
 import { MedicalSummaryPage } from "../support/page-objects/medicalSummaryPage";
@@ -15,7 +16,7 @@ import { TravelConfirmationPage } from "./../support/page-objects/travelConfirma
 import { TravelInformationPage } from "./../support/page-objects/travelInformationPage";
 import { TravelSummaryPage } from "./../support/page-objects/travelSummaryPage";
 
-describe("Visa Application End-to-End Tests", () => {
+describe("PETS Application End-to-End Tests", () => {
   // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
@@ -30,6 +31,7 @@ describe("Visa Application End-to-End Tests", () => {
   const chestXrayPage = new ChestXrayPage();
   const chestXrayUploadPage = new ChestXrayUploadPage();
   const chestXrayFindingsPage = new ChestXrayFindingsPage();
+  const chestXraySummaryPage = new ChestXraySummaryPage();
   const visaType = "Students";
 
   // Define variables to store test data
@@ -72,7 +74,7 @@ describe("Visa Application End-to-End Tests", () => {
     applicantDetailsPage.selectNationality(countryName);
 
     // Fill birth date
-    applicantDetailsPage.fillBirthDate("15", "03", "1990");
+    applicantDetailsPage.fillBirthDate("15", "03", "2000");
 
     // Fill passport dates
     applicantDetailsPage.fillPassportIssueDate("10", "05", "2018");
@@ -150,7 +152,7 @@ describe("Visa Application End-to-End Tests", () => {
 
     // Medical Screening Page
     medicalScreeningPage.verifyPageLoaded();
-    medicalScreeningPage.fillAge("33");
+    medicalScreeningPage.fillAge("25");
 
     // TB symptoms
     medicalScreeningPage.selectTbSymptoms("No");
@@ -182,7 +184,7 @@ describe("Visa Application End-to-End Tests", () => {
 
     //Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "33",
+      age: "25",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",
@@ -206,7 +208,7 @@ describe("Visa Application End-to-End Tests", () => {
     // Check applicant information is displayed correctly
     chestXrayPage.verifyApplicantInfo({
       Name: "Jane Smith",
-      "Date of Birth": "15/03/1990",
+      "Date of Birth": "15/03/2000",
       "Passport Number": passportNumber,
     });
 
@@ -220,7 +222,7 @@ describe("Visa Application End-to-End Tests", () => {
     // Check applicant information is displayed correctly
     chestXrayUploadPage.verifyApplicantInfo({
       Name: "Jane Smith",
-      "Date of Birth": "15/03/1990",
+      "Date of Birth": "15/03/2000",
       "Passport Number": passportNumber,
     });
 
@@ -243,7 +245,7 @@ describe("Visa Application End-to-End Tests", () => {
     // Check applicant information is displayed correctly
     chestXrayFindingsPage.verifyApplicantInfo({
       Name: "Jane Smith",
-      "Date of Birth": "15/03/1990",
+      "Date of Birth": "15/03/2000",
       "Passport Number": passportNumber,
     });
 
@@ -254,7 +256,30 @@ describe("Visa Application End-to-End Tests", () => {
     // Save and continue
     chestXrayFindingsPage.clickSaveAndContinue();
 
-    // Verify completion of the full flow
+    // Verify redirection to chest X-ray summary page
     cy.url().should("include", "/chest-xray-summary");
+
+    // Verify chest X-ray summary page
+    chestXraySummaryPage.verifyPageLoaded();
+
+    // Check applicant information is displayed correctly
+    chestXraySummaryPage.verifyApplicantInfo({
+      Name: "Jane Smith",
+      "Date of birth": "15/03/2000",
+      "Passport number": passportNumber,
+    });
+
+    // Verify X-ray summary information
+    chestXraySummaryPage.verifyXraySummaryInfo({
+      "Select x-ray status": "Yes",
+      "Enter radiological outcome": "Chest X-ray normal",
+      "Enter radiographic findings": "1.1 Single fibrous streak or band or scar",
+    });
+
+    // Verify change links exist
+    chestXraySummaryPage.verifyChangeLinksExist();
+
+    // Save and continue to the next page
+    chestXraySummaryPage.clickSaveAndContinue();
   });
 });
