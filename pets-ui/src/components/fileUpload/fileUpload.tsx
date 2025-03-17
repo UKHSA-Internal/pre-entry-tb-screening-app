@@ -19,6 +19,12 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
   const { register } = useFormContext();
   const [errorText, setErrorText] = useState("");
   const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
+  const [inputClass, setInputClass] = useState(
+    props.existingFileName ? "govuk-file-upload hide-text" : "govuk-file-upload",
+  );
+  const [showExistingFileName, setShowExistingFileName] = useState(
+    props.existingFileName ? true : false,
+  );
 
   const validateFileType = (files: FileList) => {
     if (props.required) {
@@ -52,9 +58,21 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
     });
   };
 
+  const displayError = (errorText: string | null) => {
+    if (errorText) {
+      setErrorText(errorText);
+      setWrapperClass("govuk-form-group govuk-form-group--error");
+    } else {
+      setErrorText("");
+      setWrapperClass("");
+    }
+  };
+
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
+      setInputClass("govuk-file-upload");
+      setShowExistingFileName(false);
       const fileTypeError = validateFileType(files);
       const fileSizeError = validateFileSize(files);
       if (fileTypeError !== true) {
@@ -85,16 +103,6 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
     }
   };
 
-  const displayError = (errorText: string | null) => {
-    if (errorText) {
-      setErrorText(errorText);
-      setWrapperClass("govuk-form-group govuk-form-group--error");
-    } else {
-      setErrorText("");
-      setWrapperClass("");
-    }
-  };
-
   useEffect(() => {
     displayError(props.errorMessage);
   }, [props.errorMessage]);
@@ -111,47 +119,24 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
         )}
         <div data-module="govuk-file-upload">
           <div key={`file-upload-${props.id}`}>
-            {!props.existingFileName && (
-              <input
-                id="fileInput"
-                className="govuk-file-upload"
-                type="file"
-                data-testid={props.id}
-                accept={props.accept} // The file types accepted
-                {...register(props.formValue, {
-                  required: props.required,
-                  validate: {
-                    fileType: validateFileType,
-                    fileSize: validateFileSize,
-                  },
-                })}
-                onChange={async (event) => {
-                  await handleFileChange(event);
-                }}
-              />
-            )}
-            {props.existingFileName && (
-              <div>
-                <input
-                  id="fileInput"
-                  className="govuk-file-upload hide-text"
-                  type="file"
-                  data-testid={props.id}
-                  accept={props.accept} // The file types accepted
-                  {...register(props.formValue, {
-                    required: props.required,
-                    validate: {
-                      fileType: validateFileType,
-                      fileSize: validateFileSize,
-                    },
-                  })}
-                  onChange={async (event) => {
-                    await handleFileChange(event);
-                  }}
-                />
-                {props.existingFileName}
-              </div>
-            )}
+            <input
+              id="fileInput"
+              className={inputClass}
+              type="file"
+              data-testid={props.id}
+              accept={props.accept} // The file types accepted
+              {...register(props.formValue, {
+                required: props.required,
+                validate: {
+                  fileType: validateFileType,
+                  fileSize: validateFileSize,
+                },
+              })}
+              onChange={async (event) => {
+                await handleFileChange(event);
+              }}
+            />
+            {showExistingFileName && props.existingFileName}
           </div>
         </div>
       </fieldset>
