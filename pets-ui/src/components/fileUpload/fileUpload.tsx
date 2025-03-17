@@ -23,7 +23,7 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
     props.existingFileName ? "govuk-file-upload hide-text" : "govuk-file-upload",
   );
   const [showExistingFileName, setShowExistingFileName] = useState(
-    props.existingFileName ? true : false,
+    props.existingFileName && props.existingFileName.length > 0,
   );
 
   const validateFileType = (files: FileList) => {
