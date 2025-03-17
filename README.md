@@ -85,11 +85,26 @@ Additional configs specific to a core service are defined in their directory
    ```
 
 - Docker
-  - Docker installation [guide](https://docs.docker.com/engine/install/)
+
+  - Check if Docker is installed.
 
    ```sh
-   npm install -g pnpm@9.15.4
+      docker -v
    ```
+
+   If Docker is installed, this command will return the installed Docker Engine version. If it is already installed, you can skip the next steps.
+
+  - Install Docker via Docker Desktop using the installation [guide](https://docs.docker.com/engine/install/). Please note this is blocked on Accenture laptops.
+
+  - Alternatively, install Rancher Desktop.
+    - Download from [homepage](https://rancherdesktop.io/) and install.
+    - Verify docker installation
+
+      ```sh
+         docker -v
+      ```
+
+    - Make any necessary [configuration](https://docs.localstack.cloud/user-guide/integrations/rancher-desktop/) changes for localstack.
 
 - Git Secrets
   - Install
@@ -212,9 +227,12 @@ LOG_LEVEL=info
 
 Don't forget to remove afterwards🫣
 
-### Preloaded Test Data
+### Preloaded Test Data(Might be broken due to Authentication)
 
-Kindly check `pets-core-services/src/applicant-service/fixtures/applicants.ts` for list of preloaded applicants.
+- Passport Number: ABC1234JANE
+- Country of Issue: Barbados
+
+Kindly check `pets-core-services/src/applicant-service/fixtures/applicants.ts` for more information on this applicant.
 
 ## Deployment
 
