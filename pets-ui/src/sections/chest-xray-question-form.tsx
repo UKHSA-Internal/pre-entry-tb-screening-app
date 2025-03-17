@@ -5,18 +5,24 @@ import { useNavigate } from "react-router-dom";
 import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
-import ErrorDisplay from "@/components/errorSummary/errorSummary";
+import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import { selectApplicant } from "@/redux/applicantSlice";
-import { setChestXrayTaken } from "@/redux/chestXraySlice";
+import {
+  clearChestXrayNotTakenDetails,
+  clearChestXrayTakenDetails,
+  selectChestXray,
+  setChestXrayTaken,
+} from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
 
 const ChestXrayQuestionForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const applicantData = useAppSelector(selectApplicant);
+  const chestXrayData = useAppSelector(selectChestXray);
 
   const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
   const {
@@ -27,9 +33,11 @@ const ChestXrayQuestionForm = () => {
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = (data) => {
     dispatch(setChestXrayTaken(data.chestXrayTaken));
 
-    if (data.chestXrayTaken === "Yes") {
+    if (data.chestXrayTaken === YesOrNo.YES) {
+      dispatch(clearChestXrayNotTakenDetails());
       navigate("/chest-xray-upload");
     } else {
+      dispatch(clearChestXrayTakenDetails());
       navigate("/chest-xray-not-taken");
     }
   };
@@ -40,7 +48,7 @@ const ChestXrayQuestionForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {!!errors?.chestXrayTaken && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
+        {!!errors?.chestXrayTaken && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
         <ApplicantDataHeader applicantData={applicantData} />
         <Heading level={2} title="Has the visa applicant had a chest X-ray?" size="m" />
         <div ref={chestXrayTakenRef}>
@@ -52,7 +60,8 @@ const ChestXrayQuestionForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.chestXrayTaken?.message ?? ""}
             formValue="chestXrayTaken"
-            required="Select yes if the visa applicant has had a chest X-ray or no if they have not."
+            defaultValue={chestXrayData.chestXrayTaken}
+            required="Select yes if the visa applicant has had a chest X-ray or no if they have not"
           />
         </div>
         <Button

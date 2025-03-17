@@ -1,4 +1,4 @@
-import { formatDateType, isDataPresent, standardiseDayOrMonth } from "./helpers";
+import { formatDateType, isDataPresent, standardiseDayOrMonth, spreadArrayIfNotEmpty, standardiseDayOrMonth } from "./helpers";
 
 describe("standardiseDayOrMonth function", () => {
   test.each([
@@ -120,5 +120,35 @@ describe("isDataPresent function", () => {
       hiddenLabel: "label",
     };
     expect(isDataPresent(summaryElementEmptyArrayExmaple)).toBeFalsy();
+
+describe("spreadIfNotEmpty", () => {
+  test("should spread non-empty string arrays", () => {
+    const result = spreadArrayIfNotEmpty(
+      ["Example Text 1", "Example Text 2"],
+      ["Example Text 3", "Example Text 4"],
+      ["Example Text 5"],
+    );
+    expect(result).toEqual([
+      "Example Text 1",
+      "Example Text 2",
+      "Example Text 3",
+      "Example Text 4",
+      "Example Text 5",
+    ]);
+  });
+
+  test("should return an empty array provided empty arrays", () => {
+    const result = spreadArrayIfNotEmpty([], [], []);
+    expect(result).toEqual([]);
+  });
+
+  test("should ignore empty arrays and spread only non-empty ones", () => {
+    const result = spreadArrayIfNotEmpty(
+      ["Example Text 1"],
+      [],
+      ["Example Text 3", "Example Text 4"],
+      [],
+    );
+    expect(result).toEqual(["Example Text 1", "Example Text 3", "Example Text 4"]);
   });
 });

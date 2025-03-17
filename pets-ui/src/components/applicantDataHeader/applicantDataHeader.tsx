@@ -13,7 +13,7 @@ export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderP
       </div>
 
       <div className="govuk-summary-list__row">
-        <dt className="govuk-summary-list__key">Date of Birth</dt>
+        <dt className="govuk-summary-list__key">Date of birth</dt>
         <dd className="govuk-summary-list__value">
           {props.applicantData.dateOfBirth.day}/{props.applicantData.dateOfBirth.month}/
           {props.applicantData.dateOfBirth.year}
@@ -21,7 +21,7 @@ export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderP
       </div>
 
       <div className="govuk-summary-list__row">
-        <dt className="govuk-summary-list__key">Passport Number</dt>
+        <dt className="govuk-summary-list__key">Passport number</dt>
         <dd className="govuk-summary-list__value">{props.applicantData.passportNumber}</dd>
       </div>
     </dl>

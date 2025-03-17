@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
-import ErrorDisplay from "@/components/errorSummary/errorSummary";
+import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import TextArea from "@/components/textArea/textArea";
@@ -31,10 +31,10 @@ const ChestXrayNotTakenForm = () => {
     watch,
   } = methods;
 
-  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = () => {
+  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = (chestXrayData) => {
     dispatch(setReasonXrayWasNotTaken(chestXrayData.reasonXrayWasNotTaken));
     dispatch(setXrayWasNotTakenFurtherDetails(chestXrayData.xrayWasNotTakenFurtherDetails));
-    navigate("/xray-not-taken-summary");
+    navigate("/chest-xray-summary");
   };
 
   const errorsToShow = Object.keys(errors);
@@ -47,7 +47,7 @@ const ChestXrayNotTakenForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
+        {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
         <ApplicantDataHeader applicantData={applicantData} />
         <Heading level={2} title="Reason X-ray not taken" />
         <div ref={reasonXrayNotTakenRef}>
@@ -59,7 +59,8 @@ const ChestXrayNotTakenForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.reasonXrayWasNotTaken?.message ?? ""}
             formValue="reasonXrayWasNotTaken"
-            required="Select the reason why the chest X-ray was not taken."
+            defaultValue={chestXrayData.reasonXrayWasNotTaken}
+            required="Select the reason why the chest X-ray was not taken"
           />
         </div>
         <Heading level={2} title="Notes" />
@@ -70,7 +71,7 @@ const ChestXrayNotTakenForm = () => {
             errorMessage={errors?.xrayWasNotTakenFurtherDetails?.message ?? ""}
             formValue="xrayWasNotTakenFurtherDetails"
             required={
-              watchedReasonXrayNotTaken === "Other" ? "Enter reason X-ray not taken." : false
+              watchedReasonXrayNotTaken === "Other" ? "Enter reason X-ray not taken" : false
             }
             rows={4}
             defaultValue={chestXrayData.xrayWasNotTakenFurtherDetails ?? ""}

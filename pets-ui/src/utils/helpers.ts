@@ -44,6 +44,8 @@ const attributeToComponentId: { [key: string]: string } = {
   tbClearanceIssued: "tb-clearance-issued",
   tbCertificateDate: "tb-certificate-date",
   tbCertificateNumber: "tb-certificate-number",
+  passportIssueDate: "passportIssueDate",
+  passportExpiryDate: "passportExpiryDate",
 };
 
 const formRegex = {
@@ -59,22 +61,22 @@ const formRegex = {
 
 const dateValidationMessages = {
   passportIssueDate: {
-    emptyFieldError: "Passport issue date must include a day, month and year.",
+    emptyFieldError: "Passport issue date must include a day, month and year",
     invalidCharError:
-      "Passport issue day and year must contain only numbers. Passport issue month must be a number, or the name of the month, or the first three letters of the month.",
-    invalidDateError: "Passport issue date must be a valid date.",
+      "Passport issue day and year must contain only numbers. Passport issue month must be a number, or the name of the month, or the first three letters of the month",
+    invalidDateError: "Passport issue date must be a valid date",
   },
   passportExpiryDate: {
-    emptyFieldError: "Passport expiry date must include a day, month and year.",
+    emptyFieldError: "Passport expiry date must include a day, month and year",
     invalidCharError:
-      "Passport expiry day and year must contain only numbers. Passport expiry month must be a number, or the name of the month, or the first three letters of the month.",
-    invalidDateError: "Passport expiry date must be a valid date.",
+      "Passport expiry day and year must contain only numbers. Passport expiry month must be a number, or the name of the month, or the first three letters of the month",
+    invalidDateError: "Passport expiry date must be a valid date",
   },
   dateOfBirth: {
-    emptyFieldError: "Date of birth must include a day, month and year.",
+    emptyFieldError: "Date of birth must include a day, month and year",
     invalidCharError:
-      "Date of birth day and year must contain only numbers. Date of birth month must be a number, or the name of the month, or the first three letters of the month.",
-    invalidDateError: "Date of birth date must be a valid date.",
+      "Date of birth day and year must contain only numbers. Date of birth month must be a number, or the name of the month, or the first three letters of the month",
+    invalidDateError: "Date of birth date must be a valid date",
   },
   tbCertificateDate: {
     emptyFieldError: "TB clearance certificate date must include a day, month and year",
@@ -232,6 +234,10 @@ export const isDataPresent = (
 ): summaryElement is SummaryElement => {
   const { value } = summaryElement;
   return Array.isArray(value) ? value.length > 0 : !!value;
+}
+
+export const spreadArrayIfNotEmpty = (...arrays: string[][]) => {
+  return arrays.flatMap((array) => (array?.length ? array : []));
 };
 
 export {
