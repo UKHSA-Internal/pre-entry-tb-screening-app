@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
-import ErrorDisplay from "@/components/errorSummary/errorSummary";
+import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import { selectApplicant } from "@/redux/applicantSlice";
@@ -48,7 +48,7 @@ const ChestXrayQuestionForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {!!errors?.chestXrayTaken && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
+        {!!errors?.chestXrayTaken && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
         <ApplicantDataHeader applicantData={applicantData} />
         <Heading level={2} title="Has the visa applicant had a chest X-ray?" size="m" />
         <div ref={chestXrayTakenRef}>
@@ -61,7 +61,7 @@ const ChestXrayQuestionForm = () => {
             errorMessage={errors?.chestXrayTaken?.message ?? ""}
             formValue="chestXrayTaken"
             defaultValue={chestXrayData.chestXrayTaken}
-            required="Select yes if the visa applicant has had a chest X-ray or no if they have not."
+            required="Select yes if the visa applicant has had a chest X-ray or no if they have not"
           />
         </div>
         <Button

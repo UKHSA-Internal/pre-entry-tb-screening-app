@@ -14,7 +14,7 @@ export default function ChestXrayNotTaken() {
   ];
 
   return (
-    <Container title="Chest X-ray Not Taken" breadcrumbItems={breadcrumbItems}>
+    <Container title="Chest X-ray not taken" breadcrumbItems={breadcrumbItems}>
       <Heading level={1} size="l" title="Enter reason X-ray not taken" />
       <ChestXrayNotTakenForm />
     </Container>

@@ -20,6 +20,8 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 
 beforeEach(() => useNavigateMock.mockClear());
 
+const user = userEvent.setup({ applyAccept: false });
+
 describe("ChestXrayUploadPage", () => {
   it("displays breadcrumb correctly", () => {
     renderWithProviders(
@@ -87,12 +89,6 @@ describe("ChestXrayForm Section", () => {
   });
 
   it("uploads three X-ray files", () => {
-    renderWithProviders(
-      <Router>
-        <ChestXrayForm />
-      </Router>,
-    );
-
     const posteroAnteriorInput: HTMLInputElement = screen.getByTestId("postero-anterior-xray");
     const apicalLordoticInput: HTMLInputElement = screen.getByTestId("apical-lordotic-xray");
     const lateralDecubitusInput: HTMLInputElement = screen.getByTestId("lateral-decubitus-xray");
@@ -115,13 +111,6 @@ describe("ChestXrayForm Section", () => {
   });
 
   it("errors when postero anterior xray is missing", async () => {
-    renderWithProviders(
-      <Router>
-        <ChestXrayForm />
-      </Router>,
-    );
-
-    const user = userEvent.setup({ applyAccept: false });
     const posteroAnteriorInput: HTMLInputElement = screen.getByTestId("postero-anterior-xray");
     const submitButton = screen.getByRole("button", { name: /continue/i });
 
@@ -130,6 +119,16 @@ describe("ChestXrayForm Section", () => {
 
     await user.click(submitButton);
     expect(useNavigateMock).not.toHaveBeenCalled();
-    expect(screen.getByText("Select a postero-anterior X-ray image file")).toBeInTheDocument();
+    expect(screen.getAllByText("Select a postero-anterior X-ray image file")).toHaveLength(2);
+    expect(screen.getAllByText("Select a postero-anterior X-ray image file")[0]).toHaveAttribute(
+      "aria-label",
+      "Error: Select a postero-anterior X-ray image file",
+    );
+  });
+  it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
+    const submitButton = screen.getByRole("button", { name: /continue/i });
+    await user.click(submitButton);
+    const errorSummaryDiv = screen.getByTestId("error-summary");
+    expect(errorSummaryDiv).toHaveFocus();
   });
 });

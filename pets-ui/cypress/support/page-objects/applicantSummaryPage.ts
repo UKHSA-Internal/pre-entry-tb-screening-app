@@ -32,17 +32,17 @@ export class ApplicantSummaryPage {
   verifyAllSummaryValues(expectedValues: {
     Name?: string;
     Sex?: string;
-    "Country of Nationality"?: string;
-    "Date of Birth"?: string;
+    "Country of nationality"?: string;
+    "Date of birth"?: string;
     "Passport number"?: string;
-    "Country of Issue"?: string;
-    "Passport Issue Date"?: string;
-    "Passport Expiry Date"?: string;
-    "Home Address Line 1"?: string;
-    "Home Address Line 2"?: string;
-    "Home Address Line 3"?: string;
-    "Town or City"?: string;
-    "Province or State"?: string;
+    "Country of issue"?: string;
+    "Passport issue date"?: string;
+    "Passport expiry date"?: string;
+    "Home address line 1"?: string;
+    "Home address line 2"?: string;
+    "Home address line 3"?: string;
+    "Town or city"?: string;
+    "Province or state"?: string;
     Country?: string;
     Postcode?: string;
   }): void {
@@ -85,17 +85,17 @@ export class ApplicantSummaryPage {
     const expectedFragments = {
       Name: "#name",
       Sex: "#sex",
-      "Country of Nationality": "#country-of-nationality",
-      "Date of Birth": "#birth-date",
+      "Country of nationality": "#country-of-nationality",
+      "Date of birth": "#birth-date",
       "Passport number": "#passportNumber",
-      "Country of Issue": "#country-of-issue",
-      "Passport Issue Date": "#passport-issue-date",
-      "Passport Expiry Date": "#passport-expiry-date",
-      "Home Address Line 1": "#address-1",
-      "Home Address Line 2": "#address-2",
-      "Home Address Line 3": "#address-3",
-      "Town or City": "#town-or-city",
-      "Province or State": "#province-or-state",
+      "Country of issue": "#country-of-issue",
+      "Passport issue date": "#passport-issue-date",
+      "Passport expiry date": "#passport-expiry-date",
+      "Home address line 1": "#address-1",
+      "Home address line 2": "#address-2",
+      "Home address line 3": "#address-3",
+      "Town or city": "#town-or-city",
+      "Province or state": "#province-or-state",
       Country: "#address-country",
       Postcode: "#postcode",
     };

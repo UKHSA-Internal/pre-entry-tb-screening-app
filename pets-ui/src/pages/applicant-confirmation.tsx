@@ -15,7 +15,7 @@ export default function ApplicantConfirmation() {
   const furtherInfo = ["You can now add travel information for this applicant."];
 
   return (
-    <Container breadcrumbItems={breadcrumbItems} title="Applicant Details Confirmation">
+    <Container breadcrumbItems={breadcrumbItems} title="Applicant details confirmation">
       <Confirmation
         confirmationText={"Applicant record created"}
         furtherInfo={furtherInfo}

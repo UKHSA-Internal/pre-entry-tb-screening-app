@@ -2,7 +2,7 @@ import { TravelInformationPage } from "../../support/page-objects/travelInformat
 import { randomElement, visaType } from "../../support/test-utils";
 
 // Error message for missing town/city
-const errorMessage = "Enter town or city.";
+const errorMessage = "Enter town or city";
 
 describe.skip("Validate the error message is displayed when town/city is not entered", () => {
   const travelInformationPage = new TravelInformationPage();

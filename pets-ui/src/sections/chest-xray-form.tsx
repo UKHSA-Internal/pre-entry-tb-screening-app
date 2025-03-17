@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
+import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FileUpload from "@/components/fileUpload/fileUpload";
 import Heading from "@/components/heading/heading";
 import { selectApplicant } from "@/redux/applicantSlice";
@@ -85,6 +86,8 @@ const ChestXrayForm = () => {
     formState: { errors },
   } = methods;
 
+  const errorsToShow = Object.keys(errors);
+
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = () => {
     if (PAFile && PAFile.length > 0) {
       dispatch(setPosteroAnteriorXrayFileName(PAFileName));
@@ -127,6 +130,7 @@ const ChestXrayForm = () => {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
+          {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
           <ApplicantDataHeader applicantData={applicantData} />
 
           <div ref={paXray}>

@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import ErrorDisplay from "./errorSummary";
+import ErrorSummary from "./errorSummary";
 
 const errorsToShow = ["errorToDisplay"];
 const errors = {
@@ -23,16 +23,30 @@ const multipleErrors = {
   },
 };
 
-describe("Error Display Component", () => {
+describe("Error Summary Component", () => {
   it("renders correctly when props are specified", () => {
-    render(<ErrorDisplay errorsToShow={errorsToShow} errors={errors} />);
+    render(<ErrorSummary errorsToShow={errorsToShow} errors={errors} />);
     expect(screen.getByText("There is a problem")).toBeInTheDocument();
     expect(screen.getByText("There is an error on this page")).toBeInTheDocument();
   });
   it("renders multiple errors correctly when props are specified", () => {
-    render(<ErrorDisplay errorsToShow={multipleErrorsToShow} errors={multipleErrors} />);
+    render(<ErrorSummary errorsToShow={multipleErrorsToShow} errors={multipleErrors} />);
     expect(screen.getByText("There is a problem")).toBeInTheDocument();
     expect(screen.getByText("There is an error on this page")).toBeInTheDocument();
     expect(screen.getByText("There is an additonal error on this page")).toBeInTheDocument();
+  });
+  it("has an aria-label with the error message for screen readers", () => {
+    render(<ErrorSummary errorsToShow={multipleErrorsToShow} errors={multipleErrors} />);
+    expect(screen.getByText("There is a problem")).toBeInTheDocument();
+    expect(screen.getByText("There is an error on this page")).toHaveAttribute(
+      "aria-label",
+      "Error: There is an error on this page",
+    );
+  });
+  it("has screen focus when an error is found", () => {
+    render(<ErrorSummary errorsToShow={multipleErrorsToShow} errors={multipleErrors} />);
+    const errorSummaryDiv = screen.getByTestId("error-summary");
+    expect(errorSummaryDiv).toHaveAttribute("tabIndex", "-1");
+    expect(errorSummaryDiv).toHaveAttribute("aria-labelledby", "error-summary-title");
   });
 });

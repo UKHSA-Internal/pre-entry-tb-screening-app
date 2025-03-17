@@ -5,11 +5,11 @@ export class MedicalScreeningPage {
   }
 
   verifyPageLoaded(): void {
-    cy.contains("h1", "Medical Screening").should("be.visible");
+    cy.contains("h1", "Medical screening").should("be.visible");
   }
 
   fillAge(age: string): void {
-    cy.contains("label", "Applicant Age")
+    cy.contains("label", "Applicant age")
       .should("be.visible")
       .siblings(".govuk-input__wrapper")
       .find("input")
