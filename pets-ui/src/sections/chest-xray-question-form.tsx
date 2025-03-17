@@ -9,14 +9,20 @@ import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import { selectApplicant } from "@/redux/applicantSlice";
-import { setChestXrayTaken } from "@/redux/chestXraySlice";
+import {
+  clearChestXrayNotTakenDetails,
+  clearChestXrayTakenDetails,
+  selectChestXray,
+  setChestXrayTaken,
+} from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
 
 const ChestXrayQuestionForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const applicantData = useAppSelector(selectApplicant);
+  const chestXrayData = useAppSelector(selectChestXray);
 
   const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
   const {
@@ -27,9 +33,11 @@ const ChestXrayQuestionForm = () => {
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = (data) => {
     dispatch(setChestXrayTaken(data.chestXrayTaken));
 
-    if (data.chestXrayTaken === "Yes") {
+    if (data.chestXrayTaken === YesOrNo.YES) {
+      dispatch(clearChestXrayNotTakenDetails());
       navigate("/chest-xray-upload");
     } else {
+      dispatch(clearChestXrayTakenDetails());
       navigate("/chest-xray-not-taken");
     }
   };
@@ -52,6 +60,7 @@ const ChestXrayQuestionForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.chestXrayTaken?.message ?? ""}
             formValue="chestXrayTaken"
+            defaultValue={chestXrayData.chestXrayTaken}
             required="Select yes if the visa applicant has had a chest X-ray or no if they have not"
           />
         </div>
