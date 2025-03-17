@@ -18,78 +18,22 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
   };
 });
 
-const preloadedState = {
-  applicant: {
-    status: ApplicationStatus.INCOMPLETE,
-    fullName: "",
-    sex: "",
-    dateOfBirth: { year: "", month: "", day: "" },
-    countryOfNationality: "",
-    passportNumber: "",
-    countryOfIssue: "",
-    passportIssueDate: { year: "", month: "", day: "" },
-    passportExpiryDate: { year: "", month: "", day: "" },
-    applicantHomeAddress1: "",
-    applicantHomeAddress2: "",
-    applicantHomeAddress3: "",
-    townOrCity: "",
-    provinceOrState: "",
-    country: "",
-    postcode: "",
-  },
-  application: { applicationId: "abc-123", dateCreated: "" },
-  medicalScreening: {
-    status: ApplicationStatus.INCOMPLETE,
-    age: "",
-    tbSymptoms: "",
-    tbSymptomsList: [],
-    otherSymptomsDetail: "",
-    underElevenConditions: [],
-    underElevenConditionsDetail: "",
-    previousTb: "",
-    previousTbDetail: "",
-    closeContactWithTb: "",
-    closeContactWithTbDetail: "",
-    pregnant: "",
-    menstrualPeriods: "",
-    physicalExamNotes: "",
-  },
+const travelState = {
+  applicantUkAddress1: "Edinburgh Castle, Castlehill",
+  applicantUkAddress2: "",
+  postcode: "EH1 2NG",
+  status: ApplicationStatus.INCOMPLETE,
+  townOrCity: "Edinburgh",
+  ukEmail: "sigmund.sigmundson@asgard.gov",
+  ukMobileNumber: "07321900900",
+  visaType: "Government Sponsored",
+};
 
-  travel: {
-    applicantUkAddress1: "Edinburgh Castle, Castlehill",
-    applicantUkAddress2: "",
-    postcode: "EH1 2NG",
-    status: ApplicationStatus.INCOMPLETE,
-    townOrCity: "Edinburgh",
-    ukEmail: "sigmund.sigmundson@asgard.gov",
-    ukMobileNumber: "07321900900",
-    visaType: "Government Sponsored",
-  },
-  chestXray: {
-    chestXrayTaken: false,
-    posteroAnteriorXray: false,
-    posteroAnteriorXrayFile: "",
-    apicalLordoticXray: false,
-    apicalLordoticXrayFile: "",
-    lateralDecubitusXray: false,
-    lateralDecubitusXrayFile: "",
-    xrayWasNotTakenFurtherDetails: "",
-    reasonXrayWasNotTaken: null,
-    reasonXrayNotTakenDetail: null,
-    dateOfCxr: null,
-    radiologicalOutcome: "",
-    radiologicalOutcomeNotes: null,
-    radiologicalFinding: null,
-    dateOfRadiologicalInterpretation: null,
-    sputumCollected: false,
-    reasonWhySputumNotRequired: null,
-    xrayResult: "",
-    xrayResultDetail: "",
-    xrayFindingsList: [],
-    xrayMinorFindings: [],
-    xrayAssociatedMinorFindings: [],
-    xrayActiveTbFindings: [],
-  },
+const applicationState = { applicationId: "abc-123", dateCreated: "" };
+
+const preloadedState = {
+  travel: { ...travelState },
+  application: { ...applicationState },
 };
 
 describe("TravelReview", () => {
@@ -112,17 +56,17 @@ describe("TravelReview", () => {
 
     expect(screen.getAllByRole("term")[0]).toHaveTextContent("Visa type");
     expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Government Sponsored");
-    expect(screen.getAllByRole("term")[1]).toHaveTextContent("UK Address Line 1");
+    expect(screen.getAllByRole("term")[1]).toHaveTextContent("UK address line 1");
     expect(screen.getAllByRole("definition")[2]).toHaveTextContent("Edinburgh Castle, Castlehill");
-    expect(screen.getAllByRole("term")[2]).toHaveTextContent("UK Address Line 2");
+    expect(screen.getAllByRole("term")[2]).toHaveTextContent("UK address line 2");
     expect(screen.getAllByRole("definition")[4]).toHaveTextContent("");
-    expect(screen.getAllByRole("term")[3]).toHaveTextContent("UK Town or City");
+    expect(screen.getAllByRole("term")[3]).toHaveTextContent("UK town or city");
     expect(screen.getAllByRole("definition")[6]).toHaveTextContent("Edinburgh");
-    expect(screen.getAllByRole("term")[4]).toHaveTextContent("UK Postcode");
+    expect(screen.getAllByRole("term")[4]).toHaveTextContent("UK postcode");
     expect(screen.getAllByRole("definition")[8]).toHaveTextContent("EH1 2NG");
-    expect(screen.getAllByRole("term")[5]).toHaveTextContent("UK Mobile Number");
+    expect(screen.getAllByRole("term")[5]).toHaveTextContent("UK mobile number");
     expect(screen.getAllByRole("definition")[10]).toHaveTextContent("07321900900");
-    expect(screen.getAllByRole("term")[6]).toHaveTextContent("UK Email Address");
+    expect(screen.getAllByRole("term")[6]).toHaveTextContent("UK email address");
     expect(screen.getAllByRole("definition")[12]).toHaveTextContent(
       "sigmund.sigmundson@asgard.gov",
     );

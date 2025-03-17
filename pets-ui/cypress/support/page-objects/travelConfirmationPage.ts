@@ -8,7 +8,7 @@ export class TravelConfirmationPage {
   // Verify page loaded
   verifyPageLoaded(): void {
     cy.url().should("include", "/travel-confirmation");
-    cy.get("h1").should("have.text", "Travel Information record created");
+    cy.get("h1").should("have.text", "Travel information record created");
   }
 
   // Submit Form to continue to medical screening

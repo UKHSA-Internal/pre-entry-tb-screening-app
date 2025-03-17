@@ -19,14 +19,14 @@ const ProgressTracker = () => {
             <dd className="govuk-summary-list__value">{applicantData.fullName}</dd>
           </div>
           <div className="govuk-summary-list__row">
-            <dt className="govuk-summary-list__key">Date of Birth</dt>
+            <dt className="govuk-summary-list__key">Date of birth</dt>
             <dd className="govuk-summary-list__value">
               {applicantData.dateOfBirth.day}/{applicantData.dateOfBirth.month}/
               {applicantData.dateOfBirth.year}
             </dd>
           </div>
           <div className="govuk-summary-list__row">
-            <dt className="govuk-summary-list__key">Passport Number</dt>
+            <dt className="govuk-summary-list__key">Passport number</dt>
             <dd className="govuk-summary-list__value">{applicantData.passportNumber}</dd>
           </div>
         </dl>

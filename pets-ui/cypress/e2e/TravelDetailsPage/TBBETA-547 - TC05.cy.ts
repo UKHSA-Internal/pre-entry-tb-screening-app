@@ -2,7 +2,7 @@ import { TravelInformationPage } from "../../support/page-objects/travelInformat
 import { randomElement, visaType } from "../../support/test-utils";
 
 // Error message for missing postcode
-const errorMessage = "Enter full UK postcode.";
+const errorMessage = "Enter full UK postcode";
 
 describe.skip("Validate the error message is displayed when postcode is NOT entered", () => {
   const travelInformationPage = new TravelInformationPage();

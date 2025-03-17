@@ -97,7 +97,7 @@ describe("Visa Application End-to-End Tests", () => {
     // Verify some of the submitted data appears correctly in the summary
     applicantSummaryPage.verifySummaryValue("Name", "Jane Smith");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
-    applicantSummaryPage.verifySummaryValue("Country of Issue", countryName);
+    applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
 
     // Then confirm the details to proceed to the next step
     applicantSummaryPage.confirmDetails();
@@ -132,14 +132,14 @@ describe("Visa Application End-to-End Tests", () => {
     travelSummaryPage.clickChangeLink("Visa type");
     travelSummaryPage.verifyFieldValueOnChangePage("Visa type", visaType);
 
-    travelSummaryPage.clickChangeLink("UK Address Line 1");
-    travelSummaryPage.verifyFieldValueOnChangePage("UK Address Line 1", "456 Park Lane");
+    travelSummaryPage.clickChangeLink("UK address line 1");
+    travelSummaryPage.verifyFieldValueOnChangePage("UK address line 1", "456 Park Lane");
 
-    travelSummaryPage.clickChangeLink("UK Town or City");
-    travelSummaryPage.verifyFieldValueOnChangePage("UK Town or City", "Manchester");
+    travelSummaryPage.clickChangeLink("UK town or city");
+    travelSummaryPage.verifyFieldValueOnChangePage("UK town or city", "Manchester");
 
-    travelSummaryPage.clickChangeLink("UK Mobile Number");
-    travelSummaryPage.verifyFieldValueOnChangePage("UK Mobile Number", "07700900123");
+    travelSummaryPage.clickChangeLink("UK mobile number");
+    travelSummaryPage.verifyFieldValueOnChangePage("UK mobile number", "07700900123");
 
     // Submit the summary form
     travelSummaryPage.submitForm();

@@ -14,7 +14,7 @@ export default function MedicalSummaryPage() {
   ];
 
   return (
-    <Container title="Medical Screening Summary" breadcrumbItems={breadcrumbItems}>
+    <Container title="Medical screening summary" breadcrumbItems={breadcrumbItems}>
       <Heading level={1} size="l" title="Check medical screening" />
       <MedicalScreeningReview />
     </Container>

@@ -51,7 +51,7 @@ const TravelReview = () => {
           </dd>
         </div>
         <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">UK Address Line 1</dt>
+          <dt className="govuk-summary-list__key">UK address line 1</dt>
           <dd className="govuk-summary-list__value">{travelData.applicantUkAddress1}</dd>
           <dd className="govuk-summary-list__actions">
             <Link
@@ -64,7 +64,7 @@ const TravelReview = () => {
           </dd>
         </div>
         <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">UK Address Line 2</dt>
+          <dt className="govuk-summary-list__key">UK address line 2</dt>
           <dd className="govuk-summary-list__value">{travelData.applicantUkAddress2}</dd>
           <dd className="govuk-summary-list__actions">
             <Link
@@ -77,7 +77,7 @@ const TravelReview = () => {
           </dd>
         </div>
         <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">UK Town or City</dt>
+          <dt className="govuk-summary-list__key">UK town or city</dt>
           <dd className="govuk-summary-list__value">{travelData.townOrCity}</dd>
           <dd className="govuk-summary-list__actions">
             <Link
@@ -90,7 +90,7 @@ const TravelReview = () => {
           </dd>
         </div>
         <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">UK Postcode</dt>
+          <dt className="govuk-summary-list__key">UK postcode</dt>
           <dd className="govuk-summary-list__value">{travelData.postcode}</dd>
           <dd className="govuk-summary-list__actions">
             <Link className="govuk-link" style={{ color: "#1d70b8" }} to="/travel-details#postcode">
@@ -99,7 +99,7 @@ const TravelReview = () => {
           </dd>
         </div>
         <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">UK Mobile Number</dt>
+          <dt className="govuk-summary-list__key">UK mobile number</dt>
           <dd className="govuk-summary-list__value">{travelData.ukMobileNumber}</dd>
           <dd className="govuk-summary-list__actions">
             <Link
@@ -112,7 +112,7 @@ const TravelReview = () => {
           </dd>
         </div>
         <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">UK Email Address</dt>
+          <dt className="govuk-summary-list__key">UK email address</dt>
           <dd className="govuk-summary-list__value">{travelData.ukEmail}</dd>
           <dd className="govuk-summary-list__actions">
             <Link className="govuk-link" style={{ color: "#1d70b8" }} to="/travel-details#email">
