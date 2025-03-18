@@ -90,13 +90,13 @@ describe("TBSummaryPage", () => {
       expect(screen.getByText("TB clearance certificate number")).toBeInTheDocument();
       expect(screen.getByText("12345")).toBeInTheDocument();
     });
-    it("when continue pressed, it navigates to /tb-confirmation", async () => {
+    it("when continue pressed, it navigates to /tb-certificate-confirmation", async () => {
       mock.onPost("/application/abc-123/tb-certificate").reply(200);
       await user.click(screen.getByRole("button"));
 
       expect(mock.history[0].url).toEqual("/application/abc-123/tb-certificate");
       expect(mock.history).toHaveLength(1);
-      expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-confirmation");
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-confirmation");
     });
   });
 });
