@@ -31,7 +31,7 @@ describe("ChestXrayFindings Form", () => {
     expect(screen.getByText("Name")).toBeInTheDocument;
     expect(screen.getByText("Chest X-ray normal")).toBeInTheDocument;
     expect(screen.getByText("Add details if X-ray results are abnormal")).toBeInTheDocument;
-    expect(screen.getByText("X-ray findings")).toBeInTheDocument;
+    expect(screen.getByText("Radiographic findings")).toBeInTheDocument;
     expect(screen.getByText("Minor findings")).toBeInTheDocument;
     expect(screen.getByText("1.1 Single fibrous streak or band or scar")).toBeInTheDocument;
     expect(screen.getByText("Minor findings (occasionally associated with TB infection)"))
@@ -60,10 +60,10 @@ describe("ChestXrayFindings Form", () => {
     fireEvent.click(screen.getByText("Save and continue"));
 
     await waitFor(() => {
-      expect(screen.getAllByText("Select an X-ray result")).toHaveLength(2);
-      expect(screen.getAllByText("Select an X-ray result")[0]).toHaveAttribute(
+      expect(screen.getAllByText("Select radiological outcome")).toHaveLength(2);
+      expect(screen.getAllByText("Select radiological outcome")[0]).toHaveAttribute(
         "aria-label",
-        "Error: Select an X-ray result",
+        "Error: Select radiological outcome",
       );
     });
   });

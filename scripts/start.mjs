@@ -3,9 +3,16 @@ import { resolve } from "path";
 import concurrently from "concurrently";
 import { execSync } from "child_process";
 
+const isPowerShell =
+  !!process.env.PSModulePath || process.env.ComSpec?.toLowerCase().includes("powershell.exe");
+let shell = "/bin/bash";
+if (isPowerShell) {
+  shell = "powershell.exe";
+}
+
 function runCommand(cmd) {
   try {
-    execSync(cmd, { stdio: "inherit" });
+    execSync(cmd, { stdio: "inherit", shell });
   } catch (error) {
     process.exit(1);
   }
@@ -29,6 +36,7 @@ concurrently(
   [
     "pnpm --filter pets-local-infra watch:core-services",
     "pnpm --filter pets-ui dev", // Starts Vite Server
+    "pnpm watch:lambda-logs", // Logs of Backend Services
   ],
   {
     killOthers: ["failure", "success"],
