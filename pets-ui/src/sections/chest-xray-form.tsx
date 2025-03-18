@@ -135,27 +135,15 @@ const ChestXrayForm = () => {
 
           <div ref={paXray}>
             <Heading level={2} size="m" title="Postero-anterior X-ray" />
-            {chestXrayData.posteroAnteriorXrayFile ? (
-              <FileUploadModule
-                id="postero-anterior-xray"
-                name="Postero-anterior"
-                setFileState={setPAFile}
-                setFileName={setPAFileName}
-                required={false}
-                errors={errors}
-                existingFileName={chestXrayData.posteroAnteriorXrayFileName}
-              />
-            ) : (
-              <FileUploadModule
-                id="postero-anterior-xray"
-                name="Postero-anterior"
-                setFileState={setPAFile}
-                setFileName={setPAFileName}
-                required={true}
-                errors={errors}
-                existingFileName={chestXrayData.posteroAnteriorXrayFileName}
-              />
-            )}
+            <FileUploadModule
+              id="postero-anterior-xray"
+              name="Postero-anterior"
+              setFileState={setPAFile}
+              setFileName={setPAFileName}
+              required={!chestXrayData.posteroAnteriorXrayFile}
+              errors={errors}
+              existingFileName={chestXrayData.posteroAnteriorXrayFileName}
+            />
           </div>
 
           <div ref={alXray}>

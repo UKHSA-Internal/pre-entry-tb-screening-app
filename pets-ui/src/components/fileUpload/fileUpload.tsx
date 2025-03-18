@@ -19,12 +19,10 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
   const { register } = useFormContext();
   const [errorText, setErrorText] = useState("");
   const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
-  const [inputClass, setInputClass] = useState(
-    props.existingFileName ? "govuk-file-upload hide-text" : "govuk-file-upload",
-  );
   const [showExistingFileName, setShowExistingFileName] = useState(
     props.existingFileName && props.existingFileName.length > 0,
   );
+  const inputClass = showExistingFileName ? "govuk-file-upload hide-text" : "govuk-file-upload";
 
   const validateFileType = (files: FileList) => {
     if (props.required) {
@@ -71,7 +69,6 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      setInputClass("govuk-file-upload");
       setShowExistingFileName(false);
       const fileTypeError = validateFileType(files);
       const fileSizeError = validateFileSize(files);
