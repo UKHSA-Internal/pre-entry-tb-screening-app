@@ -27,7 +27,7 @@ export class MedicalConfirmationPage {
 
   // Click the continue button
   clickContinueButton(): void {
-    cy.contains("button", "Continue to chest x-ray").should("be.visible").click();
+    cy.contains("button", "Continue to chest X-ray").should("be.visible").click();
   }
 
   // Verify redirection after clicking continue

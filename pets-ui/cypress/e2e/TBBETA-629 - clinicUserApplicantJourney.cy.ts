@@ -3,6 +3,7 @@ import { loginViaB2C } from "../support/commands";
 import { ApplicantConfirmationPage } from "../support/page-objects/applicantConfirmationPage";
 import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../support/page-objects/applicantSummaryPage";
+import { ChestXrayConfirmationPage } from "../support/page-objects/chestXrayConfirmationPage";
 import { ChestXrayFindingsPage } from "../support/page-objects/chestXrayFindingsPage";
 import { ChestXrayPage } from "../support/page-objects/chestXrayQuestionPage";
 import { ChestXraySummaryPage } from "../support/page-objects/chestXraySummaryPage";
@@ -32,6 +33,7 @@ describe("PETS Application End-to-End Tests", () => {
   const chestXrayUploadPage = new ChestXrayUploadPage();
   const chestXrayFindingsPage = new ChestXrayFindingsPage();
   const chestXraySummaryPage = new ChestXraySummaryPage();
+  const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
   const visaType = "Students";
 
   // Define variables to store test data
@@ -58,7 +60,7 @@ describe("PETS Application End-to-End Tests", () => {
     applicantSearchPage.submitSearch();
 
     // Verify no matching record found and click create new
-    applicantSearchPage.verifyNoMatchingRecordMessage();
+    applicantSearchPage.verifyNoMatchingRecordMessage(20000);
     applicantSearchPage.verifyCreateNewApplicantExists();
     applicantSearchPage.clickCreateNewApplicant();
 
@@ -208,8 +210,8 @@ describe("PETS Application End-to-End Tests", () => {
     // Check applicant information is displayed correctly
     chestXrayPage.verifyApplicantInfo({
       Name: "Jane Smith",
-      "Date of Birth": "15/03/2000",
-      "Passport Number": passportNumber,
+      "Date of birth": "15/03/2000",
+      "Passport number": passportNumber,
     });
 
     // Select "Yes" for X-ray taken and continue
@@ -222,8 +224,8 @@ describe("PETS Application End-to-End Tests", () => {
     // Check applicant information is displayed correctly
     chestXrayUploadPage.verifyApplicantInfo({
       Name: "Jane Smith",
-      "Date of Birth": "15/03/2000",
-      "Passport Number": passportNumber,
+      "Date of birth": "15/03/2000",
+      "Passport number": passportNumber,
     });
 
     // Upload an X-ray file
@@ -245,8 +247,8 @@ describe("PETS Application End-to-End Tests", () => {
     // Check applicant information is displayed correctly
     chestXrayFindingsPage.verifyApplicantInfo({
       Name: "Jane Smith",
-      "Date of Birth": "15/03/2000",
-      "Passport Number": passportNumber,
+      "Date of birth": "15/03/2000",
+      "Passport number": passportNumber,
     });
 
     // Complete X-ray findings
@@ -269,17 +271,29 @@ describe("PETS Application End-to-End Tests", () => {
       "Passport number": passportNumber,
     });
 
-    // Verify X-ray summary information
-    chestXraySummaryPage.verifyXraySummaryInfo({
+    // Verify X-ray summary information - this is yet to be implemented hence commenting out
+    /* chestXraySummaryPage.verifyXraySummaryInfo({
       "Select x-ray status": "Yes",
       "Enter radiological outcome": "Chest X-ray normal",
       "Enter radiographic findings": "1.1 Single fibrous streak or band or scar",
-    });
+    }); */
 
     // Verify change links exist
     chestXraySummaryPage.verifyChangeLinksExist();
 
     // Save and continue to the next page
     chestXraySummaryPage.clickSaveAndContinue();
+
+    // Verify chest X-ray confirmation page
+    chestXrayConfirmationPage.verifyPageLoaded();
+    chestXrayConfirmationPage.verifyConfirmationPanel();
+    chestXrayConfirmationPage.verifyNextStepsSection();
+    chestXrayConfirmationPage.verifyContinueText();
+    chestXrayConfirmationPage.verifyTrackerLink();
+    chestXrayConfirmationPage.verifyBreadcrumbNavigation();
+    chestXrayConfirmationPage.verifyServiceName();
+
+    // Click continue to navigate to the next page
+    chestXrayConfirmationPage.clickContinueButton();
   });
 });

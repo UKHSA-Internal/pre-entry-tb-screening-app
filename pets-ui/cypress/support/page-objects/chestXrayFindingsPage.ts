@@ -4,22 +4,22 @@ export class ChestXrayFindingsPage {
     cy.visit("/chest-xray-findings");
   }
 
-  // Verify page loaded - updated to match the actual page content
+  // Verify page loaded
   verifyPageLoaded(): void {
-    // Check for the heading with class govuk-heading-l
+    // Check for the heading
     cy.get("h1.govuk-heading-l")
       .should("be.visible")
       .and("contain", "Enter radiological outcome and findings");
 
-    // Also check for the summary list which should be present
+    // check the summary list is present
     cy.get(".govuk-summary-list").should("be.visible");
   }
 
   // Verify applicant information section
   verifyApplicantInfo(expectedValues: {
     Name?: string;
-    "Date of Birth"?: string;
-    "Passport Number"?: string;
+    "Date of birth"?: string;
+    "Passport number"?: string;
   }): void {
     Object.entries(expectedValues).forEach(([key, value]) => {
       if (value !== undefined) {
@@ -232,8 +232,8 @@ export class ChestXrayFindingsPage {
   // Check all elements on the page
   verifyAllPageElements(applicantInfo: {
     Name?: string;
-    "Date of Birth"?: string;
-    "Passport Number"?: string;
+    "Date of birth"?: string;
+    "Passport number"?: string;
   }): void {
     this.verifyPageLoaded();
     this.verifyApplicantInfo(applicantInfo);

@@ -13,8 +13,8 @@ export class ChestXrayPage {
   // Verify applicant information section
   verifyApplicantInfo(expectedValues: {
     Name?: string;
-    "Date of Birth"?: string;
-    "Passport Number"?: string;
+    "Date of birth"?: string;
+    "Passport number"?: string;
   }): void {
     Object.entries(expectedValues).forEach(([key, value]) => {
       if (value !== undefined) {
@@ -106,8 +106,8 @@ export class ChestXrayPage {
   // Check all elements on the page
   verifyAllPageElements(applicantInfo: {
     Name?: string;
-    "Date of Birth"?: string;
-    "Passport Number"?: string;
+    "Date of birth"?: string;
+    "Passport number"?: string;
   }): void {
     this.verifyPageLoaded();
     this.verifyApplicantInfo(applicantInfo);
