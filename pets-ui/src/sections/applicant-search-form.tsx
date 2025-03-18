@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { ApplicantSearchFormType } from "@/applicant";
 import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
+import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import {
   clearApplicantDetails,
@@ -13,6 +14,7 @@ import {
   setApplicantPassportDetails,
 } from "@/redux/applicantSlice";
 import { clearApplicationDetails } from "@/redux/applicationSlice";
+import { clearChestXrayDetails, setChestXrayFromApiResponse } from "@/redux/chestXraySlice";
 import { useAppDispatch } from "@/redux/hooks";
 import {
   clearMedicalScreeningDetails,
@@ -34,6 +36,7 @@ const ApplicantSearchForm = () => {
     dispatch(clearApplicationDetails());
     dispatch(clearMedicalScreeningDetails());
     dispatch(clearTravelDetails());
+    dispatch(clearChestXrayDetails());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -41,6 +44,8 @@ const ApplicantSearchForm = () => {
     handleSubmit,
     formState: { errors },
   } = methods;
+
+  const errorsToShow = Object.keys(errors);
 
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (passportDetails) => {
     try {
@@ -64,6 +69,9 @@ const ApplicantSearchForm = () => {
       if (applicationRes.data.medicalScreening) {
         dispatch(setMedicalScreeningDetailsFromApiResponse(applicationRes.data.medicalScreening));
       }
+      if (applicationRes.data.chestXray) {
+        dispatch(setChestXrayFromApiResponse(applicationRes.data.chestXray));
+      }
       navigate("/tracker");
     } catch (error) {
       console.error(error);
@@ -74,19 +82,20 @@ const ApplicantSearchForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
+        {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
         <FreeText
           id="passport-number"
-          label="Applicant's Passport Number"
+          label="Applicant's passport number"
           errorMessage={errors?.passportNumber?.message ?? ""}
           formValue="passportNumber"
-          required="Enter the applicant's passport number."
+          required="Enter the applicant's passport number"
           patternValue={formRegex.lettersAndNumbers}
-          patternError="Passport number must contain only letters and numbers."
+          patternError="Passport number must contain only letters and numbers"
         />
 
         <Dropdown
           id="country-of-issue"
-          label="Country of Issue"
+          label="Country of issue"
           hint="If you have more than one, use the nationality in the primary passport submitted by the applicant. Use the English spelling or the country code."
           options={countryList}
           errorMessage={errors?.countryOfIssue?.message ?? ""}

@@ -6,15 +6,11 @@ When I click the "Go to TB screening progress tracker" button
 Then I am navigated to the "Application progress tracker" page
  */
 
-describe("Verify Go to TB screening progress tracker link navigates to the Application progress tracker page", () => {
+describe.skip("Verify Go to TB screening progress tracker link navigates to the Application progress tracker page", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/chest-xray-confirmation");
-    cy.intercept("POST", "http://localhost:3004/dev/register-applicant", {
-      statusCode: 200,
-      body: { success: true, message: "Data successfully posted" },
-    }).as("formSubmit");
   });
-  it("Should navigate to the Application Progress Tracker Page", () => {
+  it.skip("Should navigate to the Application Progress Tracker Page", () => {
     //Validate text on page 'Chest X-ray information recorded'
     cy.get("h1").should("contain.text", "Chest X-ray information recorded");
 

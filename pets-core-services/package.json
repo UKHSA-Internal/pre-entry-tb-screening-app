@@ -20,7 +20,7 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.145",
     "aws-sdk-client-mock": "^4.1.0",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.25.1",
     "ts-patch": "^3.2.1",
     "tsx": "^4.19.2",
     "typescript": "5.5.4",

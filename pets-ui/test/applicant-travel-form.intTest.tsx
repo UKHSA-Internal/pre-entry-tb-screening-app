@@ -20,26 +20,9 @@ describe("ApplicantTravelForm", () => {
     useNavigateMock.mockClear();
   });
 
-  test("when ApplicantTravelForm is not filled then errors are displayed", async () => {
-    renderWithProviders(
-      <Router>
-        <ApplicantTravelForm />
-      </Router>,
-    );
-    const user = userEvent.setup();
-    await user.click(screen.getByRole("button"));
+  const user = userEvent.setup();
 
-    expect(screen.getAllByText("Select a visa type.")).toHaveLength(2);
-    expect(
-      screen.getAllByText("Enter address line 1, typically the building and street."),
-    ).toHaveLength(2);
-    expect(screen.getAllByText("Enter town or city.")).toHaveLength(2);
-    expect(screen.getAllByText("Enter full UK postcode.")).toHaveLength(2);
-    expect(screen.getAllByText("Enter UK mobile number.")).toHaveLength(2);
-    expect(screen.getAllByText("Enter UK email address.")).toHaveLength(2);
-  });
-
-  test("when ApplicantTravelForm is filled correctly then state is updated and user is navigated to summary page", async () => {
+  it("when ApplicantTravelForm is filled correctly then state is updated and user is navigated to summary page", async () => {
     const { store } = renderWithProviders(
       <Router>
         <ApplicantTravelForm />
@@ -77,5 +60,41 @@ describe("ApplicantTravelForm", () => {
       visaType: "Government Sponsored",
     });
     expect(useNavigateMock).toHaveBeenLastCalledWith("/travel-summary");
+  });
+
+  it("errors when travel details are missing", async () => {
+    renderWithProviders(
+      <Router>
+        <ApplicantTravelForm />
+      </Router>,
+    );
+
+    const submitButton = screen.getByRole("button", { name: /Save and Continue/i });
+
+    await user.click(submitButton);
+
+    const errorMessages = [
+      "Error: Select a visa type",
+      "Error: Enter address line 1, typically the building and street",
+      "Error: Enter town or city",
+      "Error: Enter full UK postcode",
+      "Error: Enter UK mobile number",
+      "Error: Enter UK email address",
+    ];
+
+    errorMessages.forEach((error) => {
+      expect(screen.getAllByText(error.slice(7))).toHaveLength(2);
+      expect(screen.getAllByText(error.slice(7))[0]).toHaveAttribute("aria-label", error);
+    });
+  });
+  it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
+    renderWithProviders(
+      <Router>
+        <ApplicantTravelForm />
+      </Router>,
+    );
+    await user.click(screen.getByRole("button"));
+    const errorSummaryDiv = screen.getByTestId("error-summary");
+    expect(errorSummaryDiv).toHaveFocus();
   });
 });
