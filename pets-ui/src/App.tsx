@@ -227,7 +227,7 @@ function App() {
         }
       />
       <Route
-        path="/tb-summary"
+        path="/tb-certificate-summary"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -237,7 +237,7 @@ function App() {
         }
       />
       <Route
-        path="/tb-confirmation"
+        path="/tb-certificate-confirmation"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>

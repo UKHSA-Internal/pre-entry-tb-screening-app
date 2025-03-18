@@ -30,7 +30,7 @@ const TbSummary = () => {
       });
 
       dispatch(setTbCertificateStatus(ApplicationStatus.COMPLETE));
-      navigate("/tb-confirmation");
+      navigate("/tb-certificate-confirmation");
     } catch (error) {
       console.error(error);
       navigate("/error");
@@ -72,7 +72,7 @@ const TbSummary = () => {
         id="save-and-continue"
         type={ButtonType.DEFAULT}
         text="Save and continue"
-        href="/chest-xray-confirmation"
+        href="/tb-certificate-confirmation"
         handleClick={handleSubmit}
       />
     </div>
