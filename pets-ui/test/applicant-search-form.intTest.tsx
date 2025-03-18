@@ -5,6 +5,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import ApplicantSearchForm from "@/sections/applicant-search-form";
+import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 import { petsApi } from "../src/api/api";
@@ -74,6 +75,23 @@ const emptyMedicalSlice = {
   underElevenConditions: [],
   underElevenConditionsDetail: "",
 };
+const emptyChestXraySlice = {
+  status: ApplicationStatus.INCOMPLETE,
+  chestXrayTaken: YesOrNo.NULL,
+  posteroAnteriorXrayFileName: "",
+  posteroAnteriorXrayFile: "",
+  apicalLordoticXrayFileName: "",
+  apicalLordoticXrayFile: "",
+  lateralDecubitusXrayFileName: "",
+  lateralDecubitusXrayFile: "",
+  reasonXrayWasNotTaken: "",
+  xrayWasNotTakenFurtherDetails: "",
+  xrayResult: "",
+  xrayResultDetail: "",
+  xrayMinorFindings: [],
+  xrayAssociatedMinorFindings: [],
+  xrayActiveTbFindings: [],
+};
 
 describe("ApplicantSearchForm", () => {
   let mock: MockAdapter;
@@ -138,6 +156,18 @@ describe("ApplicantSearchForm", () => {
         symptomsOfTb: "Yes",
         symptomsOther: "Other symptoms",
       },
+      chestXray: {
+        status: "completed",
+        chestXrayTaken: YesOrNo.YES,
+        posteroAnteriorXray: "pa-file-name",
+        apicalLordoticXray: "",
+        lateralDecubitusXray: "",
+        xrayResult: "normal",
+        xrayResultDetail: "",
+        xrayMinorFindings: [],
+        xrayAssociatedMinorFindings: [],
+        xrayActiveTbFindings: [],
+      },
     });
 
     await user.type(screen.getByTestId("passport-number"), "12345");
@@ -178,14 +208,14 @@ describe("ApplicantSearchForm", () => {
       postcode: "",
       provinceOrState: "New South Wales",
       sex: "Male",
-      status: "Complete",
+      status: ApplicationStatus.COMPLETE,
       townOrCity: "Sydney",
     });
     expect(store.getState().travel).toEqual({
       applicantUkAddress1: "99 Downing Street",
       applicantUkAddress2: "",
       postcode: "W1 1AS",
-      status: "Complete",
+      status: ApplicationStatus.COMPLETE,
       townOrCity: "London",
       ukEmail: "Maxwell@Spiffington.com",
       ukMobileNumber: "071234567890",
@@ -201,11 +231,28 @@ describe("ApplicantSearchForm", () => {
       pregnant: "N/A",
       previousTb: "No",
       previousTbDetail: "details3",
-      status: "Complete",
+      status: ApplicationStatus.COMPLETE,
       tbSymptoms: "Yes",
       tbSymptomsList: ["symptom1", "symptom2"],
       underElevenConditions: ["history1", "history2"],
       underElevenConditionsDetail: "details2",
+    });
+    expect(store.getState().chestXray).toEqual({
+      status: ApplicationStatus.COMPLETE,
+      chestXrayTaken: YesOrNo.YES,
+      posteroAnteriorXrayFileName: "pa-file-name",
+      posteroAnteriorXrayFile: "",
+      apicalLordoticXrayFileName: "",
+      apicalLordoticXrayFile: "",
+      lateralDecubitusXrayFileName: "",
+      lateralDecubitusXrayFile: "",
+      reasonXrayWasNotTaken: "",
+      xrayWasNotTakenFurtherDetails: "",
+      xrayResult: "normal",
+      xrayResultDetail: "",
+      xrayMinorFindings: [],
+      xrayAssociatedMinorFindings: [],
+      xrayActiveTbFindings: [],
     });
 
     expect(useNavigateMock).toHaveBeenLastCalledWith("/tracker");
@@ -283,6 +330,7 @@ describe("ApplicantSearchForm", () => {
     });
     expect(store.getState().travel).toEqual(emptyTravelSlice);
     expect(store.getState().medicalScreening).toEqual(emptyMedicalSlice);
+    expect(store.getState().chestXray).toEqual(emptyChestXraySlice);
 
     expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
   });
@@ -359,6 +407,7 @@ describe("ApplicantSearchForm", () => {
     });
     expect(store.getState().travel).toEqual(emptyTravelSlice);
     expect(store.getState().medicalScreening).toEqual(emptyMedicalSlice);
+    expect(store.getState().chestXray).toEqual(emptyChestXraySlice);
 
     expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
   });
@@ -386,6 +435,7 @@ describe("ApplicantSearchForm", () => {
     expect(store.getState().applicant).toEqual(emptyApplicantSlice);
     expect(store.getState().travel).toEqual(emptyTravelSlice);
     expect(store.getState().medicalScreening).toEqual(emptyMedicalSlice);
+    expect(store.getState().chestXray).toEqual(emptyChestXraySlice);
 
     expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-results");
   });
@@ -413,6 +463,7 @@ describe("ApplicantSearchForm", () => {
     expect(store.getState().applicant).toEqual(emptyApplicantSlice);
     expect(store.getState().travel).toEqual(emptyTravelSlice);
     expect(store.getState().medicalScreening).toEqual(emptyMedicalSlice);
+    expect(store.getState().chestXray).toEqual(emptyChestXraySlice);
 
     expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
   });

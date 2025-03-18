@@ -7,7 +7,13 @@ import { createTable } from "./db-ops";
 import { seedDatabase } from "./seed-data";
 
 beforeAll(() => {
-  execSync("docker compose up -d --wait", { stdio: "inherit" });
+  const isPowerShell =
+    !!process.env.PSModulePath || process.env.ComSpec?.toLowerCase().includes("powershell.exe");
+  let shell = "/bin/bash";
+  if (isPowerShell) {
+    shell = "powershell.exe";
+  }
+  execSync("docker compose up -d --wait", { stdio: "inherit", shell });
 });
 
 beforeEach(async () => {

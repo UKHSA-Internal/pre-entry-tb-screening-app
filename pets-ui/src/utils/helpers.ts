@@ -123,6 +123,10 @@ const validateDate = (value: DateType, fieldName: string) => {
   return true;
 };
 
+export const spreadArrayIfNotEmpty = (...arrays: string[][]) => {
+  return arrays.flatMap((array) => (array?.length ? array : []));
+};
+
 export {
   hasInvalidCharacters,
   isDateInTheFuture,

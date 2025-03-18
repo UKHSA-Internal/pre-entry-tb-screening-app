@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
@@ -11,8 +11,11 @@ import Heading from "@/components/heading/heading";
 import { selectApplicant } from "@/redux/applicantSlice";
 import {
   setApicalLordoticXrayFile,
+  setApicalLordoticXrayFileName,
   setLateralDecubitusXrayFile,
+  setLateralDecubitusXrayFileName,
   setPosteroAnteriorXrayFile,
+  setPosteroAnteriorXrayFileName,
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType } from "@/utils/enums";
@@ -21,11 +24,12 @@ const FileUploadModule = (
   props: Readonly<{
     id: string;
     name: string;
-    setFileState: Dispatch<SetStateAction<string | null>>;
     required: boolean;
     errors: FieldErrors<ReduxChestXrayDetailsType>;
     accept?: string;
     maxSize?: number;
+    setFileState: Dispatch<SetStateAction<string | null>>;
+    setFileName: Dispatch<SetStateAction<string>>;
   }>,
 ) => {
   return (
@@ -51,6 +55,7 @@ const FileUploadModule = (
               accept={props.accept ?? "jpg,jpeg,png,pdf"}
               maxSize={props.maxSize ?? 5}
               setFileState={props.setFileState}
+              setFileName={props.setFileName}
             />
           </dd>
         </div>
@@ -67,6 +72,9 @@ const ChestXrayForm = () => {
   const [PAFile, setPAFile] = useState<string | null>(null);
   const [ALFile, setALFile] = useState<string | null>(null);
   const [LDFile, setLDFile] = useState<string | null>(null);
+  const [PAFileName, setPAFileName] = useState<string>("");
+  const [ALFileName, setALFileName] = useState<string>("");
+  const [LDFileName, setLDFileName] = useState<string>("");
 
   const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
   const {
@@ -80,8 +88,33 @@ const ChestXrayForm = () => {
     dispatch(setPosteroAnteriorXrayFile(PAFile));
     dispatch(setApicalLordoticXrayFile(ALFile));
     dispatch(setLateralDecubitusXrayFile(LDFile));
+    dispatch(setPosteroAnteriorXrayFileName(PAFileName));
+    dispatch(setApicalLordoticXrayFileName(ALFileName));
+    dispatch(setLateralDecubitusXrayFileName(LDFileName));
     navigate("/chest-xray-findings");
   };
+
+  // Required to scroll to the correct element when a change link on the summary page is clicked
+  const location = useLocation();
+  const paXray = useRef<HTMLDivElement | null>(null);
+  const alXray = useRef<HTMLDivElement | null>(null);
+  const ldXray = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (location.hash) {
+      const target = location.hash.substring(1);
+      const refMap: { [key: string]: HTMLElement | null } = {
+        "postero-anterior-xray": paXray.current,
+        "apical-lordotic-xray": alXray.current,
+        "lateral-decubitus-xray": ldXray.current,
+      };
+
+      const targetRef = refMap[target];
+      if (targetRef) {
+        targetRef.scrollIntoView();
+      }
+    }
+  }, [location]);
 
   return (
     <FormProvider {...methods}>
@@ -90,32 +123,41 @@ const ChestXrayForm = () => {
           {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
           <ApplicantDataHeader applicantData={applicantData} />
 
-          <Heading level={2} size="m" title="Postero-anterior X-ray" />
-          <FileUploadModule
-            id="postero-anterior-xray"
-            name="Postero-anterior"
-            setFileState={setPAFile}
-            required={true}
-            errors={errors}
-          />
+          <div ref={paXray}>
+            <Heading level={2} size="m" title="Postero-anterior X-ray" />
+            <FileUploadModule
+              id="postero-anterior-xray"
+              name="Postero-anterior"
+              setFileState={setPAFile}
+              setFileName={setPAFileName}
+              required={true}
+              errors={errors}
+            />
+          </div>
 
-          <Heading level={2} size="m" title="Apical lordotic X-ray (optional)" />
-          <FileUploadModule
-            id="apical-lordotic-xray"
-            name="Apical-lordotic"
-            setFileState={setALFile}
-            required={false}
-            errors={errors}
-          />
+          <div ref={alXray}>
+            <Heading level={2} size="m" title="Apical lordotic X-ray (optional)" />
+            <FileUploadModule
+              id="apical-lordotic-xray"
+              name="Apical-lordotic"
+              setFileState={setALFile}
+              setFileName={setALFileName}
+              required={false}
+              errors={errors}
+            />
+          </div>
 
-          <Heading level={2} size="m" title="Lateral decubitus X-ray (optional)" />
-          <FileUploadModule
-            id="lateral-decubitus-xray"
-            name="Lateral-decubitus"
-            setFileState={setLDFile}
-            required={false}
-            errors={errors}
-          />
+          <div ref={ldXray}>
+            <Heading level={2} size="m" title="Lateral decubitus X-ray (optional)" />
+            <FileUploadModule
+              id="lateral-decubitus-xray"
+              name="Lateral-decubitus"
+              setFileState={setLDFile}
+              setFileName={setLDFileName}
+              required={false}
+              errors={errors}
+            />
+          </div>
 
           <Button
             id="continue"
