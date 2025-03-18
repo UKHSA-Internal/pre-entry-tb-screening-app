@@ -180,7 +180,7 @@ const TbCertificateDeclarationForm = () => {
           type={ButtonType.DEFAULT}
           text="Continue"
           href="/tb-certificate-summary"
-          handleClick={() => {}}
+          handleClick={onSubmit}
         />
       </form>
     </FormProvider>

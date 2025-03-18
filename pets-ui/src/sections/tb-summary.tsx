@@ -66,6 +66,7 @@ const TbSummary = () => {
 
   return (
     <div>
+      {JSON.stringify(tbCertificateData)}
       <ApplicantDataHeader applicantData={applicantData} />
       <Summary summaryElements={tbSummaryData.filter(isDataPresent)} />
       <Button
