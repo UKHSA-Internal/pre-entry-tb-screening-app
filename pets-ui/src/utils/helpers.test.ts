@@ -295,8 +295,8 @@ describe("missingFieldsMessage function", () => {
     it(`should return "${expected}" for fieldName: "${fieldName}" with missing: ${missing.join(", ")}`, () => {
       expect(missingFieldsMessage(fieldName, missing)).toBe(expected);
     });
-  }
-})
+  });
+});
 
 describe("spreadIfNotEmpty", () => {
   test("should spread non-empty string arrays", () => {
