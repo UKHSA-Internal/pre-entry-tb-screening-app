@@ -22,7 +22,7 @@ import {
 } from "@/redux/medicalScreeningSlice";
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
 import { ButtonType } from "@/utils/enums";
-import { countryList, formRegex } from "@/utils/helpers";
+import { countryList, formRegex } from "@/utils/records";
 
 import { getApplicants, getApplication } from "../api/api";
 
