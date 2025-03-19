@@ -1,5 +1,5 @@
-import { TravelInformationPage } from "../support/page-objects/travelInformationPage";
-import { randomElement, visaType } from "../support/test-utils";
+import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
+import { randomElement, visaType } from "../../support/test-utils";
 
 const errorMessages = [
   "Town name must contain only letters, spaces and punctuation.",
