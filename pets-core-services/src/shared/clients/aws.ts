@@ -6,6 +6,7 @@ import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 class AWSClients {
   private static instance: AWSClients;
   private _dynamoDBDocClient?: DynamoDBDocumentClient;
+  private _s3Client?: S3Client;
   private _lambdaClient?: LambdaClient;
   private _s3Client?: S3Client;
 
@@ -33,10 +34,7 @@ class AWSClients {
 
   get s3Client(): S3Client {
     if (!this._s3Client) {
-      this._s3Client = new S3Client({
-        region: "eu-west-2",
-        forcePathStyle: false,
-      });
+      this._s3Client = new S3Client({ region: "eu-west-2" });
     }
     return this._s3Client;
   }

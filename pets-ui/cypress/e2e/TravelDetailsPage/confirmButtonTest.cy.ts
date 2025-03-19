@@ -1,6 +1,6 @@
-import { TravelInformationPage } from "../support/page-objects/travelInformationPage";
-import { TravelSummaryPage } from "../support/page-objects/travelSummaryPage";
-import { randomElement, visaType } from "../support/test-utils";
+import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
+import { TravelSummaryPage } from "../../support/page-objects/travelSummaryPage";
+import { randomElement, visaType } from "../../support/test-utils";
 
 describe.skip("Validate that the confirm button on the travel information page redirects to the Enter Travel Information Page", () => {
   const travelInformationPage = new TravelInformationPage();

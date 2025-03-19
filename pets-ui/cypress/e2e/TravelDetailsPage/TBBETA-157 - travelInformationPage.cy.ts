@@ -1,7 +1,7 @@
-import { TravelConfirmationPage } from "../support/page-objects/travelConfirmationPage";
-import { TravelInformationPage } from "../support/page-objects/travelInformationPage";
-import { TravelSummaryPage } from "../support/page-objects/travelSummaryPage";
-import { randomElement, visaType } from "../support/test-utils";
+import { TravelConfirmationPage } from "../../support/page-objects/travelConfirmationPage";
+import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
+import { TravelSummaryPage } from "../../support/page-objects/travelSummaryPage";
+import { randomElement, visaType } from "../../support/test-utils";
 
 describe.skip("Validate that the continue to medical screening button navigates to the medical screening page", () => {
   const travelInformationPage = new TravelInformationPage();

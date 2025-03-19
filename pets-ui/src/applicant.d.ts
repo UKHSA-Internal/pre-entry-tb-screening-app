@@ -1,4 +1,4 @@
-import { ApplicationStatus, BackendApplicationStatus } from "./utils/enums";
+import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "./utils/enums";
 
 // Misc types
 type ApplicantSearchFormType = {
@@ -12,6 +12,12 @@ type DateType = {
   day: string;
 };
 
+type ReceivedApplicationAttributesType = {
+  applicationId: string;
+  dateCreated: string;
+  status: BackendApplicationStatus;
+};
+
 // Application types
 type ApplicationIdAndDateCreatedType = {
   applicationId: string;
@@ -22,6 +28,7 @@ type ReceivedApplicationDetailsType = {
   applicationId: string;
   travelInformation: ReceivedTravelDetailsType | undefined;
   medicalScreening: ReceivedMedicalScreeningType | undefined;
+  chestXray: ReceivedChestXrayDetailsType | undefined;
 };
 
 // Applicant types
@@ -176,28 +183,44 @@ type PostedMedicalScreeningType = {
 
 // Chest X-ray types
 type ReduxChestXrayDetailsType = {
-  chestXrayTaken: boolean | string;
-  posteroAnteriorXray: boolean | string; // allows for yes -> true, no -> false
+  status: ApplicationStatus;
+  chestXrayTaken: YesOrNo;
+  posteroAnteriorXrayFileName: string;
   posteroAnteriorXrayFile: string | null;
-  apicalLordoticXray: boolean | string; // allows for yes -> true, no -> false
+  apicalLordoticXrayFileName: string;
   apicalLordoticXrayFile: string | null;
-  lateralDecubitusXray: boolean | string; // allows for yes -> true, no -> false
+  lateralDecubitusXrayFileName: string;
   lateralDecubitusXrayFile: string | null;
-  reasonXrayWasNotTaken: string | null;
-  xrayWasNotTakenFurtherDetails: string | null;
-  dateOfCxr: string | null;
-  radiologicalOutcome: string;
-  radiologicalOutcomeNotes: string | null;
-  radiologicalFinding: string | null;
-  dateOfRadiologicalInterpretation: string | null;
-  sputumCollected: boolean;
-  reasonWhySputumNotRequired: string | null;
+  reasonXrayWasNotTaken: string;
+  xrayWasNotTakenFurtherDetails: string;
   xrayResult: string;
   xrayResultDetail: string;
   xrayMinorFindings: string[];
   xrayAssociatedMinorFindings: string[];
   xrayActiveTbFindings: string[];
 };
+
+type PostedChestXrayDetailsType = {
+  chestXrayTaken: YesOrNo;
+  posteroAnteriorXray: string;
+  apicalLordoticXray: string;
+  lateralDecubitusXray: string;
+  xrayResult: string;
+  xrayResultDetail: string;
+  xrayMinorFindings: string[];
+  xrayAssociatedMinorFindings: string[];
+  xrayActiveTbFindings: string[];
+};
+
+type ReceivedChestXrayDetailsType = PostedChestXrayDetailsType & ReceivedApplicationAttributesType;
+
+type PostedChestXrayNotTakenType = {
+  reasonXrayWasNotTaken: string;
+  xrayWasNotTakenFurtherDetails: string;
+};
+
+type ReceivedChestXrayNotTakenType = PostedChestXrayNotTakenType &
+  ReceivedApplicationAttributesType;
 
 // Sputum types
 type ReduxSputumCollectionDetailsType = {

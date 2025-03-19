@@ -14,6 +14,7 @@ import {
   setApplicantPassportDetails,
 } from "@/redux/applicantSlice";
 import { clearApplicationDetails, setApplicationId } from "@/redux/applicationSlice";
+import { clearChestXrayDetails, setChestXrayFromApiResponse } from "@/redux/chestXraySlice";
 import { useAppDispatch } from "@/redux/hooks";
 import {
   clearMedicalScreeningDetails,
@@ -21,7 +22,7 @@ import {
 } from "@/redux/medicalScreeningSlice";
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
 import { ButtonType } from "@/utils/enums";
-import { countryList, formRegex } from "@/utils/helpers";
+import { countryList, formRegex } from "@/utils/records";
 
 import { getApplicants, getApplication } from "../api/api";
 
@@ -35,6 +36,7 @@ const ApplicantSearchForm = () => {
     dispatch(clearApplicationDetails());
     dispatch(clearMedicalScreeningDetails());
     dispatch(clearTravelDetails());
+    dispatch(clearChestXrayDetails());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -67,6 +69,9 @@ const ApplicantSearchForm = () => {
       }
       if (applicationRes.data.medicalScreening) {
         dispatch(setMedicalScreeningDetailsFromApiResponse(applicationRes.data.medicalScreening));
+      }
+      if (applicationRes.data.chestXray) {
+        dispatch(setChestXrayFromApiResponse(applicationRes.data.chestXray));
       }
       navigate("/tracker");
     } catch (error) {
