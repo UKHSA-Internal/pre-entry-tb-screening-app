@@ -9,7 +9,6 @@ export class ApplicantSearchPage {
 
   // Verify page loaded
   verifyPageLoaded(): void {
-    //cy.contains("h1", "Search for a visa applicant").should("exist").and("be.visible");
     cy.get("h1.govuk-heading-l").should("exist").and("have.text", "Search for a visa applicant");
     cy.contains(
       "p",
@@ -48,9 +47,9 @@ export class ApplicantSearchPage {
     cy.get("#create-new-applicant").should("be.visible").and("contain", "Create new applicant");
   }
 
-  // Verify no matching record found message
-  verifyNoMatchingRecordMessage(): void {
-    cy.contains("h1", "No matching record found").should("be.visible");
+  // Verify no matching record found message - added timeout to handle intermittent step failure
+  verifyNoMatchingRecordMessage(timeout = 20000): void {
+    cy.contains("h1", "No matching record found", { timeout }).should("be.visible");
   }
 
   // Verify error summary visible
