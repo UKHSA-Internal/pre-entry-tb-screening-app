@@ -1,129 +1,18 @@
 import { DateType } from "@/components/dateTextInput/dateTextInput";
 
-import { countryList } from "./countryList";
+import {
+  dateEntryMustBeInTheFuture,
+  dateEntryMustBeInThePast,
+  dateEntryNames,
+  dateValidationMessages,
+  longMonthValues,
+  longNumericStrings,
+  shortMonthValues,
+  shortNumericStrings,
+  validMonthValues,
+} from "./records";
 
-const attributeToComponentId: { [key: string]: string } = {
-  fullName: "name",
-  passportNumber: "passport-number",
-  countryOfNationality: "country-of-nationality",
-  countryOfIssue: "country-of-issue",
-  issueDate: "passport-issue-date",
-  expiryDate: "passport-expiry-date",
-  dateOfBirth: "birth-date",
-  sex: "sex",
-  applicantHomeAddress1: "address-1",
-  applicantHomeAddress2: "address-2",
-  applicantHomeAddress3: "address-3",
-  townOrCity: "town-or-city",
-  provinceOrState: "province-or-state",
-  country: "address-country",
-  postcode: "postcode",
-  age: "age",
-  tbSymptoms: "tb-symptoms",
-  tbSymptomsList: "tb-symptoms-list",
-  otherSymptomsDetail: "other-symptoms-detail",
-  underElevenConditions: "under-eleven-conditions",
-  underElevenConditionsDetail: "under-eleven-conditions-detail",
-  previousTb: "previous-tb",
-  previousTbDetail: "previous-tb-detail",
-  closeContactWithTb: "close-contact-with-tb",
-  closeContactWithTbDetail: "close-contact-with-tb-detail",
-  pregnant: "pregnant",
-  menstrualPeriods: "menstrual-periods",
-  physicalExamNotes: "physical-exam-notes",
-  visaType: "visa-type",
-  applicantUkAddress1: "address-1",
-  applicantUkAddress2: "address-2",
-  ukMobileNumber: "mobile-number",
-  ukEmail: "email",
-  chestXrayTaken: "chest-xray-taken",
-  xrayResult: "xray-result",
-  reasonXrayWasNotTaken: "reason-xray-not-taken",
-  xrayWasNotTakenFurtherDetails: "xray-not-taken-further-details",
-  tbClearanceIssued: "tb-clearance-issued",
-  tbCertificateDate: "tb-certificate-date",
-  tbCertificateNumber: "tb-certificate-number",
-  passportIssueDate: "passportIssueDate",
-  passportExpiryDate: "passportExpiryDate",
-};
-
-const formRegex = {
-  lettersAndNumbers: /^[A-Za-z0-9]+$/,
-  lettersAndSpaces: /^[A-Za-z\s]+$/,
-  lettersNumbersAndSpaces: /^[A-Za-z0-9\s]+$/,
-  lettersSpacesAndPunctuation: /^[A-Za-z\s,-/()']+$/,
-  lettersNumbersSpacesAndPunctuation: /^[A-Za-z0-9\s,-/()']+$/,
-  numbersOnly: /^\d+$/,
-  emailAddress: /^[\w\-.]+@([\w-]+\.)+[\w-]{2,}$/,
-  fullName: /^[A-Za-z\s-'.]+$/,
-};
-
-const dateValidationMessages = {
-  passportIssueDate: {
-    emptyFieldError: "Passport issue date must include a day, month and year",
-    invalidCharError:
-      "Passport issue day and year must contain only numbers. Passport issue month must be a number, or the name of the month, or the first three letters of the month",
-    invalidDateError: "Passport issue date must be a valid date",
-  },
-  passportExpiryDate: {
-    emptyFieldError: "Passport expiry date must include a day, month and year",
-    invalidCharError:
-      "Passport expiry day and year must contain only numbers. Passport expiry month must be a number, or the name of the month, or the first three letters of the month",
-    invalidDateError: "Passport expiry date must be a valid date",
-  },
-  dateOfBirth: {
-    emptyFieldError: "Date of birth must include a day, month and year",
-    invalidCharError:
-      "Date of birth day and year must contain only numbers. Date of birth month must be a number, or the name of the month, or the first three letters of the month",
-    invalidDateError: "Date of birth date must be a valid date",
-  },
-  tbCertificateDate: {
-    emptyFieldError: "TB clearance certificate date must include a day, month and year",
-    invalidCharError:
-      "TB clearance certificate day and year must contain only numbers. TB clearance certificate month must be a number, or the name of the month, or the first three letters of the month",
-    invalidDateError: "TB clearance certificate date must be a valid date",
-  },
-};
-
-const longMonthValues = [
-  "january",
-  "february",
-  "march",
-  "april",
-  "may",
-  "june",
-  "july",
-  "august",
-  "september",
-  "october",
-  "november",
-  "december",
-];
-const shortMonthValues = [
-  "jan",
-  "feb",
-  "mar",
-  "apr",
-  "may",
-  "jun",
-  "jul",
-  "aug",
-  "sep",
-  "oct",
-  "nov",
-  "dec",
-];
-const longNumericStrings = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
-const shortNumericStrings = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
-
-const validMonthValues = [
-  ...longMonthValues,
-  ...shortMonthValues,
-  ...longNumericStrings,
-  ...shortNumericStrings,
-];
-
-function standardiseDayOrMonth(dayOrMonth: string) {
+const standardiseDayOrMonth = (dayOrMonth: string) => {
   let standardisedDayOrMonth = dayOrMonth.toLowerCase();
 
   for (const list of [longMonthValues, shortMonthValues, shortNumericStrings]) {
@@ -133,9 +22,9 @@ function standardiseDayOrMonth(dayOrMonth: string) {
   }
 
   return standardisedDayOrMonth;
-}
+};
 
-function isValidDate(day: string, month: string, year: string) {
+const isValidDate = (day: string, month: string, year: string) => {
   if (
     parseInt(year) <= 1900 ||
     parseInt(year) >= 2100 ||
@@ -165,71 +54,85 @@ function isValidDate(day: string, month: string, year: string) {
   } else {
     return true;
   }
-}
+};
+
+const missingFieldsMessage = (fieldName: string, missingFields: string[]) => {
+  const missingText =
+    missingFields.length === 1
+      ? `${missingFields[0]}`
+      : `${missingFields[0]} and ${missingFields[1]}`;
+
+  return `${dateEntryNames[fieldName]} must include a ${missingText}`;
+};
+
+const hasInvalidCharacters = (day: string, month: string, year: string, validMonths: string[]) => {
+  return /\D/.test(day) || /\D/.test(year) || !validMonths.includes(month.toLowerCase());
+};
+
+const isDateInThePast = (day: string, month: string, year: string): boolean => {
+  const inputDate = new Date(Number(year), Number(month) - 1, Number(day));
+  const today = new Date();
+
+  today.setHours(0, 0, 0, 0);
+  inputDate.setHours(0, 0, 0, 0);
+
+  return inputDate <= today;
+};
+
+const isDateInTheFuture = (day: string, month: string, year: string): boolean => {
+  const inputDate = new Date(Number(year), Number(month) - 1, Number(day));
+  const today = new Date();
+
+  today.setHours(0, 0, 0, 0);
+  inputDate.setHours(0, 0, 0, 0);
+
+  return inputDate > today;
+};
 
 const validateDate = (value: DateType, fieldName: string) => {
   const { day, month, year } = value;
+  const missingFields: Record<string, boolean> = { day: !day, month: !month, year: !year };
+  const missingKeys = Object.keys(missingFields).filter((key) => missingFields[key]);
 
-  if (!day || !month || !year) {
-    return dateValidationMessages[fieldName as keyof typeof dateValidationMessages].emptyFieldError;
-  } else if (
-    day.search(/\D/g) > -1 ||
-    year.search(/\D/g) > -1 ||
-    !validMonthValues.includes(month.toLowerCase())
-  ) {
-    return dateValidationMessages[fieldName as keyof typeof dateValidationMessages]
-      .invalidCharError;
-  } else if (!isValidDate(day, month, year)) {
-    return dateValidationMessages[fieldName as keyof typeof dateValidationMessages]
-      .invalidDateError;
+  //All three date fields missing
+  if (missingKeys.length === 3) return dateValidationMessages[fieldName].emptyFieldError;
+
+  //One or more date fields missing
+  if (missingKeys.length > 0) return missingFieldsMessage(fieldName, missingKeys);
+
+  //Fields contain invalid characters
+  if (hasInvalidCharacters(day, month, year, validMonthValues)) {
+    return dateValidationMessages[fieldName].invalidCharError;
+  }
+
+  //Fields contain Invalid dates
+  if (!isValidDate(day, month, year)) {
+    return dateValidationMessages[fieldName].invalidDateError;
+  }
+
+  //Past Check
+  if (dateEntryMustBeInThePast.includes(fieldName) && !isDateInThePast(day, month, year)) {
+    return dateValidationMessages[fieldName].dateMustBeInPastError;
+  }
+
+  //Future Check
+  if (dateEntryMustBeInTheFuture.includes(fieldName) && !isDateInTheFuture(day, month, year)) {
+    return dateValidationMessages[fieldName].dateMustBeInFutureError;
   }
 
   return true;
 };
-
-const visaOptions = [
-  {
-    value: "Family Reunion",
-    label: "Family Reunion",
-  },
-  {
-    value: "Settlement and Dependents",
-    label: "Settlement and Dependents",
-  },
-  {
-    value: "Students",
-    label: "Students",
-  },
-  {
-    value: "Work",
-    label: "Work",
-  },
-  {
-    value: "Working Holiday Maker",
-    label: "Working Holiday Maker",
-  },
-  {
-    value: "Government Sponsored",
-    label: "Government Sponsored",
-  },
-  {
-    value: "British National (Overseas)",
-    label: "British National (Overseas)",
-  },
-];
 
 export const spreadArrayIfNotEmpty = (...arrays: string[][]) => {
   return arrays.flatMap((array) => (array?.length ? array : []));
 };
 
 export {
-  attributeToComponentId,
-  countryList,
-  dateValidationMessages,
-  formRegex,
+  hasInvalidCharacters,
+  isDateInTheFuture,
+  isDateInThePast,
   isValidDate,
+  missingFieldsMessage,
   standardiseDayOrMonth,
   validateDate,
-  validMonthValues,
-  visaOptions,
 };
