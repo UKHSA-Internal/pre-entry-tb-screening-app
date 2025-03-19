@@ -1,6 +1,6 @@
-import { TravelInformationPage } from "../support/page-objects/travelInformationPage";
-import { TravelSummaryPage } from "../support/page-objects/travelSummaryPage";
-import { randomElement, visaType } from "../support/test-utils";
+import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
+import { TravelSummaryPage } from "../../support/page-objects/travelSummaryPage";
+import { randomElement, visaType } from "../../support/test-utils";
 
 describe.skip("Validate form is prefilled with data when user navigates back to the Enter Travel Information", () => {
   const travelInformationPage = new TravelInformationPage();

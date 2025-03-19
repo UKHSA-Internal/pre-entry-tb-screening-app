@@ -21,7 +21,8 @@ import {
   setTbClearanceIssued,
 } from "@/redux/tbCertificateSlice";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
-import { formRegex, validateDate } from "@/utils/helpers";
+import { validateDate } from "@/utils/helpers";
+import { formRegex } from "@/utils/records";
 
 const TbCertificateDeclarationForm = () => {
   const applicantData = useAppSelector(selectApplicant);
