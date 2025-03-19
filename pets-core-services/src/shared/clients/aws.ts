@@ -8,7 +8,6 @@ class AWSClients {
   private _dynamoDBDocClient?: DynamoDBDocumentClient;
   private _s3Client?: S3Client;
   private _lambdaClient?: LambdaClient;
-  private _s3Client?: S3Client;
 
   static getInstance(): AWSClients {
     if (!AWSClients.instance) {
