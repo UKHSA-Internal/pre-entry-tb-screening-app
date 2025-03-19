@@ -124,7 +124,17 @@ const validateDate = (value: DateType, fieldName: string) => {
   return true;
 };
 
-export const isDataPresent = (
+const formatDateType = (date: DateType): string => {
+  const { day, month, year } = date;
+
+  if (!day || !month || !year) {
+    return "";
+  }
+
+  return `${day}/${month}/${year}`;
+};
+
+const isDataPresent = (
   summaryElement: Partial<SummaryElement>,
 ): summaryElement is SummaryElement => {
   const { value } = summaryElement;
@@ -136,6 +146,7 @@ export const spreadArrayIfNotEmpty = (...arrays: string[][]) => {
 };
 
 export {
+  formatDateType,
   hasInvalidCharacters,
   isDataPresent,
   isDateInTheFuture,

@@ -1,12 +1,7 @@
 import {
   formatDateType,
-  isDataPresent,
-  spreadArrayIfNotEmpty,
-  standardiseDayOrMonth,
-} from "./helpers";
-
-import {
   hasInvalidCharacters,
+  isDataPresent,
   isDateInTheFuture,
   isDateInThePast,
   missingFieldsMessage,
