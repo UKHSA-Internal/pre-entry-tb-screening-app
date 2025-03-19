@@ -203,8 +203,8 @@ type ReduxChestXrayDetailsType = {
 type PostedChestXrayDetailsType = {
   chestXrayTaken: YesOrNo;
   posteroAnteriorXray: string;
-  apicalLordoticXray: string;
-  lateralDecubitusXray: string;
+  apicalLordoticXray?: string;
+  lateralDecubitusXray?: string;
   xrayResult: string;
   xrayResultDetail: string;
   xrayMinorFindings: string[];
