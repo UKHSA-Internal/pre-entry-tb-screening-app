@@ -47,7 +47,6 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
 
     props.setFileState(files[0]);
     props.setFileName(files[0].name);
-
   };
 
   const displayError = (errorText: string | null) => {

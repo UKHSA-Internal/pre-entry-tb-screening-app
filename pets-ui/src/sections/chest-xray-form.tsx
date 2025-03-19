@@ -88,7 +88,6 @@ const ChestXrayForm = () => {
   const [ALFileName, setALFileName] = useState<string>("");
   const [LDFileName, setLDFileName] = useState<string>("");
 
-
   const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,
@@ -119,7 +118,6 @@ const ChestXrayForm = () => {
   };
 
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = async () => {
-
     // TBBETA-163: Loaders Loaders Loaders
     if (PAFile) {
       const bucketPath = await uploadFile(PAFile, "postero-anterior.dcm");
