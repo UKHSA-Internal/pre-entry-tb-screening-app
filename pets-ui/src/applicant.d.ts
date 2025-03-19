@@ -187,9 +187,9 @@ type ReduxChestXrayDetailsType = {
   chestXrayTaken: YesOrNo;
   posteroAnteriorXrayFileName: string;
   posteroAnteriorXrayFile: string;
-  apicalLordoticXrayFileName: string;
+  apicalLordoticXrayFileName?: string;
   apicalLordoticXrayFile?: string;
-  lateralDecubitusXrayFileName: string;
+  lateralDecubitusXrayFileName?: string;
   lateralDecubitusXrayFile?: string;
   reasonXrayWasNotTaken: string;
   xrayWasNotTakenFurtherDetails: string;
