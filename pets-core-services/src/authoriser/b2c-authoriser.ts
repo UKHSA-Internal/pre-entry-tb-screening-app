@@ -48,13 +48,6 @@ export const handler = async (
 
     const payload = await verifier.verify(token);
 
-    if (!payload.ClinicID) {
-      logger.error("Missing ClinicID attribute in payload");
-      throw new Error("Missing ClinicID attribute");
-    }
-
-    // in future, do we want to validate whether it's a valid clinicID?
-
     logger.info("token verified successfully");
     callback(null, generatePolicy("user", "Allow", payload));
   } catch (error) {
@@ -93,8 +86,18 @@ const generatePolicy = (
     Statement: statements,
   };
 
-  assert(payload.email);
-  assert(payload.ClinicID);
+  try {
+    assert(payload.email);
+  } catch (error) {
+    logger.error("Invalid or missing email", error);
+  }
+
+  // TODO: check valid clinicID when we have a list?
+  try {
+    assert(payload.ClinicID);
+  } catch (error) {
+    logger.error("Invalid or missing ClinicID", error);
+  }
   const clinicId = payload.ClinicID as string;
   const createdBy = payload.email as string;
   const context = {
