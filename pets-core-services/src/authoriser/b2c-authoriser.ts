@@ -86,20 +86,20 @@ const generatePolicy = (
     Statement: statements,
   };
 
-  // try {
-  //   assert(payload.email);
-  // } catch (error) {
-  //   logger.error("Invalid or missing email", error);
-  // }
+  try {
+    assert(payload.email);
+  } catch (error) {
+    logger.error("Invalid or missing email", error);
+  }
 
-  // // TODO: check valid clinicID when we have a list?
-  // try {
-  //   assert(payload.ClinicID);
-  // } catch (error) {
-  //   logger.error("Invalid or missing ClinicID", error);
-  // }
-  assert(payload.email);
-  assert(payload.ClinicID);
+  // TODO: check valid clinicID when we have a list?
+  try {
+    assert(payload.ClinicID);
+  } catch (error) {
+    logger.error("Invalid or missing ClinicID", error);
+  }
+  // assert(payload.email);
+  // assert(payload.ClinicID);
   const clinicId = payload.ClinicID as string;
   const createdBy = payload.email as string;
   const context = {
