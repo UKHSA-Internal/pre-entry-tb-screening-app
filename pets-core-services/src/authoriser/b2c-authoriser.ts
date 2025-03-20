@@ -88,7 +88,7 @@ const generatePolicy = (
 
   assert(payload.email);
 
-  // do we want to save this in the logs?
+  // is this too much logging?
   if (!payload.ClinicID) {
     logger.error("Missing ClinicID");
   } else {
