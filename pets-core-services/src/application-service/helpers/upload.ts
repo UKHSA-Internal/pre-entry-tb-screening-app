@@ -14,7 +14,7 @@ export const generateDicomObjectkey = (keyParameters: KeyParameters) => {
   const { clinicId, applicant, fileName, applicationId } = keyParameters;
   logger.info({ clinicId, fileName, applicationId }, "Generating Dicom object key");
 
-  const countryOfIssue = applicant.countryOfIssue; // TODO: Inform platform about another dynamodb changes
+  const countryOfIssue = applicant.countryOfIssue;
   const passportNumber = applicant.passportNumber;
 
   const clinicIDFormatted = clinicId.replaceAll("/", "-");
