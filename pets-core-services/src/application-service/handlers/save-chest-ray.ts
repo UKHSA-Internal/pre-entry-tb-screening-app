@@ -47,11 +47,11 @@ export const saveChestXRayHandler = async (event: SaveChestXrayEvent) => {
         }
         if (error instanceof InvalidObjectKey) {
           logger.error(error, "Object key does not match expected");
-          return createHttpResponse(400, { message: "Malformed Payload" });
+          return createHttpResponse(400, { message: "Malformed Payload", error: error.message });
         }
         if (error instanceof ObjectNotFound) {
           logger.error(error, "Object not found in S3");
-          return createHttpResponse(400, { message: "Missing Images" });
+          return createHttpResponse(400, { message: "Missing Images", error: error.message });
         }
         throw error;
       }
@@ -143,7 +143,7 @@ type ApplicationInfo = {
   clinicId: string;
 };
 
-export const validateChestXRayImages = async (
+const validateChestXRayImages = async (
   images: ChestXRayImages,
   applicationInfo: ApplicationInfo,
 ) => {
