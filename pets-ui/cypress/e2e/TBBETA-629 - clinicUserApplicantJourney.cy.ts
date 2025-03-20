@@ -10,6 +10,10 @@ import { ChestXraySummaryPage } from "../support/page-objects/chestXraySummaryPa
 import { ChestXrayUploadPage } from "../support/page-objects/chestXrayUploadPage";
 import { MedicalConfirmationPage } from "../support/page-objects/medicalConfirmationPage";
 import { MedicalSummaryPage } from "../support/page-objects/medicalSummaryPage";
+import { TbCertificateConfirmationPage } from "../support/page-objects/tbCertificateConfirmationPage";
+import { TbClearanceCertificateSummaryPage } from "../support/page-objects/tbCertificateSummaryPage";
+import { TbClearanceCertificatePage } from "../support/page-objects/tbClearanceCertificatePage";
+import { TbScreeningProgressTrackerPage } from "../support/page-objects/tbScreeningProgressTrackerPage";
 import { getRandomPassportNumber, randomElement } from "../support/test-utils";
 import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetailsPage";
 import { MedicalScreeningPage } from "./../support/page-objects/medicalScreeningPage";
@@ -34,11 +38,16 @@ describe("PETS Application End-to-End Tests", () => {
   const chestXrayFindingsPage = new ChestXrayFindingsPage();
   const chestXraySummaryPage = new ChestXraySummaryPage();
   const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
+  const tbClearanceCertificatePage = new TbClearanceCertificatePage();
+  const tbClearanceCertificateSummaryPage = new TbClearanceCertificateSummaryPage();
+  const tbCertificateConfirmationPage = new TbCertificateConfirmationPage();
+  const tbScreeningProgressTrackerPage = new TbScreeningProgressTrackerPage();
   const visaType = "Students";
 
   // Define variables to store test data
   let countryName: string;
   let passportNumber: string;
+  let tbCertificateNumber: string;
 
   beforeEach(() => {
     loginViaB2C();
@@ -48,10 +57,12 @@ describe("PETS Application End-to-End Tests", () => {
     const randomCountry = randomElement(countryList);
     countryName = randomCountry?.value;
     passportNumber = getRandomPassportNumber();
+    tbCertificateNumber = "TB" + Math.floor(10000000 + Math.random() * 90000000);
 
     // Log what we're using for debugging
     cy.log(`Using passport number: ${passportNumber}`);
     cy.log(`Using country: ${countryName}`);
+    cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
   });
 
   it("should complete the full application process with search and create new", () => {
@@ -271,12 +282,11 @@ describe("PETS Application End-to-End Tests", () => {
       "Passport number": passportNumber,
     });
 
-    // Verify X-ray summary information - this is yet to be implemented hence commenting out
-    /* chestXraySummaryPage.verifyXraySummaryInfo({
+    // Verify X-ray summary information - only validating these 2 fields as the others donot populate on the summary page
+    chestXraySummaryPage.verifyXraySummaryInfo({
       "Select x-ray status": "Yes",
       "Enter radiological outcome": "Chest X-ray normal",
-      "Enter radiographic findings": "1.1 Single fibrous streak or band or scar",
-    }); */
+    });
 
     // Verify change links exist
     chestXraySummaryPage.verifyChangeLinksExist();
@@ -295,5 +305,100 @@ describe("PETS Application End-to-End Tests", () => {
 
     // Click continue to navigate to the next page
     chestXrayConfirmationPage.clickContinueButton();
+
+    // TB Clearance Certificate Page
+    tbClearanceCertificatePage.verifyPageLoaded();
+
+    // Verify the applicant details are displayed correctly
+    tbClearanceCertificatePage.verifySummaryDetails({
+      Name: "Jane Smith",
+      "Date of birth": "15/03/2000",
+      "Passport number": passportNumber,
+    });
+
+    // Fill TB Clearance Certificate details
+    tbClearanceCertificatePage.fillFormWithValidData({
+      clearanceIssued: "Yes",
+      physicianComments: "No signs of active tuberculosis. Chest X-ray clear.",
+      certificateDay: "19",
+      certificateMonth: "03",
+      certificateYear: "2025",
+      certificateNumber: tbCertificateNumber,
+    });
+
+    // Verify redirection to TB Clearance Certificate Summary Page
+    cy.url().should("include", "/tb-certificate-summary");
+
+    // Verify TB Clearance Certificate Summary Page
+    tbClearanceCertificateSummaryPage.verifyPageLoaded();
+
+    // Check applicant information is displayed correctly
+    tbClearanceCertificateSummaryPage.verifyApplicantInfo({
+      Name: "Jane Smith",
+      "Date of birth": "15/03/2000",
+      "Passport number": passportNumber,
+    });
+
+    // Verify TB certificate summary information
+    tbClearanceCertificateSummaryPage.verifyTbCertificateSummaryInfo({
+      "TB clearance certificate issued?": "Yes",
+      "Physician comments": "No signs of active tuberculosis. Chest X-ray clear.",
+      "Date of TB clearance certificate": "19/03/2025",
+      "TB clearance certificate number": tbCertificateNumber,
+    });
+
+    // Verify change links exist
+    tbClearanceCertificateSummaryPage.verifyChangeLinksExist();
+
+    // Verify service name and breadcrumb navigation
+    tbClearanceCertificateSummaryPage.verifyServiceName();
+    tbClearanceCertificateSummaryPage.verifyBreadcrumbNavigation();
+
+    // Save and continue to the next page
+    tbClearanceCertificateSummaryPage.clickSaveAndContinue();
+
+    // Verify TB Certificate Confirmation page
+    tbCertificateConfirmationPage.verifyPageLoaded();
+    tbCertificateConfirmationPage.verifyConfirmationPanel();
+    tbCertificateConfirmationPage.verifyConfirmationMessage();
+    tbCertificateConfirmationPage.verifyBreadcrumbNavigation();
+    tbCertificateConfirmationPage.verifyServiceName();
+
+    // Click finish button to complete the process
+    tbCertificateConfirmationPage.clickFinishButton();
+
+    // Verify redirection to TB Screening Progress Tracker page
+    cy.url().should("include", "/tracker");
+
+    // Verify TB Screening Progress Tracker page
+    tbScreeningProgressTrackerPage.verifyPageLoaded();
+
+    // Check applicant information is displayed correctly
+    tbScreeningProgressTrackerPage.verifyApplicantInfo({
+      Name: "Jane Smith",
+      "Date of birth": "15/03/2000",
+      "Passport number": passportNumber,
+    });
+
+    // Verify task status information
+    tbScreeningProgressTrackerPage.verifyVisaApplicantDetailsCompleted();
+
+    // Verify sputum test information text
+    tbScreeningProgressTrackerPage.verifySputumTestInformationText();
+
+    // Verify complete all sections text
+    tbScreeningProgressTrackerPage.verifyCompleteAllSectionsText();
+
+    // Verify service name
+    tbScreeningProgressTrackerPage.verifyServiceName();
+
+    // Click on Visa applicant details task link to navigate back to applicant summary page
+    tbScreeningProgressTrackerPage.clickTaskLink("Visa applicant details");
+
+    // Verify navigation to applicant summary page
+    cy.url().should("include", "/applicant-summary");
+
+    // Navigate back to the tracker page
+    tbScreeningProgressTrackerPage.visit();
   });
 });
