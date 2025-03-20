@@ -46,7 +46,16 @@ describe("validateRequest middleware", () => {
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Request Body failed validation",
       validationError: {
-        age: ["Expected number, received string"],
+        issues: [
+          {
+            code: "invalid_type",
+            expected: "number",
+            received: "string",
+            path: ["age"],
+            message: "Expected number, received string",
+          },
+        ],
+        name: "ZodError",
       },
     });
   });
