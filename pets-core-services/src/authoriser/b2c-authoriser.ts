@@ -98,6 +98,8 @@ const generatePolicy = (
   // } catch (error) {
   //   logger.error("Invalid or missing ClinicID", error);
   // }
+  assert(payload.email);
+  assert(payload.ClinicID);
   const clinicId = payload.ClinicID as string;
   const createdBy = payload.email as string;
   const context = {
