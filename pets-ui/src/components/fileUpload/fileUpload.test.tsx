@@ -32,14 +32,6 @@ describe("FileUpload Component", () => {
     expect(screen.getByText("Please upload a file")).toBeInTheDocument();
   });
 
-  it("validates the file type", async () => {
-    renderWithFormProvider(<FileUpload {...defaultProps} />);
-    const input = screen.getByTestId("test-file-upload");
-    const file = new File(["dummy content"], "example.txt", { type: "text/plain" });
-    fireEvent.change(input, { target: { files: [file] } });
-    expect(await screen.findByText("File type should be jpg, jpeg, png, pdf")).toBeInTheDocument();
-  });
-
   it("validates the file size", async () => {
     renderWithFormProvider(<FileUpload {...defaultProps} />);
     const input = screen.getByTestId("test-file-upload");

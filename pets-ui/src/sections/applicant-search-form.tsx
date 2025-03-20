@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useEffect } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -50,18 +49,14 @@ const ApplicantSearchForm = () => {
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (passportDetails) => {
     try {
       dispatch(setApplicantPassportDetails(passportDetails));
-      let applicantRes;
-      try {
-        applicantRes = await getApplicants(passportDetails);
-        dispatch(setApplicantDetailsFromApiResponse(applicantRes.data[0]));
-        dispatch(setApplicationId(applicantRes.data[0].applicationId));
-      } catch (error) {
-        if (axios.isAxiosError(error) && error.status == 404) {
-          navigate("/applicant-results");
-          return;
-        }
-        throw error;
+
+      const applicantRes = await getApplicants(passportDetails);
+      if (applicantRes.data.length === 0) {
+        navigate("/applicant-results");
+        return;
       }
+      dispatch(setApplicantDetailsFromApiResponse(applicantRes.data[0]));
+      dispatch(setApplicationId(applicantRes.data[0].applicationId));
 
       const applicationRes = await getApplication(applicantRes.data);
       if (applicationRes.data.travelInformation) {

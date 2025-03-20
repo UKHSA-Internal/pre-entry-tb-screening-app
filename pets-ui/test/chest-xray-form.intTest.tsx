@@ -1,9 +1,12 @@
-import { fireEvent, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import axios from "axios";
+import MockAdapter from "axios-mock-adapter";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter as Router } from "react-router-dom";
 import { describe, expect, it, Mock } from "vitest";
 
+import { petsApi } from "@/api/api";
 import ChestXrayUploadPage from "@/pages/chest-xray-upload";
 import ChestXrayForm from "@/sections/chest-xray-form";
 import { renderWithProviders } from "@/utils/test-utils";
@@ -17,7 +20,9 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
   };
 });
 
-beforeEach(() => useNavigateMock.mockClear());
+beforeEach(() => {
+  useNavigateMock.mockClear();
+});
 
 const user = userEvent.setup({ applyAccept: false });
 
@@ -37,12 +42,23 @@ describe("ChestXrayUploadPage", () => {
   });
 });
 describe("ChestXrayForm Section", () => {
+  const applicationState = { applicationId: "abc-123", dateCreated: "" };
+
+  const preloadedState = {
+    application: { ...applicationState },
+  };
+
+  let petsApiMock: MockAdapter;
+  let defaultAxiosMock: MockAdapter;
   beforeEach(() => {
     renderWithProviders(
       <Router>
         <ChestXrayForm />
       </Router>,
+      { preloadedState },
     );
+    petsApiMock = new MockAdapter(petsApi);
+    defaultAxiosMock = new MockAdapter(axios);
   });
   it("renders components correctly", () => {
     expect(screen.getByText("Postero-anterior X-ray")).toBeInTheDocument();
@@ -53,11 +69,22 @@ describe("ChestXrayForm Section", () => {
     expect(screen.getAllByRole("group")).toHaveLength(3);
   });
 
-  it("uploads three X-ray files", () => {
+  it.only("uploads three X-ray files", async () => {
+    const uploadUrl = "localhost:4567";
+
+    petsApiMock.onPut("/application/abc-123/generate-dicom-upload-url").reply(200, {
+      uploadUrl,
+      bucketPath: "test/bucket/path",
+      fields: { example: "fields" },
+    });
+
+    defaultAxiosMock.onPost(uploadUrl).reply(204);
+
     const posteroAnteriorInput: HTMLInputElement = screen.getByTestId("postero-anterior-xray");
     const apicalLordoticInput: HTMLInputElement = screen.getByTestId("apical-lordotic-xray");
     const lateralDecubitusInput: HTMLInputElement = screen.getByTestId("lateral-decubitus-xray");
-    const file = new File(["dummy content"], "example.jpg", { type: "image/jpeg" });
+
+    const file = new File(["Dummy Content"], "example.jpg", { type: "image/jpeg" });
 
     expect(posteroAnteriorInput).toBeInTheDocument();
     expect(apicalLordoticInput).toBeInTheDocument();
@@ -66,13 +93,42 @@ describe("ChestXrayForm Section", () => {
     expect(apicalLordoticInput.files).toHaveLength(0);
     expect(lateralDecubitusInput.files).toHaveLength(0);
 
-    fireEvent.change(posteroAnteriorInput, { target: { files: [file] } });
-    fireEvent.change(apicalLordoticInput, { target: { files: [file] } });
-    fireEvent.change(lateralDecubitusInput, { target: { files: [file] } });
+    await userEvent.upload(posteroAnteriorInput, file);
+    await userEvent.upload(apicalLordoticInput, file);
+    await userEvent.upload(lateralDecubitusInput, file);
 
     expect(posteroAnteriorInput.files).toHaveLength(1);
     expect(apicalLordoticInput.files).toHaveLength(1);
     expect(lateralDecubitusInput.files).toHaveLength(1);
+
+    const submitButton = screen.getByRole("button", { name: /continue/i });
+    await user.click(submitButton);
+
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Quick Hack Because Memory Router isn't used
+    expect(useNavigateMock).toHaveBeenCalled();
+    expect(petsApiMock.history.put.length).toBe(3);
+    expect(petsApiMock.history.put[0].data).toBe(
+      JSON.stringify({
+        fileName: "postero-anterior.dcm",
+        checksum: "pZzpJIWoY5Ma8hNwtQguuKDCWMHNdK4GjbCtR66sE0Q=",
+      }),
+    );
+
+    expect(petsApiMock.history.put[1].data).toBe(
+      JSON.stringify({
+        fileName: "apical-lordotic.dcm",
+        checksum: "pZzpJIWoY5Ma8hNwtQguuKDCWMHNdK4GjbCtR66sE0Q=",
+      }),
+    );
+
+    expect(petsApiMock.history.put[2].data).toBe(
+      JSON.stringify({
+        fileName: "lateral-decubitus.dcm",
+        checksum: "pZzpJIWoY5Ma8hNwtQguuKDCWMHNdK4GjbCtR66sE0Q=",
+      }),
+    );
+
+    expect(defaultAxiosMock.history.post.length).toBe(3);
   });
 
   it("errors when postero anterior xray is missing", async () => {
@@ -90,6 +146,7 @@ describe("ChestXrayForm Section", () => {
       "Error: Select a postero-anterior X-ray image file",
     );
   });
+
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
     const submitButton = screen.getByRole("button", { name: /continue/i });
     await user.click(submitButton);

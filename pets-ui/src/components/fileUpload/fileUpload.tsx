@@ -31,6 +31,7 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
 
     if (!files?.length) {
       props.setFileState(undefined);
+      if (props.required) displayError(props.required);
       return;
     }
 
