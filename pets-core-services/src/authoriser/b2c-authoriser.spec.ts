@@ -25,6 +25,7 @@ describe("Authorizer Lambda", () => {
     const mockToken = "valid.jwt.token";
     const mockPayload = {
       email: "johndoe@email.com",
+      clinicId: "Apollo Clinic",
       roles: [
         "Application.Read",
         "Application.Write",
