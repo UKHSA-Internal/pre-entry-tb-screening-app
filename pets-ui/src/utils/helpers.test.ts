@@ -1,5 +1,7 @@
 import {
+  formatDateType,
   hasInvalidCharacters,
+  isDataPresent,
   isDateInTheFuture,
   isDateInThePast,
   missingFieldsMessage,
@@ -76,6 +78,59 @@ describe("standardiseDayOrMonth function", () => {
     ["december", "12"],
   ])("%s standardises to %s", (input, expected) => {
     expect(standardiseDayOrMonth(input)).toEqual(expected);
+  });
+});
+
+describe("FormatDateType function", () => {
+  it("returns a DateType Object in the correct format", () => {
+    expect(formatDateType({ day: "04", month: "05", year: "2025" })).toBe("04/05/2025");
+    expect(formatDateType({ day: "15", month: "12", year: "1999" })).toBe("15/12/1999");
+    expect(formatDateType({ day: "24", month: "01", year: "2030" })).toBe("24/01/2030");
+  });
+  it("should return an empty string if all value is missing", () => {
+    expect(formatDateType({ year: "", month: "", day: "" })).toBe("");
+  });
+  it("should return an empty string if any value is missing", () => {
+    expect(formatDateType({ year: "", month: "5", day: "4" })).toBe("");
+    expect(formatDateType({ year: "2025", month: "", day: "4" })).toBe("");
+    expect(formatDateType({ year: "2025", month: "5", day: "" })).toBe("");
+  });
+});
+
+describe("isDataPresent function", () => {
+  it("returns true if data is present in the summaryElement", () => {
+    const summaryElementStringExample = {
+      key: "Exmaple Key",
+      value: "A Value",
+      link: "/a-link",
+      hiddenLabel: "label",
+    };
+    const summaryElementArrayExample = {
+      key: "Exmaple Key",
+      value: ["A Value", "AnotherValue"],
+      link: "/a-link",
+      hiddenLabel: "label",
+    };
+    expect(isDataPresent(summaryElementStringExample)).toBeTruthy();
+    expect(isDataPresent(summaryElementArrayExample)).toBeTruthy();
+  });
+  it("returns false if data is not present in the summaryElement", () => {
+    const summaryElementEmptyStringExmaple = {
+      key: "Exmaple Key",
+      value: "",
+      link: "/a-link",
+      hiddenLabel: "label",
+    };
+    expect(isDataPresent(summaryElementEmptyStringExmaple)).toBeFalsy();
+  });
+  it("returns false if data is an empty array", () => {
+    const summaryElementEmptyArrayExmaple = {
+      key: "Exmaple Key",
+      value: [],
+      link: "/a-link",
+      hiddenLabel: "label",
+    };
+    expect(isDataPresent(summaryElementEmptyArrayExmaple)).toBeFalsy();
   });
 });
 
