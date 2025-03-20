@@ -3,7 +3,13 @@ import { loginViaB2C } from "../support/commands";
 import { ApplicantConfirmationPage } from "../support/page-objects/applicantConfirmationPage";
 import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../support/page-objects/applicantSummaryPage";
-import { MedicalSummaryPage } from "../support/page-objects/mdecialSummaryPage";
+import { ChestXrayConfirmationPage } from "../support/page-objects/chestXrayConfirmationPage";
+import { ChestXrayFindingsPage } from "../support/page-objects/chestXrayFindingsPage";
+import { ChestXrayPage } from "../support/page-objects/chestXrayQuestionPage";
+import { ChestXraySummaryPage } from "../support/page-objects/chestXraySummaryPage";
+import { ChestXrayUploadPage } from "../support/page-objects/chestXrayUploadPage";
+import { MedicalConfirmationPage } from "../support/page-objects/medicalConfirmationPage";
+import { MedicalSummaryPage } from "../support/page-objects/medicalSummaryPage";
 import { getRandomPassportNumber, randomElement } from "../support/test-utils";
 import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetailsPage";
 import { MedicalScreeningPage } from "./../support/page-objects/medicalScreeningPage";
@@ -11,7 +17,7 @@ import { TravelConfirmationPage } from "./../support/page-objects/travelConfirma
 import { TravelInformationPage } from "./../support/page-objects/travelInformationPage";
 import { TravelSummaryPage } from "./../support/page-objects/travelSummaryPage";
 
-describe("Visa Application End-to-End Tests", () => {
+describe("PETS Application End-to-End Tests", () => {
   // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
@@ -22,6 +28,12 @@ describe("Visa Application End-to-End Tests", () => {
   const medicalScreeningPage = new MedicalScreeningPage();
   const applicantConfirmationPage = new ApplicantConfirmationPage();
   const medicalSummaryPage = new MedicalSummaryPage();
+  const medicalConfirmationPage = new MedicalConfirmationPage();
+  const chestXrayPage = new ChestXrayPage();
+  const chestXrayUploadPage = new ChestXrayUploadPage();
+  const chestXrayFindingsPage = new ChestXrayFindingsPage();
+  const chestXraySummaryPage = new ChestXraySummaryPage();
+  const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
   const visaType = "Students";
 
   // Define variables to store test data
@@ -48,7 +60,7 @@ describe("Visa Application End-to-End Tests", () => {
     applicantSearchPage.submitSearch();
 
     // Verify no matching record found and click create new
-    applicantSearchPage.verifyNoMatchingRecordMessage();
+    applicantSearchPage.verifyNoMatchingRecordMessage(20000);
     applicantSearchPage.verifyCreateNewApplicantExists();
     applicantSearchPage.clickCreateNewApplicant();
 
@@ -64,7 +76,7 @@ describe("Visa Application End-to-End Tests", () => {
     applicantDetailsPage.selectNationality(countryName);
 
     // Fill birth date
-    applicantDetailsPage.fillBirthDate("15", "03", "1990");
+    applicantDetailsPage.fillBirthDate("15", "03", "2000");
 
     // Fill passport dates
     applicantDetailsPage.fillPassportIssueDate("10", "05", "2018");
@@ -142,7 +154,7 @@ describe("Visa Application End-to-End Tests", () => {
 
     // Medical Screening Page
     medicalScreeningPage.verifyPageLoaded();
-    medicalScreeningPage.fillAge("33");
+    medicalScreeningPage.fillAge("25");
 
     // TB symptoms
     medicalScreeningPage.selectTbSymptoms("No");
@@ -174,7 +186,7 @@ describe("Visa Application End-to-End Tests", () => {
 
     //Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "33",
+      age: "25",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",
@@ -182,5 +194,106 @@ describe("Visa Application End-to-End Tests", () => {
       menstrualPeriods: "No",
       physicalExamNotes: "No abnormalities detected. Patient appears healthy.",
     });
+
+    // Confirm medical details
+    medicalSummaryPage.confirmDetails();
+
+    // Verify medical confirmation page and continue to chest X-ray
+    medicalConfirmationPage.verifyPageLoaded();
+    medicalConfirmationPage.verifyConfirmationPanel();
+    medicalConfirmationPage.verifyNextStepsSection();
+    medicalConfirmationPage.clickContinueButton();
+
+    // Verify chest X-ray page
+    chestXrayPage.verifyPageLoaded();
+
+    // Check applicant information is displayed correctly
+    chestXrayPage.verifyApplicantInfo({
+      Name: "Jane Smith",
+      "Date of birth": "15/03/2000",
+      "Passport number": passportNumber,
+    });
+
+    // Select "Yes" for X-ray taken and continue
+    chestXrayPage.selectXrayTakenYes();
+    chestXrayPage.clickContinue();
+
+    // Verify X-ray upload page
+    chestXrayUploadPage.verifyPageLoaded();
+
+    // Check applicant information is displayed correctly
+    chestXrayUploadPage.verifyApplicantInfo({
+      Name: "Jane Smith",
+      "Date of birth": "15/03/2000",
+      "Passport number": passportNumber,
+    });
+
+    // Upload an X-ray file
+    chestXrayUploadPage.uploadPosteroAnteriorXray("cypress/fixtures/test-image.png");
+
+    // Validate that the upload was successful
+    chestXrayUploadPage.verifyUploadSuccess();
+
+    cy.contains("button", "Continue").should("be.enabled").click();
+    // Continue to X-ray findings page
+    chestXrayUploadPage.clickContinue();
+    cy.url().then((url) => {
+      cy.log(`Current URL: ${url}`);
+    });
+
+    // Verify X-ray findings page
+    chestXrayFindingsPage.verifyPageLoaded();
+
+    // Check applicant information is displayed correctly
+    chestXrayFindingsPage.verifyApplicantInfo({
+      Name: "Jane Smith",
+      "Date of birth": "15/03/2000",
+      "Passport number": passportNumber,
+    });
+
+    // Complete X-ray findings
+    chestXrayFindingsPage.selectXrayResultNormal();
+    chestXrayFindingsPage.selectMinorFindings(["1.1 Single fibrous streak or band or scar"]);
+
+    // Save and continue
+    chestXrayFindingsPage.clickSaveAndContinue();
+
+    // Verify redirection to chest X-ray summary page
+    cy.url().should("include", "/chest-xray-summary");
+
+    // Verify chest X-ray summary page
+    chestXraySummaryPage.verifyPageLoaded();
+
+    // Check applicant information is displayed correctly
+    chestXraySummaryPage.verifyApplicantInfo({
+      Name: "Jane Smith",
+      "Date of birth": "15/03/2000",
+      "Passport number": passportNumber,
+    });
+
+    // Verify X-ray summary information - this is yet to be implemented hence commenting out
+    /* chestXraySummaryPage.verifyXraySummaryInfo({
+      "Select x-ray status": "Yes",
+      "Enter radiological outcome": "Chest X-ray normal",
+      "Enter radiographic findings": "1.1 Single fibrous streak or band or scar",
+    }); */
+
+    // Verify change links exist
+    chestXraySummaryPage.verifyChangeLinksExist();
+
+    // Save and continue to the next page
+    chestXraySummaryPage.clickSaveAndContinue();
+
+    // Verify chest X-ray confirmation page
+    chestXrayConfirmationPage.verifyPageLoaded();
+    chestXrayConfirmationPage.verifyConfirmationPanel();
+    chestXrayConfirmationPage.verifyNextStepsSection();
+    chestXrayConfirmationPage.verifyContinueText();
+    chestXrayConfirmationPage.verifyTrackerLink();
+    chestXrayConfirmationPage.verifyBreadcrumbNavigation();
+    chestXrayConfirmationPage.verifyServiceName();
+
+    // Click continue to navigate to the next page
+    chestXrayConfirmationPage.clickContinueButton();
   });
 });

@@ -11,7 +11,7 @@ import Heading from "@/components/heading/heading";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectTravel, setTravelDetails } from "@/redux/travelSlice";
 import { ButtonType } from "@/utils/enums";
-import { formRegex, visaOptions } from "@/utils/helpers";
+import { formRegex, visaOptions } from "@/utils/records";
 
 const ApplicantTravelForm = () => {
   const navigate = useNavigate();

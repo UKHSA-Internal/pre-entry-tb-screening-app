@@ -1,4 +1,4 @@
-import { testCredentials } from "../support/test-data";
+import { testCredentials } from "../../support/test-data";
 
 /**
  * Scenario:
