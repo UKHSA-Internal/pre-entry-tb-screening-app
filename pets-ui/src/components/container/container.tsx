@@ -14,24 +14,23 @@ interface ContainerProps {
 }
 
 const Container = ({ title, children, breadcrumbItems = [] }: ContainerProps) => {
+  const pageStart = useRef<HTMLDivElement | null>(null);
   const mainContent = useRef<HTMLDivElement | null>(null);
   const location = useLocation();
+
   useEffect(() => {
     if (location.hash) {
       const target = location.hash.substring(1);
-      const refMap: { [key: string]: HTMLElement | null } = {
-        "main-content": mainContent.current,
-      };
-
-      const targetRef = refMap[target];
-      if (targetRef) {
-        targetRef.focus({ preventScroll: true });
+      if (target == "main-content") {
+        mainContent.current?.focus({ preventScroll: true });
       }
+    } else {
+      pageStart.current?.focus({ preventScroll: true });
     }
   }, [location]);
 
   return (
-    <>
+    <div ref={pageStart}>
       <Helmet>
         <title>{title}</title>
       </Helmet>
@@ -50,7 +49,7 @@ const Container = ({ title, children, breadcrumbItems = [] }: ContainerProps) =>
         </main>
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
 
