@@ -76,11 +76,3 @@ export const generateDicomUploadUrlHandler = async (event: GenerateUploadEvent) 
     return createHttpResponse(500, { message: "Something went wrong" });
   }
 };
-
-/**
- * // DEVOPS Notes
- * - OAC behaviour should be different for frontend web browser
- * - Content policy failing
- * - Delete the upload behaviour
- * - Content policy to limit to AWS important also
- */
