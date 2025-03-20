@@ -33,7 +33,8 @@ export const validateRequest = ({
             logger.error("Failed Validation");
             return createHttpResponse(400, {
               message: "Request Body failed validation",
-              validationError: parsedResult.error,
+              validationError: parsedResult.error.flatten().fieldErrors,
+              validationErrorVerbose: parsedResult.error,
             });
           }
 
