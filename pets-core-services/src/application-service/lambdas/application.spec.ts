@@ -210,8 +210,11 @@ describe("Test for Application Lambda", () => {
         httpMethod: "POST",
         body: JSON.stringify({
           chestXrayTaken: YesOrNo.Yes,
+          posteroAnteriorXrayFileName: "pa.dicom",
           posteroAnteriorXray: "test/bucket/path/for/posterior/anterior",
+          apicalLordoticXrayFileName: "al.dicom",
           apicalLordoticXray: "test/bucket/path/for/apical/lordotic",
+          lateralDecubitusXrayFileName: "ld.dicom",
           lateralDecubitusXray: "test/bucket/path/for/lateral-decubitus",
           xrayResult: ChestXRayResult.Normal,
           xrayMinorFindings: [],
