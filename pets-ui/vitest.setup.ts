@@ -10,7 +10,6 @@ import { mockAccount, mockAuthResult } from "./src/test-data/auth";
 expect.extend(matchers);
 
 globalThis.crypto = crypto as any;
-globalThis.window.crypto = crypto;
 globalThis.File = File;
 
 beforeEach(() => {
