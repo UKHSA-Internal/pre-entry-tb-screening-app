@@ -32,8 +32,11 @@ type IChestXRayTaken = {
   createdBy: string;
 
   chestXrayTaken: YesOrNo.Yes;
+  posteroAnteriorXrayFileName: string;
   posteroAnteriorXray: string;
+  apicalLordoticXrayFileName?: string;
   apicalLordoticXray?: string;
+  lateralDecubitusXrayFileName?: string;
   lateralDecubitusXray?: string;
 
   xrayResult: ChestXRayResult;
@@ -47,8 +50,11 @@ export type NewChestXRayTaken = Omit<IChestXRayTaken, "dateCreated" | "status">;
 
 export class ChestXRayTaken extends ChestXRayBase {
   chestXrayTaken: YesOrNo.Yes;
+  posteroAnteriorXrayFileName: string;
   posteroAnteriorXray: string;
+  apicalLordoticXrayFileName?: string;
   apicalLordoticXray?: string;
+  lateralDecubitusXrayFileName?: string;
   lateralDecubitusXray?: string;
   xrayResult: ChestXRayResult;
   xrayResultDetail?: string;
@@ -61,8 +67,11 @@ export class ChestXRayTaken extends ChestXRayBase {
 
     this.chestXrayTaken = details.chestXrayTaken;
     this.chestXrayTaken = details.chestXrayTaken;
+    this.posteroAnteriorXrayFileName = details.posteroAnteriorXrayFileName;
     this.posteroAnteriorXray = details.posteroAnteriorXray;
+    this.apicalLordoticXrayFileName = details.apicalLordoticXrayFileName;
     this.apicalLordoticXray = details.apicalLordoticXray;
+    this.lateralDecubitusXrayFileName = details.lateralDecubitusXrayFileName;
     this.lateralDecubitusXray = details.lateralDecubitusXray;
 
     this.xrayResult = details.xrayResult;
@@ -77,8 +86,11 @@ export class ChestXRayTaken extends ChestXRayBase {
       applicationId: this.applicationId,
       status: this.status,
       chestXrayTaken: this.chestXrayTaken,
+      posteroAnteriorXrayFileName: this.posteroAnteriorXrayFileName,
       posteroAnteriorXray: this.posteroAnteriorXray,
+      apicalLordoticXrayFileName: this.apicalLordoticXrayFileName,
       apicalLordoticXray: this.apicalLordoticXray,
+      lateralDecubitusXrayFileName: this.lateralDecubitusXrayFileName,
       lateralDecubitusXray: this.lateralDecubitusXray,
       xrayResult: this.xrayResult,
       xrayResultDetail: this.xrayResultDetail,

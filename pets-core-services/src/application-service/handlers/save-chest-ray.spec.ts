@@ -8,9 +8,12 @@ import { SaveChestXrayEvent, saveChestXRayHandler } from "./save-chest-ray";
 
 const newChestXrayTaken: SaveChestXrayEvent["parsedBody"] = {
   chestXrayTaken: YesOrNo.Yes,
-  posteroAnteriorXray: "test/bucket/path/for/posterior/anterior",
-  apicalLordoticXray: "test/bucket/path/for/apical/lordotic",
-  lateralDecubitusXray: "test/bucket/path/for/lateral-decubitus",
+  posteroAnteriorXrayFileName: "posterior-anterior.dicom",
+  posteroAnteriorXray: "saved/bucket/path/for/posterior/anterior",
+  apicalLordoticXrayFileName: "apical-lordotic.dicom",
+  apicalLordoticXray: "saved/bucket/path/for/apical/lordotic",
+  lateralDecubitusXrayFileName: "lateral-decubitus.dicom",
+  lateralDecubitusXray: "saved/bucket/path/for/lateral/decubitus",
   xrayResult: ChestXRayResult.NonTbAbnormal,
   xrayMinorFindings: ["test", "minor", "findings"],
   xrayAssociatedMinorFindings: ["test", "associated", "minor", "findings"],
