@@ -56,7 +56,13 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
     }
 
     const { clinicId } = event.requestContext.authorizer;
-    if (application.clinicId != clinicId) {
+
+    if (!clinicId) {
+      logger.error("Missing ClinicId");
+      return createHttpResponse(400, { message: "Missing Clinic Id" });
+    }
+
+    if (application.clinicId !== clinicId) {
       logger.error("ClinicId mismatch");
       return createHttpResponse(403, { message: "Clinic Id mismatch" });
     }
