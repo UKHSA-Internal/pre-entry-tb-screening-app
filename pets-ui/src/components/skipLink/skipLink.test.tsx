@@ -6,6 +6,6 @@ describe("SkipLink component", () => {
   it("renders correctly", () => {
     render(<SkipLink />);
     expect(screen.getByText("Skip to main content")).toBeInTheDocument();
-    expect(screen.getByText("Skip to main content")).toHaveAttribute("href", "#mainContent");
+    expect(screen.getByText("Skip to main content")).toHaveAttribute("href", "#main-content");
   });
 });
