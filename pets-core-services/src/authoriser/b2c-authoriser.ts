@@ -47,6 +47,14 @@ export const handler = async (
     });
 
     const payload = await verifier.verify(token);
+
+    if (!payload.ClinicID) {
+      logger.error("Missing ClinicID attribute in payload");
+      throw new Error("Missing ClinicID attribute");
+    }
+
+    // in future, do we want to validate whether it's a valid clinicID?
+
     logger.info("token verified successfully");
     callback(null, generatePolicy("user", "Allow", payload));
   } catch (error) {
