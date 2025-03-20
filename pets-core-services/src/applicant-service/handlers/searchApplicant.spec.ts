@@ -58,8 +58,8 @@ describe("Test for Getting Applicant", () => {
     const response = await searchApplicantHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(404);
-    expect(JSON.parse(response.body)).toMatchObject({ message: "Applicant does not exist" });
+    expect(response.statusCode).toBe(204);
+    expect(JSON.parse(response.body)).toMatchObject([]);
   });
 
   test("Duplicate results returns a 500 response", async () => {
