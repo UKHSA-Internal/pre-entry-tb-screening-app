@@ -26,12 +26,12 @@ export default function ChestXrayConfirmation() {
   ];
 
   return (
-    <Container title="Medical Screening Confirmation" breadcrumbItems={breadcrumbItems}>
+    <Container title="Chest X-ray Confirmation" breadcrumbItems={breadcrumbItems}>
       <Confirmation
         confirmationText={"Chest X-ray information recorded"}
         furtherInfo={furtherInfo}
         buttonText={"Continue"}
-        buttonLink={"/tb-declaration"}
+        buttonLink={"/tb-certificate-declaration"}
         whatHappensNext
       />
     </Container>

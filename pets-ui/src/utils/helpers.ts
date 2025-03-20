@@ -1,4 +1,5 @@
 import { DateType } from "@/components/dateTextInput/dateTextInput";
+import { SummaryElement } from "@/components/summary/summary";
 
 import {
   dateEntryMustBeInTheFuture,
@@ -123,12 +124,31 @@ const validateDate = (value: DateType, fieldName: string) => {
   return true;
 };
 
+const formatDateType = (date: DateType): string => {
+  const { day, month, year } = date;
+
+  if (!day || !month || !year) {
+    return "";
+  }
+
+  return `${day}/${month}/${year}`;
+};
+
+const isDataPresent = (
+  summaryElement: Partial<SummaryElement>,
+): summaryElement is SummaryElement => {
+  const { value } = summaryElement;
+  return Array.isArray(value) ? value.length > 0 : !!value;
+};
+
 export const spreadArrayIfNotEmpty = (...arrays: string[][]) => {
   return arrays.flatMap((array) => (array?.length ? array : []));
 };
 
 export {
+  formatDateType,
   hasInvalidCharacters,
+  isDataPresent,
   isDateInTheFuture,
   isDateInThePast,
   isValidDate,
