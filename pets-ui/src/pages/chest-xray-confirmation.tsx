@@ -31,7 +31,7 @@ export default function ChestXrayConfirmation() {
         confirmationText={"Chest X-ray information recorded"}
         furtherInfo={furtherInfo}
         buttonText={"Continue"}
-        buttonLink={"/tb-declaration"}
+        buttonLink={"/tb-certificate-declaration"}
         whatHappensNext
       />
     </Container>
