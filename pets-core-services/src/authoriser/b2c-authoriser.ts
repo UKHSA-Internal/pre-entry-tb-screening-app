@@ -48,6 +48,10 @@ export const handler = async (
 
     const payload = await verifier.verify(token);
 
+    if (!payload.ClinicID) {
+      logger.error("Missing ClinicID");
+    }
+
     logger.info("token verified successfully");
     callback(null, generatePolicy("user", "Allow", payload));
   } catch (error) {
@@ -87,18 +91,7 @@ const generatePolicy = (
   };
 
   assert(payload.email);
-
-  // is this too much logging?
-  if (!payload.ClinicID) {
-    logger.error("Missing ClinicID");
-  } else {
-    try {
-      assert(payload.ClinicID);
-    } catch (error) {
-      logger.error("Invalid ClinicID", error);
-    }
-  }
-
+  assert(payload.ClinicID);
   const clinicId = payload.ClinicID as string;
   const createdBy = payload.email as string;
   const context = {
