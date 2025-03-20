@@ -40,7 +40,7 @@ const TbCertificateDeclarationForm = () => {
 
   const isTbClearanceIssued = watch("tbClearanceIssued") as unknown as string;
 
-  const onSubmit: SubmitHandler<ReduxTbCertificateType> = () => {
+  const onSubmit: SubmitHandler<ReduxTbCertificateType> = (tbCertificateData) => {
     dispatch(setTbClearanceIssued(tbCertificateData.tbClearanceIssued));
     dispatch(setPhysicianComments(tbCertificateData.physicianComments));
     dispatch(setTbCertificateDate(tbCertificateData.tbCertificateDate));
