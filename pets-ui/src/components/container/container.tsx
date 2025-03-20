@@ -20,7 +20,7 @@ const Container = ({ title, children, breadcrumbItems = [] }: ContainerProps) =>
     if (location.hash) {
       const target = location.hash.substring(1);
       const refMap: { [key: string]: HTMLElement | null } = {
-        mainContent: mainContent.current,
+        "main-content": mainContent.current,
       };
 
       const targetRef = refMap[target];
