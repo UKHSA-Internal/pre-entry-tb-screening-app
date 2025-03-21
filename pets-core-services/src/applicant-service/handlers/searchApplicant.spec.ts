@@ -2,9 +2,9 @@ import { describe, expect, test } from "vitest";
 
 import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
+import { Applicant } from "../../shared/models/applicant";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicants } from "../fixtures/applicants";
-import { Applicant } from "../models/applicant";
 import { Header, SearchApplicantEvent, searchApplicantHandler } from "./searchApplicant";
 
 describe("Test for Getting Applicant", () => {
@@ -58,8 +58,8 @@ describe("Test for Getting Applicant", () => {
     const response = await searchApplicantHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(404);
-    expect(JSON.parse(response.body)).toMatchObject({ message: "Applicant does not exist" });
+    expect(response.statusCode).toBe(204);
+    expect(JSON.parse(response.body)).toMatchObject([]);
   });
 
   test("Duplicate results returns a 500 response", async () => {
@@ -87,8 +87,8 @@ describe("Test for Getting Applicant", () => {
     });
   });
 
-  test("Verify Clinic ID", async () => {
-    const existingApplicant = seededApplicants[1]; // Already preloaded into DB,
+  test("Clinic Id mismatch returns a 403 response", async () => {
+    const existingApplicant = seededApplicants[1]; // Already preloaded into DB
 
     const event: SearchApplicantEvent = {
       ...mockAPIGwEvent,
@@ -96,7 +96,7 @@ describe("Test for Getting Applicant", () => {
         ...mockAPIGwEvent.requestContext,
         authorizer: {
           ...mockAPIGwEvent.requestContext.authorizer,
-          clinicId: "compromised-clinic-id",
+          clinicId: "compromised-clinic-id", // Simulating a mismatch
         },
       },
       parsedHeaders: {
@@ -105,13 +105,31 @@ describe("Test for Getting Applicant", () => {
       },
     };
 
-    // Act
     const response = await searchApplicantHandler(event);
 
-    // Assert
     expect(response.statusCode).toBe(403);
-
     expect(JSON.parse(response.body)).toMatchObject({ message: "Clinic Id mismatch" });
+  });
+
+  test("Missing clinicId in the request returns a 400 response", async () => {
+    const existingApplicant = seededApplicants[1]; // Already preloaded into DB
+
+    const event: SearchApplicantEvent = {
+      ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { ...mockAPIGwEvent.requestContext.authorizer, clinicId: "" },
+      },
+      parsedHeaders: {
+        passportnumber: existingApplicant.passportNumber,
+        countryofissue: existingApplicant.countryOfIssue,
+      },
+    };
+
+    const response = await searchApplicantHandler(event);
+
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body)).toMatchObject({ message: "Clinic Id missing" });
   });
 
   test("Missing required Headers returns a 500 response", async () => {

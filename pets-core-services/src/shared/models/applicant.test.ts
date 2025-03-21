@@ -2,9 +2,9 @@ import { GetCommand, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-import awsClients from "../../shared/clients/aws";
-import { CountryCode } from "../../shared/country";
-import { AllowedSex } from "../types/enums";
+import { AllowedSex } from "../../applicant-service/types/enums";
+import awsClients from "../clients/aws";
+import { CountryCode } from "../country";
 import { Applicant, NewApplicant } from "./applicant";
 
 const applicantDetails: NewApplicant = {

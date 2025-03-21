@@ -25,6 +25,7 @@ describe("Authorizer Lambda", () => {
     const mockToken = "valid.jwt.token";
     const mockPayload = {
       email: "johndoe@email.com",
+      ClinicID: "Apollo Clinic",
       roles: [
         "Application.Read",
         "Application.Write",
@@ -118,6 +119,7 @@ describe("Authorizer Lambda", () => {
     const mockToken = "valid.jwt.token";
     const mockPayload = {
       email: "johndoe@email.com",
+      ClinicID: "Apollo Clinic",
       roles: ["Unmapped.role"],
       sub: "user123",
     };
@@ -145,6 +147,35 @@ describe("Authorizer Lambda", () => {
       },
       principalId: "user",
     });
+  });
+
+  it("should return Unauthorized if Clinic ID is missing", async () => {
+    // Arrange
+    const mockToken = "valid.jwt.token";
+    const mockPayload = {
+      email: "johndoe@email.com",
+      roles: [
+        "Application.Read",
+        "Application.Write",
+        "Clinics.Read",
+        "Applicants.Write",
+        "Applicants.Read",
+        "Imaging.Write",
+      ],
+      sub: "user123",
+    };
+
+    mockVerify.mockResolvedValue(mockPayload);
+
+    const event = {
+      ...mockRequestAuthoriserEvent,
+      headers: { Authorization: `Bearer ${mockToken}` },
+    };
+
+    // Act
+    await handler(event, context, callback);
+
+    expect(callback).toHaveBeenCalledWith("Unauthorized");
   });
 
   it("should return Unauthorized if headers are missing", async () => {

@@ -13,3 +13,12 @@ body {
 [tabindex="-1"] {
   outline: none;
 }
+
+input[type='file'].hide-text {
+  @extend .govuk-file-upload !optional;
+  font-size: 0;
+
+  &::file-selector-button {
+    font-size: 19px;
+  }
+}

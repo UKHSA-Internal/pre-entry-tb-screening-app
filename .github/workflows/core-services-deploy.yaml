@@ -58,8 +58,9 @@ jobs:
       BUILD_FOLDER: ".build"
       ZIP_FILE: "deployment_package.zip"
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-      S3_SSE_KMS_KEY_ID: ${{ secrets.S3_SSE_KMS_KEY_ID }}
       API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
+      APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+      SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
 
     strategy:
       matrix:
@@ -115,6 +116,7 @@ jobs:
       APP_DOMAIN: ${{ vars.APP_DOMAIN }}
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
+      SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
 
     steps:
       - name: Checkout code

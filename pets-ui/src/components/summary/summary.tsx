@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export type SummaryElement = {
   key: string;
-  value: string | Array<string> | null;
+  value: string | Array<string> | undefined;
   link: string;
   hiddenLabel: string;
 };
