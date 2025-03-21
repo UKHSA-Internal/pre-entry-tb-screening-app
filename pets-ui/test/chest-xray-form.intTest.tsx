@@ -48,7 +48,6 @@ describe("ChestXrayForm Section", () => {
       <Router>
         <ChestXrayForm />
       </Router>,
-      { preloadedState },
     );
     expect(screen.getByText("Postero-anterior X-ray")).toBeInTheDocument();
     expect(screen.getByText("Apical lordotic X-ray (optional)")).toBeInTheDocument();
