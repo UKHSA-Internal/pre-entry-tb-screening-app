@@ -33,8 +33,8 @@ const FileUploadModule = (
     accept?: string;
     maxSize?: number;
     setFileState: Dispatch<SetStateAction<File | undefined>>;
-    setFileName: Dispatch<SetStateAction<string>>;
-    existingFileName: string;
+    setFileName: Dispatch<SetStateAction<string | undefined>>;
+    existingFileName?: string;
   }>,
 ) => {
   return (
@@ -88,9 +88,9 @@ const ChestXrayForm = () => {
   const [PAFile, setPAFile] = useState<File>();
   const [ALFile, setALFile] = useState<File>();
   const [LDFile, setLDFile] = useState<File>();
-  const [PAFileName, setPAFileName] = useState<string>("");
-  const [ALFileName, setALFileName] = useState<string>("");
-  const [LDFileName, setLDFileName] = useState<string>("");
+  const [PAFileName, setPAFileName] = useState<string>();
+  const [ALFileName, setALFileName] = useState<string>();
+  const [LDFileName, setLDFileName] = useState<string>();
 
   const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
   const {
@@ -123,19 +123,19 @@ const ChestXrayForm = () => {
 
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = async () => {
     // TBBETA-163: Loaders Loaders Loaders
-    if (PAFile) {
+    if (PAFile && PAFileName) {
       const bucketPath = await uploadFile(PAFile, "postero-anterior.dcm");
       dispatch(setPosteroAnteriorXrayFile(bucketPath));
       dispatch(setPosteroAnteriorXrayFileName(PAFileName));
     }
 
-    if (ALFile) {
+    if (ALFile && ALFileName) {
       const bucketPath = await uploadFile(ALFile, "apical-lordotic.dcm");
       dispatch(setApicalLordoticXrayFile(bucketPath));
       dispatch(setApicalLordoticXrayFileName(ALFileName));
     }
 
-    if (LDFile) {
+    if (LDFile && LDFileName) {
       const bucketPath = await uploadFile(LDFile, "lateral-decubitus.dcm");
       dispatch(setLateralDecubitusXrayFile(bucketPath));
       dispatch(setLateralDecubitusXrayFileName(LDFileName));
