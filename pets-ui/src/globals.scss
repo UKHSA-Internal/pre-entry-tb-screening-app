@@ -10,6 +10,10 @@ body {
 @import "../node_modules/govuk-frontend/dist/govuk/core/index";
 @import "../node_modules/govuk-frontend/dist/govuk/objects/index";
 
+[tabindex="-1"] {
+  outline: none;
+}
+
 input[type='file'].hide-text {
   @extend .govuk-file-upload !optional;
   font-size: 0;
