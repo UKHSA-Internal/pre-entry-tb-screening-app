@@ -94,6 +94,18 @@ describe("ChestXrayForm Section", () => {
   });
 
   it("uploads three X-ray files", async () => {
+    const petsApiMock = new MockAdapter(petsApi);
+    const defaultAxiosMock = new MockAdapter(axios);
+
+    const uploadUrl = "localhost:4567";
+    petsApiMock.onPut("/application/abc-123/generate-dicom-upload-url").reply(200, {
+      uploadUrl,
+      bucketPath: "test/bucket/path",
+      fields: { example: "fields" },
+    });
+
+    defaultAxiosMock.onPost(uploadUrl).reply(204);
+
     const preloadedState = {
       application: { applicationId: "abc-123", dateCreated: "" },
     };
@@ -103,24 +115,6 @@ describe("ChestXrayForm Section", () => {
         <ChestXrayForm />
       </Router>,
       { preloadedState },
-    );
-    const petsApiMock = new MockAdapter(petsApi);
-    const defaultAxiosMock = new MockAdapter(axios);
-
-    const uploadUrl = "localhost:4567";
-
-    petsApiMock.onPut("/application/abc-123/generate-dicom-upload-url").reply(200, {
-      uploadUrl,
-      bucketPath: "test/bucket/path",
-      fields: { example: "fields" },
-    });
-
-    defaultAxiosMock.onPost(uploadUrl).reply(204);
-
-    renderWithProviders(
-      <Router>
-        <ChestXrayForm />
-      </Router>,
     );
 
     const posteroAnteriorInput: HTMLInputElement = screen.getByTestId("postero-anterior-xray");
