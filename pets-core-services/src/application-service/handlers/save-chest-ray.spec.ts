@@ -1,5 +1,8 @@
-import { describe, expect, test, vi } from "vitest";
+import { HeadObjectCommand } from "@aws-sdk/client-s3";
+import { mockClient } from "aws-sdk-client-mock";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
+import awsClients from "../../shared/clients/aws";
 import { seededApplications } from "../../shared/fixtures/application";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededChestXray } from "../fixtures/chest-xray";
@@ -9,11 +12,12 @@ import { SaveChestXrayEvent, saveChestXRayHandler } from "./save-chest-ray";
 const newChestXrayTaken: SaveChestXrayEvent["parsedBody"] = {
   chestXrayTaken: YesOrNo.Yes,
   posteroAnteriorXrayFileName: "posterior-anterior.dicom",
-  posteroAnteriorXray: "saved/bucket/path/for/posterior/anterior",
+  posteroAnteriorXray: "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/postero-anterior.dcm",
   apicalLordoticXrayFileName: "apical-lordotic.dicom",
-  apicalLordoticXray: "saved/bucket/path/for/apical/lordotic",
+  apicalLordoticXray: "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/apical-lordotic.dcm",
   lateralDecubitusXrayFileName: "lateral-decubitus.dicom",
-  lateralDecubitusXray: "saved/bucket/path/for/lateral/decubitus",
+  lateralDecubitusXray:
+    "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/lateral-decubitus.dcm",
   xrayResult: ChestXRayResult.NonTbAbnormal,
   xrayMinorFindings: ["test", "minor", "findings"],
   xrayAssociatedMinorFindings: ["test", "associated", "minor", "findings"],
@@ -21,11 +25,25 @@ const newChestXrayTaken: SaveChestXrayEvent["parsedBody"] = {
 };
 
 describe("Test for Saving Chest X-ray into DB", () => {
+  const s3ClientMock = mockClient(awsClients.s3Client);
+
+  beforeEach(() => {
+    s3ClientMock.on(HeadObjectCommand).resolves({
+      $metadata: {
+        httpStatusCode: 200,
+      },
+    });
+  });
+
+  afterEach(() => {
+    s3ClientMock.reset();
+  });
+
   test("Saving a new Chest X-Ray Successfully", async () => {
     // Arrange
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[0].applicationId },
+      pathParameters: { applicationId: seededApplications[3].applicationId },
       parsedBody: newChestXrayTaken,
     };
 
@@ -35,7 +53,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     // Assert
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toMatchObject({
-      applicationId: seededApplications[0].applicationId,
+      applicationId: seededApplications[3].applicationId,
       ...newChestXrayTaken,
       dateCreated: expect.any(String),
     });
@@ -56,6 +74,68 @@ describe("Test for Saving Chest X-ray into DB", () => {
     // Assert
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({ message: "Chest X-ray already saved" });
+  });
+
+  test("Invalid Object Key for any image throws a 400 error", async () => {
+    const event: SaveChestXrayEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[3].applicationId },
+      parsedBody: {
+        ...newChestXrayTaken,
+        posteroAnteriorXray: "invalid-object-key",
+      },
+    };
+
+    // Act
+    const response = await saveChestXRayHandler(event);
+    // Assert
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Malformed Payload",
+      error: "postero-anterior.dcm object key is invalid",
+    });
+  });
+
+  test("Missing Object in S3 for any image throws a 400 error", async () => {
+    const event: SaveChestXrayEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[3].applicationId },
+      parsedBody: newChestXrayTaken,
+    };
+
+    s3ClientMock.on(HeadObjectCommand).resolves({
+      $metadata: {
+        httpStatusCode: 404,
+      },
+    });
+
+    // Act
+    const response = await saveChestXRayHandler(event);
+
+    // Act
+    // Assert
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Missing Images",
+      error: "postero-anterior.dcm image does not exist",
+    });
+  });
+
+  test("Missing Applicant throws a 400 error", async () => {
+    const event: SaveChestXrayEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+      parsedBody: newChestXrayTaken,
+    };
+
+    // Act
+    const response = await saveChestXRayHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Invalid Application - No Applicant",
+    });
   });
 
   test("Missing required body returns a 500 response", async () => {

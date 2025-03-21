@@ -25,11 +25,11 @@ const ChestXraySummary = () => {
         await postChestXrayDetails(applicationData.applicationId, {
           chestXrayTaken: chestXrayData.chestXrayTaken,
           posteroAnteriorXrayFileName: chestXrayData.posteroAnteriorXrayFileName,
-          posteroAnteriorXray: "some-bucket-id-path", // placeholder, to be fixed in TBBETA-506
+          posteroAnteriorXray: chestXrayData.posteroAnteriorXrayFile,
           apicalLordoticXrayFileName: chestXrayData.apicalLordoticXrayFileName,
-          apicalLordoticXray: "some-bucket-id-path", // placeholder, to be fixed in TBBETA-506
+          apicalLordoticXray: chestXrayData.apicalLordoticXrayFile,
           lateralDecubitusXrayFileName: chestXrayData.lateralDecubitusXrayFileName,
-          lateralDecubitusXray: "some-bucket-id-path", // placeholder, to be fixed in TBBETA-506
+          lateralDecubitusXray: chestXrayData.lateralDecubitusXrayFile,
           xrayResult: chestXrayData.xrayResult,
           xrayResultDetail: chestXrayData.xrayResultDetail,
           xrayMinorFindings: chestXrayData.xrayMinorFindings,

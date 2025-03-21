@@ -184,6 +184,10 @@ describe("ApplicantSearchForm", () => {
     expect(mock.history.get[1].url).toEqual("/application/abc-123");
     expect(mock.history).toHaveLength(2);
 
+    expect(store.getState().application).toMatchObject({
+      applicationId: "abc-123",
+    });
+
     expect(store.getState().applicant).toEqual({
       applicantHomeAddress1: "1 Ayres Rock Way",
       applicantHomeAddress2: "",
@@ -415,7 +419,7 @@ describe("ApplicantSearchForm", () => {
     expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
   });
 
-  test("user is navigated to applicant results page when applicant search returns 404", async () => {
+  test("user is navigated to applicant results page when applicant search returns an empty array", async () => {
     const { store } = renderWithProviders(
       <Router>
         <ApplicantSearchForm />
@@ -423,7 +427,7 @@ describe("ApplicantSearchForm", () => {
     );
     const user = userEvent.setup();
 
-    mock.onGet("/applicant/search").reply(404);
+    mock.onGet("/applicant/search").reply(204, []);
 
     await user.type(screen.getByTestId("passport-number"), "12345");
     fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });

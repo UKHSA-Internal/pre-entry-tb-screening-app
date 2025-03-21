@@ -225,3 +225,24 @@ export const ApplicationSchema = z.object({
   chestXray: ChestXRayResponseSchema,
   tbCertificate: TbCertificateResponseSchema,
 });
+
+export const DicomUploadUrlRequestSchema = z.object({
+  fileName: z.string().openapi({
+    description: "Name of file on S3",
+  }),
+  checksum: z.string().openapi({
+    description: "Checksum of file",
+  }),
+});
+
+export const DicomUploadUrlResponseSchema = z.object({
+  uploadUrl: z.string().openapi({
+    description: "The upload url",
+  }),
+  bucketPath: z.string().openapi({
+    description: "Bucket Path for Uploaded File",
+  }),
+  fields: z.record(z.string(), z.string()).openapi({
+    description: "Required fields in file upload request",
+  }),
+});

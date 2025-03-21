@@ -48,6 +48,18 @@ describe("validateRequest middleware", () => {
       validationError: {
         age: ["Expected number, received string"],
       },
+      validationErrorVerbose: {
+        issues: [
+          {
+            code: "invalid_type",
+            expected: "number",
+            received: "string",
+            path: ["age"],
+            message: "Expected number, received string",
+          },
+        ],
+        name: "ZodError",
+      },
     });
   });
 

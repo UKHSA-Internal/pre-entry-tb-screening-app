@@ -68,11 +68,8 @@ describe("Getting Application Handler", () => {
       },
       chestXray: {
         chestXrayTaken: "Yes",
-        posteroAnteriorXrayFileName: "posterior-anterior.dicom",
         posteroAnteriorXray: "saved/bucket/path/for/posterior/anterior",
-        apicalLordoticXrayFileName: "apical-lordotic.dicom",
         apicalLordoticXray: "saved/bucket/path/for/apical/lordotic",
-        lateralDecubitusXrayFileName: "lateral-decubitus.dicom",
         lateralDecubitusXray: "saved/bucket/path/for/lateral/decubitus",
         xrayResult: "Chest X-ray normal",
         xrayActiveTbFindings: [],

@@ -139,11 +139,11 @@ type ReduxChestXrayDetailsType = {
   status: ApplicationStatus;
   chestXrayTaken: YesOrNo;
   posteroAnteriorXrayFileName: string;
-  posteroAnteriorXrayFile: string | null;
-  apicalLordoticXrayFileName: string;
-  apicalLordoticXrayFile: string | null;
-  lateralDecubitusXrayFileName: string;
-  lateralDecubitusXrayFile: string | null;
+  posteroAnteriorXrayFile: string;
+  apicalLordoticXrayFileName?: string;
+  apicalLordoticXrayFile?: string;
+  lateralDecubitusXrayFileName?: string;
+  lateralDecubitusXrayFile?: string;
   reasonXrayWasNotTaken: string;
   xrayWasNotTakenFurtherDetails: string;
   xrayResult: string;
@@ -157,10 +157,10 @@ type PostedChestXrayDetailsType = {
   chestXrayTaken: YesOrNo;
   posteroAnteriorXrayFileName: string;
   posteroAnteriorXray: string;
-  apicalLordoticXrayFileName: string;
-  apicalLordoticXray: string;
-  lateralDecubitusXrayFileName: string;
-  lateralDecubitusXray: string;
+  apicalLordoticXrayFileName?: string;
+  apicalLordoticXray?: string;
+  lateralDecubitusXrayFileName?: string;
+  lateralDecubitusXray?: string;
   xrayResult: string;
   xrayResultDetail: string;
   xrayMinorFindings: string[];
@@ -218,3 +218,14 @@ type PostedTbCertificateType = {
 };
 
 type ReceivedTbCertificateType = PostedTbCertificateType & ReceivedApplicationAttributesType;
+
+type GenerateDicomUploadUrlRequest = {
+  fileName: string;
+  checksum?: string;
+};
+
+type GenerateDicomUploadUrlResponse = {
+  uploadUrl: string;
+  bucketPath: string;
+  fields: Record<string, string>;
+};

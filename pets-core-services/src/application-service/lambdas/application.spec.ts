@@ -1,6 +1,9 @@
+import { HeadObjectCommand } from "@aws-sdk/client-s3";
 import { APIGatewayProxyResult } from "aws-lambda";
-import { describe, expect, test } from "vitest";
+import { mockClient } from "aws-sdk-client-mock";
+import { beforeEach, describe, expect, test } from "vitest";
 
+import awsClients from "../../shared/clients/aws";
 import { seededApplications } from "../../shared/fixtures/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { context, mockAPIGwEvent } from "../../test/mocks/events";
@@ -201,21 +204,36 @@ describe("Test for Application Lambda", () => {
   });
 
   describe("Chest X-Ray", () => {
+    const s3ClientMock = mockClient(awsClients.s3Client);
+
+    s3ClientMock.on(HeadObjectCommand).resolves({
+      $metadata: {
+        httpStatusCode: 200,
+      },
+    });
+
+    beforeEach(() => {
+      s3ClientMock.resetHistory();
+    });
+
     test("Saving Chest X-Ray Successfully", async () => {
       // Arrange;
       const event: PetsAPIGatewayProxyEvent = {
         ...mockAPIGwEvent,
         resource: "/application/{applicationId}/chest-xray",
-        path: `/application/${seededApplications[0].applicationId}/chest-xray`,
+        path: `/application/${seededApplications[3].applicationId}/chest-xray`,
         httpMethod: "POST",
         body: JSON.stringify({
           chestXrayTaken: YesOrNo.Yes,
           posteroAnteriorXrayFileName: "pa.dicom",
-          posteroAnteriorXray: "test/bucket/path/for/posterior/anterior",
+          posteroAnteriorXray:
+            "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/postero-anterior.dcm",
           apicalLordoticXrayFileName: "al.dicom",
-          apicalLordoticXray: "test/bucket/path/for/apical/lordotic",
+          apicalLordoticXray:
+            "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/apical-lordotic.dcm",
           lateralDecubitusXrayFileName: "ld.dicom",
-          lateralDecubitusXray: "test/bucket/path/for/lateral-decubitus",
+          lateralDecubitusXray:
+            "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/lateral-decubitus.dcm",
           xrayResult: ChestXRayResult.Normal,
           xrayMinorFindings: [],
           xrayAssociatedMinorFindings: [],

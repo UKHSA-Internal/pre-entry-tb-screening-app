@@ -10,8 +10,8 @@ export interface FileUploadProps {
   required: string | false;
   accept?: string; // Add accept prop for file types
   maxSize?: number; // Size in MB
-  setFileState?: Dispatch<SetStateAction<string | null>>;
-  setFileName?: Dispatch<SetStateAction<string>>;
+  setFileState: Dispatch<SetStateAction<File | undefined>>;
+  setFileName: Dispatch<SetStateAction<string | undefined>>;
   existingFileName?: string;
 }
 
@@ -24,36 +24,11 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
   );
   const inputClass = showExistingFileName ? "govuk-file-upload hide-text" : "govuk-file-upload";
 
-  const validateFileType = (files: FileList) => {
-    if (props.required) {
-      if (files.length === 0) {
-        return props.required;
-      }
-
-      const acceptedTypes = props.accept?.split(",").map((type) => type.trim()) || [];
-      const fileType = files[0].type.split("/")[1];
-      if (!acceptedTypes.includes(fileType)) {
-        return `File type should be ${acceptedTypes.join(", ")}`;
-      }
-    }
-
-    return true;
-  };
-
   const validateFileSize = (files: FileList) => {
-    if (props.required && props.maxSize && files[0]?.size > props.maxSize * 1024 * 1024) {
+    if (props.maxSize && files[0]?.size > props.maxSize * 1024 * 1024) {
       return `File size should be less than ${props.maxSize} MB`;
     }
     return true;
-  };
-
-  const readBlobAsText = (blob: Blob): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = () => reject(new Error("Failed to read file"));
-      reader.readAsText(blob); // Read the blob as text
-    });
   };
 
   const displayError = (errorText: string | null) => {
@@ -66,38 +41,32 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
     }
   };
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      setShowExistingFileName(false);
-      const fileTypeError = validateFileType(files);
-      const fileSizeError = validateFileSize(files);
-      if (fileTypeError !== true) {
-        // file type doesn't match
-        displayError(fileTypeError);
-        return;
-      } else if (fileSizeError !== true) {
-        // file size doesn't match
-        displayError(fileSizeError);
-        return;
-      } else {
-        // if everything is ok, don't display errors and callback
-        displayError(null);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    props.setFileState(undefined);
+    props.setFileName(undefined);
 
-        // if set state callback is present
-        // e.g. if page wants file to be set to a state
-        if (props.setFileState && props.setFileName) {
-          try {
-            const fileBlob = await readBlobAsText(files[0]);
-            props.setFileState(fileBlob);
-            props.setFileName(files[0].name);
-          } catch {
-            displayError("There's been an error reading your file, please try a different file");
-            props.setFileState(null);
-          }
-        }
-      }
+    const files = event.target.files;
+
+    if (!files?.length) {
+      if (props.required) displayError(props.required);
+      return;
     }
+
+    setShowExistingFileName(false);
+
+    const fileSizeError = validateFileSize(files);
+
+    if (fileSizeError !== true) {
+      // file size doesn't match
+      displayError(fileSizeError);
+      return;
+    }
+
+    // if everything is ok, don't display errors and callback
+    displayError(null);
+
+    props.setFileState(files[0]);
+    props.setFileName(files[0].name);
   };
 
   useEffect(() => {
@@ -125,13 +94,10 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
               {...register(props.formValue, {
                 required: props.required,
                 validate: {
-                  fileType: validateFileType,
                   fileSize: validateFileSize,
                 },
               })}
-              onChange={async (event) => {
-                await handleFileChange(event);
-              }}
+              onChange={(event) => handleFileChange(event)}
             />
             {showExistingFileName && props.existingFileName}
           </div>
