@@ -69,7 +69,7 @@ describe("ChestXrayForm Section", () => {
     expect(screen.getAllByRole("group")).toHaveLength(3);
   });
 
-  it.only("uploads three X-ray files", async () => {
+  it("uploads three X-ray files", async () => {
     const uploadUrl = "localhost:4567";
 
     petsApiMock.onPut("/application/abc-123/generate-dicom-upload-url").reply(200, {
