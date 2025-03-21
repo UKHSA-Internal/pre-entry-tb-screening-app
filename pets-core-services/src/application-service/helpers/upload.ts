@@ -19,7 +19,7 @@ export const generateDicomObjectkey = (keyParameters: KeyParameters) => {
 
   const clinicIDFormatted = clinicId.replaceAll("/", "-");
 
-  const objectkey = `${DICOM_FOLDER}/${clinicIDFormatted}/${countryOfIssue}/${passportNumber}/${applicationId}/${fileName}`; // TODO: Document esbuild thingy with Envs and also we depend on the aws sdk in runtime
+  const objectkey = `${DICOM_FOLDER}/${clinicIDFormatted}/${countryOfIssue}/${passportNumber}/${applicationId}/${fileName}`;
   logger.info("Dicom object key generated successfully");
   return objectkey;
 };
