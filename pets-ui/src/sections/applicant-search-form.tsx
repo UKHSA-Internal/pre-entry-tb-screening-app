@@ -19,6 +19,10 @@ import {
   clearMedicalScreeningDetails,
   setMedicalScreeningDetailsFromApiResponse,
 } from "@/redux/medicalScreeningSlice";
+import {
+  clearTbCertificateDetails,
+  setTbCertificateFromApiResponse,
+} from "@/redux/tbCertificateSlice";
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
 import { ButtonType } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/records";
@@ -36,6 +40,7 @@ const ApplicantSearchForm = () => {
     dispatch(clearMedicalScreeningDetails());
     dispatch(clearTravelDetails());
     dispatch(clearChestXrayDetails());
+    dispatch(clearTbCertificateDetails());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -67,6 +72,9 @@ const ApplicantSearchForm = () => {
       }
       if (applicationRes.data.chestXray) {
         dispatch(setChestXrayFromApiResponse(applicationRes.data.chestXray));
+      }
+      if (applicationRes.data.tbCertificate) {
+        dispatch(setTbCertificateFromApiResponse(applicationRes.data.tbCertificate));
       }
       navigate("/tracker");
     } catch (error) {

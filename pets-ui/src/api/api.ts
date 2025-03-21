@@ -9,6 +9,7 @@ import {
   PostedChestXrayDetailsType,
   PostedChestXrayNotTakenType,
   PostedMedicalScreeningType,
+  PostedTbCertificateType,
   PostedTravelDetailsType,
   ReceivedApplicantDetailsType,
   ReceivedApplicationDetailsType,
@@ -94,6 +95,17 @@ export const postChestXrayDetails = async (
   chestXrayDetails: PostedChestXrayDetailsType | PostedChestXrayNotTakenType,
 ) => {
   const result = await petsApi.post(`/application/${applicationId}/chest-xray`, chestXrayDetails);
+  return { status: result.status, statusText: result.statusText };
+};
+
+export const postTbCerificateDetails = async (
+  applicationId: string,
+  tbCertificateDetails: PostedTbCertificateType,
+) => {
+  const result = await petsApi.post(
+    `/application/${applicationId}/tb-certificate`,
+    tbCertificateDetails,
+  );
   return { status: result.status, statusText: result.statusText };
 };
 
