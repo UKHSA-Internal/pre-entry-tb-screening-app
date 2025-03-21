@@ -73,8 +73,8 @@ const registerSwaggerConfig = (
         },
       },
       responses: {
-        "2XX": {
-          description: "2XX response",
+        "200": {
+          description: "200 response",
           content: {
             "application/json": {
               schema: responseSchema,
