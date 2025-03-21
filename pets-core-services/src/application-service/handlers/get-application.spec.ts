@@ -68,10 +68,13 @@ describe("Getting Application Handler", () => {
       },
       chestXray: {
         chestXrayTaken: "Yes",
+        posteroAnteriorXrayFileName: "posterior-anterior.dicom",
         posteroAnteriorXray:
           "dicom/Apollo Clinic/BRB/ABC1234JANE/generated-app-id-2/postero-anterior.dcm",
+        apicalLordoticXrayFileName: "apical-lordotic.dicom",
         apicalLordoticXray:
           "dicom/Apollo Clinic/BRB/ABC1234JANE/generated-app-id-2/apical-lordotic.dcm",
+        lateralDecubitusXrayFileName: "lateral-decubitus.dicom",
         lateralDecubitusXray:
           "dicom/Apollo Clinic/BRB/ABC1234JANE/generated-app-id-2/lateral-decubitus.dcm",
         xrayResult: "Chest X-ray normal",

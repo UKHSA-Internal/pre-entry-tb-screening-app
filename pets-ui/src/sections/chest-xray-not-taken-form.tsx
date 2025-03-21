@@ -82,7 +82,7 @@ const ChestXrayNotTakenForm = () => {
           id="Continue"
           type={ButtonType.DEFAULT}
           text="Continue"
-          href="/xray-not-taken-summary"
+          href="/chest-xray-summary"
           handleClick={() => {}}
         />
       </form>

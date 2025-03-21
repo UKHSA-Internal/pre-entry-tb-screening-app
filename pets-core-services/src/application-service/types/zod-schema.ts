@@ -153,11 +153,20 @@ export const ChestXRayNotTakenRequestSchema = z.object({
 
 export const ChestXRayTakenRequestSchema = z.object({
   chestXrayTaken: z.literal(YesOrNo.Yes),
+  posteroAnteriorXrayFileName: z.string().openapi({
+    description: "File name for the Postero Anterior X-Ray",
+  }),
   posteroAnteriorXray: z.string().openapi({
     description: "S3 Bucket Object key for the Postero Anterior X-Ray",
   }),
+  apicalLordoticXrayFileName: z.string().optional().openapi({
+    description: "File name for the Apical Lordotic X-Ray",
+  }),
   apicalLordoticXray: z.string().optional().openapi({
     description: "S3 Bucket Object key for the Apical Lordotic X-Ray",
+  }),
+  lateralDecubitusXrayFileName: z.string().optional().openapi({
+    description: "File name for the Lateral Decubitus X-Ray",
   }),
   lateralDecubitusXray: z.string().optional().openapi({
     description: "S3 Bucket Object key for the Lateral Decubitus X-Ray",

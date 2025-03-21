@@ -11,8 +11,11 @@ import { SaveChestXrayEvent, saveChestXRayHandler } from "./save-chest-ray";
 
 const newChestXrayTaken: SaveChestXrayEvent["parsedBody"] = {
   chestXrayTaken: YesOrNo.Yes,
+  posteroAnteriorXrayFileName: "posterior-anterior.dicom",
   posteroAnteriorXray: "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/postero-anterior.dcm",
+  apicalLordoticXrayFileName: "apical-lordotic.dicom",
   apicalLordoticXray: "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/apical-lordotic.dcm",
+  lateralDecubitusXrayFileName: "lateral-decubitus.dicom",
   lateralDecubitusXray:
     "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/lateral-decubitus.dcm",
   xrayResult: ChestXRayResult.NonTbAbnormal,

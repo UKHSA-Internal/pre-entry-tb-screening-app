@@ -9,6 +9,7 @@ import { describe, expect, it, Mock } from "vitest";
 import { petsApi } from "@/api/api";
 import ChestXrayUploadPage from "@/pages/chest-xray-upload";
 import ChestXrayForm from "@/sections/chest-xray-form";
+import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -42,25 +43,12 @@ describe("ChestXrayUploadPage", () => {
   });
 });
 describe("ChestXrayForm Section", () => {
-  const applicationState = { applicationId: "abc-123", dateCreated: "" };
-
-  const preloadedState = {
-    application: { ...applicationState },
-  };
-
-  let petsApiMock: MockAdapter;
-  let defaultAxiosMock: MockAdapter;
-  beforeEach(() => {
+  it("renders components correctly when state is empty", () => {
     renderWithProviders(
       <Router>
         <ChestXrayForm />
       </Router>,
-      { preloadedState },
     );
-    petsApiMock = new MockAdapter(petsApi);
-    defaultAxiosMock = new MockAdapter(axios);
-  });
-  it("renders components correctly", () => {
     expect(screen.getByText("Postero-anterior X-ray")).toBeInTheDocument();
     expect(screen.getByText("Apical lordotic X-ray (optional)")).toBeInTheDocument();
     expect(screen.getByText("Lateral decubitus X-ray (optional)")).toBeInTheDocument();
@@ -69,9 +57,47 @@ describe("ChestXrayForm Section", () => {
     expect(screen.getAllByRole("group")).toHaveLength(3);
   });
 
-  it("uploads three X-ray files", async () => {
-    const uploadUrl = "localhost:4567";
+  it("renders components correctly when state is populated", () => {
+    const preloadedState = {
+      chestXray: {
+        status: ApplicationStatus.INCOMPLETE,
+        chestXrayTaken: YesOrNo.YES,
+        posteroAnteriorXrayFileName: "pa-file-name.jpg",
+        posteroAnteriorXrayFile: "examplejpgexamplejpgexamplejpg",
+        apicalLordoticXrayFileName: "",
+        apicalLordoticXrayFile: "",
+        lateralDecubitusXrayFileName: "",
+        lateralDecubitusXrayFile: "",
+        reasonXrayWasNotTaken: "",
+        xrayWasNotTakenFurtherDetails: "",
+        xrayResult: "normal",
+        xrayResultDetail: "",
+        xrayMinorFindings: [],
+        xrayAssociatedMinorFindings: [],
+        xrayActiveTbFindings: [],
+      },
+    };
+    renderWithProviders(
+      <Router>
+        <ChestXrayForm />
+      </Router>,
+      { preloadedState },
+    );
 
+    expect(screen.getByText("Postero-anterior X-ray")).toBeInTheDocument();
+    expect(screen.getByText("Apical lordotic X-ray (optional)")).toBeInTheDocument();
+    expect(screen.getByText("Lateral decubitus X-ray (optional)")).toBeInTheDocument();
+    expect(screen.getAllByText("Type of X-ray")).toHaveLength(3);
+    expect(screen.getAllByText("File uploaded")).toHaveLength(3);
+    expect(screen.getAllByRole("group")).toHaveLength(3);
+    expect(screen.getByText("pa-file-name.jpg")).toBeInTheDocument();
+  });
+
+  it("uploads three X-ray files", async () => {
+    const petsApiMock = new MockAdapter(petsApi);
+    const defaultAxiosMock = new MockAdapter(axios);
+
+    const uploadUrl = "localhost:4567";
     petsApiMock.onPut("/application/abc-123/generate-dicom-upload-url").reply(200, {
       uploadUrl,
       bucketPath: "test/bucket/path",
@@ -79,6 +105,17 @@ describe("ChestXrayForm Section", () => {
     });
 
     defaultAxiosMock.onPost(uploadUrl).reply(204);
+
+    const preloadedState = {
+      application: { applicationId: "abc-123", dateCreated: "" },
+    };
+
+    renderWithProviders(
+      <Router>
+        <ChestXrayForm />
+      </Router>,
+      { preloadedState },
+    );
 
     const posteroAnteriorInput: HTMLInputElement = screen.getByTestId("postero-anterior-xray");
     const apicalLordoticInput: HTMLInputElement = screen.getByTestId("apical-lordotic-xray");
@@ -132,6 +169,12 @@ describe("ChestXrayForm Section", () => {
   });
 
   it("errors when postero anterior xray is missing", async () => {
+    renderWithProviders(
+      <Router>
+        <ChestXrayForm />
+      </Router>,
+    );
+
     const posteroAnteriorInput: HTMLInputElement = screen.getByTestId("postero-anterior-xray");
     const submitButton = screen.getByRole("button", { name: /continue/i });
 
@@ -148,6 +191,12 @@ describe("ChestXrayForm Section", () => {
   });
 
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
+    renderWithProviders(
+      <Router>
+        <ChestXrayForm />
+      </Router>,
+    );
+
     const submitButton = screen.getByRole("button", { name: /continue/i });
     await user.click(submitButton);
     const errorSummaryDiv = screen.getByTestId("error-summary");

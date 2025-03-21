@@ -11,13 +11,18 @@ export interface FileUploadProps {
   accept?: string; // Add accept prop for file types
   maxSize?: number; // Size in MB
   setFileState: Dispatch<SetStateAction<File | undefined>>;
-  setFileName: Dispatch<SetStateAction<string>>;
+  setFileName: Dispatch<SetStateAction<string | undefined>>;
+  existingFileName?: string;
 }
 
 export default function FileUpload(props: Readonly<FileUploadProps>) {
   const { register } = useFormContext();
   const [errorText, setErrorText] = useState("");
   const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
+  const [showExistingFileName, setShowExistingFileName] = useState(
+    props.existingFileName && props.existingFileName.length > 0,
+  );
+  const inputClass = showExistingFileName ? "govuk-file-upload hide-text" : "govuk-file-upload";
 
   const validateFileSize = (files: FileList) => {
     if (props.maxSize && files[0]?.size > props.maxSize * 1024 * 1024) {
@@ -26,14 +31,28 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
     return true;
   };
 
+  const displayError = (errorText: string | null) => {
+    if (errorText) {
+      setErrorText(errorText);
+      setWrapperClass("govuk-form-group govuk-form-group--error");
+    } else {
+      setErrorText("");
+      setWrapperClass("");
+    }
+  };
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    props.setFileState(undefined);
+    props.setFileName(undefined);
+
     const files = event.target.files;
 
     if (!files?.length) {
-      props.setFileState(undefined);
       if (props.required) displayError(props.required);
       return;
     }
+
+    setShowExistingFileName(false);
 
     const fileSizeError = validateFileSize(files);
 
@@ -48,16 +67,6 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
 
     props.setFileState(files[0]);
     props.setFileName(files[0].name);
-  };
-
-  const displayError = (errorText: string | null) => {
-    if (errorText) {
-      setErrorText(errorText);
-      setWrapperClass("govuk-form-group govuk-form-group--error");
-    } else {
-      setErrorText("");
-      setWrapperClass("");
-    }
   };
 
   useEffect(() => {
@@ -78,7 +87,7 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
           <div key={`file-upload-${props.id}`}>
             <input
               id="fileInput"
-              className="govuk-file-upload"
+              className={inputClass}
               type="file"
               data-testid={props.id}
               accept={props.accept} // The file types accepted
@@ -90,6 +99,7 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
               })}
               onChange={(event) => handleFileChange(event)}
             />
+            {showExistingFileName && props.existingFileName}
           </div>
         </div>
       </fieldset>

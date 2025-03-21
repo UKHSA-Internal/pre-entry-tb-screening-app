@@ -133,9 +133,12 @@ export const chestXraySlice = createSlice({
           ? ApplicationStatus.COMPLETE
           : ApplicationStatus.INCOMPLETE;
       state.chestXrayTaken = action.payload.chestXrayTaken;
-      state.posteroAnteriorXrayFileName = action.payload.posteroAnteriorXray;
-      state.apicalLordoticXrayFileName = action.payload.apicalLordoticXray;
-      state.lateralDecubitusXrayFileName = action.payload.lateralDecubitusXray;
+      state.posteroAnteriorXrayFileName = action.payload.posteroAnteriorXrayFileName;
+      state.posteroAnteriorXrayFile = action.payload.posteroAnteriorXray;
+      state.apicalLordoticXrayFileName = action.payload.apicalLordoticXrayFileName;
+      state.apicalLordoticXrayFile = action.payload.apicalLordoticXray;
+      state.lateralDecubitusXrayFileName = action.payload.lateralDecubitusXrayFileName;
+      state.lateralDecubitusXrayFile = action.payload.lateralDecubitusXray;
       state.xrayResult = action.payload.xrayResult;
       state.xrayResultDetail = action.payload.xrayResultDetail;
       state.xrayMinorFindings = action.payload.xrayMinorFindings

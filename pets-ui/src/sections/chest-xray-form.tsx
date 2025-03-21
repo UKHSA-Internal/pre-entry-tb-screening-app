@@ -13,6 +13,7 @@ import Heading from "@/components/heading/heading";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { selectApplication } from "@/redux/applicationSlice";
 import {
+  selectChestXray,
   setApicalLordoticXrayFile,
   setApicalLordoticXrayFileName,
   setLateralDecubitusXrayFile,
@@ -32,7 +33,8 @@ const FileUploadModule = (
     accept?: string;
     maxSize?: number;
     setFileState: Dispatch<SetStateAction<File | undefined>>;
-    setFileName: Dispatch<SetStateAction<string>>;
+    setFileName: Dispatch<SetStateAction<string | undefined>>;
+    existingFileName?: string;
   }>,
 ) => {
   return (
@@ -59,6 +61,7 @@ const FileUploadModule = (
               maxSize={props.maxSize}
               setFileState={props.setFileState}
               setFileName={props.setFileName}
+              existingFileName={props.existingFileName}
             />
           </dd>
         </div>
@@ -77,6 +80,7 @@ async function computeBase64SHA256(file: File) {
 
 const ChestXrayForm = () => {
   const applicantData = useAppSelector(selectApplicant);
+  const chestXrayData = useAppSelector(selectChestXray);
   const applicationData = useAppSelector(selectApplication);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -84,9 +88,9 @@ const ChestXrayForm = () => {
   const [PAFile, setPAFile] = useState<File>();
   const [ALFile, setALFile] = useState<File>();
   const [LDFile, setLDFile] = useState<File>();
-  const [PAFileName, setPAFileName] = useState<string>("");
-  const [ALFileName, setALFileName] = useState<string>("");
-  const [LDFileName, setLDFileName] = useState<string>("");
+  const [PAFileName, setPAFileName] = useState<string>();
+  const [ALFileName, setALFileName] = useState<string>();
+  const [LDFileName, setLDFileName] = useState<string>();
 
   const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
   const {
@@ -119,19 +123,19 @@ const ChestXrayForm = () => {
 
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = async () => {
     // TBBETA-163: Loaders Loaders Loaders
-    if (PAFile) {
+    if (PAFile && PAFileName) {
       const bucketPath = await uploadFile(PAFile, "postero-anterior.dcm");
       dispatch(setPosteroAnteriorXrayFile(bucketPath));
       dispatch(setPosteroAnteriorXrayFileName(PAFileName));
     }
 
-    if (ALFile) {
+    if (ALFile && ALFileName) {
       const bucketPath = await uploadFile(ALFile, "apical-lordotic.dcm");
       dispatch(setApicalLordoticXrayFile(bucketPath));
       dispatch(setApicalLordoticXrayFileName(ALFileName));
     }
 
-    if (LDFile) {
+    if (LDFile && LDFileName) {
       const bucketPath = await uploadFile(LDFile, "lateral-decubitus.dcm");
       dispatch(setLateralDecubitusXrayFile(bucketPath));
       dispatch(setLateralDecubitusXrayFileName(LDFileName));
@@ -176,8 +180,9 @@ const ChestXrayForm = () => {
               name="Postero-anterior"
               setFileState={setPAFile}
               setFileName={setPAFileName}
-              required={true}
+              required={!chestXrayData.posteroAnteriorXrayFile}
               errors={errors}
+              existingFileName={chestXrayData.posteroAnteriorXrayFileName}
             />
           </div>
 
@@ -190,6 +195,7 @@ const ChestXrayForm = () => {
               setFileName={setALFileName}
               required={false}
               errors={errors}
+              existingFileName={chestXrayData.apicalLordoticXrayFileName}
             />
           </div>
 
@@ -202,6 +208,7 @@ const ChestXrayForm = () => {
               setFileName={setLDFileName}
               required={false}
               errors={errors}
+              existingFileName={chestXrayData.lateralDecubitusXrayFileName}
             />
           </div>
 
