@@ -1,6 +1,6 @@
 import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
-import { NewApplicant } from "../models/applicant";
+import { NewApplicant } from "../../shared/models/applicant";
 import { AllowedSex } from "../types/enums";
 
 export const seededApplicants: NewApplicant[] = [
@@ -39,5 +39,23 @@ export const seededApplicants: NewApplicant[] = [
     country: CountryCode.ARG,
     postcode: "1234",
     createdBy: "shawn.jones@clinic.com",
+  },
+  {
+    applicationId: seededApplications[3].applicationId,
+    fullName: "Kathy Jones",
+    passportNumber: "ABC1234KAT",
+    countryOfNationality: CountryCode.ARG,
+    countryOfIssue: CountryCode.ARG,
+    issueDate: "2008-05-12",
+    expiryDate: "2014-05-12",
+    dateOfBirth: "2006-05-12",
+    sex: AllowedSex.Female,
+    applicantHomeAddress1: "23 Long street",
+    applicantHomeAddress2: "River Valley",
+    townOrCity: "JohannesBurg",
+    provinceOrState: "",
+    country: CountryCode.ARG,
+    postcode: "1234",
+    createdBy: "mike.jones@clinic.com",
   },
 ];

@@ -24,9 +24,9 @@ const ChestXraySummary = () => {
       if (chestXrayData.chestXrayTaken == YesOrNo.YES) {
         await postChestXrayDetails(applicationData.applicationId, {
           chestXrayTaken: chestXrayData.chestXrayTaken,
-          posteroAnteriorXray: chestXrayData.posteroAnteriorXrayFileName,
-          apicalLordoticXray: chestXrayData.apicalLordoticXrayFileName,
-          lateralDecubitusXray: chestXrayData.lateralDecubitusXrayFileName,
+          posteroAnteriorXray: chestXrayData.posteroAnteriorXrayFile,
+          apicalLordoticXray: chestXrayData.apicalLordoticXrayFile,
+          lateralDecubitusXray: chestXrayData.lateralDecubitusXrayFile,
           xrayResult: chestXrayData.xrayResult,
           xrayResultDetail: chestXrayData.xrayResultDetail,
           xrayMinorFindings: chestXrayData.xrayMinorFindings,

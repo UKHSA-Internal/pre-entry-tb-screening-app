@@ -4,9 +4,9 @@ import { z } from "zod";
 
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
+import { Applicant } from "../../shared/models/applicant";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { Applicant } from "../models/applicant";
 import { ApplicantSchema } from "../types/zod-schema";
 
 export type ApplicantRequestSchema = z.infer<typeof ApplicantSchema>;

@@ -3,9 +3,9 @@ import { GlobalContextStorageProvider } from "pino-lambda";
 import { CountryCode } from "../../shared/country";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
+import { Applicant } from "../../shared/models/applicant";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { Applicant } from "../models/applicant";
 
 export type Header = {
   passportnumber: string;
@@ -38,7 +38,7 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
       parsedHeaders.passportnumber,
     );
 
-    if (!applicants.length) return createHttpResponse(404, { message: "Applicant does not exist" });
+    if (!applicants.length) return createHttpResponse(204, []);
 
     // Note: This check would need to be modified Post-MVP, For MVP, only a single applicant should exist for passport and country combination
     if (applicants.length > 1) {

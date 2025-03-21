@@ -2,9 +2,9 @@ import { describe, expect, test } from "vitest";
 
 import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
+import { Applicant } from "../../shared/models/applicant";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicants } from "../fixtures/applicants";
-import { Applicant } from "../models/applicant";
 import { Header, SearchApplicantEvent, searchApplicantHandler } from "./searchApplicant";
 
 describe("Test for Getting Applicant", () => {
@@ -58,8 +58,8 @@ describe("Test for Getting Applicant", () => {
     const response = await searchApplicantHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(404);
-    expect(JSON.parse(response.body)).toMatchObject({ message: "Applicant does not exist" });
+    expect(response.statusCode).toBe(204);
+    expect(JSON.parse(response.body)).toMatchObject([]);
   });
 
   test("Duplicate results returns a 500 response", async () => {
