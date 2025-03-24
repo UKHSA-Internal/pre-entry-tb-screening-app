@@ -131,7 +131,7 @@ jobs:
           config-file: cypress/cypress.config.mjs
 
       - name: Retry if failed
-        if: job.steps.initial_attempt.status == failure()
+        if: steps.initial_attempt.outcome != 'success'
         uses: cypress-io/github-action@v6
         id: retry_attempt
         with:
