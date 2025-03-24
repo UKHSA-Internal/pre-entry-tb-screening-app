@@ -66,7 +66,6 @@ export class ChestXRayTaken extends ChestXRayBase {
     super(details);
 
     this.chestXrayTaken = details.chestXrayTaken;
-    this.chestXrayTaken = details.chestXrayTaken;
     this.posteroAnteriorXrayFileName = details.posteroAnteriorXrayFileName;
     this.posteroAnteriorXray = details.posteroAnteriorXray;
     this.apicalLordoticXrayFileName = details.apicalLordoticXrayFileName;
