@@ -14,5 +14,5 @@ jobs:
   deploy:
     uses: ./.github/workflows/core-services-deploy.yaml
     with:
-      environment: "pre"
+      environment: "preprod"
     secrets: inherit
