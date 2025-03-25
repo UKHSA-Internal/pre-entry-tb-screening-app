@@ -2,11 +2,11 @@ import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { DateType, ReceivedTbCertificateType, ReduxTbCertificateType } from "@/applicant";
-import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
+import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "@/utils/enums";
 
 const initialState: ReduxTbCertificateType = {
   status: ApplicationStatus.INCOMPLETE,
-  tbClearanceIssued: "",
+  tbClearanceIssued: YesOrNo.NULL,
   physicianComments: "",
   tbCertificateDate: {
     year: "",
@@ -23,7 +23,7 @@ export const tbCertificateSlice = createSlice({
     setTbCertificateStatus: (state, action: PayloadAction<ApplicationStatus>) => {
       state.status = action.payload;
     },
-    setTbClearanceIssued: (state, action: PayloadAction<string>) => {
+    setTbClearanceIssued: (state, action: PayloadAction<YesOrNo>) => {
       state.tbClearanceIssued = action.payload;
     },
     setPhysicianComments: (state, action: PayloadAction<string>) => {
@@ -37,7 +37,7 @@ export const tbCertificateSlice = createSlice({
     },
     clearTbCertificateDetails: (state) => {
       state.status = ApplicationStatus.INCOMPLETE;
-      state.tbClearanceIssued = "";
+      state.tbClearanceIssued = YesOrNo.NULL;
       state.physicianComments = "";
       state.tbCertificateDate = { year: "", month: "", day: "" };
       state.tbCertificateNumber = "";
