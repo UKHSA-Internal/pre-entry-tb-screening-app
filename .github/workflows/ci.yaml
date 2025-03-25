@@ -1,6 +1,10 @@
 name: Pets CI
 
+
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -118,6 +122,8 @@ jobs:
 
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
+        continue-on-error: true
+        id:  initial_attempt
         with:
           install: false
           working-directory: pets-ui
@@ -125,8 +131,9 @@ jobs:
           config-file: cypress/cypress.config.mjs
 
       - name: Retry if failed
-        if: failure()
+        if: steps.initial_attempt.outcome != 'success'
         uses: cypress-io/github-action@v6
+        id: retry_attempt
         with:
           install: false
           working-directory: pets-ui

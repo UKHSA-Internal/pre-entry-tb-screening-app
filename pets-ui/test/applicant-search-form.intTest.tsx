@@ -159,9 +159,12 @@ describe("ApplicantSearchForm", () => {
       chestXray: {
         status: "completed",
         chestXrayTaken: YesOrNo.YES,
-        posteroAnteriorXray: "pa-file-name",
-        apicalLordoticXray: "",
-        lateralDecubitusXray: "",
+        posteroAnteriorXrayFileName: "pa-file-name",
+        posteroAnteriorXray: "pa-bucket",
+        apicalLordoticXrayFileName: "al-file-name",
+        apicalLordoticXray: "al-bucket",
+        lateralDecubitusXrayFileName: "ld-file-name",
+        lateralDecubitusXray: "ld-bucket",
         xrayResult: "normal",
         xrayResultDetail: "",
         xrayMinorFindings: [],
@@ -180,6 +183,10 @@ describe("ApplicantSearchForm", () => {
     expect(mock.history.get[0].url).toEqual("/applicant/search");
     expect(mock.history.get[1].url).toEqual("/application/abc-123");
     expect(mock.history).toHaveLength(2);
+
+    expect(store.getState().application).toMatchObject({
+      applicationId: "abc-123",
+    });
 
     expect(store.getState().applicant).toEqual({
       applicantHomeAddress1: "1 Ayres Rock Way",
@@ -241,11 +248,11 @@ describe("ApplicantSearchForm", () => {
       status: ApplicationStatus.COMPLETE,
       chestXrayTaken: YesOrNo.YES,
       posteroAnteriorXrayFileName: "pa-file-name",
-      posteroAnteriorXrayFile: "",
-      apicalLordoticXrayFileName: "",
-      apicalLordoticXrayFile: "",
-      lateralDecubitusXrayFileName: "",
-      lateralDecubitusXrayFile: "",
+      posteroAnteriorXrayFile: "pa-bucket",
+      apicalLordoticXrayFileName: "al-file-name",
+      apicalLordoticXrayFile: "al-bucket",
+      lateralDecubitusXrayFileName: "ld-file-name",
+      lateralDecubitusXrayFile: "ld-bucket",
       reasonXrayWasNotTaken: "",
       xrayWasNotTakenFurtherDetails: "",
       xrayResult: "normal",
@@ -412,7 +419,7 @@ describe("ApplicantSearchForm", () => {
     expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
   });
 
-  test("user is navigated to applicant results page when applicant search returns 404", async () => {
+  test("user is navigated to applicant results page when applicant search returns an empty array", async () => {
     const { store } = renderWithProviders(
       <Router>
         <ApplicantSearchForm />
@@ -420,7 +427,7 @@ describe("ApplicantSearchForm", () => {
     );
     const user = userEvent.setup();
 
-    mock.onGet("/applicant/search").reply(404);
+    mock.onGet("/applicant/search").reply(204, []);
 
     await user.type(screen.getByTestId("passport-number"), "12345");
     fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });

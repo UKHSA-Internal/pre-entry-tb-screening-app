@@ -1,10 +1,16 @@
+import { File } from "node:buffer";
+
 import * as matchers from "@testing-library/jest-dom/matchers";
 import { cleanup } from "@testing-library/react";
+import crypto from "crypto";
 import { afterEach, beforeEach, expect, vi } from "vitest";
 
 import { mockAccount, mockAuthResult } from "./src/test-data/auth";
 
 expect.extend(matchers);
+
+globalThis.crypto = crypto as any;
+globalThis.File = File;
 
 beforeEach(() => {
   vi.mock("@azure/msal-browser", async (importOriginal) => {

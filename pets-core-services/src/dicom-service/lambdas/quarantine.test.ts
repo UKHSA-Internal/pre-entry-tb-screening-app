@@ -8,8 +8,8 @@ import { mockClient } from "aws-sdk-client-mock";
 import { describe, expect, test } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
-import { handler, QUARANTINE_BUCKET } from "./quarantine";
-import { EventBridgeEvent, EventBridgeEventDetails } from "./types";
+import { EventBridgeEvent, EventBridgeEventDetails } from "../types";
+import { handler } from "./quarantine";
 
 const EVENT: EventBridgeEvent<string, EventBridgeEventDetails> = {
   version: "0",
@@ -45,10 +45,9 @@ const EVENT: EventBridgeEvent<string, EventBridgeEventDetails> = {
 };
 
 describe("Tests for image service lambda", () => {
-  //@ts-expect-error type difference
   const s3ClientMock = mockClient(awsClients.s3Client);
 
-  test("Copy file", () => {
+  test("Copy file", async () => {
     //@ts-expect-error type difference
     s3ClientMock.on(CopyObjectCommand).resolvesOnce({
       done: "OK",
@@ -59,14 +58,32 @@ describe("Tests for image service lambda", () => {
     } as DeleteObjectCommandOutput);
 
     // Act
-    const result = handler(EVENT);
+    const result = await handler(EVENT);
 
     // Assert
     expect(result).toMatchObject({
       sourceBucket: "imageservice-source",
-      destinationBucket: QUARANTINE_BUCKET,
+      destinationBucket: "QUARANTINE_BUCKET",
       fileName: "test.txt",
       status: "OK",
     });
+  });
+
+  test("Invalid Event", async () => {
+    // Act
+    const testEvent: EventBridgeEvent<string, EventBridgeEventDetails> = {
+      ...EVENT,
+      detail: {
+        ...EVENT.detail,
+        scanResultDetails: {
+          ...EVENT.detail.scanResultDetails,
+          scanResultStatus: "NO_THREATS_FOUND",
+        },
+      },
+    };
+    const result = await handler(testEvent);
+
+    // Assert
+    expect(result).toBeUndefined();
   });
 });

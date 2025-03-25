@@ -1,100 +1,73 @@
 import {
   CopyObjectCommand,
   CopyObjectCommandInput,
-  CopyObjectCommandOutput,
   DeleteObjectCommand,
   DeleteObjectCommandInput,
   waitUntilObjectExists,
 } from "@aws-sdk/client-s3";
+import assert from "assert";
 
 import awsClients from "../../shared/clients/aws";
 import { assertEnvExists } from "../../shared/config";
 import { logger } from "../../shared/logger";
-import { EventBridgeEvent, EventBridgeEventDetails } from "./types";
+import { EventBridgeEvent, EventBridgeEventDetails } from "../types";
 
-export const QUARANTINE_BUCKET = assertEnvExists(process.env.QUARANTINE_BUCKET);
-const S3_SSE_KMS_KEY_ID = assertEnvExists(process.env.S3_SSE_KMS_KEY_ID);
+const QUARANTINE_BUCKET = assertEnvExists(process.env.QUARANTINE_BUCKET);
+const SSE_KEY_ID = assertEnvExists(process.env.SSE_KEY_ID);
+const NO_THREATS_FOUND = "NO_THREATS_FOUND";
 
-export const handler = (
+export const handler = async (
   event: EventBridgeEvent<string, EventBridgeEventDetails>,
-): void | object => {
+): Promise<void | object> => {
   logger.info({ event }, "Received Quarantine event");
+  try {
+    const { detail } = event;
+    assert(detail, "EventBridge event object doesn't contain 'detail' property");
 
-  const { detail } = event;
-  let bucketName: string = "";
-  let fileName: string = "";
-
-  if (detail) {
-    if (detail?.s3ObjectDetails) {
-      bucketName = detail.s3ObjectDetails?.bucketName || "";
-      fileName = detail.s3ObjectDetails?.objectKey || "";
-
-      logger.info(`bucketName => ${bucketName} / fileName => ${fileName}`);
-
-      // Do nothing if there are no proper names
-      if (!bucketName || !fileName) return;
+    if (detail?.scanResultDetails.scanResultStatus === NO_THREATS_FOUND) {
+      logger.error("EventBridge rule is not properly set");
+      return;
     }
-  } else {
-    // This should never happen
-    logger.error("EventBridge event object doesn't contain 'detail' property");
 
-    return;
-  }
+    const { s3ObjectDetails } = detail;
 
-  const { s3Client } = awsClients;
+    const bucketName = s3ObjectDetails?.bucketName;
+    const fileName = s3ObjectDetails?.objectKey;
 
-  // @ts-expect-error Property 'scanResultDetails' does not exist on type 'object'.
-  if (detail?.scanResultDetails === "NO_THREATS_FOUND") {
-    logger.info("EventBridge rule is not properly set");
-  } else {
+    assert(bucketName, "Invalid bucket name");
+    assert(fileName, "Invalid file name");
+
+    logger.info(`bucketName => ${bucketName} / fileName => ${fileName}`);
+
+    const { s3Client } = awsClients;
+
     logger.info(`Copying the file: ${bucketName}/${fileName} to the bucket: ${QUARANTINE_BUCKET}`);
 
     const copyParams: CopyObjectCommandInput = {
       Bucket: QUARANTINE_BUCKET,
       CopySource: `${bucketName}/${fileName}`,
       Key: fileName,
-      SSEKMSKeyId: S3_SSE_KMS_KEY_ID,
+      SSEKMSKeyId: SSE_KEY_ID,
       ServerSideEncryption: "aws:kms",
     };
+
+    const copyCommand = new CopyObjectCommand(copyParams);
+
+    await s3Client.send(copyCommand);
+
+    await waitUntilObjectExists(
+      { client: s3Client, maxWaitTime: 30 },
+      { Bucket: QUARANTINE_BUCKET, Key: fileName },
+    );
+    logger.info("Successfully copied to quarantine bucket");
 
     const deleteParams: DeleteObjectCommandInput = {
       Bucket: bucketName,
       Key: fileName,
     };
-
-    const copyCommand = new CopyObjectCommand(copyParams);
-    s3Client
-      .send(copyCommand)
-      .then((result: CopyObjectCommandOutput) => {
-        logger.info(`Result of copy: ${JSON.stringify(result)}`);
-
-        waitUntilObjectExists(
-          { client: s3Client, maxWaitTime: 30 },
-          { Bucket: QUARANTINE_BUCKET, Key: fileName },
-        )
-          .then((result) => {
-            logger.info(`Successfully copied: ${JSON.stringify(result)}`);
-          })
-          .catch((error) => {
-            logger.error(`Error while calling waitUntilObjectExists: ${error}`);
-            return;
-          });
-
-        const deleteCommand = new DeleteObjectCommand(deleteParams);
-        s3Client
-          .send(deleteCommand)
-          .then((result) => {
-            logger.info(`Result of delete: ${JSON.stringify(result)}`);
-          })
-          .catch((error) => {
-            logger.error(`Error while calling DeleteObjectCommand: ${error}`);
-            return;
-          });
-      })
-      .catch((error) => {
-        logger.error(`Error message while calling CopyObjectCommand: ${error}`);
-        return;
-      });
+    const deleteCommand = new DeleteObjectCommand(deleteParams);
+    await s3Client.send(deleteCommand);
+    logger.info("Successfully deleted from source bucket");
 
     return {
       sourceBucket: bucketName,
@@ -102,5 +75,8 @@ export const handler = (
       fileName: fileName,
       status: "OK",
     };
+  } catch (error) {
+    logger.error(error, "Error processing event details");
+    throw error;
   }
 };

@@ -34,7 +34,7 @@ export const validateRequest = ({
             return createHttpResponse(400, {
               message: "Request Body failed validation",
               validationError: parsedResult.error.flatten().fieldErrors,
-              parsedResult: parsedResult,
+              validationErrorVerbose: parsedResult.error,
             });
           }
 

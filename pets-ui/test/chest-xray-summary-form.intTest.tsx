@@ -101,6 +101,17 @@ describe("ChestXraySummaryPage", () => {
       await user.click(screen.getByRole("button"));
       expect(mock.history[0].url).toEqual("/application/abc-123/chest-xray");
       expect(mock.history).toHaveLength(1);
+      expect(JSON.parse(mock.history.post[0].data as string)).toMatchObject({
+        chestXrayTaken: "Yes",
+        posteroAnteriorXray: "PA Example File",
+        apicalLordoticXray: "AL Example File",
+        lateralDecubitusXray: "LD Example File",
+        xrayResult: "Chest X-ray normal",
+        xrayResultDetail: "Extra Details on Chest X-ray",
+        xrayMinorFindings: ["Single fibrous streak or band or scar", "Bony Islets"],
+        xrayAssociatedMinorFindings: [],
+        xrayActiveTbFindings: [],
+      });
       expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-confirmation");
     });
   });
