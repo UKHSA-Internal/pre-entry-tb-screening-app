@@ -9,7 +9,7 @@ import { selectApplicant } from "@/redux/applicantSlice";
 import { selectApplication } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectTbCertificate, setTbCertificateStatus } from "@/redux/tbCertificateSlice";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
 import { formatDateType, isDataPresent, standardiseDayOrMonth } from "@/utils/helpers";
 
 const TbSummary = () => {
@@ -21,13 +21,22 @@ const TbSummary = () => {
 
   const handleSubmit = async () => {
     try {
-      const certificateIssueDateStr = `${tbCertificateData.tbCertificateDate.year}-${standardiseDayOrMonth(tbCertificateData.tbCertificateDate.month)}-${standardiseDayOrMonth(tbCertificateData.tbCertificateDate.day)}`;
-      await postTbCerificateDetails(applicationData.applicationId, {
-        certificateIssued: tbCertificateData.tbClearanceIssued,
-        certificateComments: tbCertificateData.physicianComments,
-        certificateIssueDate: certificateIssueDateStr,
-        certificateNumber: tbCertificateData.tbCertificateNumber,
-      });
+      if (tbCertificateData.tbClearanceIssued == YesOrNo.YES) {
+        const certificateIssueDateStr = `${tbCertificateData.tbCertificateDate.year}-${standardiseDayOrMonth(tbCertificateData.tbCertificateDate.month)}-${standardiseDayOrMonth(tbCertificateData.tbCertificateDate.day)}`;
+        await postTbCerificateDetails(applicationData.applicationId, {
+          certificateIssued: tbCertificateData.tbClearanceIssued,
+          certificateComments: tbCertificateData.physicianComments,
+          certificateIssueDate: certificateIssueDateStr,
+          certificateNumber: tbCertificateData.tbCertificateNumber,
+        });
+      } else if (tbCertificateData.tbClearanceIssued == YesOrNo.NO) {
+        await postTbCerificateDetails(applicationData.applicationId, {
+          certificateIssued: tbCertificateData.tbClearanceIssued,
+          certificateComments: tbCertificateData.physicianComments,
+        });
+      } else {
+        throw new Error("certificateIssued field missing");
+      }
 
       dispatch(setTbCertificateStatus(ApplicationStatus.COMPLETE));
       navigate("/tb-certificate-confirmation");
