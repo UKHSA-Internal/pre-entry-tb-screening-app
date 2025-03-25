@@ -1,8 +1,13 @@
 import { seededApplications } from "../../shared/fixtures/application";
-import { NewTbCertificateDetails } from "../models/tb-certificate";
+import {
+  NewTbCertificateIssuedDetails,
+  NewTbCertificateNotIssuedDetails,
+} from "../models/tb-certificate";
 import { YesOrNo } from "../types/enums";
 
-export const seededTbCertificate: NewTbCertificateDetails[] = [
+export const seededTbCertificate: Array<
+  NewTbCertificateIssuedDetails | NewTbCertificateNotIssuedDetails
+> = [
   {
     applicationId: seededApplications[1].applicationId,
     certificateIssued: YesOrNo.Yes,
@@ -15,8 +20,6 @@ export const seededTbCertificate: NewTbCertificateDetails[] = [
     applicationId: seededApplications[2].applicationId,
     certificateIssued: YesOrNo.No,
     certificateComments: "TB is present",
-    certificateIssueDate: "2025-06-06",
-    certificateNumber: "122344",
     createdBy: "shawn.jones@clinic.com",
   },
 ];
