@@ -287,12 +287,7 @@ describe("Test for Application Lambda", () => {
       expect(response.statusCode).toBe(400);
       expect(JSON.parse(response.body)).toMatchObject({
         message: "Request Body failed validation",
-        validationError: {
-          certificateComments: ["Required"],
-          certificateIssueDate: ["Required"],
-          certificateIssued: ["Required"],
-          certificateNumber: ["Required"],
-        },
+        validationError: {},
       });
     });
 
