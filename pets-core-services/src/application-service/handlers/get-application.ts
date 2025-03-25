@@ -4,7 +4,7 @@ import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { ChestXRayDbOps } from "../models/chest-xray";
 import { MedicalScreening } from "../models/medical-screening";
-import { TbCertificate } from "../models/tb-certificate";
+import { TbCertificateDbOps } from "../models/tb-certificate";
 import { TravelInformation } from "../models/travel-information";
 
 export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => {
@@ -24,7 +24,7 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
     const travelInformation = await TravelInformation.getByApplicationId(applicationId);
     const medicalScreening = await MedicalScreening.getByApplicationId(applicationId);
     const chestXray = await ChestXRayDbOps.getByApplicationId(applicationId);
-    const tbCertificate = await TbCertificate.getByApplicationId(applicationId);
+    const tbCertificate = await TbCertificateDbOps.getByApplicationId(applicationId);
 
     return createHttpResponse(200, {
       applicationId,
