@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
 import { YesOrNo } from "../types/enums";
-import { NewTbCertificateDetails, TbCertificate } from "./tb-certificate";
+import { NewTbCertificateIssuedDetails, TbCertificateDbOps } from "./tb-certificate";
 
 describe("Tests for TB Certificate Model", () => {
   const ddbMock = mockClient(awsClients.dynamoDBDocClient);
@@ -13,7 +13,7 @@ describe("Tests for TB Certificate Model", () => {
     ddbMock.reset();
   });
 
-  const newTbCertificate: NewTbCertificateDetails = {
+  const newTbCertificate: NewTbCertificateIssuedDetails = {
     applicationId: "test-application-id",
     certificateIssued: YesOrNo.Yes,
     certificateComments: "comments",
@@ -30,7 +30,7 @@ describe("Tests for TB Certificate Model", () => {
     vi.setSystemTime(expectedDateTime);
 
     // Act
-    const tbCertificate = await TbCertificate.createTbCertificate(newTbCertificate);
+    const tbCertificate = await TbCertificateDbOps.createTbCertificate(newTbCertificate);
 
     // Assert
     expect(tbCertificate).toMatchObject({
@@ -67,7 +67,9 @@ describe("Tests for TB Certificate Model", () => {
     });
 
     // Act
-    const tbCertificate = await TbCertificate.getByApplicationId(newTbCertificate.applicationId);
+    const tbCertificate = await TbCertificateDbOps.getByApplicationId(
+      newTbCertificate.applicationId,
+    );
 
     // Assert
     expect(tbCertificate).toMatchObject({
