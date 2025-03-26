@@ -76,7 +76,7 @@ const dateValidationMessages: Record<string, Record<string, string>> = {
     invalidCharError:
       "Date of birth day and year must contain only numbers. Date of birth month must be a number, or the name of the month, or the first three letters of the month",
     invalidDateError: "Date of birth date must be a valid date",
-    dateMustBeInPastError: "Date of birth date must in the past",
+    dateMustBeInPastError: "Date of birth date must be in the past",
   },
   tbCertificateDate: {
     emptyFieldError: "TB clearance certificate date must include a day, month and year",
