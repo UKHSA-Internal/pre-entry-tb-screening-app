@@ -46,6 +46,7 @@ const attributeToComponentId: { [key: string]: string } = {
   reasonXrayWasNotTaken: "reason-xray-not-taken",
   xrayWasNotTakenFurtherDetails: "xray-not-taken-further-details",
   tbClearanceIssued: "tb-clearance-issued",
+  physicianComments: "physician-comments",
   tbCertificateDate: "tb-certificate-date",
   tbCertificateNumber: "tb-certificate-number",
 };
