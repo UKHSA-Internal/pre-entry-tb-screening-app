@@ -5,6 +5,7 @@ import {
   QueryCommandOutput,
   ScanCommand,
   ScanCommandInput,
+  ScanCommandOutput,
 } from "@aws-sdk/lib-dynamodb";
 
 import awsClients from "../../shared/clients/aws";
@@ -169,6 +170,51 @@ export class Clinic extends IClinic {
       );
     } catch (error) {
       logger.error(error, "Error retrieving active clinics");
+      throw error;
+    }
+  }
+
+  /**
+   * This return True for the clinic that endDate is null or grater than current date
+   * @returns boolean
+   */
+  static async isActiveClinic(clinicId: string): Promise<boolean> {
+    try {
+      logger.info(`Fetching the clinic (${clinicId}) if 'active'`);
+      const today = new Date();
+
+      const params: ScanCommandInput = {
+        TableName: Clinic.getTableName(),
+        // KeyConditionExpression: `clinicId = :ID`,
+        FilterExpression: `(clinicId = :ID) AND ((attribute_type(endDate, :dateType)) OR (endDate > :today))`,
+        ExpressionAttributeValues: {
+          ":dateType": "NULL",
+          ":today": today.toString(),
+          ":ID": clinicId,
+        },
+      };
+      const command = new ScanCommand(params);
+
+      const data: ScanCommandOutput = await docClient.send(command);
+
+      if (!data?.Items) {
+        logger.info("No active clinic found");
+
+        return false;
+      } else if (data?.Items.length == 1) {
+        logger.info("Clinic is active");
+
+        return true;
+      } else {
+        logger.info(
+          { resultCount: data.Items.length },
+          "There was an error retrieving the clinic data",
+        );
+
+        return false;
+      }
+    } catch (error) {
+      logger.error(error, `Error retrieving the clinic with 'clinicId': ${clinicId}`);
       throw error;
     }
   }

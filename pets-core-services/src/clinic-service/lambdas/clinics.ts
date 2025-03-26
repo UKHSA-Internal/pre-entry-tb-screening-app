@@ -7,6 +7,7 @@ import { createClinicHandler } from "../handlers/createClinic";
 import { fetchActiveClinicsHandler } from "../handlers/fetchActiveClinics";
 import { fetchClinicsHandler } from "../handlers/fetchClinics";
 import { getClinicHandler } from "../handlers/getClinic";
+import { checkActiveClinicHandler } from "../handlers/isActiveClinicHandler";
 import { ClinicSchema } from "../types/zod-schema";
 extendZodWithOpenApi(z);
 
@@ -44,6 +45,14 @@ export const routes: PetsRoute[] = [
     responseSchema: z
       .array(ClinicSchema)
       .openapi("AllActiveClinics", { description: "List of all active clinics" }),
+  },
+  {
+    method: "GET",
+    path: "/clinics/active/{clinicId}",
+    handler: checkActiveClinicHandler,
+    responseSchema: ClinicSchema.openapi("IsClinicActive", {
+      description: "True if the clinic is an active one",
+    }),
   },
 ];
 
