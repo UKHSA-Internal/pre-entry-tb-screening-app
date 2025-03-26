@@ -1,13 +1,16 @@
 import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { postMedicalDetails } from "@/api/api";
+import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
+import Summary from "@/components/summary/summary";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { selectApplication } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectMedicalScreening, setMedicalScreeningStatus } from "@/redux/medicalScreeningSlice";
 import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { attributeToComponentId } from "@/utils/records";
 
 const MedicalScreeningReview = () => {
   const applicantData = useAppSelector(selectApplicant);
@@ -42,206 +45,111 @@ const MedicalScreeningReview = () => {
     }
   };
 
+  const summaryData = [
+    {
+      key: "Age",
+      value: medicalData.age,
+      link: `/medical-screening#${attributeToComponentId.age}`,
+      hiddenLabel: "age",
+    },
+    {
+      key: "Does the applicant have TB symptoms?",
+      value: medicalData.tbSymptoms,
+      link: `/medical-screening#${attributeToComponentId.tbSymptoms}`,
+      hiddenLabel: "whether the applicant has TB symptoms",
+    },
+    {
+      key: "TB symptoms",
+      value: medicalData.tbSymptomsList.join(", "),
+      link: `/medical-screening#${attributeToComponentId.tbSymptomsList}`,
+      hiddenLabel: "TB symptoms",
+    },
+    {
+      key: "Other symptoms",
+      value: medicalData.otherSymptomsDetail,
+      link: `/medical-screening#${attributeToComponentId.otherSymptomsDetail}`,
+      hiddenLabel: "other symptoms",
+    },
+    {
+      key: "Applicant history if under 11",
+      value: medicalData.underElevenConditions.join(", "),
+      link: `/medical-screening#${attributeToComponentId.underElevenConditions}`,
+      hiddenLabel: "applicant history if under 11",
+    },
+    {
+      key: "Additional details of applicant history if under 11",
+      value: medicalData.underElevenConditionsDetail,
+      link: `/medical-screening#${attributeToComponentId.underElevenConditionsDetail}`,
+      hiddenLabel: "additional details of applicant history if under 11",
+    },
+    {
+      key: "Has the applicant ever had tuberculosis?",
+      value: medicalData.previousTb,
+      link: `/medical-screening#${attributeToComponentId.previousTb}`,
+      hiddenLabel: "whether the applicant has ever had tuberculosis",
+    },
+    {
+      key: "Detail of applicant's previous TB",
+      value: medicalData.previousTbDetail,
+      link: `/medical-screening#${attributeToComponentId.previousTbDetail}`,
+      hiddenLabel: "details of applicant's previous TB",
+    },
+    {
+      key: "Has the applicant had close contact with any person with active pulmonary tuberculosis within the past year?",
+      value: medicalData.closeContactWithTb,
+      link: `/medical-screening#${attributeToComponentId.closeContactWithTb}`,
+      hiddenLabel: "applicant's close contact with TB in the past year",
+    },
+    {
+      key: "Details of applicant's close contact with any person with active pulmonary tuberculosis",
+      value: medicalData.closeContactWithTbDetail,
+      link: `/medical-screening#${attributeToComponentId.closeContactWithTbDetail}`,
+      hiddenLabel: "details of applicant's close contact with TB in the past year",
+    },
+    {
+      key: "Is the applicant pregnant?",
+      value: medicalData.pregnant,
+      link: `/medical-screening#${attributeToComponentId.pregnant}`,
+      hiddenLabel: "pregnancy",
+    },
+    {
+      key: "Does the applicant have menstrual periods?",
+      value: medicalData.menstrualPeriods,
+      link: `/medical-screening#${attributeToComponentId.menstrualPeriods}`,
+      hiddenLabel: "menstrual periods",
+    },
+    {
+      key: "Physical examination notes",
+      value: medicalData.physicalExamNotes,
+      link: `/medical-screening#${attributeToComponentId.physicalExamNotes}`,
+      hiddenLabel: "physical examination notes",
+    },
+  ];
+
   return (
     <div>
-      <dl className="govuk-summary-list">
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Name</dt>
-          <dd className="govuk-summary-list__value">{applicantData.fullName}</dd>
-          <dd className="govuk-summary-list__actions"></dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Age</dt>
-          <dd className="govuk-summary-list__value">{medicalData.age}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link className="govuk-link" style={{ color: "#1d70b8" }} to="/medical-screening#age">
-              Change<span className="govuk-visually-hidden"> age</span>
-            </Link>
-          </dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Does the applicant have TB symptoms?</dt>
-          <dd className="govuk-summary-list__value">{medicalData.tbSymptoms}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link
-              className="govuk-link"
-              style={{ color: "#1d70b8" }}
-              to="/medical-screening#tb-symptoms"
-            >
-              Change<span className="govuk-visually-hidden"> TB symptoms</span>
-            </Link>
-          </dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">TB symptoms</dt>
-          <dd className="govuk-summary-list__value">{medicalData.tbSymptomsList.join(", ")}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link
-              className="govuk-link"
-              style={{ color: "#1d70b8" }}
-              to="/medical-screening#tb-symptoms-list"
-            >
-              Change<span className="govuk-visually-hidden"> TB symptoms</span>
-            </Link>
-          </dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Other symptoms</dt>
-          <dd className="govuk-summary-list__value">{medicalData.otherSymptomsDetail}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link
-              className="govuk-link"
-              style={{ color: "#1d70b8" }}
-              to="/medical-screening#other-symptoms-detail"
-            >
-              Change<span className="govuk-visually-hidden"> other symptoms</span>
-            </Link>
-          </dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Applicant history if under 11</dt>
-          <dd className="govuk-summary-list__value">
-            {medicalData.underElevenConditions.join(", ")}
-          </dd>
-          <dd className="govuk-summary-list__actions">
-            <Link
-              className="govuk-link"
-              style={{ color: "#1d70b8" }}
-              to="/medical-screening#under-eleven-conditions"
-            >
-              Change<span className="govuk-visually-hidden"> applicant history if under 11</span>
-            </Link>
-          </dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">
-            Additional details of applicant history if under 11
-          </dt>
-          <dd className="govuk-summary-list__value">{medicalData.underElevenConditionsDetail}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link
-              className="govuk-link"
-              style={{ color: "#1d70b8" }}
-              to="/medical-screening#under-eleven-conditions-detail"
-            >
-              Change{" "}
-              <span className="govuk-visually-hidden">
-                additional details of applicant history if under 11
-              </span>
-            </Link>
-          </dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Has the applicant ever had tuberculosis?</dt>
-          <dd className="govuk-summary-list__value">{medicalData.previousTb}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link
-              className="govuk-link"
-              style={{ color: "#1d70b8" }}
-              to="/medical-screening#previous-tb"
-            >
-              Change<span className="govuk-visually-hidden"> applicant&apos;s previous TB</span>
-            </Link>
-          </dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Detail of applicant&apos;s previous TB</dt>
-          <dd className="govuk-summary-list__value">{medicalData.previousTbDetail}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link
-              className="govuk-link"
-              style={{ color: "#1d70b8" }}
-              to="/medical-screening#previous-tb-detail"
-            >
-              Change<span className="govuk-visually-hidden"> applicant&apos;s previous TB</span>
-            </Link>
-          </dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">
-            Has the applicant had close contact with any person with active pulmonary tuberculosis
-            within the past year?
-          </dt>
-          <dd className="govuk-summary-list__value">{medicalData.closeContactWithTb}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link
-              className="govuk-link"
-              style={{ color: "#1d70b8" }}
-              to="/medical-screening#close-contact-with-tb"
-            >
-              Change{" "}
-              <span className="govuk-visually-hidden">
-                applicant&apos;s close contact with TB in the past year
-              </span>
-            </Link>
-          </dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">
-            Details of applicant&apos;s close contact with any person with active pulmonary
-            tuberculosis
-          </dt>
-          <dd className="govuk-summary-list__value">{medicalData.closeContactWithTbDetail}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link
-              className="govuk-link"
-              style={{ color: "#1d70b8" }}
-              to="/medical-screening#close-contact-with-tb-detail"
-            >
-              Change{" "}
-              <span className="govuk-visually-hidden">
-                details of applicant&apos;s close contact with TB in the past year
-              </span>
-            </Link>
-          </dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Is the applicant pregnant?</dt>
-          <dd className="govuk-summary-list__value">{medicalData.pregnant}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link
-              className="govuk-link"
-              style={{ color: "#1d70b8" }}
-              to="/medical-screening#pregnant"
-            >
-              Change<span className="govuk-visually-hidden"> pregnancy</span>
-            </Link>
-          </dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Does the applicant have menstrual periods?</dt>
-          <dd className="govuk-summary-list__value">{medicalData.menstrualPeriods}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link
-              className="govuk-link"
-              style={{ color: "#1d70b8" }}
-              to="/medical-screening#menstrual-periods"
-            >
-              Change<span className="govuk-visually-hidden"> menstrual periods</span>
-            </Link>
-          </dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Physical examination notes</dt>
-          <dd className="govuk-summary-list__value">{medicalData.physicalExamNotes}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link
-              className="govuk-link"
-              style={{ color: "#1d70b8" }}
-              to="/medical-screening#physical-exam-notes"
-            >
-              Change<span className="govuk-visually-hidden"> physical examination notes</span>
-            </Link>
-          </dd>
-        </div>
-      </dl>
-      <Button
-        id="confirm"
-        type={ButtonType.DEFAULT}
-        text="Confirm"
-        href="/medical-confirmation"
-        handleClick={handleSubmit}
-      />
+      <ApplicantDataHeader applicantData={applicantData} />
+
+      <Summary status={medicalData.status} summaryElements={summaryData} />
+
+      {medicalData.status == ApplicationStatus.INCOMPLETE && (
+        <Button
+          id="confirm"
+          type={ButtonType.DEFAULT}
+          text="Confirm"
+          href="/medical-confirmation"
+          handleClick={handleSubmit}
+        />
+      )}
+      {medicalData.status == ApplicationStatus.COMPLETE && (
+        <Button
+          id="back-to-tracker"
+          type={ButtonType.DEFAULT}
+          text="Return to tracker"
+          href="/tracker"
+          handleClick={() => navigate("/tracker")}
+        />
+      )}
     </div>
   );
 };
