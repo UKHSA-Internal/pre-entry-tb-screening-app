@@ -1,6 +1,6 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
@@ -20,6 +20,7 @@ import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
 
 const ChestXrayQuestionForm = () => {
   const dispatch = useAppDispatch();
+  const location = useLocation();
   const navigate = useNavigate();
   const applicantData = useAppSelector(selectApplicant);
   const chestXrayData = useAppSelector(selectChestXray);
@@ -44,6 +45,14 @@ const ChestXrayQuestionForm = () => {
 
   const errorsToShow = Object.keys(errors);
   const chestXrayTakenRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (location.hash) {
+      const target = location.hash.substring(1);
+      if (target == "chest-xray-taken") {
+        chestXrayTakenRef.current?.scrollIntoView();
+      }
+    }
+  }, [location]);
 
   return (
     <FormProvider {...methods}>
