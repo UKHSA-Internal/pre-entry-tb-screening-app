@@ -4,6 +4,7 @@ import { z } from "zod";
 import { boostrapLambdaRoutes } from "../../shared/http";
 import { PetsRoute } from "../../shared/types";
 import { createClinicHandler } from "../handlers/createClinic";
+import { fetchActiveClinicsHandler } from "../handlers/fetchActiveClinics";
 import { fetchClinicsHandler } from "../handlers/fetchClinics";
 import { getClinicHandler } from "../handlers/getClinic";
 import { ClinicSchema } from "../types/zod-schema";
@@ -35,6 +36,14 @@ export const routes: PetsRoute[] = [
         .string({ description: "When specified, returns only clinics in Country" })
         .optional(),
     },
+  },
+  {
+    method: "GET",
+    path: "/clinics/active",
+    handler: fetchActiveClinicsHandler,
+    responseSchema: z
+      .array(ClinicSchema)
+      .openapi("AllActiveClinics", { description: "List of all active clinics" }),
   },
 ];
 
