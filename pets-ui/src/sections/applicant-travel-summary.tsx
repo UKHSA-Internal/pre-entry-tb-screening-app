@@ -1,12 +1,14 @@
 import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { postTravelDetails } from "@/api/api";
 import Button from "@/components/button/button";
+import Summary from "@/components/summary/summary";
 import { selectApplication } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectTravel, setTravelDetailsStatus } from "@/redux/travelSlice";
 import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { attributeToComponentId } from "@/utils/records";
 
 const TravelReview = () => {
   const applicationData = useAppSelector(selectApplication);
@@ -34,100 +36,73 @@ const TravelReview = () => {
     }
   };
 
+  const summaryData = [
+    {
+      key: "Visa type",
+      value: travelData.visaType,
+      link: `/travel-details#${attributeToComponentId.visaType}`,
+      hiddenLabel: "visa type",
+    },
+    {
+      key: "UK address line 1",
+      value: travelData.applicantUkAddress1,
+      link: `/travel-details#${attributeToComponentId.applicantUkAddress1}`,
+      hiddenLabel: "UK address line 1",
+    },
+    {
+      key: "UK address line 2",
+      value: travelData.applicantUkAddress2,
+      link: `/travel-details#${attributeToComponentId.applicantUkAddress2}`,
+      hiddenLabel: "UK address line 2",
+    },
+    {
+      key: "UK town or city",
+      value: travelData.townOrCity,
+      link: `/travel-details#${attributeToComponentId.townOrCity}`,
+      hiddenLabel: "town or city",
+    },
+    {
+      key: "UK postcode",
+      value: travelData.postcode,
+      link: `/travel-details#${attributeToComponentId.postcode}`,
+      hiddenLabel: "postcode",
+    },
+    {
+      key: "UK mobile number",
+      value: travelData.ukMobileNumber,
+      link: `/travel-details#${attributeToComponentId.ukMobileNumber}`,
+      hiddenLabel: "UK mobile number",
+    },
+    {
+      key: "UK email address",
+      value: travelData.ukEmail,
+      link: `/travel-details#${attributeToComponentId.ukEmail}`,
+      hiddenLabel: "UK email address",
+    },
+  ];
+
   return (
     <div>
-      <dl className="govuk-summary-list">
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Visa type</dt>
-          <dd className="govuk-summary-list__value">{travelData.visaType}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link
-              className="govuk-link"
-              style={{ color: "#1d70b8" }}
-              to="/travel-details#visa-type"
-            >
-              Change<span className="govuk-visually-hidden"> visa type</span>
-            </Link>
-          </dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">UK address line 1</dt>
-          <dd className="govuk-summary-list__value">{travelData.applicantUkAddress1}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link
-              className="govuk-link"
-              style={{ color: "#1d70b8" }}
-              to="/travel-details#address-1"
-            >
-              Change<span className="govuk-visually-hidden"> UK address line 1</span>
-            </Link>
-          </dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">UK address line 2</dt>
-          <dd className="govuk-summary-list__value">{travelData.applicantUkAddress2}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link
-              className="govuk-link"
-              style={{ color: "#1d70b8" }}
-              to="/travel-details#address-2"
-            >
-              Change<span className="govuk-visually-hidden"> UK address line 2</span>
-            </Link>
-          </dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">UK town or city</dt>
-          <dd className="govuk-summary-list__value">{travelData.townOrCity}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link
-              className="govuk-link"
-              style={{ color: "#1d70b8" }}
-              to="/travel-details#town-or-city"
-            >
-              Change<span className="govuk-visually-hidden"> town or city</span>
-            </Link>
-          </dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">UK postcode</dt>
-          <dd className="govuk-summary-list__value">{travelData.postcode}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link className="govuk-link" style={{ color: "#1d70b8" }} to="/travel-details#postcode">
-              Change<span className="govuk-visually-hidden"> postcode</span>
-            </Link>
-          </dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">UK mobile number</dt>
-          <dd className="govuk-summary-list__value">{travelData.ukMobileNumber}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link
-              className="govuk-link"
-              style={{ color: "#1d70b8" }}
-              to="/travel-details#mobile-number"
-            >
-              Change<span className="govuk-visually-hidden"> UK mobile number</span>
-            </Link>
-          </dd>
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">UK email address</dt>
-          <dd className="govuk-summary-list__value">{travelData.ukEmail}</dd>
-          <dd className="govuk-summary-list__actions">
-            <Link className="govuk-link" style={{ color: "#1d70b8" }} to="/travel-details#email">
-              Change<span className="govuk-visually-hidden"> UK email address</span>
-            </Link>
-          </dd>
-        </div>
-      </dl>
-      <Button
-        id="confirm"
-        type={ButtonType.DEFAULT}
-        text="Confirm"
-        href="/travel-confirmation"
-        handleClick={handleSubmit}
-      />
+      <Summary status={travelData.status} summaryElements={summaryData} />
+
+      {travelData.status == ApplicationStatus.INCOMPLETE && (
+        <Button
+          id="confirm"
+          type={ButtonType.DEFAULT}
+          text="Confirm"
+          href="/travel-confirmation"
+          handleClick={handleSubmit}
+        />
+      )}
+      {travelData.status == ApplicationStatus.COMPLETE && (
+        <Button
+          id="back-to-tracker"
+          type={ButtonType.DEFAULT}
+          text="Return to tracker"
+          href="/tracker"
+          handleClick={() => navigate("/tracker")}
+        />
+      )}
     </div>
   );
 };
