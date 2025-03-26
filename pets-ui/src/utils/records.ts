@@ -9,6 +9,8 @@ const attributeToComponentId: { [key: string]: string } = {
   expiryDate: "passport-expiry-date",
   dateOfBirth: "birth-date",
   sex: "sex",
+  passportIssueDate: "passport-issue-date",
+  passportExpiryDate: "passport-expiry-date",
   applicantHomeAddress1: "address-1",
   applicantHomeAddress2: "address-2",
   applicantHomeAddress3: "address-3",
@@ -41,8 +43,6 @@ const attributeToComponentId: { [key: string]: string } = {
   tbClearanceIssued: "tb-clearance-issued",
   tbCertificateDate: "tb-certificate-date",
   tbCertificateNumber: "tb-certificate-number",
-  passportIssueDate: "passportIssueDate",
-  passportExpiryDate: "passportExpiryDate",
 };
 
 const formRegex = {
