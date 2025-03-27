@@ -1,7 +1,12 @@
+import LinkLabel from "../linkLabel/LinkLabel";
+
 export default function SkipLink() {
   return (
-    <a href="#main-content" className="govuk-skip-link" data-module="govuk-skip-link">
-      Skip to main content
-    </a>
+    <LinkLabel
+      title="Skip to main content"
+      to="#main-content"
+      className="govuk-skip-link"
+      data-module="govuk-skip-link"
+    />
   );
 }

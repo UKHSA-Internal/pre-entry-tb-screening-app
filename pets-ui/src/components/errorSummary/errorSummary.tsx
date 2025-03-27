@@ -2,6 +2,8 @@ import { FieldErrors } from "react-hook-form";
 
 import { attributeToComponentId } from "@/utils/records";
 
+import LinkLabel from "../linkLabel/LinkLabel";
+
 interface ErrorSummaryProps {
   errorsToShow: string[];
   errors: FieldErrors;
@@ -29,12 +31,11 @@ export default function ErrorSummary(props: Readonly<ErrorSummaryProps>) {
           <ul className="govuk-list govuk-error-summary__list">
             {props.errorsToShow.map((error) => (
               <li key={attributeToComponentId[error]}>
-                <a
-                  href={"#" + attributeToComponentId[error]}
+                <LinkLabel
+                  title={props.errors[error]?.message as string}
+                  to={"#" + attributeToComponentId[error]}
                   aria-label={`Error: ${props.errors[error]?.message as string}`}
-                >
-                  {props.errors[error]?.message as string}
-                </a>
+                />
               </li>
             ))}
           </ul>
