@@ -46,22 +46,22 @@ export class ChestXrayPage {
 
   // Select "Yes" for X-ray taken
   selectXrayTakenYes(): void {
-    cy.get('input[name="chestXrayTaken"][value="Yes"]').check();
+    cy.get('input[name="chest-xray-taken"][value="Yes"]').check();
   }
 
   // Select "No" for X-ray taken
   selectXrayTakenNo(): void {
-    cy.get('input[name="chestXrayTaken"][value="No"]').check();
+    cy.get('input[name="chest-xray-taken"][value="No"]').check();
   }
 
   // Get current X-ray selection
   getCurrentXraySelection(): Cypress.Chainable<string> {
-    return cy.get('input[name="chestXrayTaken"]:checked').invoke("val");
+    return cy.get('input[name="chest-xray-taken"]:checked').invoke("val");
   }
 
   // Check if X-ray option is selected
   isXrayOptionSelected(): Cypress.Chainable<JQuery<HTMLElement>> {
-    return cy.get('input[name="chestXrayTaken"]:checked').should("exist");
+    return cy.get('input[name="chest-xray-taken"]:checked').should("exist");
   }
   // Click continue button
   clickContinue(): void {
