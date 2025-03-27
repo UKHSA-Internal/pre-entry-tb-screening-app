@@ -10,6 +10,40 @@ import { selectTbCertificate } from "@/redux/tbCertificateSlice";
 import { selectTravel } from "@/redux/travelSlice";
 import { ApplicationStatus, ButtonType } from "@/utils/enums";
 
+interface TaskProps {
+  description: string;
+  status: ApplicationStatus;
+  linkWhenIncomplete: string;
+  linkWhenComplete: string;
+}
+
+const Task = (props: TaskProps) => {
+  return (
+    <li className="govuk-task-list__item govuk-task-list__item--with-link">
+      <div className="govuk-task-list__name-and-hint">
+        {props.status == ApplicationStatus.INCOMPLETE && (
+          <Link className="govuk-link govuk-task-list__link" to={props.linkWhenIncomplete}>
+            {props.description}
+          </Link>
+        )}
+        {props.status == ApplicationStatus.COMPLETE && (
+          <Link className="govuk-link govuk-task-list__link" to={props.linkWhenComplete}>
+            {props.description}
+          </Link>
+        )}
+      </div>
+      {props.status == ApplicationStatus.INCOMPLETE && (
+        <div className="govuk-task-list__status">
+          <strong className="govuk-tag govuk-tag--blue">Incomplete</strong>
+        </div>
+      )}
+      {props.status == ApplicationStatus.COMPLETE && (
+        <div className="govuk-task-list__status">Completed</div>
+      )}
+    </li>
+  );
+};
+
 const ProgressTracker = () => {
   const navigate = useNavigate();
 
@@ -18,40 +52,6 @@ const ProgressTracker = () => {
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const chestXrayData = useAppSelector(selectChestXray);
   const tbCertificateData = useAppSelector(selectTbCertificate);
-
-  interface TaskProps {
-    description: string;
-    status: ApplicationStatus;
-    linkWhenIncomplete: string;
-    linkWhenComplete: string;
-  }
-
-  const Task = (props: TaskProps) => {
-    return (
-      <li className="govuk-task-list__item govuk-task-list__item--with-link">
-        <div className="govuk-task-list__name-and-hint">
-          {props.status == ApplicationStatus.INCOMPLETE && (
-            <Link className="govuk-link govuk-task-list__link" to={props.linkWhenIncomplete}>
-              {props.description}
-            </Link>
-          )}
-          {props.status == ApplicationStatus.COMPLETE && (
-            <Link className="govuk-link govuk-task-list__link" to={props.linkWhenComplete}>
-              {props.description}
-            </Link>
-          )}
-        </div>
-        {props.status == ApplicationStatus.INCOMPLETE && (
-          <div className="govuk-task-list__status">
-            <strong className="govuk-tag govuk-tag--blue">Incomplete</strong>
-          </div>
-        )}
-        {props.status == ApplicationStatus.COMPLETE && (
-          <div className="govuk-task-list__status">Completed</div>
-        )}
-      </li>
-    );
-  };
 
   return (
     <div>
