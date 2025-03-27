@@ -16,6 +16,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  validate-branch-name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate branch name
+        uses: ./.github/actions/validate-branch-name
+        with:
+          branch_name: ${{ github.head_ref }}
+
   linting:
     name: Run linting checks
     runs-on: ubuntu-latest
