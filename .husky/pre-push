@@ -5,7 +5,7 @@ pnpm -r lint
 branch_name=$(git symbolic-ref --short HEAD)
 
 # Define the branch naming pattern
-pattern="^feature/TBBETA-[0-9]+-[a-z0-9-]+$"
+pattern="^feature/TBBETA-[0-9]+(-[a-z0-9-]+)?$"
 
 # Check if the branch name follows the convention
 if [[ ! $branch_name =~ $pattern ]]; then
