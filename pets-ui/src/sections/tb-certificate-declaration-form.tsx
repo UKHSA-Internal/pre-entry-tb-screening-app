@@ -98,12 +98,6 @@ const TbCertificateDeclarationForm = () => {
           />
         </div>
 
-        <Heading
-          level={2}
-          size="m"
-          style={{ marginBottom: 20, marginTop: 40 }}
-          title="Physician comments"
-        />
         <TextArea
           id="physician-comments"
           required={false}
@@ -111,6 +105,9 @@ const TbCertificateDeclarationForm = () => {
           formValue="physicianComments"
           rows={10}
           defaultValue={tbCertificateData.physicianComments}
+          heading="Physician comments"
+          hasHeading={true}
+          hasLabel={false}
         />
 
         <Heading
@@ -157,15 +154,12 @@ const TbCertificateDeclarationForm = () => {
         </div>
 
         <div ref={tbCertificateNumber}>
-          <Heading
-            level={2}
-            size="m"
-            style={{ marginBottom: 20, marginTop: 20 }}
-            title="TB clearance certificate number"
-          />
           <FreeText
             id="tb-certificate-number"
             errorMessage={errors?.tbCertificateNumber?.message ?? ""}
+            hasHeading={true}
+            hasLabel={false}
+            heading="TB clearance certificate number"
             formValue="tbCertificateNumber"
             patternValue={formRegex.lettersAndNumbers}
             patternError="TB clearance certificate number must contain only letters and numbers"

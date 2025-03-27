@@ -63,11 +63,12 @@ const ChestXrayNotTakenForm = () => {
             required="Select the reason why the chest X-ray was not taken"
           />
         </div>
-        <Heading level={2} title="Notes" />
         <div ref={xrayNotTakenFurtherDetailsRef}>
           <TextArea
             id="xray-not-taken-further-details"
+            heading="Notes"
             label="If other, give further details"
+            hasHeading={true}
             errorMessage={errors?.xrayWasNotTakenFurtherDetails?.message ?? ""}
             formValue="xrayWasNotTakenFurtherDetails"
             required={

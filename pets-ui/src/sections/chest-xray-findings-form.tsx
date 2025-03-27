@@ -98,10 +98,13 @@ const ChestXrayFindingsForm = () => {
         </div>
 
         <div ref={xrayResultDetail}>
-          <Heading level={4} size="s" style={{ marginBottom: 20, marginTop: 40 }} title="Details" />
           <TextArea
             id="xray-result-detail"
             label="Add details if X-ray results are abnormal"
+            hasHeading={true}
+            headingLevel={4}
+            headingSize="s"
+            heading="Details"
             required={false}
             errorMessage={errors?.xrayResultDetail?.message ?? ""}
             formValue="xrayResultDetail"

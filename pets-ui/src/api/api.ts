@@ -14,7 +14,7 @@ import {
   ReceivedApplicantDetailsType,
   ReceivedApplicationDetailsType,
 } from "@/applicant";
-import { acquireTokenSilently } from "@/utils/auth";
+import { acquireTokenSilently } from "@/auth/auth";
 
 export const petsApi = axios.create({
   baseURL: "/api",

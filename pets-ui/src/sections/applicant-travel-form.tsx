@@ -7,7 +7,6 @@ import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
-import Heading from "@/components/heading/heading";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectTravel, setTravelDetails } from "@/redux/travelSlice";
 import { ButtonType } from "@/utils/enums";
@@ -67,14 +66,11 @@ const ApplicantTravelForm = () => {
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
         <div ref={visaTypeRef}>
-          <Heading
-            level={2}
-            size="m"
-            title="Visa type"
-            style={{ marginTop: 40, marginBottom: 10 }}
-          />
           <Dropdown
             id="visa-type"
+            hasHeading={true}
+            hasLabel={false}
+            heading="Visa type"
             options={visaOptions}
             errorMessage={errors?.visaType?.message ?? ""}
             formValue="visaType"
@@ -83,17 +79,13 @@ const ApplicantTravelForm = () => {
           />
         </div>
 
-        <Heading
-          level={2}
-          size="m"
-          title="Applicant's UK address"
-          style={{ marginTop: 40, marginBottom: 10 }}
-        />
-
         <div ref={addressLine1Ref}>
           <FreeText
             id="address-1"
             label="Address line 1"
+            hasHeading={true}
+            heading="Applicant's UK address"
+            headingStyle={{ marginBottom: 20 }}
             errorMessage={errors?.applicantUkAddress1?.message ?? ""}
             formValue="applicantUkAddress1"
             required="Enter address line 1, typically the building and street"
@@ -143,15 +135,12 @@ const ApplicantTravelForm = () => {
         </div>
 
         <div ref={mobileNumberRef}>
-          <Heading
-            level={2}
-            size="m"
-            title="Applicant's UK phone number"
-            style={{ marginTop: 40, marginBottom: 10 }}
-          />
           <FreeText
             id="mobile-number"
             errorMessage={errors?.ukMobileNumber?.message ?? ""}
+            heading="Applicant's UK phone number"
+            hasHeading={true}
+            hasLabel={false}
             formValue="ukMobileNumber"
             required="Enter UK mobile number"
             patternValue={formRegex.numbersOnly}
@@ -161,15 +150,12 @@ const ApplicantTravelForm = () => {
         </div>
 
         <div ref={emailRef}>
-          <Heading
-            level={2}
-            size="m"
-            title="Applicant's UK email"
-            style={{ marginTop: 40, marginBottom: 10 }}
-          />
           <FreeText
             id="email"
             errorMessage={errors?.ukEmail?.message ?? ""}
+            hasHeading={true}
+            hasLabel={false}
+            heading="Applicant's UK email"
             formValue="ukEmail"
             required="Enter UK email address"
             patternValue={formRegex.emailAddress}
