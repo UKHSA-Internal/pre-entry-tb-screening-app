@@ -129,7 +129,7 @@ export const TbCertificateIssuedRequestSchema = z.object({
 
 export const TbCertificateNotIssuedRequestSchema = z.object({
   certificateIssued: z.literal(YesOrNo.No),
-  certificateComments: z.string().openapi({
+  certificateComments: z.string().optional().openapi({
     description: "Physican's comments",
   }),
 });
