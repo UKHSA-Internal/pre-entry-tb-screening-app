@@ -15,10 +15,10 @@ import { selectApplicant } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   selectTbCertificate,
-  setPhysicianComments,
-  setTbCertificateDate,
-  setTbCertificateNumber,
-  setTbClearanceIssued,
+  setCertficateDate,
+  setCertificateNumber,
+  setComments,
+  setIsIssued,
 } from "@/redux/tbCertificateSlice";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 import { validateDate } from "@/utils/helpers";
@@ -38,13 +38,13 @@ const TbCertificateDeclarationForm = () => {
     formState: { errors },
   } = methods;
 
-  const isTbClearanceIssued = watch("tbClearanceIssued") as unknown as string;
+  const isTbClearanceIssued = watch("isIssued") as unknown as string;
 
   const onSubmit: SubmitHandler<ReduxTbCertificateType> = (tbCertificateData) => {
-    dispatch(setTbClearanceIssued(tbCertificateData.tbClearanceIssued));
-    dispatch(setPhysicianComments(tbCertificateData.physicianComments));
-    dispatch(setTbCertificateDate(tbCertificateData.tbCertificateDate));
-    dispatch(setTbCertificateNumber(tbCertificateData.tbCertificateNumber));
+    dispatch(setIsIssued(tbCertificateData.isIssued));
+    dispatch(setComments(tbCertificateData.comments));
+    dispatch(setCertficateDate(tbCertificateData.certificateDate));
+    dispatch(setCertificateNumber(tbCertificateData.certificateNumber));
     navigate("/tb-certificate-summary");
   };
 
@@ -91,10 +91,10 @@ const TbCertificateDeclarationForm = () => {
             isInline={RadioIsInline.FALSE}
             answerOptions={["Yes", "No"]}
             sortAnswersAlphabetically={false}
-            errorMessage={errors?.tbClearanceIssued?.message ?? ""}
-            formValue="tbClearanceIssued"
+            errorMessage={errors?.isIssued?.message ?? ""}
+            formValue="isIssued"
             required="Select yes if a TB clearance certificate has been issued or no if it has not"
-            defaultValue={tbCertificateData.tbClearanceIssued}
+            defaultValue={tbCertificateData.isIssued}
           />
         </div>
 
@@ -107,10 +107,10 @@ const TbCertificateDeclarationForm = () => {
         <TextArea
           id="physician-comments"
           required={false}
-          errorMessage={errors?.physicianComments?.message ?? ""}
-          formValue="physicianComments"
+          errorMessage={errors?.comments?.message ?? ""}
+          formValue="comments"
           rows={10}
-          defaultValue={tbCertificateData.physicianComments}
+          defaultValue={tbCertificateData.comments}
         />
 
         <Heading
@@ -128,17 +128,17 @@ const TbCertificateDeclarationForm = () => {
             title="Date of TB clearance certificate"
           />
           <Controller
-            name="tbCertificateDate"
+            name="certificateDate"
             control={control}
             defaultValue={{
-              day: tbCertificateData.tbCertificateDate.day,
-              month: tbCertificateData.tbCertificateDate.month,
-              year: tbCertificateData.tbCertificateDate.year,
+              day: tbCertificateData.certificateDate.day,
+              month: tbCertificateData.certificateDate.month,
+              year: tbCertificateData.certificateDate.year,
             }}
             rules={{
               validate: (value: DateType) => {
                 if (isTbClearanceIssued === "Yes") {
-                  return validateDate(value, "tbCertificateDate");
+                  return validateDate(value, "certificateDate");
                 }
                 return true;
               },
@@ -150,7 +150,7 @@ const TbCertificateDeclarationForm = () => {
                 id={"tb-certificate-date"}
                 autocomplete={false}
                 hint="For example, 30 3 2024"
-                errorMessage={errors?.tbCertificateDate?.message ?? ""}
+                errorMessage={errors?.certificateDate?.message ?? ""}
               />
             )}
           />
@@ -165,11 +165,11 @@ const TbCertificateDeclarationForm = () => {
           />
           <FreeText
             id="tb-certificate-number"
-            errorMessage={errors?.tbCertificateNumber?.message ?? ""}
-            formValue="tbCertificateNumber"
+            errorMessage={errors?.certificateNumber?.message ?? ""}
+            formValue="certificateNumber"
             patternValue={formRegex.lettersAndNumbers}
             patternError="TB clearance certificate number must contain only letters and numbers"
-            defaultValue={tbCertificateData.tbCertificateNumber}
+            defaultValue={tbCertificateData.certificateNumber}
             required={
               isTbClearanceIssued === "Yes" ? "Enter the TB clearance certificate number" : false
             }

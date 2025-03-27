@@ -22,14 +22,14 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 
 const tbState: ReduxTbCertificateType = {
   status: ApplicationStatus.COMPLETE,
-  tbClearanceIssued: YesOrNo.YES,
-  physicianComments: "Extra Details",
-  tbCertificateDate: {
+  isIssued: YesOrNo.YES,
+  comments: "Extra Details",
+  certificateDate: {
     year: "2025",
     month: "03",
     day: "25",
   },
-  tbCertificateNumber: "12345",
+  certificateNumber: "12345",
 };
 
 describe("TBSummaryPage", () => {

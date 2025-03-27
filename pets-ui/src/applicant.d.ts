@@ -204,24 +204,24 @@ type ReduxSputumCollectionDetailsType = {
 // TB Declaration certificate types
 type ReduxTbCertificateType = {
   status: ApplicationStatus;
-  tbClearanceIssued: YesOrNo;
-  physicianComments: string;
-  tbCertificateDate: DateType;
-  tbCertificateNumber: string;
+  isIssued: YesOrNo;
+  comments: string;
+  certificateDate: DateType;
+  certificateNumber: string;
 };
 
 type PostedTbCertificateType = {
-  certificateIssued: YesOrNo;
-  certificateComments: string;
-  certificateIssueDate: string;
+  isIssued: YesOrNo;
+  comments: string;
+  certificateDate: string;
   certificateNumber: string;
 };
 
 type ReceivedTbCertificateType = PostedTbCertificateType & ReceivedApplicationAttributesType;
 
 type PostedTbCertificateNotIssuedType = {
-  certificateIssued: YesOrNo;
-  certificateComments: string;
+  isIssued: YesOrNo;
+  comments: string;
 };
 
 type ReceivedTbCertificateNotIssuedType = PostedTbCertificateNotIssuedType &

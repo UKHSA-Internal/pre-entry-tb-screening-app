@@ -21,18 +21,18 @@ const TbSummary = () => {
 
   const handleSubmit = async () => {
     try {
-      if (tbCertificateData.tbClearanceIssued == YesOrNo.YES) {
-        const certificateIssueDateStr = `${tbCertificateData.tbCertificateDate.year}-${standardiseDayOrMonth(tbCertificateData.tbCertificateDate.month)}-${standardiseDayOrMonth(tbCertificateData.tbCertificateDate.day)}`;
+      if (tbCertificateData.isIssued == YesOrNo.YES) {
+        const certificateIssueDateStr = `${tbCertificateData.certificateDate.year}-${standardiseDayOrMonth(tbCertificateData.certificateDate.month)}-${standardiseDayOrMonth(tbCertificateData.certificateDate.day)}`;
         await postTbCerificateDetails(applicationData.applicationId, {
-          certificateIssued: tbCertificateData.tbClearanceIssued,
-          certificateComments: tbCertificateData.physicianComments,
-          certificateIssueDate: certificateIssueDateStr,
-          certificateNumber: tbCertificateData.tbCertificateNumber,
+          isIssued: tbCertificateData.isIssued,
+          comments: tbCertificateData.comments,
+          certificateDate: certificateIssueDateStr,
+          certificateNumber: tbCertificateData.certificateNumber,
         });
-      } else if (tbCertificateData.tbClearanceIssued == YesOrNo.NO) {
+      } else if (tbCertificateData.isIssued == YesOrNo.NO) {
         await postTbCerificateDetails(applicationData.applicationId, {
-          certificateIssued: tbCertificateData.tbClearanceIssued,
-          certificateComments: tbCertificateData.physicianComments,
+          isIssued: tbCertificateData.isIssued,
+          comments: tbCertificateData.comments,
         });
       } else {
         throw new Error("certificateIssued field missing");
@@ -49,25 +49,25 @@ const TbSummary = () => {
   const tbSummaryData = [
     {
       key: "TB clearance certificate issued?",
-      value: tbCertificateData.tbClearanceIssued,
+      value: tbCertificateData.isIssued,
       link: "/tb-certificate-declaration#tbClearanceIssued",
       hiddenLabel: "TB clearance certificate",
     },
     {
       key: "Physician comments",
-      value: tbCertificateData.physicianComments,
+      value: tbCertificateData.comments,
       link: "/tb-certificate-declaration",
       hiddenLabel: "Comments from physician",
     },
     {
       key: "Date of TB clearance certificate",
-      value: formatDateType(tbCertificateData.tbCertificateDate),
+      value: formatDateType(tbCertificateData.certificateDate),
       link: "/tb-certificate-declaration#tbCertificateDate",
       hiddenLabel: "Date of TB certificate",
     },
     {
       key: "TB clearance certificate number",
-      value: tbCertificateData.tbCertificateNumber,
+      value: tbCertificateData.certificateNumber,
       link: "/tb-certificate-declaration#tbCertificateNumber",
       hiddenLabel: "TB certificate number",
     },

@@ -32,31 +32,31 @@ type ITbCertificateIssued = {
   dateCreated: Date;
   createdBy: string;
 
-  certificateIssued: YesOrNo.Yes;
-  certificateComments: string;
-  certificateIssueDate: Date;
+  isIssued: YesOrNo.Yes;
+  comments?: string | undefined;
+  issueDate: Date;
   certificateNumber: string;
 };
 
 export type NewTbCertificateIssuedDetails = Omit<
   ITbCertificateIssued,
-  "dateCreated" | "certificateIssueDate" | "status"
+  "dateCreated" | "issueDate" | "status"
 > & {
-  certificateIssueDate: Date | string;
+  issueDate: Date | string;
 };
 
 export class TbCertificateIssued extends TbCertificateBase {
-  certificateIssued: YesOrNo.Yes;
-  certificateComments: string;
-  certificateIssueDate: Date;
+  isIssued: YesOrNo.Yes;
+  comments?: string | undefined;
+  issueDate: Date;
   certificateNumber: string;
 
   constructor(details: ITbCertificateIssued) {
     super(details);
 
-    this.certificateIssued = details.certificateIssued;
-    this.certificateComments = details.certificateComments;
-    this.certificateIssueDate = details.certificateIssueDate;
+    this.isIssued = details.isIssued;
+    this.comments = details.comments;
+    this.issueDate = details.issueDate;
     this.certificateNumber = details.certificateNumber;
   }
 
@@ -64,9 +64,9 @@ export class TbCertificateIssued extends TbCertificateBase {
     return {
       applicationId: this.applicationId,
       status: this.status,
-      certificateIssued: this.certificateIssued,
-      certificateComments: this.certificateComments,
-      certificateIssueDate: getDateWithoutTime(this.certificateIssueDate),
+      isIssued: this.isIssued,
+      comments: this.comments,
+      issueDate: getDateWithoutTime(this.issueDate),
       certificateNumber: this.certificateNumber,
       dateCreated: this.dateCreated,
     };
@@ -79,8 +79,8 @@ type ITbCertificateNotIssued = {
   dateCreated: Date;
   createdBy: string;
 
-  certificateIssued: YesOrNo.No;
-  certificateComments: string;
+  isIssued: YesOrNo.No;
+  comments?: string | undefined;
 };
 
 export type NewTbCertificateNotIssuedDetails = Omit<
@@ -89,22 +89,22 @@ export type NewTbCertificateNotIssuedDetails = Omit<
 >;
 
 export class TbCertificateNotIssued extends TbCertificateBase {
-  certificateIssued: YesOrNo.No;
-  certificateComments: string;
+  isIssued: YesOrNo.No;
+  comments?: string | undefined;
 
   constructor(details: ITbCertificateNotIssued) {
     super(details);
 
-    this.certificateIssued = details.certificateIssued;
-    this.certificateComments = details.certificateComments;
+    this.isIssued = details.isIssued;
+    this.comments = details.comments;
   }
 
   toJson() {
     return {
       applicationId: this.applicationId,
       status: this.status,
-      certificateIssued: this.certificateIssued,
-      certificateComments: this.certificateComments,
+      isIssued: this.isIssued,
+      comments: this.comments,
       dateCreated: this.dateCreated,
     };
   }
@@ -117,11 +117,11 @@ export class TbCertificateDbOps {
 
   static todbItem(tbCertificate: TbCertificateIssued | TbCertificateNotIssued) {
     const dbItem =
-      tbCertificate.certificateIssued === YesOrNo.Yes
+      tbCertificate.isIssued === YesOrNo.Yes
         ? {
             ...tbCertificate,
             dateCreated: tbCertificate.dateCreated.toISOString(),
-            certificateIssueDate: tbCertificate.certificateIssueDate.toISOString(),
+            issueDate: tbCertificate.issueDate.toISOString(),
             pk: TbCertificateDbOps.getPk(tbCertificate.applicationId),
             sk: TbCertificateDbOps.sk,
           }
@@ -140,12 +140,12 @@ export class TbCertificateDbOps {
     try {
       logger.info("Saving TB Certificate information to DB");
       const updatedDetails =
-        details.certificateIssued === YesOrNo.Yes
+        details.isIssued === YesOrNo.Yes
           ? {
               ...details,
               dateCreated: new Date(),
               status: TaskStatus.completed,
-              certificateIssueDate: new Date(details.certificateIssueDate),
+              issueDate: new Date(details.issueDate),
             }
           : {
               ...details,
@@ -154,7 +154,7 @@ export class TbCertificateDbOps {
             };
 
       const tbCertificate =
-        details.certificateIssued === YesOrNo.Yes
+        details.isIssued === YesOrNo.Yes
           ? new TbCertificateIssued(updatedDetails as ITbCertificateIssued)
           : new TbCertificateNotIssued(updatedDetails as ITbCertificateNotIssued);
 
@@ -201,18 +201,18 @@ export class TbCertificateDbOps {
       const dbItem = data.Item as ReturnType<(typeof TbCertificateDbOps)["todbItem"]>;
 
       const tbCertificate =
-        dbItem.certificateIssued === YesOrNo.Yes
+        dbItem.isIssued === YesOrNo.Yes
           ? new TbCertificateIssued({
               ...dbItem,
               dateCreated: new Date(dbItem.dateCreated),
-              certificateIssueDate: new Date(dbItem.certificateIssueDate),
+              issueDate: new Date(dbItem.issueDate),
             })
           : new TbCertificateNotIssued({
               ...dbItem,
               dateCreated: new Date(dbItem.dateCreated),
             });
 
-      return dbItem.certificateIssued === YesOrNo.Yes
+      return dbItem.isIssued === YesOrNo.Yes
         ? new TbCertificateIssued(tbCertificate as ITbCertificateIssued)
         : new TbCertificateNotIssued(tbCertificate as ITbCertificateNotIssued);
     } catch (error) {

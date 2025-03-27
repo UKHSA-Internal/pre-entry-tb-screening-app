@@ -88,9 +88,9 @@ describe("Getting Application Handler", () => {
       // Defined in pets-core-services\src\application-service\fixtures\tb-certificate.ts
       tbCertificate: {
         applicationId: "generated-app-id-2",
-        certificateComments: "No signs of TB",
-        certificateIssueDate: "2025-01-01",
-        certificateIssued: "Yes",
+        comments: "No signs of TB",
+        issueDate: "2025-01-01",
+        isIssued: "Yes",
         certificateNumber: "987000",
         dateCreated: expect.any(String),
         status: "completed",

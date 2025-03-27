@@ -38,9 +38,9 @@ const attributeToComponentId: { [key: string]: string } = {
   xrayResult: "xray-result",
   reasonXrayWasNotTaken: "reason-xray-not-taken",
   xrayWasNotTakenFurtherDetails: "xray-not-taken-further-details",
-  tbClearanceIssued: "tb-clearance-issued",
-  tbCertificateDate: "tb-certificate-date",
-  tbCertificateNumber: "tb-certificate-number",
+  isIssued: "tb-clearance-issued",
+  certificateDate: "tb-certificate-date",
+  certificateNumber: "tb-certificate-number",
   passportIssueDate: "passportIssueDate",
   passportExpiryDate: "passportExpiryDate",
 };
@@ -78,7 +78,7 @@ const dateValidationMessages: Record<string, Record<string, string>> = {
     invalidDateError: "Date of birth date must be a valid date",
     dateMustBeInPastError: "Date of birth date must in the past",
   },
-  tbCertificateDate: {
+  certificateDate: {
     emptyFieldError: "TB clearance certificate date must include a day, month and year",
     invalidCharError:
       "TB clearance certificate day and year must contain only numbers. TB clearance certificate month must be a number, or the name of the month, or the first three letters of the month",

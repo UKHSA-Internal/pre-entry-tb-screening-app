@@ -15,9 +15,9 @@ describe("Tests for TB Certificate Model", () => {
 
   const newTbCertificate: NewTbCertificateIssuedDetails = {
     applicationId: "test-application-id",
-    certificateIssued: YesOrNo.Yes,
-    certificateComments: "comments",
-    certificateIssueDate: "2025-01-21",
+    isIssued: YesOrNo.Yes,
+    comments: "comments",
+    issueDate: "2025-01-21",
     certificateNumber: "123456",
     createdBy: "test-tb-certificate-creator",
   };
@@ -36,7 +36,7 @@ describe("Tests for TB Certificate Model", () => {
     expect(tbCertificate).toMatchObject({
       ...newTbCertificate,
       dateCreated: new Date(expectedDateTime),
-      certificateIssueDate: new Date("2025-01-21"),
+      issueDate: new Date("2025-01-21"),
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -44,7 +44,7 @@ describe("Tests for TB Certificate Model", () => {
       TableName: "test-application-details",
       Item: {
         ...newTbCertificate,
-        certificateIssueDate: "2025-01-21T00:00:00.000Z",
+        issueDate: "2025-01-21T00:00:00.000Z",
         pk: "APPLICATION#test-application-id",
         sk: "APPLICATION#TB#CERTIFICATE",
       },
@@ -75,7 +75,7 @@ describe("Tests for TB Certificate Model", () => {
     expect(tbCertificate).toMatchObject({
       ...newTbCertificate,
       dateCreated: new Date("2025-02-07"),
-      certificateIssueDate: new Date("2025-01-21"),
+      issueDate: new Date("2025-01-21"),
     });
   });
 });

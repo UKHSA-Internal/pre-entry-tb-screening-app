@@ -299,9 +299,9 @@ describe("Test for Application Lambda", () => {
         path: `/application/${seededApplications[0].applicationId}/tb-certificate`,
         httpMethod: "POST",
         body: JSON.stringify({
-          certificateComments: "comments",
-          certificateIssueDate: "2025-01-01",
-          certificateIssued: YesOrNo.Yes,
+          comments: "comments",
+          issueDate: "2025-01-01",
+          isIssued: YesOrNo.Yes,
           certificateNumber: "123456",
         }),
       };
@@ -321,8 +321,8 @@ describe("Test for Application Lambda", () => {
         path: `/application/${seededApplications[0].applicationId}/tb-certificate`,
         httpMethod: "POST",
         body: JSON.stringify({
-          certificateComments: "comments",
-          certificateIssued: YesOrNo.No,
+          comments: "comments",
+          isIssued: YesOrNo.No,
         }),
       };
 

@@ -10,16 +10,16 @@ export const seededTbCertificate: Array<
 > = [
   {
     applicationId: seededApplications[1].applicationId,
-    certificateIssued: YesOrNo.Yes,
-    certificateComments: "No signs of TB",
-    certificateIssueDate: "2025-01-01",
+    isIssued: YesOrNo.Yes,
+    comments: "No signs of TB",
+    issueDate: "2025-01-01",
     certificateNumber: "987000",
     createdBy: "shane.park@iom.com",
   },
   {
     applicationId: seededApplications[2].applicationId,
-    certificateIssued: YesOrNo.No,
-    certificateComments: "TB is present",
+    isIssued: YesOrNo.No,
+    comments: "TB is present",
     createdBy: "shawn.jones@clinic.com",
   },
 ];

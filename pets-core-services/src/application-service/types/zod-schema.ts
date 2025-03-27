@@ -115,11 +115,11 @@ export const MedicalScreeningResponseSchema = MedicalScreeningRequestSchema.exte
 });
 
 export const TbCertificateIssuedRequestSchema = z.object({
-  certificateIssued: z.literal(YesOrNo.Yes),
-  certificateComments: z.string().openapi({
+  isIssued: z.literal(YesOrNo.Yes),
+  comments: z.string().optional().openapi({
     description: "Physican's comments",
   }),
-  certificateIssueDate: z.string().date().openapi({
+  issueDate: z.string().date().openapi({
     description: "Date of certificate issue in ISO format",
   }),
   certificateNumber: z.string().openapi({
@@ -128,8 +128,8 @@ export const TbCertificateIssuedRequestSchema = z.object({
 });
 
 export const TbCertificateNotIssuedRequestSchema = z.object({
-  certificateIssued: z.literal(YesOrNo.No),
-  certificateComments: z.string().optional().openapi({
+  isIssued: z.literal(YesOrNo.No),
+  comments: z.string().optional().openapi({
     description: "Physican's comments",
   }),
 });
