@@ -41,8 +41,8 @@ export default function TextArea({
       {hasHeading && props.heading && (
         <Heading
           title={props.heading}
-          level={props.headingLevel || 2}
-          size={props.headingSize || "m"}
+          level={props.headingLevel ?? 2}
+          size={props.headingSize ?? "m"}
           style={{ marginBottom: 20, marginTop: 40, ...props.headingStyle }}
           id={hasLabel ? `${props.id}-heading` : props.id}
         />

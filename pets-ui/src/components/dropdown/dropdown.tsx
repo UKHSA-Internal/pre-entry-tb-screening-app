@@ -46,8 +46,8 @@ export default function Dropdown({
       {hasHeading && props.heading && (
         <Heading
           title={props.heading}
-          level={props.headingLevel || 2}
-          size={props.headingSize || "m"}
+          level={props.headingLevel ?? 2}
+          size={props.headingSize ?? "m"}
           style={{ ...props.headingStyle, marginTop: 40, marginBottom: 10 }}
           id={props.label ? `${props.id}-heading` : props.id}
         />

@@ -49,8 +49,8 @@ export default function FreeText({
       {hasHeading && props.heading && (
         <Heading
           title={props.heading}
-          level={props.headingLevel || 2}
-          size={props.headingSize || "m"}
+          level={props.headingLevel ?? 2}
+          size={props.headingSize ?? "m"}
           style={{ marginTop: 40, marginBottom: 10, ...props.headingStyle }}
           id={hasLabel ? `${props.id}-heading` : props.id}
         />
