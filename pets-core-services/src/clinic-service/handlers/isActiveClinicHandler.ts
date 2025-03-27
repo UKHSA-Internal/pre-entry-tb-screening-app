@@ -13,9 +13,9 @@ export const checkActiveClinicHandler = async (event: APIGatewayProxyEvent) => {
     const isActive: boolean = await Clinic.isActiveClinic(clinicId);
 
     // TODO: Is this the expected response message?
-    if (!isActive) return createHttpResponse(200, { isActive: "No" });
+    if (!isActive) return createHttpResponse(200, { isActive: false });
 
-    return createHttpResponse(200, JSON.stringify({ isActive: "Yes" }));
+    return createHttpResponse(200, JSON.stringify({ isActive: true }));
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     logger.error("Fetching Active Clinics Failed");

@@ -1,7 +1,11 @@
 import {
   GetCommand,
+  GetCommandInput,
+  GetCommandOutput,
   PutCommand,
   PutCommandInput,
+  QueryCommand,
+  QueryCommandInput,
   QueryCommandOutput,
   ScanCommand,
   ScanCommandInput,
@@ -97,11 +101,11 @@ export class Clinic extends IClinic {
    * @param clinicId
    * @returns a Clinic object
    */
-  static async getByClinicId(clinicId: string): Promise<Clinic | void> {
+  static async getClinicById(clinicId: string): Promise<Clinic | void> {
     try {
       logger.info("fetching clinic details");
 
-      const params = {
+      const params: GetCommandInput = {
         TableName: Clinic.getTableName(),
         Key: {
           pk: Clinic.getPk(clinicId),
@@ -110,7 +114,7 @@ export class Clinic extends IClinic {
       };
 
       const command = new GetCommand(params);
-      const data = await docClient.send(command);
+      const data: GetCommandOutput = await docClient.send(command);
 
       if (!data.Item) {
         logger.info("No clinic details found");
@@ -149,7 +153,7 @@ export class Clinic extends IClinic {
       };
       const command = new ScanCommand(params);
 
-      const data: QueryCommandOutput = await docClient.send(command);
+      const data: ScanCommandOutput = await docClient.send(command);
 
       if (!data?.Items) {
         logger.info("No clinics found");
@@ -181,40 +185,38 @@ export class Clinic extends IClinic {
   static async isActiveClinic(clinicId: string): Promise<boolean> {
     try {
       logger.info(`Fetching the clinic (${clinicId}) if 'active'`);
-      const today = new Date();
-
-      const params: ScanCommandInput = {
+      const params: QueryCommandInput = {
         TableName: Clinic.getTableName(),
-        // KeyConditionExpression: `clinicId = :ID`,
-        FilterExpression: `(clinicId = :ID) AND ((attribute_type(endDate, :dateType)) OR (endDate > :today))`,
+        KeyConditionExpression: `pk = :pk AND sk = :sk`,
+        FilterExpression: `(attribute_type(endDate, :dateType)) OR (endDate > :today)`,
         ExpressionAttributeValues: {
+          ":pk": Clinic.getPk(clinicId),
+          ":sk": Clinic.sk,
           ":dateType": "NULL",
-          ":today": today.toString(),
-          ":ID": clinicId,
+          ":today": new Date().toString(),
         },
       };
-      const command = new ScanCommand(params);
+      const command = new QueryCommand(params);
+      const data: QueryCommandOutput = await docClient.send(command);
 
-      const data: ScanCommandOutput = await docClient.send(command);
+      if (data?.Items) {
+        // Different log messages for different conditions
+        if (data.Items.length > 1) {
+          logger.error(`Retrieved more than 1 clinic with the same clinicId`);
 
-      if (!data?.Items) {
-        logger.info("No active clinic found");
+          return false;
+        } else if (data.Items.length == 1) {
+          logger.info("The clinic is active");
 
-        return false;
-      } else if (data?.Items.length == 1) {
-        logger.info("Clinic is active");
-
-        return true;
-      } else {
-        logger.info(
-          { resultCount: data.Items.length },
-          "There was an error retrieving the clinic data",
-        );
-
-        return false;
+          return true;
+        }
       }
+      // This is when there's no data.Items, or data.Items.length == 0
+      logger.error(`No active clinic found`);
+
+      return false;
     } catch (error) {
-      logger.error(error, `Error retrieving the clinic with 'clinicId': ${clinicId}`);
+      logger.error(error, `Error retrieving the active clinic with 'clinicId': ${clinicId}`);
       throw error;
     }
   }
