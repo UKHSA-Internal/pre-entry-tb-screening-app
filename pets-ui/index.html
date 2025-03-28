@@ -5,22 +5,10 @@
     <title>UK Pre-Entry Health Screening</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0 viewport-fit=cover" />
     <link rel="manifest" href="./manifest.json" />
-    <link rel="stylesheet" href="./sass/govuk-frontend.min.css" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   </head>
   <body class="govuk-template__body">
-    <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      document.body.className +=
-        ' js-enabled' +
-        ('noModule' in HTMLScriptElement.prototype
-          ? ' govuk-frontend-supported'
-          : '');
-    </script>
-    <script
-      type="module"
-      src="./public/assets/javascript/govuk-frontend.min.js"
-    ></script>
+    <div id="root"></div>
   </body>
 </html>
