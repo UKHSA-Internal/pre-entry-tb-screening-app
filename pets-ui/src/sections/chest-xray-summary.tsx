@@ -56,7 +56,7 @@ const ChestXraySummary = () => {
     {
       key: "Select x-ray status",
       value: chestXrayData.chestXrayTaken,
-      link: "/chest-xray-question#chestXrayTaken",
+      link: "/chest-xray-question#chest-xray-taken",
       hiddenLabel: "Chest X-ray Status",
     },
     {
@@ -105,7 +105,7 @@ const ChestXraySummary = () => {
     {
       key: "Select x-ray status",
       value: chestXrayData.chestXrayTaken,
-      link: "/chest-xray-question#chestXrayTaken",
+      link: "/chest-xray-question#chest-xray-taken",
       hiddenLabel: "Chest X-ray Status",
     },
     {
