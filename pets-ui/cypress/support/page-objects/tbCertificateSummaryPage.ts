@@ -93,7 +93,7 @@ export class TbClearanceCertificateSummaryPage {
 
   // Click confirm button
   clickSaveAndContinue(): void {
-    cy.contains("button", "onfirm").click();
+    cy.contains("button", "Save and continue").click();
   }
 
   // Verify breadcrumb navigation

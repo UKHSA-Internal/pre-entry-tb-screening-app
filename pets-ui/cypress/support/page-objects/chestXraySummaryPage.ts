@@ -93,7 +93,7 @@ export class ChestXraySummaryPage {
 
   // Click Confirm
   clickSaveAndContinue(): void {
-    cy.contains("button", "Confirm").click();
+    cy.contains("button", "Save and continue").click();
   }
 
   // Verify breadcrumb navigation
