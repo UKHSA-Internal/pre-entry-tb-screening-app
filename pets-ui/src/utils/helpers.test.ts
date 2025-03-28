@@ -255,7 +255,7 @@ describe("validateDate function", () => {
       },
       {
         value: { day: "09", month: "12", year: "3000" },
-        field: "tbCertificateDate",
+        field: "certificateDate",
         expected: "TB clearance certificate date",
       },
     ];

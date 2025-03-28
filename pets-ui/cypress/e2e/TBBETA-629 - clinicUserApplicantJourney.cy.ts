@@ -13,7 +13,7 @@ import { MedicalSummaryPage } from "../support/page-objects/medicalSummaryPage";
 import { TbCertificateConfirmationPage } from "../support/page-objects/tbCertificateConfirmationPage";
 import { TbClearanceCertificateSummaryPage } from "../support/page-objects/tbCertificateSummaryPage";
 import { TbClearanceCertificatePage } from "../support/page-objects/tbClearanceCertificatePage";
-import { TbScreeningProgressTrackerPage } from "../support/page-objects/tbScreeningProgressTrackerPage";
+import { TBProgressTrackerPage } from "../support/page-objects/tbProgressTrackerPage";
 import { getRandomPassportNumber, randomElement } from "../support/test-utils";
 import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetailsPage";
 import { MedicalScreeningPage } from "./../support/page-objects/medicalScreeningPage";
@@ -41,7 +41,7 @@ describe("PETS Application End-to-End Tests", () => {
   const tbClearanceCertificatePage = new TbClearanceCertificatePage();
   const tbClearanceCertificateSummaryPage = new TbClearanceCertificateSummaryPage();
   const tbCertificateConfirmationPage = new TbCertificateConfirmationPage();
-  const tbScreeningProgressTrackerPage = new TbScreeningProgressTrackerPage();
+  const tbProgressTrackerPage = new TBProgressTrackerPage();
   const visaType = "Students";
 
   // Define variables to store test data
@@ -371,34 +371,37 @@ describe("PETS Application End-to-End Tests", () => {
     cy.url().should("include", "/tracker");
 
     // Verify TB Screening Progress Tracker page
-    tbScreeningProgressTrackerPage.verifyPageLoaded();
+    tbProgressTrackerPage.verifyPageLoaded();
 
     // Check applicant information is displayed correctly
-    tbScreeningProgressTrackerPage.verifyApplicantInfo({
+    tbProgressTrackerPage.verifyApplicantInfo({
       Name: "Jane Smith",
       "Date of birth": "15/03/2000",
       "Passport number": passportNumber,
     });
 
     // Verify task status information
-    tbScreeningProgressTrackerPage.verifyVisaApplicantDetailsCompleted();
-
-    // Verify sputum test information text
-    tbScreeningProgressTrackerPage.verifySputumTestInformationText();
+    tbProgressTrackerPage.verifyVisaApplicantDetailsCompleted();
 
     // Verify complete all sections text
-    tbScreeningProgressTrackerPage.verifyCompleteAllSectionsText();
+    tbProgressTrackerPage.verifyCompleteAllSectionsText();
+
+    // Verify task links exist
+    tbProgressTrackerPage.verifyTaskLinksExist();
+
+    // Verify sputum test information text
+    tbProgressTrackerPage.verifySputumTestInformationText();
 
     // Verify service name
-    tbScreeningProgressTrackerPage.verifyServiceName();
+    tbProgressTrackerPage.verifyServiceName();
 
-    // Click on Visa applicant details task link to navigate back to applicant summary page
-    tbScreeningProgressTrackerPage.clickTaskLink("Visa applicant details");
-
-    // Verify navigation to applicant summary page
-    cy.url().should("include", "/applicant-summary");
-
-    // Navigate back to the tracker page
-    tbScreeningProgressTrackerPage.visit();
+    // Verify task statuses
+    tbProgressTrackerPage.verifyAllTaskStatuses({
+      "Visa applicant details": "Completed",
+      "Travel information": "Completed",
+      "Medical history and TB symptoms": "Completed",
+      "Radiological outcome": "Completed",
+      "TB certificate declaration": "Completed",
+    });
   });
 });

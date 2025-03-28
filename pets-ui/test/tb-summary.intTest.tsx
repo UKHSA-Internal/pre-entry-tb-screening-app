@@ -8,7 +8,7 @@ import { Mock } from "vitest";
 import { petsApi } from "@/api/api";
 import { ReduxTbCertificateType } from "@/applicant";
 import TbSummaryPage from "@/pages/tb-summary";
-import { ApplicationStatus } from "@/utils/enums";
+import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -21,15 +21,15 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 });
 
 const tbState: ReduxTbCertificateType = {
-  status: ApplicationStatus.COMPLETE,
-  tbClearanceIssued: "Yes",
-  physicianComments: "Extra Details",
-  tbCertificateDate: {
+  status: ApplicationStatus.INCOMPLETE,
+  isIssued: YesOrNo.YES,
+  comments: "Extra Details",
+  certificateDate: {
     year: "2025",
     month: "03",
     day: "25",
   },
-  tbCertificateNumber: "12345",
+  certificateNumber: "12345",
 };
 
 describe("TBSummaryPage", () => {
