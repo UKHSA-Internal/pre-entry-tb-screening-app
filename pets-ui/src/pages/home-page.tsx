@@ -2,12 +2,12 @@ import "./home-page.scss";
 
 import { useMsal } from "@azure/msal-react";
 
+import { loginRequest } from "@/auth/auth";
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import List from "@/components/list/list";
 import StartButton from "@/components/startButton/startButton";
-import { loginRequest } from "@/utils/auth";
 
 export default function HomePage() {
   const { instance } = useMsal();

@@ -5,6 +5,7 @@ type HeadingProps = {
   level?: 1 | 2 | 3 | 4;
   size?: HeadingSize;
   style?: React.CSSProperties;
+  id?: string;
 };
 
 const headingTags: { [key: number]: React.ElementType } = {
@@ -14,12 +15,12 @@ const headingTags: { [key: number]: React.ElementType } = {
   4: "h4",
 };
 
-const Heading = ({ title, size, level = 1, style }: HeadingProps) => {
+const Heading = ({ level = 1, ...props }: HeadingProps) => {
   const Tag = headingTags[level] || "h1";
-  const variant = `govuk-heading-${size}`;
+  const variant = `govuk-heading-${props.size}`;
   return (
-    <Tag className={variant} style={style}>
-      {title}
+    <Tag className={variant} style={props.style} id={props.id}>
+      {props.title}
     </Tag>
   );
 };

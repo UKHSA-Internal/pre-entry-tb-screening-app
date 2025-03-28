@@ -3,7 +3,7 @@ import "swagger-ui-react/swagger-ui.css";
 import React, { useCallback } from "react";
 import { Helmet } from "react-helmet-async";
 
-import { swaggerAuth } from "@/utils/auth";
+import { swaggerAuth } from "@/auth/auth";
 import { getSwaggerSpec } from "@/utils/swagger-utils";
 
 const SwaggerUI = React.lazy(() => import("swagger-ui-react"));

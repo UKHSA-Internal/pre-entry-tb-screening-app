@@ -30,7 +30,7 @@ export default function Checkbox(props: Readonly<CheckboxProps>) {
 
   useEffect(() => {
     setErrorText(props.errorMessage);
-    setWrapperClass("govuk-form-group " + `${props.errorMessage && "govuk-form-group--error"}`);
+    setWrapperClass("govuk-form-group " + (props.errorMessage ? "govuk-form-group--error" : ""));
   }, [props.errorMessage]);
 
   return (
@@ -45,9 +45,11 @@ export default function Checkbox(props: Readonly<CheckboxProps>) {
         )}
         <div className="govuk-checkboxes" data-module="govuk-checkboxes">
           {answerOptions.map((answerOption: string, index: number) => {
+            const optionId = `${props.id}-option-${index}`;
             return (
-              <div className="govuk-checkboxes__item" key={`answer-option-${index + 1}`}>
+              <div className="govuk-checkboxes__item" key={optionId}>
                 <input
+                  id={optionId}
                   className="govuk-checkboxes__input"
                   type="checkbox"
                   data-testid={props.id}
@@ -57,18 +59,20 @@ export default function Checkbox(props: Readonly<CheckboxProps>) {
                   })}
                   defaultChecked={props.defaultValue?.includes(answerOption)}
                 />
-                <label className="govuk-label govuk-checkboxes__label" htmlFor={props.id}>
+                <label className="govuk-label govuk-checkboxes__label" htmlFor={optionId}>
                   {answerOption}
                 </label>
               </div>
             );
           })}
           {exclusiveAnswerOptions.map((exclusiveAnswerOption: string, index: number) => {
+            const exclusiveOptionId = `${props.id}-exclusive-${index}`;
             return (
-              <div key={`exclusive-answer-option-${index + 1}`}>
+              <div key={exclusiveOptionId}>
                 <div className="govuk-checkboxes__divider">or</div>
                 <div className="govuk-checkboxes__item">
                   <input
+                    id={exclusiveOptionId}
                     className="govuk-checkboxes__input"
                     type="checkbox"
                     data-testid={props.id}
@@ -79,7 +83,10 @@ export default function Checkbox(props: Readonly<CheckboxProps>) {
                     data-behaviour="exclusive"
                     defaultChecked={props.defaultValue?.includes(exclusiveAnswerOption)}
                   />
-                  <label className="govuk-label govuk-checkboxes__label" htmlFor={props.id}>
+                  <label
+                    className="govuk-label govuk-checkboxes__label"
+                    htmlFor={exclusiveOptionId}
+                  >
                     {exclusiveAnswerOption}
                   </label>
                 </div>
