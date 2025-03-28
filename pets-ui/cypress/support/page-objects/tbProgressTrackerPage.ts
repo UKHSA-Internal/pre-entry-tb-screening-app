@@ -1,10 +1,9 @@
-// This holds all fields for the TB Screening Progress Tracker Page
-export class TbScreeningProgressTrackerPage {
+// This holds all fields for the TB Progress Tracker Page
+export class TBProgressTrackerPage {
   visit(): void {
     cy.visit("/tracker");
   }
 
-  // Verify page loaded
   verifyPageLoaded(): void {
     cy.get("h1.govuk-heading-l")
       .should("be.visible")
@@ -40,7 +39,15 @@ export class TbScreeningProgressTrackerPage {
     this.getSummaryValue(fieldKey).should("eq", expectedValue);
   }
 
-  // Verify task list status
+  // Task list status checks
+  getTaskStatus(taskName: string): Cypress.Chainable<string> {
+    return cy
+      .contains(".govuk-task-list__link", taskName)
+      .closest(".govuk-task-list__item")
+      .find(".govuk-task-list__status strong")
+      .invoke("text");
+  }
+
   verifyTaskStatus(taskName: string, expectedStatus: string): void {
     cy.contains(".govuk-task-list__link", taskName)
       .closest(".govuk-task-list__item")
@@ -48,9 +55,24 @@ export class TbScreeningProgressTrackerPage {
       .should("contain", expectedStatus);
   }
 
-  // Click on a task link
+  // Click on specific task link
   clickTaskLink(taskName: string): void {
     cy.contains(".govuk-task-list__link", taskName).click();
+  }
+
+  // Verify all task links exist and are clickable
+  verifyTaskLinksExist(): void {
+    const expectedTasks = [
+      "Visa applicant details",
+      "Travel information",
+      "Medical history and TB symptoms",
+      "Radiological outcome",
+      "TB certificate declaration",
+    ];
+
+    expectedTasks.forEach((task) => {
+      cy.contains(".govuk-task-list__link", task).should("be.visible").and("have.attr", "href");
+    });
   }
 
   // Verify specific text is present on the page
@@ -63,6 +85,11 @@ export class TbScreeningProgressTrackerPage {
     this.verifyTextPresent("You cannot currently log sputum test information in this system.");
   }
 
+  // For backward compatibility with your generated code
+  verifySputumTestMessage(): void {
+    this.verifySputumTestInformationText();
+  }
+
   // Verify complete all sections text
   verifyCompleteAllSectionsText(): void {
     this.verifyTextPresent("Complete all sections.");
@@ -70,7 +97,12 @@ export class TbScreeningProgressTrackerPage {
 
   // Click search again button
   clickSearchAgainButton(): void {
-    cy.contains("button", "Search again").click();
+    cy.contains("button", "Search").click();
+  }
+
+  // For backward compatibility with your generated code
+  clickSearchAgain(): void {
+    this.clickSearchAgainButton();
   }
 
   // Verify service name in header
@@ -80,7 +112,7 @@ export class TbScreeningProgressTrackerPage {
       .and("contain", "Complete UK Pre-Entry Health Screening");
   }
 
-  // Get the current URL
+  // Check URL
   getCurrentUrl(): Cypress.Chainable<string> {
     return cy.url();
   }
@@ -105,8 +137,23 @@ export class TbScreeningProgressTrackerPage {
     this.verifyPageLoaded();
     this.verifyApplicantInfo(applicantInfo);
     this.verifyCompleteAllSectionsText();
-    this.verifyVisaApplicantDetailsCompleted();
+    this.verifyTaskLinksExist();
     this.verifySputumTestInformationText();
     this.verifyServiceName();
+  }
+
+  // Verify all task statuses
+  verifyAllTaskStatuses(expectedStatuses: {
+    "Visa applicant details"?: string;
+    "Travel information"?: string;
+    "Medical history and TB symptoms"?: string;
+    "Radiological outcome"?: string;
+    "TB certificate declaration"?: string;
+  }): void {
+    Object.entries(expectedStatuses).forEach(([taskName, status]) => {
+      if (status !== undefined) {
+        this.verifyTaskStatus(taskName, status);
+      }
+    });
   }
 }

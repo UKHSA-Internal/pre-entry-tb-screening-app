@@ -19,6 +19,7 @@ const applicantDetails: NewApplicant = {
   sex: AllowedSex.Other,
   applicantHomeAddress1: "First Line of Address",
   applicantHomeAddress2: "Second Line of Address",
+  applicantHomeAddress3: "Third Line of Address",
   townOrCity: "the-town-or-city",
   provinceOrState: "the-province",
   postcode: "the-post-code",

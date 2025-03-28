@@ -1,13 +1,15 @@
 import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { createNewApplication, postApplicantDetails } from "@/api/api";
 import Button from "@/components/button/button";
+import Summary from "@/components/summary/summary";
 import { selectApplicant, setApplicantDetailsStatus } from "@/redux/applicantSlice";
 import { setApplicationDetails } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { ApplicationStatus, ButtonType } from "@/utils/enums";
 import { standardiseDayOrMonth } from "@/utils/helpers";
+import { attributeToComponentId } from "@/utils/records";
 
 const ApplicantReview = () => {
   const applicantData = useAppSelector(selectApplicant);
@@ -48,217 +50,108 @@ const ApplicantReview = () => {
     }
   };
 
+  const summaryData = [
+    {
+      key: "Name",
+      value: applicantData.fullName,
+      link: `/contact#${attributeToComponentId.fullName}`,
+      hiddenLabel: "name",
+    },
+    {
+      key: "Sex",
+      value: applicantData.sex,
+      link: `/contact#${attributeToComponentId.sex}`,
+      hiddenLabel: "sex",
+    },
+    {
+      key: "Country of nationality",
+      value: applicantData.countryOfNationality,
+      link: `/contact#${attributeToComponentId.countryOfNationality}`,
+      hiddenLabel: "country of nationality",
+    },
+    {
+      key: "Date of birth",
+      value: `${applicantData.dateOfBirth.day}/${applicantData.dateOfBirth.month}/${applicantData.dateOfBirth.year}`,
+      link: `/contact#${attributeToComponentId.dateOfBirth}`,
+      hiddenLabel: "date of birth",
+    },
+    {
+      key: "Passport number",
+      value: applicantData.passportNumber,
+      link: `/contact#${attributeToComponentId.passportNumber}`,
+      hiddenLabel: "passport number",
+    },
+    {
+      key: "Country of issue",
+      value: applicantData.countryOfIssue,
+      link: `/contact#${attributeToComponentId.countryOfIssue}`,
+      hiddenLabel: "country of issue",
+    },
+    {
+      key: "Passport issue date",
+      value: `${applicantData.passportIssueDate.day}/${applicantData.passportIssueDate.month}/${applicantData.passportIssueDate.year}`,
+      link: `/contact#${attributeToComponentId.passportIssueDate}`,
+      hiddenLabel: "passport issue date",
+    },
+    {
+      key: "Passport expiry date",
+      value: `${applicantData.passportExpiryDate.day}/${applicantData.passportExpiryDate.month}/${applicantData.passportExpiryDate.year}`,
+      link: `/contact#${attributeToComponentId.passportExpiryDate}`,
+      hiddenLabel: "passport expiry date",
+    },
+    {
+      key: "Home address line 1",
+      value: applicantData.applicantHomeAddress1,
+      link: `/contact#${attributeToComponentId.applicantHomeAddress1}`,
+      hiddenLabel: "home address line 1",
+    },
+    {
+      key: "Home address line 2",
+      value: applicantData.applicantHomeAddress2,
+      link: `/contact#${attributeToComponentId.applicantHomeAddress2}`,
+      hiddenLabel: "home address line 2",
+    },
+    {
+      key: "Home address line 3",
+      value: applicantData.applicantHomeAddress3,
+      link: `/contact#${attributeToComponentId.applicantHomeAddress3}`,
+      hiddenLabel: "home address line 3",
+    },
+    {
+      key: "Town or city",
+      value: applicantData.townOrCity,
+      link: `/contact#${attributeToComponentId.townOrCity}`,
+      hiddenLabel: "home town or city",
+    },
+    {
+      key: "Province or state",
+      value: applicantData.provinceOrState,
+      link: `/contact#${attributeToComponentId.provinceOrState}`,
+      hiddenLabel: "home province or state",
+    },
+    {
+      key: "Country",
+      value: applicantData.country,
+      link: `/contact#${attributeToComponentId.country}`,
+      hiddenLabel: "country",
+    },
+    {
+      key: "Postcode",
+      value: applicantData.postcode,
+      link: `/contact#${attributeToComponentId.postcode}`,
+      hiddenLabel: "postcode",
+    },
+  ];
+
   return (
     <div>
-      <dl className="govuk-summary-list">
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Name</dt>
-          <dd className="govuk-summary-list__value">{applicantData.fullName}</dd>
-          {applicantData.status == ApplicationStatus.INCOMPLETE && (
-            <dd className="govuk-summary-list__actions">
-              <Link className="govuk-link" style={{ color: "#1d70b8" }} to="/contact#name">
-                Change<span className="govuk-visually-hidden"> name</span>
-              </Link>
-            </dd>
-          )}
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Sex</dt>
-          <dd className="govuk-summary-list__value">{applicantData.sex}</dd>
-          {applicantData.status == ApplicationStatus.INCOMPLETE && (
-            <dd className="govuk-summary-list__actions">
-              <Link className="govuk-link" style={{ color: "#1d70b8" }} to="/contact#sex">
-                Change<span className="govuk-visually-hidden"> sex</span>
-              </Link>
-            </dd>
-          )}
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Country of nationality</dt>
-          <dd className="govuk-summary-list__value">{applicantData.countryOfNationality}</dd>
-          {applicantData.status == ApplicationStatus.INCOMPLETE && (
-            <dd className="govuk-summary-list__actions">
-              <Link
-                className="govuk-link"
-                style={{ color: "#1d70b8" }}
-                to="/contact#country-of-nationality"
-              >
-                Change<span className="govuk-visually-hidden"> country of nationality</span>
-              </Link>
-            </dd>
-          )}
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Date of birth</dt>
-          <dd className="govuk-summary-list__value">
-            {applicantData.dateOfBirth.day}/{applicantData.dateOfBirth.month}/
-            {applicantData.dateOfBirth.year}
-          </dd>
-          {applicantData.status == ApplicationStatus.INCOMPLETE && (
-            <dd className="govuk-summary-list__actions">
-              <Link className="govuk-link" style={{ color: "#1d70b8" }} to="/contact#birth-date">
-                Change<span className="govuk-visually-hidden"> date of birth</span>
-              </Link>
-            </dd>
-          )}
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Passport number</dt>
-          <dd className="govuk-summary-list__value">{applicantData.passportNumber}</dd>
-          {applicantData.status == ApplicationStatus.INCOMPLETE && (
-            <dd className="govuk-summary-list__actions">
-              <Link
-                className="govuk-link"
-                style={{ color: "#1d70b8" }}
-                to="/contact#passportNumber"
-              >
-                Change<span className="govuk-visually-hidden"> passport number</span>
-              </Link>
-            </dd>
-          )}
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Country of issue</dt>
-          <dd className="govuk-summary-list__value">{applicantData.countryOfIssue}</dd>
-          {applicantData.status == ApplicationStatus.INCOMPLETE && (
-            <dd className="govuk-summary-list__actions">
-              <Link
-                className="govuk-link"
-                style={{ color: "#1d70b8" }}
-                to="/contact#country-of-issue"
-              >
-                Change<span className="govuk-visually-hidden"> country of issue</span>
-              </Link>
-            </dd>
-          )}
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Passport issue date</dt>
-          <dd className="govuk-summary-list__value">
-            {applicantData.passportIssueDate.day}/{applicantData.passportIssueDate.month}/
-            {applicantData.passportIssueDate.year}
-          </dd>
-          {applicantData.status == ApplicationStatus.INCOMPLETE && (
-            <dd className="govuk-summary-list__actions">
-              <Link
-                className="govuk-link"
-                style={{ color: "#1d70b8" }}
-                to="/contact#passport-issue-date"
-              >
-                Change<span className="govuk-visually-hidden"> passport issue date</span>
-              </Link>
-            </dd>
-          )}
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Passport expiry date</dt>
-          <dd className="govuk-summary-list__value">
-            {applicantData.passportExpiryDate.day}/{applicantData.passportExpiryDate.month}/
-            {applicantData.passportExpiryDate.year}
-          </dd>
-          {applicantData.status == ApplicationStatus.INCOMPLETE && (
-            <dd className="govuk-summary-list__actions">
-              <Link
-                className="govuk-link"
-                style={{ color: "#1d70b8" }}
-                to="/contact#passport-expiry-date"
-              >
-                Change<span className="govuk-visually-hidden"> passport expiry date</span>
-              </Link>
-            </dd>
-          )}
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Home address line 1</dt>
-          <dd className="govuk-summary-list__value">{applicantData.applicantHomeAddress1}</dd>
-          {applicantData.status == ApplicationStatus.INCOMPLETE && (
-            <dd className="govuk-summary-list__actions">
-              <Link className="govuk-link" style={{ color: "#1d70b8" }} to="/contact#address-1">
-                Change<span className="govuk-visually-hidden"> home address line 1</span>
-              </Link>
-            </dd>
-          )}
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Home address line 2</dt>
-          <dd className="govuk-summary-list__value">{applicantData.applicantHomeAddress2}</dd>
-          {applicantData.status == ApplicationStatus.INCOMPLETE && (
-            <dd className="govuk-summary-list__actions">
-              <Link className="govuk-link" style={{ color: "#1d70b8" }} to="/contact#address-2">
-                Change<span className="govuk-visually-hidden"> home address line 2</span>
-              </Link>
-            </dd>
-          )}
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Home address line 3</dt>
-          <dd className="govuk-summary-list__value">{applicantData.applicantHomeAddress3}</dd>
-          {applicantData.status == ApplicationStatus.INCOMPLETE && (
-            <dd className="govuk-summary-list__actions">
-              <Link className="govuk-link" style={{ color: "#1d70b8" }} to="/contact#address-3">
-                Change<span className="govuk-visually-hidden"> home address line 3</span>
-              </Link>
-            </dd>
-          )}
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Town or city</dt>
-          <dd className="govuk-summary-list__value">{applicantData.townOrCity}</dd>
-          {applicantData.status == ApplicationStatus.INCOMPLETE && (
-            <dd className="govuk-summary-list__actions">
-              <Link className="govuk-link" style={{ color: "#1d70b8" }} to="/contact#town-or-city">
-                Change<span className="govuk-visually-hidden"> home town or city</span>
-              </Link>
-            </dd>
-          )}
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Province or state</dt>
-          <dd className="govuk-summary-list__value">{applicantData.provinceOrState}</dd>
-          {applicantData.status == ApplicationStatus.INCOMPLETE && (
-            <dd className="govuk-summary-list__actions">
-              <Link
-                className="govuk-link"
-                style={{ color: "#1d70b8" }}
-                to="/contact#province-or-state"
-              >
-                Change<span className="govuk-visually-hidden"> home province or state</span>
-              </Link>
-            </dd>
-          )}
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Country</dt>
-          <dd className="govuk-summary-list__value">{applicantData.country}</dd>
-          {applicantData.status == ApplicationStatus.INCOMPLETE && (
-            <dd className="govuk-summary-list__actions">
-              <Link
-                className="govuk-link"
-                style={{ color: "#1d70b8" }}
-                to="/contact#address-country"
-              >
-                Change<span className="govuk-visually-hidden"> country</span>
-              </Link>
-            </dd>
-          )}
-        </div>
-        <div className="govuk-summary-list__row">
-          <dt className="govuk-summary-list__key">Postcode</dt>
-          <dd className="govuk-summary-list__value">{applicantData.postcode}</dd>
-          {applicantData.status == ApplicationStatus.INCOMPLETE && (
-            <dd className="govuk-summary-list__actions">
-              <Link className="govuk-link" style={{ color: "#1d70b8" }} to="/contact#postcode">
-                Change<span className="govuk-visually-hidden"> postcode</span>
-              </Link>
-            </dd>
-          )}
-        </div>
-      </dl>
+      <Summary status={applicantData.status} summaryElements={summaryData} />
+
       {applicantData.status == ApplicationStatus.INCOMPLETE && (
         <Button
           id="confirm"
           type={ButtonType.DEFAULT}
-          text="Confirm"
+          text="Save and continue"
           href="/applicant-confirmation"
           handleClick={handleSubmit}
         />

@@ -53,7 +53,7 @@ export class ApplicantSummaryPage {
     });
   }
   confirmDetails(): void {
-    cy.contains("button", "Confirm").should("be.visible").click();
+    cy.contains("button", "Save and continue").should("be.visible").click();
   }
   isFieldPresent(fieldKey: string): Cypress.Chainable<boolean> {
     return cy.get("dt.govuk-summary-list__key").then(($elements) => {

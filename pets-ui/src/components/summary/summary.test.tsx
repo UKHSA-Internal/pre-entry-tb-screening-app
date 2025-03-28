@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 
+import { ApplicationStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 import Summary from "./summary";
@@ -28,7 +29,7 @@ describe("Summary Component", () => {
   it("renders correctly when props are specified", () => {
     renderWithProviders(
       <Router>
-        <Summary summaryElements={summaryData} />
+        <Summary status={ApplicationStatus.INCOMPLETE} summaryElements={summaryData} />
       </Router>,
     );
     expect(screen.getByText("Example Title")).toBeInTheDocument();
@@ -38,7 +39,7 @@ describe("Summary Component", () => {
   it("renders an array of strings", () => {
     render(
       <Router>
-        <Summary summaryElements={summaryArrayData} />
+        <Summary status={ApplicationStatus.INCOMPLETE} summaryElements={summaryArrayData} />
       </Router>,
     );
     expect(screen.getByText("A typical value")).toBeInTheDocument();
@@ -48,12 +49,21 @@ describe("Summary Component", () => {
   it("renders a link attached to the word 'Change'", () => {
     render(
       <Router>
-        <Summary summaryElements={summaryData} />
+        <Summary status={ApplicationStatus.INCOMPLETE} summaryElements={summaryData} />
       </Router>,
     );
     expect(screen.getByText("Change")).toBeInTheDocument();
+    expect(screen.getAllByRole("definition")).toHaveLength(2);
     expect(screen.getAllByRole("link")).toHaveLength(1);
     const changeLink = screen.getAllByRole("link")[0];
     expect(changeLink.getAttribute("href")).toEqual("/example-link");
+  });
+  it("does not render a link attached to the word 'Change' when the status is complete", () => {
+    render(
+      <Router>
+        <Summary status={ApplicationStatus.COMPLETE} summaryElements={summaryData} />
+      </Router>,
+    );
+    expect(screen.getAllByRole("definition")).toHaveLength(1);
   });
 });
