@@ -59,7 +59,6 @@ const ChestXraySummary = () => {
       value: chestXrayData.chestXrayTaken,
       link: `/chest-xray-question#${attributeToComponentId.chestXrayTaken}`,
       hiddenLabel: "chest X-ray Status",
-
     },
     {
       key: "Postero anterior x-ray",

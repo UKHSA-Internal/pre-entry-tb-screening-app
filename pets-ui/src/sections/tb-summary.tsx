@@ -50,25 +50,25 @@ const TbSummary = () => {
   const summaryData = [
     {
       key: "TB clearance certificate issued?",
-      value: tbCertificateData.tbClearanceIssued,
+      value: tbCertificateData.isIssued,
       link: `/tb-certificate-declaration#${attributeToComponentId.tbClearanceIssued}`,
       hiddenLabel: "TB clearance certificate",
     },
     {
       key: "Physician comments",
-      value: tbCertificateData.physicianComments,
+      value: tbCertificateData.comments,
       link: `/tb-certificate-declaration#${attributeToComponentId.physicianComments}`,
       hiddenLabel: "Comments from physician",
     },
     {
       key: "Date of TB clearance certificate",
-      value: formatDateType(tbCertificateData.tbCertificateDate),
+      value: formatDateType(tbCertificateData.certificateDate),
       link: `/tb-certificate-declaration#${attributeToComponentId.tbCertificateDate}`,
       hiddenLabel: "Date of TB certificate",
     },
     {
       key: "TB clearance certificate number",
-      value: tbCertificateData.tbCertificateNumber,
+      value: tbCertificateData.certificateNumber,
       link: `/tb-certificate-declaration#${attributeToComponentId.tbCertificateNumber}`,
       hiddenLabel: "TB certificate number",
     },

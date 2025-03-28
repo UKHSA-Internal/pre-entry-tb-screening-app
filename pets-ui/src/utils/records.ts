@@ -49,8 +49,6 @@ const attributeToComponentId: { [key: string]: string } = {
   physicianComments: "physician-comments",
   certificateDate: "tb-certificate-date",
   certificateNumber: "tb-certificate-number",
-  passportIssueDate: "passportIssueDate",
-  passportExpiryDate: "passportExpiryDate",
 };
 
 const formRegex = {

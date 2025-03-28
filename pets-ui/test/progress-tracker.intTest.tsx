@@ -78,14 +78,14 @@ const chestXraySlice = {
 };
 
 const tbCertSlice = {
-  tbClearanceIssued: "Yes",
-  physicianComments: "Extra Details",
-  tbCertificateDate: {
+  isIssued: YesOrNo.YES,
+  comments: "Extra Details",
+  certificateDate: {
     year: "2025",
     month: "03",
     day: "25",
   },
-  tbCertificateNumber: "12345",
+  certificateNumber: "12345",
 };
 
 const incompleteState = {
