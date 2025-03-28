@@ -33,7 +33,7 @@ type ITbCertificateIssued = {
   createdBy: string;
 
   isIssued: YesOrNo.Yes;
-  comments?: string | undefined;
+  comments?: string;
   issueDate: Date;
   certificateNumber: string;
 };
@@ -47,7 +47,7 @@ export type NewTbCertificateIssuedDetails = Omit<
 
 export class TbCertificateIssued extends TbCertificateBase {
   isIssued: YesOrNo.Yes;
-  comments?: string | undefined;
+  comments?: string;
   issueDate: Date;
   certificateNumber: string;
 
@@ -80,7 +80,7 @@ type ITbCertificateNotIssued = {
   createdBy: string;
 
   isIssued: YesOrNo.No;
-  comments?: string | undefined;
+  comments?: string;
 };
 
 export type NewTbCertificateNotIssuedDetails = Omit<
@@ -90,7 +90,7 @@ export type NewTbCertificateNotIssuedDetails = Omit<
 
 export class TbCertificateNotIssued extends TbCertificateBase {
   isIssued: YesOrNo.No;
-  comments?: string | undefined;
+  comments?: string;
 
   constructor(details: ITbCertificateNotIssued) {
     super(details);
