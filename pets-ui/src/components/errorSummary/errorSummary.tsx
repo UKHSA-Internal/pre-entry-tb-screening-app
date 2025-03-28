@@ -34,7 +34,7 @@ export default function ErrorSummary(props: Readonly<ErrorSummaryProps>) {
                 <LinkLabel
                   title={props.errors[error]?.message as string}
                   to={"#" + attributeToComponentId[error]}
-                  aria-label={`Error: ${props.errors[error]?.message as string}`}
+                  ariaLabel={`Error: ${props.errors[error]?.message as string}`}
                 />
               </li>
             ))}
