@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 
+import { ApplicationStatus } from "@/utils/enums";
+
 export type SummaryElement = {
   key: string;
   value: string | Array<string> | undefined;
@@ -8,6 +10,7 @@ export type SummaryElement = {
 };
 
 interface SummaryProps {
+  status: ApplicationStatus;
   summaryElements: SummaryElement[];
 }
 
@@ -31,11 +34,13 @@ export default function Summary(props: Readonly<SummaryProps>) {
             ) : (
               <dd className="govuk-summary-list__value">{summaryElement.value}</dd>
             )}
-            <dd className="govuk-summary-list__actions">
-              <Link className="govuk-link" style={{ color: "#1d70b8" }} to={summaryElement.link}>
-                Change<span className="govuk-visually-hidden">{summaryElement.hiddenLabel}</span>
-              </Link>
-            </dd>
+            {props.status == ApplicationStatus.INCOMPLETE && (
+              <dd className="govuk-summary-list__actions">
+                <Link className="govuk-link" style={{ color: "#1d70b8" }} to={summaryElement.link}>
+                  Change<span className="govuk-visually-hidden"> {summaryElement.hiddenLabel}</span>
+                </Link>
+              </dd>
+            )}
           </div>
         );
       })}

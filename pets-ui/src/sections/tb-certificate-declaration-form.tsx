@@ -53,6 +53,7 @@ const TbCertificateDeclarationForm = () => {
   // Required to scroll to the correct element when a change link on the summary page is clicked
   const location = useLocation();
   const tbClearanceIssued = useRef<HTMLDivElement | null>(null);
+  const tbPhysicanComments = useRef<HTMLDivElement | null>(null);
   const tbCertificateDate = useRef<HTMLDivElement | null>(null);
   const tbCertificateNumber = useRef<HTMLDivElement | null>(null);
 
@@ -61,6 +62,7 @@ const TbCertificateDeclarationForm = () => {
       const target = location.hash.substring(1);
       const refMap: { [key: string]: HTMLElement | null } = {
         "tb-clearance-issued": tbClearanceIssued.current,
+        "physician-comments": tbPhysicanComments.current,
         "tb-certificate-date": tbCertificateDate.current,
         "tb-certificate-number": tbCertificateNumber.current,
       };
@@ -98,20 +100,22 @@ const TbCertificateDeclarationForm = () => {
           />
         </div>
 
-        <Heading
-          level={2}
-          size="m"
-          style={{ marginBottom: 20, marginTop: 40 }}
-          title="Physician comments"
-        />
-        <TextArea
-          id="physician-comments"
-          required={false}
-          errorMessage={errors?.physicianComments?.message ?? ""}
-          formValue="physicianComments"
-          rows={10}
-          defaultValue={tbCertificateData.physicianComments}
-        />
+        <div ref={tbPhysicanComments}>
+          <Heading
+            level={2}
+            size="m"
+            style={{ marginBottom: 20, marginTop: 40 }}
+            title="Physician comments"
+          />
+          <TextArea
+            id="physician-comments"
+            required={false}
+            errorMessage={errors?.physicianComments?.message ?? ""}
+            formValue="physicianComments"
+            rows={10}
+            defaultValue={tbCertificateData.physicianComments}
+          />
+        </div>
 
         <Heading
           level={2}
