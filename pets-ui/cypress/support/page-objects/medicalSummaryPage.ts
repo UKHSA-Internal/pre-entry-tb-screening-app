@@ -201,7 +201,7 @@ export class MedicalSummaryPage {
 
   // Submit form to confirm details
   confirmDetails(): void {
-    cy.contains("button", "Confirm").should("be.visible").click();
+    cy.contains("button", "Save and continue").should("be.visible").click();
   }
 
   isFieldPresent(fieldKey: string): Cypress.Chainable<boolean> {
