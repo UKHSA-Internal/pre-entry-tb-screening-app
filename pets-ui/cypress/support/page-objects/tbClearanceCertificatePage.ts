@@ -27,8 +27,9 @@ export class TbClearanceCertificatePage {
   selectTbClearanceIssued(option: string): void {
     cy.get(`input[name="tbClearanceIssued"][value="${option}"]`)
       .should("exist")
-      .check({ force: true })
-      .should("be.checked");
+      .check({ force: true });
+    //verify radio is checked
+    cy.get(`input[name="tbClearanceIssued"]:checked`).should("have.value", option);
   }
 
   fillPhysicianComments(comments: string): void {

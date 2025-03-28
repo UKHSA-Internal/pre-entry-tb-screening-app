@@ -91,7 +91,7 @@ export class ChestXraySummaryPage {
       .should("have.attr", "href", "/chest-xray-findings#xray-minor-findings");
   }
 
-  // Click save and continue button
+  // Click Confirm
   clickSaveAndContinue(): void {
     cy.contains("button", "Save and continue").click();
   }
