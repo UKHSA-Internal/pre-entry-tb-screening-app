@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 import Heading, { HeadingSize } from "../heading/heading";
+import { textAreaHeadingStyles } from "./textArea.styles";
 
 export interface TextAreaProps {
   id: string;
@@ -13,18 +14,12 @@ export interface TextAreaProps {
   required: string | false;
   rows: number;
   defaultValue?: string;
-  hasHeading?: boolean;
-  hasLabel?: boolean;
   headingLevel?: 1 | 2 | 3 | 4;
   headingSize?: HeadingSize;
   headingStyle?: React.CSSProperties;
 }
 
-export default function TextArea({
-  hasHeading = false,
-  hasLabel = true,
-  ...props
-}: Readonly<TextAreaProps>) {
+export default function TextArea(props: Readonly<TextAreaProps>) {
   const { register } = useFormContext();
   const [errorText, setErrorText] = useState("");
   const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
@@ -38,16 +33,16 @@ export default function TextArea({
 
   return (
     <div id={props.id} className={wrapperClass}>
-      {hasHeading && props.heading && (
+      {props.heading && (
         <Heading
           title={props.heading}
           level={props.headingLevel ?? 2}
           size={props.headingSize ?? "m"}
-          style={{ marginBottom: 20, marginTop: 40, ...props.headingStyle }}
-          id={hasLabel ? `${props.id}-heading` : props.id}
+          style={{ ...textAreaHeadingStyles, ...props.headingStyle }}
+          id={props.label ? `${props.id}-heading` : props.id}
         />
       )}
-      {hasLabel && props.label && (
+      {props.label && (
         <label className="govuk-label" htmlFor={props.id}>
           {props.label}
         </label>
@@ -68,7 +63,7 @@ export default function TextArea({
         rows={props.rows}
         data-testid={props.id}
         aria-labelledby={props.id}
-        aria-describedby={props.hint ? `${props.id}-hint` : undefined}
+        aria-describedby={props.hint ?? `${props.id}-hint`}
         {...register(props.formValue, {
           required: props.required,
         })}

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 import Heading, { HeadingSize } from "../heading/heading";
+import { dropdownHeadingStyles } from "./dropdown.styles";
 
 interface OptionItem {
   label: string;
@@ -18,18 +19,12 @@ interface DropdownProps {
   formValue: string;
   required: string | false;
   defaultValue?: string;
-  hasHeading?: boolean;
-  hasLabel?: boolean;
   headingLevel?: 1 | 2 | 3 | 4;
   headingSize?: HeadingSize;
   headingStyle?: React.CSSProperties;
 }
 
-export default function Dropdown({
-  hasHeading = false,
-  hasLabel = true,
-  ...props
-}: Readonly<DropdownProps>) {
+export default function Dropdown(props: Readonly<DropdownProps>) {
   const { register } = useFormContext();
   const [errorText, setErrorText] = useState("");
   const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
@@ -43,16 +38,16 @@ export default function Dropdown({
 
   return (
     <div id={props.id} className={wrapperClass}>
-      {hasHeading && props.heading && (
+      {props.heading && (
         <Heading
           title={props.heading}
           level={props.headingLevel ?? 2}
           size={props.headingSize ?? "m"}
-          style={{ ...props.headingStyle, marginTop: 40, marginBottom: 10 }}
+          style={{ ...dropdownHeadingStyles, ...props.headingStyle }}
           id={props.label ? `${props.id}-heading` : props.id}
         />
       )}
-      {hasLabel && props.label && (
+      {props.label && (
         <label className="govuk-label" htmlFor={props.id}>
           {props.label}
         </label>
@@ -70,7 +65,7 @@ export default function Dropdown({
       <select
         id={props.id}
         aria-labelledby={props.id}
-        aria-describedby={props.hint ? `${props.id}-hint` : undefined}
+        aria-describedby={props.hint ?? `${props.id}-hint`}
         className={selectClass}
         defaultValue={props.defaultValue ?? ""}
         {...register(props.formValue, {

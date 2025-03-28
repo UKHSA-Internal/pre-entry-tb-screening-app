@@ -68,7 +68,6 @@ const ChestXrayNotTakenForm = () => {
             id="xray-not-taken-further-details"
             heading="Notes"
             label="If other, give further details"
-            hasHeading={true}
             errorMessage={errors?.xrayWasNotTakenFurtherDetails?.message ?? ""}
             formValue="xrayWasNotTakenFurtherDetails"
             required={

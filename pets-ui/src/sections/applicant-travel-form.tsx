@@ -68,8 +68,6 @@ const ApplicantTravelForm = () => {
         <div ref={visaTypeRef}>
           <Dropdown
             id="visa-type"
-            hasHeading={true}
-            hasLabel={false}
             heading="Visa type"
             options={visaOptions}
             errorMessage={errors?.visaType?.message ?? ""}
@@ -83,7 +81,6 @@ const ApplicantTravelForm = () => {
           <FreeText
             id="address-1"
             label="Address line 1"
-            hasHeading={true}
             heading="Applicant's UK address"
             headingStyle={{ marginBottom: 20 }}
             errorMessage={errors?.applicantUkAddress1?.message ?? ""}
@@ -139,8 +136,6 @@ const ApplicantTravelForm = () => {
             id="mobile-number"
             errorMessage={errors?.ukMobileNumber?.message ?? ""}
             heading="Applicant's UK phone number"
-            hasHeading={true}
-            hasLabel={false}
             formValue="ukMobileNumber"
             required="Enter UK mobile number"
             patternValue={formRegex.numbersOnly}
@@ -153,8 +148,6 @@ const ApplicantTravelForm = () => {
           <FreeText
             id="email"
             errorMessage={errors?.ukEmail?.message ?? ""}
-            hasHeading={true}
-            hasLabel={false}
             heading="Applicant's UK email"
             formValue="ukEmail"
             required="Enter UK email address"

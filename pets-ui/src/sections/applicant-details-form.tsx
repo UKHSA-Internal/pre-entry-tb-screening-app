@@ -91,7 +91,6 @@ const ApplicantForm = () => {
             label="Full name"
             heading="Applicant's personal details"
             headingStyle={{ marginBottom: 20 }}
-            hasHeading={true}
             errorMessage={errors?.fullName?.message ?? ""}
             formValue="fullName"
             required="Enter the applicant's full name"

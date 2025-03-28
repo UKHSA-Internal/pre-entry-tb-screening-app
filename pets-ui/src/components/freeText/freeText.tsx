@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 import Heading, { HeadingSize } from "../heading/heading";
+import { freeTextHeadingStyles } from "./freeText.styles";
 
 export interface FreeTextProps {
   id: string;
@@ -16,18 +17,12 @@ export interface FreeTextProps {
   inputWidth?: number;
   suffixText?: string;
   defaultValue?: string;
-  hasHeading?: boolean;
-  hasLabel?: boolean;
   headingLevel?: 1 | 2 | 3 | 4;
   headingSize?: HeadingSize;
   headingStyle?: React.CSSProperties;
 }
 
-export default function FreeText({
-  hasHeading = false,
-  hasLabel = true,
-  ...props
-}: Readonly<FreeTextProps>) {
+export default function FreeText(props: Readonly<FreeTextProps>) {
   const { register } = useFormContext();
   const [errorText, setErrorText] = useState("");
   const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
@@ -46,16 +41,16 @@ export default function FreeText({
 
   return (
     <div id={props.id} className={wrapperClass}>
-      {hasHeading && props.heading && (
+      {props.heading && (
         <Heading
           title={props.heading}
           level={props.headingLevel ?? 2}
           size={props.headingSize ?? "m"}
-          style={{ marginTop: 40, marginBottom: 10, ...props.headingStyle }}
-          id={hasLabel ? `${props.id}-heading` : props.id}
+          style={{ ...freeTextHeadingStyles, ...props.headingStyle }}
+          id={props.label ? `${props.id}-heading` : props.id}
         />
       )}
-      {hasLabel && props.label && (
+      {props.label && (
         <label className="govuk-label" htmlFor={props.id}>
           {props.label}
         </label>
@@ -75,7 +70,7 @@ export default function FreeText({
           className={inputClass}
           id={props.id}
           aria-labelledby={props.id}
-          aria-describedby={props.hint ? `${props.id}-hint` : undefined}
+          aria-describedby={props.hint ?? `${props.id}-hint`}
           type="text"
           data-testid={props.id}
           {...register(props.formValue, {

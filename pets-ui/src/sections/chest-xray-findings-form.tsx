@@ -101,7 +101,6 @@ const ChestXrayFindingsForm = () => {
           <TextArea
             id="xray-result-detail"
             label="Add details if X-ray results are abnormal"
-            hasHeading={true}
             headingLevel={4}
             headingSize="s"
             heading="Details"

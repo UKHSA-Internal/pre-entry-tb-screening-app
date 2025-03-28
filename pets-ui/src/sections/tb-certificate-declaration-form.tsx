@@ -106,8 +106,6 @@ const TbCertificateDeclarationForm = () => {
           rows={10}
           defaultValue={tbCertificateData.physicianComments}
           heading="Physician comments"
-          hasHeading={true}
-          hasLabel={false}
         />
 
         <Heading
@@ -157,8 +155,6 @@ const TbCertificateDeclarationForm = () => {
           <FreeText
             id="tb-certificate-number"
             errorMessage={errors?.tbCertificateNumber?.message ?? ""}
-            hasHeading={true}
-            hasLabel={false}
             heading="TB clearance certificate number"
             formValue="tbCertificateNumber"
             patternValue={formRegex.lettersAndNumbers}
