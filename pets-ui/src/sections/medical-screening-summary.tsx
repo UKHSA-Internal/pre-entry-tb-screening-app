@@ -136,7 +136,7 @@ const MedicalScreeningReview = () => {
         <Button
           id="confirm"
           type={ButtonType.DEFAULT}
-          text="Confirm"
+          text="Save and continue"
           href="/medical-confirmation"
           handleClick={handleSubmit}
         />

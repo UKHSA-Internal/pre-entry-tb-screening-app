@@ -145,7 +145,7 @@ const ChestXraySummary = () => {
         <Button
           id="confirm"
           type={ButtonType.DEFAULT}
-          text="Confirm"
+          text="Save and continue"
           href="/chest-xray-confirmation"
           handleClick={handleSubmit}
         />
