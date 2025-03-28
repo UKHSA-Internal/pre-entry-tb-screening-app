@@ -1,0 +1,24 @@
+name: "Validate PR Branch Name"
+description: "Checks if a PR branch follows the naming convention: feature/{ticket-number}-{short-description}"
+
+inputs:
+  branch_name:
+    description: "The branch name to validate"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check branch name format
+      shell: bash
+      run: |
+        BRANCH_NAME="${{ inputs.branch_name }}"
+        PATTERN="^feature/TBBETA-[0-9]+(-[a-z0-9-]+)?$"
+
+        if [[ ! "$BRANCH_NAME" =~ $PATTERN ]]; then
+          echo "❌ ERROR: Branch name '$branch_name' does not follow the required convention:"
+          echo "   Expected format: feature/{ticket-number}-{short-description}"
+          echo "   Example: feature/TBBETA-123-add-authentication"
+          exit 1
+        fi
+        echo "✅ Branch name '$BRANCH_NAME' follows the required convention."

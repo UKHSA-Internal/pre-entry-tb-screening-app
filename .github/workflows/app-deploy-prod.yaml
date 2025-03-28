@@ -1,4 +1,4 @@
-name: Pets UI Deployment - Preprod
+name: Pets UI Deployment - Prod
 
 on:
   workflow_dispatch:
@@ -7,5 +7,5 @@ jobs:
   pets-ui:
     uses: ./.github/workflows/app-deploy.yaml
     with:
-      environment: "preprod"
+      environment: "prod"
     secrets: inherit

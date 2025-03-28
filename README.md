@@ -181,6 +181,22 @@ Skip this section if you are not running E2E tests on your machine. As a prerequ
 
 6. Verify `.env.local.secrets` has been created in `configs` directory. Double check this file is not committed.
 
+## Development Processes
+
+All captured [here](https://confluence.collab.test-and-trace.nhs.uk/pages/viewpage.action?pageId=374193469)
+
+### Ticket Creation
+
+User story and bug tickets should follow this [template](https://ukhsa.atlassian.net/browse/TBBETA-405).
+
+### Picking up Tickets
+
+- When starting work on a new ticket, open a new branch using the following naming convention: `feature/{ticket-number}-{concise-description}`.
+   For example: `feature/TBBETA-123-setup-auth`.
+
+- Commits should be done regularly and commit messages should be meaningful. Commit messages should follow this convention - `{ticket-number}: {commit_message}`.
+   For example: `TBBETA-123: Added unit tests`
+
 ## Running Development Environment
 
 1. Start up development environment
@@ -292,6 +308,3 @@ To deploy the Core services to a target environment {target-env}:
 [cypress.com]: https://img.shields.io/badge/Cypress-20232A?style=for-the-badge&logo=cypress
 [Cypress-url]: https://docs.cypress.io/app/get-started/why-cypress
 
-## CI/CD Workflows
-
-<https://confluence.collab.test-and-trace.nhs.uk/pages/viewpage.action?pageId=374193469>
