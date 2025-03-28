@@ -73,7 +73,7 @@ export class ChestXraySummaryPage {
     cy.contains("dt.govuk-summary-list__key", "Select x-ray status")
       .siblings(".govuk-summary-list__actions")
       .find("a")
-      .should("have.attr", "href", "/chest-xray-question#chestXrayTaken");
+      .should("have.attr", "href", "/chest-xray-question#chest-xray-taken");
 
     cy.contains("dt.govuk-summary-list__key", "Postero anterior x-ray")
       .siblings(".govuk-summary-list__actions")
@@ -91,9 +91,9 @@ export class ChestXraySummaryPage {
       .should("have.attr", "href", "/chest-xray-findings#xray-minor-findings");
   }
 
-  // Click save and continue button
+  // Click Confirm
   clickSaveAndContinue(): void {
-    cy.contains("button", "Save and continue").click();
+    cy.contains("button", "Confirm").click();
   }
 
   // Verify breadcrumb navigation

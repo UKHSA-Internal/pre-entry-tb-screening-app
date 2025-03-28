@@ -73,27 +73,27 @@ export class TbClearanceCertificateSummaryPage {
     cy.contains("dt.govuk-summary-list__key", "TB clearance certificate issued?")
       .siblings(".govuk-summary-list__actions")
       .find("a")
-      .should("have.attr", "href", "/tb-certificate-declaration#tbClearanceIssued");
+      .should("have.attr", "href", "/tb-certificate-declaration#tb-clearance-issued");
 
     cy.contains("dt.govuk-summary-list__key", "Physician comments")
       .siblings(".govuk-summary-list__actions")
       .find("a")
-      .should("have.attr", "href", "/tb-certificate-declaration");
+      .should("have.attr", "href", "/tb-certificate-declaration#physician-comments");
 
     cy.contains("dt.govuk-summary-list__key", "Date of TB clearance certificate")
       .siblings(".govuk-summary-list__actions")
       .find("a")
-      .should("have.attr", "href", "/tb-certificate-declaration#tbCertificateDate");
+      .should("have.attr", "href", "/tb-certificate-declaration#tb-certificate-date");
 
     cy.contains("dt.govuk-summary-list__key", "TB clearance certificate number")
       .siblings(".govuk-summary-list__actions")
       .find("a")
-      .should("have.attr", "href", "/tb-certificate-declaration#tbCertificateNumber");
+      .should("have.attr", "href", "/tb-certificate-declaration#tb-certificate-number");
   }
 
-  // Click save and continue button
+  // Click confirm button
   clickSaveAndContinue(): void {
-    cy.contains("button", "Save and continue").click();
+    cy.contains("button", "onfirm").click();
   }
 
   // Verify breadcrumb navigation
