@@ -5,7 +5,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import ProgressTrackerPage from "@/pages/progress-tracker";
-import { ApplicationStatus } from "@/utils/enums";
+import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -34,45 +34,140 @@ afterEach(() => server.resetHandlers());
 // Disable API mocking after the tests are done.
 afterAll(() => server.close());
 
-test("Progress tracker page displays incomplete application sections correctly & links to applicant details form", async () => {
-  const preloadedState = {
-    applicant: {
-      status: ApplicationStatus.INCOMPLETE,
-      fullName: "Reginald Backwaters",
-      sex: "",
-      dateOfBirth: {
-        year: "1970",
-        month: "12",
-        day: "31",
-      },
-      countryOfNationality: "",
-      passportNumber: "12345",
-      countryOfIssue: "",
-      passportIssueDate: {
-        year: "",
-        month: "",
-        day: "",
-      },
-      passportExpiryDate: {
-        year: "",
-        month: "",
-        day: "",
-      },
-      applicantHomeAddress1: "",
-      applicantHomeAddress2: "",
-      applicantHomeAddress3: "",
-      townOrCity: "",
-      provinceOrState: "",
-      country: "",
-      postcode: "",
-    },
-  };
+const travelSlice = {
+  applicantUkAddress1: "address-1",
+  applicantUkAddress2: "address-2",
+  postcode: "P0 STC0DE",
+  townOrCity: "Town",
+  ukEmail: "email.email@com",
+  ukMobileNumber: "07321900900",
+  visaType: "Government Sponsored",
+};
 
+const medicalScreeningSlice = {
+  age: "99",
+  closeContactWithTb: "No",
+  closeContactWithTbDetail: "",
+  menstrualPeriods: "No",
+  otherSymptomsDetail: "",
+  physicalExamNotes: "Details of physical examination.",
+  pregnant: "Don't know",
+  previousTb: "Yes",
+  previousTbDetail: "Details of previous TB.",
+  tbSymptoms: "Yes",
+  tbSymptomsList: ["Cough", "Night sweats"],
+  underElevenConditions: ["Not applicable - applicant is aged 11 or over"],
+  underElevenConditionsDetail: "",
+};
+
+const chestXraySlice = {
+  chestXrayTaken: YesOrNo.NO,
+  posteroAnteriorXrayFileName: "",
+  posteroAnteriorXrayFile: "",
+  apicalLordoticXrayFileName: "",
+  apicalLordoticXrayFile: "",
+  lateralDecubitusXrayFileName: "",
+  lateralDecubitusXrayFile: "",
+  reasonXrayWasNotTaken: "Pregnant",
+  xrayWasNotTakenFurtherDetails: "Further details",
+  xrayResult: "",
+  xrayResultDetail: "",
+  xrayMinorFindings: [],
+  xrayAssociatedMinorFindings: [],
+  xrayActiveTbFindings: [],
+};
+
+const tbCertSlice = {
+  tbClearanceIssued: "Yes",
+  physicianComments: "Extra Details",
+  tbCertificateDate: {
+    year: "2025",
+    month: "03",
+    day: "25",
+  },
+  tbCertificateNumber: "12345",
+};
+
+const incompleteState = {
+  applicant: {
+    status: ApplicationStatus.INCOMPLETE,
+    fullName: "Reginald Backwaters",
+    sex: "",
+    dateOfBirth: {
+      year: "1970",
+      month: "12",
+      day: "31",
+    },
+    countryOfNationality: "",
+    passportNumber: "12345",
+    countryOfIssue: "",
+    passportIssueDate: {
+      year: "",
+      month: "",
+      day: "",
+    },
+    passportExpiryDate: {
+      year: "",
+      month: "",
+      day: "",
+    },
+    applicantHomeAddress1: "",
+    applicantHomeAddress2: "",
+    applicantHomeAddress3: "",
+    townOrCity: "",
+    provinceOrState: "",
+    country: "",
+    postcode: "",
+  },
+  travel: { status: ApplicationStatus.INCOMPLETE, ...travelSlice },
+  medicalScreening: { status: ApplicationStatus.INCOMPLETE, ...medicalScreeningSlice },
+  chestXray: { status: ApplicationStatus.INCOMPLETE, ...chestXraySlice },
+  tbCertificate: { status: ApplicationStatus.INCOMPLETE, ...tbCertSlice },
+};
+
+const completeState = {
+  applicant: {
+    status: ApplicationStatus.COMPLETE,
+    fullName: "Chelsea Cummerbund",
+    sex: "",
+    dateOfBirth: {
+      year: "1971",
+      month: "11",
+      day: "30",
+    },
+    countryOfNationality: "",
+    passportNumber: "54321",
+    countryOfIssue: "",
+    passportIssueDate: {
+      year: "",
+      month: "",
+      day: "",
+    },
+    passportExpiryDate: {
+      year: "",
+      month: "",
+      day: "",
+    },
+    applicantHomeAddress1: "",
+    applicantHomeAddress2: "",
+    applicantHomeAddress3: "",
+    townOrCity: "",
+    provinceOrState: "",
+    country: "",
+    postcode: "",
+  },
+  travel: { status: ApplicationStatus.COMPLETE, ...travelSlice },
+  medicalScreening: { status: ApplicationStatus.COMPLETE, ...medicalScreeningSlice },
+  chestXray: { status: ApplicationStatus.COMPLETE, ...chestXraySlice },
+  tbCertificate: { status: ApplicationStatus.COMPLETE, ...tbCertSlice },
+};
+
+test("Progress tracker page displays incomplete application sections correctly & links to applicant details form", async () => {
   renderWithProviders(
     <Router>
       <ProgressTrackerPage />
     </Router>,
-    { preloadedState },
+    { preloadedState: incompleteState },
   );
 
   const user = userEvent.setup();
@@ -86,7 +181,7 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(screen.getAllByRole("term")[2]).toHaveTextContent("Passport number");
   expect(screen.getAllByRole("definition")[2]).toHaveTextContent("12345");
 
-  const applicantDetailsLink = screen.getByRole("link", { name: /Applicant Details/i });
+  const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
   expect(applicantDetailsLink).toHaveAttribute("href", "/contact");
   const applicantDetailsListItem = applicantDetailsLink.closest("li");
   expect(applicantDetailsListItem).toHaveClass(
@@ -94,49 +189,48 @@ test("Progress tracker page displays incomplete application sections correctly &
   );
   expect(within(applicantDetailsListItem as HTMLElement).getByText("Incomplete"));
 
+  const travelDetailsLink = screen.getByRole("link", { name: /Travel information/i });
+  expect(travelDetailsLink).toHaveAttribute("href", "/travel-details");
+  const travelDetailsListItem = travelDetailsLink.closest("li");
+  expect(travelDetailsListItem).toHaveClass(
+    "govuk-task-list__item govuk-task-list__item--with-link",
+  );
+  expect(within(travelDetailsListItem as HTMLElement).getByText("Incomplete"));
+
+  const medicalScreeningLink = screen.getByRole("link", {
+    name: /Medical history and TB symptoms/i,
+  });
+  expect(medicalScreeningLink).toHaveAttribute("href", "/medical-screening");
+  const medicalScreeningListItem = medicalScreeningLink.closest("li");
+  expect(medicalScreeningListItem).toHaveClass(
+    "govuk-task-list__item govuk-task-list__item--with-link",
+  );
+  expect(within(medicalScreeningListItem as HTMLElement).getByText("Incomplete"));
+
+  const chestXrayLink = screen.getByRole("link", { name: /Radiological outcome/i });
+  expect(chestXrayLink).toHaveAttribute("href", "/chest-xray-question");
+  const chestXrayListItem = chestXrayLink.closest("li");
+  expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
+  expect(within(chestXrayListItem as HTMLElement).getByText("Incomplete"));
+
+  const tbCertificateLink = screen.getByRole("link", { name: /TB certificate declaration/i });
+  expect(tbCertificateLink).toHaveAttribute("href", "/tb-certificate-declaration");
+  const tbCertificateListItem = tbCertificateLink.closest("li");
+  expect(tbCertificateListItem).toHaveClass(
+    "govuk-task-list__item govuk-task-list__item--with-link",
+  );
+  expect(within(tbCertificateListItem as HTMLElement).getByText("Incomplete"));
+
   await user.click(screen.getByRole("button"));
-  expect(useNavigateMock).toHaveBeenCalled();
+  expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-search");
 });
 
 test("Progress tracker page displays complete application sections correctly & links to summary page", async () => {
-  const preloadedState = {
-    applicant: {
-      status: ApplicationStatus.COMPLETE,
-      fullName: "Chelsea Cummerbund",
-      sex: "",
-      dateOfBirth: {
-        year: "1971",
-        month: "11",
-        day: "30",
-      },
-      countryOfNationality: "",
-      passportNumber: "54321",
-      countryOfIssue: "",
-      passportIssueDate: {
-        year: "",
-        month: "",
-        day: "",
-      },
-      passportExpiryDate: {
-        year: "",
-        month: "",
-        day: "",
-      },
-      applicantHomeAddress1: "",
-      applicantHomeAddress2: "",
-      applicantHomeAddress3: "",
-      townOrCity: "",
-      provinceOrState: "",
-      country: "",
-      postcode: "",
-    },
-  };
-
   renderWithProviders(
     <Router>
       <ProgressTrackerPage />
     </Router>,
-    { preloadedState },
+    { preloadedState: completeState },
   );
 
   const user = userEvent.setup();
@@ -150,7 +244,7 @@ test("Progress tracker page displays complete application sections correctly & l
   expect(screen.getAllByRole("term")[2]).toHaveTextContent("Passport number");
   expect(screen.getAllByRole("definition")[2]).toHaveTextContent("54321");
 
-  const applicantDetailsLink = screen.getByRole("link", { name: /Applicant Details/i });
+  const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
   expect(applicantDetailsLink).toHaveAttribute("href", "/applicant-summary");
   const applicantDetailsListItem = applicantDetailsLink.closest("li");
   expect(applicantDetailsListItem).toHaveClass(
@@ -158,6 +252,38 @@ test("Progress tracker page displays complete application sections correctly & l
   );
   expect(within(applicantDetailsListItem as HTMLElement).getByText("Completed"));
 
+  const travelDetailsLink = screen.getByRole("link", { name: /Travel information/i });
+  expect(travelDetailsLink).toHaveAttribute("href", "/travel-summary");
+  const travelDetailsListItem = travelDetailsLink.closest("li");
+  expect(travelDetailsListItem).toHaveClass(
+    "govuk-task-list__item govuk-task-list__item--with-link",
+  );
+  expect(within(travelDetailsListItem as HTMLElement).getByText("Completed"));
+
+  const medicalScreeningLink = screen.getByRole("link", {
+    name: /Medical history and TB symptoms/i,
+  });
+  expect(medicalScreeningLink).toHaveAttribute("href", "/medical-summary");
+  const medicalScreeningListItem = medicalScreeningLink.closest("li");
+  expect(medicalScreeningListItem).toHaveClass(
+    "govuk-task-list__item govuk-task-list__item--with-link",
+  );
+  expect(within(medicalScreeningListItem as HTMLElement).getByText("Completed"));
+
+  const chestXrayLink = screen.getByRole("link", { name: /Radiological outcome/i });
+  expect(chestXrayLink).toHaveAttribute("href", "/chest-xray-summary");
+  const chestXrayListItem = chestXrayLink.closest("li");
+  expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
+  expect(within(chestXrayListItem as HTMLElement).getByText("Completed"));
+
+  const tbCertificateLink = screen.getByRole("link", { name: /TB certificate declaration/i });
+  expect(tbCertificateLink).toHaveAttribute("href", "/tb-certificate-summary");
+  const tbCertificateListItem = tbCertificateLink.closest("li");
+  expect(tbCertificateListItem).toHaveClass(
+    "govuk-task-list__item govuk-task-list__item--with-link",
+  );
+  expect(within(tbCertificateListItem as HTMLElement).getByText("Completed"));
+
   await user.click(screen.getByRole("button"));
-  expect(useNavigateMock).toHaveBeenCalled();
+  expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-search");
 });

@@ -37,6 +37,9 @@ export const ApplicantSchema = z.object({
   applicantHomeAddress2: z.string().optional().openapi({
     description: "Second line of Applicant's Address",
   }),
+  applicantHomeAddress3: z.string().optional().openapi({
+    description: "Third line of Applicant's Address",
+  }),
   townOrCity: z.string(),
   provinceOrState: z.string(),
   postcode: z.string(),

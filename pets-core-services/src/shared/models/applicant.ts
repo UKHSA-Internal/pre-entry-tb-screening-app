@@ -31,6 +31,7 @@ export abstract class IApplicant {
   sex: AllowedSex;
   applicantHomeAddress1: string;
   applicantHomeAddress2?: string;
+  applicantHomeAddress3?: string;
   townOrCity?: string;
   provinceOrState: string;
   postcode: string;
@@ -56,6 +57,7 @@ export abstract class IApplicant {
     this.sex = details.sex;
     this.applicantHomeAddress1 = details.applicantHomeAddress1;
     this.applicantHomeAddress2 = details.applicantHomeAddress2;
+    this.applicantHomeAddress3 = details.applicantHomeAddress3;
     this.provinceOrState = details.provinceOrState;
     this.townOrCity = details.townOrCity;
     this.postcode = details.postcode;
@@ -229,6 +231,7 @@ export class Applicant extends IApplicant {
       sex: this.sex,
       applicantHomeAddress1: this.applicantHomeAddress1,
       applicantHomeAddress2: this.applicantHomeAddress2,
+      applicantHomeAddress3: this.applicantHomeAddress3,
       provinceOrState: this.provinceOrState,
       townOrCity: this.townOrCity,
       postcode: this.postcode,
