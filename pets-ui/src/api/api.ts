@@ -9,6 +9,7 @@ import {
   PostedChestXrayDetailsType,
   PostedChestXrayNotTakenType,
   PostedMedicalScreeningType,
+  PostedTbCertificateNotIssuedType,
   PostedTbCertificateType,
   PostedTravelDetailsType,
   ReceivedApplicantDetailsType,
@@ -100,7 +101,7 @@ export const postChestXrayDetails = async (
 
 export const postTbCerificateDetails = async (
   applicationId: string,
-  tbCertificateDetails: PostedTbCertificateType,
+  tbCertificateDetails: PostedTbCertificateType | PostedTbCertificateNotIssuedType,
 ) => {
   const result = await petsApi.post(
     `/application/${applicationId}/tb-certificate`,
