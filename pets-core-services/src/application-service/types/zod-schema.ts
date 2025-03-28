@@ -153,11 +153,20 @@ export const ChestXRayNotTakenRequestSchema = z.object({
 
 export const ChestXRayTakenRequestSchema = z.object({
   chestXrayTaken: z.literal(YesOrNo.Yes),
+  posteroAnteriorXrayFileName: z.string().openapi({
+    description: "File name for the Postero Anterior X-Ray",
+  }),
   posteroAnteriorXray: z.string().openapi({
     description: "S3 Bucket Object key for the Postero Anterior X-Ray",
   }),
+  apicalLordoticXrayFileName: z.string().optional().openapi({
+    description: "File name for the Apical Lordotic X-Ray",
+  }),
   apicalLordoticXray: z.string().optional().openapi({
     description: "S3 Bucket Object key for the Apical Lordotic X-Ray",
+  }),
+  lateralDecubitusXrayFileName: z.string().optional().openapi({
+    description: "File name for the Lateral Decubitus X-Ray",
   }),
   lateralDecubitusXray: z.string().optional().openapi({
     description: "S3 Bucket Object key for the Lateral Decubitus X-Ray",
@@ -215,4 +224,25 @@ export const ApplicationSchema = z.object({
   medicalScreening: MedicalScreeningResponseSchema,
   chestXray: ChestXRayResponseSchema,
   tbCertificate: TbCertificateResponseSchema,
+});
+
+export const DicomUploadUrlRequestSchema = z.object({
+  fileName: z.string().openapi({
+    description: "Name of file on S3",
+  }),
+  checksum: z.string().openapi({
+    description: "Checksum of file",
+  }),
+});
+
+export const DicomUploadUrlResponseSchema = z.object({
+  uploadUrl: z.string().openapi({
+    description: "The upload url",
+  }),
+  bucketPath: z.string().openapi({
+    description: "Bucket Path for Uploaded File",
+  }),
+  fields: z.record(z.string(), z.string()).openapi({
+    description: "Required fields in file upload request",
+  }),
 });

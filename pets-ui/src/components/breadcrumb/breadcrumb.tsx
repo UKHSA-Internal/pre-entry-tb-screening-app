@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 export interface IBreadcrumbItem {
   text: string;
   href: string;
@@ -13,9 +14,9 @@ export default function Breadcrumb(props: Readonly<BreadcrumbProps>) {
       <ol className="govuk-breadcrumbs__list">
         {props.items.map((item: IBreadcrumbItem, index: number) => (
           <li className="govuk-breadcrumbs__list-item" key={`breadcrumb-${index + 1}`}>
-            <a className="govuk-breadcrumbs__link" href={item.href}>
+            <Link className="govuk-breadcrumbs__link" to={item.href}>
               {item.text}
-            </a>
+            </Link>
           </li>
         ))}
       </ol>

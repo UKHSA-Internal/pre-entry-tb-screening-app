@@ -1,6 +1,10 @@
 name: Pets CI
 
+
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -12,6 +16,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  validate-branch-name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate branch name
+        uses: ./.github/actions/validate-branch-name
+        with:
+          branch_name: ${{ github.head_ref }}
+
   linting:
     name: Run linting checks
     runs-on: ubuntu-latest
@@ -118,6 +133,8 @@ jobs:
 
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
+        continue-on-error: true
+        id:  initial_attempt
         with:
           install: false
           working-directory: pets-ui
@@ -125,8 +142,9 @@ jobs:
           config-file: cypress/cypress.config.mjs
 
       - name: Retry if failed
-        if: failure()
+        if: steps.initial_attempt.outcome != 'success'
         uses: cypress-io/github-action@v6
+        id: retry_attempt
         with:
           install: false
           working-directory: pets-ui

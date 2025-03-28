@@ -21,6 +21,7 @@ jobs:
     env:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+      SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
 
     steps:
       - name: Checkout code
@@ -60,7 +61,7 @@ jobs:
       - name: Get Pull Request Number
         id: get_pr
         run: |
-          PR_NUMBER=$(gh pr list --head ${{ github.ref_name }} --state open --json number --jq '.[0].number')
+          PR_NUMBER=$(gh pr list --head '${{ github.ref_name }}' --state open --json number --jq '.[0].number')
           echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

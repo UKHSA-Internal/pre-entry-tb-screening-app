@@ -1,5 +1,4 @@
 import { seededApplicants } from "../applicant-service/fixtures/applicants";
-import { Applicant } from "../applicant-service/models/applicant";
 import { seededChestXray } from "../application-service/fixtures/chest-xray";
 import { seededMedicalScreening } from "../application-service/fixtures/medical-screening";
 import { seededTbCertificate } from "../application-service/fixtures/tb-certificate";
@@ -11,6 +10,7 @@ import { TravelInformation } from "../application-service/models/travel-informat
 import { seededClinics } from "../clinic-service/fixtures/clinics";
 import { Clinic } from "../clinic-service/models/clinics";
 import { seededApplications } from "../shared/fixtures/application";
+import { Applicant } from "../shared/models/applicant";
 import { Application } from "../shared/models/application";
 
 export const seedDatabase = async () => {

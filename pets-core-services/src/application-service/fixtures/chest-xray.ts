@@ -6,9 +6,17 @@ export const seededChestXray: Array<NewChestXRayTaken | NewChestXRayNotTaken> = 
   {
     applicationId: seededApplications[1].applicationId,
     chestXrayTaken: YesOrNo.Yes,
-    posteroAnteriorXray: "saved/bucket/path/for/posterior/anterior",
-    apicalLordoticXray: "saved/bucket/path/for/apical/lordotic",
-    lateralDecubitusXray: "saved/bucket/path/for/lateral-decubitus",
+    posteroAnteriorXrayFileName: "posterior-anterior.dicom",
+    posteroAnteriorXray:
+      "dicom/Apollo Clinic/BRB/ABC1234JANE/generated-app-id-2/postero-anterior.dcm",
+    apicalLordoticXrayFileName: "apical-lordotic.dicom",
+
+    apicalLordoticXray:
+      "dicom/Apollo Clinic/BRB/ABC1234JANE/generated-app-id-2/apical-lordotic.dcm",
+    lateralDecubitusXrayFileName: "lateral-decubitus.dicom",
+
+    lateralDecubitusXray:
+      "dicom/Apollo Clinic/BRB/ABC1234JANE/generated-app-id-2/lateral-decubitus.dcm",
     createdBy: "shane.park@iom.com",
     xrayResult: ChestXRayResult.Normal,
     xrayMinorFindings: [],

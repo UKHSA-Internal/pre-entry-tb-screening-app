@@ -1,7 +1,9 @@
+import axios from "axios";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { generateDicomUploadUrl } from "@/api/api";
 import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
@@ -9,7 +11,9 @@ import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FileUpload from "@/components/fileUpload/fileUpload";
 import Heading from "@/components/heading/heading";
 import { selectApplicant } from "@/redux/applicantSlice";
+import { selectApplication } from "@/redux/applicationSlice";
 import {
+  selectChestXray,
   setApicalLordoticXrayFile,
   setApicalLordoticXrayFileName,
   setLateralDecubitusXrayFile,
@@ -28,8 +32,9 @@ const FileUploadModule = (
     errors: FieldErrors<ReduxChestXrayDetailsType>;
     accept?: string;
     maxSize?: number;
-    setFileState: Dispatch<SetStateAction<string | null>>;
-    setFileName: Dispatch<SetStateAction<string>>;
+    setFileState: Dispatch<SetStateAction<File | undefined>>;
+    setFileName: Dispatch<SetStateAction<string | undefined>>;
+    existingFileName?: string;
   }>,
 ) => {
   return (
@@ -52,10 +57,11 @@ const FileUploadModule = (
               errorMessage={
                 props.errors[props.id as keyof ReduxChestXrayDetailsType]?.message ?? ""
               }
-              accept={props.accept ?? "jpg,jpeg,png,pdf"}
-              maxSize={props.maxSize ?? 5}
+              accept={props.accept}
+              maxSize={props.maxSize}
               setFileState={props.setFileState}
               setFileName={props.setFileName}
+              existingFileName={props.existingFileName}
             />
           </dd>
         </div>
@@ -64,17 +70,27 @@ const FileUploadModule = (
   );
 };
 
+async function computeBase64SHA256(file: File) {
+  const arrayBuffer = await file.arrayBuffer();
+  const hashBuffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hash = btoa(String.fromCharCode(...hashArray));
+  return hash;
+}
+
 const ChestXrayForm = () => {
   const applicantData = useAppSelector(selectApplicant);
+  const chestXrayData = useAppSelector(selectChestXray);
+  const applicationData = useAppSelector(selectApplication);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const [PAFile, setPAFile] = useState<string | null>(null);
-  const [ALFile, setALFile] = useState<string | null>(null);
-  const [LDFile, setLDFile] = useState<string | null>(null);
-  const [PAFileName, setPAFileName] = useState<string>("");
-  const [ALFileName, setALFileName] = useState<string>("");
-  const [LDFileName, setLDFileName] = useState<string>("");
+  const [PAFile, setPAFile] = useState<File>();
+  const [ALFile, setALFile] = useState<File>();
+  const [LDFile, setLDFile] = useState<File>();
+  const [PAFileName, setPAFileName] = useState<string>();
+  const [ALFileName, setALFileName] = useState<string>();
+  const [LDFileName, setLDFileName] = useState<string>();
 
   const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
   const {
@@ -84,13 +100,47 @@ const ChestXrayForm = () => {
 
   const errorsToShow = Object.keys(errors);
 
-  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = () => {
-    dispatch(setPosteroAnteriorXrayFile(PAFile));
-    dispatch(setApicalLordoticXrayFile(ALFile));
-    dispatch(setLateralDecubitusXrayFile(LDFile));
-    dispatch(setPosteroAnteriorXrayFileName(PAFileName));
-    dispatch(setApicalLordoticXrayFileName(ALFileName));
-    dispatch(setLateralDecubitusXrayFileName(LDFileName));
+  const uploadFile = async (file: File, bucketFileName: string) => {
+    const { data } = await generateDicomUploadUrl(applicationData.applicationId, {
+      fileName: bucketFileName,
+      checksum: await computeBase64SHA256(file),
+    });
+
+    const { uploadUrl, bucketPath, fields } = data;
+
+    const form = new FormData();
+    Object.entries(fields).forEach(([field, value]) => {
+      form.append(field, value);
+    });
+    form.append("file", file);
+
+    await axios.post(uploadUrl, form, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    return bucketPath;
+  };
+
+  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = async () => {
+    // TBBETA-163: Loaders Loaders Loaders
+    if (PAFile && PAFileName) {
+      const bucketPath = await uploadFile(PAFile, "postero-anterior.dcm");
+      dispatch(setPosteroAnteriorXrayFile(bucketPath));
+      dispatch(setPosteroAnteriorXrayFileName(PAFileName));
+    }
+
+    if (ALFile && ALFileName) {
+      const bucketPath = await uploadFile(ALFile, "apical-lordotic.dcm");
+      dispatch(setApicalLordoticXrayFile(bucketPath));
+      dispatch(setApicalLordoticXrayFileName(ALFileName));
+    }
+
+    if (LDFile && LDFileName) {
+      const bucketPath = await uploadFile(LDFile, "lateral-decubitus.dcm");
+      dispatch(setLateralDecubitusXrayFile(bucketPath));
+      dispatch(setLateralDecubitusXrayFileName(LDFileName));
+    }
+
     navigate("/chest-xray-findings");
   };
 
@@ -130,8 +180,9 @@ const ChestXrayForm = () => {
               name="Postero-anterior"
               setFileState={setPAFile}
               setFileName={setPAFileName}
-              required={true}
+              required={!chestXrayData.posteroAnteriorXrayFile}
               errors={errors}
+              existingFileName={chestXrayData.posteroAnteriorXrayFileName}
             />
           </div>
 
@@ -144,6 +195,7 @@ const ChestXrayForm = () => {
               setFileName={setALFileName}
               required={false}
               errors={errors}
+              existingFileName={chestXrayData.apicalLordoticXrayFileName}
             />
           </div>
 
@@ -156,6 +208,7 @@ const ChestXrayForm = () => {
               setFileName={setLDFileName}
               required={false}
               errors={errors}
+              existingFileName={chestXrayData.lateralDecubitusXrayFileName}
             />
           </div>
 
