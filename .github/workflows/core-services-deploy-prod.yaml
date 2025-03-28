@@ -1,4 +1,4 @@
-name: Pets Core Services Deployment - Preprod
+name: Pets Core Services Deployment - Prod
 
 on:
   workflow_dispatch:
