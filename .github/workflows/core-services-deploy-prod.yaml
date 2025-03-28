@@ -1,4 +1,4 @@
-name: Pets Core Services Deployment - Preprod
+name: Pets Core Services Deployment - Prod
 
 on:
   workflow_dispatch:
@@ -7,5 +7,5 @@ jobs:
   deploy:
     uses: ./.github/workflows/core-services-deploy.yaml
     with:
-      environment: "preprod"
+      environment: "prod"
     secrets: inherit
