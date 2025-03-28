@@ -2,11 +2,6 @@ name: Pets UI Deployment - Preprod
 
 on:
   workflow_dispatch:
-  # pull_request:
-  #   types: [closed]
-  #   branches: [main]
-  #   paths:
-  #     - "pets-ui/**"
 
 jobs:
   pets-ui:
