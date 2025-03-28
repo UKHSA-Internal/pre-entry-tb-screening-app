@@ -3,11 +3,11 @@ import { z } from "zod";
 
 import { boostrapLambdaRoutes } from "../../shared/http";
 import { PetsRoute } from "../../shared/types";
+import { checkActiveClinicHandler } from "../handlers/checkActiveClinic";
 import { createClinicHandler } from "../handlers/createClinic";
 import { fetchActiveClinicsHandler } from "../handlers/fetchActiveClinics";
 import { fetchClinicsHandler } from "../handlers/fetchClinics";
 import { getClinicHandler } from "../handlers/getClinic";
-import { checkActiveClinicHandler } from "../handlers/isActiveClinicHandler";
 import { ClinicSchema } from "../types/zod-schema";
 extendZodWithOpenApi(z);
 

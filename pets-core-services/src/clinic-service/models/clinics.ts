@@ -137,6 +137,42 @@ export class Clinic extends IClinic {
   }
 
   /**
+   * It gets all Clinics
+   * @returns array of Clinic objects
+   */
+  static async getAllClinics(): Promise<Clinic[]> {
+    try {
+      logger.info(`Finding all clinics in '${process.env.CLINIC_SERVICE_DATABASE_NAME}'`);
+
+      const params: ScanCommandInput = {
+        TableName: Clinic.getTableName(),
+      };
+      const command = new ScanCommand(params);
+      const data: ScanCommandOutput = await docClient.send(command);
+
+      if (!data?.Items) {
+        logger.info("No clinics found");
+        return [];
+      }
+
+      logger.info({ resultCount: data.Items.length }, "Clinics data fetched successfully");
+      const results = data.Items as ReturnType<Clinic["todbItem"]>[];
+
+      return results.map(
+        (dbItem) =>
+          new Clinic({
+            ...dbItem,
+            startDate: new Date(dbItem.startDate),
+            endDate: dbItem.endDate ? new Date(dbItem.endDate) : null,
+          }),
+      );
+    } catch (error) {
+      logger.error(error, "Error retrieving clinics");
+      throw error;
+    }
+  }
+
+  /**
    * It retrieves all Clinic objects which have endDate attribute as null
    * (no endDate indicates the clinic as active)
    * @returns array of Clinic objects
