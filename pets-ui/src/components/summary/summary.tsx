@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 import { ApplicationStatus } from "@/utils/enums";
 
 export type SummaryElement = {
@@ -36,9 +34,9 @@ export default function Summary(props: Readonly<SummaryProps>) {
             )}
             {props.status == ApplicationStatus.INCOMPLETE && (
               <dd className="govuk-summary-list__actions">
-                <Link className="govuk-link" style={{ color: "#1d70b8" }} to={summaryElement.link}>
+                <a className="govuk-link" style={{ color: "#1d70b8" }} href={summaryElement.link}>
                   Change<span className="govuk-visually-hidden"> {summaryElement.hiddenLabel}</span>
-                </Link>
+                </a>
               </dd>
             )}
           </div>
