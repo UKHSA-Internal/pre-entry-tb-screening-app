@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 import Heading, { HeadingSize } from "../heading/heading";
-import { freeTextHeadingStyles } from "./freeText.styles";
+import { freeTextHeadingStyles, freeTextHeadingWithLabelStyles } from "./freeText.styles";
 
 export interface FreeTextProps {
   id: string;
@@ -22,7 +22,11 @@ export interface FreeTextProps {
   headingStyle?: React.CSSProperties;
 }
 
-export default function FreeText(props: Readonly<FreeTextProps>) {
+export default function FreeText({
+  headingLevel = 2,
+  headingSize = "m",
+  ...props
+}: Readonly<FreeTextProps>) {
   const { register } = useFormContext();
   const [errorText, setErrorText] = useState("");
   const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
@@ -44,9 +48,12 @@ export default function FreeText(props: Readonly<FreeTextProps>) {
       {props.heading && (
         <Heading
           title={props.heading}
-          level={props.headingLevel ?? 2}
-          size={props.headingSize ?? "m"}
-          style={{ ...freeTextHeadingStyles, ...props.headingStyle }}
+          level={headingLevel}
+          size={headingSize}
+          style={{
+            ...(props.label ? freeTextHeadingWithLabelStyles : freeTextHeadingStyles),
+            ...props.headingStyle,
+          }}
           id={props.label ? `${props.id}-heading` : props.id}
         />
       )}

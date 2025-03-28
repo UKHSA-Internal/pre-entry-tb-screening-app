@@ -19,7 +19,11 @@ export interface TextAreaProps {
   headingStyle?: React.CSSProperties;
 }
 
-export default function TextArea(props: Readonly<TextAreaProps>) {
+export default function TextArea({
+  headingLevel = 2,
+  headingSize = "m",
+  ...props
+}: Readonly<TextAreaProps>) {
   const { register } = useFormContext();
   const [errorText, setErrorText] = useState("");
   const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
@@ -36,8 +40,8 @@ export default function TextArea(props: Readonly<TextAreaProps>) {
       {props.heading && (
         <Heading
           title={props.heading}
-          level={props.headingLevel ?? 2}
-          size={props.headingSize ?? "m"}
+          level={headingLevel}
+          size={headingSize}
           style={{ ...textAreaHeadingStyles, ...props.headingStyle }}
           id={props.label ? `${props.id}-heading` : props.id}
         />

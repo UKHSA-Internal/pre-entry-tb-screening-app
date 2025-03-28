@@ -24,7 +24,11 @@ interface DropdownProps {
   headingStyle?: React.CSSProperties;
 }
 
-export default function Dropdown(props: Readonly<DropdownProps>) {
+export default function Dropdown({
+  headingLevel = 2,
+  headingSize = "m",
+  ...props
+}: Readonly<DropdownProps>) {
   const { register } = useFormContext();
   const [errorText, setErrorText] = useState("");
   const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
@@ -41,8 +45,8 @@ export default function Dropdown(props: Readonly<DropdownProps>) {
       {props.heading && (
         <Heading
           title={props.heading}
-          level={props.headingLevel ?? 2}
-          size={props.headingSize ?? "m"}
+          level={headingLevel}
+          size={headingSize}
           style={{ ...dropdownHeadingStyles, ...props.headingStyle }}
           id={props.label ? `${props.id}-heading` : props.id}
         />
