@@ -4,7 +4,11 @@ import { z } from "zod";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { TbCertificate } from "../models/tb-certificate";
+import {
+  TbCertificateDbOps,
+  TbCertificateIssued,
+  TbCertificateNotIssued,
+} from "../models/tb-certificate";
 import { TbCertificateRequestSchema } from "../types/zod-schema";
 
 export type TbCertificateRequestSchema = z.infer<typeof TbCertificateRequestSchema>;
@@ -28,10 +32,10 @@ export const saveTbCertificateHandler = async (event: SaveTbCertificateEvent) =>
       });
     }
 
-    let tbCertificate: TbCertificate;
+    let tbCertificate: TbCertificateIssued | TbCertificateNotIssued;
     try {
       const { createdBy } = event.requestContext.authorizer;
-      tbCertificate = await TbCertificate.createTbCertificate({
+      tbCertificate = await TbCertificateDbOps.createTbCertificate({
         ...parsedBody,
         createdBy,
         applicationId,

@@ -45,10 +45,10 @@ const attributeToComponentId: { [key: string]: string } = {
   xrayMinorFindings: "xray-minor-findings",
   reasonXrayWasNotTaken: "reason-xray-not-taken",
   xrayWasNotTakenFurtherDetails: "xray-not-taken-further-details",
-  tbClearanceIssued: "tb-clearance-issued",
+  isIssued: "tb-clearance-issued",
   physicianComments: "physician-comments",
-  tbCertificateDate: "tb-certificate-date",
-  tbCertificateNumber: "tb-certificate-number",
+  certificateDate: "tb-certificate-date",
+  certificateNumber: "tb-certificate-number",
 };
 
 const formRegex = {
@@ -84,7 +84,7 @@ const dateValidationMessages: Record<string, Record<string, string>> = {
     invalidDateError: "Date of birth date must be a valid date",
     dateMustBeInPastError: "Date of birth date must be in the past",
   },
-  tbCertificateDate: {
+  certificateDate: {
     emptyFieldError: "TB clearance certificate date must include a day, month and year",
     invalidCharError:
       "TB clearance certificate day and year must contain only numbers. TB clearance certificate month must be a number, or the name of the month, or the first three letters of the month",

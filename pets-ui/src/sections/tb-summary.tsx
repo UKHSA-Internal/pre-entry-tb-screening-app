@@ -9,7 +9,7 @@ import { selectApplicant } from "@/redux/applicantSlice";
 import { selectApplication } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectTbCertificate, setTbCertificateStatus } from "@/redux/tbCertificateSlice";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
 import { formatDateType, isDataPresent, standardiseDayOrMonth } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
@@ -22,13 +22,22 @@ const TbSummary = () => {
 
   const handleSubmit = async () => {
     try {
-      const certificateIssueDateStr = `${tbCertificateData.tbCertificateDate.year}-${standardiseDayOrMonth(tbCertificateData.tbCertificateDate.month)}-${standardiseDayOrMonth(tbCertificateData.tbCertificateDate.day)}`;
-      await postTbCerificateDetails(applicationData.applicationId, {
-        certificateIssued: tbCertificateData.tbClearanceIssued,
-        certificateComments: tbCertificateData.physicianComments,
-        certificateIssueDate: certificateIssueDateStr,
-        certificateNumber: tbCertificateData.tbCertificateNumber,
-      });
+      if (tbCertificateData.isIssued == YesOrNo.YES) {
+        const certificateIssueDateStr = `${tbCertificateData.certificateDate.year}-${standardiseDayOrMonth(tbCertificateData.certificateDate.month)}-${standardiseDayOrMonth(tbCertificateData.certificateDate.day)}`;
+        await postTbCerificateDetails(applicationData.applicationId, {
+          isIssued: tbCertificateData.isIssued,
+          comments: tbCertificateData.comments,
+          certificateDate: certificateIssueDateStr,
+          certificateNumber: tbCertificateData.certificateNumber,
+        });
+      } else if (tbCertificateData.isIssued == YesOrNo.NO) {
+        await postTbCerificateDetails(applicationData.applicationId, {
+          isIssued: tbCertificateData.isIssued,
+          comments: tbCertificateData.comments,
+        });
+      } else {
+        throw new Error("certificateIssued field missing");
+      }
 
       dispatch(setTbCertificateStatus(ApplicationStatus.COMPLETE));
       navigate("/tb-certificate-confirmation");
@@ -41,25 +50,25 @@ const TbSummary = () => {
   const summaryData = [
     {
       key: "TB clearance certificate issued?",
-      value: tbCertificateData.tbClearanceIssued,
+      value: tbCertificateData.isIssued,
       link: `/tb-certificate-declaration#${attributeToComponentId.tbClearanceIssued}`,
       hiddenLabel: "TB clearance certificate",
     },
     {
       key: "Physician comments",
-      value: tbCertificateData.physicianComments,
+      value: tbCertificateData.comments,
       link: `/tb-certificate-declaration#${attributeToComponentId.physicianComments}`,
       hiddenLabel: "Comments from physician",
     },
     {
       key: "Date of TB clearance certificate",
-      value: formatDateType(tbCertificateData.tbCertificateDate),
+      value: formatDateType(tbCertificateData.certificateDate),
       link: `/tb-certificate-declaration#${attributeToComponentId.tbCertificateDate}`,
       hiddenLabel: "Date of TB certificate",
     },
     {
       key: "TB clearance certificate number",
-      value: tbCertificateData.tbCertificateNumber,
+      value: tbCertificateData.certificateNumber,
       link: `/tb-certificate-declaration#${attributeToComponentId.tbCertificateNumber}`,
       hiddenLabel: "TB certificate number",
     },
