@@ -114,14 +114,12 @@ export const MedicalScreeningResponseSchema = MedicalScreeningRequestSchema.exte
   }),
 });
 
-export const TbCertificateRequestSchema = z.object({
-  certificateIssued: z.nativeEnum(YesOrNo).openapi({
-    description: "Whether a clearance certificate has been issued",
-  }),
-  certificateComments: z.string().openapi({
+export const TbCertificateIssuedRequestSchema = z.object({
+  isIssued: z.literal(YesOrNo.Yes),
+  comments: z.string().optional().openapi({
     description: "Physican's comments",
   }),
-  certificateIssueDate: z.string().date().openapi({
+  issueDate: z.string().date().openapi({
     description: "Date of certificate issue in ISO format",
   }),
   certificateNumber: z.string().openapi({
@@ -129,10 +127,19 @@ export const TbCertificateRequestSchema = z.object({
   }),
 });
 
-export const TbCertificateResponseSchema = TbCertificateRequestSchema.extend({
-  applicationId: z.string().openapi({
-    description: "ID of application",
+export const TbCertificateNotIssuedRequestSchema = z.object({
+  isIssued: z.literal(YesOrNo.No),
+  comments: z.string().optional().openapi({
+    description: "Physican's comments",
   }),
+});
+
+export const TbCertificateRequestSchema = z.union([
+  TbCertificateIssuedRequestSchema,
+  TbCertificateNotIssuedRequestSchema,
+]);
+
+export const TbCertificateIssuedResponseSchema = TbCertificateIssuedRequestSchema.extend({
   dateCreated: z.string().date().openapi({
     description: "Creation Date in UTC timezone",
   }),
@@ -140,6 +147,20 @@ export const TbCertificateResponseSchema = TbCertificateRequestSchema.extend({
     description: "Status of Task",
   }),
 });
+
+export const TbCertificateNotIssuedResponseSchema = TbCertificateNotIssuedRequestSchema.extend({
+  dateCreated: z.string().date().openapi({
+    description: "Creation Date in UTC timezone",
+  }),
+  status: z.nativeEnum(TaskStatus).openapi({
+    description: "Status of Task",
+  }),
+});
+
+export const TbCertificateResponseSchema = z.union([
+  TbCertificateIssuedResponseSchema,
+  TbCertificateNotIssuedResponseSchema,
+]);
 
 export const ChestXRayNotTakenRequestSchema = z.object({
   chestXrayTaken: z.literal(YesOrNo.No),

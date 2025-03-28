@@ -5,7 +5,7 @@ import { seededTbCertificate } from "../application-service/fixtures/tb-certific
 import { seededTravelInformation } from "../application-service/fixtures/travel-information";
 import { ChestXRayDbOps } from "../application-service/models/chest-xray";
 import { MedicalScreening } from "../application-service/models/medical-screening";
-import { TbCertificate } from "../application-service/models/tb-certificate";
+import { TbCertificateDbOps } from "../application-service/models/tb-certificate";
 import { TravelInformation } from "../application-service/models/travel-information";
 import { seededApplications } from "../shared/fixtures/application";
 import { Applicant } from "../shared/models/applicant";
@@ -29,7 +29,7 @@ export const seedDatabase = async () => {
     await ChestXRayDbOps.createChestXray(chestXray);
   }
   for (const tbCertificate of seededTbCertificate) {
-    await TbCertificate.createTbCertificate(tbCertificate);
+    await TbCertificateDbOps.createTbCertificate(tbCertificate);
   }
 };
 

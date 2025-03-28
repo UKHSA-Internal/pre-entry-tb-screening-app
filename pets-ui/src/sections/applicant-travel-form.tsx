@@ -139,7 +139,7 @@ const ApplicantTravelForm = () => {
             formValue="ukMobileNumber"
             required="Enter UK mobile number"
             patternValue={formRegex.numbersOnly}
-            patternError="Full name must contain only letters and spaces"
+            patternError="Enter applicant's UK phone number"
             defaultValue={travelData.ukMobileNumber}
           />
         </div>
