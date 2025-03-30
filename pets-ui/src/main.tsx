@@ -6,8 +6,8 @@ import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 
 import App from "./App.tsx";
+import { initializeMsal } from "./auth/auth.ts";
 import { setupStore } from "./redux/store.ts";
-import { initializeMsal } from "./utils/auth.ts";
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 initializeMsal().then((msalInstance) => {

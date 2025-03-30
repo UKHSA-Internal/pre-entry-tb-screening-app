@@ -9,6 +9,8 @@ const attributeToComponentId: { [key: string]: string } = {
   expiryDate: "passport-expiry-date",
   dateOfBirth: "birth-date",
   sex: "sex",
+  passportIssueDate: "passport-issue-date",
+  passportExpiryDate: "passport-expiry-date",
   applicantHomeAddress1: "address-1",
   applicantHomeAddress2: "address-2",
   applicantHomeAddress3: "address-3",
@@ -35,14 +37,18 @@ const attributeToComponentId: { [key: string]: string } = {
   ukMobileNumber: "mobile-number",
   ukEmail: "email",
   chestXrayTaken: "chest-xray-taken",
+  posteroAnteriorXrayFileName: "postero-anterior-xray",
+  apicalLordoticXrayFileName: "apical-lordotic-xray",
+  lateralDecubitusXrayFileName: "lateral-decubitus-xray",
   xrayResult: "xray-result",
+  xrayResultDetail: "xray-result-detail",
+  xrayMinorFindings: "xray-minor-findings",
   reasonXrayWasNotTaken: "reason-xray-not-taken",
   xrayWasNotTakenFurtherDetails: "xray-not-taken-further-details",
-  tbClearanceIssued: "tb-clearance-issued",
-  tbCertificateDate: "tb-certificate-date",
-  tbCertificateNumber: "tb-certificate-number",
-  passportIssueDate: "passportIssueDate",
-  passportExpiryDate: "passportExpiryDate",
+  isIssued: "tb-clearance-issued",
+  physicianComments: "physician-comments",
+  certificateDate: "tb-certificate-date",
+  certificateNumber: "tb-certificate-number",
 };
 
 const formRegex = {
@@ -76,9 +82,9 @@ const dateValidationMessages: Record<string, Record<string, string>> = {
     invalidCharError:
       "Date of birth day and year must contain only numbers. Date of birth month must be a number, or the name of the month, or the first three letters of the month",
     invalidDateError: "Date of birth date must be a valid date",
-    dateMustBeInPastError: "Date of birth date must in the past",
+    dateMustBeInPastError: "Date of birth date must be in the past",
   },
-  tbCertificateDate: {
+  certificateDate: {
     emptyFieldError: "TB clearance certificate date must include a day, month and year",
     invalidCharError:
       "TB clearance certificate day and year must contain only numbers. TB clearance certificate month must be a number, or the name of the month, or the first three letters of the month",

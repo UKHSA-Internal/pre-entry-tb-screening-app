@@ -28,7 +28,7 @@ export default function Radio(props: Readonly<RadioProps>) {
 
   useEffect(() => {
     setErrorText(props.errorMessage);
-    setWrapperClass("govuk-form-group " + `${props.errorMessage && "govuk-form-group--error"}`);
+    setWrapperClass("govuk-form-group " + (props.errorMessage ? "govuk-form-group--error" : ""));
   }, [props.errorMessage]);
 
   return (
@@ -43,10 +43,12 @@ export default function Radio(props: Readonly<RadioProps>) {
         )}
         <div className={props.isInline} data-module="govuk-radios">
           {answerOptions.map((answerOption: string, index: number) => {
+            const optionId = `${props.id}-${index}`;
             return (
-              <div className="govuk-radios__item" key={`answer-option-${index + 1}`}>
+              <div className="govuk-radios__item" key={optionId}>
                 <input
                   className="govuk-radios__input"
+                  id={optionId}
                   type="radio"
                   data-testid={props.id}
                   value={answerOption}
@@ -55,7 +57,7 @@ export default function Radio(props: Readonly<RadioProps>) {
                   })}
                   defaultChecked={props.defaultValue == answerOption}
                 />
-                <label className="govuk-label govuk-radios__label" htmlFor={props.id}>
+                <label className="govuk-label govuk-radios__label" htmlFor={optionId}>
                   {answerOption}
                 </label>
               </div>

@@ -8,6 +8,7 @@ export interface FileUploadProps {
   errorMessage: string;
   formValue: string;
   required: string | false;
+  heading?: string;
   accept?: string; // Add accept prop for file types
   maxSize?: number; // Size in MB
   setFileState: Dispatch<SetStateAction<File | undefined>>;
@@ -74,35 +75,40 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
   }, [props.errorMessage]);
 
   return (
-    <div id={props.id} className={wrapperClass}>
-      <fieldset className="govuk-fieldset">
-        {props.legend && <legend className="govuk-fieldset__legend">{props.legend}</legend>}
-        {props.hint && <div className="govuk-hint">{props.hint}</div>}
-        {errorText && (
-          <p className="govuk-error-message">
-            <span className="govuk-visually-hidden">Error:</span> {errorText}
-          </p>
-        )}
-        <div data-module="govuk-file-upload">
-          <div key={`file-upload-${props.id}`}>
-            <input
-              id="fileInput"
-              className={inputClass}
-              type="file"
-              data-testid={props.id}
-              accept={props.accept} // The file types accepted
-              {...register(props.formValue, {
-                required: props.required,
-                validate: {
-                  fileSize: validateFileSize,
-                },
-              })}
-              onChange={(event) => handleFileChange(event)}
-            />
-            {showExistingFileName && props.existingFileName}
+    <>
+      <label className="govuk-visually-hidden" htmlFor={props.id}>
+        {`${props.id} file upload`}
+      </label>
+      <div id={props.id} className={wrapperClass}>
+        <fieldset className="govuk-fieldset">
+          {props.legend && <legend className="govuk-fieldset__legend">{props.legend}</legend>}
+          {props.hint && <div className="govuk-hint">{props.hint}</div>}
+          {errorText && (
+            <p className="govuk-error-message">
+              <span className="govuk-visually-hidden">Error:</span> {errorText}
+            </p>
+          )}
+          <div data-module="govuk-file-upload">
+            <div key={props.id}>
+              <input
+                id={props.id}
+                className={inputClass}
+                type="file"
+                data-testid={props.id}
+                accept={props.accept} // The file types accepted
+                {...register(props.formValue, {
+                  required: props.required,
+                  validate: {
+                    fileSize: validateFileSize,
+                  },
+                })}
+                onChange={(event) => handleFileChange(event)}
+              />
+              {showExistingFileName && props.existingFileName}
+            </div>
           </div>
-        </div>
-      </fieldset>
-    </div>
+        </fieldset>
+      </div>
+    </>
   );
 }

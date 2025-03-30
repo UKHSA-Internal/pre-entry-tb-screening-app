@@ -9,12 +9,13 @@ import {
   PostedChestXrayDetailsType,
   PostedChestXrayNotTakenType,
   PostedMedicalScreeningType,
+  PostedTbCertificateNotIssuedType,
   PostedTbCertificateType,
   PostedTravelDetailsType,
   ReceivedApplicantDetailsType,
   ReceivedApplicationDetailsType,
 } from "@/applicant";
-import { acquireTokenSilently } from "@/utils/auth";
+import { acquireTokenSilently } from "@/auth/auth";
 
 export const petsApi = axios.create({
   baseURL: "/api",
@@ -100,7 +101,7 @@ export const postChestXrayDetails = async (
 
 export const postTbCerificateDetails = async (
   applicationId: string,
-  tbCertificateDetails: PostedTbCertificateType,
+  tbCertificateDetails: PostedTbCertificateType | PostedTbCertificateNotIssuedType,
 ) => {
   const result = await petsApi.post(
     `/application/${applicationId}/tb-certificate`,
