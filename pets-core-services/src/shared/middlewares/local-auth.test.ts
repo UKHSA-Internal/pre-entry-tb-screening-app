@@ -38,6 +38,7 @@ describe("simulateLambdaAuthorizer", () => {
     };
 
     lambdaClientMock.on(InvokeCommand).resolves({
+      //@ts-expect-error type difference
       Payload: new TextEncoder().encode(JSON.stringify(mockPayload)),
     });
 

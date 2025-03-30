@@ -1,13 +1,14 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import { APIGatewayProxyResult } from "aws-lambda";
 import { describe, expect, test } from "vitest";
 
+import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { context, mockAPIGwEvent } from "../../test/mocks/events";
-import { handler } from "./clinics.ts";
+import { handler } from "./clinics";
 
 describe("Test for Applicant Lambda", () => {
   test("Creating a Clinic", async () => {
     // Arrange
-    const event: APIGatewayProxyEvent = {
+    const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
       resource: "/clinics/{clinicId}",
       path: "/clinics/12345",
@@ -31,7 +32,7 @@ describe("Test for Applicant Lambda", () => {
 
   test("Fetching a Clinic", async () => {
     // Arrange;
-    const event: APIGatewayProxyEvent = {
+    const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
       resource: "/clinics/{clinicId}",
       path: "/clinics/12345",
@@ -50,7 +51,7 @@ describe("Test for Applicant Lambda", () => {
 
   test("Fetching all Clinics", async () => {
     // Arrange;
-    const event: APIGatewayProxyEvent = {
+    const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
       resource: "/clinics",
       path: "/clinics",
