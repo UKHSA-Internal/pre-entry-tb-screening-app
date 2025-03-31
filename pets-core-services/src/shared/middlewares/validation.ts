@@ -20,7 +20,7 @@ export const validateRequest = ({
   APIGatewayProxyResult | void
 > => {
   return {
-    before: (request) => {
+    before: (request): APIGatewayProxyResult | void => {
       const { event } = request;
 
       try {
