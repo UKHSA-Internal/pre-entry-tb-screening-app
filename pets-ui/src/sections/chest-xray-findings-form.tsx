@@ -80,7 +80,7 @@ const ChestXrayFindingsForm = () => {
 
         <div ref={xrayResult}>
           <Heading
-            level={3}
+            level={2}
             size="m"
             style={{ marginBottom: 20, marginTop: 40 }}
             title="Radiological outcome"
@@ -98,10 +98,12 @@ const ChestXrayFindingsForm = () => {
         </div>
 
         <div ref={xrayResultDetail}>
-          <Heading level={4} size="s" style={{ marginBottom: 20, marginTop: 40 }} title="Details" />
           <TextArea
             id="xray-result-detail"
-            label="Add details if X-ray results are abnormal"
+            hint="Add details if X-ray results are abnormal"
+            headingLevel={3}
+            headingSize="s"
+            heading="Details"
             required={false}
             errorMessage={errors?.xrayResultDetail?.message ?? ""}
             formValue="xrayResultDetail"
@@ -111,7 +113,7 @@ const ChestXrayFindingsForm = () => {
 
           <Heading
             level={2}
-            size="l"
+            size="m"
             style={{ marginBottom: 20, marginTop: 40 }}
             title="Radiographic findings"
           />
@@ -120,7 +122,7 @@ const ChestXrayFindingsForm = () => {
         <div ref={xrayMinorFindings}>
           <Heading
             level={3}
-            size="m"
+            size="s"
             style={{ marginBottom: 20, marginTop: 40 }}
             title="Minor findings"
           />
@@ -145,7 +147,7 @@ const ChestXrayFindingsForm = () => {
 
         <div ref={xrayAssociatedMinorFindings}>
           <Heading
-            size="m"
+            size="s"
             level={3}
             title="Minor findings (occasionally associated with TB infection)"
             style={{ marginBottom: 20, marginTop: 40 }}
@@ -174,7 +176,7 @@ const ChestXrayFindingsForm = () => {
         <div ref={xrayActiveTbFindings}>
           <Heading
             level={3}
-            size="m"
+            size="s"
             title="Findings sometimes seen in active TB (or other conditions)"
             style={{ marginBottom: 20, marginTop: 40 }}
           />
