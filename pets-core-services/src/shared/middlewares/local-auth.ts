@@ -1,5 +1,9 @@
 import { InvokeCommand } from "@aws-sdk/client-lambda";
-import { APIGatewayAuthorizerResult, APIGatewayProxyEvent } from "aws-lambda";
+import {
+  APIGatewayAuthorizerResult,
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult,
+} from "aws-lambda";
 
 import awsClients from "../clients/aws";
 import { assertEnvExists, isLocal } from "../config";
@@ -10,7 +14,9 @@ import { logger } from "../logger";
  * This is strictly for local environment due to lack of support from localstack
  * Any changes to auth should absolutely be verified on AWS
  */
-export const simulateLambdaAuthorizer = async (request: { event: APIGatewayProxyEvent }) => {
+export const simulateLambdaAuthorizer = async (request: {
+  event: APIGatewayProxyEvent;
+}): Promise<APIGatewayProxyResult | void> => {
   if (isLocal()) {
     const { event } = request;
 

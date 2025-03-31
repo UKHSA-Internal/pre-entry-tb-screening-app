@@ -27,7 +27,7 @@ const TbSummary = () => {
         await postTbCerificateDetails(applicationData.applicationId, {
           isIssued: tbCertificateData.isIssued,
           comments: tbCertificateData.comments,
-          certificateDate: certificateIssueDateStr,
+          issueDate: certificateIssueDateStr,
           certificateNumber: tbCertificateData.certificateNumber,
         });
       } else if (tbCertificateData.isIssued == YesOrNo.NO) {
@@ -51,25 +51,25 @@ const TbSummary = () => {
     {
       key: "TB clearance certificate issued?",
       value: tbCertificateData.isIssued,
-      link: `/tb-certificate-declaration#${attributeToComponentId.tbClearanceIssued}`,
+      link: `/tb-certificate-declaration#${attributeToComponentId.isIssued}`,
       hiddenLabel: "TB clearance certificate",
     },
     {
       key: "Physician comments",
       value: tbCertificateData.comments,
-      link: `/tb-certificate-declaration#${attributeToComponentId.physicianComments}`,
+      link: `/tb-certificate-declaration#${attributeToComponentId.comments}`,
       hiddenLabel: "Comments from physician",
     },
     {
       key: "Date of TB clearance certificate",
       value: formatDateType(tbCertificateData.certificateDate),
-      link: `/tb-certificate-declaration#${attributeToComponentId.tbCertificateDate}`,
+      link: `/tb-certificate-declaration#${attributeToComponentId.certificateDate}`,
       hiddenLabel: "Date of TB certificate",
     },
     {
       key: "TB clearance certificate number",
       value: tbCertificateData.certificateNumber,
-      link: `/tb-certificate-declaration#${attributeToComponentId.tbCertificateNumber}`,
+      link: `/tb-certificate-declaration#${attributeToComponentId.certificateNumber}`,
       hiddenLabel: "TB certificate number",
     },
   ];

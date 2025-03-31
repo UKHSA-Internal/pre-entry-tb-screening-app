@@ -12,6 +12,7 @@ node_modules/
 # Typescript
 .build
 .reports
+tsconfig.tsbuildinfo
 
 # MacOS specific hidden files
 .DS_Store
