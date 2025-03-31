@@ -1,4 +1,4 @@
-name: Pets Core Services Deployment - Test
+name: Pets Deployment - Test
 
 on:
   workflow_dispatch:
@@ -9,10 +9,11 @@ on:
       - "core-services/applicant-service/**"
       - "core-services/clinic-service/**"
       - "core-services/lambda-authoriser/**"
+      - "pets-ui/**"
 
 jobs:
   deploy:
-    uses: ./.github/workflows/core-services-deploy.yaml
+    uses: ./.github/workflows/deploy.yaml
     with:
       environment: "qat"
     secrets: inherit
