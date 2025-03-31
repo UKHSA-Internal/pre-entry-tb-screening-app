@@ -46,8 +46,12 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
-      - name: Lint typescript code
+      - name: Linting Checks
         run: pnpm -r lint
+
+      - name: Type Checks
+        run: pnpm -r type-check
+
 
   ui-tests:
     name: Run unit tests for ui

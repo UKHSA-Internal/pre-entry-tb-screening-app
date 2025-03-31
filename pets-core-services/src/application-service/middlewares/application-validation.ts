@@ -1,9 +1,13 @@
+import { APIGatewayProxyResult } from "aws-lambda";
+
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 
-export const validateApplication = async (request: { event: PetsAPIGatewayProxyEvent }) => {
+export const validateApplication = async (request: {
+  event: PetsAPIGatewayProxyEvent;
+}): Promise<APIGatewayProxyResult | void> => {
   try {
     const event = request.event;
     const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
