@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 
 import LinkLabel from "./LinkLabel";
@@ -8,7 +9,11 @@ describe("LinkLabel component", () => {
     const title = "Test Link";
     const to = "https://example.com";
 
-    render(<LinkLabel title={title} to={to} />);
+    render(
+      <BrowserRouter>
+        <LinkLabel title={title} to={to} />
+      </BrowserRouter>,
+    );
 
     const linkElement = screen.getByRole("link", { name: title });
 
@@ -16,5 +21,7 @@ describe("LinkLabel component", () => {
     expect(linkElement).toHaveClass("govuk-link");
     expect(linkElement).toHaveAttribute("href", to);
     expect(linkElement).toHaveTextContent(title);
+    expect(linkElement).not.toHaveAttribute("target", "_blank");
+    expect(linkElement).not.toHaveAttribute("rel", "noopener noreferrer");
   });
 });

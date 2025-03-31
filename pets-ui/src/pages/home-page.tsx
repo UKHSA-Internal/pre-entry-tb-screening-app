@@ -31,6 +31,7 @@ export default function HomePage() {
           to="https://www.gov.uk/tb-test-visa"
           title="Tuberculosis tests for visa applicants: Check if you need a TB test for your visa
           application"
+          externalLink
         />
         .
       </p>

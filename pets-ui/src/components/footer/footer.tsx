@@ -26,6 +26,7 @@ export default function Footer() {
                 title="Open Government Licence v3.0"
                 className="govuk-footer__link"
                 to="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+                externalLink
               />
               , except where otherwise stated
             </span>
@@ -35,6 +36,7 @@ export default function Footer() {
               title="© Crown copyright"
               className="govuk-footer__link govuk-footer__copyright-logo"
               to="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+              externalLink
             />
           </div>
         </div>
