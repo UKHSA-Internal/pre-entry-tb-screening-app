@@ -50,9 +50,9 @@ export const tbCertificateSlice = createSlice({
       state.isIssued = action.payload.isIssued;
       state.comments = action.payload.comments;
       state.certificateDate = {
-        year: action.payload.certificateDate.split("-")[0],
-        month: action.payload.certificateDate.split("-")[1],
-        day: action.payload.certificateDate.split("-")[2],
+        year: action.payload.issueDate.split("-")[0],
+        month: action.payload.issueDate.split("-")[1],
+        day: action.payload.issueDate.split("-")[2],
       };
       state.certificateNumber = action.payload.certificateNumber;
     },

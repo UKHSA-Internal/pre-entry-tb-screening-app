@@ -105,7 +105,7 @@ const TbCertificateDeclarationForm = () => {
             id="physician-comments"
             required={false}
             errorMessage={errors?.comments?.message ?? ""}
-            formValue="physicianComments"
+            formValue="comments"
             rows={10}
             defaultValue={tbCertificateData.comments}
             heading="Physician comments"
