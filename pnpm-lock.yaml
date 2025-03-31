@@ -185,6 +185,9 @@ importers:
       '@azure/msal-react':
         specifier: ^3.0.4
         version: 3.0.4(@azure/msal-browser@4.2.1)(react@18.3.1)
+      '@hods/loading-spinner':
+        specifier: ^0.5.1
+        version: 0.5.1(react@18.3.1)
       '@reduxjs/toolkit':
         specifier: ^2.3.0
         version: 2.4.0(react-redux@9.1.2(@types/react@18.3.12)(react@18.3.1)(redux@5.0.1))(react@18.3.1)
@@ -785,6 +788,21 @@ packages:
     resolution: {integrity: sha512-+0TjwR1eAUdZtvv/ir1mGX+v0tUoR3VEPB8Up0LLJC+whRW0GgBBtpbOkg/a/U4Dxa6l5a3l9AJ1aWIQVyoWJA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
+  '@hods/loading-spinner@0.5.1':
+    resolution: {integrity: sha512-ARl6NY4dGEz+j5wxfDb+QFkGQwHMaRZ8dg745TLK3QJmR+s29HhUY6xfwXvVp2IDbm31BeeVPzipD7OtWft+KA==}
+    peerDependencies:
+      '@not-govuk/docs-components': ^0.15.2
+      '@storybook/addon-docs': ^6.5.16
+      react: ^18.0.0
+    peerDependenciesMeta:
+      '@not-govuk/docs-components':
+        optional: true
+      '@storybook/addon-docs':
+        optional: true
+
+  '@hods/sass-base@0.5.1':
+    resolution: {integrity: sha512-FeYJ2tzoQ016cM0Jc4Iy3Yo6deZctvyd8JceBGw6Mlx9gkDbH8hPan8K0aMb/CrnUP5DlSIA6vcEBLThA7YR3w==}
+
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
     engines: {node: '>=18.18.0'}
@@ -885,6 +903,12 @@ packages:
   '@nolyfill/is-core-module@1.0.39':
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
+
+  '@not-govuk/component-helpers@0.15.10':
+    resolution: {integrity: sha512-wt24STPuNTQCw0Z2noNVWOCuyQyKpAk/m5gyEiuSkRlmWDYAq7fCqleWmxOS8yjmgyr5345XpSj5z6z+Het1VQ==}
+
+  '@not-govuk/sass-base@0.15.10':
+    resolution: {integrity: sha512-Yl0IHAhgpbHR89n9zcwEycJ5IFVAbu/VAFDJlcpG3hmkNxryVukFJgVzXP+CfgCJpCT7kbJtxd2ceoQz61gBLA==}
 
   '@open-draft/deferred-promise@2.2.0':
     resolution: {integrity: sha512-CecwLWx3rhxVQF6V4bAgPS5t+So2sTbPgAzafKkVizyi7tlwpcFpdFqq+wqF2OwNBmqFuu6tOyouTuxgpMfzmA==}
@@ -2970,6 +2994,10 @@ packages:
 
   govuk-frontend@5.7.1:
     resolution: {integrity: sha512-jF1cq5rn57kxZmJRprUZhTQ31zaBBK4b5AyeJaPX3Yhg22lk90Mx/dQLvOk/ycV3wM7e0y+s4IPvb2fFaPlCGg==}
+    engines: {node: '>= 4.2.0'}
+
+  govuk-frontend@5.9.0:
+    resolution: {integrity: sha512-8NzmyoDtRFYyHs413DfNPR8Zo6qw6Q02Mruxml/Yfy+EueaOI/JZ4gVM8d0pqzJmTiMcJuHhvxqYEgBRmqeoyA==}
     engines: {node: '>= 4.2.0'}
 
   graceful-fs@4.2.11:
@@ -5978,6 +6006,16 @@ snapshots:
       '@eslint/core': 0.11.0
       levn: 0.4.1
 
+  '@hods/loading-spinner@0.5.1(react@18.3.1)':
+    dependencies:
+      '@hods/sass-base': 0.5.1
+      '@not-govuk/component-helpers': 0.15.10
+      react: 18.3.1
+
+  '@hods/sass-base@0.5.1':
+    dependencies:
+      '@not-govuk/sass-base': 0.15.10
+
   '@humanfs/core@0.19.1': {}
 
   '@humanfs/node@0.16.6':
@@ -6080,6 +6118,12 @@ snapshots:
       fastq: 1.19.0
 
   '@nolyfill/is-core-module@1.0.39': {}
+
+  '@not-govuk/component-helpers@0.15.10': {}
+
+  '@not-govuk/sass-base@0.15.10':
+    dependencies:
+      govuk-frontend: 5.9.0
 
   '@open-draft/deferred-promise@2.2.0': {}
 
@@ -8856,6 +8900,8 @@ snapshots:
   gopd@1.2.0: {}
 
   govuk-frontend@5.7.1: {}
+
+  govuk-frontend@5.9.0: {}
 
   graceful-fs@4.2.11: {}
 
