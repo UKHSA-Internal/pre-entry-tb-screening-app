@@ -213,7 +213,7 @@ type ReduxTbCertificateType = {
 type PostedTbCertificateType = {
   isIssued: YesOrNo;
   comments: string;
-  certificateDate: string;
+  issueDate: string;
   certificateNumber: string;
 };
 
