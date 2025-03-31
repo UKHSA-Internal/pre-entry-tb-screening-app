@@ -1,14 +1,15 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { BrowserRouter as Router, Link } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 import { describe, expect, it, Mock } from "vitest";
 
+import LinkLabel from "../linkLabel/LinkLabel";
 import Confirmation from "./confirmation";
 
 const furtherInfo = [
   "Further Information Test Text",
   "Additional Information",
   <>
-    Continue to <Link to={"/tracker"}>tracker page</Link>.
+    Continue to <LinkLabel to="/tracker" title="tracker page" />.
   </>,
 ];
 

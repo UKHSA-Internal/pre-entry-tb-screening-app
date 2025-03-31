@@ -5,6 +5,7 @@ import { useMsal } from "@azure/msal-react";
 import { loginRequest } from "@/auth/auth";
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
+import LinkLabel from "@/components/linkLabel/LinkLabel";
 import List from "@/components/list/list";
 import StartButton from "@/components/startButton/startButton";
 
@@ -26,11 +27,13 @@ export default function HomePage() {
       <p className="govuk-body">
         This service is for authorised staff to enter TB screening information for UK visa
         applicants. For advice and guidance on the process, visa applicants should visit{" "}
-        <a href="https://www.gov.uk/tb-test-visa">
-          Tuberculosis tests for visa applicants: Check if you need a TB test for your visa
-          application
-        </a>
-        {/* */}.
+        <LinkLabel
+          to="https://www.gov.uk/tb-test-visa"
+          title="Tuberculosis tests for visa applicants: Check if you need a TB test for your visa
+          application"
+          externalLink
+        />
+        .
       </p>
       <p className="govuk-body">Use this service to:</p>
       <List
