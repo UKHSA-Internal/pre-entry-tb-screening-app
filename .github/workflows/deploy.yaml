@@ -292,6 +292,9 @@ jobs:
     environment: ${{ inputs.environment }}
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Get Pull Request Number
         id: get_pr
         run: |
