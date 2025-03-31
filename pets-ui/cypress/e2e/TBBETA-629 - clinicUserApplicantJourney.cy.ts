@@ -268,9 +268,6 @@ describe("PETS Application End-to-End Tests", () => {
     // Save and continue
     chestXrayFindingsPage.clickSaveAndContinue();
 
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(3000);
-
     // Verify redirection to chest X-ray summary page
     cy.url().should("include", "/chest-xray-summary");
 
