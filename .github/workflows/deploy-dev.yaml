@@ -1,11 +1,11 @@
-name: Pets Core Services Deployment - Dev
+name: Pets Deployment - Dev
 
 on:
   workflow_dispatch:
 
 jobs:
   deploy:
-    uses: ./.github/workflows/core-services-deploy.yaml
+    uses: ./.github/workflows/deploy.yaml
     with:
       environment: "dev"
     secrets: inherit
