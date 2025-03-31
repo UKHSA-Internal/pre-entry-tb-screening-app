@@ -202,10 +202,14 @@ jobs:
     needs: build-and-deploy-ui
     name: Run cypress tests
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
     strategy:
       matrix:
         browser: [chrome, firefox, edge]
     env:
+      APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+
       USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
       USER_1_PASSWORD: ${{ secrets.USER_1_PASSWORD }}
 
@@ -288,6 +292,9 @@ jobs:
     environment: ${{ inputs.environment }}
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Get Pull Request Number
         id: get_pr
         run: |
