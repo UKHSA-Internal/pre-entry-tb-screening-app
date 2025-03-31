@@ -1,3 +1,5 @@
+import LoadingSpinner from "@hods/loading-spinner";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -16,7 +18,11 @@ const ApplicantReview = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleSubmit = async () => {
+    setIsLoading(true);
+    const apiTimeout = setTimeout(() => navigate("/error"), 20000);
     try {
       const applicationRes = await createNewApplication();
       dispatch(setApplicationDetails(applicationRes.data));
@@ -43,9 +49,11 @@ const ApplicantReview = () => {
       });
 
       dispatch(setApplicantDetailsStatus(ApplicationStatus.COMPLETE));
+      clearTimeout(apiTimeout);
       navigate("/applicant-confirmation");
     } catch (error) {
       console.error(error);
+      clearTimeout(apiTimeout);
       navigate("/error");
     }
   };
@@ -145,7 +153,11 @@ const ApplicantReview = () => {
 
   return (
     <div>
-      <Summary status={applicantData.status} summaryElements={summaryData} />
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <Summary status={applicantData.status} summaryElements={summaryData} />
+      )}
 
       {applicantData.status == ApplicationStatus.INCOMPLETE && (
         <Button
