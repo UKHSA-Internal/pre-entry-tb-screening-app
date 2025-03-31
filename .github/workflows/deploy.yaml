@@ -202,6 +202,8 @@ jobs:
     needs: build-and-deploy-ui
     name: Run cypress tests
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
     strategy:
       matrix:
         browser: [chrome, firefox, edge]
