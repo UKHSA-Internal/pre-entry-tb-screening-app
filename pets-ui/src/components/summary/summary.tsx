@@ -1,5 +1,7 @@
 import { ApplicationStatus } from "@/utils/enums";
 
+import LinkLabel from "../linkLabel/LinkLabel";
+
 export type SummaryElement = {
   key: string;
   value: string | Array<string> | undefined;
@@ -34,9 +36,11 @@ export default function Summary(props: Readonly<SummaryProps>) {
             )}
             {props.status == ApplicationStatus.INCOMPLETE && (
               <dd className="govuk-summary-list__actions">
-                <a className="govuk-link" style={{ color: "#1d70b8" }} href={summaryElement.link}>
-                  Change<span className="govuk-visually-hidden"> {summaryElement.hiddenLabel}</span>
-                </a>
+                <LinkLabel
+                  to={summaryElement.link}
+                  title="Change"
+                  hiddenLabel={summaryElement.hiddenLabel}
+                />
               </dd>
             )}
           </div>

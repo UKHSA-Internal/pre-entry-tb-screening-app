@@ -1,5 +1,3 @@
-// import { Link } from "react-router-dom";
-
 import LinkLabel from "../linkLabel/LinkLabel";
 export interface IBreadcrumbItem {
   text: string;

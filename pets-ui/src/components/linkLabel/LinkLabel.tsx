@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 type LabelProps = {
   ariaLabel?: string;
   title: string;
@@ -6,6 +8,7 @@ type LabelProps = {
   style?: React.CSSProperties;
   className?: string;
   id?: string;
+  hiddenLabel?: string;
 };
 
 const LinkLabel = ({
@@ -13,16 +16,17 @@ const LinkLabel = ({
   ...props
 }: LabelProps) => {
   return (
-    <a
+    <Link
       className={className}
       id={props.id}
-      href={props.to}
+      to={props.to}
       aria-label={props.ariaLabel}
       style={props.style}
       onClick={props.onClick}
     >
       {props.title}
-    </a>
+      {props.hiddenLabel && <span className="govuk-visually-hidden"> {props.hiddenLabel}</span>}
+    </Link>
   );
 };
 
