@@ -248,9 +248,8 @@ describe("PETS Application End-to-End Tests", () => {
     cy.contains("button", "Continue").should("be.enabled").click();
     // Continue to X-ray findings page
     chestXrayUploadPage.clickContinue();
-    cy.url().then((url) => {
-      cy.log(`Current URL: ${url}`);
-    });
+
+    cy.url().should("include", "/chest-xray-findings");
 
     // Verify X-ray findings page
     chestXrayFindingsPage.verifyPageLoaded();
@@ -268,9 +267,6 @@ describe("PETS Application End-to-End Tests", () => {
 
     // Save and continue
     chestXrayFindingsPage.clickSaveAndContinue();
-
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(3000);
 
     // Verify redirection to chest X-ray summary page
     cy.url().should("include", "/chest-xray-summary");

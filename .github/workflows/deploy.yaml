@@ -206,6 +206,8 @@ jobs:
       matrix:
         browser: [chrome, firefox, edge]
     env:
+      APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+
       USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
       USER_1_PASSWORD: ${{ secrets.USER_1_PASSWORD }}
 
