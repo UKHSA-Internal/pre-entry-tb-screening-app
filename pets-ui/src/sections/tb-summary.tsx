@@ -76,7 +76,6 @@ const TbSummary = () => {
 
   return (
     <div>
-      {JSON.stringify(tbCertificateData.certificateDate)}
       <ApplicantDataHeader applicantData={applicantData} />
 
       <Summary
