@@ -27,7 +27,7 @@ const TbSummary = () => {
         await postTbCerificateDetails(applicationData.applicationId, {
           isIssued: tbCertificateData.isIssued,
           comments: tbCertificateData.comments,
-          certificateDate: certificateIssueDateStr,
+          issueDate: certificateIssueDateStr,
           certificateNumber: tbCertificateData.certificateNumber,
         });
       } else if (tbCertificateData.isIssued == YesOrNo.NO) {
@@ -76,6 +76,7 @@ const TbSummary = () => {
 
   return (
     <div>
+      {JSON.stringify(tbCertificateData.certificateDate)}
       <ApplicantDataHeader applicantData={applicantData} />
 
       <Summary
