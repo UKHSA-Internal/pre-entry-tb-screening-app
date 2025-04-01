@@ -6,7 +6,7 @@ import { Code, Function, Runtime } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunctionProps } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Bucket, HttpMethods } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
-import { basename, dirname, join, relative } from "path";
+import { basename, dirname, join, posix, relative, sep } from "path";
 export class LocalInfrastructureStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -110,7 +110,11 @@ class HotReloadedLambda extends Function {
     const repoRoot = join(__dirname, "../../");
     const buildRoot = join(__dirname, "../build");
     const relativePath = relative(repoRoot, dirname(props.entry));
-    const codePath = join(buildRoot, relativePath);
+    let codePath = join(buildRoot, relativePath);
+
+    if (process.platform == "win32") {
+      codePath = codePath.split(sep).join(posix.sep).replace("C:", "/mnt/c");
+    }
 
     super(scope, id, {
       functionName: props.functionName,
