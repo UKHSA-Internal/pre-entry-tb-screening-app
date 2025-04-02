@@ -4,7 +4,7 @@ import { assertEnvExists, isLocal } from "./config";
 
 describe("assertEnvExists", () => {
   it("should return the environment value when it exists", () => {
-    expect(assertEnvExists(process.env.ENVIRONMENT)).toBe("ENVIRONMENT");
+    expect(assertEnvExists(process.env.ENVIRONMENT)).toBe("TEST_LOCAL");
   });
 
   it("should throw an assertion error when the environment value is undefined", () => {
