@@ -1,5 +1,12 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
+
+vi.mock("@/utils/records", () => ({
+  attributeToComponentId: {
+    errorToDisplay: "input-error-id",
+  },
+}));
 
 import ErrorSummary from "./errorSummary";
 
@@ -29,12 +36,14 @@ describe("Error Summary Component", () => {
     expect(screen.getByText("There is a problem")).toBeInTheDocument();
     expect(screen.getByText("There is an error on this page")).toBeInTheDocument();
   });
+
   it("renders multiple errors correctly when props are specified", () => {
     render(<ErrorSummary errorsToShow={multipleErrorsToShow} errors={multipleErrors} />);
     expect(screen.getByText("There is a problem")).toBeInTheDocument();
     expect(screen.getByText("There is an error on this page")).toBeInTheDocument();
     expect(screen.getByText("There is an additonal error on this page")).toBeInTheDocument();
   });
+
   it("has an aria-label with the error message for screen readers", () => {
     render(<ErrorSummary errorsToShow={multipleErrorsToShow} errors={multipleErrors} />);
     expect(screen.getByText("There is a problem")).toBeInTheDocument();
@@ -43,10 +52,32 @@ describe("Error Summary Component", () => {
       "Error: There is an error on this page",
     );
   });
+
   it("has screen focus when an error is found", () => {
     render(<ErrorSummary errorsToShow={multipleErrorsToShow} errors={multipleErrors} />);
     const errorSummaryDiv = screen.getByTestId("error-summary");
     expect(errorSummaryDiv).toHaveAttribute("tabIndex", "-1");
     expect(errorSummaryDiv).toHaveAttribute("aria-labelledby", "error-summary-title");
+  });
+
+  it("moves focus to the correct input field when clicking an error link", async () => {
+    render(
+      <>
+        <ErrorSummary errorsToShow={errorsToShow} errors={errors} />
+        <div id="input-error-id">
+          <input id="input-error-id" data-testid="error-input" />
+        </div>
+      </>,
+    );
+
+    const errorLink = screen.getByText("There is an error on this page");
+    const inputElement = screen.getByTestId("error-input");
+
+    await userEvent.click(errorLink);
+
+    await waitFor(() => {
+      expect(document.activeElement).toBe(inputElement);
+      expect(inputElement).toHaveAttribute("tabIndex", "-1");
+    });
   });
 });
