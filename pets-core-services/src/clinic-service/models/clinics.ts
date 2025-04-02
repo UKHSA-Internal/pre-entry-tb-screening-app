@@ -71,7 +71,7 @@ export class Clinic extends IClinic {
 
       const updatedDetails: IClinic = {
         ...details,
-        startDate: new Date(),
+        startDate: details.startDate ? new Date(details.startDate) : new Date(),
         // TODO: if better validation is needed, then create function to properly check endDate value
         endDate: details.endDate ? new Date(details.endDate) : null,
       };
@@ -248,7 +248,7 @@ export class Clinic extends IClinic {
         }
       }
       // This is when there's no data.Items, or data.Items.length == 0
-      logger.error(`No active clinic found`);
+      logger.info(`No active clinic found`);
 
       return false;
     } catch (error) {
