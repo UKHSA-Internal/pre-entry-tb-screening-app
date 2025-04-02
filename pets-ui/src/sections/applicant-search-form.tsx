@@ -1,4 +1,5 @@
-import LoadingSpinner from "@hods/loading-spinner";
+import "@/components/spinner/spinner.scss";
+
 import { useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +9,7 @@ import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
+import Spinner from "@/components/spinner/spinner";
 import {
   clearApplicantDetails,
   setApplicantDetailsFromApiResponse,
@@ -35,7 +37,7 @@ const ApplicantSearchForm = () => {
   const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
   const dispatch = useAppDispatch();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     dispatch(clearApplicantDetails());
@@ -56,13 +58,11 @@ const ApplicantSearchForm = () => {
 
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (passportDetails) => {
     setIsLoading(true);
-    const apiTimeout = setTimeout(() => navigate("/error"), 20000);
     try {
       dispatch(setApplicantPassportDetails(passportDetails));
 
       const applicantRes = await getApplicants(passportDetails);
       if (applicantRes.data.length === 0) {
-        clearTimeout(apiTimeout);
         navigate("/applicant-results");
         return;
       }
@@ -82,53 +82,48 @@ const ApplicantSearchForm = () => {
       if (applicationRes.data.tbCertificate) {
         dispatch(setTbCertificateFromApiResponse(applicationRes.data.tbCertificate));
       }
-      clearTimeout(apiTimeout);
       navigate("/tracker");
     } catch (error) {
       console.error(error);
-      clearTimeout(apiTimeout);
       navigate("/error");
     }
   };
 
   return (
     <div>
-      {isLoading ? (
-        <LoadingSpinner />
-      ) : (
-        <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
-            <FreeText
-              id="passport-number"
-              label="Applicant's passport number"
-              errorMessage={errors?.passportNumber?.message ?? ""}
-              formValue="passportNumber"
-              required="Enter the applicant's passport number"
-              patternValue={formRegex.lettersAndNumbers}
-              patternError="Passport number must contain only letters and numbers"
-            />
+      <Spinner isLoading={isLoading} />
+      <FormProvider {...methods}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
+          <FreeText
+            id="passport-number"
+            label="Applicant's passport number"
+            errorMessage={errors?.passportNumber?.message ?? ""}
+            formValue="passportNumber"
+            required="Enter the applicant's passport number"
+            patternValue={formRegex.lettersAndNumbers}
+            patternError="Passport number must contain only letters and numbers"
+          />
 
-            <Dropdown
-              id="country-of-issue"
-              label="Country of issue"
-              hint="If you have more than one, use the nationality in the primary passport submitted by the applicant. Use the English spelling or the country code."
-              options={countryList}
-              errorMessage={errors?.countryOfIssue?.message ?? ""}
-              formValue="countryOfIssue"
-              required="Select the country of issue."
-            />
+          <Dropdown
+            id="country-of-issue"
+            label="Country of issue"
+            hint="If you have more than one, use the nationality in the primary passport submitted by the applicant. Use the English spelling or the country code."
+            options={countryList}
+            errorMessage={errors?.countryOfIssue?.message ?? ""}
+            formValue="countryOfIssue"
+            required="Select the country of issue."
+          />
 
-            <Button
-              id="search"
-              type={ButtonType.DEFAULT}
-              text="Search"
-              href="#"
-              handleClick={() => {}}
-            />
-          </form>
-        </FormProvider>
-      )}
+          <Button
+            id="search"
+            type={ButtonType.DEFAULT}
+            text="Search"
+            href="#"
+            handleClick={() => {}}
+          />
+        </form>
+      </FormProvider>
     </div>
   );
 };
