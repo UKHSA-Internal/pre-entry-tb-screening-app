@@ -151,7 +151,7 @@ const ApplicantReview = () => {
 
   return (
     <div>
-      <Spinner isLoading={isLoading} />
+      {isLoading && <Spinner />}
       <Summary status={applicantData.status} summaryElements={summaryData} />
 
       {applicantData.status == ApplicationStatus.INCOMPLETE && (

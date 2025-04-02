@@ -91,7 +91,7 @@ const ApplicantSearchForm = () => {
 
   return (
     <div>
-      <Spinner isLoading={isLoading} />
+      {isLoading && <Spinner />}
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
