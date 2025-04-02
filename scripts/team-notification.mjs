@@ -22,6 +22,7 @@ const body = {
             type: "TextBlock",
             size: "Medium",
             weight: "Bolder",
+            wrap: "true",
             text,
           },
         ],
