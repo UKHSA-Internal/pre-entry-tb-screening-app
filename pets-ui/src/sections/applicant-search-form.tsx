@@ -37,7 +37,7 @@ const ApplicantSearchForm = () => {
   const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
   const dispatch = useAppDispatch();
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     dispatch(clearApplicantDetails());
