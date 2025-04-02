@@ -16,6 +16,8 @@ import { validateDate } from "@/utils/helpers";
 import { countryList, formRegex } from "@/utils/records";
 
 const ApplicantForm = () => {
+  const applicantData = useAppSelector(selectApplicant);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const methods = useForm<ReduxApplicantDetailsType>({ reValidateMode: "onSubmit" });
@@ -24,9 +26,6 @@ const ApplicantForm = () => {
     handleSubmit,
     formState: { errors },
   } = methods;
-
-  const dispatch = useAppDispatch();
-  const applicantData = useAppSelector(selectApplicant);
 
   const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = (applicantData) => {
     dispatch(setApplicantDetails(applicantData));

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -11,12 +12,17 @@ import { ApplicationStatus, ButtonType } from "@/utils/enums";
 import { standardiseDayOrMonth } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
+import Spinner from "../components/spinner/spinner";
+
 const ApplicantReview = () => {
   const applicantData = useAppSelector(selectApplicant);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleSubmit = async () => {
+    setIsLoading(true);
     try {
       const applicationRes = await createNewApplication();
       dispatch(setApplicationDetails(applicationRes.data));
@@ -145,6 +151,7 @@ const ApplicantReview = () => {
 
   return (
     <div>
+      {isLoading && <Spinner />}
       <Summary status={applicantData.status} summaryElements={summaryData} />
 
       {applicantData.status == ApplicationStatus.INCOMPLETE && (
