@@ -334,8 +334,8 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
-      - name: Notify Teams Chat(Dev and Test)
-        if: contains('dev test', inputs.environment)
+      - name: Notify Teams Chat(Dev and QAT)
+        if: contains('dev qat', inputs.environment)
         run: |
           pnpm notify:teams '${{ secrets.APP_DEPLOYMENT_NOTIFICATION_CHAT }}' '${{ github.ref_name }} has been deployed to ${{ inputs.environment }}'
 
