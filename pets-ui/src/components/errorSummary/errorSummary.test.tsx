@@ -55,23 +55,25 @@ describe("Error Summary Component", () => {
   });
 
   it("moves focus to the correct input field when clicking an error link", async () => {
-    vi.mock("@/utils/records", () => ({
-      attributeToComponentId: {
-        errorToDisplay: "input-error-id",
+    const errorsToShow = ["passportNumber"];
+    const errors = {
+      passportNumber: {
+        message: "Enter the applicant's passport number",
+        type: "required",
       },
-    }));
+    };
 
     render(
       <>
         <ErrorSummary errorsToShow={errorsToShow} errors={errors} />
-        <div id="input-error-id">
-          <input id="input-error-id" data-testid="error-input" />
+        <div id="passport-number">
+          <input id="passport-number" data-testid="passport-number-input" />
         </div>
       </>,
     );
 
-    const errorLink = screen.getByText("There is an error on this page");
-    const inputElement = screen.getByTestId("error-input");
+    const errorLink = screen.getByText("Enter the applicant's passport number");
+    const inputElement = screen.getByTestId("passport-number-input");
 
     await userEvent.click(errorLink);
 
