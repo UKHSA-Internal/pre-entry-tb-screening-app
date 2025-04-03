@@ -2,12 +2,6 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
-vi.mock("@/utils/records", () => ({
-  attributeToComponentId: {
-    errorToDisplay: "input-error-id",
-  },
-}));
-
 import ErrorSummary from "./errorSummary";
 
 const errorsToShow = ["errorToDisplay"];
@@ -61,6 +55,12 @@ describe("Error Summary Component", () => {
   });
 
   it("moves focus to the correct input field when clicking an error link", async () => {
+    vi.mock("@/utils/records", () => ({
+      attributeToComponentId: {
+        errorToDisplay: "input-error-id",
+      },
+    }));
+
     render(
       <>
         <ErrorSummary errorsToShow={errorsToShow} errors={errors} />
