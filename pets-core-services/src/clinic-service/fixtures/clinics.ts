@@ -6,34 +6,39 @@ import { logger } from "../../shared/logger";
 import { NewClinic } from "../models/clinics";
 
 // TODO: move it to env var
-const filePath = "src/clinic-service/fixtures/clinics.json";
+const filePath = "src/clinic-service/fixtures/test-file.json";
 
-const getClinicObject = (obj: Record<string, string>): NewClinic | void => {
+export const getClinicObject = (obj: Record<string, string | null>): NewClinic | void => {
   try {
     // Checking if all required attributes are present
     const { clinicId, name, country, city, startDate, endDate, createdBy } = obj;
 
     // All these should have some values
     if (!clinicId || !name || !country || !city || !startDate || !createdBy) {
-      logger.error(`Clinic object missing requireq attribute (object: ${JSON.stringify(obj)}`);
+      logger.error(`Clinic object missing requireq attribute`);
 
       return;
       // Can startDate for a clinic be from before 2024-01-01?
-    } else if (new Date(startDate) < new Date("2024-01-01")) {
+    } else if (
+      startDate &&
+      (Number.isNaN(new Date(startDate).getDate()) || new Date(startDate) < new Date("2024-01-01"))
+    ) {
       logger.error(`Failed to convert startDate: ${startDate}`);
 
       return;
       // If endDate have a value, then it has te be possible to convert it to Date
-    } else if (endDate && new Date(endDate) < new Date(startDate)) {
+    } else if (
+      endDate &&
+      (Number.isNaN(new Date(endDate).getDate()) || new Date(endDate) < new Date(startDate))
+    ) {
       logger.error(`Failed to validate endDate: ${endDate}`);
 
       return;
     }
     const countries = Object(CountryCode) as CountryCode;
-    // logger.info(`country codes: ${JSON.stringify(countries)}`);
 
     // Checking if country is one of CountryCode keys
-    if (!Object.keys(countries).indexOf(country)) {
+    if (Object.keys(countries).indexOf(country) < 0) {
       logger.error(`Can't convert to CountyCode: ${country}`);
 
       return;
@@ -43,7 +48,7 @@ const getClinicObject = (obj: Record<string, string>): NewClinic | void => {
       name: name,
       country: country as CountryCode,
       city: city,
-      startDate: startDate,
+      startDate: startDate ? startDate : new Date(),
       endDate: endDate ? endDate : null,
       createdBy: createdBy,
     } as NewClinic;
@@ -56,7 +61,7 @@ const getClinicObject = (obj: Record<string, string>): NewClinic | void => {
   }
 };
 
-const validateClinics = (data: string | undefined | void): NewClinic[] => {
+export const validateClinics = (data: string | undefined | void): NewClinic[] => {
   if (!data) {
     logger.info("The json file didn't contain correct objects");
 
@@ -88,17 +93,18 @@ const validateClinics = (data: string | undefined | void): NewClinic[] => {
   }
 };
 
-const readClinicsFromFile = (): string | void => {
+export const readClinicsFromFile = (filePathString: string): string | void => {
   try {
-    const data = readFileSync(resolve(process.cwd(), filePath), "utf-8").toString();
+    const data = readFileSync(resolve(process.cwd(), filePathString), "utf-8").toString();
     logger.info(`File data (from file): ${data.length}`);
 
     return data;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (err) {
-    logger.error(`File reading error: ${JSON.stringify(err)}`);
+    logger.error(`File reading error`);
 
     return;
   }
 };
 
-export const seededClinics: NewClinic[] = validateClinics(readClinicsFromFile());
+export const seededClinics: NewClinic[] = validateClinics(readClinicsFromFile(filePath));

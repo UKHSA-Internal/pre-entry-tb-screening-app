@@ -71,7 +71,10 @@ export class Clinic extends IClinic {
 
       const updatedDetails: IClinic = {
         ...details,
-        startDate: details.startDate ? new Date(details.startDate) : new Date(),
+        startDate:
+          details.startDate && typeof details.startDate == "string"
+            ? new Date(details.startDate)
+            : new Date(),
         // TODO: if better validation is needed, then create function to properly check endDate value
         endDate: details.endDate ? new Date(details.endDate) : null,
       };
@@ -229,7 +232,7 @@ export class Clinic extends IClinic {
           ":pk": Clinic.getPk(clinicId),
           ":sk": Clinic.sk,
           ":dateType": "NULL",
-          ":today": new Date().toString(),
+          ":today": new Date().toISOString(),
         },
       };
       const command = new QueryCommand(params);

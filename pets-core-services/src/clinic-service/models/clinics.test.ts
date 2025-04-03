@@ -26,6 +26,15 @@ const clinicsDetails: NewClinic[] = [
     createdBy: "info@eclinic.eu",
   },
 ];
+const clinicNoStartDate = {
+  clinicId: "clinic-id-03",
+  name: "Town's Clinic",
+  city: "Town One",
+  country: CountryCode.KOR,
+  startDate: "",
+  endDate: null,
+  createdBy: "info@eclinic.eu",
+};
 
 describe("Tests for Clinic Model", () => {
   const ddbMock = mockClient(awsClients.dynamoDBDocClient);
@@ -34,7 +43,7 @@ describe("Tests for Clinic Model", () => {
     ddbMock.reset();
   });
 
-  test("Create New Clinic Successfully", async () => {
+  test("Create New Clinic Successfully No StartDate", async () => {
     // Arrange
     ddbMock.on(PutCommand);
     vi.useFakeTimers();
@@ -42,11 +51,11 @@ describe("Tests for Clinic Model", () => {
     vi.setSystemTime(expectedDateTime);
 
     // Act
-    const clinic = await Clinic.createNewClinic(clinicsDetails[0]);
+    const clinic = await Clinic.createNewClinic(clinicNoStartDate);
 
     // Assert
     expect(clinic).toMatchObject({
-      ...clinicsDetails[0],
+      ...clinicNoStartDate,
       startDate: new Date(expectedDateTime),
       endDate: null,
     });
@@ -55,15 +64,30 @@ describe("Tests for Clinic Model", () => {
     expect(ddbMock.commandCalls(PutCommand)[0].firstArg.input).toMatchObject({
       TableName: "test-clinic-details",
       Item: {
-        ...clinicsDetails[0],
+        ...clinicNoStartDate,
         startDate: "2025-03-04T00:00:00.000Z",
-        pk: "CLINIC#clinic-id-01",
+        pk: "CLINIC#clinic-id-03",
         sk: "CLINIC#ROOT",
       },
     });
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(ddbMock.commandCalls(PutCommand)[0].firstArg.input).toMatchObject({
       ConditionExpression: "attribute_not_exists(pk) AND attribute_not_exists(sk)",
+    });
+  });
+
+  test("Create New Clinic Successfully with StartDate", async () => {
+    // Arrange
+    ddbMock.on(PutCommand);
+
+    // Act
+    const clinic = await Clinic.createNewClinic(clinicsDetails[0]);
+
+    // Assert
+    expect(clinic).toMatchObject({
+      ...clinicsDetails[0],
+      startDate: new Date(clinicsDetails[0].startDate),
+      endDate: null,
     });
   });
 
