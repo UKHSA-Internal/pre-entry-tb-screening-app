@@ -36,7 +36,6 @@ jobs:
         run: pnpm i
 
       - name: Notify Teams Chat
-        if: contains('prod preprod', inputs.environment)
         run: |
           pnpm notify:teams '${{ secrets.TECH_TEAM_CHAT }}' '⌛️${{ github.actor }} has just triggered App deployment to ${{ inputs.environment }}.'
 
