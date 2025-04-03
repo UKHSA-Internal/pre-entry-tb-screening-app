@@ -36,7 +36,7 @@ describe("Test for Applicant Lambda", () => {
     expect(response.statusCode).toBe(200);
   });
 
-  test.skip("Fetching a Clinic", async () => {
+  test("Fetching a Clinic", async () => {
     // Arrange;
     const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
@@ -55,7 +55,7 @@ describe("Test for Applicant Lambda", () => {
     expect(response.statusCode).toBe(200);
   });
 
-  test.skip("Fetching all Clinics", async () => {
+  test("Fetching all Clinics", async () => {
     // Arrange;
     const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
@@ -71,7 +71,7 @@ describe("Test for Applicant Lambda", () => {
     expect(response.statusCode).toBe(200);
   });
 
-  test.skip("Checking an active Clinic", async () => {
+  test("Checking an active Clinic", async () => {
     // Arrange;
     const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
