@@ -1,11 +1,12 @@
 import { QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
 import { CountryCode } from "../../shared/country";
+import { logger } from "../../shared/logger";
 import { mockAPIGwEvent } from "../../test/mocks/events";
-import { NewClinic } from "../models/clinics";
+import { Clinic, NewClinic } from "../models/clinics";
 import { checkActiveClinicHandler } from "./checkActiveClinic";
 
 const activeClinicDetails: NewClinic = {
@@ -49,5 +50,19 @@ describe("Get active Clinic", () => {
     const res = await checkActiveClinicHandler({ ...mockEvent });
     expect(res.statusCode).toBe(200);
     expect(JSON.parse(res.body)).toMatchObject({ isActive: false });
+  });
+
+  test("error response", async () => {
+    const consoleMock = vi.spyOn(logger, "error").mockImplementation(() => undefined);
+    const mockEvent = Object.assign({}, mockAPIGwEvent);
+    const mock = vi.spyOn(Clinic, "isActiveClinic");
+    mock.mockRejectedValue("Err0R");
+
+    const res = await checkActiveClinicHandler({ ...mockEvent });
+
+    expect(consoleMock).toHaveBeenCalledOnce();
+    expect(consoleMock).toHaveBeenLastCalledWith("Fetching Active Clinics Failed");
+    expect(JSON.parse(res.body)).toMatchObject({ message: "Something went wrong" });
+    expect(res.statusCode).toBe(500);
   });
 });

@@ -1,17 +1,17 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { logger } from "../../shared/logger";
-import { getClinicObject, readClinicsFromFile, validateClinics } from "./clinics";
+import { readClinicsFile, validateClinic, validateClinicsDataString } from "./validation";
 
 describe("Load and validate Clinics from json file", () => {
   test("read file with correct path", () => {
-    const res = readClinicsFromFile("src/clinic-service/fixtures/test-file.json");
+    const res = readClinicsFile("src/clinic-service/fixtures/test-file.json");
     expect(JSON.parse(res as string)).toHaveLength(8);
   });
 
   test("read incorrect file path", () => {
     const consoleMock = vi.spyOn(logger, "error").mockImplementation(() => undefined);
-    const res = readClinicsFromFile("fake-file.json");
+    const res = readClinicsFile("fake-file.json");
     expect(consoleMock).toHaveBeenCalledOnce();
     expect(consoleMock).toHaveBeenLastCalledWith("File reading error");
     expect(res).toBeUndefined();
@@ -20,7 +20,26 @@ describe("Load and validate Clinics from json file", () => {
   test("validate objects", () => {
     const fakeFile = `[{"clinicId":"1","name":"Q-Life Family clinic","city":"Lagos","country":"NGA","startDate":"2025-02-07","endDate":"2025-02-08","createdBy":"shane.park@iom.com"}]`;
 
-    const res = validateClinics(fakeFile);
+    const res = validateClinicsDataString(fakeFile);
+
+    expect(res).toMatchObject([
+      {
+        city: "Lagos",
+        clinicId: "1",
+        country: "NGA",
+        createdBy: "shane.park@iom.com",
+        endDate: "2025-02-08",
+        name: "Q-Life Family clinic",
+        startDate: "2025-02-07",
+      },
+    ]);
+    expect(res).toHaveLength(1);
+  });
+
+  test("validate objects in empty string", () => {
+    const fakeFile = "";
+
+    const res = validateClinicsDataString(fakeFile);
 
     expect(res).toMatchObject([
       {
@@ -46,7 +65,7 @@ describe("Load and validate Clinics from json file", () => {
       endDate: null,
       createdBy: "info@eclinic.eu",
     };
-    const res = getClinicObject(fakeClinic);
+    const res = validateClinic(fakeClinic);
 
     expect(res).toMatchObject({
       clinicId: "clinic-id-03",
@@ -71,10 +90,10 @@ describe("Load and validate Clinics from json file", () => {
       endDate: null,
       createdBy: "info@eclinic.eu",
     };
-    const res = getClinicObject(fakeClinic);
+    const res = validateClinic(fakeClinic);
 
     expect(consoleMock).toHaveBeenCalledOnce();
-    expect(consoleMock).toHaveBeenLastCalledWith("Clinic object missing requireq attribute");
+    expect(consoleMock).toHaveBeenLastCalledWith("Clinic object missing required attribute");
     expect(res).toBeUndefined();
   });
 
@@ -89,10 +108,10 @@ describe("Load and validate Clinics from json file", () => {
       endDate: null,
       createdBy: "info@eclinic.eu",
     };
-    const res = getClinicObject(fakeClinic);
+    const res = validateClinic(fakeClinic);
 
     expect(consoleMock).toHaveBeenCalledOnce();
-    expect(consoleMock).toHaveBeenLastCalledWith("Clinic object missing requireq attribute");
+    expect(consoleMock).toHaveBeenLastCalledWith("Clinic object missing required attribute");
     expect(res).toBeUndefined();
   });
 
@@ -106,10 +125,10 @@ describe("Load and validate Clinics from json file", () => {
       endDate: null,
       createdBy: "info@eclinic.eu",
     };
-    const res = getClinicObject(fakeClinic);
+    const res = validateClinic(fakeClinic);
 
     expect(consoleMock).toHaveBeenCalledOnce();
-    expect(consoleMock).toHaveBeenLastCalledWith("Clinic object missing requireq attribute");
+    expect(consoleMock).toHaveBeenLastCalledWith("Clinic object missing required attribute");
     expect(res).toBeUndefined();
   });
 
@@ -124,7 +143,7 @@ describe("Load and validate Clinics from json file", () => {
       endDate: null,
       createdBy: "info@eclinic.eu",
     };
-    const res = getClinicObject(fakeClinic);
+    const res = validateClinic(fakeClinic);
 
     expect(consoleMock).toHaveBeenCalledOnce();
     expect(consoleMock).toHaveBeenLastCalledWith("Can't convert to CountyCode: XYZ");
@@ -142,10 +161,10 @@ describe("Load and validate Clinics from json file", () => {
       endDate: null,
       createdBy: "info@eclinic.eu",
     };
-    const res = getClinicObject(fakeClinic);
+    const res = validateClinic(fakeClinic);
 
     expect(consoleMock).toHaveBeenCalledOnce();
-    expect(consoleMock).toHaveBeenLastCalledWith("Clinic object missing requireq attribute");
+    expect(consoleMock).toHaveBeenLastCalledWith("Clinic object missing required attribute");
     expect(res).toBeUndefined();
   });
 
@@ -162,7 +181,7 @@ describe("Load and validate Clinics from json file", () => {
       endDate: wrongDate,
       createdBy: "info@eclinic.eu",
     };
-    const res = getClinicObject(fakeClinic);
+    const res = validateClinic(fakeClinic);
 
     expect(consoleMock).toHaveBeenCalledOnce();
     expect(consoleMock).toHaveBeenLastCalledWith(`Failed to validate endDate: ${wrongDate}`);
@@ -181,7 +200,7 @@ describe("Load and validate Clinics from json file", () => {
       endDate: null,
       createdBy: "info@eclinic.eu",
     };
-    const res = getClinicObject(fakeClinic);
+    const res = validateClinic(fakeClinic);
 
     expect(consoleMock).toHaveBeenLastCalledWith(`Failed to convert startDate: ${badDateString}`);
     expect(res).toBeUndefined();

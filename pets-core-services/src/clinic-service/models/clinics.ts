@@ -88,9 +88,9 @@ export class Clinic extends IClinic {
         ConditionExpression: "attribute_not_exists(pk) AND attribute_not_exists(sk)",
       };
       const command = new PutCommand(params);
-      const response = await docClient.send(command);
+      await docClient.send(command);
 
-      logger.info({ response }, "Clinic details saved successfully");
+      logger.info("Clinic details saved successfully");
 
       return clinic;
     } catch (error) {
@@ -119,7 +119,7 @@ export class Clinic extends IClinic {
       const command = new GetCommand(params);
       const data: GetCommandOutput = await docClient.send(command);
 
-      if (!data.Item) {
+      if (data?.Item && data.Item?.name === undefined) {
         logger.info("No clinic details found");
         return;
       }
@@ -194,12 +194,13 @@ export class Clinic extends IClinic {
 
       const data: ScanCommandOutput = await docClient.send(command);
 
-      if (!data?.Items) {
-        logger.info("No clinics found");
+      if (data?.Items?.length == 0) {
+        logger.info("No active clinics found");
+
         return [];
       }
 
-      logger.info({ resultCount: data.Items.length }, "Clinics data fetched successfully");
+      logger.info({ resultCount: data?.Items?.length && 0 }, "Clinics data fetched successfully");
 
       const results = data.Items as ReturnType<Clinic["todbItem"]>[];
 

@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
 import { CountryCode } from "../../shared/country";
+import { logger } from "../../shared/logger";
 import { Clinic, NewClinic } from "./clinics";
 
 const clinicsDetails: NewClinic[] = [
@@ -76,6 +77,22 @@ describe("Tests for Clinic Model", () => {
     });
   });
 
+  test("Create New Clinic error handling", async () => {
+    // Arrange
+    const consoleMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    ddbMock.on(PutCommand).rejectsOnce(Error("--error--"));
+
+    // Act
+    await expect(Clinic.createNewClinic(clinicNoStartDate)).rejects.toThrow(Error("--error--"));
+
+    // // Assert
+    expect(consoleMock).toHaveBeenCalledOnce();
+    expect(consoleMock).toHaveBeenLastCalledWith(
+      Error("--error--"),
+      "Error saving new clinic details",
+    );
+  });
+
   test("Create New Clinic Successfully with StartDate", async () => {
     // Arrange
     ddbMock.on(PutCommand);
@@ -111,7 +128,39 @@ describe("Tests for Clinic Model", () => {
     });
   });
 
-  test("Get all active clinic details", async () => {
+  test("Getting clinic by clinicID error handling", async () => {
+    const consoleMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    // @ts-expect-error checking error handling
+    ddbMock.on(GetCommand).resolves(undefined);
+
+    // Act
+    await expect(Clinic.getClinicById("clinic-id-01")).rejects.toThrow(
+      "Cannot read properties of undefined (reading 'Item')",
+    );
+
+    // Assert
+    expect(consoleMock).toHaveBeenCalledOnce();
+    expect(consoleMock).toHaveBeenLastCalledWith(
+      TypeError("Cannot read properties of undefined (reading 'Item')"),
+      "Error retrieving clinic details",
+    );
+  });
+
+  test("Getting clinic by clinicID no rusults", async () => {
+    const consoleMock = vi.spyOn(logger, "info").mockImplementation(() => null);
+    ddbMock.on(GetCommand).resolves({
+      Item: {},
+    });
+    // Act
+    const clinic = await Clinic.getClinicById("clinic-id-01");
+
+    // Assert
+    expect(consoleMock).toHaveBeenCalled();
+    expect(consoleMock).toHaveBeenLastCalledWith("No clinic details found");
+    expect(clinic).toBeUndefined();
+  });
+
+  test("Get all active clinics details", async () => {
     // Arrange
     vi.useFakeTimers();
     vi.setSystemTime("2025-03-04");
@@ -150,6 +199,45 @@ describe("Tests for Clinic Model", () => {
     ]);
   });
 
+  test("Get all active clinics no results", async () => {
+    // Arrange
+    const consoleMock = vi.spyOn(logger, "info").mockImplementation(() => null);
+    vi.useFakeTimers();
+    vi.setSystemTime("2025-03-04");
+
+    ddbMock.on(ScanCommand).resolves({
+      Items: [],
+    });
+
+    // Act
+    const searchResult = await Clinic.getActiveClinics();
+
+    // Assert
+    expect(searchResult).toHaveLength(0);
+    expect(consoleMock).toHaveBeenCalled();
+    expect(consoleMock).toHaveBeenLastCalledWith("No active clinics found");
+  });
+
+  test("Get all active clinics error handling", async () => {
+    // Arrange
+    const consoleMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    vi.useFakeTimers();
+    vi.setSystemTime("2025-03-04");
+
+    // @ts-expect-error error handling
+    ddbMock.on(ScanCommand).resolves(undefined);
+
+    // Assert
+    await expect(Clinic.getActiveClinics()).rejects.toThrow(
+      "Cannot read properties of undefined (reading 'Items')",
+    );
+    expect(consoleMock).toHaveBeenCalled();
+    expect(consoleMock).toHaveBeenLastCalledWith(
+      TypeError("Cannot read properties of undefined (reading 'Items')"),
+      "Error retrieving active clinics",
+    );
+  });
+
   test("Check active clinic with endDate null", async () => {
     ddbMock.on(QueryCommand).resolves({
       Items: [
@@ -170,6 +258,52 @@ describe("Tests for Clinic Model", () => {
     expect(active).toBeTruthy();
   });
 
+  test("Check active clinic multiple results", async () => {
+    const consoleMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    ddbMock.on(QueryCommand).resolves({
+      Items: [
+        {
+          ...clinicsDetails[0],
+          startDate: new Date(clinicsDetails[0].startDate),
+          endDate: null,
+          pk: "CLINICN#test-id-01",
+          sk: "CLINIC#DROOT",
+        },
+        {
+          ...clinicsDetails[0],
+          startDate: new Date(clinicsDetails[0].startDate),
+          endDate: null,
+          pk: "CLINICN#test-id-01",
+          sk: "CLINIC#DROOT",
+        },
+      ],
+    });
+
+    // Act
+    const active = await Clinic.isActiveClinic("clinic-id-01");
+
+    // Assert
+    expect(active).toBeFalsy();
+    expect(consoleMock).toHaveBeenCalledOnce();
+    expect(consoleMock).toHaveBeenLastCalledWith(
+      "Retrieved more than 1 clinic with the same clinicId",
+    );
+  });
+
+  test("Check active clinic error handling", async () => {
+    const consoleMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    const clinicId = "clinic-id-01";
+    ddbMock.on(QueryCommand).rejects();
+
+    // Assert
+    await expect(Clinic.isActiveClinic(clinicId)).rejects.toThrow();
+    expect(consoleMock).toHaveBeenCalled();
+    expect(consoleMock).toHaveBeenLastCalledWith(
+      Error(),
+      `Error retrieving the active clinic with 'clinicId': ${clinicId}`,
+    );
+  });
+
   test("Check active clinic with endDate in future", async () => {
     ddbMock.on(QueryCommand).resolves({
       Items: [
@@ -188,5 +322,29 @@ describe("Tests for Clinic Model", () => {
 
     // Assert
     expect(active).toBeTruthy();
+  });
+
+  test("Convert to json", async () => {
+    const consoleMock = vi.spyOn(logger, "info").mockImplementation(() => null);
+    const data = {
+      ...clinicNoStartDate,
+      startDate: new Date(),
+    } as NewClinic;
+
+    // Act
+    const clinic = await Clinic.createNewClinic(data);
+    const result = clinic.toJson();
+
+    // Assert
+    expect(consoleMock).toHaveBeenCalled();
+    expect(consoleMock).toHaveBeenLastCalledWith(`Clinic details saved successfully`);
+    expect(result).toBeInstanceOf(Object);
+    expect(result?.clinicId).toBeTruthy();
+    expect(result?.name.length).toBeGreaterThan(3);
+    expect(result?.city).toBeTruthy();
+    expect(result?.country).toBeTypeOf("string");
+    expect(result?.startDate).toBeTruthy();
+    expect(result).toHaveProperty("endDate");
+    expect(result?.createdBy).toBeTruthy();
   });
 });
