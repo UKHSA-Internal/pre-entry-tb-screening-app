@@ -77,7 +77,6 @@ export default function FreeText({
           className={inputClass}
           id={props.id}
           aria-labelledby={props.id}
-          aria-describedby={props.hint ?? `${props.id}-hint`}
           type="text"
           data-testid={props.id}
           {...register(props.formValue, {
