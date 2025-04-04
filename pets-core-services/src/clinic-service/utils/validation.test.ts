@@ -37,22 +37,29 @@ describe("Load and validate Clinics from json file", () => {
   });
 
   test("validate objects in empty string", () => {
+    const consoleMock = vi.spyOn(logger, "info").mockImplementation(() => null);
     const fakeFile = "";
 
     const res = validateClinicsDataString(fakeFile);
 
-    expect(res).toMatchObject([
-      {
-        city: "Lagos",
-        clinicId: "1",
-        country: "NGA",
-        createdBy: "shane.park@iom.com",
-        endDate: "2025-02-08",
-        name: "Q-Life Family clinic",
-        startDate: "2025-02-07",
-      },
-    ]);
-    expect(res).toHaveLength(1);
+    expect(res).toHaveLength(0);
+    expect(consoleMock).toHaveBeenCalled();
+    expect(consoleMock).toHaveBeenLastCalledWith("The json file didn't contain correct objects");
+  });
+
+  test("validate objects invalid json string error handling", () => {
+    const consoleMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    const fakeFileData = "it's not json";
+
+    // expect(validateClinicsDataString(fakeFileData)).toThrow("IDK");
+    const result = validateClinicsDataString(fakeFileData);
+
+    expect(result).toBeInstanceOf(Array);
+    expect(result).toHaveLength(0);
+    expect(consoleMock).toHaveBeenCalled();
+    expect(consoleMock).toHaveBeenLastCalledWith(
+      SyntaxError("Unexpected token i in JSON at position 0"),
+    );
   });
 
   test("create Clinic from object", () => {
