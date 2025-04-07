@@ -117,6 +117,9 @@ describe("PETS Application End-to-End Tests", () => {
     // Then confirm the details to proceed to the next step
     applicantSummaryPage.confirmDetails();
 
+    // Verify redirection to applicant confirmation page
+    cy.url().should("include", "/applicant-confirmation");
+
     //Verify applicant confirmation page
     applicantConfirmationPage.verifyPageLoaded();
     applicantConfirmationPage.verifyNextStepsText();
@@ -158,6 +161,9 @@ describe("PETS Application End-to-End Tests", () => {
 
     // Submit the summary form
     travelSummaryPage.submitForm();
+
+    // Verify redirection to Travel Confirmation confirmation
+    cy.url().should("include", "/travel-confirmation");
 
     // Travel Confirmation confirmation
     travelConfirmationPage.verifyPageLoaded();
@@ -208,6 +214,9 @@ describe("PETS Application End-to-End Tests", () => {
 
     // Confirm medical details
     medicalSummaryPage.confirmDetails();
+
+    // Verify redirection to chest X-ray page
+    cy.url().should("include", "/medical-confirmation");
 
     // Verify medical confirmation page and continue to chest X-ray
     medicalConfirmationPage.verifyPageLoaded();
@@ -293,6 +302,9 @@ describe("PETS Application End-to-End Tests", () => {
     // Save and continue to the next page
     chestXraySummaryPage.clickSaveAndContinue();
 
+    // Verify redirection to chest X-ray confirmation page
+    cy.url().should("include", "/chest-xray-confirmation");
+
     // Verify chest X-ray confirmation page
     chestXrayConfirmationPage.verifyPageLoaded();
     chestXrayConfirmationPage.verifyConfirmationPanel();
@@ -355,6 +367,9 @@ describe("PETS Application End-to-End Tests", () => {
 
     // Save and continue to the next page
     tbClearanceCertificateSummaryPage.clickSaveAndContinue();
+
+    // Verify redirection to TB Certificate Confirmation page
+    cy.url().should("include", "/tb-certificate-confirmation");
 
     // Verify TB Certificate Confirmation page
     tbCertificateConfirmationPage.verifyPageLoaded();

@@ -69,7 +69,6 @@ export default function Dropdown({
       <select
         id={props.id}
         aria-labelledby={props.id}
-        aria-describedby={props.hint ?? `${props.id}-hint`}
         className={selectClass}
         defaultValue={props.defaultValue ?? ""}
         {...register(props.formValue, {
