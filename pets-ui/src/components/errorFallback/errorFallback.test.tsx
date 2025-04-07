@@ -1,17 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
-import { describe, expect, it, Mock } from "vitest";
+import { describe, expect, it } from "vitest";
 
-import ErrorFallback from "./errorFallback";
+import { ErrorFallback } from "./errorFallback";
 
-const useNavigateMock: Mock = vi.fn();
-vi.mock(`react-router-dom`, async (): Promise<unknown> => {
-  const actual: Record<string, unknown> = await vi.importActual(`react-router-dom`);
-  return {
-    ...actual,
-    useNavigate: (): Mock => useNavigateMock,
-  };
-});
 vi.mock("react-helmet-async", () => ({
   Helmet: () => <>{}</>,
   HelmetProvider: () => <>{}</>,
