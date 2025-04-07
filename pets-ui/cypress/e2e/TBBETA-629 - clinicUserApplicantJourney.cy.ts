@@ -254,7 +254,6 @@ describe("PETS Application End-to-End Tests", () => {
     // Validate that the upload was successful
     chestXrayUploadPage.verifyUploadSuccess();
 
-    cy.contains("button", "Continue").should("be.enabled").click();
     // Continue to X-ray findings page
     chestXrayUploadPage.clickContinue();
 
