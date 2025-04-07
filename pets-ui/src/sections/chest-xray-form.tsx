@@ -10,6 +10,7 @@ import Button from "@/components/button/button";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FileUpload from "@/components/fileUpload/fileUpload";
 import Heading from "@/components/heading/heading";
+import Spinner from "@/components/spinner/spinner";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { selectApplication } from "@/redux/applicationSlice";
 import {
@@ -85,6 +86,8 @@ const ChestXrayForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const [PAFile, setPAFile] = useState<File>();
   const [ALFile, setALFile] = useState<File>();
   const [LDFile, setLDFile] = useState<File>();
@@ -122,7 +125,8 @@ const ChestXrayForm = () => {
   };
 
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = async () => {
-    // TBBETA-163: Loaders Loaders Loaders
+    setIsLoading(true);
+
     if (PAFile && PAFileName) {
       const bucketPath = await uploadFile(PAFile, "postero-anterior.dcm");
       dispatch(setPosteroAnteriorXrayFile(bucketPath));
@@ -167,61 +171,64 @@ const ChestXrayForm = () => {
   }, [location]);
 
   return (
-    <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
-          {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
-          <ApplicantDataHeader applicantData={applicantData} />
+    <div>
+      {isLoading && <Spinner />}
+      <FormProvider {...methods}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div>
+            {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
+            <ApplicantDataHeader applicantData={applicantData} />
 
-          <div ref={paXray}>
-            <Heading level={2} size="m" title="Postero-anterior X-ray" />
-            <FileUploadModule
-              id="postero-anterior-xray"
-              name="Postero-anterior"
-              setFileState={setPAFile}
-              setFileName={setPAFileName}
-              required={!chestXrayData.posteroAnteriorXrayFile}
-              errors={errors}
-              existingFileName={chestXrayData.posteroAnteriorXrayFileName}
+            <div ref={paXray}>
+              <Heading level={2} size="m" title="Postero-anterior X-ray" />
+              <FileUploadModule
+                id="postero-anterior-xray"
+                name="Postero-anterior"
+                setFileState={setPAFile}
+                setFileName={setPAFileName}
+                required={!chestXrayData.posteroAnteriorXrayFile}
+                errors={errors}
+                existingFileName={chestXrayData.posteroAnteriorXrayFileName}
+              />
+            </div>
+
+            <div ref={alXray}>
+              <Heading level={2} size="m" title="Apical lordotic X-ray (optional)" />
+              <FileUploadModule
+                id="apical-lordotic-xray"
+                name="Apical-lordotic"
+                setFileState={setALFile}
+                setFileName={setALFileName}
+                required={false}
+                errors={errors}
+                existingFileName={chestXrayData.apicalLordoticXrayFileName}
+              />
+            </div>
+
+            <div ref={ldXray}>
+              <Heading level={2} size="m" title="Lateral decubitus X-ray (optional)" />
+              <FileUploadModule
+                id="lateral-decubitus-xray"
+                name="Lateral-decubitus"
+                setFileState={setLDFile}
+                setFileName={setLDFileName}
+                required={false}
+                errors={errors}
+                existingFileName={chestXrayData.lateralDecubitusXrayFileName}
+              />
+            </div>
+
+            <Button
+              id="continue"
+              type={ButtonType.DEFAULT}
+              text="Continue"
+              href="/chest-xray-findings"
+              handleClick={() => {}}
             />
           </div>
-
-          <div ref={alXray}>
-            <Heading level={2} size="m" title="Apical lordotic X-ray (optional)" />
-            <FileUploadModule
-              id="apical-lordotic-xray"
-              name="Apical-lordotic"
-              setFileState={setALFile}
-              setFileName={setALFileName}
-              required={false}
-              errors={errors}
-              existingFileName={chestXrayData.apicalLordoticXrayFileName}
-            />
-          </div>
-
-          <div ref={ldXray}>
-            <Heading level={2} size="m" title="Lateral decubitus X-ray (optional)" />
-            <FileUploadModule
-              id="lateral-decubitus-xray"
-              name="Lateral-decubitus"
-              setFileState={setLDFile}
-              setFileName={setLDFileName}
-              required={false}
-              errors={errors}
-              existingFileName={chestXrayData.lateralDecubitusXrayFileName}
-            />
-          </div>
-
-          <Button
-            id="continue"
-            type={ButtonType.DEFAULT}
-            text="Continue"
-            href="/chest-xray-findings"
-            handleClick={() => {}}
-          />
-        </div>
-      </form>
-    </FormProvider>
+        </form>
+      </FormProvider>
+    </div>
   );
 };
 
