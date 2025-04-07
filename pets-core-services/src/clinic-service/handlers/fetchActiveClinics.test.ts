@@ -7,7 +7,7 @@ import { CountryCode } from "../../shared/country";
 import { logger } from "../../shared/logger";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { NewClinic } from "../models/clinics";
-import { fetchClinicsHandler } from "./fetchClinics";
+import { fetchActiveClinicsHandler } from "./fetchActiveClinics";
 
 const clinicsDetails: NewClinic[] = [
   {
@@ -48,31 +48,20 @@ describe("Fetching Clinic", () => {
         },
       ],
     });
-
-    const res = await fetchClinicsHandler({ ...mockAPIGwEvent });
+    const res = await fetchActiveClinicsHandler({ ...mockAPIGwEvent });
     expect(res.statusCode).toBe(200);
   });
 
-  test("error response 500", async () => {
+  test("error response", async () => {
     const loggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
     ddbMock.on(ScanCommand).rejects("DB Error");
 
-    const res = await fetchClinicsHandler({ ...mockAPIGwEvent });
+    const res = await fetchActiveClinicsHandler({ ...mockAPIGwEvent });
     expect(res.statusCode).toBe(500);
     expect(loggerMock).toHaveBeenCalled();
-    expect(loggerMock).toHaveBeenLastCalledWith(Error("DB Error"), "Fetching Clinics Failed");
-  });
-
-  test("error response with status code 404", async () => {
-    const loggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
-    ddbMock.on(ScanCommand).resolves({ Items: [] });
-
-    const res = await fetchClinicsHandler({ ...mockAPIGwEvent });
-    expect(res.statusCode).toBe(404);
-    expect(loggerMock).toHaveBeenCalled();
     expect(loggerMock).toHaveBeenLastCalledWith(
-      { resultCount: 0 },
-      "Clinics data fetched successfully",
+      Error("DB Error"),
+      "Fetching Active Clinics Failed",
     );
   });
 });

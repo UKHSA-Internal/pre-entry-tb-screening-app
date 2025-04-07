@@ -153,7 +153,7 @@ export class Clinic extends IClinic {
       const command = new ScanCommand(params);
       const data: ScanCommandOutput = await docClient.send(command);
 
-      if (!data?.Items) {
+      if (!data || !data?.Items) {
         logger.info("No clinics found");
         return [];
       }
@@ -194,7 +194,7 @@ export class Clinic extends IClinic {
 
       const data: ScanCommandOutput = await docClient.send(command);
 
-      if (data?.Items?.length == 0) {
+      if (!data || !data?.Items || data?.Items?.length == 0) {
         logger.info("No active clinics found");
 
         return [];
