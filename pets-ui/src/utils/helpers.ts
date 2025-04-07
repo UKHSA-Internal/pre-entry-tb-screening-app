@@ -141,8 +141,15 @@ const isDataPresent = (
   return Array.isArray(value) ? value.length > 0 : !!value;
 };
 
-export const spreadArrayIfNotEmpty = (...arrays: string[][]) => {
+const spreadArrayIfNotEmpty = (...arrays: string[][]) => {
   return arrays.flatMap((array) => (array?.length ? array : []));
+};
+
+const logError = (error: Error, info: { componentStack?: string | null | undefined }) => {
+  console.error(`Error: + ${error}`);
+  if (info) {
+    console.error(`Info: + ${JSON.stringify(info)}`);
+  }
 };
 
 export {
@@ -152,7 +159,9 @@ export {
   isDateInTheFuture,
   isDateInThePast,
   isValidDate,
+  logError,
   missingFieldsMessage,
+  spreadArrayIfNotEmpty,
   standardiseDayOrMonth,
   validateDate,
 };

@@ -8,8 +8,9 @@ import { BrowserRouter as Router } from "react-router-dom";
 
 import App from "./App.tsx";
 import { initializeMsal } from "./auth/auth.ts";
-import ErrorFallback from "./components/errorFallback/errorFallback.tsx";
+import { ErrorFallback } from "./components/errorFallback/errorFallback.tsx";
 import { setupStore } from "./redux/store.ts";
+import { logError } from "./utils/helpers.ts";
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 initializeMsal().then((msalInstance) => {
@@ -19,7 +20,7 @@ initializeMsal().then((msalInstance) => {
         <StrictMode>
           <Router>
             <MsalProvider instance={msalInstance}>
-              <ErrorBoundary FallbackComponent={ErrorFallback}>
+              <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
                 <App />
               </ErrorBoundary>
             </MsalProvider>
