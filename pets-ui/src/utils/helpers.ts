@@ -147,9 +147,7 @@ const spreadArrayIfNotEmpty = (...arrays: string[][]) => {
 
 const logError = (error: Error, info: { componentStack?: string | null | undefined }) => {
   console.error(`Error: + ${error}`);
-  if (info) {
-    console.error(`Info: + ${JSON.stringify(info)}`);
-  }
+  console.error(`Info: + ${JSON.stringify(info)}`);
 };
 
 export {
