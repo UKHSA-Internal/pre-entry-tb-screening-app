@@ -145,7 +145,7 @@ const spreadArrayIfNotEmpty = (...arrays: string[][]) => {
   return arrays.flatMap((array) => (array?.length ? array : []));
 };
 
-const logError = (error: Error, info: { componentStack?: string | null | undefined }) => {
+const logError = (error: Error, info: { componentStack?: string | null }) => {
   console.error(`Error: + ${error}`);
   console.error(`Info: + ${JSON.stringify(info)}`);
 };
