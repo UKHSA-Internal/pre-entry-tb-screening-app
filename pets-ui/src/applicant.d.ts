@@ -76,21 +76,21 @@ type ReceivedApplicantDetailsType = PostedApplicantDetailsType & ReceivedApplica
 type ReduxTravelDetailsType = {
   status: ApplicationStatus;
   visaType: string;
-  applicantUkAddress1: string;
+  applicantUkAddress1?: string;
   applicantUkAddress2?: string;
   applicantUkAddress3?: string;
-  townOrCity: string;
-  postcode: string;
+  townOrCity?: string;
+  postcode?: string;
   ukMobileNumber?: string;
   ukEmail: string;
 };
 
 type PostedTravelDetailsType = {
-  ukAddressLine1: string;
+  ukAddressLine1?: string;
   ukAddressLine2?: string;
   ukAddressLine3?: string;
-  ukAddressTownOrCity: string;
-  ukAddressPostcode: string;
+  ukAddressTownOrCity?: string;
+  ukAddressPostcode?: string;
   ukEmailAddress: string;
   ukMobileNumber?: string;
   visaCategory: string;
