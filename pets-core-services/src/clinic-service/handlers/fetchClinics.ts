@@ -11,7 +11,8 @@ export const fetchClinicsHandler = async (event: APIGatewayProxyEvent) => {
     logger.info("All Clinics details handler triggered");
     const clinics: Clinic[] = await Clinic.getAllClinics();
 
-    if (!clinics) return createHttpResponse(404, { message: "No clinics exist" });
+    if (!clinics || clinics?.length < 1)
+      return createHttpResponse(404, { message: "No clinics exist" });
 
     return createHttpResponse(
       200,

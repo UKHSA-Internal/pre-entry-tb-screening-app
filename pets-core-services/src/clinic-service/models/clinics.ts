@@ -71,7 +71,10 @@ export class Clinic extends IClinic {
 
       const updatedDetails: IClinic = {
         ...details,
-        startDate: new Date(),
+        startDate:
+          details.startDate && typeof details.startDate == "string"
+            ? new Date(details.startDate)
+            : new Date(),
         // TODO: if better validation is needed, then create function to properly check endDate value
         endDate: details.endDate ? new Date(details.endDate) : null,
       };
@@ -85,9 +88,9 @@ export class Clinic extends IClinic {
         ConditionExpression: "attribute_not_exists(pk) AND attribute_not_exists(sk)",
       };
       const command = new PutCommand(params);
-      const response = await docClient.send(command);
+      await docClient.send(command);
 
-      logger.info({ response }, "Clinic details saved successfully");
+      logger.info("Clinic details saved successfully");
 
       return clinic;
     } catch (error) {
@@ -116,7 +119,7 @@ export class Clinic extends IClinic {
       const command = new GetCommand(params);
       const data: GetCommandOutput = await docClient.send(command);
 
-      if (!data.Item) {
+      if (data?.Item && data.Item?.name === undefined) {
         logger.info("No clinic details found");
         return;
       }
@@ -150,7 +153,7 @@ export class Clinic extends IClinic {
       const command = new ScanCommand(params);
       const data: ScanCommandOutput = await docClient.send(command);
 
-      if (!data?.Items) {
+      if (!data || !data?.Items) {
         logger.info("No clinics found");
         return [];
       }
@@ -191,12 +194,13 @@ export class Clinic extends IClinic {
 
       const data: ScanCommandOutput = await docClient.send(command);
 
-      if (!data?.Items) {
-        logger.info("No clinics found");
+      if (!data || !data?.Items || data?.Items?.length == 0) {
+        logger.info("No active clinics found");
+
         return [];
       }
 
-      logger.info({ resultCount: data.Items.length }, "Clinics data fetched successfully");
+      logger.info({ resultCount: data?.Items?.length && 0 }, "Clinics data fetched successfully");
 
       const results = data.Items as ReturnType<Clinic["todbItem"]>[];
 
@@ -229,7 +233,7 @@ export class Clinic extends IClinic {
           ":pk": Clinic.getPk(clinicId),
           ":sk": Clinic.sk,
           ":dateType": "NULL",
-          ":today": new Date().toString(),
+          ":today": new Date().toISOString(),
         },
       };
       const command = new QueryCommand(params);
@@ -248,7 +252,7 @@ export class Clinic extends IClinic {
         }
       }
       // This is when there's no data.Items, or data.Items.length == 0
-      logger.error(`No active clinic found`);
+      logger.info(`No active clinic found`);
 
       return false;
     } catch (error) {
