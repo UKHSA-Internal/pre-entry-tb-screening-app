@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { postMedicalDetails } from "@/api/api";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
+import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { selectApplication } from "@/redux/applicationSlice";
@@ -19,7 +21,10 @@ const MedicalScreeningReview = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleSubmit = async () => {
+    setIsLoading(true);
     try {
       await postMedicalDetails(applicationData.applicationId, {
         age: parseInt(medicalData.age),
@@ -128,6 +133,7 @@ const MedicalScreeningReview = () => {
 
   return (
     <div>
+      {isLoading && <Spinner />}
       <ApplicantDataHeader applicantData={applicantData} />
 
       <Summary status={medicalData.status} summaryElements={summaryData} />
