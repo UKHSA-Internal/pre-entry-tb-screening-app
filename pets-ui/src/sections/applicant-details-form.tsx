@@ -16,6 +16,8 @@ import { validateDate } from "@/utils/helpers";
 import { countryList, formRegex } from "@/utils/records";
 
 const ApplicantForm = () => {
+  const applicantData = useAppSelector(selectApplicant);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const methods = useForm<ReduxApplicantDetailsType>({ reValidateMode: "onSubmit" });
@@ -24,9 +26,6 @@ const ApplicantForm = () => {
     handleSubmit,
     formState: { errors },
   } = methods;
-
-  const dispatch = useAppDispatch();
-  const applicantData = useAppSelector(selectApplicant);
 
   const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = (applicantData) => {
     dispatch(setApplicantDetails(applicantData));
@@ -85,12 +84,12 @@ const ApplicantForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
-        <h2 className="govuk-label govuk-label--m">Applicant&apos;s personal details</h2>
-
         <div ref={nameRef}>
           <FreeText
             id="name"
             label="Full name"
+            heading="Applicant's personal details"
+            headingStyle={{ marginBottom: 20 }}
             errorMessage={errors?.fullName?.message ?? ""}
             formValue="fullName"
             required="Enter the applicant's full name"

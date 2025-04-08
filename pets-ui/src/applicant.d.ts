@@ -201,24 +201,33 @@ type ReduxSputumCollectionDetailsType = {
   drugResistanceDetails: string | null;
 };
 
-// TB Declaration certificate type
+// TB Declaration certificate types
 type ReduxTbCertificateType = {
   status: ApplicationStatus;
-  tbClearanceIssued: string;
-  physicianComments: string;
-  tbCertificateDate: DateType;
-  tbCertificateNumber: string;
+  isIssued: YesOrNo;
+  comments: string;
+  certificateDate: DateType;
+  certificateNumber: string;
 };
 
 type PostedTbCertificateType = {
-  certificateIssued: string;
-  certificateComments: string;
-  certificateIssueDate: string;
+  isIssued: YesOrNo;
+  comments: string;
+  issueDate: string;
   certificateNumber: string;
 };
 
 type ReceivedTbCertificateType = PostedTbCertificateType & ReceivedApplicationAttributesType;
 
+type PostedTbCertificateNotIssuedType = {
+  isIssued: YesOrNo;
+  comments: string;
+};
+
+type ReceivedTbCertificateNotIssuedType = PostedTbCertificateNotIssuedType &
+  ReceivedApplicationAttributesType;
+
+// Dicom upload types
 type GenerateDicomUploadUrlRequest = {
   fileName: string;
   checksum?: string;

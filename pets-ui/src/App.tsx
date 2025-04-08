@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 
-import { AuthenticatedRoute, UnauthenticatedRoute } from "./components/auth/routes";
+import { AuthenticatedRoute, UnauthenticatedRoute } from "./auth/authRoutes";
 import ApiDocs from "./pages/api-docs";
 import ApplicantConfirmation from "./pages/applicant-confirmation";
 import ApplicantResultsPage from "./pages/applicant-results";

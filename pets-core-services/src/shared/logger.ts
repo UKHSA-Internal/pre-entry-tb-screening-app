@@ -2,11 +2,11 @@ import pino, { multistream } from "pino";
 import { lambdaRequestTracker, pinoLambdaDestination } from "pino-lambda";
 import PinoPretty from "pino-pretty";
 
-import { isLocal } from "./config";
+import { isLocal, isTest } from "./config";
 
 let streams = [{ stream: pinoLambdaDestination() }];
 
-if (isLocal()) {
+if (isLocal() || isTest()) {
   const logPrettifier = { stream: PinoPretty({ colorize: true, sync: true }) };
   streams = [logPrettifier, ...streams];
 }

@@ -6,9 +6,9 @@ import { YesOrNo } from "../types/enums";
 import { SaveTbCertificateEvent, saveTbCertificateHandler } from "./save-tb-certificate";
 
 const newTbCertificate: SaveTbCertificateEvent["parsedBody"] = {
-  certificateIssued: YesOrNo.Yes,
-  certificateComments: "comments",
-  certificateIssueDate: "2025-01-21",
+  isIssued: YesOrNo.Yes,
+  comments: "comments",
+  issueDate: "2025-01-21",
   certificateNumber: "123456",
 };
 

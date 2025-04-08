@@ -14,6 +14,18 @@ export default function ErrorSummary(props: Readonly<ErrorSummaryProps>) {
     }
   };
 
+  const handleFocus = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+
+    const target = document.getElementById(id);
+    if (target) {
+      const inputElement = target.querySelector("input, select, textarea, button") as HTMLElement;
+
+      inputElement.focus();
+      inputElement.setAttribute("tabIndex", "-1");
+    }
+  };
+
   return (
     <div
       className="govuk-error-summary"
@@ -27,16 +39,20 @@ export default function ErrorSummary(props: Readonly<ErrorSummaryProps>) {
         <h2 className="govuk-error-summary__title">There is a problem</h2>
         <div className="govuk-error-summary__body">
           <ul className="govuk-list govuk-error-summary__list">
-            {props.errorsToShow.map((error) => (
-              <li key={attributeToComponentId[error]}>
-                <a
-                  href={"#" + attributeToComponentId[error]}
-                  aria-label={`Error: ${props.errors[error]?.message as string}`}
-                >
-                  {props.errors[error]?.message as string}
-                </a>
-              </li>
-            ))}
+            {props.errorsToShow.map((error) => {
+              const fieldId = attributeToComponentId[error];
+              return (
+                <li key={fieldId}>
+                  <a
+                    href={"#" + fieldId}
+                    aria-label={`Error: ${props.errors[error]?.message as string}`}
+                    onClick={(e) => handleFocus(e, fieldId)}
+                  >
+                    {props.errors[error]?.message as string}
+                  </a>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>

@@ -4,7 +4,7 @@ export function loginViaB2C() {}
 Cypress.Commands.add("loginViaB2C", () => {
   cy.log("Starting B2C authentication");
 
-  cy.visit("https://pets-test.ukhsa.gov.uk");
+  cy.visit("/");
 
   cy.get("button#sign-in").click({ force: true });
 

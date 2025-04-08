@@ -2,18 +2,18 @@ import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { DateType, ReceivedTbCertificateType, ReduxTbCertificateType } from "@/applicant";
-import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
+import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "@/utils/enums";
 
 const initialState: ReduxTbCertificateType = {
   status: ApplicationStatus.INCOMPLETE,
-  tbClearanceIssued: "",
-  physicianComments: "",
-  tbCertificateDate: {
+  isIssued: YesOrNo.NULL,
+  comments: "",
+  certificateDate: {
     year: "",
     month: "",
     day: "",
   },
-  tbCertificateNumber: "",
+  certificateNumber: "",
 };
 
 export const tbCertificateSlice = createSlice({
@@ -23,48 +23,48 @@ export const tbCertificateSlice = createSlice({
     setTbCertificateStatus: (state, action: PayloadAction<ApplicationStatus>) => {
       state.status = action.payload;
     },
-    setTbClearanceIssued: (state, action: PayloadAction<string>) => {
-      state.tbClearanceIssued = action.payload;
+    setIsIssued: (state, action: PayloadAction<YesOrNo>) => {
+      state.isIssued = action.payload;
     },
-    setPhysicianComments: (state, action: PayloadAction<string>) => {
-      state.physicianComments = action.payload;
+    setComments: (state, action: PayloadAction<string>) => {
+      state.comments = action.payload;
     },
-    setTbCertificateDate: (state, action: PayloadAction<DateType>) => {
-      state.tbCertificateDate = action.payload;
+    setCertficateDate: (state, action: PayloadAction<DateType>) => {
+      state.certificateDate = action.payload;
     },
-    setTbCertificateNumber: (state, action: PayloadAction<string>) => {
-      state.tbCertificateNumber = action.payload;
+    setCertificateNumber: (state, action: PayloadAction<string>) => {
+      state.certificateNumber = action.payload;
     },
     clearTbCertificateDetails: (state) => {
       state.status = ApplicationStatus.INCOMPLETE;
-      state.tbClearanceIssued = "";
-      state.physicianComments = "";
-      state.tbCertificateDate = { year: "", month: "", day: "" };
-      state.tbCertificateNumber = "";
+      state.isIssued = YesOrNo.NULL;
+      state.comments = "";
+      state.certificateDate = { year: "", month: "", day: "" };
+      state.certificateNumber = "";
     },
     setTbCertificateFromApiResponse: (state, action: PayloadAction<ReceivedTbCertificateType>) => {
       state.status =
         action.payload.status == BackendApplicationStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
           : ApplicationStatus.INCOMPLETE;
-      state.tbClearanceIssued = action.payload.certificateIssued;
-      state.physicianComments = action.payload.certificateComments;
-      state.tbCertificateDate = {
-        year: action.payload.certificateIssueDate.split("-")[0],
-        month: action.payload.certificateIssueDate.split("-")[1],
-        day: action.payload.certificateIssueDate.split("-")[2],
+      state.isIssued = action.payload.isIssued;
+      state.comments = action.payload.comments;
+      state.certificateDate = {
+        year: action.payload.issueDate.split("-")[0],
+        month: action.payload.issueDate.split("-")[1],
+        day: action.payload.issueDate.split("-")[2],
       };
-      state.tbCertificateNumber = action.payload.certificateNumber;
+      state.certificateNumber = action.payload.certificateNumber;
     },
   },
 });
 
 export const {
   setTbCertificateStatus,
-  setTbClearanceIssued,
-  setPhysicianComments,
-  setTbCertificateDate,
-  setTbCertificateNumber,
+  setIsIssued,
+  setComments,
+  setCertficateDate,
+  setCertificateNumber,
   clearTbCertificateDetails,
   setTbCertificateFromApiResponse,
 } = tbCertificateSlice.actions;
