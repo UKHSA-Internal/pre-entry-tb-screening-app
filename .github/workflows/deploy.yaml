@@ -375,8 +375,8 @@ jobs:
     environment: ${{ inputs.environment }}
     timeout-minutes: 5
 
-    # env:
-    #    CLINICSDATA: "clinicsData.dynamoDB.json"
+    env:
+      CLINICSDATA: "clinicsData.dynamoDB.${{ inputs.environment }}.json"
 
     steps:
       - name: Configure AWS credentials
@@ -391,22 +391,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # - name: Executing batch-write-item
-      #   working-directory: pets-core-services/src/clinic-service
-      #   run: aws dynamodb batch-write-item --request-items file://$CLINICSDATA
-
       - name: Check environment
         run: echo ${{ inputs.environment }}
 
-      - name: Put DynamoDB Item
-        uses: mooyoul/dynamodb-actions@v1.2.1
-        env:
-          AWS_DEFAULT_REGION: "eu-west-2"
-          AWS_REGION: "eu-west-2"
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        with:
-          operation: "batch-put"
-          region: "eu-west-2"
-          table: ${{ vars.CLINIC_SERVICE_DATABASE_NAME }}
-          files: "pets-core-services/src/clinic-service/clinicsData.json"
+      - name: Executing batch-write-item
+        working-directory: pets-core-services/src/clinic-service
+        run: aws dynamodb batch-write-item --request-items file://$CLINICSDATA

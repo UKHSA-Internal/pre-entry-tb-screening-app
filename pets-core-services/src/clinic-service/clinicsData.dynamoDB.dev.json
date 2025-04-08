@@ -1,0 +1,220 @@
+{
+    "pets-clinics": [
+        {
+            "PutRequest": {
+                "Item": {
+                    "clinicId": {
+                        "S": "1"
+                    },
+                    "name": {
+                        "S": "Q-Life Family clinic"
+                    },
+                    "city": {
+                        "S": "Lagos"
+                    },
+                    "country": {
+                        "S": "NGA"
+                    },
+                    "startDate": {
+                        "S": "2025-02-07"
+                    },
+                    "endDate": {
+                        "S": "2025-02-08"
+                    },
+                    "createdBy": {
+                        "S": "shane.park@iom.com"
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "clinicId": {
+                        "S": "2"
+                    },
+                    "name": {
+                        "S": "Q-Life Family clinic"
+                    },
+                    "city": {
+                        "S": "Lagos"
+                    },
+                    "country": {
+                        "S": "NGA"
+                    },
+                    "startDate": {
+                        "S": "2025-02-07"
+                    },
+                    "endDate": {
+                        "NULL": true
+                    },
+                    "createdBy": {
+                        "S": "shawn.jones@clinic.com"
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "clinicId": {
+                        "S": "3"
+                    },
+                    "name": {
+                        "S": "Q-Life Family clinic"
+                    },
+                    "city": {
+                        "S": "Lagos"
+                    },
+                    "country": {
+                        "S": "NGA"
+                    },
+                    "startDate": {
+                        "S": "2025-02-07"
+                    },
+                    "endDate": {
+                        "S": ""
+                    },
+                    "createdBy": {
+                        "S": "john.doe@email.com"
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "clinicId": {
+                        "S": "4"
+                    },
+                    "name": {
+                        "S": "Q-Life Family clinic"
+                    },
+                    "city": {
+                        "S": "Lagos"
+                    },
+                    "country": {
+                        "S": "NGA"
+                    },
+                    "startDate": {
+                        "S": "2025-02-08"
+                    },
+                    "endDate": {
+                        "S": "225-01-10"
+                    },
+                    "createdBy": {
+                        "S": "sin.cos@encrypted.ai"
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "clinicId": {
+                        "S": "5"
+                    },
+                    "name": {
+                        "S": "5tar Clinic"
+                    },
+                    "city": {
+                        "S": "Seoul"
+                    },
+                    "country": {
+                        "S": "KOR"
+                    },
+                    "startDate": {
+                        "S": "2024-04-14"
+                    },
+                    "endDate": {
+                        "S": "3"
+                    },
+                    "createdBy": {
+                        "S": "john.doe@email.com"
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "clinicId": {
+                        "S": "6"
+                    },
+                    "name": {
+                        "S": "Ur Clinic"
+                    },
+                    "city": {
+                        "S": "Heaven"
+                    },
+                    "country": {
+                        "S": "XYZ"
+                    },
+                    "startDate": {
+                        "S": "2024-04-24"
+                    },
+                    "endDate": {
+                        "NULL": true
+                    },
+                    "createdBy": {
+                        "S": "john.doe@email.com"
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "clinicId": {
+                        "S": "7"
+                    },
+                    "name": {
+                        "S": "New Clinic"
+                    },
+                    "city": {
+                        "S": "Daegu"
+                    },
+                    "country": {
+                        "S": "KOR"
+                    },
+                    "startDate": {
+                        "S": "2024-04-17"
+                    },
+                    "endDate": {
+                        "NULL": true
+                    },
+                    "createdBy": {
+                        "S": "joe.doe@email.com"
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "clinicId": {
+                        "S": "8"
+                    },
+                    "name": {
+                        "S": "Bad date"
+                    },
+                    "city": {
+                        "S": "really"
+                    },
+                    "country": {
+                        "S": "KOR"
+                    },
+                    "startDate": {
+                        "S": "2024-04-44"
+                    },
+                    "endDate": {
+                        "NULL": true
+                    },
+                    "createdBy": {
+                        "S": "johnny.doe@email.com"
+                    }
+                }
+            }
+        }
+    ]
+}
