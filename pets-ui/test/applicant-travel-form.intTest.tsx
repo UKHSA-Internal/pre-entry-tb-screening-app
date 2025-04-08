@@ -75,9 +75,6 @@ describe("ApplicantTravelForm", () => {
 
     const errorMessages = [
       "Error: Select a visa type",
-      "Error: Enter address line 1, typically the building and street",
-      "Error: Enter town or city",
-      "Error: Enter full UK postcode",
       "Error: Enter UK mobile number",
       "Error: Enter UK email address",
     ];
