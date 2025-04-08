@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { postTravelDetails } from "@/api/api";
 import Button from "@/components/button/button";
+import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { selectApplication } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
@@ -16,7 +18,10 @@ const TravelReview = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleSubmit = async () => {
+    setIsLoading(true);
     try {
       await postTravelDetails(applicationData.applicationId, {
         visaCategory: travelData.visaType,
@@ -83,6 +88,7 @@ const TravelReview = () => {
 
   return (
     <div>
+      {isLoading && <Spinner />}
       <Summary status={travelData.status} summaryElements={summaryData} />
 
       {travelData.status == ApplicationStatus.INCOMPLETE && (

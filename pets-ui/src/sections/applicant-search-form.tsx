@@ -1,5 +1,3 @@
-import "@/components/spinner/spinner.scss";
-
 import { useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
