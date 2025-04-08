@@ -374,6 +374,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     timeout-minutes: 5
+    needs: load-deployment-config
 
     env:
       CLINICSDATA: "clinicsData.dynamoDB.${{ inputs.environment }}.json"
