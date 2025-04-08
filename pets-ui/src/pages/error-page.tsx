@@ -13,7 +13,9 @@ export default function ErrorPage() {
       />
       <p className="govuk-body">Try again now or later.</p>
       <p className="govuk-body">
-        Contact uktbscreeningsupport@ukhsa.gov.uk if the problem continues.
+        Contact{" "}
+        <a href="mailto:uktbscreeningsupport@ukhsa.gov.uk">uktbscreeningsupport@ukhsa.gov.uk</a> if
+        the problem continues.
       </p>
     </Container>
   );
