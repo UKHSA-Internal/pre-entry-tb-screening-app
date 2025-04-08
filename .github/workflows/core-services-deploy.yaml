@@ -151,3 +151,45 @@ jobs:
 
       - name: Update API Gateway Stage
         run: aws apigateway create-deployment --rest-api-id ${{ vars.API_GATEWAY_ID }} --stage-name ${{ env.API_GATEWAY_STAGE }}
+
+  populate-dynamodb-with-clinics-data:
+    name: Read data from JSON file and save Clinics to DynamoDB
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    timeout-minutes: 5
+
+    # env:
+    #    CLINICSDATA: "clinicsData.dynamoDB.json"
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: "eu-west-2"
+          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_DEPLOY_ROLE_NAME }}"
+
+      - name: Load environment config
+        run: cat configs/.env.${{ inputs.environment }} >> $GITHUB_ENV
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # - name: Executing batch-write-item
+      #   working-directory: pets-core-services/src/clinic-service
+      #   run: aws dynamodb batch-write-item --request-items file://$CLINICSDATA
+
+      - name: Check environment
+        run: echo ${{ inputs.environment }}
+
+      - name: Put DynamoDB Item
+        uses: mooyoul/dynamodb-actions@v1.2.1
+        env:
+          AWS_DEFAULT_REGION: "eu-west-2"
+          AWS_REGION: "eu-west-2"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        with:
+          operation: "batch-put"
+          region: "eu-west-2"
+          table: ${{ vars.CLINIC_SERVICE_DATABASE_NAME }}
+          files: "pets-core-services/src/clinic-service/clinicsData.json"
