@@ -15,18 +15,18 @@ import { logError } from "./utils/helpers.ts";
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 initializeMsal().then((msalInstance) => {
   createRoot(document.getElementById("root")!).render(
-    <Provider store={setupStore()}>
-      <HelmetProvider>
-        <StrictMode>
-          <Router>
-            <MsalProvider instance={msalInstance}>
-              <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
+    <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
+      <Provider store={setupStore()}>
+        <HelmetProvider>
+          <StrictMode>
+            <Router>
+              <MsalProvider instance={msalInstance}>
                 <App />
-              </ErrorBoundary>
-            </MsalProvider>
-          </Router>
-        </StrictMode>
-      </HelmetProvider>
-    </Provider>,
+              </MsalProvider>
+            </Router>
+          </StrictMode>
+        </HelmetProvider>
+      </Provider>
+    </ErrorBoundary>,
   );
 });
