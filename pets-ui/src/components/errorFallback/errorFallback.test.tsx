@@ -23,8 +23,11 @@ describe("Error Summary Component", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.getByText("Try again now or later.")).toBeInTheDocument();
-    expect(
-      screen.getByText("Contact uktbscreeningsupport@ukhsa.gov.uk if the problem continues."),
-    ).toBeInTheDocument();
+
+    const contactParagraph = screen.getAllByRole("paragraph")[1];
+    expect(contactParagraph).toHaveTextContent(
+      "Contact uktbscreeningsupport@ukhsa.gov.uk if the problem continues.",
+    );
+    expect(screen.getAllByRole("link")[3]).toHaveTextContent("uktbscreeningsupport@ukhsa.gov.uk");
   });
 });
