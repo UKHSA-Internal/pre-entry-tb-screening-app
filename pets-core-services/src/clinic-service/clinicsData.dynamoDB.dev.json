@@ -23,6 +23,12 @@
                     },
                     "createdBy": {
                         "S": "shane.park@iom.com"
+                    },
+                    "pk": {
+                        "S": "CLINIC#1"
+                    },
+                    "sk": {
+                        "S": "CLINIC#ROOT"
                     }
                 }
             }
@@ -50,6 +56,12 @@
                     },
                     "createdBy": {
                         "S": "shawn.jones@clinic.com"
+                    },
+                    "pk": {
+                        "S": "CLINIC#2"
+                    },
+                    "sk": {
+                        "S": "CLINIC#ROOT"
                     }
                 }
             }
@@ -77,6 +89,12 @@
                     },
                     "createdBy": {
                         "S": "joe.doe@email.com"
+                    },
+                    "pk": {
+                        "S": "CLINIC#7"
+                    },
+                    "sk": {
+                        "S": "CLINIC#ROOT"
                     }
                 }
             }
