@@ -103,7 +103,6 @@ const ProgressTracker = () => {
         id="search-again"
         type={ButtonType.DEFAULT}
         text="Search again"
-        href="/applicant-search"
         handleClick={() => {
           navigate("/applicant-search");
         }}

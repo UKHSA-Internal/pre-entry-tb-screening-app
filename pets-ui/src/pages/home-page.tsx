@@ -56,7 +56,7 @@ export default function HomePage() {
         If you&apos;re a clinician you can also sign in to resume a medical screening case.
       </p>
       <p className="govuk-body">Use the username and password you were assigned to sign in.</p>
-      <StartButton id="sign-in" text="Sign in" href="" handleClick={initializeSignIn} />
+      <StartButton id="sign-in" text="Sign in" handleClick={initializeSignIn} />
     </Container>
   );
 }
