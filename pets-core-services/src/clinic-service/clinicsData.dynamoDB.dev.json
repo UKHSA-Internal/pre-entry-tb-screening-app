@@ -1,5 +1,5 @@
 {
-    "pets-clinics": [
+    "clinics-details": [
         {
             "PutRequest": {
                 "Item": {
