@@ -22,7 +22,7 @@ const EXPIRY_TIME = 5 * 60; // 5 minutes
 
 export const generateDicomUploadUrlHandler = async (event: GenerateUploadEvent) => {
   try {
-    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
+    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
 
     const { parsedBody } = event;
 

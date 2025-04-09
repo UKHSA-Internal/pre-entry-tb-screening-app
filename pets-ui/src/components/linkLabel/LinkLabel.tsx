@@ -39,7 +39,7 @@ const LinkLabel = ({
       onClick={props.onClick}
     >
       {props.title}
-      {props.hiddenLabel && <span className="govuk-visually-hidden"> {props.hiddenLabel}</span>}
+      {props.hiddenLabel && <span className="govuk-visually-hidden">{props.hiddenLabel}</span>}
     </Link>
   );
 };
