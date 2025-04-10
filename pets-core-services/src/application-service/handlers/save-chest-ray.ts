@@ -36,30 +36,17 @@ export const saveChestXRayHandler = async (event: SaveChestXrayEvent) => {
       });
     }
 
-    const { clinicId } = event.requestContext.authorizer;
+    const { clinicId, createdBy } = event.requestContext.authorizer;
+
     if (parsedBody.chestXrayTaken === YesOrNo.Yes) {
-      try {
-        await validateChestXRayImages(parsedBody, { applicationId, clinicId });
-      } catch (error) {
-        if (error instanceof ApplicantNotFound) {
-          logger.error(error, "Applicant not found");
-          return createHttpResponse(400, { message: "Invalid Application - No Applicant" });
-        }
-        if (error instanceof InvalidObjectKey) {
-          logger.error(error, "Object key does not match expected");
-          return createHttpResponse(400, { message: "Malformed Payload", error: error.message });
-        }
-        if (error instanceof ObjectNotFound) {
-          logger.error(error, "Object not found in S3");
-          return createHttpResponse(400, { message: "Missing Images", error: error.message });
-        }
-        throw error;
+      const validationError = await validateImages(parsedBody, applicationId, clinicId);
+      if (validationError) {
+        return createHttpResponse(400, { message: validationError });
       }
     }
 
     let chestXray: ChestXRayTaken | ChestXRayNotTaken;
     try {
-      const { createdBy } = event.requestContext.authorizer;
       chestXray = await ChestXRayDbOps.createChestXray({
         ...parsedBody,
         createdBy,
@@ -79,6 +66,27 @@ export const saveChestXRayHandler = async (event: SaveChestXrayEvent) => {
     return createHttpResponse(500, { message: "Something went wrong" });
   }
 };
+
+async function validateImages(images: ChestXRayImages, applicationId: string, clinicId: string) {
+  try {
+    await validateChestXRayImages(images, { applicationId, clinicId });
+    return null;
+  } catch (error) {
+    if (error instanceof ApplicantNotFound) {
+      logger.error(error, "Applicant not found");
+      return "Invalid Application - No Applicant";
+    }
+    if (error instanceof InvalidObjectKey) {
+      logger.error(error, "Object key does not match expected");
+      return "Malformed Payload";
+    }
+    if (error instanceof ObjectNotFound) {
+      logger.error(error, "Object not found in S3");
+      return "Missing Images";
+    }
+    throw error;
+  }
+}
 
 type ChestXRayImages = {
   posteroAnteriorXray: string;

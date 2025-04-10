@@ -12,9 +12,8 @@ export default function NotificationBanner({
   list,
 }: Readonly<NotificationBannerProps>) {
   return (
-    <div
+    <section
       className="govuk-notification-banner"
-      role="region"
       aria-labelledby="govuk-notification-banner-title"
       data-module="govuk-notification-banner"
     >
@@ -35,6 +34,6 @@ export default function NotificationBanner({
           </>
         )}
       </div>
-    </div>
+    </section>
   );
 }

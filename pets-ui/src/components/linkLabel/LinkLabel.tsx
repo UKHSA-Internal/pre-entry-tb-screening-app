@@ -9,16 +9,15 @@ type LabelProps = {
   className?: string;
   id?: string;
   hiddenLabel?: string;
-  externalLink?: boolean;
+  externalLink: boolean;
 };
 
 // excludes internal page navigations (e.g. error summary, skip to main content)
 const LinkLabel = ({
   className = "govuk-link govuk-link--no-visited-state",
-  externalLink = false,
   ...props
 }: LabelProps) => {
-  return externalLink ? (
+  return props.externalLink ? (
     <a
       className={className}
       id={props.id}
