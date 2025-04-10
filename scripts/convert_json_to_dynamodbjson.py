@@ -13,9 +13,7 @@ serializer = TypeSerializer()
 
 DEFAULT_ENV = os.getenv("ENVIRONMENT", "qat")
 WORKDIR = os.getenv("WORKDIR", "pets-core-services/src/clinic-service")
-CLINIC_SERVICE_DATABASE_NAME = os.getenv(
-    "CLINIC_SERVICE_DATABASE_NAME", "clinics-details"
-)
+DATABASE_NAME = os.getenv("CLINIC_SERVICE_DATABASE_NAME")
 DBCLINICSDATA = os.getenv(
     "CLINICSDATA",
     os.path.join(dir_path, WORKDIR, f"clinicsData.dynamoDB.{DEFAULT_ENV}.json")
@@ -133,14 +131,12 @@ def serialize(objects):
         }
         new_list.append(put_request_obj)
 
-    return {CLINIC_SERVICE_DATABASE_NAME: [*new_list]}
+    return {DATABASE_NAME or "clinics-details": [*new_list]}
 
 
 if __name__ == "__main__":
     logging.info(f"DEFAULT_ENV is set to: {DEFAULT_ENV}")
-    logging.info(
-        f"CLINIC_SERVICE_DATABASE_NAME is set to: {CLINIC_SERVICE_DATABASE_NAME}"
-    )
+    logging.info(f"DATABASE_NAME is set to: {DATABASE_NAME}")
     logging.info(f"INPUTDATA is set to: {INPUTDATA}")
     logging.info(f"DBCLINICSDATA is set to: {DBCLINICSDATA}")
     logging.info(f"WORKDIR is set to: {WORKDIR}")
