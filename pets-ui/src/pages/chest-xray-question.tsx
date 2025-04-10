@@ -1,5 +1,3 @@
-import "./chest-xray-question.scss";
-
 import { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";

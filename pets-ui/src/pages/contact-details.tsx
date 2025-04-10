@@ -1,5 +1,3 @@
-import "./contact-details.scss";
-
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import ApplicantForm from "@/sections/applicant-details-form";

@@ -1,5 +1,3 @@
-import "./applicant-search.scss";
-
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import ApplicantSearchForm from "@/sections/applicant-search-form";
