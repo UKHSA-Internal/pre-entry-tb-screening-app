@@ -405,5 +405,5 @@ jobs:
         run: python scripts/convert_json_to_dynamodbjson.py
 
       - name: Executing batch-write-item
-        working-directory: $WORKDIR
+        working-directory: "pets-core-services/src/clinic-service"
         run: aws dynamodb batch-write-item --request-items file://$CLINICSDATA
