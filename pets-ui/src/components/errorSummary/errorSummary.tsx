@@ -1,3 +1,5 @@
+import "./errorSummary.scss";
+
 import { FieldErrors } from "react-hook-form";
 
 import { attributeToComponentId } from "@/utils/records";
