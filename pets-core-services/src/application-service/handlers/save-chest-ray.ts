@@ -78,11 +78,11 @@ async function validateImages(images: ChestXRayImages, applicationId: string, cl
     }
     if (error instanceof InvalidObjectKey) {
       logger.error(error, "Object key does not match expected");
-      return "Malformed Payload";
+      return error.message;
     }
     if (error instanceof ObjectNotFound) {
       logger.error(error, "Object not found in S3");
-      return "Missing Images";
+      return error.message;
     }
     throw error;
   }
