@@ -229,6 +229,7 @@ jobs:
     name: Run cypress tests
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    if: inputs.environment != 'prod'
 
     strategy:
       matrix:
