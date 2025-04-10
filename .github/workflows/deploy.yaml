@@ -380,7 +380,7 @@ jobs:
       ENVIRONMENT: ${{ inputs.environment }}
       CLINICSDATA: "clinicsData.dynamoDB.${{ inputs.environment }}.json"
       WORKDIR: "pets-core-services/src/clinic-service"
-      JSONCLINICSDATA: "pets-core-services/src/clinic-service/clinicsData.json"
+      JSONCLINICSDATA: "clinicsData.json"
       CLINIC_SERVICE_DATABASE_NAME: ${{ vars.CLINIC_SERVICE_DATABASE_NAME }}
 
     steps:
