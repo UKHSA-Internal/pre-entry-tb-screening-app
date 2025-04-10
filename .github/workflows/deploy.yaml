@@ -1,0 +1,371 @@
+name: Pets Deployment
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+
+jobs:
+  Higher-Env-Notification:
+    if: contains('prod preprod', inputs.environment)
+    name: Notify team on deployment to higher environments
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Notify Teams Chat
+        run: |
+          pnpm notify:teams '${{ secrets.TECH_TEAM_CHAT }}' '⌛️${{ github.actor }} has just triggered App deployment to ${{ inputs.environment }}.'
+
+  load-deployment-config:
+    name: Load deployment config for Core Services Lambda
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
+
+    outputs:
+      config: ${{ steps.deployment-config.outputs.deploy_config }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Load environment config
+        run: cat configs/.env.${{ inputs.environment }} >> $GITHUB_ENV
+
+      - name: Load Deployment config
+        id: deployment-config
+        run: |
+          deploy_config=$(pnpm tsx deployment-config.ts)
+          echo "deploy_config=$(jq -cj . <<< $deploy_config)" >> $GITHUB_OUTPUT
+        working-directory: pets-core-services
+
+  deploy-lambdas:
+    name: Build, package & deploy lambda
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    needs: load-deployment-config
+
+    env:
+      BUILD_FOLDER: ".build"
+      ZIP_FILE: "deployment_package.zip"
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
+      APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+      SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
+
+    strategy:
+      matrix:
+        lambda: ${{ fromJSON(needs.load-deployment-config.outputs.config) }}
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: "eu-west-2"
+          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_DEPLOY_ROLE_NAME }}"
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Load environment config
+        run: cat configs/.env.${{ inputs.environment }} >> $GITHUB_ENV
+
+      - name: Build lambda source code
+        run: node esbuild.config.js ${{ matrix.lambda.path }} $BUILD_FOLDER/index.js
+        working-directory: pets-core-services
+
+      - name: Create zip
+        run: zip -r -j $ZIP_FILE $BUILD_FOLDER/*
+        working-directory: pets-core-services
+
+      - name: Upload Spec to S3 # Ensures IAC deployments always deploy the latest changes in this repo.
+        run: aws s3 cp $ZIP_FILE s3://${{ matrix.lambda.s3Bucket }} --sse aws:kms --sse-kms-key-id ${{ vars.SSE_KEY_ID }}
+        working-directory: pets-core-services
+
+      - name: Update lambda code
+        run: aws lambda update-function-code --function-name ${{ matrix.lambda.lambdaName }} --zip-file fileb://$ZIP_FILE
+        working-directory: pets-core-services
+
+  deploy-swagger-spec:
+    name: Generate Swagger spec and deploy to API Gateway
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    needs: deploy-lambdas
+
+    env:
+      SPEC_FILE: swagger.json
+      APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
+      SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Load environment config
+        run: cat configs/.env.${{ inputs.environment }} >> $GITHUB_ENV
+
+      - name: Generate Swagger spec
+        run: pnpm generate:swagger-doc
+        working-directory: pets-core-services
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: "eu-west-2"
+          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_DEPLOY_ROLE_NAME }}"
+
+      - name: Deploy Spec to API Gateway
+        run: aws apigateway put-rest-api --rest-api-id ${{ vars.API_GATEWAY_ID }} --mode overwrite --body fileb://$SPEC_FILE
+        working-directory: pets-core-services
+
+      - name: Update API Gateway Stage
+        run: aws apigateway create-deployment --rest-api-id ${{ vars.API_GATEWAY_ID }} --stage-name ${{ env.API_GATEWAY_STAGE }}
+
+  build-and-deploy-ui:
+    name: Build and Deploy UI
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    needs: [load-deployment-config, deploy-lambdas, deploy-swagger-spec]
+
+    env:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+      SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "pnpm"
+
+      - name: Load environment config
+        run: cat configs/.env.${{ inputs.environment }} >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: "eu-west-2"
+          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_DEPLOY_ROLE_NAME }}"
+
+      - name: Generate Swagger spec
+        run: pnpm generate:swagger-doc
+        working-directory: pets-core-services
+
+      - name: Build application
+        run: pnpm run build
+        working-directory: pets-ui
+
+      - name: Upload App to S3
+        working-directory: pets-ui/dist
+        run: aws s3 sync . s3://$APPDEPLOY_BUCKET_NAME --sse aws:kms --sse-kms-key-id ${{ vars.SSE_KEY_ID }}
+
+  cypress-run:
+    needs: build-and-deploy-ui
+    name: Run cypress tests
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    if: inputs.environment != 'prod'
+
+    strategy:
+      matrix:
+        browser: [chrome, firefox, edge]
+    env:
+      APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+
+      USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
+      USER_1_PASSWORD: ${{ secrets.USER_1_PASSWORD }}
+
+      USER_2_EMAIL: ${{ secrets.USER_2_EMAIL }}
+      USER_2_PASSWORD: ${{ secrets.USER_2_PASSWORD }}
+
+      USER_3_EMAIL: ${{ secrets.USER_3_EMAIL }}
+      USER_3_PASSWORD: ${{ secrets.USER_3_PASSWORD }}
+
+      USER_4_EMAIL: ${{ secrets.USER_4_EMAIL }}
+      USER_4_PASSWORD: ${{ secrets.USER_4_PASSWORD }}
+
+      USER_5_EMAIL: ${{ secrets.USER_5_EMAIL }}
+      USER_5_PASSWORD: ${{ secrets.USER_5_PASSWORD }}
+
+      USER_6_EMAIL: ${{ secrets.USER_6_EMAIL }}
+      USER_6_PASSWORD: ${{ secrets.USER_6_PASSWORD }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Cache Cypress binary
+        id: cache-cypress-binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-binary-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
+
+      - name: Install Cypress Binary
+        if: steps.cache-cypress-binary.outputs.cache-hit != 'true'
+        run: |
+          pnpm exec cypress install --force
+          pnpm exec cypress verify
+        working-directory: pets-ui
+
+      - name: Cypress run tests
+        uses: cypress-io/github-action@v6
+        continue-on-error: true
+        id: initial_attempt
+        with:
+          install: false
+          working-directory: pets-ui
+          browser: ${{ matrix.browser }}
+          config-file: cypress/cypress.config.mjs
+
+      - name: Retry if failed
+        if: steps.initial_attempt.outcome != 'success'
+        uses: cypress-io/github-action@v6
+        id: retry_attempt
+        with:
+          install: false
+          working-directory: pets-ui
+          browser: ${{ matrix.browser }}
+          config-file: cypress/cypress.config.mjs
+
+      - name: Upload Failed Tests Screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failed-tests-screenshots
+          path: pets-ui/cypress/screenshots
+
+  share-deployment-details:
+    needs: cypress-run
+    name: Share Deployment Details
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Notify Teams Chat(Dev and QAT)
+        if: contains('dev qat', inputs.environment)
+        run: |
+          pnpm notify:teams '${{ secrets.APP_DEPLOYMENT_NOTIFICATION_CHAT }}' '${{ github.ref_name }} has been deployed to ${{ inputs.environment }}'
+
+      - name: Notify Teams Chat(Preprod and Prod)
+        if: contains('prod preprod', inputs.environment)
+        run: |
+          pnpm notify:teams '${{ secrets.TECH_TEAM_CHAT }}' '🚀 App deployment to ${{ inputs.environment }} ran successfully'
+
+      - name: Get Pull Request Number
+        id: get_pr
+        run: |
+          PR_NUMBER=$(gh pr list --head '${{ github.ref_name }}' --state open --json number --jq '.[0].number')
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deployment details
+        uses: actions/github-script@v7
+        if: env.PR_NUMBER != ''
+        with:
+          script: |
+            github.rest.issues.createComment({
+            issue_number: ${{ env.PR_NUMBER }},
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `🚀 Pull Request ${{ env.PR_NUMBER }} deployed to ${{ inputs.environment }}
+
+              - React app: ${{ vars.APP_DOMAIN }}
+              - API Docs: ${{ vars.APP_DOMAIN }}/api-docs
+            `
+            })
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

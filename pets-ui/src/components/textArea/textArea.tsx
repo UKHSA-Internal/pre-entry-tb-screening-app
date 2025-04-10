@@ -67,7 +67,6 @@ export default function TextArea({
         rows={props.rows}
         data-testid={props.id}
         aria-labelledby={props.id}
-        aria-describedby={props.hint ?? `${props.id}-hint`}
         {...register(props.formValue, {
           required: props.required,
         })}

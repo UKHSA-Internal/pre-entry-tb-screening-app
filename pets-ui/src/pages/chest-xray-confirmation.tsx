@@ -1,10 +1,9 @@
 import "./chest-xray-confirmation.scss";
 
-import { Link } from "react-router-dom";
-
 import { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
 import Confirmation from "@/components/confirmation/confirmation";
 import Container from "@/components/container/container";
+import LinkLabel from "@/components/linkLabel/LinkLabel";
 
 export default function ChestXrayConfirmation() {
   const breadcrumbItems: IBreadcrumbItem[] = [
@@ -18,10 +17,7 @@ export default function ChestXrayConfirmation() {
     "You cannot currently log sputum test information in this service.",
     <>
       Continue to TB certificate declaration or go to{" "}
-      <Link to={"/tracker"} className="govuk-link" style={{ color: "#1d70b8" }}>
-        TB screening progress tracker
-      </Link>
-      .
+      <LinkLabel to="/tracker" title="TB screening progress tracker" externalLink={false} />.
     </>,
   ];
 

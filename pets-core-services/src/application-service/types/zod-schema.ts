@@ -28,16 +28,16 @@ export const TravelInformationRequestSchema = z.object({
   visaCategory: z.nativeEnum(VisaOptions).openapi({
     description: "Visa Option",
   }),
-  ukAddressLine1: z.string().openapi({
+  ukAddressLine1: z.string().optional().openapi({
     description: "First line of Travel Address",
   }),
   ukAddressLine2: z.string().optional().openapi({
     description: "Second line of Travel Address",
   }),
-  ukAddressTownOrCity: z.string().openapi({
+  ukAddressTownOrCity: z.string().optional().openapi({
     description: "Town or City of Travel Address",
   }),
-  ukAddressPostcode: z.string().openapi({
+  ukAddressPostcode: z.string().optional().openapi({
     description: "Postcode of Travel Address",
   }),
   ukMobileNumber: z.string().openapi({

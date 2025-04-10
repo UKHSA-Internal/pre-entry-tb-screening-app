@@ -42,7 +42,7 @@ export default function Radio(props: Readonly<RadioProps>) {
           </p>
         )}
         <div className={props.isInline} data-module="govuk-radios">
-          {answerOptions.map((answerOption: string, index: number) => {
+          {answerOptions.map((answerOption, index) => {
             const optionId = `${props.id}-${index}`;
             return (
               <div className="govuk-radios__item" key={optionId}>

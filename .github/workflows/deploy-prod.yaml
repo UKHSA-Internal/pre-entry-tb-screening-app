@@ -1,11 +1,11 @@
-name: Pets Core Services Deployment - Prod
+name: Pets Deployment - Prod
 
 on:
   workflow_dispatch:
 
 jobs:
   deploy:
-    uses: ./.github/workflows/core-services-deploy.yaml
+    uses: ./.github/workflows/deploy.yaml
     with:
       environment: "prod"
     secrets: inherit

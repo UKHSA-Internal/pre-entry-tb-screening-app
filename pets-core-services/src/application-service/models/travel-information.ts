@@ -13,10 +13,10 @@ export abstract class ITravelInformation {
   status: TaskStatus;
 
   visaCategory: VisaOptions;
-  ukAddressLine1: string;
+  ukAddressLine1?: string;
   ukAddressLine2?: string;
-  ukAddressTownOrCity: string;
-  ukAddressPostcode: string;
+  ukAddressTownOrCity?: string;
+  ukAddressPostcode?: string;
   ukMobileNumber: string;
   ukEmailAddress: string;
 
