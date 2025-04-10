@@ -1,93 +1,166 @@
-//This holds all fields on the Travel Information Page
-export class TravelInformationPage {
-  // Visit the Travel Information page
-  visit(): void {
-    cy.visit("/travel-details");
+import { BasePage } from "../BasePage";
+
+export class TravelInformationPage extends BasePage {
+  constructor() {
+    super("/travel-details");
   }
 
-  // Verify page is loaded
-  verifyPageLoaded(): void {
-    cy.contains("h1", "Travel information").should("be.visible");
+  // Page verification
+  verifyPageLoaded(): TravelInformationPage {
+    this.verifyPageHeading("Travel information");
     cy.contains("p", "Enter the applicant's travel information below.").should("be.visible");
+    return this;
   }
 
-  // Select Visa Type
-  selectVisaType(visaType: string): void {
-    cy.get("#visa-type select").select(visaType);
+  // Form field methods using label-based selectors
+  selectVisaType(visaType: string): TravelInformationPage {
+    cy.get('[name="visaType"]').select(visaType);
+    return this;
   }
 
-  // Fill UK Address Details
-  fillAddressLine1(address: string): void {
-    cy.get("#address-1 input").clear().type(address);
+  fillAddressLine1(address: string): TravelInformationPage {
+    this.fillTextInput("Address line 1", address);
+    return this;
   }
 
-  fillAddressLine2(address: string): void {
-    cy.get("#address-2 input").clear().type(address);
+  fillAddressLine2(address: string): TravelInformationPage {
+    this.fillTextInput("Address line 2", address);
+    return this;
   }
 
-  fillTownOrCity(townOrCity: string): void {
-    cy.get("#town-or-city input").clear().type(townOrCity);
+  fillTownOrCity(townOrCity: string): TravelInformationPage {
+    this.fillTextInput("Town/city", townOrCity);
+    return this;
   }
 
-  fillPostcode(postcode: string): void {
-    cy.get("#postcode input").clear().type(postcode);
+  fillPostcode(postcode: string): TravelInformationPage {
+    this.fillTextInput("Postcode", postcode);
+    return this;
   }
 
-  // Fill Contact Details
-  fillMobileNumber(mobileNumber: string): void {
-    cy.get("#mobile-number input").clear().type(mobileNumber);
+  fillMobileNumber(mobileNumber: string): TravelInformationPage {
+    cy.get('[name="ukMobileNumber"]').type(mobileNumber);
+    return this;
   }
 
-  fillEmail(email: string): void {
-    cy.get("#email input").clear().type(email);
+  fillEmail(email: string): TravelInformationPage {
+    cy.get('[name="ukEmail"]').type(email);
+    return this;
   }
 
   // Submit Form
-  submitForm(): void {
+  submitForm(): TravelInformationPage {
     cy.contains("button", "Save and continue").click();
-  }
-
-  // Error Validation Methods
-  validateErrorSummaryVisible(): void {
-    cy.get(".govuk-error-summary").should("be.visible");
-  }
-
-  validateErrorMessage(expectedText: string): void {
-    this.validateErrorSummaryVisible();
-    cy.get(".govuk-error-summary__list").should("contain.text", expectedText);
-  }
-
-  // Validate field errors
-  validateVisaTypeError(): void {
-    cy.get("#visa-type").should("have.class", "govuk-form-group--error");
-  }
-
-  validateAddressLine1Error(): void {
-    cy.get("#address-1").should("have.class", "govuk-form-group--error");
-  }
-
-  validateTownOrCityError(): void {
-    cy.get("#town-or-city").should("have.class", "govuk-form-group--error");
-  }
-
-  validatePostcodeError(): void {
-    cy.get("#postcode").should("have.class", "govuk-form-group--error");
+    return this;
   }
 
   // Fill all required fields with valid data
-  fillAllRequiredFields(
-    visaType: string,
-    addressLine1: string,
-    townOrCity: string,
-    postcode: string,
-    mobileNumber: string,
-    email: string,
-  ): void {
-    this.selectVisaType(visaType);
-    this.fillAddressLine1(addressLine1);
-    this.fillTownOrCity(townOrCity);
-    this.fillPostcode(postcode);
-    this.fillMobileNumber(mobileNumber);
-    this.fillEmail(email);
+  fillCompleteForm(details: {
+    visaType: string;
+    ukAddressLine1: string;
+    ukAddressLine2?: string;
+    ukTownOrCity: string;
+    ukPostcode: string;
+    mobileNumber: string;
+    email: string;
+  }): TravelInformationPage {
+    this.selectVisaType(details.visaType);
+    this.fillAddressLine1(details.ukAddressLine1);
+
+    if (details.ukAddressLine2) {
+      this.fillAddressLine2(details.ukAddressLine2);
+    }
+
+    this.fillTownOrCity(details.ukTownOrCity);
+    this.fillPostcode(details.ukPostcode);
+    this.fillMobileNumber(details.mobileNumber);
+    this.fillEmail(details.email);
+
+    return this;
+  }
+
+  // Error validation methods
+  validateErrorSummaryVisible(): TravelInformationPage {
+    cy.get(".govuk-error-summary").should("be.visible");
+    return this;
+  }
+
+  validateErrorMessage(expectedText: string): TravelInformationPage {
+    this.validateErrorSummaryVisible();
+    cy.get(".govuk-error-summary__list").should("contain.text", expectedText);
+    return this;
+  }
+
+  // Validate field errors
+  validateVisaTypeError(): TravelInformationPage {
+    this.validateFieldError("visa-type");
+    return this;
+  }
+
+  validateAddressLine1Error(): TravelInformationPage {
+    this.validateFieldError("address-1");
+    return this;
+  }
+
+  validateTownOrCityError(): TravelInformationPage {
+    this.validateFieldError("town-or-city");
+    return this;
+  }
+
+  validatePostcodeError(): TravelInformationPage {
+    this.validateFieldError("postcode");
+    return this;
+  }
+
+  validateMobileNumberError(): TravelInformationPage {
+    this.validateFieldError("mobile-number");
+    return this;
+  }
+
+  validateEmailError(): TravelInformationPage {
+    this.validateFieldError("email");
+    return this;
+  }
+
+  // Comprehensive validation method
+  validateFormErrors(errors: {
+    visaType?: string;
+    ukAddressLine1?: string;
+    ukTownOrCity?: string;
+    ukPostcode?: string;
+    mobileNumber?: string;
+    email?: string;
+  }): TravelInformationPage {
+    if (errors.visaType) {
+      this.validateFieldError("visa-type", errors.visaType);
+    }
+
+    if (errors.ukAddressLine1) {
+      this.validateFieldError("address-1", errors.ukAddressLine1);
+    }
+
+    if (errors.ukTownOrCity) {
+      this.validateFieldError("town-or-city", errors.ukTownOrCity);
+    }
+
+    if (errors.ukPostcode) {
+      this.validateFieldError("postcode", errors.ukPostcode);
+    }
+
+    if (errors.mobileNumber) {
+      this.validateFieldError("mobile-number", errors.mobileNumber);
+    }
+
+    if (errors.email) {
+      this.validateFieldError("email", errors.email);
+    }
+
+    return this;
+  }
+
+  // Verify redirection to confirmation page
+  verifyRedirectionToSummaryPage(): TravelInformationPage {
+    this.verifyUrlContains("/travel-summary");
+    return this;
   }
 }

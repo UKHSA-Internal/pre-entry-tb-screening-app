@@ -7,17 +7,37 @@ import { dirname } from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+async function setupMochawesomeReporter(on) {
+  const reporter = await import("cypress-mochawesome-reporter/plugin");
+  reporter.default(on);
+}
+
 dotenv.config({
   path: resolve(__dirname, "../../configs/.env.local.secrets"), // Required only for local runs, CI environment secrets are retrieved from Actions Secrets
 });
 
 export default defineConfig({
+  reporter: "cypress-mochawesome-reporter",
+  reporterOptions: {
+    charts: true,
+    reportPageTitle: "Pets UI Test Results",
+    embeddedScreenshots: true,
+    inlineAssets: true,
+    saveAllAttempts: false,
+    overwrite: false,
+    html: true,
+    json: true,
+  },
+  video: true,
+  screenshotOnRunFailure: true,
   e2e: {
     baseUrl: "https://pets-test.ukhsa.gov.uk",
     supportFile: "cypress/support/e2e.ts",
     specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
     experimentalStudio: true,
-    setupNodeEvents(on, config) {
+    setupNodeEvents: async (on, config) => {
+      await setupMochawesomeReporter(on);
+
       on("before:browser:launch", (browser, launchOptions) => {
         if (browser.family === "firefox") {
           launchOptions.preferences["network.proxy.testing_localhost_is_secure_when_hijacked"] =
@@ -25,6 +45,8 @@ export default defineConfig({
         }
         return launchOptions;
       });
+
+      return config;
     },
     experimentalModifyObstructiveThirdPartyCode: true,
     modifyObstructiveCode: true,

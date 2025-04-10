@@ -1,114 +1,102 @@
 // This holds all fields on the Applicant Search Page
 import { countryList } from "../../../src/utils/countryList";
+import { BasePage } from "../BasePage";
 
-export class ApplicantSearchPage {
-  // Navigation
-  visit(): void {
-    cy.visit("/");
+export class ApplicantSearchPage extends BasePage {
+  constructor() {
+    super("/"); // Pass the page path to the base class constructor
   }
 
-  // Verify page loaded
-  verifyPageLoaded(): void {
-    cy.get("h1.govuk-heading-l").should("exist").and("have.text", "Search for a visa applicant");
+  // Verify page loaded using the base page method
+  verifyPageLoaded(): this {
+    this.verifyPageHeading("Search for a visa applicant");
     cy.contains(
       "p",
       "Enter the applicant's passport number and the passport's country of issue.",
     ).should("be.visible");
+    return this;
   }
 
-  // Fill Passport Number
-  fillPassportNumber(passportNumber: string): void {
-    cy.get("label.govuk-label")
-      .contains("Applicant's passport number")
-      .siblings(".govuk-input__wrapper")
-      .find("input[name='passportNumber']")
-      .should("be.visible")
-      .clear()
-      .type(passportNumber);
+  // Fill Passport Number using label selector and the base page method
+  fillPassportNumber(passportNumber: string): this {
+    this.fillTextInput("Applicant's passport number", passportNumber);
+    return this;
   }
 
-  // Select Country of Issue
-  selectCountryOfIssue(countryCode: string): void {
-    cy.get("select[name='countryOfIssue']").select(countryCode);
+  // Select Country of Issue using label selector and the base page method
+  selectCountryOfIssue(countryCode: string): this {
+    this.selectDropdown("Country of issue", countryCode);
+    return this;
   }
 
-  // Submit search form
-  submitSearch(): void {
-    cy.get("button[type='submit']").should("be.visible").and("contain", "Search").click();
+  // Submit search form using the base page method
+  submitSearch(): this {
+    this.submitForm("Search");
+    return this;
   }
 
   // Click Create New Applicant button
-  clickCreateNewApplicant(): void {
-    cy.get("#create-new-applicant").should("be.visible").click();
+  clickCreateNewApplicant(): this {
+    cy.contains("button, .govuk-button", "Create new applicant").click();
+    return this;
   }
 
   // Verify Create New Applicant button exists
-  verifyCreateNewApplicantExists(): void {
-    cy.get("#create-new-applicant").should("be.visible").and("contain", "Create new applicant");
+  verifyCreateNewApplicantExists(): this {
+    cy.contains("button, .govuk-button", "Create new applicant").should("be.visible");
+    return this;
   }
 
   // Verify no matching record found message - added timeout to handle intermittent step failure
-  verifyNoMatchingRecordMessage(timeout = 20000): void {
+  verifyNoMatchingRecordMessage(timeout = 20000): this {
     cy.contains("h1", "No matching record found", { timeout }).should("be.visible");
-  }
-
-  // Verify error summary visible
-  validateErrorSummaryVisible(): void {
-    cy.get(".govuk-error-summary").should("be.visible");
-  }
-
-  // Validate specific error message text
-  validateErrorMessage(expectedText: string): void {
-    this.validateErrorSummaryVisible();
-    cy.get(".govuk-error-summary__list").should("contain.text", expectedText);
+    return this;
   }
 
   // Validate Passport Number field error
-  validatePassportNumberFieldError(): void {
-    cy.get("#passport-number").should("have.class", "govuk-form-group--error");
+  validatePassportNumberFieldError(errorMessage?: string): this {
+    this.validateFieldError("passport-number", errorMessage);
+    return this;
   }
 
   // Validate Country of Issue field error
-  validateCountryOfIssueFieldError(): void {
-    cy.get("#country-of-issue").should("have.class", "govuk-form-group--error");
+  validateCountryOfIssueFieldError(errorMessage?: string): this {
+    this.validateFieldError("country-of-issue", errorMessage);
+    return this;
   }
 
   // Detailed validation for checking form errors
   validateFormErrors(expectedErrorMessages: {
     passportNumber?: string;
     countryOfIssue?: string;
-  }): void {
+  }): this {
     // Validate Passport Number field error
     if (expectedErrorMessages.passportNumber) {
-      cy.get("#passport-number").should("have.class", "govuk-form-group--error");
-      cy.get("#passport-number")
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", expectedErrorMessages.passportNumber);
+      this.validatePassportNumberFieldError(expectedErrorMessages.passportNumber);
     }
 
     // Validate Country of Issue field error
     if (expectedErrorMessages.countryOfIssue) {
-      cy.get("#country-of-issue").should("have.class", "govuk-form-group--error");
-      cy.get("#country-of-issue")
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", expectedErrorMessages.countryOfIssue);
+      this.validateCountryOfIssueFieldError(expectedErrorMessages.countryOfIssue);
     }
+
+    return this;
   }
 
   // Verify country of issue hint text
-  verifyCountryOfIssueHintText(): void {
-    cy.get("#country-of-issue-hint")
+  verifyCountryOfIssueHintText(): this {
+    cy.contains("label", "Country of issue")
+      .siblings(".govuk-hint")
       .should("be.visible")
       .and(
         "contain.text",
         "If you have more than one, use the nationality in the primary passport submitted by the applicant",
       );
+    return this;
   }
 
   // Search and create new if not found - new applicant
-  searchAndCreateNewIfNotFound(passportNumber: string, countryCode: string): void {
+  searchAndCreateNewIfNotFound(passportNumber: string, countryCode: string): this {
     this.fillPassportNumber(passportNumber);
     this.selectCountryOfIssue(countryCode);
     this.submitSearch();
@@ -119,15 +107,25 @@ export class ApplicantSearchPage {
         this.clickCreateNewApplicant();
       }
     });
+
+    return this;
   }
 
   // Verify passport details were carried over to the applicant details page
-  verifyPassportDetailsCarriedOver(passportNumber: string, countryCode: string): void {
+  verifyPassportDetailsCarriedOver(passportNumber: string, countryCode: string): this {
     // Verify the passport number was carried over
-    cy.get('input[name="passportNumber"]').should("have.value", passportNumber);
+    cy.contains("label", "Passport number")
+      .parents(".govuk-form-group")
+      .find("input")
+      .should("have.value", passportNumber);
 
     // Verify the country of issue was carried over
-    cy.get("#country-of-issue").should("have.value", countryCode);
+    cy.contains("label", "Country of issue")
+      .parents(".govuk-form-group")
+      .find("select")
+      .should("have.value", countryCode);
+
+    return this;
   }
 
   // Get country label by country code
@@ -137,33 +135,30 @@ export class ApplicantSearchPage {
   }
 
   // Verify country dropdown has all expected options
-  verifyCountryDropdownOptions(): void {
-    cy.get("select[name='countryOfIssue'] option").should("have.length.greaterThan", 200);
-  }
+  verifyCountryDropdownOptions(): this {
+    cy.contains("label", "Country of issue")
+      .parents(".govuk-form-group")
+      .find("select option")
+      .should("have.length.greaterThan", 200);
 
-  getCurrentUrl(): Cypress.Chainable<string> {
-    return cy.url();
+    return this;
   }
 
   // Verify successful redirection after search
-  verifyRedirectionToDetailsPage(): void {
-    cy.url().should("include", "/contact");
+  verifyRedirectionToDetailsPage(): this {
+    this.verifyUrlContains("/contact");
+    return this;
   }
 
   // Verify redirection after clicking Create New Applicant
-  verifyRedirectionToCreateApplicantPage(): void {
-    cy.url().should("include", "/contact");
+  verifyRedirectionToCreateApplicantPage(): this {
+    this.verifyUrlContains("/contact");
+    return this;
   }
 
-  // Get page title
-  getPageTitle(): Cypress.Chainable<string> {
-    return cy.title();
-  }
-
-  // Verify page header
-  verifyPageHeader(): void {
-    cy.get(".govuk-header__service-name")
-      .should("be.visible")
-      .and("contain", "Complete UK Pre-Entry Health Screening");
+  // Verify page header - using method from base class
+  verifyPageHeader(): this {
+    this.verifyServiceName();
+    return this;
   }
 }
