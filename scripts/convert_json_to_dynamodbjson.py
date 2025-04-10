@@ -144,7 +144,7 @@ if __name__ == "__main__":
     logging.info(f"WORKDIR is set to: {WORKDIR}")
 
     clinics_data = get_json_data()
-    logging.info(f"Correct clinics objects: {len(clinics_data)}")
+    logging.info(f"Correct clinic objects: {len(clinics_data)}")
 
     dynamodb_data = serialize(clinics_data)
 
