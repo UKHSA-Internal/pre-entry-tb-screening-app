@@ -14,10 +14,7 @@ serializer = TypeSerializer()
 DEFAULT_ENV = os.getenv("ENVIRONMENT", "qat")
 WORKDIR = os.getenv("WORKDIR", "pets-core-services/src/clinic-service")
 DATABASE_NAME = os.getenv("CLINIC_SERVICE_DATABASE_NAME")
-DBCLINICSDATA = os.getenv(
-    "CLINICSDATA",
-    os.path.join(dir_path, WORKDIR, f"clinicsData.dynamoDB.{DEFAULT_ENV}.json")
-)
+DBCLINICSDATA = os.getenv("CLINICSDATA", f"clinicsData.dynamoDB.{DEFAULT_ENV}.json")
 INPUTDATA = os.getenv("JSONCLINICSDATA", "clinicsData.json")
 COUNTRYCODES_FILE_PATH = "pets-core-services/src/shared/country.ts"
 
@@ -153,4 +150,7 @@ if __name__ == "__main__":
     ) as fh:
         json.dump(dynamodb_data, fh, ensure_ascii=False, indent=4)
 
-    logging.info(f"DynamoDB data (clinics) saved into file: {DBCLINICSDATA}")
+    logging.info(
+        "DynamoDB data (clinics) saved into file: "
+        f"{os.path.join(dir_path, WORKDIR, DBCLINICSDATA)}"
+    )
