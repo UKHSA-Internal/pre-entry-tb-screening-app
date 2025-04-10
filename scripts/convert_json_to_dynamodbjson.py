@@ -138,7 +138,9 @@ def serialize(objects):
 
 if __name__ == "__main__":
     logging.info(f"DEFAULT_ENV is set to: {DEFAULT_ENV}")
-    logging.info(f"CLINIC_SERVICE_DATABASE_NAME is set to: {CLINIC_SERVICE_DATABASE_NAME}")
+    logging.info(
+        f"CLINIC_SERVICE_DATABASE_NAME is set to: {CLINIC_SERVICE_DATABASE_NAME}"
+    )
     logging.info(f"INPUTDATA is set to: {INPUTDATA}")
     logging.info(f"DBCLINICSDATA is set to: {DBCLINICSDATA}")
     logging.info(f"WORKDIR is set to: {WORKDIR}")
@@ -148,7 +150,11 @@ if __name__ == "__main__":
 
     dynamodb_data = serialize(clinics_data)
 
-    with open(DBCLINICSDATA, "wt", encoding='utf-8') as fh:
+    with open(
+        os.path.join(dir_path, WORKDIR, DBCLINICSDATA),
+        "wt",
+        encoding='utf-8'
+    ) as fh:
         json.dump(dynamodb_data, fh, ensure_ascii=False, indent=4)
 
     logging.info(f"DynamoDB data (clinics) saved into file: {DBCLINICSDATA}")
