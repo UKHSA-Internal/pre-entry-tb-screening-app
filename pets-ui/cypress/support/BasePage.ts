@@ -1,4 +1,4 @@
-// BasePage.ts - Common functionality for all page objects
+// BasePage Common functionality for all page objects
 export class BasePage {
   // Page path to visit
   protected path: string;
@@ -40,7 +40,7 @@ export class BasePage {
     return this;
   }
 
-  // Common methods for handling form fields using label-based selectors
+  // Common methods for handling form fields
   fillTextInput(labelText: string, value: string): BasePage {
     cy.contains("label", labelText).parent().find("input").should("be.visible").clear().type(value);
     return this;

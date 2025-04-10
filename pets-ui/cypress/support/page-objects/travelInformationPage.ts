@@ -12,7 +12,7 @@ export class TravelInformationPage extends BasePage {
     return this;
   }
 
-  // Form field methods using label-based selectors
+  // Form field methods
   selectVisaType(visaType: string): TravelInformationPage {
     cy.get('[name="visaType"]').select(visaType);
     return this;

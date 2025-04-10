@@ -30,7 +30,7 @@ export class ChestXrayUploadPage extends BasePage {
     return this;
   }
 
-  // Upload postero-anterior X-ray file using label-based selector
+  // Upload postero-anterior X-ray file
   uploadPosteroAnteriorXray(filePath: string): ChestXrayUploadPage {
     cy.contains("h2", "Postero-anterior X-ray")
       .parent()
@@ -41,7 +41,7 @@ export class ChestXrayUploadPage extends BasePage {
 
   // Upload apical lordotic X-ray file (optional)
   uploadApicalLordoticXray(filePath: string): ChestXrayUploadPage {
-    cy.contains("h2", "Apical lordotic X-ray (optional)")
+    cy.contains("h2", "Apical lordotic X-ray")
       .parent()
       .find('input[type="file"]')
       .selectFile(filePath, { force: true });
@@ -50,7 +50,7 @@ export class ChestXrayUploadPage extends BasePage {
 
   // Upload lateral decubitus X-ray file (optional)
   uploadLateralDecubitusXray(filePath: string): ChestXrayUploadPage {
-    cy.contains("h2", "Lateral decubitus X-ray (optional)")
+    cy.contains("h2", "Lateral decubitus X-ray")
       .parent()
       .find('input[type="file"]')
       .selectFile(filePath, { force: true });
@@ -76,7 +76,7 @@ export class ChestXrayUploadPage extends BasePage {
 
   /// Click continue button
   clickContinue(): ChestXrayUploadPage {
-    // Wait for any potential upload processing to complete
+    // Wait for any potential upload processing to complete - intermittently slow have added a wait
     cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
     cy.wait(1000);
     cy.get("button").contains("Continue").click({ force: true });

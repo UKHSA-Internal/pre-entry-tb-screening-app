@@ -4,7 +4,7 @@ import { BasePage } from "../BasePage";
 
 export class ApplicantSearchPage extends BasePage {
   constructor() {
-    super("/"); // Pass the page path to the base class constructor
+    super("/");
   }
 
   // Verify page loaded using the base page method
@@ -17,19 +17,19 @@ export class ApplicantSearchPage extends BasePage {
     return this;
   }
 
-  // Fill Passport Number using label selector and the base page method
+  // Fill Passport Number
   fillPassportNumber(passportNumber: string): this {
     this.fillTextInput("Applicant's passport number", passportNumber);
     return this;
   }
 
-  // Select Country of Issue using label selector and the base page method
+  // Select Country of Issue
   selectCountryOfIssue(countryCode: string): this {
     this.selectDropdown("Country of issue", countryCode);
     return this;
   }
 
-  // Submit search form using the base page method
+  // Submit search form
   submitSearch(): this {
     this.submitForm("Search");
     return this;
@@ -156,7 +156,7 @@ export class ApplicantSearchPage extends BasePage {
     return this;
   }
 
-  // Verify page header - using method from base class
+  // Verify page header
   verifyPageHeader(): this {
     this.verifyServiceName();
     return this;

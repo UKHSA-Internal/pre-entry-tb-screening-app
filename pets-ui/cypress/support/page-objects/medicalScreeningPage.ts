@@ -67,7 +67,6 @@ export class MedicalScreeningPage extends BasePage {
   }
 
   fillPreviousTbDetails(text: string): MedicalScreeningPage {
-    // Using a more specific selector because there could be multiple "If yes, give details" labels
     cy.contains("fieldset", "Has the applicant ever had tuberculosis?")
       .contains("label", "If yes, give details")
       .parent()
@@ -84,7 +83,6 @@ export class MedicalScreeningPage extends BasePage {
   }
 
   fillCloseContactDetails(text: string): MedicalScreeningPage {
-    // Using a more specific selector for the second "If yes, give details" textarea
     cy.contains("fieldset", "active pulmonary tuberculosis")
       .contains("label", "If yes, give details")
       .parent()

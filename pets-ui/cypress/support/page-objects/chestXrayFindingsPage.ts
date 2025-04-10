@@ -17,7 +17,7 @@ export class ChestXrayFindingsPage extends BasePage {
     return this;
   }
 
-  // Verify applicant information section - using base class method
+  // Verify applicant information section
   verifyApplicantInfo(expectedValues: {
     Name?: string;
     "Date of birth"?: string;
