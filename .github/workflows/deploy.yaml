@@ -405,7 +405,7 @@ jobs:
         run: python scripts/convert_json_to_dynamodbjson.py
 
       - name: Printing out the new file
-        run: cat $CLINICSDATA
+        run: awk 'NR<20' $CLINICSDATA && echo ...
         working-directory: "pets-core-services/src/clinic-service"
 
       - name: Executing batch-write-item
