@@ -27,6 +27,7 @@ const Task = (props: TaskProps) => {
             className="govuk-link govuk-task-list__link"
             to={props.linkWhenIncomplete}
             title={props.description}
+            externalLink={false}
           />
         )}
         {props.status == ApplicationStatus.COMPLETE && (
@@ -34,6 +35,7 @@ const Task = (props: TaskProps) => {
             className="govuk-link govuk-task-list__link"
             to={props.linkWhenComplete}
             title={props.description}
+            externalLink={false}
           />
         )}
       </div>

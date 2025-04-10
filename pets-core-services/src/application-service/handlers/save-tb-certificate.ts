@@ -18,7 +18,7 @@ export type SaveTbCertificateEvent = PetsAPIGatewayProxyEvent & {
 
 export const saveTbCertificateHandler = async (event: SaveTbCertificateEvent) => {
   try {
-    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
+    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
 
     logger.info({ applicationId }, "Save TB Certificate handler triggered");
 

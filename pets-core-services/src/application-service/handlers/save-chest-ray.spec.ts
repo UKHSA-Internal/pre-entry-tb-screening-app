@@ -91,8 +91,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     // Assert
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Malformed Payload",
-      error: "postero-anterior.dcm object key is invalid",
+      message: "postero-anterior.dcm object key is invalid",
     });
   });
 
@@ -116,8 +115,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     // Assert
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Missing Images",
-      error: "postero-anterior.dcm image does not exist",
+      message: "postero-anterior.dcm image does not exist",
     });
   });
 
