@@ -15,7 +15,7 @@ export type SaveMedicalScreeningEvent = PetsAPIGatewayProxyEvent & {
 
 export const saveMedicalScreeningHandler = async (event: SaveMedicalScreeningEvent) => {
   try {
-    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
+    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
 
     logger.info({ applicationId }, "Save Medical Screening handler triggered");
 
