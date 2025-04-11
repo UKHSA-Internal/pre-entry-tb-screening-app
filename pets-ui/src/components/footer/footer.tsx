@@ -1,3 +1,5 @@
+import LinkLabel from "../linkLabel/LinkLabel";
+
 export default function Footer() {
   return (
     <footer className="govuk-footer">
@@ -20,23 +22,22 @@ export default function Footer() {
             </svg>
             <span className="govuk-footer__licence-description">
               All content is available under the{" "}
-              <a
+              <LinkLabel
+                title="Open Government Licence v3.0"
                 className="govuk-footer__link"
-                href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
-                rel="license"
-              >
-                Open Government Licence v3.0
-              </a>
-              {/* */}, except where otherwise stated
+                to="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+                externalLink
+              />
+              , except where otherwise stated
             </span>
           </div>
           <div className="govuk-footer__meta-item">
-            <a
+            <LinkLabel
+              title="© Crown copyright"
               className="govuk-footer__link govuk-footer__copyright-logo"
-              href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
-            >
-              © Crown copyright
-            </a>
+              to="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+              externalLink
+            />
           </div>
         </div>
       </div>

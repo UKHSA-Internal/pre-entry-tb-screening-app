@@ -85,7 +85,7 @@ const ApplicantTravelForm = () => {
             headingStyle={{ marginBottom: 20 }}
             errorMessage={errors?.applicantUkAddress1?.message ?? ""}
             formValue="applicantUkAddress1"
-            required="Enter address line 1, typically the building and street"
+            required={false}
             patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
             patternError="Home address must contain only letters, numbers, spaces and punctuation"
             defaultValue={travelData.applicantUkAddress1}
@@ -111,7 +111,7 @@ const ApplicantTravelForm = () => {
             label="Town/city"
             errorMessage={errors?.townOrCity?.message ?? ""}
             formValue="townOrCity"
-            required="Enter town or city"
+            required={false}
             patternValue={formRegex.lettersSpacesAndPunctuation}
             patternError="Town name must contain only letters, spaces and punctuation"
             defaultValue={travelData.townOrCity}
@@ -124,7 +124,7 @@ const ApplicantTravelForm = () => {
             label="Postcode"
             errorMessage={errors?.postcode?.message ?? ""}
             formValue="postcode"
-            required="Enter full UK postcode"
+            required={false}
             patternValue={formRegex.lettersNumbersAndSpaces}
             patternError="Postcode must contain only letters, numbers and spaces"
             defaultValue={travelData.postcode}

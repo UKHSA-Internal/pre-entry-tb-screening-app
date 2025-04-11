@@ -1,7 +1,8 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
+import LinkLabel from "@/components/linkLabel/LinkLabel";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { selectChestXray } from "@/redux/chestXraySlice";
 import { useAppSelector } from "@/redux/hooks";
@@ -22,14 +23,20 @@ const Task = (props: TaskProps) => {
     <li className="govuk-task-list__item govuk-task-list__item--with-link">
       <div className="govuk-task-list__name-and-hint">
         {props.status == ApplicationStatus.INCOMPLETE && (
-          <Link className="govuk-link govuk-task-list__link" to={props.linkWhenIncomplete}>
-            {props.description}
-          </Link>
+          <LinkLabel
+            className="govuk-link govuk-task-list__link"
+            to={props.linkWhenIncomplete}
+            title={props.description}
+            externalLink={false}
+          />
         )}
         {props.status == ApplicationStatus.COMPLETE && (
-          <Link className="govuk-link govuk-task-list__link" to={props.linkWhenComplete}>
-            {props.description}
-          </Link>
+          <LinkLabel
+            className="govuk-link govuk-task-list__link"
+            to={props.linkWhenComplete}
+            title={props.description}
+            externalLink={false}
+          />
         )}
       </div>
       {props.status == ApplicationStatus.INCOMPLETE && (

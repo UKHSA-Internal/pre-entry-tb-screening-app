@@ -4,6 +4,7 @@ import {
   isDataPresent,
   isDateInTheFuture,
   isDateInThePast,
+  logError,
   missingFieldsMessage,
   spreadArrayIfNotEmpty,
   standardiseDayOrMonth,
@@ -382,5 +383,17 @@ describe("spreadIfNotEmpty", () => {
       [],
     );
     expect(result).toEqual(["Example Text 1", "Example Text 3", "Example Text 4"]);
+  });
+});
+
+describe("logError", () => {
+  test("should call console.error twice", () => {
+    const consoleMock = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    const error = new Error("dummy error");
+    const info = { componentStack: "info" };
+    logError(error, info);
+
+    expect(consoleMock).toHaveBeenCalledTimes(2);
   });
 });

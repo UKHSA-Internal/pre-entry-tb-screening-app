@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
@@ -7,6 +7,7 @@ import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
+import Spinner from "@/components/spinner/spinner";
 import {
   clearApplicantDetails,
   setApplicantDetailsFromApiResponse,
@@ -34,6 +35,8 @@ const ApplicantSearchForm = () => {
   const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
   const dispatch = useAppDispatch();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     dispatch(clearApplicantDetails());
     dispatch(clearApplicationDetails());
@@ -52,6 +55,7 @@ const ApplicantSearchForm = () => {
   const errorsToShow = Object.keys(errors);
 
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (passportDetails) => {
+    setIsLoading(true);
     try {
       dispatch(setApplicantPassportDetails(passportDetails));
 
@@ -84,38 +88,41 @@ const ApplicantSearchForm = () => {
   };
 
   return (
-    <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
-        <FreeText
-          id="passport-number"
-          label="Applicant's passport number"
-          errorMessage={errors?.passportNumber?.message ?? ""}
-          formValue="passportNumber"
-          required="Enter the applicant's passport number"
-          patternValue={formRegex.lettersAndNumbers}
-          patternError="Passport number must contain only letters and numbers"
-        />
+    <div>
+      {isLoading && <Spinner />}
+      <FormProvider {...methods}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
+          <FreeText
+            id="passport-number"
+            label="Applicant's passport number"
+            errorMessage={errors?.passportNumber?.message ?? ""}
+            formValue="passportNumber"
+            required="Enter the applicant's passport number"
+            patternValue={formRegex.lettersAndNumbers}
+            patternError="Passport number must contain only letters and numbers"
+          />
 
-        <Dropdown
-          id="country-of-issue"
-          label="Country of issue"
-          hint="If you have more than one, use the nationality in the primary passport submitted by the applicant. Use the English spelling or the country code."
-          options={countryList}
-          errorMessage={errors?.countryOfIssue?.message ?? ""}
-          formValue="countryOfIssue"
-          required="Select the country of issue."
-        />
+          <Dropdown
+            id="country-of-issue"
+            label="Country of issue"
+            hint="If you have more than one, use the nationality in the primary passport submitted by the applicant. Use the English spelling or the country code."
+            options={countryList}
+            errorMessage={errors?.countryOfIssue?.message ?? ""}
+            formValue="countryOfIssue"
+            required="Select the country of issue."
+          />
 
-        <Button
-          id="search"
-          type={ButtonType.DEFAULT}
-          text="Search"
-          href="#"
-          handleClick={() => {}}
-        />
-      </form>
-    </FormProvider>
+          <Button
+            id="search"
+            type={ButtonType.DEFAULT}
+            text="Search"
+            href="#"
+            handleClick={() => {}}
+          />
+        </form>
+      </FormProvider>
+    </div>
   );
 };
 

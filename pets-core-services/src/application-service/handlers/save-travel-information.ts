@@ -15,7 +15,7 @@ export type SaveTravelInformationEvent = PetsAPIGatewayProxyEvent & {
 
 export const saveTravelInformationHandler = async (event: SaveTravelInformationEvent) => {
   try {
-    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
+    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
 
     logger.info({ applicationId }, "Save Travel Information handler triggered");
 

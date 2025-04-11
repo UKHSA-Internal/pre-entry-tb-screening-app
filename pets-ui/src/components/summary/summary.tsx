@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
-
 import { ApplicationStatus } from "@/utils/enums";
+
+import LinkLabel from "../linkLabel/LinkLabel";
 
 export type SummaryElement = {
   key: string;
@@ -36,9 +36,12 @@ export default function Summary(props: Readonly<SummaryProps>) {
             )}
             {props.status == ApplicationStatus.INCOMPLETE && (
               <dd className="govuk-summary-list__actions">
-                <Link className="govuk-link" style={{ color: "#1d70b8" }} to={summaryElement.link}>
-                  Change<span className="govuk-visually-hidden"> {summaryElement.hiddenLabel}</span>
-                </Link>
+                <LinkLabel
+                  to={summaryElement.link}
+                  title="Change"
+                  hiddenLabel={summaryElement.hiddenLabel}
+                  externalLink={false}
+                />
               </dd>
             )}
           </div>

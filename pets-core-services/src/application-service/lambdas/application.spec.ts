@@ -94,8 +94,6 @@ describe("Test for Application Lambda", () => {
       expect(JSON.parse(response.body)).toMatchObject({
         message: "Request Body failed validation",
         validationError: {
-          ukAddressLine1: ["Required"],
-          ukAddressPostcode: ["Required"],
           ukEmailAddress: ["Required"],
           ukMobileNumber: ["Required"],
           visaCategory: ["Required"],

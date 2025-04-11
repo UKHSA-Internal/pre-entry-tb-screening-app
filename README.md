@@ -197,6 +197,8 @@ User story and bug tickets should follow this [template](https://ukhsa.atlassian
 - Commits should be done regularly and commit messages should be meaningful. Commit messages should follow this convention - `{ticket-number}: {commit_message}`.
    For example: `TBBETA-123: Added unit tests`
 
+- Ensure your commit email is your ukhsa email. Check this SO [thread](https://stackoverflow.com/a/51682403) on how to change that.
+
 ## Running Development Environment
 
 1. Start up development environment
@@ -256,24 +258,10 @@ Kindly check `pets-core-services/src/applicant-service/fixtures/applicants.ts` f
 
 - Navigate to the [actions](https://github.com/UKHSA-Internal/pre-entry-tb-screening-app/actions) page.
 
-### UI
-
-To deploy the UI to a target environment {target-env}:
-
-- At the side panel, Find on the workflow with name `Pets UI Deployment - {target-env}` and click on it.
+- At the side panel, Find on the workflow with name `Pets Deployment - {target-env}` and click on it.
 - At top right corner, find the `Run Workflow` Button.
 - Start the deployment workflow by clicking on the button and providing your branch name. Please note that this would overwrite any existing deployment at the target environment.
 - If a PR is already raised for your branch, after successful deployment, you should receive an email with the deployment url
-
-### Core Services
-
-Before you proceed with the core services deployment, please note that this would deploy only services with changes.
-
-To deploy the Core services to a target environment {target-env}:
-
-- At the side panel, Find on the workflow with name `Pets Core Services Deployment - {target-env}` and click on it.
-- At top right corner, find the `Run Workflow` Button.
-- Start the deployment workflow by clicking on the button and providing your branch name. Please note that this would overwrite any existing deployment at the target environment.
 
 ## Automated dependency updates
 

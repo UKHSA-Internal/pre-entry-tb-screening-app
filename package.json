@@ -2,6 +2,8 @@
   "private": "true",
   "name": "pets-monorepo",
   "version": "1.0.0",
+  "main": "index.js",
+  "author": "PETS Engineering",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "security-checks": "git secrets --scan",
@@ -9,11 +11,10 @@
     "start": "node scripts/start.mjs",
     "pull:secrets": "node scripts/pull-secrets.mjs",
     "start:ui": "pnpm --filter pets-ui dev",
-    "watch:lambda-logs": "node scripts/watch-docker-logs.mjs"
+    "watch:lambda-logs": "node scripts/watch-docker-logs.mjs",
+    "notify:teams": "node scripts/team-notification.mjs"
   },
-  "main": "index.js",
   "repository": "git@github.com:UKHSA-Internal/pre-entry-tb-screening-app.git",
-  "author": "PETS Engineering",
   "license": "MIT",
   "devDependencies": {
     "@aws-sdk/client-secrets-manager": "^3.758.0",
@@ -21,7 +22,7 @@
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.20.0",
     "@types/node": "^22.13.4",
-    "@vitest/coverage-v8": "2.1.8",
+    "@vitest/coverage-v8": "^2.1.9",
     "concurrently": "^9.1.2",
     "dotenv": "^16.4.7",
     "eslint": "^9.20.1",
@@ -53,7 +54,8 @@
       "esbuild": "^0.25.1",
       "micromatch": "^4.0.8",
       "nanoid": "^3.3.8",
-      "prismjs": "^1.30.0"
+      "prismjs": "^1.30.0",
+      "vite": "^5.4.17"
     }
   }
 }
