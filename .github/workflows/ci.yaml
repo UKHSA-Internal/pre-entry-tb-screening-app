@@ -69,7 +69,7 @@ jobs:
           name: coverage-ui
           path: pets-ui/coverage/
 
-  cypress-run:
+  c  cypress-run:
     name: Run cypress tests
     runs-on: ubuntu-latest
     strategy:
@@ -78,33 +78,35 @@ jobs:
     env:
       USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
       USER_1_PASSWORD: ${{ secrets.USER_1_PASSWORD }}
-
       USER_2_EMAIL: ${{ secrets.USER_2_EMAIL }}
       USER_2_PASSWORD: ${{ secrets.USER_2_PASSWORD }}
-
       USER_3_EMAIL: ${{ secrets.USER_3_EMAIL }}
       USER_3_PASSWORD: ${{ secrets.USER_3_PASSWORD }}
-
       USER_4_EMAIL: ${{ secrets.USER_4_EMAIL }}
       USER_4_PASSWORD: ${{ secrets.USER_4_PASSWORD }}
-
       USER_5_EMAIL: ${{ secrets.USER_5_EMAIL }}
       USER_5_PASSWORD: ${{ secrets.USER_5_PASSWORD }}
-
       USER_6_EMAIL: ${{ secrets.USER_6_EMAIL }}
       USER_6_PASSWORD: ${{ secrets.USER_6_PASSWORD }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
           cache: "pnpm"
+
       - name: Install dependencies
         run: pnpm i
+
+      - name: Debug available Cypress specs
+        run: ls -R pets-ui/cypress/e2e
 
       - name: Cache Cypress binary
         id: cache-cypress-binary
@@ -127,7 +129,7 @@ jobs:
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
         continue-on-error: true
-        id:  initial_attempt
+        id: initial_attempt
         with:
           install: false
           working-directory: pets-ui
@@ -150,6 +152,23 @@ jobs:
         with:
           name: failed-tests-screenshots
           path: pets-ui/cypress/screenshots
+
+      - name: Merge Mochawesome Reports
+        run: |
+          JSON_DIR=pets-ui/cypress/reports/mochawesome/.jsons
+          if ls ${JSON_DIR}/*.json 1> /dev/null 2>&1; then
+            npx mochawesome-merge ${JSON_DIR}/*.json > pets-ui/cypress/reports/mochawesome/mochawesome.json
+          else
+            echo "⚠️ No mochawesome JSON files found. Skipping merge."
+          fi
+
+      - name: Upload Mochawesome Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mochawesome-report
+          path: pets-ui/cypress/reports/mochawesome/
+
 
   core-services-tests:
     name: Run tests for core services

@@ -17,6 +17,21 @@ dotenv.config({
 });
 
 export default defineConfig({
+  reporter: "cypress-mochawesome-reporter",
+  reporterOptions: {
+    reportDir: "cypress/reports/mochawesome",
+    charts: true,
+    reportPageTitle: "Pets UI Test Results",
+    embeddedScreenshots: true,
+    inlineAssets: true,
+    saveAllAttempts: false,
+    overwrite: true,
+    html: true,
+    json: true,
+  },
+  video: true,
+  screenshotOnRunFailure: true,
+  defaultCommandTimeout: 30000,
   e2e: {
     baseUrl: process.env.APP_DOMAIN ?? "http://localhost:3000",
     supportFile: "cypress/support/e2e.ts",
