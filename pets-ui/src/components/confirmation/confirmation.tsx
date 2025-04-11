@@ -40,7 +40,6 @@ export default function Confirmation({
           id="continue"
           type={ButtonType.DEFAULT}
           text={props.buttonText}
-          href={props.buttonLink}
           handleClick={() => {
             navigate(props.buttonLink);
           }}

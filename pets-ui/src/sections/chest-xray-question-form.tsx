@@ -4,10 +4,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
-import Button from "@/components/button/button";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
+import SubmitButton from "@/components/submitButton/submitButton";
 import { selectApplicant } from "@/redux/applicantSlice";
 import {
   clearChestXrayNotTakenDetails,
@@ -73,13 +73,7 @@ const ChestXrayQuestionForm = () => {
             required="Select yes if the visa applicant has had a chest X-ray or no if they have not"
           />
         </div>
-        <Button
-          id="Continue"
-          type={ButtonType.DEFAULT}
-          text="Continue"
-          href="/"
-          handleClick={() => {}}
-        />
+        <SubmitButton id="Continue" type={ButtonType.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

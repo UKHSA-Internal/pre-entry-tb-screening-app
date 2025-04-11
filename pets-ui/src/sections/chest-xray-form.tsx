@@ -6,11 +6,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { generateDicomUploadUrl } from "@/api/api";
 import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
-import Button from "@/components/button/button";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FileUpload from "@/components/fileUpload/fileUpload";
 import Heading from "@/components/heading/heading";
 import Spinner from "@/components/spinner/spinner";
+import SubmitButton from "@/components/submitButton/submitButton";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { selectApplication } from "@/redux/applicationSlice";
 import {
@@ -218,13 +218,7 @@ const ChestXrayForm = () => {
               />
             </div>
 
-            <Button
-              id="continue"
-              type={ButtonType.DEFAULT}
-              text="Continue"
-              href="/chest-xray-findings"
-              handleClick={() => {}}
-            />
+            <SubmitButton id="continue" type={ButtonType.DEFAULT} text="Continue" />
           </div>
         </form>
       </FormProvider>

@@ -5,8 +5,7 @@ import { MouseEventHandler } from "react";
 export interface StartButtonProps {
   id: string;
   text: string;
-  href: string;
-  handleClick: MouseEventHandler<HTMLButtonElement>;
+  handleClick?: MouseEventHandler<HTMLButtonElement>;
 }
 
 export default function StartButton(props: Readonly<StartButtonProps>) {
