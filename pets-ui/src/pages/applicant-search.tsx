@@ -6,7 +6,7 @@ export default function ApplicantSearchPage() {
   return (
     <Container title="Applicant search">
       <Heading level={1} size="l" title="Search for a visa applicant" />
-      <p className="govuk-heading-s">
+      <p className="govuk-body" style={{ fontWeight: "bold" }}>
         Enter the applicant&apos;s passport number and the passport&apos;s country of issue.
       </p>
       <ApplicantSearchForm />
