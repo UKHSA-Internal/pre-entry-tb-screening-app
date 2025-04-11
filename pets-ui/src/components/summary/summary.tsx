@@ -40,6 +40,7 @@ export default function Summary(props: Readonly<SummaryProps>) {
                   to={summaryElement.link}
                   title="Change"
                   hiddenLabel={summaryElement.hiddenLabel}
+                  externalLink={false}
                 />
               </dd>
             )}

@@ -23,7 +23,7 @@ const ApplicantEmptyResult = () => {
         handleClick={() => navigate("/contact")}
       />
       <br />
-      <LinkLabel to="/applicant-search" title="Search again" />
+      <LinkLabel to="/applicant-search" title="Search again" externalLink={false} />
     </>
   );
 };
