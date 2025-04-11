@@ -159,7 +159,7 @@ jobs:
           if ls ${JSON_DIR}/*.json 1> /dev/null 2>&1; then
             npx mochawesome-merge ${JSON_DIR}/*.json > pets-ui/cypress/reports/mochawesome/mochawesome.json
           else
-            echo "⚠️ No mochawesome JSON files found. Skipping merge."
+            echo "No mochawesome JSON files found. Skipping merge."
           fi
 
       - name: Upload Mochawesome Report
