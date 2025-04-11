@@ -69,7 +69,7 @@ jobs:
           name: coverage-ui
           path: pets-ui/coverage/
 
-  c  cypress-run:
+  cypress-run:
     name: Run cypress tests
     runs-on: ubuntu-latest
     strategy:
