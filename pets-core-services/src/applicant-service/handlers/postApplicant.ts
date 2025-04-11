@@ -29,7 +29,7 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
       });
     }
 
-    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
+    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
 
     GlobalContextStorageProvider.updateContext({
       countryOfIssue: parsedBody.countryOfIssue,

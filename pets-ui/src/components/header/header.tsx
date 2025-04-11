@@ -27,6 +27,7 @@ export default function Header() {
           <LinkLabel
             title="Complete UK Pre-Entry Health Screening"
             to="/"
+            externalLink={false}
             className="govuk-header__link govuk-header__service-name"
           />
         </div>

@@ -9,7 +9,7 @@ import { TravelInformation } from "../models/travel-information";
 
 export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => {
   try {
-    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] || "").trim();
+    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
 
     logger.info({ applicationId }, "Retrieve Application handler triggered");
 
