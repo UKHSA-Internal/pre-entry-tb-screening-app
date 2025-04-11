@@ -41,7 +41,7 @@ export class ApplicantDetailsPage extends BasePage {
 
   // Passport Details Methods
   fillPassportNumber(number: string): ApplicantDetailsPage {
-    this.fillTextInput("Passport number", number);
+    this.fillTextInput("Applicant's passport number", number);
     return this;
   }
 
