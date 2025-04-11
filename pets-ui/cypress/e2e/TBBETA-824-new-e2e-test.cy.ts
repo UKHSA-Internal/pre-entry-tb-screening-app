@@ -1,3 +1,4 @@
+//Pets Private Beta E2E Test
 import { countryList } from "../../src/utils/countryList";
 import { loginViaB2C } from "../support/commands";
 import { ApplicantConfirmationPage } from "../support/page-objects/applicantConfirmationPage";
@@ -118,7 +119,7 @@ describe("PETS Application End-to-End Tests", () => {
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
 
-    //confirm above details to proceed to the next page
+    //confirm above details to proceed to next page
     applicantSummaryPage.confirmDetails();
 
     // Verify applicant confirmation page
@@ -204,7 +205,7 @@ describe("PETS Application End-to-End Tests", () => {
     // Verify chest X-ray page
     chestXrayPage.verifyPageLoaded();
 
-    // Check applicant information is displayed correctly
+    // Check applicant information is displayed
     chestXrayPage.verifyApplicantInfo({
       Name: "Jane Smith",
       "Date of birth": "15/03/2000",
