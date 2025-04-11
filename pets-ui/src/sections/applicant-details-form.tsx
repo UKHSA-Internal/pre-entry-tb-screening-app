@@ -3,12 +3,12 @@ import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-for
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { ReduxApplicantDetailsType } from "@/applicant";
-import Button from "@/components/button/button";
 import DateTextInput, { DateType } from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Radio from "@/components/radio/radio";
+import SubmitButton from "@/components/submitButton/submitButton";
 import { selectApplicant, setApplicantDetails } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
@@ -318,13 +318,7 @@ const ApplicantForm = () => {
           />
         </div>
 
-        <Button
-          id="save-and-continue"
-          type={ButtonType.DEFAULT}
-          text="Save and continue"
-          href="/applicant-summary"
-          handleClick={() => {}}
-        />
+        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Save and continue" />
       </form>
     </FormProvider>
   );

@@ -3,29 +3,15 @@ import { describe, expect, it } from "vitest";
 
 import { ButtonType } from "@/utils/enums";
 
-import Button from "./button";
-
-const handleClick = () => {};
+import SubmitButton from "./submitButton";
 
 describe("Button component", () => {
   it("renders correctly when button type is DEFAULT", () => {
-    render(
-      <Button
-        id="test-id"
-        text="test-text-default"
-        type={ButtonType.DEFAULT}
-        handleClick={handleClick}
-      />,
-    );
+    render(<SubmitButton id="test-id" text="test-text-default" type={ButtonType.DEFAULT} />);
     expect(screen.getByText("test-text-default")).toBeTruthy();
 
     const { container } = render(
-      <Button
-        id="test-id"
-        text="test-text-default"
-        type={ButtonType.DEFAULT}
-        handleClick={handleClick}
-      />,
+      <SubmitButton id="test-id" text="test-text-default" type={ButtonType.DEFAULT} />,
     );
     expect(container.getElementsByClassName("govuk-button")).toHaveLength(1);
     expect(container.getElementsByClassName("govuk-button--secondary")).toHaveLength(0);
@@ -33,23 +19,11 @@ describe("Button component", () => {
   });
 
   it("renders correctly when button type is SECONDARY", () => {
-    render(
-      <Button
-        id="test-id"
-        text="test-text-secondary"
-        type={ButtonType.SECONDARY}
-        handleClick={handleClick}
-      />,
-    );
+    render(<SubmitButton id="test-id" text="test-text-secondary" type={ButtonType.SECONDARY} />);
     expect(screen.getByText("test-text-secondary")).toBeTruthy();
 
     const { container } = render(
-      <Button
-        id="test-id"
-        text="test-text-secondary"
-        type={ButtonType.SECONDARY}
-        handleClick={handleClick}
-      />,
+      <SubmitButton id="test-id" text="test-text-secondary" type={ButtonType.SECONDARY} />,
     );
     expect(container.getElementsByClassName("govuk-button")).toHaveLength(1);
     expect(container.getElementsByClassName("govuk-button--secondary")).toHaveLength(1);
@@ -57,23 +31,11 @@ describe("Button component", () => {
   });
 
   it("renders correctly when button type is WARNING", () => {
-    render(
-      <Button
-        id="test-id"
-        text="test-text-warning"
-        type={ButtonType.WARNING}
-        handleClick={handleClick}
-      />,
-    );
+    render(<SubmitButton id="test-id" text="test-text-warning" type={ButtonType.WARNING} />);
     expect(screen.getByText("test-text-warning")).toBeTruthy();
 
     const { container } = render(
-      <Button
-        id="test-id"
-        text="test-text-warning"
-        type={ButtonType.WARNING}
-        handleClick={handleClick}
-      />,
+      <SubmitButton id="test-id" text="test-text-warning" type={ButtonType.WARNING} />,
     );
     expect(container.getElementsByClassName("govuk-button")).toHaveLength(1);
     expect(container.getElementsByClassName("govuk-button--secondary")).toHaveLength(0);
@@ -81,14 +43,7 @@ describe("Button component", () => {
   });
 
   it("renders button with marginTop style", () => {
-    render(
-      <Button
-        id="test-id"
-        text="test-text-default"
-        type={ButtonType.DEFAULT}
-        handleClick={handleClick}
-      />,
-    );
+    render(<SubmitButton id="test-id" text="test-text-default" type={ButtonType.DEFAULT} />);
 
     const buttonElement = screen.getByText("test-text-default");
     expect(buttonElement).toHaveStyle("margin-top: 30px");

@@ -3,10 +3,10 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { ReduxTravelDetailsType } from "@/applicant";
-import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
+import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectTravel, setTravelDetails } from "@/redux/travelSlice";
 import { ButtonType } from "@/utils/enums";
@@ -157,13 +157,7 @@ const ApplicantTravelForm = () => {
           />
         </div>
 
-        <Button
-          id="save-and-continue"
-          type={ButtonType.DEFAULT}
-          text="Save and continue"
-          href="/travel-confirmation"
-          handleClick={() => {}}
-        />
+        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Save and continue" />
       </form>
     </FormProvider>
   );

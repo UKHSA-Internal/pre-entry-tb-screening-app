@@ -159,7 +159,6 @@ const ApplicantReview = () => {
           id="confirm"
           type={ButtonType.DEFAULT}
           text="Save and continue"
-          href="/applicant-confirmation"
           handleClick={handleSubmit}
         />
       )}
@@ -168,7 +167,6 @@ const ApplicantReview = () => {
           id="back-to-tracker"
           type={ButtonType.DEFAULT}
           text="Return to tracker"
-          href="/tracker"
           handleClick={() => navigate("/tracker")}
         />
       )}

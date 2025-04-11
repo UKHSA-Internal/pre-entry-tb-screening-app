@@ -4,11 +4,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { ReduxMedicalScreeningType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
-import Button from "@/components/button/button";
 import Checkbox from "@/components/checkbox/checkbox";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Radio from "@/components/radio/radio";
+import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -271,13 +271,7 @@ const MedicalScreeningForm = () => {
           />
         </div>
 
-        <Button
-          id="save-and-continue"
-          type={ButtonType.DEFAULT}
-          text="Save and continue"
-          href="/medical-summary"
-          handleClick={() => {}}
-        />
+        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Save and continue" />
       </form>
     </FormProvider>
   );

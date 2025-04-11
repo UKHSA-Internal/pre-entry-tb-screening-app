@@ -152,7 +152,6 @@ const ChestXraySummary = () => {
           id="confirm"
           type={ButtonType.DEFAULT}
           text="Save and continue"
-          href="/chest-xray-confirmation"
           handleClick={handleSubmit}
         />
       )}
@@ -161,7 +160,6 @@ const ChestXraySummary = () => {
           id="back-to-tracker"
           type={ButtonType.DEFAULT}
           text="Return to tracker"
-          href="/tracker"
           handleClick={() => navigate("/tracker")}
         />
       )}
