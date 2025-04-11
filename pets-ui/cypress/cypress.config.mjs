@@ -31,7 +31,6 @@ export default defineConfig({
   },
   video: true,
   screenshotOnRunFailure: true,
-  defaultCommandTimeout: 30000,
   e2e: {
     baseUrl: process.env.APP_DOMAIN ?? "http://localhost:3000",
     supportFile: "cypress/support/e2e.ts",
