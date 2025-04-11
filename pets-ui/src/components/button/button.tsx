@@ -6,8 +6,7 @@ export interface ButtonProps {
   id: string;
   type: ButtonType;
   text: string;
-  href: string;
-  handleClick: MouseEventHandler<HTMLButtonElement>;
+  handleClick?: MouseEventHandler<HTMLButtonElement>;
 }
 
 export default function Button(props: Readonly<ButtonProps>) {
