@@ -4,12 +4,12 @@ import { useLocation, useNavigate } from "react-router";
 
 import { DateType, ReduxTbCertificateType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
-import Button from "@/components/button/button";
 import DateTextInput from "@/components/dateTextInput/dateTextInput";
 import ErrorDisplay from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
+import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -170,13 +170,7 @@ const TbCertificateDeclarationForm = () => {
           />
         </div>
 
-        <Button
-          id="continue"
-          type={ButtonType.DEFAULT}
-          text="Continue"
-          href="/tb-certificate-summary"
-          handleClick={() => {}}
-        />
+        <SubmitButton id="continue" type={ButtonType.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

@@ -3,11 +3,11 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 import { ApplicantSearchFormType } from "@/applicant";
-import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Spinner from "@/components/spinner/spinner";
+import SubmitButton from "@/components/submitButton/submitButton";
 import {
   clearApplicantDetails,
   setApplicantDetailsFromApiResponse,
@@ -113,13 +113,7 @@ const ApplicantSearchForm = () => {
             required="Select the country of issue."
           />
 
-          <Button
-            id="search"
-            type={ButtonType.DEFAULT}
-            text="Search"
-            href="#"
-            handleClick={() => {}}
-          />
+          <SubmitButton id="search" type={ButtonType.DEFAULT} text="Search" />
         </form>
       </FormProvider>
     </div>

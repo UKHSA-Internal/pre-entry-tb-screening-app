@@ -7,23 +7,11 @@ const handleClick = () => {};
 
 describe("Button component", () => {
   it("renders correctly", () => {
-    render(
-      <StartButton
-        id="test-id"
-        text="test-text-default"
-        href="/test-href"
-        handleClick={handleClick}
-      />,
-    );
+    render(<StartButton id="test-id" text="test-text-default" handleClick={handleClick} />);
     expect(screen.getByText("test-text-default")).toBeTruthy();
 
     const { container } = render(
-      <StartButton
-        id="test-id"
-        text="test-text-default"
-        href="/test-href"
-        handleClick={handleClick}
-      />,
+      <StartButton id="test-id" text="test-text-default" handleClick={handleClick} />,
     );
     expect(container.getElementsByClassName("govuk-button--start")).toHaveLength(1);
   });

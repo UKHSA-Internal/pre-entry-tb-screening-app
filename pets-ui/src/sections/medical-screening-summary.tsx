@@ -143,7 +143,6 @@ const MedicalScreeningReview = () => {
           id="confirm"
           type={ButtonType.DEFAULT}
           text="Save and continue"
-          href="/medical-confirmation"
           handleClick={handleSubmit}
         />
       )}
@@ -152,7 +151,6 @@ const MedicalScreeningReview = () => {
           id="back-to-tracker"
           type={ButtonType.DEFAULT}
           text="Return to tracker"
-          href="/tracker"
           handleClick={() => navigate("/tracker")}
         />
       )}

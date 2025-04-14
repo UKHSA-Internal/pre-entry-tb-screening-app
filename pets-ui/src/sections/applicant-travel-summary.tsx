@@ -96,7 +96,6 @@ const TravelReview = () => {
           id="confirm"
           type={ButtonType.DEFAULT}
           text="Save and continue"
-          href="/travel-confirmation"
           handleClick={handleSubmit}
         />
       )}
@@ -105,7 +104,6 @@ const TravelReview = () => {
           id="back-to-tracker"
           type={ButtonType.DEFAULT}
           text="Return to tracker"
-          href="/tracker"
           handleClick={() => navigate("/tracker")}
         />
       )}
