@@ -1,13 +1,15 @@
-//This holds all fields of the Chest X-ray Question Page
-export class ChestXrayPage {
-  visit(): void {
-    cy.visit("/chest-xray");
+import { BasePage } from "../BasePage";
+
+export class ChestXrayPage extends BasePage {
+  constructor() {
+    super("/chest-xray");
   }
 
   // Verify page loaded
-  verifyPageLoaded(): void {
-    cy.contains("h1", "Select X-ray status").should("be.visible");
+  verifyPageLoaded(): ChestXrayPage {
+    this.verifyPageHeading("Select X-ray status");
     cy.get(".govuk-summary-list").should("be.visible");
+    return this;
   }
 
   // Verify applicant information section
@@ -15,43 +17,30 @@ export class ChestXrayPage {
     Name?: string;
     "Date of birth"?: string;
     "Passport number"?: string;
-  }): void {
-    Object.entries(expectedValues).forEach(([key, value]) => {
-      if (value !== undefined) {
-        this.verifySummaryValue(key, value);
-      }
-    });
-  }
-
-  // Get summary value for a specific field
-  getSummaryValue(fieldKey: string): Cypress.Chainable<string> {
-    return cy
-      .contains("dt.govuk-summary-list__key", fieldKey)
-      .siblings(".govuk-summary-list__value")
-      .invoke("text");
-  }
-
-  // Verify specific summary value
-  verifySummaryValue(fieldKey: string, expectedValue: string): void {
-    this.getSummaryValue(fieldKey).should("eq", expectedValue);
+  }): ChestXrayPage {
+    this.verifySummaryValues(expectedValues);
+    return this;
   }
 
   // Verify X-ray question is displayed
-  verifyXrayQuestionDisplayed(): void {
+  verifyXrayQuestionDisplayed(): ChestXrayPage {
     cy.contains("h2", "Has the visa applicant had a chest X-ray?").should("be.visible");
     cy.get(".govuk-fieldset__legend")
       .contains("This would typically be the postero-anterior chest X-ray")
       .should("be.visible");
+    return this;
   }
 
   // Select "Yes" for X-ray taken
-  selectXrayTakenYes(): void {
-    cy.get('input[name="chestXrayTaken"][value="Yes"]').check();
+  selectXrayTakenYes(): ChestXrayPage {
+    this.checkRadio("chestXrayTaken", "Yes");
+    return this;
   }
 
   // Select "No" for X-ray taken
-  selectXrayTakenNo(): void {
-    cy.get('input[name="chestXrayTaken"][value="No"]').check();
+  selectXrayTakenNo(): ChestXrayPage {
+    this.checkRadio("chestXrayTaken", "No");
+    return this;
   }
 
   // Get current X-ray selection
@@ -63,44 +52,39 @@ export class ChestXrayPage {
   isXrayOptionSelected(): Cypress.Chainable<JQuery<HTMLElement>> {
     return cy.get('input[name="chestXrayTaken"]:checked').should("exist");
   }
+
   // Click continue button
-  clickContinue(): void {
-    cy.contains("button", "Continue").click();
+  clickContinue(): ChestXrayPage {
+    super.submitForm("Continue");
+    return this;
   }
 
   // Verify form submission with selected option
-  submitFormWithOption(option: "Yes" | "No"): void {
+  submitFormWithOption(option: "Yes" | "No"): ChestXrayPage {
     if (option === "Yes") {
       this.selectXrayTakenYes();
     } else {
       this.selectXrayTakenNo();
     }
     this.clickContinue();
+    return this;
   }
 
-  // Verify breadcrumb navigation
-  verifyBreadcrumbNavigation(): void {
-    cy.get(".govuk-breadcrumbs__list-item")
-      .contains("Application progress tracker")
-      .should("be.visible")
-      .and("have.attr", "href", "/tracker");
-  }
-
-  // Verify service name in header
-  verifyServiceName(): void {
-    cy.get(".govuk-header__service-name")
-      .should("be.visible")
-      .and("contain", "Complete UK Pre-Entry Health Screening");
+  // Form validation
+  validateXrayTakenFieldError(): ChestXrayPage {
+    this.validateFieldError("chest-xray-taken");
+    return this;
   }
 
   // Verify form validation - ensure an option is selected
-  verifyFormValidation(): void {
+  verifyFormValidation(): ChestXrayPage {
     // Submit form without selecting an option
     this.clickContinue();
 
     // Verify validation error is displayed
     cy.get(".govuk-error-message").should("be.visible");
     cy.get("#chest-xray-taken-error").should("be.visible");
+    return this;
   }
 
   // Check all elements on the page
@@ -108,11 +92,12 @@ export class ChestXrayPage {
     Name?: string;
     "Date of birth"?: string;
     "Passport number"?: string;
-  }): void {
+  }): ChestXrayPage {
     this.verifyPageLoaded();
     this.verifyApplicantInfo(applicantInfo);
     this.verifyXrayQuestionDisplayed();
     this.verifyBreadcrumbNavigation();
     this.verifyServiceName();
+    return this;
   }
 }
