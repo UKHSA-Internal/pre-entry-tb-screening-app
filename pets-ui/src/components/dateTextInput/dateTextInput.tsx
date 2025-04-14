@@ -9,6 +9,7 @@ export interface DateProps {
   errorMessage: string;
   value: DateType;
   setDateValue: (value: DateType) => void;
+  trimWhitespace?: boolean;
 }
 
 export type DateType = {
@@ -25,17 +26,26 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
   const { day, month, year } = props.value || {};
 
   const handleDayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = { ...props.value, day: e.target.value };
+    const newValue = {
+      ...props.value,
+      day: props.trimWhitespace ? e.target.value.trim() : e.target.value,
+    };
     props.setDateValue(newValue); // Update the whole date object
   };
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = { ...props.value, month: e.target.value };
+    const newValue = {
+      ...props.value,
+      month: props.trimWhitespace ? e.target.value.trim() : e.target.value,
+    };
     props.setDateValue(newValue); // Update the whole date object
   };
 
   const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = { ...props.value, year: e.target.value };
+    const newValue = {
+      ...props.value,
+      year: props.trimWhitespace ? e.target.value.trim() : e.target.value,
+    };
     props.setDateValue(newValue); // Update the whole date object
   };
 

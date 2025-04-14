@@ -20,6 +20,7 @@ export interface FreeTextProps {
   headingLevel?: 1 | 2 | 3 | 4;
   headingSize?: HeadingSize;
   headingStyle?: React.CSSProperties;
+  trimWhitespace?: boolean;
 }
 
 export default function FreeText({
@@ -84,6 +85,9 @@ export default function FreeText({
             pattern: {
               value: props.patternValue,
               message: props.patternError,
+            },
+            setValueAs: (value: string) => {
+              return props.trimWhitespace ? value.trim() : value;
             },
           })}
           defaultValue={props.defaultValue ?? ""}

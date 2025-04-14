@@ -17,6 +17,7 @@ export interface TextAreaProps {
   headingLevel?: 1 | 2 | 3 | 4;
   headingSize?: HeadingSize;
   headingStyle?: React.CSSProperties;
+  trimWhitespace?: boolean;
 }
 
 export default function TextArea({
@@ -69,6 +70,13 @@ export default function TextArea({
         aria-labelledby={props.id}
         {...register(props.formValue, {
           required: props.required,
+          setValueAs: (value: string) => {
+            if (props.trimWhitespace) {
+              return value.trim();
+            } else {
+              return value;
+            }
+          },
         })}
         defaultValue={props.defaultValue ?? ""}
       />
