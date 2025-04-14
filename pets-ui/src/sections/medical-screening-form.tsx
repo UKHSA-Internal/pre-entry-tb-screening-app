@@ -95,6 +95,7 @@ const MedicalScreeningForm = () => {
             inputWidth={3}
             suffixText="years"
             defaultValue={medicalData.age.toString()}
+            trimWhitespace={true}
           />
         </div>
 

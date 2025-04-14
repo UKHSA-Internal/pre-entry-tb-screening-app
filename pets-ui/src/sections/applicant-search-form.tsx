@@ -101,6 +101,7 @@ const ApplicantSearchForm = () => {
             required="Enter the applicant's passport number"
             patternValue={formRegex.lettersAndNumbers}
             patternError="Passport number must contain only letters and numbers"
+            trimWhitespace={true}
           />
 
           <Dropdown

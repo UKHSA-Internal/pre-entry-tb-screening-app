@@ -96,6 +96,7 @@ const ApplicantForm = () => {
             patternValue={formRegex.fullName}
             patternError="Full name must contain only letters and spaces"
             defaultValue={applicantData.fullName}
+            trimWhitespace={true}
           />
         </div>
 
@@ -146,6 +147,7 @@ const ApplicantForm = () => {
                 id={"birth-date"}
                 autocomplete={false}
                 errorMessage={errors?.dateOfBirth?.message ?? ""}
+                trimWhitespace={true}
               />
             )}
           />
@@ -160,6 +162,7 @@ const ApplicantForm = () => {
             patternValue={formRegex.lettersAndNumbers}
             patternError="Passport number must contain only letters and numbers"
             defaultValue={applicantData.passportNumber}
+            trimWhitespace={true}
           />
         </div>
 
@@ -197,6 +200,7 @@ const ApplicantForm = () => {
                 id={"passport-issue-date"}
                 autocomplete={false}
                 errorMessage={errors?.passportIssueDate?.message ?? ""}
+                trimWhitespace={true}
               />
             )}
           />
@@ -223,6 +227,7 @@ const ApplicantForm = () => {
                 id="passport-expiry-date"
                 autocomplete={false}
                 errorMessage={errors?.passportExpiryDate?.message ?? ""}
+                trimWhitespace={true}
               />
             )}
           />
@@ -238,6 +243,7 @@ const ApplicantForm = () => {
             patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
             patternError="Home address must contain only letters, numbers, spaces and punctuation"
             defaultValue={applicantData.applicantHomeAddress1}
+            trimWhitespace={true}
           />
         </div>
 
@@ -251,6 +257,7 @@ const ApplicantForm = () => {
             patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
             patternError="Home address must contain only letters, numbers, spaces and punctuation"
             defaultValue={applicantData.applicantHomeAddress2}
+            trimWhitespace={true}
           />
         </div>
 
@@ -264,6 +271,7 @@ const ApplicantForm = () => {
             patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
             patternError="Home address must contain only letters, numbers, spaces and punctuation"
             defaultValue={applicantData.applicantHomeAddress3}
+            trimWhitespace={true}
           />
         </div>
 
@@ -277,6 +285,7 @@ const ApplicantForm = () => {
             patternValue={formRegex.lettersSpacesAndPunctuation}
             patternError="Town name must contain only letters, spaces and punctuation"
             defaultValue={applicantData.townOrCity}
+            trimWhitespace={true}
           />
         </div>
 
@@ -290,6 +299,7 @@ const ApplicantForm = () => {
             patternValue={formRegex.lettersSpacesAndPunctuation}
             patternError="Province/state name must contain only letters, spaces and punctuation"
             defaultValue={applicantData.provinceOrState}
+            trimWhitespace={true}
           />
         </div>
 
@@ -315,6 +325,7 @@ const ApplicantForm = () => {
             patternValue={formRegex.lettersNumbersAndSpaces}
             patternError="Postcode must contain only letters, numbers and spaces"
             defaultValue={applicantData.postcode}
+            trimWhitespace={true}
           />
         </div>
 

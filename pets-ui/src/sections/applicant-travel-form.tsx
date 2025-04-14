@@ -89,6 +89,7 @@ const ApplicantTravelForm = () => {
             patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
             patternError="Home address must contain only letters, numbers, spaces and punctuation"
             defaultValue={travelData.applicantUkAddress1}
+            trimWhitespace={true}
           />
         </div>
 
@@ -102,6 +103,7 @@ const ApplicantTravelForm = () => {
             patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
             patternError="Home address must contain only letters, numbers, spaces and punctuation"
             defaultValue={travelData.applicantUkAddress2}
+            trimWhitespace={true}
           />
         </div>
 
@@ -115,6 +117,7 @@ const ApplicantTravelForm = () => {
             patternValue={formRegex.lettersSpacesAndPunctuation}
             patternError="Town name must contain only letters, spaces and punctuation"
             defaultValue={travelData.townOrCity}
+            trimWhitespace={true}
           />
         </div>
 
@@ -128,6 +131,7 @@ const ApplicantTravelForm = () => {
             patternValue={formRegex.lettersNumbersAndSpaces}
             patternError="Postcode must contain only letters, numbers and spaces"
             defaultValue={travelData.postcode}
+            trimWhitespace={true}
           />
         </div>
 
@@ -141,6 +145,7 @@ const ApplicantTravelForm = () => {
             patternValue={formRegex.numbersOnly}
             patternError="Enter applicant's UK phone number"
             defaultValue={travelData.ukMobileNumber}
+            trimWhitespace={true}
           />
         </div>
 
@@ -154,6 +159,7 @@ const ApplicantTravelForm = () => {
             patternValue={formRegex.emailAddress}
             patternError="Email must be in correct format"
             defaultValue={travelData.ukEmail}
+            trimWhitespace={true}
           />
         </div>
 
