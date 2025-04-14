@@ -71,11 +71,7 @@ export default function TextArea({
         {...register(props.formValue, {
           required: props.required,
           setValueAs: (value: string) => {
-            if (props.trimWhitespace) {
-              return value.trim();
-            } else {
-              return value;
-            }
+            return props.trimWhitespace ? value.trim() : value;
           },
         })}
         defaultValue={props.defaultValue ?? ""}
