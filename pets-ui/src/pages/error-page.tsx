@@ -2,6 +2,7 @@ import "./error-page.scss";
 
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
+import LinkLabel from "@/components/linkLabel/LinkLabel";
 
 export default function ErrorPage() {
   return (
@@ -14,8 +15,12 @@ export default function ErrorPage() {
       <p className="govuk-body">Try again now or later.</p>
       <p className="govuk-body">
         Contact{" "}
-        <a href="mailto:uktbscreeningsupport@ukhsa.gov.uk">uktbscreeningsupport@ukhsa.gov.uk</a> if
-        the problem continues.
+        <LinkLabel
+          to="mailto:uktbscreeningsupport@ukhsa.gov.uk"
+          title="uktbscreeningsupport@ukhsa.gov.uk"
+          externalLink
+        />{" "}
+        if the problem continues.
       </p>
     </Container>
   );
