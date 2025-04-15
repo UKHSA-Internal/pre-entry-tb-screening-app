@@ -87,6 +87,7 @@ export default function FreeText({
               value: props.patternValue,
               message: props.patternError,
             },
+            setValueAs: (value: string) => value.trim(),
           })}
           defaultValue={props.defaultValue ?? ""}
         />
