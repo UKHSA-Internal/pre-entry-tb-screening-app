@@ -5,6 +5,7 @@ type LabelProps = {
   title: string;
   to: string;
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+  dataModule?: string;
   style?: React.CSSProperties;
   className?: string;
   id?: string;
@@ -25,6 +26,7 @@ const LinkLabel = ({
       aria-label={props.ariaLabel}
       style={props.style}
       onClick={props.onClick}
+      data-module={props.dataModule}
     >
       {props.title}
     </a>
