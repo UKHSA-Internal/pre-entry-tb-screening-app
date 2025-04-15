@@ -150,7 +150,6 @@ const TbCertificateDeclarationForm = () => {
                 autocomplete={false}
                 hint="For example, 30 3 2024"
                 errorMessage={errors?.certificateDate?.message ?? ""}
-                trimWhitespace={true}
               />
             )}
           />
@@ -168,7 +167,6 @@ const TbCertificateDeclarationForm = () => {
             required={
               isTbClearanceIssued === "Yes" ? "Enter the TB clearance certificate number" : false
             }
-            trimWhitespace={true}
           />
         </div>
 
