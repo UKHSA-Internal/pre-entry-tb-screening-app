@@ -1,3 +1,5 @@
+import "./notificationBanner.scss";
+
 import List from "../list/list";
 
 interface NotificationBannerProps {

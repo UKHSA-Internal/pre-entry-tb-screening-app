@@ -1,5 +1,3 @@
-import "./applicant-results.scss";
-
 import Container from "@/components/container/container";
 import ApplicantEmptyResult from "@/sections/applicant-no-results";
 

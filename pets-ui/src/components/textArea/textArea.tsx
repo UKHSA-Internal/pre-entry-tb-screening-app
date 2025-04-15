@@ -1,3 +1,5 @@
+import "./textArea.scss";
+
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
