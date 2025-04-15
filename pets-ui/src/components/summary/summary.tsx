@@ -1,3 +1,5 @@
+import "./summary.scss";
+
 import { ApplicationStatus } from "@/utils/enums";
 
 import LinkLabel from "../linkLabel/LinkLabel";

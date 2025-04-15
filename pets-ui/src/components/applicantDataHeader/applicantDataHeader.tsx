@@ -1,3 +1,5 @@
+import "./applicantDataHeader.scss";
+
 import { ReduxApplicantDetailsType } from "@/applicant";
 
 interface ApplicantDataHeaderProps {

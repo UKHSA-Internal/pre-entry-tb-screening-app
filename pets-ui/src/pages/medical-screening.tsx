@@ -1,5 +1,3 @@
-import "./medical-screening.scss";
-
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import MedicalScreeningForm from "@/sections/medical-screening-form";

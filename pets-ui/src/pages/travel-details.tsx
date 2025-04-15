@@ -1,5 +1,3 @@
-import "./travel-details.scss";
-
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import ApplicantTravelForm from "@/sections/applicant-travel-form";
