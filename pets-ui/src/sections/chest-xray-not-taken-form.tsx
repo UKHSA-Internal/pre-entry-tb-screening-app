@@ -1,6 +1,6 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
@@ -41,8 +41,25 @@ const ChestXrayNotTakenForm = () => {
 
   const watchedReasonXrayNotTaken = watch("reasonXrayWasNotTaken") as unknown as string;
 
+  // Required to scroll to the correct element when a change link on the summary page is clicked
+  const location = useLocation();
   const reasonXrayNotTakenRef = useRef<HTMLDivElement | null>(null);
   const xrayNotTakenFurtherDetailsRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (location.hash) {
+      const target = location.hash.substring(1);
+      const refMap: { [key: string]: HTMLElement | null } = {
+        "reason-xray-not-taken": reasonXrayNotTakenRef.current,
+        "xray-not-taken-further-details": xrayNotTakenFurtherDetailsRef.current,
+      };
+
+      const targetRef = refMap[target];
+      if (targetRef) {
+        targetRef.scrollIntoView();
+      }
+    }
+  }, [location]);
 
   return (
     <FormProvider {...methods}>
