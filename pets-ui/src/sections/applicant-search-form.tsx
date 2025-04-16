@@ -110,7 +110,7 @@ const ApplicantSearchForm = () => {
             options={countryList}
             errorMessage={errors?.countryOfIssue?.message ?? ""}
             formValue="countryOfIssue"
-            required="Select the country of issue."
+            required="Select the country of issue"
           />
 
           <SubmitButton id="search" type={ButtonType.DEFAULT} text="Search" />
