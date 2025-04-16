@@ -9,7 +9,7 @@ export type SummaryElement = {
   value: string | Array<string> | undefined;
   link: string;
   hiddenLabel: string;
-  emptyValueMessage?: string;
+  emptyValueText?: string;
 };
 
 interface SummaryProps {
@@ -33,8 +33,8 @@ function summaryValue(summaryElement: SummaryElement) {
           <LinkLabel
             to={summaryElement.link}
             title={
-              summaryElement.emptyValueMessage
-                ? summaryElement.emptyValueMessage
+              summaryElement.emptyValueText
+                ? summaryElement.emptyValueText
                 : `Enter ${summaryElement.key.toLowerCase()}`
             }
             hiddenLabel=""
@@ -52,8 +52,8 @@ function summaryValue(summaryElement: SummaryElement) {
           <LinkLabel
             to={summaryElement.link}
             title={
-              summaryElement.emptyValueMessage
-                ? summaryElement.emptyValueMessage
+              summaryElement.emptyValueText
+                ? summaryElement.emptyValueText
                 : `Enter ${summaryElement.key.toLowerCase()}`
             }
             hiddenLabel=""
