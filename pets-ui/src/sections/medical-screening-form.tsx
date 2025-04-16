@@ -14,6 +14,7 @@ import { selectApplicant } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectMedicalScreening, setMedicalScreeningDetails } from "@/redux/medicalScreeningSlice";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { convertToArrayIfString } from "@/utils/helpers";
 import { formRegex } from "@/utils/records";
 
 const MedicalScreeningForm = () => {
@@ -30,7 +31,12 @@ const MedicalScreeningForm = () => {
   const dispatch = useAppDispatch();
 
   const onSubmit: SubmitHandler<ReduxMedicalScreeningType> = (medicalScreeningData) => {
-    dispatch(setMedicalScreeningDetails(medicalScreeningData));
+    const dataWithCorrectedLists = {
+      ...medicalScreeningData,
+      tbSymptomsList: convertToArrayIfString(medicalScreeningData.tbSymptomsList),
+      underElevenConditions: convertToArrayIfString(medicalScreeningData.underElevenConditions),
+    };
+    dispatch(setMedicalScreeningDetails(dataWithCorrectedLists));
     navigate("/medical-summary");
   };
 
