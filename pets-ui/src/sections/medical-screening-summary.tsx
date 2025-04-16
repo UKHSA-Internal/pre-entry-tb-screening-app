@@ -62,12 +62,14 @@ const MedicalScreeningReview = () => {
       value: medicalData.tbSymptoms,
       link: `/medical-screening#${attributeToComponentId.tbSymptoms}`,
       hiddenLabel: "whether the applicant has TB symptoms",
+      emptyValueMessage: "Enter whether the applicant has TB symptoms",
     },
     {
       key: "TB symptoms",
       value: medicalData.tbSymptomsList.join(", "),
       link: `/medical-screening#${attributeToComponentId.tbSymptomsList}`,
       hiddenLabel: "TB symptoms",
+      emptyValueMessage: "Enter TB symptoms",
     },
     {
       key: "Other symptoms",
@@ -92,18 +94,22 @@ const MedicalScreeningReview = () => {
       value: medicalData.previousTb,
       link: `/medical-screening#${attributeToComponentId.previousTb}`,
       hiddenLabel: "whether the applicant has ever had tuberculosis",
+      emptyValueMessage: "Enter whether the applicant has ever had tuberculosis",
     },
     {
       key: "Detail of applicant's previous TB",
       value: medicalData.previousTbDetail,
       link: `/medical-screening#${attributeToComponentId.previousTbDetail}`,
       hiddenLabel: "details of applicant's previous TB",
+      emptyValueMessage: "Enter detail of applicant's previous TB",
     },
     {
       key: "Has the applicant had close contact with any person with active pulmonary tuberculosis within the past year?",
       value: medicalData.closeContactWithTb,
       link: `/medical-screening#${attributeToComponentId.closeContactWithTb}`,
       hiddenLabel: "applicant's close contact with TB in the past year",
+      emptyValueMessage:
+        "Enter whether the applicant has had close contact with any person with active pulmonary tuberculosis within the past year",
     },
     {
       key: "Details of applicant's close contact with any person with active pulmonary tuberculosis",
@@ -116,12 +122,14 @@ const MedicalScreeningReview = () => {
       value: medicalData.pregnant,
       link: `/medical-screening#${attributeToComponentId.pregnant}`,
       hiddenLabel: "pregnancy",
+      emptyValueMessage: "Enter whether the applicant is pregnant",
     },
     {
       key: "Does the applicant have menstrual periods?",
       value: medicalData.menstrualPeriods,
       link: `/medical-screening#${attributeToComponentId.menstrualPeriods}`,
       hiddenLabel: "menstrual periods",
+      emptyValueMessage: "Enter whether the applicant has menstrual periods",
     },
     {
       key: "Physical examination notes",

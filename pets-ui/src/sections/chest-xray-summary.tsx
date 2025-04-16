@@ -60,34 +60,39 @@ const ChestXraySummary = () => {
 
   const xrayTakenSummaryData = [
     {
-      key: "Select x-ray status",
+      key: "Select X-ray status",
       value: chestXrayData.chestXrayTaken,
       link: `/chest-xray-question#${attributeToComponentId.chestXrayTaken}`,
       hiddenLabel: "chest X-ray Status",
+      emptyValueMessage: "Enter X-ray status",
     },
     {
-      key: "Postero anterior x-ray",
+      key: "Postero anterior X-ray",
       value: chestXrayData.posteroAnteriorXrayFileName,
       link: `/chest-xray-upload#${attributeToComponentId.posteroAnteriorXrayFileName}`,
-      hiddenLabel: "postero-anterior X-ray",
+      hiddenLabel: "postero anterior X-ray",
+      emptyValueMessage: "Upload postero anterior X-ray",
     },
     {
-      key: "Apical lordotic x-ray",
+      key: "Apical lordotic X-ray",
       value: chestXrayData.apicalLordoticXrayFileName,
       link: `/chest-xray-upload#${attributeToComponentId.apicalLordoticXrayFileName}`,
       hiddenLabel: "apical lordotic X-ray",
+      emptyValueMessage: "Upload apical lordotic X-ray",
     },
     {
-      key: "Lateral decubitus x-ray",
+      key: "Lateral decubitus X-ray",
       value: chestXrayData.lateralDecubitusXrayFileName,
       link: `/chest-xray-upload#${attributeToComponentId.lateralDecubitusXrayFileName}`,
       hiddenLabel: "lateral decubitus X-ray",
+      emptyValueMessage: "Upload lateral decubitus X-ray",
     },
     {
       key: "Enter radiological outcome",
       value: chestXrayData.xrayResult,
       link: `/chest-xray-findings#${attributeToComponentId.xrayResult}`,
       hiddenLabel: "radiological outcome",
+      emptyValueMessage: "Enter radiological outcome",
     },
     {
       key: "Radiological details",
@@ -103,7 +108,8 @@ const ChestXraySummary = () => {
         chestXrayData.xrayActiveTbFindings,
       ),
       link: `/chest-xray-findings#${attributeToComponentId.xrayMinorFindings}`,
-      hiddenLabel: "radiographic Findings",
+      hiddenLabel: "radiographic findings",
+      emptyValueMessage: "Enter radiographic findings",
     },
   ];
 
@@ -112,13 +118,15 @@ const ChestXraySummary = () => {
       key: "Select x-ray status",
       value: chestXrayData.chestXrayTaken,
       link: `/chest-xray-question#${attributeToComponentId.chestXrayTaken}`,
-      hiddenLabel: "Chest X-ray Status",
+      hiddenLabel: "chest X-ray status",
+      emptyValueMessage: "Enter X-ray status",
     },
     {
       key: "Enter reason X-ray not taken",
       value: chestXrayData.reasonXrayWasNotTaken,
       link: `/chest-xray-not-taken#${attributeToComponentId.reasonXrayWasNotTaken}`,
       hiddenLabel: "Reason why X-ray was not taken",
+      emptyValueMessage: "Enter reason X-ray not taken",
     },
   ];
 

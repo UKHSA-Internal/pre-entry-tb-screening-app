@@ -53,36 +53,42 @@ const TravelReview = () => {
       value: travelData.applicantUkAddress1,
       link: `/travel-details#${attributeToComponentId.applicantUkAddress1}`,
       hiddenLabel: "UK address line 1",
+      emptyValueMessage: "Enter UK address line 1",
     },
     {
       key: "UK address line 2",
       value: travelData.applicantUkAddress2,
       link: `/travel-details#${attributeToComponentId.applicantUkAddress2}`,
       hiddenLabel: "UK address line 2",
+      emptyValueMessage: "Enter UK address line 2",
     },
     {
       key: "UK town or city",
       value: travelData.townOrCity,
       link: `/travel-details#${attributeToComponentId.townOrCity}`,
       hiddenLabel: "town or city",
+      emptyValueMessage: "Enter UK town or city",
     },
     {
       key: "UK postcode",
       value: travelData.postcode,
       link: `/travel-details#${attributeToComponentId.postcode}`,
       hiddenLabel: "postcode",
+      emptyValueMessage: "Enter UK postcode",
     },
     {
       key: "UK mobile number",
       value: travelData.ukMobileNumber,
       link: `/travel-details#${attributeToComponentId.ukMobileNumber}`,
       hiddenLabel: "UK mobile number",
+      emptyValueMessage: "Enter UK mobile number",
     },
     {
       key: "UK email address",
       value: travelData.ukEmail,
       link: `/travel-details#${attributeToComponentId.ukEmail}`,
       hiddenLabel: "UK email address",
+      emptyValueMessage: "Enter email address",
     },
   ];
 
