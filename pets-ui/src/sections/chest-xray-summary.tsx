@@ -128,6 +128,12 @@ const ChestXraySummary = () => {
       hiddenLabel: "Reason why X-ray was not taken",
       emptyValueText: "Enter reason X-ray not taken",
     },
+    {
+      key: "Details",
+      value: chestXrayData.xrayWasNotTakenFurtherDetails,
+      link: `/chest-xray-not-taken#${attributeToComponentId.xrayWasNotTakenFurtherDetails}`,
+      hiddenLabel: "details",
+    },
   ];
 
   return (
