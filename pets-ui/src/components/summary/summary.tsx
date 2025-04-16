@@ -42,15 +42,20 @@ function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement)
   } else {
     return (
       <dd className="govuk-summary-list__value">
-        {summaryElement.value ??
-          (status == ApplicationStatus.INCOMPLETE && (
-            <LinkLabel
-              to={summaryElement.link}
-              title={summaryElement.emptyValueText ?? `Enter ${summaryElement.key.toLowerCase()}`}
-              hiddenLabel=""
-              externalLink={false}
-            />
-          ))}
+        {summaryElement.value
+          ? summaryElement.value
+          : status == ApplicationStatus.INCOMPLETE && (
+              <LinkLabel
+                to={summaryElement.link}
+                title={
+                  summaryElement.emptyValueText
+                    ? summaryElement.emptyValueText
+                    : `Enter ${summaryElement.key.toLowerCase()}`
+                }
+                hiddenLabel=""
+                externalLink={false}
+              />
+            )}
       </dd>
     );
   }
