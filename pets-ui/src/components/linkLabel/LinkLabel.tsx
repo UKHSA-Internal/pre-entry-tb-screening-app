@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 
 type LabelProps = {
-  ariaLabel?: string;
   title: string;
   to: string;
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
@@ -23,7 +22,6 @@ const LinkLabel = ({
       className={className}
       id={props.id}
       href={props.to}
-      aria-label={props.ariaLabel}
       style={props.style}
       onClick={props.onClick}
       data-module={props.dataModule}
@@ -35,7 +33,6 @@ const LinkLabel = ({
       className={className}
       id={props.id}
       to={props.to}
-      aria-label={props.ariaLabel}
       style={props.style}
       onClick={props.onClick}
     >
