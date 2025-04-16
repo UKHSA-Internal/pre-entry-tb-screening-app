@@ -1,7 +1,6 @@
 import {
   formatDateType,
   hasInvalidCharacters,
-  isDataPresent,
   isDateInTheFuture,
   isDateInThePast,
   logError,
@@ -95,43 +94,6 @@ describe("FormatDateType function", () => {
     expect(formatDateType({ year: "", month: "5", day: "4" })).toBe("");
     expect(formatDateType({ year: "2025", month: "", day: "4" })).toBe("");
     expect(formatDateType({ year: "2025", month: "5", day: "" })).toBe("");
-  });
-});
-
-describe("isDataPresent function", () => {
-  it("returns true if data is present in the summaryElement", () => {
-    const summaryElementStringExample = {
-      key: "Exmaple Key",
-      value: "A Value",
-      link: "/a-link",
-      hiddenLabel: "label",
-    };
-    const summaryElementArrayExample = {
-      key: "Exmaple Key",
-      value: ["A Value", "AnotherValue"],
-      link: "/a-link",
-      hiddenLabel: "label",
-    };
-    expect(isDataPresent(summaryElementStringExample)).toBeTruthy();
-    expect(isDataPresent(summaryElementArrayExample)).toBeTruthy();
-  });
-  it("returns false if data is not present in the summaryElement", () => {
-    const summaryElementEmptyStringExmaple = {
-      key: "Exmaple Key",
-      value: "",
-      link: "/a-link",
-      hiddenLabel: "label",
-    };
-    expect(isDataPresent(summaryElementEmptyStringExmaple)).toBeFalsy();
-  });
-  it("returns false if data is an empty array", () => {
-    const summaryElementEmptyArrayExmaple = {
-      key: "Exmaple Key",
-      value: [],
-      link: "/a-link",
-      hiddenLabel: "label",
-    };
-    expect(isDataPresent(summaryElementEmptyArrayExmaple)).toBeFalsy();
   });
 });
 

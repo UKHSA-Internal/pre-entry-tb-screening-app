@@ -6,7 +6,7 @@ import { postChestXrayDetails } from "@/api/api";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import Spinner from "@/components/spinner/spinner";
-import Summary, { SummaryElement } from "@/components/summary/summary";
+import Summary from "@/components/summary/summary";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { selectApplication } from "@/redux/applicationSlice";
 import { selectChestXray, setChestXrayStatus } from "@/redux/chestXraySlice";
@@ -130,29 +130,16 @@ const ChestXraySummary = () => {
     },
   ];
 
-  const isDataPresent = (
-    summaryElement: Partial<SummaryElement>,
-  ): summaryElement is SummaryElement => {
-    const { value } = summaryElement;
-    return Array.isArray(value) ? value.length > 0 : !!value;
-  };
-
   return (
     <div>
       {isLoading && <Spinner />}
       <ApplicantDataHeader applicantData={applicantData} />
 
       {chestXrayData.chestXrayTaken == YesOrNo.YES && (
-        <Summary
-          status={chestXrayData.status}
-          summaryElements={xrayTakenSummaryData.filter(isDataPresent)}
-        />
+        <Summary status={chestXrayData.status} summaryElements={xrayTakenSummaryData} />
       )}
       {chestXrayData.chestXrayTaken == YesOrNo.NO && (
-        <Summary
-          status={chestXrayData.status}
-          summaryElements={xrayNotTakenSummaryData.filter(isDataPresent)}
-        />
+        <Summary status={chestXrayData.status} summaryElements={xrayNotTakenSummaryData} />
       )}
 
       {chestXrayData.status == ApplicationStatus.INCOMPLETE && (

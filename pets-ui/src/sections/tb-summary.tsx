@@ -12,7 +12,7 @@ import { selectApplication } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectTbCertificate, setTbCertificateStatus } from "@/redux/tbCertificateSlice";
 import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
-import { formatDateType, isDataPresent, standardiseDayOrMonth } from "@/utils/helpers";
+import { formatDateType, standardiseDayOrMonth } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
 const TbSummary = () => {
@@ -87,10 +87,7 @@ const TbSummary = () => {
       {isLoading && <Spinner />}
       <ApplicantDataHeader applicantData={applicantData} />
 
-      <Summary
-        status={tbCertificateData.status}
-        summaryElements={summaryData.filter(isDataPresent)}
-      />
+      <Summary status={tbCertificateData.status} summaryElements={summaryData} />
 
       {tbCertificateData.status == ApplicationStatus.INCOMPLETE && (
         <Button
