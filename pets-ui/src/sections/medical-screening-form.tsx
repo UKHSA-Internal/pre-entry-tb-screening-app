@@ -262,7 +262,7 @@ const MedicalScreeningForm = () => {
         <div ref={physicalExamNotesRef}>
           <TextArea
             id="physical-exam-notes"
-            label="Physical examination notes"
+            label="Physical examination notes (optional)"
             errorMessage={errors?.physicalExamNotes?.message ?? ""}
             formValue="physicalExamNotes"
             required={false}

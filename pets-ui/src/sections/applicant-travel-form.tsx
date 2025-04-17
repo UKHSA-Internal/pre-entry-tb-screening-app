@@ -95,7 +95,7 @@ const ApplicantTravelForm = () => {
         <div ref={addressLine2Ref}>
           <FreeText
             id="address-2"
-            label="Address line 2 (optional)"
+            label="Address line 2"
             errorMessage={errors?.applicantUkAddress2?.message ?? ""}
             formValue="applicantUkAddress2"
             required={false}
