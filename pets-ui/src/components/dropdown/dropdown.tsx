@@ -1,3 +1,5 @@
+import "./dropdown.scss";
+
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
@@ -68,7 +70,6 @@ export default function Dropdown({
       )}
       <select
         id={props.id}
-        aria-labelledby={props.id}
         className={selectClass}
         defaultValue={props.defaultValue ?? ""}
         {...register(props.formValue, {

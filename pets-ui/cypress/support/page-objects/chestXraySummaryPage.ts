@@ -42,8 +42,8 @@ export class ChestXraySummaryPage {
 
   // Verify X-ray summary information
   verifyXraySummaryInfo(expectedValues: {
-    "Select x-ray status"?: string;
-    "Postero anterior x-ray"?: string;
+    "Select X-ray status"?: string;
+    "Postero anterior X-ray"?: string;
     "Enter radiological outcome"?: string;
     "Enter radiographic findings"?: string;
   }): void {
@@ -70,12 +70,12 @@ export class ChestXraySummaryPage {
 
   // Check specific change links exist with correct URLs
   verifyChangeLinksExist(): void {
-    cy.contains("dt.govuk-summary-list__key", "Select x-ray status")
+    cy.contains("dt.govuk-summary-list__key", "Select X-ray status")
       .siblings(".govuk-summary-list__actions")
       .find("a")
       .should("have.attr", "href", "/chest-xray-question#chest-xray-taken");
 
-    cy.contains("dt.govuk-summary-list__key", "Postero anterior x-ray")
+    cy.contains("dt.govuk-summary-list__key", "Postero anterior X-ray")
       .siblings(".govuk-summary-list__actions")
       .find("a")
       .should("have.attr", "href", "/chest-xray-upload#postero-anterior-xray");
@@ -130,8 +130,8 @@ export class ChestXraySummaryPage {
       "Passport number"?: string;
     },
     xrayInfo: {
-      "Select x-ray status"?: string;
-      "Postero anterior x-ray"?: string;
+      "Select X-ray status"?: string;
+      "Postero anterior X-ray"?: string;
       "Enter radiological outcome"?: string;
       "Enter radiographic findings"?: string;
     },

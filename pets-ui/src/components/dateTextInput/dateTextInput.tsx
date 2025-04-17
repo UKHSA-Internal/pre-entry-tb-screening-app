@@ -1,4 +1,8 @@
+import "./dateTextInput.scss";
+
 import { useEffect, useState } from "react";
+
+import { DateType } from "@/applicant";
 
 export interface DateProps {
   id: string;
@@ -11,12 +15,6 @@ export interface DateProps {
   setDateValue: (value: DateType) => void;
 }
 
-export type DateType = {
-  year: string;
-  month: string;
-  day: string;
-};
-
 interface AutocompleteI {
   autoComplete?: string;
 }
@@ -25,17 +23,26 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
   const { day, month, year } = props.value || {};
 
   const handleDayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = { ...props.value, day: e.target.value };
+    const newValue = {
+      ...props.value,
+      day: e.target.value.trim(),
+    };
     props.setDateValue(newValue); // Update the whole date object
   };
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = { ...props.value, month: e.target.value };
+    const newValue = {
+      ...props.value,
+      month: e.target.value.trim(),
+    };
     props.setDateValue(newValue); // Update the whole date object
   };
 
   const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = { ...props.value, year: e.target.value };
+    const newValue = {
+      ...props.value,
+      year: e.target.value.trim(),
+    };
     props.setDateValue(newValue); // Update the whole date object
   };
 

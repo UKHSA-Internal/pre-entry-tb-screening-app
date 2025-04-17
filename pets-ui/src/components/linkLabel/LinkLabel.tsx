@@ -1,16 +1,16 @@
 import { Link } from "react-router-dom";
 
-type LabelProps = {
-  ariaLabel?: string;
+interface LabelProps {
   title: string;
   to: string;
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+  dataModule?: string;
   style?: React.CSSProperties;
   className?: string;
   id?: string;
   hiddenLabel?: string;
   externalLink: boolean;
-};
+}
 
 // excludes internal page navigations (e.g. error summary, skip to main content)
 const LinkLabel = ({
@@ -22,9 +22,9 @@ const LinkLabel = ({
       className={className}
       id={props.id}
       href={props.to}
-      aria-label={props.ariaLabel}
       style={props.style}
       onClick={props.onClick}
+      data-module={props.dataModule}
     >
       {props.title}
     </a>
@@ -33,7 +33,6 @@ const LinkLabel = ({
       className={className}
       id={props.id}
       to={props.to}
-      aria-label={props.ariaLabel}
       style={props.style}
       onClick={props.onClick}
     >

@@ -94,7 +94,7 @@ describe("ChestXraySummaryPage", () => {
     });
     it("renders the page titles and descriptions ", () => {
       expect(screen.getByText("Check chest X-ray information")).toBeInTheDocument();
-      expect(screen.getByText("Select x-ray status")).toBeInTheDocument();
+      expect(screen.getByText("Select X-ray status")).toBeInTheDocument();
     });
     it("when continue pressed, data is posted & user is navigated to /chest-xray-confirmation", async () => {
       mock.onPost("/application/abc-123/chest-xray").reply(200);
@@ -131,11 +131,11 @@ describe("ChestXraySummaryPage", () => {
       );
     });
     it("renders the page titles and data ", () => {
-      expect(screen.getByText("Postero anterior x-ray")).toBeInTheDocument();
+      expect(screen.getByText("Postero anterior X-ray")).toBeInTheDocument();
       expect(screen.getByText("PA Example FileName")).toBeInTheDocument();
-      expect(screen.getByText("Apical lordotic x-ray")).toBeInTheDocument();
+      expect(screen.getByText("Apical lordotic X-ray")).toBeInTheDocument();
       expect(screen.getByText("AL Example FileName")).toBeInTheDocument();
-      expect(screen.getByText("Lateral decubitus x-ray")).toBeInTheDocument();
+      expect(screen.getByText("Lateral decubitus X-ray")).toBeInTheDocument();
       expect(screen.getByText("LD Example FileName")).toBeInTheDocument();
       expect(screen.getByText("Enter radiological outcome")).toBeInTheDocument();
       expect(screen.getByText("Chest X-ray normal")).toBeInTheDocument();

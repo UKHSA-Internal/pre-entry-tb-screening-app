@@ -1,3 +1,5 @@
+import "./summary.scss";
+
 import { ApplicationStatus } from "@/utils/enums";
 
 import LinkLabel from "../linkLabel/LinkLabel";
@@ -7,11 +9,52 @@ export type SummaryElement = {
   value: string | Array<string> | undefined;
   link: string;
   hiddenLabel: string;
+  emptyValueText?: string;
 };
 
 interface SummaryProps {
   status: ApplicationStatus;
   summaryElements: SummaryElement[];
+}
+
+function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement) {
+  if (Array.isArray(summaryElement.value)) {
+    return (
+      <div className="govuk-summary-value-column">
+        {summaryElement.value.length > 0
+          ? summaryElement.value.map((value) => {
+              return (
+                <dd className="govuk-summary-list__value" key={value}>
+                  {value}
+                </dd>
+              );
+            })
+          : status == ApplicationStatus.INCOMPLETE && (
+              <LinkLabel
+                to={summaryElement.link}
+                title={summaryElement.emptyValueText ?? `Enter ${summaryElement.key.toLowerCase()}`}
+                hiddenLabel=""
+                externalLink={false}
+              />
+            )}
+      </div>
+    );
+  } else {
+    return (
+      <dd className="govuk-summary-list__value">
+        {summaryElement.value
+          ? summaryElement.value
+          : status == ApplicationStatus.INCOMPLETE && (
+              <LinkLabel
+                to={summaryElement.link}
+                title={summaryElement.emptyValueText ?? `Enter ${summaryElement.key.toLowerCase()}`}
+                hiddenLabel=""
+                externalLink={false}
+              />
+            )}
+      </dd>
+    );
+  }
 }
 
 export default function Summary(props: Readonly<SummaryProps>) {
@@ -21,29 +64,19 @@ export default function Summary(props: Readonly<SummaryProps>) {
         return (
           <div className="govuk-summary-list__row" key={summaryElement.key}>
             <dt className="govuk-summary-list__key">{summaryElement.key}</dt>
-            {Array.isArray(summaryElement.value) ? (
-              <div className="govuk-summary-value-column">
-                {summaryElement.value.map((value) => {
-                  return (
-                    <dd className="govuk-summary-list__value" key={value}>
-                      {value}
-                    </dd>
-                  );
-                })}
-              </div>
-            ) : (
-              <dd className="govuk-summary-list__value">{summaryElement.value}</dd>
-            )}
-            {props.status == ApplicationStatus.INCOMPLETE && (
-              <dd className="govuk-summary-list__actions">
-                <LinkLabel
-                  to={summaryElement.link}
-                  title="Change"
-                  hiddenLabel={summaryElement.hiddenLabel}
-                  externalLink={false}
-                />
-              </dd>
-            )}
+            {summaryValue(props.status, summaryElement)}
+            {props.status == ApplicationStatus.INCOMPLETE &&
+              summaryElement.value &&
+              summaryElement.value.length > 0 && (
+                <dd className="govuk-summary-list__actions">
+                  <LinkLabel
+                    to={summaryElement.link}
+                    title="Change"
+                    hiddenLabel={" " + summaryElement.hiddenLabel}
+                    externalLink={false}
+                  />
+                </dd>
+              )}
           </div>
         );
       })}

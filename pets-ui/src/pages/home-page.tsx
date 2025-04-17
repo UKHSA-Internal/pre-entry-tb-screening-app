@@ -47,11 +47,7 @@ export default function HomePage() {
         ]}
       />
       <p className="govuk-body">Applicants need a:</p>
-      <ul className="govuk-body">
-        <li>valid passport</li>
-        <li>UK address</li>
-        <li>UK visa type</li>
-      </ul>
+      <List items={["valid passport", "valid passport", "UK visa type"]} />
       <p className="govuk-body">
         If you&apos;re a clinician you can also sign in to resume a medical screening case.
       </p>
