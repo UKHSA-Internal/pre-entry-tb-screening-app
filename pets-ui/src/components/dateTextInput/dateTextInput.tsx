@@ -2,6 +2,8 @@ import "./dateTextInput.scss";
 
 import { useEffect, useState } from "react";
 
+import { DateType } from "@/applicant";
+
 export interface DateProps {
   id: string;
   legend?: string;
@@ -12,12 +14,6 @@ export interface DateProps {
   value: DateType;
   setDateValue: (value: DateType) => void;
 }
-
-export type DateType = {
-  year: string;
-  month: string;
-  day: string;
-};
 
 interface AutocompleteI {
   autoComplete?: string;

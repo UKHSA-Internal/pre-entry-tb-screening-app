@@ -12,7 +12,7 @@ import { selectApplication } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectTbCertificate, setTbCertificateStatus } from "@/redux/tbCertificateSlice";
 import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
-import { formatDateType, isDataPresent, standardiseDayOrMonth } from "@/utils/helpers";
+import { formatDateType, standardiseDayOrMonth } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
 const TbSummary = () => {
@@ -58,6 +58,7 @@ const TbSummary = () => {
       value: tbCertificateData.isIssued,
       link: `/tb-certificate-declaration#${attributeToComponentId.isIssued}`,
       hiddenLabel: "TB clearance certificate",
+      emptyValueText: "Enter whether a TB clearance certificate has been issued",
     },
     {
       key: "Physician comments",
@@ -70,12 +71,14 @@ const TbSummary = () => {
       value: formatDateType(tbCertificateData.certificateDate),
       link: `/tb-certificate-declaration#${attributeToComponentId.certificateDate}`,
       hiddenLabel: "Date of TB certificate",
+      emptyValueText: "Enter date of TB clearance certificate",
     },
     {
       key: "TB clearance certificate number",
       value: tbCertificateData.certificateNumber,
       link: `/tb-certificate-declaration#${attributeToComponentId.certificateNumber}`,
       hiddenLabel: "TB certificate number",
+      emptyValueText: "Enter TB clearance certificate number",
     },
   ];
 
@@ -84,10 +87,7 @@ const TbSummary = () => {
       {isLoading && <Spinner />}
       <ApplicantDataHeader applicantData={applicantData} />
 
-      <Summary
-        status={tbCertificateData.status}
-        summaryElements={summaryData.filter(isDataPresent)}
-      />
+      <Summary status={tbCertificateData.status} summaryElements={summaryData} />
 
       {tbCertificateData.status == ApplicationStatus.INCOMPLETE && (
         <Button

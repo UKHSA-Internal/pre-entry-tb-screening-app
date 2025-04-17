@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-type LabelProps = {
+interface LabelProps {
   title: string;
   to: string;
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
@@ -10,7 +10,7 @@ type LabelProps = {
   id?: string;
   hiddenLabel?: string;
   externalLink: boolean;
-};
+}
 
 // excludes internal page navigations (e.g. error summary, skip to main content)
 const LinkLabel = ({
