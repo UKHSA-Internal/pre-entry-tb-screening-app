@@ -1,5 +1,4 @@
 import { DateType } from "@/applicant";
-import { SummaryElement } from "@/components/summary/summary";
 
 import {
   dateEntryMustBeInTheFuture,
