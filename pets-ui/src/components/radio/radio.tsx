@@ -48,6 +48,7 @@ export default function Radio({
     <div className={wrapperClass}>
       <fieldset
         className="govuk-fieldset"
+        id={props.id}
         aria-describedby={props.heading && props.label && `${props.id}-label`}
       >
         <legend className="govuk-fieldset__legend">
@@ -60,12 +61,9 @@ export default function Radio({
                 ...(props.label ? radioHeadingWithLabelStyles : radioHeadingStyles),
                 ...props.headingStyle,
               }}
-              id={props.id}
             />
           ) : (
-            <span style={radioLabelStyles} id={props.id}>
-              {props.label}
-            </span>
+            props.label
           )}
         </legend>
 
