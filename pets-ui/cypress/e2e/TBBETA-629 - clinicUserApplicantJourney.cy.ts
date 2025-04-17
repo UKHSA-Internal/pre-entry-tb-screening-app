@@ -291,7 +291,7 @@ describe("PETS Application End-to-End Tests", () => {
 
     // Verify X-ray summary information - only validating these 2 fields as the others donot populate on the summary page
     chestXraySummaryPage.verifyXraySummaryInfo({
-      "Select x-ray status": "Yes",
+      "Select X-ray status": "Yes",
       "Enter radiological outcome": "Chest X-ray normal",
     });
 

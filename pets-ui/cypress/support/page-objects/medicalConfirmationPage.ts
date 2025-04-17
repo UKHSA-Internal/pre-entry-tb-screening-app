@@ -71,7 +71,7 @@ export class MedicalConfirmationPage {
   verifyAllConfirmationElements(): void {
     this.verifyConfirmationPanel();
     this.verifyNextStepsSection();
-    cy.contains("button", "Continue to chest x-ray").should("be.visible");
+    cy.contains("button", "Continue to chest X-ray").should("be.visible");
     this.verifyBreadcrumbNavigation();
     this.verifyServiceName();
     this.verifyFooterLicense();
