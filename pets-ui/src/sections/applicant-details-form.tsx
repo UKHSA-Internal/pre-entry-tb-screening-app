@@ -2,8 +2,8 @@ import { useEffect, useRef } from "react";
 import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { ReduxApplicantDetailsType } from "@/applicant";
-import DateTextInput, { DateType } from "@/components/dateTextInput/dateTextInput";
+import { DateType, ReduxApplicantDetailsType } from "@/applicant";
+import DateTextInput from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
