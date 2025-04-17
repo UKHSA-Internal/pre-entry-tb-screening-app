@@ -78,7 +78,6 @@ export default function FreeText({
         <input
           className={inputClass}
           id={props.id}
-          aria-labelledby={props.id}
           type="text"
           data-testid={props.id}
           {...register(props.formValue, {
