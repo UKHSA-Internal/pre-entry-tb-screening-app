@@ -45,10 +45,9 @@ export default function Radio({
   }, [props.errorMessage]);
 
   return (
-    <div className={wrapperClass}>
+    <div id={props.id} className={wrapperClass}>
       <fieldset
         className="govuk-fieldset"
-        id={props.id}
         aria-describedby={props.heading && props.label && `${props.id}-label`}
       >
         <legend className="govuk-fieldset__legend">
