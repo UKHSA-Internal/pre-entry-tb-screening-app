@@ -1,4 +1,4 @@
-import { DateType } from "@/components/dateTextInput/dateTextInput";
+import { DateType } from "@/applicant";
 import { SummaryElement } from "@/components/summary/summary";
 
 import {
