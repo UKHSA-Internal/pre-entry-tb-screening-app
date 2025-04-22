@@ -28,7 +28,7 @@ export interface RadioProps {
 export default function Radio(props: Readonly<RadioProps>) {
   const { register } = useFormContext();
 
-  const answerOptions: string[] = [...props.answerOptions];
+  const answerOptions = [...props.answerOptions];
   if (props.sortAnswersAlphabetically) {
     answerOptions.sort((a, b) => a.localeCompare(b));
   }

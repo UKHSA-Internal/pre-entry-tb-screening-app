@@ -26,7 +26,7 @@ export interface CheckboxProps {
 export default function Checkbox(props: Readonly<CheckboxProps>) {
   const { register } = useFormContext();
 
-  const answerOptions: string[] = [...props.answerOptions];
+  const answerOptions = [...props.answerOptions];
   const exclusiveOptions = [...(props.exclusiveAnswerOptions ?? [])];
 
   if (props.sortAnswersAlphabetically) {

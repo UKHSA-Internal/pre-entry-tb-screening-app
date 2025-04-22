@@ -27,7 +27,7 @@ export default function FieldWrapper({
 
   useEffect(() => {
     setErrorText(props.errorMessage);
-    setWrapperClass(wrapperClass + (props.errorMessage ? " govuk-form-group--error" : ""));
+    setWrapperClass(`govuk-form-group${props.errorMessage ? " govuk-form-group--error" : ""}`);
   }, [props.errorMessage, wrapperClass]);
 
   return (
