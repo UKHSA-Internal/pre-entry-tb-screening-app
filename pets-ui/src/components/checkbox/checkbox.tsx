@@ -3,9 +3,13 @@ import "./checkbox.scss";
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
+import Heading, { HeadingSize } from "../heading/heading";
+import { checkboxHeadingStyles } from "./checkbox.styles";
+
 export interface CheckboxProps {
   id: string;
-  legend?: string;
+  heading?: string;
+  label?: string;
   hint?: string;
   answerOptions: string[];
   exclusiveAnswerOptions?: string[];
@@ -14,9 +18,16 @@ export interface CheckboxProps {
   formValue: string;
   required: string | false;
   defaultValue?: string[];
+  headingLevel?: 1 | 2 | 3 | 4;
+  headingSize?: HeadingSize;
+  headingStyle?: React.CSSProperties;
 }
 
-export default function Checkbox(props: Readonly<CheckboxProps>) {
+export default function Checkbox({
+  headingLevel = 2,
+  headingSize = "m",
+  ...props
+}: Readonly<CheckboxProps>) {
   const answerOptions: string[] = props.answerOptions;
   if (props.sortAnswersAlphabetically) {
     answerOptions.sort((a, b) => a.localeCompare(b));
@@ -32,13 +43,35 @@ export default function Checkbox(props: Readonly<CheckboxProps>) {
 
   useEffect(() => {
     setErrorText(props.errorMessage);
-    setWrapperClass("govuk-form-group " + (props.errorMessage ? "govuk-form-group--error" : ""));
+    setWrapperClass("govuk-form-group" + (props.errorMessage ? " govuk-form-group--error" : ""));
   }, [props.errorMessage]);
 
   return (
     <div id={props.id} className={wrapperClass}>
-      <fieldset className="govuk-fieldset">
-        {props.legend && <legend className="govuk-fieldset__legend">{props.legend}</legend>}
+      <fieldset
+        className="govuk-fieldset"
+        aria-describedby={props.heading && props.label && `${props.id}-label`}
+      >
+        <legend className="govuk-fieldset__legend">
+          {props.heading ? (
+            <Heading
+              title={props.heading}
+              level={headingLevel}
+              size={headingSize}
+              style={{
+                ...(props.heading && checkboxHeadingStyles),
+              }}
+            />
+          ) : (
+            props.label
+          )}
+        </legend>
+
+        {props.heading && props.label && (
+          <div className="govuk-label" id={`${props.id}-label`}>
+            {props.label}
+          </div>
+        )}
         {props.hint && <div className="govuk-hint">{props.hint}</div>}
         {errorText && (
           <p className="govuk-error-message">
