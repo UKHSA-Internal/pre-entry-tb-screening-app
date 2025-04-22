@@ -32,7 +32,7 @@ export default function FieldWrapper({
 
   return (
     <div id={props.id} className={wrapperClass}>
-      {/* conditional fieldset as textarea, tables/non-input fields will not require fieldset... unless want to exclude them from this component,
+      {/* conditional fieldset as textarea, tables/non-input fields will not require fieldset... unless we want to exclude them from this component,
           which also makes sense as they are not technically 'field elements' */}
       {useFieldset ? (
         <fieldset
