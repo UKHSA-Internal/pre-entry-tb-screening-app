@@ -5,7 +5,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
-import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { selectApplicant } from "@/redux/applicantSlice";
@@ -59,11 +58,11 @@ const ChestXrayQuestionForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errors?.chestXrayTaken && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
         <ApplicantDataHeader applicantData={applicantData} />
-        <Heading level={2} title="Has the visa applicant had a chest X-ray?" size="m" />
         <div ref={chestXrayTakenRef}>
           <Radio
+            heading="Has the visa applicant had a chest X-ray?"
             id="chest-xray-taken"
-            legend="This would typically be the postero-anterior chest X-ray"
+            label="This would typically be the postero-anterior chest X-ray"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Yes", "No"]}
             sortAnswersAlphabetically={false}
