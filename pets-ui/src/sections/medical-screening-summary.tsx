@@ -62,14 +62,14 @@ const MedicalScreeningReview = () => {
       value: medicalData.tbSymptoms,
       link: `/medical-screening#${attributeToComponentId.tbSymptoms}`,
       hiddenLabel: "whether the applicant has TB symptoms",
-      emptyValueText: "Enter whether the applicant has TB symptoms",
+      emptyValueText: "Enter whether the applicant has TB symptoms (optional)",
     },
     {
       key: "TB symptoms",
       value: medicalData.tbSymptomsList.join(", "),
       link: `/medical-screening#${attributeToComponentId.tbSymptomsList}`,
       hiddenLabel: "TB symptoms",
-      emptyValueText: "Enter TB symptoms",
+      emptyValueText: "Enter TB symptoms (optional)",
     },
     {
       key: "Other symptoms",
@@ -94,14 +94,14 @@ const MedicalScreeningReview = () => {
       value: medicalData.previousTb,
       link: `/medical-screening#${attributeToComponentId.previousTb}`,
       hiddenLabel: "whether the applicant has ever had tuberculosis",
-      emptyValueText: "Enter whether the applicant has ever had tuberculosis",
+      emptyValueText: "Enter whether the applicant has ever had tuberculosis (optional)",
     },
     {
       key: "Detail of applicant's previous TB",
       value: medicalData.previousTbDetail,
       link: `/medical-screening#${attributeToComponentId.previousTbDetail}`,
       hiddenLabel: "details of applicant's previous TB",
-      emptyValueText: "Enter detail of applicant's previous TB",
+      emptyValueText: "Enter detail of applicant's previous TB (optional)",
     },
     {
       key: "Has the applicant had close contact with any person with active pulmonary tuberculosis within the past year?",
@@ -109,7 +109,7 @@ const MedicalScreeningReview = () => {
       link: `/medical-screening#${attributeToComponentId.closeContactWithTb}`,
       hiddenLabel: "applicant's close contact with TB in the past year",
       emptyValueText:
-        "Enter whether the applicant has had close contact with any person with active pulmonary tuberculosis within the past year",
+        "Enter whether the applicant has had close contact with any person with active pulmonary tuberculosis within the past year (optional)",
     },
     {
       key: "Details of applicant's close contact with any person with active pulmonary tuberculosis",
@@ -122,14 +122,14 @@ const MedicalScreeningReview = () => {
       value: medicalData.pregnant,
       link: `/medical-screening#${attributeToComponentId.pregnant}`,
       hiddenLabel: "pregnancy",
-      emptyValueText: "Enter whether the applicant is pregnant",
+      emptyValueText: "Enter whether the applicant is pregnant (optional)",
     },
     {
       key: "Does the applicant have menstrual periods?",
       value: medicalData.menstrualPeriods,
       link: `/medical-screening#${attributeToComponentId.menstrualPeriods}`,
       hiddenLabel: "menstrual periods",
-      emptyValueText: "Enter whether the applicant has menstrual periods",
+      emptyValueText: "Enter whether the applicant has menstrual periods (optional)",
     },
     {
       key: "Physical examination notes",

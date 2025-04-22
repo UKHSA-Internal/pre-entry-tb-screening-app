@@ -32,7 +32,10 @@ function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement)
           : status == ApplicationStatus.INCOMPLETE && (
               <LinkLabel
                 to={summaryElement.link}
-                title={summaryElement.emptyValueText ?? `Enter ${summaryElement.key.toLowerCase()}`}
+                title={
+                  summaryElement.emptyValueText ??
+                  `Enter ${summaryElement.key.toLowerCase()} (optional)`
+                }
                 hiddenLabel=""
                 externalLink={false}
               />

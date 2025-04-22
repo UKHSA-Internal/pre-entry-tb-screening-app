@@ -58,7 +58,7 @@ const TbSummary = () => {
       value: tbCertificateData.isIssued,
       link: `/tb-certificate-declaration#${attributeToComponentId.isIssued}`,
       hiddenLabel: "TB clearance certificate",
-      emptyValueText: "Enter whether a TB clearance certificate has been issued",
+      emptyValueText: "Enter whether a TB clearance certificate has been issued (optional)",
     },
     {
       key: "Physician comments",
@@ -71,14 +71,14 @@ const TbSummary = () => {
       value: formatDateType(tbCertificateData.certificateDate),
       link: `/tb-certificate-declaration#${attributeToComponentId.certificateDate}`,
       hiddenLabel: "Date of TB certificate",
-      emptyValueText: "Enter date of TB clearance certificate",
+      emptyValueText: "Enter date of TB clearance certificate (optional)",
     },
     {
       key: "TB clearance certificate number",
       value: tbCertificateData.certificateNumber,
       link: `/tb-certificate-declaration#${attributeToComponentId.certificateNumber}`,
       hiddenLabel: "TB certificate number",
-      emptyValueText: "Enter TB clearance certificate number",
+      emptyValueText: "Enter TB clearance certificate number (optional)",
     },
   ];
 
