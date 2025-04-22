@@ -107,7 +107,7 @@ const MedicalScreeningForm = () => {
         <div ref={tbSymptomsRef}>
           <Radio
             id="tb-symptoms"
-            legend="Does the applicant have any TB symptoms?"
+            label="Does the applicant have any TB symptoms?"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Yes", "No"]}
             sortAnswersAlphabetically={false}
@@ -187,7 +187,7 @@ const MedicalScreeningForm = () => {
         <div ref={previousTbRef}>
           <Radio
             id="previous-tb"
-            legend="Has the applicant ever had tuberculosis?"
+            label="Has the applicant ever had tuberculosis?"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Yes", "No"]}
             sortAnswersAlphabetically={false}
@@ -213,7 +213,7 @@ const MedicalScreeningForm = () => {
         <div ref={closeContactWithTbRef}>
           <Radio
             id="close-contact-with-tb"
-            legend="Has the applicant had close contact with any person with active pulmonary tuberculosis within the past year?"
+            label="Has the applicant had close contact with any person with active pulmonary tuberculosis within the past year?"
             hint="This might be sharing the same enclosed air space or household or other enclosed environment for a prolonged period, such as days or weeks"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Yes", "No"]}
@@ -240,7 +240,7 @@ const MedicalScreeningForm = () => {
         <div ref={pregnantRef}>
           <Radio
             id="pregnant"
-            legend="Is the applicant pregnant?"
+            label="Is the applicant pregnant?"
             isInline={RadioIsInline.FALSE}
             answerOptions={["Yes", "No", "Don't know", "N/A"]}
             sortAnswersAlphabetically={false}
@@ -254,7 +254,7 @@ const MedicalScreeningForm = () => {
         <div ref={menstrualPeriodsRef}>
           <Radio
             id="menstrual-periods"
-            legend="Does the applicant have menstrual periods?"
+            label="Does the applicant have menstrual periods?"
             isInline={RadioIsInline.FALSE}
             answerOptions={["Yes", "No", "N/A"]}
             sortAnswersAlphabetically={false}

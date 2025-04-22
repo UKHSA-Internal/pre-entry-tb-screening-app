@@ -70,7 +70,6 @@ export default function Dropdown({
       )}
       <select
         id={props.id}
-        aria-labelledby={props.id}
         className={selectClass}
         defaultValue={props.defaultValue ?? ""}
         {...register(props.formValue, {

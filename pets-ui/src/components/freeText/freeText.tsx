@@ -78,7 +78,6 @@ export default function FreeText({
         <input
           className={inputClass}
           id={props.id}
-          aria-labelledby={props.id}
           type="text"
           data-testid={props.id}
           {...register(props.formValue, {
@@ -91,11 +90,7 @@ export default function FreeText({
           })}
           defaultValue={props.defaultValue ?? ""}
         />
-        {props.suffixText && (
-          <div className="govuk-input__suffix" aria-hidden="true">
-            {props.suffixText}
-          </div>
-        )}
+        {props.suffixText && <div className="govuk-input__suffix">{props.suffixText}</div>}
       </div>
     </div>
   );
