@@ -79,14 +79,9 @@ const ChestXrayFindingsForm = () => {
         <ApplicantDataHeader applicantData={applicantData} />
 
         <div ref={xrayResult}>
-          <Heading
-            level={2}
-            size="m"
-            style={{ marginBottom: 20, marginTop: 40 }}
-            title="Radiological outcome"
-          />
           <Radio
             id="xray-result"
+            heading="Radiological outcome"
             isInline={RadioIsInline.FALSE}
             answerOptions={["Chest X-ray normal", "Non-TB abnormality", "Old or active TB"]}
             sortAnswersAlphabetically={false}
