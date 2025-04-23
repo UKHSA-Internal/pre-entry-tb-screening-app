@@ -12,6 +12,7 @@ interface FieldWrapperProps {
   headingStyle?: React.CSSProperties;
   children: React.ReactNode;
   labelStyle?: React.CSSProperties;
+  // useFieldset defaults to true. Set to false when wrapping a field that does not require being wrapped in <fieldset>
   useFieldset?: boolean;
   errorMessage: string;
 }
@@ -32,8 +33,6 @@ export default function FieldWrapper({
 
   return (
     <div id={props.id} className={wrapperClass}>
-      {/* conditional fieldset as textarea, tables/non-input fields will not require fieldset... unless we want to exclude them from this component,
-          which also makes sense as they are not technically 'field elements' */}
       {useFieldset ? (
         <fieldset
           className="govuk-fieldset"
