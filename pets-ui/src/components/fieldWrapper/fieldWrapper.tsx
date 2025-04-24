@@ -25,11 +25,15 @@ export default function FieldWrapper({
 }: Readonly<FieldWrapperProps>) {
   const [errorText, setErrorText] = useState("");
   const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
-  const describedBy = props.hint
-    ? `${props.id}-hint`
-    : props.heading && props.label
-      ? `${props.id}-label`
-      : undefined;
+  let describedBy: string | undefined;
+
+  if (props.hint) {
+    describedBy = `${props.id}-hint`;
+  } else if (props.heading && props.label) {
+    describedBy = `${props.id}-label`;
+  } else {
+    describedBy = undefined;
+  }
 
   useEffect(() => {
     setErrorText(props.errorMessage);
