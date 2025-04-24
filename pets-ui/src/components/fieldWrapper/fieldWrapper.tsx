@@ -22,9 +22,14 @@ export default function FieldWrapper({
   headingSize = "m",
   useFieldset = true,
   ...props
-}: FieldWrapperProps) {
+}: Readonly<FieldWrapperProps>) {
   const [errorText, setErrorText] = useState("");
   const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
+  const describedBy = props.hint
+    ? `${props.id}-hint`
+    : props.heading && props.label
+      ? `${props.id}-label`
+      : undefined;
 
   useEffect(() => {
     setErrorText(props.errorMessage);
@@ -34,16 +39,7 @@ export default function FieldWrapper({
   return (
     <div id={props.id} className={wrapperClass}>
       {useFieldset ? (
-        <fieldset
-          className="govuk-fieldset"
-          aria-describedby={
-            props.hint
-              ? `${props.id}-hint`
-              : props.heading && props.label
-                ? `${props.id}-label`
-                : undefined
-          }
-        >
+        <fieldset className="govuk-fieldset" aria-describedby={describedBy}>
           <legend className="govuk-fieldset__legend">
             {props.heading ? (
               <Heading
