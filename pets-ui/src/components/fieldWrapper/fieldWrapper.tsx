@@ -1,0 +1,88 @@
+import { useEffect, useState } from "react";
+
+import Heading, { HeadingSize } from "../heading/heading";
+
+interface FieldWrapperProps {
+  id: string;
+  heading?: string;
+  label?: string;
+  hint?: string;
+  headingLevel?: 1 | 2 | 3 | 4;
+  headingSize?: HeadingSize;
+  headingStyle?: React.CSSProperties;
+  children: React.ReactNode;
+  labelStyle?: React.CSSProperties;
+  // useFieldset defaults to true. Set to false when wrapping a field that does not require being wrapped in <fieldset>
+  useFieldset?: boolean;
+  errorMessage: string;
+}
+
+export default function FieldWrapper({
+  headingLevel = 2,
+  headingSize = "m",
+  useFieldset = true,
+  ...props
+}: Readonly<FieldWrapperProps>) {
+  const [errorText, setErrorText] = useState("");
+  const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
+  let describedBy: string | undefined;
+
+  if (props.hint) {
+    describedBy = `${props.id}-hint`;
+  } else if (props.heading && props.label) {
+    describedBy = `${props.id}-label`;
+  } else {
+    describedBy = undefined;
+  }
+
+  useEffect(() => {
+    setErrorText(props.errorMessage);
+    setWrapperClass(`govuk-form-group${props.errorMessage ? " govuk-form-group--error" : ""}`);
+  }, [props.errorMessage, wrapperClass]);
+
+  return (
+    <div id={props.id} className={wrapperClass}>
+      {useFieldset ? (
+        <fieldset className="govuk-fieldset" aria-describedby={describedBy}>
+          <legend className="govuk-fieldset__legend">
+            {props.heading ? (
+              <Heading
+                title={props.heading}
+                level={headingLevel}
+                size={headingSize}
+                style={props.headingStyle}
+              />
+            ) : (
+              props.label
+            )}
+          </legend>
+          {props.heading && props.label && (
+            <div className="govuk-label" id={`${props.id}-label`} style={props.labelStyle}>
+              {props.label}
+            </div>
+          )}
+          {props.hint && (
+            <div className="govuk-hint" id={`${props.id}-hint`}>
+              {props.hint}
+            </div>
+          )}
+          {errorText && (
+            <p className="govuk-error-message">
+              <span className="govuk-visually-hidden">Error:</span> {errorText}
+            </p>
+          )}
+          {props.children}
+        </fieldset>
+      ) : (
+        <>
+          {errorText && (
+            <p className="govuk-error-message">
+              <span className="govuk-visually-hidden">Error:</span> {props.errorMessage}
+            </p>
+          )}
+          {props.children}
+        </>
+      )}
+    </div>
+  );
+}
