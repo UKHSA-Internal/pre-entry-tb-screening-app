@@ -15,12 +15,14 @@ interface FieldWrapperProps {
   // useFieldset defaults to true. Set to false when wrapping a field that does not require being wrapped in <fieldset>
   useFieldset?: boolean;
   errorMessage: string;
+  divStyle?: React.CSSProperties;
 }
 
 export default function FieldWrapper({
   headingLevel = 2,
   headingSize = "m",
   useFieldset = true,
+  labelStyle = { marginBottom: 10 },
   ...props
 }: Readonly<FieldWrapperProps>) {
   const [errorText, setErrorText] = useState("");
@@ -41,7 +43,11 @@ export default function FieldWrapper({
   }, [props.errorMessage, wrapperClass]);
 
   return (
-    <div id={props.id} className={wrapperClass}>
+    <div
+      id={useFieldset ? props.id : `${props.id}-container`}
+      className={wrapperClass}
+      style={props.divStyle}
+    >
       {useFieldset ? (
         <fieldset className="govuk-fieldset" aria-describedby={describedBy}>
           <legend className="govuk-fieldset__legend">
@@ -50,14 +56,14 @@ export default function FieldWrapper({
                 title={props.heading}
                 level={headingLevel}
                 size={headingSize}
-                style={props.headingStyle}
+                style={{ marginBottom: 10, ...props.headingStyle }}
               />
             ) : (
               props.label
             )}
           </legend>
           {props.heading && props.label && (
-            <div className="govuk-label" id={`${props.id}-label`} style={props.labelStyle}>
+            <div className="govuk-label" id={`${props.id}-label`} style={labelStyle}>
               {props.label}
             </div>
           )}
@@ -75,9 +81,36 @@ export default function FieldWrapper({
         </fieldset>
       ) : (
         <>
+          {props.heading ? (
+            <Heading
+              title={props.heading}
+              level={headingLevel}
+              size={headingSize}
+              style={{ marginBottom: 10, ...props.headingStyle }}
+              id={props.label ? `${props.id}-heading` : props.id}
+            />
+          ) : (
+            <label
+              className="govuk-label"
+              htmlFor={props.heading ? `${props.id}-label` : props.id}
+              style={labelStyle}
+            >
+              {props.label}
+            </label>
+          )}
+          {props.heading && props.label && (
+            <div className="govuk-label" id={`${props.id}-label`} style={labelStyle}>
+              {props.label}
+            </div>
+          )}
+          {props.hint && (
+            <div className="govuk-hint" id={`${props.id}-hint`}>
+              {props.hint}
+            </div>
+          )}
           {errorText && (
             <p className="govuk-error-message">
-              <span className="govuk-visually-hidden">Error:</span> {props.errorMessage}
+              <span className="govuk-visually-hidden">Error:</span> {errorText}
             </p>
           )}
           {props.children}

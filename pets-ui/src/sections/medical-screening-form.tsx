@@ -7,6 +7,7 @@ import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataH
 import Checkbox from "@/components/checkbox/checkbox";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
+import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
@@ -81,6 +82,12 @@ const MedicalScreeningForm = () => {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
+
+        <Heading level={1} size="l" title="Medical screening" />
+        <p className="govuk-body">
+          Enter the applicant&apos;s profile information. You should answer every question.
+        </p>
+
         <ApplicantDataHeader applicantData={applicantData} />
 
         <div ref={ageRef}>

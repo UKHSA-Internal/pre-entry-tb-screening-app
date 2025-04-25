@@ -1,10 +1,9 @@
 import "./freeText.scss";
 
-import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-import Heading, { HeadingSize } from "../heading/heading";
-import { freeTextHeadingStyles, freeTextHeadingWithLabelStyles } from "./freeText.styles";
+import FieldWrapper from "../fieldWrapper/fieldWrapper";
+import { HeadingSize } from "../heading/heading";
 
 export interface FreeTextProps {
   id: string;
@@ -22,61 +21,30 @@ export interface FreeTextProps {
   headingLevel?: 1 | 2 | 3 | 4;
   headingSize?: HeadingSize;
   headingStyle?: React.CSSProperties;
+  labelStyle?: React.CSSProperties;
+  divStyle?: React.CSSProperties;
 }
 
-export default function FreeText({
-  headingLevel = 2,
-  headingSize = "m",
-  ...props
-}: Readonly<FreeTextProps>) {
+export default function FreeText(props: Readonly<FreeTextProps>) {
   const { register } = useFormContext();
-  const [errorText, setErrorText] = useState("");
-  const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
-  const [inputClass, setInputClass] = useState(
-    `govuk-input govuk-input--width-${props.inputWidth}`,
-  );
-
-  useEffect(() => {
-    setErrorText(props.errorMessage);
-    setWrapperClass("govuk-form-group " + (props.errorMessage ? "govuk-form-group--error" : ""));
-    setInputClass(
-      `govuk-input govuk-input--width-${props.inputWidth} ` +
-        (props.errorMessage ? "govuk-input--error" : ""),
-    );
-  }, [props.errorMessage, props.inputWidth]);
 
   return (
-    <div id={props.id} className={wrapperClass}>
-      {props.heading && (
-        <Heading
-          title={props.heading}
-          level={headingLevel}
-          size={headingSize}
-          style={{
-            ...(props.label ? freeTextHeadingWithLabelStyles : freeTextHeadingStyles),
-            ...props.headingStyle,
-          }}
-          id={props.label ? `${props.id}-heading` : props.id}
-        />
-      )}
-      {props.label && (
-        <label className="govuk-label" htmlFor={props.id}>
-          {props.label}
-        </label>
-      )}
-      {props.hint && (
-        <div className="govuk-hint" id={`${props.id}-hint`}>
-          {props.hint}
-        </div>
-      )}
-      {errorText && (
-        <p className="govuk-error-message">
-          <span className="govuk-visually-hidden">Error:</span> {errorText}
-        </p>
-      )}
+    <FieldWrapper
+      id={props.id}
+      heading={props.heading}
+      label={props.label}
+      hint={props.hint}
+      errorMessage={props.errorMessage}
+      headingLevel={props.headingLevel}
+      headingSize={props.headingSize}
+      headingStyle={props.headingStyle}
+      useFieldset={false}
+      labelStyle={props.labelStyle}
+      divStyle={props.divStyle}
+    >
       <div className="govuk-input__wrapper">
         <input
-          className={inputClass}
+          className={`govuk-input govuk-input--width-${props.inputWidth}`}
           id={props.id}
           type="text"
           data-testid={props.id}
@@ -92,6 +60,6 @@ export default function FreeText({
         />
         {props.suffixText && <div className="govuk-input__suffix">{props.suffixText}</div>}
       </div>
-    </div>
+    </FieldWrapper>
   );
 }

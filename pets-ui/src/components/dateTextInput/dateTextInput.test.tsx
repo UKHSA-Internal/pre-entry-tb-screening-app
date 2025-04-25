@@ -8,7 +8,7 @@ describe("Date Component", () => {
     render(
       <Date
         id="passport-issue-date"
-        legend="Issue Date"
+        label="Issue Date"
         hint="For example, 31 3 2019"
         autocomplete={false}
         errorMessage=""

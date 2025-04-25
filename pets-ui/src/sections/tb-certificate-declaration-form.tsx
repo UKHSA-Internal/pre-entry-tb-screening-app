@@ -79,6 +79,8 @@ const TbCertificateDeclarationForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
 
+        <Heading level={1} size="l" title="Enter TB clearance certificate declaration" />
+
         <ApplicantDataHeader applicantData={applicantData} />
 
         <div ref={tbClearanceIssued}>
@@ -115,12 +117,6 @@ const TbCertificateDeclarationForm = () => {
         />
 
         <div ref={tbCertificateDate}>
-          <Heading
-            level={2}
-            size="m"
-            style={{ marginBottom: 20, marginTop: 20 }}
-            title="Date of TB clearance certificate"
-          />
           <Controller
             name="certificateDate"
             control={control}
@@ -139,6 +135,7 @@ const TbCertificateDeclarationForm = () => {
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
+                heading="Date of TB clearance certificate"
                 value={value}
                 setDateValue={onChange}
                 id={"tb-certificate-date"}

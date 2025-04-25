@@ -1,10 +1,9 @@
 import "./dropdown.scss";
 
-import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-import Heading, { HeadingSize } from "../heading/heading";
-import { dropdownHeadingStyles } from "./dropdown.styles";
+import FieldWrapper from "../fieldWrapper/fieldWrapper";
+import { HeadingSize } from "../heading/heading";
 
 interface OptionItem {
   label: string;
@@ -24,53 +23,30 @@ interface DropdownProps {
   headingLevel?: 1 | 2 | 3 | 4;
   headingSize?: HeadingSize;
   headingStyle?: React.CSSProperties;
+  labelStyle?: React.CSSProperties;
+  divStyle?: React.CSSProperties;
 }
 
-export default function Dropdown({
-  headingLevel = 2,
-  headingSize = "m",
-  ...props
-}: Readonly<DropdownProps>) {
+export default function Dropdown(props: Readonly<DropdownProps>) {
   const { register } = useFormContext();
-  const [errorText, setErrorText] = useState("");
-  const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
-  const [selectClass, setSelectClass] = useState("govuk-select");
-
-  useEffect(() => {
-    setErrorText(props.errorMessage);
-    setWrapperClass("govuk-form-group" + (props.errorMessage ? " govuk-form-group--error" : ""));
-    setSelectClass("govuk-select" + (props.errorMessage ? " govuk-select--error" : ""));
-  }, [props.errorMessage]);
 
   return (
-    <div id={props.id} className={wrapperClass}>
-      {props.heading && (
-        <Heading
-          title={props.heading}
-          level={headingLevel}
-          size={headingSize}
-          style={{ ...dropdownHeadingStyles, ...props.headingStyle }}
-          id={props.label ? `${props.id}-heading` : props.id}
-        />
-      )}
-      {props.label && (
-        <label className="govuk-label" htmlFor={props.id}>
-          {props.label}
-        </label>
-      )}
-      {props.hint && (
-        <div className="govuk-hint" id={`${props.id}-hint`}>
-          {props.hint}
-        </div>
-      )}
-      {errorText && (
-        <p className="govuk-error-message">
-          <span className="govuk-visually-hidden">Error:</span> {errorText}
-        </p>
-      )}
+    <FieldWrapper
+      id={props.id}
+      heading={props.heading}
+      label={props.label}
+      hint={props.hint}
+      errorMessage={props.errorMessage}
+      headingLevel={props.headingLevel}
+      headingSize={props.headingSize}
+      headingStyle={props.headingStyle}
+      useFieldset={false}
+      labelStyle={props.labelStyle}
+      divStyle={props.divStyle}
+    >
       <select
         id={props.id}
-        className={selectClass}
+        className="govuk-select"
         defaultValue={props.defaultValue ?? ""}
         {...register(props.formValue, {
           required: props.required,
@@ -85,6 +61,6 @@ export default function Dropdown({
           </option>
         ))}
       </select>
-    </div>
+    </FieldWrapper>
   );
 }
