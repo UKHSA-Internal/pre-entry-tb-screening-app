@@ -119,6 +119,8 @@ const MedicalScreeningReview = () => {
       value: medicalData.closeContactWithTbDetail,
       link: `/medical-screening#${attributeToComponentId.closeContactWithTbDetail}`,
       hiddenLabel: "details of applicant's close contact with TB in the past year",
+      emptyValueText:
+        "Enter details of applicant's close contact with any person with active pulmonary tuberculosis (optional)",
     },
     {
       key: "Is the applicant pregnant?",

@@ -120,7 +120,7 @@ describe("MedicalScreeningReview", () => {
       "Details of applicant's close contact with any person with active pulmonary tuberculosis",
     );
     expect(screen.getAllByRole("definition")[19]).toHaveTextContent(
-      "Enter details of applicant's close contact with any person with active pulmonary tuberculosis",
+      "Enter details of applicant's close contact with any person with active pulmonary tuberculosis (optional)",
     );
     expect(screen.getAllByRole("term")[13]).toHaveTextContent("Is the applicant pregnant?");
     expect(screen.getAllByRole("definition")[20]).toHaveTextContent("Don't know");
