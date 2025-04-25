@@ -107,7 +107,7 @@ describe("ChestXrayFindings Form", () => {
     expect(screen.getByText("Enter radiological outcome and findings")).toBeInTheDocument;
   });
 
-  it("navigates to cxr summary when form is completely and submit button is clicked", async () => {
+  it("navigates to cxr summary when form is complete and submit button is clicked", async () => {
     const preloadedState = {
       chestXray: {
         status: ApplicationStatus.INCOMPLETE,
