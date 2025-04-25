@@ -81,7 +81,7 @@ const ApplicantTravelForm = () => {
           <FreeText
             id="address-1"
             label="Address line 1"
-            heading="Applicant's UK address"
+            heading="UK address (optional)"
             headingStyle={{ marginBottom: 20 }}
             errorMessage={errors?.applicantUkAddress1?.message ?? ""}
             formValue="applicantUkAddress1"
@@ -135,7 +135,7 @@ const ApplicantTravelForm = () => {
           <FreeText
             id="mobile-number"
             errorMessage={errors?.ukMobileNumber?.message ?? ""}
-            heading="Applicant's UK phone number"
+            heading="Phone number (optional)"
             formValue="ukMobileNumber"
             required="Enter UK mobile number"
             patternValue={formRegex.numbersOnly}
@@ -148,7 +148,7 @@ const ApplicantTravelForm = () => {
           <FreeText
             id="email"
             errorMessage={errors?.ukEmail?.message ?? ""}
-            heading="Applicant's UK email"
+            heading="Email address (optional)"
             formValue="ukEmail"
             required="Enter UK email address"
             patternValue={formRegex.emailAddress}

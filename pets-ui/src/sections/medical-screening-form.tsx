@@ -135,7 +135,7 @@ const MedicalScreeningForm = () => {
         <div ref={otherSymptomsDetailRef}>
           <TextArea
             id="other-symptoms-detail"
-            label='If you have selected "Other symptoms", list these'
+            label="Give further details (optional)"
             errorMessage={errors?.otherSymptomsDetail?.message ?? ""}
             formValue="otherSymptomsDetail"
             required={false}
@@ -169,7 +169,7 @@ const MedicalScreeningForm = () => {
         <div ref={underElevenConditionsDetailRef}>
           <TextArea
             id="under-eleven-conditions-detail"
-            label="You can give details of the procedure or condition"
+            label="Give further details (optional)"
             errorMessage={errors?.underElevenConditionsDetail?.message ?? ""}
             formValue="underElevenConditionsDetail"
             required={false}
@@ -195,7 +195,7 @@ const MedicalScreeningForm = () => {
         <div ref={previousTbDetailRef}>
           <TextArea
             id="previous-tb-detail"
-            label="If yes, give details"
+            label="Give further details (optional)"
             errorMessage={errors?.previousTbDetail?.message ?? ""}
             formValue="previousTbDetail"
             required={false}
