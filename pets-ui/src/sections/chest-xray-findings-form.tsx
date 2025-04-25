@@ -14,7 +14,7 @@ import { selectApplicant } from "@/redux/applicantSlice";
 import { selectChestXray, setChestXrayDetails } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
-import { convertToArrayIfString } from "@/utils/helpers";
+import { toArray } from "@/utils/helpers";
 
 const ChestXrayFindingsForm = () => {
   const applicantData = useAppSelector(selectApplicant);
@@ -32,11 +32,9 @@ const ChestXrayFindingsForm = () => {
     const dataWithCorrectedLists = {
       ...chestXrayData,
       ...formChestXrayData,
-      xrayMinorFindings: convertToArrayIfString(formChestXrayData.xrayMinorFindings),
-      xrayAssociatedMinorFindings: convertToArrayIfString(
-        formChestXrayData.xrayAssociatedMinorFindings,
-      ),
-      xrayActiveTbFindings: convertToArrayIfString(formChestXrayData.xrayActiveTbFindings),
+      xrayMinorFindings: toArray(formChestXrayData.xrayMinorFindings),
+      xrayAssociatedMinorFindings: toArray(formChestXrayData.xrayAssociatedMinorFindings),
+      xrayActiveTbFindings: toArray(formChestXrayData.xrayActiveTbFindings),
     };
 
     dispatch(setChestXrayDetails(dataWithCorrectedLists));

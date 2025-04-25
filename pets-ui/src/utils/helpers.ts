@@ -142,7 +142,7 @@ const logError = (error: Error, info: { componentStack?: string | null }) => {
   console.error(`Info: + ${JSON.stringify(info)}`);
 };
 
-const convertToArrayIfString = (input: boolean | string | string[]) => {
+const toArray = (input: boolean | string | string[]) => {
   if (typeof input == "string") {
     return [input];
   } else if (typeof input == "boolean") {
@@ -153,7 +153,6 @@ const convertToArrayIfString = (input: boolean | string | string[]) => {
 };
 
 export {
-  convertToArrayIfString,
   formatDateType,
   hasInvalidCharacters,
   isDateInTheFuture,
@@ -163,5 +162,6 @@ export {
   missingFieldsMessage,
   spreadArrayIfNotEmpty,
   standardiseDayOrMonth,
+  toArray,
   validateDate,
 };
