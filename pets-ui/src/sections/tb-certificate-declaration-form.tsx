@@ -97,13 +97,13 @@ const TbCertificateDeclarationForm = () => {
 
         <div ref={tbPhysicanComments}>
           <TextArea
-            id="physician-comments (optional)"
+            id="physician-comments"
             required={false}
             errorMessage={errors?.comments?.message ?? ""}
             formValue="comments"
             rows={10}
             defaultValue={tbCertificateData.comments}
-            heading="Physician comments"
+            heading="Give further details (optional)"
           />
         </div>
 
