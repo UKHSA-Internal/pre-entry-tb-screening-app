@@ -13,7 +13,7 @@ interface ContainerProps {
   children: ReactNode;
 }
 
-const Container = ({ title, children, breadcrumbItems = [] }: ContainerProps) => {
+const Container = ({ title, children, breadcrumbItems = [] }: Readonly<ContainerProps>) => {
   const pageStart = useRef<HTMLDivElement | null>(null);
   const mainContent = useRef<HTMLDivElement | null>(null);
   const location = useLocation();
