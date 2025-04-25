@@ -150,7 +150,7 @@ const ApplicantTravelForm = () => {
             errorMessage={errors?.ukEmail?.message ?? ""}
             heading="Email address (optional)"
             formValue="ukEmail"
-            required="Enter UK email address"
+            required="Enter email address"
             patternValue={formRegex.emailAddress}
             patternError="Email must be in correct format"
             defaultValue={travelData.ukEmail}
