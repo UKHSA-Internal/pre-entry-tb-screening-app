@@ -65,6 +65,7 @@ const TbSummary = () => {
       value: tbCertificateData.comments,
       link: `/tb-certificate-declaration#${attributeToComponentId.comments}`,
       hiddenLabel: "Comments from physician",
+      emptyValueText: "Enter physician comments (optional)",
     },
     {
       key: "Date of TB clearance certificate",

@@ -64,14 +64,12 @@ const ChestXraySummary = () => {
       value: chestXrayData.chestXrayTaken,
       link: `/chest-xray-question#${attributeToComponentId.chestXrayTaken}`,
       hiddenLabel: "chest X-ray Status",
-      emptyValueText: "Enter X-ray status (optional)",
     },
     {
       key: "Postero anterior X-ray",
       value: chestXrayData.posteroAnteriorXrayFileName,
       link: `/chest-xray-upload#${attributeToComponentId.posteroAnteriorXrayFileName}`,
       hiddenLabel: "postero anterior X-ray",
-      emptyValueText: "Upload postero anterior X-ray (optional)",
     },
     {
       key: "Apical lordotic X-ray",
@@ -99,6 +97,7 @@ const ChestXraySummary = () => {
       value: chestXrayData.xrayResultDetail,
       link: `/chest-xray-findings#${attributeToComponentId.xrayResultDetail}`,
       hiddenLabel: "X-ray Details",
+      emptyValueText: "Enter radiological details (optional)",
     },
     {
       key: "Enter radiographic findings",
@@ -133,6 +132,7 @@ const ChestXraySummary = () => {
       value: chestXrayData.xrayWasNotTakenFurtherDetails,
       link: `/chest-xray-not-taken#${attributeToComponentId.xrayWasNotTakenFurtherDetails}`,
       hiddenLabel: "details",
+      emptyValueText: "Enter details (optional)",
     },
   ];
 

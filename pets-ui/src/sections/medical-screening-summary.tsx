@@ -76,18 +76,21 @@ const MedicalScreeningReview = () => {
       value: medicalData.otherSymptomsDetail,
       link: `/medical-screening#${attributeToComponentId.otherSymptomsDetail}`,
       hiddenLabel: "other symptoms",
+      emptyValueText: "Enter other symptoms (optional)",
     },
     {
       key: "Applicant history if under 11",
       value: medicalData.underElevenConditions.join(", "),
       link: `/medical-screening#${attributeToComponentId.underElevenConditions}`,
       hiddenLabel: "applicant history if under 11",
+      emptyValueText: "Enter applicant history if under 11 (optional)",
     },
     {
       key: "Additional details of applicant history if under 11",
       value: medicalData.underElevenConditionsDetail,
       link: `/medical-screening#${attributeToComponentId.underElevenConditionsDetail}`,
       hiddenLabel: "additional details of applicant history if under 11",
+      emptyValueText: "Enter additional details of applicant history if under 11 (optional)",
     },
     {
       key: "Has the applicant ever had tuberculosis?",
@@ -136,6 +139,7 @@ const MedicalScreeningReview = () => {
       value: medicalData.physicalExamNotes,
       link: `/medical-screening#${attributeToComponentId.physicalExamNotes}`,
       hiddenLabel: "physical examination notes",
+      emptyValueText: "Enter physical examination notes (optional)",
     },
   ];
 
