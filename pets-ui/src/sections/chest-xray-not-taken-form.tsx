@@ -1,11 +1,10 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
-import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
@@ -41,19 +40,36 @@ const ChestXrayNotTakenForm = () => {
 
   const watchedReasonXrayNotTaken = watch("reasonXrayWasNotTaken") as unknown as string;
 
+  // Required to scroll to the correct element when a change link on the summary page is clicked
+  const location = useLocation();
   const reasonXrayNotTakenRef = useRef<HTMLDivElement | null>(null);
   const xrayNotTakenFurtherDetailsRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (location.hash) {
+      const target = location.hash.substring(1);
+      const refMap: { [key: string]: HTMLElement | null } = {
+        "reason-xray-not-taken": reasonXrayNotTakenRef.current,
+        "xray-not-taken-further-details": xrayNotTakenFurtherDetailsRef.current,
+      };
+
+      const targetRef = refMap[target];
+      if (targetRef) {
+        targetRef.scrollIntoView();
+      }
+    }
+  }, [location]);
 
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
         <ApplicantDataHeader applicantData={applicantData} />
-        <Heading level={2} title="Reason X-ray not taken" />
         <div ref={reasonXrayNotTakenRef}>
           <Radio
             id="reason-xray-not-taken"
-            legend="Choose from the following options"
+            heading="Reason X-ray not taken"
+            label="Choose from the following options"
             isInline={RadioIsInline.FALSE}
             answerOptions={["Child", "Pregnant", "Other"]}
             sortAnswersAlphabetically={false}

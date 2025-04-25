@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 
 interface LabelProps {
-  ariaLabel?: string;
   title: string;
   to: string;
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
@@ -17,13 +16,12 @@ interface LabelProps {
 const LinkLabel = ({
   className = "govuk-link govuk-link--no-visited-state",
   ...props
-}: LabelProps) => {
+}: Readonly<LabelProps>) => {
   return props.externalLink ? (
     <a
       className={className}
       id={props.id}
       href={props.to}
-      aria-label={props.ariaLabel}
       style={props.style}
       onClick={props.onClick}
       data-module={props.dataModule}
@@ -35,7 +33,6 @@ const LinkLabel = ({
       className={className}
       id={props.id}
       to={props.to}
-      aria-label={props.ariaLabel}
       style={props.style}
       onClick={props.onClick}
     >

@@ -33,7 +33,8 @@ describe("Radio component", () => {
         <FormProvider {...methods}>
           <Radio
             id="test-id"
-            legend="test-legend"
+            heading="test-heading"
+            label="test-label"
             hint="test-hint"
             isInline={RadioIsInline.FALSE}
             answerOptions={["zzz Answer One", "aaa Answer Two"]}
@@ -47,7 +48,8 @@ describe("Radio component", () => {
     };
     render(<RadioToTest />);
     expect(screen.getAllByRole("radio")).toBeTruthy();
-    expect(screen.getByText("test-legend")).toBeTruthy();
+    expect(screen.getByText("test-label")).toBeTruthy();
+    expect(screen.getByText("test-heading")).toBeTruthy();
     expect(screen.getByText("test-hint")).toBeTruthy();
     expect(screen.getByText("zzz Answer One")).toBeTruthy();
     expect(screen.getByText("aaa Answer Two")).toBeTruthy();
@@ -56,7 +58,7 @@ describe("Radio component", () => {
   it("renders correctly when all optional props are omitted", () => {
     render(<DefaultRadioToTest />);
     expect(screen.getAllByRole("radio")).toBeTruthy();
-    expect(screen.queryByText("test-legend")).toBeNull();
+    expect(screen.queryByText("test-label")).toBeNull();
     expect(screen.queryByText("test-hint")).toBeNull();
     expect(screen.getByText("zzz Answer One")).toBeTruthy();
     expect(screen.getByText("aaa Answer Two")).toBeTruthy();
@@ -81,7 +83,7 @@ describe("Radio component", () => {
     };
     render(<RadioToTest />);
     expect(screen.getAllByRole("radio")).toBeTruthy();
-    expect(screen.queryByText("test-legend")).toBeNull();
+    expect(screen.queryByText("test-label")).toBeNull();
     expect(screen.queryByText("test-hint")).toBeNull();
     expect(screen.queryByText("test error")).toBeTruthy();
     expect(screen.getByText("zzz Answer One")).toBeTruthy();

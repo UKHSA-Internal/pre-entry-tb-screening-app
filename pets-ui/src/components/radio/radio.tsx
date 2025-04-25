@@ -1,13 +1,17 @@
 import "./radio.scss";
 
-import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 import { RadioIsInline } from "@/utils/enums";
 
+import FieldWrapper from "../fieldWrapper/fieldWrapper";
+import { HeadingSize } from "../heading/heading";
+import { radioHeadingStyles, radioHeadingWithLabelStyles, radioLabelStyles } from "./radio.styles";
+
 export interface RadioProps {
   id: string;
-  legend?: string;
+  heading?: string;
+  label?: string;
   hint?: string;
   isInline: RadioIsInline;
   answerOptions: string[];
@@ -16,57 +20,57 @@ export interface RadioProps {
   formValue: string;
   required: string | false;
   defaultValue?: string;
+  headingLevel?: 1 | 2 | 3 | 4;
+  headingSize?: HeadingSize;
+  headingStyle?: React.CSSProperties;
 }
 
 export default function Radio(props: Readonly<RadioProps>) {
-  const answerOptions: string[] = props.answerOptions;
+  const { register } = useFormContext();
+
+  const answerOptions = [...props.answerOptions];
   if (props.sortAnswersAlphabetically) {
     answerOptions.sort((a, b) => a.localeCompare(b));
   }
 
-  const { register } = useFormContext();
-  const [errorText, setErrorText] = useState("");
-  const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
-
-  useEffect(() => {
-    setErrorText(props.errorMessage);
-    setWrapperClass("govuk-form-group " + (props.errorMessage ? "govuk-form-group--error" : ""));
-  }, [props.errorMessage]);
-
   return (
-    <div id={props.id} className={wrapperClass}>
-      <fieldset className="govuk-fieldset">
-        {props.legend && <legend className="govuk-fieldset__legend">{props.legend}</legend>}
-        {props.hint && <div className="govuk-hint">{props.hint}</div>}
-        {errorText && (
-          <p className="govuk-error-message">
-            <span className="govuk-visually-hidden">Error:</span> {errorText}
-          </p>
-        )}
-        <div className={props.isInline} data-module="govuk-radios">
-          {answerOptions.map((answerOption, index) => {
-            const optionId = `${props.id}-${index}`;
-            return (
-              <div className="govuk-radios__item" key={optionId}>
-                <input
-                  className="govuk-radios__input"
-                  id={optionId}
-                  type="radio"
-                  data-testid={props.id}
-                  value={answerOption}
-                  {...register(props.formValue, {
-                    required: props.required,
-                  })}
-                  defaultChecked={props.defaultValue == answerOption}
-                />
-                <label className="govuk-label govuk-radios__label" htmlFor={optionId}>
-                  {answerOption}
-                </label>
-              </div>
-            );
-          })}
-        </div>
-      </fieldset>
-    </div>
+    <FieldWrapper
+      id={props.id}
+      heading={props.heading}
+      label={props.label}
+      hint={props.hint}
+      errorMessage={props.errorMessage}
+      headingLevel={props.headingLevel}
+      headingSize={props.headingSize}
+      headingStyle={{
+        ...(props.label ? radioHeadingWithLabelStyles : radioHeadingStyles),
+        ...props.headingStyle,
+      }}
+      labelStyle={radioLabelStyles}
+    >
+      <div className={props.isInline} data-module="govuk-radios">
+        {answerOptions.map((option, index) => {
+          const optionId = `${props.id}-${index}`;
+          return (
+            <div className="govuk-radios__item" key={optionId}>
+              <input
+                className="govuk-radios__input"
+                id={optionId}
+                type="radio"
+                data-testid={props.id}
+                value={option}
+                {...register(props.formValue, {
+                  required: props.required,
+                })}
+                defaultChecked={props.defaultValue === option}
+              />
+              <label className="govuk-label govuk-radios__label" htmlFor={optionId}>
+                {option}
+              </label>
+            </div>
+          );
+        })}
+      </div>
+    </FieldWrapper>
   );
 }

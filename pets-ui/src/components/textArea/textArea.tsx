@@ -68,7 +68,6 @@ export default function TextArea({
         className={inputClass}
         rows={props.rows}
         data-testid={props.id}
-        aria-labelledby={props.id}
         {...register(props.formValue, {
           required: props.required,
         })}

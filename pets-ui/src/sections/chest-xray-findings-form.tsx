@@ -79,14 +79,9 @@ const ChestXrayFindingsForm = () => {
         <ApplicantDataHeader applicantData={applicantData} />
 
         <div ref={xrayResult}>
-          <Heading
-            level={2}
-            size="m"
-            style={{ marginBottom: 20, marginTop: 40 }}
-            title="Radiological outcome"
-          />
           <Radio
             id="xray-result"
+            heading="Radiological outcome"
             isInline={RadioIsInline.FALSE}
             answerOptions={["Chest X-ray normal", "Non-TB abnormality", "Old or active TB"]}
             sortAnswersAlphabetically={false}
@@ -95,111 +90,104 @@ const ChestXrayFindingsForm = () => {
             required="Select radiological outcome"
             defaultValue={chestXrayData.xrayResult}
           />
+
+          <div ref={xrayResultDetail}>
+            <TextArea
+              id="xray-result-detail"
+              hint="Add details if X-ray results are abnormal"
+              headingLevel={3}
+              headingSize="s"
+              heading="Details"
+              required={false}
+              errorMessage={errors?.xrayResultDetail?.message ?? ""}
+              formValue="xrayResultDetail"
+              rows={4}
+              defaultValue={chestXrayData.xrayResultDetail}
+            />
+          </div>
         </div>
 
-        <div ref={xrayResultDetail}>
-          <TextArea
-            id="xray-result-detail"
-            hint="Add details if X-ray results are abnormal"
-            headingLevel={3}
-            headingSize="s"
-            heading="Details"
-            required={false}
-            errorMessage={errors?.xrayResultDetail?.message ?? ""}
-            formValue="xrayResultDetail"
-            rows={4}
-            defaultValue={chestXrayData.xrayResultDetail}
-          />
-
+        <div id="radiographic-findings" className="govuk-form-group">
           <Heading
             level={2}
             size="m"
-            style={{ marginBottom: 20, marginTop: 40 }}
+            style={{ marginBottom: -10, marginTop: 40 }}
             title="Radiographic findings"
           />
-        </div>
 
-        <div ref={xrayMinorFindings}>
-          <Heading
-            level={3}
-            size="s"
-            style={{ marginBottom: 20, marginTop: 40 }}
-            title="Minor findings"
-          />
-          <Checkbox
-            id="xray-minor-findings"
-            answerOptions={[
-              "1.1 Single fibrous streak or band or scar",
-              "1.2 Bony islets",
-              "2.1 Pleural capping with a smooth inferior border (less than 1cm thick at all points)",
-              "2.2 Unilateral or bilateral costophrenic angle blunding (below the horizontal)",
-              "2.3 Calcified nodule(s) in the hilum or mediastinum with no pulmonary granulomas",
-            ]}
-            required={false}
-            sortAnswersAlphabetically={false}
-            errorMessage={errors?.xrayMinorFindings?.message ?? ""}
-            formValue="xrayMinorFindings"
-            defaultValue={
-              chestXrayData.xrayMinorFindings.length ? chestXrayData.xrayMinorFindings : []
-            }
-          />
-        </div>
+          <div ref={xrayMinorFindings}>
+            <Checkbox
+              id="xray-minor-findings"
+              answerOptions={[
+                "1.1 Single fibrous streak or band or scar",
+                "1.2 Bony islets",
+                "2.1 Pleural capping with a smooth inferior border (less than 1cm thick at all points)",
+                "2.2 Unilateral or bilateral costophrenic angle blunding (below the horizontal)",
+                "2.3 Calcified nodule(s) in the hilum or mediastinum with no pulmonary granulomas",
+              ]}
+              heading="Minor findings"
+              headingLevel={3}
+              headingSize="s"
+              required={false}
+              sortAnswersAlphabetically={false}
+              errorMessage={errors?.xrayMinorFindings?.message ?? ""}
+              formValue="xrayMinorFindings"
+              defaultValue={
+                chestXrayData.xrayMinorFindings.length ? chestXrayData.xrayMinorFindings : []
+              }
+            />
+          </div>
 
-        <div ref={xrayAssociatedMinorFindings}>
-          <Heading
-            size="s"
-            level={3}
-            title="Minor findings (occasionally associated with TB infection)"
-            style={{ marginBottom: 20, marginTop: 40 }}
-          />
-          <Checkbox
-            id="xray-associated-minor-findings"
-            answerOptions={[
-              "3.1 Solitary granuloma (less than 1cm and of any lobe) with an unremarkable hilum",
-              "3.2 Solitary granuloma (less than 1cm and of any lobe) with calcified or enlarged hilar lymph nodes",
-              "3.3 Single or multiple calcified pulmonary nodules or micronodulese with distinct borders",
-              "3.4 Calcified pleural lesion",
-              "3.5 Costophrenic angle blunting (either side above the horizontal)",
-            ]}
-            required={false}
-            sortAnswersAlphabetically={false}
-            errorMessage={errors?.xrayAssociatedMinorFindings?.message ?? ""}
-            formValue="xrayAssociatedMinorFindings"
-            defaultValue={
-              chestXrayData.xrayAssociatedMinorFindings.length
-                ? chestXrayData.xrayAssociatedMinorFindings
-                : []
-            }
-          />
-        </div>
+          <div ref={xrayAssociatedMinorFindings}>
+            <Checkbox
+              id="xray-associated-minor-findings"
+              answerOptions={[
+                "3.1 Solitary granuloma (less than 1cm and of any lobe) with an unremarkable hilum",
+                "3.2 Solitary granuloma (less than 1cm and of any lobe) with calcified or enlarged hilar lymph nodes",
+                "3.3 Single or multiple calcified pulmonary nodules or micronodulese with distinct borders",
+                "3.4 Calcified pleural lesion",
+                "3.5 Costophrenic angle blunting (either side above the horizontal)",
+              ]}
+              heading="Minor findings (occasionally associated with TB infection)"
+              headingLevel={3}
+              headingSize="s"
+              required={false}
+              sortAnswersAlphabetically={false}
+              errorMessage={errors?.xrayAssociatedMinorFindings?.message ?? ""}
+              formValue="xrayAssociatedMinorFindings"
+              defaultValue={
+                chestXrayData.xrayAssociatedMinorFindings.length
+                  ? chestXrayData.xrayAssociatedMinorFindings
+                  : []
+              }
+            />
+          </div>
 
-        <div ref={xrayActiveTbFindings}>
-          <Heading
-            level={3}
-            size="s"
-            title="Findings sometimes seen in active TB (or other conditions)"
-            style={{ marginBottom: 20, marginTop: 40 }}
-          />
-          <Checkbox
-            id="xray-active-tb-findings"
-            answerOptions={[
-              "4.0 Notable apical pleural capping (rough or ragged inferior border an/or equal or greater than 1cm thick at any point)",
-              "4.1 Apical fibronodular or fibrocalcific lesions or apical microcalcifications",
-              "4.2 Single or multiple pulmonary nodules or micronodules (noncalcified or poorly defined)",
-              "4.3 Isolated hilar or mediastinal mass or lymphadenopathy (noncalcified)",
-              "4.4 Single or multiple pulmonary nodules / masses equal or greater than 1cm",
-              "4.5 Non calcified pleural fibrosis or effusion",
-              "4.6 Interstitial fibrosis or parenchymal lung disease and or acute pulmonary disease",
-              "4.7 Any cavitating lesion or 'fluffy' or 'soft' lesions felt likely to represent active TB",
-            ]}
-            required={false}
-            sortAnswersAlphabetically={false}
-            errorMessage={errors?.xrayActiveTbFindings?.message ?? ""}
-            formValue="xrayActiveTbFindings"
-            defaultValue={
-              chestXrayData.xrayActiveTbFindings.length ? chestXrayData.xrayActiveTbFindings : []
-            }
-          />
+          <div ref={xrayActiveTbFindings}>
+            <Checkbox
+              id="xray-active-tb-findings"
+              answerOptions={[
+                "4.0 Notable apical pleural capping (rough or ragged inferior border an/or equal or greater than 1cm thick at any point)",
+                "4.1 Apical fibronodular or fibrocalcific lesions or apical microcalcifications",
+                "4.2 Single or multiple pulmonary nodules or micronodules (noncalcified or poorly defined)",
+                "4.3 Isolated hilar or mediastinal mass or lymphadenopathy (noncalcified)",
+                "4.4 Single or multiple pulmonary nodules / masses equal or greater than 1cm",
+                "4.5 Non calcified pleural fibrosis or effusion",
+                "4.6 Interstitial fibrosis or parenchymal lung disease and or acute pulmonary disease",
+                "4.7 Any cavitating lesion or 'fluffy' or 'soft' lesions felt likely to represent active TB",
+              ]}
+              heading="Findings sometimes seen in active TB (or other conditions)"
+              headingLevel={3}
+              headingSize="s"
+              required={false}
+              sortAnswersAlphabetically={false}
+              errorMessage={errors?.xrayActiveTbFindings?.message ?? ""}
+              formValue="xrayActiveTbFindings"
+              defaultValue={
+                chestXrayData.xrayActiveTbFindings.length ? chestXrayData.xrayActiveTbFindings : []
+              }
+            />
+          </div>
         </div>
 
         <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Save and continue" />

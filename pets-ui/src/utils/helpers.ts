@@ -1,5 +1,4 @@
 import { DateType } from "@/applicant";
-import { SummaryElement } from "@/components/summary/summary";
 
 import {
   dateEntryMustBeInTheFuture,
@@ -134,13 +133,6 @@ const formatDateType = (date: DateType): string => {
   return `${day}/${month}/${year}`;
 };
 
-const isDataPresent = (
-  summaryElement: Partial<SummaryElement>,
-): summaryElement is SummaryElement => {
-  const { value } = summaryElement;
-  return Array.isArray(value) ? value.length > 0 : !!value;
-};
-
 const spreadArrayIfNotEmpty = (...arrays: string[][]) => {
   return arrays.flatMap((array) => (array?.length ? array : []));
 };
@@ -153,7 +145,6 @@ const logError = (error: Error, info: { componentStack?: string | null }) => {
 export {
   formatDateType,
   hasInvalidCharacters,
-  isDataPresent,
   isDateInTheFuture,
   isDateInThePast,
   isValidDate,

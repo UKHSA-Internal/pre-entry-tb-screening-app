@@ -59,15 +59,15 @@ describe("TravelReview", () => {
     expect(screen.getAllByRole("term")[1]).toHaveTextContent("UK address line 1");
     expect(screen.getAllByRole("definition")[2]).toHaveTextContent("Edinburgh Castle, Castlehill");
     expect(screen.getAllByRole("term")[2]).toHaveTextContent("UK address line 2");
-    expect(screen.getAllByRole("definition")[4]).toHaveTextContent("");
+    expect(screen.getAllByRole("definition")[4]).toHaveTextContent("Enter UK address line 2");
     expect(screen.getAllByRole("term")[3]).toHaveTextContent("UK town or city");
-    expect(screen.getAllByRole("definition")[6]).toHaveTextContent("Edinburgh");
+    expect(screen.getAllByRole("definition")[5]).toHaveTextContent("Edinburgh");
     expect(screen.getAllByRole("term")[4]).toHaveTextContent("UK postcode");
-    expect(screen.getAllByRole("definition")[8]).toHaveTextContent("EH1 2NG");
+    expect(screen.getAllByRole("definition")[7]).toHaveTextContent("EH1 2NG");
     expect(screen.getAllByRole("term")[5]).toHaveTextContent("UK mobile number");
-    expect(screen.getAllByRole("definition")[10]).toHaveTextContent("07321900900");
+    expect(screen.getAllByRole("definition")[9]).toHaveTextContent("07321900900");
     expect(screen.getAllByRole("term")[6]).toHaveTextContent("UK email address");
-    expect(screen.getAllByRole("definition")[12]).toHaveTextContent(
+    expect(screen.getAllByRole("definition")[11]).toHaveTextContent(
       "sigmund.sigmundson@asgard.gov",
     );
 

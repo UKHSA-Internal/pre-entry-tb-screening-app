@@ -102,7 +102,7 @@ const ApplicantForm = () => {
         <div ref={sexRef}>
           <Radio
             id="sex"
-            legend="Sex"
+            label="Sex"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Female", "Male", "Other"]}
             sortAnswersAlphabetically={false}
