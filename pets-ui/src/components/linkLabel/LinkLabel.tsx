@@ -16,7 +16,7 @@ interface LabelProps {
 const LinkLabel = ({
   className = "govuk-link govuk-link--no-visited-state",
   ...props
-}: LabelProps) => {
+}: Readonly<LabelProps>) => {
   return props.externalLink ? (
     <a
       className={className}

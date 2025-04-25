@@ -115,7 +115,7 @@ const MedicalScreeningForm = () => {
         <div ref={tbSymptomsListRef}>
           <Checkbox
             id="tb-symptoms-list"
-            legend="If yes, select which symptoms"
+            label="If yes, select which symptoms"
             answerOptions={[
               "Cough",
               "Night sweats",
@@ -147,7 +147,7 @@ const MedicalScreeningForm = () => {
         <div ref={underElevenConditionsRef}>
           <Checkbox
             id="under-eleven-conditions"
-            legend="If the applicant is a child aged under 11, have they ever had:"
+            label="If the applicant is a child aged under 11, have they ever had:"
             answerOptions={[
               "Thoracic surgery",
               "Cyanosis",
