@@ -30,7 +30,6 @@ const ChestXrayFindingsForm = () => {
   const navigate = useNavigate();
 
   const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
-
   const {
     handleSubmit,
     formState: { errors },
