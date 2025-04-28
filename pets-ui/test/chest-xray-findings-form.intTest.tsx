@@ -34,7 +34,7 @@ describe("ChestXrayFindings Form", () => {
 
     expect(screen.getByText("Name")).toBeInTheDocument;
     expect(screen.getByText("Chest X-ray normal")).toBeInTheDocument;
-    expect(screen.getByText("Add details if X-ray results are abnormal")).toBeInTheDocument;
+    expect(screen.getByText("Give further details (optional)")).toBeInTheDocument;
     expect(screen.getByText("Radiographic findings")).toBeInTheDocument;
     expect(screen.getByText("Minor findings")).toBeInTheDocument;
     expect(screen.getByText("1.1 Single fibrous streak or band or scar")).toBeInTheDocument;
