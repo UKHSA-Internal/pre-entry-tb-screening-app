@@ -21,6 +21,7 @@ import {
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { toArray } from "@/utils/helpers";
 
 const ChestXrayFindingsForm = () => {
   const applicantData = useAppSelector(selectApplicant);
@@ -34,12 +35,14 @@ const ChestXrayFindingsForm = () => {
     formState: { errors },
   } = methods;
 
-  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = (chestXrayData) => {
-    dispatch(setXrayResult(chestXrayData.xrayResult));
-    dispatch(setXrayResultDetail(chestXrayData.xrayResultDetail));
-    dispatch(setXrayMinorFindings(chestXrayData.xrayMinorFindings));
-    dispatch(setXrayAssociatedMinorFindings(chestXrayData.xrayAssociatedMinorFindings));
-    dispatch(setXrayActiveTbFindings(chestXrayData.xrayActiveTbFindings));
+  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = (formChestXrayData) => {
+    dispatch(setXrayResult(formChestXrayData.xrayResult));
+    dispatch(setXrayResultDetail(formChestXrayData.xrayResultDetail));
+    dispatch(setXrayMinorFindings(toArray(formChestXrayData.xrayMinorFindings)));
+    dispatch(
+      setXrayAssociatedMinorFindings(toArray(formChestXrayData.xrayAssociatedMinorFindings)),
+    );
+    dispatch(setXrayActiveTbFindings(toArray(formChestXrayData.xrayActiveTbFindings)));
     navigate("/chest-xray-summary");
   };
 

@@ -1,17 +1,19 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { fireEvent, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import ChestXrayFindingsPage from "@/pages/chest-xray-findings";
 import ChestXrayFindingsForm from "@/sections/chest-xray-findings-form";
+import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
-vi.mock(`react-router-dom`, async (): Promise<unknown> => {
-  const actual: Record<string, unknown> = await vi.importActual(`react-router-dom`);
+vi.mock(`react-router`, async (): Promise<unknown> => {
+  const actual: Record<string, unknown> = await vi.importActual(`react-router`);
   return {
     ...actual,
     useNavigate: (): Mock => useNavigateMock,
@@ -19,6 +21,8 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 });
 
 beforeEach(() => useNavigateMock.mockClear());
+
+const user = userEvent.setup();
 
 describe("ChestXrayFindings Form", () => {
   it("renders form correctly", () => {
@@ -67,6 +71,7 @@ describe("ChestXrayFindings Form", () => {
       );
     });
   });
+
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
     renderWithProviders(
       <Router>
@@ -100,5 +105,38 @@ describe("ChestXrayFindings Form", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.getByText("Enter radiological outcome and findings")).toBeInTheDocument;
+  });
+
+  it("navigates to cxr summary when form is complete and submit button is clicked", async () => {
+    const preloadedState = {
+      chestXray: {
+        status: ApplicationStatus.INCOMPLETE,
+        chestXrayTaken: YesOrNo.YES,
+        posteroAnteriorXrayFileName: "pa-file-name.jpg",
+        posteroAnteriorXrayFile: "examplejpgexamplejpgexamplejpg",
+        apicalLordoticXrayFileName: "",
+        apicalLordoticXrayFile: "",
+        lateralDecubitusXrayFileName: "",
+        lateralDecubitusXrayFile: "",
+        reasonXrayWasNotTaken: "",
+        xrayWasNotTakenFurtherDetails: "",
+        xrayResult: "",
+        xrayResultDetail: "",
+        xrayMinorFindings: [],
+        xrayAssociatedMinorFindings: [],
+        xrayActiveTbFindings: [],
+      },
+    };
+    renderWithProviders(
+      <Router>
+        <HelmetProvider>
+          <ChestXrayFindingsPage />
+        </HelmetProvider>
+      </Router>,
+      { preloadedState },
+    );
+    await user.click(screen.getAllByTestId("xray-result")[0]);
+    await user.click(screen.getByRole("button"));
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-summary");
   });
 });
