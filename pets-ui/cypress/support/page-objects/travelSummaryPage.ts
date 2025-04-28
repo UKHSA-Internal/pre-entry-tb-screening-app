@@ -33,31 +33,52 @@ export class TravelSummaryPage {
   verifyFieldValueOnChangePage(fieldName: string, expectedValue: string): void {
     switch (fieldName) {
       case "Visa type":
-        cy.get("#visa-type select").should("have.value", expectedValue);
+        // Use multiple selectors to handle different DOM structures
+        cy.get('select[name="visaType"], #visa-type select')
+          .should("exist")
+          .then(($select) => {
+            if ($select.length > 0) {
+              cy.wrap($select).should("have.value", expectedValue);
+            } else {
+              // Try an alternative approach for visa type
+              cy.contains("Visa type").parent().find("select").should("have.value", expectedValue);
+            }
+          });
         break;
       case "UK address line 1":
-        cy.get('input[type="text"][name="applicantUkAddress1"]').should(
+        cy.get('input[type="text"][name="applicantUkAddress1"], #address-1').should(
           "have.value",
           expectedValue,
         );
         break;
       case "UK address line 2":
-        cy.get('input[type="text"][name="applicantUkAddress2"]').should(
+        cy.get('input[type="text"][name="applicantUkAddress2"], #address-2').should(
           "have.value",
           expectedValue,
         );
         break;
       case "UK town or city":
-        cy.get('input[type="text"][name="townOrCity"]').should("have.value", expectedValue);
+        cy.get('input[type="text"][name="townOrCity"], #town-or-city').should(
+          "have.value",
+          expectedValue,
+        );
         break;
       case "UK postcode":
-        cy.get('input[type="text"][name="postcode"]').should("have.value", expectedValue);
+        cy.get('input[type="text"][name="postcode"], #postcode').should(
+          "have.value",
+          expectedValue,
+        );
         break;
       case "UK mobile number":
-        cy.get('input[type="text"][name="ukMobileNumber"]').should("have.value", expectedValue);
+        cy.get(
+          'input[type="text"][name="ukMobileNumber"], [aria-labelledby="mobile-number"]',
+        ).should("have.value", expectedValue);
         break;
       case "UK email address":
-        cy.get('input[type="text"][name="ukEmail"]').should("have.value", expectedValue);
+        cy.get('input[type="text"][name="ukEmail"], [aria-labelledby="email"]').should(
+          "have.value",
+          expectedValue,
+        );
         break;
     }
 
