@@ -103,7 +103,7 @@ const ChestXrayFindingsForm = () => {
           <div ref={xrayResultDetail}>
             <TextArea
               id="xray-result-detail"
-              hint="Add details if X-ray results are abnormal"
+              hint="Give further details (optional)"
               headingLevel={3}
               headingSize="s"
               heading="Details"

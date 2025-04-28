@@ -99,7 +99,7 @@ const ApplicantTravelForm = () => {
         <div ref={addressLine2Ref}>
           <FreeText
             id="address-2"
-            label="Address line 2 (optional)"
+            label="Address line 2"
             errorMessage={errors?.applicantUkAddress2?.message ?? ""}
             formValue="applicantUkAddress2"
             required={false}
@@ -139,7 +139,7 @@ const ApplicantTravelForm = () => {
           <FreeText
             id="mobile-number"
             errorMessage={errors?.ukMobileNumber?.message ?? ""}
-            heading="Applicant's UK phone number"
+            heading="Phone number (optional)"
             formValue="ukMobileNumber"
             required="Enter UK mobile number"
             patternValue={formRegex.numbersOnly}
@@ -152,9 +152,9 @@ const ApplicantTravelForm = () => {
           <FreeText
             id="email"
             errorMessage={errors?.ukEmail?.message ?? ""}
-            heading="Applicant's UK email"
+            heading="Email address (optional)"
             formValue="ukEmail"
-            required="Enter UK email address"
+            required="Enter email address"
             patternValue={formRegex.emailAddress}
             patternError="Email must be in correct format"
             defaultValue={travelData.ukEmail}
