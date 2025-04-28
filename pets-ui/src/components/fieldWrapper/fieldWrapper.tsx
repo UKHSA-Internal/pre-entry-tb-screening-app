@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 
 import Heading, { HeadingSize } from "../heading/heading";
 
+// useFieldset is a key determinant of how labels/legends should be applied to meet accessibility requirements
+// when useFieldset = true, heading and/or label prop, and id prop are required
+// when useFieldset = false, heading and/or label prop are required, and the form element (<input>, <select>, <textarea> etc.) should have an aria-labelledby prop that matches with the heading's id attribute, or id prop that matches with the label's htmlFor attribute
+
 interface FieldWrapperProps {
   id: string;
   heading?: string;
@@ -63,9 +67,9 @@ export default function FieldWrapper({
             )}
           </legend>
           {props.heading && props.label && (
-            <label className="govuk-label" id={`${props.id}-label`} style={labelStyle}>
+            <div className="govuk-label" id={`${props.id}-label`} style={labelStyle}>
               {props.label}
-            </label>
+            </div>
           )}
           {props.hint && (
             <div className="govuk-hint" id={`${props.id}-hint`}>
@@ -87,21 +91,17 @@ export default function FieldWrapper({
               level={headingLevel}
               size={headingSize}
               style={{ marginBottom: 10, ...props.headingStyle }}
-              id={props.label ? `${props.id}-heading` : props.id}
+              id={props.id}
             />
           ) : (
-            <label
-              className="govuk-label"
-              htmlFor={props.heading ? `${props.id}-label` : props.id}
-              style={labelStyle}
-            >
+            <label className="govuk-label" htmlFor={props.id} style={labelStyle}>
               {props.label}
             </label>
           )}
           {props.heading && props.label && (
-            <label className="govuk-label" id={`${props.id}-label`} style={labelStyle}>
+            <div className="govuk-label" id={`${props.id}-label`} style={labelStyle}>
               {props.label}
-            </label>
+            </div>
           )}
           {props.hint && (
             <div className="govuk-hint" id={`${props.id}-hint`}>

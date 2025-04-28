@@ -81,11 +81,11 @@ const ApplicantTravelForm = () => {
           />
         </div>
 
+        <Heading title="Applicant's UK address" level={2} size="m" />
         <div ref={addressLine1Ref}>
           <FreeText
             id="address-1"
             label="Address line 1"
-            heading="Applicant's UK address"
             headingStyle={{ marginBottom: 20 }}
             errorMessage={errors?.applicantUkAddress1?.message ?? ""}
             formValue="applicantUkAddress1"

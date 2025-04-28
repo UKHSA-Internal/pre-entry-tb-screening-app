@@ -40,7 +40,8 @@ export default function TextArea(props: Readonly<TextAreaProps>) {
       divStyle={props.divStyle}
     >
       <textarea
-        id={props.id}
+        aria-labelledby={props.heading && props.id}
+        id={props.label && !props.heading ? props.id : undefined}
         className="govuk-textarea"
         rows={props.rows}
         data-testid={props.id}

@@ -45,7 +45,8 @@ export default function Dropdown(props: Readonly<DropdownProps>) {
       divStyle={props.divStyle}
     >
       <select
-        id={props.id}
+        aria-labelledby={props.heading && props.id}
+        id={props.label && !props.heading ? props.id : undefined}
         className="govuk-select"
         defaultValue={props.defaultValue ?? ""}
         {...register(props.formValue, {

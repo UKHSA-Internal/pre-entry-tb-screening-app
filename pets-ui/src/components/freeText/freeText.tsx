@@ -42,24 +42,23 @@ export default function FreeText(props: Readonly<FreeTextProps>) {
       labelStyle={props.labelStyle}
       divStyle={props.divStyle}
     >
-      <div className="govuk-input__wrapper">
-        <input
-          className={`govuk-input govuk-input--width-${props.inputWidth}`}
-          id={props.id}
-          type="text"
-          data-testid={props.id}
-          {...register(props.formValue, {
-            required: props.required,
-            pattern: {
-              value: props.patternValue,
-              message: props.patternError,
-            },
-            setValueAs: (value: string) => value.trim(),
-          })}
-          defaultValue={props.defaultValue ?? ""}
-        />
-        {props.suffixText && <div className="govuk-input__suffix">{props.suffixText}</div>}
-      </div>
+      <input
+        className={`govuk-input govuk-input--width-${props.inputWidth}`}
+        aria-labelledby={props.heading && props.id}
+        id={props.label && !props.heading ? props.id : undefined}
+        type="text"
+        data-testid={props.id}
+        {...register(props.formValue, {
+          required: props.required,
+          pattern: {
+            value: props.patternValue,
+            message: props.patternError,
+          },
+          setValueAs: (value: string) => value.trim(),
+        })}
+        defaultValue={props.defaultValue ?? ""}
+      />
+      {props.suffixText && <div className="govuk-input__suffix">{props.suffixText}</div>}
     </FieldWrapper>
   );
 }
