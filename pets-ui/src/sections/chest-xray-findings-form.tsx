@@ -7,6 +7,7 @@ import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataH
 import Checkbox from "@/components/checkbox/checkbox";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
+import NotificationBanner from "@/components/notificationBanner/notificationBanner";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
@@ -79,6 +80,13 @@ const ChestXrayFindingsForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
+        <NotificationBanner
+          bannerTitle="Important"
+          bannerText="If a visa applicant's chest X-rays indicate that they have pulmonary TB, give them a referral letter and copies of the:"
+          list={["chest X-ray", "radiology report", "medical record form"]}
+        />
+        <Heading level={1} size="l" title="Enter radiological outcome and findings" />
+
         <ApplicantDataHeader applicantData={applicantData} />
 
         <div ref={xrayResult}>
@@ -92,6 +100,7 @@ const ChestXrayFindingsForm = () => {
             formValue="xrayResult"
             required="Select radiological outcome"
             defaultValue={chestXrayData.xrayResult}
+            divStyle={{ marginTop: 40 }}
           />
 
           <div ref={xrayResultDetail}>
@@ -138,6 +147,7 @@ const ChestXrayFindingsForm = () => {
               defaultValue={
                 chestXrayData.xrayMinorFindings.length ? chestXrayData.xrayMinorFindings : []
               }
+              divStyle={{ marginTop: 40, marginBottom: 10 }}
             />
           </div>
 
@@ -163,6 +173,7 @@ const ChestXrayFindingsForm = () => {
                   ? chestXrayData.xrayAssociatedMinorFindings
                   : []
               }
+              divStyle={{ marginTop: 40, marginBottom: 10 }}
             />
           </div>
 
@@ -189,6 +200,7 @@ const ChestXrayFindingsForm = () => {
               defaultValue={
                 chestXrayData.xrayActiveTbFindings.length ? chestXrayData.xrayActiveTbFindings : []
               }
+              divStyle={{ marginTop: 40, marginBottom: 10 }}
             />
           </div>
         </div>
