@@ -40,7 +40,7 @@ export default function FieldWrapper({
   useEffect(() => {
     setErrorText(props.errorMessage);
     setWrapperClass(`govuk-form-group${props.errorMessage ? " govuk-form-group--error" : ""}`);
-  }, [props.errorMessage, wrapperClass]);
+  }, [props.errorMessage]);
 
   return (
     <div
@@ -63,9 +63,9 @@ export default function FieldWrapper({
             )}
           </legend>
           {props.heading && props.label && (
-            <div className="govuk-label" id={`${props.id}-label`} style={labelStyle}>
+            <label className="govuk-label" id={`${props.id}-label`} style={labelStyle}>
               {props.label}
-            </div>
+            </label>
           )}
           {props.hint && (
             <div className="govuk-hint" id={`${props.id}-hint`}>
@@ -99,9 +99,9 @@ export default function FieldWrapper({
             </label>
           )}
           {props.heading && props.label && (
-            <div className="govuk-label" id={`${props.id}-label`} style={labelStyle}>
+            <label className="govuk-label" id={`${props.id}-label`} style={labelStyle}>
               {props.label}
-            </div>
+            </label>
           )}
           {props.hint && (
             <div className="govuk-hint" id={`${props.id}-hint`}>
