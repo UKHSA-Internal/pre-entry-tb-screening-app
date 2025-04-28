@@ -76,7 +76,7 @@ describe("ApplicantTravelForm", () => {
     const errorMessages = [
       "Error: Select a visa type",
       "Error: Enter UK mobile number",
-      "Error: Enter UK email address",
+      "Error: Enter email address",
     ];
 
     errorMessages.forEach((error) => {

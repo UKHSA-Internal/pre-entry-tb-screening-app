@@ -102,7 +102,7 @@ const ApplicantForm = () => {
         <div ref={sexRef}>
           <Radio
             id="sex"
-            legend="Sex"
+            label="Sex"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Female", "Male", "Other"]}
             sortAnswersAlphabetically={false}
@@ -244,7 +244,7 @@ const ApplicantForm = () => {
         <div ref={addressLine2Ref}>
           <FreeText
             id="address-2"
-            label="Address line 2"
+            label="Address line 2 (optional)"
             errorMessage={errors?.applicantHomeAddress2?.message ?? ""}
             formValue="applicantHomeAddress2"
             required={false}
@@ -257,7 +257,7 @@ const ApplicantForm = () => {
         <div ref={addressLine3Ref}>
           <FreeText
             id="address-3"
-            label="Address line 3"
+            label="Address line 3 (optional)"
             errorMessage={errors?.applicantHomeAddress3?.message ?? ""}
             formValue="applicantHomeAddress3"
             required={false}
@@ -308,7 +308,7 @@ const ApplicantForm = () => {
         <div ref={postcodeRef}>
           <FreeText
             id="postcode"
-            label="Postcode"
+            label="Postcode (optional)"
             errorMessage={errors?.postcode?.message ?? ""}
             formValue="postcode"
             required={false}

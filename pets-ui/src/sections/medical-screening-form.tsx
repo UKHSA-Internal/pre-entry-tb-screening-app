@@ -101,7 +101,7 @@ const MedicalScreeningForm = () => {
         <div ref={tbSymptomsRef}>
           <Radio
             id="tb-symptoms"
-            legend="Does the applicant have any TB symptoms?"
+            label="Does the applicant have any TB symptoms?"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Yes", "No"]}
             sortAnswersAlphabetically={false}
@@ -115,7 +115,7 @@ const MedicalScreeningForm = () => {
         <div ref={tbSymptomsListRef}>
           <Checkbox
             id="tb-symptoms-list"
-            legend="If yes, select which symptoms"
+            label="If yes, select which symptoms"
             answerOptions={[
               "Cough",
               "Night sweats",
@@ -135,7 +135,7 @@ const MedicalScreeningForm = () => {
         <div ref={otherSymptomsDetailRef}>
           <TextArea
             id="other-symptoms-detail"
-            label='If you have selected "Other symptoms", list these'
+            label="Give further details (optional)"
             errorMessage={errors?.otherSymptomsDetail?.message ?? ""}
             formValue="otherSymptomsDetail"
             required={false}
@@ -147,7 +147,7 @@ const MedicalScreeningForm = () => {
         <div ref={underElevenConditionsRef}>
           <Checkbox
             id="under-eleven-conditions"
-            legend="If the applicant is a child aged under 11, have they ever had:"
+            label="If the applicant is a child aged under 11, have they ever had:"
             answerOptions={[
               "Thoracic surgery",
               "Cyanosis",
@@ -169,7 +169,7 @@ const MedicalScreeningForm = () => {
         <div ref={underElevenConditionsDetailRef}>
           <TextArea
             id="under-eleven-conditions-detail"
-            label="You can give details of the procedure or condition"
+            label="Give further details (optional)"
             errorMessage={errors?.underElevenConditionsDetail?.message ?? ""}
             formValue="underElevenConditionsDetail"
             required={false}
@@ -181,7 +181,7 @@ const MedicalScreeningForm = () => {
         <div ref={previousTbRef}>
           <Radio
             id="previous-tb"
-            legend="Has the applicant ever had tuberculosis?"
+            label="Has the applicant ever had tuberculosis?"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Yes", "No"]}
             sortAnswersAlphabetically={false}
@@ -195,7 +195,7 @@ const MedicalScreeningForm = () => {
         <div ref={previousTbDetailRef}>
           <TextArea
             id="previous-tb-detail"
-            label="If yes, give details"
+            label="Give further details (optional)"
             errorMessage={errors?.previousTbDetail?.message ?? ""}
             formValue="previousTbDetail"
             required={false}
@@ -207,7 +207,7 @@ const MedicalScreeningForm = () => {
         <div ref={closeContactWithTbRef}>
           <Radio
             id="close-contact-with-tb"
-            legend="Has the applicant had close contact with any person with active pulmonary tuberculosis within the past year?"
+            label="Has the applicant had close contact with any person with active pulmonary tuberculosis within the past year?"
             hint="This might be sharing the same enclosed air space or household or other enclosed environment for a prolonged period, such as days or weeks"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Yes", "No"]}
@@ -234,7 +234,7 @@ const MedicalScreeningForm = () => {
         <div ref={pregnantRef}>
           <Radio
             id="pregnant"
-            legend="Is the applicant pregnant?"
+            label="Is the applicant pregnant?"
             isInline={RadioIsInline.FALSE}
             answerOptions={["Yes", "No", "Don't know", "N/A"]}
             sortAnswersAlphabetically={false}
@@ -248,7 +248,7 @@ const MedicalScreeningForm = () => {
         <div ref={menstrualPeriodsRef}>
           <Radio
             id="menstrual-periods"
-            legend="Does the applicant have menstrual periods?"
+            label="Does the applicant have menstrual periods?"
             isInline={RadioIsInline.FALSE}
             answerOptions={["Yes", "No", "N/A"]}
             sortAnswersAlphabetically={false}
@@ -262,7 +262,7 @@ const MedicalScreeningForm = () => {
         <div ref={physicalExamNotesRef}>
           <TextArea
             id="physical-exam-notes"
-            label="Physical examination notes"
+            label="Physical examination notes (optional)"
             errorMessage={errors?.physicalExamNotes?.message ?? ""}
             formValue="physicalExamNotes"
             required={false}

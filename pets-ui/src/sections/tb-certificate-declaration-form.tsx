@@ -82,13 +82,8 @@ const TbCertificateDeclarationForm = () => {
         <ApplicantDataHeader applicantData={applicantData} />
 
         <div ref={tbClearanceIssued}>
-          <Heading
-            level={2}
-            size="m"
-            style={{ marginBottom: 20, marginTop: 40 }}
-            title="Has a TB clearance certificate been issued?"
-          />
           <Radio
+            heading="Has a TB clearance certificate been issued?"
             id="tb-clearance-issued"
             isInline={RadioIsInline.FALSE}
             answerOptions={["Yes", "No"]}
@@ -108,7 +103,7 @@ const TbCertificateDeclarationForm = () => {
             formValue="comments"
             rows={10}
             defaultValue={tbCertificateData.comments}
-            heading="Physician comments"
+            heading="Give further details (optional)"
           />
         </div>
 
