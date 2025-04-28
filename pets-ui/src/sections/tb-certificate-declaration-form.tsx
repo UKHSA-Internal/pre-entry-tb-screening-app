@@ -103,7 +103,7 @@ const TbCertificateDeclarationForm = () => {
             formValue="comments"
             rows={10}
             defaultValue={tbCertificateData.comments}
-            heading="Physician comments"
+            heading="Give further details (optional)"
           />
         </div>
 
