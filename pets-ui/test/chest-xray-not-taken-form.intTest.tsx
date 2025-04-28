@@ -97,7 +97,7 @@ describe("ChestXrayNotTakenPage", () => {
     expect(screen.queryByText("There is a problem")).toBeInTheDocument();
     expect(screen.getAllByText("Enter reason X-ray not taken")[0]).toBeInTheDocument();
     expect(screen.getAllByText("Enter reason X-ray not taken")[1]).toBeInTheDocument();
-    expect(screen.getAllByText("Enter reason X-ray not taken")[1]).toHaveAttribute(
+    expect(screen.getAllByText("Enter reason X-ray not taken")[0]).toHaveAttribute(
       "aria-label",
       "Error: Enter reason X-ray not taken",
     );
