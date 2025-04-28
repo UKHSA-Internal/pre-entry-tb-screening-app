@@ -63,71 +63,34 @@ const formRegex = {
 const dateValidationMessages: Record<string, Record<string, string>> = {
   passportIssueDate: {
     emptyFieldError: "Passport issue date must include a day, month and year",
-    invalidCharError:
-      "Passport issue day and year must contain only numbers. Passport issue month must be a number, or the name of the month, or the first three letters of the month",
+    invalidCharError: "Passport issue day, month and year must contain only numbers",
     invalidDateError: "Passport issue date must be a valid date",
     dateMustBeInPastError: "Passport issue date must be today or in the past",
   },
   passportExpiryDate: {
     emptyFieldError: "Passport expiry date must include a day, month and year",
-    invalidCharError:
-      "Passport expiry day and year must contain only numbers. Passport expiry month must be a number, or the name of the month, or the first three letters of the month",
+    invalidCharError: "Passport expiry day, month and year must contain only numbers",
     invalidDateError: "Passport expiry date must be a valid date",
     dateMustBeInFutureError: "Passport expiry date must be in the future",
   },
   dateOfBirth: {
     emptyFieldError: "Date of birth must include a day, month and year",
-    invalidCharError:
-      "Date of birth day and year must contain only numbers. Date of birth month must be a number, or the name of the month, or the first three letters of the month",
+    invalidCharError: "Date of birth day, month and year must contain only numbers",
     invalidDateError: "Date of birth date must be a valid date",
     dateMustBeInPastError: "Date of birth date must be in the past",
   },
   certificateDate: {
     emptyFieldError: "TB clearance certificate date must include a day, month and year",
-    invalidCharError:
-      "TB clearance certificate day and year must contain only numbers. TB clearance certificate month must be a number, or the name of the month, or the first three letters of the month",
+    invalidCharError: "TB clearance certificate day, month and year must contain only numbers",
     invalidDateError: "TB clearance certificate date must be a valid date",
     dateMustBeInPastError: "TB clearance certificate date must be today or in the past",
   },
 };
 
-const longMonthValues = [
-  "january",
-  "february",
-  "march",
-  "april",
-  "may",
-  "june",
-  "july",
-  "august",
-  "september",
-  "october",
-  "november",
-  "december",
-];
-const shortMonthValues = [
-  "jan",
-  "feb",
-  "mar",
-  "apr",
-  "may",
-  "jun",
-  "jul",
-  "aug",
-  "sep",
-  "oct",
-  "nov",
-  "dec",
-];
-const longNumericStrings = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
-const shortNumericStrings = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+const longNumericStrings = ["01", "02", "03", "04", "05", "06", "07", "08", "09"];
+const shortNumericStrings = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
-const validMonthValues = [
-  ...longMonthValues,
-  ...shortMonthValues,
-  ...longNumericStrings,
-  ...shortNumericStrings,
-];
+const validMonthValues = [...longNumericStrings, ...shortNumericStrings];
 
 const dateEntryNames: Record<string, string> = {
   dateOfBirth: "Date of birth",
@@ -183,9 +146,7 @@ export {
   dateEntryNames,
   dateValidationMessages,
   formRegex,
-  longMonthValues,
   longNumericStrings,
-  shortMonthValues,
   shortNumericStrings,
   validMonthValues,
   visaOptions,
