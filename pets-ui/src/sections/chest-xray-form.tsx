@@ -177,6 +177,8 @@ const ChestXrayForm = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div>
             {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
+            <Heading level={1} size="l" title="Upload chest X-ray images" />
+
             <ApplicantDataHeader applicantData={applicantData} />
 
             <div ref={paXray}>

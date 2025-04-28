@@ -6,6 +6,7 @@ import { ReduxTravelDetailsType } from "@/applicant";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
+import Heading from "@/components/heading/heading";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectTravel, setTravelDetails } from "@/redux/travelSlice";
@@ -65,6 +66,9 @@ const ApplicantTravelForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
+        <Heading level={1} size="l" title="Travel information" />
+        <p className="govuk-body">Enter the applicant&apos;s travel information below.</p>
+
         <div ref={visaTypeRef}>
           <Dropdown
             id="visa-type"
@@ -77,11 +81,11 @@ const ApplicantTravelForm = () => {
           />
         </div>
 
+        <Heading title="Applicant's UK address" level={2} size="m" />
         <div ref={addressLine1Ref}>
           <FreeText
             id="address-1"
             label="Address line 1"
-            heading="UK address (optional)"
             headingStyle={{ marginBottom: 20 }}
             errorMessage={errors?.applicantUkAddress1?.message ?? ""}
             formValue="applicantUkAddress1"

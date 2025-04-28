@@ -1,6 +1,5 @@
 import { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
 import Container from "@/components/container/container";
-import Heading from "@/components/heading/heading";
 import TbCertificateDeclarationForm from "@/sections/tb-certificate-declaration-form";
 
 export default function TbCertificateDeclarationPage() {
@@ -12,7 +11,6 @@ export default function TbCertificateDeclarationPage() {
   ];
   return (
     <Container title="TB Certificate Declaration" breadcrumbItems={breadcrumbItems}>
-      <Heading level={1} size="l" title="Enter TB clearance certificate declaration" />
       <TbCertificateDeclarationForm />
     </Container>
   );
