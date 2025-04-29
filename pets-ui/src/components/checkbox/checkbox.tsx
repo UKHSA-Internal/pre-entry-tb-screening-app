@@ -1,5 +1,3 @@
-import "./checkbox.scss";
-
 import { useFormContext } from "react-hook-form";
 
 import FieldWrapper from "../fieldWrapper/fieldWrapper";

@@ -1,5 +1,3 @@
-import "./button.scss";
-
 import { MouseEventHandler } from "react";
 
 import { ButtonType } from "@/utils/enums";
