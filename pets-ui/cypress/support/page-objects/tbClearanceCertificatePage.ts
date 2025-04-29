@@ -56,7 +56,7 @@ export class TbClearanceCertificatePage extends BasePage {
   }
 
   fillTbCertificateNumber(number: string): TbClearanceCertificatePage {
-    cy.get('input[id="tb-certificate-number"]').should("be.visible").clear().type(number);
+    cy.get('input[name="certificateNumber"]').should("be.visible").clear().type(number);
     return this;
   }
 

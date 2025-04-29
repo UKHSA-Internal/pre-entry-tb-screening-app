@@ -141,7 +141,7 @@ const ApplicantTravelForm = () => {
             errorMessage={errors?.ukMobileNumber?.message ?? ""}
             heading="Phone number (optional)"
             formValue="ukMobileNumber"
-            required="Enter UK mobile number"
+            required={false}
             patternValue={formRegex.numbersOnly}
             patternError="Enter applicant's UK phone number"
             defaultValue={travelData.ukMobileNumber}
@@ -154,7 +154,7 @@ const ApplicantTravelForm = () => {
             errorMessage={errors?.ukEmail?.message ?? ""}
             heading="Email address (optional)"
             formValue="ukEmail"
-            required="Enter email address"
+            required={false}
             patternValue={formRegex.emailAddress}
             patternError="Email must be in correct format"
             defaultValue={travelData.ukEmail}
