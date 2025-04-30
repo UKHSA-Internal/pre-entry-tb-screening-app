@@ -5,7 +5,7 @@ import { z } from "zod";
 import { boostrapLambdaRoutes } from "../../shared/http";
 import { PetsAPIGatewayProxyEvent, PetsRoute } from "../../shared/types";
 import { createApplicationHandler } from "../handlers/create-application";
-import { generateDicomUploadUrlHandler } from "../handlers/generate-dicom-upload-url";
+import { generateImageUploadUrlHandler } from "../handlers/generate-image-upload-url";
 import { getApplicationHandler } from "../handlers/get-application";
 import { saveChestXRayHandler } from "../handlers/save-chest-ray";
 import { saveMedicalScreeningHandler } from "../handlers/save-medical-screening";
@@ -18,8 +18,8 @@ import {
   ChestXRayRequestSchema,
   ChestXRayResponseSchema,
   CreateApplicationResponseSchema,
-  DicomUploadUrlRequestSchema,
-  DicomUploadUrlResponseSchema,
+  ImageUploadUrlRequestSchema as ImageUploadUrlRequestSchema,
+  ImageUploadUrlResponseSchema as ImageUploadUrlResponseSchema,
   MedicalScreeningRequestSchema,
   MedicalScreeningResponseSchema,
   TbCertificateRequestSchema,
@@ -109,11 +109,11 @@ export const routes: PetsRoute[] = [
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(setApplicationIdContext)
       .before(validateApplication)
-      .handler(generateDicomUploadUrlHandler),
-    requestBodySchema: DicomUploadUrlRequestSchema.openapi({
-      description: "Details of the Dicom to be uploaded",
+      .handler(generateImageUploadUrlHandler),
+    requestBodySchema: ImageUploadUrlRequestSchema.openapi({
+      description: "Details of the File to be uploaded",
     }),
-    responseSchema: DicomUploadUrlResponseSchema.openapi({
+    responseSchema: ImageUploadUrlResponseSchema.openapi({
       description: "The upload url",
     }),
   },

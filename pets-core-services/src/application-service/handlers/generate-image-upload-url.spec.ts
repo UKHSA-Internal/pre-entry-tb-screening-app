@@ -3,10 +3,10 @@ import { afterEach, describe, expect, test, vi } from "vitest";
 import { seededApplications } from "../../shared/fixtures/application";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import {
-  DicomUploadUrlRequestSchema,
-  generateDicomUploadUrlHandler,
+  ImageUploadUrlRequestSchema,
+  generateImageUploadUrlHandler,
   GenerateUploadEvent,
-} from "./generate-dicom-upload-url";
+} from "./generate-image-upload-url";
 
 describe("Generating signed POST url for DICOM Upload", () => {
   const originalEnv = process.env;
@@ -15,7 +15,7 @@ describe("Generating signed POST url for DICOM Upload", () => {
     process.env = { ...originalEnv };
   });
 
-  const uploadInfo: DicomUploadUrlRequestSchema = {
+  const uploadInfo: ImageUploadUrlRequestSchema = {
     fileName: "test-file-name",
     checksum: "test-checksum",
   };
@@ -28,7 +28,7 @@ describe("Generating signed POST url for DICOM Upload", () => {
     };
 
     // Act
-    const response = await generateDicomUploadUrlHandler(event);
+    const response = await generateImageUploadUrlHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(200);
@@ -53,7 +53,7 @@ describe("Generating signed POST url for DICOM Upload", () => {
     };
 
     // Act
-    const response = await generateDicomUploadUrlHandler(event);
+    const response = await generateImageUploadUrlHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(400);
@@ -73,7 +73,7 @@ describe("Generating signed POST url for DICOM Upload", () => {
     };
 
     // Act
-    const response = await generateDicomUploadUrlHandler(event);
+    const response = await generateImageUploadUrlHandler(event);
 
     // Assert
     expect(JSON.parse(response.body)).toMatchObject({
@@ -88,7 +88,7 @@ describe("Generating signed POST url for DICOM Upload", () => {
     };
 
     // Act
-    const response = await generateDicomUploadUrlHandler(event);
+    const response = await generateImageUploadUrlHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(500);
@@ -107,7 +107,7 @@ describe("Generating signed POST url for DICOM Upload", () => {
     };
 
     // Act
-    const response = await generateDicomUploadUrlHandler(event);
+    const response = await generateImageUploadUrlHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(500);

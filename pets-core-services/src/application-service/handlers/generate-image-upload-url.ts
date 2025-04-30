@@ -1,5 +1,6 @@
 import { ChecksumAlgorithm, ServerSideEncryption } from "@aws-sdk/client-s3";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
+import { Conditions } from "@aws-sdk/s3-presigned-post/dist-types/types";
 import { z } from "zod";
 
 import awsClients from "../../shared/clients/aws";
@@ -8,23 +9,26 @@ import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Applicant } from "../../shared/models/applicant";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { generateDicomObjectkey } from "../helpers/upload";
-import { DicomUploadUrlRequestSchema } from "../types/zod-schema";
+import { generateImageObjectkey } from "../helpers/upload";
+import { ImageType } from "../types/enums";
+import { ImageUploadUrlRequestSchema } from "../types/zod-schema";
 
-export type DicomUploadUrlRequestSchema = z.infer<typeof DicomUploadUrlRequestSchema>;
+export type ImageUploadUrlRequestSchema = z.infer<typeof ImageUploadUrlRequestSchema>;
 export type GenerateUploadEvent = PetsAPIGatewayProxyEvent & {
-  parsedBody?: DicomUploadUrlRequestSchema;
+  parsedBody?: ImageUploadUrlRequestSchema;
 };
 
 const IMAGE_BUCKET = assertEnvExists(process.env.IMAGE_BUCKET);
 const SSE_KEY_ID = assertEnvExists(process.env.SSE_KEY_ID);
 const EXPIRY_TIME = 5 * 60; // 5 minutes
+const FILE_SIZE_PHOTO = 10 * 1024 * 1024; // 10MB
 
-export const generateDicomUploadUrlHandler = async (event: GenerateUploadEvent) => {
+export const generateImageUploadUrlHandler = async (event: GenerateUploadEvent) => {
   try {
     const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
 
     const { parsedBody } = event;
+    let imageType, fileRestrictions: Conditions[];
 
     if (!parsedBody) {
       logger.error("Event missing parsed body");
@@ -33,6 +37,24 @@ export const generateDicomUploadUrlHandler = async (event: GenerateUploadEvent) 
         message: "Internal Server Error: Generate Upload URL Request not parsed correctly",
       });
     }
+    if (parsedBody.fileName === "applicant-photo") {
+      imageType = ImageType.Photo;
+      fileRestrictions = [
+        ["starts-with", "$Content-Type", "image/"],
+        ["content-length-range", 0, FILE_SIZE_PHOTO],
+      ];
+      //validate file extension
+      const allowedExtensions = ["jpg", "jpeg", "png"];
+      const extension = parsedBody.fileName.split(".").pop()?.toLowerCase();
+
+      if (!extension || !allowedExtensions.includes(extension)) {
+        logger.error("Invalid file type. Only .jpg, .jpeg, and .png are allowed.");
+        return createHttpResponse(400, { message: "Invalid File Type" });
+      }
+    } else {
+      imageType = ImageType.Dicom;
+      fileRestrictions = [];
+    }
 
     const applicant = await Applicant.getByApplicationId(applicationId);
     if (!applicant) {
@@ -40,10 +62,11 @@ export const generateDicomUploadUrlHandler = async (event: GenerateUploadEvent) 
       return createHttpResponse(400, { message: "Invalid Application - No Applicant" });
     }
 
-    const objectKey = generateDicomObjectkey({
+    const objectKey = generateImageObjectkey({
       applicant,
       clinicId: event.requestContext.authorizer.clinicId,
       fileName: parsedBody.fileName,
+      imageType,
       applicationId,
     });
 
@@ -59,7 +82,7 @@ export const generateDicomUploadUrlHandler = async (event: GenerateUploadEvent) 
         "x-amz-server-side-encryption": ServerSideEncryption.aws_kms,
         "x-amz-server-side-encryption-aws-kms-key-id": SSE_KEY_ID,
       },
-      Conditions: [], // TBBETA-701: Future conditions to enforce size and file types
+      Conditions: fileRestrictions, // TBBETA-701: Future conditions to enforce size and file types
       Expires: EXPIRY_TIME,
     });
 

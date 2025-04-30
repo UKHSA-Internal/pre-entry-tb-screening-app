@@ -9,22 +9,22 @@ import { logger } from "../../shared/logger";
 import { Applicant } from "../../shared/models/applicant";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { generateImageObjectkey, KeyParameters } from "../helpers/upload";
-import { ChestXRayDbOps, ChestXRayNotTaken, ChestXRayTaken } from "../models/chest-xray";
-import { ImageType, YesOrNo } from "../types/enums";
+import { ApplicantPhoto } from "../models/applicant-photo";
+import { ImageType } from "../types/enums";
 import { ApplicantNotFound, InvalidObjectKey, ObjectNotFound } from "../types/errors";
-import { ChestXRayRequestSchema } from "../types/zod-schema";
+import { ApplicantPhotoRequestSchema } from "../types/zod-schema";
 
-export type ChestXRayRequestSchema = z.infer<typeof ChestXRayRequestSchema>;
-export type SaveChestXrayEvent = PetsAPIGatewayProxyEvent & {
-  parsedBody?: ChestXRayRequestSchema;
+export type ApplicantPhotoRequestSchema = z.infer<typeof ApplicantPhotoRequestSchema>;
+export type UploadApplicantPhotoEvent = PetsAPIGatewayProxyEvent & {
+  parsedBody?: ApplicantPhotoRequestSchema;
 };
 const IMAGE_BUCKET = assertEnvExists(process.env.IMAGE_BUCKET);
 
-export const saveChestXRayHandler = async (event: SaveChestXrayEvent) => {
+export const saveApplicantPhotoHandler = async (event: UploadApplicantPhotoEvent) => {
   try {
     const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
 
-    logger.info({ applicationId }, "Save Chest X-ray Information handler triggered");
+    logger.info({ applicationId }, "Save Applicant Photo handler triggered");
 
     const { parsedBody } = event;
 
@@ -32,44 +32,42 @@ export const saveChestXRayHandler = async (event: SaveChestXrayEvent) => {
       logger.error("Event missing parsed body");
 
       return createHttpResponse(500, {
-        message: "Internal Server Error: Chest X-Ray Request not parsed correctly",
+        message: "Internal Server Error: Upload Applicant Photo Request not parsed correctly",
       });
     }
 
     const { clinicId, createdBy } = event.requestContext.authorizer;
 
-    if (parsedBody.chestXrayTaken === YesOrNo.Yes) {
-      const validationError = await validateImages(parsedBody, applicationId, clinicId);
-      if (validationError) {
-        return createHttpResponse(400, { message: validationError });
-      }
+    const validationError = await validateImages(parsedBody, applicationId, clinicId);
+    if (validationError) {
+      return createHttpResponse(400, { message: validationError });
     }
 
-    let chestXray: ChestXRayTaken | ChestXRayNotTaken;
+    let applicantPhoto;
     try {
-      chestXray = await ChestXRayDbOps.createChestXray({
+      applicantPhoto = await ApplicantPhoto.createApplicantPhotoDetails({
         ...parsedBody,
         createdBy,
         applicationId,
       });
     } catch (error) {
       if (error instanceof ConditionalCheckFailedException)
-        return createHttpResponse(400, { message: "Chest X-ray already saved" });
+        return createHttpResponse(400, { message: "Applicant Photo already saved" });
       throw error;
     }
 
     return createHttpResponse(200, {
-      ...chestXray.toJson(),
+      ...applicantPhoto.toJson(),
     });
   } catch (error) {
-    logger.error(error, "Error saving Chest X-ray");
+    logger.error(error, "Error saving Applicant Photo");
     return createHttpResponse(500, { message: "Something went wrong" });
   }
 };
 
-async function validateImages(images: ChestXRayImages, applicationId: string, clinicId: string) {
+async function validateImages(images: Photo, applicationId: string, clinicId: string) {
   try {
-    await validateChestXRayImages(images, { applicationId, clinicId });
+    await validateApplicantPhoto(images, { applicationId, clinicId });
     return null;
   } catch (error) {
     if (error instanceof ApplicantNotFound) {
@@ -88,10 +86,8 @@ async function validateImages(images: ChestXRayImages, applicationId: string, cl
   }
 }
 
-type ChestXRayImages = {
-  posteroAnteriorXray: string;
-  apicalLordoticXray?: string;
-  lateralDecubitusXray?: string;
+type Photo = {
+  applicantPhotoKey: string;
 };
 
 const checkIfExists = async (objectKey: string) => {
@@ -122,15 +118,15 @@ const checkIfExists = async (objectKey: string) => {
 };
 
 const validateObjectKey = async (value: string, expectedKeyParameters: KeyParameters) => {
-  const { applicant, clinicId, applicationId, fileName, imageType } = expectedKeyParameters;
+  const { applicant, clinicId, applicationId, imageType, fileName } = expectedKeyParameters;
   logger.info({ applicationId, clinicId, fileName }, "Validating object key");
 
   const expectedObjectKey = generateImageObjectkey({
     applicant,
     clinicId,
     applicationId,
-    fileName,
     imageType,
+    fileName,
   });
 
   logger.info("Comparing Object Key with expected");
@@ -151,12 +147,8 @@ type ApplicationInfo = {
   applicationId: string;
   clinicId: string;
 };
-
-const validateChestXRayImages = async (
-  images: ChestXRayImages,
-  applicationInfo: ApplicationInfo,
-) => {
-  logger.info({ applicationInfo }, "Validating Uploaded Chest X-Ray Images");
+const validateApplicantPhoto = async (images: Photo, applicationInfo: ApplicationInfo) => {
+  logger.info({ applicationInfo }, "Validating Uploaded Applicant photo");
   const { applicationId } = applicationInfo;
   const applicant = await Applicant.getByApplicationId(applicationId);
   if (!applicant) {
@@ -165,32 +157,14 @@ const validateChestXRayImages = async (
   }
 
   const { clinicId } = applicationInfo;
-  await validateObjectKey(images.posteroAnteriorXray, {
+  const imageType = ImageType.Photo;
+  await validateObjectKey(images.applicantPhotoKey, {
     applicant,
     applicationId,
     clinicId,
-    fileName: "postero-anterior.dcm",
-    imageType: ImageType.Dicom,
+    imageType,
+    fileName: "applicant-photo.jpg",
   });
 
-  if (images.apicalLordoticXray) {
-    await validateObjectKey(images.apicalLordoticXray, {
-      applicant,
-      applicationId,
-      clinicId,
-      fileName: "apical-lordotic.dcm",
-      imageType: ImageType.Dicom,
-    });
-  }
-
-  if (images.lateralDecubitusXray) {
-    await validateObjectKey(images.lateralDecubitusXray, {
-      applicant,
-      applicationId,
-      clinicId,
-      fileName: "lateral-decubitus.dcm",
-      imageType: ImageType.Dicom,
-    });
-  }
   logger.info({ applicationInfo }, "Validation Completed");
 };
