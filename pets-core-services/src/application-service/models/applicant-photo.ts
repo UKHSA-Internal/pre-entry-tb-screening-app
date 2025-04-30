@@ -14,14 +14,14 @@ const IMAGE_BUCKET = assertEnvExists(process.env.IMAGE_BUCKET);
 export abstract class IApplicantPhoto {
   applicationId: string;
   status: TaskStatus;
-  applicantPhotoKey!: string;
-  applicantPhoto: string;
-
+  applicantPhotoKey: string;
+  applicantPhoto?: string;
   dateCreated: Date;
   createdBy: string;
 
   constructor(details: IApplicantPhoto) {
     this.applicationId = details.applicationId;
+    this.applicantPhotoKey = details.applicantPhotoKey;
     this.applicantPhoto = details.applicantPhoto;
     this.status = details.status;
 
@@ -62,6 +62,7 @@ export class ApplicantPhoto extends IApplicantPhoto {
         ...details,
         dateCreated: new Date(),
         status: TaskStatus.completed,
+        // applicantPhoto: "",
       };
 
       const applicantPhoto = new ApplicantPhoto(updatedDetails);

@@ -3,9 +3,9 @@ import { afterEach, describe, expect, test, vi } from "vitest";
 import { seededApplications } from "../../shared/fixtures/application";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import {
-  ImageUploadUrlRequestSchema,
   generateImageUploadUrlHandler,
   GenerateUploadEvent,
+  ImageUploadUrlRequestSchema,
 } from "./generate-image-upload-url";
 
 describe("Generating signed POST url for DICOM Upload", () => {
