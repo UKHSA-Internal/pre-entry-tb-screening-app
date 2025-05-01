@@ -3,7 +3,7 @@ import { Applicant } from "../../shared/models/applicant";
 import { ImageType } from "../types/enums";
 
 const DICOM_FOLDER = "dicom";
-const APPLICANT_PHOTOS_FOLDER = "photos";
+export const APPLICANT_PHOTOS_FOLDER = "photos";
 
 export type KeyParameters = {
   applicant: Applicant;
