@@ -131,7 +131,7 @@ const ChestXraySummary = () => {
       value: chestXrayData.xrayWasNotTakenFurtherDetails,
       link: `/chest-xray-not-taken#${attributeToComponentId.xrayWasNotTakenFurtherDetails}`,
       hiddenLabel: "details",
-      emptyValueText: "Enter details",
+      emptyValueText: "Enter details (optional)",
     },
   ];
 
