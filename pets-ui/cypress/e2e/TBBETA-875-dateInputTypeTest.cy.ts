@@ -4,7 +4,7 @@ import { ApplicantDetailsPage } from "../support/page-objects/applicantDetailsPa
 import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
 import { getRandomPassportNumber, randomElement } from "../support/test-utils";
 
-describe("Applicant Details Form - Invalid Month Format Test", () => {
+describe("Applicant Details Form - Invalid Date Format Test", () => {
   const applicantDetailsPage = new ApplicantDetailsPage();
   const applicantSearchPage = new ApplicantSearchPage();
   // Define variables to store test data
@@ -35,7 +35,7 @@ describe("Applicant Details Form - Invalid Month Format Test", () => {
     applicantDetailsPage.verifyPageLoaded();
   });
 
-  it("should display error when invalid month name is entered in birth date", () => {
+  it("should display error when MONTH NAME is entered in the month fields", () => {
     // Fill form with valid data except for birth date
     applicantDetailsPage.fillFullName("Sarah Brown");
     applicantDetailsPage.selectSex("Female");
@@ -43,11 +43,11 @@ describe("Applicant Details Form - Invalid Month Format Test", () => {
     applicantDetailsPage.selectCountryOfIssue(countryName);
 
     // Enter an INVALID MONTH
-    applicantDetailsPage.fillBirthDate("15", "JAZ", "1988");
+    applicantDetailsPage.fillBirthDate("15", "JAN", "1988");
 
     applicantDetailsPage.fillPassportNumber(passportNumber);
-    applicantDetailsPage.fillPassportIssueDate("10", "04", "2018");
-    applicantDetailsPage.fillPassportExpiryDate("10", "04", "2028");
+    applicantDetailsPage.fillPassportIssueDate("10", "JUN", "2018");
+    applicantDetailsPage.fillPassportExpiryDate("10", "JUN", "2028");
 
     // Fill address fields
     applicantDetailsPage.fillAddressLine1("321 Test Blvd");
@@ -60,11 +60,10 @@ describe("Applicant Details Form - Invalid Month Format Test", () => {
     applicantDetailsPage.submitForm();
 
     // Validate error for invalid date format is displayed
-    applicantDetailsPage.validateErrorContainsText(
-      "Date of birth day, month and year must contain only numbers",
-    );
     applicantDetailsPage.validateFormErrors({
       birthDate: "Date of birth day, month and year must contain only numbers",
+      passportIssueDate: "Passport issue day, month and year must contain only numbers",
+      passportExpiryDate: "Passport expiry day, month and year must contain only numbers",
     });
   });
 });

@@ -5,50 +5,27 @@ import {
   dateEntryMustBeInThePast,
   dateEntryNames,
   dateValidationMessages,
-  longMonthValues,
   longNumericStrings,
-  shortMonthValues,
   shortNumericStrings,
-  validMonthValues,
 } from "./records";
 
 const standardiseDayOrMonth = (dayOrMonth: string) => {
-  let standardisedDayOrMonth = dayOrMonth.toLowerCase();
-
-  for (const list of [longMonthValues, shortMonthValues, shortNumericStrings]) {
-    if (list.includes(dayOrMonth.toLowerCase())) {
-      standardisedDayOrMonth = longNumericStrings[list.indexOf(dayOrMonth.toLowerCase())];
-    }
-  }
-
-  return standardisedDayOrMonth;
+  return shortNumericStrings.includes(dayOrMonth)
+    ? longNumericStrings[shortNumericStrings.indexOf(dayOrMonth)]
+    : dayOrMonth;
 };
 
 const isValidDate = (day: string, month: string, year: string) => {
   if (
     parseInt(year) <= 1900 ||
     parseInt(year) >= 2100 ||
+    parseInt(month) < 1 ||
+    parseInt(month) > 12 ||
     parseInt(day) < 1 ||
     parseInt(day) > 31 ||
-    (parseInt(day) > 28 &&
-      parseInt(year) % 4 != 0 &&
-      (month == "february" || month == "feb" || month == "2")) ||
-    (parseInt(day) > 29 &&
-      parseInt(year) % 4 == 0 &&
-      (month == "february" || month == "feb" || month == "2")) ||
-    (parseInt(day) > 30 &&
-      (month == "april" ||
-        month == "june" ||
-        month == "september" ||
-        month == "november" ||
-        month == "apr" ||
-        month == "jun" ||
-        month == "sep" ||
-        month == "nov" ||
-        month == "4" ||
-        month == "6" ||
-        month == "9" ||
-        month == "11"))
+    (parseInt(day) > 28 && parseInt(year) % 4 != 0 && month == "2") ||
+    (parseInt(day) > 29 && parseInt(year) % 4 == 0 && month == "2") ||
+    (parseInt(day) > 30 && (month == "4" || month == "6" || month == "9" || month == "11"))
   ) {
     return false;
   } else {
@@ -65,8 +42,8 @@ const missingFieldsMessage = (fieldName: string, missingFields: string[]) => {
   return `${dateEntryNames[fieldName]} must include a ${missingText}`;
 };
 
-const hasInvalidCharacters = (day: string, month: string, year: string, validMonths: string[]) => {
-  return /\D/.test(day) || /\D/.test(year) || !validMonths.includes(month.toLowerCase());
+const hasInvalidCharacters = (day: string, month: string, year: string) => {
+  return /\D/.test(day) || /\D/.test(month) || /\D/.test(year);
 };
 
 const isDateInThePast = (day: string, month: string, year: string): boolean => {
@@ -101,7 +78,7 @@ const validateDate = (value: DateType, fieldName: string) => {
   if (missingKeys.length > 0) return missingFieldsMessage(fieldName, missingKeys);
 
   //Fields contain invalid characters
-  if (hasInvalidCharacters(day, month, year, validMonthValues)) {
+  if (hasInvalidCharacters(day, month, year)) {
     return dateValidationMessages[fieldName].invalidCharError;
   }
 
