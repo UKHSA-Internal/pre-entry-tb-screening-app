@@ -90,8 +90,6 @@ const dateValidationMessages: Record<string, Record<string, string>> = {
 const longNumericStrings = ["01", "02", "03", "04", "05", "06", "07", "08", "09"];
 const shortNumericStrings = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
-const validMonthValues = [...longNumericStrings, ...shortNumericStrings];
-
 const dateEntryNames: Record<string, string> = {
   dateOfBirth: "Date of birth",
   passportIssueDate: "Passport issue date",
@@ -148,6 +146,5 @@ export {
   formRegex,
   longNumericStrings,
   shortNumericStrings,
-  validMonthValues,
   visaOptions,
 };
