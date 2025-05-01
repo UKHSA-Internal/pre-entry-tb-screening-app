@@ -105,13 +105,13 @@ export const routes: PetsRoute[] = [
   },
   {
     method: "PUT",
-    path: "/application/{applicationId}/generate-dicom-upload-url",
+    path: "/application/{applicationId}/generate-image-upload-url",
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(setApplicationIdContext)
       .before(validateApplication)
       .handler(generateImageUploadUrlHandler),
     requestBodySchema: ImageUploadUrlRequestSchema.openapi({
-      description: "Details of the File to be uploaded",
+      description: "Details of the Image to be uploaded",
     }),
     responseSchema: ImageUploadUrlResponseSchema.openapi({
       description: "The upload url",

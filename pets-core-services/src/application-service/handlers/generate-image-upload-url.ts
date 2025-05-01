@@ -28,7 +28,7 @@ export const generateImageUploadUrlHandler = async (event: GenerateUploadEvent) 
     const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
 
     const { parsedBody } = event;
-    let imageType, fileRestrictions: Conditions[];
+    let fileRestrictions: Conditions[] = [];
 
     if (!parsedBody) {
       logger.error("Event missing parsed body");
@@ -37,25 +37,15 @@ export const generateImageUploadUrlHandler = async (event: GenerateUploadEvent) 
         message: "Internal Server Error: Generate Upload URL Request not parsed correctly",
       });
     }
-    if (parsedBody.fileName === "applicant-photo") {
-      imageType = ImageType.Photo;
+    const imageType = parsedBody.imageType as ImageType;
+    if (imageType === ImageType.Photo) {
+      //can’t specify multiple exact values directly in a pre-signed POST
+      // prefix-matching "image/" is the most effective solution for image/jpeg, image/png, etc
       fileRestrictions = [
         ["starts-with", "$Content-Type", "image/"],
         ["content-length-range", 0, FILE_SIZE_PHOTO],
       ];
-      //validate file extension
-      const allowedExtensions = ["jpg", "jpeg", "png"];
-      const extension = parsedBody.fileName.split(".").pop()?.toLowerCase();
-
-      if (!extension || !allowedExtensions.includes(extension)) {
-        logger.error("Invalid file type. Only .jpg, .jpeg, and .png are allowed.");
-        return createHttpResponse(400, { message: "Invalid File Type" });
-      }
-    } else {
-      imageType = ImageType.Dicom;
-      fileRestrictions = [];
     }
-
     const applicant = await Applicant.getByApplicationId(applicationId);
     if (!applicant) {
       logger.error("Application does not have an applicant");

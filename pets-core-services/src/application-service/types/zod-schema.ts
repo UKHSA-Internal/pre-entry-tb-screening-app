@@ -254,6 +254,9 @@ export const ImageUploadUrlRequestSchema = z.object({
   checksum: z.string().openapi({
     description: "Checksum of file",
   }),
+  imageType: z.string().openapi({
+    description: "Type of image being uploaded : Dicom/Photo",
+  }),
 });
 
 export const ImageUploadUrlResponseSchema = z.object({

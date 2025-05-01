@@ -13,12 +13,6 @@ export type KeyParameters = {
   applicationId: string;
 };
 
-// export type PhotoKeyParameters = {
-//   applicant: Applicant;
-//   clinicId: string;
-//   fileName: string;
-//   applicationId: string;
-// };
 export const generateImageObjectkey = (keyParameters: KeyParameters) => {
   const { clinicId, applicant, fileName, imageType, applicationId } = keyParameters;
   logger.info({ clinicId, fileName, applicationId }, "Generating Image object key");
@@ -40,17 +34,3 @@ export const generateImageObjectkey = (keyParameters: KeyParameters) => {
   logger.info("Image object key generated successfully");
   return objectkey;
 };
-
-// export const generatePhotoObjectkey = (keyParameters: PhotoKeyParameters) => {
-//   const { clinicId, applicant, fileName, applicationId } = keyParameters;
-//   logger.info({ applicationId }, "Generating Applicant Photo object key");
-
-//   const countryOfIssue = applicant.countryOfIssue;
-//   const passportNumber = applicant.passportNumber;
-
-//   const clinicIDFormatted = clinicId.replaceAll("/", "-");
-
-//   const objectkey = `${APPLICANT_PHOTOS_FOLDER}/${clinicIDFormatted}/${countryOfIssue}/${passportNumber}/${applicationId}/${fileName}`; //need it for the QA journey
-//   logger.info("Applicant photo object key generated successfully");
-//   return objectkey;
-// };
