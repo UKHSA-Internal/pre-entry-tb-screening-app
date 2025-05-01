@@ -19,14 +19,13 @@ const isValidDate = (day: string, month: string, year: string) => {
   if (
     parseInt(year) <= 1900 ||
     parseInt(year) >= 2100 ||
+    parseInt(month) < 1 ||
+    parseInt(month) > 12 ||
     parseInt(day) < 1 ||
     parseInt(day) > 31 ||
     (parseInt(day) > 28 && parseInt(year) % 4 != 0 && month == "2") ||
     (parseInt(day) > 29 && parseInt(year) % 4 == 0 && month == "2") ||
-    (parseInt(day) > 30 && month == "4") ||
-    month == "6" ||
-    month == "9" ||
-    month == "11"
+    (parseInt(day) > 30 && (month == "4" || month == "6" || month == "9" || month == "11"))
   ) {
     return false;
   } else {
