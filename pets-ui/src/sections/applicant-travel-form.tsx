@@ -81,11 +81,11 @@ const ApplicantTravelForm = () => {
           />
         </div>
 
-        <Heading title="Applicant's UK address" level={2} size="m" />
+        <Heading title="Applicant's UK address (optional)" level={2} size="m" />
         <div ref={addressLine1Ref}>
           <FreeText
             id="address-1"
-            label="Address line 1"
+            label="Address line 1 (optional)"
             headingStyle={{ marginBottom: 20 }}
             errorMessage={errors?.applicantUkAddress1?.message ?? ""}
             formValue="applicantUkAddress1"
@@ -99,7 +99,7 @@ const ApplicantTravelForm = () => {
         <div ref={addressLine2Ref}>
           <FreeText
             id="address-2"
-            label="Address line 2"
+            label="Address line 2 (optional)"
             errorMessage={errors?.applicantUkAddress2?.message ?? ""}
             formValue="applicantUkAddress2"
             required={false}
@@ -112,7 +112,7 @@ const ApplicantTravelForm = () => {
         <div ref={townRef}>
           <FreeText
             id="town-or-city"
-            label="Town/city"
+            label="Town/city (optional)"
             errorMessage={errors?.townOrCity?.message ?? ""}
             formValue="townOrCity"
             required={false}
@@ -125,7 +125,7 @@ const ApplicantTravelForm = () => {
         <div ref={postcodeRef}>
           <FreeText
             id="postcode"
-            label="Postcode"
+            label="Postcode (optional)"
             errorMessage={errors?.postcode?.message ?? ""}
             formValue="postcode"
             required={false}
