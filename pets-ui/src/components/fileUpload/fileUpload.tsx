@@ -1,5 +1,3 @@
-import "./fileUpload.scss";
-
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 

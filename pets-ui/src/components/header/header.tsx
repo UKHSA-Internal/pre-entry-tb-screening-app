@@ -1,5 +1,3 @@
-import "./header.scss";
-
 import LinkLabel from "../linkLabel/LinkLabel";
 
 export default function Header() {
