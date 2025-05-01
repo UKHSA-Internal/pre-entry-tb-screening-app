@@ -19,6 +19,7 @@ describe("Generate  Object Key", () => {
         fileName: "chest-xray",
         imageType: ImageType.Dicom,
         applicationId: "applicationId",
+        imageType: ImageType.Dicom,
       }),
     ).toBe("dicom/clinicId/ABW/passport-number/applicationId/chest-xray");
   });

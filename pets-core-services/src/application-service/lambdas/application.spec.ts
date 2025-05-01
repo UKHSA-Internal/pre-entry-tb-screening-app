@@ -1,12 +1,15 @@
 import { HeadObjectCommand } from "@aws-sdk/client-s3";
 import { APIGatewayProxyResult } from "aws-lambda";
 import { mockClient } from "aws-sdk-client-mock";
-import { beforeEach, describe, expect, test } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
+import { seededApplicants } from "../../applicant-service/fixtures/applicants";
 import awsClients from "../../shared/clients/aws";
 import { seededApplications } from "../../shared/fixtures/application";
+import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { context, mockAPIGwEvent } from "../../test/mocks/events";
+import { APPLICANT_PHOTOS_FOLDER } from "../helpers/upload";
 import {
   ChestXRayResult,
   MenstrualPeriods,
@@ -265,6 +268,52 @@ describe("Test for Application Lambda", () => {
 
       // Assert
       expect(response.statusCode).toBe(200);
+    });
+  });
+
+  describe("Applicant photo", () => {
+    const s3ClientMock = mockClient(awsClients.s3Client);
+
+    s3ClientMock.on(HeadObjectCommand).resolves({
+      $metadata: {
+        httpStatusCode: 200,
+      },
+    });
+
+    beforeEach(() => {
+      s3ClientMock.resetHistory();
+    });
+
+    test("Saving applicant photo uccessfully", async () => {
+      // Arrange;
+      const infologgerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
+      const errorloggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+      const fileName = "applicant-photo.jpg";
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        resource: "/application/{applicationId}/generate-image-upload-url",
+        path: `/application/${seededApplications[3].applicationId}/generate-image-upload-url`,
+        httpMethod: "PUT",
+        body: JSON.stringify({
+          fileName: fileName,
+          checksum: "",
+        }),
+      };
+
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+      expect(infologgerMock).toHaveBeenCalled();
+      expect(infologgerMock).toHaveBeenCalledWith("Image object key generated successfully");
+      expect(errorloggerMock).not.toHaveBeenCalled();
+
+      // Assert
+      expect(response.statusCode).toBe(200);
+      const obj = JSON.parse(response.body);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      expect(obj.bucketPath).toBe(
+        `${APPLICANT_PHOTOS_FOLDER}/${seededApplications[3].clinicId}/${seededApplicants[2].country}/${seededApplicants[2].passportNumber}/${seededApplications[3].applicationId}/${fileName}`,
+      );
+      expect(obj).toHaveProperty("uploadUrl");
     });
   });
 
