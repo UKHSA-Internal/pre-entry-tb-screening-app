@@ -1,5 +1,3 @@
-import "./breadcrumb.scss";
-
 import LinkLabel from "../linkLabel/LinkLabel";
 
 export interface IBreadcrumbItem {

@@ -1,5 +1,3 @@
-import "./dateTextInput.scss";
-
 import { useEffect, useState } from "react";
 
 import { DateType } from "@/applicant";

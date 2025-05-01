@@ -1,6 +1,7 @@
-import "./dropdown.scss";
-
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
+
+import { getDescribedBy } from "@/utils/getDescribedBy";
 
 import FieldWrapper from "../fieldWrapper/fieldWrapper";
 import { HeadingSize } from "../heading/heading";
@@ -29,6 +30,11 @@ interface DropdownProps {
 
 export default function Dropdown(props: Readonly<DropdownProps>) {
   const { register } = useFormContext();
+  const [selectClass, setSelectClass] = useState("govuk-select");
+
+  useEffect(() => {
+    setSelectClass("govuk-select" + (props.errorMessage ? " govuk-select--error" : ""));
+  }, [props.errorMessage]);
 
   return (
     <FieldWrapper
@@ -45,9 +51,10 @@ export default function Dropdown(props: Readonly<DropdownProps>) {
       divStyle={props.divStyle}
     >
       <select
-        aria-labelledby={props.heading && props.id}
-        id={props.label && !props.heading ? props.id : undefined}
-        className="govuk-select"
+        aria-labelledby={props.heading && `${props.id}-field`}
+        id={props.label && !props.heading ? `${props.id}-field` : undefined}
+        aria-describedby={getDescribedBy(props.id, props.hint, props.heading, props.label)}
+        className={selectClass}
         defaultValue={props.defaultValue ?? ""}
         {...register(props.formValue, {
           required: props.required,

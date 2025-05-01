@@ -1,5 +1,3 @@
-import "./radio.scss";
-
 import { useFormContext } from "react-hook-form";
 
 import { RadioIsInline } from "@/utils/enums";

@@ -1,6 +1,7 @@
-import "./textArea.scss";
-
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
+
+import { getDescribedBy } from "@/utils/getDescribedBy";
 
 import FieldWrapper from "../fieldWrapper/fieldWrapper";
 import { HeadingSize } from "../heading/heading";
@@ -24,6 +25,11 @@ export interface TextAreaProps {
 
 export default function TextArea(props: Readonly<TextAreaProps>) {
   const { register } = useFormContext();
+  const [inputClass, setInputClass] = useState("govuk-textarea");
+
+  useEffect(() => {
+    setInputClass("govuk-textarea" + (props.errorMessage ? " govuk-textarea--error" : ""));
+  }, [props.errorMessage]);
 
   return (
     <FieldWrapper
@@ -40,9 +46,10 @@ export default function TextArea(props: Readonly<TextAreaProps>) {
       divStyle={props.divStyle}
     >
       <textarea
-        aria-labelledby={props.heading && props.id}
-        id={props.label && !props.heading ? props.id : undefined}
-        className="govuk-textarea"
+        aria-labelledby={props.heading && `${props.id}-field`}
+        id={props.label && !props.heading ? `${props.id}-field` : undefined}
+        aria-describedby={getDescribedBy(props.id, props.hint, props.heading, props.label)}
+        className={inputClass}
         rows={props.rows}
         data-testid={props.id}
         {...register(props.formValue, {

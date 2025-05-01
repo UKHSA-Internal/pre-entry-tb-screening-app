@@ -1,5 +1,3 @@
-import "./startButton.scss";
-
 import { MouseEventHandler } from "react";
 
 export interface StartButtonProps {

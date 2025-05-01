@@ -145,6 +145,16 @@ describe("PETS Application End-to-End Tests", () => {
     // Review Travel Summary
     travelSummaryPage.verifyPageLoaded();
 
+    // Verify all required values are present on the summary page first
+    travelSummaryPage.verifyRequiredSummaryValues(
+      visaType,
+      "456 Park Lane",
+      "Manchester",
+      "M1 1AA",
+      "07700900123",
+      "pets.tester@hotmail.com",
+    );
+
     // Verify details by clicking change links and checking fields
     travelSummaryPage.clickChangeLink("Visa type");
     travelSummaryPage.verifyFieldValueOnChangePage("Visa type", visaType);
@@ -157,7 +167,6 @@ describe("PETS Application End-to-End Tests", () => {
 
     travelSummaryPage.clickChangeLink("UK mobile number");
     travelSummaryPage.verifyFieldValueOnChangePage("UK mobile number", "07700900123");
-
     // Submit the summary page
     travelSummaryPage.submitForm();
 
