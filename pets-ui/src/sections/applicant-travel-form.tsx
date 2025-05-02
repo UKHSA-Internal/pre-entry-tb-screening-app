@@ -3,10 +3,11 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { ReduxTravelDetailsType } from "@/applicant";
-import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
+import Heading from "@/components/heading/heading";
+import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectTravel, setTravelDetails } from "@/redux/travelSlice";
 import { ButtonType } from "@/utils/enums";
@@ -65,6 +66,9 @@ const ApplicantTravelForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
+        <Heading level={1} size="l" title="Travel information" />
+        <p className="govuk-body">Enter the applicant&apos;s travel information below.</p>
+
         <div ref={visaTypeRef}>
           <Dropdown
             id="visa-type"
@@ -77,15 +81,15 @@ const ApplicantTravelForm = () => {
           />
         </div>
 
+        <Heading title="Applicant's UK address (optional)" level={2} size="m" />
         <div ref={addressLine1Ref}>
           <FreeText
             id="address-1"
-            label="Address line 1"
-            heading="Applicant's UK address"
+            label="Address line 1 (optional)"
             headingStyle={{ marginBottom: 20 }}
             errorMessage={errors?.applicantUkAddress1?.message ?? ""}
             formValue="applicantUkAddress1"
-            required="Enter address line 1, typically the building and street"
+            required={false}
             patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
             patternError="Home address must contain only letters, numbers, spaces and punctuation"
             defaultValue={travelData.applicantUkAddress1}
@@ -108,10 +112,10 @@ const ApplicantTravelForm = () => {
         <div ref={townRef}>
           <FreeText
             id="town-or-city"
-            label="Town/city"
+            label="Town/city (optional)"
             errorMessage={errors?.townOrCity?.message ?? ""}
             formValue="townOrCity"
-            required="Enter town or city"
+            required={false}
             patternValue={formRegex.lettersSpacesAndPunctuation}
             patternError="Town name must contain only letters, spaces and punctuation"
             defaultValue={travelData.townOrCity}
@@ -121,10 +125,10 @@ const ApplicantTravelForm = () => {
         <div ref={postcodeRef}>
           <FreeText
             id="postcode"
-            label="Postcode"
+            label="Postcode (optional)"
             errorMessage={errors?.postcode?.message ?? ""}
             formValue="postcode"
-            required="Enter full UK postcode"
+            required={false}
             patternValue={formRegex.lettersNumbersAndSpaces}
             patternError="Postcode must contain only letters, numbers and spaces"
             defaultValue={travelData.postcode}
@@ -135,9 +139,9 @@ const ApplicantTravelForm = () => {
           <FreeText
             id="mobile-number"
             errorMessage={errors?.ukMobileNumber?.message ?? ""}
-            heading="Applicant's UK phone number"
+            heading="Phone number (optional)"
             formValue="ukMobileNumber"
-            required="Enter UK mobile number"
+            required={false}
             patternValue={formRegex.numbersOnly}
             patternError="Enter applicant's UK phone number"
             defaultValue={travelData.ukMobileNumber}
@@ -148,22 +152,16 @@ const ApplicantTravelForm = () => {
           <FreeText
             id="email"
             errorMessage={errors?.ukEmail?.message ?? ""}
-            heading="Applicant's UK email"
+            heading="Email address (optional)"
             formValue="ukEmail"
-            required="Enter UK email address"
+            required={false}
             patternValue={formRegex.emailAddress}
             patternError="Email must be in correct format"
             defaultValue={travelData.ukEmail}
           />
         </div>
 
-        <Button
-          id="save-and-continue"
-          type={ButtonType.DEFAULT}
-          text="Save and continue"
-          href="/travel-confirmation"
-          handleClick={() => {}}
-        />
+        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Save and continue" />
       </form>
     </FormProvider>
   );

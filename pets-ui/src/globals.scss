@@ -6,10 +6,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-@import "../node_modules/govuk-frontend/dist/govuk/base";
-@import "../node_modules/govuk-frontend/dist/govuk/core/index";
-@import "../node_modules/govuk-frontend/dist/govuk/objects/index";
-
 [tabindex="-1"] {
   outline: none;
 }

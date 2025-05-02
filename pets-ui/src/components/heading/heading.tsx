@@ -15,7 +15,7 @@ const headingTags: { [key: number]: React.ElementType } = {
   4: "h4",
 };
 
-const Heading = ({ level = 1, ...props }: HeadingProps) => {
+const Heading = ({ level = 1, ...props }: Readonly<HeadingProps>) => {
   const Tag = headingTags[level] || "h1";
   const variant = `govuk-heading-${props.size}`;
   return (

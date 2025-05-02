@@ -11,7 +11,7 @@ describe("LinkLabel component", () => {
 
     render(
       <BrowserRouter>
-        <LinkLabel title={title} to={to} />
+        <LinkLabel title={title} to={to} externalLink={false} />
       </BrowserRouter>,
     );
 

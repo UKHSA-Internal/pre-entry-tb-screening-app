@@ -6,7 +6,7 @@ import { postChestXrayDetails } from "@/api/api";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import Spinner from "@/components/spinner/spinner";
-import Summary, { SummaryElement } from "@/components/summary/summary";
+import Summary from "@/components/summary/summary";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { selectApplication } from "@/redux/applicationSlice";
 import { selectChestXray, setChestXrayStatus } from "@/redux/chestXraySlice";
@@ -60,28 +60,30 @@ const ChestXraySummary = () => {
 
   const xrayTakenSummaryData = [
     {
-      key: "Select x-ray status",
+      key: "Select X-ray status",
       value: chestXrayData.chestXrayTaken,
       link: `/chest-xray-question#${attributeToComponentId.chestXrayTaken}`,
       hiddenLabel: "chest X-ray Status",
     },
     {
-      key: "Postero anterior x-ray",
+      key: "Postero anterior X-ray",
       value: chestXrayData.posteroAnteriorXrayFileName,
       link: `/chest-xray-upload#${attributeToComponentId.posteroAnteriorXrayFileName}`,
-      hiddenLabel: "postero-anterior X-ray",
+      hiddenLabel: "postero anterior X-ray",
     },
     {
-      key: "Apical lordotic x-ray",
+      key: "Apical lordotic X-ray",
       value: chestXrayData.apicalLordoticXrayFileName,
       link: `/chest-xray-upload#${attributeToComponentId.apicalLordoticXrayFileName}`,
       hiddenLabel: "apical lordotic X-ray",
+      emptyValueText: "Upload apical lordotic X-ray (optional)",
     },
     {
-      key: "Lateral decubitus x-ray",
+      key: "Lateral decubitus X-ray",
       value: chestXrayData.lateralDecubitusXrayFileName,
       link: `/chest-xray-upload#${attributeToComponentId.lateralDecubitusXrayFileName}`,
       hiddenLabel: "lateral decubitus X-ray",
+      emptyValueText: "Upload lateral decubitus X-ray (optional)",
     },
     {
       key: "Enter radiological outcome",
@@ -94,6 +96,7 @@ const ChestXraySummary = () => {
       value: chestXrayData.xrayResultDetail,
       link: `/chest-xray-findings#${attributeToComponentId.xrayResultDetail}`,
       hiddenLabel: "X-ray Details",
+      emptyValueText: "Enter radiological details (optional)",
     },
     {
       key: "Enter radiographic findings",
@@ -103,7 +106,8 @@ const ChestXraySummary = () => {
         chestXrayData.xrayActiveTbFindings,
       ),
       link: `/chest-xray-findings#${attributeToComponentId.xrayMinorFindings}`,
-      hiddenLabel: "radiographic Findings",
+      hiddenLabel: "radiographic findings",
+      emptyValueText: "Enter radiographic findings (optional)",
     },
   ];
 
@@ -112,22 +116,24 @@ const ChestXraySummary = () => {
       key: "Select x-ray status",
       value: chestXrayData.chestXrayTaken,
       link: `/chest-xray-question#${attributeToComponentId.chestXrayTaken}`,
-      hiddenLabel: "Chest X-ray Status",
+      hiddenLabel: "chest X-ray status",
+      emptyValueText: "Enter X-ray status (optional)",
     },
     {
       key: "Enter reason X-ray not taken",
       value: chestXrayData.reasonXrayWasNotTaken,
       link: `/chest-xray-not-taken#${attributeToComponentId.reasonXrayWasNotTaken}`,
       hiddenLabel: "Reason why X-ray was not taken",
+      emptyValueText: "Enter reason X-ray not taken (optional)",
+    },
+    {
+      key: "Details",
+      value: chestXrayData.xrayWasNotTakenFurtherDetails,
+      link: `/chest-xray-not-taken#${attributeToComponentId.xrayWasNotTakenFurtherDetails}`,
+      hiddenLabel: "details",
+      emptyValueText: "Enter details (optional)",
     },
   ];
-
-  const isDataPresent = (
-    summaryElement: Partial<SummaryElement>,
-  ): summaryElement is SummaryElement => {
-    const { value } = summaryElement;
-    return Array.isArray(value) ? value.length > 0 : !!value;
-  };
 
   return (
     <div>
@@ -135,16 +141,10 @@ const ChestXraySummary = () => {
       <ApplicantDataHeader applicantData={applicantData} />
 
       {chestXrayData.chestXrayTaken == YesOrNo.YES && (
-        <Summary
-          status={chestXrayData.status}
-          summaryElements={xrayTakenSummaryData.filter(isDataPresent)}
-        />
+        <Summary status={chestXrayData.status} summaryElements={xrayTakenSummaryData} />
       )}
       {chestXrayData.chestXrayTaken == YesOrNo.NO && (
-        <Summary
-          status={chestXrayData.status}
-          summaryElements={xrayNotTakenSummaryData.filter(isDataPresent)}
-        />
+        <Summary status={chestXrayData.status} summaryElements={xrayNotTakenSummaryData} />
       )}
 
       {chestXrayData.status == ApplicationStatus.INCOMPLETE && (
@@ -152,7 +152,6 @@ const ChestXraySummary = () => {
           id="confirm"
           type={ButtonType.DEFAULT}
           text="Save and continue"
-          href="/chest-xray-confirmation"
           handleClick={handleSubmit}
         />
       )}
@@ -161,7 +160,6 @@ const ChestXraySummary = () => {
           id="back-to-tracker"
           type={ButtonType.DEFAULT}
           text="Return to tracker"
-          href="/tracker"
           handleClick={() => navigate("/tracker")}
         />
       )}

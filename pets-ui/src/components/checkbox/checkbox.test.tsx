@@ -30,7 +30,8 @@ describe("Checkbox component", () => {
         <FormProvider {...methods}>
           <Checkbox
             id="test-id"
-            legend="test-legend"
+            label="test-label"
+            heading="test-heading"
             hint="test-hint"
             answerOptions={["zzz Answer One", "aaa Answer Two"]}
             exclusiveAnswerOptions={["Exclusive Answer"]}
@@ -44,7 +45,8 @@ describe("Checkbox component", () => {
     };
     render(<CheckboxToTest />);
     expect(screen.getAllByRole("checkbox")).toBeTruthy();
-    expect(screen.getByText("test-legend")).toBeTruthy();
+    expect(screen.getByText("test-heading")).toBeTruthy();
+    expect(screen.getByText("test-label")).toBeTruthy();
     expect(screen.getByText("test-hint")).toBeTruthy();
     expect(screen.getByText("zzz Answer One")).toBeTruthy();
     expect(screen.getByText("aaa Answer Two")).toBeTruthy();
@@ -54,7 +56,7 @@ describe("Checkbox component", () => {
   it("renders correctly when all optional props are omitted", () => {
     render(<DefaultCheckboxToTest />);
     expect(screen.getAllByRole("checkbox")).toBeTruthy();
-    expect(screen.queryByText("test-legend")).toBeNull();
+    expect(screen.queryByText("test-label")).toBeNull();
     expect(screen.queryByText("test-hint")).toBeNull();
     expect(screen.getByText("zzz Answer One")).toBeTruthy();
     expect(screen.getByText("aaa Answer Two")).toBeTruthy();
@@ -78,7 +80,7 @@ describe("Checkbox component", () => {
     };
     render(<CheckboxToTest />);
     expect(screen.getAllByRole("checkbox")).toBeTruthy();
-    expect(screen.queryByText("test-legend")).toBeNull();
+    expect(screen.queryByText("test-label")).toBeNull();
     expect(screen.queryByText("test-hint")).toBeNull();
     expect(screen.queryByText("test error")).toBeTruthy();
     expect(screen.getByText("zzz Answer One")).toBeTruthy();

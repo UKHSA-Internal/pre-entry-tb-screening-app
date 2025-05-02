@@ -1,5 +1,3 @@
-import "./chest-xray-confirmation.scss";
-
 import { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
 import Confirmation from "@/components/confirmation/confirmation";
 import Container from "@/components/container/container";
@@ -17,7 +15,7 @@ export default function ChestXrayConfirmation() {
     "You cannot currently log sputum test information in this service.",
     <>
       Continue to TB certificate declaration or go to{" "}
-      <LinkLabel to="/tracker" title="TB screening progress tracker" />.
+      <LinkLabel to="/tracker" title="TB screening progress tracker" externalLink={false} />.
     </>,
   ];
 

@@ -116,12 +116,14 @@ const ApplicantReview = () => {
       value: applicantData.applicantHomeAddress2,
       link: `/contact#${attributeToComponentId.applicantHomeAddress2}`,
       hiddenLabel: "home address line 2",
+      emptyValueText: "Enter home address line 2 (optional)",
     },
     {
       key: "Home address line 3",
       value: applicantData.applicantHomeAddress3,
       link: `/contact#${attributeToComponentId.applicantHomeAddress3}`,
       hiddenLabel: "home address line 3",
+      emptyValueText: "Enter home address line 3 (optional)",
     },
     {
       key: "Town or city",
@@ -146,6 +148,7 @@ const ApplicantReview = () => {
       value: applicantData.postcode,
       link: `/contact#${attributeToComponentId.postcode}`,
       hiddenLabel: "postcode",
+      emptyValueText: "Enter postcode (optional)",
     },
   ];
 
@@ -159,7 +162,6 @@ const ApplicantReview = () => {
           id="confirm"
           type={ButtonType.DEFAULT}
           text="Save and continue"
-          href="/applicant-confirmation"
           handleClick={handleSubmit}
         />
       )}
@@ -168,7 +170,6 @@ const ApplicantReview = () => {
           id="back-to-tracker"
           type={ButtonType.DEFAULT}
           text="Return to tracker"
-          href="/tracker"
           handleClick={() => navigate("/tracker")}
         />
       )}

@@ -73,19 +73,11 @@ describe("ApplicantTravelForm", () => {
 
     await user.click(submitButton);
 
-    const errorMessages = [
+    expect(screen.getAllByText("Error: Select a visa type".slice(7))).toHaveLength(2);
+    expect(screen.getAllByText("Error: Select a visa type".slice(7))[0]).toHaveAttribute(
+      "aria-label",
       "Error: Select a visa type",
-      "Error: Enter address line 1, typically the building and street",
-      "Error: Enter town or city",
-      "Error: Enter full UK postcode",
-      "Error: Enter UK mobile number",
-      "Error: Enter UK email address",
-    ];
-
-    errorMessages.forEach((error) => {
-      expect(screen.getAllByText(error.slice(7))).toHaveLength(2);
-      expect(screen.getAllByText(error.slice(7))[0]).toHaveAttribute("aria-label", error);
-    });
+    );
   });
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
     renderWithProviders(

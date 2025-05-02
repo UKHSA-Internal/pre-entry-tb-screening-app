@@ -76,21 +76,21 @@ type ReceivedApplicantDetailsType = PostedApplicantDetailsType & ReceivedApplica
 type ReduxTravelDetailsType = {
   status: ApplicationStatus;
   visaType: string;
-  applicantUkAddress1: string;
+  applicantUkAddress1?: string;
   applicantUkAddress2?: string;
   applicantUkAddress3?: string;
-  townOrCity: string;
-  postcode: string;
+  townOrCity?: string;
+  postcode?: string;
   ukMobileNumber?: string;
   ukEmail: string;
 };
 
 type PostedTravelDetailsType = {
-  ukAddressLine1: string;
+  ukAddressLine1?: string;
   ukAddressLine2?: string;
   ukAddressLine3?: string;
-  ukAddressTownOrCity: string;
-  ukAddressPostcode: string;
+  ukAddressTownOrCity?: string;
+  ukAddressPostcode?: string;
   ukEmailAddress: string;
   ukMobileNumber?: string;
   visaCategory: string;
@@ -177,29 +177,6 @@ type PostedChestXrayNotTakenType = {
 
 type ReceivedChestXrayNotTakenType = PostedChestXrayNotTakenType &
   ReceivedApplicationAttributesType;
-
-// Sputum types
-type ReduxSputumCollectionDetailsType = {
-  dateOfSputumSample1: string | null;
-  collectionMethodSample1: string | null;
-  collectionMethodOtherSample1: string | null;
-  smearResult1: string | null;
-  cultureResult1: string | null;
-  dateOfSputumSample2: string | null;
-  collectionMethodSample2: string | null;
-  collectionMethodOtherSample2: string | null;
-  smearResult2: string | null;
-  cultureResult2: string | null;
-  dateOfSputumSample3: string | null;
-  collectionMethodSample3: string | null;
-  collectionMethodOtherSample3: string | null;
-  smearResult3: string | null;
-  cultureResult3: string | null;
-  dstConducted: boolean;
-  drugTested: string | null;
-  drugResistance: "Yes" | "No" | "Not applicable";
-  drugResistanceDetails: string | null;
-};
 
 // TB Declaration certificate types
 type ReduxTbCertificateType = {

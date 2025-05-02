@@ -1,0 +1,221 @@
+name: Nightly Cypress Tests
+
+on:
+  schedule:
+    # Runs at 1 AM UTC every weekday (Monday to Friday)
+    - cron: '0 1 * * 1-5'
+  workflow_dispatch:  # Allows manual triggering through GitHub UI
+
+jobs:
+  cypress-nightly:
+    name: Run Nightly Cypress Tests
+    runs-on: ubuntu-latest
+    strategy:
+      # Don't fail fast - run all tests even if some fail
+      fail-fast: false
+      matrix:
+        # Define the specific test files to run
+        spec:
+          - cypress/e2e/TBBETA-824-TC01-applicantDetailsErrorTest.cy.ts
+          - cypress/e2e/TBBETA-824-TC02-applicantDetailsErrorTest.cy.ts
+          - cypress/e2e/TBBETA-824-TC03-applicantDetailsErrorTest.cy.ts
+          - cypress/e2e/TBBETA-824-TC04-applicantDetailsErrorTest.cy.ts
+          - cypress/e2e/TBBETA-824-new-e2e-test.cy.ts
+      
+        browser: [chrome]
+    
+    env:
+      USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
+      USER_1_PASSWORD: ${{ secrets.USER_1_PASSWORD }}
+      USER_2_EMAIL: ${{ secrets.USER_2_EMAIL }}
+      USER_2_PASSWORD: ${{ secrets.USER_2_PASSWORD }}
+      USER_3_EMAIL: ${{ secrets.USER_3_EMAIL }}
+      USER_3_PASSWORD: ${{ secrets.USER_3_PASSWORD }}
+      USER_4_EMAIL: ${{ secrets.USER_4_EMAIL }}
+      USER_4_PASSWORD: ${{ secrets.USER_4_PASSWORD }}
+      USER_5_EMAIL: ${{ secrets.USER_5_EMAIL }}
+      USER_5_PASSWORD: ${{ secrets.USER_5_PASSWORD }}
+      USER_6_EMAIL: ${{ secrets.USER_6_EMAIL }}
+      USER_6_PASSWORD: ${{ secrets.USER_6_PASSWORD }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Cache Cypress binary
+        id: cache-cypress-binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-binary-nightly-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
+
+      - name: Install Cypress Binary
+        if: steps.cache-cypress-binary.outputs.cache-hit != 'true'
+        run: |
+          pnpm exec cypress install --force
+          pnpm exec cypress verify
+        working-directory: pets-ui
+
+      - name: Start Local Environment
+        run: |
+          pnpm start & sleep 120
+
+      - name: Cypress run tests
+        uses: cypress-io/github-action@v6
+        continue-on-error: true
+        id: initial_attempt
+        with:
+          install: false
+          working-directory: pets-ui
+          browser: ${{ matrix.browser }}
+          spec: pets-ui/${{ matrix.spec }}
+          config-file: cypress/cypress.config.mjs
+
+      - name: Retry failed tests
+        if: steps.initial_attempt.outcome != 'success'
+        uses: cypress-io/github-action@v6
+        id: retry_attempt
+        with:
+          install: false
+          working-directory: pets-ui
+          browser: ${{ matrix.browser }}
+          spec: pets-ui/${{ matrix.spec }}
+          config-file: cypress/cypress.config.mjs
+
+      - name: Upload Failed Tests Screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-failed-${{ matrix.spec }}-${{ matrix.browser }}
+          path: pets-ui/cypress/screenshots
+          retention-days: 7
+
+      - name: Merge Mochawesome Reports
+        if: always()
+        run: |
+          JSON_DIR=pets-ui/cypress/reports/mochawesome/.jsons
+          if ls ${JSON_DIR}/*.json 1> /dev/null 2>&1; then
+            npx mochawesome-merge ${JSON_DIR}/*.json > pets-ui/cypress/reports/mochawesome/mochawesome-${{ matrix.spec }}.json
+          else
+            echo "No mochawesome JSON files found. Skipping merge."
+          fi
+
+      - name: Upload Mochawesome Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-report-${{ matrix.spec }}-${{ matrix.browser }}
+          path: pets-ui/cypress/reports/mochawesome/
+          retention-days: 7
+          
+      # Add test status to GitHub Step Summary
+      - name: Set test status
+        if: always()
+        id: status
+        run: |
+          if [ "${{ steps.retry_attempt.outcome }}" = "success" ] || [ "${{ steps.initial_attempt.outcome }}" = "success" ]; then
+            echo "test_status=success" >> $GITHUB_OUTPUT
+            echo "## ✅ Test Passed" >> $GITHUB_STEP_SUMMARY
+            echo "Test for ${{ matrix.spec }} passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "test_status=failure" >> $GITHUB_OUTPUT
+            echo "## ❌ Test Failed" >> $GITHUB_STEP_SUMMARY
+            echo "Test for ${{ matrix.spec }} failed" >> $GITHUB_STEP_SUMMARY
+            
+            # Add screenshot links if available
+            if [ -d "pets-ui/cypress/screenshots" ]; then
+              echo "### Screenshots:" >> $GITHUB_STEP_SUMMARY
+              echo "Screenshots are available in the artifacts" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+
+  generate-summary:
+    name: Generate Test Summary
+    needs: cypress-nightly
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-artifacts
+          pattern: nightly-*
+
+      - name: Generate test summary report
+        id: summary
+        run: |
+          echo "# Nightly Cypress Test Results" > nightly-summary.md
+          echo "Run completed at $(date)" >> nightly-summary.md
+          echo "" >> nightly-summary.md
+          
+          # Count test specs - update to match the actual number of specs
+          TOTAL_SPECS=5
+          
+          # Calculate results
+          FAILED_SPECS=$(find all-artifacts -name "*.png" -o -name "*.jpg" | grep -v "nightly-report" | wc -l)
+          if [ $FAILED_SPECS -gt 0 ]; then
+            FAILED=true
+            echo "## ❌ Failed Tests Found" >> nightly-summary.md
+            echo "status=failed" >> $GITHUB_OUTPUT
+          else
+            FAILED=false
+            echo "## ✅ All Tests Passed" >> nightly-summary.md
+            echo "status=passed" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "" >> nightly-summary.md
+          echo "### Test Specs" >> nightly-summary.md
+          
+          # List test specs and their status - More reliable detection pattern
+          for TEST_FILE in "TBBETA-824-TC01-applicantDetailsErrorTest.cy.ts" "TBBETA-824-TC02-applicantDetailsErrorTest.cy.ts" "TBBETA-824-TC03-applicantDetailsErrorTest.cy.ts" "TBBETA-824-TC04-applicantDetailsErrorTest.cy.ts" "TBBETA-824-new-e2e-test.cy.ts"; do
+            # Using find to look for screenshots that would indicate failure
+            if find all-artifacts -path "*$TEST_FILE*" -name "*.png" | grep -q .; then
+              echo "- $TEST_FILE - ❌ Failed" >> nightly-summary.md
+            else
+              echo "- $TEST_FILE - ✅ Passed" >> nightly-summary.md
+            fi
+          done
+          
+          if [ "$FAILED" = true ]; then
+            echo "" >> nightly-summary.md
+            echo "### Failure Details" >> nightly-summary.md
+            find all-artifacts -name "*.png" -o -name "*.jpg" | grep -v "nightly-report" | sort >> nightly-summary.md
+          fi
+          
+          # Add to GitHub step summary
+          cat nightly-summary.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload summary report
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-summary-report
+          path: nightly-summary.md
+          retention-days: 7
+      
+      # Set final workflow conclusion
+      - name: Set workflow conclusion
+        if: always()
+        run: |
+          if [[ "${{ steps.summary.outputs.status }}" == "passed" ]]; then
+            echo "## ✅ Nightly Test Run Successful" >> $GITHUB_STEP_SUMMARY
+            echo "All tests have passed successfully." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ❌ Nightly Test Run Failed" >> $GITHUB_STEP_SUMMARY
+            echo "Some tests have failed. Please check the artifacts for details." >> $GITHUB_STEP_SUMMARY
+            echo "View run details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_STEP_SUMMARY
+          fi

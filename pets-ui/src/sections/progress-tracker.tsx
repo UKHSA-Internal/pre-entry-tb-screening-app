@@ -18,7 +18,7 @@ interface TaskProps {
   linkWhenComplete: string;
 }
 
-const Task = (props: TaskProps) => {
+const Task = (props: Readonly<TaskProps>) => {
   return (
     <li className="govuk-task-list__item govuk-task-list__item--with-link">
       <div className="govuk-task-list__name-and-hint">
@@ -27,6 +27,7 @@ const Task = (props: TaskProps) => {
             className="govuk-link govuk-task-list__link"
             to={props.linkWhenIncomplete}
             title={props.description}
+            externalLink={false}
           />
         )}
         {props.status == ApplicationStatus.COMPLETE && (
@@ -34,6 +35,7 @@ const Task = (props: TaskProps) => {
             className="govuk-link govuk-task-list__link"
             to={props.linkWhenComplete}
             title={props.description}
+            externalLink={false}
           />
         )}
       </div>
@@ -103,7 +105,6 @@ const ProgressTracker = () => {
         id="search-again"
         type={ButtonType.DEFAULT}
         text="Search again"
-        href="/applicant-search"
         handleClick={() => {
           navigate("/applicant-search");
         }}

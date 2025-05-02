@@ -9,7 +9,7 @@ const furtherInfo = [
   "Further Information Test Text",
   "Additional Information",
   <>
-    Continue to <LinkLabel to="/tracker" title="tracker page" />.
+    Continue to <LinkLabel to="/tracker" title="tracker page" externalLink={false} />.
   </>,
 ];
 

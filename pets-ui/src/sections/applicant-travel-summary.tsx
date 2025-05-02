@@ -53,36 +53,42 @@ const TravelReview = () => {
       value: travelData.applicantUkAddress1,
       link: `/travel-details#${attributeToComponentId.applicantUkAddress1}`,
       hiddenLabel: "UK address line 1",
+      emptyValueText: "Enter UK address line 1 (optional)",
     },
     {
       key: "UK address line 2",
       value: travelData.applicantUkAddress2,
       link: `/travel-details#${attributeToComponentId.applicantUkAddress2}`,
       hiddenLabel: "UK address line 2",
+      emptyValueText: "Enter UK address line 2 (optional)",
     },
     {
       key: "UK town or city",
       value: travelData.townOrCity,
       link: `/travel-details#${attributeToComponentId.townOrCity}`,
       hiddenLabel: "town or city",
+      emptyValueText: "Enter UK town or city (optional)",
     },
     {
       key: "UK postcode",
       value: travelData.postcode,
       link: `/travel-details#${attributeToComponentId.postcode}`,
       hiddenLabel: "postcode",
+      emptyValueText: "Enter UK postcode (optional)",
     },
     {
       key: "UK mobile number",
       value: travelData.ukMobileNumber,
       link: `/travel-details#${attributeToComponentId.ukMobileNumber}`,
       hiddenLabel: "UK mobile number",
+      emptyValueText: "Enter UK mobile number (optional)",
     },
     {
       key: "UK email address",
       value: travelData.ukEmail,
       link: `/travel-details#${attributeToComponentId.ukEmail}`,
       hiddenLabel: "UK email address",
+      emptyValueText: "Enter email address (optional)",
     },
   ];
 
@@ -96,7 +102,6 @@ const TravelReview = () => {
           id="confirm"
           type={ButtonType.DEFAULT}
           text="Save and continue"
-          href="/travel-confirmation"
           handleClick={handleSubmit}
         />
       )}
@@ -105,7 +110,6 @@ const TravelReview = () => {
           id="back-to-tracker"
           type={ButtonType.DEFAULT}
           text="Return to tracker"
-          href="/tracker"
           handleClick={() => navigate("/tracker")}
         />
       )}

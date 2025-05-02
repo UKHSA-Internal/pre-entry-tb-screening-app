@@ -1,205 +1,236 @@
-// This holds all fields for the Medical Screening Page
-export class MedicalScreeningPage {
-  visit(): void {
-    cy.visit("/medical-screening");
+import { BasePage } from "../BasePage";
+
+// Interface for medical screening form data
+interface MedicalScreeningFormData {
+  age: string;
+  tbSymptoms: "Yes" | "No";
+  tbSymptomsList?: string[];
+  otherSymptoms?: string;
+  previousTb: "Yes" | "No";
+  previousTbDetails?: string;
+  closeContactWithTb: "Yes" | "No";
+  closeContactDetails?: string;
+  pregnant: "Yes" | "No" | "Don't know" | "N/A";
+  menstrualPeriods: "Yes" | "No" | "N/A";
+  physicalExamNotes: string;
+}
+
+export class MedicalScreeningPage extends BasePage {
+  constructor() {
+    super("/medical-screening");
   }
 
-  verifyPageLoaded(): void {
-    cy.contains("h1", "Medical screening").should("be.visible");
+  verifyPageLoaded(): MedicalScreeningPage {
+    this.verifyPageHeading("Medical screening");
+    return this;
   }
 
-  fillAge(age: string): void {
-    cy.contains("label", "Applicant age")
-      .should("be.visible")
-      .siblings(".govuk-input__wrapper")
-      .find("input")
-      .should("be.visible")
-      .clear()
-      .type(age);
+  fillAge(age: string): MedicalScreeningPage {
+    this.fillTextInput("Applicant age", age);
+    return this;
   }
 
-  selectTbSymptoms(option: string): void {
-    cy.get(`input[name="tbSymptoms"][value="${option}"]`)
-      .should("exist")
-      .check({ force: true })
-      .should("be.checked");
+  selectTbSymptoms(option: "Yes" | "No"): MedicalScreeningPage {
+    this.checkRadio("tbSymptoms", option);
+    return this;
   }
 
-  selectTbSymptomsList(symptoms: string[]): void {
+  selectTbSymptomsList(symptoms: string[]): MedicalScreeningPage {
     symptoms.forEach((symptom) => {
-      cy.get(`input[name="tbSymptomsList"][value="${symptom}"]`)
+      cy.contains("label", symptom)
+        .find('input[type="checkbox"]')
         .should("exist")
         .check({ force: true })
         .should("be.checked");
     });
+    return this;
   }
 
-  fillOtherSymptoms(text: string): void {
-    cy.contains("label", 'If you have selected "Other symptoms", list these')
-      .should("be.visible")
-      .siblings("textarea")
-      .should("be.visible")
-      .clear()
-      .type(text);
+  fillOtherSymptoms(text: string): MedicalScreeningPage {
+    this.fillTextarea('If you have selected "Other symptoms", list these', text);
+    return this;
   }
 
-  selectUnderElevenOption(option: string): void {
-    cy.get(`input[name="underElevenConditions"][value="${option}"]`)
-      .should("exist")
-      .check({ force: true })
-      .should("be.checked");
+  selectUnderElevenOption(option: string): MedicalScreeningPage {
+    this.checkRadio("underElevenConditions", option);
+    return this;
   }
 
-  fillUnderElevenDetails(text: string): void {
-    cy.contains("label", "You can give details of the procedure or condition")
-      .should("be.visible")
-      .siblings("textarea")
-      .should("be.visible")
-      .clear()
-      .type(text);
+  fillUnderElevenDetails(text: string): MedicalScreeningPage {
+    this.fillTextarea("You can give details of the procedure or condition", text);
+    return this;
   }
 
-  selectPreviousTb(option: string): void {
-    cy.get(`input[name="previousTb"][value="${option}"]`)
-      .should("exist")
-      .check({ force: true })
-      .should("be.checked");
+  selectPreviousTb(option: "Yes" | "No"): MedicalScreeningPage {
+    this.checkRadio("previousTb", option);
+    return this;
   }
 
-  fillPreviousTbDetails(text: string): void {
-    cy.contains("label", "If yes, give details")
-      .first()
-      .siblings("textarea")
+  fillPreviousTbDetails(text: string): MedicalScreeningPage {
+    cy.contains("fieldset", "Has the applicant ever had tuberculosis?")
+      .contains("label", "If yes, give details")
+      .parent()
+      .find("textarea")
       .should("be.visible")
       .clear()
       .type(text);
+    return this;
   }
 
-  selectCloseContact(option: string): void {
-    cy.get(`input[name="closeContactWithTb"][value="${option}"]`)
-      .should("exist")
-      .check({ force: true })
-      .should("be.checked");
+  selectCloseContact(option: "Yes" | "No"): MedicalScreeningPage {
+    this.checkRadio("closeContactWithTb", option);
+    return this;
   }
 
-  fillCloseContactDetails(text: string): void {
-    cy.contains("label", "If yes, give details")
-      .last()
-      .siblings("textarea")
+  fillCloseContactDetails(text: string): MedicalScreeningPage {
+    cy.contains("fieldset", "active pulmonary tuberculosis")
+      .contains("label", "If yes, give details")
+      .parent()
+      .find("textarea")
       .should("be.visible")
       .clear()
       .type(text);
+    return this;
   }
 
-  selectPregnancyStatus(option: string): void {
-    cy.get(`input[name="pregnant"][value="${option}"]`)
-      .should("exist")
-      .check({ force: true })
-      .should("be.checked");
+  selectPregnancyStatus(option: "Yes" | "No" | "Don't know" | "N/A"): MedicalScreeningPage {
+    this.checkRadio("pregnant", option);
+    return this;
   }
 
-  selectMenstrualPeriods(option: string): void {
-    cy.get(`input[name="menstrualPeriods"][value="${option}"]`)
-      .should("exist")
-      .check({ force: true })
-      .should("be.checked");
+  selectMenstrualPeriods(option: "Yes" | "No" | "N/A"): MedicalScreeningPage {
+    this.checkRadio("menstrualPeriods", option);
+    return this;
   }
 
-  fillPhysicalExamNotes(text: string): void {
-    cy.contains("label", "Physical examination notes")
-      .should("be.visible")
-      .siblings("textarea")
-      .should("be.visible")
-      .clear()
-      .type(text);
+  fillPhysicalExamNotes(text: string): MedicalScreeningPage {
+    this.fillTextarea("Physical examination notes", text);
+    return this;
   }
 
-  submitForm(): void {
-    cy.contains("button", "Save and continue").should("be.visible").click();
+  // Fill the entire form at once
+  fillCompleteForm(data: MedicalScreeningFormData): MedicalScreeningPage {
+    this.fillAge(data.age);
+    this.selectTbSymptoms(data.tbSymptoms);
+
+    if (data.tbSymptoms === "Yes" && data.tbSymptomsList && data.tbSymptomsList.length > 0) {
+      this.selectTbSymptomsList(data.tbSymptomsList);
+
+      if (data.otherSymptoms) {
+        this.fillOtherSymptoms(data.otherSymptoms);
+      }
+    }
+
+    this.selectPreviousTb(data.previousTb);
+
+    if (data.previousTb === "Yes" && data.previousTbDetails) {
+      this.fillPreviousTbDetails(data.previousTbDetails);
+    }
+
+    this.selectCloseContact(data.closeContactWithTb);
+
+    if (data.closeContactWithTb === "Yes" && data.closeContactDetails) {
+      this.fillCloseContactDetails(data.closeContactDetails);
+    }
+
+    this.selectPregnancyStatus(data.pregnant);
+    this.selectMenstrualPeriods(data.menstrualPeriods);
+    this.fillPhysicalExamNotes(data.physicalExamNotes);
+
+    return this;
   }
 
-  verifyRedirectedToSummary(): void {
-    cy.url().should("include", "/medical-summary");
+  // Form submission
+  submitForm(): MedicalScreeningPage {
+    super.submitForm("Save and continue");
+    return this;
   }
-  validateErrorSummary(expectedErrors: string[]): void {
-    // Verify error summary is visible
+
+  // Check redirection
+  verifyRedirectedToSummary(): MedicalScreeningPage {
+    this.verifyUrlContains("/medical-summary");
+    return this;
+  }
+
+  // Error validation
+  validateErrorSummaryVisible(): MedicalScreeningPage {
     cy.get(".govuk-error-summary").should("be.visible");
-
-    // Verify "There is a problem" header is visible
-    cy.get(".govuk-error-summary__title").should("contain.text", "There is a problem");
-
-    // Check each expected error is present in the error summary
-    expectedErrors.forEach((errorText) => {
-      cy.get(".govuk-error-summary__list").should("contain.text", errorText);
-    });
+    return this;
   }
 
-  // Detailed Error validation method
-  validateFormErrors(expectedErrorMessages: {
+  validateErrorContainsText(text: string): MedicalScreeningPage {
+    cy.get(".govuk-error-summary__list").should("contain.text", text);
+    return this;
+  }
+
+  // Individual field error validations
+  validateAgeFieldError(): MedicalScreeningPage {
+    this.validateFieldError("age");
+    return this;
+  }
+
+  validateTbSymptomsFieldError(): MedicalScreeningPage {
+    this.validateFieldError("tb-symptoms");
+    return this;
+  }
+
+  validatePreviousTbFieldError(): MedicalScreeningPage {
+    this.validateFieldError("previous-tb");
+    return this;
+  }
+
+  validateCloseContactFieldError(): MedicalScreeningPage {
+    this.validateFieldError("close-contact-with-tb");
+    return this;
+  }
+
+  validatePregnancyFieldError(): MedicalScreeningPage {
+    this.validateFieldError("pregnant");
+    return this;
+  }
+
+  validateMenstrualPeriodsFieldError(): MedicalScreeningPage {
+    this.validateFieldError("menstrual-periods");
+    return this;
+  }
+
+  // Comprehensive validation method
+  validateFormErrors(errors: {
+    age?: string;
     tbSymptoms?: string;
     previousTb?: string;
     closeContact?: string;
     pregnant?: string;
     menstrualPeriods?: string;
-  }): void {
-    // Validate TB Symptoms field error
-    if (expectedErrorMessages.tbSymptoms) {
-      cy.get("#tb-symptoms").should("have.class", "govuk-form-group--error");
-      cy.get("#tb-symptoms")
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", expectedErrorMessages.tbSymptoms);
-    }
+  }): MedicalScreeningPage {
+    Object.entries(errors).forEach(([field, message]) => {
+      switch (field) {
+        case "age":
+          this.validateFieldError("age", message);
+          break;
+        case "tbSymptoms":
+          this.validateFieldError("tb-symptoms", message);
+          break;
+        case "previousTb":
+          this.validateFieldError("previous-tb", message);
+          break;
+        case "closeContact":
+          this.validateFieldError("close-contact-with-tb", message);
+          break;
+        case "pregnant":
+          this.validateFieldError("pregnant", message);
+          break;
+        case "menstrualPeriods":
+          this.validateFieldError("menstrual-periods", message);
+          break;
+      }
+    });
 
-    // Validate Previous TB field error
-    if (expectedErrorMessages.previousTb) {
-      cy.get("#previous-tb").should("have.class", "govuk-form-group--error");
-      cy.get("#previous-tb")
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", expectedErrorMessages.previousTb);
-    }
-
-    // Validate Close Contact field error
-    if (expectedErrorMessages.closeContact) {
-      cy.get("#close-contact-with-tb").should("have.class", "govuk-form-group--error");
-      cy.get("#close-contact-with-tb")
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", expectedErrorMessages.closeContact);
-    }
-
-    // Validate Pregnancy Status field error
-    if (expectedErrorMessages.pregnant) {
-      cy.get("#pregnant").should("have.class", "govuk-form-group--error");
-      cy.get("#pregnant")
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", expectedErrorMessages.pregnant);
-    }
-
-    // Validate Menstrual Periods field error
-    if (expectedErrorMessages.menstrualPeriods) {
-      cy.get("#menstrual-periods").should("have.class", "govuk-form-group--error");
-      cy.get("#menstrual-periods")
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", expectedErrorMessages.menstrualPeriods);
-    }
-  }
-  getCurrentUrl(): Cypress.Chainable<string> {
-    return cy.url();
-  }
-  //Summary Error
-  validateErrorSummaryVisible(): void {
-    cy.get(".govuk-error-summary").should("be.visible");
+    return this;
   }
 
-  validateErrorContainsText(text: string): void {
-    cy.get(".govuk-error-summary__list").should("contain.text", text);
-  }
-
-  validateErrorMessage(...expectedTexts: string[]): void {
+  // Detailed error message validation
+  validateErrorMessage(...expectedTexts: string[]): MedicalScreeningPage {
     this.validateErrorSummaryVisible();
 
     // Get the error summary list text
@@ -215,30 +246,7 @@ export class MedicalScreeningPage {
         );
       });
     });
-  }
 
-  // Age Field Error
-  validateAgeFieldError(): void {
-    cy.get("#age").should("have.class", "govuk-form-group--error");
-    cy.get("#age").find(".govuk-error-message").should("be.visible");
-    cy.get("#age")
-      .find(".govuk-error-message")
-      .should("contain.text", "Enter applicant's age in years.");
-  }
-
-  // Error validation
-  validateTbSymptomsFieldError(): void {
-    cy.get("#tb-symptoms").should("have.class", "govuk-form-group--error");
-    cy.get("#tb-symptoms").find(".govuk-error-message").should("be.visible");
-  }
-
-  validatePregnancyFieldError(): void {
-    cy.get("#pregnant").should("have.class", "govuk-form-group--error");
-    cy.get("#pregnant").find(".govuk-error-message").should("be.visible");
-  }
-
-  validateMenstrualPeriodsFieldError(): void {
-    cy.get("#menstrual-periods").should("have.class", "govuk-form-group--error");
-    cy.get("#menstrual-periods").find(".govuk-error-message").should("be.visible");
+    return this;
   }
 }

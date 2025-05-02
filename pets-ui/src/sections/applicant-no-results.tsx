@@ -20,11 +20,10 @@ const ApplicantEmptyResult = () => {
       <StartButton
         id="create-new-applicant"
         text="Create new applicant"
-        href=""
         handleClick={() => navigate("/contact")}
       />
       <br />
-      <LinkLabel to="/applicant-search" title="Search again" />
+      <LinkLabel to="/applicant-search" title="Search again" externalLink={false} />
     </>
   );
 };

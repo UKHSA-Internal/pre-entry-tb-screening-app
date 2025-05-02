@@ -197,6 +197,8 @@ User story and bug tickets should follow this [template](https://ukhsa.atlassian
 - Commits should be done regularly and commit messages should be meaningful. Commit messages should follow this convention - `{ticket-number}: {commit_message}`.
    For example: `TBBETA-123: Added unit tests`
 
+- Ensure your commit email is your ukhsa email. Check this SO [thread](https://stackoverflow.com/a/51682403) on how to change that.
+
 ## Running Development Environment
 
 1. Start up development environment

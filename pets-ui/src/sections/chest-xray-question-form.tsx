@@ -4,10 +4,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
-import Button from "@/components/button/button";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
+import SubmitButton from "@/components/submitButton/submitButton";
 import { selectApplicant } from "@/redux/applicantSlice";
 import {
   clearChestXrayNotTakenDetails,
@@ -58,12 +58,14 @@ const ChestXrayQuestionForm = () => {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errors?.chestXrayTaken && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
+
+        <Heading level={1} size="l" title="Select X-ray status" />
         <ApplicantDataHeader applicantData={applicantData} />
-        <Heading level={2} title="Has the visa applicant had a chest X-ray?" size="m" />
         <div ref={chestXrayTakenRef}>
           <Radio
+            heading="Has the visa applicant had a chest X-ray?"
             id="chest-xray-taken"
-            legend="This would typically be the postero-anterior chest X-ray"
+            label="This would typically be the postero-anterior chest X-ray"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Yes", "No"]}
             sortAnswersAlphabetically={false}
@@ -71,15 +73,10 @@ const ChestXrayQuestionForm = () => {
             formValue="chestXrayTaken"
             defaultValue={chestXrayData.chestXrayTaken}
             required="Select yes if the visa applicant has had a chest X-ray or no if they have not"
+            divStyle={{ marginTop: 40 }}
           />
         </div>
-        <Button
-          id="Continue"
-          type={ButtonType.DEFAULT}
-          text="Continue"
-          href="/"
-          handleClick={() => {}}
-        />
+        <SubmitButton id="Continue" type={ButtonType.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

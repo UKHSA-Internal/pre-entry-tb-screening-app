@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-import Heading, { HeadingSize } from "../heading/heading";
-import { textAreaHeadingStyles } from "./textArea.styles";
+import { getDescribedBy } from "@/utils/getDescribedBy";
+
+import FieldWrapper from "../fieldWrapper/fieldWrapper";
+import { HeadingSize } from "../heading/heading";
 
 export interface TextAreaProps {
   id: string;
@@ -17,61 +19,44 @@ export interface TextAreaProps {
   headingLevel?: 1 | 2 | 3 | 4;
   headingSize?: HeadingSize;
   headingStyle?: React.CSSProperties;
+  labelStyle?: React.CSSProperties;
+  divStyle?: React.CSSProperties;
 }
 
-export default function TextArea({
-  headingLevel = 2,
-  headingSize = "m",
-  ...props
-}: Readonly<TextAreaProps>) {
+export default function TextArea(props: Readonly<TextAreaProps>) {
   const { register } = useFormContext();
-  const [errorText, setErrorText] = useState("");
-  const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
   const [inputClass, setInputClass] = useState("govuk-textarea");
 
   useEffect(() => {
-    setErrorText(props.errorMessage);
-    setWrapperClass("govuk-form-group" + (props.errorMessage ? " govuk-form-group--error" : ""));
     setInputClass("govuk-textarea" + (props.errorMessage ? " govuk-textarea--error" : ""));
   }, [props.errorMessage]);
 
   return (
-    <div id={props.id} className={wrapperClass}>
-      {props.heading && (
-        <Heading
-          title={props.heading}
-          level={headingLevel}
-          size={headingSize}
-          style={{ ...textAreaHeadingStyles, ...props.headingStyle }}
-          id={props.label ? `${props.id}-heading` : props.id}
-        />
-      )}
-      {props.label && (
-        <label className="govuk-label" htmlFor={props.id}>
-          {props.label}
-        </label>
-      )}
-      {props.hint && (
-        <div className="govuk-hint" id={`${props.id}-hint`}>
-          {props.hint}
-        </div>
-      )}
-      {errorText && (
-        <p className="govuk-error-message">
-          <span className="govuk-visually-hidden">Error:</span> {errorText}
-        </p>
-      )}
+    <FieldWrapper
+      id={props.id}
+      heading={props.heading}
+      label={props.label}
+      hint={props.hint}
+      errorMessage={props.errorMessage}
+      headingLevel={props.headingLevel}
+      headingSize={props.headingSize}
+      headingStyle={props.headingStyle}
+      useFieldset={false}
+      labelStyle={props.labelStyle}
+      divStyle={props.divStyle}
+    >
       <textarea
-        id={props.id}
+        aria-labelledby={props.heading && `${props.id}-field`}
+        id={props.label && !props.heading ? `${props.id}-field` : undefined}
+        aria-describedby={getDescribedBy(props.id, props.hint, props.heading, props.label)}
         className={inputClass}
         rows={props.rows}
         data-testid={props.id}
-        aria-labelledby={props.id}
         {...register(props.formValue, {
           required: props.required,
         })}
         defaultValue={props.defaultValue ?? ""}
       />
-    </div>
+    </FieldWrapper>
   );
 }

@@ -13,7 +13,6 @@ describe("Button component", () => {
       <Button
         id="test-id"
         text="test-text-default"
-        href="/test-href"
         type={ButtonType.DEFAULT}
         handleClick={handleClick}
       />,
@@ -24,7 +23,6 @@ describe("Button component", () => {
       <Button
         id="test-id"
         text="test-text-default"
-        href="/test-href"
         type={ButtonType.DEFAULT}
         handleClick={handleClick}
       />,
@@ -39,7 +37,6 @@ describe("Button component", () => {
       <Button
         id="test-id"
         text="test-text-secondary"
-        href="/test-href"
         type={ButtonType.SECONDARY}
         handleClick={handleClick}
       />,
@@ -50,7 +47,6 @@ describe("Button component", () => {
       <Button
         id="test-id"
         text="test-text-secondary"
-        href="/test-href"
         type={ButtonType.SECONDARY}
         handleClick={handleClick}
       />,
@@ -65,7 +61,6 @@ describe("Button component", () => {
       <Button
         id="test-id"
         text="test-text-warning"
-        href="/test-href"
         type={ButtonType.WARNING}
         handleClick={handleClick}
       />,
@@ -76,7 +71,6 @@ describe("Button component", () => {
       <Button
         id="test-id"
         text="test-text-warning"
-        href="/test-href"
         type={ButtonType.WARNING}
         handleClick={handleClick}
       />,
@@ -91,7 +85,6 @@ describe("Button component", () => {
       <Button
         id="test-id"
         text="test-text-default"
-        href="/test-href"
         type={ButtonType.DEFAULT}
         handleClick={handleClick}
       />,

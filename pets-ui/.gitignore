@@ -29,3 +29,6 @@ coverage
 #Cypress Reports
 **/reports
 **/screenshots
+**/videos
+**/html
+**/downloads

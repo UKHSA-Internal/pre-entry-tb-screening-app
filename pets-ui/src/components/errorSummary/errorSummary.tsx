@@ -30,7 +30,6 @@ export default function ErrorSummary(props: Readonly<ErrorSummaryProps>) {
     <div
       className="govuk-error-summary"
       data-module="govuk-error-summary"
-      aria-labelledby="error-summary-title"
       tabIndex={-1}
       ref={setErrorSummaryRef}
       data-testid="error-summary"
