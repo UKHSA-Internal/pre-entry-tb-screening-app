@@ -12,6 +12,7 @@ import { context, mockAPIGwEvent } from "../../test/mocks/events";
 import { APPLICANT_PHOTOS_FOLDER } from "../helpers/upload";
 import {
   ChestXRayResult,
+  ImageType,
   MenstrualPeriods,
   PregnancyStatus,
   VisaOptions,
@@ -296,14 +297,15 @@ describe("Test for Application Lambda", () => {
         httpMethod: "PUT",
         body: JSON.stringify({
           fileName: fileName,
-          checksum: "",
+          checksum: "whatever",
+          imageType: ImageType.Photo,
         }),
       };
 
       // Act
       const response: APIGatewayProxyResult = await handler(event, context);
       expect(infologgerMock).toHaveBeenCalled();
-      expect(infologgerMock).toHaveBeenCalledWith("Image object key generated successfully");
+      expect(infologgerMock).toHaveBeenCalledWith("Validating Request Body");
       expect(errorloggerMock).not.toHaveBeenCalled();
 
       // Assert
