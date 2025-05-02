@@ -1,5 +1,3 @@
-import "./home-page.scss";
-
 import { useMsal } from "@azure/msal-react";
 
 import { loginRequest } from "@/auth/auth";

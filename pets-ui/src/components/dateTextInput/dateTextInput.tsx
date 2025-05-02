@@ -1,5 +1,3 @@
-import "./dateTextInput.scss";
-
 import { useEffect, useState } from "react";
 
 import { DateType } from "@/applicant";
@@ -109,7 +107,8 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
               className={dayMonthClass}
               id={`${props.id}-day`}
               data-testid={`${props.id}-day`}
-              type="string"
+              type="text"
+              inputMode="numeric"
               value={day || ""}
               onChange={handleDayChange}
             />
@@ -125,7 +124,8 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
               className={dayMonthClass}
               id={`${props.id}-month`}
               data-testid={`${props.id}-month`}
-              type="string"
+              type="text"
+              inputMode="numeric"
               value={month || ""}
               onChange={handleMonthChange}
             />
@@ -141,7 +141,8 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
               className={yearClass}
               id={`${props.id}-year`}
               data-testid={`${props.id}-year`}
-              type="string"
+              type="text"
+              inputMode="numeric"
               value={year || ""}
               onChange={handleYearChange}
             />

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { getDescribedBy } from "@/utils/getDescribedBy";
+
 import Heading, { HeadingSize } from "../heading/heading";
 
 // useFieldset is a key determinant of how labels/legends should be applied to meet accessibility requirements
@@ -31,15 +33,6 @@ export default function FieldWrapper({
 }: Readonly<FieldWrapperProps>) {
   const [errorText, setErrorText] = useState("");
   const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
-  let describedBy: string | undefined;
-
-  if (props.hint) {
-    describedBy = `${props.id}-hint`;
-  } else if (props.heading && props.label) {
-    describedBy = `${props.id}-label`;
-  } else {
-    describedBy = undefined;
-  }
 
   useEffect(() => {
     setErrorText(props.errorMessage);
@@ -47,13 +40,12 @@ export default function FieldWrapper({
   }, [props.errorMessage]);
 
   return (
-    <div
-      id={useFieldset ? props.id : `${props.id}-container`}
-      className={wrapperClass}
-      style={props.divStyle}
-    >
+    <div id={props.id} className={wrapperClass} style={props.divStyle}>
       {useFieldset ? (
-        <fieldset className="govuk-fieldset" aria-describedby={describedBy}>
+        <fieldset
+          className="govuk-fieldset"
+          aria-describedby={getDescribedBy(props.id, props.hint, props.heading, props.label)}
+        >
           <legend className="govuk-fieldset__legend">
             {props.heading ? (
               <Heading
@@ -91,10 +83,10 @@ export default function FieldWrapper({
               level={headingLevel}
               size={headingSize}
               style={{ marginBottom: 10, ...props.headingStyle }}
-              id={props.id}
+              id={`${props.id}-field`}
             />
           ) : (
-            <label className="govuk-label" htmlFor={props.id} style={labelStyle}>
+            <label className="govuk-label" htmlFor={`${props.id}-field`} style={labelStyle}>
               {props.label}
             </label>
           )}

@@ -1,5 +1,3 @@
-import "./error-page.scss";
-
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
