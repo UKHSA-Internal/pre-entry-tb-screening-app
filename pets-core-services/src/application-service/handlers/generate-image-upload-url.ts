@@ -1,6 +1,7 @@
 import { ChecksumAlgorithm, ServerSideEncryption } from "@aws-sdk/client-s3";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 import { Conditions } from "@aws-sdk/s3-presigned-post/dist-types/types";
+import path from "path";
 import { z } from "zod";
 
 import awsClients from "../../shared/clients/aws";
@@ -21,7 +22,13 @@ export type GenerateUploadEvent = PetsAPIGatewayProxyEvent & {
 const IMAGE_BUCKET = assertEnvExists(process.env.IMAGE_BUCKET);
 const SSE_KEY_ID = assertEnvExists(process.env.SSE_KEY_ID);
 const EXPIRY_TIME = 5 * 60; // 5 minutes
-const FILE_SIZE_PHOTO = 10 * 1024 * 1024; // 10MB
+const MAX_FILE_SIZE_PHOTO = 10 * 1024 * 1024; // 10MB
+// Mapping extensions to MIME types for applicant photo
+const mimeTypes: Record<string, string> = {
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".png": "image/png",
+};
 
 export const generateImageUploadUrlHandler = async (event: GenerateUploadEvent) => {
   try {
@@ -38,12 +45,22 @@ export const generateImageUploadUrlHandler = async (event: GenerateUploadEvent) 
       });
     }
     const imageType = parsedBody.imageType as ImageType;
+    let contentType = "application/octet-stream";
     if (imageType === ImageType.Photo) {
+      //validate fileName
+      const ext = path.extname(parsedBody.fileName).toLowerCase();
+      contentType = mimeTypes[ext];
+      if (!contentType) {
+        logger.error("Invalid file type. Only .jpg, .jpeg, and .png are allowed.");
+        return createHttpResponse(400, {
+          message: "Invalid file type. Only .jpg, .jpeg, and .png are allowed.",
+        });
+      }
       //can’t specify multiple exact values directly in a pre-signed POST
       // prefix-matching "image/" is the most effective solution for image/jpeg, image/png, etc
       fileRestrictions = [
-        ["starts-with", "$Content-Type", "image/"],
-        ["content-length-range", 0, FILE_SIZE_PHOTO],
+        ["starts-with", "$Content-Type", contentType],
+        ["content-length-range", 0, MAX_FILE_SIZE_PHOTO],
       ];
     }
     const applicant = await Applicant.getByApplicationId(applicationId);
@@ -66,7 +83,7 @@ export const generateImageUploadUrlHandler = async (event: GenerateUploadEvent) 
       Bucket: IMAGE_BUCKET,
       Key: objectKey,
       Fields: {
-        "Content-Type": "application/octet-stream",
+        "Content-Type": contentType,
         "x-amz-checksum-sha256": parsedBody.checksum,
         "x-amz-sdk-checksum-algorithm": ChecksumAlgorithm.SHA256,
         "x-amz-server-side-encryption": ServerSideEncryption.aws_kms,

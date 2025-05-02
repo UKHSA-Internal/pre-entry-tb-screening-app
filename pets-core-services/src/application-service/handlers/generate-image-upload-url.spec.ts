@@ -148,7 +148,7 @@ describe("Generating signed POST url for Photo Upload", () => {
       uploadUrl: "http://127.0.0.1:4566/IMAGE_BUCKET",
       bucketPath: "photos/Apollo Clinic/BRB/ABC1234JANE/generated-app-id-2/applicant-photo.jpg",
       fields: {
-        "Content-Type": "application/octet-stream",
+        "Content-Type": "image/jpeg",
         "x-amz-checksum-sha256": "test-checksum",
         "x-amz-sdk-checksum-algorithm": "SHA256",
         "x-amz-server-side-encryption": "aws:kms",
@@ -174,6 +174,27 @@ describe("Generating signed POST url for Photo Upload", () => {
     });
   });
 
+  test("400 error when flletype is not of jpg/jpeg/png", async () => {
+    const uploadImageInfo: ImageUploadUrlRequestSchema = {
+      fileName: "applicant-photo.txt",
+      checksum: "test-checksum",
+      imageType: ImageType.Photo,
+    };
+    const event: GenerateUploadEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+      parsedBody: uploadImageInfo,
+    };
+
+    // Act
+    const response = await generateImageUploadUrlHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Invalid file type. Only .jpg, .jpeg, and .png are allowed.",
+    });
+  });
   test("Local Environment", async () => {
     // Arrange
     process.env.ENVIRONMENT = "local";
