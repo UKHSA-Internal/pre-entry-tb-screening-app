@@ -20,7 +20,7 @@ export const ClinicSchema = z
     startDate: z.string().openapi({
       description: "Start Date of the Clinic",
     }),
-    endDate: z.string().optional().openapi({
+    endDate: z.union([z.string(), z.null()]).optional().openapi({
       description: "End Date of the Clinic",
     }),
     createdBy: z.string().openapi({
