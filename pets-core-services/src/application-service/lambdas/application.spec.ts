@@ -285,7 +285,7 @@ describe("Test for Application Lambda", () => {
       s3ClientMock.resetHistory();
     });
 
-    test("Saving applicant photo uccessfully", async () => {
+    test("Generating presigned url for applicant photo upload successfully", async () => {
       // Arrange;
       const infologgerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
       const errorloggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
