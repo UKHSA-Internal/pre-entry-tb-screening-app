@@ -11,9 +11,13 @@ describe("Load and validate Clinics from json file", () => {
 
   test("read incorrect file path", () => {
     const consoleMock = vi.spyOn(logger, "error").mockImplementation(() => undefined);
-    const res = readClinicsFile("fake-file.json");
+    const fileName = "fake-file.json";
+    const res = readClinicsFile(fileName);
     expect(consoleMock).toHaveBeenCalledOnce();
-    expect(consoleMock).toHaveBeenLastCalledWith("File reading error");
+    expect(consoleMock).toHaveBeenCalledWith(
+      "File reading error:",
+      Error(`ENOENT: no such file or directory, open '${process.cwd()}/${fileName}'`),
+    );
     expect(res).toBeUndefined();
   });
 

@@ -44,8 +44,8 @@ export const validateClinic = (obj: Record<string, string | null>): NewClinic | 
     name: name,
     country: country as CountryCode,
     city: city,
-    startDate: startDate ? startDate : new Date(),
-    endDate: endDate ? endDate : null,
+    startDate: startDate ?? new Date(),
+    endDate: endDate ?? null,
     createdBy: createdBy,
   } as NewClinic;
 };
@@ -88,9 +88,8 @@ export const readClinicsFile = (filePathString: string): string | void => {
     logger.info(`File data (from file): ${data.length}`);
 
     return data;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (err) {
-    logger.error(`File reading error`);
+    logger.error(`File reading error:`, err);
 
     return;
   }

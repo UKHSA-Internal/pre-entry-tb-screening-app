@@ -75,7 +75,6 @@ export class Clinic extends IClinic {
           details.startDate && typeof details.startDate == "string"
             ? new Date(details.startDate)
             : new Date(),
-        // TODO: if better validation is needed, then create function to properly check endDate value
         endDate: details.endDate ? new Date(details.endDate) : null,
       };
 
