@@ -23,7 +23,7 @@ import {
   setPosteroAnteriorXrayFileName,
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { ButtonType } from "@/utils/enums";
+import { ButtonType, ImageType } from "@/utils/enums";
 
 const FileUploadModule = (
   props: Readonly<{
@@ -126,6 +126,7 @@ const ChestXrayForm = () => {
     const { data } = await generateDicomUploadUrl(applicationData.applicationId, {
       fileName: bucketFileName,
       checksum: await computeBase64SHA256(file),
+      imageType: ImageType.Dicom,
     });
 
     const { uploadUrl, bucketPath, fields } = data;

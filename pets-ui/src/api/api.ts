@@ -115,7 +115,7 @@ export const generateDicomUploadUrl = async (
   dicomDetails: GenerateDicomUploadUrlRequest,
 ) => {
   const result = await petsApi.put(
-    `/application/${applicationId}/generate-dicom-upload-url`,
+    `/application/${applicationId}/generate-image-upload-url`,
     dicomDetails,
   );
   return result as AxiosResponse<GenerateDicomUploadUrlResponse>;
