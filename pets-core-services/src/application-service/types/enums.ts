@@ -55,3 +55,8 @@ export enum ChestXRayResult {
   NonTbAbnormal = "Non-TB abnormality",
   OldActive = "Old or active TB",
 }
+
+export enum ImageType {
+  Dicom = "Dicom",
+  Photo = "Photo",
+}
