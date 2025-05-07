@@ -61,7 +61,7 @@ describe("Get active Clinic", () => {
     const res = await checkActiveClinicHandler({ ...mockEvent });
 
     expect(consoleMock).toHaveBeenCalledOnce();
-    expect(consoleMock).toHaveBeenCalledWith("Fetching Active Clinics Failed:", "Err0R");
+    expect(consoleMock).toHaveBeenCalledWith("Checking Active Clinics Failed:", "Err0R");
     expect(JSON.parse(res.body)).toMatchObject({ message: "Something went wrong" });
     expect(res.statusCode).toBe(500);
   });

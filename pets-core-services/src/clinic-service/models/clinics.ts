@@ -152,7 +152,7 @@ export class Clinic extends IClinic {
       const command = new ScanCommand(params);
       const data: ScanCommandOutput = await docClient.send(command);
 
-      if (!data || !data?.Items) {
+      if (!data?.Items) {
         logger.info("No clinics found");
         return [];
       }
@@ -193,7 +193,7 @@ export class Clinic extends IClinic {
 
       const data: ScanCommandOutput = await docClient.send(command);
 
-      if (!data || !data?.Items || data?.Items?.length == 0) {
+      if (data?.Items?.length == 0) {
         logger.info("No active clinics found");
 
         return [];
@@ -238,22 +238,18 @@ export class Clinic extends IClinic {
       const command = new QueryCommand(params);
       const data: QueryCommandOutput = await docClient.send(command);
 
-      if (data?.Items) {
-        // Different log messages for different conditions
-        if (data.Items.length > 1) {
-          logger.error(`Retrieved more than 1 clinic with the same clinicId`);
-
-          return false;
-        } else if (data.Items.length == 1) {
-          logger.info("The clinic is active");
-
-          return true;
-        }
+      if (!data?.Items?.length) {
+        logger.error("No active clinic found");
+        return false;
       }
-      // This is when there's no data.Items, or data.Items.length == 0
-      logger.info(`No active clinic found`);
 
-      return false;
+      if (data?.Items?.length > 1) {
+        logger.error(`Retrieved more than 1 clinic with the same clinicId`);
+        return false;
+      }
+
+      logger.info("The clinic is active");
+      return true;
     } catch (error) {
       logger.error(error, `Error retrieving the active clinic with 'clinicId': ${clinicId}`);
       throw error;

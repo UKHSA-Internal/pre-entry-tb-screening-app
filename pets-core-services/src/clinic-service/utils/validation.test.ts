@@ -104,7 +104,9 @@ describe("Load and validate Clinics from json file", () => {
     const res = validateClinic(fakeClinic);
 
     expect(consoleMock).toHaveBeenCalledOnce();
-    expect(consoleMock).toHaveBeenLastCalledWith("Clinic object missing required attribute");
+    expect(consoleMock).toHaveBeenLastCalledWith(
+      "Clinic object missing required attribute: clinicId",
+    );
     expect(res).toBeUndefined();
   });
 
@@ -122,7 +124,7 @@ describe("Load and validate Clinics from json file", () => {
     const res = validateClinic(fakeClinic);
 
     expect(consoleMock).toHaveBeenCalledOnce();
-    expect(consoleMock).toHaveBeenLastCalledWith("Clinic object missing required attribute");
+    expect(consoleMock).toHaveBeenLastCalledWith("Clinic object missing required attribute: name");
     expect(res).toBeUndefined();
   });
 
@@ -139,7 +141,7 @@ describe("Load and validate Clinics from json file", () => {
     const res = validateClinic(fakeClinic);
 
     expect(consoleMock).toHaveBeenCalledOnce();
-    expect(consoleMock).toHaveBeenLastCalledWith("Clinic object missing required attribute");
+    expect(consoleMock).toHaveBeenLastCalledWith("Clinic object missing required attribute: city");
     expect(res).toBeUndefined();
   });
 
@@ -175,7 +177,9 @@ describe("Load and validate Clinics from json file", () => {
     const res = validateClinic(fakeClinic);
 
     expect(consoleMock).toHaveBeenCalledOnce();
-    expect(consoleMock).toHaveBeenLastCalledWith("Clinic object missing required attribute");
+    expect(consoleMock).toHaveBeenLastCalledWith(
+      "Clinic object missing required attribute: startDate",
+    );
     expect(res).toBeUndefined();
   });
 
@@ -213,7 +217,9 @@ describe("Load and validate Clinics from json file", () => {
     };
     const res = validateClinic(fakeClinic);
 
-    expect(consoleMock).toHaveBeenLastCalledWith(`Failed to convert startDate: ${badDateString}`);
+    expect(consoleMock).toHaveBeenLastCalledWith(
+      `Invalid or too early startDate: ${badDateString}`,
+    );
     expect(res).toBeUndefined();
   });
 });

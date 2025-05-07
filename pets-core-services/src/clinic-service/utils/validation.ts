@@ -8,33 +8,33 @@ import { NewClinic } from "../models/clinics";
 export const validateClinic = (obj: Record<string, string | null>): NewClinic | void => {
   // Checking if all required attributes are present
   const { clinicId, name, country, city, startDate, endDate, createdBy } = obj;
+  const requiredFields = { clinicId, name, country, city, startDate, createdBy };
 
   // All these should have some values
-  if (!clinicId || !name || !country || !city || !startDate || !createdBy) {
-    logger.error(`Clinic object missing required attribute`);
+  for (const [key, value] of Object.entries(requiredFields)) {
+    if (!value) {
+      logger.error(`Clinic object missing required attribute: ${key}`);
+      return;
+    }
+  }
 
-    return;
-    // Can startDate for a clinic be from before 2024-01-01?
-  } else if (
-    startDate &&
-    (Number.isNaN(new Date(startDate).getDate()) || new Date(startDate) < new Date("2024-01-01"))
-  ) {
-    logger.error(`Failed to convert startDate: ${startDate}`);
+  const parsedStartDate = new Date(startDate!);
 
+  if (isNaN(parsedStartDate.getDate()) || parsedStartDate < new Date("2024-01-01")) {
+    logger.error(`Invalid or too early startDate: ${startDate}`);
     return;
-    // If endDate have a value, then it has te be possible to convert it to Date
-  } else if (
-    endDate &&
-    (Number.isNaN(new Date(endDate).getDate()) || new Date(endDate) < new Date(startDate))
-  ) {
+  }
+
+  if (endDate && (isNaN(new Date(endDate).getDate()) || new Date(endDate) < parsedStartDate)) {
     logger.error(`Failed to validate endDate: ${endDate}`);
 
     return;
   }
+
   const countries = Object(CountryCode) as CountryCode;
 
   // Checking if country is one of CountryCode keys
-  if (Object.keys(countries).indexOf(country) < 0) {
+  if (Object.keys(countries).indexOf(country as string) < 0) {
     logger.error(`Can't convert to CountyCode: ${country}`);
 
     return;

@@ -44,11 +44,13 @@ describe("Test for Clinic Lambda", () => {
 
     // Act
     const response: APIGatewayProxyResult = await handler(event, context);
+    const parsedResponse = JSON.parse(response.body) as { body: string };
+    const parsedBody = JSON.parse(parsedResponse.body) as NewClinic[];
 
     // Assert
     expect(response.statusCode).toBe(200);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    expect(JSON.parse(JSON.parse(response.body)?.body as string)).toMatchObject({
+
+    expect(parsedBody).toMatchObject({
       ...clinicDetails[0],
     });
   });

@@ -13,7 +13,7 @@ export const checkActiveClinicHandler = async (event: APIGatewayProxyEvent) => {
     const isActive: boolean = await Clinic.isActiveClinic(clinicId);
     return createHttpResponse(200, JSON.stringify({ isActive: isActive }));
   } catch (error) {
-    logger.error("Fetching Active Clinics Failed:", error);
+    logger.error("Checking Active Clinics Failed:", error);
 
     return createHttpResponse(500, { message: "Something went wrong" });
   }
