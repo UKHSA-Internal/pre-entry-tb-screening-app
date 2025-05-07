@@ -4,7 +4,7 @@ import { CountryCode } from "../../shared/country";
 import { Applicant } from "../../shared/models/applicant";
 import { ImageHelper } from "../helpers/image-helper";
 import { generateImageObjectkey } from "../helpers/upload";
-import { ApplicantPhoto } from "./applicant-photo";
+import { ApplicantPhoto, IApplicantPhoto } from "./applicant-photo";
 
 // Mock direct dependencies
 vi.mock("../../shared/models/applicant", () => ({
@@ -29,7 +29,6 @@ const clinicId = "clinic-456";
 const objectKey = "photos/applicant-1/app-123.jpg";
 // Type-safe access to mocked modules
 const mockedApplicant = vi.mocked(Applicant);
-// const mockedImageHelper = vi.mocked(ImageHelper);
 const mockedGenerateImageObjectkey = vi.mocked(generateImageObjectkey, true); // true = function
 
 describe("ApplicantPhoto.getByApplicationId", () => {
@@ -38,8 +37,6 @@ describe("ApplicantPhoto.getByApplicationId", () => {
   });
 
   it("returns base64 image when all steps succeed", async () => {
-    // (Applicant.getByApplicationId as vi.Mock).mockResolvedValue(mockApplicant);
-    // (generateImageObjectkey as vi.Mock).mockReturnValue(objectKey);
     mockedApplicant.getByApplicationId.mockResolvedValue(mockApplicant);
     mockedGenerateImageObjectkey.mockReturnValue(objectKey);
 
@@ -47,7 +44,6 @@ describe("ApplicantPhoto.getByApplicationId", () => {
 
     const result = await ApplicantPhoto.getByApplicationId(applicationId, clinicId);
 
-    // expect(Applicant.getByApplicationId(applicationId)).toHaveBeenCalledWith(applicationId);
     expect(generateImageObjectkey).toHaveBeenCalledWith({
       applicant: mockApplicant,
       clinicId,
@@ -69,7 +65,6 @@ describe("ApplicantPhoto.getByApplicationId", () => {
   it("returns undefined if image not found", async () => {
     mockedApplicant.getByApplicationId.mockResolvedValue(mockApplicant);
     mockedGenerateImageObjectkey.mockReturnValue(objectKey);
-    // mockedImageHelper.fetchImageAsBase64.mockResolvedValue(null);
 
     vi.spyOn(ImageHelper, "fetchImageAsBase64").mockResolvedValue(null);
 
@@ -86,5 +81,17 @@ describe("ApplicantPhoto.getByApplicationId", () => {
     await expect(ApplicantPhoto.getByApplicationId(applicationId, clinicId)).rejects.toThrow(
       "S3 error",
     );
+  });
+});
+
+// Dummy subclass just for testing constructor
+class TestPhoto extends IApplicantPhoto {}
+
+describe("IApplicantPhoto constructor", () => {
+  it("should assign applicantPhoto from details object", () => {
+    const mockPhoto = "base64encodedimage";
+    const testInstance = new TestPhoto({ applicantPhoto: mockPhoto });
+
+    expect(testInstance.applicantPhoto).toBe(mockPhoto);
   });
 });

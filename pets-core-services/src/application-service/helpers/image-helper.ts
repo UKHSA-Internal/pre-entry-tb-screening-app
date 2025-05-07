@@ -28,7 +28,7 @@ export class ImageHelper {
       const listResult = await s3Client.send(listCommand);
       const object = listResult.Contents?.[0];
 
-      if (!object || !object.Key) {
+      if (!object?.Key) {
         logger.error("No image found under the specified prefix.");
         return null;
       }
