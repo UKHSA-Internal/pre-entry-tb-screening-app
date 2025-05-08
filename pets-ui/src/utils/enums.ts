@@ -24,3 +24,8 @@ export enum YesOrNo {
   NO = "No",
   NULL = "",
 }
+
+export enum FileType {
+  dicom = "dicom",
+  photo = "photo",
+}

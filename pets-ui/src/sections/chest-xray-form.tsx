@@ -23,15 +23,15 @@ import {
   setPosteroAnteriorXrayFileName,
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { ButtonType } from "@/utils/enums";
+import { ButtonType, FileType } from "@/utils/enums";
 
-const FileUploadModule = (
+const DicomUploadModule = (
   props: Readonly<{
     id: string;
     name: string;
     caption?: string;
     required: boolean;
-    errors: FieldErrors<ReduxChestXrayDetailsType>;
+    errors?: FieldErrors<ReduxChestXrayDetailsType>;
     accept?: string;
     maxSize?: number;
     formValue: string;
@@ -75,10 +75,9 @@ const FileUploadModule = (
                 props.required ? `Select a ${props.name.toLowerCase()} X-ray image file` : false
               }
               errorMessage={
-                props.errors[props.formValue as keyof ReduxChestXrayDetailsType]?.message ?? ""
+                props.errors?.[props.formValue as keyof ReduxChestXrayDetailsType]?.message ?? ""
               }
-              accept={props.accept}
-              maxSize={props.maxSize}
+              type={FileType.dicom}
               setFileState={props.setFileState}
               setFileName={props.setFileName}
               existingFileName={props.existingFileName}
@@ -201,21 +200,21 @@ const ChestXrayForm = () => {
             <ApplicantDataHeader applicantData={applicantData} />
 
             <div ref={paXray}>
-              <FileUploadModule
+              <DicomUploadModule
                 id="postero-anterior-xray"
                 name="Postero-anterior"
                 formValue="posteroAnteriorXrayFileName"
                 caption="Postero-anterior X-ray"
                 setFileState={setPAFile}
                 setFileName={setPAFileName}
-                required={!chestXrayData.posteroAnteriorXrayFile}
+                required={true}
                 errors={errors}
                 existingFileName={chestXrayData.posteroAnteriorXrayFileName}
               />
             </div>
 
             <div ref={alXray}>
-              <FileUploadModule
+              <DicomUploadModule
                 id="apical-lordotic-xray"
                 caption="Apical lordotic X-ray (optional)"
                 formValue="apicalLordoticXrayFileName"
@@ -223,13 +222,12 @@ const ChestXrayForm = () => {
                 setFileState={setALFile}
                 setFileName={setALFileName}
                 required={false}
-                errors={errors}
                 existingFileName={chestXrayData.apicalLordoticXrayFileName}
               />
             </div>
 
             <div ref={ldXray}>
-              <FileUploadModule
+              <DicomUploadModule
                 id="lateral-decubitus-xray"
                 caption="Lateral decubitus X-ray (optional)"
                 formValue="lateralDecubitusXrayFileName"
@@ -237,7 +235,6 @@ const ChestXrayForm = () => {
                 setFileState={setLDFile}
                 setFileName={setLDFileName}
                 required={false}
-                errors={errors}
                 existingFileName={chestXrayData.lateralDecubitusXrayFileName}
               />
             </div>

@@ -195,6 +195,9 @@ importers:
       axios:
         specifier: ^1.8.3
         version: 1.8.3
+      dicom-parser:
+        specifier: ^1.8.21
+        version: 1.8.21
       govuk-frontend:
         specifier: ^5.7.1
         version: 5.7.1
@@ -2614,6 +2617,9 @@ packages:
     resolution: {integrity: sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg==}
     engines: {node: '>=0.10'}
     hasBin: true
+
+  dicom-parser@1.8.21:
+    resolution: {integrity: sha512-lYCweHQDsC8UFpXErPlg86Px2A8bay0HiUY+wzoG3xv5GzgqVHU3lziwSc/Gzn7VV7y2KeP072SzCviuOoU02w==}
 
   diff@4.0.2:
     resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
@@ -8749,6 +8755,8 @@ snapshots:
 
   detect-libc@1.0.3:
     optional: true
+
+  dicom-parser@1.8.21: {}
 
   diff@4.0.2: {}
 

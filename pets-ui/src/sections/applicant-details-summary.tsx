@@ -46,7 +46,10 @@ const ApplicantReview = () => {
         provinceOrState: applicantData.provinceOrState,
         country: applicantData.country,
         postcode: applicantData.postcode,
+        // applicantPhotoFile:
+        // applicantPhotoFileName: applicantData.applicantPhotoFileName,
       });
+      // await postApplicantPhoto(...);
 
       dispatch(setApplicantDetailsStatus(ApplicationStatus.COMPLETE));
       navigate("/applicant-confirmation");
@@ -149,6 +152,13 @@ const ApplicantReview = () => {
       link: `/contact#${attributeToComponentId.postcode}`,
       hiddenLabel: "postcode",
       emptyValueText: "Enter postcode (optional)",
+    },
+    {
+      key: "Photo",
+      value: applicantData.applicantPhotoFileName,
+      link: "/applicant-photo",
+      hiddenLabel: "applicant photo",
+      emptyValueText: "Upload visa applicant photo (optional)",
     },
   ];
 

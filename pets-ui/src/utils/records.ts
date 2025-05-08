@@ -16,6 +16,7 @@ const attributeToComponentId: { [key: string]: string } = {
   provinceOrState: "province-or-state",
   country: "address-country",
   postcode: "postcode",
+  applicantPhotoFileName: "applicant-photo",
   visaType: "visa-type",
   applicantUkAddress1: "address-1",
   applicantUkAddress2: "address-2",

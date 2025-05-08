@@ -50,6 +50,8 @@ type ReduxApplicantDetailsType = {
   provinceOrState: string;
   country: string;
   postcode?: string;
+  applicantPhotoFileName?: string;
+  applicantPhotoFile?: string;
 };
 
 type PostedApplicantDetailsType = {
@@ -68,6 +70,8 @@ type PostedApplicantDetailsType = {
   provinceOrState: string;
   country: string;
   postcode?: string;
+  applicantPhotoFileName?: string;
+  applicantPhotoFile?: string;
 };
 
 type ReceivedApplicantDetailsType = PostedApplicantDetailsType & ReceivedApplicationAttributesType;
