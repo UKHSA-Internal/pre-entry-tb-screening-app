@@ -1,9 +1,7 @@
-import axios from "axios";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { generateDicomUploadUrl } from "@/api/api";
 import { ReduxChestXrayDetailsType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
@@ -24,6 +22,7 @@ import {
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType, ImageType } from "@/utils/enums";
+import uploadFile from "@/utils/uploadFile";
 
 const DicomUploadModule = (
   props: Readonly<{
@@ -32,8 +31,6 @@ const DicomUploadModule = (
     caption?: string;
     required: boolean;
     errors?: FieldErrors<ReduxChestXrayDetailsType>;
-    accept?: string;
-    maxSize?: number;
     formValue: string;
     setFileState: Dispatch<SetStateAction<File | undefined>>;
     setFileName: Dispatch<SetStateAction<string | undefined>>;
@@ -89,14 +86,6 @@ const DicomUploadModule = (
   );
 };
 
-async function computeBase64SHA256(file: File) {
-  const arrayBuffer = await file.arrayBuffer();
-  const hashBuffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hash = btoa(String.fromCharCode(...hashArray));
-  return hash;
-}
-
 const ChestXrayForm = () => {
   const applicantData = useAppSelector(selectApplicant);
   const chestXrayData = useAppSelector(selectChestXray);
@@ -113,7 +102,9 @@ const ChestXrayForm = () => {
   const [ALFileName, setALFileName] = useState<string>();
   const [LDFileName, setLDFileName] = useState<string>();
 
-  const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxChestXrayDetailsType>({
+    criteriaMode: "all",
+  });
   const {
     handleSubmit,
     formState: { errors },
@@ -121,45 +112,38 @@ const ChestXrayForm = () => {
 
   const errorsToShow = Object.keys(errors);
 
-  const uploadFile = async (file: File, bucketFileName: string) => {
-    const { data } = await generateDicomUploadUrl(applicationData.applicationId, {
-      fileName: bucketFileName,
-      checksum: await computeBase64SHA256(file),
-      imageType: ImageType.Dicom,
-    });
-
-    const { uploadUrl, bucketPath, fields } = data;
-
-    const form = new FormData();
-    Object.entries(fields).forEach(([field, value]) => {
-      form.append(field, value);
-    });
-    form.append("file", file);
-
-    await axios.post(uploadUrl, form, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-
-    return bucketPath;
-  };
-
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = async () => {
     setIsLoading(true);
 
     if (PAFile && PAFileName) {
-      const bucketPath = await uploadFile(PAFile, "postero-anterior.dcm");
+      const bucketPath = await uploadFile(
+        PAFile,
+        "postero-anterior.dcm",
+        applicationData.applicationId,
+        ImageType.Dicom,
+      );
       dispatch(setPosteroAnteriorXrayFile(bucketPath));
       dispatch(setPosteroAnteriorXrayFileName(PAFileName));
     }
 
     if (ALFile && ALFileName) {
-      const bucketPath = await uploadFile(ALFile, "apical-lordotic.dcm");
+      const bucketPath = await uploadFile(
+        ALFile,
+        "apical-lordotic.dcm",
+        applicationData.applicationId,
+        ImageType.Dicom,
+      );
       dispatch(setApicalLordoticXrayFile(bucketPath));
       dispatch(setApicalLordoticXrayFileName(ALFileName));
     }
 
     if (LDFile && LDFileName) {
-      const bucketPath = await uploadFile(LDFile, "lateral-decubitus.dcm");
+      const bucketPath = await uploadFile(
+        LDFile,
+        "lateral-decubitus.dcm",
+        applicationData.applicationId,
+        ImageType.Dicom,
+      );
       dispatch(setLateralDecubitusXrayFile(bucketPath));
       dispatch(setLateralDecubitusXrayFileName(LDFileName));
     }

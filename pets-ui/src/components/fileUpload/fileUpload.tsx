@@ -20,7 +20,7 @@ export interface FileUploadProps {
 }
 
 export default function FileUpload(props: Readonly<FileUploadProps>) {
-  const { register, setError, clearErrors, formState } = useFormContext();
+  const { register, clearErrors } = useFormContext();
   const [errorText, setErrorText] = useState("");
   const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
   const [showExistingFileName, setShowExistingFileName] = useState(
@@ -38,28 +38,19 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
     }
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     props.setFileState(undefined);
     props.setFileName(undefined);
-    clearErrors(props.formValue);
 
-    const files = e.target.files ? Array.from(e.target.files) : [];
-    const validation = await validateFiles(files, props.type);
+    if (e.target.files) {
+      const files = e.target.files;
+      setShowExistingFileName(false);
 
-    if (validation.errors.length > 0) {
-      // Show only the first error
-      const message = validation.errors[0].message;
-      setError(props.formValue, { type: "validate", message });
-      displayError(message);
-
-      return validation.errors;
+      props.setFileState(files[0]);
+      props.setFileName(files[0].name);
+      clearErrors(props.formValue);
+      displayError(null);
     }
-
-    // No validation errors
-    displayError(null);
-    setShowExistingFileName(false);
-    props.setFileState(files[0]);
-    props.setFileName(files[0].name);
   };
 
   useEffect(() => {
@@ -89,8 +80,16 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
                 data-testid={props.id}
                 {...register(props.formValue, {
                   required: props.required,
-                  validate: {
-                    noFileErrors: () => !formState.errors[props.formValue],
+                  validate: async (files: File[]) => {
+                    if (files.length) {
+                      const validationResult = await validateFiles(files, props.type);
+                      if (validationResult !== true) {
+                        // Show only the first error
+                        const message = validationResult[0];
+                        displayError(message);
+                        return message;
+                      }
+                    }
                   },
                 })}
                 onChange={(e) => handleFileChange(e)}

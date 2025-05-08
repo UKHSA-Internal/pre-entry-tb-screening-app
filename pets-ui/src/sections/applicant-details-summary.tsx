@@ -5,12 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { createNewApplication, postApplicantDetails } from "@/api/api";
 import Button from "@/components/button/button";
 import Summary from "@/components/summary/summary";
+import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { selectApplicant, setApplicantDetailsStatus } from "@/redux/applicantSlice";
 import { setApplicationDetails } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus, ButtonType, ImageType } from "@/utils/enums";
 import { standardiseDayOrMonth } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
+import uploadFile from "@/utils/uploadFile";
 
 import Spinner from "../components/spinner/spinner";
 
@@ -20,6 +22,8 @@ const ApplicantReview = () => {
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const { applicantPhotoFile } = useApplicantPhoto();
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -46,10 +50,17 @@ const ApplicantReview = () => {
         provinceOrState: applicantData.provinceOrState,
         country: applicantData.country,
         postcode: applicantData.postcode,
-        // applicantPhotoFile:
-        // applicantPhotoFileName: applicantData.applicantPhotoFileName,
       });
-      // await postApplicantPhoto(...);
+
+      // Upload applicant photo if it exists
+      if (applicantData.applicantPhotoFileName && applicantPhotoFile) {
+        await uploadFile(
+          applicantPhotoFile,
+          applicantData.applicantPhotoFileName,
+          applicationRes.data.applicationId,
+          ImageType.Photo,
+        );
+      }
 
       dispatch(setApplicantDetailsStatus(ApplicationStatus.COMPLETE));
       navigate("/applicant-confirmation");

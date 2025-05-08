@@ -2,15 +2,7 @@ import dicomParser from "dicom-parser";
 
 import { ImageType } from "./enums";
 
-export type ValidationType = {
-  isValid: boolean;
-  fileName: string;
-  message: string;
-};
-
-export type ValidationResult = {
-  errors: ValidationType[];
-};
+export type ValidationResult = string[] | true;
 
 export const getImageType = (file: File): "Photo" | "Dicom" | undefined => {
   const photoFile =
@@ -48,81 +40,53 @@ const isPhotoValid = (file: File): Promise<boolean> => {
 };
 
 const validateFiles = async (files: File[], type: ImageType): Promise<ValidationResult> => {
-  const errors: ValidationType[] = [];
+  const errors: ValidationResult = [];
 
   const maxPhotoBytes = 10 * 1024 * 1024;
   const maxDicomBytes = 50 * 1024 * 1024;
 
-  await Promise.all(
-    files.map(async (file) => {
-      const imageType = getImageType(file);
-      const fileSize = file.size;
+  const file = files[0];
 
-      // Check file type is supported
-      if (type === ImageType.Dicom && imageType !== "Dicom") {
-        errors.push({
-          isValid: false,
-          fileName: file.name,
-          message: "The selected file must be a DICOM file",
-        });
-      } else if (type === ImageType.Photo && imageType !== "Photo") {
-        errors.push({
-          isValid: false,
-          fileName: file.name,
-          message: "The selected file must be a JPG, JPEG or PNG",
-        });
-      }
+  const imageType = getImageType(file);
+  const fileSize = file.size;
 
-      // Check file size
-      if (imageType === ImageType.Dicom && fileSize > maxDicomBytes) {
-        errors.push({
-          isValid: false,
-          fileName: file.name,
-          message: "The selected file must be smaller than 50MB",
-        });
-      } else if (imageType === ImageType.Photo && fileSize > maxPhotoBytes) {
-        errors.push({
-          isValid: false,
-          fileName: file.name,
-          message: "The selected file must be smaller than 10MB",
-        });
-      }
+  // Check file type is supported
+  if (type === ImageType.Dicom && imageType !== "Dicom") {
+    errors.push("The selected file must be a DICOM file");
+  } else if (type === ImageType.Photo && imageType !== "Photo") {
+    errors.push("The selected file must be a JPG, JPEG or PNG");
+  }
 
-      // Check if file is empty
-      if (fileSize === 0) {
-        errors.push({
-          isValid: false,
-          fileName: file.name,
-          message: "The selected file is empty",
-        });
-      }
+  // Check file size
+  if (imageType === ImageType.Dicom && fileSize > maxDicomBytes) {
+    errors.push("The selected file must be smaller than 50MB");
+  } else if (imageType === ImageType.Photo && fileSize > maxPhotoBytes) {
+    errors.push("The selected file must be smaller than 10MB");
+  }
 
-      // Check if files are valid format
-      if (imageType === ImageType.Dicom) {
-        const isValidDicom = await isDicomValid(file);
-        if (!isValidDicom) {
-          errors.push({
-            isValid: false,
-            fileName: file.name,
-            message: "The selected file is password protected or is an invalid DICOM file",
-          });
-        }
-      } else if (imageType === ImageType.Photo) {
-        const isValidPhoto = await isPhotoValid(file);
-        if (!isValidPhoto) {
-          errors.push({
-            isValid: false,
-            fileName: file.name,
-            message: "The selected file is an invalid JPG, JPEG or PNG file",
-          });
-        }
-      }
-    }),
-  );
+  // Check if file is empty
+  if (fileSize === 0) {
+    errors.push("The selected file is empty");
+  }
 
-  return {
-    errors,
-  };
+  // Check if files are valid format
+  if (imageType === ImageType.Dicom) {
+    const isValidDicom = await isDicomValid(file);
+    if (!isValidDicom) {
+      errors.push("The selected file is password protected or is an invalid DICOM file");
+    }
+  } else if (imageType === ImageType.Photo) {
+    const isValidPhoto = await isPhotoValid(file);
+    if (!isValidPhoto) {
+      errors.push("The selected file is an invalid JPG, JPEG or PNG file");
+    }
+  }
+
+  if (errors.length > 0) {
+    return errors;
+  } else {
+    return true;
+  }
 };
 
 export default validateFiles;

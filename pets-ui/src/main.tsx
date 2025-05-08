@@ -9,6 +9,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import App from "./App.tsx";
 import { initializeMsal } from "./auth/auth.ts";
 import { ErrorFallback } from "./components/errorFallback/errorFallback.tsx";
+import { ApplicantPhotoProvider } from "./context/applicantPhotoContext.tsx";
 import { setupStore } from "./redux/store.ts";
 import { logError } from "./utils/helpers.ts";
 
@@ -21,7 +22,9 @@ initializeMsal().then((msalInstance) => {
           <StrictMode>
             <Router>
               <MsalProvider instance={msalInstance}>
-                <App />
+                <ApplicantPhotoProvider>
+                  <App />
+                </ApplicantPhotoProvider>
               </MsalProvider>
             </Router>
           </StrictMode>

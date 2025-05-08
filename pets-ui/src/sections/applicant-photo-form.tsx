@@ -8,12 +8,14 @@ import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FileUpload from "@/components/fileUpload/fileUpload";
 import Heading from "@/components/heading/heading";
 import SubmitButton from "@/components/submitButton/submitButton";
+import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { selectApplicant, setApplicantPhotoFileName } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType, ImageType } from "@/utils/enums";
 
 const ApplicantPhotoForm = () => {
   const applicantData = useAppSelector(selectApplicant);
+  const { setApplicantPhotoFile } = useApplicantPhoto();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -36,8 +38,7 @@ const ApplicantPhotoForm = () => {
     // save only file name in redux
     if (applicantPhoto && applicantPhotoName) {
       dispatch(setApplicantPhotoFileName(applicantPhotoName));
-      // const formData = new FormData();
-      // formData.append("image", applicantPhoto);
+      setApplicantPhotoFile(applicantPhoto);
     }
 
     navigate("/applicant-summary");
