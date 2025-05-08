@@ -9,7 +9,7 @@ import { describe, expect, it, Mock } from "vitest";
 import { petsApi } from "@/api/api";
 import ChestXrayUploadPage from "@/pages/chest-xray-upload";
 import ChestXrayForm from "@/sections/chest-xray-form";
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, ImageType, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -98,7 +98,7 @@ describe("ChestXrayForm Section", () => {
     const defaultAxiosMock = new MockAdapter(axios);
 
     const uploadUrl = "localhost:4567";
-    petsApiMock.onPut("/application/abc-123/generate-dicom-upload-url").reply(200, {
+    petsApiMock.onPut("/application/abc-123/generate-image-upload-url").reply(200, {
       uploadUrl,
       bucketPath: "test/bucket/path",
       fields: { example: "fields" },
@@ -148,6 +148,7 @@ describe("ChestXrayForm Section", () => {
       JSON.stringify({
         fileName: "postero-anterior.dcm",
         checksum: "pZzpJIWoY5Ma8hNwtQguuKDCWMHNdK4GjbCtR66sE0Q=",
+        imageType: ImageType.Dicom,
       }),
     );
 
@@ -155,6 +156,7 @@ describe("ChestXrayForm Section", () => {
       JSON.stringify({
         fileName: "apical-lordotic.dcm",
         checksum: "pZzpJIWoY5Ma8hNwtQguuKDCWMHNdK4GjbCtR66sE0Q=",
+        imageType: ImageType.Dicom,
       }),
     );
 
@@ -162,6 +164,7 @@ describe("ChestXrayForm Section", () => {
       JSON.stringify({
         fileName: "lateral-decubitus.dcm",
         checksum: "pZzpJIWoY5Ma8hNwtQguuKDCWMHNdK4GjbCtR66sE0Q=",
+        imageType: ImageType.Dicom,
       }),
     );
 

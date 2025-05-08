@@ -247,16 +247,19 @@ export const ApplicationSchema = z.object({
   tbCertificate: TbCertificateResponseSchema,
 });
 
-export const DicomUploadUrlRequestSchema = z.object({
+export const ImageUploadUrlRequestSchema = z.object({
   fileName: z.string().openapi({
     description: "Name of file on S3",
   }),
   checksum: z.string().openapi({
     description: "Checksum of file",
   }),
+  imageType: z.string().openapi({
+    description: "Type of image being uploaded : Dicom/Photo",
+  }),
 });
 
-export const DicomUploadUrlResponseSchema = z.object({
+export const ImageUploadUrlResponseSchema = z.object({
   uploadUrl: z.string().openapi({
     description: "The upload url",
   }),
@@ -265,5 +268,20 @@ export const DicomUploadUrlResponseSchema = z.object({
   }),
   fields: z.record(z.string(), z.string()).openapi({
     description: "Required fields in file upload request",
+  }),
+});
+
+export const ApplicantPhotoRequestSchema = z.object({
+  applicantPhotoKey: z.string().openapi({
+    description: "S3 Bucket Object key for Applicant photo",
+  }),
+});
+
+export const ApplicantPhotoResponseSchema = ApplicantPhotoRequestSchema.extend({
+  dateCreated: z.string().date().openapi({
+    description: "Creation Date in UTC timezone",
+  }),
+  status: z.nativeEnum(TaskStatus).openapi({
+    description: "Status of Task",
   }),
 });

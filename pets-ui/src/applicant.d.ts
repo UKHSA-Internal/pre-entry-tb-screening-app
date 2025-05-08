@@ -1,4 +1,4 @@
-import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "./utils/enums";
+import { ApplicationStatus, BackendApplicationStatus, ImageType, YesOrNo } from "./utils/enums";
 
 // Misc types
 type ApplicantSearchFormType = {
@@ -212,6 +212,7 @@ type ReceivedTbCertificateNotIssuedType = PostedTbCertificateNotIssuedType &
 type GenerateDicomUploadUrlRequest = {
   fileName: string;
   checksum?: string;
+  imageType: ImageType;
 };
 
 type GenerateDicomUploadUrlResponse = {

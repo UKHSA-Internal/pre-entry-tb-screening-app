@@ -125,6 +125,7 @@ const ChestXrayForm = () => {
     const { data } = await generateDicomUploadUrl(applicationData.applicationId, {
       fileName: bucketFileName,
       checksum: await computeBase64SHA256(file),
+      imageType: ImageType.Dicom,
     });
 
     const { uploadUrl, bucketPath, fields } = data;

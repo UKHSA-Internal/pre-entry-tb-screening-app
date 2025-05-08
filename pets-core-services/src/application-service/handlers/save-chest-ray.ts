@@ -8,9 +8,9 @@ import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Applicant } from "../../shared/models/applicant";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { generateDicomObjectkey, KeyParameters } from "../helpers/upload";
+import { generateImageObjectkey, KeyParameters } from "../helpers/upload";
 import { ChestXRayDbOps, ChestXRayNotTaken, ChestXRayTaken } from "../models/chest-xray";
-import { YesOrNo } from "../types/enums";
+import { ImageType, YesOrNo } from "../types/enums";
 import { ApplicantNotFound, InvalidObjectKey, ObjectNotFound } from "../types/errors";
 import { ChestXRayRequestSchema } from "../types/zod-schema";
 
@@ -122,14 +122,15 @@ const checkIfExists = async (objectKey: string) => {
 };
 
 const validateObjectKey = async (value: string, expectedKeyParameters: KeyParameters) => {
-  const { applicant, clinicId, applicationId, fileName } = expectedKeyParameters;
+  const { applicant, clinicId, applicationId, fileName, imageType } = expectedKeyParameters;
   logger.info({ applicationId, clinicId, fileName }, "Validating object key");
 
-  const expectedObjectKey = generateDicomObjectkey({
+  const expectedObjectKey = generateImageObjectkey({
     applicant,
     clinicId,
     applicationId,
     fileName,
+    imageType,
   });
 
   logger.info("Comparing Object Key with expected");
@@ -169,6 +170,7 @@ const validateChestXRayImages = async (
     applicationId,
     clinicId,
     fileName: "postero-anterior.dcm",
+    imageType: ImageType.Dicom,
   });
 
   if (images.apicalLordoticXray) {
@@ -177,6 +179,7 @@ const validateChestXRayImages = async (
       applicationId,
       clinicId,
       fileName: "apical-lordotic.dcm",
+      imageType: ImageType.Dicom,
     });
   }
 
@@ -186,6 +189,7 @@ const validateChestXRayImages = async (
       applicationId,
       clinicId,
       fileName: "lateral-decubitus.dcm",
+      imageType: ImageType.Dicom,
     });
   }
   logger.info({ applicationInfo }, "Validation Completed");
