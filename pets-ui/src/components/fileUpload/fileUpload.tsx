@@ -89,9 +89,9 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
                 data-testid={props.id}
                 {...register(props.formValue, {
                   required: props.required,
-                  // validate: {
-                  //   noFileErrors: () => !formState.errors[props.formValue],
-                  // },
+                  validate: {
+                    noFileErrors: () => !formState.errors[props.formValue],
+                  },
                 })}
                 onChange={(e) => handleFileChange(e)}
               />

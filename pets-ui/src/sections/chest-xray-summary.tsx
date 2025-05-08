@@ -23,8 +23,6 @@ const ChestXraySummary = () => {
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
-  // eslint-disable-next-line no-console
-  console.log(chestXrayData.apicalLordoticXrayFile);
 
   const handleSubmit = async () => {
     setIsLoading(true);

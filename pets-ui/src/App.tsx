@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import { AuthenticatedRoute, UnauthenticatedRoute } from "./auth/authRoutes";
 import ApiDocs from "./pages/api-docs";
 import ApplicantConfirmation from "./pages/applicant-confirmation";
+import ApplicantPhotoPage from "./pages/applicant-photo";
 import ApplicantResultsPage from "./pages/applicant-results";
 import ApplicantSearchPage from "./pages/applicant-search";
 import ApplicantSummaryPage from "./pages/applicant-summary";
@@ -27,7 +28,7 @@ import TbSummaryPage from "./pages/tb-summary";
 import TravelConfirmation from "./pages/travel-confirmation";
 import TravelDetailsPage from "./pages/travel-details";
 import TravelSummaryPage from "./pages/travel-summary";
-import { RedirectedRouteIfReduxEmpty } from "./utils/redirect";
+// import { RedirectedRouteIfReduxEmpty } from "./utils/redirect";
 
 function App() {
   return (
@@ -52,9 +53,9 @@ function App() {
         path="/tracker"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <ProgressTrackerPage />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <ProgressTrackerPage />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -62,9 +63,9 @@ function App() {
         path="/applicant-results"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <ApplicantResultsPage />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <ApplicantResultsPage />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -72,9 +73,19 @@ function App() {
         path="/contact"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <ContactDetailsPage />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <ContactDetailsPage />
+            {/* </RedirectedRouteIfReduxEmpty> */}
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/applicant-photo"
+        element={
+          <AuthenticatedRoute>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <ApplicantPhotoPage />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -82,9 +93,9 @@ function App() {
         path="/applicant-summary"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <ApplicantSummaryPage />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <ApplicantSummaryPage />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -92,9 +103,9 @@ function App() {
         path="/applicant-confirmation"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <ApplicantConfirmation />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <ApplicantConfirmation />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -102,9 +113,9 @@ function App() {
         path="/medical-screening"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <MedicalScreeningPage />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <MedicalScreeningPage />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -112,9 +123,9 @@ function App() {
         path="/medical-summary"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <MedicalSummaryPage />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <MedicalSummaryPage />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -122,9 +133,9 @@ function App() {
         path="/medical-confirmation"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <MedicalConfirmation />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <MedicalConfirmation />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -132,9 +143,9 @@ function App() {
         path="/travel-details"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <TravelDetailsPage />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <TravelDetailsPage />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -142,9 +153,9 @@ function App() {
         path="/travel-summary"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <TravelSummaryPage />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <TravelSummaryPage />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -152,9 +163,9 @@ function App() {
         path="/travel-confirmation"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <TravelConfirmation />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <TravelConfirmation />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -162,9 +173,9 @@ function App() {
         path="/chest-xray-findings"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <ChestXrayFindingsPage />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <ChestXrayFindingsPage />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -172,9 +183,9 @@ function App() {
         path="/chest-xray-question"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <ChestXrayQuestionPage />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <ChestXrayQuestionPage />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -182,9 +193,9 @@ function App() {
         path="/chest-xray-not-taken"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <ChestXrayNotTaken />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <ChestXrayNotTaken />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -192,9 +203,9 @@ function App() {
         path="/chest-xray-summary"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <ChestXraySummaryPage />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <ChestXraySummaryPage />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -202,9 +213,9 @@ function App() {
         path="/chest-xray-upload"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <ChestXrayUploadPage />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <ChestXrayUploadPage />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -212,9 +223,9 @@ function App() {
         path="/chest-xray-confirmation"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <ChestXrayConfirmation />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <ChestXrayConfirmation />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -222,9 +233,9 @@ function App() {
         path="/tb-certificate-declaration"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <TbCertificateDeclarationPage />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <TbCertificateDeclarationPage />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -232,9 +243,9 @@ function App() {
         path="/tb-certificate-summary"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <TbSummaryPage />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <TbSummaryPage />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
@@ -242,9 +253,9 @@ function App() {
         path="/tb-certificate-confirmation"
         element={
           <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <TbConfirmationPage />
-            </RedirectedRouteIfReduxEmpty>
+            {/* <RedirectedRouteIfReduxEmpty> */}
+            <TbConfirmationPage />
+            {/* </RedirectedRouteIfReduxEmpty> */}
           </AuthenticatedRoute>
         }
       />
