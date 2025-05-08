@@ -23,7 +23,7 @@ import {
   setPosteroAnteriorXrayFileName,
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { ButtonType, FileType } from "@/utils/enums";
+import { ButtonType, ImageType } from "@/utils/enums";
 
 const DicomUploadModule = (
   props: Readonly<{
@@ -77,7 +77,7 @@ const DicomUploadModule = (
               errorMessage={
                 props.errors?.[props.formValue as keyof ReduxChestXrayDetailsType]?.message ?? ""
               }
-              type={FileType.dicom}
+              type={ImageType.Dicom}
               setFileState={props.setFileState}
               setFileName={props.setFileName}
               existingFileName={props.existingFileName}

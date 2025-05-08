@@ -25,7 +25,7 @@ export enum YesOrNo {
   NULL = "",
 }
 
-export enum FileType {
-  dicom = "dicom",
-  photo = "photo",
+export enum ImageType {
+  Dicom = "Dicom",
+  Photo = "Photo",
 }

@@ -1,6 +1,6 @@
 import dicomParser from "dicom-parser";
 
-import { FileType } from "./enums";
+import { ImageType } from "./enums";
 
 export type ValidationType = {
   isValid: boolean;
@@ -12,14 +12,14 @@ export type ValidationResult = {
   errors: ValidationType[];
 };
 
-export const getFileType = (file: File): "photo" | "dicom" | undefined => {
+export const getImageType = (file: File): "Photo" | "Dicom" | undefined => {
   const photoFile =
     file.name.endsWith(".jpg") || file.name.endsWith(".jpeg") || file.name.endsWith(".png");
   const dicomFile = file.name.endsWith(".dcm");
   if (photoFile) {
-    return "photo";
+    return "Photo";
   } else if (dicomFile) {
-    return "dicom";
+    return "Dicom";
   }
 };
 
@@ -47,7 +47,7 @@ const isPhotoValid = (file: File): Promise<boolean> => {
   });
 };
 
-const validateFiles = async (files: File[], type: FileType): Promise<ValidationResult> => {
+const validateFiles = async (files: File[], type: ImageType): Promise<ValidationResult> => {
   const errors: ValidationType[] = [];
 
   const maxPhotoBytes = 10 * 1024 * 1024;
@@ -55,17 +55,17 @@ const validateFiles = async (files: File[], type: FileType): Promise<ValidationR
 
   await Promise.all(
     files.map(async (file) => {
-      const fileType = getFileType(file);
+      const imageType = getImageType(file);
       const fileSize = file.size;
 
       // Check file type is supported
-      if (type === FileType.dicom && fileType !== "dicom") {
+      if (type === ImageType.Dicom && imageType !== "Dicom") {
         errors.push({
           isValid: false,
           fileName: file.name,
           message: "The selected file must be a DICOM file",
         });
-      } else if (type === FileType.photo && fileType !== "photo") {
+      } else if (type === ImageType.Photo && imageType !== "Photo") {
         errors.push({
           isValid: false,
           fileName: file.name,
@@ -74,13 +74,13 @@ const validateFiles = async (files: File[], type: FileType): Promise<ValidationR
       }
 
       // Check file size
-      if (fileType === FileType.dicom && fileSize > maxDicomBytes) {
+      if (imageType === ImageType.Dicom && fileSize > maxDicomBytes) {
         errors.push({
           isValid: false,
           fileName: file.name,
           message: "The selected file must be smaller than 50MB",
         });
-      } else if (fileType === FileType.photo && fileSize > maxPhotoBytes) {
+      } else if (imageType === ImageType.Photo && fileSize > maxPhotoBytes) {
         errors.push({
           isValid: false,
           fileName: file.name,
@@ -98,7 +98,7 @@ const validateFiles = async (files: File[], type: FileType): Promise<ValidationR
       }
 
       // Check if files are valid format
-      if (fileType === FileType.dicom) {
+      if (imageType === ImageType.Dicom) {
         const isValidDicom = await isDicomValid(file);
         if (!isValidDicom) {
           errors.push({
@@ -107,7 +107,7 @@ const validateFiles = async (files: File[], type: FileType): Promise<ValidationR
             message: "The selected file is password protected or is an invalid DICOM file",
           });
         }
-      } else if (fileType === FileType.photo) {
+      } else if (imageType === ImageType.Photo) {
         const isValidPhoto = await isPhotoValid(file);
         if (!isValidPhoto) {
           errors.push({

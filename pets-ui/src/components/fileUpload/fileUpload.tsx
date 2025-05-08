@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-import { FileType } from "@/utils/enums";
+import { ImageType } from "@/utils/enums";
 import validateFiles from "@/utils/validateFiles";
 
 export interface FileUploadProps {
@@ -13,7 +13,7 @@ export interface FileUploadProps {
   formValue: string;
   required: string | false;
   heading?: string;
-  type: FileType;
+  type: ImageType;
   setFileState: Dispatch<SetStateAction<File | undefined>>;
   setFileName: Dispatch<SetStateAction<string | undefined>>;
   existingFileName?: string;
