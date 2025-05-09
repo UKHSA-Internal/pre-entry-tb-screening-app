@@ -2,6 +2,8 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
+import { ImageType } from "@/utils/enums";
+
 import FileUpload, { FileUploadProps } from "./fileUpload";
 
 const renderWithFormProvider = (ui: React.ReactElement) => {
@@ -19,8 +21,7 @@ const defaultProps: FileUploadProps = {
   errorMessage: "",
   formValue: "testFile",
   required: "File is required",
-  accept: "jpg,jpeg,png,pdf",
-  maxSize: 5, // 5 MB
+  type: ImageType.Photo,
   setFileState: vi.fn(),
   setFileName: vi.fn(),
 };

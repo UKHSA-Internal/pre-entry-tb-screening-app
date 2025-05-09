@@ -35,8 +35,8 @@ const ApplicantPhotoForm = () => {
   const errorsToShow = Object.keys(errors);
 
   const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = () => {
-    // save only file name in redux
     if (applicantPhoto && applicantPhotoName) {
+      // save only file name in redux
       dispatch(setApplicantPhotoFileName(applicantPhotoName));
       setApplicantPhotoFile(applicantPhoto);
     }
