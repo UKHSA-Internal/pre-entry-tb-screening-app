@@ -1,9 +1,50 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
+import { AllowedSex } from "../../applicant-service/types/enums";
+import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { mockAPIGwEvent } from "../../test/mocks/events";
+import { seededApplicantPhoto } from "../fixtures/applicant-photo";
+import { ImageHelper } from "../helpers/image-helper";
 import { getApplicationHandler } from "./get-application";
+
+// Mock generateImageObjectkey
+vi.mock("../helpers/upload", () => ({
+  generateImageObjectkey: () => "mock/key/photo.jpg",
+}));
+
+// Mock getByApplicationId from Applicant model
+vi.mock("../../shared/models/applicant", () => ({
+  Applicant: {
+    getByApplicationId: vi.fn().mockResolvedValue({
+      applicationId: "test-application-id",
+      fullName: "John Doe",
+      passportNumber: "test-passport-id",
+      countryOfNationality: CountryCode.ALA,
+      countryOfIssue: CountryCode.ALA,
+      issueDate: "2025-01-01",
+      expiryDate: "2030-01-01",
+      dateOfBirth: "2000-02-07",
+      sex: AllowedSex.Female,
+      applicantHomeAddress1: "First Line of Address",
+      applicantHomeAddress2: "Second Line of Address",
+      applicantHomeAddress3: "Third Line of Address",
+      townOrCity: "the-town-or-city",
+      provinceOrState: "the-province",
+      postcode: "the-post-code",
+      country: CountryCode.ALA,
+      createdBy: "test-applicant-creator",
+    }),
+  },
+}));
+
+vi.spyOn(ImageHelper, "fetchImageAsBase64").mockResolvedValue(
+  seededApplicantPhoto[1].applicantPhoto,
+);
+
+// Set env variable
+vi.stubEnv("IMAGE_BUCKET", "mock-bucket");
 
 describe("Getting Application Handler", () => {
   test("Missing application returns 404", async () => {
@@ -35,6 +76,8 @@ describe("Getting Application Handler", () => {
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toEqual({
       applicationId: seededApplications[1].applicationId,
+      // Defined in pets-core-services/src/application-service/fixtures/applicant-photo.ts
+      applicantPhoto: seededApplicantPhoto[1].applicantPhoto,
       // Defined in pets-core-services/src/application-service/fixtures/travel-information.ts
       travelInformation: {
         applicationId: seededApplications[1].applicationId,
