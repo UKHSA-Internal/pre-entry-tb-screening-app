@@ -51,7 +51,6 @@ type ReduxApplicantDetailsType = {
   country: string;
   postcode?: string;
   applicantPhotoFileName?: string;
-  applicantPhotoFile?: string;
 };
 
 type PostedApplicantDetailsType = {
@@ -71,7 +70,6 @@ type PostedApplicantDetailsType = {
   country: string;
   postcode?: string;
   applicantPhotoFileName?: string;
-  applicantPhotoFile?: string;
 };
 
 type ReceivedApplicantDetailsType = PostedApplicantDetailsType & ReceivedApplicationAttributesType;

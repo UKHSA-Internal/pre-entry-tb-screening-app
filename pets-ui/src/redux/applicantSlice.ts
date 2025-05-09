@@ -116,7 +116,7 @@ export const applicantSlice = createSlice({
       state.provinceOrState = action.payload.provinceOrState;
       state.country = action.payload.country;
       state.postcode = action.payload.postcode ?? "";
-      state.applicantPhotoFileName = action.payload.applicantPhotoFileName;
+      state.applicantPhotoFileName = action.payload.applicantPhotoFileName ?? "";
     },
     clearApplicantDetails: (state) => {
       state.status = ApplicationStatus.INCOMPLETE;
@@ -184,7 +184,7 @@ export const applicantSlice = createSlice({
       state.provinceOrState = action.payload.provinceOrState;
       state.country = action.payload.country;
       state.postcode = action.payload.postcode ?? "";
-      state.applicantPhotoFileName = action.payload.applicantPhotoFileName;
+      state.applicantPhotoFileName = action.payload.applicantPhotoFileName ?? "";
     },
   },
 });

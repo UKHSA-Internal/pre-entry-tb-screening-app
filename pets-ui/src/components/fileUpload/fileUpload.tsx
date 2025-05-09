@@ -39,9 +39,6 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    props.setFileState(undefined);
-    props.setFileName(undefined);
-
     if (e.target.files) {
       const files = e.target.files;
       setShowExistingFileName(false);

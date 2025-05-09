@@ -54,9 +54,10 @@ const ApplicantReview = () => {
 
       // Upload applicant photo if it exists
       if (applicantData.applicantPhotoFileName && applicantPhotoFile) {
+        const fileType = applicantPhotoFile.name.split(".").pop();
         await uploadFile(
           applicantPhotoFile,
-          applicantData.applicantPhotoFileName,
+          `applicant-photo.${fileType}`,
           applicationRes.data.applicationId,
           ImageType.Photo,
         );
@@ -165,7 +166,7 @@ const ApplicantReview = () => {
       emptyValueText: "Enter postcode (optional)",
     },
     {
-      key: "Photo",
+      key: "Applicant Photo",
       value: applicantData.applicantPhotoFileName,
       link: "/applicant-photo",
       hiddenLabel: "applicant photo",
