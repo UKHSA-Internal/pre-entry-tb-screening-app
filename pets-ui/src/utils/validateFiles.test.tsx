@@ -109,31 +109,4 @@ describe("validateFiles", () => {
 
     expect(result).toBe(true);
   });
-
-  //   it("rejects unsupported file type for dicom", async () => {
-  //     const file = new File(["a"], "test.jpg", { type: "image/jpeg" });
-  //     const result = await validateFiles([file], ImageType.Dicom);
-  //     expect(result).toContain("The selected file must be a DICOM file");
-  //   });
-
-  //   it("rejects files that are too large", async () => {
-  //     const photo = new File(["a".repeat(11 * 1024 * 1024)], "photo.jpg", { type: "image/jpeg" });
-  //     Object.defineProperty(photo, "size", { value: 11 * 1024 * 1024 });
-  //     const result = await validateFiles([photo], ImageType.Photo);
-  //     expect(result).toContain("The selected file must be smaller than 10MB");
-
-  //     const dicom = new File(["a".repeat(51 * 1024 * 1024)], "scan.dcm", {
-  //       type: "application/dicom",
-  //     });
-  //     Object.defineProperty(dicom, "size", { value: 51 * 1024 * 1024 });
-  //     const result2 = await validateFiles([dicom], ImageType.Dicom);
-  //     expect(result2).toContain("The selected file must be smaller than 50MB");
-  //   });
-
-  //   it("rejects empty files", async () => {
-  //     const file = new File([""], "empty.jpg", { type: "image/jpeg" });
-  //     Object.defineProperty(file, "size", { value: 0 });
-  //     const result = await validateFiles([file], ImageType.Photo);
-  //     expect(result).toContain("The selected file is empty");
-  //   });
 });
