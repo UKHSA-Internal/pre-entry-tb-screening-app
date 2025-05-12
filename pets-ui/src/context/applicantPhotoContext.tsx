@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useMemo, useState } from "react";
 
 type ApplicantPhotoContextType = {
   applicantPhotoFile: File | null;
@@ -18,9 +18,10 @@ export const useApplicantPhoto = () => {
 export const ApplicantPhotoProvider = ({ children }: { children: ReactNode }) => {
   const [applicantPhotoFile, setApplicantPhotoFile] = useState<File | null>(null);
 
-  return (
-    <ApplicantPhotoContext.Provider value={{ applicantPhotoFile, setApplicantPhotoFile }}>
-      {children}
-    </ApplicantPhotoContext.Provider>
+  const value = useMemo(
+    () => ({ applicantPhotoFile, setApplicantPhotoFile }),
+    [applicantPhotoFile],
   );
+
+  return <ApplicantPhotoContext.Provider value={value}>{children}</ApplicantPhotoContext.Provider>;
 };

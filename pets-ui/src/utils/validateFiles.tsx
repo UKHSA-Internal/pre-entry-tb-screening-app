@@ -5,21 +5,15 @@ import { ImageType } from "./enums";
 export type ValidationResult = string[] | true;
 
 export const getImageType = (file: File): "Photo" | "Dicom" | undefined => {
-  const photoFile =
-    file.name.endsWith(".jpg") || file.name.endsWith(".jpeg") || file.name.endsWith(".png");
-  const dicomFile = file.name.endsWith(".dcm");
-  if (photoFile) {
-    return "Photo";
-  } else if (dicomFile) {
-    return "Dicom";
-  }
+  const isPhoto = /\.(jpg|jpeg|png)$/i.test(file.name);
+  const isDicom = /\.dcm$/i.test(file.name);
+  return isPhoto ? "Photo" : isDicom ? "Dicom" : undefined;
 };
 
 // use dicom-parser to check file encryption
 const isDicomValid = async (file: File): Promise<boolean> => {
   try {
-    const arrayBuffer = await file.arrayBuffer();
-    const byteArray = new Uint8Array(arrayBuffer);
+    const byteArray = new Uint8Array(await file.arrayBuffer());
     dicomParser.parseDicom(byteArray);
     return true;
   } catch {
@@ -33,60 +27,65 @@ const isPhotoValid = (file: File): Promise<boolean> => {
     const img = new Image();
     img.onload = () => resolve(true); // Loaded successfully
     img.onerror = () => resolve(false); // Not a valid image
-
-    const url = URL.createObjectURL(file);
-    img.src = url;
+    img.src = URL.createObjectURL(file);
   });
 };
 
-const validateFiles = async (files: File[], type: ImageType): Promise<ValidationResult> => {
-  const errors: ValidationResult = [];
+// --- Error Messages ---
+const getTypeError = (type: ImageType, actual: string | undefined): string | null => {
+  if (type === ImageType.Dicom && actual !== "Dicom") {
+    return "The selected file must be a DICOM file";
+  }
+  if (type === ImageType.Photo && actual !== "Photo") {
+    return "The selected file must be a JPG, JPEG or PNG";
+  }
+  return null;
+};
 
-  const maxPhotoBytes = 10 * 1024 * 1024;
-  const maxDicomBytes = 50 * 1024 * 1024;
+const getSizeError = (type: string, size: number): string | null => {
+  const maxSize = type === "Dicom" ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+  const label = type === "Dicom" ? "50MB" : "10MB";
+  if (size > maxSize) {
+    return `The selected file must be smaller than ${label}`;
+  }
+  return null;
+};
 
+// --- Main Validator ---
+const validateFiles = async (files: File[], expectedType: ImageType): Promise<ValidationResult> => {
   const file = files[0];
+  const errors: string[] = [];
 
   const imageType = getImageType(file);
   const fileSize = file.size;
 
-  // Check file type is supported
-  if (type === ImageType.Dicom && imageType !== "Dicom") {
-    errors.push("The selected file must be a DICOM file");
-  } else if (type === ImageType.Photo && imageType !== "Photo") {
-    errors.push("The selected file must be a JPG, JPEG or PNG");
-  }
+  const typeError = getTypeError(expectedType, imageType);
+  if (typeError) return [typeError];
 
-  // Check file size
-  if (imageType === ImageType.Dicom && fileSize > maxDicomBytes) {
-    errors.push("The selected file must be smaller than 50MB");
-  } else if (imageType === ImageType.Photo && fileSize > maxPhotoBytes) {
-    errors.push("The selected file must be smaller than 10MB");
-  }
+  const sizeError = getSizeError(imageType!, fileSize);
+  if (sizeError) errors.push(sizeError);
 
-  // Check if file is empty
   if (fileSize === 0) {
     errors.push("The selected file is empty");
-  }
-
-  // Check if files are valid format
-  if (imageType === ImageType.Dicom) {
-    const isValidDicom = await isDicomValid(file);
-    if (!isValidDicom) {
-      errors.push("The selected file is password protected or is an invalid DICOM file");
-    }
-  } else if (imageType === ImageType.Photo) {
-    const isValidPhoto = await isPhotoValid(file);
-    if (!isValidPhoto) {
-      errors.push("The selected file is an invalid JPG, JPEG or PNG file");
-    }
-  }
-
-  if (errors.length > 0) {
     return errors;
-  } else {
-    return true;
   }
+
+  const isValid =
+    imageType === "Dicom"
+      ? await isDicomValid(file)
+      : imageType === "Photo"
+        ? await isPhotoValid(file)
+        : false;
+
+  if (!isValid) {
+    const invalidMsg =
+      imageType === "Dicom"
+        ? "The selected file is password protected or is an invalid DICOM file"
+        : "The selected file is an invalid JPG, JPEG or PNG file";
+    errors.push(invalidMsg);
+  }
+
+  return errors.length > 0 ? errors : true;
 };
 
 export default validateFiles;
