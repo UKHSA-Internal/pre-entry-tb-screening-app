@@ -46,6 +46,7 @@ const preloadedState = {
     provinceOrState: "",
     country: "",
     postcode: "",
+    applicantPhotoFileName: "",
   },
 };
 
@@ -161,8 +162,9 @@ describe("ApplicantForm", () => {
       provinceOrState: "Reykjavik",
       country: "ISL",
       postcode: "101",
+      applicantPhotoFileName: "",
     });
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-summary");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-photo");
   });
 
   it("errors when applicant details are missing", async () => {

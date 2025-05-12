@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useFormState } from "react-hook-form";
 
 import { ImageType } from "@/utils/enums";
 import validateFiles from "@/utils/validateFiles";
@@ -8,8 +8,6 @@ export interface FileUploadProps {
   id: string;
   legend?: string;
   hint?: string;
-  // errorMessage prop ony required if it is a required field
-  errorMessage?: string;
   formValue: string;
   required: string | false;
   heading?: string;
@@ -21,6 +19,8 @@ export interface FileUploadProps {
 
 export default function FileUpload(props: Readonly<FileUploadProps>) {
   const { register, clearErrors } = useFormContext();
+  const { errors, isSubmitted } = useFormState();
+
   const [errorText, setErrorText] = useState("");
   const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
   const [showExistingFileName, setShowExistingFileName] = useState(
@@ -34,25 +34,30 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
       setWrapperClass("govuk-form-group govuk-form-group--error");
     } else {
       setErrorText("");
-      setWrapperClass("");
+      setWrapperClass("govuk-form-group");
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = e.target.files;
-      setShowExistingFileName(false);
+    const files = e.target.files;
 
+    if (files && files.length > 0) {
+      setShowExistingFileName(false);
       props.setFileState(files[0]);
       props.setFileName(files[0].name);
+
+      // clear existing error message
       clearErrors(props.formValue);
       displayError(null);
     }
   };
 
   useEffect(() => {
-    displayError(props.errorMessage || "");
-  }, [props.errorMessage]);
+    const fieldError = errors[props.formValue];
+    if (fieldError?.type === "required" && props.required) {
+      displayError(props.required);
+    }
+  }, [errors, props.formValue, props.required, isSubmitted]);
 
   return (
     <>

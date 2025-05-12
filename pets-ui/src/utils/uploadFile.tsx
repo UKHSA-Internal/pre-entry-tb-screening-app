@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { generateDicomUploadUrl } from "@/api/api";
+import { generateImageUploadUrl } from "@/api/api";
 
 import { ImageType } from "./enums";
 
@@ -18,7 +18,7 @@ const uploadFile = async (
   applicationId: string,
   imageType: ImageType,
 ) => {
-  const { data } = await generateDicomUploadUrl(applicationId, {
+  const { data } = await generateImageUploadUrl(applicationId, {
     fileName: bucketFileName,
     checksum: await computeBase64SHA256(file),
     imageType: imageType,

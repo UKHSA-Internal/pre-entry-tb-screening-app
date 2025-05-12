@@ -23,7 +23,6 @@ const ApplicantPhotoForm = () => {
   const [applicantPhotoName, setApplicantPhotoName] = useState<string>();
 
   const methods = useForm<ReduxApplicantDetailsType>({
-    reValidateMode: "onSubmit",
     criteriaMode: "all",
   });
 

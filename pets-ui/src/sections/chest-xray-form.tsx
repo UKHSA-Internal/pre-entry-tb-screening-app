@@ -71,9 +71,6 @@ const DicomUploadModule = (
               required={
                 props.required ? `Select a ${props.name.toLowerCase()} X-ray image file` : false
               }
-              errorMessage={
-                props.errors?.[props.formValue as keyof ReduxChestXrayDetailsType]?.message ?? ""
-              }
               type={ImageType.Dicom}
               setFileState={props.setFileState}
               setFileName={props.setFileName}
