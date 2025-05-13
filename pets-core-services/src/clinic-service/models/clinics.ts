@@ -186,8 +186,11 @@ export class Clinic extends IClinic {
       const params: ScanCommandInput = {
         TableName: Clinic.getTableName(),
         // endDate can only be 'null' or 'Date'
-        FilterExpression: `attribute_type(endDate, :dateType)`,
-        ExpressionAttributeValues: { ":dateType": "NULL" },
+        FilterExpression: `(attribute_type(endDate, :dateType)) OR (endDate > :today)`,
+        ExpressionAttributeValues: {
+          ":dateType": "NULL",
+          ":today": new Date().toISOString(),
+        },
       };
       const command = new ScanCommand(params);
 
@@ -199,7 +202,7 @@ export class Clinic extends IClinic {
         return [];
       }
 
-      logger.info({ resultCount: data?.Items?.length && 0 }, "Clinics data fetched successfully");
+      logger.info({ resultCount: data?.Items?.length ?? 0 }, "Clinics data fetched successfully");
 
       const results = data.Items as ReturnType<Clinic["todbItem"]>[];
 
@@ -223,7 +226,7 @@ export class Clinic extends IClinic {
    */
   static async isActiveClinic(clinicId: string): Promise<boolean> {
     try {
-      logger.info(`Fetching the clinic (${clinicId}) if 'active'`);
+      logger.info(`Fetching the clinic (${clinicId})`);
       const params: QueryCommandInput = {
         TableName: Clinic.getTableName(),
         KeyConditionExpression: `pk = :pk AND sk = :sk`,
@@ -239,16 +242,16 @@ export class Clinic extends IClinic {
       const data: QueryCommandOutput = await docClient.send(command);
 
       if (!data?.Items?.length) {
-        logger.error("No active clinic found");
+        logger.error(`No active clinic found with 'clinicId': ${clinicId}`);
         return false;
       }
 
       if (data?.Items?.length > 1) {
-        logger.error(`Retrieved more than 1 clinic with the same clinicId`);
+        logger.error(`Retrieved more than 1 clinic with the same 'clinicId': ${clinicId}`);
         return false;
       }
 
-      logger.info("The clinic is active");
+      logger.info(`The clinic with 'clinicId': ${clinicId} is active`);
       return true;
     } catch (error) {
       logger.error(error, `Error retrieving the active clinic with 'clinicId': ${clinicId}`);

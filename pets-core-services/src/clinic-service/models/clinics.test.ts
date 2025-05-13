@@ -328,7 +328,7 @@ describe("Tests for Clinic Model", () => {
     expect(active).toBeFalsy();
     expect(consoleMock).toHaveBeenCalledOnce();
     expect(consoleMock).toHaveBeenLastCalledWith(
-      "Retrieved more than 1 clinic with the same clinicId",
+      `Retrieved more than 1 clinic with the same 'clinicId': ${clinicsDetails[0].clinicId}`,
     );
   });
 

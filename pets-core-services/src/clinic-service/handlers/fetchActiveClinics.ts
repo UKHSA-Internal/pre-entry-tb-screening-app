@@ -5,7 +5,23 @@ import { logger } from "../../shared/logger";
 import { Clinic } from "../models/clinics";
 
 export const fetchActiveClinicsHandler = async (event: APIGatewayProxyEvent) => {
-  logger.info(`API End point: ${event.path}`);
+  logger.info(`API End point --->: ${JSON.stringify(event)}`);
+
+  const clinicId = event?.queryStringParameters?.clinicId;
+
+  if (clinicId) {
+    logger.info(`clinicId from queryStringParameters: ${clinicId}`);
+
+    try {
+      const isActive: boolean = await Clinic.isActiveClinic(clinicId);
+
+      return createHttpResponse(200, JSON.stringify({ isActive: isActive }));
+    } catch (error) {
+      logger.error(`Checking clinic with ID: ${clinicId} failed`, error);
+
+      return createHttpResponse(500, { message: "Something went wrong" });
+    }
+  }
 
   try {
     logger.info("Active clinics details handler triggered");

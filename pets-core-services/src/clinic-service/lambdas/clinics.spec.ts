@@ -111,13 +111,50 @@ describe("Test for Clinic Lambda", () => {
     );
   });
 
-  test("Checking an active Clinic", async () => {
+  test("Fetching all active clinics", async () => {
+    // Arrange;
+    const loggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
+    const event: PetsAPIGatewayProxyEvent = {
+      ...mockAPIGwEvent,
+      resource: "/clinics/active",
+      path: "/clinics/active",
+      httpMethod: "GET",
+    };
+    ddbMock.on(ScanCommand).resolves({
+      Items: [
+        {
+          ...clinicDetails[0],
+          pk: `CLINIC#${clinicDetails[0].clinicId}`,
+          sk: "CLINIC#ROOT",
+        },
+      ],
+    });
+
+    // Act
+    const response: APIGatewayProxyResult = await handler(event, context);
+
+    // Assert
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toMatchObject([
+      {
+        ...clinicDetails[0],
+        startDate: new Date(clinicDetails[0].startDate).toISOString(),
+      },
+    ]);
+    expect(loggerMock).toHaveBeenCalled();
+    expect(loggerMock).toHaveBeenLastCalledWith(
+      { resultCount: 1 },
+      "Clinics data fetched successfully",
+    );
+  });
+
+  test("Checking an active clinic", async () => {
     // Arrange;
     const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
-      resource: "/clinics/active/{clinicId}",
-      path: "/clinics/active/1",
-      pathParameters: {
+      resource: "/clinics/active",
+      path: "/clinics/active",
+      queryStringParameters: {
         clinicId: "1",
       },
       httpMethod: "GET",
@@ -128,5 +165,37 @@ describe("Test for Clinic Lambda", () => {
 
     // Assert
     expect(response.statusCode).toBe(200);
+  });
+
+  test("Checking an active Clinic", async () => {
+    // Arrange;
+    const loggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
+    const event: PetsAPIGatewayProxyEvent = {
+      ...mockAPIGwEvent,
+      resource: "/clinics/active",
+      path: "/clinics/active",
+      httpMethod: "GET",
+      queryStringParameters: { clinicId: `${clinicDetails[0].clinicId}` },
+    };
+    ddbMock.on(ScanCommand).resolves({
+      Items: [
+        {
+          ...clinicDetails[0],
+          pk: `CLINIC#${clinicDetails[0].clinicId}`,
+          sk: "CLINIC#ROOT",
+        },
+      ],
+    });
+
+    // Act
+    const response: APIGatewayProxyResult = await handler(event, context);
+
+    // Assert
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toMatchObject({ isActive: false });
+    expect(loggerMock).toHaveBeenCalled();
+    expect(loggerMock).toHaveBeenLastCalledWith(
+      `Fetching the clinic (${clinicDetails[0].clinicId})`,
+    );
   });
 });

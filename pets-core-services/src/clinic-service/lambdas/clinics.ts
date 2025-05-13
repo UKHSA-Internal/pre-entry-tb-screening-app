@@ -3,7 +3,6 @@ import { z } from "zod";
 
 import { boostrapLambdaRoutes } from "../../shared/http";
 import { PetsRoute } from "../../shared/types";
-import { checkActiveClinicHandler } from "../handlers/checkActiveClinic";
 import { createClinicHandler } from "../handlers/createClinic";
 import { fetchActiveClinicsHandler } from "../handlers/fetchActiveClinics";
 import { fetchClinicsHandler } from "../handlers/fetchClinics";
@@ -42,17 +41,14 @@ export const routes: PetsRoute[] = [
     method: "GET",
     path: "/clinics/active",
     handler: fetchActiveClinicsHandler,
-    responseSchema: z
-      .array(ClinicSchema)
-      .openapi("AllActiveClinics", { description: "List of all active clinics" }),
-  },
-  {
-    method: "GET",
-    path: "/clinics/active/{clinicId}",
-    handler: checkActiveClinicHandler,
     responseSchema: ClinicSchema.openapi("IsClinicActive", {
       description: "True if the clinic is an active one",
     }),
+    queryParams: {
+      clinicId: z
+        .string({ description: "When specified, returns only the clinic with matching clinicId" })
+        .optional(),
+    },
   },
 ];
 

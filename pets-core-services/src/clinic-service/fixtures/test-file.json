@@ -70,5 +70,50 @@
         "startDate": "2024-04-44",
         "endDate": null,
         "createdBy": "johnny.doe@email.com"
+    },
+    {
+        "clinicId": "IND/NEW/01/",
+        "name": "Indraprastha Apollo Hospital",
+        "city": "New Delhi",
+        "country": "IND",
+        "startDate": "2025-04-01",
+        "endDate": null,
+        "createdBy": "tmp@email.com"
+    },
+    {
+        "clinicId": "SAF/PRE/01/",
+        "name": "Hatmed Medical Centre",
+        "city": "Pretoria",
+        "country": "ZAF",
+        "startDate": "2025-04-01",
+        "endDate": null,
+        "createdBy": "tmp@email.com"
+    },
+    {
+        "clinicId": "CHI/SHA/03/",
+        "name": "ParkwayHealth Shanghai Centre",
+        "city": "Shanghai",
+        "country": "CHN",
+        "startDate": "2025-04-01",
+        "endDate": null,
+        "createdBy": "tmp@email.com"
+    },
+    {
+        "clinicId": "PAK/ISL/05/",
+        "name": "AMC Medical Center",
+        "city": "Islambad",
+        "country": "PAK",
+        "startDate": "2025-04-01",
+        "endDate": null,
+        "createdBy": "tmp@email.com"
+    },
+    {
+        "clinicId": "PAK/LAH/01/",
+        "name": "AMC Medical Center",
+        "city": "Lahore",
+        "country": "PAK",
+        "startDate": "2025-04-01",
+        "endDate": null,
+        "createdBy": "tmp@email.com"
     }
 ]
