@@ -1,4 +1,4 @@
-import { ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { QueryCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
 import { describe, expect, test, vi } from "vitest";
 
@@ -30,7 +30,7 @@ const clinicsDetails: NewClinic[] = [
   },
 ];
 
-describe("Fetching Clinic", () => {
+describe("Fetching active clinics", () => {
   const ddbMock = mockClient(awsClients.dynamoDBDocClient);
 
   test("success response", async () => {
@@ -52,16 +52,74 @@ describe("Fetching Clinic", () => {
     expect(res.statusCode).toBe(200);
   });
 
-  test("error response", async () => {
-    const loggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
-    ddbMock.on(ScanCommand).rejects("DB Error");
-
+  test("Fetching active clinics empty response", async () => {
+    ddbMock.on(ScanCommand).resolves({
+      Items: [],
+    });
     const res = await fetchActiveClinicsHandler({ ...mockAPIGwEvent });
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toContain("No active clinics exist");
+  });
+
+  test("success response for an active clinic", async () => {
+    const mockEvent = Object.assign({}, mockAPIGwEvent);
+    ddbMock.on(QueryCommand).resolves({
+      Items: [
+        {
+          ...clinicsDetails[0],
+          pk: "CLINICN#clinic-id-01",
+          sk: "CLINIC#ROOT",
+        },
+      ],
+    });
+    mockEvent.queryStringParameters = { clinicId: "clinic-id-01" };
+
+    const res = await fetchActiveClinicsHandler({ ...mockEvent });
+    expect(res.statusCode).toBe(200);
+    expect(JSON.parse(res.body)).toMatchObject({ isActive: true });
+  });
+
+  test("success response for an inactive clinic", async () => {
+    const mockEvent = Object.assign({}, mockAPIGwEvent);
+    ddbMock.on(QueryCommand).resolves({
+      Items: [],
+    });
+    mockEvent.queryStringParameters = { clinicId: "clinic-id-02" };
+
+    const res = await fetchActiveClinicsHandler({ ...mockEvent });
+    expect(res.statusCode).toBe(200);
+    expect(JSON.parse(res.body)).toMatchObject({ isActive: false });
+  });
+
+  test("db error response", async () => {
+    const consoleMock = vi.spyOn(logger, "error").mockImplementation(() => undefined);
+    const mockEvent = Object.assign({}, mockAPIGwEvent);
+    ddbMock.rejects("DB Error");
+
+    const res = await fetchActiveClinicsHandler({ ...mockEvent });
+
+    // expect(consoleMock).toHaveBeenCalledOnce();
+    expect(consoleMock).toHaveBeenCalledWith(Error("DB Error"), "Fetching Active Clinics Failed");
+    expect(JSON.parse(res.body)).toMatchObject({ message: "Something went wrong" });
     expect(res.statusCode).toBe(500);
-    expect(loggerMock).toHaveBeenCalled();
-    expect(loggerMock).toHaveBeenLastCalledWith(
-      Error("DB Error"),
-      "Fetching Active Clinics Failed",
+  });
+
+  test("db error response while getting the active clinic", async () => {
+    const consoleMock = vi.spyOn(logger, "error").mockImplementation(() => undefined);
+    const mockEvent = Object.assign(
+      {},
+      { ...mockAPIGwEvent, queryStringParameters: { clinicId: "clinic-id-02" } },
     );
+    ddbMock.rejects("DB Error");
+
+    const res = await fetchActiveClinicsHandler({ ...mockEvent });
+
+    // expect(consoleMock).toHaveBeenCalledOnce();
+    expect(consoleMock).toHaveBeenCalledWith(
+      "Checking clinic with ID: clinic-id-02 failed",
+      Error("DB Error"),
+    );
+    expect(JSON.parse(res.body)).toMatchObject({ message: "Something went wrong" });
+    expect(res.statusCode).toBe(500);
   });
 });

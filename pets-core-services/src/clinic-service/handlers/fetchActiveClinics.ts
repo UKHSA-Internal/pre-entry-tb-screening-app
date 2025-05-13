@@ -5,14 +5,13 @@ import { logger } from "../../shared/logger";
 import { Clinic } from "../models/clinics";
 
 export const fetchActiveClinicsHandler = async (event: APIGatewayProxyEvent) => {
-  logger.info(`API End point --->: ${JSON.stringify(event)}`);
+  logger.info(`API End point: ${event.path}`);
 
   const clinicId = event?.queryStringParameters?.clinicId;
 
   if (clinicId) {
-    logger.info(`clinicId from queryStringParameters: ${clinicId}`);
-
     try {
+      logger.info(`clinicId from queryStringParameters: ${clinicId}`);
       const isActive: boolean = await Clinic.isActiveClinic(clinicId);
 
       return createHttpResponse(200, JSON.stringify({ isActive: isActive }));
@@ -27,8 +26,9 @@ export const fetchActiveClinicsHandler = async (event: APIGatewayProxyEvent) => 
     logger.info("Active clinics details handler triggered");
     const clinics: Clinic[] = await Clinic.getActiveClinics();
 
-    if (!clinics || clinics?.length < 1)
+    if (!clinics || clinics?.length < 1) {
       return createHttpResponse(404, { message: "No active clinics exist" });
+    }
 
     return createHttpResponse(
       200,
