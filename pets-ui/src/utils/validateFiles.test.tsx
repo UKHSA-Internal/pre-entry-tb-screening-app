@@ -51,6 +51,12 @@ describe("validateFiles", () => {
     expect(result).toContain("The selected file must be a JPG, JPEG or PNG");
   });
 
+  it("rejects unsupported file type for dicom", async () => {
+    const file = new File([""], "test.jpg", { type: "application/jpeg" });
+    const result = await validateFiles([file], ImageType.Dicom);
+    expect(result).toContain("The selected file must be a DICOM file");
+  });
+
   it("rejects invalid DICOM files", async () => {
     const file = new File(["invalid"], "scan.dcm", { type: "application/dicom" });
     Object.defineProperty(file, "size", { value: 1024 });
