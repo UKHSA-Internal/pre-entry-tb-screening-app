@@ -67,7 +67,7 @@ describe("validateFiles", () => {
     expect(result).toContain("The selected file is password protected or is an invalid DICOM file");
   });
 
-  it("rejects invalid photo files (img.onerror)", async () => {
+  it("rejects invalid photo files", async () => {
     const file = new File(["invalid"], "photo.jpg", { type: "image/jpeg" });
     Object.defineProperty(file, "size", { value: 1024 });
 
