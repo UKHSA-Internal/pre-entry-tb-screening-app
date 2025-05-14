@@ -29,10 +29,17 @@ const isDicomValid = async (file: File): Promise<boolean> => {
 // check valid photo file
 const isPhotoValid = (file: File): Promise<boolean> => {
   return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve(true); // Loaded successfully
-    img.onerror = () => resolve(false); // Not a valid image
-    img.src = URL.createObjectURL(file);
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = reader.result as string;
+    };
+
+    reader.onerror = () => resolve(false);
+    reader.readAsDataURL(file);
   });
 };
 

@@ -72,6 +72,9 @@ describe("validateFiles", () => {
     Object.defineProperty(file, "size", { value: 1024 });
 
     const originalImage = global.Image;
+    const originalFileReader = global.FileReader;
+
+    // Mock Image
     global.Image = class {
       onload: () => void = () => {};
       onerror: () => void = () => {};
@@ -80,10 +83,24 @@ describe("validateFiles", () => {
       }
     } as unknown as typeof Image;
 
+    // Mock FileReader
+    global.FileReader = class {
+      onload: ((this: FileReader, ev: ProgressEvent<FileReader>) => void) | null = null;
+      onerror: (() => void) | null = null;
+      result: string | ArrayBuffer | null = "data:image/jpeg;base64,invalid";
+
+      readAsDataURL() {
+        setTimeout(() => {
+          this.onload?.call(this as unknown as FileReader, {} as ProgressEvent<FileReader>);
+        });
+      }
+    } as unknown as typeof FileReader;
+
     const result = await validateFiles([file], ImageType.Photo);
     expect(result).toContain("The selected file is an invalid JPG, JPEG or PNG file");
 
     global.Image = originalImage;
+    global.FileReader = originalFileReader;
   });
 
   it("returns true for valid photo file", async () => {
@@ -91,6 +108,9 @@ describe("validateFiles", () => {
     Object.defineProperty(file, "size", { value: 1024 });
 
     const originalImage = global.Image;
+    const originalFileReader = global.FileReader;
+
+    // Mock Image
     global.Image = class {
       onload: () => void = () => {};
       onerror: () => void = () => {};
@@ -99,10 +119,24 @@ describe("validateFiles", () => {
       }
     } as unknown as typeof Image;
 
+    // Mock FileReader
+    global.FileReader = class {
+      onload: ((this: FileReader, ev: ProgressEvent<FileReader>) => void) | null = null;
+      onerror: (() => void) | null = null;
+      result: string | ArrayBuffer | null = "data:image/jpeg;base64,valid";
+
+      readAsDataURL() {
+        setTimeout(() => {
+          this.onload?.call(this as unknown as FileReader, {} as ProgressEvent<FileReader>);
+        });
+      }
+    } as unknown as typeof FileReader;
+
     const result = await validateFiles([file], ImageType.Photo);
     expect(result).toBe(true);
 
     global.Image = originalImage;
+    global.FileReader = originalFileReader;
   });
 
   it("returns true for valid dicom file", async () => {
