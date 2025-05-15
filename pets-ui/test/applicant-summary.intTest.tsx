@@ -6,8 +6,9 @@ import { Mock } from "vitest";
 
 import { petsApi } from "@/api/api";
 import ApplicantReview from "@/sections/applicant-details-summary";
-import { ApplicationStatus } from "@/utils/enums";
+import { ApplicationStatus, ImageType } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
+import uploadFile from "@/utils/uploadFile";
 
 const useNavigateMock: Mock = vi.fn();
 vi.mock(`react-router-dom`, async (): Promise<unknown> => {
@@ -17,6 +18,20 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
     useNavigate: (): Mock => useNavigateMock,
   };
 });
+
+vi.mock("@/utils/uploadFile", () => ({
+  __esModule: true,
+  default: vi.fn(),
+  computeBase64SHA256: vi.fn(),
+}));
+
+vi.mock("@/context/applicantPhotoContext", () => ({
+  useApplicantPhoto: () => ({
+    applicantPhotoFile: new File(["dummy content"], "photo.jpg", { type: "image/jpeg" }),
+  }),
+}));
+
+const user = userEvent.setup();
 
 describe("ApplicantReview", () => {
   let mock: MockAdapter;
@@ -56,6 +71,7 @@ describe("ApplicantReview", () => {
         provinceOrState: "Reykjavik",
         country: "ISL",
         postcode: "101",
+        applicantPhotoFileName: "photo.jpg",
       },
     };
 
@@ -65,7 +81,6 @@ describe("ApplicantReview", () => {
       </Router>,
       { preloadedState },
     );
-    const user = userEvent.setup();
 
     mock.onPost("/application").reply(200, { applicationId: "abc-123" });
     mock.onPost("/applicant/register/abc-123").reply(200);
@@ -100,6 +115,8 @@ describe("ApplicantReview", () => {
     expect(screen.getAllByRole("definition")[26]).toHaveTextContent("ISL");
     expect(screen.getAllByRole("term")[14]).toHaveTextContent("Postcode");
     expect(screen.getAllByRole("definition")[28]).toHaveTextContent("101");
+    expect(screen.getAllByRole("term")[15]).toHaveTextContent("Applicant Photo");
+    expect(screen.getAllByRole("definition")[30]).toHaveTextContent("photo.jpg");
 
     await user.click(screen.getByRole("button"));
 
@@ -115,7 +132,6 @@ describe("ApplicantReview", () => {
         <ApplicantReview />
       </Router>,
     );
-    const user = userEvent.setup();
 
     mock.onPost("/application").reply(500);
 
@@ -132,7 +148,6 @@ describe("ApplicantReview", () => {
         <ApplicantReview />
       </Router>,
     );
-    const user = userEvent.setup();
 
     mock.onPost("/application").reply(200, { applicationId: "abc-123" });
     mock.onPost("/applicant/register/abc-123").reply(500);
@@ -143,5 +158,29 @@ describe("ApplicantReview", () => {
     expect(mock.history[1].url).toEqual("/applicant/register/abc-123");
     expect(mock.history).toHaveLength(2);
     expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
+  });
+
+  test("calls uploadFile to upload applicant photo if present", async () => {
+    const applicantPhotoFile = new File(["dummy content"], "photo.jpg", { type: "image/jpeg" });
+
+    const preloadedState = {
+      application: { applicationId: "abc-123", dateCreated: "" },
+    };
+
+    renderWithProviders(
+      <Router>
+        <ApplicantReview />
+      </Router>,
+      { preloadedState },
+    );
+
+    await user.click(screen.getByRole("button"));
+
+    expect(uploadFile).toHaveBeenCalledWith(
+      applicantPhotoFile,
+      "applicant-photo.jpg",
+      "abc-123",
+      ImageType.Photo,
+    );
   });
 });
