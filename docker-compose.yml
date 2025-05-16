@@ -1,14 +1,14 @@
 services:
-    localstack:
-        image: localstack/localstack:4.0.3
-        ports:
-            - '127.0.0.1:4566:4566' # LocalStack Gateway
-        environment:
-            # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
-            - DEBUG=${DEBUG:-0}
-            - DYNAMODB_IN_MEMORY=1
-            - LAMBDA_DOCKER_FLAGS=-e LOCALSTACK_FILE_WATCHER_STRATEGY=polling
+  localstack:
+    image: localstack/localstack:4.3.0
+    ports:
+      - "127.0.0.1:4566:4566" # LocalStack Gateway
+    environment:
+      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
+      - DEBUG=${DEBUG:-0}
+      - DYNAMODB_IN_MEMORY=1
+      - LAMBDA_DOCKER_FLAGS=-e LOCALSTACK_FILE_WATCHER_STRATEGY=polling
 
-        volumes:
-            - './.localstack-data:/var/lib/localstack'
-            - '/var/run/docker.sock:/var/run/docker.sock'
+    volumes:
+      - "./.localstack-data:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"

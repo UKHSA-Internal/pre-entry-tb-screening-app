@@ -90,7 +90,6 @@ const ChestXraySummary = () => {
       value: chestXrayData.xrayResult,
       link: `/chest-xray-findings#${attributeToComponentId.xrayResult}`,
       hiddenLabel: "radiological outcome",
-      emptyValueText: "Enter radiological outcome (optional)",
     },
     {
       key: "Radiological details",
@@ -132,7 +131,7 @@ const ChestXraySummary = () => {
       value: chestXrayData.xrayWasNotTakenFurtherDetails,
       link: `/chest-xray-not-taken#${attributeToComponentId.xrayWasNotTakenFurtherDetails}`,
       hiddenLabel: "details",
-      emptyValueText: "Enter details",
+      emptyValueText: "Enter details (optional)",
     },
   ];
 

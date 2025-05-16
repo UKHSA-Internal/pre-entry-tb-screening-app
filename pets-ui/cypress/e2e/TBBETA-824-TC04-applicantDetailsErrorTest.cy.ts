@@ -61,11 +61,10 @@ describe("Applicant Details Form - Invalid Month Format Test", () => {
 
     // Validate error for invalid date format is displayed
     applicantDetailsPage.validateErrorContainsText(
-      "Date of birth day and year must contain only numbers. Date of birth month must be a number, or the name of the month, or the first three letters of the month",
+      "Date of birth day, month and year must contain only numbers",
     );
     applicantDetailsPage.validateFormErrors({
-      birthDate:
-        "Date of birth day and year must contain only numbers. Date of birth month must be a number, or the name of the month, or the first three letters of the month",
+      birthDate: "Date of birth day, month and year must contain only numbers",
     });
   });
 });

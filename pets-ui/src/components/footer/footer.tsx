@@ -1,5 +1,3 @@
-import "./footer.scss";
-
 import LinkLabel from "../linkLabel/LinkLabel";
 
 export default function Footer() {

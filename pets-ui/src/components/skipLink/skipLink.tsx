@@ -1,5 +1,3 @@
-import "./skipLink.scss";
-
 import LinkLabel from "../linkLabel/LinkLabel";
 
 export default function SkipLink() {

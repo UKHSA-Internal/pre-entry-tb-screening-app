@@ -1,12 +1,9 @@
-import "./radio.scss";
-
 import { useFormContext } from "react-hook-form";
 
 import { RadioIsInline } from "@/utils/enums";
 
 import FieldWrapper from "../fieldWrapper/fieldWrapper";
 import { HeadingSize } from "../heading/heading";
-import { radioHeadingStyles, radioHeadingWithLabelStyles, radioLabelStyles } from "./radio.styles";
 
 export interface RadioProps {
   id: string;
@@ -23,6 +20,8 @@ export interface RadioProps {
   headingLevel?: 1 | 2 | 3 | 4;
   headingSize?: HeadingSize;
   headingStyle?: React.CSSProperties;
+  labelStyle?: React.CSSProperties;
+  divStyle?: React.CSSProperties;
 }
 
 export default function Radio(props: Readonly<RadioProps>) {
@@ -42,11 +41,9 @@ export default function Radio(props: Readonly<RadioProps>) {
       errorMessage={props.errorMessage}
       headingLevel={props.headingLevel}
       headingSize={props.headingSize}
-      headingStyle={{
-        ...(props.label ? radioHeadingWithLabelStyles : radioHeadingStyles),
-        ...props.headingStyle,
-      }}
-      labelStyle={radioLabelStyles}
+      headingStyle={props.headingStyle}
+      labelStyle={props.labelStyle}
+      divStyle={props.divStyle}
     >
       <div className={props.isInline} data-module="govuk-radios">
         {answerOptions.map((option, index) => {

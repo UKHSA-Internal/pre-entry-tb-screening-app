@@ -80,7 +80,7 @@ export class BasePage {
 
     switch (strategy) {
       case "legend":
-        // Original implementation - find by legend text
+        // Find by legend text
         fieldsetLocator = () => cy.contains("fieldset legend", legendText).parents("fieldset");
         break;
       case "aria":
@@ -137,15 +137,45 @@ export class BasePage {
     return this;
   }
 
+  // ValidateFieldError method
   validateFieldError(fieldId: string, errorMessage?: string): BasePage {
-    cy.get(`#${fieldId}`).should("have.class", "govuk-form-group--error");
+    // In the GDS system, error classes are now being applied to container elements
+    // So I am having to use the ID to find either the container directly or the field's container
+    const containerId = fieldId.includes("-container") ? fieldId : `${fieldId}-container`;
 
+    // First find the container with the ID, if it exists
+    cy.get(`body`).then(($body) => {
+      if ($body.find(`#${containerId}`).length > 0) {
+        // Container exists with that ID
+        cy.get(`#${containerId}`).should("have.class", "govuk-form-group--error");
+      } else {
+        // Look for the element directly and then its closest form group
+        cy.get(`#${fieldId}`)
+          .closest(".govuk-form-group")
+          .should("have.class", "govuk-form-group--error");
+      }
+    });
+
+    // Check error message if provided
     if (errorMessage) {
-      cy.get(`#${fieldId}`)
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", errorMessage);
+      cy.get(`body`).then(($body) => {
+        if ($body.find(`#${containerId}`).length > 0) {
+          // Find error message within the container
+          cy.get(`#${containerId}`)
+            .find(".govuk-error-message")
+            .should("be.visible")
+            .and("contain.text", errorMessage);
+        } else {
+          // Find error message within the closest form group
+          cy.get(`#${fieldId}`)
+            .closest(".govuk-form-group")
+            .find(".govuk-error-message")
+            .should("be.visible")
+            .and("contain.text", errorMessage);
+        }
+      });
     }
+
     return this;
   }
 

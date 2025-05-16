@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 
+import { getDescribedBy } from "@/utils/getDescribedBy";
+
 import Heading, { HeadingSize } from "../heading/heading";
+
+// useFieldset is a key determinant of how labels/legends should be applied to meet accessibility requirements
+// when useFieldset = true, heading and/or label prop, and id prop are required
+// when useFieldset = false, heading and/or label prop are required, and the form element (<input>, <select>, <textarea> etc.) should have an aria-labelledby prop that matches with the heading's id attribute, or id prop that matches with the label's htmlFor attribute
 
 interface FieldWrapperProps {
   id: string;
@@ -15,49 +21,45 @@ interface FieldWrapperProps {
   // useFieldset defaults to true. Set to false when wrapping a field that does not require being wrapped in <fieldset>
   useFieldset?: boolean;
   errorMessage: string;
+  divStyle?: React.CSSProperties;
 }
 
 export default function FieldWrapper({
   headingLevel = 2,
   headingSize = "m",
   useFieldset = true,
+  labelStyle = { marginBottom: 10 },
   ...props
 }: Readonly<FieldWrapperProps>) {
   const [errorText, setErrorText] = useState("");
   const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
-  let describedBy: string | undefined;
-
-  if (props.hint) {
-    describedBy = `${props.id}-hint`;
-  } else if (props.heading && props.label) {
-    describedBy = `${props.id}-label`;
-  } else {
-    describedBy = undefined;
-  }
 
   useEffect(() => {
     setErrorText(props.errorMessage);
     setWrapperClass(`govuk-form-group${props.errorMessage ? " govuk-form-group--error" : ""}`);
-  }, [props.errorMessage, wrapperClass]);
+  }, [props.errorMessage]);
 
   return (
-    <div id={props.id} className={wrapperClass}>
+    <div id={props.id} className={wrapperClass} style={props.divStyle}>
       {useFieldset ? (
-        <fieldset className="govuk-fieldset" aria-describedby={describedBy}>
+        <fieldset
+          className="govuk-fieldset"
+          aria-describedby={getDescribedBy(props.id, props.hint, props.heading, props.label)}
+        >
           <legend className="govuk-fieldset__legend">
             {props.heading ? (
               <Heading
                 title={props.heading}
                 level={headingLevel}
                 size={headingSize}
-                style={props.headingStyle}
+                style={{ marginBottom: 10, ...props.headingStyle }}
               />
             ) : (
               props.label
             )}
           </legend>
           {props.heading && props.label && (
-            <div className="govuk-label" id={`${props.id}-label`} style={props.labelStyle}>
+            <div className="govuk-label" id={`${props.id}-label`} style={labelStyle}>
               {props.label}
             </div>
           )}
@@ -75,9 +77,32 @@ export default function FieldWrapper({
         </fieldset>
       ) : (
         <>
+          {props.heading ? (
+            <Heading
+              title={props.heading}
+              level={headingLevel}
+              size={headingSize}
+              style={{ marginBottom: 10, ...props.headingStyle }}
+              id={`${props.id}-field`}
+            />
+          ) : (
+            <label className="govuk-label" htmlFor={`${props.id}-field`} style={labelStyle}>
+              {props.label}
+            </label>
+          )}
+          {props.heading && props.label && (
+            <div className="govuk-label" id={`${props.id}-label`} style={labelStyle}>
+              {props.label}
+            </div>
+          )}
+          {props.hint && (
+            <div className="govuk-hint" id={`${props.id}-hint`}>
+              {props.hint}
+            </div>
+          )}
           {errorText && (
             <p className="govuk-error-message">
-              <span className="govuk-visually-hidden">Error:</span> {props.errorMessage}
+              <span className="govuk-visually-hidden">Error:</span> {errorText}
             </p>
           )}
           {props.children}

@@ -2,6 +2,7 @@
 import { countryList } from "../../src/utils/countryList";
 import { loginViaB2C } from "../support/commands";
 import { ApplicantConfirmationPage } from "../support/page-objects/applicantConfirmationPage";
+import { ApplicantPhotoUploadPage } from "../support/page-objects/applicantPhotoUploadPage";
 import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../support/page-objects/applicantSummaryPage";
 import { ChestXrayConfirmationPage } from "../support/page-objects/chestXrayConfirmationPage";
@@ -29,6 +30,7 @@ import { TravelSummaryPage } from "./../support/page-objects/travelSummaryPage";
 describe("PETS Application End-to-End Tests", () => {
   // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
+  const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
   const travelInformationPage = new TravelInformationPage();
@@ -110,6 +112,33 @@ describe("PETS Application End-to-End Tests", () => {
       .fillPostcode("SW1A 1AA")
       .submitForm();
 
+    // Verify redirection to the Applicant Photo page
+    cy.url().should("include", "/applicant-photo");
+    applicantPhotoUploadPage.verifyPageLoaded();
+
+    // Check applicant information is displayed correctly
+    applicantPhotoUploadPage.verifyApplicantInfo({
+      Name: "Jane Smith",
+      "Date of birth": "15/03/2000",
+      "Passport number": passportNumber,
+    });
+
+    // Upload Applicant Photo file
+    applicantPhotoUploadPage
+      .uploadApplicantPhotoFile("cypress/fixtures/test-image.png")
+      .verifyUploadSuccess();
+
+    //Checking no errors appear
+    cy.get(".govuk-error-message").should("not.exist");
+    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
+
+    // Continue to Applicant Summary page
+    applicantPhotoUploadPage.clickContinue();
+
+    cy.url().then((url) => {
+      cy.log(`Current URL: ${url}`);
+    });
+
     // Verify redirection to the Applicant Summary page
     cy.url().should("include", "/applicant-summary");
     applicantSummaryPage.verifyPageLoaded();
@@ -145,6 +174,16 @@ describe("PETS Application End-to-End Tests", () => {
     // Review Travel Summary
     travelSummaryPage.verifyPageLoaded();
 
+    // Verify all required values are present on the summary page first
+    travelSummaryPage.verifyRequiredSummaryValues(
+      visaType,
+      "456 Park Lane",
+      "Manchester",
+      "M1 1AA",
+      "07700900123",
+      "pets.tester@hotmail.com",
+    );
+
     // Verify details by clicking change links and checking fields
     travelSummaryPage.clickChangeLink("Visa type");
     travelSummaryPage.verifyFieldValueOnChangePage("Visa type", visaType);
@@ -157,7 +196,6 @@ describe("PETS Application End-to-End Tests", () => {
 
     travelSummaryPage.clickChangeLink("UK mobile number");
     travelSummaryPage.verifyFieldValueOnChangePage("UK mobile number", "07700900123");
-
     // Submit the summary page
     travelSummaryPage.submitForm();
 

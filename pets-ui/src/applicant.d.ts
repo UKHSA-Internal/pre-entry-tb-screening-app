@@ -1,4 +1,4 @@
-import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "./utils/enums";
+import { ApplicationStatus, BackendApplicationStatus, ImageType, YesOrNo } from "./utils/enums";
 
 // Misc types
 type ApplicantSearchFormType = {
@@ -50,6 +50,7 @@ type ReduxApplicantDetailsType = {
   provinceOrState: string;
   country: string;
   postcode?: string;
+  applicantPhotoFileName?: string;
 };
 
 type PostedApplicantDetailsType = {
@@ -68,6 +69,7 @@ type PostedApplicantDetailsType = {
   provinceOrState: string;
   country: string;
   postcode?: string;
+  applicantPhotoFileName?: string;
 };
 
 type ReceivedApplicantDetailsType = PostedApplicantDetailsType & ReceivedApplicationAttributesType;
@@ -204,13 +206,14 @@ type PostedTbCertificateNotIssuedType = {
 type ReceivedTbCertificateNotIssuedType = PostedTbCertificateNotIssuedType &
   ReceivedApplicationAttributesType;
 
-// Dicom upload types
-type GenerateDicomUploadUrlRequest = {
+// Image upload types
+type GenerateImageUploadUrlRequest = {
   fileName: string;
   checksum?: string;
+  imageType: ImageType;
 };
 
-type GenerateDicomUploadUrlResponse = {
+type GenerateImageUploadUrlResponse = {
   uploadUrl: string;
   bucketPath: string;
   fields: Record<string, string>;

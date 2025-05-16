@@ -1,10 +1,7 @@
-import "./checkbox.scss";
-
 import { useFormContext } from "react-hook-form";
 
 import FieldWrapper from "../fieldWrapper/fieldWrapper";
 import { HeadingSize } from "../heading/heading";
-import { checkboxHeadingStyles } from "./checkbox.styles";
 
 export interface CheckboxProps {
   id: string;
@@ -21,6 +18,8 @@ export interface CheckboxProps {
   headingLevel?: 1 | 2 | 3 | 4;
   headingSize?: HeadingSize;
   headingStyle?: React.CSSProperties;
+  labelStyle?: React.CSSProperties;
+  divStyle?: React.CSSProperties;
 }
 
 export default function Checkbox(props: Readonly<CheckboxProps>) {
@@ -43,10 +42,9 @@ export default function Checkbox(props: Readonly<CheckboxProps>) {
       errorMessage={props.errorMessage}
       headingLevel={props.headingLevel}
       headingSize={props.headingSize}
-      headingStyle={{
-        ...(props.heading && checkboxHeadingStyles),
-        ...props.headingStyle,
-      }}
+      headingStyle={props.headingStyle}
+      labelStyle={props.labelStyle}
+      divStyle={props.divStyle}
     >
       <div className="govuk-checkboxes" data-module="govuk-checkboxes">
         {answerOptions.map((option, index) => {

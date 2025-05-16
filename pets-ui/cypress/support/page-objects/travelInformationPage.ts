@@ -1,3 +1,4 @@
+// This holds all the fields on the Travel Information Page
 import { BasePage } from "../BasePage";
 
 export class TravelInformationPage extends BasePage {
@@ -19,32 +20,32 @@ export class TravelInformationPage extends BasePage {
   }
 
   fillAddressLine1(address: string): TravelInformationPage {
-    this.fillTextInput("Address line 1", address);
+    cy.get("#address-1-field").clear().type(address);
     return this;
   }
 
   fillAddressLine2(address: string): TravelInformationPage {
-    this.fillTextInput("Address line 2", address);
+    cy.get("#address-2-field").clear().type(address);
     return this;
   }
 
   fillTownOrCity(townOrCity: string): TravelInformationPage {
-    this.fillTextInput("Town/city", townOrCity);
+    cy.get("#town-or-city-field").clear().type(townOrCity);
     return this;
   }
 
   fillPostcode(postcode: string): TravelInformationPage {
-    this.fillTextInput("Postcode", postcode);
+    cy.get("#postcode-field").clear().type(postcode);
     return this;
   }
 
   fillMobileNumber(mobileNumber: string): TravelInformationPage {
-    cy.get('[name="ukMobileNumber"]').type(mobileNumber);
+    cy.get('[name="ukMobileNumber"]').clear().type(mobileNumber);
     return this;
   }
 
   fillEmail(email: string): TravelInformationPage {
-    cy.get('[name="ukEmail"]').type(email);
+    cy.get('[name="ukEmail"]').clear().type(email);
     return this;
   }
 

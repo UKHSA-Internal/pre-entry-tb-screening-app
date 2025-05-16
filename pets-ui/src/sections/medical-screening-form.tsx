@@ -7,6 +7,7 @@ import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataH
 import Checkbox from "@/components/checkbox/checkbox";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
+import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
@@ -14,6 +15,7 @@ import { selectApplicant } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectMedicalScreening, setMedicalScreeningDetails } from "@/redux/medicalScreeningSlice";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { toArray } from "@/utils/helpers";
 import { formRegex } from "@/utils/records";
 
 const MedicalScreeningForm = () => {
@@ -30,7 +32,12 @@ const MedicalScreeningForm = () => {
   const dispatch = useAppDispatch();
 
   const onSubmit: SubmitHandler<ReduxMedicalScreeningType> = (medicalScreeningData) => {
-    dispatch(setMedicalScreeningDetails(medicalScreeningData));
+    const dataWithCorrectedLists = {
+      ...medicalScreeningData,
+      tbSymptomsList: toArray(medicalScreeningData.tbSymptomsList),
+      underElevenConditions: toArray(medicalScreeningData.underElevenConditions),
+    };
+    dispatch(setMedicalScreeningDetails(dataWithCorrectedLists));
     navigate("/medical-summary");
   };
 
@@ -81,6 +88,12 @@ const MedicalScreeningForm = () => {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
+
+        <Heading level={1} size="l" title="Medical screening" />
+        <p className="govuk-body">
+          Enter the applicant&apos;s profile information. You should answer every question.
+        </p>
+
         <ApplicantDataHeader applicantData={applicantData} />
 
         <div ref={ageRef}>

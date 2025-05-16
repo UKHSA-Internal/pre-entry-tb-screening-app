@@ -8,6 +8,8 @@ export class ApplicantConfirmationPage extends BasePage {
 
   // Verify page loaded
   verifyPageLoaded(): ApplicantConfirmationPage {
+    // Wait for all the api calls to complete - intermittently slow have added a wait
+    cy.wait(10000);
     cy.get(".govuk-panel--confirmation").should("be.visible");
     cy.get(".govuk-panel__title").should("be.visible").and("contain", "Applicant record created");
     return this;

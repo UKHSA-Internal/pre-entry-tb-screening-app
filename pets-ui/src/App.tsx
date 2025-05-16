@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import { AuthenticatedRoute, UnauthenticatedRoute } from "./auth/authRoutes";
 import ApiDocs from "./pages/api-docs";
 import ApplicantConfirmation from "./pages/applicant-confirmation";
+import ApplicantPhotoPage from "./pages/applicant-photo";
 import ApplicantResultsPage from "./pages/applicant-results";
 import ApplicantSearchPage from "./pages/applicant-search";
 import ApplicantSummaryPage from "./pages/applicant-summary";
@@ -74,6 +75,16 @@ function App() {
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <ContactDetailsPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/applicant-photo"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <ApplicantPhotoPage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }

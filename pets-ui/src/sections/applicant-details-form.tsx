@@ -7,6 +7,7 @@ import DateTextInput from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
+import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { selectApplicant, setApplicantDetails } from "@/redux/applicantSlice";
@@ -29,7 +30,7 @@ const ApplicantForm = () => {
 
   const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = (applicantData) => {
     dispatch(setApplicantDetails(applicantData));
-    navigate("/applicant-summary");
+    navigate("/applicant-photo");
   };
 
   const errorsToShow = Object.keys(errors);
@@ -84,12 +85,17 @@ const ApplicantForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
+        <Heading level={1} size="l" title="Enter applicant information" />
+        <p className="govuk-body">
+          Enter the applicant&apos;s profile information below. Select &apos;Save and continue&apos;
+          to save any information added.
+        </p>
+
+        <Heading level={2} size="m" title="Applicant's personal details" />
         <div ref={nameRef}>
           <FreeText
             id="name"
             label="Full name"
-            heading="Applicant's personal details"
-            headingStyle={{ marginBottom: 20 }}
             errorMessage={errors?.fullName?.message ?? ""}
             formValue="fullName"
             required="Enter the applicant's full name"
@@ -139,7 +145,7 @@ const ApplicantForm = () => {
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
-                legend="Date of birth"
+                label="Date of birth"
                 hint="For example, 31 3 2019"
                 value={value}
                 setDateValue={onChange}
@@ -190,7 +196,7 @@ const ApplicantForm = () => {
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
-                legend="Issue date"
+                label="Issue date"
                 hint="For example, 31 3 2019"
                 value={value}
                 setDateValue={onChange}
@@ -216,7 +222,7 @@ const ApplicantForm = () => {
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
-                legend="Expiry date"
+                label="Expiry date"
                 hint="For example, 31 3 2019"
                 value={value}
                 setDateValue={onChange}

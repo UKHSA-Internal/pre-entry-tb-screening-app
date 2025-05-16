@@ -38,6 +38,7 @@ const initialState: ReduxApplicantDetailsType = {
   provinceOrState: "",
   country: "",
   postcode: "",
+  applicantPhotoFileName: "",
 };
 
 export const applicantSlice = createSlice({
@@ -92,6 +93,9 @@ export const applicantSlice = createSlice({
     setPostcode: (state, action: PayloadAction<string>) => {
       state.postcode = action.payload;
     },
+    setApplicantPhotoFileName: (state, action: PayloadAction<string>) => {
+      state.applicantPhotoFileName = action.payload;
+    },
     setApplicantPassportDetails: (state, action: PayloadAction<ApplicantSearchFormType>) => {
       state.passportNumber = action.payload.passportNumber;
       state.countryOfIssue = action.payload.countryOfIssue;
@@ -112,6 +116,7 @@ export const applicantSlice = createSlice({
       state.provinceOrState = action.payload.provinceOrState;
       state.country = action.payload.country;
       state.postcode = action.payload.postcode ?? "";
+      state.applicantPhotoFileName = action.payload.applicantPhotoFileName ?? "";
     },
     clearApplicantDetails: (state) => {
       state.status = ApplicationStatus.INCOMPLETE;
@@ -142,6 +147,7 @@ export const applicantSlice = createSlice({
       state.provinceOrState = "";
       state.country = "";
       state.postcode = "";
+      state.applicantPhotoFileName = "";
     },
     setApplicantDetailsFromApiResponse: (
       state,
@@ -178,6 +184,7 @@ export const applicantSlice = createSlice({
       state.provinceOrState = action.payload.provinceOrState;
       state.country = action.payload.country;
       state.postcode = action.payload.postcode ?? "";
+      state.applicantPhotoFileName = action.payload.applicantPhotoFileName ?? "";
     },
   },
 });
@@ -199,6 +206,7 @@ export const {
   setProvinceOrState,
   setCountry,
   setPostcode,
+  setApplicantPhotoFileName,
   setApplicantPassportDetails,
   setApplicantDetails,
   clearApplicantDetails,
