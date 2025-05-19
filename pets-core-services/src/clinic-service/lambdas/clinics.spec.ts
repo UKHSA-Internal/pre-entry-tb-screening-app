@@ -111,43 +111,6 @@ describe("Test for Clinic Lambda", () => {
     );
   });
 
-  test("Fetching all active clinics", async () => {
-    // Arrange;
-    const loggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
-    const event: PetsAPIGatewayProxyEvent = {
-      ...mockAPIGwEvent,
-      resource: "/clinics/active",
-      path: "/clinics/active",
-      httpMethod: "GET",
-    };
-    ddbMock.on(ScanCommand).resolves({
-      Items: [
-        {
-          ...clinicDetails[0],
-          pk: `CLINIC#${clinicDetails[0].clinicId}`,
-          sk: "CLINIC#ROOT",
-        },
-      ],
-    });
-
-    // Act
-    const response: APIGatewayProxyResult = await handler(event, context);
-
-    // Assert
-    expect(response.statusCode).toBe(200);
-    expect(JSON.parse(response.body)).toMatchObject([
-      {
-        ...clinicDetails[0],
-        startDate: new Date(clinicDetails[0].startDate).toISOString(),
-      },
-    ]);
-    expect(loggerMock).toHaveBeenCalled();
-    expect(loggerMock).toHaveBeenLastCalledWith(
-      { resultCount: 1 },
-      "Clinics data fetched successfully",
-    );
-  });
-
   test("Checking an active clinic", async () => {
     // Arrange;
     const event: PetsAPIGatewayProxyEvent = {
@@ -172,8 +135,8 @@ describe("Test for Clinic Lambda", () => {
     const loggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
     const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
-      resource: "/clinics/active",
-      path: "/clinics/active",
+      resource: "/clinics/isactive",
+      path: "/clinics/isactive",
       httpMethod: "GET",
       queryStringParameters: { clinicId: `${clinicDetails[0].clinicId}` },
     };

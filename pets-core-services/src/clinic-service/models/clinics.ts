@@ -175,52 +175,6 @@ export class Clinic extends IClinic {
   }
 
   /**
-   * It retrieves all Clinic objects which have endDate attribute as null
-   * (no endDate indicates the clinic as active)
-   * @returns array of Clinic objects
-   */
-  static async getActiveClinics(): Promise<Clinic[]> {
-    try {
-      logger.info(`Finding all active clinics in '${process.env.CLINIC_SERVICE_DATABASE_NAME}'`);
-
-      const params: ScanCommandInput = {
-        TableName: Clinic.getTableName(),
-        // endDate can only be 'null' or 'Date'
-        FilterExpression: `(attribute_type(endDate, :dateType)) OR (endDate > :today)`,
-        ExpressionAttributeValues: {
-          ":dateType": "NULL",
-          ":today": new Date().toISOString(),
-        },
-      };
-      const command = new ScanCommand(params);
-
-      const data: ScanCommandOutput = await docClient.send(command);
-
-      if (data?.Items?.length == 0) {
-        logger.info("No active clinics found");
-
-        return [];
-      }
-
-      logger.info({ resultCount: data?.Items?.length ?? 0 }, "Clinics data fetched successfully");
-
-      const results = data.Items as ReturnType<Clinic["todbItem"]>[];
-
-      return results.map(
-        (dbItem) =>
-          new Clinic({
-            ...dbItem,
-            startDate: new Date(dbItem.startDate),
-            endDate: dbItem.endDate ? new Date(dbItem.endDate) : null,
-          }),
-      );
-    } catch (error) {
-      logger.error(error, "Error retrieving active clinics");
-      throw error;
-    }
-  }
-
-  /**
    * This return True for the clinic that endDate is null or grater than current date
    * @returns boolean
    */

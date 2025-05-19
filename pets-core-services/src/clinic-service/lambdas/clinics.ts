@@ -4,9 +4,9 @@ import { z } from "zod";
 import { boostrapLambdaRoutes } from "../../shared/http";
 import { PetsRoute } from "../../shared/types";
 import { createClinicHandler } from "../handlers/createClinic";
-import { fetchActiveClinicsHandler } from "../handlers/fetchActiveClinics";
 import { fetchClinicsHandler } from "../handlers/fetchClinics";
 import { getClinicHandler } from "../handlers/getClinic";
+import { isActiveClinicHandler } from "../handlers/isActiveClinic";
 import { ClinicSchema } from "../types/zod-schema";
 extendZodWithOpenApi(z);
 
@@ -39,15 +39,15 @@ export const routes: PetsRoute[] = [
   },
   {
     method: "GET",
-    path: "/clinics/active",
-    handler: fetchActiveClinicsHandler,
-    responseSchema: ClinicSchema.openapi("IsClinicActive", {
+    path: "/clinics/isactive",
+    handler: isActiveClinicHandler,
+    responseSchema: ClinicSchema.openapi({
       description: "True if the clinic is an active one",
     }),
     queryParams: {
-      clinicId: z
-        .string({ description: "When specified, returns only the clinic with matching clinicId" })
-        .optional(),
+      clinicId: z.string({
+        description: "When specified, returns only the clinic with matching clinicId",
+      }),
     },
   },
 ];

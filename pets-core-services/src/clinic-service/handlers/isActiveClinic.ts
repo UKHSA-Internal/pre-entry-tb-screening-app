@@ -4,12 +4,13 @@ import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Clinic } from "../models/clinics";
 
-export const fetchActiveClinicsHandler = async (event: APIGatewayProxyEvent) => {
+export const isActiveClinicHandler = async (event: APIGatewayProxyEvent) => {
   logger.info(`API End point: ${event.path}`);
 
   const clinicId = event?.queryStringParameters?.clinicId;
 
   if (clinicId) {
+    logger.info(`clinicId: ${clinicId}`);
     try {
       logger.info(`clinicId from queryStringParameters: ${clinicId}`);
       const isActive: boolean = await Clinic.isActiveClinic(clinicId);
@@ -22,21 +23,7 @@ export const fetchActiveClinicsHandler = async (event: APIGatewayProxyEvent) => 
     }
   }
 
-  try {
-    logger.info("Active clinics details handler triggered");
-    const clinics: Clinic[] = await Clinic.getActiveClinics();
+  logger.error(`The 'clinicId' is missing or incorrect`);
 
-    if (!clinics || clinics?.length < 1) {
-      return createHttpResponse(404, { message: "No active clinics exist" });
-    }
-
-    return createHttpResponse(
-      200,
-      clinics.map((clinic: Clinic) => clinic.toJson()),
-    );
-  } catch (error) {
-    logger.error(error, "Fetching Active Clinics Failed");
-
-    return createHttpResponse(500, { message: "Something went wrong" });
-  }
+  return createHttpResponse(400, { message: "The 'clinicId' is missing or incorrect" });
 };
