@@ -3,8 +3,8 @@ import axios, { AxiosResponse } from "axios";
 import {
   ApplicantSearchFormType,
   ApplicationIdAndDateCreatedType,
-  GenerateDicomUploadUrlRequest,
-  GenerateDicomUploadUrlResponse,
+  GenerateImageUploadUrlRequest,
+  GenerateImageUploadUrlResponse,
   PostedApplicantDetailsType,
   PostedChestXrayDetailsType,
   PostedChestXrayNotTakenType,
@@ -110,13 +110,13 @@ export const postTbCerificateDetails = async (
   return { status: result.status, statusText: result.statusText };
 };
 
-export const generateDicomUploadUrl = async (
+export const generateImageUploadUrl = async (
   applicationId: string,
-  dicomDetails: GenerateDicomUploadUrlRequest,
+  imageDetails: GenerateImageUploadUrlRequest,
 ) => {
   const result = await petsApi.put(
     `/application/${applicationId}/generate-image-upload-url`,
-    dicomDetails,
+    imageDetails,
   );
-  return result as AxiosResponse<GenerateDicomUploadUrlResponse>;
+  return result as AxiosResponse<GenerateImageUploadUrlResponse>;
 };

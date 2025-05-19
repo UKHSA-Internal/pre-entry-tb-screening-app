@@ -30,7 +30,7 @@ const ApplicantForm = () => {
 
   const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = (applicantData) => {
     dispatch(setApplicantDetails(applicantData));
-    navigate("/applicant-summary");
+    navigate("/applicant-photo");
   };
 
   const errorsToShow = Object.keys(errors);
