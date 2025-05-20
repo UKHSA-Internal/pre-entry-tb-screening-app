@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
@@ -15,12 +15,54 @@ import { ButtonType, ImageType } from "@/utils/enums";
 
 const ApplicantPhotoForm = () => {
   const applicantData = useAppSelector(selectApplicant);
-  const { setApplicantPhotoFile } = useApplicantPhoto();
+  const { applicantPhotoFile: contextPhotoFile, setApplicantPhotoFile: setContextPhotoFile } =
+    useApplicantPhoto();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const [applicantPhoto, setApplicantPhoto] = useState<File>();
-  const [applicantPhotoName, setApplicantPhotoName] = useState<string>();
+  const [localFileName, setLocalFileName] = useState<string | undefined>(() => {
+    if (contextPhotoFile) return contextPhotoFile.name;
+    if (applicantData.applicantPhotoFileName) return applicantData.applicantPhotoFileName;
+    return undefined;
+  });
+
+  const [localFile, setLocalFile] = useState<File | undefined>(() => {
+    if (contextPhotoFile && (contextPhotoFile.name === localFileName || !localFileName)) {
+      return contextPhotoFile;
+    }
+    return undefined;
+  });
+
+  useEffect(() => {
+    let currentName: string | undefined = undefined;
+    let currentFile: File | undefined = undefined;
+
+    if (contextPhotoFile) {
+      currentName = contextPhotoFile.name;
+      currentFile = contextPhotoFile;
+    } else if (applicantData.applicantPhotoFileName) {
+      currentName = applicantData.applicantPhotoFileName;
+      currentFile = undefined;
+    }
+
+    if (currentName !== localFileName) {
+      setLocalFileName(currentName);
+    }
+
+    if (currentFile !== localFile) {
+      setLocalFile(currentFile);
+    }
+  }, [contextPhotoFile, applicantData.applicantPhotoFileName]);
+
+  useEffect(() => {
+    if (localFile) {
+      setContextPhotoFile(localFile);
+    } else {
+      if (contextPhotoFile !== null) {
+        setContextPhotoFile(null);
+      }
+    }
+  }, [localFile, setContextPhotoFile, contextPhotoFile]);
 
   const methods = useForm<ReduxApplicantDetailsType>({
     criteriaMode: "all",
@@ -34,10 +76,15 @@ const ApplicantPhotoForm = () => {
   const errorsToShow = Object.keys(errors);
 
   const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = () => {
-    if (applicantPhoto && applicantPhotoName) {
-      // save only file name in redux
-      dispatch(setApplicantPhotoFileName(applicantPhotoName));
-      setApplicantPhotoFile(applicantPhoto);
+    if (localFile && localFileName) {
+      dispatch(setApplicantPhotoFileName(localFileName));
+    } else if (!localFile && !localFileName) {
+      if (applicantData.applicantPhotoFileName) {
+        dispatch(setApplicantPhotoFileName(""));
+      }
+      if (contextPhotoFile) {
+        setContextPhotoFile(null);
+      }
     }
 
     navigate("/applicant-summary");
@@ -64,9 +111,9 @@ const ApplicantPhotoForm = () => {
                 formValue="applicantPhotoFileName"
                 required={false}
                 type={ImageType.Photo}
-                setFileState={setApplicantPhoto}
-                setFileName={setApplicantPhotoName}
-                existingFileName={applicantData.applicantPhotoFileName}
+                setFileState={setLocalFile}
+                setFileName={setLocalFileName}
+                existingFileName={localFileName}
               />
             </div>
 
