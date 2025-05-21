@@ -170,6 +170,7 @@ export const ChestXRayNotTakenRequestSchema = z.object({
   xrayWasNotTakenFurtherDetails: z.string().optional().openapi({
     description: "Further details on why X-ray was not taken",
   }),
+  isChestXrayRequireq: z.literal(YesOrNo.Yes),
 });
 
 export const ChestXRayTakenRequestSchema = z.object({
@@ -207,6 +208,7 @@ export const ChestXRayTakenRequestSchema = z.object({
   xrayActiveTbFindings: z.array(z.string()).openapi({
     description: "Findings sometimes seen in active TB (or other conditions)",
   }),
+  isChestXrayRequireq: z.literal(YesOrNo.No),
 });
 
 export const ChestXRayRequestSchema = z.union([

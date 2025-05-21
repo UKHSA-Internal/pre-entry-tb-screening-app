@@ -15,6 +15,8 @@ abstract class ChestXRayBase {
   dateCreated: Date;
   createdBy: string;
 
+  isChestXrayRequireq: YesOrNo;
+
   constructor(details: ChestXRayBase) {
     this.applicationId = details.applicationId;
     this.status = details.status;
@@ -22,6 +24,7 @@ abstract class ChestXRayBase {
     // Audit
     this.dateCreated = details.dateCreated;
     this.createdBy = details.createdBy;
+    this.isChestXrayRequireq = details.isChestXrayRequireq;
   }
 }
 
@@ -30,6 +33,7 @@ type IChestXRayTaken = {
   status: TaskStatus;
   dateCreated: Date;
   createdBy: string;
+  isChestXrayRequireq: YesOrNo;
 
   chestXrayTaken: YesOrNo.Yes;
   posteroAnteriorXrayFileName: string;
@@ -106,6 +110,7 @@ type IChestXRayNotTaken = {
   status: TaskStatus;
   dateCreated: Date;
   createdBy: string;
+  isChestXrayRequireq: YesOrNo;
 
   chestXrayTaken: YesOrNo.No;
   reasonXrayWasNotTaken: ChestXRayNotTakenReason;

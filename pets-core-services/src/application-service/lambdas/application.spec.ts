@@ -240,6 +240,7 @@ describe("Test for Application Lambda", () => {
           xrayMinorFindings: [],
           xrayAssociatedMinorFindings: [],
           xrayActiveTbFindings: [],
+          isChestXrayRequireq: YesOrNo.No,
         }),
       };
 
@@ -261,6 +262,7 @@ describe("Test for Application Lambda", () => {
           chestXrayTaken: YesOrNo.No,
           reasonXrayWasNotTaken: "Other",
           xrayWasNotTakenFurtherDetails: "Physician Notes",
+          isChestXrayRequireq: YesOrNo.Yes,
         }),
       };
 

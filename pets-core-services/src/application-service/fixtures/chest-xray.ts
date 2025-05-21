@@ -22,6 +22,7 @@ export const seededChestXray: Array<NewChestXRayTaken | NewChestXRayNotTaken> = 
     xrayMinorFindings: [],
     xrayAssociatedMinorFindings: [],
     xrayActiveTbFindings: [],
+    isChestXrayRequireq: YesOrNo.No,
   },
   {
     applicationId: seededApplications[2].applicationId,
@@ -29,5 +30,6 @@ export const seededChestXray: Array<NewChestXRayTaken | NewChestXRayNotTaken> = 
     reasonXrayWasNotTaken: ChestXRayNotTakenReason.Other,
     xrayWasNotTakenFurtherDetails: "Further Notes",
     createdBy: "shawn.jones@clinic.com",
+    isChestXrayRequireq: YesOrNo.Yes,
   },
 ];
