@@ -20,7 +20,7 @@ const initialState: ReduxChestXrayDetailsType = {
   xrayMinorFindings: [],
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
-  sputumCollected: YesOrNo.NULL,
+  isSputumRequired: YesOrNo.NULL,
 };
 
 export const chestXraySlice = createSlice({
@@ -73,7 +73,7 @@ export const chestXraySlice = createSlice({
       state.xrayWasNotTakenFurtherDetails = action.payload;
     },
     setSputumCollectionTaken: (state, action: PayloadAction<YesOrNo>) => {
-      state.sputumCollected = action.payload;
+      state.isSputumRequired = action.payload;
     },
     setChestXrayDetails: (state, action: PayloadAction<ReduxChestXrayDetailsType>) => {
       state.chestXrayTaken = action.payload.chestXrayTaken;
@@ -96,7 +96,7 @@ export const chestXraySlice = createSlice({
       state.xrayActiveTbFindings = action.payload.xrayActiveTbFindings
         ? [...action.payload.xrayActiveTbFindings]
         : [];
-      state.sputumCollected = action.payload.sputumCollected;
+      state.isSputumRequired = action.payload.isSputumRequired;
     },
     clearChestXrayTakenDetails: (state) => {
       state.posteroAnteriorXrayFileName = "";
@@ -131,7 +131,7 @@ export const chestXraySlice = createSlice({
       state.xrayMinorFindings = [];
       state.xrayAssociatedMinorFindings = [];
       state.xrayActiveTbFindings = [];
-      state.sputumCollected = YesOrNo.NULL;
+      state.isSputumRequired = YesOrNo.NULL;
     },
     setChestXrayFromApiResponse: (state, action: PayloadAction<ReceivedChestXrayDetailsType>) => {
       state.status =
@@ -156,7 +156,7 @@ export const chestXraySlice = createSlice({
       state.xrayActiveTbFindings = action.payload.xrayActiveTbFindings
         ? [...action.payload.xrayActiveTbFindings]
         : [];
-      state.sputumCollected = action.payload.sputumCollected;
+      state.isSputumRequired = action.payload.isSputumRequired;
     },
   },
 });

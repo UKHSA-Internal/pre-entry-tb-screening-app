@@ -41,7 +41,7 @@ const ChestXraySummary = () => {
           xrayMinorFindings: chestXrayData.xrayMinorFindings,
           xrayAssociatedMinorFindings: chestXrayData.xrayAssociatedMinorFindings,
           xrayActiveTbFindings: chestXrayData.xrayActiveTbFindings,
-          sputumCollected: chestXrayData.sputumCollected,
+          isSputumRequired: chestXrayData.isSputumRequired,
         });
       } else {
         await postChestXrayDetails(applicationData.applicationId, {
@@ -112,8 +112,8 @@ const ChestXraySummary = () => {
     },
     {
       key: "Sputum collection requirement",
-      value: chestXrayData.sputumCollected,
-      link: `/sputum-question#${attributeToComponentId.sputumCollected}`,
+      value: chestXrayData.isSputumRequired,
+      link: `/sputum-question#${attributeToComponentId.isSputumRequired}`,
       hiddenLabel: "chest X-ray Status",
     },
   ];
@@ -142,8 +142,8 @@ const ChestXraySummary = () => {
     },
     {
       key: "Sputum collection requirement",
-      value: chestXrayData.sputumCollected,
-      link: `/sputum-question#${attributeToComponentId.sputumCollected}`,
+      value: chestXrayData.isSputumRequired,
+      link: `/sputum-question#${attributeToComponentId.isSputumRequired}`,
       hiddenLabel: "chest X-ray Status",
     },
   ];

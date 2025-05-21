@@ -1,0 +1,154 @@
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { HelmetProvider } from "react-helmet-async";
+import { BrowserRouter as Router, useLocation } from "react-router-dom";
+import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest";
+
+import SputumQuestionPage from "@/pages/sputum-question";
+import { renderWithProviders } from "@/utils/test-utils";
+
+const useNavigateMock: Mock = vi.fn();
+vi.mock(`react-router-dom`, async (): Promise<unknown> => {
+  const actual: Record<string, unknown> = await vi.importActual(`react-router-dom`);
+  return {
+    ...actual,
+    useNavigate: (): Mock => useNavigateMock,
+    useLocation: vi.fn(),
+  };
+});
+
+describe("SputumQuestionPage", () => {
+  const user = userEvent.setup();
+
+  let originalScrollIntoViewDescriptor: PropertyDescriptor | undefined;
+  let scrollIntoViewMockFn: Mock;
+
+  beforeEach(() => {
+    (useLocation as Mock).mockReturnValue({ pathname: "/sputum-question", hash: "", search: "" });
+
+    originalScrollIntoViewDescriptor = Object.getOwnPropertyDescriptor(
+      window.HTMLElement.prototype,
+      "scrollIntoView",
+    );
+
+    scrollIntoViewMockFn = vi.fn();
+
+    window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMockFn;
+
+    renderWithProviders(
+      <Router>
+        <HelmetProvider>
+          <SputumQuestionPage />
+        </HelmetProvider>
+      </Router>,
+    );
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    cleanup();
+
+    if (originalScrollIntoViewDescriptor) {
+      Object.defineProperty(
+        window.HTMLElement.prototype,
+        "scrollIntoView",
+        originalScrollIntoViewDescriptor,
+      );
+    }
+  });
+
+  it("shows the breadcrumbs", () => {
+    const breadcrumbItems = [{ text: "Application progress tracker", href: "/tracker" }];
+    breadcrumbItems.forEach((item) => {
+      const breadcrumbElement = screen.getByText(item.text);
+      expect(breadcrumbElement).toBeInTheDocument();
+      expect(breadcrumbElement.closest("a")).toHaveAttribute("href", item.href);
+    });
+  });
+
+  it("renders the page titles and radio question", () => {
+    expect(
+      screen.getByRole("heading", { name: "Sputum collection requirement", level: 1 }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", { name: "Is a sputum collection required?", level: 2 }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("group", { name: "Is a sputum collection required?" }),
+    ).toBeInTheDocument();
+
+    expect(screen.getByRole("radio", { name: "Yes" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "No" })).toBeInTheDocument();
+  });
+
+  it("renders an error when continue button pressed but required question not answered", async () => {
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+    expect(await screen.findByText("There is a problem")).toBeInTheDocument();
+
+    const expectedErrorMessageText = "Select whether a sputum collection is required";
+    const expectedErrorLinkName = `Error: ${expectedErrorMessageText}`;
+
+    const errorLinkInSummary = screen.getByRole("link", { name: expectedErrorLinkName });
+    expect(errorLinkInSummary).toBeInTheDocument();
+    expect(errorLinkInSummary).toHaveAttribute("href", "#sputum-collected");
+    expect(errorLinkInSummary).toHaveAttribute("aria-label", expectedErrorLinkName);
+
+    const radioGroup = screen.getByRole("group", { name: "Is a sputum collection required?" });
+    expect(within(radioGroup).getByText(expectedErrorMessageText)).toBeInTheDocument();
+  });
+
+  it("renders an in-focus error summary when continue button pressed but required questions not answered", async () => {
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+    const errorSummaryDiv = await screen.findByTestId("error-summary");
+    await waitFor(() => expect(errorSummaryDiv).toHaveFocus());
+  });
+
+  it("does not render an error if continue button not clicked with no answer provided", () => {
+    expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
+
+    const radioGroup = screen.getByRole("group", { name: "Is a sputum collection required?" });
+    expect(
+      within(radioGroup).queryByText("Select whether a sputum collection is required"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("when 'Yes' selected and continue pressed, it navigates to /chest-xray-summary", async () => {
+    const radioYes = screen.getByRole("radio", { name: "Yes" });
+    await user.click(radioYes);
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-summary");
+  });
+
+  it("when 'No' selected and continue pressed, it navigates to /chest-xray-summary", async () => {
+    const radioNo = screen.getByRole("radio", { name: "No" });
+    await user.click(radioNo);
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-summary");
+  });
+
+  it("scrolls to the sputum collected radio group if location hash is #sputum-collected", () => {
+    (useLocation as Mock).mockReturnValue({
+      pathname: "/sputum-question",
+      hash: "#sputum-collected",
+      search: "",
+    });
+
+    cleanup();
+    renderWithProviders(
+      <Router>
+        <HelmetProvider>
+          <SputumQuestionPage />
+        </HelmetProvider>
+      </Router>,
+    );
+
+    expect(scrollIntoViewMockFn).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not pre-select any radio button by default if the store's default isSputumRequired is null/undefined", () => {
+    expect(screen.getByRole("radio", { name: "Yes" })).not.toBeChecked();
+    expect(screen.getByRole("radio", { name: "No" })).not.toBeChecked();
+  });
+});
