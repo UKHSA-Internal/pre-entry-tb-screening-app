@@ -73,7 +73,7 @@ const ApplicantPhotoForm = () => {
                 type={ImageType.Photo}
                 setFileState={setApplicantPhoto}
                 setFileName={setApplicantPhotoName}
-                existingFileName={applicantPhotoFile?.name || applicantData.applicantPhotoFileName}
+                existingFileName={applicantPhotoFile?.name ?? applicantData.applicantPhotoFileName}
               />
             </div>
 
