@@ -153,6 +153,7 @@ type ReduxChestXrayDetailsType = {
   xrayMinorFindings: string[];
   xrayAssociatedMinorFindings: string[];
   xrayActiveTbFindings: string[];
+  sputumCollected: YesOrNo;
 };
 
 type PostedChestXrayDetailsType = {
@@ -168,6 +169,7 @@ type PostedChestXrayDetailsType = {
   xrayMinorFindings: string[];
   xrayAssociatedMinorFindings: string[];
   xrayActiveTbFindings: string[];
+  sputumCollected: YesOrNo;
 };
 
 type ReceivedChestXrayDetailsType = PostedChestXrayDetailsType & ReceivedApplicationAttributesType;

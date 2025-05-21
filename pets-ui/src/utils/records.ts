@@ -35,6 +35,7 @@ const attributeToComponentId: { [key: string]: string } = {
   pregnant: "pregnant",
   menstrualPeriods: "menstrual-periods",
   physicalExamNotes: "physical-exam-notes",
+  sputumCollected: "sputum-collected",
   chestXrayTaken: "chest-xray-taken",
   posteroAnteriorXrayFileName: "postero-anterior-xray",
   apicalLordoticXrayFileName: "apical-lordotic-xray",
