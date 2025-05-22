@@ -32,7 +32,7 @@ export default defineConfig({
   video: true,
   screenshotOnRunFailure: true,
   e2e: {
-    baseUrl: process.env.APP_DOMAIN ?? "https://pets-test.ukhsa.gov.uk",
+    baseUrl: process.env.APP_DOMAIN ?? "http://localhost:3000",
     supportFile: "cypress/support/e2e.ts",
     specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
     experimentalStudio: true,
