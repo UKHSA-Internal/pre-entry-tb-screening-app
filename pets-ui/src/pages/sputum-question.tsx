@@ -8,7 +8,7 @@ export default function SputumQuestionPage() {
   ];
 
   return (
-    <Container title="Select sputum collection status" breadcrumbItems={breadcrumbItems}>
+    <Container title="Is sputum collection required?" breadcrumbItems={breadcrumbItems}>
       <SputumQuestionForm />
     </Container>
   );
