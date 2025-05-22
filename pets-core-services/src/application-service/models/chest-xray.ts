@@ -101,6 +101,7 @@ export class ChestXRayTaken extends ChestXRayBase {
       xrayAssociatedMinorFindings: this.xrayAssociatedMinorFindings,
       xrayActiveTbFindings: this.xrayActiveTbFindings,
       dateCreated: this.dateCreated,
+      isSputumRequired: this.isSputumRequired,
     };
   }
 }
