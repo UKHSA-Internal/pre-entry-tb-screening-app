@@ -1,6 +1,6 @@
 [
     {
-        "clinicId": "1",
+        "clinicId": "test-clinic-id-3",
         "name": "Q-Life Family clinic",
         "city": "Lagos",
         "country": "NGA",
@@ -9,7 +9,7 @@
         "createdBy": "shane.park@iom.com"
     },
     {
-        "clinicId": "2",
+        "clinicId": "Apollo Clinic",
         "name": "Q-Life Family clinic",
         "city": "Lagos",
         "country": "NGA",
