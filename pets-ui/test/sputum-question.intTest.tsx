@@ -68,18 +68,15 @@ describe("SputumQuestionPage", () => {
 
   it("renders the page titles and radio question", () => {
     expect(
-      screen.getByRole("heading", { name: "Sputum collection requirement", level: 1 }),
+      screen.getByRole("heading", { name: "Is a sputum collection required?", level: 1 }),
     ).toBeInTheDocument();
 
-    expect(
-      screen.getByRole("heading", { name: "Is a sputum collection required?", level: 2 }),
-    ).toBeInTheDocument();
+    const yesRadio = screen.getByRole("radio", { name: "Yes" });
+    const radioGroupElement = yesRadio.closest("fieldset");
+    expect(radioGroupElement).toBeInTheDocument();
 
-    expect(
-      screen.getByRole("group", { name: "Is a sputum collection required?" }),
-    ).toBeInTheDocument();
-
-    expect(screen.getByRole("radio", { name: "Yes" })).toBeInTheDocument();
+    expect(radioGroupElement).toHaveRole("group");
+    expect(yesRadio).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: "No" })).toBeInTheDocument();
   });
 
@@ -95,8 +92,10 @@ describe("SputumQuestionPage", () => {
     expect(errorLinkInSummary).toHaveAttribute("href", "#sputum-collected");
     expect(errorLinkInSummary).toHaveAttribute("aria-label", expectedErrorLinkName);
 
-    const radioGroup = screen.getByRole("group", { name: "Is a sputum collection required?" });
-    expect(within(radioGroup).getByText(expectedErrorMessageText)).toBeInTheDocument();
+    const yesRadio = screen.getByRole("radio", { name: "Yes" });
+    const radioGroupElement = yesRadio.closest("fieldset");
+    expect(radioGroupElement).toBeInTheDocument();
+    expect(within(radioGroupElement!).getByText(expectedErrorMessageText)).toBeInTheDocument();
   });
 
   it("renders an in-focus error summary when continue button pressed but required questions not answered", async () => {
@@ -108,9 +107,11 @@ describe("SputumQuestionPage", () => {
   it("does not render an error if continue button not clicked with no answer provided", () => {
     expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
 
-    const radioGroup = screen.getByRole("group", { name: "Is a sputum collection required?" });
+    const yesRadio = screen.getByRole("radio", { name: "Yes" });
+    const radioGroupElement = yesRadio.closest("fieldset");
+    expect(radioGroupElement).toBeInTheDocument();
     expect(
-      within(radioGroup).queryByText("Select whether a sputum collection is required"),
+      within(radioGroupElement!).queryByText("Select whether a sputum collection is required"),
     ).not.toBeInTheDocument();
   });
 
