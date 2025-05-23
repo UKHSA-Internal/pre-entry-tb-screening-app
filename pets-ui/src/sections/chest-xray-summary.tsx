@@ -110,12 +110,6 @@ const ChestXraySummary = () => {
       hiddenLabel: "radiographic findings",
       emptyValueText: "Enter radiographic findings (optional)",
     },
-    {
-      key: "Sputum collection requirement",
-      value: chestXrayData.isSputumRequired,
-      link: `/sputum-question#${attributeToComponentId.isSputumRequired}`,
-      hiddenLabel: "chest X-ray Status",
-    },
   ];
 
   const xrayNotTakenSummaryData = [
@@ -139,12 +133,6 @@ const ChestXraySummary = () => {
       link: `/chest-xray-not-taken#${attributeToComponentId.xrayWasNotTakenFurtherDetails}`,
       hiddenLabel: "details",
       emptyValueText: "Enter details (optional)",
-    },
-    {
-      key: "Sputum collection requirement",
-      value: chestXrayData.isSputumRequired,
-      link: `/sputum-question#${attributeToComponentId.isSputumRequired}`,
-      hiddenLabel: "chest X-ray Status",
     },
   ];
 
