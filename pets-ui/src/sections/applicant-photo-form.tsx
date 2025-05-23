@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
@@ -15,7 +15,7 @@ import { ButtonType, ImageType } from "@/utils/enums";
 
 const ApplicantPhotoForm = () => {
   const applicantData = useAppSelector(selectApplicant);
-  const { setApplicantPhotoFile } = useApplicantPhoto();
+  const { applicantPhotoFile, setApplicantPhotoFile } = useApplicantPhoto();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -43,6 +43,13 @@ const ApplicantPhotoForm = () => {
     navigate("/applicant-summary");
   };
 
+  useEffect(() => {
+    if (applicantPhotoFile) {
+      setApplicantPhoto(applicantPhotoFile);
+      setApplicantPhotoName(applicantPhotoFile.name);
+    }
+  }, [applicantPhotoFile]);
+
   return (
     <div>
       <FormProvider {...methods}>
@@ -66,7 +73,7 @@ const ApplicantPhotoForm = () => {
                 type={ImageType.Photo}
                 setFileState={setApplicantPhoto}
                 setFileName={setApplicantPhotoName}
-                existingFileName={applicantData.applicantPhotoFileName}
+                existingFileName={applicantPhotoFile?.name ?? applicantData.applicantPhotoFileName}
               />
             </div>
 
