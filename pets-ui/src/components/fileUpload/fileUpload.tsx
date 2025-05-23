@@ -81,7 +81,7 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
                 type="file"
                 data-testid={props.id}
                 {...register(props.formValue, {
-                  required: props.required,
+                  required: showExistingFileName ? false : props.required,
                   validate: async (files: File[]) => {
                     if (files.length) {
                       const validationResult = await validateFiles(files, props.type);

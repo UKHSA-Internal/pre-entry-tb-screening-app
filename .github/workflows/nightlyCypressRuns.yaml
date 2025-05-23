@@ -1,0 +1,214 @@
+name: Nightly Cypress Tests
+
+on:
+  schedule:
+    # Runs at 1 AM UTC every weekday (Monday to Friday)
+    - cron: "0 1 * * 1-5"
+  workflow_dispatch: # Allows manual triggering through GitHub UI
+
+jobs:
+  cypress-nightly:
+    name: Run Nightly Cypress Tests - ${{ matrix.browser }}
+    runs-on: ubuntu-latest
+    strategy:
+      # Don't fail fast - run all tests even if some fail
+      fail-fast: false
+      matrix:
+        browser: [chrome, firefox, edge]
+
+    env:
+      USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
+      USER_1_PASSWORD: ${{ secrets.USER_1_PASSWORD }}
+      USER_2_EMAIL: ${{ secrets.USER_2_EMAIL }}
+      USER_2_PASSWORD: ${{ secrets.USER_2_PASSWORD }}
+      USER_3_EMAIL: ${{ secrets.USER_3_EMAIL }}
+      USER_3_PASSWORD: ${{ secrets.USER_3_PASSWORD }}
+      USER_4_EMAIL: ${{ secrets.USER_4_EMAIL }}
+      USER_4_PASSWORD: ${{ secrets.USER_4_PASSWORD }}
+      USER_5_EMAIL: ${{ secrets.USER_5_EMAIL }}
+      USER_5_PASSWORD: ${{ secrets.USER_5_PASSWORD }}
+      USER_6_EMAIL: ${{ secrets.USER_6_EMAIL }}
+      USER_6_PASSWORD: ${{ secrets.USER_6_PASSWORD }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Debug available Cypress specs
+        run: ls -R pets-ui/cypress/e2e
+
+      - name: Cache Cypress binary
+        id: cache-cypress-binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-binary-nightly-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
+
+      - name: Install Cypress Binary
+        if: steps.cache-cypress-binary.outputs.cache-hit != 'true'
+        run: |
+          pnpm exec cypress install --force
+          pnpm exec cypress verify
+        working-directory: pets-ui
+
+      - name: Start Local Environment
+        run: |
+          pnpm start & sleep 120
+
+      - name: Cypress run tests
+        uses: cypress-io/github-action@v6
+        continue-on-error: true
+        id: initial_attempt
+        with:
+          install: false
+          working-directory: pets-ui
+          browser: ${{ matrix.browser }}
+          config-file: cypress/cypress.config.mjs
+
+      - name: Retry if failed
+        if: steps.initial_attempt.outcome != 'success'
+        uses: cypress-io/github-action@v6
+        id: retry_attempt
+        with:
+          install: false
+          working-directory: pets-ui
+          browser: ${{ matrix.browser }}
+          config-file: cypress/cypress.config.mjs
+
+      - name: Upload Failed Tests Screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-failed-screenshots-${{ matrix.browser }}
+          path: pets-ui/cypress/screenshots
+          retention-days: 7
+
+      - name: Merge Mochawesome Reports
+        if: always()
+        run: |
+          JSON_DIR=pets-ui/cypress/reports/mochawesome/.jsons
+          if ls ${JSON_DIR}/*.json 1> /dev/null 2>&1; then
+            npx mochawesome-merge ${JSON_DIR}/*.json > pets-ui/cypress/reports/mochawesome/mochawesome.json
+          else
+            echo "No mochawesome JSON files found. Skipping merge."
+          fi
+
+      - name: Upload Mochawesome Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-mochawesome-report-${{ matrix.browser }}
+          path: pets-ui/cypress/reports/mochawesome/
+          retention-days: 7
+
+  generate-summary:
+    name: Generate Test Summary
+    needs: cypress-nightly
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-artifacts
+          pattern: nightly-*
+
+      - name: Generate test summary report
+        id: summary
+        run: |
+          echo "# 🌙 Nightly Cypress Test Results" > nightly-summary.md
+          echo "**Run Date**: $(date)" >> nightly-summary.md
+          echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
+          echo "" >> nightly-summary.md
+
+          # Initialize counters
+          TOTAL_BROWSERS=3
+          FAILED_BROWSERS=0
+
+          echo "## Browser Test Results" >> nightly-summary.md
+          echo "" >> nightly-summary.md
+          echo "| Browser | Status | Screenshots |" >> nightly-summary.md
+          echo "|---------|--------|-------------|" >> nightly-summary.md
+
+          # Check each browser result
+          for browser in chrome firefox edge; do
+            SCREENSHOT_DIR="all-artifacts/nightly-failed-screenshots-$browser"
+            if [ -d "$SCREENSHOT_DIR" ] && [ "$(ls -A $SCREENSHOT_DIR 2>/dev/null)" ]; then
+              SCREENSHOT_COUNT=$(find "$SCREENSHOT_DIR" -name "*.png" -o -name "*.jpg" | wc -l)
+              echo "| $browser | ❌ Failed | $SCREENSHOT_COUNT failure(s) |" >> nightly-summary.md
+              ((FAILED_BROWSERS++))
+            else
+              echo "| $browser | ✅ Passed | - |" >> nightly-summary.md
+            fi
+          done
+
+          echo "" >> nightly-summary.md
+
+          # Overall status
+          if [ $FAILED_BROWSERS -eq 0 ]; then
+            echo "## ✅ Overall Status: PASSED" >> nightly-summary.md
+            echo "All browser tests completed successfully!" >> nightly-summary.md
+            echo "status=passed" >> $GITHUB_OUTPUT
+          else
+            echo "## ❌ Overall Status: FAILED" >> nightly-summary.md
+            echo "$FAILED_BROWSERS out of $TOTAL_BROWSERS browser(s) have failing tests." >> nightly-summary.md
+            echo "status=failed" >> $GITHUB_OUTPUT
+            
+            # List failed screenshots
+            echo "" >> nightly-summary.md
+            echo "### Failed Test Details" >> nightly-summary.md
+            echo "" >> nightly-summary.md
+            for browser in chrome firefox edge; do
+              SCREENSHOT_DIR="all-artifacts/nightly-failed-screenshots-$browser"
+              if [ -d "$SCREENSHOT_DIR" ] && [ "$(ls -A $SCREENSHOT_DIR 2>/dev/null)" ]; then
+                echo "#### $browser failures:" >> nightly-summary.md
+                find "$SCREENSHOT_DIR" -name "*.png" -o -name "*.jpg" | while read screenshot; do
+                  echo "- $(basename "$screenshot")" >> nightly-summary.md
+                done
+                echo "" >> nightly-summary.md
+              fi
+            done
+          fi
+
+          # Add links
+          echo "" >> nightly-summary.md
+          echo "---" >> nightly-summary.md
+          echo "📊 [View Full Test Report](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> nightly-summary.md
+          echo "" >> nightly-summary.md
+          echo "💾 Test artifacts (screenshots, reports) are available in the workflow run artifacts." >> nightly-summary.md
+
+          # Add to GitHub step summary
+          cat nightly-summary.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload summary report
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-summary-report
+          path: nightly-summary.md
+          retention-days: 7
+
+      # Set final workflow status
+      - name: Set workflow conclusion
+        if: always()
+        run: |
+          if [[ "${{ steps.summary.outputs.status }}" == "passed" ]]; then
+            echo "::notice::✅ All nightly tests passed successfully!"
+          else
+            echo "::error::❌ Some nightly tests failed. Check the summary report for details."
+            exit 1
+          fi
