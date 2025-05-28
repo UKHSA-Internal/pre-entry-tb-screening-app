@@ -85,7 +85,7 @@ export class TBProgressTrackerPage {
     this.verifyTextPresent("You cannot currently log sputum test information in this system.");
   }
 
-  // For backward compatibility with your generated code
+  // For backward compatibility
   verifySputumTestMessage(): void {
     this.verifySputumTestInformationText();
   }
@@ -100,7 +100,7 @@ export class TBProgressTrackerPage {
     cy.contains("button", "Search").click();
   }
 
-  // For backward compatibility with your generated code
+  // For backward compatibility
   clickSearchAgain(): void {
     this.clickSearchAgainButton();
   }

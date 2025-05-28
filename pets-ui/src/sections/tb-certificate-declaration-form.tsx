@@ -4,12 +4,12 @@ import { useLocation, useNavigate } from "react-router";
 
 import { DateType, ReduxTbCertificateType } from "@/applicant";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
-import Button from "@/components/button/button";
 import DateTextInput from "@/components/dateTextInput/dateTextInput";
 import ErrorDisplay from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
+import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -79,16 +79,13 @@ const TbCertificateDeclarationForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
 
+        <Heading level={1} size="l" title="Enter TB clearance certificate declaration" />
+
         <ApplicantDataHeader applicantData={applicantData} />
 
         <div ref={tbClearanceIssued}>
-          <Heading
-            level={2}
-            size="m"
-            style={{ marginBottom: 20, marginTop: 40 }}
-            title="Has a TB clearance certificate been issued?"
-          />
           <Radio
+            heading="Has a TB clearance certificate been issued?"
             id="tb-clearance-issued"
             isInline={RadioIsInline.FALSE}
             answerOptions={["Yes", "No"]}
@@ -108,7 +105,7 @@ const TbCertificateDeclarationForm = () => {
             formValue="comments"
             rows={10}
             defaultValue={tbCertificateData.comments}
-            heading="Physician comments"
+            heading="Give further details (optional)"
           />
         </div>
 
@@ -120,12 +117,6 @@ const TbCertificateDeclarationForm = () => {
         />
 
         <div ref={tbCertificateDate}>
-          <Heading
-            level={2}
-            size="m"
-            style={{ marginBottom: 20, marginTop: 20 }}
-            title="Date of TB clearance certificate"
-          />
           <Controller
             name="certificateDate"
             control={control}
@@ -144,6 +135,7 @@ const TbCertificateDeclarationForm = () => {
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
+                heading="Date of TB clearance certificate"
                 value={value}
                 setDateValue={onChange}
                 id={"tb-certificate-date"}
@@ -170,13 +162,7 @@ const TbCertificateDeclarationForm = () => {
           />
         </div>
 
-        <Button
-          id="continue"
-          type={ButtonType.DEFAULT}
-          text="Continue"
-          href="/tb-certificate-summary"
-          handleClick={() => {}}
-        />
+        <SubmitButton id="continue" type={ButtonType.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

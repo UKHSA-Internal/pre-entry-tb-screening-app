@@ -170,6 +170,7 @@ export const {
   setXrayMinorFindings,
   setXrayAssociatedMinorFindings,
   setXrayActiveTbFindings,
+  setChestXrayDetails,
   clearChestXrayTakenDetails,
   clearChestXrayNotTakenDetails,
   clearChestXrayDetails,

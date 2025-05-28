@@ -3,11 +3,12 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 import { ApplicantSearchFormType } from "@/applicant";
-import Button from "@/components/button/button";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
+import Heading from "@/components/heading/heading";
 import Spinner from "@/components/spinner/spinner";
+import SubmitButton from "@/components/submitButton/submitButton";
 import {
   clearApplicantDetails,
   setApplicantDetailsFromApiResponse,
@@ -93,6 +94,12 @@ const ApplicantSearchForm = () => {
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
+
+          <Heading level={1} size="l" title="Search for a visa applicant" />
+          <p className="govuk-body" style={{ fontWeight: "bold" }}>
+            Enter the applicant&apos;s passport number and the passport&apos;s country of issue.
+          </p>
+
           <FreeText
             id="passport-number"
             label="Applicant's passport number"
@@ -110,16 +117,10 @@ const ApplicantSearchForm = () => {
             options={countryList}
             errorMessage={errors?.countryOfIssue?.message ?? ""}
             formValue="countryOfIssue"
-            required="Select the country of issue."
+            required="Select the country of issue"
           />
 
-          <Button
-            id="search"
-            type={ButtonType.DEFAULT}
-            text="Search"
-            href="#"
-            handleClick={() => {}}
-          />
+          <SubmitButton id="search" type={ButtonType.DEFAULT} text="Search" />
         </form>
       </FormProvider>
     </div>

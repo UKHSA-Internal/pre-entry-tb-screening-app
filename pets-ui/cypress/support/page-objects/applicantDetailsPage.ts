@@ -1,170 +1,212 @@
-//This holds all fields on Applicant Details Page
-export class ApplicantDetailsPage {
-  // Navigation
-  visit(): void {
-    cy.visit("/contact");
+//This holds all fields on the Applicant Details Page
+import { BasePage } from "../BasePage";
+
+export class ApplicantDetailsPage extends BasePage {
+  constructor() {
+    super("/contact");
   }
 
-  // Personal Details Actions
-  fillFullName(name: string): void {
-    cy.get('input[name="fullName"]').should("be.visible").clear().type(name);
+  // Page verification
+  verifyPageLoaded(): ApplicantDetailsPage {
+    this.verifyPageHeading("Enter applicant information");
+    return this;
   }
 
-  selectSex(sex: string): void {
-    // Match the exact value case (Female, Male, or Other)
-    cy.get(`input[name="sex"][value="${sex}"]`).should("exist").check().should("be.checked");
+  // Personal Details Methods
+  fillFullName(name: string): ApplicantDetailsPage {
+    this.fillTextInput("Full name", name);
+    return this;
   }
 
-  selectNationality(country: string): void {
-    cy.get("#country-of-nationality.govuk-select").should("be.visible").select(country);
+  selectSex(sex: string): ApplicantDetailsPage {
+    this.checkRadio("sex", sex);
+    return this;
   }
 
-  selectCountryOfIssue(country: string): void {
-    cy.get("#country-of-issue.govuk-select").should("be.visible").select(country);
+  selectNationality(country: string): ApplicantDetailsPage {
+    this.selectDropdown("Country of nationality", country);
+    return this;
   }
 
-  // Date of Birth Actions
-  fillBirthDate(day: string, month: string, year: string): void {
-    cy.get("input#birth-date-day").should("be.visible").clear().type(day);
-
-    cy.get("input#birth-date-month").should("be.visible").clear().type(month);
-
-    cy.get("input#birth-date-year").should("be.visible").clear().type(year);
+  selectCountryOfIssue(country: string): ApplicantDetailsPage {
+    this.selectDropdown("Country of issue", country);
+    return this;
   }
 
-  // Passport Details Actions
-  fillPassportNumber(number: string): void {
-    cy.get('input[name="passportNumber"]').should("be.visible").clear().type(number);
+  // Date of Birth Methods
+  fillBirthDate(day: string, month: string, year: string): ApplicantDetailsPage {
+    this.fillDateFields("Date of birth", day, month, year);
+    return this;
   }
 
-  fillPassportIssueDate(day: string, month: string, year: string): void {
-    cy.get("input#passport-issue-date-day").should("be.visible").clear().type(day);
-
-    cy.get("input#passport-issue-date-month").should("be.visible").clear().type(month);
-
-    cy.get("input#passport-issue-date-year").should("be.visible").clear().type(year);
+  // Passport Details Methods
+  fillPassportNumber(number: string): ApplicantDetailsPage {
+    this.fillTextInput("Applicant's passport number", number);
+    return this;
   }
 
-  fillPassportExpiryDate(day: string, month: string, year: string): void {
-    cy.get("input#passport-expiry-date-day").should("be.visible").clear().type(day);
-
-    cy.get("input#passport-expiry-date-month").should("be.visible").clear().type(month);
-
-    cy.get("input#passport-expiry-date-year").should("be.visible").clear().type(year);
+  fillPassportIssueDate(day: string, month: string, year: string): ApplicantDetailsPage {
+    this.fillDateFields("Issue date", day, month, year);
+    return this;
   }
 
-  // Address Actions
-  fillAddressLine1(text: string): void {
-    cy.get("#address-1").should("be.visible").clear().type(text);
+  fillPassportExpiryDate(day: string, month: string, year: string): ApplicantDetailsPage {
+    this.fillDateFields("Expiry date", day, month, year);
+    return this;
   }
 
-  fillAddressLine2(text: string): void {
-    cy.get("#address-2").should("be.visible").clear().type(text);
+  // Address Methods
+  fillAddressLine1(text: string): ApplicantDetailsPage {
+    this.fillTextInput("Address line 1", text);
+    return this;
   }
 
-  fillAddressLine3(text: string): void {
-    cy.get("#address-3").should("be.visible").clear().type(text);
+  fillAddressLine2(text: string): ApplicantDetailsPage {
+    this.fillTextInput("Address line 2", text);
+    return this;
   }
 
-  fillTownOrCity(text: string): void {
-    cy.get("#town-or-city").should("be.visible").clear().type(text);
+  fillAddressLine3(text: string): ApplicantDetailsPage {
+    this.fillTextInput("Address line 3", text);
+    return this;
   }
 
-  fillProvinceOrState(text: string): void {
-    cy.get("#province-or-state").should("be.visible").clear().type(text);
+  fillTownOrCity(text: string): ApplicantDetailsPage {
+    this.fillTextInput("Town/city", text);
+    return this;
   }
 
-  selectAddressCountry(country: string): void {
-    cy.get("#address-country.govuk-select").should("be.visible").select(country);
+  fillProvinceOrState(text: string): ApplicantDetailsPage {
+    this.fillTextInput("Province/state", text);
+    return this;
   }
 
-  fillPostcode(text: string): void {
-    cy.get("#postcode").should("be.visible").clear().type(text);
+  selectAddressCountry(country: string): ApplicantDetailsPage {
+    cy.get('[name="country"]').select(country);
+    return this;
+  }
+
+  fillPostcode(text: string): ApplicantDetailsPage {
+    this.fillTextInput("Postcode", text);
+    return this;
   }
 
   // Form Submission
-  submitForm(): void {
+  submitForm(): ApplicantDetailsPage {
     cy.get('button[type="submit"]').should("be.visible").click();
+    return this;
   }
 
-  fillFormWithValidData(countryName: string): void {
-    cy.get('input[name="fullName"]').should("be.visible").clear().type("John Doe");
-    cy.get(`input[name="sex"][value="Male"]`).should("exist").check().should("be.checked");
-    cy.get("#country-of-nationality.govuk-select").should("be.visible").select(countryName);
-    cy.get("#country-of-issue.govuk-select").should("be.visible").select(countryName);
+  /**
+   * Fill the entire form with valid data
+   * @param data Complete applicant details
+   */
+  fillCompleteForm(data: {
+    fullName: string;
+    sex: string;
+    nationality: string;
+    birthDay: string;
+    birthMonth: string;
+    birthYear: string;
+    passportIssueDay: string;
+    passportIssueMonth: string;
+    passportIssueYear: string;
+    passportExpiryDay: string;
+    passportExpiryMonth: string;
+    passportExpiryYear: string;
+    addressLine1: string;
+    addressLine2?: string;
+    addressLine3?: string;
+    townOrCity: string;
+    provinceOrState?: string;
+    addressCountry: string;
+    postcode: string;
+  }): ApplicantDetailsPage {
+    this.fillFullName(data.fullName)
+      .selectSex(data.sex)
+      .selectNationality(data.nationality)
+      .fillBirthDate(data.birthDay, data.birthMonth, data.birthYear)
+      .fillPassportIssueDate(data.passportIssueDay, data.passportIssueMonth, data.passportIssueYear)
+      .fillPassportExpiryDate(
+        data.passportExpiryDay,
+        data.passportExpiryMonth,
+        data.passportExpiryYear,
+      )
+      .fillAddressLine1(data.addressLine1);
 
-    cy.get("input#birth-date-day").should("be.visible").clear().type("4");
-    cy.get("input#birth-date-month").should("be.visible").clear().type("JAN");
-    cy.get("input#birth-date-year").should("be.visible").clear().type("1998");
+    if (data.addressLine2) {
+      this.fillAddressLine2(data.addressLine2);
+    }
 
-    cy.get('input[name="passportNumber"]').should("be.visible").clear().type("AA1235467");
+    if (data.addressLine3) {
+      this.fillAddressLine3(data.addressLine3);
+    }
 
-    cy.get("input#passport-issue-date-day").should("be.visible").clear().type("20");
-    cy.get("input#passport-issue-date-month").should("be.visible").clear().type("11");
-    cy.get("input#passport-issue-date-year").should("be.visible").clear().type("2011");
+    this.fillTownOrCity(data.townOrCity);
 
-    cy.get("input#passport-expiry-date-day").should("be.visible").clear().type("19");
-    cy.get("input#passport-expiry-date-month").should("be.visible").clear().type("11");
-    cy.get("input#passport-expiry-date-year").should("be.visible").clear().type("2031");
+    if (data.provinceOrState) {
+      this.fillProvinceOrState(data.provinceOrState);
+    }
 
-    cy.get("#address-1").should("be.visible").clear().type("1322");
-    cy.get("#address-2").should("be.visible").clear().type("100th St");
-    cy.get("#address-3").should("be.visible").clear().type("Apt 16");
-    cy.get("#town-or-city").should("be.visible").clear().type("North Battleford");
-    cy.get("#province-or-state").should("be.visible").clear().type("Saskatchewan");
-    cy.get("#address-country.govuk-select").should("be.visible").select("CAN");
-    cy.get("#postcode").should("be.visible").clear().type("S4R 0M6");
+    this.selectAddressCountry(data.addressCountry).fillPostcode(data.postcode);
+
+    return this;
   }
 
   // Error validation methods
-  validateErrorSummaryVisible(): void {
+  validateErrorSummaryVisible(): ApplicantDetailsPage {
     cy.get(".govuk-error-summary").should("be.visible");
+    return this;
   }
 
-  validateErrorContainsText(text: string): void {
+  validateErrorContainsText(text: string): ApplicantDetailsPage {
     cy.get(".govuk-error-summary__list").should("contain.text", text);
+    return this;
   }
 
-  validateErrorSummary(expectedErrors: string[]): void {
-    cy.get(".govuk-error-summary").should("be.visible");
+  validateErrorSummary(expectedErrors: string[]): ApplicantDetailsPage {
+    this.validateErrorSummaryVisible();
 
     // Check each expected error is present in the error summary
     expectedErrors.forEach((errorText) => {
-      cy.get(".govuk-error-summary__list").should("contain.text", errorText);
+      this.validateErrorContainsText(errorText);
     });
+
+    return this;
   }
 
   // Form field error validations
-  validateFullNameFieldError(): void {
-    cy.get("#name").should("have.class", "govuk-form-group--error");
-    cy.get("#name").find(".govuk-error-message").should("be.visible");
+  validateFullNameFieldError(): ApplicantDetailsPage {
+    this.validateFieldError("name");
+    return this;
   }
 
-  validateSexFieldError(): void {
-    cy.get("#sex").should("have.class", "govuk-form-group--error");
-    cy.get("#sex").find(".govuk-error-message").should("be.visible");
+  validateSexFieldError(): ApplicantDetailsPage {
+    this.validateFieldError("sex");
+    return this;
   }
 
-  validateNationalityFieldError(): void {
-    cy.get("#country-of-nationality").should("have.class", "govuk-form-group--error");
-    cy.get("#country-of-nationality").find(".govuk-error-message").should("be.visible");
+  validateNationalityFieldError(): ApplicantDetailsPage {
+    this.validateFieldError("country-of-nationality");
+    return this;
   }
 
-  validateBirthDateFieldError(): void {
-    cy.get("#birth-date").should("have.class", "govuk-form-group--error");
-    cy.get("#birth-date").find(".govuk-error-message").should("be.visible");
+  validateBirthDateFieldError(): ApplicantDetailsPage {
+    this.validateFieldError("birth-date");
+    return this;
   }
 
-  validatePassportNumberFieldError(): void {
-    cy.get("#passport-number").should("have.class", "govuk-form-group--error");
-    cy.get("#passport-number").find(".govuk-error-message").should("be.visible");
+  validatePassportNumberFieldError(): ApplicantDetailsPage {
+    this.validateFieldError("passport-number");
+    return this;
   }
 
-  validateAddressFieldError(): void {
-    cy.get("#address-1").should("have.class", "govuk-form-group--error");
-    cy.get("#address-1").find(".govuk-error-message").should("be.visible");
+  validateAddressFieldError(): ApplicantDetailsPage {
+    this.validateFieldError("address-1");
+    return this;
   }
 
+  // Enhanced validation method
   validateFormErrors(expectedErrorMessages: {
     fullName?: string;
     sex?: string;
@@ -174,70 +216,42 @@ export class ApplicantDetailsPage {
     passportIssueDate?: string;
     passportExpiryDate?: string;
     address?: string;
-  }): void {
+  }): ApplicantDetailsPage {
     // Validate Full Name field error
     if (expectedErrorMessages.fullName) {
-      cy.get("#name").should("have.class", "govuk-form-group--error");
-      cy.get("#name")
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", expectedErrorMessages.fullName);
+      this.validateFieldError("name", expectedErrorMessages.fullName);
     }
 
     // Validate Sex field error
     if (expectedErrorMessages.sex) {
-      cy.get("#sex").should("have.class", "govuk-form-group--error");
-      cy.get("#sex")
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", expectedErrorMessages.sex);
+      this.validateFieldError("sex", expectedErrorMessages.sex);
     }
 
     // Other field validations
     if (expectedErrorMessages.nationality) {
-      cy.get("#country-of-nationality").should("have.class", "govuk-form-group--error");
-      cy.get("#country-of-nationality")
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", expectedErrorMessages.nationality);
+      this.validateFieldError("country-of-nationality", expectedErrorMessages.nationality);
     }
 
     if (expectedErrorMessages.birthDate) {
-      cy.get("#birth-date").should("have.class", "govuk-form-group--error");
-      cy.get("#birth-date")
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", expectedErrorMessages.birthDate);
+      this.validateFieldError("birth-date", expectedErrorMessages.birthDate);
     }
 
     if (expectedErrorMessages.passportNumber) {
-      cy.get("#passport-number").should("have.class", "govuk-form-group--error");
-      cy.get("#passport-number")
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", expectedErrorMessages.passportNumber);
+      this.validateFieldError("passport-number", expectedErrorMessages.passportNumber);
     }
 
     if (expectedErrorMessages.passportIssueDate) {
-      cy.get("#passport-issue-date").should("have.class", "govuk-form-group--error");
-      cy.get("#passport-issue-date")
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", expectedErrorMessages.passportIssueDate);
+      this.validateFieldError("passport-issue-date", expectedErrorMessages.passportIssueDate);
     }
 
     if (expectedErrorMessages.passportExpiryDate) {
-      cy.get("#passport-expiry-date").should("have.class", "govuk-form-group--error");
-      cy.get("#passport-expiry-date")
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", expectedErrorMessages.passportExpiryDate);
+      this.validateFieldError("passport-expiry-date", expectedErrorMessages.passportExpiryDate);
     }
-  }
-  verifyPageLoaded(): void {
-    cy.contains("h1", "Enter applicant information").should("be.visible");
+
+    return this;
   }
 
+  // Get current URL
   getCurrentUrl(): Cypress.Chainable<string> {
     return cy.url();
   }

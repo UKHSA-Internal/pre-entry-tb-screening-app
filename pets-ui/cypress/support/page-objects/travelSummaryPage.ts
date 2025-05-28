@@ -33,31 +33,26 @@ export class TravelSummaryPage {
   verifyFieldValueOnChangePage(fieldName: string, expectedValue: string): void {
     switch (fieldName) {
       case "Visa type":
-        cy.get("#visa-type select").should("have.value", expectedValue);
+        // Use multiple selectors to handle different scenarios
+        cy.get('[name="visaType"]').should("exist").should("have.value", expectedValue);
         break;
       case "UK address line 1":
-        cy.get('input[type="text"][name="applicantUkAddress1"]').should(
-          "have.value",
-          expectedValue,
-        );
+        cy.get("#address-1-field").should("exist").should("have.value", expectedValue);
         break;
       case "UK address line 2":
-        cy.get('input[type="text"][name="applicantUkAddress2"]').should(
-          "have.value",
-          expectedValue,
-        );
+        cy.get("#address-2-field").should("exist").should("have.value", expectedValue);
         break;
       case "UK town or city":
-        cy.get('input[type="text"][name="townOrCity"]').should("have.value", expectedValue);
+        cy.get("#town-or-city-field").should("exist").should("have.value", expectedValue);
         break;
       case "UK postcode":
-        cy.get('input[type="text"][name="postcode"]').should("have.value", expectedValue);
+        cy.get("#postcode-field").should("exist").should("have.value", expectedValue);
         break;
       case "UK mobile number":
-        cy.get('input[type="text"][name="ukMobileNumber"]').should("have.value", expectedValue);
+        cy.get('[name="ukMobileNumber"]').should("exist").should("have.value", expectedValue);
         break;
       case "UK email address":
-        cy.get('input[type="text"][name="ukEmail"]').should("have.value", expectedValue);
+        cy.get('[name="ukEmail"]').should("exist").should("have.value", expectedValue);
         break;
     }
 

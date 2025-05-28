@@ -12,7 +12,7 @@ import { selectApplication } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectTbCertificate, setTbCertificateStatus } from "@/redux/tbCertificateSlice";
 import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
-import { formatDateType, isDataPresent, standardiseDayOrMonth } from "@/utils/helpers";
+import { formatDateType, standardiseDayOrMonth } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
 const TbSummary = () => {
@@ -58,24 +58,28 @@ const TbSummary = () => {
       value: tbCertificateData.isIssued,
       link: `/tb-certificate-declaration#${attributeToComponentId.isIssued}`,
       hiddenLabel: "TB clearance certificate",
+      emptyValueText: "Enter whether a TB clearance certificate has been issued (optional)",
     },
     {
       key: "Physician comments",
       value: tbCertificateData.comments,
       link: `/tb-certificate-declaration#${attributeToComponentId.comments}`,
       hiddenLabel: "Comments from physician",
+      emptyValueText: "Enter physician comments (optional)",
     },
     {
       key: "Date of TB clearance certificate",
       value: formatDateType(tbCertificateData.certificateDate),
       link: `/tb-certificate-declaration#${attributeToComponentId.certificateDate}`,
       hiddenLabel: "Date of TB certificate",
+      emptyValueText: "Enter date of TB clearance certificate (optional)",
     },
     {
       key: "TB clearance certificate number",
       value: tbCertificateData.certificateNumber,
       link: `/tb-certificate-declaration#${attributeToComponentId.certificateNumber}`,
       hiddenLabel: "TB certificate number",
+      emptyValueText: "Enter TB clearance certificate number (optional)",
     },
   ];
 
@@ -84,17 +88,13 @@ const TbSummary = () => {
       {isLoading && <Spinner />}
       <ApplicantDataHeader applicantData={applicantData} />
 
-      <Summary
-        status={tbCertificateData.status}
-        summaryElements={summaryData.filter(isDataPresent)}
-      />
+      <Summary status={tbCertificateData.status} summaryElements={summaryData} />
 
       {tbCertificateData.status == ApplicationStatus.INCOMPLETE && (
         <Button
           id="confirm"
           type={ButtonType.DEFAULT}
           text="Save and continue"
-          href="/tb-certificate-confirmation"
           handleClick={handleSubmit}
         />
       )}
@@ -103,7 +103,6 @@ const TbSummary = () => {
           id="back-to-tracker"
           type={ButtonType.DEFAULT}
           text="Return to tracker"
-          href="/tracker"
           handleClick={() => navigate("/tracker")}
         />
       )}

@@ -1,4 +1,4 @@
-import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "./utils/enums";
+import { ApplicationStatus, BackendApplicationStatus, ImageType, YesOrNo } from "./utils/enums";
 
 // Misc types
 type ApplicantSearchFormType = {
@@ -50,6 +50,7 @@ type ReduxApplicantDetailsType = {
   provinceOrState: string;
   country: string;
   postcode?: string;
+  applicantPhotoFileName?: string;
 };
 
 type PostedApplicantDetailsType = {
@@ -68,6 +69,7 @@ type PostedApplicantDetailsType = {
   provinceOrState: string;
   country: string;
   postcode?: string;
+  applicantPhotoFileName?: string;
 };
 
 type ReceivedApplicantDetailsType = PostedApplicantDetailsType & ReceivedApplicationAttributesType;
@@ -178,29 +180,6 @@ type PostedChestXrayNotTakenType = {
 type ReceivedChestXrayNotTakenType = PostedChestXrayNotTakenType &
   ReceivedApplicationAttributesType;
 
-// Sputum types
-type ReduxSputumCollectionDetailsType = {
-  dateOfSputumSample1: string | null;
-  collectionMethodSample1: string | null;
-  collectionMethodOtherSample1: string | null;
-  smearResult1: string | null;
-  cultureResult1: string | null;
-  dateOfSputumSample2: string | null;
-  collectionMethodSample2: string | null;
-  collectionMethodOtherSample2: string | null;
-  smearResult2: string | null;
-  cultureResult2: string | null;
-  dateOfSputumSample3: string | null;
-  collectionMethodSample3: string | null;
-  collectionMethodOtherSample3: string | null;
-  smearResult3: string | null;
-  cultureResult3: string | null;
-  dstConducted: boolean;
-  drugTested: string | null;
-  drugResistance: "Yes" | "No" | "Not applicable";
-  drugResistanceDetails: string | null;
-};
-
 // TB Declaration certificate types
 type ReduxTbCertificateType = {
   status: ApplicationStatus;
@@ -227,13 +206,14 @@ type PostedTbCertificateNotIssuedType = {
 type ReceivedTbCertificateNotIssuedType = PostedTbCertificateNotIssuedType &
   ReceivedApplicationAttributesType;
 
-// Dicom upload types
-type GenerateDicomUploadUrlRequest = {
+// Image upload types
+type GenerateImageUploadUrlRequest = {
   fileName: string;
   checksum?: string;
+  imageType: ImageType;
 };
 
-type GenerateDicomUploadUrlResponse = {
+type GenerateImageUploadUrlResponse = {
   uploadUrl: string;
   bucketPath: string;
   fields: Record<string, string>;

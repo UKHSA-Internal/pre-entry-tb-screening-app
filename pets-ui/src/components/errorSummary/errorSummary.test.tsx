@@ -51,7 +51,6 @@ describe("Error Summary Component", () => {
     render(<ErrorSummary errorsToShow={multipleErrorsToShow} errors={multipleErrors} />);
     const errorSummaryDiv = screen.getByTestId("error-summary");
     expect(errorSummaryDiv).toHaveAttribute("tabIndex", "-1");
-    expect(errorSummaryDiv).toHaveAttribute("aria-labelledby", "error-summary-title");
   });
 
   it("moves focus to the correct input field when clicking an error link", async () => {

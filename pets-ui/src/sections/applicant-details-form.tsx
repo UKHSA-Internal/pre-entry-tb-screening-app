@@ -2,13 +2,14 @@ import { useEffect, useRef } from "react";
 import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { ReduxApplicantDetailsType } from "@/applicant";
-import Button from "@/components/button/button";
-import DateTextInput, { DateType } from "@/components/dateTextInput/dateTextInput";
+import { DateType, ReduxApplicantDetailsType } from "@/applicant";
+import DateTextInput from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
+import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
+import SubmitButton from "@/components/submitButton/submitButton";
 import { selectApplicant, setApplicantDetails } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
@@ -29,7 +30,7 @@ const ApplicantForm = () => {
 
   const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = (applicantData) => {
     dispatch(setApplicantDetails(applicantData));
-    navigate("/applicant-summary");
+    navigate("/applicant-photo");
   };
 
   const errorsToShow = Object.keys(errors);
@@ -84,12 +85,17 @@ const ApplicantForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
+        <Heading level={1} size="l" title="Enter applicant information" />
+        <p className="govuk-body">
+          Enter the applicant&apos;s profile information below. Select &apos;Save and continue&apos;
+          to save any information added.
+        </p>
+
+        <Heading level={2} size="m" title="Applicant's personal details" />
         <div ref={nameRef}>
           <FreeText
             id="name"
             label="Full name"
-            heading="Applicant's personal details"
-            headingStyle={{ marginBottom: 20 }}
             errorMessage={errors?.fullName?.message ?? ""}
             formValue="fullName"
             required="Enter the applicant's full name"
@@ -102,7 +108,7 @@ const ApplicantForm = () => {
         <div ref={sexRef}>
           <Radio
             id="sex"
-            legend="Sex"
+            label="Sex"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Female", "Male", "Other"]}
             sortAnswersAlphabetically={false}
@@ -139,7 +145,7 @@ const ApplicantForm = () => {
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
-                legend="Date of birth"
+                label="Date of birth"
                 hint="For example, 31 3 2019"
                 value={value}
                 setDateValue={onChange}
@@ -190,7 +196,7 @@ const ApplicantForm = () => {
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
-                legend="Issue date"
+                label="Issue date"
                 hint="For example, 31 3 2019"
                 value={value}
                 setDateValue={onChange}
@@ -216,7 +222,7 @@ const ApplicantForm = () => {
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
-                legend="Expiry date"
+                label="Expiry date"
                 hint="For example, 31 3 2019"
                 value={value}
                 setDateValue={onChange}
@@ -244,7 +250,7 @@ const ApplicantForm = () => {
         <div ref={addressLine2Ref}>
           <FreeText
             id="address-2"
-            label="Address line 2"
+            label="Address line 2 (optional)"
             errorMessage={errors?.applicantHomeAddress2?.message ?? ""}
             formValue="applicantHomeAddress2"
             required={false}
@@ -257,7 +263,7 @@ const ApplicantForm = () => {
         <div ref={addressLine3Ref}>
           <FreeText
             id="address-3"
-            label="Address line 3"
+            label="Address line 3 (optional)"
             errorMessage={errors?.applicantHomeAddress3?.message ?? ""}
             formValue="applicantHomeAddress3"
             required={false}
@@ -308,7 +314,7 @@ const ApplicantForm = () => {
         <div ref={postcodeRef}>
           <FreeText
             id="postcode"
-            label="Postcode"
+            label="Postcode (optional)"
             errorMessage={errors?.postcode?.message ?? ""}
             formValue="postcode"
             required={false}
@@ -318,13 +324,7 @@ const ApplicantForm = () => {
           />
         </div>
 
-        <Button
-          id="save-and-continue"
-          type={ButtonType.DEFAULT}
-          text="Save and continue"
-          href="/applicant-summary"
-          handleClick={() => {}}
-        />
+        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Save and continue" />
       </form>
     </FormProvider>
   );

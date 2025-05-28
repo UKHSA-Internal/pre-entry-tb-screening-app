@@ -1,11 +1,31 @@
-// This holds all fields for the TB Clearance Certificate Page
-export class TbClearanceCertificatePage {
-  visit(): void {
-    cy.visit("/tb-certificate-declaration");
+import { BasePage } from "../BasePage";
+
+// Types for TB certificate form
+interface TbCertificateDetails {
+  clearanceIssued: "Yes" | "No";
+  physicianComments?: string;
+  certificateDay?: string;
+  certificateMonth?: string;
+  certificateYear?: string;
+  certificateNumber?: string;
+}
+
+// Types for error validation
+interface TbCertificateErrors {
+  isIssued?: string;
+  comments?: string;
+  issueDate?: string;
+  certificateNumber?: string;
+}
+
+export class TbClearanceCertificatePage extends BasePage {
+  constructor() {
+    super("/tb-certificate-declaration");
   }
 
-  verifyPageLoaded(): void {
-    cy.contains("h1", "Enter TB clearance certificate declaration").should("be.visible");
+  verifyPageLoaded(): TbClearanceCertificatePage {
+    super.verifyPageHeading("Enter TB clearance certificate declaration");
+    return this;
   }
 
   // Verify applicant details in summary
@@ -13,54 +33,35 @@ export class TbClearanceCertificatePage {
     Name?: string;
     "Date of birth"?: string;
     "Passport number"?: string;
-  }): void {
-    Object.entries(details).forEach(([key, value]) => {
-      if (value !== undefined) {
-        cy.contains("dt.govuk-summary-list__key", key)
-          .siblings(".govuk-summary-list__value")
-          .should("contain.text", value);
-      }
-    });
+  }): TbClearanceCertificatePage {
+    this.verifySummaryValues(details);
+    return this;
   }
 
   // TB Clearance Certificate Actions
-  selectTbClearanceIssued(option: string): void {
-    cy.get(`input[name="isIssued"][value="${option}"]`).should("exist").check({ force: true });
-    //verify radio is checked
-    cy.get(`input[name="isIssued"]:checked`).should("have.value", option);
+  selectTbClearanceIssued(option: "Yes" | "No"): TbClearanceCertificatePage {
+    this.checkRadio("isIssued", option);
+    return this;
   }
 
-  fillPhysicianComments(comments: string): void {
-    cy.get('textarea[name="comments"]').should("be.visible").clear().type(comments);
+  fillPhysicianComments(comments: string): TbClearanceCertificatePage {
+    cy.get('[name="comments"]').type(comments);
+    return this;
   }
 
   // TB Certificate Date Actions
-  fillTbCertificateDate(day: string, month: string, year: string): void {
-    cy.get("#tb-certificate-date-day").should("be.visible").clear().type(day);
-
-    cy.get("#tb-certificate-date-month").should("be.visible").clear().type(month);
-
-    cy.get("#tb-certificate-date-year").should("be.visible").clear().type(year);
+  fillTbCertificateDate(day: string, month: string, year: string): TbClearanceCertificatePage {
+    this.fillDateFields("tb-certificate-date", day, month, year, "aria");
+    return this;
   }
 
-  fillTbCertificateNumber(number: string): void {
+  fillTbCertificateNumber(number: string): TbClearanceCertificatePage {
     cy.get('input[name="certificateNumber"]').should("be.visible").clear().type(number);
-  }
-
-  // Form Submission
-  submitForm(): void {
-    cy.contains("button", "Continue").should("be.visible").click();
+    return this;
   }
 
   // Complete form with valid data
-  fillFormWithValidData(options: {
-    clearanceIssued: string;
-    physicianComments?: string;
-    certificateDay?: string;
-    certificateMonth?: string;
-    certificateYear?: string;
-    certificateNumber?: string;
-  }): void {
+  fillFormWithValidData(options: TbCertificateDetails): TbClearanceCertificatePage {
     this.selectTbClearanceIssued(options.clearanceIssued);
 
     if (options.physicianComments) {
@@ -82,98 +83,35 @@ export class TbClearanceCertificatePage {
       }
     }
 
-    this.submitForm();
+    this.submitForm("Continue");
+    return this;
   }
 
-  // Error validation methods
-  validateErrorSummaryVisible(): void {
-    cy.get(".govuk-error-summary").should("be.visible");
-  }
-
-  validateErrorSummary(expectedErrors: string[]): void {
-    // Verify error summary is visible
-    cy.get(".govuk-error-summary").should("be.visible");
-
-    // Verify "There is a problem" header is visible
-    cy.get(".govuk-error-summary__title").should("contain.text", "There is a problem");
-
-    // Check each expected error is present in the error summary
-    expectedErrors.forEach((errorText) => {
-      cy.get(".govuk-error-summary__list").should("contain.text", errorText);
-    });
-  }
-
-  // Form field error validations
-  validateTbClearanceIssuedFieldError(): void {
-    cy.get("#tb-clearance-issued").should("have.class", "govuk-form-group--error");
-    cy.get("#tb-clearance-issued").find(".govuk-error-message").should("be.visible");
-  }
-
-  validateTbCertificateDateFieldError(): void {
-    cy.get("#tb-certificate-date").should("have.class", "govuk-form-group--error");
-    cy.get("#tb-certificate-date").find(".govuk-error-message").should("be.visible");
-  }
-
-  validateTbCertificateNumberFieldError(): void {
-    cy.get("#tb-certificate-number").should("have.class", "govuk-form-group--error");
-    cy.get("#tb-certificate-number").find(".govuk-error-message").should("be.visible");
-  }
-
-  validatePhysicianCommentsFieldError(): void {
-    cy.get("#physician-comments").should("have.class", "govuk-form-group--error");
-    cy.get("#physician-comments").find(".govuk-error-message").should("be.visible");
-  }
-
-  // Detailed form errors validation
-  validateFormErrors(expectedErrorMessages: {
-    isIssued?: string;
-    comments?: string;
-    issueDate?: string;
-    certificateNumber?: string;
-  }): void {
-    // Validate TB Clearance Issued field error
+  // Enhanced error validation
+  validateFormErrors(expectedErrorMessages: TbCertificateErrors): TbClearanceCertificatePage {
     if (expectedErrorMessages.isIssued) {
-      cy.get("#tb-clearance-issued").should("have.class", "govuk-form-group--error");
-      cy.get("#tb-clearance-issued")
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", expectedErrorMessages.isIssued);
+      this.validateFieldError("tb-clearance-issued", expectedErrorMessages.isIssued);
     }
 
-    // Validate Physician Comments field error
     if (expectedErrorMessages.comments) {
-      cy.get("#physician-comments").should("have.class", "govuk-form-group--error");
-      cy.get("#physician-comments")
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", expectedErrorMessages.comments);
+      this.validateFieldError("physician-comments", expectedErrorMessages.comments);
     }
 
-    // Validate TB Certificate Date field error
     if (expectedErrorMessages.issueDate) {
-      cy.get("#tb-certificate-date").should("have.class", "govuk-form-group--error");
-      cy.get("#tb-certificate-date")
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", expectedErrorMessages.issueDate);
+      this.validateFieldError("tb-certificate-date", expectedErrorMessages.issueDate);
     }
 
-    // Validate TB Certificate Number field error
     if (expectedErrorMessages.certificateNumber) {
-      cy.get("#tb-certificate-number").should("have.class", "govuk-form-group--error");
-      cy.get("#tb-certificate-number")
-        .find(".govuk-error-message")
-        .should("be.visible")
-        .and("contain.text", expectedErrorMessages.certificateNumber);
+      this.validateFieldError("tb-certificate-number", expectedErrorMessages.certificateNumber);
     }
+
+    return this;
   }
 
-  // Verify redirection after form submission
-  verifyRedirectionAfterSubmit(expectedPath: string): void {
-    cy.url().should("include", expectedPath);
-  }
-
-  getCurrentUrl(): Cypress.Chainable<string> {
-    return cy.url();
+  // Submit form and verify redirection
+  submitAndVerifyRedirection(): TbClearanceCertificatePage {
+    this.submitForm("Continue");
+    this.verifyUrlContains("/tb-certificate-summary");
+    return this;
   }
 }

@@ -5,12 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { createNewApplication, postApplicantDetails } from "@/api/api";
 import Button from "@/components/button/button";
 import Summary from "@/components/summary/summary";
+import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { selectApplicant, setApplicantDetailsStatus } from "@/redux/applicantSlice";
 import { setApplicationDetails } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus, ButtonType, ImageType } from "@/utils/enums";
 import { standardiseDayOrMonth } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
+import uploadFile from "@/utils/uploadFile";
 
 import Spinner from "../components/spinner/spinner";
 
@@ -20,6 +22,8 @@ const ApplicantReview = () => {
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const { applicantPhotoFile } = useApplicantPhoto();
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -47,6 +51,17 @@ const ApplicantReview = () => {
         country: applicantData.country,
         postcode: applicantData.postcode,
       });
+
+      // Upload applicant photo if it exists
+      if (applicantData.applicantPhotoFileName && applicantPhotoFile) {
+        const fileType = applicantPhotoFile.name.split(".").pop();
+        await uploadFile(
+          applicantPhotoFile,
+          `applicant-photo.${fileType}`,
+          applicationRes.data.applicationId,
+          ImageType.Photo,
+        );
+      }
 
       dispatch(setApplicantDetailsStatus(ApplicationStatus.COMPLETE));
       navigate("/applicant-confirmation");
@@ -116,12 +131,14 @@ const ApplicantReview = () => {
       value: applicantData.applicantHomeAddress2,
       link: `/contact#${attributeToComponentId.applicantHomeAddress2}`,
       hiddenLabel: "home address line 2",
+      emptyValueText: "Enter home address line 2 (optional)",
     },
     {
       key: "Home address line 3",
       value: applicantData.applicantHomeAddress3,
       link: `/contact#${attributeToComponentId.applicantHomeAddress3}`,
       hiddenLabel: "home address line 3",
+      emptyValueText: "Enter home address line 3 (optional)",
     },
     {
       key: "Town or city",
@@ -146,6 +163,14 @@ const ApplicantReview = () => {
       value: applicantData.postcode,
       link: `/contact#${attributeToComponentId.postcode}`,
       hiddenLabel: "postcode",
+      emptyValueText: "Enter postcode (optional)",
+    },
+    {
+      key: "Applicant Photo",
+      value: applicantData.applicantPhotoFileName,
+      link: "/applicant-photo",
+      hiddenLabel: "applicant photo",
+      emptyValueText: "Upload visa applicant photo (optional)",
     },
   ];
 
@@ -159,7 +184,6 @@ const ApplicantReview = () => {
           id="confirm"
           type={ButtonType.DEFAULT}
           text="Save and continue"
-          href="/applicant-confirmation"
           handleClick={handleSubmit}
         />
       )}
@@ -168,7 +192,6 @@ const ApplicantReview = () => {
           id="back-to-tracker"
           type={ButtonType.DEFAULT}
           text="Return to tracker"
-          href="/tracker"
           handleClick={() => navigate("/tracker")}
         />
       )}

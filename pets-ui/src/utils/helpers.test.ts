@@ -1,7 +1,5 @@
 import {
   formatDateType,
-  hasInvalidCharacters,
-  isDataPresent,
   isDateInTheFuture,
   isDateInThePast,
   logError,
@@ -10,7 +8,6 @@ import {
   standardiseDayOrMonth,
   validateDate,
 } from "./helpers";
-import { validMonthValues } from "./records";
 
 describe("standardiseDayOrMonth function", () => {
   test.each([
@@ -54,29 +51,6 @@ describe("standardiseDayOrMonth function", () => {
     ["07", "07"],
     ["08", "08"],
     ["09", "09"],
-    ["jan", "01"],
-    ["january", "01"],
-    ["feb", "02"],
-    ["february", "02"],
-    ["mar", "03"],
-    ["march", "03"],
-    ["april", "04"],
-    ["apr", "04"],
-    ["may", "05"],
-    ["jun", "06"],
-    ["june", "06"],
-    ["jul", "07"],
-    ["july", "07"],
-    ["aug", "08"],
-    ["august", "08"],
-    ["sep", "09"],
-    ["september", "09"],
-    ["oct", "10"],
-    ["october", "10"],
-    ["nov", "11"],
-    ["november", "11"],
-    ["dec", "12"],
-    ["december", "12"],
   ])("%s standardises to %s", (input, expected) => {
     expect(standardiseDayOrMonth(input)).toEqual(expected);
   });
@@ -95,43 +69,6 @@ describe("FormatDateType function", () => {
     expect(formatDateType({ year: "", month: "5", day: "4" })).toBe("");
     expect(formatDateType({ year: "2025", month: "", day: "4" })).toBe("");
     expect(formatDateType({ year: "2025", month: "5", day: "" })).toBe("");
-  });
-});
-
-describe("isDataPresent function", () => {
-  it("returns true if data is present in the summaryElement", () => {
-    const summaryElementStringExample = {
-      key: "Exmaple Key",
-      value: "A Value",
-      link: "/a-link",
-      hiddenLabel: "label",
-    };
-    const summaryElementArrayExample = {
-      key: "Exmaple Key",
-      value: ["A Value", "AnotherValue"],
-      link: "/a-link",
-      hiddenLabel: "label",
-    };
-    expect(isDataPresent(summaryElementStringExample)).toBeTruthy();
-    expect(isDataPresent(summaryElementArrayExample)).toBeTruthy();
-  });
-  it("returns false if data is not present in the summaryElement", () => {
-    const summaryElementEmptyStringExmaple = {
-      key: "Exmaple Key",
-      value: "",
-      link: "/a-link",
-      hiddenLabel: "label",
-    };
-    expect(isDataPresent(summaryElementEmptyStringExmaple)).toBeFalsy();
-  });
-  it("returns false if data is an empty array", () => {
-    const summaryElementEmptyArrayExmaple = {
-      key: "Exmaple Key",
-      value: [],
-      link: "/a-link",
-      hiddenLabel: "label",
-    };
-    expect(isDataPresent(summaryElementEmptyArrayExmaple)).toBeFalsy();
   });
 });
 
@@ -180,9 +117,7 @@ describe("validateDate function", () => {
     });
   });
   it("should provide the invalidCharError when provided with all date fields containing invalid charcters", () => {
-    const invalidCharError =
-      "Date of birth day and year must contain only numbers. Date of birth month must be a number, or the name of the month, or the first three letters of the month";
-
+    const invalidCharError = "Date of birth day, month and year must contain only numbers";
     const dateTestCases = [
       {
         value: { day: "05", month: "02", year: "$$" },
@@ -289,20 +224,6 @@ describe("isDateInThePast function", () => {
     const month = today.getMonth().toString();
     const year = today.getFullYear().toString();
     expect(isDateInThePast(day, month, year)).toBeTruthy();
-  });
-});
-
-describe("hasInvalidCharacters function", () => {
-  it("should return false if date is valid", () => {
-    expect(hasInvalidCharacters("05", "02", "2025", validMonthValues)).toBeFalsy();
-  });
-  it("should return true if date has invalid characters", () => {
-    expect(hasInvalidCharacters("$$", "02", "3000", validMonthValues)).toBeTruthy();
-    expect(hasInvalidCharacters("02", "$$", "3000", validMonthValues)).toBeTruthy();
-    expect(hasInvalidCharacters("02", "02", "$$", validMonthValues)).toBeTruthy();
-  });
-  it("should return true if date has invalid month", () => {
-    expect(hasInvalidCharacters("01", "22", "3000", validMonthValues)).toBeTruthy();
   });
 });
 

@@ -1,5 +1,3 @@
-import "./chest-xray-confirmation.scss";
-
 import { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
 import Confirmation from "@/components/confirmation/confirmation";
 import Container from "@/components/container/container";

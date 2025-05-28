@@ -40,16 +40,52 @@ export class ChestXraySummaryPage {
     this.getSummaryValue(fieldKey).should("eq", expectedValue);
   }
 
-  // Verify X-ray summary information
+  //Verify X-ray summary information for both populated fields and optional fields
   verifyXraySummaryInfo(expectedValues: {
-    "Select x-ray status"?: string;
-    "Postero anterior x-ray"?: string;
+    "Select X-ray status"?: string;
+    "Postero anterior X-ray"?: string;
     "Enter radiological outcome"?: string;
+    "Radiological details"?: string;
     "Enter radiographic findings"?: string;
   }): void {
-    Object.entries(expectedValues).forEach(([key, value]) => {
-      if (value !== undefined) {
-        this.verifySummaryValue(key, value);
+    Object.entries(expectedValues).forEach(([key, expectedValue]) => {
+      if (expectedValue !== undefined) {
+        this.verifyField(key, expectedValue);
+      }
+    });
+  }
+
+  /**
+   * Check a field's status and value in the X-ray summary
+   * @param fieldKey Field label to check
+   * @param expectedValue Expected value if field is populated
+   * @param optionalLink Whether to expect an optional link if field is not populated
+   */
+  verifyField(fieldKey: string, expectedValue?: string, optionalLink: boolean = false): void {
+    cy.contains("dt.govuk-summary-list__key", fieldKey).then(($dt) => {
+      const $value = $dt.siblings(".govuk-summary-list__value");
+
+      // Check if this field contains an optional link
+      if ($value.find("a").length > 0) {
+        if (optionalLink) {
+          // Verify we have the expected optional link
+          cy.wrap($value).find("a").should("contain", fieldKey);
+        } else if (expectedValue) {
+          // This is to check where expecting a value but found a link - this should then fail
+          throw new Error(
+            `Expected field "${fieldKey}" to have value "${expectedValue}" but found optional link instead`,
+          );
+        }
+      } else {
+        // Field has a value, not a link
+        if (expectedValue) {
+          cy.wrap($value)
+            .invoke("text")
+            .then((text) => {
+              // Trim the text to handle whitespace (This is inline with Will's fix for whitespaces)
+              expect(text.trim()).to.eq(expectedValue);
+            });
+        }
       }
     });
   }
@@ -68,27 +104,45 @@ export class ChestXraySummaryPage {
     this.checkChangeLink(fieldKey).click();
   }
 
-  // Check specific change links exist with correct URLs
+  // Check change links exist with correct URLs
   verifyChangeLinksExist(): void {
-    cy.contains("dt.govuk-summary-list__key", "Select x-ray status")
-      .siblings(".govuk-summary-list__actions")
-      .find("a")
-      .should("have.attr", "href", "/chest-xray-question#chest-xray-taken");
+    // Define fields to check with different possible states
+    const fields = [
+      { key: "Select X-ray status", expectedHref: "/chest-xray-question#chest-xray-taken" },
+      { key: "Postero anterior X-ray", expectedHref: "/chest-xray-upload#postero-anterior-xray" },
+      { key: "Enter radiological outcome", expectedHref: "/chest-xray-findings#xray-result" },
+      { key: "Radiological details", expectedHref: "/chest-xray-findings#xray-result-detail" },
+      {
+        key: "Enter radiographic findings",
+        expectedHref: "/chest-xray-findings#xray-minor-findings",
+      },
+    ];
 
-    cy.contains("dt.govuk-summary-list__key", "Postero anterior x-ray")
-      .siblings(".govuk-summary-list__actions")
-      .find("a")
-      .should("have.attr", "href", "/chest-xray-upload#postero-anterior-xray");
+    // Check each field
+    fields.forEach((field) => {
+      // First check if the field key exists
+      cy.contains("dt.govuk-summary-list__key", field.key).then(($dt) => {
+        // Get the value cell
+        const $value = $dt.siblings(".govuk-summary-list__value");
 
-    cy.contains("dt.govuk-summary-list__key", "Enter radiological outcome")
-      .siblings(".govuk-summary-list__actions")
-      .find("a")
-      .should("have.attr", "href", "/chest-xray-findings#xray-result");
+        // Check if value contains a link (optional field not filled)
+        if ($value.find("a").length > 0) {
+          // Check the link URL for optional fields
+          cy.wrap($value).find("a").should("have.attr", "href", field.expectedHref);
+        } else {
+          // Value is populated, should have a change link
+          const $actions = $dt.siblings(".govuk-summary-list__actions");
 
-    cy.contains("dt.govuk-summary-list__key", "Enter radiographic findings")
-      .siblings(".govuk-summary-list__actions")
-      .find("a")
-      .should("have.attr", "href", "/chest-xray-findings#xray-minor-findings");
+          //Verify change link if actions cell exists
+          if ($actions.length > 0) {
+            cy.wrap($actions)
+              .find("a")
+              .should("contain", "Change")
+              .and("have.attr", "href", field.expectedHref);
+          }
+        }
+      });
+    });
   }
 
   // Click Confirm
@@ -130,9 +184,10 @@ export class ChestXraySummaryPage {
       "Passport number"?: string;
     },
     xrayInfo: {
-      "Select x-ray status"?: string;
-      "Postero anterior x-ray"?: string;
+      "Select X-ray status"?: string;
+      "Postero anterior X-ray"?: string;
       "Enter radiological outcome"?: string;
+      "Radiological details"?: string;
       "Enter radiographic findings"?: string;
     },
   ): void {

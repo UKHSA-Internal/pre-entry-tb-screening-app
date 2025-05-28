@@ -1,5 +1,3 @@
-import "./home-page.scss";
-
 import { useMsal } from "@azure/msal-react";
 
 import { loginRequest } from "@/auth/auth";
@@ -47,16 +45,12 @@ export default function HomePage() {
         ]}
       />
       <p className="govuk-body">Applicants need a:</p>
-      <ul className="govuk-body">
-        <li>valid passport</li>
-        <li>UK address</li>
-        <li>UK visa type</li>
-      </ul>
+      <List items={["valid passport", "valid passport", "UK visa type"]} />
       <p className="govuk-body">
         If you&apos;re a clinician you can also sign in to resume a medical screening case.
       </p>
       <p className="govuk-body">Use the username and password you were assigned to sign in.</p>
-      <StartButton id="sign-in" text="Sign in" href="" handleClick={initializeSignIn} />
+      <StartButton id="sign-in" text="Sign in" handleClick={initializeSignIn} />
     </Container>
   );
 }

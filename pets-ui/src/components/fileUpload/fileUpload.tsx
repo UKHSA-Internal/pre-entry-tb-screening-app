@@ -1,23 +1,26 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useFormState } from "react-hook-form";
+
+import { ImageType } from "@/utils/enums";
+import validateFiles from "@/utils/validateFiles";
 
 export interface FileUploadProps {
   id: string;
   legend?: string;
   hint?: string;
-  errorMessage: string;
   formValue: string;
   required: string | false;
   heading?: string;
-  accept?: string; // Add accept prop for file types
-  maxSize?: number; // Size in MB
+  type: ImageType;
   setFileState: Dispatch<SetStateAction<File | undefined>>;
   setFileName: Dispatch<SetStateAction<string | undefined>>;
   existingFileName?: string;
 }
 
 export default function FileUpload(props: Readonly<FileUploadProps>) {
-  const { register } = useFormContext();
+  const { register, clearErrors } = useFormContext();
+  const { errors, isSubmitted } = useFormState();
+
   const [errorText, setErrorText] = useState("");
   const [wrapperClass, setWrapperClass] = useState("govuk-form-group");
   const [showExistingFileName, setShowExistingFileName] = useState(
@@ -25,54 +28,36 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
   );
   const inputClass = showExistingFileName ? "govuk-file-upload hide-text" : "govuk-file-upload";
 
-  const validateFileSize = (files: FileList) => {
-    if (props.maxSize && files[0]?.size > props.maxSize * 1024 * 1024) {
-      return `File size should be less than ${props.maxSize} MB`;
-    }
-    return true;
-  };
-
   const displayError = (errorText: string | null) => {
     if (errorText) {
       setErrorText(errorText);
       setWrapperClass("govuk-form-group govuk-form-group--error");
     } else {
       setErrorText("");
-      setWrapperClass("");
+      setWrapperClass("govuk-form-group");
     }
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    props.setFileState(undefined);
-    props.setFileName(undefined);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
 
-    const files = event.target.files;
+    if (files && files.length > 0) {
+      setShowExistingFileName(false);
+      props.setFileState(files[0]);
+      props.setFileName(files[0].name);
 
-    if (!files?.length) {
-      if (props.required) displayError(props.required);
-      return;
+      // clear existing error message
+      clearErrors(props.formValue);
+      displayError(null);
     }
-
-    setShowExistingFileName(false);
-
-    const fileSizeError = validateFileSize(files);
-
-    if (fileSizeError !== true) {
-      // file size doesn't match
-      displayError(fileSizeError);
-      return;
-    }
-
-    // if everything is ok, don't display errors and callback
-    displayError(null);
-
-    props.setFileState(files[0]);
-    props.setFileName(files[0].name);
   };
 
   useEffect(() => {
-    displayError(props.errorMessage);
-  }, [props.errorMessage]);
+    const fieldError = errors[props.formValue];
+    if (fieldError?.type === "required" && props.required) {
+      displayError(props.required);
+    }
+  }, [errors, props.formValue, props.required, isSubmitted]);
 
   return (
     <>
@@ -95,14 +80,21 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
                 className={inputClass}
                 type="file"
                 data-testid={props.id}
-                accept={props.accept} // The file types accepted
                 {...register(props.formValue, {
-                  required: props.required,
-                  validate: {
-                    fileSize: validateFileSize,
+                  required: showExistingFileName ? false : props.required,
+                  validate: async (files: File[]) => {
+                    if (files.length) {
+                      const validationResult = await validateFiles(files, props.type);
+                      if (validationResult !== true) {
+                        // Show only the first error
+                        const message = validationResult[0];
+                        displayError(message);
+                        return message;
+                      }
+                    }
                   },
                 })}
-                onChange={(event) => handleFileChange(event)}
+                onChange={(e) => handleFileChange(e)}
               />
               {showExistingFileName && props.existingFileName}
             </div>

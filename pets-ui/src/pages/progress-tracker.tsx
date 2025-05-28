@@ -1,5 +1,3 @@
-import "./progress-tracker.scss";
-
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import ProgressTracker from "@/sections/progress-tracker";
