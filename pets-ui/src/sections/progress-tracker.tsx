@@ -22,7 +22,7 @@ const Task = (props: Readonly<TaskProps>) => {
   return (
     <li className="govuk-task-list__item govuk-task-list__item--with-link">
       <div className="govuk-task-list__name-and-hint">
-        {props.status == ApplicationStatus.INCOMPLETE && (
+        {props.status == ApplicationStatus.NOT_YET_STARTED && (
           <LinkLabel
             className="govuk-link govuk-task-list__link"
             to={props.linkWhenIncomplete}
@@ -39,7 +39,7 @@ const Task = (props: Readonly<TaskProps>) => {
           />
         )}
       </div>
-      {props.status == ApplicationStatus.INCOMPLETE && (
+      {props.status == ApplicationStatus.NOT_YET_STARTED && (
         <div className="govuk-task-list__status">
           <strong className="govuk-tag govuk-tag--blue">Incomplete</strong>
         </div>

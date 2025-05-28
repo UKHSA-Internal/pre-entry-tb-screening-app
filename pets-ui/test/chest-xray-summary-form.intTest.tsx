@@ -23,7 +23,7 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 const applicationState = { applicationId: "abc-123", dateCreated: "" };
 
 const chestXrayTakenState: ReduxChestXrayDetailsType = {
-  status: ApplicationStatus.INCOMPLETE,
+  status: ApplicationStatus.NOT_YET_STARTED,
   chestXrayTaken: YesOrNo.YES,
   posteroAnteriorXrayFileName: "PA Example FileName",
   posteroAnteriorXrayFile: "PA Example File",
@@ -41,7 +41,7 @@ const chestXrayTakenState: ReduxChestXrayDetailsType = {
 };
 
 const chestXrayNotTakenState: ReduxChestXrayDetailsType = {
-  status: ApplicationStatus.INCOMPLETE,
+  status: ApplicationStatus.NOT_YET_STARTED,
   chestXrayTaken: YesOrNo.NO,
   posteroAnteriorXrayFileName: "",
   posteroAnteriorXrayFile: "",

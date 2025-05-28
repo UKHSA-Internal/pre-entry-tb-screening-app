@@ -97,7 +97,7 @@ const TravelReview = () => {
       {isLoading && <Spinner />}
       <Summary status={travelData.status} summaryElements={summaryData} />
 
-      {travelData.status == ApplicationStatus.INCOMPLETE && (
+      {travelData.status == ApplicationStatus.NOT_YET_STARTED && (
         <Button
           id="confirm"
           type={ButtonType.DEFAULT}

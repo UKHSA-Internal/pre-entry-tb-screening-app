@@ -10,7 +10,7 @@ export enum RadioIsInline {
 }
 
 export enum ApplicationStatus {
-  INCOMPLETE = "Incomplete",
+  NOT_YET_STARTED = "Not yet started",
   COMPLETE = "Complete",
   IN_PROGRESS = "In progress",
   NOT_REQUIRED = "Not required",

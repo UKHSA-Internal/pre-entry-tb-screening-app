@@ -90,7 +90,7 @@ const tbCertSlice = {
 
 const incompleteState = {
   applicant: {
-    status: ApplicationStatus.INCOMPLETE,
+    status: ApplicationStatus.NOT_YET_STARTED,
     fullName: "Reginald Backwaters",
     sex: "",
     dateOfBirth: {
@@ -119,10 +119,10 @@ const incompleteState = {
     country: "",
     postcode: "",
   },
-  travel: { status: ApplicationStatus.INCOMPLETE, ...travelSlice },
-  medicalScreening: { status: ApplicationStatus.INCOMPLETE, ...medicalScreeningSlice },
-  chestXray: { status: ApplicationStatus.INCOMPLETE, ...chestXraySlice },
-  tbCertificate: { status: ApplicationStatus.INCOMPLETE, ...tbCertSlice },
+  travel: { status: ApplicationStatus.NOT_YET_STARTED, ...travelSlice },
+  medicalScreening: { status: ApplicationStatus.NOT_YET_STARTED, ...medicalScreeningSlice },
+  chestXray: { status: ApplicationStatus.NOT_YET_STARTED, ...chestXraySlice },
+  tbCertificate: { status: ApplicationStatus.NOT_YET_STARTED, ...tbCertSlice },
 };
 
 const completeState = {

@@ -77,7 +77,7 @@ const emptyMedicalSlice = {
   underElevenConditionsDetail: "",
 };
 const emptyChestXraySlice = {
-  status: ApplicationStatus.INCOMPLETE,
+  status: ApplicationStatus.NOT_YET_STARTED,
   chestXrayTaken: YesOrNo.NULL,
   posteroAnteriorXrayFileName: "",
   posteroAnteriorXrayFile: "",

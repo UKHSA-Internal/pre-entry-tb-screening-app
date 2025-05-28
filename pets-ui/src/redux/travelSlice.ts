@@ -5,7 +5,7 @@ import { ReceivedTravelDetailsType, ReduxTravelDetailsType } from "@/applicant";
 import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
 
 const initialState: ReduxTravelDetailsType = {
-  status: ApplicationStatus.INCOMPLETE,
+  status: ApplicationStatus.NOT_YET_STARTED,
   visaType: "",
   applicantUkAddress1: "",
   applicantUkAddress2: "",
@@ -53,7 +53,7 @@ export const travelSlice = createSlice({
       state.ukEmail = action.payload.ukEmail;
     },
     clearTravelDetails: (state) => {
-      state.status = ApplicationStatus.INCOMPLETE;
+      state.status = ApplicationStatus.NOT_YET_STARTED;
       state.visaType = "";
       state.applicantUkAddress1 = "";
       state.applicantUkAddress2 = "";
@@ -66,7 +66,7 @@ export const travelSlice = createSlice({
       state.status =
         action.payload.status == BackendApplicationStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.INCOMPLETE;
+          : ApplicationStatus.NOT_YET_STARTED;
       state.visaType = action.payload.visaCategory;
       state.applicantUkAddress1 = action.payload.ukAddressLine1;
       state.applicantUkAddress2 = action.payload.ukAddressLine2 ?? "";

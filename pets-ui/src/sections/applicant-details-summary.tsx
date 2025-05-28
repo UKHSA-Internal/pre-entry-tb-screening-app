@@ -179,7 +179,7 @@ const ApplicantReview = () => {
       {isLoading && <Spinner />}
       <Summary status={applicantData.status} summaryElements={summaryData} />
 
-      {applicantData.status == ApplicationStatus.INCOMPLETE && (
+      {applicantData.status == ApplicationStatus.NOT_YET_STARTED && (
         <Button
           id="confirm"
           type={ButtonType.DEFAULT}

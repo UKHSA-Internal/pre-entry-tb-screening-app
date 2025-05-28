@@ -18,7 +18,7 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 
 const preloadedState = {
   applicant: {
-    status: ApplicationStatus.INCOMPLETE,
+    status: ApplicationStatus.NOT_YET_STARTED,
     fullName: "",
     sex: "",
     dateOfBirth: {

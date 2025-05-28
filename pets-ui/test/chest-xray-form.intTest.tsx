@@ -73,7 +73,7 @@ describe("ChestXrayForm Section", () => {
   it("renders components correctly when state is populated", () => {
     const preloadedState = {
       chestXray: {
-        status: ApplicationStatus.INCOMPLETE,
+        status: ApplicationStatus.NOT_YET_STARTED,
         chestXrayTaken: YesOrNo.YES,
         posteroAnteriorXrayFileName: "pa-file-name.jpg",
         posteroAnteriorXrayFile: "examplejpgexamplejpgexamplejpg",

@@ -147,7 +147,7 @@ const ChestXraySummary = () => {
         <Summary status={chestXrayData.status} summaryElements={xrayNotTakenSummaryData} />
       )}
 
-      {chestXrayData.status == ApplicationStatus.INCOMPLETE && (
+      {chestXrayData.status == ApplicationStatus.NOT_YET_STARTED && (
         <Button
           id="confirm"
           type={ButtonType.DEFAULT}

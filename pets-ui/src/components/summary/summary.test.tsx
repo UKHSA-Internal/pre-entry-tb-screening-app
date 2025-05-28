@@ -29,7 +29,7 @@ describe("Summary Component", () => {
   it("renders correctly when props are specified", () => {
     renderWithProviders(
       <Router>
-        <Summary status={ApplicationStatus.INCOMPLETE} summaryElements={summaryData} />
+        <Summary status={ApplicationStatus.NOT_YET_STARTED} summaryElements={summaryData} />
       </Router>,
     );
     expect(screen.getByText("Example Title")).toBeInTheDocument();
@@ -39,7 +39,7 @@ describe("Summary Component", () => {
   it("renders an array of strings", () => {
     render(
       <Router>
-        <Summary status={ApplicationStatus.INCOMPLETE} summaryElements={summaryArrayData} />
+        <Summary status={ApplicationStatus.NOT_YET_STARTED} summaryElements={summaryArrayData} />
       </Router>,
     );
     expect(screen.getByText("A typical value")).toBeInTheDocument();
@@ -49,7 +49,7 @@ describe("Summary Component", () => {
   it("renders a link attached to the word 'Change'", () => {
     render(
       <Router>
-        <Summary status={ApplicationStatus.INCOMPLETE} summaryElements={summaryData} />
+        <Summary status={ApplicationStatus.NOT_YET_STARTED} summaryElements={summaryData} />
       </Router>,
     );
     expect(screen.getByText("Change")).toBeInTheDocument();

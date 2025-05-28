@@ -10,7 +10,7 @@ import {
 import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
 
 const initialState: ReduxApplicantDetailsType = {
-  status: ApplicationStatus.INCOMPLETE,
+  status: ApplicationStatus.NOT_YET_STARTED,
   fullName: "",
   sex: "",
   dateOfBirth: {
@@ -119,7 +119,7 @@ export const applicantSlice = createSlice({
       state.applicantPhotoFileName = action.payload.applicantPhotoFileName ?? "";
     },
     clearApplicantDetails: (state) => {
-      state.status = ApplicationStatus.INCOMPLETE;
+      state.status = ApplicationStatus.NOT_YET_STARTED;
       state.fullName = "";
       state.sex = "";
       state.dateOfBirth = {
@@ -156,7 +156,7 @@ export const applicantSlice = createSlice({
       state.status =
         action.payload.status == BackendApplicationStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.INCOMPLETE;
+          : ApplicationStatus.NOT_YET_STARTED;
       state.fullName = action.payload.fullName;
       state.sex = action.payload.sex;
       state.countryOfNationality = action.payload.countryOfNationality;

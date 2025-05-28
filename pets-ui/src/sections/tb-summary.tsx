@@ -90,7 +90,7 @@ const TbSummary = () => {
 
       <Summary status={tbCertificateData.status} summaryElements={summaryData} />
 
-      {tbCertificateData.status == ApplicationStatus.INCOMPLETE && (
+      {tbCertificateData.status == ApplicationStatus.NOT_YET_STARTED && (
         <Button
           id="confirm"
           type={ButtonType.DEFAULT}

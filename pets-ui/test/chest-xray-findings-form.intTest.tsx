@@ -110,7 +110,7 @@ describe("ChestXrayFindings Form", () => {
   it("navigates to cxr summary when form is complete and submit button is clicked", async () => {
     const preloadedState = {
       chestXray: {
-        status: ApplicationStatus.INCOMPLETE,
+        status: ApplicationStatus.NOT_YET_STARTED,
         chestXrayTaken: YesOrNo.YES,
         posteroAnteriorXrayFileName: "pa-file-name.jpg",
         posteroAnteriorXrayFile: "examplejpgexamplejpgexamplejpg",

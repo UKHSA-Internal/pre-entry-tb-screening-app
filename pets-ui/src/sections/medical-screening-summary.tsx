@@ -152,7 +152,7 @@ const MedicalScreeningReview = () => {
 
       <Summary status={medicalData.status} summaryElements={summaryData} />
 
-      {medicalData.status == ApplicationStatus.INCOMPLETE && (
+      {medicalData.status == ApplicationStatus.NOT_YET_STARTED && (
         <Button
           id="confirm"
           type={ButtonType.DEFAULT}
