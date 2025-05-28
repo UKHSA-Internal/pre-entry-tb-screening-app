@@ -86,7 +86,7 @@ export class MedicalScreening extends IMedicalScreening {
       const updatedDetails: IMedicalScreening = {
         ...details,
         dateCreated: new Date(),
-        status: TaskStatus.completed,
+        status: TaskStatus.COMPLETE,
       };
 
       const medicalScreening = new MedicalScreening(updatedDetails);
