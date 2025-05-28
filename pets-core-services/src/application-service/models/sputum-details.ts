@@ -4,7 +4,11 @@ import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { TaskStatus } from "../../shared/types/enum";
-import { SputumRequestSchema, SputumSampleUpdateInput } from "../types/zod-schema";
+import {
+  CompletionCheckSchema,
+  SputumRequestSchema,
+  SputumSampleUpdateInput,
+} from "../types/zod-schema";
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
@@ -52,7 +56,7 @@ type ISputumDetails = {
   drugResistanceDetails: string;
 };
 
-export abstract class SputumDetails extends SputumDetailsBase {
+export class SputumDetails extends SputumDetailsBase {
   sampleDetails: SputumSamples;
   dstConducted: boolean;
   dstSputumSample: string;
@@ -105,10 +109,15 @@ export class SputumDetailsDbOps {
       const sk = this.sk;
       const TableName = this.getTableName();
 
+      const { Item: existingItem } = await docClient.send(
+        new GetCommand({ TableName, Key: { pk, sk } }),
+      );
+
+      if (!existingItem) throw new Error("Item not found");
       // Merge sampleDetails
       const mergedSamples = {
         ...(existingItem.sampleDetails || {}),
-        ...(updates.samples || {}),
+        ...(updates.sputumSamples || {}),
       };
 
       // Merge full item
@@ -124,9 +133,9 @@ export class SputumDetailsDbOps {
         CompletionCheckSchema.parse({
           samples: merged.sampleDetails,
           drugTested: merged.drugTested,
+          // dstSputumSample: merged.dstSputumSample,
           drugResistance: merged.drugResistance,
           drugResistanceDetails: merged.drugResistanceDetails,
-          dstBloodSampleSample: merged.dstBloodSampleSample,
         });
         shouldSetStatusCompleted = true;
       } catch {
