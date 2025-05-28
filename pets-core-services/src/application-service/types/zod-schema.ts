@@ -237,19 +237,6 @@ export const ChestXRayResponseSchema = z.union([
   ChestXRayNotTakenResponseSchema,
 ]);
 
-export const ApplicationSchema = z.object({
-  applicationId: z.string().openapi({
-    description: "application id",
-  }),
-  applicantPhoto: z.string().openapi({
-    description: "Base64 Encoded string for Applicant photo",
-  }),
-  travelInformation: TravelInformationResponseSchema,
-  medicalScreening: MedicalScreeningResponseSchema,
-  chestXray: ChestXRayResponseSchema,
-  tbCertificate: TbCertificateResponseSchema,
-});
-
 export const ImageUploadUrlRequestSchema = z.object({
   fileName: z.string().openapi({
     description: "Name of file on S3",
@@ -281,6 +268,133 @@ export const ApplicantPhotoRequestSchema = z.object({
 });
 
 export const ApplicantPhotoResponseSchema = ApplicantPhotoRequestSchema.extend({
+  dateCreated: z.string().date().openapi({
+    description: "Creation Date in UTC timezone",
+  }),
+  status: z.nativeEnum(TaskStatus).openapi({
+    description: "Status of Task",
+  }),
+});
+
+export const SputumSampleSchema = z.object({
+  dateOfSputumSample: z.coerce.date().openapi({
+    description: "Date of Sputum Collection",
+  }),
+  collectionMethods: z.string().openapi({
+    description: "Collection Method of Sputum Collection",
+  }),
+  smearResult: z.string().optional().openapi({
+    description: "Smear Result",
+  }),
+  cultureResult: z.string().optional().openapi({
+    description: "Culture Result",
+  }),
+  dateCreated: z.string().date().openapi({
+    description: "Creation Date in UTC timezone",
+  }),
+  dateUpdated: z.string().date().openapi({
+    description: "Updated Date in UTC timezone",
+  }),
+});
+
+export const SputumSamplesSchema = z
+  .object({
+    sample1: SputumSampleSchema.optional(),
+    sample2: SputumSampleSchema.optional(),
+    sample3: SputumSampleSchema.optional(),
+  })
+  .partial()
+  .openapi({ description: "Details of Sputum Samples" });
+
+export const SputumRequestSchema = z.object({
+  sputumSamples: SputumSamplesSchema.optional().openapi({
+    description: "Sputum Sample details",
+  }),
+  dstConducted: z.boolean().optional().openapi({
+    description: "Has drug testing  been Conducted",
+  }),
+  drugTested: z.string().optional().openapi({
+    description: "Drug tested",
+  }),
+  dstSputumSampleTested: z.string().optional().openapi({
+    description: "Sputum Sample on which DST conducted",
+  }),
+  drugResistance: z.string().optional().openapi({
+    description: "Drug resistance result",
+  }),
+  drugResistanceDetails: z.string().optional().openapi({
+    description: "Drug Resistance Details",
+  }),
+  version: z.number().optional().openapi({
+    description: "Version Number for concurrency Control",
+  }), // for concurrency control
+});
+
+export const SputumResponseSchema = SputumRequestSchema.extend({
+  dateCreated: z.string().date().openapi({
+    description: "Creation Date in UTC timezone",
+  }),
+  dateUpdated: z.string().date().openapi({
+    description: "Updated Date in UTC timezone",
+  }),
+  status: z.nativeEnum(TaskStatus).openapi({
+    description: "Status of Task",
+  }),
+});
+
+export type SputumSampleUpdateInput = z.infer<typeof SputumRequestSchema>;
+
+export const CompleteSampleSchema = z.object({
+  dateOfSputumSample: z.union([z.string(), z.date()]),
+  collectionMethods: z.string().min(1),
+  smearResult: z.string().min(1),
+  cultureResult: z.string().min(1),
+});
+export const CompletionCheckSchema = z.object({
+  samples: z.object({
+    sample1: CompleteSampleSchema,
+    sample2: CompleteSampleSchema,
+    sample3: CompleteSampleSchema,
+  }),
+  dstConducted: z.boolean(),
+  drugTested: z.string().min(1),
+  drugResistance: z.string().min(1),
+  drugResistanceDetails: z.string().min(1),
+  dstSputumSample: z.string().min(1),
+});
+
+export const ApplicationSchema = z.object({
+  applicationId: z.string().openapi({
+    description: "application id",
+  }),
+  applicantPhoto: z.string().openapi({
+    description: "Base64 Encoded string for Applicant photo",
+  }),
+  travelInformation: TravelInformationResponseSchema,
+  medicalScreening: MedicalScreeningResponseSchema,
+  chestXray: ChestXRayResponseSchema,
+  sputumDetails: SputumResponseSchema,
+  tbCertificate: TbCertificateResponseSchema,
+});
+export const DstResultsRequestSchema = z.object({
+  dstConducted: z.boolean().openapi({
+    description: "Has drug testing  been Conducted",
+  }),
+  drugTested: z.string().openapi({
+    description: "Collection Method of Sputum Collection",
+  }),
+  dstSputumSampleTested: z.string().openapi({
+    description: "Sputum Sample on which DST conducted",
+  }),
+  drugResistance: z.string().openapi({
+    description: "Culture Result",
+  }),
+  drugResistanceDetails: z.string().openapi({
+    description: "Culture Result",
+  }),
+});
+
+export const DstResultsResponseSchema = DstResultsRequestSchema.extend({
   dateCreated: z.string().date().openapi({
     description: "Creation Date in UTC timezone",
   }),

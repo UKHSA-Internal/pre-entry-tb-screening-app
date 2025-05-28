@@ -22,6 +22,8 @@ import {
   ImageUploadUrlResponseSchema,
   MedicalScreeningRequestSchema,
   MedicalScreeningResponseSchema,
+  SputumRequestSchema,
+  SputumResponseSchema,
   TbCertificateRequestSchema,
   TbCertificateResponseSchema,
   TravelInformationRequestSchema,
@@ -115,6 +117,20 @@ export const routes: PetsRoute[] = [
     }),
     responseSchema: ImageUploadUrlResponseSchema.openapi({
       description: "The upload url",
+    }),
+  },
+  {
+    method: "PUT",
+    path: "/application/{applicationId}/sputum-details",
+    handler: middy<PetsAPIGatewayProxyEvent>()
+      .before(setApplicationIdContext)
+      .before(validateApplication)
+      .handler(generateImageUploadUrlHandler),
+    requestBodySchema: SputumRequestSchema.openapi({
+      description: "Sputum Collection and Testing Details of Applicant",
+    }),
+    responseSchema: SputumResponseSchema.openapi({
+      description: "Saved Sputum Details of Applicant",
     }),
   },
 ];
