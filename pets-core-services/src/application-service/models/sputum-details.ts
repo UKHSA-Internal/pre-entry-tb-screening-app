@@ -5,13 +5,35 @@ import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { TaskStatus } from "../../shared/types/enum";
 import {
-  CompletionCheckSchema,
   SputumRequestSchema,
+  SputumSampleCompletionCheckSchema,
   SputumSampleUpdateInput,
 } from "../types/zod-schema";
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
+export type SputumSample = {
+  dateOfSputumSample?: Date | string;
+  sputumCollectionMethod?: string;
+  smearResult?: string;
+  cultureResult?: string;
+  dateUpdated?: Date | string;
+};
+
+export type SputumSamples = {
+  sample1?: SputumSample;
+  sample2?: SputumSample;
+  sample3?: SputumSample;
+};
+
+export interface ISputumDetails {
+  applicationId: string;
+  status: TaskStatus;
+  dateCreated: Date;
+  createdBy: string;
+  sputumSamples: SputumSamples;
+  version?: number;
+}
 abstract class SputumDetailsBase {
   applicationId: string;
   status: TaskStatus;
@@ -29,72 +51,56 @@ abstract class SputumDetailsBase {
   }
 }
 
-type SputumSample = {
-  dateSputumSample: Date;
-  sputumCollectionMethod: string;
-  smearResult?: string;
-  cultureResult?: string;
-};
-
-type SputumSamples = {
-  sample1?: SputumSample;
-  sample2?: SputumSample;
-  sample3?: SputumSample;
-};
-
-type ISputumDetails = {
-  applicationId: string;
-  status: TaskStatus;
-  dateCreated: Date;
-  createdBy: string;
-
-  sampleDetails: SputumSamples;
-  dstConducted: boolean;
-  dstSputumSample: string;
-  drugTested: string;
-  drugResistance: string;
-  drugResistanceDetails: string;
-};
-
 export class SputumDetails extends SputumDetailsBase {
-  sampleDetails: SputumSamples;
-  dstConducted: boolean;
-  dstSputumSample: string;
-  drugTested: string;
-  drugResistance: string;
-  drugResistanceDetails: string;
+  sputumSamples: SputumSamples;
+  version?: number;
 
   constructor(details: ISputumDetails) {
     super(details);
-    this.dstConducted = details.dstConducted;
-    this.sampleDetails = details.sampleDetails;
-    this.dstSputumSample = details.dstSputumSample;
-    this.drugTested = details.drugTested;
-    this.drugResistance = details.drugResistance;
-    this.drugResistanceDetails = details.drugResistanceDetails;
+    this.sputumSamples = details.sputumSamples;
+    this.version = details.version;
   }
 
   toJson() {
     return {
       applicationId: this.applicationId,
       status: this.status,
-      sampleDetails: this.sampleDetails,
-      dstSputumSample: this.dstSputumSample,
-      drugTested: this.drugTested,
-      drugResistance: this.drugResistance,
-      drugResistanceDetails: this.drugResistanceDetails,
-      dateCreated: this.dateCreated,
+      sputumSamples: this.sputumSamples,
+      dateCreated: this.dateCreated.toISOString(),
       createdBy: this.createdBy,
+      version: this.version,
     };
   }
 }
+// --- Helper to safely parse sample fields ---
+
+const parseSample = (sample: any): SputumSample | undefined => {
+  if (!sample || typeof sample !== "object" || Array.isArray(sample)) return undefined;
+
+  const parsedSample = sample as SputumSample;
+
+  return {
+    dateOfSputumSample: parsedSample.dateOfSputumSample
+      ? new Date(parsedSample.dateOfSputumSample as string)
+      : undefined,
+    sputumCollectionMethod: parsedSample.sputumCollectionMethod as string,
+    smearResult: parsedSample.smearResult as string,
+    cultureResult: parsedSample.cultureResult as string,
+    dateUpdated: parsedSample.dateUpdated
+      ? new Date(parsedSample.dateUpdated as string)
+      : undefined,
+  };
+};
 
 export class SputumDetailsDbOps {
   static readonly getPk = (applicationId: string) => Application.getPk(applicationId);
   static readonly sk = "APPLICATION#SPUTUM#DETAILS";
   static readonly getTableName = () => process.env.APPLICATION_SERVICE_DATABASE_NAME;
 
-  static async createOrUpdateSputumDetails(applicationId: string, details: SputumDetails) {
+  static async createOrUpdateSputumDetails(
+    applicationId: string,
+    details: Omit<ISputumDetails, "dateCreated" | "status">,
+  ): Promise<SputumDetails> {
     try {
       logger.info("Saving Sputum Details Information to DB");
       // Step 1: Validate
@@ -109,14 +115,29 @@ export class SputumDetailsDbOps {
       const sk = this.sk;
       const TableName = this.getTableName();
 
-      const { Item: existingItem } = await docClient.send(
+      const { Item: existingItemRaw } = await docClient.send(
         new GetCommand({ TableName, Key: { pk, sk } }),
       );
 
-      if (!existingItem) throw new Error("Item not found");
+      if (!existingItemRaw) throw new Error("Sputum details not found");
+      if (!("version" in existingItemRaw)) {
+        existingItemRaw.version = 0;
+      }
+      // Parse existing sample dates
+      const samplesRaw = existingItemRaw.sputumSamples as Record<string, unknown> | undefined;
+
+      const existingItem = {
+        ...existingItemRaw,
+        sputumSamples: {
+          sample1: parseSample(samplesRaw?.sample1),
+          sample2: parseSample(samplesRaw?.sample2),
+          sample3: parseSample(samplesRaw?.sample3),
+        },
+      };
+
       // Merge sampleDetails
       const mergedSamples = {
-        ...(existingItem.sampleDetails || {}),
+        ...((existingItem.sputumSamples as SputumSamples) || {}),
         ...(updates.sputumSamples || {}),
       };
 
@@ -124,18 +145,14 @@ export class SputumDetailsDbOps {
       const merged = {
         ...existingItem,
         ...updates,
-        sampleDetails: mergedSamples,
+        sputumSamples: mergedSamples,
       };
 
       // Determine if all required fields are complete using Zod
       let shouldSetStatusCompleted = false;
       try {
-        CompletionCheckSchema.parse({
-          samples: merged.sampleDetails,
-          drugTested: merged.drugTested,
-          // dstSputumSample: merged.dstSputumSample,
-          drugResistance: merged.drugResistance,
-          drugResistanceDetails: merged.drugResistanceDetails,
+        SputumSampleCompletionCheckSchema.parse({
+          samples: merged.sputumSamples,
         });
         shouldSetStatusCompleted = true;
       } catch {
@@ -146,7 +163,7 @@ export class SputumDetailsDbOps {
       const updateExpressions: string[] = [];
       const expressionAttributeNames: Record<string, string> = {};
       const expressionAttributeValues: Record<string, any> = {
-        ":updatedAt": new Date().toISOString(),
+        ":dateUpdated": new Date().toISOString(),
       };
 
       let conditionExpression: string | undefined;
@@ -161,31 +178,12 @@ export class SputumDetailsDbOps {
             const fieldAttr = `#f${idx}`;
             const valueAttr = `:v${idx}`;
 
-            updateExpressions.push(`sampleDetails.${sampleAttr}.${fieldAttr} = ${valueAttr}`);
+            updateExpressions.push(`sputumSamples.${sampleAttr}.${fieldAttr} = ${valueAttr}`);
             expressionAttributeNames[sampleAttr] = sampleKey;
             expressionAttributeNames[fieldAttr] = fieldKey;
             expressionAttributeValues[valueAttr] = value;
             idx++;
           }
-        }
-      }
-
-      // Top-level drug test fields
-      const topFields: (keyof SputumSampleUpdateInput)[] = [
-        "dstConducted",
-        "drugTested",
-        "dstSputumSampleTested",
-        "drugResistance",
-        "drugResistanceDetails",
-      ];
-      for (const field of topFields) {
-        const value = updates[field];
-        if (value !== undefined) {
-          const nameKey = `#${field}`;
-          const valueKey = `:${field}`;
-          updateExpressions.push(`${nameKey} = ${valueKey}`);
-          expressionAttributeNames[nameKey] = field;
-          expressionAttributeValues[valueKey] = value;
         }
       }
 
@@ -201,38 +199,47 @@ export class SputumDetailsDbOps {
       if (shouldSetStatusCompleted) {
         updateExpressions.push("#status = :status");
         expressionAttributeNames["#status"] = "status";
-        expressionAttributeValues[":status"] = "completed";
+        expressionAttributeValues[":status"] = TaskStatus.completed;
       }
 
-      updateExpressions.push("updatedAt = :updatedAt");
+      updateExpressions.push("dateUpdated = :dateUpdated");
 
       const UpdateExpression = "SET " + updateExpressions.join(", ");
 
-      await docClient.send(
-        new UpdateCommand({
-          TableName,
-          Key: { pk, sk },
-          UpdateExpression,
-          ExpressionAttributeNames: expressionAttributeNames,
-          ExpressionAttributeValues: expressionAttributeValues,
-          ...(conditionExpression ? { ConditionExpression: conditionExpression } : {}),
-        }),
-      );
+      const updateCommand = new UpdateCommand({
+        TableName,
+        Key: { pk, sk },
+        UpdateExpression,
+        ExpressionAttributeNames: expressionAttributeNames,
+        ExpressionAttributeValues: expressionAttributeValues,
+        ...(conditionExpression ? { ConditionExpression: conditionExpression } : {}),
+        ReturnValues: "ALL_NEW",
+      });
+
+      const { Attributes } = await docClient.send(updateCommand);
+      if (!Attributes) throw new Error("Update failed");
 
       logger.info(`Created/Updated sputum sample details for ${applicationId}`);
+      const samples = Attributes.sputumSamples as Record<string, unknown> | undefined;
+
+      const updatedSputumDetails = new SputumDetails({
+        applicationId,
+        status: Attributes.status as TaskStatus,
+        createdBy: Attributes.createdBy as string,
+        dateCreated: new Date(Attributes.dateCreated as string),
+        sputumSamples: {
+          sample1: parseSample(samples?.sample1),
+          sample2: parseSample(samples?.sample2),
+          sample3: parseSample(samples?.sample3),
+        },
+        version: Attributes.version as number,
+      });
+
+      return updatedSputumDetails;
     } catch (error) {
       logger.error("Update failed", error);
       throw error;
     }
-  }
-  static todbItem(sputumDetails: SputumDetails) {
-    const dbItem = {
-      ...sputumDetails,
-      dateCreated: sputumDetails.dateCreated.toISOString(),
-      pk: SputumDetailsDbOps.getPk(sputumDetails.applicationId),
-      sk: SputumDetailsDbOps.sk,
-    };
-    return dbItem;
   }
 
   static async getByApplicationId(applicationId: string) {
@@ -249,19 +256,27 @@ export class SputumDetailsDbOps {
 
       const command = new GetCommand(params);
       const data = await docClient.send(command);
+      const sputumRecord = data.Item;
 
-      if (!data.Item) {
+      if (!sputumRecord) {
         logger.info("No Sputum Details found");
         return;
       }
 
       logger.info("Sputum Details fetched successfully");
-
-      const dbItem = data.Item as ReturnType<(typeof SputumDetailsDbOps)["todbItem"]>;
+      const samplesRetreived = sputumRecord.sputumSamples as Record<string, unknown> | undefined;
 
       const sputumDetails = new SputumDetails({
-        ...dbItem,
-        dateCreated: new Date(dbItem.dateCreated),
+        applicationId,
+        status: sputumRecord.status as TaskStatus,
+        createdBy: sputumRecord.createdBy as string,
+        dateCreated: new Date(sputumRecord.dateCreated as string),
+        sputumSamples: {
+          sample1: parseSample(samplesRetreived?.sample1),
+          sample2: parseSample(samplesRetreived?.sample2),
+          sample3: parseSample(samplesRetreived?.sample3),
+        },
+        version: sputumRecord.version as number,
       });
       return sputumDetails;
     } catch (error) {

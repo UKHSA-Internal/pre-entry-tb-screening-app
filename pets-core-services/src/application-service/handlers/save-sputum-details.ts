@@ -35,6 +35,7 @@ export const saveSputumDetailsHandler = async (event: SaveSputumDetailsEvent) =>
         ...parsedBody,
         createdBy,
         applicationId,
+        sputumSamples: parsedBody.sputumSamples ?? {},
       });
     } catch (error) {
       if (error instanceof ConditionalCheckFailedException)

@@ -9,6 +9,7 @@ import { generateImageUploadUrlHandler } from "../handlers/generate-image-upload
 import { getApplicationHandler } from "../handlers/get-application";
 import { saveChestXRayHandler } from "../handlers/save-chest-ray";
 import { saveMedicalScreeningHandler } from "../handlers/save-medical-screening";
+import { saveSputumDetailsHandler } from "../handlers/save-sputum-details";
 import { saveTbCertificateHandler } from "../handlers/save-tb-certificate";
 import { saveTravelInformationHandler } from "../handlers/save-travel-information";
 import { setApplicationIdContext } from "../middlewares/application-logger-context";
@@ -125,7 +126,7 @@ export const routes: PetsRoute[] = [
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(setApplicationIdContext)
       .before(validateApplication)
-      .handler(generateImageUploadUrlHandler),
+      .handler(saveSputumDetailsHandler),
     requestBodySchema: SputumRequestSchema.openapi({
       description: "Sputum Collection and Testing Details of Applicant",
     }),
