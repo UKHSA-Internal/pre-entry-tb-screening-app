@@ -90,7 +90,8 @@ const TbSummary = () => {
 
       <Summary status={tbCertificateData.status} summaryElements={summaryData} />
 
-      {tbCertificateData.status == ApplicationStatus.NOT_YET_STARTED && (
+      {(tbCertificateData.status == ApplicationStatus.NOT_YET_STARTED ||
+        tbCertificateData.status == ApplicationStatus.IN_PROGRESS) && (
         <Button
           id="confirm"
           type={ButtonType.DEFAULT}
@@ -98,7 +99,8 @@ const TbSummary = () => {
           handleClick={handleSubmit}
         />
       )}
-      {tbCertificateData.status == ApplicationStatus.COMPLETE && (
+      {(tbCertificateData.status == ApplicationStatus.COMPLETE ||
+        tbCertificateData.status == ApplicationStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
           type={ButtonType.DEFAULT}

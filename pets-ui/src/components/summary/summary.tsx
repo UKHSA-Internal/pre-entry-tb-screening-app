@@ -27,7 +27,7 @@ function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement)
                 </dd>
               );
             })
-          : status == ApplicationStatus.NOT_YET_STARTED && (
+          : status != ApplicationStatus.COMPLETE && (
               <LinkLabel
                 to={summaryElement.link}
                 title={summaryElement.emptyValueText ?? ""}
@@ -42,7 +42,7 @@ function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement)
       <dd className="govuk-summary-list__value">
         {summaryElement.value
           ? summaryElement.value
-          : status == ApplicationStatus.NOT_YET_STARTED && (
+          : status != ApplicationStatus.COMPLETE && (
               <LinkLabel
                 to={summaryElement.link}
                 title={summaryElement.emptyValueText ?? ""}
