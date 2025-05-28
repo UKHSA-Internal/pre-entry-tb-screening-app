@@ -22,7 +22,8 @@ const Task = (props: Readonly<TaskProps>) => {
   return (
     <li className="govuk-task-list__item govuk-task-list__item--with-link">
       <div className="govuk-task-list__name-and-hint">
-        {props.status == ApplicationStatus.NOT_YET_STARTED && (
+        {(props.status == ApplicationStatus.NOT_YET_STARTED ||
+          props.status == ApplicationStatus.IN_PROGRESS) && (
           <LinkLabel
             className="govuk-link govuk-task-list__link"
             to={props.linkWhenIncomplete}
@@ -38,14 +39,31 @@ const Task = (props: Readonly<TaskProps>) => {
             externalLink={false}
           />
         )}
+        {props.status == ApplicationStatus.NOT_REQUIRED && (
+          <p className="govuk-body" style={{ marginBottom: 0 }}>
+            {props.description}
+          </p>
+        )}
       </div>
       {props.status == ApplicationStatus.NOT_YET_STARTED && (
         <div className="govuk-task-list__status">
-          <strong className="govuk-tag govuk-tag--blue">Incomplete</strong>
+          <strong className="govuk-tag govuk-tag--blue">Not yet started</strong>
+        </div>
+      )}
+      {props.status == ApplicationStatus.IN_PROGRESS && (
+        <div className="govuk-task-list__status">
+          <strong className="govuk-tag govuk-tag--yellow">In progress</strong>
         </div>
       )}
       {props.status == ApplicationStatus.COMPLETE && (
-        <div className="govuk-task-list__status">Completed</div>
+        <div className="govuk-task-list__status">
+          <strong className="govuk-tag govuk-tag--green">Completed</strong>
+        </div>
+      )}
+      {props.status == ApplicationStatus.NOT_REQUIRED && (
+        <div className="govuk-task-list__status">
+          <strong className="govuk-tag govuk-tag--grey">Not required</strong>
+        </div>
       )}
     </li>
   );
