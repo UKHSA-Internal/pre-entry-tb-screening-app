@@ -144,30 +144,6 @@ const ProgressTracker = () => {
           linkWhenIncomplete="/tb-certificate-declaration"
           linkWhenComplete="/tb-certificate-summary"
         />
-        <Task
-          description="*DO NOT MERGE* For testing only: not yet started"
-          status={ApplicationStatus.NOT_YET_STARTED}
-          linkWhenIncomplete="/incomplete"
-          linkWhenComplete="/complete"
-        />
-        <Task
-          description="*DO NOT MERGE* For testing only: in progress"
-          status={ApplicationStatus.IN_PROGRESS}
-          linkWhenIncomplete="/incomplete"
-          linkWhenComplete="/complete"
-        />
-        <Task
-          description="*DO NOT MERGE* For testing only: complete"
-          status={ApplicationStatus.COMPLETE}
-          linkWhenIncomplete="/incomplete"
-          linkWhenComplete="/complete"
-        />
-        <Task
-          description="*DO NOT MERGE* For testing only: not required"
-          status={ApplicationStatus.NOT_REQUIRED}
-          linkWhenIncomplete="/incomplete"
-          linkWhenComplete="/complete"
-        />
       </ul>
 
       <p className="govuk-body">You cannot currently log sputum test information in this system.</p>
