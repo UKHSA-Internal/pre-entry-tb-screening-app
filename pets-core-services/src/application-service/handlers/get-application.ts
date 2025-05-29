@@ -22,7 +22,7 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
       return createHttpResponse(403, { message: "Clinic Id mismatch" });
     }
     const clinicId = application.clinicId;
-    const applicantPhoto = await ApplicantPhoto.getByApplicationId(applicationId, clinicId);
+    const applicantPhotoUrl = await ApplicantPhoto.getByApplicationId(applicationId, clinicId);
     const travelInformation = await TravelInformation.getByApplicationId(applicationId);
     const medicalScreening = await MedicalScreening.getByApplicationId(applicationId);
     const chestXray = await ChestXRayDbOps.getByApplicationId(applicationId);
@@ -30,7 +30,7 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
 
     return createHttpResponse(200, {
       applicationId,
-      applicantPhoto,
+      applicantPhotoUrl,
       travelInformation: travelInformation?.toJson(),
       medicalScreening: medicalScreening?.toJson(),
       chestXray: chestXray?.toJson(),

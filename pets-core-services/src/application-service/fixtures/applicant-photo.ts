@@ -2,12 +2,12 @@ import { ApplicantPhoto } from "../models/applicant-photo";
 
 export const seededApplicantPhoto: Array<ApplicantPhoto> = [
   {
-    applicantPhoto: "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhUVORK5CYII=",
+    applicantPhotoUrl: "http://presignedurl1",
   },
   {
-    applicantPhoto: "data:image/jpg;base64,itfrykw0KGgoBBRTYUhUVORK5CYII=",
+    applicantPhotoUrl: "http://presignedurl2",
   },
   {
-    applicantPhoto: "data:image/jpg;base64,HJRTYUw0KGgoAAAANSUhUVORK5CYII=",
+    applicantPhotoUrl: "http://presignedurl3",
   },
 ];

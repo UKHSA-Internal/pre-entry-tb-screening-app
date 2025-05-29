@@ -1,23 +1,14 @@
 import { GetObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
-import { Readable } from "stream";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 import awsClients from "../../shared/clients/aws";
 import { assertEnvExists } from "../../shared/config";
 import { logger } from "../../shared/logger";
 
 const { s3Client } = awsClients;
-
+const EXPIRY_TIME = 5 * 60; // 5 minutes
 export class ImageHelper {
-  static async streamToBuffer(stream: Readable): Promise<Buffer> {
-    return new Promise((resolve, reject) => {
-      const chunks: Buffer[] = [];
-      stream.on("data", (chunk) => chunks.push(chunk as Buffer));
-      stream.on("end", () => resolve(Buffer.concat(chunks)));
-      stream.on("error", reject);
-    });
-  }
-
-  static async fetchImageAsBase64(bucket: string, key: string): Promise<string | null> {
+  static async getPresignedUrlforImage(bucket: string, key: string): Promise<string | null> {
     try {
       const listCommand = new ListObjectsV2Command({
         Bucket: bucket,
@@ -38,11 +29,11 @@ export class ImageHelper {
         Key: object.Key,
       });
 
-      const result = await s3Client.send(getCommand);
-      const stream = result.Body as Readable;
-      const buffer = await ImageHelper.streamToBuffer(stream);
-
-      return buffer.toString("base64");
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+      const presignedUrl: string = await getSignedUrl(s3Client, getCommand, {
+        expiresIn: EXPIRY_TIME,
+      });
+      return presignedUrl;
     } catch (error) {
       logger.error("Error fetching image:", error);
       throw error;

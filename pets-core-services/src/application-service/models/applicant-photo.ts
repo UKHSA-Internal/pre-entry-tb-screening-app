@@ -6,15 +6,15 @@ import { ImageType } from "../types/enums";
 const bucket = getImageBucket();
 
 export abstract class IApplicantPhoto {
-  applicantPhoto: string;
+  applicantPhotoUrl: string;
   constructor(details: IApplicantPhoto) {
-    this.applicantPhoto = details.applicantPhoto;
+    this.applicantPhotoUrl = details.applicantPhotoUrl;
   }
 }
 export class ApplicantPhoto extends IApplicantPhoto {
   static async getByApplicationId(applicationId: string, clinicId: string) {
     try {
-      logger.info("fetching photo Details");
+      logger.info("Fetching presigned photo Url");
       const applicant = await Applicant.getByApplicationId(applicationId);
       if (!applicant) {
         logger.error("Application does not have an applicant");
@@ -27,13 +27,13 @@ export class ApplicantPhoto extends IApplicantPhoto {
         imageType: ImageType.Photo,
         applicationId,
       });
-      const applicantPhoto = await ImageHelper.fetchImageAsBase64(bucket, objectKey);
-      if (!applicantPhoto) {
+      const applicantPhotoUrl = await ImageHelper.getPresignedUrlforImage(bucket, objectKey);
+      if (!applicantPhotoUrl) {
         logger.info("Applicant Photo not found");
         return;
       }
-      logger.info("Applicant Photo fetched successfully");
-      return applicantPhoto;
+      logger.info("Applicant Photo Url generated successfully");
+      return applicantPhotoUrl;
     } catch (error) {
       logger.error(error, "Error retrieving Applicant Photo Details");
       throw error;

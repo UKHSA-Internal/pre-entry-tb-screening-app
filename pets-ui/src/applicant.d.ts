@@ -26,6 +26,7 @@ type ApplicationIdAndDateCreatedType = {
 
 type ReceivedApplicationDetailsType = {
   applicationId: string;
+  applicantPhotoUrl?: string;
   travelInformation: ReceivedTravelDetailsType | undefined;
   medicalScreening: ReceivedMedicalScreeningType | undefined;
   chestXray: ReceivedChestXrayDetailsType | undefined;

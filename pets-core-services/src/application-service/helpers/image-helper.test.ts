@@ -1,36 +1,23 @@
 import { GetObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { mockClient } from "aws-sdk-client-mock";
-import { Readable } from "stream";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
+import { logger } from "../../shared/logger";
 import { ImageHelper } from "./image-helper";
 
 // Mock S3 client
 const s3ClientMock = mockClient(awsClients.s3Client);
 
+const errorloggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+
+vi.mock("@aws-sdk/s3-request-presigner", () => ({
+  getSignedUrl: vi.fn().mockResolvedValue("https://mocked-signed-url.com"),
+}));
+
 describe("ImageHelper", () => {
-  describe("streamToBuffer", () => {
-    it("should convert a stream to a buffer", async () => {
-      const inputBuffer = Buffer.from("Test Data");
-      const stream = Readable.from([inputBuffer]);
-
-      const result = await ImageHelper.streamToBuffer(stream);
-      expect(result.equals(inputBuffer)).toBe(true);
-    });
-
-    it("should reject on stream error", async () => {
-      const errorStream = new Readable({
-        read() {
-          this.emit("error", new Error("Stream error"));
-        },
-      });
-
-      await expect(ImageHelper.streamToBuffer(errorStream)).rejects.toThrow("Stream error");
-    });
-  });
-
-  describe("Fetch image as Base64", () => {
+  describe("Get Presigned URL for image", () => {
     const bucket = "test-bucket";
     const key = "test/key";
 
@@ -39,36 +26,35 @@ describe("ImageHelper", () => {
       vi.clearAllMocks();
     });
 
-    it("should return base64 string if object exists", async () => {
-      // Setup mocks
-      const fakeBuffer = Buffer.from("mock-image-content");
-      const fakeStream = Readable.from(fakeBuffer);
-
+    it("returns presigned URL when object is found", async () => {
       // Mock S3 responses
       s3ClientMock.on(ListObjectsV2Command).resolves({
         Contents: [{ Key: "photo/q2378/.../applicant-photo/test.jpg" }],
       });
 
-      s3ClientMock.on(GetObjectCommand).resolves({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
-        Body: fakeStream as any,
-        // ContentType: "image/jpeg",
-      });
-      const result = await ImageHelper.fetchImageAsBase64(bucket, key);
-      expect(result).toBe(fakeBuffer.toString("base64"));
+      const url = await ImageHelper.getPresignedUrlforImage(bucket, key);
+      expect(getSignedUrl).toHaveBeenCalledWith(
+        awsClients.s3Client,
+        expect.any(GetObjectCommand),
+        expect.objectContaining({ expiresIn: 300 }),
+      );
+      expect(url).toBe("https://mocked-signed-url.com");
     });
 
-    it("should return null if no object is found", async () => {
+    it("returns null and logs error if object not found", async () => {
       s3ClientMock.on(ListObjectsV2Command).resolves({ Contents: [] });
 
-      const result = await ImageHelper.fetchImageAsBase64(bucket, key);
+      const result = await ImageHelper.getPresignedUrlforImage(bucket, key);
       expect(result).toBeNull();
+      expect(errorloggerMock).toHaveBeenCalledWith("No image found under the specified prefix.");
     });
 
-    it("should throw error on S3 client failure", async () => {
-      s3ClientMock.on(ListObjectsV2Command).rejects(new Error("S3 error"));
+    it("throws and logs error on AWS failure", async () => {
+      const error = new Error("S3 error");
+      s3ClientMock.on(ListObjectsV2Command).rejects(error);
 
-      await expect(ImageHelper.fetchImageAsBase64(bucket, key)).rejects.toThrow("S3 error");
+      await expect(ImageHelper.getPresignedUrlforImage(bucket, key)).rejects.toThrow("S3 error");
+      expect(errorloggerMock).toHaveBeenCalledWith("Error fetching image:", error);
     });
   });
 });

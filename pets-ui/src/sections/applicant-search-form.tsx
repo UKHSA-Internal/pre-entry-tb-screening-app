@@ -9,10 +9,12 @@ import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
 import Spinner from "@/components/spinner/spinner";
 import SubmitButton from "@/components/submitButton/submitButton";
+import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import {
   clearApplicantDetails,
   setApplicantDetailsFromApiResponse,
   setApplicantPassportDetails,
+  setApplicantPhotoFileName,
 } from "@/redux/applicantSlice";
 import { clearApplicationDetails, setApplicationId } from "@/redux/applicationSlice";
 import { clearChestXrayDetails, setChestXrayFromApiResponse } from "@/redux/chestXraySlice";
@@ -35,6 +37,7 @@ const ApplicantSearchForm = () => {
   const navigate = useNavigate();
   const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
   const dispatch = useAppDispatch();
+  const { setApplicantPhotoFile } = useApplicantPhoto();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -45,6 +48,8 @@ const ApplicantSearchForm = () => {
     dispatch(clearTravelDetails());
     dispatch(clearChestXrayDetails());
     dispatch(clearTbCertificateDetails());
+    dispatch(setApplicantPhotoFileName(""));
+    setApplicantPhotoFile(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -59,16 +64,36 @@ const ApplicantSearchForm = () => {
     setIsLoading(true);
     try {
       dispatch(setApplicantPassportDetails(passportDetails));
+      setApplicantPhotoFile(null);
 
       const applicantRes = await getApplicants(passportDetails);
       if (applicantRes.data.length === 0) {
         navigate("/applicant-results");
+        setIsLoading(false);
         return;
       }
       dispatch(setApplicantDetailsFromApiResponse(applicantRes.data[0]));
       dispatch(setApplicationId(applicantRes.data[0].applicationId));
 
       const applicationRes = await getApplication(applicantRes.data);
+      if (applicationRes.data.applicantPhotoUrl) {
+        try {
+          const fixedUrl = applicationRes.data.applicantPhotoUrl.replace(
+            /172\.\d+\.\d+\.\d+:4566/,
+            "localhost:4566",
+          );
+          const response = await fetch(fixedUrl);
+          const blob = await response.blob();
+          const urlParts = applicationRes.data.applicantPhotoUrl.split("/");
+          const filename = urlParts.pop()?.split("?")[0] || "applicant-photo.jpg";
+          const photoFile = new File([blob], filename, { type: blob.type });
+          setApplicantPhotoFile(photoFile);
+          dispatch(setApplicantPhotoFileName(filename));
+        } catch (photoError) {
+          console.error("Error fetching or processing applicant photo:", photoError);
+        }
+      }
+
       if (applicationRes.data.travelInformation) {
         dispatch(setTravelDetailsFromApiResponse(applicationRes.data.travelInformation));
       }
@@ -85,6 +110,8 @@ const ApplicantSearchForm = () => {
     } catch (error) {
       console.error(error);
       navigate("/error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
