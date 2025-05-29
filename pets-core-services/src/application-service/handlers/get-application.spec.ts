@@ -81,7 +81,7 @@ describe("Getting Application Handler", () => {
       // Defined in pets-core-services/src/application-service/fixtures/travel-information.ts
       travelInformation: {
         applicationId: seededApplications[1].applicationId,
-        status: "completed",
+        status: "Complete",
         dateCreated: expect.any(String),
         ukAddressLine1: "182 Willow Crescent",
         ukAddressLine2: "Northfield",
@@ -107,7 +107,7 @@ describe("Getting Application Handler", () => {
         physicalExaminationNotes: "NA",
         applicationId: seededApplications[1].applicationId,
         dateCreated: expect.any(String),
-        status: "completed",
+        status: "Complete",
       },
       chestXray: {
         chestXrayTaken: "Yes",
@@ -126,7 +126,7 @@ describe("Getting Application Handler", () => {
         xrayMinorFindings: [],
         applicationId: seededApplications[1].applicationId,
         dateCreated: expect.any(String),
-        status: "completed",
+        status: "Complete",
       },
       // Defined in pets-core-services\src\application-service\fixtures\tb-certificate.ts
       tbCertificate: {
@@ -136,7 +136,7 @@ describe("Getting Application Handler", () => {
         isIssued: "Yes",
         certificateNumber: "987000",
         dateCreated: expect.any(String),
-        status: "completed",
+        status: "Complete",
       },
     });
   });

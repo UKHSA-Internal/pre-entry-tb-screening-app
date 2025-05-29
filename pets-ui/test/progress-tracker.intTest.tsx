@@ -187,7 +187,7 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(applicantDetailsListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
-  expect(within(applicantDetailsListItem as HTMLElement).getByText("Incomplete"));
+  expect(within(applicantDetailsListItem as HTMLElement).getByText("Not yet started"));
 
   const travelDetailsLink = screen.getByRole("link", { name: /Travel information/i });
   expect(travelDetailsLink).toHaveAttribute("href", "/travel-details");
@@ -195,7 +195,7 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(travelDetailsListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
-  expect(within(travelDetailsListItem as HTMLElement).getByText("Incomplete"));
+  expect(within(travelDetailsListItem as HTMLElement).getByText("Not yet started"));
 
   const medicalScreeningLink = screen.getByRole("link", {
     name: /Medical history and TB symptoms/i,
@@ -205,13 +205,13 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(medicalScreeningListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
-  expect(within(medicalScreeningListItem as HTMLElement).getByText("Incomplete"));
+  expect(within(medicalScreeningListItem as HTMLElement).getByText("Not yet started"));
 
   const chestXrayLink = screen.getByRole("link", { name: /Radiological outcome/i });
   expect(chestXrayLink).toHaveAttribute("href", "/chest-xray-question");
   const chestXrayListItem = chestXrayLink.closest("li");
   expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
-  expect(within(chestXrayListItem as HTMLElement).getByText("Incomplete"));
+  expect(within(chestXrayListItem as HTMLElement).getByText("Not yet started"));
 
   const tbCertificateLink = screen.getByRole("link", { name: /TB certificate declaration/i });
   expect(tbCertificateLink).toHaveAttribute("href", "/tb-certificate-declaration");
@@ -219,7 +219,7 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(tbCertificateListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
-  expect(within(tbCertificateListItem as HTMLElement).getByText("Incomplete"));
+  expect(within(tbCertificateListItem as HTMLElement).getByText("Not yet started"));
 
   await user.click(screen.getByRole("button"));
   expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-search");

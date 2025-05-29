@@ -146,7 +146,7 @@ describe("ApplicantForm", () => {
     await user.click(screen.getByRole("button"));
 
     expect(store.getState().applicant).toEqual({
-      status: "Incomplete",
+      status: "Not yet started",
       fullName: "Sigmund Sigmundson",
       sex: "Male",
       dateOfBirth: { day: "1", month: "1", year: "1901" },
