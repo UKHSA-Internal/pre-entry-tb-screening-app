@@ -33,7 +33,7 @@ const SputumQuestionForm = () => {
   useEffect(() => {
     if (location.hash) {
       const target = location.hash.substring(1);
-      if (target == "sputum-collected") {
+      if (target == "sputum-required") {
         isSputumRequiredRef.current?.scrollIntoView();
       }
     }
@@ -44,17 +44,16 @@ const SputumQuestionForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errors?.isSputumRequired && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
         <Heading level={1} size="l" title="Is a sputum collection required?" />{" "}
-        {/* <ApplicantDataHeader applicantData={applicantData} /> */}
         <div ref={isSputumRequiredRef}>
           <Radio
-            id="sputum-collected"
+            id="sputum-required"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Yes", "No"]}
             sortAnswersAlphabetically={false}
             errorMessage={errors?.isSputumRequired?.message ?? ""}
             formValue="isSputumRequired"
             defaultValue={chestXrayData.isSputumRequired}
-            required="Select whether a sputum collection is required"
+            required="Select yes if sputum collection is required"
             divStyle={{ marginTop: 40 }}
           />
         </div>

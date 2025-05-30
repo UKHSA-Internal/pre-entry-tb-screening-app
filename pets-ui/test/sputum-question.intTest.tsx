@@ -84,12 +84,12 @@ describe("SputumQuestionPage", () => {
     await user.click(screen.getByRole("button", { name: "Continue" }));
     expect(await screen.findByText("There is a problem")).toBeInTheDocument();
 
-    const expectedErrorMessageText = "Select whether a sputum collection is required";
+    const expectedErrorMessageText = "Select yes if sputum collection is required";
     const expectedErrorLinkName = `Error: ${expectedErrorMessageText}`;
 
     const errorLinkInSummary = screen.getByRole("link", { name: expectedErrorLinkName });
     expect(errorLinkInSummary).toBeInTheDocument();
-    expect(errorLinkInSummary).toHaveAttribute("href", "#sputum-collected");
+    expect(errorLinkInSummary).toHaveAttribute("href", "#sputum-required");
     expect(errorLinkInSummary).toHaveAttribute("aria-label", expectedErrorLinkName);
 
     const yesRadio = screen.getByRole("radio", { name: "Yes" });
@@ -111,7 +111,7 @@ describe("SputumQuestionPage", () => {
     const radioGroupElement = yesRadio.closest("fieldset");
     expect(radioGroupElement).toBeInTheDocument();
     expect(
-      within(radioGroupElement!).queryByText("Select whether a sputum collection is required"),
+      within(radioGroupElement!).queryByText("Select yes if sputum collection is required"),
     ).not.toBeInTheDocument();
   });
 
@@ -129,10 +129,10 @@ describe("SputumQuestionPage", () => {
     expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-summary");
   });
 
-  it("scrolls to the sputum collected radio group if location hash is #sputum-collected", () => {
+  it("scrolls to the sputum collected radio group if location hash is #sputum-required", () => {
     (useLocation as Mock).mockReturnValue({
       pathname: "/sputum-question",
-      hash: "#sputum-collected",
+      hash: "#sputum-required",
       search: "",
     });
 
