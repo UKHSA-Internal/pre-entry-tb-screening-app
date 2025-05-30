@@ -1,14 +1,33 @@
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
+import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
+import { ApplicantPhotoProvider, useApplicantPhoto } from "@/context/applicantPhotoContext";
 import ProgressTrackerPage from "@/pages/progress-tracker";
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
+
+let originalCreateObjectURL: typeof URL.createObjectURL;
+
+beforeAll(() => {
+  originalCreateObjectURL = global.URL.createObjectURL?.bind(global.URL);
+  global.URL.createObjectURL = vi.fn(() => "blob:http://localhost/test-photo.jpg");
+});
+afterAll(() => {
+  global.URL.createObjectURL = originalCreateObjectURL;
+});
+vi.mock("@/context/applicantPhotoContext", async () => {
+  const actual = await import("@/context/applicantPhotoContext");
+  return {
+    ...actual,
+  };
+});
+
 vi.mock(`react-router-dom`, async (): Promise<unknown> => {
   const actual: Record<string, unknown> = await vi.importActual(`react-router-dom`);
   return {
@@ -165,7 +184,9 @@ const completeState = {
 test("Progress tracker page displays incomplete application sections correctly & links to applicant details form", async () => {
   renderWithProviders(
     <Router>
-      <ProgressTrackerPage />
+      <ApplicantPhotoProvider>
+        <ProgressTrackerPage />
+      </ApplicantPhotoProvider>
     </Router>,
     { preloadedState: incompleteState },
   );
@@ -225,10 +246,23 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-search");
 });
 
-test("Progress tracker page displays complete application sections correctly & links to summary page", async () => {
+test("Progress tracker page displays complete application sections correctly, links to summary page, and displays applicant photo from context", async () => {
+  const mockPhoto = new File(["dummy"], "test-photo.jpg", { type: "image/jpeg" });
+  const SetPhoto: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { setApplicantPhotoFile } = useApplicantPhoto();
+    React.useEffect(() => {
+      setApplicantPhotoFile(mockPhoto);
+    }, []);
+    return <>{children}</>;
+  };
+
   renderWithProviders(
     <Router>
-      <ProgressTrackerPage />
+      <ApplicantPhotoProvider>
+        <SetPhoto>
+          <ProgressTrackerPage />
+        </SetPhoto>
+      </ApplicantPhotoProvider>
     </Router>,
     { preloadedState: completeState },
   );
@@ -283,6 +317,8 @@ test("Progress tracker page displays complete application sections correctly & l
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
   expect(within(tbCertificateListItem as HTMLElement).getByText("Completed"));
+  const img = await screen.findByAltText(/applicant photo/i);
+  expect(img).toBeInTheDocument();
 
   await user.click(screen.getByRole("button"));
   expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-search");
