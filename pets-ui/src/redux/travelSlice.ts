@@ -66,7 +66,7 @@ export const travelSlice = createSlice({
       state.status =
         action.payload.status == BackendApplicationStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.NOT_YET_STARTED;
+          : ApplicationStatus.IN_PROGRESS;
       state.visaType = action.payload.visaCategory;
       state.applicantUkAddress1 = action.payload.ukAddressLine1;
       state.applicantUkAddress2 = action.payload.ukAddressLine2 ?? "";

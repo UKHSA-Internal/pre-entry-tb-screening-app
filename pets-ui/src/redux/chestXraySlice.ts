@@ -131,7 +131,7 @@ export const chestXraySlice = createSlice({
       state.status =
         action.payload.status == BackendApplicationStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.NOT_YET_STARTED;
+          : ApplicationStatus.IN_PROGRESS;
       state.chestXrayTaken = action.payload.chestXrayTaken;
       state.posteroAnteriorXrayFileName = action.payload.posteroAnteriorXrayFileName;
       state.posteroAnteriorXrayFile = action.payload.posteroAnteriorXray;

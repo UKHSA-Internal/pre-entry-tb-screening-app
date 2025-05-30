@@ -156,7 +156,7 @@ export const applicantSlice = createSlice({
       state.status =
         action.payload.status == BackendApplicationStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.NOT_YET_STARTED;
+          : ApplicationStatus.IN_PROGRESS;
       state.fullName = action.payload.fullName;
       state.sex = action.payload.sex;
       state.countryOfNationality = action.payload.countryOfNationality;

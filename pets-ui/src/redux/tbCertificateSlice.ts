@@ -46,7 +46,7 @@ export const tbCertificateSlice = createSlice({
       state.status =
         action.payload.status == BackendApplicationStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.NOT_YET_STARTED;
+          : ApplicationStatus.IN_PROGRESS;
       state.isIssued = action.payload.isIssued;
       state.comments = action.payload.comments;
       state.certificateDate = {

@@ -109,7 +109,7 @@ export const medicalScreeningSlice = createSlice({
       state.status =
         action.payload.status == BackendApplicationStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.NOT_YET_STARTED;
+          : ApplicationStatus.IN_PROGRESS;
       state.age = action.payload.age.toString();
       state.tbSymptoms = action.payload.symptomsOfTb;
       state.tbSymptomsList = action.payload.symptoms ? [...action.payload.symptoms] : [];
