@@ -8,27 +8,27 @@ export class SputumQuestionPage extends BasePage {
   // Verify page loaded
   verifyPageLoaded(): SputumQuestionPage {
     this.verifyPageHeading("Is a sputum collection required?");
-    cy.get("#sputum-collected").should("be.visible");
+    cy.get("#sputum-required").should("be.visible");
     return this;
   }
 
   // Verify sputum question is displayed
   verifySputumQuestionDisplayed(): SputumQuestionPage {
     cy.contains("h1", "Is a sputum collection required?").should("be.visible");
-    cy.get("#sputum-collected .govuk-fieldset").should("be.visible");
+    cy.get("#sputum-required .govuk-fieldset").should("be.visible");
     cy.get(".govuk-radios--inline").should("be.visible");
     return this;
   }
 
   // Select "Yes" for sputum collection required
   selectSputumRequiredYes(): SputumQuestionPage {
-    cy.get("#sputum-collected-0").check();
+    cy.get("#sputum-required-0").check();
     return this;
   }
 
   // Select "No" for sputum collection required
   selectSputumRequiredNo(): SputumQuestionPage {
-    cy.get("#sputum-collected-1").check();
+    cy.get("#sputum-required-1").check();
     return this;
   }
 
@@ -69,7 +69,7 @@ export class SputumQuestionPage extends BasePage {
 
   // Form validation methods
   validateSputumRequiredFieldError(): SputumQuestionPage {
-    this.validateFieldError("sputum-collected");
+    this.validateFieldError("sputum-required");
     return this;
   }
 
@@ -82,7 +82,7 @@ export class SputumQuestionPage extends BasePage {
 
   // Verify specific error message in summary
   verifyErrorSummaryMessage(
-    expectedText: string = "Select whether a sputum collection is required",
+    expectedText: string = "Select yes if sputum collection is required",
   ): SputumQuestionPage {
     this.verifyErrorSummaryDisplayed();
     cy.get(".govuk-error-summary").should("contain.text", expectedText);
@@ -91,16 +91,16 @@ export class SputumQuestionPage extends BasePage {
 
   // Verify form group has error state
   verifyFormGroupErrorState(): SputumQuestionPage {
-    cy.get("#sputum-collected").should("have.class", "govuk-form-group--error");
+    cy.get("#sputum-required").should("have.class", "govuk-form-group--error");
     return this;
   }
 
   // Verify field-level error message
   verifyFieldErrorMessage(): SputumQuestionPage {
-    cy.get("#sputum-collected .govuk-error-message").should("be.visible");
-    cy.get("#sputum-collected .govuk-error-message").should(
+    cy.get("#sputum-required .govuk-error-message").should("be.visible");
+    cy.get("#sputum-required .govuk-error-message").should(
       "contain.text",
-      "Select whether a sputum collection is required",
+      "Select yes if sputum collection is required",
     );
     return this;
   }
@@ -135,16 +135,16 @@ export class SputumQuestionPage extends BasePage {
   verifyErrorSummaryLinkFunctionality(): SputumQuestionPage {
     // Click on error summary link and verify it focuses the form group
     cy.get(".govuk-error-summary a").click();
-    cy.get("#sputum-collected").should("be.focused");
+    cy.get("#sputum-required").should("be.focused");
     return this;
   }
 
   // Verify radio buttons are displayed correctly
   verifyRadioButtonsDisplayed(): SputumQuestionPage {
-    cy.get("#sputum-collected-0").should("be.visible");
-    cy.get("#sputum-collected-1").should("be.visible");
-    cy.get('label[for="sputum-collected-0"]').should("contain.text", "Yes");
-    cy.get('label[for="sputum-collected-1"]').should("contain.text", "No");
+    cy.get("#sputum-required-0").should("be.visible");
+    cy.get("#sputum-required-1").should("be.visible");
+    cy.get('label[for="sputum-required-0"]').should("contain.text", "Yes");
+    cy.get('label[for="sputum-required-1"]').should("contain.text", "No");
     return this;
   }
 
