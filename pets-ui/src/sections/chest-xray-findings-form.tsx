@@ -44,7 +44,7 @@ const ChestXrayFindingsForm = () => {
       setXrayAssociatedMinorFindings(toArray(formChestXrayData.xrayAssociatedMinorFindings)),
     );
     dispatch(setXrayActiveTbFindings(toArray(formChestXrayData.xrayActiveTbFindings)));
-    navigate("/chest-xray-summary");
+    navigate("/sputum-question");
   };
 
   const errorsToShow = Object.keys(errors);
