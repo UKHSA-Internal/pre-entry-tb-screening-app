@@ -1,3 +1,4 @@
+import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
 import { HeadObjectCommand } from "@aws-sdk/client-s3";
 import { APIGatewayProxyResult } from "aws-lambda";
 import { mockClient } from "aws-sdk-client-mock";
@@ -8,8 +9,10 @@ import awsClients from "../../shared/clients/aws";
 import { seededApplications } from "../../shared/fixtures/application";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
+import { TaskStatus } from "../../shared/types/enum";
 import { context, mockAPIGwEvent } from "../../test/mocks/events";
 import { APPLICANT_PHOTOS_FOLDER } from "../helpers/upload";
+import { SputumDetails, SputumDetailsDbOps } from "../models/sputum-details";
 import {
   ChestXRayResult,
   ImageType,
@@ -380,6 +383,81 @@ describe("Test for Application Lambda", () => {
 
       // Assert
       expect(response.statusCode).toBe(200);
+    });
+  });
+
+  describe("Sputum Details", () => {
+    test("Saving Sputum Details successfully", async () => {
+      // Arrange
+      const sputumDetails = new SputumDetails({
+        applicationId: "test-clinic-id-3",
+        status: TaskStatus.incompleted,
+        dateCreated: new Date(),
+        createdBy: "John Doe",
+        sputumSamples: {},
+        version: 0,
+      });
+      vi.spyOn(SputumDetailsDbOps, "createOrUpdateSputumDetails").mockResolvedValue(sputumDetails);
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        resource: "/application/{applicationId}/sputum-details",
+        path: `/application/${seededApplications[3].applicationId}/sputum-details`,
+        httpMethod: "PUT",
+      };
+
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+
+      // Assert
+      expect(response.statusCode).toBe(200);
+    });
+
+    test("Sputum Details already saved error", async () => {
+      // Arrange
+      vi.spyOn(SputumDetailsDbOps, "createOrUpdateSputumDetails").mockRejectedValue(
+        new ConditionalCheckFailedException(
+          new ConditionalCheckFailedException({
+            message: "DB Error",
+            $metadata: { httpStatusCode: 500 },
+          }),
+        ),
+      );
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        resource: "/application/{applicationId}/sputum-details",
+        path: `/application/${seededApplications[3].applicationId}/sputum-details`,
+        httpMethod: "PUT",
+      };
+
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body).toContain("Sputum Details already saved");
+    });
+
+    test("Error saving Sputum Details", async () => {
+      // Arrange
+      vi.spyOn(SputumDetailsDbOps, "createOrUpdateSputumDetails").mockRejectedValue(
+        new Error("SP Error"),
+      );
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        resource: "/application/{applicationId}/sputum-details",
+        path: `/application/${seededApplications[3].applicationId}/sputum-details`,
+        httpMethod: "PUT",
+      };
+      const errorloggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+
+      // Assert
+      expect(errorloggerMock).toHaveBeenCalledWith(
+        Error("SP Error"),
+        "Error saving Sputum Details",
+      );
+      expect(response.statusCode).toBe(500);
     });
   });
 });
