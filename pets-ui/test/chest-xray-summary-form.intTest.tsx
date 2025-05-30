@@ -38,6 +38,7 @@ const chestXrayTakenState: ReduxChestXrayDetailsType = {
   xrayMinorFindings: ["Single fibrous streak or band or scar", "Bony Islets"],
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
+  isSputumRequired: YesOrNo.YES,
 };
 
 const chestXrayNotTakenState: ReduxChestXrayDetailsType = {
@@ -56,6 +57,7 @@ const chestXrayNotTakenState: ReduxChestXrayDetailsType = {
   xrayMinorFindings: [],
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
+  isSputumRequired: YesOrNo.YES,
 };
 
 describe("ChestXraySummaryPage", () => {
