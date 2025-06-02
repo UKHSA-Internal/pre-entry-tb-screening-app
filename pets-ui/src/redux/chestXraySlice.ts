@@ -20,6 +20,7 @@ const initialState: ReduxChestXrayDetailsType = {
   xrayMinorFindings: [],
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
+  isSputumRequired: YesOrNo.NULL,
 };
 
 export const chestXraySlice = createSlice({
@@ -71,6 +72,9 @@ export const chestXraySlice = createSlice({
     setXrayWasNotTakenFurtherDetails: (state, action: PayloadAction<string>) => {
       state.xrayWasNotTakenFurtherDetails = action.payload;
     },
+    setSputumCollectionTaken: (state, action: PayloadAction<YesOrNo>) => {
+      state.isSputumRequired = action.payload;
+    },
     setChestXrayDetails: (state, action: PayloadAction<ReduxChestXrayDetailsType>) => {
       state.chestXrayTaken = action.payload.chestXrayTaken;
       state.posteroAnteriorXrayFileName = action.payload.posteroAnteriorXrayFileName;
@@ -92,6 +96,7 @@ export const chestXraySlice = createSlice({
       state.xrayActiveTbFindings = action.payload.xrayActiveTbFindings
         ? [...action.payload.xrayActiveTbFindings]
         : [];
+      state.isSputumRequired = action.payload.isSputumRequired;
     },
     clearChestXrayTakenDetails: (state) => {
       state.posteroAnteriorXrayFileName = "";
@@ -126,6 +131,7 @@ export const chestXraySlice = createSlice({
       state.xrayMinorFindings = [];
       state.xrayAssociatedMinorFindings = [];
       state.xrayActiveTbFindings = [];
+      state.isSputumRequired = YesOrNo.NULL;
     },
     setChestXrayFromApiResponse: (state, action: PayloadAction<ReceivedChestXrayDetailsType>) => {
       state.status =
@@ -150,6 +156,7 @@ export const chestXraySlice = createSlice({
       state.xrayActiveTbFindings = action.payload.xrayActiveTbFindings
         ? [...action.payload.xrayActiveTbFindings]
         : [];
+      state.isSputumRequired = action.payload.isSputumRequired;
     },
   },
 });
@@ -157,6 +164,7 @@ export const chestXraySlice = createSlice({
 export const {
   setChestXrayStatus,
   setChestXrayTaken,
+  setSputumCollectionTaken,
   setPosteroAnteriorXrayFileName,
   setApicalLordoticXrayFileName,
   setLateralDecubitusXrayFileName,

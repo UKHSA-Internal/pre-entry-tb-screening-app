@@ -75,6 +75,7 @@ const chestXraySlice = {
   xrayMinorFindings: [],
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
+  isSputumRequired: YesOrNo.NO,
 };
 
 const tbCertSlice = {

@@ -125,6 +125,7 @@ describe("ChestXrayFindings Form", () => {
         xrayMinorFindings: [],
         xrayAssociatedMinorFindings: [],
         xrayActiveTbFindings: [],
+        isSputumRequired: YesOrNo.NULL,
       },
     };
     renderWithProviders(
@@ -137,6 +138,6 @@ describe("ChestXrayFindings Form", () => {
     );
     await user.click(screen.getAllByTestId("xray-result")[0]);
     await user.click(screen.getByRole("button"));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-summary");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/sputum-question");
   });
 });

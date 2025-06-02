@@ -88,6 +88,7 @@ describe("ChestXrayForm Section", () => {
         xrayMinorFindings: [],
         xrayAssociatedMinorFindings: [],
         xrayActiveTbFindings: [],
+        isSputumRequired: YesOrNo.NULL,
       },
     };
     renderWithProviders(
