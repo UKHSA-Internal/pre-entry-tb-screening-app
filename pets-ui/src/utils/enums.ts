@@ -27,6 +27,12 @@ export enum YesOrNo {
   NULL = "",
 }
 
+export enum PositiveOrNegative {
+  POSITIVE = "Positive",
+  NEGATIVE = "Negative",
+  NOT_YET_ENTERED = "Not yet entered",
+}
+
 export enum ImageType {
   Dicom = "Dicom",
   Photo = "Photo",
