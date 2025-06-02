@@ -10,9 +10,13 @@ import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
-import { selectApplicant, setApplicantDetails } from "@/redux/applicantSlice";
+import {
+  selectApplicant,
+  setApplicantDetails,
+  setApplicantDetailsStatus,
+} from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { ApplicationStatus, ButtonType, RadioIsInline } from "@/utils/enums";
 import { validateDate } from "@/utils/helpers";
 import { countryList, formRegex } from "@/utils/records";
 
@@ -30,6 +34,7 @@ const ApplicantForm = () => {
 
   const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = (applicantData) => {
     dispatch(setApplicantDetails(applicantData));
+    dispatch(setApplicantDetailsStatus(ApplicationStatus.IN_PROGRESS));
     navigate("/applicant-photo");
   };
 

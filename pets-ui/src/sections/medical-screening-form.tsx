@@ -13,8 +13,12 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectMedicalScreening, setMedicalScreeningDetails } from "@/redux/medicalScreeningSlice";
-import { ButtonType, RadioIsInline } from "@/utils/enums";
+import {
+  selectMedicalScreening,
+  setMedicalScreeningDetails,
+  setMedicalScreeningStatus,
+} from "@/redux/medicalScreeningSlice";
+import { ApplicationStatus, ButtonType, RadioIsInline } from "@/utils/enums";
 import { toArray } from "@/utils/helpers";
 import { formRegex } from "@/utils/records";
 
@@ -38,6 +42,7 @@ const MedicalScreeningForm = () => {
       underElevenConditions: toArray(medicalScreeningData.underElevenConditions),
     };
     dispatch(setMedicalScreeningDetails(dataWithCorrectedLists));
+    dispatch(setMedicalScreeningStatus(ApplicationStatus.IN_PROGRESS));
     navigate("/medical-summary");
   };
 
