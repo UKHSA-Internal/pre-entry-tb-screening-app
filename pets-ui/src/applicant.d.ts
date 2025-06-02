@@ -1,4 +1,10 @@
-import { ApplicationStatus, BackendApplicationStatus, ImageType, YesOrNo } from "./utils/enums";
+import {
+  ApplicationStatus,
+  BackendApplicationStatus,
+  ImageType,
+  PositiveOrNegative,
+  YesOrNo,
+} from "./utils/enums";
 
 // Misc types
 type ApplicantSearchFormType = {
@@ -180,6 +186,71 @@ type PostedChestXrayNotTakenType = {
 
 type ReceivedChestXrayNotTakenType = PostedChestXrayNotTakenType &
   ReceivedApplicationAttributesType;
+
+// Sputum types
+type ReduxSputumCollectionType = {
+  submittedToDatabase: boolean;
+  dateOfSample: DateType;
+  collectionMethod: string;
+};
+
+type ReduxSputumSmearResultType = {
+  submittedToDatabase: boolean;
+  smearResult: PositiveOrNegative;
+};
+
+type ReduxSputumCultureResultType = {
+  submittedToDatabase: boolean;
+  cultureResult: PositiveOrNegative;
+};
+
+type ReduxSputumType = {
+  status: ApplicationStatus;
+  sample1: {
+    collection: ReduxSputumCollectionType;
+    smearResults: ReduxSputumSmearResultType;
+    cultureResults: ReduxSputumCultureResultType;
+    lastUpdatedDate: DateType;
+  };
+  sample2: {
+    collection: ReduxSputumCollectionType;
+    smearResults: ReduxSputumSmearResultType;
+    cultureResults: ReduxSputumCultureResultType;
+    lastUpdatedDate: DateType;
+  };
+  sample3: {
+    collection: ReduxSputumCollectionType;
+    smearResults: ReduxSputumSmearResultType;
+    cultureResults: ReduxSputumCultureResultType;
+    lastUpdatedDate: DateType;
+  };
+};
+
+type PostedSputumType = {
+  sample1?: {
+    dateOfSample: string;
+    collectionMethod: string;
+    smearResult?: PositiveOrNegative;
+    cultureResult?: PositiveOrNegative;
+    dateUpdated: string;
+  };
+  sample2?: {
+    dateOfSample: string;
+    collectionMethod: string;
+    smearResult?: PositiveOrNegative;
+    cultureResult?: PositiveOrNegative;
+    dateUpdated: string;
+  };
+  sample3?: {
+    dateOfSample: string;
+    collectionMethod: string;
+    smearResult?: PositiveOrNegative;
+    cultureResult?: PositiveOrNegative;
+    dateUpdated: string;
+  };
+};
+
+type ReceivedSputumType = PostedSputumType & ReceivedApplicationAttributesType;
 
 // TB Declaration certificate types
 type ReduxTbCertificateType = {
