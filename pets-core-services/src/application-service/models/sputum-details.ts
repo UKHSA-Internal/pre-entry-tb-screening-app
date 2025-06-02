@@ -13,8 +13,8 @@ import {
 const { dynamoDBDocClient: docClient } = awsClients;
 
 export type SputumSample = {
-  dateOfSputumSample?: Date | string;
-  sputumCollectionMethod?: string;
+  dateOfSample?: Date | string;
+  collectionMethod?: string;
   smearResult?: string;
   cultureResult?: string;
   dateUpdated?: Date | string;
@@ -80,10 +80,10 @@ const parseSample = (sample: any): SputumSample | undefined => {
   const parsedSample = sample as SputumSample;
 
   return {
-    dateOfSputumSample: parsedSample.dateOfSputumSample
-      ? new Date(parsedSample.dateOfSputumSample as string)
+    dateOfSample: parsedSample.dateOfSample
+      ? new Date(parsedSample.dateOfSample as string)
       : undefined,
-    sputumCollectionMethod: parsedSample.sputumCollectionMethod as string,
+    collectionMethod: parsedSample.collectionMethod as string,
     smearResult: parsedSample.smearResult as string,
     cultureResult: parsedSample.cultureResult as string,
     dateUpdated: parsedSample.dateUpdated

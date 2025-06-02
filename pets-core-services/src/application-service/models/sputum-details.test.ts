@@ -1,137 +1,141 @@
 import { GetCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
 import { TaskStatus } from "../../shared/types/enum";
-import { SputumDetailsDbOps } from "../models/sputum-details";
+import { SputumDetailsDbOps } from "./sputum-details";
 
-const dynamoMock = mockClient(awsClients.dynamoDBDocClient);
+const ddbMock = mockClient(awsClients.dynamoDBDocClient);
 
-describe("SputumDetailsDbOps", () => {
-  const TableName = "mock-table";
-  const applicationId = "app-123";
+describe("Tests for SputumDetailsDbOps model", () => {
+  const applicationId = "test-application-id";
   const pk = `APPLICATION#${applicationId}`;
   const sk = "APPLICATION#SPUTUM#DETAILS";
 
+  const existingItem = {
+    pk,
+    sk,
+    applicationId,
+    status: TaskStatus.incompleted,
+    createdBy: "test-user",
+    dateCreated: "2025-01-01T00:00:00.000Z",
+    version: 1,
+    sputumSamples: {
+      sample1: {
+        dateOfSample: "2025-01-02T00:00:00.000Z",
+        collectionMethod: "Coughed Up",
+      },
+    },
+  };
+
   beforeEach(() => {
-    process.env.APPLICATION_SERVICE_DATABASE_NAME = TableName;
-    dynamoMock.reset();
+    ddbMock.reset();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2025-03-10T00:00:00.000Z"));
   });
 
-  it("should fetch sputum details by application ID", async () => {
-    const mockItem = {
-      pk,
-      sk,
-      applicationId,
-      status: TaskStatus.incompleted,
-      sputumSamples: {
-        sample1: {
-          dateSputumSample: new Date().toISOString(),
-          sputumCollectionMethod: "Method A",
+  test("createOrUpdateSputumDetails: should update sputum sample details", async () => {
+    ddbMock.on(GetCommand).resolves({ Item: existingItem });
+    ddbMock.on(UpdateCommand).resolves({
+      Attributes: {
+        ...existingItem,
+        version: 2,
+        status: TaskStatus.completed,
+        sputumSamples: {
+          ...existingItem.sputumSamples,
+          sample2: {
+            dateOfSample: "2025-03-10T00:00:00.000Z",
+            collectionMethod: "Coughed Up",
+          },
         },
       },
-      createdBy: "user1",
-      dateCreated: new Date().toISOString(),
-    };
-
-    dynamoMock.on(GetCommand).resolves({ Item: mockItem });
-
-    const result = await SputumDetailsDbOps.getByApplicationId(applicationId);
-    expect(result).toBeDefined();
-    expect(result?.applicationId).toBe(applicationId);
-    expect(result?.sputumSamples.sample1?.sputumCollectionMethod).toBe("Method A");
-  });
-
-  it("should throw error if no item found", async () => {
-    dynamoMock.on(GetCommand).resolves({});
-
-    await expect(SputumDetailsDbOps.getByApplicationId(applicationId)).resolves.toBeUndefined();
-  });
-
-  it("should merge and update sputum sample details", async () => {
-    const existingItem = {
-      pk,
-      sk,
-      applicationId,
-      status: TaskStatus.incompleted,
-      sputumSamples: {
-        sample1: {
-          dateSputumSample: new Date().toISOString(),
-          sputumCollectionMethod: "Old Method",
-        },
-      },
-      createdBy: "user1",
-      dateCreated: new Date().toISOString(),
-    };
-
-    dynamoMock.on(GetCommand).resolves({ Item: existingItem });
-    dynamoMock.on(UpdateCommand).resolves({ Attributes: {} });
-
-    const input = {
-      createdBy: "user1",
-      applicationId,
-      sputumSamples: {
-        sample2: {
-          dateSputumSample: new Date(),
-          sputumCollectionMethod: "New Method",
-        },
-      },
-    };
-
-    await expect(
-      SputumDetailsDbOps.createOrUpdateSputumDetails(applicationId, input),
-    ).resolves.toMatchObject({
-      applicationId: "app-123",
-      createdBy: undefined,
-      // dateCreated should be: Date { NaN }
-      dateCreated: new Date("-"),
-      sputumSamples: {
-        sample1: undefined,
-        sample2: undefined,
-        sample3: undefined,
-      },
-      status: undefined,
-      version: undefined,
     });
 
-    expect(dynamoMock.calls(UpdateCommand).length).toBeGreaterThan(0);
-  });
-
-  it("should throw error on bad db response", async () => {
-    const existingItem = {
-      pk,
-      sk,
+    const updated = await SputumDetailsDbOps.createOrUpdateSputumDetails(applicationId, {
       applicationId,
-      status: TaskStatus.incompleted,
-      sputumSamples: {
-        sample1: {
-          dateSputumSample: new Date().toISOString(),
-          sputumCollectionMethod: "Old Method",
-        },
-      },
-      createdBy: "user1",
-      dateCreated: new Date().toISOString(),
-    };
-
-    dynamoMock.on(GetCommand).resolves({ Item: existingItem });
-    dynamoMock.on(UpdateCommand).resolves({});
-
-    const input = {
-      createdBy: "user1",
-      applicationId,
+      createdBy: "test-user",
+      version: 1,
       sputumSamples: {
         sample2: {
-          dateSputumSample: new Date(),
-          sputumCollectionMethod: "New Method",
+          dateOfSample: "2025-03-10T00:00:00.000Z",
+          collectionMethod: "Coughed Up",
         },
       },
-    };
+    });
+
+    expect(updated).toMatchObject({
+      applicationId,
+      createdBy: "test-user",
+      version: 2,
+      status: TaskStatus.completed,
+      sputumSamples: {
+        sample1: {
+          dateOfSample: new Date("2025-01-02T00:00:00.000Z"),
+          collectionMethod: "Coughed Up",
+        },
+        sample2: {
+          dateOfSample: new Date("2025-03-10T00:00:00.000Z"),
+          collectionMethod: "Coughed Up",
+        },
+      },
+    });
+
+    const call = ddbMock.commandCalls(UpdateCommand)[0];
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(call?.firstArg.input).toMatchObject({
+      Key: { pk, sk },
+      TableName: "test-application-details",
+    });
+  });
+
+  test("createOrUpdateSputumDetails:should throw if existing record is not found", async () => {
+    ddbMock.on(GetCommand).resolves({});
 
     await expect(
-      SputumDetailsDbOps.createOrUpdateSputumDetails(applicationId, input),
-    ).rejects.toThrowError(new Error("Update failed"));
+      SputumDetailsDbOps.createOrUpdateSputumDetails(applicationId, {
+        applicationId,
+        createdBy: "test-user",
+        sputumSamples: {},
+      }),
+    ).rejects.toThrow("Sputum details not found");
+  });
+  test("createOrUpdateSputumDetails: should throw error if DynamoDB update fails", async () => {
+    ddbMock.on(GetCommand).resolves({ Item: existingItem });
+    ddbMock.on(UpdateCommand).resolves({});
 
-    expect(dynamoMock.calls(UpdateCommand).length).toBeGreaterThan(0);
+    await expect(
+      SputumDetailsDbOps.createOrUpdateSputumDetails(applicationId, {
+        applicationId,
+        createdBy: "test-user",
+        version: 1,
+        sputumSamples: {},
+      }),
+    ).rejects.toThrow("Update failed");
+  });
+  test("getByApplicationId: should retrieve sputum details by applicationId", async () => {
+    ddbMock.on(GetCommand).resolves({ Item: existingItem });
+
+    const result = await SputumDetailsDbOps.getByApplicationId(applicationId);
+
+    expect(result).toMatchObject({
+      applicationId,
+      createdBy: "test-user",
+      status: TaskStatus.incompleted,
+      dateCreated: new Date("2025-01-01T00:00:00.000Z"),
+      sputumSamples: {
+        sample1: {
+          dateOfSample: new Date("2025-01-02T00:00:00.000Z"),
+          collectionMethod: "Coughed Up",
+        },
+      },
+    });
+  });
+
+  test("getByApplicationId: should return undefined if no sputum details are found", async () => {
+    ddbMock.on(GetCommand).resolves({});
+
+    const result = await SputumDetailsDbOps.getByApplicationId(applicationId);
+    expect(result).toBeUndefined();
   });
 });

@@ -277,11 +277,11 @@ export const ApplicantPhotoResponseSchema = ApplicantPhotoRequestSchema.extend({
 });
 
 export const SputumSampleSchema = z.object({
-  dateOfSputumSample: z.string().date().openapi({
-    description: "Date of Sputum Collection",
+  dateOfSample: z.coerce.date().openapi({
+    description: "Date of Sputum Sample Collection",
   }),
-  sputumCollectionMethod: z.string().openapi({
-    description: "Collection Method of Sputum Collection",
+  collectionMethod: z.string().openapi({
+    description: "Collection Method of Sputum Sample",
   }),
   smearResult: z.string().openapi({
     description: "Smear Result",
@@ -294,24 +294,9 @@ export const SputumSampleSchema = z.object({
   }),
 });
 
-export const SputumSamplesSchema = z
-  .object({
-    sample1: SputumSampleSchema.partial()
-      .optional()
-      .openapi({ description: "Details of Sputum Sample 1" }),
-    sample2: SputumSampleSchema.partial()
-      .optional()
-      .openapi({ description: "Details of Sputum Sample 2" }),
-    sample3: SputumSampleSchema.partial()
-      .optional()
-      .openapi({ description: "Details of Sputum Sample 3" }),
-  })
-  .optional()
-  .openapi({ description: "Details of Sputum Samples" });
-
 export const SputumSampleCompletionSchema = z.object({
-  dateSputumSample: z.string().date(),
-  sputumCollectionMethod: z.string().min(1),
+  dateOfSample: z.coerce.date(),
+  collectionMethod: z.string().min(1),
   smearResult: z.string().min(1),
   cultureResult: z.string().min(1),
 });
@@ -325,9 +310,21 @@ export const SputumSampleCompletionCheckSchema = z.object({
 });
 
 export const SputumRequestSchema = z.object({
-  sputumSamples: SputumSamplesSchema.default({}).openapi({
-    description: "Sputum Sample details",
-  }),
+  sputumSamples: z
+    .object({
+      sample1: SputumSampleSchema.partial()
+        .optional()
+        .openapi({ description: "Details of Sputum Sample 1" }),
+      sample2: SputumSampleSchema.partial()
+        .optional()
+        .openapi({ description: "Details of Sputum Sample 2" }),
+      sample3: SputumSampleSchema.partial()
+        .optional()
+        .openapi({ description: "Details of Sputum Sample 3" }),
+    })
+    .openapi({
+      description: "Sputum Sample details",
+    }),
   version: z.number().optional().openapi({
     description: "Version Number for concurrency Control",
   }), // for concurrency control

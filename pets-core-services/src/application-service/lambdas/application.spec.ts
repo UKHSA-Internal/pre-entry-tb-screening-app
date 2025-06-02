@@ -394,7 +394,12 @@ describe("Test for Application Lambda", () => {
         status: TaskStatus.incompleted,
         dateCreated: new Date(),
         createdBy: "John Doe",
-        sputumSamples: {},
+        sputumSamples: {
+          sample1: {
+            dateOfSample: new Date().toISOString(),
+            collectionMethod: "Coughed Up",
+          },
+        },
         version: 0,
       });
       vi.spyOn(SputumDetailsDbOps, "createOrUpdateSputumDetails").mockResolvedValue(sputumDetails);
@@ -403,6 +408,7 @@ describe("Test for Application Lambda", () => {
         resource: "/application/{applicationId}/sputum-details",
         path: `/application/${seededApplications[3].applicationId}/sputum-details`,
         httpMethod: "PUT",
+        body: JSON.stringify(sputumDetails),
       };
 
       // Act
@@ -414,11 +420,24 @@ describe("Test for Application Lambda", () => {
 
     test("Sputum Details already saved error", async () => {
       // Arrange
+      const sputumDetails = new SputumDetails({
+        applicationId: "test-clinic-id-3",
+        status: TaskStatus.incompleted,
+        dateCreated: new Date(),
+        createdBy: "John Doe",
+        sputumSamples: {
+          sample1: {
+            dateOfSample: new Date().toISOString(),
+            collectionMethod: "Coughed Up",
+          },
+        },
+        version: 1,
+      });
       vi.spyOn(SputumDetailsDbOps, "createOrUpdateSputumDetails").mockRejectedValue(
         new ConditionalCheckFailedException(
           new ConditionalCheckFailedException({
             message: "DB Error",
-            $metadata: { httpStatusCode: 500 },
+            $metadata: { httpStatusCode: 400 },
           }),
         ),
       );
@@ -427,6 +446,7 @@ describe("Test for Application Lambda", () => {
         resource: "/application/{applicationId}/sputum-details",
         path: `/application/${seededApplications[3].applicationId}/sputum-details`,
         httpMethod: "PUT",
+        body: JSON.stringify(sputumDetails),
       };
 
       // Act
@@ -438,6 +458,19 @@ describe("Test for Application Lambda", () => {
 
     test("Error saving Sputum Details", async () => {
       // Arrange
+      const sputumDetails = new SputumDetails({
+        applicationId: "test-clinic-id-3",
+        status: TaskStatus.incompleted,
+        dateCreated: new Date(),
+        createdBy: "John Doe",
+        sputumSamples: {
+          sample1: {
+            dateOfSample: new Date().toISOString(),
+            collectionMethod: "Coughed Up",
+          },
+        },
+        version: 1,
+      });
       vi.spyOn(SputumDetailsDbOps, "createOrUpdateSputumDetails").mockRejectedValue(
         new Error("SP Error"),
       );
@@ -446,6 +479,7 @@ describe("Test for Application Lambda", () => {
         resource: "/application/{applicationId}/sputum-details",
         path: `/application/${seededApplications[3].applicationId}/sputum-details`,
         httpMethod: "PUT",
+        body: JSON.stringify(sputumDetails),
       };
       const errorloggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
 

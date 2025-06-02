@@ -1,4 +1,3 @@
-import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
 import { z } from "zod";
 
 import { createHttpResponse } from "../../shared/http";
@@ -37,8 +36,9 @@ export const saveSputumDetailsHandler = async (event: SaveSputumDetailsEvent) =>
         applicationId,
         sputumSamples: parsedBody.sputumSamples ?? {},
       });
-    } catch (error) {
-      if (error instanceof ConditionalCheckFailedException)
+    } catch (error: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if ((error as any).name === "ConditionalCheckFailedException")
         return createHttpResponse(400, { message: "Sputum Details already saved" });
       throw error;
     }

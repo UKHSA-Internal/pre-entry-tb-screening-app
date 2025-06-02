@@ -21,8 +21,8 @@ vi.mock("../models/Sputum-details", async () => {
 const newSputumDetails: SaveSputumDetailsEvent["parsedBody"] = {
   sputumSamples: {
     sample1: {
-      dateOfSputumSample: new Date().getDate.toString(),
-      sputumCollectionMethod: "Venipuncture",
+      dateOfSample: new Date().toISOString(),
+      collectionMethod: "Coughed Up",
     },
   },
 };
@@ -61,10 +61,11 @@ describe("Test for Saving Sputum Details into DB", () => {
   });
 
   test("Duplicate post throws a 400 error", async () => {
-    // Arrange
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    (SputumDetailsDbOps.createOrUpdateSputumDetails as any).mockRejectedValue(
-      new ConditionalCheckFailedException({}),
+    const conditionalError = Object.assign(new Error("Version mismatch"), {
+      name: "ConditionalCheckFailedException",
+    });
+    vi.spyOn(SputumDetailsDbOps, "createOrUpdateSputumDetails").mockRejectedValueOnce(
+      conditionalError,
     );
 
     const event: SaveSputumDetailsEvent = {
