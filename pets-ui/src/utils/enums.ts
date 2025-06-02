@@ -17,8 +17,9 @@ export enum ApplicationStatus {
 }
 
 export enum BackendApplicationStatus {
-  INCOMPLETE = "incompleted",
-  COMPLETE = "completed",
+  NOT_YET_STARTED = "Not yet started",
+  COMPLETE = "Complete",
+  IN_PROGRESS = "In progress",
 }
 
 export enum YesOrNo {
