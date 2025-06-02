@@ -28,6 +28,7 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     xrayMinorFindings: ["minor", "findings"],
     xrayAssociatedMinorFindings: ["associated", "minor", "findings"],
     xrayActiveTbFindings: ["active", "tb", "findings"],
+    isSputumRequired: YesOrNo.No,
   };
 
   const newChestXrayNotTaken: NewChestXRayNotTaken = {
@@ -36,6 +37,7 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     chestXrayTaken: YesOrNo.No,
     reasonXrayWasNotTaken: ChestXRayNotTakenReason.Other,
     xrayWasNotTakenFurtherDetails: "Extra Notes",
+    isSputumRequired: YesOrNo.Yes,
   };
 
   test.each([
