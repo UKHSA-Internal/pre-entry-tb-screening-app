@@ -78,10 +78,14 @@ const ApplicantSearchForm = () => {
       const applicationRes = await getApplication(applicantRes.data);
       if (applicationRes.data.applicantPhotoUrl) {
         try {
-          const fixedUrl = applicationRes.data.applicantPhotoUrl.replace(
-            /172\.\d+\.\d+\.\d+:4566/,
-            "localhost:4566",
-          );
+          const env = import.meta.env.VITE_ENVIRONMENT as string | undefined;
+          const fixedUrl =
+            env === "local"
+              ? applicationRes.data.applicantPhotoUrl.replace(
+                  /172\.\d+\.\d+\.\d+:4566/,
+                  "localhost:4566",
+                )
+              : applicationRes.data.applicantPhotoUrl;
           const response = await fetch(fixedUrl);
           const blob = await response.blob();
           const urlParts = applicationRes.data.applicantPhotoUrl.split("/");
