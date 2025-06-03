@@ -23,7 +23,7 @@ const options = {
   outbase,
   bundle: true,
   platform: "node",
-  target: "node18",
+  target: "node20",
   define,
 };
 

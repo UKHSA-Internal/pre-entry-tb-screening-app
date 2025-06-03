@@ -22,6 +22,7 @@ const newChestXrayTaken: SaveChestXrayEvent["parsedBody"] = {
   xrayMinorFindings: ["test", "minor", "findings"],
   xrayAssociatedMinorFindings: ["test", "associated", "minor", "findings"],
   xrayActiveTbFindings: ["test", "active", "tb", "findings"],
+  isSputumRequired: YesOrNo.No,
 };
 
 describe("Test for Saving Chest X-ray into DB", () => {
