@@ -22,6 +22,7 @@ import MedicalScreeningPage from "./pages/medical-screening";
 import MedicalConfirmation from "./pages/medical-screening-confirmation";
 import MedicalSummaryPage from "./pages/medical-screening-summary";
 import ProgressTrackerPage from "./pages/progress-tracker";
+import SputumQuestionPage from "./pages/sputum-question";
 import TbCertificateDeclarationPage from "./pages/tb-certificate-declaration";
 import TbConfirmationPage from "./pages/tb-confirmation";
 import TbSummaryPage from "./pages/tb-summary";
@@ -225,6 +226,16 @@ function App() {
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <ChestXrayConfirmation />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/sputum-question"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <SputumQuestionPage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }

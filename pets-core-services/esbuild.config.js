@@ -14,7 +14,7 @@ const options = {
   outfile: process.argv[3],
   bundle: true,
   platform: "node",
-  target: "node18",
+  target: "node20",
   format: "cjs",
   external: ["@aws-sdk/*"],
   define,

@@ -34,7 +34,7 @@ const ChestXrayNotTakenForm = () => {
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = (chestXrayData) => {
     dispatch(setReasonXrayWasNotTaken(chestXrayData.reasonXrayWasNotTaken));
     dispatch(setXrayWasNotTakenFurtherDetails(chestXrayData.xrayWasNotTakenFurtherDetails));
-    navigate("/chest-xray-summary");
+    navigate("/sputum-question");
   };
 
   const errorsToShow = Object.keys(errors);
