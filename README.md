@@ -66,17 +66,17 @@ Additional configs specific to a core service are defined in their directory
 
 ### Prerequisites
 
-- Node 18
+- Node 20
 
   - `volta` installation [guide](https://docs.volta.sh/guide/getting-started)
 
-  - Install Node 18
+  - Install Node 20
 
     ```sh
-    volta install node@18
+    volta install node@20
     ```
 
-  - Verify Node Version with `node -v`, should return `v18.20.6`
+  - Verify Node Version with `node -v`, should return `v20.19.0`
 
 - Pnpm
 

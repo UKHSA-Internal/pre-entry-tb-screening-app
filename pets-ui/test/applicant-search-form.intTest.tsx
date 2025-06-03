@@ -110,6 +110,7 @@ const emptyChestXraySlice = {
   xrayMinorFindings: [],
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
+  isSputumRequired: YesOrNo.NULL,
 };
 
 describe("ApplicantSearchForm", () => {

@@ -41,6 +41,7 @@ const ChestXraySummary = () => {
           xrayMinorFindings: chestXrayData.xrayMinorFindings,
           xrayAssociatedMinorFindings: chestXrayData.xrayAssociatedMinorFindings,
           xrayActiveTbFindings: chestXrayData.xrayActiveTbFindings,
+          isSputumRequired: chestXrayData.isSputumRequired,
         });
       } else {
         await postChestXrayDetails(applicationData.applicationId, {
