@@ -63,7 +63,8 @@ export default function Summary(props: Readonly<SummaryProps>) {
           <div className="govuk-summary-list__row" key={summaryElement.key}>
             <dt className="govuk-summary-list__key">{summaryElement.key}</dt>
             {summaryValue(props.status, summaryElement)}
-            {props.status == ApplicationStatus.NOT_YET_STARTED &&
+            {(props.status == ApplicationStatus.NOT_YET_STARTED ||
+              props.status == ApplicationStatus.IN_PROGRESS) &&
               summaryElement.value &&
               summaryElement.value.length > 0 && (
                 <dd className="govuk-summary-list__actions">
