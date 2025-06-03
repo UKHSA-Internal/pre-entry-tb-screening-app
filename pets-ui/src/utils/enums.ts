@@ -34,6 +34,13 @@ export enum PositiveOrNegative {
   NOT_YET_ENTERED = "Not yet entered",
 }
 
+export enum SputumCollectionMethod {
+  COUGHED_UP = "Coughed up",
+  INDUCED = "Induced",
+  GASTRIC_LAVAGE = "Gastric lavage",
+  NOT_KNOWN = "Not known",
+}
+
 export enum ImageType {
   Dicom = "Dicom",
   Photo = "Photo",
