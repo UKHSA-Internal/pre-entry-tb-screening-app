@@ -23,7 +23,16 @@ export const saveSputumDetailsHandler = async (event: SaveSputumDetailsEvent) =>
     if (!parsedBody) {
       logger.error("Event missing parsed body");
       return createHttpResponse(500, {
-        message: "Internal Server Error: Sputum Details Request not parsed correctly",
+        message: "Internal Server Error: Sputum Details Request missing",
+      });
+    }
+
+    //  Validate Sputum  Details Request
+    const parsed = SputumRequestSchema.safeParse(parsedBody);
+    if (!parsed.success) {
+      logger.error("Validation failed", parsed.error.flatten());
+      return createHttpResponse(400, {
+        message: "Sputum Details Request validation failed",
       });
     }
 
@@ -31,10 +40,9 @@ export const saveSputumDetailsHandler = async (event: SaveSputumDetailsEvent) =>
     let sputumDetails: SputumDetails;
     try {
       sputumDetails = await SputumDetailsDbOps.createOrUpdateSputumDetails(applicationId, {
-        ...parsedBody,
+        ...parsed.data,
         createdBy,
         applicationId,
-        sputumSamples: parsedBody.sputumSamples ?? {},
       });
     } catch (error: unknown) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

@@ -7,7 +7,9 @@ import {
   ChestXRayResult,
   HistoryOfConditionsUnder11,
   MenstrualPeriods,
+  PositiveOrNegative,
   PregnancyStatus,
+  SputumCollectionMethod,
   TbSymptomsOptions,
   VisaOptions,
   YesOrNo,
@@ -279,28 +281,29 @@ export const ApplicantPhotoResponseSchema = ApplicantPhotoRequestSchema.extend({
 });
 
 export const SputumSampleSchema = z.object({
-  dateOfSample: z.coerce.date().openapi({
+  dateOfSample: z.string().or(z.date()).openapi({
     description: "Date of Sputum Sample Collection",
   }),
-  collectionMethod: z.string().openapi({
+  collectionMethod: z.nativeEnum(SputumCollectionMethod).openapi({
     description: "Collection Method of Sputum Sample",
   }),
-  smearResult: z.string().openapi({
+  smearResult: z.nativeEnum(PositiveOrNegative).optional().openapi({
     description: "Smear Result",
   }),
-  cultureResult: z.string().openapi({
+  cultureResult: z.nativeEnum(PositiveOrNegative).optional().openapi({
     description: "Culture Result",
   }),
-  dateUpdated: z.string().date().optional().openapi({
+  dateUpdated: z.string().or(z.date()).openapi({
     description: "Updated Date in UTC timezone",
   }),
 });
 
 export const SputumSampleCompletionSchema = z.object({
-  dateOfSample: z.coerce.date(),
-  collectionMethod: z.string().min(1),
-  smearResult: z.string().min(1),
-  cultureResult: z.string().min(1),
+  dateOfSample: z.string().or(z.date()),
+  collectionMethod: z.nativeEnum(SputumCollectionMethod),
+  smearResult: z.nativeEnum(PositiveOrNegative),
+  cultureResult: z.nativeEnum(PositiveOrNegative),
+  dateUpdated: z.string().or(z.date()),
 });
 
 export const SputumSampleCompletionCheckSchema = z.object({
@@ -314,15 +317,9 @@ export const SputumSampleCompletionCheckSchema = z.object({
 export const SputumRequestSchema = z.object({
   sputumSamples: z
     .object({
-      sample1: SputumSampleSchema.partial()
-        .optional()
-        .openapi({ description: "Details of Sputum Sample 1" }),
-      sample2: SputumSampleSchema.partial()
-        .optional()
-        .openapi({ description: "Details of Sputum Sample 2" }),
-      sample3: SputumSampleSchema.partial()
-        .optional()
-        .openapi({ description: "Details of Sputum Sample 3" }),
+      sample1: SputumSampleSchema.optional().openapi({ description: "Details of Sputum Sample 1" }),
+      sample2: SputumSampleSchema.optional().openapi({ description: "Details of Sputum Sample 2" }),
+      sample3: SputumSampleSchema.optional().openapi({ description: "Details of Sputum Sample 3" }),
     })
     .openapi({
       description: "Sputum Sample details",

@@ -4,20 +4,17 @@ import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { TaskStatus } from "../../shared/types/enum";
-import {
-  SputumRequestSchema,
-  SputumSampleCompletionCheckSchema,
-  SputumSampleUpdateInput,
-} from "../types/zod-schema";
+import { PositiveOrNegative, SputumCollectionMethod } from "../types/enums";
+import { SputumSampleCompletionCheckSchema, SputumSampleUpdateInput } from "../types/zod-schema";
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
 export type SputumSample = {
-  dateOfSample?: Date | string;
-  collectionMethod?: string;
-  smearResult?: string;
-  cultureResult?: string;
-  dateUpdated?: Date | string;
+  dateOfSample: Date | string;
+  collectionMethod: SputumCollectionMethod;
+  smearResult?: PositiveOrNegative;
+  cultureResult?: PositiveOrNegative;
+  dateUpdated: Date | string;
 };
 
 export type SputumSamples = {
@@ -75,21 +72,40 @@ export class SputumDetails extends SputumDetailsBase {
 // --- Helper to safely parse sample fields ---
 
 const parseSample = (sample: any): SputumSample | undefined => {
-  if (!sample || typeof sample !== "object" || Array.isArray(sample)) return undefined;
+  if (!sample || typeof sample !== "object" || Array.isArray(sample)) {
+    throw new Error("Invalid sample object");
+  }
 
   const parsedSample = sample as SputumSample;
 
+  const { dateOfSample, collectionMethod, dateUpdated } = parsedSample;
+
+  if (!dateOfSample || !collectionMethod || !dateUpdated) {
+    throw new Error(
+      "Missing required fields in sputum sample: dateOfSample, collectionMethod, or dateUpdated",
+    );
+  }
+
   return {
-    dateOfSample: parsedSample.dateOfSample
-      ? new Date(parsedSample.dateOfSample as string)
-      : undefined,
-    collectionMethod: parsedSample.collectionMethod as string,
-    smearResult: parsedSample.smearResult as string,
-    cultureResult: parsedSample.cultureResult as string,
-    dateUpdated: parsedSample.dateUpdated
-      ? new Date(parsedSample.dateUpdated as string)
-      : undefined,
+    dateOfSample: new Date(parsedSample.dateOfSample),
+    collectionMethod: parsedSample.collectionMethod,
+    smearResult: parsedSample.smearResult as PositiveOrNegative,
+    cultureResult: parsedSample.cultureResult as PositiveOrNegative,
+    dateUpdated: new Date(parsedSample.dateUpdated),
   };
+};
+
+const mergeSamples = (
+  existing?: Partial<SputumSample>,
+  updates?: Partial<SputumSample>,
+): SputumSample | undefined => {
+  const merged = { ...existing, ...updates };
+
+  if (merged.dateOfSample && merged.dateUpdated && merged.collectionMethod) {
+    return merged as SputumSample;
+  }
+
+  return undefined;
 };
 
 export class SputumDetailsDbOps {
@@ -103,13 +119,7 @@ export class SputumDetailsDbOps {
   ): Promise<SputumDetails> {
     try {
       logger.info("Saving Sputum Details Information to DB");
-      // Step 1: Validate
-      const parsed = SputumRequestSchema.safeParse(details);
-      if (!parsed.success) {
-        logger.error("Validation failed", parsed.error.flatten());
-        throw new Error("Invalid Sputum Details");
-      }
-      const updates: SputumSampleUpdateInput = parsed.data;
+      const newSputumDetails: SputumSampleUpdateInput = details;
 
       const pk = this.getPk(applicationId);
       const sk = this.sk;
@@ -118,46 +128,59 @@ export class SputumDetailsDbOps {
       const { Item: existingItemRaw } = await docClient.send(
         new GetCommand({ TableName, Key: { pk, sk } }),
       );
+      let existingSputumDetails = undefined;
 
-      if (!existingItemRaw) throw new Error("Sputum details not found");
-      if (!("version" in existingItemRaw)) {
-        existingItemRaw.version = 0;
+      if (!existingItemRaw) {
+        logger.info("Sputum details not found in database");
+      } else {
+        // Parse existing sputum samples
+        const samplesRaw = existingItemRaw.sputumSamples as SputumSamples;
+
+        existingSputumDetails = {
+          ...(existingItemRaw as SputumSample),
+          sputumSamples: {
+            sample1: samplesRaw?.sample1 != null ? parseSample(samplesRaw?.sample1) : undefined,
+            sample2: samplesRaw?.sample2 != null ? parseSample(samplesRaw?.sample2) : undefined,
+            sample3: samplesRaw?.sample3 != null ? parseSample(samplesRaw?.sample3) : undefined,
+          },
+        };
       }
-      // Parse existing sample dates
-      const samplesRaw = existingItemRaw.sputumSamples as Record<string, unknown> | undefined;
-
-      const existingItem = {
-        ...existingItemRaw,
-        sputumSamples: {
-          sample1: parseSample(samplesRaw?.sample1),
-          sample2: parseSample(samplesRaw?.sample2),
-          sample3: parseSample(samplesRaw?.sample3),
-        },
-      };
 
       // Merge sampleDetails
-      const mergedSamples = {
-        ...((existingItem.sputumSamples as SputumSamples) || {}),
-        ...(updates.sputumSamples || {}),
+      const mergedSamples: SputumSamples = {
+        sample1: mergeSamples(
+          existingSputumDetails?.sputumSamples?.sample1,
+          newSputumDetails.sputumSamples?.sample1,
+        ),
+        sample2: mergeSamples(
+          existingSputumDetails?.sputumSamples?.sample2,
+          newSputumDetails.sputumSamples?.sample2,
+        ),
+        sample3: mergeSamples(
+          existingSputumDetails?.sputumSamples?.sample3,
+          newSputumDetails.sputumSamples?.sample3,
+        ),
       };
 
       // Merge full item
       const merged = {
-        ...existingItem,
-        ...updates,
+        ...existingSputumDetails,
+        ...newSputumDetails,
         sputumSamples: mergedSamples,
       };
 
       // Determine if all required fields are complete using Zod
-      let shouldSetStatusCompleted = false;
-      try {
-        SputumSampleCompletionCheckSchema.parse({
-          samples: merged.sputumSamples,
-        });
-        shouldSetStatusCompleted = true;
-      } catch {
-        shouldSetStatusCompleted = false;
+
+      const completionCheck = SputumSampleCompletionCheckSchema.safeParse({
+        samples: merged.sputumSamples,
+      });
+
+      const shouldSetStatusCompleted = completionCheck.success;
+
+      if (!shouldSetStatusCompleted) {
+        logger.info("Sputum sample completion check failed", completionCheck.error.flatten());
       }
+
       // Start update
 
       const updateExpressions: string[] = [];
@@ -169,9 +192,9 @@ export class SputumDetailsDbOps {
       let conditionExpression: string | undefined;
 
       // Sputum Samples
-      if (updates.sputumSamples) {
+      if (newSputumDetails.sputumSamples) {
         let idx = 0;
-        for (const [sampleKey, sampleData] of Object.entries(updates.sputumSamples)) {
+        for (const [sampleKey, sampleData] of Object.entries(newSputumDetails.sputumSamples)) {
           if (!sampleData) continue;
           for (const [fieldKey, value] of Object.entries(sampleData)) {
             const sampleAttr = `#s${idx}`;
@@ -188,11 +211,11 @@ export class SputumDetailsDbOps {
       }
 
       // Optimistic concurrency control
-      if (updates.version !== undefined) {
+      if (newSputumDetails.version !== undefined) {
         conditionExpression = "version = :expectedVersion";
-        expressionAttributeValues[":expectedVersion"] = updates.version;
+        expressionAttributeValues[":expectedVersion"] = newSputumDetails.version;
         updateExpressions.push("version = :newVersion");
-        expressionAttributeValues[":newVersion"] = updates.version + 1;
+        expressionAttributeValues[":newVersion"] = newSputumDetails.version + 1;
       }
 
       // Final conditional status update
@@ -220,7 +243,7 @@ export class SputumDetailsDbOps {
       if (!Attributes) throw new Error("Update failed");
 
       logger.info(`Created/Updated sputum sample details for ${applicationId}`);
-      const samples = Attributes.sputumSamples as Record<string, unknown> | undefined;
+      const samples = Attributes.sputumSamples as SputumSamples | undefined;
 
       const updatedSputumDetails = new SputumDetails({
         applicationId,
@@ -228,9 +251,9 @@ export class SputumDetailsDbOps {
         createdBy: Attributes.createdBy as string,
         dateCreated: new Date(Attributes.dateCreated as string),
         sputumSamples: {
-          sample1: parseSample(samples?.sample1),
-          sample2: parseSample(samples?.sample2),
-          sample3: parseSample(samples?.sample3),
+          sample1: samples?.sample1,
+          sample2: samples?.sample2,
+          sample3: samples?.sample3,
         },
         version: Attributes.version as number,
       });
@@ -264,7 +287,7 @@ export class SputumDetailsDbOps {
       }
 
       logger.info("Sputum Details fetched successfully");
-      const samplesRetreived = sputumRecord.sputumSamples as Record<string, unknown> | undefined;
+      const samplesRetreived = sputumRecord.sputumSamples as SputumSamples | undefined;
 
       const sputumDetails = new SputumDetails({
         applicationId,
@@ -272,9 +295,12 @@ export class SputumDetailsDbOps {
         createdBy: sputumRecord.createdBy as string,
         dateCreated: new Date(sputumRecord.dateCreated as string),
         sputumSamples: {
-          sample1: parseSample(samplesRetreived?.sample1),
-          sample2: parseSample(samplesRetreived?.sample2),
-          sample3: parseSample(samplesRetreived?.sample3),
+          sample1:
+            samplesRetreived?.sample1 != null ? parseSample(samplesRetreived.sample1) : undefined,
+          sample2:
+            samplesRetreived?.sample2 != null ? parseSample(samplesRetreived.sample2) : undefined,
+          sample3:
+            samplesRetreived?.sample3 != null ? parseSample(samplesRetreived.sample3) : undefined,
         },
         version: sputumRecord.version as number,
       });
