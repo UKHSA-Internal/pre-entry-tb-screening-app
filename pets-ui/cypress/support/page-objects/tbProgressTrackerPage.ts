@@ -67,6 +67,7 @@ export class TBProgressTrackerPage {
       "Travel information",
       "Medical history and TB symptoms",
       "Radiological outcome",
+      "Sputum collection and results",
       "TB certificate declaration",
     ];
 
@@ -148,6 +149,7 @@ export class TBProgressTrackerPage {
     "Travel information"?: string;
     "Medical history and TB symptoms"?: string;
     "Radiological outcome"?: string;
+    "Sputum collection and results": string;
     "TB certificate declaration"?: string;
   }): void {
     Object.entries(expectedStatuses).forEach(([taskName, status]) => {
