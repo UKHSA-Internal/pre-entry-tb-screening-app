@@ -78,7 +78,7 @@ const ProgressTracker = () => {
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const chestXrayData = useAppSelector(selectChestXray);
   const tbCertificateData = useAppSelector(selectTbCertificate);
-  const { applicantPhotoFile } = useApplicantPhoto();
+  const applicantPhotoContext = useApplicantPhoto();
 
   return (
     <div>
@@ -86,7 +86,7 @@ const ProgressTracker = () => {
         <div style={{ flexGrow: 1 }}>
           <ApplicantDataHeader applicantData={applicantData} />
         </div>
-        {applicantPhotoFile && (
+        {applicantPhotoContext?.applicantPhotoFile && (
           <div
             style={{
               marginLeft: "20px",
@@ -96,9 +96,9 @@ const ProgressTracker = () => {
             }}
           >
             <img
-              src={URL.createObjectURL(applicantPhotoFile)}
-              alt="Applicant photo"
-              title={applicantData.applicantPhotoFileName || undefined}
+              src={URL.createObjectURL(applicantPhotoContext.applicantPhotoFile)}
+              alt={"Applicant"}
+              title={applicantData.applicantPhotoFileName ?? undefined}
               style={{
                 display: "block",
                 height: "100%",

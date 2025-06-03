@@ -1,9 +1,11 @@
 import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MockAdapter from "axios-mock-adapter";
+import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
+import { ApplicantPhotoProvider, useApplicantPhoto } from "@/context/applicantPhotoContext";
 import ApplicantSearchForm from "@/sections/applicant-search-form";
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
@@ -16,6 +18,22 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
   return {
     ...actual,
     useNavigate: (): Mock => useNavigateMock,
+  };
+});
+
+let originalCreateObjectURL: typeof URL.createObjectURL;
+beforeAll(() => {
+  originalCreateObjectURL = global.URL.createObjectURL?.bind(global.URL);
+  global.URL.createObjectURL = vi.fn(() => "blob:http://localhost/test-photo.jpg");
+});
+afterAll(() => {
+  global.URL.createObjectURL = originalCreateObjectURL;
+});
+
+vi.mock("@/context/applicantPhotoContext", async () => {
+  const actual = await import("@/context/applicantPhotoContext");
+  return {
+    ...actual,
   };
 });
 
@@ -102,10 +120,31 @@ describe("ApplicantSearchForm", () => {
     useNavigateMock.mockClear();
   });
 
-  test("store is correctly populated and user is navigated to tracker page when both api calls are successful", async () => {
+  test("store is correctly populated, applicant photo is handled, and user is navigated to tracker page when both api calls are successful", async () => {
+    const photoBlob = new Blob(["test-photo"], { type: "image/jpeg" });
+    const mockFetch = vi.spyOn(global, "fetch").mockResolvedValue({
+      blob: async () => {
+        await Promise.resolve();
+        return photoBlob;
+      },
+      ok: true,
+    } as Response);
+
+    let contextFile: File | null = null;
+    const ContextChecker: React.FC = () => {
+      const { applicantPhotoFile } = useApplicantPhoto();
+      React.useEffect(() => {
+        contextFile = applicantPhotoFile;
+      }, [applicantPhotoFile]);
+      return null;
+    };
+
     const { store } = renderWithProviders(
       <Router>
-        <ApplicantSearchForm />
+        <ApplicantPhotoProvider>
+          <ContextChecker />
+          <ApplicantSearchForm />
+        </ApplicantPhotoProvider>
       </Router>,
     );
     const user = userEvent.setup();
@@ -131,6 +170,7 @@ describe("ApplicantSearchForm", () => {
 
     mock.onGet("/application/abc-123").reply(200, {
       applicationId: "abc-123",
+      applicantPhotoUrl: "http://localhost:4566/photos/photo.jpg",
       travelInformation: {
         ukAddressLine1: "99 Downing Street",
         ukAddressPostcode: "W1 1AS",
@@ -215,7 +255,7 @@ describe("ApplicantSearchForm", () => {
       },
       passportNumber: "12345",
       postcode: "",
-      applicantPhotoFileName: "",
+      applicantPhotoFileName: "photo.jpg",
       provinceOrState: "New South Wales",
       sex: "Male",
       status: ApplicationStatus.COMPLETE,
@@ -264,14 +304,29 @@ describe("ApplicantSearchForm", () => {
       xrayAssociatedMinorFindings: [],
       xrayActiveTbFindings: [],
     });
+    expect(mockFetch).toHaveBeenCalledWith("http://localhost:4566/photos/photo.jpg");
+    expect(store.getState().applicant.applicantPhotoFileName).toBe("photo.jpg");
+    expect(contextFile).not.toBeNull();
+    if (
+      contextFile &&
+      typeof contextFile === "object" &&
+      "name" in contextFile &&
+      "type" in contextFile
+    ) {
+      expect((contextFile as File).name).toBe("photo.jpg");
+      expect((contextFile as File).type).toBe("image/jpeg");
+    }
 
     expect(useNavigateMock).toHaveBeenLastCalledWith("/tracker");
+    mockFetch.mockRestore();
   });
 
   test("store is correctly populated and user is navigated to error page when applicant search is successful & application search returns a non-200 response", async () => {
     const { store } = renderWithProviders(
       <Router>
-        <ApplicantSearchForm />
+        <ApplicantPhotoProvider>
+          <ApplicantSearchForm />
+        </ApplicantPhotoProvider>
       </Router>,
     );
     const user = userEvent.setup();
@@ -349,7 +404,9 @@ describe("ApplicantSearchForm", () => {
   test("store is correctly populated and user is navigated to error page when applicant search is successful & application search returns 500", async () => {
     const { store } = renderWithProviders(
       <Router>
-        <ApplicantSearchForm />
+        <ApplicantPhotoProvider>
+          <ApplicantSearchForm />
+        </ApplicantPhotoProvider>
       </Router>,
     );
     const user = userEvent.setup();
@@ -427,7 +484,9 @@ describe("ApplicantSearchForm", () => {
   test("user is navigated to applicant results page when applicant search returns an empty array", async () => {
     const { store } = renderWithProviders(
       <Router>
-        <ApplicantSearchForm />
+        <ApplicantPhotoProvider>
+          <ApplicantSearchForm />
+        </ApplicantPhotoProvider>
       </Router>,
     );
     const user = userEvent.setup();
@@ -455,7 +514,9 @@ describe("ApplicantSearchForm", () => {
   test("user is navigated to applicant results page when applicant search returns 500", async () => {
     const { store } = renderWithProviders(
       <Router>
-        <ApplicantSearchForm />
+        <ApplicantPhotoProvider>
+          <ApplicantSearchForm />
+        </ApplicantPhotoProvider>
       </Router>,
     );
     const user = userEvent.setup();
