@@ -152,7 +152,7 @@ describe("ApplicantSearchForm", () => {
     mock.onGet("/applicant/search").reply(200, [
       {
         applicationId: "abc-123",
-        status: "completed",
+        status: "Complete",
         fullName: "Maxwell Spiffington",
         sex: "Male",
         dateOfBirth: "01-01-1991",
@@ -174,7 +174,7 @@ describe("ApplicantSearchForm", () => {
       travelInformation: {
         ukAddressLine1: "99 Downing Street",
         ukAddressPostcode: "W1 1AS",
-        status: "completed",
+        status: "Complete",
         ukAddressTownOrCity: "London",
         ukEmailAddress: "Maxwell@Spiffington.com",
         ukMobileNumber: "071234567890",
@@ -183,7 +183,7 @@ describe("ApplicantSearchForm", () => {
       medicalScreening: {
         applicationId: "abc-123",
         dateCreated: "2025-01-01",
-        status: "completed",
+        status: "Complete",
         age: 43,
         contactWithPersonWithTb: "Yes",
         contactWithTbDetails: "details1",
@@ -199,7 +199,7 @@ describe("ApplicantSearchForm", () => {
         symptomsOther: "Other symptoms",
       },
       chestXray: {
-        status: "completed",
+        status: "Complete",
         chestXrayTaken: YesOrNo.YES,
         posteroAnteriorXrayFileName: "pa-file-name",
         posteroAnteriorXray: "pa-bucket",
@@ -264,6 +264,7 @@ describe("ApplicantSearchForm", () => {
     expect(store.getState().travel).toEqual({
       applicantUkAddress1: "99 Downing Street",
       applicantUkAddress2: "",
+      applicantUkAddress3: "",
       postcode: "W1 1AS",
       status: ApplicationStatus.COMPLETE,
       townOrCity: "London",
@@ -334,7 +335,7 @@ describe("ApplicantSearchForm", () => {
     mock.onGet("/applicant/search").reply(200, [
       {
         applicationId: "abc-123",
-        status: "completed",
+        status: "Complete",
         fullName: "Maxwell Spiffington",
         sex: "Male",
         dateOfBirth: "01-01-1991",
@@ -414,7 +415,7 @@ describe("ApplicantSearchForm", () => {
     mock.onGet("/applicant/search").reply(200, [
       {
         applicationId: "abc-123",
-        status: "completed",
+        status: "Complete",
         fullName: "Maxwell Spiffington",
         sex: "Male",
         dateOfBirth: "01-01-1991",
