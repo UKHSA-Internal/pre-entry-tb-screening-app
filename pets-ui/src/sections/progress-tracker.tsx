@@ -79,8 +79,8 @@ const ProgressTracker = () => {
           >
             <img
               src={URL.createObjectURL(applicantPhotoContext.applicantPhotoFile)}
-              alt={"Applicant photo"}
-              title={applicantData.applicantPhotoFileName || undefined}
+              alt={"Applicant"}
+              title={applicantData.applicantPhotoFileName ?? undefined}
               style={{
                 display: "block",
                 height: "100%",

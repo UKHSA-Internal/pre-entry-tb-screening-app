@@ -253,7 +253,7 @@ test("Progress tracker page displays complete application sections correctly, li
     const { setApplicantPhotoFile } = useApplicantPhoto();
     React.useEffect(() => {
       setApplicantPhotoFile(mockPhoto);
-    }, []);
+    }, [setApplicantPhotoFile]);
     return <>{children}</>;
   };
 
@@ -318,7 +318,7 @@ test("Progress tracker page displays complete application sections correctly, li
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
   expect(within(tbCertificateListItem as HTMLElement).getByText("Completed"));
-  const img = await screen.findByAltText(/applicant photo/i);
+  const img = await screen.findByAltText(/applicant/i);
   expect(img).toBeInTheDocument();
 
   await user.click(screen.getByRole("button"));

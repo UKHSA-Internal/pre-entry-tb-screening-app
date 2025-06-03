@@ -69,7 +69,6 @@ const ApplicantSearchForm = () => {
       const applicantRes = await getApplicants(passportDetails);
       if (applicantRes.data.length === 0) {
         navigate("/applicant-results");
-        setIsLoading(false);
         return;
       }
       dispatch(setApplicantDetailsFromApiResponse(applicantRes.data[0]));
@@ -89,7 +88,7 @@ const ApplicantSearchForm = () => {
           const response = await fetch(fixedUrl);
           const blob = await response.blob();
           const urlParts = applicationRes.data.applicantPhotoUrl.split("/");
-          const filename = urlParts.pop()?.split("?")[0] || "applicant-photo.jpg";
+          const filename = urlParts.pop()?.split("?")[0] ?? "applicant-photo.jpg";
           const photoFile = new File([blob], filename, { type: blob.type });
           setApplicantPhotoFile(photoFile);
           dispatch(setApplicantPhotoFileName(filename));
@@ -114,8 +113,6 @@ const ApplicantSearchForm = () => {
     } catch (error) {
       console.error(error);
       navigate("/error");
-    } finally {
-      setIsLoading(false);
     }
   };
 
