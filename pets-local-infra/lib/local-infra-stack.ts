@@ -119,7 +119,7 @@ class HotReloadedLambda extends Function {
     super(scope, id, {
       functionName: props.functionName,
       code: Code.fromBucket(hotReloadBucket, codePath),
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
       handler: `${fileName}.handler`,
       environment: {
         NODE_EXTRA_CA_CERTS: "/var/runtime/ca-cert.pem",
