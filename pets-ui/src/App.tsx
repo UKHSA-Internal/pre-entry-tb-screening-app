@@ -22,6 +22,7 @@ import MedicalScreeningPage from "./pages/medical-screening";
 import MedicalConfirmation from "./pages/medical-screening-confirmation";
 import MedicalSummaryPage from "./pages/medical-screening-summary";
 import ProgressTrackerPage from "./pages/progress-tracker";
+import SputumConfirmation from "./pages/sputum-confirmation";
 import SputumQuestionPage from "./pages/sputum-question";
 import TbCertificateDeclarationPage from "./pages/tb-certificate-declaration";
 import TbConfirmationPage from "./pages/tb-confirmation";
@@ -236,6 +237,16 @@ function App() {
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <SputumQuestionPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/sputum-confirmation"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <SputumConfirmation />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
