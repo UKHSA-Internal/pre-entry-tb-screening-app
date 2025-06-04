@@ -1,22 +1,11 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { seededApplications } from "../../shared/fixtures/application";
+import { TaskStatus } from "../../shared/types/enum";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { SputumDetailsDbOps } from "../models/sputum-details";
 import { SputumCollectionMethod } from "../types/enums";
 import { SaveSputumDetailsEvent, saveSputumDetailsHandler } from "./save-sputum-details";
-
-vi.mock("../models/Sputum-details", async () => {
-  const actual = await vi.importActual<typeof import("../models/sputum-details")>(
-    "../models/sputum-details",
-  );
-  return {
-    ...actual,
-    SputumDetailsDbOps: {
-      createOrUpdateSputumDetails: vi.fn(),
-    },
-  };
-});
 
 const newSputumDetails: SaveSputumDetailsEvent["parsedBody"] = {
   sputumSamples: {
@@ -31,13 +20,19 @@ const newSputumDetails: SaveSputumDetailsEvent["parsedBody"] = {
 describe("Test for Saving Sputum Details into DB", () => {
   test("Saving a new Sputum Details successfully", async () => {
     // Arrange
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    (SputumDetailsDbOps.createOrUpdateSputumDetails as any).mockResolvedValue({
-      toJson: () => ({
-        applicationId: seededApplications[0].applicationId,
-        ...newSputumDetails,
-        dateCreated: new Date().toISOString(),
-      }),
+    const dateCreated = new Date();
+    const sputumDetails = {
+      ...newSputumDetails,
+      applicationId: seededApplications[0].applicationId,
+      dateCreated: dateCreated,
+      status: TaskStatus.incompleted,
+      createdBy: "John Doe",
+      version: 0,
+    };
+
+    vi.spyOn(SputumDetailsDbOps, "createOrUpdateSputumDetails").mockResolvedValueOnce({
+      toJson: () => ({ ...sputumDetails, dateCreated: dateCreated.toISOString() }),
+      ...sputumDetails,
     });
 
     const event: SaveSputumDetailsEvent = {
@@ -57,6 +52,7 @@ describe("Test for Saving Sputum Details into DB", () => {
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toMatchObject({
       applicationId: seededApplications[0].applicationId,
+      dateCreated: dateCreated.toISOString(),
       ...newSputumDetails,
     });
   });
