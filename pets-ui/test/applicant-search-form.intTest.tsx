@@ -540,4 +540,68 @@ describe("ApplicantSearchForm", () => {
 
     expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
   });
+
+  test("should call console.error when fetching applicant photo fails", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const mockFetch = vi.spyOn(global, "fetch").mockRejectedValue(new Error("Photo fetch failed"));
+
+    const { store } = renderWithProviders(
+      <Router>
+        <ApplicantPhotoProvider>
+          <ApplicantSearchForm />
+        </ApplicantPhotoProvider>
+      </Router>,
+    );
+    const user = userEvent.setup();
+
+    mock.onGet("/applicant/search").reply(200, [
+      {
+        applicationId: "abc-123",
+        status: "completed",
+        fullName: "Maxwell Spiffington",
+        sex: "Male",
+        dateOfBirth: "01-01-1991",
+        countryOfNationality: "AUS",
+        passportNumber: "12345",
+        countryOfIssue: "AUS",
+        issueDate: "02-02-1992",
+        expiryDate: "03-03-2053",
+        applicantHomeAddress1: "1 Ayres Rock Way",
+        townOrCity: "Sydney",
+        provinceOrState: "New South Wales",
+        country: "Australia",
+      },
+    ]);
+
+    mock.onGet("/application/abc-123").reply(200, {
+      applicationId: "abc-123",
+      applicantPhotoUrl: "http://localhost:4566/photos/photo.jpg",
+      travelInformation: {
+        ukAddressLine1: "99 Downing Street",
+        ukAddressPostcode: "W1 1AS",
+        status: "completed",
+        ukAddressTownOrCity: "London",
+        ukEmailAddress: "Maxwell@Spiffington.com",
+        ukMobileNumber: "071234567890",
+        visaCategory: "Family Reunion",
+      },
+    });
+
+    await user.type(screen.getByTestId("passport-number"), "12345");
+    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+
+    await user.click(screen.getByRole("button"));
+    await new Promise((resolve) => process.nextTick(resolve));
+
+    expect(mockFetch).toHaveBeenCalledWith("http://localhost:4566/photos/photo.jpg");
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "Error fetching or processing applicant photo:",
+      expect.any(Error),
+    );
+    expect((consoleErrorSpy.mock.calls[0][1] as Error).message).toBe("Photo fetch failed");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/tracker");
+    expect(store.getState().applicant.applicantPhotoFileName).toBe("");
+    mockFetch.mockRestore();
+    consoleErrorSpy.mockRestore();
+  });
 });
