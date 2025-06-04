@@ -48,6 +48,7 @@ const ChestXraySummary = () => {
           chestXrayTaken: chestXrayData.chestXrayTaken,
           reasonXrayWasNotTaken: chestXrayData.reasonXrayWasNotTaken,
           xrayWasNotTakenFurtherDetails: chestXrayData.xrayWasNotTakenFurtherDetails,
+          isSputumRequired: chestXrayData.isSputumRequired,
         });
       }
 
@@ -133,6 +134,12 @@ const ChestXraySummary = () => {
       link: `/chest-xray-not-taken#${attributeToComponentId.xrayWasNotTakenFurtherDetails}`,
       hiddenLabel: "details",
       emptyValueText: "Enter details (optional)",
+    },
+    {
+      key: "Sputum required?",
+      value: chestXrayData.isSputumRequired,
+      link: `/sputum-question`,
+      hiddenLabel: "if sputum is required",
     },
   ];
 
