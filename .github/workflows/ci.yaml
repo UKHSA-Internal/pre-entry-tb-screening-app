@@ -1,6 +1,5 @@
 name: Pets CI
 
-
 on:
   push:
     branches:
@@ -29,7 +28,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20.x
           cache: "pnpm"
 
       - name: Install dependencies
@@ -40,7 +39,6 @@ jobs:
 
       - name: Type Checks
         run: pnpm -r type-check
-
 
   ui-tests:
     name: Run unit tests for ui
@@ -54,7 +52,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20.x
           cache: "pnpm"
       - name: Install dependencies
         run: pnpm i
@@ -99,7 +97,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20.x
           cache: "pnpm"
 
       - name: Install dependencies
@@ -183,7 +181,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20.x
           cache: "pnpm"
 
       - name: Install dependencies
@@ -232,7 +230,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20.x
           cache: "pnpm"
 
       - name: Install dependencies
@@ -268,7 +266,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20.x
           cache: "pnpm"
       - name: Install dependencies
         run: pnpm i

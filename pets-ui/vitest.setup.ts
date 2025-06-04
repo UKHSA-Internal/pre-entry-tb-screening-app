@@ -9,7 +9,11 @@ import { mockAccount, mockAuthResult } from "./src/test-data/auth";
 
 expect.extend(matchers);
 
-globalThis.crypto = crypto as any;
+// Patch globalThis.crypto using defineProperty
+Object.defineProperty(globalThis, "crypto", {
+  value: crypto,
+  configurable: true,
+});
 globalThis.File = File;
 
 beforeEach(() => {
