@@ -3,6 +3,7 @@ import { describe, expect, test, vi } from "vitest";
 import { seededApplications } from "../../shared/fixtures/application";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { SputumDetailsDbOps } from "../models/sputum-details";
+import { SputumCollectionMethod } from "../types/enums";
 import { SaveSputumDetailsEvent, saveSputumDetailsHandler } from "./save-sputum-details";
 
 vi.mock("../models/Sputum-details", async () => {
@@ -21,7 +22,8 @@ const newSputumDetails: SaveSputumDetailsEvent["parsedBody"] = {
   sputumSamples: {
     sample1: {
       dateOfSample: new Date().toISOString(),
-      collectionMethod: "Coughed Up",
+      collectionMethod: SputumCollectionMethod.COUGHED_UP,
+      dateUpdated: new Date().toISOString(),
     },
   },
 };
@@ -59,7 +61,7 @@ describe("Test for Saving Sputum Details into DB", () => {
     });
   });
 
-  test("Duplicate post throws a 400 error", async () => {
+  test("Duplicate update request throws a 400 error", async () => {
     const conditionalError = Object.assign(new Error("Version mismatch"), {
       name: "ConditionalCheckFailedException",
     });
@@ -104,10 +106,41 @@ describe("Test for Saving Sputum Details into DB", () => {
     // Assert
     expect(response.statusCode).toBe(500);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Sputum Details Request not parsed correctly",
+      message: "Internal Server Error: Sputum Details Request missing",
     });
   });
 
+  test("Invalid parsed sputum details request throws a 400 error", async () => {
+    // Arrange
+
+    const sputumDetails: SaveSputumDetailsEvent["parsedBody"] = {
+      sputumSamples: {
+        // @ts-expect-error: intentionally mocking partial event
+        sample1: {
+          collectionMethod: SputumCollectionMethod.COUGHED_UP,
+          dateUpdated: new Date("2025-03-10T00:00:00.000Z"),
+        },
+      },
+    };
+    const event: SaveSputumDetailsEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[2].applicationId },
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "test1", createdBy: "user1" },
+      },
+      parsedBody: sputumDetails,
+    };
+
+    // Act
+    const response = await saveSputumDetailsHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Sputum Details Request validation failed",
+    });
+  });
   test("Unexpected error returns a 500 response", async () => {
     // Arrange
     vi.spyOn(global, "decodeURIComponent").mockImplementationOnce(() => {

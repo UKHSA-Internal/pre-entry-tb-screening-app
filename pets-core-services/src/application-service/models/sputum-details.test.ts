@@ -4,11 +4,12 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
 import { TaskStatus } from "../../shared/types/enum";
+import { PositiveOrNegative, SputumCollectionMethod } from "../types/enums";
 import { SputumDetailsDbOps } from "./sputum-details";
 
 const ddbMock = mockClient(awsClients.dynamoDBDocClient);
 
-describe("Tests for SputumDetailsDbOps model", () => {
+describe("Tests for SputumDetails model", () => {
   const applicationId = "test-application-id";
   const pk = `APPLICATION#${applicationId}`;
   const sk = "APPLICATION#SPUTUM#DETAILS";
@@ -19,12 +20,13 @@ describe("Tests for SputumDetailsDbOps model", () => {
     applicationId,
     status: TaskStatus.incompleted,
     createdBy: "test-user",
-    dateCreated: "2025-01-01T00:00:00.000Z",
+    dateCreated: new Date("2025-01-01T00:00:00.000Z"),
     version: 1,
     sputumSamples: {
       sample1: {
-        dateOfSample: "2025-01-02T00:00:00.000Z",
-        collectionMethod: "Coughed Up",
+        dateOfSample: new Date("2025-01-02T00:00:00.000Z"),
+        collectionMethod: SputumCollectionMethod.COUGHED_UP,
+        dateUpdated: new Date("2025-01-02T00:00:00.000Z"),
       },
     },
   };
@@ -35,18 +37,69 @@ describe("Tests for SputumDetailsDbOps model", () => {
     vi.setSystemTime(new Date("2025-03-10T00:00:00.000Z"));
   });
 
+  test("createOrUpdateSputumDetails: should create first sputum sample collection details", async () => {
+    ddbMock.on(GetCommand).resolves({ Item: undefined });
+    ddbMock.on(UpdateCommand).resolves({
+      Attributes: {
+        ...existingItem,
+        version: 1,
+        status: TaskStatus.incompleted,
+        sputumSamples: {
+          sample1: {
+            dateOfSample: "2025-03-10T00:00:00.000Z",
+            collectionMethod: SputumCollectionMethod.COUGHED_UP,
+            dateUpdated: "2025-03-10T00:00:00.000Z",
+          },
+        },
+      },
+    });
+
+    const updated = await SputumDetailsDbOps.createOrUpdateSputumDetails(applicationId, {
+      applicationId,
+      createdBy: "test-user",
+      version: 1,
+      sputumSamples: {
+        sample1: {
+          dateOfSample: new Date("2025-03-10T00:00:00.000Z"),
+          collectionMethod: SputumCollectionMethod.COUGHED_UP,
+          dateUpdated: new Date("2025-03-10T00:00:00.000Z"),
+        },
+      },
+    });
+
+    expect(updated).toMatchObject({
+      applicationId,
+      createdBy: "test-user",
+      version: 1,
+      status: TaskStatus.incompleted,
+      sputumSamples: {
+        sample1: {
+          dateOfSample: "2025-03-10T00:00:00.000Z",
+          collectionMethod: SputumCollectionMethod.COUGHED_UP,
+        },
+      },
+    });
+
+    const call = ddbMock.commandCalls(UpdateCommand)[0];
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(call?.firstArg.input).toMatchObject({
+      Key: { pk, sk },
+      TableName: "test-application-details",
+    });
+  });
   test("createOrUpdateSputumDetails: should update sputum sample details", async () => {
     ddbMock.on(GetCommand).resolves({ Item: existingItem });
     ddbMock.on(UpdateCommand).resolves({
       Attributes: {
         ...existingItem,
         version: 2,
-        status: TaskStatus.completed,
+        status: TaskStatus.incompleted,
         sputumSamples: {
           ...existingItem.sputumSamples,
           sample2: {
-            dateOfSample: "2025-03-10T00:00:00.000Z",
-            collectionMethod: "Coughed Up",
+            dateOfSample: new Date("2025-03-11T00:00:00.000Z"),
+            collectionMethod: SputumCollectionMethod.COUGHED_UP,
+            dateUpdated: new Date("2025-03-11T00:00:00.000Z"),
           },
         },
       },
@@ -58,8 +111,9 @@ describe("Tests for SputumDetailsDbOps model", () => {
       version: 1,
       sputumSamples: {
         sample2: {
-          dateOfSample: "2025-03-10T00:00:00.000Z",
-          collectionMethod: "Coughed Up",
+          dateOfSample: new Date("2025-03-11T00:00:00.000Z"),
+          collectionMethod: SputumCollectionMethod.COUGHED_UP,
+          dateUpdated: new Date("2025-03-11T00:00:00.000Z"),
         },
       },
     });
@@ -68,15 +122,17 @@ describe("Tests for SputumDetailsDbOps model", () => {
       applicationId,
       createdBy: "test-user",
       version: 2,
-      status: TaskStatus.completed,
+      status: TaskStatus.incompleted,
       sputumSamples: {
         sample1: {
           dateOfSample: new Date("2025-01-02T00:00:00.000Z"),
-          collectionMethod: "Coughed Up",
+          collectionMethod: SputumCollectionMethod.COUGHED_UP,
+          dateUpdated: new Date("2025-01-02T00:00:00.000Z"),
         },
         sample2: {
-          dateOfSample: new Date("2025-03-10T00:00:00.000Z"),
-          collectionMethod: "Coughed Up",
+          dateOfSample: new Date("2025-03-11T00:00:00.000Z"),
+          collectionMethod: SputumCollectionMethod.COUGHED_UP,
+          dateUpdated: new Date("2025-03-11T00:00:00.000Z"),
         },
       },
     });
@@ -89,16 +145,105 @@ describe("Tests for SputumDetailsDbOps model", () => {
     });
   });
 
-  test("createOrUpdateSputumDetails:should throw if existing record is not found", async () => {
-    ddbMock.on(GetCommand).resolves({});
+  test("createOrUpdateSputumDetails: should update sputum sample details and results and mark status complete", async () => {
+    ddbMock.on(GetCommand).resolves({ Item: existingItem });
+    ddbMock.on(UpdateCommand).resolves({
+      Attributes: {
+        ...existingItem,
+        version: 2,
+        status: TaskStatus.completed,
+        sputumSamples: {
+          ...existingItem.sputumSamples,
+          sample1: {
+            dateOfSample: new Date("2025-01-02T00:00:00.000Z"),
+            collectionMethod: SputumCollectionMethod.COUGHED_UP,
+            smearResult: PositiveOrNegative.POSITIVE,
+            cultureResult: PositiveOrNegative.POSITIVE,
+            dateUpdated: new Date("2025-01-02T00:00:00.000Z"),
+          },
+          sample2: {
+            dateOfSample: new Date("2025-03-11T00:00:00.000Z"),
+            collectionMethod: SputumCollectionMethod.COUGHED_UP,
+            smearResult: PositiveOrNegative.POSITIVE,
+            cultureResult: PositiveOrNegative.POSITIVE,
+            dateUpdated: new Date("2025-03-11T00:00:00.000Z"),
+          },
+          sample3: {
+            dateOfSample: new Date("2025-03-12T00:00:00.000Z"),
+            collectionMethod: "Induced",
+            smearResult: PositiveOrNegative.POSITIVE,
+            cultureResult: PositiveOrNegative.POSITIVE,
+            dateUpdated: new Date("2025-03-12T00:00:00.000Z"),
+          },
+        },
+      },
+    });
 
-    await expect(
-      SputumDetailsDbOps.createOrUpdateSputumDetails(applicationId, {
-        applicationId,
-        createdBy: "test-user",
-        sputumSamples: {},
-      }),
-    ).rejects.toThrow("Sputum details not found");
+    const updated = await SputumDetailsDbOps.createOrUpdateSputumDetails(applicationId, {
+      applicationId,
+      createdBy: "test-user",
+      version: 1,
+      sputumSamples: {
+        sample1: {
+          dateOfSample: new Date("2025-01-02T00:00:00.000Z"),
+          collectionMethod: SputumCollectionMethod.COUGHED_UP,
+          smearResult: PositiveOrNegative.POSITIVE,
+          cultureResult: PositiveOrNegative.POSITIVE,
+          dateUpdated: new Date("2025-01-02T00:00:00.000Z"),
+        },
+        sample2: {
+          dateOfSample: new Date("2025-03-11T00:00:00.000Z"),
+          collectionMethod: SputumCollectionMethod.COUGHED_UP,
+          smearResult: PositiveOrNegative.POSITIVE,
+          cultureResult: PositiveOrNegative.POSITIVE,
+          dateUpdated: new Date("2025-03-11T00:00:00.000Z"),
+        },
+        sample3: {
+          dateOfSample: new Date("2025-03-12T00:00:00.000Z"),
+          collectionMethod: SputumCollectionMethod.INDUCED,
+          smearResult: PositiveOrNegative.POSITIVE,
+          cultureResult: PositiveOrNegative.POSITIVE,
+          dateUpdated: new Date("2025-03-12T00:00:00.000Z"),
+        },
+      },
+    });
+
+    expect(updated).toMatchObject({
+      applicationId,
+      createdBy: "test-user",
+      version: 2,
+      status: TaskStatus.completed,
+      sputumSamples: {
+        sample1: {
+          dateOfSample: new Date("2025-01-02T00:00:00.000Z"),
+          collectionMethod: SputumCollectionMethod.COUGHED_UP,
+          smearResult: PositiveOrNegative.POSITIVE,
+          cultureResult: PositiveOrNegative.POSITIVE,
+          dateUpdated: new Date("2025-01-02T00:00:00.000Z"),
+        },
+        sample2: {
+          dateOfSample: new Date("2025-03-11T00:00:00.000Z"),
+          collectionMethod: SputumCollectionMethod.COUGHED_UP,
+          smearResult: PositiveOrNegative.POSITIVE,
+          cultureResult: PositiveOrNegative.POSITIVE,
+          dateUpdated: new Date("2025-03-11T00:00:00.000Z"),
+        },
+        sample3: {
+          dateOfSample: new Date("2025-03-12T00:00:00.000Z"),
+          collectionMethod: "Induced",
+          smearResult: PositiveOrNegative.POSITIVE,
+          cultureResult: PositiveOrNegative.POSITIVE,
+          dateUpdated: new Date("2025-03-12T00:00:00.000Z"),
+        },
+      },
+    });
+
+    const call = ddbMock.commandCalls(UpdateCommand)[0];
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(call?.firstArg.input).toMatchObject({
+      Key: { pk, sk },
+      TableName: "test-application-details",
+    });
   });
   test("createOrUpdateSputumDetails: should throw error if DynamoDB update fails", async () => {
     ddbMock.on(GetCommand).resolves({ Item: existingItem });
@@ -113,6 +258,77 @@ describe("Tests for SputumDetailsDbOps model", () => {
       }),
     ).rejects.toThrow("Update failed");
   });
+
+  test("createOrUpdateSputumDetails: should throw error if sputum sample object schema is invalid", async () => {
+    ddbMock.on(GetCommand).resolves({
+      Item: {
+        pk,
+        sk,
+        applicationId,
+        status: TaskStatus.incompleted,
+        createdBy: "test-user",
+        dateCreated: new Date("2025-01-01T00:00:00.000Z"),
+        version: 1,
+        sputumSamples: {
+          sample1: [],
+        },
+      },
+    });
+    ddbMock.on(UpdateCommand).resolves({});
+
+    await expect(
+      SputumDetailsDbOps.createOrUpdateSputumDetails(applicationId, {
+        applicationId,
+        createdBy: "test-user",
+        version: 1,
+        sputumSamples: {
+          sample1: {
+            dateOfSample: "2025-03-10T00:00:00.000Z",
+            collectionMethod: SputumCollectionMethod.COUGHED_UP,
+            dateUpdated: new Date("2025-03-10T00:00:00.000Z"),
+          },
+        },
+      }),
+    ).rejects.toThrow("Invalid sample object");
+  });
+
+  test("createOrUpdateSputumDetails: should throw error if sputum sample object in DB has missing required fields", async () => {
+    ddbMock.on(GetCommand).resolves({
+      Item: {
+        pk,
+        sk,
+        applicationId,
+        status: TaskStatus.incompleted,
+        createdBy: "test-user",
+        dateCreated: new Date("2025-01-01T00:00:00.000Z"),
+        version: 1,
+        sputumSamples: {
+          sample1: {
+            collectionMethod: SputumCollectionMethod.COUGHED_UP,
+            dateUpdated: new Date("2025-01-02T00:00:00.000Z"),
+          },
+        },
+      },
+    });
+    ddbMock.on(UpdateCommand).resolves({});
+
+    await expect(
+      SputumDetailsDbOps.createOrUpdateSputumDetails(applicationId, {
+        applicationId,
+        createdBy: "test-user",
+        version: 1,
+        sputumSamples: {
+          sample1: {
+            dateOfSample: "2025-03-10T00:00:00.000Z",
+            collectionMethod: SputumCollectionMethod.COUGHED_UP,
+            dateUpdated: new Date("2025-03-10T00:00:00.000Z"),
+          },
+        },
+      }),
+    ).rejects.toThrow(
+      "Missing required fields in sputum sample: dateOfSample, collectionMethod, or dateUpdated",
+    );
+  });
   test("getByApplicationId: should retrieve sputum details by applicationId", async () => {
     ddbMock.on(GetCommand).resolves({ Item: existingItem });
 
@@ -126,7 +342,8 @@ describe("Tests for SputumDetailsDbOps model", () => {
       sputumSamples: {
         sample1: {
           dateOfSample: new Date("2025-01-02T00:00:00.000Z"),
-          collectionMethod: "Coughed Up",
+          collectionMethod: SputumCollectionMethod.COUGHED_UP,
+          dateUpdated: new Date("2025-01-02T00:00:00.000Z"),
         },
       },
     });
@@ -137,5 +354,11 @@ describe("Tests for SputumDetailsDbOps model", () => {
 
     const result = await SputumDetailsDbOps.getByApplicationId(applicationId);
     expect(result).toBeUndefined();
+  });
+  test("getByApplicationId: should throw error if DynamoDB fails", async () => {
+    ddbMock.on(GetCommand).rejects(new Error("DynamoDB failure"));
+    await expect(SputumDetailsDbOps.getByApplicationId(applicationId)).rejects.toThrow(
+      "DynamoDB failure",
+    );
   });
 });
