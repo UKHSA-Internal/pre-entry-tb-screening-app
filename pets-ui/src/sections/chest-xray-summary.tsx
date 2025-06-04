@@ -11,6 +11,7 @@ import { selectApplicant } from "@/redux/applicantSlice";
 import { selectApplication } from "@/redux/applicationSlice";
 import { selectChestXray, setChestXrayStatus } from "@/redux/chestXraySlice";
 import { useAppSelector } from "@/redux/hooks";
+import { setSputumStatus } from "@/redux/sputumSlice";
 import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
 import { spreadArrayIfNotEmpty } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
@@ -52,6 +53,9 @@ const ChestXraySummary = () => {
         });
       }
 
+      if (chestXrayData.isSputumRequired == YesOrNo.NO) {
+        dispatch(setSputumStatus(ApplicationStatus.NOT_REQUIRED));
+      }
       dispatch(setChestXrayStatus(ApplicationStatus.COMPLETE));
       navigate("/chest-xray-confirmation");
     } catch (error) {
