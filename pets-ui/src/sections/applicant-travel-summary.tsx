@@ -97,7 +97,8 @@ const TravelReview = () => {
       {isLoading && <Spinner />}
       <Summary status={travelData.status} summaryElements={summaryData} />
 
-      {travelData.status == ApplicationStatus.INCOMPLETE && (
+      {(travelData.status == ApplicationStatus.NOT_YET_STARTED ||
+        travelData.status == ApplicationStatus.IN_PROGRESS) && (
         <Button
           id="confirm"
           type={ButtonType.DEFAULT}
@@ -105,7 +106,8 @@ const TravelReview = () => {
           handleClick={handleSubmit}
         />
       )}
-      {travelData.status == ApplicationStatus.COMPLETE && (
+      {(travelData.status == ApplicationStatus.COMPLETE ||
+        travelData.status == ApplicationStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
           type={ButtonType.DEFAULT}

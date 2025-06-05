@@ -5,7 +5,7 @@ import { ReceivedChestXrayDetailsType, ReduxChestXrayDetailsType } from "@/appli
 import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "@/utils/enums";
 
 const initialState: ReduxChestXrayDetailsType = {
-  status: ApplicationStatus.INCOMPLETE,
+  status: ApplicationStatus.NOT_YET_STARTED,
   chestXrayTaken: YesOrNo.NULL,
   posteroAnteriorXrayFileName: "",
   posteroAnteriorXrayFile: "",
@@ -116,7 +116,7 @@ export const chestXraySlice = createSlice({
       state.xrayWasNotTakenFurtherDetails = "";
     },
     clearChestXrayDetails: (state) => {
-      state.status = ApplicationStatus.INCOMPLETE;
+      state.status = ApplicationStatus.NOT_YET_STARTED;
       state.chestXrayTaken = YesOrNo.NULL;
       state.posteroAnteriorXrayFileName = "";
       state.apicalLordoticXrayFileName = "";
@@ -137,7 +137,7 @@ export const chestXraySlice = createSlice({
       state.status =
         action.payload.status == BackendApplicationStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.INCOMPLETE;
+          : ApplicationStatus.NOT_YET_STARTED;
       state.chestXrayTaken = action.payload.chestXrayTaken;
       state.posteroAnteriorXrayFileName = action.payload.posteroAnteriorXrayFileName;
       state.posteroAnteriorXrayFile = action.payload.posteroAnteriorXray;

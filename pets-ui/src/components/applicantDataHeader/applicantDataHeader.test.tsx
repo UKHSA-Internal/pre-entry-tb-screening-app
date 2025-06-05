@@ -7,7 +7,7 @@ import { renderWithProviders } from "@/utils/test-utils";
 import ApplicantDataHeader from "./applicantDataHeader";
 
 const applicantData = {
-  status: ApplicationStatus.INCOMPLETE,
+  status: ApplicationStatus.NOT_YET_STARTED,
   fullName: "full name",
   sex: "male",
   dateOfBirth: {

@@ -53,7 +53,7 @@ describe("ApplicantTravelForm", () => {
       applicantUkAddress1: "Edinburgh Castle, Castlehill",
       applicantUkAddress2: "",
       postcode: "EH1 2NG",
-      status: "Incomplete",
+      status: "Not yet started",
       townOrCity: "Edinburgh",
       ukEmail: "sigmund.sigmundson@asgard.gov",
       ukMobileNumber: "07321900900",

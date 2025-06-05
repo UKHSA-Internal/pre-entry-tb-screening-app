@@ -45,7 +45,7 @@ describe("ApplicantReview", () => {
   test("state is displayed correctly & user is navigated to confirmation page when both api calls are successful", async () => {
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.INCOMPLETE,
+        status: ApplicationStatus.NOT_YET_STARTED,
         fullName: "Sigmund Sigmundson",
         sex: "Male",
         dateOfBirth: {

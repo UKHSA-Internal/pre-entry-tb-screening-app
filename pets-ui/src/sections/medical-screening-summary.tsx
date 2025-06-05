@@ -152,7 +152,8 @@ const MedicalScreeningReview = () => {
 
       <Summary status={medicalData.status} summaryElements={summaryData} />
 
-      {medicalData.status == ApplicationStatus.INCOMPLETE && (
+      {(medicalData.status == ApplicationStatus.NOT_YET_STARTED ||
+        medicalData.status == ApplicationStatus.IN_PROGRESS) && (
         <Button
           id="confirm"
           type={ButtonType.DEFAULT}
@@ -160,7 +161,8 @@ const MedicalScreeningReview = () => {
           handleClick={handleSubmit}
         />
       )}
-      {medicalData.status == ApplicationStatus.COMPLETE && (
+      {(medicalData.status == ApplicationStatus.COMPLETE ||
+        medicalData.status == ApplicationStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
           type={ButtonType.DEFAULT}

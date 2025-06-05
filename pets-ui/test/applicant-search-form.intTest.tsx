@@ -65,14 +65,14 @@ const emptyApplicantSlice = {
   applicantPhotoFileName: "",
   provinceOrState: "",
   sex: "",
-  status: "Incomplete",
+  status: "Not yet started",
   townOrCity: "",
 };
 const emptyTravelSlice = {
   applicantUkAddress1: "",
   applicantUkAddress2: "",
   postcode: "",
-  status: "Incomplete",
+  status: "Not yet started",
   townOrCity: "",
   ukEmail: "",
   ukMobileNumber: "",
@@ -88,14 +88,14 @@ const emptyMedicalSlice = {
   pregnant: "",
   previousTb: "",
   previousTbDetail: "",
-  status: "Incomplete",
+  status: "Not yet started",
   tbSymptoms: "",
   tbSymptomsList: [],
   underElevenConditions: [],
   underElevenConditionsDetail: "",
 };
 const emptyChestXraySlice = {
-  status: ApplicationStatus.INCOMPLETE,
+  status: ApplicationStatus.NOT_YET_STARTED,
   chestXrayTaken: YesOrNo.NULL,
   posteroAnteriorXrayFileName: "",
   posteroAnteriorXrayFile: "",
@@ -155,12 +155,12 @@ describe("ApplicantSearchForm", () => {
         status: "completed",
         fullName: "Maxwell Spiffington",
         sex: "Male",
-        dateOfBirth: "01-01-1991",
+        dateOfBirth: "1991-01-01",
         countryOfNationality: "AUS",
         passportNumber: "12345",
         countryOfIssue: "AUS",
-        issueDate: "02-02-1992",
-        expiryDate: "03-03-2053",
+        issueDate: "1992-02-02",
+        expiryDate: "2053-03-03",
         applicantHomeAddress1: "1 Ayres Rock Way",
         townOrCity: "Sydney",
         provinceOrState: "New South Wales",
@@ -213,6 +213,13 @@ describe("ApplicantSearchForm", () => {
         xrayAssociatedMinorFindings: [],
         xrayActiveTbFindings: [],
       },
+      tbCertificate: {
+        status: "completed",
+        isIssued: "Yes",
+        comments: "Comments",
+        issueDate: "2025-01-01",
+        certificateNumber: "XYZ789",
+      },
     });
 
     await user.type(screen.getByTestId("passport-number"), "12345");
@@ -238,20 +245,20 @@ describe("ApplicantSearchForm", () => {
       countryOfIssue: "AUS",
       countryOfNationality: "AUS",
       dateOfBirth: {
-        day: "1991",
+        day: "01",
         month: "01",
-        year: "01",
+        year: "1991",
       },
       fullName: "Maxwell Spiffington",
       passportExpiryDate: {
-        day: "2053",
+        day: "03",
         month: "03",
-        year: "03",
+        year: "2053",
       },
       passportIssueDate: {
-        day: "1992",
+        day: "02",
         month: "02",
-        year: "02",
+        year: "1992",
       },
       passportNumber: "12345",
       postcode: "",
@@ -303,6 +310,17 @@ describe("ApplicantSearchForm", () => {
       xrayMinorFindings: [],
       xrayAssociatedMinorFindings: [],
       xrayActiveTbFindings: [],
+    });
+    expect(store.getState().tbCertificate).toEqual({
+      status: ApplicationStatus.COMPLETE,
+      isIssued: YesOrNo.YES,
+      comments: "Comments",
+      certificateDate: {
+        day: "01",
+        month: "01",
+        year: "2025",
+      },
+      certificateNumber: "XYZ789",
     });
     expect(mockFetch).toHaveBeenCalledWith("http://localhost:4566/photos/photo.jpg");
     expect(store.getState().applicant.applicantPhotoFileName).toBe("photo.jpg");

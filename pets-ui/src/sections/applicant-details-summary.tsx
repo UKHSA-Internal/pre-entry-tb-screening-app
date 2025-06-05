@@ -179,7 +179,8 @@ const ApplicantReview = () => {
       {isLoading && <Spinner />}
       <Summary status={applicantData.status} summaryElements={summaryData} />
 
-      {applicantData.status == ApplicationStatus.INCOMPLETE && (
+      {(applicantData.status == ApplicationStatus.NOT_YET_STARTED ||
+        applicantData.status == ApplicationStatus.IN_PROGRESS) && (
         <Button
           id="confirm"
           type={ButtonType.DEFAULT}
@@ -187,7 +188,8 @@ const ApplicantReview = () => {
           handleClick={handleSubmit}
         />
       )}
-      {applicantData.status == ApplicationStatus.COMPLETE && (
+      {(applicantData.status == ApplicationStatus.COMPLETE ||
+        applicantData.status == ApplicationStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
           type={ButtonType.DEFAULT}
