@@ -214,7 +214,7 @@ describe("ApplicantSearchForm", () => {
         xrayActiveTbFindings: [],
       },
       tbCertificate: {
-        status: "completed",
+        status: "Complete",
         isIssued: "Yes",
         comments: "Comments",
         issueDate: "2025-01-01",
