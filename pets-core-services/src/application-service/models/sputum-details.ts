@@ -169,10 +169,8 @@ const buildUpdateExpressionsForSputumDetails = (
   const expressionAttributeNames: Record<string, string> = {};
   const expressionAttributeValues: Record<string, any> = {
     ":dateUpdated": new Date().toISOString(),
-    ":dateCreated": new Date().toISOString(),
     ":newVersion": currentVersion + 1,
   };
-
   let updateExpressions: string[] = [];
 
   if (isFirstInsert) {
@@ -191,22 +189,25 @@ const buildUpdateExpressionsForSputumDetails = (
 
   updateExpressions.push("version = :newVersion");
   updateExpressions.push("dateUpdated = :dateUpdated");
-  updateExpressions.push("dateCreated = :dateCreated");
+  if (isFirstInsert) {
+    expressionAttributeValues[":createdBy"] = details.createdBy;
+    updateExpressions.push("createdBy = :createdBy");
+    expressionAttributeValues[":dateCreated"] = new Date().toISOString();
+    updateExpressions.push("dateCreated = :dateCreated");
+  }
   updateExpressions.push("#status = :status");
   expressionAttributeNames["#status"] = "status";
 
-  if (completionCheckSuccess) {
-    expressionAttributeValues[":status"] = TaskStatus.completed;
-  } else {
-    expressionAttributeValues[":status"] = TaskStatus.incompleted;
-  }
+  expressionAttributeValues[":status"] = completionCheckSuccess
+    ? TaskStatus.completed
+    : TaskStatus.incompleted;
 
   const conditionExpression = isFirstInsert
     ? "attribute_not_exists(version)"
     : "version = :expectedVersion";
 
   if (!isFirstInsert) {
-    expressionAttributeValues[":expectedVersion"] = currentVersion;
+    expressionAttributeValues[":expectedVersion"] = details?.version;
   }
 
   const updateCommandInput: {
