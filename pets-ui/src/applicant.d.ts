@@ -206,50 +206,32 @@ type ReduxSputumCultureResultType = {
   cultureResult: PositiveOrNegative;
 };
 
+type ReduxSputumSampleType = {
+  collection: ReduxSputumCollectionType;
+  smearResults: ReduxSputumSmearResultType;
+  cultureResults: ReduxSputumCultureResultType;
+  lastUpdatedDate: DateType;
+};
+
 type ReduxSputumType = {
   status: ApplicationStatus;
-  sample1: {
-    collection: ReduxSputumCollectionType;
-    smearResults: ReduxSputumSmearResultType;
-    cultureResults: ReduxSputumCultureResultType;
-    lastUpdatedDate: DateType;
-  };
-  sample2: {
-    collection: ReduxSputumCollectionType;
-    smearResults: ReduxSputumSmearResultType;
-    cultureResults: ReduxSputumCultureResultType;
-    lastUpdatedDate: DateType;
-  };
-  sample3: {
-    collection: ReduxSputumCollectionType;
-    smearResults: ReduxSputumSmearResultType;
-    cultureResults: ReduxSputumCultureResultType;
-    lastUpdatedDate: DateType;
-  };
+  sample1: ReduxSputumSampleType;
+  sample2: ReduxSputumSampleType;
+  sample3: ReduxSputumSampleType;
+};
+
+type PostedSputumSampleType = {
+  dateOfSample: string;
+  collectionMethod: string;
+  smearResult?: PositiveOrNegative;
+  cultureResult?: PositiveOrNegative;
+  dateUpdated: string;
 };
 
 type PostedSputumType = {
-  sample1?: {
-    dateOfSample: string;
-    collectionMethod: string;
-    smearResult?: PositiveOrNegative;
-    cultureResult?: PositiveOrNegative;
-    dateUpdated: string;
-  };
-  sample2?: {
-    dateOfSample: string;
-    collectionMethod: string;
-    smearResult?: PositiveOrNegative;
-    cultureResult?: PositiveOrNegative;
-    dateUpdated: string;
-  };
-  sample3?: {
-    dateOfSample: string;
-    collectionMethod: string;
-    smearResult?: PositiveOrNegative;
-    cultureResult?: PositiveOrNegative;
-    dateUpdated: string;
-  };
+  sample1?: PostedSputumSampleType;
+  sample2?: PostedSputumSampleType;
+  sample3?: PostedSputumSampleType;
 };
 
 type ReceivedSputumType = PostedSputumType & ReceivedApplicationAttributesType;

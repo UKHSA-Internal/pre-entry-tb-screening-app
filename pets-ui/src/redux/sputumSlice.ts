@@ -3,9 +3,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import {
   DateType,
+  PostedSputumSampleType,
   ReceivedSputumType,
   ReduxSputumCollectionType,
   ReduxSputumCultureResultType,
+  ReduxSputumSampleType,
   ReduxSputumSmearResultType,
   ReduxSputumType,
 } from "@/applicant";
@@ -86,6 +88,12 @@ const initialState: ReduxSputumType = {
     },
   },
 };
+
+// const setCollectionDetails: (state, action: PayloadAction<ReceivedSputumType>, sample: "sample1" | "sample2" | "sample3") => {
+//         if (action.payload[sample]) {
+//           return 0
+//         }
+//       };
 
 export const sputumSlice = createSlice({
   name: "sputumDetails",
@@ -240,135 +248,73 @@ export const sputumSlice = createSlice({
           ? ApplicationStatus.COMPLETE
           : ApplicationStatus.IN_PROGRESS;
 
-      if (action.payload.sample1) {
-        state.sample1.collection.dateOfSample = {
-          year: action.payload.sample1.dateOfSample.split("-")[0],
-          month: action.payload.sample1.dateOfSample.split("-")[1],
-          day: action.payload.sample1.dateOfSample.split("-")[2],
-        };
-        state.sample1.collection.collectionMethod = action.payload.sample1.collectionMethod;
-      } else {
-        state.sample1.collection.dateOfSample = {
-          year: "",
-          month: "",
-          day: "",
-        };
-        state.sample1.collection.collectionMethod = "";
-      }
-      if (action.payload.sample2) {
-        state.sample2.collection.dateOfSample = {
-          year: action.payload.sample2.dateOfSample.split("-")[0],
-          month: action.payload.sample2.dateOfSample.split("-")[1],
-          day: action.payload.sample2.dateOfSample.split("-")[2],
-        };
-        state.sample2.collection.collectionMethod = action.payload.sample2.collectionMethod;
-      } else {
-        state.sample2.collection.dateOfSample = {
-          year: "",
-          month: "",
-          day: "",
-        };
-        state.sample2.collection.collectionMethod = "";
-      }
-      if (action.payload.sample3) {
-        state.sample3.collection.dateOfSample = {
-          year: action.payload.sample3.dateOfSample.split("-")[0],
-          month: action.payload.sample3.dateOfSample.split("-")[1],
-          day: action.payload.sample3.dateOfSample.split("-")[2],
-        };
-        state.sample3.collection.collectionMethod = action.payload.sample3.collectionMethod;
-      } else {
-        state.sample3.collection.dateOfSample = {
-          year: "",
-          month: "",
-          day: "",
-        };
-        state.sample3.collection.collectionMethod = "";
-      }
+      const setCollectionDetails = (
+        sampleData: PostedSputumSampleType | undefined,
+        target: ReduxSputumSampleType,
+      ) => {
+        if (sampleData) {
+          const [year, month, day] = sampleData.dateOfSample.split("-");
+          target.collection.dateOfSample = { year, month, day };
+          target.collection.collectionMethod = sampleData.collectionMethod;
+        } else {
+          target.collection.dateOfSample = { year: "", month: "", day: "" };
+          target.collection.collectionMethod = "";
+        }
+      };
 
-      if (action.payload.sample1?.smearResult) {
-        state.sample1.smearResults.smearResult = action.payload.sample1.smearResult;
-        state.sample1.smearResults.submittedToDatabase = true;
-      } else {
-        state.sample1.smearResults.smearResult = PositiveOrNegative.NOT_YET_ENTERED;
-        state.sample1.smearResults.submittedToDatabase = false;
-      }
-      if (action.payload.sample2?.smearResult) {
-        state.sample2.smearResults.smearResult = action.payload.sample2.smearResult;
-        state.sample2.smearResults.submittedToDatabase = true;
-      } else {
-        state.sample2.smearResults.smearResult = PositiveOrNegative.NOT_YET_ENTERED;
-        state.sample2.smearResults.submittedToDatabase = false;
-      }
-      if (action.payload.sample3?.smearResult) {
-        state.sample3.smearResults.smearResult = action.payload.sample3.smearResult;
-        state.sample3.smearResults.submittedToDatabase = true;
-      } else {
-        state.sample3.smearResults.smearResult = PositiveOrNegative.NOT_YET_ENTERED;
-        state.sample3.smearResults.submittedToDatabase = false;
-      }
+      setCollectionDetails(action.payload.sample1, state.sample1);
+      setCollectionDetails(action.payload.sample2, state.sample2);
+      setCollectionDetails(action.payload.sample3, state.sample3);
 
-      if (action.payload.sample1?.cultureResult) {
-        state.sample1.cultureResults.cultureResult = action.payload.sample1.cultureResult;
-        state.sample1.cultureResults.submittedToDatabase = true;
-      } else {
-        state.sample1.cultureResults.cultureResult = PositiveOrNegative.NOT_YET_ENTERED;
-        state.sample1.cultureResults.submittedToDatabase = false;
-      }
-      if (action.payload.sample2?.cultureResult) {
-        state.sample2.cultureResults.cultureResult = action.payload.sample2.cultureResult;
-        state.sample2.cultureResults.submittedToDatabase = true;
-      } else {
-        state.sample2.cultureResults.cultureResult = PositiveOrNegative.NOT_YET_ENTERED;
-        state.sample2.cultureResults.submittedToDatabase = false;
-      }
-      if (action.payload.sample3?.cultureResult) {
-        state.sample3.cultureResults.cultureResult = action.payload.sample3.cultureResult;
-        state.sample3.cultureResults.submittedToDatabase = true;
-      } else {
-        state.sample3.cultureResults.cultureResult = PositiveOrNegative.NOT_YET_ENTERED;
-        state.sample3.cultureResults.submittedToDatabase = false;
-      }
+      const setSmearResults = (
+        smearResult: PositiveOrNegative | undefined,
+        target: ReduxSputumSampleType,
+      ) => {
+        if (smearResult) {
+          target.smearResults.smearResult = smearResult;
+          target.smearResults.submittedToDatabase = true;
+        } else {
+          target.smearResults.smearResult = PositiveOrNegative.NOT_YET_ENTERED;
+          target.smearResults.submittedToDatabase = false;
+        }
+      };
 
-      if (action.payload.sample1) {
-        state.sample1.lastUpdatedDate = {
-          year: action.payload.sample1.dateUpdated.split("-")[0],
-          month: action.payload.sample1.dateUpdated.split("-")[1],
-          day: action.payload.sample1.dateUpdated.split("-")[2],
-        };
-      } else {
-        state.sample1.lastUpdatedDate = {
-          year: "",
-          month: "",
-          day: "",
-        };
-      }
-      if (action.payload.sample2) {
-        state.sample2.lastUpdatedDate = {
-          year: action.payload.sample2.dateUpdated.split("-")[0],
-          month: action.payload.sample2.dateUpdated.split("-")[1],
-          day: action.payload.sample2.dateUpdated.split("-")[2],
-        };
-      } else {
-        state.sample2.lastUpdatedDate = {
-          year: "",
-          month: "",
-          day: "",
-        };
-      }
-      if (action.payload.sample3) {
-        state.sample3.lastUpdatedDate = {
-          year: action.payload.sample3.dateUpdated.split("-")[0],
-          month: action.payload.sample3.dateUpdated.split("-")[1],
-          day: action.payload.sample3.dateUpdated.split("-")[2],
-        };
-      } else {
-        state.sample3.lastUpdatedDate = {
-          year: "",
-          month: "",
-          day: "",
-        };
-      }
+      setSmearResults(action.payload.sample1?.smearResult, state.sample1);
+      setSmearResults(action.payload.sample2?.smearResult, state.sample2);
+      setSmearResults(action.payload.sample3?.smearResult, state.sample3);
+
+      const setCultureResults = (
+        cultureResult: PositiveOrNegative | undefined,
+        target: ReduxSputumSampleType,
+      ) => {
+        if (cultureResult) {
+          target.cultureResults.cultureResult = cultureResult;
+          target.cultureResults.submittedToDatabase = true;
+        } else {
+          target.cultureResults.cultureResult = PositiveOrNegative.NOT_YET_ENTERED;
+          target.cultureResults.submittedToDatabase = false;
+        }
+      };
+
+      setCultureResults(action.payload.sample1?.cultureResult, state.sample1);
+      setCultureResults(action.payload.sample2?.cultureResult, state.sample2);
+      setCultureResults(action.payload.sample3?.cultureResult, state.sample3);
+
+      const setLastUpdatedDate = (
+        sampleData: { dateUpdated: string } | undefined,
+        target: ReduxSputumSampleType,
+      ) => {
+        if (sampleData) {
+          const [year, month, day] = sampleData.dateUpdated.split("-");
+          target.lastUpdatedDate = { year, month, day };
+        } else {
+          target.lastUpdatedDate = { year: "", month: "", day: "" };
+        }
+      };
+
+      setLastUpdatedDate(action.payload.sample1, state.sample1);
+      setLastUpdatedDate(action.payload.sample2, state.sample2);
+      setLastUpdatedDate(action.payload.sample3, state.sample3);
     },
   },
 });
