@@ -29,6 +29,7 @@ export class ImageHelper {
         Key: object.Key,
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
       const presignedUrl: string = await getSignedUrl(s3Client, getCommand, {
         expiresIn: EXPIRY_TIME,
       });
