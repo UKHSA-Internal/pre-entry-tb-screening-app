@@ -344,8 +344,6 @@ export const SputumResponseSchema = SputumRequestSchema.extend({
   }),
 });
 
-export type SputumSampleUpdateInput = z.infer<typeof SputumRequestSchema>;
-
 export const ApplicationSchema = z.object({
   applicationId: z.string().openapi({
     description: "application id",

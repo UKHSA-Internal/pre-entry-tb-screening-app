@@ -12,7 +12,7 @@ import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { TaskStatus } from "../../shared/types/enum";
 import { context, mockAPIGwEvent } from "../../test/mocks/events";
 import { APPLICANT_PHOTOS_FOLDER } from "../helpers/upload";
-import { SputumDetails, SputumDetailsDbOps } from "../models/sputum-details";
+import { SputumDetailsDbOps } from "../models/sputum-details";
 import {
   ChestXRayResult,
   ImageType,
@@ -392,11 +392,9 @@ describe("Test for Application Lambda", () => {
   describe("Sputum Details", () => {
     test("Saving Sputum Details successfully", async () => {
       // Arrange
-      const sputumDetails = new SputumDetails({
-        applicationId: "test-clinic-id-3",
-        status: TaskStatus.incompleted,
-        dateCreated: new Date(),
-        createdBy: "John Doe",
+      const dateCreated = new Date();
+      const dateUpdated = new Date();
+      const newSputumDetails = {
         sputumSamples: {
           sample1: {
             dateOfSample: new Date(),
@@ -405,14 +403,33 @@ describe("Test for Application Lambda", () => {
           },
         },
         version: 0,
+      };
+
+      const sputumDetails = {
+        ...newSputumDetails,
+        applicationId: seededApplications[0].applicationId,
+        dateCreated: dateCreated,
+        dateUpdated: dateUpdated,
+
+        status: TaskStatus.incompleted,
+        createdBy: "John Doe",
+      };
+
+      vi.spyOn(SputumDetailsDbOps, "createOrUpdateSputumDetails").mockResolvedValueOnce({
+        toJson: () => ({
+          ...sputumDetails,
+          dateCreated: dateCreated.toISOString(),
+          dateUpdated: dateUpdated.toISOString(),
+        }),
+        ...sputumDetails,
       });
-      vi.spyOn(SputumDetailsDbOps, "createOrUpdateSputumDetails").mockResolvedValue(sputumDetails);
+
       const event: PetsAPIGatewayProxyEvent = {
         ...mockAPIGwEvent,
         resource: "/application/{applicationId}/sputum-details",
         path: `/application/${seededApplications[3].applicationId}/sputum-details`,
         httpMethod: "PUT",
-        body: JSON.stringify(sputumDetails),
+        body: JSON.stringify(newSputumDetails),
       };
 
       // Act
@@ -424,10 +441,7 @@ describe("Test for Application Lambda", () => {
 
     test("Sputum Details already saved error", async () => {
       // Arrange
-      const sputumDetails = new SputumDetails({
-        applicationId: "test-clinic-id-3",
-        status: TaskStatus.incompleted,
-        dateCreated: new Date(),
+      const sputumDetails = {
         createdBy: "John Doe",
         sputumSamples: {
           sample1: {
@@ -437,7 +451,7 @@ describe("Test for Application Lambda", () => {
           },
         },
         version: 1,
-      });
+      };
       vi.spyOn(SputumDetailsDbOps, "createOrUpdateSputumDetails").mockRejectedValue(
         new ConditionalCheckFailedException(
           new ConditionalCheckFailedException({
@@ -463,10 +477,7 @@ describe("Test for Application Lambda", () => {
 
     test("Error saving Sputum Details", async () => {
       // Arrange
-      const sputumDetails = new SputumDetails({
-        applicationId: "test-clinic-id-3",
-        status: TaskStatus.incompleted,
-        dateCreated: new Date(),
+      const sputumDetails = {
         createdBy: "John Doe",
         sputumSamples: {
           sample1: {
@@ -476,7 +487,7 @@ describe("Test for Application Lambda", () => {
           },
         },
         version: 1,
-      });
+      };
       vi.spyOn(SputumDetailsDbOps, "createOrUpdateSputumDetails").mockRejectedValue(
         new Error("SP Error"),
       );

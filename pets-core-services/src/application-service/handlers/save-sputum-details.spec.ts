@@ -21,17 +21,24 @@ describe("Test for Saving Sputum Details into DB", () => {
   test("Saving a new Sputum Details successfully", async () => {
     // Arrange
     const dateCreated = new Date();
+    const dateUpdated = new Date();
+
     const sputumDetails = {
       ...newSputumDetails,
       applicationId: seededApplications[0].applicationId,
       dateCreated: dateCreated,
+      dateUpdated: dateUpdated,
       status: TaskStatus.incompleted,
       createdBy: "John Doe",
       version: 0,
     };
 
     vi.spyOn(SputumDetailsDbOps, "createOrUpdateSputumDetails").mockResolvedValueOnce({
-      toJson: () => ({ ...sputumDetails, dateCreated: dateCreated.toISOString() }),
+      toJson: () => ({
+        ...sputumDetails,
+        dateCreated: dateCreated.toISOString(),
+        dateUpdated: dateUpdated.toISOString(),
+      }),
       ...sputumDetails,
     });
 
