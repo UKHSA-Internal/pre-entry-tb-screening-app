@@ -40,8 +40,8 @@ vi.mock("../../shared/models/applicant", () => ({
   },
 }));
 
-vi.spyOn(ImageHelper, "fetchImageAsBase64").mockResolvedValue(
-  seededApplicantPhoto[1].applicantPhoto,
+vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue(
+  seededApplicantPhoto[1].applicantPhotoUrl,
 );
 
 // Set env variable
@@ -78,7 +78,7 @@ describe("Getting Application Handler", () => {
     expect(JSON.parse(response.body)).toEqual({
       applicationId: seededApplications[1].applicationId,
       // Defined in pets-core-services/src/application-service/fixtures/applicant-photo.ts
-      applicantPhoto: seededApplicantPhoto[1].applicantPhoto,
+      applicantPhotoUrl: seededApplicantPhoto[1].applicantPhotoUrl,
       // Defined in pets-core-services/src/application-service/fixtures/travel-information.ts
       travelInformation: {
         applicationId: seededApplications[1].applicationId,

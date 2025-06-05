@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
+import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { selectApplicant } from "@/redux/applicantSlice";
 import { selectChestXray } from "@/redux/chestXraySlice";
 import { useAppSelector } from "@/redux/hooks";
@@ -59,10 +60,38 @@ const ProgressTracker = () => {
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const chestXrayData = useAppSelector(selectChestXray);
   const tbCertificateData = useAppSelector(selectTbCertificate);
+  const applicantPhotoContext = useApplicantPhoto();
 
   return (
     <div>
-      <ApplicantDataHeader applicantData={applicantData} />
+      <div style={{ display: "flex", alignItems: "flex-start", marginBottom: "20px" }}>
+        <div style={{ flexGrow: 1 }}>
+          <ApplicantDataHeader applicantData={applicantData} />
+        </div>
+        {applicantPhotoContext?.applicantPhotoFile && (
+          <div
+            style={{
+              marginLeft: "20px",
+              border: "1px solid #b1b4b6",
+              display: "flex",
+              alignItems: "stretch",
+            }}
+          >
+            <img
+              src={URL.createObjectURL(applicantPhotoContext.applicantPhotoFile)}
+              alt={"Applicant"}
+              title={applicantData.applicantPhotoFileName ?? undefined}
+              style={{
+                display: "block",
+                height: "100%",
+                maxHeight: "150px",
+                width: "auto",
+                objectFit: "cover",
+              }}
+            />
+          </div>
+        )}
+      </div>
 
       <p className="govuk-body">Complete all sections.</p>
 

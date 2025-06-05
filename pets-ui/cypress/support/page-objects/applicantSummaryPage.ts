@@ -45,6 +45,7 @@ export class ApplicantSummaryPage {
     "Province or state"?: string;
     Country?: string;
     Postcode?: string;
+    "Applicant Photo"?: string;
   }): void {
     Object.entries(expectedValues).forEach(([key, value]) => {
       if (value !== undefined) {
@@ -98,6 +99,7 @@ export class ApplicantSummaryPage {
       "Province or state": "#province-or-state",
       Country: "#address-country",
       Postcode: "#postcode",
+      "Applicant Photo": "#/applicant-photo",
     };
 
     Object.entries(expectedFragments).forEach(([key, fragment]) => {
