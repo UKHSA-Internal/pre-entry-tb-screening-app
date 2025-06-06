@@ -172,6 +172,7 @@ export const buildUpdateExpressionsForSputumDetails = (
     ":newVersion": currentVersion + 1,
   };
   let updateExpressions: string[] = [];
+  mergedSamples = cleanDeep(mergedSamples, { emptyStrings: false });
 
   if (isFirstInsert) {
     updateExpressions.push("sputumSamples = :samples");
