@@ -7,6 +7,7 @@ import {
   ReceivedSputumType,
   ReduxSputumCollectionType,
   ReduxSputumCultureResultType,
+  ReduxSputumSampleKeys,
   ReduxSputumSampleType,
   ReduxSputumSmearResultType,
   ReduxSputumType,
@@ -142,10 +143,6 @@ export const sputumSlice = createSlice({
         target.submittedToDatabase = source?.submittedToDatabase ?? false;
       };
 
-      setCollectionDetails(action.payload.sample1?.collection, state.sample1.collection);
-      setCollectionDetails(action.payload.sample2?.collection, state.sample2.collection);
-      setCollectionDetails(action.payload.sample3?.collection, state.sample3.collection);
-
       const setSmearResults = (
         smearResult: ReduxSputumSmearResultType | undefined,
         target: ReduxSputumSmearResultType,
@@ -158,10 +155,6 @@ export const sputumSlice = createSlice({
           target.smearResult = PositiveOrNegative.NOT_YET_ENTERED;
         }
       };
-
-      setSmearResults(action.payload.sample1?.smearResults, state.sample1.smearResults);
-      setSmearResults(action.payload.sample2?.smearResults, state.sample2.smearResults);
-      setSmearResults(action.payload.sample3?.smearResults, state.sample3.smearResults);
 
       const setCultureResults = (
         cultureResult: ReduxSputumCultureResultType | undefined,
@@ -176,25 +169,16 @@ export const sputumSlice = createSlice({
         }
       };
 
-      setCultureResults(action.payload.sample1?.cultureResults, state.sample1.cultureResults);
-      setCultureResults(action.payload.sample2?.cultureResults, state.sample2.cultureResults);
-      setCultureResults(action.payload.sample3?.cultureResults, state.sample3.cultureResults);
-
-      state.sample1.lastUpdatedDate = action.payload.sample1.lastUpdatedDate ?? {
-        year: "",
-        month: "",
-        day: "",
-      };
-      state.sample2.lastUpdatedDate = action.payload.sample2.lastUpdatedDate ?? {
-        year: "",
-        month: "",
-        day: "",
-      };
-      state.sample3.lastUpdatedDate = action.payload.sample3.lastUpdatedDate ?? {
-        year: "",
-        month: "",
-        day: "",
-      };
+      for (const sample of Object.keys(state) as ReduxSputumSampleKeys[]) {
+        setCollectionDetails(action.payload[sample]?.collection, state[sample].collection);
+        setSmearResults(action.payload[sample]?.smearResults, state[sample].smearResults);
+        setCultureResults(action.payload[sample]?.cultureResults, state[sample].cultureResults);
+        state[sample].lastUpdatedDate = action.payload[sample]?.lastUpdatedDate ?? {
+          year: "",
+          month: "",
+          day: "",
+        };
+      }
     },
     clearSputumDetails: () => {
       JSON.parse(JSON.stringify(initialState));
@@ -219,10 +203,6 @@ export const sputumSlice = createSlice({
         }
       };
 
-      setCollectionDetails(action.payload.sample1, state.sample1);
-      setCollectionDetails(action.payload.sample2, state.sample2);
-      setCollectionDetails(action.payload.sample3, state.sample3);
-
       const setSmearResults = (
         smearResult: PositiveOrNegative | undefined,
         target: ReduxSputumSampleType,
@@ -235,10 +215,6 @@ export const sputumSlice = createSlice({
           target.smearResults.submittedToDatabase = false;
         }
       };
-
-      setSmearResults(action.payload.sample1?.smearResult, state.sample1);
-      setSmearResults(action.payload.sample2?.smearResult, state.sample2);
-      setSmearResults(action.payload.sample3?.smearResult, state.sample3);
 
       const setCultureResults = (
         cultureResult: PositiveOrNegative | undefined,
@@ -253,10 +229,6 @@ export const sputumSlice = createSlice({
         }
       };
 
-      setCultureResults(action.payload.sample1?.cultureResult, state.sample1);
-      setCultureResults(action.payload.sample2?.cultureResult, state.sample2);
-      setCultureResults(action.payload.sample3?.cultureResult, state.sample3);
-
       const setLastUpdatedDate = (
         sampleData: { dateUpdated: string } | undefined,
         target: ReduxSputumSampleType,
@@ -269,9 +241,12 @@ export const sputumSlice = createSlice({
         }
       };
 
-      setLastUpdatedDate(action.payload.sample1, state.sample1);
-      setLastUpdatedDate(action.payload.sample2, state.sample2);
-      setLastUpdatedDate(action.payload.sample3, state.sample3);
+      for (const sample of Object.keys(state) as ReduxSputumSampleKeys[]) {
+        setCollectionDetails(action.payload[sample], state[sample]);
+        setSmearResults(action.payload[sample]?.smearResult, state[sample]);
+        setCultureResults(action.payload[sample]?.cultureResult, state[sample]);
+        setLastUpdatedDate(action.payload[sample], state[sample]);
+      }
     },
   },
 });

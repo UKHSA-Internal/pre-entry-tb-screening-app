@@ -220,6 +220,8 @@ type ReduxSputumType = {
   sample3: ReduxSputumSampleType;
 };
 
+type ReduxSputumSampleKeys = Exclude<keyof ReduxSputumType, "status">;
+
 type PostedSputumSampleType = {
   dateOfSample: string;
   collectionMethod: string;
