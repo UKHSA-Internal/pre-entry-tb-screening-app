@@ -154,7 +154,7 @@ const buildSputumUpdateExpressions = (
   return { updateExpressions, names, values };
 };
 
-const buildUpdateExpressionsForSputumDetails = (
+export const buildUpdateExpressionsForSputumDetails = (
   details: Omit<ISputumDetails, "dateCreated" | "dateUpdated" | "status">,
   mergedSamples: SputumSamples,
   isFirstInsert: boolean,
@@ -181,7 +181,7 @@ const buildUpdateExpressionsForSputumDetails = (
       updateExpressions: sputumExpr,
       names,
       values,
-    } = buildSputumUpdateExpressions(details.sputumSamples || {});
+    } = buildSputumUpdateExpressions(mergedSamples || {});
     updateExpressions = sputumExpr;
     Object.assign(expressionAttributeNames, names);
     Object.assign(expressionAttributeValues, values);

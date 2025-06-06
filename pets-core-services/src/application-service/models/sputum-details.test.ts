@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import awsClients from "../../shared/clients/aws";
 import { TaskStatus } from "../../shared/types/enum";
 import { PositiveOrNegative, SputumCollectionMethod } from "../types/enums";
-import { SputumDetailsDbOps } from "./sputum-details";
+import { buildUpdateExpressionsForSputumDetails, SputumDetailsDbOps } from "./sputum-details";
 
 const ddbMock = mockClient(awsClients.dynamoDBDocClient);
 
@@ -87,6 +87,7 @@ describe("Tests for SputumDetails model", () => {
       TableName: "test-application-details",
     });
   });
+
   test("createOrUpdateSputumDetails: should update sputum sample details", async () => {
     ddbMock.on(GetCommand).resolves({ Item: existingItem });
     ddbMock.on(UpdateCommand).resolves({
@@ -142,6 +143,64 @@ describe("Tests for SputumDetails model", () => {
     expect(call?.firstArg.input).toMatchObject({
       Key: { pk, sk },
       TableName: "test-application-details",
+    });
+  });
+
+  test("buildUpdateExpressionsForSputumDetails: should update existing sputum sample all details", () => {
+    const newSputumSamples = {
+      applicationId: "1234",
+      createdBy: "John",
+      sputumSamples: {
+        sample1: {
+          dateOfSample: new Date("2025-03-11T00:00:00.000Z"),
+          collectionMethod: SputumCollectionMethod.COUGHED_UP,
+          smearResult: PositiveOrNegative.POSITIVE,
+          dateUpdated: new Date("2025-03-12T00:00:00.000Z"),
+        },
+      },
+    };
+
+    const mergedSamples = {
+      sample1: {
+        dateOfSample: new Date("2025-03-11T00:00:00.000Z"),
+        collectionMethod: SputumCollectionMethod.COUGHED_UP,
+        cultureResult: PositiveOrNegative.NEGATIVE,
+        smearResult: PositiveOrNegative.POSITIVE,
+        dateUpdated: new Date("2025-03-12T00:00:00.000Z"),
+      },
+      sample2: undefined,
+      sample3: undefined,
+    };
+
+    const updated = buildUpdateExpressionsForSputumDetails(
+      newSputumSamples,
+      mergedSamples,
+      false,
+      false,
+      3,
+    );
+
+    expect(updated).toMatchObject({
+      ConditionExpression: "version = :expectedVersion",
+      ExpressionAttributeNames: {
+        "#s_sample1": "sample1",
+        "#status": "status",
+      },
+      ExpressionAttributeValues: {
+        ":dateUpdated": "2025-03-10T00:00:00.000Z",
+        ":expectedVersion": undefined,
+        ":newVersion": 4,
+        ":status": "incompleted",
+        ":v_sample1": {
+          collectionMethod: "Coughed up",
+          dateOfSample: new Date("2025-03-11T00:00:00.000Z"),
+          dateUpdated: new Date("2025-03-12T00:00:00.000Z"),
+          cultureResult: "Negative",
+          smearResult: "Positive",
+        },
+      },
+      UpdateExpression:
+        "SET sputumSamples.#s_sample1 = :v_sample1, version = :newVersion, dateUpdated = :dateUpdated, #status = :status",
     });
   });
 
@@ -245,6 +304,7 @@ describe("Tests for SputumDetails model", () => {
       TableName: "test-application-details",
     });
   });
+
   test("createOrUpdateSputumDetails: should throw error if DynamoDB update fails", async () => {
     ddbMock.on(GetCommand).resolves({ Item: existingItem });
     ddbMock.on(UpdateCommand).resolves({});
@@ -329,6 +389,7 @@ describe("Tests for SputumDetails model", () => {
       "Missing required fields in sputum sample: dateOfSample, collectionMethod, or dateUpdated",
     );
   });
+
   test("getByApplicationId: should retrieve sputum details by applicationId", async () => {
     ddbMock.on(GetCommand).resolves({ Item: existingItem });
 
@@ -355,6 +416,7 @@ describe("Tests for SputumDetails model", () => {
     const result = await SputumDetailsDbOps.getByApplicationId(applicationId);
     expect(result).toBeUndefined();
   });
+
   test("getByApplicationId: should throw error if DynamoDB fails", async () => {
     ddbMock.on(GetCommand).rejects(new Error("DynamoDB failure"));
     await expect(SputumDetailsDbOps.getByApplicationId(applicationId)).rejects.toThrow(
