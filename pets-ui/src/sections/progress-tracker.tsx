@@ -8,6 +8,7 @@ import { selectApplicant } from "@/redux/applicantSlice";
 import { selectChestXray } from "@/redux/chestXraySlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectMedicalScreening } from "@/redux/medicalScreeningSlice";
+import { selectSputum } from "@/redux/sputumSlice";
 import { selectTbCertificate } from "@/redux/tbCertificateSlice";
 import { selectTravel } from "@/redux/travelSlice";
 import { ApplicationStatus, ButtonType } from "@/utils/enums";
@@ -77,6 +78,7 @@ const ProgressTracker = () => {
   const travelData = useAppSelector(selectTravel);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const chestXrayData = useAppSelector(selectChestXray);
+  const sputumData = useAppSelector(selectSputum);
   const tbCertificateData = useAppSelector(selectTbCertificate);
   const applicantPhotoContext = useApplicantPhoto();
 
@@ -137,6 +139,12 @@ const ProgressTracker = () => {
           status={chestXrayData.status}
           linkWhenIncomplete="/chest-xray-question"
           linkWhenComplete="/chest-xray-summary"
+        />
+        <Task
+          description="Sputum collection and results"
+          status={sputumData.status}
+          linkWhenIncomplete="/sputum-collection"
+          linkWhenComplete="/sputum-summary"
         />
         <Task
           description="TB certificate declaration"

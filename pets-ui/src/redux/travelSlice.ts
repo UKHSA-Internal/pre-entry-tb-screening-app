@@ -45,12 +45,12 @@ export const travelSlice = createSlice({
     },
     setTravelDetails: (state, action: PayloadAction<ReduxTravelDetailsType>) => {
       state.visaType = action.payload.visaType;
-      state.applicantUkAddress1 = action.payload.applicantUkAddress1;
+      state.applicantUkAddress1 = action.payload.applicantUkAddress1 ?? "";
       state.applicantUkAddress2 = action.payload.applicantUkAddress2 ?? "";
-      state.townOrCity = action.payload.townOrCity;
-      state.postcode = action.payload.postcode;
+      state.townOrCity = action.payload.townOrCity ?? "";
+      state.postcode = action.payload.postcode ?? "";
       state.ukMobileNumber = action.payload.ukMobileNumber ?? "";
-      state.ukEmail = action.payload.ukEmail;
+      state.ukEmail = action.payload.ukEmail ?? "";
     },
     clearTravelDetails: (state) => {
       state.status = ApplicationStatus.NOT_YET_STARTED;
@@ -66,15 +66,15 @@ export const travelSlice = createSlice({
       state.status =
         action.payload.status == BackendApplicationStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.NOT_YET_STARTED;
+          : ApplicationStatus.IN_PROGRESS;
       state.visaType = action.payload.visaCategory;
-      state.applicantUkAddress1 = action.payload.ukAddressLine1;
+      state.applicantUkAddress1 = action.payload.ukAddressLine1 ?? "";
       state.applicantUkAddress2 = action.payload.ukAddressLine2 ?? "";
-      state.applicantUkAddress3 = action.payload.ukAddressLine3;
-      state.townOrCity = action.payload.ukAddressTownOrCity;
-      state.postcode = action.payload.ukAddressPostcode;
+      state.applicantUkAddress3 = action.payload.ukAddressLine3 ?? "";
+      state.townOrCity = action.payload.ukAddressTownOrCity ?? "";
+      state.postcode = action.payload.ukAddressPostcode ?? "";
       state.ukMobileNumber = action.payload.ukMobileNumber ?? "";
-      state.ukEmail = action.payload.ukEmailAddress;
+      state.ukEmail = action.payload.ukEmailAddress ?? "";
     },
   },
 });

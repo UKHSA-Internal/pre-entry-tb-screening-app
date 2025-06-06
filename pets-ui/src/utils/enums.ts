@@ -17,14 +17,28 @@ export enum ApplicationStatus {
 }
 
 export enum BackendApplicationStatus {
-  INCOMPLETE = "incompleted",
-  COMPLETE = "completed",
+  NOT_YET_STARTED = "Not yet started",
+  COMPLETE = "Complete",
+  IN_PROGRESS = "In progress",
 }
 
 export enum YesOrNo {
   YES = "Yes",
   NO = "No",
   NULL = "",
+}
+
+export enum PositiveOrNegative {
+  POSITIVE = "Positive",
+  NEGATIVE = "Negative",
+  NOT_YET_ENTERED = "Not yet entered",
+}
+
+export enum SputumCollectionMethod {
+  COUGHED_UP = "Coughed up",
+  INDUCED = "Induced",
+  GASTRIC_LAVAGE = "Gastric lavage",
+  NOT_KNOWN = "Not known",
 }
 
 export enum ImageType {

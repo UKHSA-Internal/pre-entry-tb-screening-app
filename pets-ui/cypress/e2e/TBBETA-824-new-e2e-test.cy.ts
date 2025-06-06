@@ -432,6 +432,7 @@ describe("PETS Application End-to-End Tests", () => {
       "Travel information": "Completed",
       "Medical history and TB symptoms": "Completed",
       "Radiological outcome": "Completed",
+      "Sputum collection and results": "Not yet started",
       "TB certificate declaration": "Completed",
     });
   });
