@@ -156,7 +156,7 @@ export class ChestXRayDbOps {
       const updatedDetails = {
         ...details,
         dateCreated: new Date(),
-        status: TaskStatus.COMPLETE,
+        status: TaskStatus.completed,
       };
 
       const chestXray =
