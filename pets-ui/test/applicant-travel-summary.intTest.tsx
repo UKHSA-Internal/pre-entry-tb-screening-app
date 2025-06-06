@@ -22,7 +22,7 @@ const travelState = {
   applicantUkAddress1: "Edinburgh Castle, Castlehill",
   applicantUkAddress2: "",
   postcode: "EH1 2NG",
-  status: ApplicationStatus.INCOMPLETE,
+  status: ApplicationStatus.NOT_YET_STARTED,
   townOrCity: "Edinburgh",
   ukEmail: "sigmund.sigmundson@asgard.gov",
   ukMobileNumber: "07321900900",

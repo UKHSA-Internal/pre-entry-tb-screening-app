@@ -40,8 +40,8 @@ vi.mock("../../shared/models/applicant", () => ({
   },
 }));
 
-vi.spyOn(ImageHelper, "fetchImageAsBase64").mockResolvedValue(
-  seededApplicantPhoto[1].applicantPhoto,
+vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue(
+  seededApplicantPhoto[1].applicantPhotoUrl,
 );
 
 // Set env variable
@@ -78,11 +78,11 @@ describe("Getting Application Handler", () => {
     expect(JSON.parse(response.body)).toEqual({
       applicationId: seededApplications[1].applicationId,
       // Defined in pets-core-services/src/application-service/fixtures/applicant-photo.ts
-      applicantPhoto: seededApplicantPhoto[1].applicantPhoto,
+      applicantPhotoUrl: seededApplicantPhoto[1].applicantPhotoUrl,
       // Defined in pets-core-services/src/application-service/fixtures/travel-information.ts
       travelInformation: {
         applicationId: seededApplications[1].applicationId,
-        status: "completed",
+        status: "Complete",
         dateCreated: expect.any(String),
         ukAddressLine1: "182 Willow Crescent",
         ukAddressLine2: "Northfield",
@@ -108,7 +108,7 @@ describe("Getting Application Handler", () => {
         physicalExaminationNotes: "NA",
         applicationId: seededApplications[1].applicationId,
         dateCreated: expect.any(String),
-        status: "completed",
+        status: "Complete",
       },
       chestXray: {
         chestXrayTaken: "Yes",
@@ -127,7 +127,7 @@ describe("Getting Application Handler", () => {
         xrayMinorFindings: [],
         applicationId: seededApplications[1].applicationId,
         dateCreated: expect.any(String),
-        status: "completed",
+        status: "Complete",
         isSputumRequired: YesOrNo.No,
       },
       // Defined in pets-core-services\src\application-service\fixtures\tb-certificate.ts
@@ -138,7 +138,7 @@ describe("Getting Application Handler", () => {
         isIssued: "Yes",
         certificateNumber: "987000",
         dateCreated: expect.any(String),
-        status: "completed",
+        status: "Complete",
       },
     });
   });

@@ -5,7 +5,7 @@ import { ReceivedMedicalScreeningType, ReduxMedicalScreeningType } from "@/appli
 import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
 
 const initialState: ReduxMedicalScreeningType = {
-  status: ApplicationStatus.INCOMPLETE,
+  status: ApplicationStatus.NOT_YET_STARTED,
   age: "",
   tbSymptoms: "",
   tbSymptomsList: [],
@@ -87,7 +87,7 @@ export const medicalScreeningSlice = createSlice({
       state.physicalExamNotes = action.payload.physicalExamNotes;
     },
     clearMedicalScreeningDetails: (state) => {
-      state.status = ApplicationStatus.INCOMPLETE;
+      state.status = ApplicationStatus.NOT_YET_STARTED;
       state.age = "";
       state.tbSymptoms = "";
       state.tbSymptomsList = [];
@@ -109,7 +109,7 @@ export const medicalScreeningSlice = createSlice({
       state.status =
         action.payload.status == BackendApplicationStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.INCOMPLETE;
+          : ApplicationStatus.IN_PROGRESS;
       state.age = action.payload.age.toString();
       state.tbSymptoms = action.payload.symptomsOfTb;
       state.tbSymptomsList = action.payload.symptoms ? [...action.payload.symptoms] : [];

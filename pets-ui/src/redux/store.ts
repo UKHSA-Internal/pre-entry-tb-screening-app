@@ -4,6 +4,7 @@ import { applicantReducer } from "./applicantSlice";
 import { applicationReducer } from "./applicationSlice";
 import { chestXrayReducer } from "./chestXraySlice";
 import { medicalScreeningReducer } from "./medicalScreeningSlice";
+import { sputumReducer } from "./sputumSlice";
 import { tbCertificateReducer } from "./tbCertificateSlice";
 import { travelReducer } from "./travelSlice";
 
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   medicalScreening: medicalScreeningReducer,
   travel: travelReducer,
   chestXray: chestXrayReducer,
+  sputum: sputumReducer,
   tbCertificate: tbCertificateReducer,
 });
 

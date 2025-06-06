@@ -1,4 +1,10 @@
-import { ApplicationStatus, BackendApplicationStatus, ImageType, YesOrNo } from "./utils/enums";
+import {
+  ApplicationStatus,
+  BackendApplicationStatus,
+  ImageType,
+  PositiveOrNegative,
+  YesOrNo,
+} from "./utils/enums";
 
 // Misc types
 type ApplicantSearchFormType = {
@@ -26,6 +32,7 @@ type ApplicationIdAndDateCreatedType = {
 
 type ReceivedApplicationDetailsType = {
   applicationId: string;
+  applicantPhotoUrl?: string;
   travelInformation: ReceivedTravelDetailsType | undefined;
   medicalScreening: ReceivedMedicalScreeningType | undefined;
   chestXray: ReceivedChestXrayDetailsType | undefined;
@@ -181,6 +188,55 @@ type PostedChestXrayNotTakenType = {
 
 type ReceivedChestXrayNotTakenType = PostedChestXrayNotTakenType &
   ReceivedApplicationAttributesType;
+
+// Sputum types
+type ReduxSputumCollectionType = {
+  submittedToDatabase: boolean;
+  dateOfSample: DateType;
+  collectionMethod: string;
+};
+
+type ReduxSputumSmearResultType = {
+  submittedToDatabase: boolean;
+  smearResult: PositiveOrNegative;
+};
+
+type ReduxSputumCultureResultType = {
+  submittedToDatabase: boolean;
+  cultureResult: PositiveOrNegative;
+};
+
+type ReduxSputumSampleType = {
+  collection: ReduxSputumCollectionType;
+  smearResults: ReduxSputumSmearResultType;
+  cultureResults: ReduxSputumCultureResultType;
+  lastUpdatedDate: DateType;
+};
+
+type ReduxSputumType = {
+  status: ApplicationStatus;
+  sample1: ReduxSputumSampleType;
+  sample2: ReduxSputumSampleType;
+  sample3: ReduxSputumSampleType;
+};
+
+type ReduxSputumSampleKeys = Exclude<keyof ReduxSputumType, "status">;
+
+type PostedSputumSampleType = {
+  dateOfSample: string;
+  collectionMethod: string;
+  smearResult?: PositiveOrNegative;
+  cultureResult?: PositiveOrNegative;
+  dateUpdated: string;
+};
+
+type PostedSputumType = {
+  sample1?: PostedSputumSampleType;
+  sample2?: PostedSputumSampleType;
+  sample3?: PostedSputumSampleType;
+};
+
+type ReceivedSputumType = PostedSputumType & ReceivedApplicationAttributesType;
 
 // TB Declaration certificate types
 type ReduxTbCertificateType = {

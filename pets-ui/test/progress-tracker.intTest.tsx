@@ -1,14 +1,33 @@
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
+import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
+import { ApplicantPhotoProvider, useApplicantPhoto } from "@/context/applicantPhotoContext";
 import ProgressTrackerPage from "@/pages/progress-tracker";
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
+
+let originalCreateObjectURL: typeof URL.createObjectURL;
+
+beforeAll(() => {
+  originalCreateObjectURL = global.URL.createObjectURL?.bind(global.URL);
+  global.URL.createObjectURL = vi.fn(() => "blob:http://localhost/test-photo.jpg");
+});
+afterAll(() => {
+  global.URL.createObjectURL = originalCreateObjectURL;
+});
+vi.mock("@/context/applicantPhotoContext", async () => {
+  const actual = await import("@/context/applicantPhotoContext");
+  return {
+    ...actual,
+  };
+});
+
 vi.mock(`react-router-dom`, async (): Promise<unknown> => {
   const actual: Record<string, unknown> = await vi.importActual(`react-router-dom`);
   return {
@@ -91,7 +110,7 @@ const tbCertSlice = {
 
 const incompleteState = {
   applicant: {
-    status: ApplicationStatus.INCOMPLETE,
+    status: ApplicationStatus.NOT_YET_STARTED,
     fullName: "Reginald Backwaters",
     sex: "",
     dateOfBirth: {
@@ -120,10 +139,10 @@ const incompleteState = {
     country: "",
     postcode: "",
   },
-  travel: { status: ApplicationStatus.INCOMPLETE, ...travelSlice },
-  medicalScreening: { status: ApplicationStatus.INCOMPLETE, ...medicalScreeningSlice },
-  chestXray: { status: ApplicationStatus.INCOMPLETE, ...chestXraySlice },
-  tbCertificate: { status: ApplicationStatus.INCOMPLETE, ...tbCertSlice },
+  travel: { status: ApplicationStatus.NOT_YET_STARTED, ...travelSlice },
+  medicalScreening: { status: ApplicationStatus.NOT_YET_STARTED, ...medicalScreeningSlice },
+  chestXray: { status: ApplicationStatus.NOT_YET_STARTED, ...chestXraySlice },
+  tbCertificate: { status: ApplicationStatus.NOT_YET_STARTED, ...tbCertSlice },
 };
 
 const completeState = {
@@ -166,7 +185,9 @@ const completeState = {
 test("Progress tracker page displays incomplete application sections correctly & links to applicant details form", async () => {
   renderWithProviders(
     <Router>
-      <ProgressTrackerPage />
+      <ApplicantPhotoProvider>
+        <ProgressTrackerPage />
+      </ApplicantPhotoProvider>
     </Router>,
     { preloadedState: incompleteState },
   );
@@ -188,7 +209,7 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(applicantDetailsListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
-  expect(within(applicantDetailsListItem as HTMLElement).getByText("Incomplete"));
+  expect(within(applicantDetailsListItem as HTMLElement).getByText("Not yet started"));
 
   const travelDetailsLink = screen.getByRole("link", { name: /Travel information/i });
   expect(travelDetailsLink).toHaveAttribute("href", "/travel-details");
@@ -196,7 +217,7 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(travelDetailsListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
-  expect(within(travelDetailsListItem as HTMLElement).getByText("Incomplete"));
+  expect(within(travelDetailsListItem as HTMLElement).getByText("Not yet started"));
 
   const medicalScreeningLink = screen.getByRole("link", {
     name: /Medical history and TB symptoms/i,
@@ -206,13 +227,13 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(medicalScreeningListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
-  expect(within(medicalScreeningListItem as HTMLElement).getByText("Incomplete"));
+  expect(within(medicalScreeningListItem as HTMLElement).getByText("Not yet started"));
 
   const chestXrayLink = screen.getByRole("link", { name: /Radiological outcome/i });
   expect(chestXrayLink).toHaveAttribute("href", "/chest-xray-question");
   const chestXrayListItem = chestXrayLink.closest("li");
   expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
-  expect(within(chestXrayListItem as HTMLElement).getByText("Incomplete"));
+  expect(within(chestXrayListItem as HTMLElement).getByText("Not yet started"));
 
   const tbCertificateLink = screen.getByRole("link", { name: /TB certificate declaration/i });
   expect(tbCertificateLink).toHaveAttribute("href", "/tb-certificate-declaration");
@@ -220,16 +241,29 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(tbCertificateListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
-  expect(within(tbCertificateListItem as HTMLElement).getByText("Incomplete"));
+  expect(within(tbCertificateListItem as HTMLElement).getByText("Not yet started"));
 
   await user.click(screen.getByRole("button"));
   expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-search");
 });
 
-test("Progress tracker page displays complete application sections correctly & links to summary page", async () => {
+test("Progress tracker page displays complete application sections correctly, links to summary page, and displays applicant photo from context", async () => {
+  const mockPhoto = new File(["dummy"], "test-photo.jpg", { type: "image/jpeg" });
+  const SetPhoto: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { setApplicantPhotoFile } = useApplicantPhoto();
+    React.useEffect(() => {
+      setApplicantPhotoFile(mockPhoto);
+    }, [setApplicantPhotoFile]);
+    return <>{children}</>;
+  };
+
   renderWithProviders(
     <Router>
-      <ProgressTrackerPage />
+      <ApplicantPhotoProvider>
+        <SetPhoto>
+          <ProgressTrackerPage />
+        </SetPhoto>
+      </ApplicantPhotoProvider>
     </Router>,
     { preloadedState: completeState },
   );
@@ -284,6 +318,8 @@ test("Progress tracker page displays complete application sections correctly & l
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
   expect(within(tbCertificateListItem as HTMLElement).getByText("Completed"));
+  const img = await screen.findByAltText(/applicant/i);
+  expect(img).toBeInTheDocument();
 
   await user.click(screen.getByRole("button"));
   expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-search");

@@ -5,7 +5,7 @@ import { DateType, ReceivedTbCertificateType, ReduxTbCertificateType } from "@/a
 import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "@/utils/enums";
 
 const initialState: ReduxTbCertificateType = {
-  status: ApplicationStatus.INCOMPLETE,
+  status: ApplicationStatus.NOT_YET_STARTED,
   isIssued: YesOrNo.NULL,
   comments: "",
   certificateDate: {
@@ -36,7 +36,7 @@ export const tbCertificateSlice = createSlice({
       state.certificateNumber = action.payload;
     },
     clearTbCertificateDetails: (state) => {
-      state.status = ApplicationStatus.INCOMPLETE;
+      state.status = ApplicationStatus.NOT_YET_STARTED;
       state.isIssued = YesOrNo.NULL;
       state.comments = "";
       state.certificateDate = { year: "", month: "", day: "" };
@@ -46,14 +46,20 @@ export const tbCertificateSlice = createSlice({
       state.status =
         action.payload.status == BackendApplicationStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.INCOMPLETE;
+          : ApplicationStatus.IN_PROGRESS;
       state.isIssued = action.payload.isIssued;
-      state.comments = action.payload.comments;
-      state.certificateDate = {
-        year: action.payload.issueDate.split("-")[0],
-        month: action.payload.issueDate.split("-")[1],
-        day: action.payload.issueDate.split("-")[2],
-      };
+      state.comments = action.payload.comments ?? "";
+      state.certificateDate = action.payload.issueDate
+        ? {
+            year: action.payload.issueDate.split("-")[0],
+            month: action.payload.issueDate.split("-")[1],
+            day: action.payload.issueDate.split("-")[2],
+          }
+        : {
+            year: "",
+            month: "",
+            day: "",
+          };
       state.certificateNumber = action.payload.certificateNumber;
     },
   },

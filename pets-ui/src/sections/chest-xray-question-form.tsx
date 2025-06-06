@@ -13,10 +13,11 @@ import {
   clearChestXrayNotTakenDetails,
   clearChestXrayTakenDetails,
   selectChestXray,
+  setChestXrayStatus,
   setChestXrayTaken,
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
 
 const ChestXrayQuestionForm = () => {
   const dispatch = useAppDispatch();
@@ -33,6 +34,7 @@ const ChestXrayQuestionForm = () => {
 
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = (data) => {
     dispatch(setChestXrayTaken(data.chestXrayTaken));
+    dispatch(setChestXrayStatus(ApplicationStatus.IN_PROGRESS));
 
     if (data.chestXrayTaken === YesOrNo.YES) {
       dispatch(clearChestXrayNotTakenDetails());

@@ -40,7 +40,9 @@ describe("ApplicantPhoto.getByApplicationId", () => {
     mockedApplicant.getByApplicationId.mockResolvedValue(mockApplicant);
     mockedGenerateImageObjectkey.mockReturnValue(objectKey);
 
-    const spy = vi.spyOn(ImageHelper, "fetchImageAsBase64").mockResolvedValue("base64-image");
+    const spy = vi
+      .spyOn(ImageHelper, "getPresignedUrlforImage")
+      .mockResolvedValue("https://signed.url");
 
     const result = await ApplicantPhoto.getByApplicationId(applicationId, clinicId);
 
@@ -53,7 +55,7 @@ describe("ApplicantPhoto.getByApplicationId", () => {
       applicationId,
     });
     expect(spy).toHaveBeenCalledWith("IMAGE_BUCKET", objectKey);
-    expect(result).toBe("base64-image");
+    expect(result).toBe("https://signed.url");
   });
 
   it("returns undefined if applicant not found", async () => {
@@ -66,17 +68,17 @@ describe("ApplicantPhoto.getByApplicationId", () => {
     mockedApplicant.getByApplicationId.mockResolvedValue(mockApplicant);
     mockedGenerateImageObjectkey.mockReturnValue(objectKey);
 
-    vi.spyOn(ImageHelper, "fetchImageAsBase64").mockResolvedValue(null);
+    vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue(null);
 
     const result = await ApplicantPhoto.getByApplicationId(applicationId, clinicId);
     expect(result).toBeUndefined();
   });
 
-  it("throws if fetchImageAsBase64 fails", async () => {
+  it("throws if getPresignedUrlforImage fails", async () => {
     mockedApplicant.getByApplicationId.mockResolvedValue(mockApplicant);
     mockedGenerateImageObjectkey.mockReturnValue(objectKey);
 
-    vi.spyOn(ImageHelper, "fetchImageAsBase64").mockRejectedValue(new Error("S3 error"));
+    vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockRejectedValue(new Error("S3 error"));
 
     await expect(ApplicantPhoto.getByApplicationId(applicationId, clinicId)).rejects.toThrow(
       "S3 error",
@@ -88,10 +90,10 @@ describe("ApplicantPhoto.getByApplicationId", () => {
 class TestPhoto extends IApplicantPhoto {}
 
 describe("IApplicantPhoto constructor", () => {
-  it("should assign applicantPhoto from details object", () => {
-    const mockPhoto = "base64encodedimage";
-    const testInstance = new TestPhoto({ applicantPhoto: mockPhoto });
+  it("should assign applicantPhoto url  from details object", () => {
+    const mockPhotoUrl = "https://signedurl.com";
+    const testInstance = new TestPhoto({ applicantPhotoUrl: mockPhotoUrl });
 
-    expect(testInstance.applicantPhoto).toBe(mockPhoto);
+    expect(testInstance.applicantPhotoUrl).toBe(mockPhotoUrl);
   });
 });
