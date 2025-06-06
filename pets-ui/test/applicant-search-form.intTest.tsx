@@ -155,12 +155,12 @@ describe("ApplicantSearchForm", () => {
         status: "Complete",
         fullName: "Maxwell Spiffington",
         sex: "Male",
-        dateOfBirth: "01-01-1991",
+        dateOfBirth: "1991-01-01",
         countryOfNationality: "AUS",
         passportNumber: "12345",
         countryOfIssue: "AUS",
-        issueDate: "02-02-1992",
-        expiryDate: "03-03-2053",
+        issueDate: "1992-02-02",
+        expiryDate: "2053-03-03",
         applicantHomeAddress1: "1 Ayres Rock Way",
         townOrCity: "Sydney",
         provinceOrState: "New South Wales",
@@ -213,6 +213,13 @@ describe("ApplicantSearchForm", () => {
         xrayAssociatedMinorFindings: [],
         xrayActiveTbFindings: [],
       },
+      tbCertificate: {
+        status: "Complete",
+        isIssued: "Yes",
+        comments: "Comments",
+        issueDate: "2025-01-01",
+        certificateNumber: "XYZ789",
+      },
     });
 
     await user.type(screen.getByTestId("passport-number"), "12345");
@@ -238,20 +245,20 @@ describe("ApplicantSearchForm", () => {
       countryOfIssue: "AUS",
       countryOfNationality: "AUS",
       dateOfBirth: {
-        day: "1991",
+        day: "01",
         month: "01",
-        year: "01",
+        year: "1991",
       },
       fullName: "Maxwell Spiffington",
       passportExpiryDate: {
-        day: "2053",
+        day: "03",
         month: "03",
-        year: "03",
+        year: "2053",
       },
       passportIssueDate: {
-        day: "1992",
+        day: "02",
         month: "02",
-        year: "02",
+        year: "1992",
       },
       passportNumber: "12345",
       postcode: "",
@@ -304,6 +311,17 @@ describe("ApplicantSearchForm", () => {
       xrayMinorFindings: [],
       xrayAssociatedMinorFindings: [],
       xrayActiveTbFindings: [],
+    });
+    expect(store.getState().tbCertificate).toEqual({
+      status: ApplicationStatus.COMPLETE,
+      isIssued: YesOrNo.YES,
+      comments: "Comments",
+      certificateDate: {
+        day: "01",
+        month: "01",
+        year: "2025",
+      },
+      certificateNumber: "XYZ789",
     });
     expect(mockFetch).toHaveBeenCalledWith("http://localhost:4566/photos/photo.jpg");
     expect(store.getState().applicant.applicantPhotoFileName).toBe("photo.jpg");
@@ -540,5 +558,69 @@ describe("ApplicantSearchForm", () => {
     expect(store.getState().chestXray).toEqual(emptyChestXraySlice);
 
     expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
+  });
+
+  test("should call console.error when fetching applicant photo fails", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const mockFetch = vi.spyOn(global, "fetch").mockRejectedValue(new Error("Photo fetch failed"));
+
+    const { store } = renderWithProviders(
+      <Router>
+        <ApplicantPhotoProvider>
+          <ApplicantSearchForm />
+        </ApplicantPhotoProvider>
+      </Router>,
+    );
+    const user = userEvent.setup();
+
+    mock.onGet("/applicant/search").reply(200, [
+      {
+        applicationId: "abc-123",
+        status: "completed",
+        fullName: "Maxwell Spiffington",
+        sex: "Male",
+        dateOfBirth: "01-01-1991",
+        countryOfNationality: "AUS",
+        passportNumber: "12345",
+        countryOfIssue: "AUS",
+        issueDate: "02-02-1992",
+        expiryDate: "03-03-2053",
+        applicantHomeAddress1: "1 Ayres Rock Way",
+        townOrCity: "Sydney",
+        provinceOrState: "New South Wales",
+        country: "Australia",
+      },
+    ]);
+
+    mock.onGet("/application/abc-123").reply(200, {
+      applicationId: "abc-123",
+      applicantPhotoUrl: "http://localhost:4566/photos/photo.jpg",
+      travelInformation: {
+        ukAddressLine1: "99 Downing Street",
+        ukAddressPostcode: "W1 1AS",
+        status: "completed",
+        ukAddressTownOrCity: "London",
+        ukEmailAddress: "Maxwell@Spiffington.com",
+        ukMobileNumber: "071234567890",
+        visaCategory: "Family Reunion",
+      },
+    });
+
+    await user.type(screen.getByTestId("passport-number"), "12345");
+    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+
+    await user.click(screen.getByRole("button"));
+    await new Promise((resolve) => process.nextTick(resolve));
+
+    expect(mockFetch).toHaveBeenCalledWith("http://localhost:4566/photos/photo.jpg");
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "Error fetching or processing applicant photo:",
+      expect.any(Error),
+    );
+    expect((consoleErrorSpy.mock.calls[0][1] as Error).message).toBe("Photo fetch failed");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/tracker");
+    expect(store.getState().applicant.applicantPhotoFileName).toBe("");
+    mockFetch.mockRestore();
+    consoleErrorSpy.mockRestore();
   });
 });

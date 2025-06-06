@@ -169,6 +169,12 @@ const ProgressTracker = () => {
           ]}
         />
         <Task
+          description="Sputum collection and results"
+          status={sputumData.status}
+          linkWhenIncomplete="/sputum-collection"
+          linkWhenComplete="/sputum-summary"
+        />
+        <Task
           description="TB certificate declaration"
           status={tbCertificateData.status}
           linkWhenIncomplete="/tb-certificate-declaration"

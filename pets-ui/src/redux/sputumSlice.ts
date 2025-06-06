@@ -3,9 +3,12 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import {
   DateType,
+  PostedSputumSampleType,
   ReceivedSputumType,
   ReduxSputumCollectionType,
   ReduxSputumCultureResultType,
+  ReduxSputumSampleKeys,
+  ReduxSputumSampleType,
   ReduxSputumSmearResultType,
   ReduxSputumType,
 } from "@/applicant";
@@ -131,105 +134,51 @@ export const sputumSlice = createSlice({
       state.sample3.lastUpdatedDate = action.payload;
     },
     setSputumDetails: (state, action: PayloadAction<ReduxSputumType>) => {
-      state.sample1.collection.collectionMethod =
-        action.payload.sample1.collection.collectionMethod ?? "";
-      state.sample1.collection.dateOfSample = action.payload.sample1.collection.dateOfSample ?? {
-        year: "",
-        month: "",
-        day: "",
+      const setCollectionDetails = (
+        source: ReduxSputumCollectionType | undefined,
+        target: ReduxSputumCollectionType,
+      ) => {
+        target.collectionMethod = source?.collectionMethod ?? "";
+        target.dateOfSample = source?.dateOfSample ?? { year: "", month: "", day: "" };
+        target.submittedToDatabase = source?.submittedToDatabase ?? false;
       };
-      state.sample1.collection.submittedToDatabase =
-        action.payload.sample1.collection.submittedToDatabase ?? false;
-      state.sample2.collection.collectionMethod =
-        action.payload.sample2.collection.collectionMethod ?? "";
-      state.sample2.collection.dateOfSample = action.payload.sample2.collection.dateOfSample ?? {
-        year: "",
-        month: "",
-        day: "",
-      };
-      state.sample2.collection.submittedToDatabase =
-        action.payload.sample2.collection.submittedToDatabase ?? false;
-      state.sample3.collection.collectionMethod =
-        action.payload.sample3.collection.collectionMethod ?? "";
-      state.sample3.collection.dateOfSample = action.payload.sample3.collection.dateOfSample ?? {
-        year: "",
-        month: "",
-        day: "",
-      };
-      state.sample3.collection.submittedToDatabase =
-        action.payload.sample3.collection.submittedToDatabase ?? false;
 
-      state.sample1.smearResults = action.payload.sample1.smearResults
-        ? {
-            submittedToDatabase: action.payload.sample1.smearResults.submittedToDatabase,
-            smearResult: action.payload.sample1.smearResults.smearResult,
-          }
-        : {
-            submittedToDatabase: false,
-            smearResult: PositiveOrNegative.NOT_YET_ENTERED,
-          };
-      state.sample2.smearResults = action.payload.sample2.smearResults
-        ? {
-            submittedToDatabase: action.payload.sample2.smearResults.submittedToDatabase,
-            smearResult: action.payload.sample2.smearResults.smearResult,
-          }
-        : {
-            submittedToDatabase: false,
-            smearResult: PositiveOrNegative.NOT_YET_ENTERED,
-          };
-      state.sample3.smearResults = action.payload.sample3.smearResults
-        ? {
-            submittedToDatabase: action.payload.sample3.smearResults.submittedToDatabase,
-            smearResult: action.payload.sample3.smearResults.smearResult,
-          }
-        : {
-            submittedToDatabase: false,
-            smearResult: PositiveOrNegative.NOT_YET_ENTERED,
-          };
+      const setSmearResults = (
+        smearResult: ReduxSputumSmearResultType | undefined,
+        target: ReduxSputumSmearResultType,
+      ) => {
+        if (smearResult) {
+          target.submittedToDatabase = smearResult.submittedToDatabase;
+          target.smearResult = smearResult.smearResult;
+        } else {
+          target.submittedToDatabase = false;
+          target.smearResult = PositiveOrNegative.NOT_YET_ENTERED;
+        }
+      };
 
-      state.sample1.cultureResults = action.payload.sample1.cultureResults
-        ? {
-            submittedToDatabase: action.payload.sample1.cultureResults.submittedToDatabase,
-            cultureResult: action.payload.sample1.cultureResults.cultureResult,
-          }
-        : {
-            submittedToDatabase: false,
-            cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
-          };
-      state.sample2.cultureResults = action.payload.sample2.cultureResults
-        ? {
-            submittedToDatabase: action.payload.sample2.cultureResults.submittedToDatabase,
-            cultureResult: action.payload.sample2.cultureResults.cultureResult,
-          }
-        : {
-            submittedToDatabase: false,
-            cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
-          };
-      state.sample3.cultureResults = action.payload.sample3.cultureResults
-        ? {
-            submittedToDatabase: action.payload.sample3.cultureResults.submittedToDatabase,
-            cultureResult: action.payload.sample3.cultureResults.cultureResult,
-          }
-        : {
-            submittedToDatabase: false,
-            cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
-          };
+      const setCultureResults = (
+        cultureResult: ReduxSputumCultureResultType | undefined,
+        target: ReduxSputumCultureResultType,
+      ) => {
+        if (cultureResult) {
+          target.submittedToDatabase = cultureResult.submittedToDatabase;
+          target.cultureResult = cultureResult.cultureResult;
+        } else {
+          target.submittedToDatabase = false;
+          target.cultureResult = PositiveOrNegative.NOT_YET_ENTERED;
+        }
+      };
 
-      state.sample1.lastUpdatedDate = action.payload.sample1.lastUpdatedDate ?? {
-        year: "",
-        month: "",
-        day: "",
-      };
-      state.sample2.lastUpdatedDate = action.payload.sample2.lastUpdatedDate ?? {
-        year: "",
-        month: "",
-        day: "",
-      };
-      state.sample3.lastUpdatedDate = action.payload.sample3.lastUpdatedDate ?? {
-        year: "",
-        month: "",
-        day: "",
-      };
+      for (const sample of Object.keys(state) as ReduxSputumSampleKeys[]) {
+        setCollectionDetails(action.payload[sample]?.collection, state[sample].collection);
+        setSmearResults(action.payload[sample]?.smearResults, state[sample].smearResults);
+        setCultureResults(action.payload[sample]?.cultureResults, state[sample].cultureResults);
+        state[sample].lastUpdatedDate = action.payload[sample]?.lastUpdatedDate ?? {
+          year: "",
+          month: "",
+          day: "",
+        };
+      }
     },
     clearSputumDetails: () => {
       JSON.parse(JSON.stringify(initialState));
@@ -240,134 +189,63 @@ export const sputumSlice = createSlice({
           ? ApplicationStatus.COMPLETE
           : ApplicationStatus.IN_PROGRESS;
 
-      if (action.payload.sample1) {
-        state.sample1.collection.dateOfSample = {
-          year: action.payload.sample1.dateOfSample.split("-")[0],
-          month: action.payload.sample1.dateOfSample.split("-")[1],
-          day: action.payload.sample1.dateOfSample.split("-")[2],
-        };
-        state.sample1.collection.collectionMethod = action.payload.sample1.collectionMethod;
-      } else {
-        state.sample1.collection.dateOfSample = {
-          year: "",
-          month: "",
-          day: "",
-        };
-        state.sample1.collection.collectionMethod = "";
-      }
-      if (action.payload.sample2) {
-        state.sample2.collection.dateOfSample = {
-          year: action.payload.sample2.dateOfSample.split("-")[0],
-          month: action.payload.sample2.dateOfSample.split("-")[1],
-          day: action.payload.sample2.dateOfSample.split("-")[2],
-        };
-        state.sample2.collection.collectionMethod = action.payload.sample2.collectionMethod;
-      } else {
-        state.sample2.collection.dateOfSample = {
-          year: "",
-          month: "",
-          day: "",
-        };
-        state.sample2.collection.collectionMethod = "";
-      }
-      if (action.payload.sample3) {
-        state.sample3.collection.dateOfSample = {
-          year: action.payload.sample3.dateOfSample.split("-")[0],
-          month: action.payload.sample3.dateOfSample.split("-")[1],
-          day: action.payload.sample3.dateOfSample.split("-")[2],
-        };
-        state.sample3.collection.collectionMethod = action.payload.sample3.collectionMethod;
-      } else {
-        state.sample3.collection.dateOfSample = {
-          year: "",
-          month: "",
-          day: "",
-        };
-        state.sample3.collection.collectionMethod = "";
-      }
+      const setCollectionDetails = (
+        sampleData: PostedSputumSampleType | undefined,
+        target: ReduxSputumSampleType,
+      ) => {
+        if (sampleData) {
+          const [year, month, day] = sampleData.dateOfSample.split("-");
+          target.collection.dateOfSample = { year, month, day };
+          target.collection.collectionMethod = sampleData.collectionMethod;
+        } else {
+          target.collection.dateOfSample = { year: "", month: "", day: "" };
+          target.collection.collectionMethod = "";
+        }
+      };
 
-      if (action.payload.sample1?.smearResult) {
-        state.sample1.smearResults.smearResult = action.payload.sample1.smearResult;
-        state.sample1.smearResults.submittedToDatabase = true;
-      } else {
-        state.sample1.smearResults.smearResult = PositiveOrNegative.NOT_YET_ENTERED;
-        state.sample1.smearResults.submittedToDatabase = false;
-      }
-      if (action.payload.sample2?.smearResult) {
-        state.sample2.smearResults.smearResult = action.payload.sample2.smearResult;
-        state.sample2.smearResults.submittedToDatabase = true;
-      } else {
-        state.sample2.smearResults.smearResult = PositiveOrNegative.NOT_YET_ENTERED;
-        state.sample2.smearResults.submittedToDatabase = false;
-      }
-      if (action.payload.sample3?.smearResult) {
-        state.sample3.smearResults.smearResult = action.payload.sample3.smearResult;
-        state.sample3.smearResults.submittedToDatabase = true;
-      } else {
-        state.sample3.smearResults.smearResult = PositiveOrNegative.NOT_YET_ENTERED;
-        state.sample3.smearResults.submittedToDatabase = false;
-      }
+      const setSmearResults = (
+        smearResult: PositiveOrNegative | undefined,
+        target: ReduxSputumSampleType,
+      ) => {
+        if (smearResult) {
+          target.smearResults.smearResult = smearResult;
+          target.smearResults.submittedToDatabase = true;
+        } else {
+          target.smearResults.smearResult = PositiveOrNegative.NOT_YET_ENTERED;
+          target.smearResults.submittedToDatabase = false;
+        }
+      };
 
-      if (action.payload.sample1?.cultureResult) {
-        state.sample1.cultureResults.cultureResult = action.payload.sample1.cultureResult;
-        state.sample1.cultureResults.submittedToDatabase = true;
-      } else {
-        state.sample1.cultureResults.cultureResult = PositiveOrNegative.NOT_YET_ENTERED;
-        state.sample1.cultureResults.submittedToDatabase = false;
-      }
-      if (action.payload.sample2?.cultureResult) {
-        state.sample2.cultureResults.cultureResult = action.payload.sample2.cultureResult;
-        state.sample2.cultureResults.submittedToDatabase = true;
-      } else {
-        state.sample2.cultureResults.cultureResult = PositiveOrNegative.NOT_YET_ENTERED;
-        state.sample2.cultureResults.submittedToDatabase = false;
-      }
-      if (action.payload.sample3?.cultureResult) {
-        state.sample3.cultureResults.cultureResult = action.payload.sample3.cultureResult;
-        state.sample3.cultureResults.submittedToDatabase = true;
-      } else {
-        state.sample3.cultureResults.cultureResult = PositiveOrNegative.NOT_YET_ENTERED;
-        state.sample3.cultureResults.submittedToDatabase = false;
-      }
+      const setCultureResults = (
+        cultureResult: PositiveOrNegative | undefined,
+        target: ReduxSputumSampleType,
+      ) => {
+        if (cultureResult) {
+          target.cultureResults.cultureResult = cultureResult;
+          target.cultureResults.submittedToDatabase = true;
+        } else {
+          target.cultureResults.cultureResult = PositiveOrNegative.NOT_YET_ENTERED;
+          target.cultureResults.submittedToDatabase = false;
+        }
+      };
 
-      if (action.payload.sample1) {
-        state.sample1.lastUpdatedDate = {
-          year: action.payload.sample1.dateUpdated.split("-")[0],
-          month: action.payload.sample1.dateUpdated.split("-")[1],
-          day: action.payload.sample1.dateUpdated.split("-")[2],
-        };
-      } else {
-        state.sample1.lastUpdatedDate = {
-          year: "",
-          month: "",
-          day: "",
-        };
-      }
-      if (action.payload.sample2) {
-        state.sample2.lastUpdatedDate = {
-          year: action.payload.sample2.dateUpdated.split("-")[0],
-          month: action.payload.sample2.dateUpdated.split("-")[1],
-          day: action.payload.sample2.dateUpdated.split("-")[2],
-        };
-      } else {
-        state.sample2.lastUpdatedDate = {
-          year: "",
-          month: "",
-          day: "",
-        };
-      }
-      if (action.payload.sample3) {
-        state.sample3.lastUpdatedDate = {
-          year: action.payload.sample3.dateUpdated.split("-")[0],
-          month: action.payload.sample3.dateUpdated.split("-")[1],
-          day: action.payload.sample3.dateUpdated.split("-")[2],
-        };
-      } else {
-        state.sample3.lastUpdatedDate = {
-          year: "",
-          month: "",
-          day: "",
-        };
+      const setLastUpdatedDate = (
+        sampleData: { dateUpdated: string } | undefined,
+        target: ReduxSputumSampleType,
+      ) => {
+        if (sampleData) {
+          const [year, month, day] = sampleData.dateUpdated.split("-");
+          target.lastUpdatedDate = { year, month, day };
+        } else {
+          target.lastUpdatedDate = { year: "", month: "", day: "" };
+        }
+      };
+
+      for (const sample of Object.keys(state) as ReduxSputumSampleKeys[]) {
+        setCollectionDetails(action.payload[sample], state[sample]);
+        setSmearResults(action.payload[sample]?.smearResult, state[sample]);
+        setCultureResults(action.payload[sample]?.cultureResult, state[sample]);
+        setLastUpdatedDate(action.payload[sample], state[sample]);
       }
     },
   },
