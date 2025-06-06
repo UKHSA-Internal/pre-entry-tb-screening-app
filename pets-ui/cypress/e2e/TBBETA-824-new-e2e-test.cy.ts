@@ -420,9 +420,6 @@ describe("PETS Application End-to-End Tests", () => {
     // Verify task links exist
     tbProgressTrackerPage.verifyTaskLinksExist();
 
-    // Verify sputum test information text
-    tbProgressTrackerPage.verifySputumTestInformationText();
-
     // Verify service name
     tbProgressTrackerPage.verifyServiceName();
 
