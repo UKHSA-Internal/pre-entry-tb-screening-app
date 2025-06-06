@@ -112,7 +112,7 @@ export class Applicant extends IApplicant {
       const updatedDetails: ApplicantConstructorProps = {
         ...details,
         dateCreated: new Date(),
-        status: TaskStatus.COMPLETE,
+        status: TaskStatus.completed,
         issueDate: new Date(details.issueDate),
         expiryDate: new Date(details.expiryDate),
         dateOfBirth: new Date(details.dateOfBirth),

@@ -70,7 +70,7 @@ export class TravelInformation extends ITravelInformation {
       const updatedDetails: ITravelInformation = {
         ...details,
         dateCreated: new Date(),
-        status: TaskStatus.COMPLETE,
+        status: TaskStatus.completed,
       };
 
       const travelInformation = new TravelInformation(updatedDetails);
