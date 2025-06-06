@@ -147,12 +147,12 @@ export const sputumSlice = createSlice({
       setCollectionDetails(action.payload.sample3?.collection, state.sample3.collection);
 
       const setSmearResults = (
-        source: ReduxSputumSmearResultType | undefined,
+        smearResult: ReduxSputumSmearResultType | undefined,
         target: ReduxSputumSmearResultType,
       ) => {
-        if (source) {
-          target.submittedToDatabase = source.submittedToDatabase;
-          target.smearResult = source.smearResult;
+        if (smearResult) {
+          target.submittedToDatabase = smearResult.submittedToDatabase;
+          target.smearResult = smearResult.smearResult;
         } else {
           target.submittedToDatabase = false;
           target.smearResult = PositiveOrNegative.NOT_YET_ENTERED;
@@ -164,12 +164,12 @@ export const sputumSlice = createSlice({
       setSmearResults(action.payload.sample3?.smearResults, state.sample3.smearResults);
 
       const setCultureResults = (
-        source: ReduxSputumCultureResultType | undefined,
+        cultureResult: ReduxSputumCultureResultType | undefined,
         target: ReduxSputumCultureResultType,
       ) => {
-        if (source) {
-          target.submittedToDatabase = source.submittedToDatabase;
-          target.cultureResult = source.cultureResult;
+        if (cultureResult) {
+          target.submittedToDatabase = cultureResult.submittedToDatabase;
+          target.cultureResult = cultureResult.cultureResult;
         } else {
           target.submittedToDatabase = false;
           target.cultureResult = PositiveOrNegative.NOT_YET_ENTERED;
