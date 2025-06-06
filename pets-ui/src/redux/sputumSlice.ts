@@ -133,89 +133,52 @@ export const sputumSlice = createSlice({
       state.sample3.lastUpdatedDate = action.payload;
     },
     setSputumDetails: (state, action: PayloadAction<ReduxSputumType>) => {
-      state.sample1.collection.collectionMethod =
-        action.payload.sample1.collection.collectionMethod ?? "";
-      state.sample1.collection.dateOfSample = action.payload.sample1.collection.dateOfSample ?? {
-        year: "",
-        month: "",
-        day: "",
+      const setCollectionDetails = (
+        source: ReduxSputumCollectionType | undefined,
+        target: ReduxSputumCollectionType,
+      ) => {
+        target.collectionMethod = source?.collectionMethod ?? "";
+        target.dateOfSample = source?.dateOfSample ?? { year: "", month: "", day: "" };
+        target.submittedToDatabase = source?.submittedToDatabase ?? false;
       };
-      state.sample1.collection.submittedToDatabase =
-        action.payload.sample1.collection.submittedToDatabase ?? false;
-      state.sample2.collection.collectionMethod =
-        action.payload.sample2.collection.collectionMethod ?? "";
-      state.sample2.collection.dateOfSample = action.payload.sample2.collection.dateOfSample ?? {
-        year: "",
-        month: "",
-        day: "",
-      };
-      state.sample2.collection.submittedToDatabase =
-        action.payload.sample2.collection.submittedToDatabase ?? false;
-      state.sample3.collection.collectionMethod =
-        action.payload.sample3.collection.collectionMethod ?? "";
-      state.sample3.collection.dateOfSample = action.payload.sample3.collection.dateOfSample ?? {
-        year: "",
-        month: "",
-        day: "",
-      };
-      state.sample3.collection.submittedToDatabase =
-        action.payload.sample3.collection.submittedToDatabase ?? false;
 
-      state.sample1.smearResults = action.payload.sample1.smearResults
-        ? {
-            submittedToDatabase: action.payload.sample1.smearResults.submittedToDatabase,
-            smearResult: action.payload.sample1.smearResults.smearResult,
-          }
-        : {
-            submittedToDatabase: false,
-            smearResult: PositiveOrNegative.NOT_YET_ENTERED,
-          };
-      state.sample2.smearResults = action.payload.sample2.smearResults
-        ? {
-            submittedToDatabase: action.payload.sample2.smearResults.submittedToDatabase,
-            smearResult: action.payload.sample2.smearResults.smearResult,
-          }
-        : {
-            submittedToDatabase: false,
-            smearResult: PositiveOrNegative.NOT_YET_ENTERED,
-          };
-      state.sample3.smearResults = action.payload.sample3.smearResults
-        ? {
-            submittedToDatabase: action.payload.sample3.smearResults.submittedToDatabase,
-            smearResult: action.payload.sample3.smearResults.smearResult,
-          }
-        : {
-            submittedToDatabase: false,
-            smearResult: PositiveOrNegative.NOT_YET_ENTERED,
-          };
+      setCollectionDetails(action.payload.sample1?.collection, state.sample1.collection);
+      setCollectionDetails(action.payload.sample2?.collection, state.sample2.collection);
+      setCollectionDetails(action.payload.sample3?.collection, state.sample3.collection);
 
-      state.sample1.cultureResults = action.payload.sample1.cultureResults
-        ? {
-            submittedToDatabase: action.payload.sample1.cultureResults.submittedToDatabase,
-            cultureResult: action.payload.sample1.cultureResults.cultureResult,
-          }
-        : {
-            submittedToDatabase: false,
-            cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
-          };
-      state.sample2.cultureResults = action.payload.sample2.cultureResults
-        ? {
-            submittedToDatabase: action.payload.sample2.cultureResults.submittedToDatabase,
-            cultureResult: action.payload.sample2.cultureResults.cultureResult,
-          }
-        : {
-            submittedToDatabase: false,
-            cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
-          };
-      state.sample3.cultureResults = action.payload.sample3.cultureResults
-        ? {
-            submittedToDatabase: action.payload.sample3.cultureResults.submittedToDatabase,
-            cultureResult: action.payload.sample3.cultureResults.cultureResult,
-          }
-        : {
-            submittedToDatabase: false,
-            cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
-          };
+      const setSmearResults = (
+        source: ReduxSputumSmearResultType | undefined,
+        target: ReduxSputumSmearResultType,
+      ) => {
+        if (source) {
+          target.submittedToDatabase = source.submittedToDatabase;
+          target.smearResult = source.smearResult;
+        } else {
+          target.submittedToDatabase = false;
+          target.smearResult = PositiveOrNegative.NOT_YET_ENTERED;
+        }
+      };
+
+      setSmearResults(action.payload.sample1?.smearResults, state.sample1.smearResults);
+      setSmearResults(action.payload.sample2?.smearResults, state.sample2.smearResults);
+      setSmearResults(action.payload.sample3?.smearResults, state.sample3.smearResults);
+
+      const setCultureResults = (
+        source: ReduxSputumCultureResultType | undefined,
+        target: ReduxSputumCultureResultType,
+      ) => {
+        if (source) {
+          target.submittedToDatabase = source.submittedToDatabase;
+          target.cultureResult = source.cultureResult;
+        } else {
+          target.submittedToDatabase = false;
+          target.cultureResult = PositiveOrNegative.NOT_YET_ENTERED;
+        }
+      };
+
+      setCultureResults(action.payload.sample1?.cultureResults, state.sample1.cultureResults);
+      setCultureResults(action.payload.sample2?.cultureResults, state.sample2.cultureResults);
+      setCultureResults(action.payload.sample3?.cultureResults, state.sample3.cultureResults);
 
       state.sample1.lastUpdatedDate = action.payload.sample1.lastUpdatedDate ?? {
         year: "",
