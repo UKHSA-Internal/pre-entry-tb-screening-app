@@ -89,12 +89,6 @@ const initialState: ReduxSputumType = {
   },
 };
 
-// const setCollectionDetails: (state, action: PayloadAction<ReceivedSputumType>, sample: "sample1" | "sample2" | "sample3") => {
-//         if (action.payload[sample]) {
-//           return 0
-//         }
-//       };
-
 export const sputumSlice = createSlice({
   name: "sputumDetails",
   initialState,
