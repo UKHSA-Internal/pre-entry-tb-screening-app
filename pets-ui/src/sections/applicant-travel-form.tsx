@@ -9,8 +9,8 @@ import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectTravel, setTravelDetails } from "@/redux/travelSlice";
-import { ButtonType } from "@/utils/enums";
+import { selectTravel, setTravelDetails, setTravelDetailsStatus } from "@/redux/travelSlice";
+import { ApplicationStatus, ButtonType } from "@/utils/enums";
 import { formRegex, visaOptions } from "@/utils/records";
 
 const ApplicantTravelForm = () => {
@@ -27,6 +27,7 @@ const ApplicantTravelForm = () => {
 
   const onSubmit: SubmitHandler<ReduxTravelDetailsType> = (travelData) => {
     dispatch(setTravelDetails(travelData));
+    dispatch(setTravelDetailsStatus(ApplicationStatus.IN_PROGRESS));
     navigate("/travel-summary");
   };
 

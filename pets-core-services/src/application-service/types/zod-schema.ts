@@ -243,8 +243,8 @@ export const ApplicationSchema = z.object({
   applicationId: z.string().openapi({
     description: "application id",
   }),
-  applicantPhoto: z.string().openapi({
-    description: "Base64 Encoded string for Applicant photo",
+  applicantPhotoUrl: z.string().openapi({
+    description: "Presigned Url for applicant Photo",
   }),
   travelInformation: TravelInformationResponseSchema,
   medicalScreening: MedicalScreeningResponseSchema,

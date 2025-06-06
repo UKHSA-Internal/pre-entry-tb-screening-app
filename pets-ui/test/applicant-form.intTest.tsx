@@ -18,7 +18,7 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 
 const preloadedState = {
   applicant: {
-    status: ApplicationStatus.INCOMPLETE,
+    status: ApplicationStatus.NOT_YET_STARTED,
     fullName: "",
     sex: "",
     dateOfBirth: {
@@ -146,7 +146,7 @@ describe("ApplicantForm", () => {
     await user.click(screen.getByRole("button"));
 
     expect(store.getState().applicant).toEqual({
-      status: "Incomplete",
+      status: "In progress",
       fullName: "Sigmund Sigmundson",
       sex: "Male",
       dateOfBirth: { day: "1", month: "1", year: "1901" },

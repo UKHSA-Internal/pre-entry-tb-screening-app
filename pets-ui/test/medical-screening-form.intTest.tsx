@@ -89,7 +89,7 @@ describe("MedicalScreeningForm", () => {
       pregnant: "Don't know",
       previousTb: "Yes",
       previousTbDetail: "Details of previous TB.",
-      status: "Incomplete",
+      status: "In progress",
       tbSymptoms: "Yes",
       tbSymptomsList: ["Cough", "Night sweats"],
       underElevenConditions: ["Not applicable - applicant is aged 11 or over"],

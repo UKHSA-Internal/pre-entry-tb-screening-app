@@ -24,10 +24,12 @@ vi.mock("@/utils/uploadFile", () => ({
   default: vi.fn(),
   computeBase64SHA256: vi.fn(),
 }));
+const mockApplicantPhotoFile = new File(["dummy content"], "photo.jpg", { type: "image/jpeg" });
 
 vi.mock("@/context/applicantPhotoContext", () => ({
   useApplicantPhoto: () => ({
-    applicantPhotoFile: new File(["dummy content"], "photo.jpg", { type: "image/jpeg" }),
+    applicantPhotoFile: mockApplicantPhotoFile,
+    setApplicantPhotoFile: vi.fn(),
   }),
 }));
 
@@ -43,7 +45,7 @@ describe("ApplicantReview", () => {
   test("state is displayed correctly & user is navigated to confirmation page when both api calls are successful", async () => {
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.INCOMPLETE,
+        status: ApplicationStatus.NOT_YET_STARTED,
         fullName: "Sigmund Sigmundson",
         sex: "Male",
         dateOfBirth: {
@@ -161,8 +163,6 @@ describe("ApplicantReview", () => {
   });
 
   test("calls uploadFile to upload applicant photo if present", async () => {
-    const applicantPhotoFile = new File(["dummy content"], "photo.jpg", { type: "image/jpeg" });
-
     const preloadedState = {
       application: { applicationId: "abc-123", dateCreated: "" },
     };
@@ -177,7 +177,7 @@ describe("ApplicantReview", () => {
     await user.click(screen.getByRole("button"));
 
     expect(uploadFile).toHaveBeenCalledWith(
-      applicantPhotoFile,
+      mockApplicantPhotoFile,
       "applicant-photo.jpg",
       "abc-123",
       ImageType.Photo,

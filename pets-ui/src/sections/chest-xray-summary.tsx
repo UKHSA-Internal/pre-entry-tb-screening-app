@@ -148,7 +148,8 @@ const ChestXraySummary = () => {
         <Summary status={chestXrayData.status} summaryElements={xrayNotTakenSummaryData} />
       )}
 
-      {chestXrayData.status == ApplicationStatus.INCOMPLETE && (
+      {(chestXrayData.status == ApplicationStatus.NOT_YET_STARTED ||
+        chestXrayData.status == ApplicationStatus.IN_PROGRESS) && (
         <Button
           id="confirm"
           type={ButtonType.DEFAULT}
@@ -156,7 +157,8 @@ const ChestXraySummary = () => {
           handleClick={handleSubmit}
         />
       )}
-      {chestXrayData.status == ApplicationStatus.COMPLETE && (
+      {(chestXrayData.status == ApplicationStatus.COMPLETE ||
+        chestXrayData.status == ApplicationStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
           type={ButtonType.DEFAULT}

@@ -19,8 +19,9 @@ import {
   setCertificateNumber,
   setComments,
   setIsIssued,
+  setTbCertificateStatus,
 } from "@/redux/tbCertificateSlice";
-import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { ApplicationStatus, ButtonType, RadioIsInline } from "@/utils/enums";
 import { validateDate } from "@/utils/helpers";
 import { formRegex } from "@/utils/records";
 
@@ -45,6 +46,7 @@ const TbCertificateDeclarationForm = () => {
     dispatch(setComments(tbCertificateData.comments));
     dispatch(setCertficateDate(tbCertificateData.certificateDate));
     dispatch(setCertificateNumber(tbCertificateData.certificateNumber));
+    dispatch(setTbCertificateStatus(ApplicationStatus.IN_PROGRESS));
     navigate("/tb-certificate-summary");
   };
 

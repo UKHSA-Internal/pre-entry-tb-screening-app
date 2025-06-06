@@ -127,7 +127,7 @@ describe("PETS Application End-to-End Tests", () => {
 
     // Upload Applicant Photo file
     applicantPhotoUploadPage
-      .uploadApplicantPhotoFile("cypress/fixtures/test-image.png")
+      .uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg")
       .verifyUploadSuccess();
 
     //Checking no errors appear
@@ -432,6 +432,7 @@ describe("PETS Application End-to-End Tests", () => {
       "Travel information": "Completed",
       "Medical history and TB symptoms": "Completed",
       "Radiological outcome": "Completed",
+      "Sputum collection and results": "Not yet started",
       "TB certificate declaration": "Completed",
     });
   });

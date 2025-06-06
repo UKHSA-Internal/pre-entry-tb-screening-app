@@ -36,7 +36,7 @@ afterAll(() => server.close());
 test("No results section is correctly displayed with information from the Redux store", () => {
   const preloadedState = {
     applicant: {
-      status: ApplicationStatus.INCOMPLETE,
+      status: ApplicationStatus.NOT_YET_STARTED,
       fullName: "",
       sex: "",
       dateOfBirth: {

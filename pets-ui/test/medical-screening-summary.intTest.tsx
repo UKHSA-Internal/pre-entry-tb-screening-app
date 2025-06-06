@@ -19,7 +19,7 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 });
 
 const medicalScreeningState = {
-  status: ApplicationStatus.INCOMPLETE,
+  status: ApplicationStatus.NOT_YET_STARTED,
   age: "99",
   closeContactWithTb: "No",
   closeContactWithTbDetail: "",
