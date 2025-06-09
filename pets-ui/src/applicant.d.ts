@@ -184,6 +184,7 @@ type ReceivedChestXrayDetailsType = PostedChestXrayDetailsType & ReceivedApplica
 type PostedChestXrayNotTakenType = {
   reasonXrayWasNotTaken: string;
   xrayWasNotTakenFurtherDetails: string;
+  isSputumRequired: YesOrNo;
 };
 
 type ReceivedChestXrayNotTakenType = PostedChestXrayNotTakenType &

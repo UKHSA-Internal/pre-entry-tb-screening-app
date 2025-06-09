@@ -81,16 +81,6 @@ export class TBProgressTrackerPage {
     cy.contains(".govuk-body", text).should("be.visible");
   }
 
-  // Verify sputum test information text
-  verifySputumTestInformationText(): void {
-    this.verifyTextPresent("You cannot currently log sputum test information in this system.");
-  }
-
-  // For backward compatibility
-  verifySputumTestMessage(): void {
-    this.verifySputumTestInformationText();
-  }
-
   // Verify complete all sections text
   verifyCompleteAllSectionsText(): void {
     this.verifyTextPresent("Complete all sections.");
@@ -139,7 +129,6 @@ export class TBProgressTrackerPage {
     this.verifyApplicantInfo(applicantInfo);
     this.verifyCompleteAllSectionsText();
     this.verifyTaskLinksExist();
-    this.verifySputumTestInformationText();
     this.verifyServiceName();
   }
 
