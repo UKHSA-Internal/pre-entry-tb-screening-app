@@ -144,13 +144,13 @@ export class TbCertificateDbOps {
           ? {
               ...details,
               dateCreated: new Date(),
-              status: TaskStatus.COMPLETE,
+              status: TaskStatus.completed,
               issueDate: new Date(details.issueDate),
             }
           : {
               ...details,
               dateCreated: new Date(),
-              status: TaskStatus.COMPLETE,
+              status: TaskStatus.completed,
             };
 
       const tbCertificate =
