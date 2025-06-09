@@ -87,6 +87,12 @@ const dateValidationMessages: Record<string, Record<string, string>> = {
     invalidDateError: "TB clearance certificate date must be a valid date",
     dateMustBeInPastError: "TB clearance certificate date must be today or in the past",
   },
+  sputumSampleDate: {
+    emptyFieldError: "Sputum sample {sampleNumber} date must include a day, month and year",
+    invalidCharError: "Sputum sample {sampleNumber} day, month and year must contain only numbers",
+    invalidDateError: "Sputum sample {sampleNumber} date must be a valid date",
+    dateMustBeInPastError: "Sputum sample {sampleNumber} date must be today or in the past",
+  },
 };
 
 const longNumericStrings = ["01", "02", "03", "04", "05", "06", "07", "08", "09"];
@@ -103,6 +109,7 @@ const dateEntryMustBeInThePast: string[] = [
   "dateOfBirth",
   "passportIssueDate",
   "tbCertificateDate",
+  "sputumSampleDate",
 ];
 
 const dateEntryMustBeInTheFuture: string[] = ["passportExpiryDate"];
