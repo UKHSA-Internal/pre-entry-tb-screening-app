@@ -180,8 +180,32 @@ export const sputumSlice = createSlice({
         };
       }
     },
-    clearSputumDetails: () => {
-      JSON.parse(JSON.stringify(initialState));
+    clearSputumDetails: (state) => {
+      state.status = ApplicationStatus.NOT_YET_STARTED;
+      state.sample1.collection.submittedToDatabase = false;
+      state.sample1.collection.dateOfSample = { year: "", month: "", day: "" };
+      state.sample1.collection.collectionMethod = "";
+      state.sample1.cultureResults.submittedToDatabase = false;
+      state.sample1.cultureResults.cultureResult = PositiveOrNegative.NOT_YET_ENTERED;
+      state.sample1.smearResults.submittedToDatabase = false;
+      state.sample1.smearResults.smearResult = PositiveOrNegative.NOT_YET_ENTERED;
+      state.sample1.lastUpdatedDate = { year: "", month: "", day: "" };
+      state.sample2.collection.submittedToDatabase = false;
+      state.sample2.collection.dateOfSample = { year: "", month: "", day: "" };
+      state.sample2.collection.collectionMethod = "";
+      state.sample2.cultureResults.submittedToDatabase = false;
+      state.sample2.cultureResults.cultureResult = PositiveOrNegative.NOT_YET_ENTERED;
+      state.sample2.smearResults.submittedToDatabase = false;
+      state.sample2.smearResults.smearResult = PositiveOrNegative.NOT_YET_ENTERED;
+      state.sample2.lastUpdatedDate = { year: "", month: "", day: "" };
+      state.sample3.collection.submittedToDatabase = false;
+      state.sample3.collection.dateOfSample = { year: "", month: "", day: "" };
+      state.sample3.collection.collectionMethod = "";
+      state.sample3.cultureResults.submittedToDatabase = false;
+      state.sample3.cultureResults.cultureResult = PositiveOrNegative.NOT_YET_ENTERED;
+      state.sample3.smearResults.submittedToDatabase = false;
+      state.sample3.smearResults.smearResult = PositiveOrNegative.NOT_YET_ENTERED;
+      state.sample3.lastUpdatedDate = { year: "", month: "", day: "" };
     },
     setSputumDetailsFromApiResponse: (state, action: PayloadAction<ReceivedSputumType>) => {
       state.status =
