@@ -29,7 +29,7 @@ export interface ISputumDetails {
   status: TaskStatus;
   dateCreated: Date;
   dateUpdated: Date;
-  createdBy: string;
+  createdBy?: string;
   sputumSamples: SputumSamples;
   version?: number;
 }
@@ -40,7 +40,7 @@ abstract class SputumDetailsBase {
   dateCreated: Date;
   dateUpdated: Date;
 
-  createdBy: string;
+  createdBy?: string;
 
   constructor(details: SputumDetailsBase) {
     this.applicationId = details.applicationId;
@@ -94,11 +94,11 @@ const parseSample = (sample: any): SputumSample | undefined => {
   }
 
   return {
-    dateOfSample: new Date(parsedSample.dateOfSample),
+    dateOfSample: new Date(parsedSample.dateOfSample).toISOString(),
     collectionMethod: parsedSample.collectionMethod,
     smearResult: parsedSample.smearResult as PositiveOrNegative,
     cultureResult: parsedSample.cultureResult as PositiveOrNegative,
-    dateUpdated: new Date(parsedSample.dateUpdated),
+    dateUpdated: new Date(parsedSample.dateUpdated).toISOString(),
   };
 };
 
@@ -293,7 +293,6 @@ export class SputumDetailsDbOps {
       const updatedSputumDetails = new SputumDetails({
         applicationId,
         status: Attributes.status as TaskStatus,
-        createdBy: Attributes.createdBy as string,
         dateCreated: new Date(Attributes.dateCreated as string),
         dateUpdated: new Date(Attributes.dateUpdated as string),
         sputumSamples: {
@@ -338,7 +337,6 @@ export class SputumDetailsDbOps {
       const sputumDetails = new SputumDetails({
         applicationId,
         status: sputumRecord.status as TaskStatus,
-        createdBy: sputumRecord.createdBy as string,
         dateCreated: new Date(sputumRecord.dateCreated as string),
         dateUpdated: new Date(sputumRecord.dateUpdated as string),
 

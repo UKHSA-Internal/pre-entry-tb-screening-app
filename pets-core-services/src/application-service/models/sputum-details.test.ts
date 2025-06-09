@@ -69,7 +69,6 @@ describe("Tests for SputumDetails model", () => {
 
     expect(updated).toMatchObject({
       applicationId,
-      createdBy: "test-user",
       version: 1,
       status: TaskStatus.incompleted,
       sputumSamples: {
@@ -121,7 +120,6 @@ describe("Tests for SputumDetails model", () => {
 
     expect(updated).toMatchObject({
       applicationId,
-      createdBy: "test-user",
       version: 2,
       status: TaskStatus.incompleted,
       sputumSamples: {
@@ -269,7 +267,6 @@ describe("Tests for SputumDetails model", () => {
 
     expect(updated).toMatchObject({
       applicationId,
-      createdBy: "test-user",
       version: 2,
       status: TaskStatus.completed,
       sputumSamples: {
@@ -397,14 +394,13 @@ describe("Tests for SputumDetails model", () => {
 
     expect(result).toMatchObject({
       applicationId,
-      createdBy: "test-user",
       status: TaskStatus.incompleted,
       dateCreated: new Date("2025-01-01T00:00:00.000Z"),
       sputumSamples: {
         sample1: {
-          dateOfSample: new Date("2025-01-02T00:00:00.000Z"),
+          dateOfSample: new Date("2025-01-02T00:00:00.000Z").toISOString(),
           collectionMethod: SputumCollectionMethod.COUGHED_UP,
-          dateUpdated: new Date("2025-01-02T00:00:00.000Z"),
+          dateUpdated: new Date("2025-01-02T00:00:00.000Z").toISOString(),
         },
       },
     });
