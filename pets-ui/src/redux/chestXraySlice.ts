@@ -110,11 +110,12 @@ export const chestXraySlice = createSlice({
       state.xrayMinorFindings = [];
       state.xrayAssociatedMinorFindings = [];
       state.xrayActiveTbFindings = [];
-      state.isSputumRequired = YesOrNo.NULL;
     },
     clearChestXrayNotTakenDetails: (state) => {
       state.reasonXrayWasNotTaken = "";
       state.xrayWasNotTakenFurtherDetails = "";
+    },
+    clearIsSputumRequired: (state) => {
       state.isSputumRequired = YesOrNo.NULL;
     },
     clearChestXrayDetails: (state) => {
@@ -183,6 +184,7 @@ export const {
   setChestXrayDetails,
   clearChestXrayTakenDetails,
   clearChestXrayNotTakenDetails,
+  clearIsSputumRequired,
   clearChestXrayDetails,
   setChestXrayFromApiResponse,
 } = chestXraySlice.actions;
