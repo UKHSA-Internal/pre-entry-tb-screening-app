@@ -9,6 +9,7 @@ import {
   PostedChestXrayDetailsType,
   PostedChestXrayNotTakenType,
   PostedMedicalScreeningType,
+  PostedSputumType,
   PostedTbCertificateNotIssuedType,
   PostedTbCertificateType,
   PostedTravelDetailsType,
@@ -108,6 +109,24 @@ export const postTbCerificateDetails = async (
     tbCertificateDetails,
   );
   return { status: result.status, statusText: result.statusText };
+};
+
+export const postSputumDetails = async (
+  applicationId: string,
+  sputumSamples: PostedSputumType,
+  version?: number,
+) => {
+  const requestData: { sputumSamples: PostedSputumType; version?: number } = { sputumSamples };
+  if (version !== undefined) {
+    requestData.version = version;
+  }
+
+  const result = await petsApi.put(`/application/${applicationId}/sputum-details`, requestData);
+  return {
+    status: result.status,
+    statusText: result.statusText,
+    data: result.data as { version: number; sputumSamples: PostedSputumType },
+  };
 };
 
 export const generateImageUploadUrl = async (
