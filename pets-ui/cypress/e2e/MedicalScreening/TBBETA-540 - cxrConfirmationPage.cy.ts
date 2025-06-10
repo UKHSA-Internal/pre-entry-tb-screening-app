@@ -11,8 +11,8 @@ describe.skip("Verify Go to TB screening progress tracker link navigates to the 
     cy.visit("http://localhost:3000/chest-xray-confirmation");
   });
   it.skip("Should navigate to the Application Progress Tracker Page", () => {
-    //Validate text on page 'Chest X-ray information recorded'
-    cy.get("h1").should("contain.text", "Chest X-ray information recorded");
+    //Validate text on page 'Radiological outcome confirmed'
+    cy.get("h1").should("contain.text", "Radiological outcome confirmed");
 
     //Validate that TB screening progress tracker link exists and is visible
     cy.contains(".govuk-body a", "TB screening progress tracker")

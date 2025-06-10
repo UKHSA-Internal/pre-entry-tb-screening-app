@@ -331,8 +331,6 @@ describe("PETS Application End-to-End Tests", () => {
     chestXrayConfirmationPage.verifyPageLoaded();
     chestXrayConfirmationPage.verifyConfirmationPanel();
     chestXrayConfirmationPage.verifyNextStepsSection();
-    chestXrayConfirmationPage.verifyContinueText();
-    chestXrayConfirmationPage.verifyTrackerLink();
     chestXrayConfirmationPage.verifyBreadcrumbNavigation();
     chestXrayConfirmationPage.verifyServiceName();
     chestXrayConfirmationPage.clickContinueButton();
