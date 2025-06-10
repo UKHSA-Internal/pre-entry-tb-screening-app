@@ -23,7 +23,7 @@ import {
   clearMedicalScreeningDetails,
   setMedicalScreeningDetailsFromApiResponse,
 } from "@/redux/medicalScreeningSlice";
-import { clearSputumDetails } from "@/redux/sputumSlice";
+import { clearSputumDetails, setSputumDetailsFromApiResponse } from "@/redux/sputumSlice";
 import {
   clearTbCertificateDetails,
   setTbCertificateFromApiResponse,
@@ -107,6 +107,9 @@ const ApplicantSearchForm = () => {
       }
       if (applicationRes.data.chestXray) {
         dispatch(setChestXrayFromApiResponse(applicationRes.data.chestXray));
+      }
+      if (applicationRes.data.sputumDetails) {
+        dispatch(setSputumDetailsFromApiResponse(applicationRes.data.sputumDetails));
       }
       if (applicationRes.data.tbCertificate) {
         dispatch(setTbCertificateFromApiResponse(applicationRes.data.tbCertificate));

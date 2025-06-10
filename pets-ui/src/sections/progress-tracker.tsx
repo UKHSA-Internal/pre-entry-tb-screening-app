@@ -90,6 +90,15 @@ const ProgressTracker = () => {
   const tbCertificateData = useAppSelector(selectTbCertificate);
   const applicantPhotoContext = useApplicantPhoto();
 
+  const allSputumSamplesSubmitted =
+    sputumData.sample1.collection.submittedToDatabase &&
+    sputumData.sample2.collection.submittedToDatabase &&
+    sputumData.sample3.collection.submittedToDatabase;
+
+  const sputumLink = allSputumSamplesSubmitted
+    ? "/enter-sputum-sample-results"
+    : "/sputum-collection";
+
   return (
     <div>
       <div style={{ display: "flex", alignItems: "flex-start", marginBottom: "20px" }}>
@@ -159,8 +168,8 @@ const ProgressTracker = () => {
         <Task
           description="Sputum collection and results"
           status={sputumData.status}
-          linkWhenIncomplete="/sputum-collection"
-          linkWhenComplete="/sputum-summary"
+          linkWhenIncomplete={sputumLink}
+          linkWhenComplete={sputumLink}
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,

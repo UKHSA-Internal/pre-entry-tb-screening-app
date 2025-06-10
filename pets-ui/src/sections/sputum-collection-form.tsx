@@ -1,13 +1,23 @@
 import { useRef } from "react";
-import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import {
+  Control,
+  Controller,
+  FieldErrors,
+  FormProvider,
+  SubmitHandler,
+  useForm,
+  UseFormGetValues,
+} from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
+import { postSputumDetails } from "@/api/api";
 import { DateType } from "@/applicant";
 import DateTextInput from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import SubmitButton from "@/components/submitButton/submitButton";
+import { selectApplication } from "@/redux/applicationSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   selectSputum,
@@ -15,8 +25,9 @@ import {
   setSample2Collection,
   setSample3Collection,
   setSputumStatus,
+  setSputumVersion,
 } from "@/redux/sputumSlice";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus, ButtonType, SputumCollectionMethod } from "@/utils/enums";
 import { validateDate } from "@/utils/helpers";
 import { dateValidationMessages } from "@/utils/records";
 
@@ -30,17 +41,98 @@ interface SputumCollectionFormFields {
 }
 
 const collectionMethodOptions = [
-  { value: "Coughed up", label: "Coughed up" },
-  { value: "Induced", label: "Induced" },
-  { value: "Gastric lavage", label: "Gastric lavage" },
-  { value: "Not known", label: "Not known" },
+  { value: SputumCollectionMethod.COUGHED_UP, label: SputumCollectionMethod.COUGHED_UP },
+  { value: SputumCollectionMethod.INDUCED, label: SputumCollectionMethod.INDUCED },
+  { value: SputumCollectionMethod.GASTRIC_LAVAGE, label: SputumCollectionMethod.GASTRIC_LAVAGE },
+  { value: SputumCollectionMethod.NOT_KNOWN, label: SputumCollectionMethod.NOT_KNOWN },
 ];
 
 const SputumCollectionForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const sputumData = useAppSelector(selectSputum);
+  const applicationData = useAppSelector(selectApplication);
   const lastClickedButtonId = useRef<string | null>(null);
+
+  const renderSampleEditableForm = (
+    sampleNumber: 1 | 2 | 3,
+    sampleRef: React.RefObject<HTMLDivElement>,
+    control: Control<SputumCollectionFormFields>,
+    errors: FieldErrors<SputumCollectionFormFields>,
+    getValues: UseFormGetValues<SputumCollectionFormFields>,
+  ) => {
+    const dateFieldName = `dateOfSputumSample${sampleNumber}` as keyof SputumCollectionFormFields;
+    const methodFieldName =
+      `collectionMethodSample${sampleNumber}` as keyof SputumCollectionFormFields;
+
+    return (
+      <div className="govuk-grid-row" style={{ display: "flex", alignItems: "flex-end" }}>
+        <div className="govuk-grid-column-one-half" ref={sampleRef}>
+          <Controller
+            name={dateFieldName}
+            control={control}
+            rules={{
+              validate: (value: string | DateType) => {
+                if (typeof value !== "object" || value === null) {
+                  return true;
+                }
+                const hasData = value.day || value.month || value.year;
+                const methodValue = getValues(methodFieldName);
+                if (hasData || methodValue) {
+                  if (!hasData) {
+                    return `Enter the date sample ${sampleNumber} was taken on`;
+                  }
+
+                  if (hasData && (!value.day || !value.month || !value.year)) {
+                    return dateValidationMessages.sputumSampleDate.emptyFieldError.replace(
+                      "{sampleNumber}",
+                      sampleNumber.toString(),
+                    );
+                  }
+                  const result = validateDate(value, "sputumSampleDate");
+                  if (typeof result === "string") {
+                    return result.replace("{sampleNumber}", sampleNumber.toString());
+                  }
+                  return result;
+                }
+                return true;
+              },
+            }}
+            render={({ field: { value, onChange } }) => (
+              <DateTextInput
+                hint="For example, 31 3 2024"
+                value={
+                  typeof value === "object" && value !== null
+                    ? value
+                    : { day: "", month: "", year: "" }
+                }
+                setDateValue={onChange}
+                id={`date-sample-${sampleNumber}-taken`}
+                autocomplete={false}
+                errorMessage={
+                  (errors as Record<string, { message?: string }>)?.[dateFieldName]?.message ?? ""
+                }
+              />
+            )}
+          />
+        </div>
+        <div className="govuk-grid-column-one-half">
+          <div style={sampleNumber === 3 ? { width: "177px" } : {}}>
+            <Dropdown
+              id={`collection-method-sample-${sampleNumber}`}
+              label=""
+              options={collectionMethodOptions}
+              formValue={methodFieldName}
+              errorMessage={
+                (errors as Record<string, { message?: string }>)?.[methodFieldName]?.message ?? ""
+              }
+              required=""
+            />
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const methods = useForm<SputumCollectionFormFields>({
     reValidateMode: "onSubmit",
@@ -73,7 +165,7 @@ const SputumCollectionForm = () => {
     getValues,
   } = methods;
 
-  const onSubmit: SubmitHandler<SputumCollectionFormFields> = (formData) => {
+  const onSubmit: SubmitHandler<SputumCollectionFormFields> = async (formData) => {
     const submittedBy = lastClickedButtonId.current;
     lastClickedButtonId.current = null;
 
@@ -102,52 +194,21 @@ const SputumCollectionForm = () => {
       }
     };
 
+    const validateSample = (sampleNumber: 1 | 2 | 3) => {
+      const formDate = formData[`dateOfSputumSample${sampleNumber}`];
+      const formMethod = formData[`collectionMethodSample${sampleNumber}`];
+
+      if (!isSampleFilled(formDate, formMethod)) {
+        setSampleErrors(sampleNumber, formDate, formMethod);
+      }
+    };
+
     let hasError = false;
 
-    if (submittedBy === "save-progress") {
-      const filled1 = isSampleFilled(
-        formData.dateOfSputumSample1,
-        formData.collectionMethodSample1,
-      );
-      const filled2 = isSampleFilled(
-        formData.dateOfSputumSample2,
-        formData.collectionMethodSample2,
-      );
-      const filled3 = isSampleFilled(
-        formData.dateOfSputumSample3,
-        formData.collectionMethodSample3,
-      );
-
-      if (!filled1 && !filled2 && !filled3) {
-        setSampleErrors(1, formData.dateOfSputumSample1, formData.collectionMethodSample1);
-        setSampleErrors(2, formData.dateOfSputumSample2, formData.collectionMethodSample2);
-        setSampleErrors(3, formData.dateOfSputumSample3, formData.collectionMethodSample3);
-      }
-    }
-
-    if (submittedBy === "save-and-continue-to-results") {
-      const filled1 = isSampleFilled(
-        formData.dateOfSputumSample1,
-        formData.collectionMethodSample1,
-      );
-      const filled2 = isSampleFilled(
-        formData.dateOfSputumSample2,
-        formData.collectionMethodSample2,
-      );
-      const filled3 = isSampleFilled(
-        formData.dateOfSputumSample3,
-        formData.collectionMethodSample3,
-      );
-
-      if (!filled1) {
-        setSampleErrors(1, formData.dateOfSputumSample1, formData.collectionMethodSample1);
-      }
-      if (!filled2) {
-        setSampleErrors(2, formData.dateOfSputumSample2, formData.collectionMethodSample2);
-      }
-      if (!filled3) {
-        setSampleErrors(3, formData.dateOfSputumSample3, formData.collectionMethodSample3);
-      }
+    if (submittedBy === "save-progress" || submittedBy === "save-and-continue-to-results") {
+      validateSample(1);
+      validateSample(2);
+      validateSample(3);
     }
 
     if (hasError) {
@@ -156,29 +217,72 @@ const SputumCollectionForm = () => {
 
     dispatch(setSputumStatus(ApplicationStatus.IN_PROGRESS));
 
-    dispatch(
-      setSample1Collection({
-        dateOfSample: formData.dateOfSputumSample1,
-        collectionMethod: formData.collectionMethodSample1,
-        submittedToDatabase: sputumData.sample1.collection.submittedToDatabase,
-      }),
-    );
+    const sputumSamples: Record<
+      string,
+      { dateOfSample: string; collectionMethod: string; dateUpdated: string }
+    > = {};
 
-    dispatch(
-      setSample2Collection({
-        dateOfSample: formData.dateOfSputumSample2,
-        collectionMethod: formData.collectionMethodSample2,
-        submittedToDatabase: sputumData.sample2.collection.submittedToDatabase,
-      }),
-    );
+    const formatDate = (date: DateType) =>
+      `${date.year}-${date.month.padStart(2, "0")}-${date.day.padStart(2, "0")}`;
 
-    dispatch(
-      setSample3Collection({
-        dateOfSample: formData.dateOfSputumSample3,
-        collectionMethod: formData.collectionMethodSample3,
-        submittedToDatabase: sputumData.sample3.collection.submittedToDatabase,
-      }),
-    );
+    const sampleKeys = ["sample1", "sample2", "sample3"] as const;
+    const dispatchActions = [setSample1Collection, setSample2Collection, setSample3Collection];
+
+    sampleKeys.forEach((sampleKey, index) => {
+      const formDateField = `dateOfSputumSample${index + 1}` as keyof SputumCollectionFormFields;
+      const formMethodField =
+        `collectionMethodSample${index + 1}` as keyof SputumCollectionFormFields;
+
+      const dateValue = formData[formDateField] as DateType;
+      const methodValue = formData[formMethodField] as string;
+
+      if (isSampleFilled(dateValue, methodValue)) {
+        sputumSamples[sampleKey] = {
+          dateOfSample: formatDate(dateValue),
+          collectionMethod: methodValue,
+          dateUpdated: new Date().toISOString().split("T")[0],
+        };
+      }
+    });
+
+    if (Object.keys(sputumSamples).length > 0) {
+      try {
+        console.info("Attempting to save sputum details:", {
+          applicationId: applicationData.applicationId,
+          sputumSamples,
+          version: sputumData.version,
+        });
+        const response = await postSputumDetails(
+          applicationData.applicationId,
+          sputumSamples,
+          sputumData.version,
+        );
+
+        if (response.data.version !== undefined) {
+          dispatch(setSputumVersion(response.data.version));
+        }
+
+        sampleKeys.forEach((sampleKey, index) => {
+          if (sputumSamples[sampleKey]) {
+            const formDateField =
+              `dateOfSputumSample${index + 1}` as keyof SputumCollectionFormFields;
+            const formMethodField =
+              `collectionMethodSample${index + 1}` as keyof SputumCollectionFormFields;
+
+            dispatch(
+              dispatchActions[index]({
+                dateOfSample: formData[formDateField] as DateType,
+                collectionMethod: formData[formMethodField] as string,
+                submittedToDatabase: true,
+              }),
+            );
+          }
+        });
+      } catch (error: unknown) {
+        console.error("Error saving sputum details:", error);
+        return;
+      }
+    }
 
     if (submittedBy === "save-progress") {
       navigate("/check-sputum-sample-information");
@@ -210,59 +314,11 @@ const SputumCollectionForm = () => {
           <div className="govuk-grid-column-one-half">
             <Heading level={3} size="s" title="Date sample 1 was taken on" />
           </div>
-        </div>
-        <div className="govuk-grid-row" style={{ display: "flex", alignItems: "flex-end" }}>
-          <div className="govuk-grid-column-one-half" ref={sample1DateRef}>
-            <Controller
-              name="dateOfSputumSample1"
-              control={control}
-              rules={{
-                validate: (value: DateType) => {
-                  const hasData = value.day || value.month || value.year;
-                  const methodValue = getValues("collectionMethodSample1");
-                  if (hasData || methodValue) {
-                    if (!hasData) {
-                      return "Enter the date sample 1 was taken on";
-                    }
-
-                    if (hasData && (!value.day || !value.month || !value.year)) {
-                      return dateValidationMessages.sputumSampleDate.emptyFieldError.replace(
-                        "{sampleNumber}",
-                        "1",
-                      );
-                    }
-                    const result = validateDate(value, "sputumSampleDate");
-                    if (typeof result === "string") {
-                      return result.replace("{sampleNumber}", "1");
-                    }
-                    return result;
-                  }
-                  return true;
-                },
-              }}
-              render={({ field: { value, onChange } }) => (
-                <DateTextInput
-                  hint="For example, 31 3 2024"
-                  value={value}
-                  setDateValue={onChange}
-                  id="date-sample-1-taken"
-                  autocomplete={false}
-                  errorMessage={errors?.dateOfSputumSample1?.message ?? ""}
-                />
-              )}
-            />
-          </div>
           <div className="govuk-grid-column-one-half">
-            <Dropdown
-              id="collection-method-sample-1"
-              label="Collection method"
-              options={collectionMethodOptions}
-              formValue="collectionMethodSample1"
-              errorMessage={errors?.collectionMethodSample1?.message ?? ""}
-              required=""
-            />
+            <Heading level={3} size="s" title="Collection method" />
           </div>
         </div>
+        {renderSampleEditableForm(1, sample1DateRef, control, errors, getValues)}
 
         <hr
           className="govuk-section-break govuk-section-break--l govuk-section-break--visible"
@@ -274,59 +330,11 @@ const SputumCollectionForm = () => {
           <div className="govuk-grid-column-one-half">
             <Heading level={3} size="s" title="Date sample 2 was taken on" />
           </div>
-        </div>
-        <div className="govuk-grid-row" style={{ display: "flex", alignItems: "flex-end" }}>
-          <div className="govuk-grid-column-one-half" ref={sample2DateRef}>
-            <Controller
-              name="dateOfSputumSample2"
-              control={control}
-              rules={{
-                validate: (value: DateType) => {
-                  const hasData = value.day || value.month || value.year;
-                  const methodValue = getValues("collectionMethodSample2");
-                  if (hasData || methodValue) {
-                    if (!hasData) {
-                      return "Enter the date sample 2 was taken on";
-                    }
-
-                    if (hasData && (!value.day || !value.month || !value.year)) {
-                      return dateValidationMessages.sputumSampleDate.emptyFieldError.replace(
-                        "{sampleNumber}",
-                        "2",
-                      );
-                    }
-                    const result = validateDate(value, "sputumSampleDate");
-                    if (typeof result === "string") {
-                      return result.replace("{sampleNumber}", "2");
-                    }
-                    return result;
-                  }
-                  return true;
-                },
-              }}
-              render={({ field: { value, onChange } }) => (
-                <DateTextInput
-                  hint="For example, 31 3 2024"
-                  value={value}
-                  setDateValue={onChange}
-                  id="date-sample-2-taken"
-                  autocomplete={false}
-                  errorMessage={errors?.dateOfSputumSample2?.message ?? ""}
-                />
-              )}
-            />
-          </div>
           <div className="govuk-grid-column-one-half">
-            <Dropdown
-              id="collection-method-sample-2"
-              label="Collection method"
-              options={collectionMethodOptions}
-              formValue="collectionMethodSample2"
-              errorMessage={errors?.collectionMethodSample2?.message ?? ""}
-              required=""
-            />
+            <Heading level={3} size="s" title="Collection method" />
           </div>
         </div>
+        {renderSampleEditableForm(2, sample2DateRef, control, errors, getValues)}
 
         <hr
           className="govuk-section-break govuk-section-break--l govuk-section-break--visible"
@@ -338,61 +346,11 @@ const SputumCollectionForm = () => {
           <div className="govuk-grid-column-one-half">
             <Heading level={3} size="s" title="Date sample 3 was taken on" />
           </div>
-        </div>
-        <div className="govuk-grid-row" style={{ display: "flex", alignItems: "flex-end" }}>
-          <div className="govuk-grid-column-one-half" ref={sample3DateRef}>
-            <Controller
-              name="dateOfSputumSample3"
-              control={control}
-              rules={{
-                validate: (value: DateType) => {
-                  const hasData = value.day || value.month || value.year;
-                  const methodValue = getValues("collectionMethodSample3");
-                  if (hasData || methodValue) {
-                    if (!hasData) {
-                      return "Enter the date sample 3 was taken on";
-                    }
-
-                    if (hasData && (!value.day || !value.month || !value.year)) {
-                      return dateValidationMessages.sputumSampleDate.emptyFieldError.replace(
-                        "{sampleNumber}",
-                        "3",
-                      );
-                    }
-                    const result = validateDate(value, "sputumSampleDate");
-                    if (typeof result === "string") {
-                      return result.replace("{sampleNumber}", "3");
-                    }
-                    return result;
-                  }
-                  return true;
-                },
-              }}
-              render={({ field: { value, onChange } }) => (
-                <DateTextInput
-                  hint="For example, 31 3 2024"
-                  value={value}
-                  setDateValue={onChange}
-                  id="date-sample-3-taken"
-                  autocomplete={false}
-                  errorMessage={errors?.dateOfSputumSample3?.message ?? ""}
-                />
-              )}
-            />
-          </div>
           <div className="govuk-grid-column-one-half">
-            <div style={{ width: "177px" }}>
-              <Dropdown
-                id="collection-method-sample-3"
-                label="Collection method"
-                options={collectionMethodOptions}
-                formValue="collectionMethodSample3"
-                errorMessage={errors?.collectionMethodSample3?.message ?? ""}
-                required=""
-              />
-            </div>
+            <Heading level={3} size="s" title="Collection method" />
           </div>
         </div>
+        {renderSampleEditableForm(3, sample3DateRef, control, errors, getValues)}
 
         <div style={{ marginTop: 40, display: "flex", gap: "20px" }}>
           <div onClick={() => (lastClickedButtonId.current = "save-and-continue-to-results")}>
