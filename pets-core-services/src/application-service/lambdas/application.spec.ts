@@ -401,6 +401,16 @@ describe("Test for Application Lambda", () => {
             collectionMethod: SputumCollectionMethod.COUGHED_UP,
             dateUpdated: new Date(),
           },
+          sample2: {
+            dateOfSample: new Date(),
+            collectionMethod: SputumCollectionMethod.COUGHED_UP,
+            dateUpdated: new Date(),
+          },
+          sample3: {
+            dateOfSample: new Date(),
+            collectionMethod: SputumCollectionMethod.COUGHED_UP,
+            dateUpdated: new Date(),
+          },
         },
         version: 0,
       };
@@ -449,6 +459,16 @@ describe("Test for Application Lambda", () => {
             collectionMethod: SputumCollectionMethod.COUGHED_UP,
             dateUpdated: new Date(),
           },
+          sample2: {
+            dateOfSample: new Date(),
+            collectionMethod: SputumCollectionMethod.COUGHED_UP,
+            dateUpdated: new Date(),
+          },
+          sample3: {
+            dateOfSample: new Date(),
+            collectionMethod: SputumCollectionMethod.COUGHED_UP,
+            dateUpdated: new Date(),
+          },
         },
         version: 1,
       };
@@ -481,6 +501,16 @@ describe("Test for Application Lambda", () => {
         createdBy: "John Doe",
         sputumSamples: {
           sample1: {
+            dateOfSample: new Date(),
+            collectionMethod: SputumCollectionMethod.COUGHED_UP,
+            dateUpdated: new Date(),
+          },
+          sample2: {
+            dateOfSample: new Date(),
+            collectionMethod: SputumCollectionMethod.COUGHED_UP,
+            dateUpdated: new Date(),
+          },
+          sample3: {
             dateOfSample: new Date(),
             collectionMethod: SputumCollectionMethod.COUGHED_UP,
             dateUpdated: new Date(),

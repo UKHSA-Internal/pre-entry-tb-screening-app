@@ -317,9 +317,9 @@ export const SputumSampleCompletionCheckSchema = z.object({
 export const SputumRequestSchema = z.object({
   sputumSamples: z
     .object({
-      sample1: SputumSampleSchema.optional().openapi({ description: "Details of Sputum Sample 1" }),
-      sample2: SputumSampleSchema.optional().openapi({ description: "Details of Sputum Sample 2" }),
-      sample3: SputumSampleSchema.optional().openapi({ description: "Details of Sputum Sample 3" }),
+      sample1: SputumSampleSchema.openapi({ description: "Details of Sputum Sample 1" }),
+      sample2: SputumSampleSchema.openapi({ description: "Details of Sputum Sample 2" }),
+      sample3: SputumSampleSchema.openapi({ description: "Details of Sputum Sample 3" }),
     })
     .openapi({
       description: "Sputum Sample details",

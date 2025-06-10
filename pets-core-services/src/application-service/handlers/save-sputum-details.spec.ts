@@ -14,6 +14,16 @@ const newSputumDetails: SaveSputumDetailsEvent["parsedBody"] = {
       collectionMethod: SputumCollectionMethod.COUGHED_UP,
       dateUpdated: new Date().toISOString(),
     },
+    sample2: {
+      dateOfSample: new Date().toISOString(),
+      collectionMethod: SputumCollectionMethod.INDUCED,
+      dateUpdated: new Date().toISOString(),
+    },
+    sample3: {
+      dateOfSample: new Date().toISOString(),
+      collectionMethod: SputumCollectionMethod.NOT_KNOWN,
+      dateUpdated: new Date().toISOString(),
+    },
   },
 };
 
