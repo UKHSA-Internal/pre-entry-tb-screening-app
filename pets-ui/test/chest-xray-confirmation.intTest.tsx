@@ -4,7 +4,9 @@ import { setupServer } from "msw/node";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
+import { ReduxChestXrayDetailsType } from "@/applicant";
 import ChestXrayConfirmation from "@/pages/chest-xray-confirmation";
+import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -24,28 +26,83 @@ vi.mock("react-helmet-async", () => ({
 export const handlers = [];
 const server = setupServer(...handlers);
 
-// Enable API mocking before tests.
+const mockChestXrayState: ReduxChestXrayDetailsType = {
+  status: ApplicationStatus.NOT_YET_STARTED,
+  chestXrayTaken: YesOrNo.NULL,
+  posteroAnteriorXrayFileName: "",
+  posteroAnteriorXrayFile: "",
+  apicalLordoticXrayFileName: "",
+  apicalLordoticXrayFile: "",
+  lateralDecubitusXrayFileName: "",
+  lateralDecubitusXrayFile: "",
+  reasonXrayWasNotTaken: "",
+  xrayWasNotTakenFurtherDetails: "",
+  xrayResult: "",
+  xrayResultDetail: "",
+  xrayMinorFindings: [],
+  xrayAssociatedMinorFindings: [],
+  xrayActiveTbFindings: [],
+  isSputumRequired: YesOrNo.NULL,
+};
+
 beforeAll(() => server.listen());
 
-// Reset any runtime request handlers we may add during the tests.
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+  server.resetHandlers();
+  vi.clearAllMocks();
+});
 
-// Disable API mocking after the tests are done.
 afterAll(() => server.close());
 
-test("Chest X-ray Information confirmation page renders correctly & redirects on button click", async () => {
-  renderWithProviders(
-    <Router>
-      <ChestXrayConfirmation />
-    </Router>,
-  );
+describe("ChestXrayConfirmation", () => {
+  test("Renders correctly when sputum collection is not required", async () => {
+    renderWithProviders(
+      <Router>
+        <ChestXrayConfirmation />
+      </Router>,
+      {
+        preloadedState: {
+          chestXray: {
+            ...mockChestXrayState,
+            isSputumRequired: YesOrNo.NO,
+          },
+        },
+      },
+    );
 
-  const button = screen.getAllByRole("button")[0];
-  const user = userEvent.setup();
+    const button = screen.getByRole("button", { name: /Continue/i });
+    const user = userEvent.setup();
 
-  expect(screen.getByText("Radiological outcome confirmed")).toBeTruthy();
-  expect(screen.getByText("You can now return to the progress tracker.")).toBeTruthy();
-  expect(button).toHaveTextContent("Continue");
-  await user.click(button);
-  expect(useNavigateMock).toHaveBeenCalledWith("/tracker");
+    expect(screen.getByText("Radiological outcome confirmed")).toBeTruthy();
+    expect(screen.getByText(/Continue to/i)).toBeTruthy();
+    expect(screen.getByText(/TB certificate declaration/i)).toBeTruthy();
+    expect(button).toHaveTextContent("Continue");
+    await user.click(button);
+    expect(useNavigateMock).toHaveBeenCalledWith("/tb-certificate-declaration");
+  });
+
+  test("Renders correctly when sputum collection is required", async () => {
+    renderWithProviders(
+      <Router>
+        <ChestXrayConfirmation />
+      </Router>,
+      {
+        preloadedState: {
+          chestXray: {
+            ...mockChestXrayState,
+            isSputumRequired: YesOrNo.YES,
+          },
+        },
+      },
+    );
+
+    const button = screen.getByRole("button", { name: /Continue/i });
+    const user = userEvent.setup();
+
+    expect(screen.getByText("Radiological outcome confirmed")).toBeTruthy();
+    expect(screen.getByText(/Continue to sputum collection/i)).toBeTruthy();
+    expect(button).toHaveTextContent("Continue");
+    await user.click(button);
+    expect(useNavigateMock).toHaveBeenCalledWith("/sputum-collection");
+  });
 });
