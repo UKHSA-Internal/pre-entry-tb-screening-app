@@ -331,8 +331,6 @@ describe("PETS Application End-to-End Tests", () => {
     chestXrayConfirmationPage.verifyPageLoaded();
     chestXrayConfirmationPage.verifyConfirmationPanel();
     chestXrayConfirmationPage.verifyNextStepsSection();
-    chestXrayConfirmationPage.verifyContinueText();
-    chestXrayConfirmationPage.verifyTrackerLink();
     chestXrayConfirmationPage.verifyBreadcrumbNavigation();
     chestXrayConfirmationPage.verifyServiceName();
     chestXrayConfirmationPage.clickContinueButton();
@@ -419,9 +417,6 @@ describe("PETS Application End-to-End Tests", () => {
 
     // Verify task links exist
     tbProgressTrackerPage.verifyTaskLinksExist();
-
-    // Verify sputum test information text
-    tbProgressTrackerPage.verifySputumTestInformationText();
 
     // Verify service name
     tbProgressTrackerPage.verifyServiceName();

@@ -6,40 +6,20 @@ export class ChestXrayConfirmationPage {
 
   // Verify page loaded
   verifyPageLoaded(): void {
-    cy.contains("h1.govuk-panel__title", "Chest X-ray information recorded").should("be.visible");
+    cy.contains("h1.govuk-panel__title", "Radiological outcome confirmed").should("be.visible");
   }
 
   // Verify confirmation panel
   verifyConfirmationPanel(): void {
     cy.get(".govuk-panel--confirmation").should("be.visible");
-    cy.contains("h1.govuk-panel__title", "Chest X-ray information recorded").should("be.visible");
+    cy.contains("h1.govuk-panel__title", "Radiological outcome confirmed").should("be.visible");
   }
 
   // Verify next steps section
   verifyNextStepsSection(): void {
     cy.contains("h2.govuk-heading-m", "What happens next").should("be.visible");
 
-    cy.contains(
-      "p.govuk-body",
-      "You cannot currently log sputum test information in this service.",
-    ).should("be.visible");
-  }
-
-  // Verify continue to TB certificate text
-  verifyContinueText(): void {
-    cy.contains("p.govuk-body", "Continue to TB certificate declaration").should("be.visible");
-  }
-
-  // Verify tracker link
-  verifyTrackerLink(): void {
-    cy.contains("a.govuk-link", "TB screening progress tracker")
-      .should("be.visible")
-      .and("have.attr", "href", "/tracker");
-  }
-
-  // Click tracker link
-  clickTrackerLink(): void {
-    cy.contains("a.govuk-link", "TB screening progress tracker").click();
+    cy.contains("p.govuk-body", "You can now return to the progress tracker.").should("be.visible");
   }
 
   // Click continue button
@@ -78,8 +58,6 @@ export class ChestXrayConfirmationPage {
     this.verifyPageLoaded();
     this.verifyConfirmationPanel();
     this.verifyNextStepsSection();
-    this.verifyContinueText();
-    this.verifyTrackerLink();
     this.verifyBreadcrumbNavigation();
     this.verifyServiceName();
   }

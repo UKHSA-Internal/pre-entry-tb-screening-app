@@ -115,6 +115,9 @@ export const chestXraySlice = createSlice({
       state.reasonXrayWasNotTaken = "";
       state.xrayWasNotTakenFurtherDetails = "";
     },
+    clearIsSputumRequired: (state) => {
+      state.isSputumRequired = YesOrNo.NULL;
+    },
     clearChestXrayDetails: (state) => {
       state.status = ApplicationStatus.NOT_YET_STARTED;
       state.chestXrayTaken = YesOrNo.NULL;
@@ -181,6 +184,7 @@ export const {
   setChestXrayDetails,
   clearChestXrayTakenDetails,
   clearChestXrayNotTakenDetails,
+  clearIsSputumRequired,
   clearChestXrayDetails,
   setChestXrayFromApiResponse,
 } = chestXraySlice.actions;

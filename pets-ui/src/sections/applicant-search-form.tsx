@@ -23,6 +23,7 @@ import {
   clearMedicalScreeningDetails,
   setMedicalScreeningDetailsFromApiResponse,
 } from "@/redux/medicalScreeningSlice";
+import { clearSputumDetails } from "@/redux/sputumSlice";
 import {
   clearTbCertificateDetails,
   setTbCertificateFromApiResponse,
@@ -47,6 +48,7 @@ const ApplicantSearchForm = () => {
     dispatch(clearMedicalScreeningDetails());
     dispatch(clearTravelDetails());
     dispatch(clearChestXrayDetails());
+    dispatch(clearSputumDetails());
     dispatch(clearTbCertificateDetails());
     dispatch(setApplicantPhotoFileName(""));
     setApplicantPhotoFile(null);
