@@ -361,14 +361,17 @@ const SputumCollectionForm = () => {
         {renderSampleEditableForm(3, sample3DateRef, control, errors)}
 
         <div style={{ marginTop: 40, display: "flex", gap: "20px" }}>
-          <div onMouseDown={() => (lastClickedButtonId.current = "save-and-continue-to-results")}>
+          <div
+            onMouseDown={() => (lastClickedButtonId.current = "save-and-continue-to-results")}
+            role="button"
+          >
             <SubmitButton
               id="save-and-continue-to-results"
               type={ButtonType.DEFAULT}
               text="Save and continue to results"
             />
           </div>
-          <div onMouseDown={() => (lastClickedButtonId.current = "save-progress")}>
+          <div onMouseDown={() => (lastClickedButtonId.current = "save-progress")} role="button">
             <SubmitButton id="save-progress" type={ButtonType.SECONDARY} text="Save progress" />
           </div>
         </div>
