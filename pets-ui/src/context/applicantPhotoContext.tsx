@@ -4,6 +4,7 @@ type ApplicantPhotoContextType = {
   applicantPhotoFile: File | null;
   applicantPhotoDataUrl: string | null;
   setApplicantPhotoFile: (file: File | null) => void;
+  setApplicantPhotoUrl: (url: string | null) => void;
 };
 
 const ApplicantPhotoContext = createContext<ApplicantPhotoContextType | undefined>(undefined);
@@ -37,8 +38,18 @@ export const ApplicantPhotoProvider = ({ children }: { children: ReactNode }) =>
     }
   };
 
+  const setApplicantPhotoUrl = (url: string | null) => {
+    setApplicantPhotoFileState(null);
+    setApplicantPhotoDataUrl(url);
+  };
+
   const value = useMemo(
-    () => ({ applicantPhotoFile, applicantPhotoDataUrl, setApplicantPhotoFile }),
+    () => ({
+      applicantPhotoFile,
+      applicantPhotoDataUrl,
+      setApplicantPhotoFile,
+      setApplicantPhotoUrl,
+    }),
     [applicantPhotoFile, applicantPhotoDataUrl],
   );
 
