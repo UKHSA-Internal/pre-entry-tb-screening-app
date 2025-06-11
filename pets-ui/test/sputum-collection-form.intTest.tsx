@@ -254,7 +254,11 @@ describe("SputumCollectionForm", () => {
 
     expect(screen.getByTestId("error-summary")).toBeInTheDocument();
     expect(screen.getAllByText("Enter the date sample 1 was taken on")).toHaveLength(2);
-    expect(screen.getAllByText("Select if collection method was coughed up, etc.")).toHaveLength(6);
+    expect(screen.getAllByText("Enter Sputum sample 1 collection method")).toHaveLength(2);
+    expect(screen.getAllByText("Enter the date sample 2 was taken on")).toHaveLength(2);
+    expect(screen.getAllByText("Enter Sputum sample 2 collection method")).toHaveLength(2);
+    expect(screen.getAllByText("Enter the date sample 3 was taken on")).toHaveLength(2);
+    expect(screen.getAllByText("Enter Sputum sample 3 collection method")).toHaveLength(2);
   });
 
   test("shows validation errors for incomplete date fields", async () => {
@@ -310,6 +314,8 @@ describe("SputumCollectionForm", () => {
     mockPostSputumDetails.mockResolvedValue({
       data: { version: 2 },
     });
+    const isoDate = "2025-06-10T00:00:00.000Z";
+    const dateSpy = vi.spyOn(Date.prototype, "toISOString").mockReturnValue(isoDate);
 
     const { store } = renderWithProviders(
       <Router>
@@ -397,12 +403,15 @@ describe("SputumCollectionForm", () => {
       expect(sputumState.version).toBe(2);
       expect(useNavigateMock).toHaveBeenCalledWith("/check-sputum-sample-information");
     });
+    dateSpy.mockRestore();
   });
 
   test("updates store and navigates to '/enter-sputum-sample-results' on 'Save and continue to results' with all samples valid", async () => {
     mockPostSputumDetails.mockResolvedValue({
       data: { version: 2 },
     });
+    const isoDate = "2025-06-10T00:00:00.000Z";
+    const dateSpy = vi.spyOn(Date.prototype, "toISOString").mockReturnValue(isoDate);
 
     const { store } = renderWithProviders(
       <Router>
@@ -486,12 +495,15 @@ describe("SputumCollectionForm", () => {
       expect(sputumState.version).toBe(2);
       expect(useNavigateMock).toHaveBeenCalledWith("/enter-sputum-sample-results");
     });
+    dateSpy.mockRestore();
   });
 
   test("handles form with pre-filled data correctly", async () => {
     mockPostSputumDetails.mockResolvedValue({
       data: { version: 3 },
     });
+    const isoDate = "2025-06-10T00:00:00.000Z";
+    const dateSpy = vi.spyOn(Date.prototype, "toISOString").mockReturnValue(isoDate);
 
     const { store } = renderWithProviders(
       <Router>
@@ -550,10 +562,13 @@ describe("SputumCollectionForm", () => {
       expect(sputumState.version).toBe(3);
       expect(useNavigateMock).toHaveBeenCalledWith("/enter-sputum-sample-results");
     });
+    dateSpy.mockRestore();
   });
 
   test("handles API error gracefully", async () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const isoDate = "2025-06-10T00:00:00.000Z";
+    const dateSpy = vi.spyOn(Date.prototype, "toISOString").mockReturnValue(isoDate);
     mockPostSputumDetails.mockRejectedValue(new Error("Network error"));
 
     renderWithProviders(
@@ -616,10 +631,13 @@ describe("SputumCollectionForm", () => {
     });
 
     consoleErrorSpy.mockRestore();
+    dateSpy.mockRestore();
   });
 
   test("handles 403 authentication error specifically", async () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const isoDate = "2025-06-10T00:00:00.000Z";
+    const dateSpy = vi.spyOn(Date.prototype, "toISOString").mockReturnValue(isoDate);
     mockPostSputumDetails.mockRejectedValue({
       response: { status: 403, data: "Forbidden" },
     });
@@ -683,6 +701,7 @@ describe("SputumCollectionForm", () => {
     });
 
     consoleErrorSpy.mockRestore();
+    dateSpy.mockRestore();
   });
 
   test("shows validation errors when no samples have data and save progress is clicked", async () => {

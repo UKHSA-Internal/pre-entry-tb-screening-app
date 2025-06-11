@@ -6,7 +6,6 @@ import {
   FormProvider,
   SubmitHandler,
   useForm,
-  UseFormGetValues,
 } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
@@ -59,7 +58,6 @@ const SputumCollectionForm = () => {
     sampleRef: React.RefObject<HTMLDivElement>,
     control: Control<SputumCollectionFormFields>,
     errors: FieldErrors<SputumCollectionFormFields>,
-    getValues: UseFormGetValues<SputumCollectionFormFields>,
   ) => {
     const dateFieldName = `dateOfSputumSample${sampleNumber}` as keyof SputumCollectionFormFields;
     const methodFieldName =
@@ -71,33 +69,7 @@ const SputumCollectionForm = () => {
           <Controller
             name={dateFieldName}
             control={control}
-            rules={{
-              validate: (value: string | DateType) => {
-                if (typeof value !== "object" || value === null) {
-                  return true;
-                }
-                const hasData = value.day || value.month || value.year;
-                const methodValue = getValues(methodFieldName);
-                if (hasData || methodValue) {
-                  if (!hasData) {
-                    return `Enter the date sample ${sampleNumber} was taken on`;
-                  }
-
-                  if (hasData && (!value.day || !value.month || !value.year)) {
-                    return dateValidationMessages.sputumSampleDate.emptyFieldError.replace(
-                      "{sampleNumber}",
-                      sampleNumber.toString(),
-                    );
-                  }
-                  const result = validateDate(value, "sputumSampleDate");
-                  if (typeof result === "string") {
-                    return result.replace("{sampleNumber}", sampleNumber.toString());
-                  }
-                  return result;
-                }
-                return true;
-              },
-            }}
+            rules={{}}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
                 hint="For example, 31 3 2024"
@@ -117,7 +89,7 @@ const SputumCollectionForm = () => {
           />
         </div>
         <div className="govuk-grid-column-one-half">
-          <div style={sampleNumber === 3 ? { width: "177px" } : {}}>
+          <div>
             <Dropdown
               id={`collection-method-sample-${sampleNumber}`}
               label=""
@@ -162,53 +134,89 @@ const SputumCollectionForm = () => {
     control,
     handleSubmit,
     formState: { errors },
-    getValues,
   } = methods;
 
   const onSubmit: SubmitHandler<SputumCollectionFormFields> = async (formData) => {
     const submittedBy = lastClickedButtonId.current;
     lastClickedButtonId.current = null;
 
-    const isSampleFilled = (date: DateType, method: string) => {
-      const hasDate = date.day && date.month && date.year;
-      return hasDate && !!method;
-    };
+    let hasError = false;
+    if (submittedBy === "save-progress" || submittedBy === "save-and-continue-to-results") {
+      const isAnySampleFilled = Object.values(formData).some((field) => {
+        if (typeof field === "string") {
+          return field.trim() !== "";
+        }
+        if (typeof field === "object" && field !== null) {
+          const date = field as DateType;
+          return date.day || date.month || date.year;
+        }
+        return false;
+      });
 
-    const setSampleErrors = (sampleNumber: number, date: DateType, method: string) => {
-      if (!date.day || !date.month || !date.year) {
-        methods.setError(`dateOfSputumSample${sampleNumber}` as keyof SputumCollectionFormFields, {
-          type: "manual",
-          message: `Enter the date sample ${sampleNumber} was taken on`,
+      if (isAnySampleFilled) {
+        [1, 2, 3].forEach((sampleNumber) => {
+          const dateFieldName =
+            `dateOfSputumSample${sampleNumber}` as keyof SputumCollectionFormFields;
+          const methodFieldName =
+            `collectionMethodSample${sampleNumber}` as keyof SputumCollectionFormFields;
+          const date = formData[dateFieldName] as DateType;
+          const method = formData[methodFieldName] as string;
+
+          const hasDate = date.day || date.month || date.year;
+
+          if (!hasDate) {
+            methods.setError(dateFieldName, {
+              type: "manual",
+              message: `Enter the date sample ${sampleNumber} was taken on`,
+            });
+            hasError = true;
+          } else if (!date.day || !date.month || !date.year) {
+            methods.setError(dateFieldName, {
+              type: "manual",
+              message: dateValidationMessages.sputumSampleDate.emptyFieldError.replace(
+                "{sampleNumber}",
+                sampleNumber.toString(),
+              ),
+            });
+            hasError = true;
+          } else {
+            const result = validateDate(date, "sputumSampleDate");
+            if (typeof result === "string") {
+              methods.setError(dateFieldName, {
+                type: "manual",
+                message: result.replace("{sampleNumber}", sampleNumber.toString()),
+              });
+              hasError = true;
+            }
+          }
+
+          if (!method) {
+            methods.setError(methodFieldName, {
+              type: "manual",
+              message: `Enter Sputum sample ${sampleNumber} collection method`,
+            });
+            hasError = true;
+          }
+        });
+      } else {
+        [1, 2, 3].forEach((sampleNumber) => {
+          methods.setError(
+            `dateOfSputumSample${sampleNumber}` as keyof SputumCollectionFormFields,
+            {
+              type: "manual",
+              message: `Enter the date sample ${sampleNumber} was taken on`,
+            },
+          );
+          methods.setError(
+            `collectionMethodSample${sampleNumber}` as keyof SputumCollectionFormFields,
+            {
+              type: "manual",
+              message: `Enter Sputum sample ${sampleNumber} collection method`,
+            },
+          );
         });
         hasError = true;
       }
-      if (!method) {
-        methods.setError(
-          `collectionMethodSample${sampleNumber}` as keyof SputumCollectionFormFields,
-          {
-            type: "manual",
-            message: "Select if collection method was coughed up, etc.",
-          },
-        );
-        hasError = true;
-      }
-    };
-
-    const validateSample = (sampleNumber: 1 | 2 | 3) => {
-      const formDate = formData[`dateOfSputumSample${sampleNumber}`];
-      const formMethod = formData[`collectionMethodSample${sampleNumber}`];
-
-      if (!isSampleFilled(formDate, formMethod)) {
-        setSampleErrors(sampleNumber, formDate, formMethod);
-      }
-    };
-
-    let hasError = false;
-
-    if (submittedBy === "save-progress" || submittedBy === "save-and-continue-to-results") {
-      validateSample(1);
-      validateSample(2);
-      validateSample(3);
     }
 
     if (hasError) {
@@ -236,7 +244,7 @@ const SputumCollectionForm = () => {
       const dateValue = formData[formDateField] as DateType;
       const methodValue = formData[formMethodField] as string;
 
-      if (isSampleFilled(dateValue, methodValue)) {
+      if (dateValue.day && dateValue.month && dateValue.year && methodValue) {
         sputumSamples[sampleKey] = {
           dateOfSample: formatDate(dateValue),
           collectionMethod: methodValue,
@@ -318,7 +326,7 @@ const SputumCollectionForm = () => {
             <Heading level={3} size="s" title="Collection method" />
           </div>
         </div>
-        {renderSampleEditableForm(1, sample1DateRef, control, errors, getValues)}
+        {renderSampleEditableForm(1, sample1DateRef, control, errors)}
 
         <hr
           className="govuk-section-break govuk-section-break--l govuk-section-break--visible"
@@ -334,7 +342,7 @@ const SputumCollectionForm = () => {
             <Heading level={3} size="s" title="Collection method" />
           </div>
         </div>
-        {renderSampleEditableForm(2, sample2DateRef, control, errors, getValues)}
+        {renderSampleEditableForm(2, sample2DateRef, control, errors)}
 
         <hr
           className="govuk-section-break govuk-section-break--l govuk-section-break--visible"
@@ -350,7 +358,7 @@ const SputumCollectionForm = () => {
             <Heading level={3} size="s" title="Collection method" />
           </div>
         </div>
-        {renderSampleEditableForm(3, sample3DateRef, control, errors, getValues)}
+        {renderSampleEditableForm(3, sample3DateRef, control, errors)}
 
         <div style={{ marginTop: 40, display: "flex", gap: "20px" }}>
           <div onMouseDown={() => (lastClickedButtonId.current = "save-and-continue-to-results")}>
