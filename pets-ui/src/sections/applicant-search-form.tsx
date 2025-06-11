@@ -23,7 +23,6 @@ import {
   clearMedicalScreeningDetails,
   setMedicalScreeningDetailsFromApiResponse,
 } from "@/redux/medicalScreeningSlice";
-
 import { clearSputumDetails, setSputumDetailsFromApiResponse } from "@/redux/sputumSlice";
 import {
   clearTbCertificateDetails,

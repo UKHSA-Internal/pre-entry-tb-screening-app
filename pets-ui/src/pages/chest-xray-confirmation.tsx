@@ -4,6 +4,7 @@ import Container from "@/components/container/container";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import { selectChestXray } from "@/redux/chestXraySlice";
 import { useAppSelector } from "@/redux/hooks";
+import { YesOrNo } from "@/utils/enums";
 
 export default function ChestXrayConfirmation() {
   const chestXrayData = useAppSelector(selectChestXray);
@@ -34,7 +35,7 @@ export default function ChestXrayConfirmation() {
           <LinkLabel to="/tracker" title="TB screening progress tracker" externalLink={false} />.
         </>,
       ];
-        
+
   return (
     <Container title="Radiological outcome confirmed" breadcrumbItems={breadcrumbItems}>
       <Confirmation
