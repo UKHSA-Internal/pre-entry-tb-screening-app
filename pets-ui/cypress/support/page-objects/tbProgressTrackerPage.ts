@@ -1,4 +1,8 @@
 // This holds all fields for the TB Progress Tracker Page
+
+// Type safety for task statuses
+type TaskStatus = "Not yet started" | "Completed" | "Not required" | "Incomplete" | "In progress";
+
 export class TBProgressTrackerPage {
   visit(): void {
     cy.visit("/tracker");
@@ -97,6 +101,11 @@ export class TBProgressTrackerPage {
   // Verify task status
   verifyTaskStatus(taskName: string, expectedStatus: string): void {
     this.getTaskStatus(taskName).should("eq", expectedStatus);
+  }
+
+  // Verify task status with type safety
+  verifyTaskHasStatus(taskName: string, expectedStatus: TaskStatus): void {
+    this.verifyTaskStatus(taskName, expectedStatus);
   }
 
   // Click on specific task link (only works for tasks that have links)
@@ -220,17 +229,17 @@ export class TBProgressTrackerPage {
       });
   }
 
-  // Verify which tasks are clickable and which are not
+  // UPDATED: Verify which tasks are clickable and which are not based on business requirements
   verifyTaskClickability(): void {
-    // These should be clickable links
+    // These should be clickable links when accessible
     const clickableTasks = ["Visa applicant details", "Travel information"];
 
-    // These should NOT be clickable
+    // These should NOT be clickable until prerequisites are met
     const nonClickableTasks = [
-      "Medical history and TB symptoms",
-      "Radiological outcome",
-      "Sputum collection and results",
-      "TB certificate declaration",
+      "Medical history and TB symptoms", // Not accessible until prerequisites completed
+      "Radiological outcome", // Not accessible until prerequisites completed
+      "Sputum collection and results", // Not accessible until prerequisites completed
+      "TB certificate declaration", // Not accessible until ALL other tasks are completed
     ];
 
     clickableTasks.forEach((task) => {
@@ -239,6 +248,97 @@ export class TBProgressTrackerPage {
 
     nonClickableTasks.forEach((task) => {
       this.verifyTaskIsNotClickable(task);
+    });
+  }
+
+  // UPDATED: Verify task actionability based on status and business rules
+  verifyTaskActionabilityByStatus(taskName: string, status: TaskStatus): void {
+    // Special case for TB certificate declaration - should not be clickable until all other tasks are completed
+    if (taskName === "TB certificate declaration") {
+      this.verifyTaskIsNotClickable(taskName);
+      return;
+    }
+
+    // For other tasks, generally actionable when they are:
+    // - "Not yet started" (if prerequisites are met)
+    // - "Incomplete"
+    // - "In progress"
+    const actionableStatuses: TaskStatus[] = ["Not yet started", "Incomplete", "In progress"];
+    const shouldBeActionable = actionableStatuses.includes(status);
+
+    if (shouldBeActionable) {
+      // Additional check for tasks that require prerequisites
+      const tasksWithPrerequisites = [
+        "Medical history and TB symptoms",
+        "Radiological outcome",
+        "Sputum collection and results",
+      ];
+
+      if (tasksWithPrerequisites.includes(taskName)) {
+        // These tasks should not be clickable even if status suggests they should be
+        this.verifyTaskIsNotClickable(taskName);
+      } else {
+        this.verifyTaskIsClickable(taskName);
+      }
+    } else if (status === "Not required") {
+      // "Not required" tasks should definitely not be clickable
+      this.verifyTaskIsNotClickable(taskName);
+    }
+    // Note: "Completed" tasks may or may not be clickable depending on your app's behavior
+  }
+
+  // UPDATED: Get all task statuses at once (useful for debugging)
+  getAllTaskStatuses(): Cypress.Chainable<Record<string, string>> {
+    const taskNames = [
+      "Visa applicant details",
+      "Travel information",
+      "Medical history and TB symptoms",
+      "Radiological outcome",
+      "Sputum collection and results",
+      "TB certificate declaration",
+    ];
+
+    return cy.wrap({}).then(() => {
+      const statuses: Record<string, string> = {};
+
+      taskNames.forEach((taskName) => {
+        this.getTaskStatus(taskName).then((status) => {
+          statuses[taskName] = status;
+        });
+      });
+
+      return cy.wrap(statuses);
+    });
+  }
+
+  // NEW: Verify TB certificate declaration is not accessible when prerequisites are incomplete
+  verifyTBCertificateDeclarationNotAccessible(): void {
+    // Verify the task exists but is not clickable
+    this.verifyTaskExists("TB certificate declaration");
+    this.verifyTaskIsNotClickable("TB certificate declaration");
+
+    // Verify the status is "Not yet started" (as it shouldn't be accessible)
+    this.verifyTaskStatus("TB certificate declaration", "Not yet started");
+  }
+
+  // NEW: Verify prerequisites for TB certificate declaration
+  verifyTBCertificateDeclarationPrerequisites(): void {
+    const prerequisiteTasks = [
+      "Visa applicant details",
+      "Travel information",
+      "Medical history and TB symptoms",
+      "Radiological outcome",
+      "Sputum collection and results",
+    ];
+
+    prerequisiteTasks.forEach((task) => {
+      // All prerequisite tasks should be completed before TB certificate declaration is accessible
+      this.getTaskStatus(task).then((status) => {
+        if (status !== "Completed" && status !== "Not required") {
+          // If any prerequisite is not completed, TB certificate should not be accessible
+          this.verifyTBCertificateDeclarationNotAccessible();
+        }
+      });
     });
   }
 

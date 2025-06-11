@@ -13,7 +13,7 @@ import {
 } from "../support/test-helpers";
 import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetailsPage";
 
-describe("PETS Application task links should NOT be clickable until all pre-requisite tasks are completed", () => {
+describe("TB certificate declaration task links should NOT be clickable until all pre-requisite tasks are completed", () => {
   // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
@@ -143,8 +143,8 @@ describe("PETS Application task links should NOT be clickable until all pre-requ
     // Verify the applicant photo is displayed
     tbProgressTrackerPage.verifyApplicantPhotoDisplayed();
 
-    // Optionally verify the photo title attribute (if we know what it should be)
-    // tbProgressTrackerPage.verifyApplicantPhotoAttributes("passport-pic.jpeg");
+    // Optionally verify the photo title attribute (i'm trying this first)
+    tbProgressTrackerPage.verifyApplicantPhotoAttributes("passportpic.jpeg");
 
     // Verify task status information
     tbProgressTrackerPage.verifyVisaApplicantDetailsCompleted();
