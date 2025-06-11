@@ -43,12 +43,9 @@ test("Chest X-ray Information confirmation page renders correctly & redirects on
   const button = screen.getAllByRole("button")[0];
   const user = userEvent.setup();
 
-  expect(screen.getByText("Chest X-ray information recorded")).toBeTruthy();
-  expect(
-    screen.getByText("You cannot currently log sputum test information in this service."),
-  ).toBeTruthy();
-  expect(screen.getByText("TB screening progress tracker")).toHaveAttribute("href", "/tracker");
+  expect(screen.getByText("Radiological outcome confirmed")).toBeTruthy();
+  expect(screen.getByText("You can now return to the progress tracker.")).toBeTruthy();
   expect(button).toHaveTextContent("Continue");
   await user.click(button);
-  expect(useNavigateMock).toHaveBeenCalled();
+  expect(useNavigateMock).toHaveBeenCalledWith("/tracker");
 });

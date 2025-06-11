@@ -12,6 +12,7 @@ import { selectApplicant } from "@/redux/applicantSlice";
 import {
   clearChestXrayNotTakenDetails,
   clearChestXrayTakenDetails,
+  clearIsSputumRequired,
   selectChestXray,
   setChestXrayStatus,
   setChestXrayTaken,
@@ -42,6 +43,10 @@ const ChestXrayQuestionForm = () => {
     } else {
       dispatch(clearChestXrayTakenDetails());
       navigate("/chest-xray-not-taken");
+    }
+
+    if (data.chestXrayTaken != chestXrayData.chestXrayTaken) {
+      dispatch(clearIsSputumRequired());
     }
   };
 
