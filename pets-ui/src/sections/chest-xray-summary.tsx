@@ -115,6 +115,12 @@ const ChestXraySummary = () => {
       hiddenLabel: "radiographic findings",
       emptyValueText: "Enter radiographic findings (optional)",
     },
+    {
+      key: "Sputum required?",
+      value: chestXrayData.isSputumRequired,
+      link: `/sputum-question`,
+      hiddenLabel: "if sputum is required",
+    },
   ];
 
   const xrayNotTakenSummaryData = [
