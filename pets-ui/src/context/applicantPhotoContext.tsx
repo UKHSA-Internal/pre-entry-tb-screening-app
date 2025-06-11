@@ -2,6 +2,7 @@ import { createContext, ReactNode, useContext, useMemo, useState } from "react";
 
 type ApplicantPhotoContextType = {
   applicantPhotoFile: File | null;
+  applicantPhotoDataUrl: string | null;
   setApplicantPhotoFile: (file: File | null) => void;
 };
 
@@ -16,11 +17,29 @@ export const useApplicantPhoto = () => {
 };
 
 export const ApplicantPhotoProvider = ({ children }: { children: ReactNode }) => {
-  const [applicantPhotoFile, setApplicantPhotoFile] = useState<File | null>(null);
+  const [applicantPhotoFile, setApplicantPhotoFileState] = useState<File | null>(null);
+  const [applicantPhotoDataUrl, setApplicantPhotoDataUrl] = useState<string | null>(null);
+
+  const setApplicantPhotoFile = (file: File | null) => {
+    setApplicantPhotoFileState(file);
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setApplicantPhotoDataUrl(reader.result as string);
+      };
+      reader.onerror = () => {
+        setApplicantPhotoDataUrl(null);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setApplicantPhotoDataUrl(null);
+    }
+  };
 
   const value = useMemo(
-    () => ({ applicantPhotoFile, setApplicantPhotoFile }),
-    [applicantPhotoFile],
+    () => ({ applicantPhotoFile, applicantPhotoDataUrl, setApplicantPhotoFile }),
+    [applicantPhotoFile, applicantPhotoDataUrl],
   );
 
   return <ApplicantPhotoContext.Provider value={value}>{children}</ApplicantPhotoContext.Provider>;

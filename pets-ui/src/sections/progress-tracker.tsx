@@ -88,29 +88,30 @@ const ProgressTracker = () => {
         <div style={{ flexGrow: 1 }}>
           <ApplicantDataHeader applicantData={applicantData} />
         </div>
-        {applicantPhotoContext?.applicantPhotoFile && (
-          <div
-            style={{
-              marginLeft: "20px",
-              border: "1px solid #b1b4b6",
-              display: "flex",
-              alignItems: "stretch",
-            }}
-          >
-            <img
-              src={URL.createObjectURL(applicantPhotoContext.applicantPhotoFile)}
-              alt={"Applicant"}
-              title={applicantData.applicantPhotoFileName ?? undefined}
+        {applicantPhotoContext?.applicantPhotoFile &&
+          applicantPhotoContext?.applicantPhotoDataUrl && (
+            <div
               style={{
-                display: "block",
-                height: "100%",
-                maxHeight: "150px",
-                width: "auto",
-                objectFit: "cover",
+                marginLeft: "20px",
+                border: "1px solid #b1b4b6",
+                display: "flex",
+                alignItems: "stretch",
               }}
-            />
-          </div>
-        )}
+            >
+              <img
+                src={applicantPhotoContext.applicantPhotoDataUrl}
+                alt={"Applicant"}
+                title={applicantData.applicantPhotoFileName ?? undefined}
+                style={{
+                  display: "block",
+                  height: "100%",
+                  maxHeight: "150px",
+                  width: "auto",
+                  objectFit: "cover",
+                }}
+              />
+            </div>
+          )}
       </div>
 
       <p className="govuk-body">Complete all sections.</p>
