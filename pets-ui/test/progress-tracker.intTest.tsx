@@ -248,12 +248,12 @@ test("Progress tracker page displays incomplete application sections correctly &
 });
 
 test("Progress tracker page displays complete application sections correctly, links to summary page, and displays applicant photo from context", async () => {
-  const mockPhoto = new File(["dummy"], "test-photo.jpg", { type: "image/jpeg" });
+  const mockPhotoUrl = "http://localhost/test-photo.jpg";
   const SetPhoto: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { setApplicantPhotoFile } = useApplicantPhoto();
+    const { setApplicantPhotoUrl } = useApplicantPhoto();
     React.useEffect(() => {
-      setApplicantPhotoFile(mockPhoto);
-    }, [setApplicantPhotoFile]);
+      setApplicantPhotoUrl(mockPhotoUrl);
+    }, [setApplicantPhotoUrl]);
     return <>{children}</>;
   };
 
