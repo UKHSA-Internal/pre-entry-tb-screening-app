@@ -229,7 +229,7 @@ export class TBProgressTrackerPage {
       });
   }
 
-  // UPDATED: Verify which tasks are clickable and which are not based on business requirements
+  // Verify which tasks are clickable and which are not based on business requirements
   verifyTaskClickability(): void {
     // These should be clickable links when accessible
     const clickableTasks = ["Visa applicant details", "Travel information"];
@@ -251,7 +251,7 @@ export class TBProgressTrackerPage {
     });
   }
 
-  // UPDATED: Verify task actionability based on status and business rules
+  //Verify task actionability based on status and business rules
   verifyTaskActionabilityByStatus(taskName: string, status: TaskStatus): void {
     // Special case for TB certificate declaration - should not be clickable until all other tasks are completed
     if (taskName === "TB certificate declaration") {
@@ -284,10 +284,9 @@ export class TBProgressTrackerPage {
       // "Not required" tasks should definitely not be clickable
       this.verifyTaskIsNotClickable(taskName);
     }
-    // Note: "Completed" tasks may or may not be clickable depending on your app's behavior
   }
 
-  // UPDATED: Get all task statuses at once (useful for debugging)
+  // Get all task statuses at once (useful for debugging)
   getAllTaskStatuses(): Cypress.Chainable<Record<string, string>> {
     const taskNames = [
       "Visa applicant details",
@@ -311,7 +310,7 @@ export class TBProgressTrackerPage {
     });
   }
 
-  // NEW: Verify TB certificate declaration is not accessible when prerequisites are incomplete
+  //Verify TB certificate declaration is not accessible when prerequisites are incomplete
   verifyTBCertificateDeclarationNotAccessible(): void {
     // Verify the task exists but is not clickable
     this.verifyTaskExists("TB certificate declaration");
@@ -321,7 +320,7 @@ export class TBProgressTrackerPage {
     this.verifyTaskStatus("TB certificate declaration", "Not yet started");
   }
 
-  // NEW: Verify prerequisites for TB certificate declaration
+  //Verify prerequisites for TB certificate declaration
   verifyTBCertificateDeclarationPrerequisites(): void {
     const prerequisiteTasks = [
       "Visa applicant details",
