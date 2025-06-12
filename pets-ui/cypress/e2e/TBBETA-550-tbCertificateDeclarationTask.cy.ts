@@ -13,7 +13,7 @@ import {
 } from "../support/test-helpers";
 import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetailsPage";
 
-describe("PETS Application task links should NOT be clickable until all pre-requisite tasks are completed", () => {
+describe("TB certificate declaration task links should NOT be clickable until all pre-requisite tasks are completed", () => {
   // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
@@ -143,8 +143,8 @@ describe("PETS Application task links should NOT be clickable until all pre-requ
     // Verify the applicant photo is displayed
     tbProgressTrackerPage.verifyApplicantPhotoDisplayed();
 
-    // Optionally verify the photo title attribute (if we know what it should be)
-    // tbProgressTrackerPage.verifyApplicantPhotoAttributes("passport-pic.jpeg");
+    // Verify the photo title attribute
+    tbProgressTrackerPage.verifyApplicantPhotoAttributes("passportpic.jpeg");
 
     // Verify task status information
     tbProgressTrackerPage.verifyVisaApplicantDetailsCompleted();
@@ -152,7 +152,7 @@ describe("PETS Application task links should NOT be clickable until all pre-requ
     // Verify complete all sections text
     tbProgressTrackerPage.verifyCompleteAllSectionsText();
 
-    // Verify all tasks exist (both clickable links and non-clickable items)
+    // Verify all tasks exist
     tbProgressTrackerPage.verifyAllTasksExist();
 
     // Verify service name
@@ -189,7 +189,7 @@ describe("PETS Application task links should NOT be clickable until all pre-requ
     cy.go("back");
     tbProgressTrackerPage.verifyPageLoaded();
 
-    // Verify we can click on the "Visa applicant details" link
+    // Verify can click on the "Visa applicant details" link
     tbProgressTrackerPage.clickTaskLink("Visa applicant details");
     cy.url().should("include", "/applicant-summary");
 
