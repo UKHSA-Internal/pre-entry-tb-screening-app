@@ -195,9 +195,9 @@ describe("SputumCollectionForm", () => {
     ).toHaveValue("");
     expect(screen.getAllByRole("combobox")[0]).toHaveValue("");
 
-    expect(screen.getByRole("button", { name: "Save progress" })).toBeInTheDocument();
+    expect(screen.getByText("Save progress", { selector: "button" })).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Save and continue to results" }),
+      screen.getByText("Save and continue to results", { selector: "button" }),
     ).toBeInTheDocument();
   });
 
@@ -250,7 +250,7 @@ describe("SputumCollectionForm", () => {
       { preloadedState: preloadedStateWithEmptySputum },
     );
 
-    await user.click(screen.getByRole("button", { name: "Save and continue to results" }));
+    await user.click(screen.getByText("Save and continue to results", { selector: "button" }));
 
     expect(screen.getByTestId("error-summary")).toBeInTheDocument();
     expect(screen.getAllByText("Enter the date sample 1 was taken on")).toHaveLength(2);
@@ -275,7 +275,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.selectOptions(screen.getAllByRole("combobox")[0], "Coughed up");
 
-    await user.click(screen.getByRole("button", { name: "Save and continue to results" }));
+    await user.click(screen.getByText("Save and continue to results", { selector: "button" }));
 
     expect(screen.getByTestId("error-summary")).toBeInTheDocument();
     expect(
@@ -305,7 +305,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.selectOptions(screen.getAllByRole("combobox")[0], "Coughed up");
 
-    await user.click(screen.getByRole("button", { name: "Save and continue to results" }));
+    await user.click(screen.getByText("Save and continue to results", { selector: "button" }));
 
     expect(screen.getByTestId("error-summary")).toBeInTheDocument();
   });
@@ -366,7 +366,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.selectOptions(screen.getAllByRole("combobox")[2], "Gastric lavage");
 
-    await user.click(screen.getByRole("button", { name: "Save progress" }));
+    await user.click(screen.getByText("Save progress", { selector: "button" }));
 
     await waitFor(() => {
       expect(mockPostSputumDetails).toHaveBeenCalledWith(
@@ -462,7 +462,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.selectOptions(screen.getAllByRole("combobox")[2], "Gastric lavage");
 
-    await user.click(screen.getByRole("button", { name: "Save and continue to results" }));
+    await user.click(screen.getByText("Save and continue to results", { selector: "button" }));
 
     await waitFor(() => {
       expect(mockPostSputumDetails).toHaveBeenCalledWith(
@@ -533,7 +533,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.selectOptions(screen.getAllByRole("combobox")[2], "Not known");
 
-    await user.click(screen.getByRole("button", { name: "Save and continue to results" }));
+    await user.click(screen.getByText("Save and continue to results", { selector: "button" }));
 
     await waitFor(() => {
       expect(mockPostSputumDetails).toHaveBeenCalledWith(
@@ -620,7 +620,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.selectOptions(screen.getAllByRole("combobox")[2], "Gastric lavage");
 
-    await user.click(screen.getByRole("button", { name: "Save progress" }));
+    await user.click(screen.getByText("Save progress", { selector: "button" }));
 
     await waitFor(() => {
       expect(consoleErrorSpy).toHaveBeenCalledWith(
@@ -691,7 +691,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.selectOptions(screen.getAllByRole("combobox")[2], "Gastric lavage");
 
-    await user.click(screen.getByRole("button", { name: "Save progress" }));
+    await user.click(screen.getByText("Save progress", { selector: "button" }));
 
     await waitFor(() => {
       expect(consoleErrorSpy).toHaveBeenCalledWith(
@@ -712,7 +712,7 @@ describe("SputumCollectionForm", () => {
       { preloadedState: preloadedStateWithEmptySputum },
     );
 
-    await user.click(screen.getByRole("button", { name: "Save progress" }));
+    await user.click(screen.getByText("Save progress", { selector: "button" }));
 
     expect(screen.getByTestId("error-summary")).toBeInTheDocument();
     expect(mockPostSputumDetails).not.toHaveBeenCalled();
@@ -741,7 +741,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.selectOptions(screen.getAllByRole("combobox")[1], "Coughed up");
 
-    await user.click(screen.getByRole("button", { name: "Save progress" }));
+    await user.click(screen.getByText("Save progress", { selector: "button" }));
 
     expect(screen.getByTestId("error-summary")).toBeInTheDocument();
     expect(screen.getAllByText("Enter the date sample 1 was taken on")).toHaveLength(2);
