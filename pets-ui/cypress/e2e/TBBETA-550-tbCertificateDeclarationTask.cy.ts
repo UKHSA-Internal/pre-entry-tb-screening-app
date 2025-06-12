@@ -143,7 +143,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
     // Verify the applicant photo is displayed
     tbProgressTrackerPage.verifyApplicantPhotoDisplayed();
 
-    // Optionally verify the photo title attribute (i'm trying this first)
+    // Verify the photo title attribute
     tbProgressTrackerPage.verifyApplicantPhotoAttributes("passportpic.jpeg");
 
     // Verify task status information
@@ -152,7 +152,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
     // Verify complete all sections text
     tbProgressTrackerPage.verifyCompleteAllSectionsText();
 
-    // Verify all tasks exist (both clickable links and non-clickable items)
+    // Verify all tasks exist
     tbProgressTrackerPage.verifyAllTasksExist();
 
     // Verify service name
@@ -189,7 +189,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
     cy.go("back");
     tbProgressTrackerPage.verifyPageLoaded();
 
-    // Verify we can click on the "Visa applicant details" link
+    // Verify can click on the "Visa applicant details" link
     tbProgressTrackerPage.clickTaskLink("Visa applicant details");
     cy.url().should("include", "/applicant-summary");
 

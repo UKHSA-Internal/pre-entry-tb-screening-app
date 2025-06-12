@@ -1,7 +1,7 @@
 // This holds all fields for the TB Progress Tracker Page
 
 // Type safety for task statuses
-type TaskStatus = "Not yet started" | "Completed" | "Not required" | "Incomplete" | "In progress";
+type TaskStatus = "Not yet started" | "Completed" | "Not required" | "In progress";
 
 export class TBProgressTrackerPage {
   visit(): void {
@@ -261,9 +261,8 @@ export class TBProgressTrackerPage {
 
     // For other tasks, generally actionable when they are:
     // - "Not yet started" (if prerequisites are met)
-    // - "Incomplete"
     // - "In progress"
-    const actionableStatuses: TaskStatus[] = ["Not yet started", "Incomplete", "In progress"];
+    const actionableStatuses: TaskStatus[] = ["Not yet started", "In progress"];
     const shouldBeActionable = actionableStatuses.includes(status);
 
     if (shouldBeActionable) {
