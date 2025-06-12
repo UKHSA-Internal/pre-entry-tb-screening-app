@@ -13,7 +13,6 @@ import {
 } from "../support/test-helpers";
 import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetailsPage";
 
-
 describe("TB certificate declaration task links should NOT be clickable until all pre-requisite tasks are completed", () => {
   // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
