@@ -364,6 +364,8 @@ const SputumCollectionForm = () => {
           <div
             onMouseDown={() => (lastClickedButtonId.current = "save-and-continue-to-results")}
             role="button"
+            tabIndex={0}
+            aria-label="Save and continue to results"
           >
             <SubmitButton
               id="save-and-continue-to-results"
@@ -371,7 +373,12 @@ const SputumCollectionForm = () => {
               text="Save and continue to results"
             />
           </div>
-          <div onMouseDown={() => (lastClickedButtonId.current = "save-progress")} role="button">
+          <div
+            onMouseDown={() => (lastClickedButtonId.current = "save-progress")}
+            role="button"
+            tabIndex={0}
+            aria-label="Save progress"
+          >
             <SubmitButton id="save-progress" type={ButtonType.SECONDARY} text="Save progress" />
           </div>
         </div>
