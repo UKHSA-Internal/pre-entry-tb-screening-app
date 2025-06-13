@@ -9,6 +9,7 @@ import ApplicantPhotoPage from "./pages/applicant-photo";
 import ApplicantResultsPage from "./pages/applicant-results";
 import ApplicantSearchPage from "./pages/applicant-search";
 import ApplicantSummaryPage from "./pages/applicant-summary";
+import CheckSputumSampleInformationPage from "./pages/check-sputum-sample-information";
 import ChestXrayConfirmation from "./pages/chest-xray-confirmation";
 import ChestXrayFindingsPage from "./pages/chest-xray-findings";
 import ChestXrayNotTaken from "./pages/chest-xray-not-taken";
@@ -258,6 +259,16 @@ function App() {
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <SputumCollectionPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/check-sputum-sample-information"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <CheckSputumSampleInformationPage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
