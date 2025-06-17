@@ -41,7 +41,7 @@ function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement)
   } else {
     return (
       <dd className="govuk-summary-list__value">
-        {summaryElement.value || summaryElement.emptyValueText || ""}
+        {summaryElement.value ?? summaryElement.emptyValueText ?? ""}
       </dd>
     );
   }

@@ -182,12 +182,14 @@ const SputumSummary = () => {
   };
 
   const getSampleStatus = (sampleNumber: 1 | 2 | 3): ApplicationStatus => {
-    const sample =
-      sampleNumber === 1
-        ? sputumData.sample1
-        : sampleNumber === 2
-          ? sputumData.sample2
-          : sputumData.sample3;
+    let sample;
+    if (sampleNumber === 1) {
+      sample = sputumData.sample1;
+    } else if (sampleNumber === 2) {
+      sample = sputumData.sample2;
+    } else {
+      sample = sputumData.sample3;
+    }
 
     const hasCollectionData = !!(
       sample.collection.dateOfSample.day &&
@@ -218,12 +220,14 @@ const SputumSummary = () => {
   };
 
   const generateSampleSummaryData = (sampleNumber: 1 | 2 | 3) => {
-    const sample =
-      sampleNumber === 1
-        ? sputumData.sample1
-        : sampleNumber === 2
-          ? sputumData.sample2
-          : sputumData.sample3;
+    let sample;
+    if (sampleNumber === 1) {
+      sample = sputumData.sample1;
+    } else if (sampleNumber === 2) {
+      sample = sputumData.sample2;
+    } else {
+      sample = sputumData.sample3;
+    }
 
     const hasCollectionData: boolean = !!(
       sample.collection.dateOfSample.day &&
