@@ -26,6 +26,8 @@ interface DropdownProps {
   headingStyle?: React.CSSProperties;
   labelStyle?: React.CSSProperties;
   divStyle?: React.CSSProperties;
+  disabled?: boolean;
+  placeholder?: string;
 }
 
 export default function Dropdown(props: Readonly<DropdownProps>) {
@@ -56,12 +58,13 @@ export default function Dropdown(props: Readonly<DropdownProps>) {
         aria-describedby={getDescribedBy(props.id, props.hint, props.heading, props.label)}
         className={selectClass}
         defaultValue={props.defaultValue ?? ""}
+        disabled={props.disabled}
         {...register(props.formValue, {
           required: props.required,
         })}
       >
         <option disabled value="">
-          Select an option
+          {props.placeholder ?? "Select an option"}
         </option>
         {props.options.map((optionItem: OptionItem, index: number) => (
           <option value={optionItem.value} key={`${props.id}-${index + 1}`}>

@@ -9,6 +9,7 @@ import ApplicantPhotoPage from "./pages/applicant-photo";
 import ApplicantResultsPage from "./pages/applicant-results";
 import ApplicantSearchPage from "./pages/applicant-search";
 import ApplicantSummaryPage from "./pages/applicant-summary";
+import CheckSputumSampleInformationPage from "./pages/check-sputum-sample-information";
 import ChestXrayConfirmation from "./pages/chest-xray-confirmation";
 import ChestXrayFindingsPage from "./pages/chest-xray-findings";
 import ChestXrayNotTaken from "./pages/chest-xray-not-taken";
@@ -16,6 +17,7 @@ import ChestXrayQuestionPage from "./pages/chest-xray-question";
 import ChestXraySummaryPage from "./pages/chest-xray-summary";
 import ChestXrayUploadPage from "./pages/chest-xray-upload";
 import ContactDetailsPage from "./pages/contact-details";
+import EnterSputumSampleResultsPage from "./pages/enter-sputum-sample-results";
 import ErrorPage from "./pages/error-page";
 import HomePage from "./pages/home-page";
 import MedicalScreeningPage from "./pages/medical-screening";
@@ -258,6 +260,26 @@ function App() {
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <SputumCollectionPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/check-sputum-sample-information"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <CheckSputumSampleInformationPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/enter-sputum-sample-results"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <EnterSputumSampleResultsPage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }

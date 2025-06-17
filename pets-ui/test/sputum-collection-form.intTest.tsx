@@ -311,12 +311,6 @@ describe("SputumCollectionForm", () => {
   });
 
   test("updates store and navigates to '/check-sputum-sample-information' on 'Save progress' with valid data for all samples", async () => {
-    mockPostSputumDetails.mockResolvedValue({
-      data: { version: 2 },
-    });
-    const isoDate = "2025-06-10T00:00:00.000Z";
-    const dateSpy = vi.spyOn(Date.prototype, "toISOString").mockReturnValue(isoDate);
-
     const { store } = renderWithProviders(
       <Router>
         <SputumCollectionForm />
@@ -369,27 +363,7 @@ describe("SputumCollectionForm", () => {
     await user.click(screen.getByText("Save progress", { selector: "button" }));
 
     await waitFor(() => {
-      expect(mockPostSputumDetails).toHaveBeenCalledWith(
-        "test-app-123",
-        {
-          sample1: {
-            dateOfSample: "2024-07-15",
-            collectionMethod: "Induced",
-            dateUpdated: "2025-06-10",
-          },
-          sample2: {
-            dateOfSample: "2024-07-16",
-            collectionMethod: "Coughed up",
-            dateUpdated: "2025-06-10",
-          },
-          sample3: {
-            dateOfSample: "2024-07-17",
-            collectionMethod: "Gastric lavage",
-            dateUpdated: "2025-06-10",
-          },
-        },
-        1,
-      );
+      expect(mockPostSputumDetails).not.toHaveBeenCalled();
 
       const sputumState = store.getState().sputum;
       expect(sputumState.status).toBe(ApplicationStatus.IN_PROGRESS);
@@ -399,20 +373,27 @@ describe("SputumCollectionForm", () => {
         year: "2024",
       });
       expect(sputumState.sample1.collection.collectionMethod).toBe("Induced");
-      expect(sputumState.sample1.collection.submittedToDatabase).toBe(true);
-      expect(sputumState.version).toBe(2);
+      expect(sputumState.sample1.collection.submittedToDatabase).toBe(false);
+      expect(sputumState.sample2.collection.dateOfSample).toEqual({
+        day: "16",
+        month: "07",
+        year: "2024",
+      });
+      expect(sputumState.sample2.collection.collectionMethod).toBe("Coughed up");
+      expect(sputumState.sample2.collection.submittedToDatabase).toBe(false);
+      expect(sputumState.sample3.collection.dateOfSample).toEqual({
+        day: "17",
+        month: "07",
+        year: "2024",
+      });
+      expect(sputumState.sample3.collection.collectionMethod).toBe("Gastric lavage");
+      expect(sputumState.sample3.collection.submittedToDatabase).toBe(false);
+      expect(sputumState.version).toBe(1);
       expect(useNavigateMock).toHaveBeenCalledWith("/check-sputum-sample-information");
     });
-    dateSpy.mockRestore();
   });
 
   test("updates store and navigates to '/enter-sputum-sample-results' on 'Save and continue to results' with all samples valid", async () => {
-    mockPostSputumDetails.mockResolvedValue({
-      data: { version: 2 },
-    });
-    const isoDate = "2025-06-10T00:00:00.000Z";
-    const dateSpy = vi.spyOn(Date.prototype, "toISOString").mockReturnValue(isoDate);
-
     const { store } = renderWithProviders(
       <Router>
         <SputumCollectionForm />
@@ -465,46 +446,19 @@ describe("SputumCollectionForm", () => {
     await user.click(screen.getByText("Save and continue to results", { selector: "button" }));
 
     await waitFor(() => {
-      expect(mockPostSputumDetails).toHaveBeenCalledWith(
-        "test-app-123",
-        {
-          sample1: {
-            dateOfSample: "2023-01-01",
-            collectionMethod: "Coughed up",
-            dateUpdated: "2025-06-10",
-          },
-          sample2: {
-            dateOfSample: "2023-01-02",
-            collectionMethod: "Induced",
-            dateUpdated: "2025-06-10",
-          },
-          sample3: {
-            dateOfSample: "2023-01-03",
-            collectionMethod: "Gastric lavage",
-            dateUpdated: "2025-06-10",
-          },
-        },
-        1,
-      );
+      expect(mockPostSputumDetails).not.toHaveBeenCalled();
 
       const sputumState = store.getState().sputum;
       expect(sputumState.status).toBe(ApplicationStatus.IN_PROGRESS);
-      expect(sputumState.sample1.collection.submittedToDatabase).toBe(true);
-      expect(sputumState.sample2.collection.submittedToDatabase).toBe(true);
-      expect(sputumState.sample3.collection.submittedToDatabase).toBe(true);
-      expect(sputumState.version).toBe(2);
+      expect(sputumState.sample1.collection.submittedToDatabase).toBe(false);
+      expect(sputumState.sample2.collection.submittedToDatabase).toBe(false);
+      expect(sputumState.sample3.collection.submittedToDatabase).toBe(false);
+      expect(sputumState.version).toBe(1);
       expect(useNavigateMock).toHaveBeenCalledWith("/enter-sputum-sample-results");
     });
-    dateSpy.mockRestore();
   });
 
   test("handles form with pre-filled data correctly", async () => {
-    mockPostSputumDetails.mockResolvedValue({
-      data: { version: 3 },
-    });
-    const isoDate = "2025-06-10T00:00:00.000Z";
-    const dateSpy = vi.spyOn(Date.prototype, "toISOString").mockReturnValue(isoDate);
-
     const { store } = renderWithProviders(
       <Router>
         <SputumCollectionForm />
@@ -536,41 +490,15 @@ describe("SputumCollectionForm", () => {
     await user.click(screen.getByText("Save and continue to results", { selector: "button" }));
 
     await waitFor(() => {
-      expect(mockPostSputumDetails).toHaveBeenCalledWith(
-        "test-app-123",
-        {
-          sample1: {
-            dateOfSample: "2024-05-10",
-            collectionMethod: "Coughed up",
-            dateUpdated: "2025-06-10",
-          },
-          sample2: {
-            dateOfSample: "2024-06-15",
-            collectionMethod: "Induced",
-            dateUpdated: "2025-06-10",
-          },
-          sample3: {
-            dateOfSample: "2024-07-20",
-            collectionMethod: "Not known",
-            dateUpdated: "2025-06-10",
-          },
-        },
-        2,
-      );
+      expect(mockPostSputumDetails).not.toHaveBeenCalled();
 
       const sputumState = store.getState().sputum;
-      expect(sputumState.version).toBe(3);
+      expect(sputumState.version).toBe(2);
       expect(useNavigateMock).toHaveBeenCalledWith("/enter-sputum-sample-results");
     });
-    dateSpy.mockRestore();
   });
 
-  test("handles API error gracefully", async () => {
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const isoDate = "2025-06-10T00:00:00.000Z";
-    const dateSpy = vi.spyOn(Date.prototype, "toISOString").mockReturnValue(isoDate);
-    mockPostSputumDetails.mockRejectedValue(new Error("Network error"));
-
+  test("handles form submission without API errors since no API calls are made", async () => {
     renderWithProviders(
       <Router>
         <SputumCollectionForm />
@@ -623,26 +551,13 @@ describe("SputumCollectionForm", () => {
     await user.click(screen.getByText("Save progress", { selector: "button" }));
 
     await waitFor(() => {
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Error saving sputum details:",
-        expect.any(Error),
-      );
-      expect(useNavigateMock).not.toHaveBeenCalled();
+      expect(mockPostSputumDetails).not.toHaveBeenCalled();
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-sputum-sample-information");
     });
-
-    consoleErrorSpy.mockRestore();
-    dateSpy.mockRestore();
   });
 
-  test("handles 403 authentication error specifically", async () => {
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const isoDate = "2025-06-10T00:00:00.000Z";
-    const dateSpy = vi.spyOn(Date.prototype, "toISOString").mockReturnValue(isoDate);
-    mockPostSputumDetails.mockRejectedValue({
-      response: { status: 403, data: "Forbidden" },
-    });
-
-    renderWithProviders(
+  test("saves form data to Redux state without API calls", async () => {
+    const { store } = renderWithProviders(
       <Router>
         <SputumCollectionForm />
       </Router>,
@@ -694,14 +609,19 @@ describe("SputumCollectionForm", () => {
     await user.click(screen.getByText("Save progress", { selector: "button" }));
 
     await waitFor(() => {
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Error saving sputum details:",
-        expect.any(Object),
-      );
-    });
+      expect(mockPostSputumDetails).not.toHaveBeenCalled();
 
-    consoleErrorSpy.mockRestore();
-    dateSpy.mockRestore();
+      const sputumState = store.getState().sputum;
+      expect(sputumState.sample1.collection.dateOfSample).toEqual({
+        day: "15",
+        month: "07",
+        year: "2024",
+      });
+      expect(sputumState.sample1.collection.collectionMethod).toBe("Coughed up");
+      expect(sputumState.sample1.collection.submittedToDatabase).toBe(false);
+
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-sputum-sample-information");
+    });
   });
 
   test("shows validation errors when no samples have data and save progress is clicked", async () => {

@@ -9,14 +9,12 @@ import {
 } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import { postSputumDetails } from "@/api/api";
 import { DateType } from "@/applicant";
 import DateTextInput from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import SubmitButton from "@/components/submitButton/submitButton";
-import { selectApplication } from "@/redux/applicationSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   selectSputum,
@@ -24,7 +22,6 @@ import {
   setSample2Collection,
   setSample3Collection,
   setSputumStatus,
-  setSputumVersion,
 } from "@/redux/sputumSlice";
 import { ApplicationStatus, ButtonType, SputumCollectionMethod } from "@/utils/enums";
 import { validateDate } from "@/utils/helpers";
@@ -50,7 +47,6 @@ const SputumCollectionForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const sputumData = useAppSelector(selectSputum);
-  const applicationData = useAppSelector(selectApplication);
   const lastClickedButtonId = useRef<string | null>(null);
 
   const renderSampleEditableForm = (
@@ -99,6 +95,7 @@ const SputumCollectionForm = () => {
                 (errors as Record<string, { message?: string }>)?.[methodFieldName]?.message ?? ""
               }
               required=""
+              placeholder="Select"
             />
           </div>
         </div>
@@ -136,7 +133,7 @@ const SputumCollectionForm = () => {
     formState: { errors },
   } = methods;
 
-  const onSubmit: SubmitHandler<SputumCollectionFormFields> = async (formData) => {
+  const onSubmit: SubmitHandler<SputumCollectionFormFields> = (formData) => {
     const submittedBy = lastClickedButtonId.current;
     lastClickedButtonId.current = null;
 
@@ -225,18 +222,10 @@ const SputumCollectionForm = () => {
 
     dispatch(setSputumStatus(ApplicationStatus.IN_PROGRESS));
 
-    const sputumSamples: Record<
-      string,
-      { dateOfSample: string; collectionMethod: string; dateUpdated: string }
-    > = {};
-
-    const formatDate = (date: DateType) =>
-      `${date.year}-${date.month.padStart(2, "0")}-${date.day.padStart(2, "0")}`;
-
     const sampleKeys = ["sample1", "sample2", "sample3"] as const;
     const dispatchActions = [setSample1Collection, setSample2Collection, setSample3Collection];
 
-    sampleKeys.forEach((sampleKey, index) => {
+    sampleKeys.forEach((_, index) => {
       const formDateField = `dateOfSputumSample${index + 1}` as keyof SputumCollectionFormFields;
       const formMethodField =
         `collectionMethodSample${index + 1}` as keyof SputumCollectionFormFields;
@@ -245,52 +234,15 @@ const SputumCollectionForm = () => {
       const methodValue = formData[formMethodField] as string;
 
       if (dateValue.day && dateValue.month && dateValue.year && methodValue) {
-        sputumSamples[sampleKey] = {
-          dateOfSample: formatDate(dateValue),
-          collectionMethod: methodValue,
-          dateUpdated: new Date().toISOString().split("T")[0],
-        };
+        dispatch(
+          dispatchActions[index]({
+            dateOfSample: dateValue,
+            collectionMethod: methodValue,
+            submittedToDatabase: false,
+          }),
+        );
       }
     });
-
-    if (Object.keys(sputumSamples).length > 0) {
-      try {
-        console.info("Attempting to save sputum details:", {
-          applicationId: applicationData.applicationId,
-          sputumSamples,
-          version: sputumData.version,
-        });
-        const response = await postSputumDetails(
-          applicationData.applicationId,
-          sputumSamples,
-          sputumData.version,
-        );
-
-        if (response.data.version !== undefined) {
-          dispatch(setSputumVersion(response.data.version));
-        }
-
-        sampleKeys.forEach((sampleKey, index) => {
-          if (sputumSamples[sampleKey]) {
-            const formDateField =
-              `dateOfSputumSample${index + 1}` as keyof SputumCollectionFormFields;
-            const formMethodField =
-              `collectionMethodSample${index + 1}` as keyof SputumCollectionFormFields;
-
-            dispatch(
-              dispatchActions[index]({
-                dateOfSample: formData[formDateField] as DateType,
-                collectionMethod: formData[formMethodField] as string,
-                submittedToDatabase: true,
-              }),
-            );
-          }
-        });
-      } catch (error: unknown) {
-        console.error("Error saving sputum details:", error);
-        return;
-      }
-    }
 
     if (submittedBy === "save-progress") {
       navigate("/check-sputum-sample-information");

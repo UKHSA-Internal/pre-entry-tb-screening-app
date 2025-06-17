@@ -5,7 +5,7 @@ import LinkLabel from "../linkLabel/LinkLabel";
 export type SummaryElement = {
   key: string;
   value: string | Array<string> | undefined;
-  link: string;
+  link?: string;
   hiddenLabel: string;
   emptyValueText?: string;
 };
@@ -27,7 +27,8 @@ function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement)
                 </dd>
               );
             })
-          : status != ApplicationStatus.COMPLETE && (
+          : status != ApplicationStatus.COMPLETE &&
+            summaryElement.link && (
               <LinkLabel
                 to={summaryElement.link}
                 title={summaryElement.emptyValueText ?? ""}
@@ -40,16 +41,7 @@ function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement)
   } else {
     return (
       <dd className="govuk-summary-list__value">
-        {summaryElement.value
-          ? summaryElement.value
-          : status != ApplicationStatus.COMPLETE && (
-              <LinkLabel
-                to={summaryElement.link}
-                title={summaryElement.emptyValueText ?? ""}
-                hiddenLabel=""
-                externalLink={false}
-              />
-            )}
+        {summaryElement.value || summaryElement.emptyValueText || ""}
       </dd>
     );
   }
@@ -63,19 +55,27 @@ export default function Summary(props: Readonly<SummaryProps>) {
           <div className="govuk-summary-list__row" key={summaryElement.key}>
             <dt className="govuk-summary-list__key">{summaryElement.key}</dt>
             {summaryValue(props.status, summaryElement)}
-            {(props.status == ApplicationStatus.NOT_YET_STARTED ||
-              props.status == ApplicationStatus.IN_PROGRESS) &&
-              summaryElement.value &&
-              summaryElement.value.length > 0 && (
-                <dd className="govuk-summary-list__actions">
-                  <LinkLabel
-                    to={summaryElement.link}
-                    title="Change"
-                    hiddenLabel={" " + summaryElement.hiddenLabel}
-                    externalLink={false}
-                  />
-                </dd>
-              )}
+            {(() => {
+              const hasValue = Array.isArray(summaryElement.value)
+                ? summaryElement.value.length > 0
+                : !!summaryElement.value;
+
+              return (
+                summaryElement.link &&
+                summaryElement.link.length > 0 &&
+                hasValue &&
+                props.status !== ApplicationStatus.COMPLETE && (
+                  <dd className="govuk-summary-list__actions">
+                    <LinkLabel
+                      to={summaryElement.link}
+                      title="Change"
+                      hiddenLabel={" " + summaryElement.hiddenLabel}
+                      externalLink={false}
+                    />
+                  </dd>
+                )
+              );
+            })()}
           </div>
         );
       })}
