@@ -39,11 +39,16 @@ function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement)
       </div>
     );
   } else {
-    return (
-      <dd className="govuk-summary-list__value">
-        {summaryElement.value ?? summaryElement.emptyValueText ?? ""}
-      </dd>
-    );
+    let displayValue: string;
+    if (summaryElement.value) {
+      displayValue = summaryElement.value;
+    } else if (summaryElement.emptyValueText) {
+      displayValue = summaryElement.emptyValueText;
+    } else {
+      displayValue = "";
+    }
+
+    return <dd className="govuk-summary-list__value">{displayValue}</dd>;
   }
 }
 
