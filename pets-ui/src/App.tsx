@@ -17,6 +17,7 @@ import ChestXrayQuestionPage from "./pages/chest-xray-question";
 import ChestXraySummaryPage from "./pages/chest-xray-summary";
 import ChestXrayUploadPage from "./pages/chest-xray-upload";
 import ContactDetailsPage from "./pages/contact-details";
+import EnterSputumSampleResultsPage from "./pages/enter-sputum-sample-results";
 import ErrorPage from "./pages/error-page";
 import HomePage from "./pages/home-page";
 import MedicalScreeningPage from "./pages/medical-screening";
@@ -269,6 +270,16 @@ function App() {
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <CheckSputumSampleInformationPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/enter-sputum-sample-results"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <EnterSputumSampleResultsPage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }

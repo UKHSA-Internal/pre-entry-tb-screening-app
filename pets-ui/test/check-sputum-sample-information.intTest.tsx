@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Mock, vi } from "vitest";
 
+import { postSputumDetails } from "@/api/api";
 import {
   DateType,
   ReduxApplicantDetailsType,
@@ -21,6 +22,16 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
     useNavigate: (): Mock => useNavigateMock,
   };
 });
+
+vi.mock("@/api/api", () => ({
+  postSputumDetails: vi.fn().mockResolvedValue({
+    data: {
+      version: 1,
+    },
+  }),
+}));
+
+const mockPostSputumDetails = postSputumDetails as Mock;
 
 const emptyDate: DateType = { day: "", month: "", year: "" };
 
@@ -66,8 +77,9 @@ const sampleWithData: ReduxSputumSampleType = {
   lastUpdatedDate: { day: "15", month: "06", year: "2025" },
 };
 
-const initialApplicantData: ReduxApplicantDetailsType = {
+const initialApplicantData: ReduxApplicantDetailsType & { applicationId: string } = {
   status: ApplicationStatus.NOT_YET_STARTED,
+  applicationId: "test-123",
   fullName: "John Doe",
   sex: "Male",
   dateOfBirth: {
@@ -176,7 +188,7 @@ describe("SputumSummary", () => {
     expect(screen.getByText(PositiveOrNegative.NEGATIVE)).toBeInTheDocument();
 
     const changeLinks = screen.getAllByRole("link", { name: /Change/ });
-    expect(changeLinks).toHaveLength(8);
+    expect(changeLinks).toHaveLength(12);
 
     const noDataTexts = screen.getAllByText("No data");
     expect(noDataTexts).toHaveLength(8);
@@ -205,6 +217,28 @@ describe("SputumSummary", () => {
     const saveButton = screen.getByText("Save and continue");
     await user.click(saveButton);
 
+    expect(useNavigateMock).toHaveBeenCalledWith("/sputum-confirmation");
+    expect(mockPostSputumDetails).toHaveBeenCalledTimes(1);
+  });
+
+  it("should not call API when no sample data entered", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(
+      <Router>
+        <SputumSummary />
+      </Router>,
+      {
+        preloadedState: {
+          applicant: initialApplicantData,
+          sputum: { ...initialSputumDataEmpty, status: ApplicationStatus.NOT_YET_STARTED },
+        },
+      },
+    );
+
+    await user.click(screen.getByText("Save and continue"));
+
+    expect(mockPostSputumDetails).not.toHaveBeenCalled();
     expect(useNavigateMock).toHaveBeenCalledWith("/sputum-confirmation");
   });
 });
