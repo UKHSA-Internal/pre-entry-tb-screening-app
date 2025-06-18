@@ -10,6 +10,7 @@ import {
   Statement,
   StatementEffect,
 } from "aws-lambda";
+import jwt from "jsonwebtoken";
 
 import { assertEnvExists } from "../shared/config";
 import { logger, withRequest } from "../shared/logger";
@@ -22,6 +23,18 @@ export const handler = async (
 ) => {
   try {
     logger.info("Authorizer lambda triggered");
+
+    const allowedTenantIds =
+      (assertEnvExists(process.env.VITE_ALLOWED_TENANT_IDS) &&
+        process.env.VITE_ALLOWED_TENANT_IDS?.split(",")) ??
+      [];
+    const allowedClientIds =
+      (assertEnvExists(process.env.VITE_ALLOWED_CLIENT_IDS) &&
+        process.env.VITE_ALLOWED_CLIENT_IDS?.split(",")) ??
+      [];
+
+    const roleMap =
+      assertEnvExists(process.env.VITE_ROLE_MAP) && JSON.parse(process.env.VITE_ROLE_MAP || "{}");
 
     if (!event.headers) {
       logger.error("Headers are missing");
@@ -36,24 +49,56 @@ export const handler = async (
       logger.error("Authorization Headers missing");
       throw new Error("Authorization Headers missing");
     }
+    // Decode without verifying to extract tenant/client
 
-    const TENANT_ID = assertEnvExists(process.env.VITE_MSAL_TENANT_ID);
-    const CLIENT_ID = assertEnvExists(process.env.VITE_MSAL_CLIENT_ID);
+    const decodedHeader = jwt.decode(token, { complete: true });
+
+    if (!decodedHeader || typeof decodedHeader === "string") {
+      throw new Error("Invalid token");
+    }
+
+    const payload = decodedHeader.payload as JwtPayload;
+
+    const tenantId = payload.tid as string; // Azure AD tenant ID
+    const clientId = payload.aud as string; // Client ID (Application ID)
+
+    // Validate against allowed tenant and client lists
+    if (!allowedTenantIds.includes(tenantId)) {
+      throw new Error(`Unauthorized tenant: ${tenantId}`);
+    }
+
+    if (!allowedClientIds.includes(clientId)) {
+      throw new Error(`Unauthorized client ID: ${clientId}`);
+    }
 
     const verifier = JwtVerifier.create({
-      issuer: `https://${TENANT_ID}.ciamlogin.com/${TENANT_ID}/v2.0`,
-      audience: CLIENT_ID,
-      jwksUri: `https://login.microsoftonline.com/${TENANT_ID}/discovery/keys`,
+      issuer: `https://${tenantId}.ciamlogin.com/${tenantId}/v2.0`,
+      audience: clientId,
+      jwksUri: `https://login.microsoftonline.com/${tenantId}/discovery/keys`,
     });
 
-    const payload = await verifier.verify(token);
+    const verifiedPayload = await verifier.verify(token);
 
-    if (!payload.ClinicID) {
+    if (!verifiedPayload.ClinicID) {
       logger.error("Missing ClinicID");
     }
 
+    const clientIdFromPayload = verifiedPayload.aud as string;
+    const userRoles = extractRoles(payload.roles);
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const allowedRoles = roleMap[clientIdFromPayload] || [];
+
+    // Check if any user role matches allowed roles
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    const isAuthorized = userRoles.some((role) => allowedRoles.includes(role));
+
+    if (!isAuthorized) {
+      throw new Error(`Unauthorized role for client ${clientId}`);
+    }
+
     logger.info("token verified successfully");
-    callback(null, generatePolicy("user", "Allow", payload));
+    callback(null, generatePolicy("user", "Allow", verifiedPayload));
   } catch (error) {
     logger.error(error, "Authorization failed");
     callback("Unauthorized");
@@ -109,3 +154,10 @@ const generatePolicy = (
 
   return authResponse;
 };
+
+const extractRoles = (raw: unknown): string[] =>
+  Array.isArray(raw)
+    ? raw.filter((r): r is string => typeof r === "string")
+    : typeof raw === "string"
+      ? [raw]
+      : [];

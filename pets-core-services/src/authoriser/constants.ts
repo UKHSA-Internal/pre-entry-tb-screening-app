@@ -7,6 +7,8 @@ export enum Roles {
   ApplicantsRead = "applicants.read",
   ClinicsRead = "clinics.read",
   ImagingWrite = "imaging.write",
+  QualityReviewRead = "QualityReview.Read",
+  QualityReviewWrite = "QualityReview.Write",
 }
 const AWS_ACCOUNT_ID = assertEnvExists(process.env.AWS_ACCOUNT_ID);
 const API_GATEWAY_ID = assertEnvExists(process.env.API_GATEWAY_ID);
@@ -38,5 +40,13 @@ export const policyMapping: Record<Roles, string[]> = {
   [Roles.ClinicsRead]: [
     `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/GET/clinics`,
     `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/GET/clinics/*`,
+  ],
+  [Roles.QualityReviewRead]: [
+    `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/GET/qa-application/`,
+    `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/GET/qa-application/*`,
+  ],
+  [Roles.QualityReviewWrite]: [
+    `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/GET/qa-application/`,
+    `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/GET/qa-application/*`,
   ],
 };
