@@ -34,7 +34,7 @@ export const handler = async (
       [];
 
     const roleMap =
-      assertEnvExists(process.env.VITE_ROLE_MAP) && JSON.parse(process.env.VITE_ROLE_MAP || "{}");
+      assertEnvExists(process.env.VITE_ROLE_MAP) && JSON.parse(process.env.VITE_ROLE_MAP ?? "{}");
 
     if (!event.headers) {
       logger.error("Headers are missing");
@@ -86,8 +86,8 @@ export const handler = async (
     const clientIdFromPayload = verifiedPayload.aud as string;
     const userRoles = extractRoles(payload.roles);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const allowedRoles = roleMap[clientIdFromPayload] || [];
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    const allowedRoles = roleMap[clientIdFromPayload] ?? [];
 
     // Check if any user role matches allowed roles
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
@@ -155,9 +155,14 @@ const generatePolicy = (
   return authResponse;
 };
 
-const extractRoles = (raw: unknown): string[] =>
-  Array.isArray(raw)
-    ? raw.filter((r): r is string => typeof r === "string")
-    : typeof raw === "string"
-      ? [raw]
-      : [];
+const extractRoles = (raw: unknown): string[] => {
+  if (Array.isArray(raw)) {
+    return raw.filter((r): r is string => typeof r === "string");
+  }
+
+  if (typeof raw === "string") {
+    return [raw];
+  }
+
+  return [];
+};
