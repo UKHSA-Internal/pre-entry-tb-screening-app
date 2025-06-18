@@ -112,13 +112,6 @@ importers:
       aws-jwt-verify:
         specifier: ^5.0.0
         version: 5.0.0
-      aws-xray-sdk:
-        specifier: ^3.10.1
-        version: 3.10.2
-      clean-deep:
-        specifier: ^3.4.0
-        version: 3.4.0
-
       pino:
         specifier: ^9.6.0
         version: 9.6.0
