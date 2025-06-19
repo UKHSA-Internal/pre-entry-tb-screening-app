@@ -7,8 +7,8 @@ import {
   ChestXRayResult,
   HistoryOfConditionsUnder11,
   MenstrualPeriods,
-  PositiveOrNegative,
   PregnancyStatus,
+  SmearAndCultureResultOptions,
   SputumCollectionMethod,
   TbSymptomsOptions,
   VisaOptions,
@@ -287,10 +287,10 @@ export const SputumSampleSchema = z.object({
   collectionMethod: z.nativeEnum(SputumCollectionMethod).openapi({
     description: "Collection Method of Sputum Sample",
   }),
-  smearResult: z.nativeEnum(PositiveOrNegative).optional().openapi({
+  smearResult: z.nativeEnum(SmearAndCultureResultOptions).optional().openapi({
     description: "Smear Result",
   }),
-  cultureResult: z.nativeEnum(PositiveOrNegative).optional().openapi({
+  cultureResult: z.nativeEnum(SmearAndCultureResultOptions).optional().openapi({
     description: "Culture Result",
   }),
   dateUpdated: z.string().or(z.date()).openapi({
@@ -301,8 +301,8 @@ export const SputumSampleSchema = z.object({
 export const SputumSampleCompletionSchema = z.object({
   dateOfSample: z.string().or(z.date()),
   collectionMethod: z.nativeEnum(SputumCollectionMethod),
-  smearResult: z.nativeEnum(PositiveOrNegative),
-  cultureResult: z.nativeEnum(PositiveOrNegative),
+  smearResult: z.nativeEnum(SmearAndCultureResultOptions),
+  cultureResult: z.nativeEnum(SmearAndCultureResultOptions),
   dateUpdated: z.string().or(z.date()),
 });
 
