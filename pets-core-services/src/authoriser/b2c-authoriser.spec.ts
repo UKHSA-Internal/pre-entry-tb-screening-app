@@ -167,18 +167,6 @@ describe("Authorizer Lambda", () => {
     // Assert
     expect(mockVerify).toHaveBeenCalledWith(mockToken);
     expect(callback).toHaveBeenCalledWith("Unauthorized");
-
-    // expect(callback).toHaveBeenCalledWith(null, {
-    //   context: {
-    //     clinicId: "Apollo Clinic",
-    //     createdBy: "johndoe@email.com",
-    //   },
-    //   policyDocument: {
-    //     Statement: [],
-    //     Version: "2012-10-17",
-    //   },
-    //   principalId: "user",
-    // });
   });
 
   it("should return Unauthorized if Clinic ID is missing", async () => {
