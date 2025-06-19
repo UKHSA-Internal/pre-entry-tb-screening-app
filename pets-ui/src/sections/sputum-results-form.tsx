@@ -35,6 +35,70 @@ const SputumResultsForm = () => {
   const sputumData = useAppSelector(selectSputum);
   const [isLoading, setIsLoading] = useState(false);
 
+  const selectStyle: React.CSSProperties = {
+    minWidth: "auto",
+    width: "100%",
+    height: "35px",
+    padding: "2px 8px",
+  };
+
+  const disabledSelectStyle: React.CSSProperties = {
+    ...selectStyle,
+    backgroundColor: "#f3f2f1",
+    color: "#626a6e",
+    cursor: "not-allowed",
+  };
+
+  const formStyle: React.CSSProperties = {
+    maxWidth: "540px",
+    margin: "0",
+  };
+
+  const headingStyle: React.CSSProperties = {
+    marginBottom: "70px",
+  };
+
+  const columnCenterStyle: React.CSSProperties = {
+    textAlign: "center",
+  };
+
+  const flexRowStyle: React.CSSProperties = {
+    display: "flex",
+    alignItems: "flex-end",
+    marginBottom: "2px",
+  };
+
+  const flexCenterStyle: React.CSSProperties = {
+    display: "flex",
+    justifyContent: "center",
+  };
+
+  const dropdownContainerStyle: React.CSSProperties = {
+    width: "100%",
+    maxWidth: "150px",
+  };
+
+  const dropdownDivStyle: React.CSSProperties = {
+    minWidth: "auto",
+    width: "100%",
+    marginBottom: "10px",
+  };
+
+  const hrStyle: React.CSSProperties = {
+    marginTop: "2px",
+    marginBottom: "2px",
+  };
+
+  const hrFirstStyle: React.CSSProperties = {
+    marginTop: "5px",
+    marginBottom: "10px",
+  };
+
+  const hrLastStyle: React.CSSProperties = {
+    marginTop: "2px",
+    marginBottom: "15px",
+  };
+
   const methods = useForm<SputumResultsFormType>({
     reValidateMode: "onSubmit",
     defaultValues: {
@@ -150,93 +214,32 @@ const SputumResultsForm = () => {
 
   return (
     <div>
-      <style>
-        {`
-          #sample1-smear-result .govuk-select,
-          #sample1-culture-result .govuk-select,
-          #sample2-smear-result .govuk-select,
-          #sample2-culture-result .govuk-select,
-          #sample3-smear-result .govuk-select,
-          #sample3-culture-result .govuk-select {
-            min-width: auto !important;
-            width: 100% !important;
-            height: 35px !important;
-            padding: 2px 8px !important;
-          }
-         
-          #sample1-smear-result .govuk-select:disabled,
-          #sample1-culture-result .govuk-select:disabled,
-          #sample2-smear-result .govuk-select:disabled,
-          #sample2-culture-result .govuk-select:disabled,
-          #sample3-smear-result .govuk-select:disabled,
-          #sample3-culture-result .govuk-select:disabled {
-            background-color: #f3f2f1 !important;
-            color: #626a6e !important;
-            cursor: not-allowed !important;
-          }
-         
-          #sample1-smear-result .govuk-select option[disabled],
-          #sample1-culture-result .govuk-select option[disabled],
-          #sample2-smear-result .govuk-select option[disabled],
-          #sample2-culture-result .govuk-select option[disabled],
-          #sample3-smear-result .govuk-select option[disabled],
-          #sample3-culture-result .govuk-select option[disabled] {
-            font-size: 0 !important;
-          }
-         
-          #sample1-smear-result .govuk-select option[disabled]:before,
-          #sample1-culture-result .govuk-select option[disabled]:before,
-          #sample2-smear-result .govuk-select option[disabled]:before,
-          #sample2-culture-result .govuk-select option[disabled]:before,
-          #sample3-smear-result .govuk-select option[disabled]:before,
-          #sample3-culture-result .govuk-select option[disabled]:before {
-            content: "Select";
-            font-size: 14px;
-          }
-         
-          .govuk-grid-row {
-            min-height: auto !important;
-            margin-bottom: 2px !important;
-          }
-        `}
-      </style>
       {isLoading && <Spinner />}
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)} style={{ maxWidth: "540px", margin: "0" }}>
+        <form onSubmit={handleSubmit(onSubmit)} style={formStyle}>
           {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}{" "}
-          <Heading
-            level={1}
-            size="l"
-            title="Enter sputum sample results"
-            style={{ marginBottom: "70px" }}
-          />
+          <Heading level={1} size="l" title="Enter sputum sample results" style={headingStyle} />
           <div className="govuk-grid-row">
             <div className="govuk-grid-column-one-third">
               <strong>Sample</strong>
             </div>
-            <div className="govuk-grid-column-one-third" style={{ textAlign: "center" }}>
+            <div className="govuk-grid-column-one-third" style={columnCenterStyle}>
               <strong>Smear result</strong>
             </div>
-            <div className="govuk-grid-column-one-third" style={{ textAlign: "center" }}>
+            <div className="govuk-grid-column-one-third" style={columnCenterStyle}>
               <strong>Culture result</strong>
             </div>
           </div>
           <hr
             className="govuk-section-break govuk-section-break--m govuk-section-break--visible"
-            style={{ marginTop: "5px", marginBottom: "10px" }}
+            style={hrFirstStyle}
           />
-          <div
-            className="govuk-grid-row"
-            style={{ display: "flex", alignItems: "flex-end", marginBottom: "2px" }}
-          >
+          <div className="govuk-grid-row" style={flexRowStyle}>
             <div className="govuk-grid-column-one-third">
               <span>{getSampleDate("sample1")}</span>
             </div>
-            <div
-              className="govuk-grid-column-one-third"
-              style={{ display: "flex", justifyContent: "center" }}
-            >
-              <div style={{ width: "100%", maxWidth: "150px" }}>
+            <div className="govuk-grid-column-one-third" style={flexCenterStyle}>
+              <div style={dropdownContainerStyle}>
                 <Dropdown
                   id="sample1-smear-result"
                   options={resultOptions}
@@ -244,17 +247,19 @@ const SputumResultsForm = () => {
                   formValue="sample1SmearResult"
                   required={false}
                   label=""
-                  divStyle={{ minWidth: "auto", width: "100%", marginBottom: "10px" }}
+                  divStyle={dropdownDivStyle}
+                  selectStyle={
+                    sputumData.sample1.smearResults.submittedToDatabase
+                      ? disabledSelectStyle
+                      : selectStyle
+                  }
                   disabled={sputumData.sample1.smearResults.submittedToDatabase}
                   placeholder="Select"
                 />
               </div>
             </div>
-            <div
-              className="govuk-grid-column-one-third"
-              style={{ display: "flex", justifyContent: "center" }}
-            >
-              <div style={{ width: "100%", maxWidth: "150px" }}>
+            <div className="govuk-grid-column-one-third" style={flexCenterStyle}>
+              <div style={dropdownContainerStyle}>
                 <Dropdown
                   id="sample1-culture-result"
                   options={resultOptions}
@@ -262,7 +267,12 @@ const SputumResultsForm = () => {
                   formValue="sample1CultureResult"
                   required={false}
                   label=""
-                  divStyle={{ minWidth: "auto", width: "100%", marginBottom: "10px" }}
+                  divStyle={dropdownDivStyle}
+                  selectStyle={
+                    sputumData.sample1.cultureResults.submittedToDatabase
+                      ? disabledSelectStyle
+                      : selectStyle
+                  }
                   disabled={sputumData.sample1.cultureResults.submittedToDatabase}
                   placeholder="Select"
                 />
@@ -271,20 +281,14 @@ const SputumResultsForm = () => {
           </div>
           <hr
             className="govuk-section-break govuk-section-break--m govuk-section-break--visible"
-            style={{ marginTop: "2px", marginBottom: "2px" }}
+            style={hrStyle}
           />
-          <div
-            className="govuk-grid-row"
-            style={{ display: "flex", alignItems: "flex-end", marginBottom: "2px" }}
-          >
+          <div className="govuk-grid-row" style={flexRowStyle}>
             <div className="govuk-grid-column-one-third">
               <span>{getSampleDate("sample2")}</span>
             </div>
-            <div
-              className="govuk-grid-column-one-third"
-              style={{ display: "flex", justifyContent: "center" }}
-            >
-              <div style={{ width: "100%", maxWidth: "150px" }}>
+            <div className="govuk-grid-column-one-third" style={flexCenterStyle}>
+              <div style={dropdownContainerStyle}>
                 <Dropdown
                   id="sample2-smear-result"
                   options={resultOptions}
@@ -292,17 +296,19 @@ const SputumResultsForm = () => {
                   formValue="sample2SmearResult"
                   required={false}
                   label=""
-                  divStyle={{ minWidth: "auto", width: "100%", marginBottom: "10px" }}
+                  divStyle={dropdownDivStyle}
+                  selectStyle={
+                    sputumData.sample2.smearResults.submittedToDatabase
+                      ? disabledSelectStyle
+                      : selectStyle
+                  }
                   disabled={sputumData.sample2.smearResults.submittedToDatabase}
                   placeholder="Select"
                 />
               </div>
             </div>
-            <div
-              className="govuk-grid-column-one-third"
-              style={{ display: "flex", justifyContent: "center" }}
-            >
-              <div style={{ width: "100%", maxWidth: "150px" }}>
+            <div className="govuk-grid-column-one-third" style={flexCenterStyle}>
+              <div style={dropdownContainerStyle}>
                 <Dropdown
                   id="sample2-culture-result"
                   options={resultOptions}
@@ -310,7 +316,12 @@ const SputumResultsForm = () => {
                   formValue="sample2CultureResult"
                   required={false}
                   label=""
-                  divStyle={{ minWidth: "auto", width: "100%", marginBottom: "10px" }}
+                  divStyle={dropdownDivStyle}
+                  selectStyle={
+                    sputumData.sample2.cultureResults.submittedToDatabase
+                      ? disabledSelectStyle
+                      : selectStyle
+                  }
                   disabled={sputumData.sample2.cultureResults.submittedToDatabase}
                   placeholder="Select"
                 />
@@ -319,20 +330,14 @@ const SputumResultsForm = () => {
           </div>
           <hr
             className="govuk-section-break govuk-section-break--m govuk-section-break--visible"
-            style={{ marginTop: "2px", marginBottom: "2px" }}
+            style={hrStyle}
           />
-          <div
-            className="govuk-grid-row"
-            style={{ display: "flex", alignItems: "flex-end", marginBottom: "2px" }}
-          >
+          <div className="govuk-grid-row" style={flexRowStyle}>
             <div className="govuk-grid-column-one-third">
               <span>{getSampleDate("sample3")}</span>
             </div>
-            <div
-              className="govuk-grid-column-one-third"
-              style={{ display: "flex", justifyContent: "center" }}
-            >
-              <div style={{ width: "100%", maxWidth: "150px" }}>
+            <div className="govuk-grid-column-one-third" style={flexCenterStyle}>
+              <div style={dropdownContainerStyle}>
                 <Dropdown
                   id="sample3-smear-result"
                   options={resultOptions}
@@ -340,17 +345,19 @@ const SputumResultsForm = () => {
                   formValue="sample3SmearResult"
                   required={false}
                   label=""
-                  divStyle={{ minWidth: "auto", width: "100%", marginBottom: "10px" }}
+                  divStyle={dropdownDivStyle}
+                  selectStyle={
+                    sputumData.sample3.smearResults.submittedToDatabase
+                      ? disabledSelectStyle
+                      : selectStyle
+                  }
                   disabled={sputumData.sample3.smearResults.submittedToDatabase}
                   placeholder="Select"
                 />
               </div>
             </div>
-            <div
-              className="govuk-grid-column-one-third"
-              style={{ display: "flex", justifyContent: "center" }}
-            >
-              <div style={{ width: "100%", maxWidth: "150px" }}>
+            <div className="govuk-grid-column-one-third" style={flexCenterStyle}>
+              <div style={dropdownContainerStyle}>
                 <Dropdown
                   id="sample3-culture-result"
                   options={resultOptions}
@@ -358,7 +365,12 @@ const SputumResultsForm = () => {
                   formValue="sample3CultureResult"
                   required={false}
                   label=""
-                  divStyle={{ minWidth: "auto", width: "100%", marginBottom: "10px" }}
+                  divStyle={dropdownDivStyle}
+                  selectStyle={
+                    sputumData.sample3.cultureResults.submittedToDatabase
+                      ? disabledSelectStyle
+                      : selectStyle
+                  }
                   disabled={sputumData.sample3.cultureResults.submittedToDatabase}
                   placeholder="Select"
                 />
@@ -367,7 +379,7 @@ const SputumResultsForm = () => {
           </div>
           <hr
             className="govuk-section-break govuk-section-break--m govuk-section-break--visible"
-            style={{ marginTop: "2px", marginBottom: "15px" }}
+            style={hrLastStyle}
           />
           <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Save and continue" />
         </form>

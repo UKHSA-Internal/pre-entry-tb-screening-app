@@ -26,6 +26,7 @@ interface DropdownProps {
   headingStyle?: React.CSSProperties;
   labelStyle?: React.CSSProperties;
   divStyle?: React.CSSProperties;
+  selectStyle?: React.CSSProperties;
   disabled?: boolean;
   placeholder?: string;
 }
@@ -59,6 +60,7 @@ export default function Dropdown(props: Readonly<DropdownProps>) {
         className={selectClass}
         defaultValue={props.defaultValue ?? ""}
         disabled={props.disabled}
+        style={props.selectStyle}
         {...register(props.formValue, {
           required: props.required,
         })}
