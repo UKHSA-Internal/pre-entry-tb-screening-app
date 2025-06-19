@@ -256,7 +256,7 @@ const SputumSummary = () => {
       hiddenLabel: `date sample ${sampleNumber} was taken`,
     };
 
-    if (!hasCollectionData || !sample.collection.submittedToDatabase) {
+    if (hasCollectionData && !sample.collection.submittedToDatabase) {
       dateTaken.link = "/sputum-collection";
     }
     summaryData.push(dateTaken);
@@ -272,7 +272,7 @@ const SputumSummary = () => {
       hiddenLabel: `collection method for sample ${sampleNumber}`,
     };
 
-    if (!sample.collection.collectionMethod || !sample.collection.submittedToDatabase) {
+    if (sample.collection.collectionMethod && !sample.collection.submittedToDatabase) {
       collectionMethod.link = "/sputum-collection";
     }
     summaryData.push(collectionMethod);
@@ -288,7 +288,7 @@ const SputumSummary = () => {
       hiddenLabel: `smear result for sample ${sampleNumber}`,
     };
 
-    if (!hasSmearResult || !sample.smearResults.submittedToDatabase) {
+    if (hasSmearResult && !sample.smearResults.submittedToDatabase) {
       smearResult.link = "/enter-sputum-sample-results";
     }
     summaryData.push(smearResult);
@@ -304,7 +304,7 @@ const SputumSummary = () => {
       hiddenLabel: `culture result for sample ${sampleNumber}`,
     };
 
-    if (!hasCultureResult || !sample.cultureResults.submittedToDatabase) {
+    if (hasCultureResult && !sample.cultureResults.submittedToDatabase) {
       cultureResult.link = "/enter-sputum-sample-results";
     }
     summaryData.push(cultureResult);
