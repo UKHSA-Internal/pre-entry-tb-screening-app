@@ -18,21 +18,29 @@ interface TaskProps {
   status: ApplicationStatus;
   linkWhenIncomplete: string;
   linkWhenComplete: string;
+  prerequisiteTaskStatuses: ApplicationStatus[];
 }
 
 const Task = (props: Readonly<TaskProps>) => {
+  const allPrerequisitesComplete =
+    props.prerequisiteTaskStatuses.length < 1 ||
+    props.prerequisiteTaskStatuses.every(
+      (status) => status == ApplicationStatus.COMPLETE || status == ApplicationStatus.NOT_REQUIRED,
+    );
+
   return (
     <li className="govuk-task-list__item govuk-task-list__item--with-link">
       <div className="govuk-task-list__name-and-hint">
-        {(props.status == ApplicationStatus.NOT_YET_STARTED ||
-          props.status == ApplicationStatus.IN_PROGRESS) && (
-          <LinkLabel
-            className="govuk-link govuk-task-list__link"
-            to={props.linkWhenIncomplete}
-            title={props.description}
-            externalLink={false}
-          />
-        )}
+        {allPrerequisitesComplete &&
+          (props.status == ApplicationStatus.NOT_YET_STARTED ||
+            props.status == ApplicationStatus.IN_PROGRESS) && (
+            <LinkLabel
+              className="govuk-link govuk-task-list__link"
+              to={props.linkWhenIncomplete}
+              title={props.description}
+              externalLink={false}
+            />
+          )}
         {props.status == ApplicationStatus.COMPLETE && (
           <LinkLabel
             className="govuk-link govuk-task-list__link"
@@ -41,7 +49,7 @@ const Task = (props: Readonly<TaskProps>) => {
             externalLink={false}
           />
         )}
-        {props.status == ApplicationStatus.NOT_REQUIRED && (
+        {(!allPrerequisitesComplete || props.status == ApplicationStatus.NOT_REQUIRED) && (
           <p className="govuk-body" style={{ marginBottom: 0 }}>
             {props.description}
           </p>
@@ -121,40 +129,59 @@ const ProgressTracker = () => {
           status={applicantData.status}
           linkWhenIncomplete="/contact"
           linkWhenComplete="/applicant-summary"
+          prerequisiteTaskStatuses={[]}
         />
         <Task
           description="Travel information"
           status={travelData.status}
           linkWhenIncomplete="/travel-details"
           linkWhenComplete="/travel-summary"
+          prerequisiteTaskStatuses={[applicantData.status]}
         />
         <Task
           description="Medical history and TB symptoms"
           status={medicalScreeningData.status}
           linkWhenIncomplete="/medical-screening"
           linkWhenComplete="/medical-summary"
+          prerequisiteTaskStatuses={[applicantData.status, travelData.status]}
         />
         <Task
           description="Radiological outcome"
           status={chestXrayData.status}
           linkWhenIncomplete="/chest-xray-question"
           linkWhenComplete="/chest-xray-summary"
+          prerequisiteTaskStatuses={[
+            applicantData.status,
+            travelData.status,
+            medicalScreeningData.status,
+          ]}
         />
         <Task
           description="Sputum collection and results"
           status={sputumData.status}
           linkWhenIncomplete="/sputum-collection"
           linkWhenComplete="/sputum-summary"
+          prerequisiteTaskStatuses={[
+            applicantData.status,
+            travelData.status,
+            medicalScreeningData.status,
+            chestXrayData.status,
+          ]}
         />
         <Task
           description="TB certificate declaration"
           status={tbCertificateData.status}
           linkWhenIncomplete="/tb-certificate-declaration"
           linkWhenComplete="/tb-certificate-summary"
+          prerequisiteTaskStatuses={[
+            applicantData.status,
+            travelData.status,
+            medicalScreeningData.status,
+            chestXrayData.status,
+            sputumData.status,
+          ]}
         />
       </ul>
-
-      <p className="govuk-body">You cannot currently log sputum test information in this system.</p>
 
       <Button
         id="search-again"

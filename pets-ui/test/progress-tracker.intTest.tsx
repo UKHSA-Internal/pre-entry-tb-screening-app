@@ -211,33 +211,27 @@ test("Progress tracker page displays incomplete application sections correctly &
   );
   expect(within(applicantDetailsListItem as HTMLElement).getByText("Not yet started"));
 
-  const travelDetailsLink = screen.getByRole("link", { name: /Travel information/i });
-  expect(travelDetailsLink).toHaveAttribute("href", "/travel-details");
-  const travelDetailsListItem = travelDetailsLink.closest("li");
+  const travelDetailsText = screen.getByText(/Travel information/i);
+  const travelDetailsListItem = travelDetailsText.closest("li");
   expect(travelDetailsListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
   expect(within(travelDetailsListItem as HTMLElement).getByText("Not yet started"));
 
-  const medicalScreeningLink = screen.getByRole("link", {
-    name: /Medical history and TB symptoms/i,
-  });
-  expect(medicalScreeningLink).toHaveAttribute("href", "/medical-screening");
-  const medicalScreeningListItem = medicalScreeningLink.closest("li");
+  const medicalScreeningText = screen.getByText(/Medical history and TB symptoms/i);
+  const medicalScreeningListItem = medicalScreeningText.closest("li");
   expect(medicalScreeningListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
   expect(within(medicalScreeningListItem as HTMLElement).getByText("Not yet started"));
 
-  const chestXrayLink = screen.getByRole("link", { name: /Radiological outcome/i });
-  expect(chestXrayLink).toHaveAttribute("href", "/chest-xray-question");
-  const chestXrayListItem = chestXrayLink.closest("li");
+  const chestXrayText = screen.getByText(/Radiological outcome/i);
+  const chestXrayListItem = chestXrayText.closest("li");
   expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
   expect(within(chestXrayListItem as HTMLElement).getByText("Not yet started"));
 
-  const tbCertificateLink = screen.getByRole("link", { name: /TB certificate declaration/i });
-  expect(tbCertificateLink).toHaveAttribute("href", "/tb-certificate-declaration");
-  const tbCertificateListItem = tbCertificateLink.closest("li");
+  const tbCertificateText = screen.getByText(/TB certificate declaration/i);
+  const tbCertificateListItem = tbCertificateText.closest("li");
   expect(tbCertificateListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );

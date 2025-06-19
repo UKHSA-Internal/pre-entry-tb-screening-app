@@ -4,6 +4,7 @@ import { countryList } from "../../src/utils/countryList";
 import { loginViaB2C } from "./commands";
 import { ApplicantConfirmationPage } from "./page-objects/applicantConfirmationPage";
 import { ApplicantDetailsPage } from "./page-objects/applicantDetailsPage";
+import { ApplicantPhotoUploadPage } from "./page-objects/applicantPhotoUploadPage";
 import { ApplicantSearchPage } from "./page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "./page-objects/applicantSummaryPage";
 import { ChestXrayConfirmationPage } from "./page-objects/chestXrayConfirmationPage";
@@ -14,6 +15,11 @@ import { ChestXrayUploadPage } from "./page-objects/chestXrayUploadPage";
 import { MedicalConfirmationPage } from "./page-objects/medicalConfirmationPage";
 import { MedicalScreeningPage } from "./page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "./page-objects/medicalSummaryPage";
+import { SputumQuestionPage } from "./page-objects/sputumQuestionPage";
+import { TbCertificateConfirmationPage } from "./page-objects/tbCertificateConfirmationPage";
+import { TbClearanceCertificateSummaryPage } from "./page-objects/tbCertificateSummaryPage";
+import { TbClearanceCertificatePage } from "./page-objects/tbClearanceCertificatePage";
+import { TBProgressTrackerPage } from "./page-objects/tbProgressTrackerPage";
 import { TravelConfirmationPage } from "./page-objects/travelConfirmationPage";
 import { TravelInformationPage } from "./page-objects/travelInformationPage";
 import { TravelSummaryPage } from "./page-objects/travelSummaryPage";
@@ -38,6 +44,7 @@ export function getRandomPassportNumber(): string {
 
   return prefix + digits;
 }
+
 export { testData };
 
 /**
@@ -100,6 +107,7 @@ export function generateApplicantData() {
  */
 export function createNewApplicant() {
   const applicantSearchPage = new ApplicantSearchPage();
+  const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
 
@@ -153,6 +161,25 @@ export function createNewApplicant() {
   applicantDetailsPage.selectAddressCountry(applicantData.countryName);
   applicantDetailsPage.fillPostcode(applicantData.postcode);
   applicantDetailsPage.submitForm();
+
+  // Verify redirection to the Applicant Photo page
+  cy.url().should("include", "/applicant-photo");
+  applicantPhotoUploadPage.verifyPageLoaded();
+
+  // Check applicant information is displayed correctly
+  applicantPhotoUploadPage.verifyApplicantInfo({
+    Name: applicantData.fullName,
+    "Date of birth": `${applicantData.birthDay}/${applicantData.birthMonth}/${applicantData.birthYear}`,
+    "Passport number": applicantData.passportNumber,
+  });
+
+  // Upload Applicant Photo file
+  applicantPhotoUploadPage
+    .uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg")
+    .verifyUploadSuccess();
+
+  // Continue to Applicant Summary page
+  applicantPhotoUploadPage.clickContinue();
 
   // Verify and confirm applicant summary
   applicantSummaryPage.verifyPageLoaded();
@@ -278,7 +305,7 @@ export function navigateToChestXrayFindingsPage() {
 
   // Upload an X-ray file
   chestXrayUploadPage.verifyPageLoaded();
-  chestXrayUploadPage.uploadPosteroAnteriorXray("cypress/fixtures/test-image.png");
+  chestXrayUploadPage.uploadPosteroAnteriorXray("cypress/fixtures/test-chest-xray.dcm");
   chestXrayUploadPage.verifyUploadSuccess();
   chestXrayUploadPage.clickContinue();
 
@@ -286,13 +313,11 @@ export function navigateToChestXrayFindingsPage() {
 }
 
 /**
- * Helper function to navigate to the TB Certificate page
+ * Helper function to navigate to the Sputum Question page
  * Returns the applicant data used
  */
-export function navigateToTbCertificatePage() {
+export function navigateToSputumQuestionPage() {
   const chestXrayFindingsPage = new ChestXrayFindingsPage();
-  const chestXraySummaryPage = new ChestXraySummaryPage();
-  const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
 
   // Navigate to the chest X-ray findings page
   const applicantData = navigateToChestXrayFindingsPage();
@@ -303,13 +328,123 @@ export function navigateToTbCertificatePage() {
   chestXrayFindingsPage.selectMinorFindings(["1.1 Single fibrous streak or band or scar"]);
   chestXrayFindingsPage.clickSaveAndContinue();
 
-  // Complete the X-ray summary page
+  return applicantData;
+}
+
+/**
+ * Helper function to navigate to the Progress Tracker
+ * Returns the applicant data used
+ */
+export function navigateToProgressTracker() {
+  const sputumQuestionPage = new SputumQuestionPage();
+  const chestXraySummaryPage = new ChestXraySummaryPage();
+  const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
+
+  // Navigate to the sputum question page
+  const applicantData = navigateToSputumQuestionPage();
+
+  // Select "No" for sputum collection
+  sputumQuestionPage.verifyPageLoaded();
+  sputumQuestionPage.selectSputumRequiredNo();
+  sputumQuestionPage.clickContinue();
+
+  // Continue through chest X-ray summary
   chestXraySummaryPage.verifyPageLoaded();
   chestXraySummaryPage.clickSaveAndContinue();
 
-  // Navigate through confirmation to TB certificate page
+  // Continue through chest X-ray confirmation to get to progress tracker
   chestXrayConfirmationPage.verifyPageLoaded();
   chestXrayConfirmationPage.clickContinueButton();
+
+  return applicantData;
+}
+
+/**
+ * Helper function to navigate to the Progress Tracker with sputum "Yes" selected
+ * Returns the applicant data used
+ */
+export function navigateToProgressTrackerWithSputumYes() {
+  const sputumQuestionPage = new SputumQuestionPage();
+  const chestXraySummaryPage = new ChestXraySummaryPage();
+  const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
+
+  // Navigate to the sputum question page
+  const applicantData = navigateToSputumQuestionPage();
+
+  // Select "Yes" for sputum collection
+  sputumQuestionPage.verifyPageLoaded();
+  sputumQuestionPage.selectSputumRequiredYes();
+  sputumQuestionPage.clickContinue();
+
+  // Continue through chest X-ray summary
+  chestXraySummaryPage.verifyPageLoaded();
+  chestXraySummaryPage.clickSaveAndContinue();
+
+  // Continue through chest X-ray confirmation to get to progress tracker
+  chestXrayConfirmationPage.verifyPageLoaded();
+  chestXrayConfirmationPage.clickContinueButton();
+
+  return applicantData;
+}
+
+/**
+ * Helper function to navigate to the TB Certificate page via Progress Tracker
+ * This enforces the business rule that TB certificate declaration can only be accessed
+ * after all prerequisite tasks are completed (JIRA TBBETA-550)
+ * Returns the applicant data used
+ */
+export function navigateToTbCertificatePageViaTracker() {
+  const tbProgressTrackerPage = new TBProgressTrackerPage();
+
+  // Navigate to the progress tracker first
+  const applicantData = navigateToProgressTracker();
+
+  // Click on TB certificate declaration from the tracker
+  tbProgressTrackerPage.verifyPageLoaded();
+  tbProgressTrackerPage.clickTaskLink("TB certificate declaration");
+
+  return applicantData;
+}
+
+/**
+ * Helper function to navigate to the TB Certificate page (UPDATED)
+ * This maintains backward compatibility by using the new flow
+ * Returns the applicant data used
+ */
+export function navigateToTbCertificatePage() {
+  return navigateToTbCertificatePageViaTracker();
+}
+
+/**
+ * Helper function to complete the entire flow up to TB certificate completion
+ * Returns the applicant data used
+ */
+export function completeFullFlowToTbCertificate() {
+  const tbClearanceCertificatePage = new TbClearanceCertificatePage();
+  const tbClearanceCertificateSummaryPage = new TbClearanceCertificateSummaryPage();
+  const tbCertificateConfirmationPage = new TbCertificateConfirmationPage();
+
+  // Navigate to TB certificate page via the tracker
+  const applicantData = navigateToTbCertificatePageViaTracker();
+
+  // Complete TB certificate
+  tbClearanceCertificatePage.verifyPageLoaded();
+  tbClearanceCertificatePage.fillFormWithValidData({
+    clearanceIssued: "Yes",
+    physicianComments: "No signs of active tuberculosis. Chest X-ray clear.",
+    certificateDay: "19",
+    certificateMonth: "03",
+    certificateYear: "2025",
+    certificateNumber: applicantData.tbCertificateNumber,
+  });
+
+  // Complete TB certificate summary
+  tbClearanceCertificateSummaryPage.verifyPageLoaded();
+  tbClearanceCertificateSummaryPage.clickSaveAndContinue();
+
+  // Complete TB certificate confirmation
+  tbCertificateConfirmationPage.verifyPageLoaded();
+  tbCertificateConfirmationPage.clickFinishButton();
 
   return applicantData;
 }
