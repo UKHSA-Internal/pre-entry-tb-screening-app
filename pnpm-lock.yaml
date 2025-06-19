@@ -114,7 +114,7 @@ importers:
         version: 5.0.0
       aws-xray-sdk:
         specifier: ^3.10.1
-        version: 3.10.3
+        version: 3.10.2
       clean-deep:
         specifier: ^3.4.0
         version: 3.4.0
@@ -4538,11 +4538,6 @@ packages:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
 
-  semver@7.6.3:
-    resolution: {integrity: sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==}
-    engines: {node: '>=10'}
-    hasBin: true
-
   semver@7.7.1:
     resolution: {integrity: sha512-hlq8tAfn0m/61p4BVRcPzIGr6LKiMwo4VM6dGi6pt4qcRkmNzTcWq6eCEjEh+qXjkMDvPlOFFSGwQjoEa6gyMA==}
     engines: {node: '>=10'}
@@ -8318,7 +8313,7 @@ snapshots:
       '@types/cls-hooked': 4.3.9
       atomic-batcher: 1.0.2
       cls-hooked: 4.2.2
-      semver: 7.6.3
+      semver: 7.7.1
 
   aws-xray-sdk-express@3.10.2(aws-xray-sdk-core@3.10.2):
     dependencies:
@@ -11011,8 +11006,6 @@ snapshots:
   semver@5.7.2: {}
 
   semver@6.3.1: {}
-
-  semver@7.6.3: {}
 
   semver@7.7.1: {}
 
