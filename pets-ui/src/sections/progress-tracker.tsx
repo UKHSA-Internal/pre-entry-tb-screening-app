@@ -96,7 +96,7 @@ const ProgressTracker = () => {
         <div style={{ flexGrow: 1 }}>
           <ApplicantDataHeader applicantData={applicantData} />
         </div>
-        {applicantPhotoContext?.applicantPhotoFile && (
+        {applicantPhotoContext?.applicantPhotoDataUrl && (
           <div
             style={{
               marginLeft: "20px",
@@ -106,7 +106,7 @@ const ProgressTracker = () => {
             }}
           >
             <img
-              src={URL.createObjectURL(applicantPhotoContext.applicantPhotoFile)}
+              src={applicantPhotoContext.applicantPhotoDataUrl}
               alt={"Applicant"}
               title={applicantData.applicantPhotoFileName ?? undefined}
               style={{
