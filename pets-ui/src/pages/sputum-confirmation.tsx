@@ -26,9 +26,7 @@ export default function SputumConfirmation() {
       ? "All sputum sample information confirmed"
       : "Partial sputum sample information confirmed";
 
-  const furtherInfo = allResultsComplete
-    ? ["You can now return to the progress tracker."]
-    : ["You can add more results later or return to the progress tracker."];
+  const furtherInfo = ["You can now return to the progress tracker."];
 
   return (
     <Container breadcrumbItems={[]} title="Sputum confirmation">

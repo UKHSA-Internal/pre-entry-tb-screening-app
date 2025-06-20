@@ -132,4 +132,170 @@ describe("SputumResultsForm", () => {
     expect(state.sputum.sample1.smearResults.smearResult).toBe(PositiveOrNegative.POSITIVE);
     expect(state.sputum.sample1.cultureResults.cultureResult).toBe(PositiveOrNegative.NEGATIVE);
   });
+
+  test("shows validation error when no results entered and user clicks save", async () => {
+    renderWithProviders(
+      <Router>
+        <SputumResultsForm />
+      </Router>,
+      { preloadedState: buildPreloadedState(defaultSputumState) },
+    );
+
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole("button", { name: /Save and continue/i }));
+
+    expect(
+      screen.getByRole("link", { name: /Error: Select result of smear test/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Error: Select result of culture test/i }),
+    ).toBeInTheDocument();
+
+    expect(useNavigateMock).not.toHaveBeenCalled();
+  });
+
+  test("saves successfully when only smear results are provided", async () => {
+    renderWithProviders(
+      <Router>
+        <SputumResultsForm />
+      </Router>,
+      { preloadedState: buildPreloadedState(defaultSputumState) },
+    );
+
+    const user = userEvent.setup();
+
+    const selects = screen.getAllByRole("combobox");
+    await user.selectOptions(selects[0], PositiveOrNegative.POSITIVE);
+
+    await user.click(screen.getByRole("button", { name: /Save and continue/i }));
+
+    expect(
+      screen.queryByRole("link", { name: /Error: Select result of smear test/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /Error: Select result of culture test/i }),
+    ).not.toBeInTheDocument();
+
+    expect(useNavigateMock).toHaveBeenCalled();
+  });
+
+  test("saves successfully when only culture results are provided", async () => {
+    renderWithProviders(
+      <Router>
+        <SputumResultsForm />
+      </Router>,
+      { preloadedState: buildPreloadedState(defaultSputumState) },
+    );
+
+    const user = userEvent.setup();
+
+    const selects = screen.getAllByRole("combobox");
+    await user.selectOptions(selects[1], PositiveOrNegative.POSITIVE);
+
+    await user.click(screen.getByRole("button", { name: /Save and continue/i }));
+
+    expect(
+      screen.queryByRole("link", { name: /Error: Select result of smear test/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /Error: Select result of culture test/i }),
+    ).not.toBeInTheDocument();
+
+    expect(useNavigateMock).toHaveBeenCalled();
+  });
+
+  test("allows save when both smear and culture results are entered", async () => {
+    renderWithProviders(
+      <Router>
+        <SputumResultsForm />
+      </Router>,
+      { preloadedState: buildPreloadedState(defaultSputumState) },
+    );
+
+    const user = userEvent.setup();
+
+    const selects = screen.getAllByRole("combobox");
+    await user.selectOptions(selects[0], PositiveOrNegative.POSITIVE);
+    await user.selectOptions(selects[1], PositiveOrNegative.NEGATIVE);
+
+    await user.click(screen.getByRole("button", { name: /Save and continue/i }));
+
+    expect(
+      screen.queryByRole("link", { name: /Error: Select result of smear test/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /Error: Select result of culture test/i }),
+    ).not.toBeInTheDocument();
+
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-sputum-sample-information");
+  });
+
+  test("ignores samples without collection dates for validation", async () => {
+    const stateWithOnlyOneSample: ReduxSputumType = {
+      ...defaultSputumState,
+      sample2: createEmptySample(),
+      sample3: createEmptySample(),
+    };
+
+    renderWithProviders(
+      <Router>
+        <SputumResultsForm />
+      </Router>,
+      { preloadedState: buildPreloadedState(stateWithOnlyOneSample) },
+    );
+
+    const user = userEvent.setup();
+
+    const selects = screen.getAllByRole("combobox");
+    await user.selectOptions(selects[0], PositiveOrNegative.POSITIVE);
+
+    await user.click(screen.getByRole("button", { name: /Save and continue/i }));
+
+    expect(
+      screen.queryByRole("link", { name: /Error: Select result of smear test/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /Error: Select result of culture test/i }),
+    ).not.toBeInTheDocument();
+
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-sputum-sample-information");
+  });
+
+  test("allows save when existing non-database values are present", async () => {
+    const stateWithExistingValues: ReduxSputumType = {
+      ...defaultSputumState,
+      sample1: {
+        ...sampleWithDate({ day: "05", month: "05", year: "2024" }),
+        smearResults: {
+          smearResult: PositiveOrNegative.POSITIVE,
+          submittedToDatabase: false,
+        },
+        cultureResults: {
+          cultureResult: PositiveOrNegative.NEGATIVE,
+          submittedToDatabase: false,
+        },
+      },
+    };
+
+    renderWithProviders(
+      <Router>
+        <SputumResultsForm />
+      </Router>,
+      { preloadedState: buildPreloadedState(stateWithExistingValues) },
+    );
+
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole("button", { name: /Save and continue/i }));
+
+    expect(
+      screen.queryByRole("link", { name: /Error: Select result of smear test/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /Error: Select result of culture test/i }),
+    ).not.toBeInTheDocument();
+
+    expect(useNavigateMock).toHaveBeenCalledWith("/check-sputum-sample-information");
+  });
 });

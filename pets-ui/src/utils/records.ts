@@ -49,6 +49,12 @@ const attributeToComponentId: { [key: string]: string } = {
   comments: "physician-comments",
   certificateDate: "tb-certificate-date",
   certificateNumber: "tb-certificate-number",
+  sample1SmearResult: "sample1-smear-result",
+  sample1CultureResult: "sample1-culture-result",
+  sample2SmearResult: "sample2-smear-result",
+  sample2CultureResult: "sample2-culture-result",
+  sample3SmearResult: "sample3-smear-result",
+  sample3CultureResult: "sample3-culture-result",
 };
 
 const formRegex = {
@@ -93,6 +99,12 @@ const dateValidationMessages: Record<string, Record<string, string>> = {
     invalidDateError: "Sputum sample {sampleNumber} date must be a valid date",
     dateMustBeInPastError: "Sputum sample {sampleNumber} date must be today or in the past",
   },
+};
+
+const sputumResultsValidationMessages = {
+  smearTestRequired: "Select result of smear test",
+  cultureTestRequired: "Select result of culture test",
+  anyResultRequired: "Enter at least one sputum test result",
 };
 
 const longNumericStrings = ["01", "02", "03", "04", "05", "06", "07", "08", "09"];
@@ -155,5 +167,6 @@ export {
   formRegex,
   longNumericStrings,
   shortNumericStrings,
+  sputumResultsValidationMessages,
   visaOptions,
 };
