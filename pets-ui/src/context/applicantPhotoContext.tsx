@@ -18,11 +18,11 @@ export const useApplicantPhoto = () => {
 };
 
 export const ApplicantPhotoProvider = ({ children }: { children: ReactNode }) => {
-  const [applicantPhotoFile, setApplicantPhotoFileState] = useState<File | null>(null);
+  const [applicantPhotoFile, setApplicantPhotoFile] = useState<File | null>(null);
   const [applicantPhotoDataUrl, setApplicantPhotoDataUrl] = useState<string | null>(null);
 
-  const setApplicantPhotoFile = (file: File | null) => {
-    setApplicantPhotoFileState(file);
+  const updateApplicantPhotoFile = (file: File | null) => {
+    setApplicantPhotoFile(file);
 
     if (file) {
       const reader = new FileReader();
@@ -39,7 +39,7 @@ export const ApplicantPhotoProvider = ({ children }: { children: ReactNode }) =>
   };
 
   const setApplicantPhotoUrl = (url: string | null) => {
-    setApplicantPhotoFileState(null);
+    setApplicantPhotoFile(null);
     setApplicantPhotoDataUrl(url);
   };
 
@@ -47,7 +47,7 @@ export const ApplicantPhotoProvider = ({ children }: { children: ReactNode }) =>
     () => ({
       applicantPhotoFile,
       applicantPhotoDataUrl,
-      setApplicantPhotoFile,
+      setApplicantPhotoFile: updateApplicantPhotoFile,
       setApplicantPhotoUrl,
     }),
     [applicantPhotoFile, applicantPhotoDataUrl],
