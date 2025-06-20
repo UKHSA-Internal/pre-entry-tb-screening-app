@@ -243,6 +243,73 @@ const SputumResultsForm = () => {
     { label: "Inconclusive", value: PositiveOrNegative.INCONCLUSIVE },
   ];
 
+  const persistResultsToStore = (formData: SputumResultsFormType) => {
+    type SmearActionCreator =
+      | typeof setSample1SmearResults
+      | typeof setSample2SmearResults
+      | typeof setSample3SmearResults;
+
+    type CultureActionCreator =
+      | typeof setSample1CultureResults
+      | typeof setSample2CultureResults
+      | typeof setSample3CultureResults;
+
+    type ResultConfig = {
+      sample: SampleKey;
+      smearField: keyof SputumResultsFormType;
+      cultureField: keyof SputumResultsFormType;
+      smearAction: SmearActionCreator;
+      cultureAction: CultureActionCreator;
+    };
+
+    const configs: ResultConfig[] = [
+      {
+        sample: "sample1",
+        smearField: "sample1SmearResult",
+        cultureField: "sample1CultureResult",
+        smearAction: setSample1SmearResults,
+        cultureAction: setSample1CultureResults,
+      },
+      {
+        sample: "sample2",
+        smearField: "sample2SmearResult",
+        cultureField: "sample2CultureResult",
+        smearAction: setSample2SmearResults,
+        cultureAction: setSample2CultureResults,
+      },
+      {
+        sample: "sample3",
+        smearField: "sample3SmearResult",
+        cultureField: "sample3CultureResult",
+        smearAction: setSample3SmearResults,
+        cultureAction: setSample3CultureResults,
+      },
+    ];
+
+    configs.forEach(({ sample, smearField, cultureField, smearAction, cultureAction }) => {
+      const smearValue = formData[smearField];
+      const cultureValue = formData[cultureField];
+
+      if (smearValue && !sputumData[sample].smearResults.submittedToDatabase) {
+        dispatch(
+          smearAction({
+            submittedToDatabase: false,
+            smearResult: smearValue as PositiveOrNegative,
+          }),
+        );
+      }
+
+      if (cultureValue && !sputumData[sample].cultureResults.submittedToDatabase) {
+        dispatch(
+          cultureAction({
+            submittedToDatabase: false,
+            cultureResult: cultureValue as PositiveOrNegative,
+          }),
+        );
+      }
+    });
+  };
+
   const onSubmit: SubmitHandler<SputumResultsFormType> = (formData) => {
     const samplesWithData = getSamplesWithData();
 
@@ -261,55 +328,7 @@ const SputumResultsForm = () => {
 
     setIsLoading(true);
     try {
-      if (formData.sample1SmearResult && !sputumData.sample1.smearResults.submittedToDatabase) {
-        dispatch(
-          setSample1SmearResults({
-            submittedToDatabase: false,
-            smearResult: formData.sample1SmearResult as PositiveOrNegative,
-          }),
-        );
-      }
-      if (formData.sample1CultureResult && !sputumData.sample1.cultureResults.submittedToDatabase) {
-        dispatch(
-          setSample1CultureResults({
-            submittedToDatabase: false,
-            cultureResult: formData.sample1CultureResult as PositiveOrNegative,
-          }),
-        );
-      }
-      if (formData.sample2SmearResult && !sputumData.sample2.smearResults.submittedToDatabase) {
-        dispatch(
-          setSample2SmearResults({
-            submittedToDatabase: false,
-            smearResult: formData.sample2SmearResult as PositiveOrNegative,
-          }),
-        );
-      }
-      if (formData.sample2CultureResult && !sputumData.sample2.cultureResults.submittedToDatabase) {
-        dispatch(
-          setSample2CultureResults({
-            submittedToDatabase: false,
-            cultureResult: formData.sample2CultureResult as PositiveOrNegative,
-          }),
-        );
-      }
-      if (formData.sample3SmearResult && !sputumData.sample3.smearResults.submittedToDatabase) {
-        dispatch(
-          setSample3SmearResults({
-            submittedToDatabase: false,
-            smearResult: formData.sample3SmearResult as PositiveOrNegative,
-          }),
-        );
-      }
-      if (formData.sample3CultureResult && !sputumData.sample3.cultureResults.submittedToDatabase) {
-        dispatch(
-          setSample3CultureResults({
-            submittedToDatabase: false,
-            cultureResult: formData.sample3CultureResult as PositiveOrNegative,
-          }),
-        );
-      }
-
+      persistResultsToStore(formData);
       navigate("/check-sputum-sample-information");
     } catch (error) {
       console.error(error);
