@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
 import { TaskStatus } from "../../shared/types/enum";
-import { PositiveOrNegative, SputumCollectionMethod } from "../types/enums";
+import { SmearAndCultureResultOptions, SputumCollectionMethod } from "../types/enums";
 import { buildUpdateExpressionsForSputumDetails, SputumDetailsDbOps } from "./sputum-details";
 
 const ddbMock = mockClient(awsClients.dynamoDBDocClient);
@@ -152,7 +152,7 @@ describe("Tests for SputumDetails model", () => {
         sample1: {
           dateOfSample: new Date("2025-03-11T00:00:00.000Z"),
           collectionMethod: SputumCollectionMethod.COUGHED_UP,
-          smearResult: PositiveOrNegative.POSITIVE,
+          smearResult: SmearAndCultureResultOptions.POSITIVE,
           dateUpdated: new Date("2025-03-12T00:00:00.000Z"),
         },
       },
@@ -162,8 +162,8 @@ describe("Tests for SputumDetails model", () => {
       sample1: {
         dateOfSample: new Date("2025-03-11T00:00:00.000Z"),
         collectionMethod: SputumCollectionMethod.COUGHED_UP,
-        cultureResult: PositiveOrNegative.NEGATIVE,
-        smearResult: PositiveOrNegative.POSITIVE,
+        cultureResult: SmearAndCultureResultOptions.NEGATIVE,
+        smearResult: SmearAndCultureResultOptions.POSITIVE,
         dateUpdated: new Date("2025-03-12T00:00:00.000Z"),
       },
       sample2: undefined,
@@ -214,22 +214,22 @@ describe("Tests for SputumDetails model", () => {
           sample1: {
             dateOfSample: new Date("2025-01-02T00:00:00.000Z"),
             collectionMethod: SputumCollectionMethod.COUGHED_UP,
-            smearResult: PositiveOrNegative.POSITIVE,
-            cultureResult: PositiveOrNegative.POSITIVE,
+            smearResult: SmearAndCultureResultOptions.POSITIVE,
+            cultureResult: SmearAndCultureResultOptions.POSITIVE,
             dateUpdated: new Date("2025-01-02T00:00:00.000Z"),
           },
           sample2: {
             dateOfSample: new Date("2025-03-11T00:00:00.000Z"),
             collectionMethod: SputumCollectionMethod.COUGHED_UP,
-            smearResult: PositiveOrNegative.POSITIVE,
-            cultureResult: PositiveOrNegative.POSITIVE,
+            smearResult: SmearAndCultureResultOptions.POSITIVE,
+            cultureResult: SmearAndCultureResultOptions.POSITIVE,
             dateUpdated: new Date("2025-03-11T00:00:00.000Z"),
           },
           sample3: {
             dateOfSample: new Date("2025-03-12T00:00:00.000Z"),
             collectionMethod: "Induced",
-            smearResult: PositiveOrNegative.POSITIVE,
-            cultureResult: PositiveOrNegative.POSITIVE,
+            smearResult: SmearAndCultureResultOptions.POSITIVE,
+            cultureResult: SmearAndCultureResultOptions.POSITIVE,
             dateUpdated: new Date("2025-03-12T00:00:00.000Z"),
           },
         },
@@ -244,22 +244,22 @@ describe("Tests for SputumDetails model", () => {
         sample1: {
           dateOfSample: new Date("2025-01-02T00:00:00.000Z"),
           collectionMethod: SputumCollectionMethod.COUGHED_UP,
-          smearResult: PositiveOrNegative.POSITIVE,
-          cultureResult: PositiveOrNegative.POSITIVE,
+          smearResult: SmearAndCultureResultOptions.POSITIVE,
+          cultureResult: SmearAndCultureResultOptions.POSITIVE,
           dateUpdated: new Date("2025-01-02T00:00:00.000Z"),
         },
         sample2: {
           dateOfSample: new Date("2025-03-11T00:00:00.000Z"),
           collectionMethod: SputumCollectionMethod.COUGHED_UP,
-          smearResult: PositiveOrNegative.POSITIVE,
-          cultureResult: PositiveOrNegative.POSITIVE,
+          smearResult: SmearAndCultureResultOptions.POSITIVE,
+          cultureResult: SmearAndCultureResultOptions.POSITIVE,
           dateUpdated: new Date("2025-03-11T00:00:00.000Z"),
         },
         sample3: {
           dateOfSample: new Date("2025-03-12T00:00:00.000Z"),
           collectionMethod: SputumCollectionMethod.INDUCED,
-          smearResult: PositiveOrNegative.POSITIVE,
-          cultureResult: PositiveOrNegative.POSITIVE,
+          smearResult: SmearAndCultureResultOptions.POSITIVE,
+          cultureResult: SmearAndCultureResultOptions.POSITIVE,
           dateUpdated: new Date("2025-03-12T00:00:00.000Z"),
         },
       },
@@ -273,22 +273,22 @@ describe("Tests for SputumDetails model", () => {
         sample1: {
           dateOfSample: new Date("2025-01-02T00:00:00.000Z"),
           collectionMethod: SputumCollectionMethod.COUGHED_UP,
-          smearResult: PositiveOrNegative.POSITIVE,
-          cultureResult: PositiveOrNegative.POSITIVE,
+          smearResult: SmearAndCultureResultOptions.POSITIVE,
+          cultureResult: SmearAndCultureResultOptions.POSITIVE,
           dateUpdated: new Date("2025-01-02T00:00:00.000Z"),
         },
         sample2: {
           dateOfSample: new Date("2025-03-11T00:00:00.000Z"),
           collectionMethod: SputumCollectionMethod.COUGHED_UP,
-          smearResult: PositiveOrNegative.POSITIVE,
-          cultureResult: PositiveOrNegative.POSITIVE,
+          smearResult: SmearAndCultureResultOptions.POSITIVE,
+          cultureResult: SmearAndCultureResultOptions.POSITIVE,
           dateUpdated: new Date("2025-03-11T00:00:00.000Z"),
         },
         sample3: {
           dateOfSample: new Date("2025-03-12T00:00:00.000Z"),
           collectionMethod: "Induced",
-          smearResult: PositiveOrNegative.POSITIVE,
-          cultureResult: PositiveOrNegative.POSITIVE,
+          smearResult: SmearAndCultureResultOptions.POSITIVE,
+          cultureResult: SmearAndCultureResultOptions.POSITIVE,
           dateUpdated: new Date("2025-03-12T00:00:00.000Z"),
         },
       },

@@ -61,9 +61,10 @@ export enum ImageType {
   Photo = "Photo",
 }
 
-export enum PositiveOrNegative {
+export enum SmearAndCultureResultOptions {
   POSITIVE = "Positive",
   NEGATIVE = "Negative",
+  INCONCLUSIVE = "Inconclusive",
 }
 
 export enum SputumCollectionMethod {

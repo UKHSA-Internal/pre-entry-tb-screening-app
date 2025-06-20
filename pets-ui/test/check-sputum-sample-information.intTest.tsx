@@ -130,8 +130,7 @@ describe("SputumSummary", () => {
 
     expect(screen.getByText("Check sputum sample information and results")).toBeInTheDocument();
   });
-
-  it("should show Change links for all sample fields", () => {
+  it("should not show Change links when there is no data", () => {
     renderWithProviders(
       <Router>
         <SputumSummary />
@@ -147,18 +146,8 @@ describe("SputumSummary", () => {
     const noDataTexts = screen.getAllByText("No data");
     expect(noDataTexts).toHaveLength(12);
 
-    const changeLinks = screen.getAllByRole("link", { name: /Change/ });
-    expect(changeLinks).toHaveLength(12);
-
-    const sputumCollectionLinks = changeLinks.filter(
-      (link) => link.getAttribute("href") === "/sputum-collection",
-    );
-    const sputumResultsLinks = changeLinks.filter(
-      (link) => link.getAttribute("href") === "/enter-sputum-sample-results",
-    );
-
-    expect(sputumCollectionLinks).toHaveLength(6);
-    expect(sputumResultsLinks).toHaveLength(6);
+    const changeLinks = screen.queryAllByRole("link", { name: /Change/ });
+    expect(changeLinks).toHaveLength(0);
 
     const noDataLinks = screen.queryAllByRole("link", { name: "No data" });
     expect(noDataLinks).toHaveLength(0);
@@ -181,14 +170,13 @@ describe("SputumSummary", () => {
         },
       },
     );
-
     expect(screen.getByText("15/06/2025")).toBeInTheDocument();
     expect(screen.getByText(SputumCollectionMethod.COUGHED_UP)).toBeInTheDocument();
     expect(screen.getByText(PositiveOrNegative.POSITIVE)).toBeInTheDocument();
     expect(screen.getByText(PositiveOrNegative.NEGATIVE)).toBeInTheDocument();
 
     const changeLinks = screen.getAllByRole("link", { name: /Change/ });
-    expect(changeLinks).toHaveLength(12);
+    expect(changeLinks).toHaveLength(4);
 
     const noDataTexts = screen.getAllByText("No data");
     expect(noDataTexts).toHaveLength(8);
@@ -237,8 +225,53 @@ describe("SputumSummary", () => {
     );
 
     await user.click(screen.getByText("Save and continue"));
-
     expect(mockPostSputumDetails).not.toHaveBeenCalled();
     expect(useNavigateMock).toHaveBeenCalledWith("/sputum-confirmation");
+  });
+
+  it("should not show Change links when data has been submitted to database", () => {
+    const sampleSubmittedToDb: ReduxSputumSampleType = {
+      ...sampleWithData,
+      collection: {
+        ...sampleWithData.collection,
+        submittedToDatabase: true,
+      },
+      smearResults: {
+        ...sampleWithData.smearResults,
+        submittedToDatabase: true,
+      },
+      cultureResults: {
+        ...sampleWithData.cultureResults,
+        submittedToDatabase: true,
+      },
+    };
+
+    const sputumDataSubmitted: ReduxSputumType = {
+      ...initialSputumDataEmpty,
+      sample1: sampleSubmittedToDb,
+    };
+
+    renderWithProviders(
+      <Router>
+        <SputumSummary />
+      </Router>,
+      {
+        preloadedState: {
+          applicant: initialApplicantData,
+          sputum: sputumDataSubmitted,
+        },
+      },
+    );
+
+    expect(screen.getByText("15/06/2025")).toBeInTheDocument();
+    expect(screen.getByText(SputumCollectionMethod.COUGHED_UP)).toBeInTheDocument();
+    expect(screen.getByText(PositiveOrNegative.POSITIVE)).toBeInTheDocument();
+    expect(screen.getByText(PositiveOrNegative.NEGATIVE)).toBeInTheDocument();
+
+    const changeLinks = screen.queryAllByRole("link", { name: /Change/ });
+    expect(changeLinks).toHaveLength(0);
+
+    const noDataTexts = screen.getAllByText("No data");
+    expect(noDataTexts).toHaveLength(8);
   });
 });

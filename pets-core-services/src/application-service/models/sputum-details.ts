@@ -5,7 +5,7 @@ import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { TaskStatus } from "../../shared/types/enum";
-import { PositiveOrNegative, SputumCollectionMethod } from "../types/enums";
+import { SmearAndCultureResultOptions, SputumCollectionMethod } from "../types/enums";
 import { SputumSampleCompletionCheckSchema } from "../types/zod-schema";
 
 const { dynamoDBDocClient: docClient } = awsClients;
@@ -13,8 +13,8 @@ const { dynamoDBDocClient: docClient } = awsClients;
 export type SputumSample = {
   dateOfSample: Date | string;
   collectionMethod: SputumCollectionMethod;
-  smearResult?: PositiveOrNegative;
-  cultureResult?: PositiveOrNegative;
+  smearResult?: SmearAndCultureResultOptions;
+  cultureResult?: SmearAndCultureResultOptions;
   dateUpdated: Date | string;
 };
 
@@ -96,8 +96,8 @@ const parseSample = (sample: any): SputumSample | undefined => {
   return {
     dateOfSample: new Date(parsedSample.dateOfSample).toISOString(),
     collectionMethod: parsedSample.collectionMethod,
-    smearResult: parsedSample.smearResult as PositiveOrNegative,
-    cultureResult: parsedSample.cultureResult as PositiveOrNegative,
+    smearResult: parsedSample.smearResult as SmearAndCultureResultOptions,
+    cultureResult: parsedSample.cultureResult as SmearAndCultureResultOptions,
     dateUpdated: new Date(parsedSample.dateUpdated).toISOString(),
   };
 };
