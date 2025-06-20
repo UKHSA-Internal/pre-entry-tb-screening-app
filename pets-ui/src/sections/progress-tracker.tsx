@@ -95,9 +95,13 @@ const ProgressTracker = () => {
     sputumData.sample2.collection.submittedToDatabase &&
     sputumData.sample3.collection.submittedToDatabase;
 
-  const sputumLink = allSputumSamplesSubmitted
-    ? "/enter-sputum-sample-results"
-    : "/sputum-collection";
+  let sputumLink = "/sputum-collection";
+
+  if (sputumData.status === ApplicationStatus.COMPLETE) {
+    sputumLink = "/check-sputum-sample-information";
+  } else if (allSputumSamplesSubmitted) {
+    sputumLink = "/enter-sputum-sample-results";
+  }
 
   return (
     <div>
