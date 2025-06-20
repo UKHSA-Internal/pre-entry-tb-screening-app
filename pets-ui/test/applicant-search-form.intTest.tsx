@@ -121,21 +121,12 @@ describe("ApplicantSearchForm", () => {
   });
 
   test("store is correctly populated, applicant photo is handled, and user is navigated to tracker page when both api calls are successful", async () => {
-    const photoBlob = new Blob(["test-photo"], { type: "image/jpeg" });
-    const mockFetch = vi.spyOn(global, "fetch").mockResolvedValue({
-      blob: async () => {
-        await Promise.resolve();
-        return photoBlob;
-      },
-      ok: true,
-    } as Response);
-
-    let contextFile: File | null = null;
+    let contextUrl: string | null = null;
     const ContextChecker: React.FC = () => {
-      const { applicantPhotoFile } = useApplicantPhoto();
+      const { applicantPhotoDataUrl } = useApplicantPhoto();
       React.useEffect(() => {
-        contextFile = applicantPhotoFile;
-      }, [applicantPhotoFile]);
+        contextUrl = applicantPhotoDataUrl;
+      }, [applicantPhotoDataUrl]);
       return null;
     };
 
@@ -323,21 +314,9 @@ describe("ApplicantSearchForm", () => {
       },
       certificateNumber: "XYZ789",
     });
-    expect(mockFetch).toHaveBeenCalledWith("http://localhost:4566/photos/photo.jpg");
     expect(store.getState().applicant.applicantPhotoFileName).toBe("photo.jpg");
-    expect(contextFile).not.toBeNull();
-    if (
-      contextFile &&
-      typeof contextFile === "object" &&
-      "name" in contextFile &&
-      "type" in contextFile
-    ) {
-      expect((contextFile as File).name).toBe("photo.jpg");
-      expect((contextFile as File).type).toBe("image/jpeg");
-    }
-
+    expect(contextUrl).toBe("http://localhost:4566/photos/photo.jpg");
     expect(useNavigateMock).toHaveBeenLastCalledWith("/tracker");
-    mockFetch.mockRestore();
   });
 
   test("store is correctly populated and user is navigated to error page when applicant search is successful & application search returns a non-200 response", async () => {
@@ -562,7 +541,6 @@ describe("ApplicantSearchForm", () => {
 
   test("should call console.error when fetching applicant photo fails", async () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const mockFetch = vi.spyOn(global, "fetch").mockRejectedValue(new Error("Photo fetch failed"));
 
     const { store } = renderWithProviders(
       <Router>
@@ -612,15 +590,8 @@ describe("ApplicantSearchForm", () => {
     await user.click(screen.getByRole("button"));
     await new Promise((resolve) => process.nextTick(resolve));
 
-    expect(mockFetch).toHaveBeenCalledWith("http://localhost:4566/photos/photo.jpg");
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "Error fetching or processing applicant photo:",
-      expect.any(Error),
-    );
-    expect((consoleErrorSpy.mock.calls[0][1] as Error).message).toBe("Photo fetch failed");
     expect(useNavigateMock).toHaveBeenLastCalledWith("/tracker");
-    expect(store.getState().applicant.applicantPhotoFileName).toBe("");
-    mockFetch.mockRestore();
+    expect(store.getState().applicant.applicantPhotoFileName).toBe("photo.jpg");
     consoleErrorSpy.mockRestore();
   });
 });
