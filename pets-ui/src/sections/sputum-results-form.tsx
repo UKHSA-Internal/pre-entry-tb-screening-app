@@ -136,6 +136,105 @@ const SputumResultsForm = () => {
     formState: { errors },
   } = methods;
 
+  type SampleKey = "sample1" | "sample2" | "sample3";
+  const sampleKeys: SampleKey[] = ["sample1", "sample2", "sample3"];
+
+  const getSamplesWithData = (): SampleKey[] =>
+    sampleKeys.filter((sample) => {
+      const { day, month, year } = sputumData[sample].collection.dateOfSample;
+      return day && month && year;
+    });
+
+  const getUpdateStats = (
+    samples: SampleKey[],
+    formData: SputumResultsFormType,
+  ): {
+    hasEditableFields: boolean;
+    hasAnyNewSmearResult: boolean;
+    hasAnyNewCultureResult: boolean;
+  } => {
+    let hasEditableFields = false;
+    let hasAnyNewSmearResult = false;
+    let hasAnyNewCultureResult = false;
+
+    samples.forEach((sample) => {
+      const smearResults = sputumData[sample].smearResults;
+      const cultureResults = sputumData[sample].cultureResults;
+
+      if (!smearResults.submittedToDatabase) {
+        hasEditableFields = true;
+        const smearField = `${sample}SmearResult` as keyof SputumResultsFormType;
+        const formValue = formData[smearField]?.toString().trim();
+        const initialValue = smearResults.smearResult;
+
+        if (
+          formValue &&
+          formValue !== "" &&
+          (initialValue === PositiveOrNegative.NOT_YET_ENTERED ||
+            formValue !== initialValue.toString())
+        ) {
+          hasAnyNewSmearResult = true;
+        }
+      }
+
+      if (!cultureResults.submittedToDatabase) {
+        hasEditableFields = true;
+        const cultureField = `${sample}CultureResult` as keyof SputumResultsFormType;
+        const formValue = formData[cultureField]?.toString().trim();
+        const initialValue = cultureResults.cultureResult;
+
+        if (
+          formValue &&
+          formValue !== "" &&
+          (initialValue === PositiveOrNegative.NOT_YET_ENTERED ||
+            formValue !== initialValue.toString())
+        ) {
+          hasAnyNewCultureResult = true;
+        }
+      }
+    });
+
+    return { hasEditableFields, hasAnyNewSmearResult, hasAnyNewCultureResult };
+  };
+
+  const applyRequiredFieldErrors = (
+    samples: SampleKey[],
+    formData: SputumResultsFormType,
+  ): boolean => {
+    let foundError = false;
+
+    samples.forEach((sample) => {
+      const smearNotInDb = !sputumData[sample].smearResults.submittedToDatabase;
+      const cultureNotInDb = !sputumData[sample].cultureResults.submittedToDatabase;
+
+      if (smearNotInDb) {
+        const smearField = `${sample}SmearResult` as keyof SputumResultsFormType;
+        const smearValue = formData[smearField]?.toString().trim();
+        if (!smearValue) {
+          setError(smearField, {
+            type: "manual",
+            message: sputumResultsValidationMessages.smearTestRequired,
+          });
+          foundError = true;
+        }
+      }
+
+      if (cultureNotInDb) {
+        const cultureField = `${sample}CultureResult` as keyof SputumResultsFormType;
+        const cultureValue = formData[cultureField]?.toString().trim();
+        if (!cultureValue) {
+          setError(cultureField, {
+            type: "manual",
+            message: sputumResultsValidationMessages.cultureTestRequired,
+          });
+          foundError = true;
+        }
+      }
+    });
+
+    return foundError;
+  };
+
   const errorsToShow = Object.keys(errors);
 
   const resultOptions = [
@@ -145,114 +244,19 @@ const SputumResultsForm = () => {
   ];
 
   const onSubmit: SubmitHandler<SputumResultsFormType> = (formData) => {
-    let hasError = false;
+    const samplesWithData = getSamplesWithData();
 
-    const samplesWithData = [
-      {
-        sample: "sample1" as const,
-        hasData: !!(
-          sputumData.sample1.collection.dateOfSample.day &&
-          sputumData.sample1.collection.dateOfSample.month &&
-          sputumData.sample1.collection.dateOfSample.year
-        ),
-      },
-      {
-        sample: "sample2" as const,
-        hasData: !!(
-          sputumData.sample2.collection.dateOfSample.day &&
-          sputumData.sample2.collection.dateOfSample.month &&
-          sputumData.sample2.collection.dateOfSample.year
-        ),
-      },
-      {
-        sample: "sample3" as const,
-        hasData: !!(
-          sputumData.sample3.collection.dateOfSample.day &&
-          sputumData.sample3.collection.dateOfSample.month &&
-          sputumData.sample3.collection.dateOfSample.year
-        ),
-      },
-    ].filter((s) => s.hasData);
-
-    if (samplesWithData.length > 0) {
-      const editableSmearResults = samplesWithData
-        .filter(({ sample }) => !sputumData[sample].smearResults.submittedToDatabase)
-        .map(({ sample }) => {
-          const fieldName = `${sample}SmearResult` as keyof SputumResultsFormType;
-          const formValue = formData[fieldName]?.toString().trim();
-          const initialValue = sputumData[sample].smearResults.smearResult;
-
-          const hasNewEntry =
-            formValue &&
-            formValue !== "" &&
-            (initialValue === PositiveOrNegative.NOT_YET_ENTERED ||
-              formValue !== initialValue.toString());
-
-          return hasNewEntry;
-        });
-
-      const hasAnyNewSmearResult = editableSmearResults.some((result) => result);
-
-      const editableCultureResults = samplesWithData
-        .filter(({ sample }) => !sputumData[sample].cultureResults.submittedToDatabase)
-        .map(({ sample }) => {
-          const fieldName = `${sample}CultureResult` as keyof SputumResultsFormType;
-          const formValue = formData[fieldName]?.toString().trim();
-          const initialValue = sputumData[sample].cultureResults.cultureResult;
-
-          const hasNewEntry =
-            formValue &&
-            formValue !== "" &&
-            (initialValue === PositiveOrNegative.NOT_YET_ENTERED ||
-              formValue !== initialValue.toString());
-
-          return hasNewEntry;
-        });
-
-      const hasAnyNewCultureResult = editableCultureResults.some((result) => result);
-
-      const hasEditableFields = samplesWithData.some(
-        ({ sample }) =>
-          !sputumData[sample].smearResults.submittedToDatabase ||
-          !sputumData[sample].cultureResults.submittedToDatabase,
+    if (samplesWithData.length) {
+      const { hasEditableFields, hasAnyNewSmearResult, hasAnyNewCultureResult } = getUpdateStats(
+        samplesWithData,
+        formData,
       );
 
-      if (hasEditableFields && !hasAnyNewSmearResult && !hasAnyNewCultureResult) {
-        samplesWithData.forEach(({ sample }) => {
-          const smearNotInDb = !sputumData[sample].smearResults.submittedToDatabase;
-          const cultureNotInDb = !sputumData[sample].cultureResults.submittedToDatabase;
+      const shouldValidate = hasEditableFields && !hasAnyNewSmearResult && !hasAnyNewCultureResult;
 
-          if (smearNotInDb) {
-            const smearFieldName = `${sample}SmearResult` as keyof SputumResultsFormType;
-            const smearValue = formData[smearFieldName]?.toString().trim();
-
-            if (!smearValue || smearValue === "") {
-              setError(smearFieldName, {
-                type: "manual",
-                message: sputumResultsValidationMessages.smearTestRequired,
-              });
-              hasError = true;
-            }
-          }
-
-          if (cultureNotInDb) {
-            const cultureFieldName = `${sample}CultureResult` as keyof SputumResultsFormType;
-            const cultureValue = formData[cultureFieldName]?.toString().trim();
-
-            if (!cultureValue || cultureValue === "") {
-              setError(cultureFieldName, {
-                type: "manual",
-                message: sputumResultsValidationMessages.cultureTestRequired,
-              });
-              hasError = true;
-            }
-          }
-        });
+      if (shouldValidate && applyRequiredFieldErrors(samplesWithData, formData)) {
+        return;
       }
-    }
-
-    if (hasError) {
-      return;
     }
 
     setIsLoading(true);
