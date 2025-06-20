@@ -114,7 +114,7 @@ importers:
         version: 5.0.0
       aws-xray-sdk:
         specifier: ^3.10.1
-        version: 3.10.2
+        version: 3.10.3
       clean-deep:
         specifier: ^3.4.0
         version: 3.4.0
@@ -1801,8 +1801,8 @@ packages:
   '@types/aws-lambda@8.10.147':
     resolution: {integrity: sha512-nD0Z9fNIZcxYX5Mai2CTmFD7wX7UldCkW2ezCF8D1T5hdiLsnTWDGRpfRYntU6VjTdLQjOvyszru7I1c1oCQew==}
 
-  '@types/body-parser@1.19.5':
-    resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
+  '@types/body-parser@1.19.6':
+    resolution: {integrity: sha512-HLFeCYgz89uk22N5Qg3dvGvsv46B8GLvKKo1zKG4NybA8U2DiEO3w9lqGg29t/tfLRJpJ6iQxnVw4OnB7MoM9g==}
 
   '@types/cls-hooked@4.3.9':
     resolution: {integrity: sha512-CMtHMz6Q/dkfcHarq9nioXH8BDPP+v5xvd+N90lBQ2bdmu06UvnLDqxTKoOJzz4SzIwb/x9i4UXGAAcnUDuIvg==}
@@ -1816,11 +1816,11 @@ packages:
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
 
-  '@types/express-serve-static-core@5.0.4':
-    resolution: {integrity: sha512-5kz9ScmzBdzTgB/3susoCgfqNDzBjvLL4taparufgSvlwjdLy6UyUy9T/tCpYd2GIdIilCatC4iSQS0QSYHt0w==}
+  '@types/express-serve-static-core@5.0.6':
+    resolution: {integrity: sha512-3xhRnjJPkULekpSzgtoNYYcTWgEZkp4myc+Saevii5JPnHNvHMRlBSHDbs7Bh1iPPoVTERHEZXyhyLbMEsExsA==}
 
-  '@types/express@5.0.0':
-    resolution: {integrity: sha512-DvZriSMehGHL1ZNLzi6MidnsDhUZM/x2pRdDIKdwbUNqqwHxMlRdkxtn6/EPKyqKpHqTl/4nRZsRNLpZxZRpPQ==}
+  '@types/express@5.0.3':
+    resolution: {integrity: sha512-wGA0NX93b19/dZC1J18tKWVIYWyyF2ZjT9vin/NRu0qzzvfVzWjs04iq2rQ3H65vCTQYlRqs3YHfY7zjdV+9Kw==}
 
   '@types/hast@2.3.10':
     resolution: {integrity: sha512-McWspRw8xx8J9HurkVBfYj0xKoE25tOFlHGdx4MJ5xORQrMGZNqJhVQWaIbm6Oyla5kYOXtDiopzKRJzEOkwJw==}
@@ -1828,8 +1828,8 @@ packages:
   '@types/hoist-non-react-statics@3.3.6':
     resolution: {integrity: sha512-lPByRJUer/iN/xa4qpyL0qmL11DqNW81iU/IG1S3uvRUq4oKagz8VCxZjiWkumgt66YT3vOdDgZ0o32sGKtCEw==}
 
-  '@types/http-errors@2.0.4':
-    resolution: {integrity: sha512-D0CFMMtydbJAegzOyHjtiKPLlvnm3iTZyZRSZoLq2mRhDdmLfIWOCYPfQJ4cu2erKghU++QvjcUjp/5h7hESpA==}
+  '@types/http-errors@2.0.5':
+    resolution: {integrity: sha512-r8Tayk8HJnX0FztbZN7oVqGccWgw98T/0neJphO91KkmOzug1KkofZURD4UaD5uH8AqcFLfdPErnBod0u71/qg==}
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -1849,8 +1849,8 @@ packages:
   '@types/mime@1.3.5':
     resolution: {integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==}
 
-  '@types/mysql@2.15.26':
-    resolution: {integrity: sha512-DSLCOXhkvfS5WNNPbfn2KdICAmk8lLc+/PNvnPnF7gOdMZCxopXduqv0OQ13y/yA/zXTSikZZqVgybUxOEg6YQ==}
+  '@types/mysql@2.15.27':
+    resolution: {integrity: sha512-YfWiV16IY0OeBfBCk8+hXKmdTKrKlwKN1MNKAPBu5JYxLwBEZl7QzeEpGnlZb3VMGJrrGmB84gXiH+ofs/TezA==}
 
   '@types/node@22.13.4':
     resolution: {integrity: sha512-ywP2X0DYtX3y08eFVx5fNIw7/uIv8hYUKgXoK8oayJlLnKcRfEYCxWMVE1XagUdVtCJlZT1AU4LXEABW+L1Peg==}
@@ -1858,14 +1858,14 @@ packages:
   '@types/node@22.7.9':
     resolution: {integrity: sha512-jrTfRC7FM6nChvU7X2KqcrgquofrWLFDeYC1hKfwNWomVvrn7JIksqf344WN2X/y8xrgqBd2dJATZV4GbatBfg==}
 
-  '@types/pg@8.11.10':
-    resolution: {integrity: sha512-LczQUW4dbOQzsH2RQ5qoeJ6qJPdrcM/DcMLoqWQkMLMsq83J5lAX3LXjdkWdpscFy67JSOWDnh7Ny/sPFykmkg==}
+  '@types/pg@8.15.4':
+    resolution: {integrity: sha512-I6UNVBAoYbvuWkkU3oosC8yxqH21f4/Jc4DK71JLG3dT2mdlGe1z+ep/LQGXaKaOgcvUrsQoPRqfgtMcvZiJhg==}
 
   '@types/prop-types@15.7.13':
     resolution: {integrity: sha512-hCZTSvwbzWGvhqxp/RqVqwU999pBf2vp7hzIjiYOsl8wqOmUxkQ6ddw1cV3l8811+kdUFus/q4d1Y3E3SyEifA==}
 
-  '@types/qs@6.9.17':
-    resolution: {integrity: sha512-rX4/bPcfmvxHDv0XjfJELTTr+iB+tn032nPILqHm5wbthUUUuVtNGGqzhya9XUxjTP8Fpr0qYgSZZKxGY++svQ==}
+  '@types/qs@6.14.0':
+    resolution: {integrity: sha512-eOunJqu0K1923aExK6y8p6fsihYEn/BYuQ4g0CxAAgFc4b/ZLN4CrsRZ55srTdqoiLzU2B2evC+apEIxprEzkQ==}
 
   '@types/ramda@0.30.2':
     resolution: {integrity: sha512-PyzHvjCalm2BRYjAU6nIB3TprYwMNOUY/7P/N8bSzp9W/yM2YrtGtAnnVtaCNSeOZ8DzKyFDvaqQs7LnWwwmBA==}
@@ -1882,11 +1882,11 @@ packages:
   '@types/react@18.3.12':
     resolution: {integrity: sha512-D2wOSq/d6Agt28q7rSI3jhU7G6aiuzljDGZ2hTZHIkrTLUI+AF3WMeKkEZ9nN2fkBAlcktT6vcZjDFiIhMYEQw==}
 
-  '@types/send@0.17.4':
-    resolution: {integrity: sha512-x2EM6TJOybec7c52BX0ZspPodMsQUd5L6PRwOunVyVUhXiBSKf3AezDL8Dgvgt5o0UfKNfuA0eMLr2wLT4AiBA==}
+  '@types/send@0.17.5':
+    resolution: {integrity: sha512-z6F2D3cOStZvuk2SaP6YrwkNO65iTZcwA2ZkSABegdkAh/lf+Aa/YQndZVfmEXT5vgAp6zv06VQ3ejSVjAny4w==}
 
-  '@types/serve-static@1.15.7':
-    resolution: {integrity: sha512-W8Ym+h8nhuRwaKPaDw34QUkwsGi6Rc4yYqvKFo5rm2FUEhCFbzVWrxXUxuKK8TASjWsysJY0nsmNCGhCOIsrOw==}
+  '@types/serve-static@1.15.8':
+    resolution: {integrity: sha512-roei0UY3LhpOJvjbIP6ZZFngyLKl5dskOtDhxY5THRSpO+ZI+nzJ+m5yUMzGrp89YRa7lvknKkMYjqQFGwA7Sg==}
 
   '@types/sinon@17.0.4':
     resolution: {integrity: sha512-RHnIrhfPO3+tJT0s7cFaXGZvsL4bbR3/k7z3P312qMS4JaS2Tk+KiwiLx1S0rQ56ERj00u1/BtdyVd0FY+Pdew==}
@@ -2218,30 +2218,30 @@ packages:
   aws-sign2@0.7.0:
     resolution: {integrity: sha512-08kcGqnYf/YmjoRhfxyu+CLxBjUtHLXLXX/vUfx9l2LYzG3c1m61nrpyFUZI6zeS+Li/wWMMidD9KgrqtGq3mA==}
 
-  aws-xray-sdk-core@3.10.2:
-    resolution: {integrity: sha512-hAFEB+Stqm4FoQmIuyw5AzGVJh3BSfvLjK7IK4YYRXXLt1Oq9KS6pv2samYgRTTTXsxhmVpDjiYF3Xo/gfXIXA==}
+  aws-xray-sdk-core@3.10.3:
+    resolution: {integrity: sha512-bltsLAr4juMJJ2tT5/L/CtwUGIvHihtPe6SO/z3jjOD73PHhOYxcuwCMFFyTbTy5S4WThJO32oZk7r+pg3ZoCQ==}
     engines: {node: '>= 14.x'}
 
-  aws-xray-sdk-express@3.10.2:
-    resolution: {integrity: sha512-1NJnQNTmRcQSl0hdwIdQ+3UXhzeXTYR+yyY87bmzDDjHer1GPGQYeYRhkpCGLx8bRF7JpYlHoclA1RVhH3pWMw==}
-    engines: {node: '>= 14.x'}
-    peerDependencies:
-      aws-xray-sdk-core: ^3.10.2
-
-  aws-xray-sdk-mysql@3.10.2:
-    resolution: {integrity: sha512-TybN+z0XIWbputEy57T+jQEp5OKFs0daRrQ0t8aU+jAJfpuVgN69WoQrV/LFj2HITVL+ISMQsaUR5dvxWY+ZYQ==}
+  aws-xray-sdk-express@3.10.3:
+    resolution: {integrity: sha512-ynmpcM3X8QRt00UmgwIW2hYAJkw8vPQtdgX0SJGjizbzbAH4n3H6zfOJfq54RxANYzHSyeS/I6J3PlBJgnYQjA==}
     engines: {node: '>= 14.x'}
     peerDependencies:
-      aws-xray-sdk-core: ^3.10.2
+      aws-xray-sdk-core: ^3.10.3
 
-  aws-xray-sdk-postgres@3.10.2:
-    resolution: {integrity: sha512-ku17VjrT25BpCYUb5Vqcfh8pkc62SaVIeritCH2No85LOzU9jl0oPUhlRG4NzHkdmIJuUtLP1IxQlwIGAQgreg==}
+  aws-xray-sdk-mysql@3.10.3:
+    resolution: {integrity: sha512-aP9dXWWn2zhSr4I+IUnkwlGoLc7/pzjFegiW3w7qcFP+WwTU4tbme99igqT0edPVFSOeGMq8zMt/IL2gmER7Lg==}
     engines: {node: '>= 14.x'}
     peerDependencies:
-      aws-xray-sdk-core: ^3.10.2
+      aws-xray-sdk-core: ^3.10.3
 
-  aws-xray-sdk@3.10.2:
-    resolution: {integrity: sha512-T9Qwq65hUQo4GtZ7WPAzpLGd7y8bDKODlJkKAYsQKMcUIIpMPYWsSxd38ZLy3uwTY0ErkrG6Pqmc5Zs1p0BmZg==}
+  aws-xray-sdk-postgres@3.10.3:
+    resolution: {integrity: sha512-Etz1W8UltrG8Up2tAh6OizCOXQFaAcgDAs8EoOaELnorWKhQe+iG6+vgZSAVnNKiyEAFRY97O9PPFD2U05RqNg==}
+    engines: {node: '>= 14.x'}
+    peerDependencies:
+      aws-xray-sdk-core: ^3.10.3
+
+  aws-xray-sdk@3.10.3:
+    resolution: {integrity: sha512-qUB7iKWQ5UaTHyZ38jDinIYEE8kJ6LtuTFzHQGeyrlyXKEAxHzU1jOzDClChs/vjG51Zz3P71mEvxHh236Hbyw==}
     engines: {node: '>= 14.x'}
 
   aws4@1.13.2:
@@ -4103,13 +4103,13 @@ packages:
     resolution: {integrity: sha512-BM/Thnrw5jm2kKLE5uJkXqqExRUY/toLHda65XgFTBTFYZyopbKjBe29Ii3RbkvlsMoFwD+tHeGaCjjv0gHlyw==}
     engines: {node: '>=4'}
 
-  pg-protocol@1.7.0:
-    resolution: {integrity: sha512-hTK/mE36i8fDDhgDFjy6xNOG+LCorxLG3WO17tku+ij6sVHXh1jQUJ8hYAnRhNla4QVD2H8er/FOjc/+EgC6yQ==}
+  pg-protocol@1.10.0:
+    resolution: {integrity: sha512-IpdytjudNuLv8nhlHs/UrVBhU0e78J0oIS/0AVdTbWxSOkFUVdsHC/NrorO6nXsQNDTT1kzDSOMJubBQviX18Q==}
 
-  pg-types@4.0.2:
-    resolution: {integrity: sha512-cRL3JpS3lKMGsKaWndugWQoLOCoP+Cic8oseVcbr0qhPzYD5DWXK+RZ9LY9wxRf7RQia4SCwQlXk0q6FCPrVng==}
-    engines: {node: '>=10'}
-
+  pg-types@2.2.0:
+    resolution: {integrity: sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==}
+    engines: {node: '>=4'}
+    
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
@@ -7787,7 +7787,7 @@ snapshots:
 
   '@types/aws-lambda@8.10.147': {}
 
-  '@types/body-parser@1.19.5':
+  '@types/body-parser@1.19.6':
     dependencies:
       '@types/connect': 3.4.38
       '@types/node': 22.13.4
@@ -7804,19 +7804,18 @@ snapshots:
 
   '@types/estree@1.0.6': {}
 
-  '@types/express-serve-static-core@5.0.4':
+  '@types/express-serve-static-core@5.0.6':
     dependencies:
       '@types/node': 22.13.4
-      '@types/qs': 6.9.17
+      '@types/qs': 6.14.0
       '@types/range-parser': 1.2.7
-      '@types/send': 0.17.4
+      '@types/send': 0.17.5
 
-  '@types/express@5.0.0':
+  '@types/express@5.0.3':
     dependencies:
-      '@types/body-parser': 1.19.5
-      '@types/express-serve-static-core': 5.0.4
-      '@types/qs': 6.9.17
-      '@types/serve-static': 1.15.7
+      '@types/body-parser': 1.19.6
+      '@types/express-serve-static-core': 5.0.6
+      '@types/serve-static': 1.15.8
 
   '@types/hast@2.3.10':
     dependencies:
@@ -7827,7 +7826,7 @@ snapshots:
       '@types/react': 18.3.12
       hoist-non-react-statics: 3.3.2
 
-  '@types/http-errors@2.0.4': {}
+  '@types/http-errors@2.0.5': {}
 
   '@types/json-schema@7.0.15': {}
 
@@ -7846,7 +7845,7 @@ snapshots:
 
   '@types/mime@1.3.5': {}
 
-  '@types/mysql@2.15.26':
+  '@types/mysql@2.15.27':
     dependencies:
       '@types/node': 22.13.4
 
@@ -7858,15 +7857,15 @@ snapshots:
     dependencies:
       undici-types: 6.19.8
 
-  '@types/pg@8.11.10':
+  '@types/pg@8.15.4':
     dependencies:
       '@types/node': 22.13.4
-      pg-protocol: 1.7.0
-      pg-types: 4.0.2
+      pg-protocol: 1.10.0
+      pg-types: 2.2.0
 
   '@types/prop-types@15.7.13': {}
 
-  '@types/qs@6.9.17': {}
+  '@types/qs@6.14.0': {}
 
   '@types/ramda@0.30.2':
     dependencies:
@@ -7890,16 +7889,16 @@ snapshots:
       '@types/prop-types': 15.7.13
       csstype: 3.1.3
 
-  '@types/send@0.17.4':
+  '@types/send@0.17.5':
     dependencies:
       '@types/mime': 1.3.5
       '@types/node': 22.13.4
 
-  '@types/serve-static@1.15.7':
+  '@types/serve-static@1.15.8':
     dependencies:
-      '@types/http-errors': 2.0.4
+      '@types/http-errors': 2.0.5
       '@types/node': 22.13.4
-      '@types/send': 0.17.4
+      '@types/send': 0.17.5
 
   '@types/sinon@17.0.4':
     dependencies:
@@ -8307,7 +8306,7 @@ snapshots:
 
   aws-sign2@0.7.0: {}
 
-  aws-xray-sdk-core@3.10.2:
+  aws-xray-sdk-core@3.10.3:
     dependencies:
       '@aws-sdk/types': 3.775.0
       '@smithy/service-error-classification': 2.1.5
@@ -8316,27 +8315,27 @@ snapshots:
       cls-hooked: 4.2.2
       semver: 7.7.1
 
-  aws-xray-sdk-express@3.10.2(aws-xray-sdk-core@3.10.2):
+  aws-xray-sdk-express@3.10.3(aws-xray-sdk-core@3.10.3):
     dependencies:
-      '@types/express': 5.0.0
-      aws-xray-sdk-core: 3.10.2
+      '@types/express': 5.0.3
+      aws-xray-sdk-core: 3.10.3
 
-  aws-xray-sdk-mysql@3.10.2(aws-xray-sdk-core@3.10.2):
+  aws-xray-sdk-mysql@3.10.3(aws-xray-sdk-core@3.10.3):
     dependencies:
-      '@types/mysql': 2.15.26
-      aws-xray-sdk-core: 3.10.2
+      '@types/mysql': 2.15.27
+      aws-xray-sdk-core: 3.10.3
 
-  aws-xray-sdk-postgres@3.10.2(aws-xray-sdk-core@3.10.2):
+  aws-xray-sdk-postgres@3.10.3(aws-xray-sdk-core@3.10.3):
     dependencies:
-      '@types/pg': 8.11.10
-      aws-xray-sdk-core: 3.10.2
+      '@types/pg': 8.15.4
+      aws-xray-sdk-core: 3.10.3
 
-  aws-xray-sdk@3.10.2:
+  aws-xray-sdk@3.10.3:
     dependencies:
-      aws-xray-sdk-core: 3.10.2
-      aws-xray-sdk-express: 3.10.2(aws-xray-sdk-core@3.10.2)
-      aws-xray-sdk-mysql: 3.10.2(aws-xray-sdk-core@3.10.2)
-      aws-xray-sdk-postgres: 3.10.2(aws-xray-sdk-core@3.10.2)
+      aws-xray-sdk-core: 3.10.3
+      aws-xray-sdk-express: 3.10.3(aws-xray-sdk-core@3.10.3)
+      aws-xray-sdk-mysql: 3.10.3(aws-xray-sdk-core@3.10.3)
+      aws-xray-sdk-postgres: 3.10.3(aws-xray-sdk-core@3.10.3)
 
   aws4@1.13.2: {}
 
@@ -10536,7 +10535,7 @@ snapshots:
 
   pg-numeric@1.0.2: {}
 
-  pg-protocol@1.7.0: {}
+   pg-protocol@1.10.0: {}
 
   pg-types@4.0.2:
     dependencies:
