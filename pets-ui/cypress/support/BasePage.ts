@@ -18,6 +18,31 @@ export class BasePage {
     return this;
   }
 
+  //* / Common method to verify applicant information across all pages
+  /* verifyApplicantInfo(expectedInfo: { [key: string]: string }): BasePage {
+    Object.entries(expectedInfo).forEach(([label, value]) => {
+      // Try multiple selectors to match different page layouts
+      cy.get("body").then(($body) => {
+        if ($body.find("dt.govuk-summary-list__key").length > 0) {
+          // If summary list exists, use it (most common pattern)
+          cy.contains("dt.govuk-summary-list__key", label)
+            .next("dd.govuk-summary-list__value")
+            .should("contain.text", value);
+        } else if ($body.find(".applicant-info").length > 0) {
+          // If applicant info section exists
+          cy.get(".applicant-info").contains(label).parent().should("contain.text", value);
+        } else if ($body.find("dt").length > 0) {
+          // Fallback to general dt/dd structure
+          cy.contains("dt", label).next("dd").should("contain.text", value);
+        } else {
+          // Last resort - look for any element containing both label and value
+          cy.get("body").contains(label).parent().should("contain.text", value);
+        }
+      });
+    });
+    return this;
+  } */
+
   // Get summary value for a specific field - common across many pages
   getSummaryValue(fieldKey: string): Cypress.Chainable<string> {
     return cy
@@ -201,6 +226,20 @@ export class BasePage {
       .siblings(".govuk-summary-list__actions")
       .find("a")
       .click();
+    return this;
+  }
+
+  // Helper method to verify task status on progress tracker
+  verifyTaskStatus(taskName: string, expectedStatus: string): BasePage {
+    cy.contains(".govuk-task-list__name-and-hint", taskName)
+      .siblings(".govuk-task-list__status")
+      .should("contain.text", expectedStatus);
+    return this;
+  }
+
+  // Helper method to click task link on progress tracker
+  clickTaskLink(taskName: string): BasePage {
+    cy.contains(".govuk-task-list__name-and-hint", taskName).find("a").click();
     return this;
   }
 }
