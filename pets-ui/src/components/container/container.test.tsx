@@ -66,6 +66,31 @@ describe("Container Component", () => {
     );
     expect(screen.queryByText("Home")).not.toBeInTheDocument();
   });
+
+  test("renders back link when provided", () => {
+    render(
+      <Router>
+        <HelmetProvider>
+          <Container title="With Back Link" backLinkTo="/test">
+            Test Content
+          </Container>
+        </HelmetProvider>
+      </Router>,
+    );
+    expect(screen.getByText("Back")).toBeInTheDocument();
+  });
+
+  test("renders without back link if none are provided", () => {
+    render(
+      <Router>
+        <HelmetProvider>
+          <Container title="No Back Link">Test Content</Container>
+        </HelmetProvider>
+      </Router>,
+    );
+    expect(screen.queryByText("Back")).not.toBeInTheDocument();
+  });
+
   test("main element has tabIndex of -1", () => {
     render(
       <Router>
@@ -77,6 +102,7 @@ describe("Container Component", () => {
     const mainElement = screen.getByRole("main");
     expect(mainElement).toHaveAttribute("tabIndex", "-1");
   });
+
   test("main element is in focus when skipLink is clicked", async () => {
     render(
       <Router>
