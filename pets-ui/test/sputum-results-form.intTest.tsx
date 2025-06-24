@@ -298,4 +298,41 @@ describe("SputumResultsForm", () => {
 
     expect(useNavigateMock).toHaveBeenCalledWith("/check-sputum-sample-information");
   });
+
+  test("shows validation errors when there are no results from database and no new entries", async () => {
+    const stateWithNoResults: ReduxSputumType = {
+      ...defaultSputumState,
+      sample1: {
+        ...sampleWithDate({ day: "05", month: "05", year: "2024" }),
+        smearResults: {
+          smearResult: PositiveOrNegative.NOT_YET_ENTERED,
+          submittedToDatabase: false,
+        },
+        cultureResults: {
+          cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
+          submittedToDatabase: false,
+        },
+      },
+    };
+
+    renderWithProviders(
+      <Router>
+        <SputumResultsForm />
+      </Router>,
+      { preloadedState: buildPreloadedState(stateWithNoResults) },
+    );
+
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole("button", { name: /Save and continue/i }));
+
+    expect(
+      screen.getByRole("link", { name: /Error: Select result of smear test/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Error: Select result of culture test/i }),
+    ).toBeInTheDocument();
+
+    expect(useNavigateMock).not.toHaveBeenCalled();
+  });
 });
