@@ -31,14 +31,6 @@ export class SputumConfirmationPage {
     cy.contains("button", "Continue").click();
   }
 
-  // Verify breadcrumb navigation
-  /* verifyBreadcrumbNavigation(): void {
-    cy.contains(".govuk-breadcrumbs__list-item", "Application progress tracker")
-      .should("be.visible")
-      .find("a")
-      .should("have.attr", "href", "/tracker");
-  } */
-
   // Verify service name in header
   verifyServiceName(): void {
     cy.contains(".govuk-header__service-name", "Complete UK Pre-Entry Health Screening").should(
@@ -62,7 +54,6 @@ export class SputumConfirmationPage {
     this.verifyPageLoaded();
     this.verifyConfirmationPanel();
     this.verifyNextStepsSection();
-    //this.verifyBreadcrumbNavigation();
     this.verifyServiceName();
   }
 }

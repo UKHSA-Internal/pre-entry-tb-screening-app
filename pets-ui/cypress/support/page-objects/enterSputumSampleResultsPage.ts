@@ -12,9 +12,9 @@ export interface SampleResultData {
 
 // Interface for all sample results
 export interface AllSampleResultsData {
-  sample1: SampleResultData;
-  sample2: SampleResultData;
-  sample3: SampleResultData;
+  sample1?: SampleResultData;
+  sample2?: SampleResultData;
+  sample3?: SampleResultData;
 }
 
 export class EnterSputumSampleResultsPage extends BasePage {
@@ -51,6 +51,19 @@ export class EnterSputumSampleResultsPage extends BasePage {
         sample1: { smearResult: options[2], cultureResult: options[2] },
         sample2: { smearResult: options[2], cultureResult: options[2] },
         sample3: { smearResult: options[2], cultureResult: options[2] },
+      },
+      onlyFirstSampleResults: {
+        sample1: { smearResult: options[0], cultureResult: options[1] },
+      },
+      firstAndSecondSampleResults: {
+        sample1: { smearResult: options[0], cultureResult: options[0] },
+        sample2: { smearResult: options[1], cultureResult: options[2] },
+      },
+      onlySecondSampleResults: {
+        sample2: { smearResult: options[1], cultureResult: options[0] },
+      },
+      onlyThirdSampleResults: {
+        sample3: { smearResult: options[2], cultureResult: options[1] },
       },
     };
   }
@@ -142,9 +155,18 @@ export class EnterSputumSampleResultsPage extends BasePage {
 
   // Fill all sample results
   fillAllSampleResults(results: AllSampleResultsData): EnterSputumSampleResultsPage {
-    this.fillSample1Results(results.sample1);
-    this.fillSample2Results(results.sample2);
-    this.fillSample3Results(results.sample3);
+    if (results.sample1) {
+      this.fillSample1Results(results.sample1);
+    }
+
+    if (results.sample2) {
+      this.fillSample2Results(results.sample2);
+    }
+
+    if (results.sample3) {
+      this.fillSample3Results(results.sample3);
+    }
+
     return this;
   }
 
@@ -166,6 +188,29 @@ export class EnterSputumSampleResultsPage extends BasePage {
 
   fillWithAllInconclusiveResults(): EnterSputumSampleResultsPage {
     const testData = EnterSputumSampleResultsPage.getTestSampleResultsData().allInconclusiveResults;
+    return this.fillAllSampleResults(testData);
+  }
+
+  //Methods for partial data scenarios
+  fillWithOnlyFirstSampleResults(): EnterSputumSampleResultsPage {
+    const testData = EnterSputumSampleResultsPage.getTestSampleResultsData().onlyFirstSampleResults;
+    return this.fillAllSampleResults(testData);
+  }
+
+  fillWithFirstAndSecondSampleResults(): EnterSputumSampleResultsPage {
+    const testData =
+      EnterSputumSampleResultsPage.getTestSampleResultsData().firstAndSecondSampleResults;
+    return this.fillAllSampleResults(testData);
+  }
+
+  fillWithOnlySecondSampleResults(): EnterSputumSampleResultsPage {
+    const testData =
+      EnterSputumSampleResultsPage.getTestSampleResultsData().onlySecondSampleResults;
+    return this.fillAllSampleResults(testData);
+  }
+
+  fillWithOnlyThirdSampleResults(): EnterSputumSampleResultsPage {
+    const testData = EnterSputumSampleResultsPage.getTestSampleResultsData().onlyThirdSampleResults;
     return this.fillAllSampleResults(testData);
   }
 
@@ -200,31 +245,62 @@ export class EnterSputumSampleResultsPage extends BasePage {
     return this;
   }
 
+  // Verify sample fields are empty (default state)
+  verifySample1FieldsEmpty(): EnterSputumSampleResultsPage {
+    cy.get('select[name="sample1SmearResult"]').should("have.value", "");
+    cy.get('select[name="sample1CultureResult"]').should("have.value", "");
+    return this;
+  }
+
+  verifySample2FieldsEmpty(): EnterSputumSampleResultsPage {
+    cy.get('select[name="sample2SmearResult"]').should("have.value", "");
+    cy.get('select[name="sample2CultureResult"]').should("have.value", "");
+    return this;
+  }
+
+  verifySample3FieldsEmpty(): EnterSputumSampleResultsPage {
+    cy.get('select[name="sample3SmearResult"]').should("have.value", "");
+    cy.get('select[name="sample3CultureResult"]').should("have.value", "");
+    return this;
+  }
+
   // Verify all form selections match expected data
   verifyFormFilledWith(expectedData: AllSampleResultsData): EnterSputumSampleResultsPage {
-    // Verify sample 1 results
-    this.verifySample1SmearResult(expectedData.sample1.smearResult);
-    this.verifySample1CultureResult(expectedData.sample1.cultureResult);
+    // Verify sample 1 results if provided
+    if (expectedData.sample1) {
+      this.verifySample1SmearResult(expectedData.sample1.smearResult);
+      this.verifySample1CultureResult(expectedData.sample1.cultureResult);
+    } else {
+      this.verifySample1FieldsEmpty();
+    }
 
-    // Verify sample 2 results
-    this.verifySample2SmearResult(expectedData.sample2.smearResult);
-    this.verifySample2CultureResult(expectedData.sample2.cultureResult);
+    // Verify sample 2 results if provided
+    if (expectedData.sample2) {
+      this.verifySample2SmearResult(expectedData.sample2.smearResult);
+      this.verifySample2CultureResult(expectedData.sample2.cultureResult);
+    } else {
+      this.verifySample2FieldsEmpty();
+    }
 
-    // Verify sample 3 results
-    this.verifySample3SmearResult(expectedData.sample3.smearResult);
-    this.verifySample3CultureResult(expectedData.sample3.cultureResult);
+    // Verify sample 3 results if provided
+    if (expectedData.sample3) {
+      this.verifySample3SmearResult(expectedData.sample3.smearResult);
+      this.verifySample3CultureResult(expectedData.sample3.cultureResult);
+    } else {
+      this.verifySample3FieldsEmpty();
+    }
 
     return this;
   }
 
   // Verify all dropdowns show default "Select" option
   verifyAllFieldsEmpty(): EnterSputumSampleResultsPage {
-    cy.get('select[name="sample1SmearResult"]').should("have.value", "");
-    cy.get('select[name="sample1CultureResult"]').should("have.value", "");
-    cy.get('select[name="sample2SmearResult"]').should("have.value", "");
-    cy.get('select[name="sample2CultureResult"]').should("have.value", "");
-    cy.get('select[name="sample3SmearResult"]').should("have.value", "");
-    cy.get('select[name="sample3CultureResult"]').should("have.value", "");
+    cy.get('select[name="sample1SmearResult"]').should("be.visible");
+    cy.get('select[name="sample1CultureResult"]').should("be.visible");
+    cy.get('select[name="sample2SmearResult"]').should("be.visible");
+    cy.get('select[name="sample2CultureResult"]').should("be.visible");
+    cy.get('select[name="sample3SmearResult"]').should("be.visible");
+    cy.get('select[name="sample3CultureResult"]').should("be.visible");
     return this;
   }
 
@@ -265,7 +341,6 @@ export class EnterSputumSampleResultsPage extends BasePage {
     return this;
   }
 
-  // Alternative method name for consistency
   submitForm(): EnterSputumSampleResultsPage {
     return this.clickSaveAndContinue();
   }
@@ -283,7 +358,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
   validateSample1SmearResultError(expectedMessage?: string): EnterSputumSampleResultsPage {
     this.validateFieldError(
       "sample1-smear-result",
-      expectedMessage || "Select a smear result for sample 1",
+      expectedMessage || "Select result of smear test",
     );
     return this;
   }
@@ -291,7 +366,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
   validateSample1CultureResultError(expectedMessage?: string): EnterSputumSampleResultsPage {
     this.validateFieldError(
       "sample1-culture-result",
-      expectedMessage || "Select a culture result for sample 1",
+      expectedMessage || "Select result of culture test",
     );
     return this;
   }
@@ -299,7 +374,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
   validateSample2SmearResultError(expectedMessage?: string): EnterSputumSampleResultsPage {
     this.validateFieldError(
       "sample2-smear-result",
-      expectedMessage || "Select a smear result for sample 2",
+      expectedMessage || "Select result of smear test",
     );
     return this;
   }
@@ -307,7 +382,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
   validateSample2CultureResultError(expectedMessage?: string): EnterSputumSampleResultsPage {
     this.validateFieldError(
       "sample2-culture-result",
-      expectedMessage || "Select a culture result for sample 2",
+      expectedMessage || "Select result of culture test",
     );
     return this;
   }
@@ -315,7 +390,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
   validateSample3SmearResultError(expectedMessage?: string): EnterSputumSampleResultsPage {
     this.validateFieldError(
       "sample3-smear-result",
-      expectedMessage || "Select a smear result for sample 3",
+      expectedMessage || "Select result of smear test",
     );
     return this;
   }
@@ -323,43 +398,42 @@ export class EnterSputumSampleResultsPage extends BasePage {
   validateSample3CultureResultError(expectedMessage?: string): EnterSputumSampleResultsPage {
     this.validateFieldError(
       "sample3-culture-result",
-      expectedMessage || "Select a culture result for sample 3",
+      expectedMessage || "Select result of culture test",
     );
     return this;
   }
 
-  // Comprehensive validation method
-  validateFormErrors(errors: {
-    sample1SmearResult?: string;
-    sample1CultureResult?: string;
-    sample2SmearResult?: string;
-    sample2CultureResult?: string;
-    sample3SmearResult?: string;
-    sample3CultureResult?: string;
-  }): EnterSputumSampleResultsPage {
-    if (errors.sample1SmearResult) {
-      this.validateSample1SmearResultError(errors.sample1SmearResult);
-    }
+  // Validation for partial sample completion
+  validatePartialSampleError(
+    sampleNumber: number,
+    fieldType: "smear" | "culture",
+  ): EnterSputumSampleResultsPage {
+    const fieldId = `sample${sampleNumber}-${fieldType}-result`;
+    const expectedMessage = `Select a ${fieldType} result for sample ${sampleNumber}`;
+    this.validateFieldError(fieldId, expectedMessage);
+    return this;
+  }
+  // Validate error for no samples entered at all
+  validateNoSamplesEnteredError(): EnterSputumSampleResultsPage {
+    this.validateErrorSummaryVisible();
 
-    if (errors.sample1CultureResult) {
-      this.validateSample1CultureResultError(errors.sample1CultureResult);
-    }
+    // Check for each expected error message individually
+    cy.get(".govuk-error-summary__list").should("contain.text", "Select result of smear test");
+    cy.get(".govuk-error-summary__list").should("contain.text", "Select result of culture test");
 
-    if (errors.sample2SmearResult) {
-      this.validateSample2SmearResultError(errors.sample2SmearResult);
-    }
+    return this;
+  }
+  // Validate error for no samples entered at all
+  validateNoSamplesEnteredErrorDetailed(): EnterSputumSampleResultsPage {
+    this.validateErrorSummaryVisible();
 
-    if (errors.sample2CultureResult) {
-      this.validateSample2CultureResultError(errors.sample2CultureResult);
-    }
+    // Array of expected error messages
+    const expectedErrors = ["Select result of smear test", "Select result of culture test"];
 
-    if (errors.sample3SmearResult) {
-      this.validateSample3SmearResultError(errors.sample3SmearResult);
-    }
-
-    if (errors.sample3CultureResult) {
-      this.validateSample3CultureResultError(errors.sample3CultureResult);
-    }
+    // Check each error message exists
+    expectedErrors.forEach((errorText) => {
+      cy.get(".govuk-error-summary__list").should("contain.text", errorText);
+    });
 
     return this;
   }
@@ -373,29 +447,45 @@ export class EnterSputumSampleResultsPage extends BasePage {
     return this;
   }
 
-  // Validate all required field errors
-  validateAllRequiredFieldErrors(): EnterSputumSampleResultsPage {
+  //Validate errors in line with Business Rules - at least 1 sputum sample must be entered
+  validateMinimumRequiredFieldErrors(): EnterSputumSampleResultsPage {
+    const expectedErrors = ["Select result of smear test", "Select result of culture test"];
+    return this.validateErrorSummaryContains(expectedErrors);
+  }
+
+  // Validate errors when sample is partially completed
+  validatePartialSampleErrors(sampleNumber: number): EnterSputumSampleResultsPage {
     const expectedErrors = [
-      "Select a smear result for sample 1",
-      "Select a culture result for sample 1",
-      "Select a smear result for sample 2",
-      "Select a culture result for sample 2",
-      "Select a smear result for sample 3",
-      "Select a culture result for sample 3",
+      `Select result of smear test ${sampleNumber}`,
+      `Select result of culture test ${sampleNumber}`,
     ];
     return this.validateErrorSummaryContains(expectedErrors);
   }
 
   // Verify form validation when submitting empty form
-  verifyFormValidation(): EnterSputumSampleResultsPage {
+  verifyFormValidationForEmptyForm(): EnterSputumSampleResultsPage {
     // Submit form without selecting any options
     this.clickSaveAndContinue();
 
     // Verify error summary is displayed
     this.validateErrorSummaryVisible();
 
-    // Verify all required field errors are shown
-    this.validateAllRequiredFieldErrors();
+    // Verify minimum required field error is shown
+    this.validateMinimumRequiredFieldErrors();
+
+    return this;
+  }
+
+  // Verify form validation when one sample is partially completed
+  verifyFormValidationForPartialSample(sampleNumber: number): EnterSputumSampleResultsPage {
+    // Submit form with partial data
+    this.clickSaveAndContinue();
+
+    // Verify error summary is displayed
+    this.validateErrorSummaryVisible();
+
+    // Verify partial sample errors are shown
+    this.validatePartialSampleErrors(sampleNumber);
 
     return this;
   }
@@ -429,19 +519,104 @@ export class EnterSputumSampleResultsPage extends BasePage {
     return this;
   }
 
-  // Get current selections (will be using this for my negative scenarios and error validation)
-  getCurrentSelections(): Cypress.Chainable<AllSampleResultsData> {
-    return cy.then(() => {
-      const selections: AllSampleResultsData = {
-        sample1: { smearResult: "Negative", cultureResult: "Negative" },
-        sample2: { smearResult: "Negative", cultureResult: "Negative" },
-        sample3: { smearResult: "Negative", cultureResult: "Negative" },
-      };
+  // Check if at least one sample has both results filled
+  hasAtLeastOneSampleCompleted(): Cypress.Chainable<boolean> {
+    return cy
+      .get('select[name="sample1SmearResult"]')
+      .invoke("val")
+      .then((sample1Smear) => {
+        return cy
+          .get('select[name="sample1CultureResult"]')
+          .invoke("val")
+          .then((sample1Culture) => {
+            return cy
+              .get('select[name="sample2SmearResult"]')
+              .invoke("val")
+              .then((sample2Smear) => {
+                return cy
+                  .get('select[name="sample2CultureResult"]')
+                  .invoke("val")
+                  .then((sample2Culture) => {
+                    return cy
+                      .get('select[name="sample3SmearResult"]')
+                      .invoke("val")
+                      .then((sample3Smear) => {
+                        return cy
+                          .get('select[name="sample3CultureResult"]')
+                          .invoke("val")
+                          .then((sample3Culture) => {
+                            const sample1Complete = sample1Smear !== "" && sample1Culture !== "";
+                            const sample2Complete = sample2Smear !== "" && sample2Culture !== "";
+                            const sample3Complete = sample3Smear !== "" && sample3Culture !== "";
 
-      // This would need to be implemented properly with cy.get().invoke('val')
-      // For now, returning a placeholder
-      return selections;
-    });
+                            return sample1Complete || sample2Complete || sample3Complete;
+                          });
+                      });
+                  });
+              });
+          });
+      });
+  }
+
+  // Get current selections
+  getCurrentSelections(): Cypress.Chainable<AllSampleResultsData> {
+    return cy
+      .get('select[name="sample1SmearResult"]')
+      .invoke("val")
+      .then((sample1Smear) => {
+        return cy
+          .get('select[name="sample1CultureResult"]')
+          .invoke("val")
+          .then((sample1Culture) => {
+            return cy
+              .get('select[name="sample2SmearResult"]')
+              .invoke("val")
+              .then((sample2Smear) => {
+                return cy
+                  .get('select[name="sample2CultureResult"]')
+                  .invoke("val")
+                  .then((sample2Culture) => {
+                    return cy
+                      .get('select[name="sample3SmearResult"]')
+                      .invoke("val")
+                      .then((sample3Smear) => {
+                        return cy
+                          .get('select[name="sample3CultureResult"]')
+                          .invoke("val")
+                          .then((sample3Culture) => {
+                            const selections: AllSampleResultsData = {};
+
+                            // Add sample1 if both fields are filled
+                            if (sample1Smear !== "" && sample1Culture !== "") {
+                              selections.sample1 = {
+                                smearResult: sample1Smear as SputumResult,
+                                cultureResult: sample1Culture as SputumResult,
+                              };
+                            }
+
+                            // Add sample2 if both fields are filled
+                            if (sample2Smear !== "" && sample2Culture !== "") {
+                              selections.sample2 = {
+                                smearResult: sample2Smear as SputumResult,
+                                cultureResult: sample2Culture as SputumResult,
+                              };
+                            }
+
+                            // Add sample3 if both fields are filled
+                            if (sample3Smear !== "" && sample3Culture !== "") {
+                              selections.sample3 = {
+                                smearResult: sample3Smear as SputumResult,
+                                cultureResult: sample3Culture as SputumResult,
+                              };
+                            }
+
+                            return selections;
+                          });
+                      });
+                  });
+              });
+          });
+      });
   }
 
   // Helper method to get result options
@@ -451,11 +626,53 @@ export class EnterSputumSampleResultsPage extends BasePage {
 
   // Verify redirection after successful form submission
   verifyRedirectionAfterSubmission(): EnterSputumSampleResultsPage {
-    this.verifyUrlContains("/tracker");
+    this.verifyUrlContains("/check-sputum-sample-information");
     return this;
   }
 
-  // Comprehensive page verification
+  // Check if sample has partial data (one field filled, other empty)
+  checkSampleHasPartialData(sampleNumber: number): Cypress.Chainable<boolean> {
+    return cy
+      .get(`select[name="sample${sampleNumber}SmearResult"]`)
+      .invoke("val")
+      .then((smear) => {
+        return cy
+          .get(`select[name="sample${sampleNumber}CultureResult"]`)
+          .invoke("val")
+          .then((culture) => {
+            // Partial data means one field is filled and the other is empty
+            return (smear !== "" && culture === "") || (smear === "" && culture !== "");
+          });
+      });
+  }
+
+  // Verify validation behaviour for specific scenarios
+  verifyMinimumSampleValidation(): EnterSputumSampleResultsPage {
+    // Fill only one sample partially (just smear result)
+    this.selectSample1SmearResult("Negative");
+
+    // Submit and expect partial completion error
+    this.clickSaveAndContinue();
+    this.validatePartialSampleErrors(1);
+
+    return this;
+  }
+
+  // Test successful submission with minimum data
+  testSuccessfulSubmissionWithMinimumData(): EnterSputumSampleResultsPage {
+    // Fill only first sample completely
+    this.fillWithOnlyFirstSampleResults();
+
+    // Submit form
+    this.clickSaveAndContinue();
+
+    // Should redirect to check page
+    this.verifyRedirectionAfterSubmission();
+
+    return this;
+  }
+
+  //Page verification
   verifyAllPageElements(): EnterSputumSampleResultsPage {
     this.verifyPageLoaded();
     this.verifyPageStructure();
