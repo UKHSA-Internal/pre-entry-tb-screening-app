@@ -672,7 +672,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
     return this;
   }
 
-  // Comprehensive page verification
+  //Page verification
   verifyAllPageElements(): EnterSputumSampleResultsPage {
     this.verifyPageLoaded();
     this.verifyPageStructure();
