@@ -5,17 +5,14 @@ import { ApplicantConfirmationPage } from "../support/page-objects/applicantConf
 import { ApplicantPhotoUploadPage } from "../support/page-objects/applicantPhotoUploadPage";
 import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../support/page-objects/applicantSummaryPage";
-import { CheckSputumSampleInfoPage } from "../support/page-objects/checkSputumSampleInfoPage";
 import { ChestXrayConfirmationPage } from "../support/page-objects/chestXrayConfirmationPage";
 import { ChestXrayFindingsPage } from "../support/page-objects/chestXrayFindingsPage";
 import { ChestXrayPage } from "../support/page-objects/chestXrayQuestionPage";
 import { ChestXraySummaryPage } from "../support/page-objects/chestXraySummaryPage";
 import { ChestXrayUploadPage } from "../support/page-objects/chestXrayUploadPage";
-import { EnterSputumSampleResultsPage } from "../support/page-objects/enterSputumSampleResultsPage";
 import { MedicalConfirmationPage } from "../support/page-objects/medicalConfirmationPage";
 import { MedicalSummaryPage } from "../support/page-objects/medicalSummaryPage";
 import { SputumCollectionPage } from "../support/page-objects/sputumCollectionPage";
-import { SputumConfirmationPage } from "../support/page-objects/sputumConfirmationPage";
 import { SputumQuestionPage } from "../support/page-objects/sputumQuestionPage";
 import { TBProgressTrackerPage } from "../support/page-objects/tbProgressTrackerPage";
 import {
@@ -44,17 +41,11 @@ describe("PETS Application Sputum Collection Validation", () => {
   const medicalConfirmationPage = new MedicalConfirmationPage();
   const sputumQuestionPage = new SputumQuestionPage();
   const sputumCollectionPage = new SputumCollectionPage();
-  const sputumConfirmationPage = new SputumConfirmationPage();
-  const checkSputumSampleInfoPage = new CheckSputumSampleInfoPage();
-  const enterSputumSampleResultsPage = new EnterSputumSampleResultsPage();
   const chestXrayPage = new ChestXrayPage();
   const chestXrayUploadPage = new ChestXrayUploadPage();
   const chestXrayFindingsPage = new ChestXrayFindingsPage();
   const chestXraySummaryPage = new ChestXraySummaryPage();
   const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
-  /* const tbClearanceCertificatePage = new TbClearanceCertificatePage();
-  const tbClearanceCertificateSummaryPage = new TbClearanceCertificateSummaryPage();
-  const tbCertificateConfirmationPage = new TbCertificateConfirmationPage(); */
   const tbProgressTrackerPage = new TBProgressTrackerPage();
   const visaType = "Students";
 
