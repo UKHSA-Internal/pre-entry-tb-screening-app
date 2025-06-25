@@ -202,15 +202,12 @@ const SputumResultsForm = () => {
   const applyRequiredFieldErrors = (samples: SampleKey[]): boolean => {
     let foundError = false;
 
-    const editableSample = samples.find((sample) => {
+    samples.forEach((sample) => {
       const smearNotInDb = !sputumData[sample].smearResults.submittedToDatabase;
       const cultureNotInDb = !sputumData[sample].cultureResults.submittedToDatabase;
-      return smearNotInDb || cultureNotInDb;
-    });
 
-    if (editableSample) {
-      if (!sputumData[editableSample].smearResults.submittedToDatabase) {
-        const smearField = `${editableSample}SmearResult` as keyof SputumResultsFormType;
+      if (smearNotInDb) {
+        const smearField = `${sample}SmearResult` as keyof SputumResultsFormType;
         setError(smearField, {
           type: "manual",
           message: sputumResultsValidationMessages.smearTestRequired,
@@ -218,15 +215,15 @@ const SputumResultsForm = () => {
         foundError = true;
       }
 
-      if (!sputumData[editableSample].cultureResults.submittedToDatabase) {
-        const cultureField = `${editableSample}CultureResult` as keyof SputumResultsFormType;
+      if (cultureNotInDb) {
+        const cultureField = `${sample}CultureResult` as keyof SputumResultsFormType;
         setError(cultureField, {
           type: "manual",
           message: sputumResultsValidationMessages.cultureTestRequired,
         });
         foundError = true;
       }
-    }
+    });
 
     return foundError;
   };
@@ -325,6 +322,7 @@ const SputumResultsForm = () => {
     setIsLoading(true);
     try {
       persistResultsToStore(formData);
+
       navigate("/check-sputum-sample-information");
     } catch (error) {
       console.error(error);
