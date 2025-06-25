@@ -203,4 +203,18 @@ export class BasePage {
       .click();
     return this;
   }
+
+  // Helper method to verify task status on progress tracker
+  verifyTaskStatus(taskName: string, expectedStatus: string): BasePage {
+    cy.contains(".govuk-task-list__name-and-hint", taskName)
+      .siblings(".govuk-task-list__status")
+      .should("contain.text", expectedStatus);
+    return this;
+  }
+
+  // Helper method to click task link on progress tracker
+  clickTaskLink(taskName: string): BasePage {
+    cy.contains(".govuk-task-list__name-and-hint", taskName).find("a").click();
+    return this;
+  }
 }
