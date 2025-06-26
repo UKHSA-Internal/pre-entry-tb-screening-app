@@ -3,11 +3,9 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { postTbCerificateDetails } from "@/api/api";
-import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
-import { selectApplicant } from "@/redux/applicantSlice";
 import { selectApplication } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectTbCertificate, setTbCertificateStatus } from "@/redux/tbCertificateSlice";
@@ -16,7 +14,6 @@ import { formatDateType, standardiseDayOrMonth } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
 const TbSummary = () => {
-  const applicantData = useAppSelector(selectApplicant);
   const applicationData = useAppSelector(selectApplication);
   const tbCertificateData = useAppSelector(selectTbCertificate);
   const dispatch = useDispatch();
@@ -86,7 +83,6 @@ const TbSummary = () => {
   return (
     <div>
       {isLoading && <Spinner />}
-      <ApplicantDataHeader applicantData={applicantData} />
 
       <Summary status={tbCertificateData.status} summaryElements={summaryData} />
 
