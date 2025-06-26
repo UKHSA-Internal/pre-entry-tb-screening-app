@@ -8,6 +8,8 @@ import {
   HistoryOfConditionsUnder11,
   MenstrualPeriods,
   PregnancyStatus,
+  SmearAndCultureResultOptions,
+  SputumCollectionMethod,
   TbSymptomsOptions,
   VisaOptions,
   YesOrNo,
@@ -239,19 +241,6 @@ export const ChestXRayResponseSchema = z.union([
   ChestXRayNotTakenResponseSchema,
 ]);
 
-export const ApplicationSchema = z.object({
-  applicationId: z.string().openapi({
-    description: "application id",
-  }),
-  applicantPhotoUrl: z.string().openapi({
-    description: "Presigned Url for applicant Photo",
-  }),
-  travelInformation: TravelInformationResponseSchema,
-  medicalScreening: MedicalScreeningResponseSchema,
-  chestXray: ChestXRayResponseSchema,
-  tbCertificate: TbCertificateResponseSchema,
-});
-
 export const ImageUploadUrlRequestSchema = z.object({
   fileName: z.string().openapi({
     description: "Name of file on S3",
@@ -289,4 +278,82 @@ export const ApplicantPhotoResponseSchema = ApplicantPhotoRequestSchema.extend({
   status: z.nativeEnum(TaskStatus).openapi({
     description: "Status of Task",
   }),
+});
+
+export const SputumSampleSchema = z.object({
+  dateOfSample: z.string().or(z.date()).openapi({
+    description: "Date of Sputum Sample Collection",
+  }),
+  collectionMethod: z.nativeEnum(SputumCollectionMethod).openapi({
+    description: "Collection Method of Sputum Sample",
+  }),
+  smearResult: z.nativeEnum(SmearAndCultureResultOptions).optional().openapi({
+    description: "Smear Result",
+  }),
+  cultureResult: z.nativeEnum(SmearAndCultureResultOptions).optional().openapi({
+    description: "Culture Result",
+  }),
+  dateUpdated: z.string().or(z.date()).openapi({
+    description: "Updated Date in UTC timezone",
+  }),
+});
+
+export const SputumSampleCompletionSchema = z.object({
+  dateOfSample: z.string().or(z.date()),
+  collectionMethod: z.nativeEnum(SputumCollectionMethod),
+  smearResult: z.nativeEnum(SmearAndCultureResultOptions),
+  cultureResult: z.nativeEnum(SmearAndCultureResultOptions),
+  dateUpdated: z.string().or(z.date()),
+});
+
+export const SputumSampleCompletionCheckSchema = z.object({
+  samples: z.object({
+    sample1: SputumSampleCompletionSchema,
+    sample2: SputumSampleCompletionSchema,
+    sample3: SputumSampleCompletionSchema,
+  }),
+});
+
+export const SputumRequestSchema = z.object({
+  sputumSamples: z
+    .object({
+      sample1: SputumSampleSchema.optional().openapi({ description: "Details of Sputum Sample 1" }),
+      sample2: SputumSampleSchema.optional().openapi({ description: "Details of Sputum Sample 2" }),
+      sample3: SputumSampleSchema.optional().openapi({ description: "Details of Sputum Sample 3" }),
+    })
+    .openapi({
+      description: "Sputum Sample details",
+    }),
+  version: z.number().optional().openapi({
+    description: "Version Number for concurrency Control",
+  }), // for concurrency control
+});
+
+export const SputumResponseSchema = SputumRequestSchema.extend({
+  applicationId: z.string().openapi({
+    description: "ID of application",
+  }),
+  dateCreated: z.string().date().openapi({
+    description: "Creation Date in UTC timezone",
+  }),
+  dateUpdated: z.string().date().openapi({
+    description: "Updated Date in UTC timezone",
+  }),
+  status: z.nativeEnum(TaskStatus).openapi({
+    description: "Status of Task",
+  }),
+});
+
+export const ApplicationSchema = z.object({
+  applicationId: z.string().openapi({
+    description: "application id",
+  }),
+  applicantPhotoUrl: z.string().openapi({
+    description: "Presigned Url for applicant Photo",
+  }),
+  travelInformation: TravelInformationResponseSchema,
+  medicalScreening: MedicalScreeningResponseSchema,
+  chestXray: ChestXRayResponseSchema,
+  sputumDetails: SputumResponseSchema,
+  tbCertificate: TbCertificateResponseSchema,
 });
