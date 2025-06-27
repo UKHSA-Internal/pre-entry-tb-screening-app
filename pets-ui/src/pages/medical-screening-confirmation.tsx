@@ -17,8 +17,8 @@ export default function MedicalConfirmation() {
       <Confirmation
         confirmationText={"Medical screening record created"}
         furtherInfo={furtherInfo}
-        buttonText={"Continue to chest X-ray"}
-        buttonLink={"/chest-xray-question"}
+        buttonText={"Continue"}
+        buttonLink={"/tracker"}
         whatHappensNext
       />
     </Container>
