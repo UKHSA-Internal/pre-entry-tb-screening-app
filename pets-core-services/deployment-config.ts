@@ -32,6 +32,11 @@ const config: DeploymentConfig[] = [
     s3Bucket: process.env.QUARANTINE_LAMBDA_BUCKET,
     path: join(__dirname, "./src/dicom-service/lambdas/quarantine.ts"),
   },
+  {
+    lambdaName: process.env.INTEGRATION_SERVICE_LAMBDA_NAME,
+    s3Bucket: process.env.INTEGRATION_SERVICE_LAMBDA_BUCKET,
+    path: join(__dirname, "./src/integration-service/lambdas/integration.ts"),
+  },
 ];
 
 // eslint-disable-next-line no-console
