@@ -42,11 +42,11 @@ export const policyMapping: Record<Roles, string[]> = {
     `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/GET/clinics/*`,
   ],
   [Roles.QualityReviewRead]: [
-    `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/GET/qa-application/`,
-    `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/GET/qa-application/*`,
+    `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/GET/qa/application/`,
+    `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/GET/qa/application/*`,
   ],
   [Roles.QualityReviewWrite]: [
-    `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/GET/qa-application/`,
-    `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/GET/qa-application/*`,
+    `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/GET/qa/application/`,
+    `arn:aws:execute-api:eu-west-2:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/GET/qa/application/*`,
   ],
 };
