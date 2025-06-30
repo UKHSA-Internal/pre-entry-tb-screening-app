@@ -110,6 +110,35 @@ const formatDateType = (date: DateType): string => {
   return `${day}/${month}/${year}`;
 };
 
+const formatDateForDisplay = (date: DateType): string => {
+  const { day, month, year } = date;
+
+  if (!day || !month || !year) {
+    return "";
+  }
+
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const monthIndex = parseInt(month, 10) - 1;
+  const monthName = monthNames[monthIndex];
+  const dayNumber = parseInt(day, 10);
+
+  return `${dayNumber} ${monthName} ${year}`;
+};
+
 const spreadArrayIfNotEmpty = (...arrays: string[][]) => {
   return arrays.flatMap((array) => (array?.length ? array : []));
 };
@@ -130,6 +159,7 @@ const toArray = (input: boolean | string | string[]) => {
 };
 
 export {
+  formatDateForDisplay,
   formatDateType,
   hasInvalidCharacters,
   isDateInTheFuture,

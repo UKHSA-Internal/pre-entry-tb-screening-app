@@ -23,6 +23,7 @@ import {
   clearMedicalScreeningDetails,
   setMedicalScreeningDetailsFromApiResponse,
 } from "@/redux/medicalScreeningSlice";
+import { clearSputumDetails, setSputumDetailsFromApiResponse } from "@/redux/sputumSlice";
 import {
   clearTbCertificateDetails,
   setTbCertificateFromApiResponse,
@@ -37,7 +38,7 @@ const ApplicantSearchForm = () => {
   const navigate = useNavigate();
   const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
   const dispatch = useAppDispatch();
-  const { setApplicantPhotoFile } = useApplicantPhoto();
+  const { setApplicantPhotoUrl } = useApplicantPhoto();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -47,9 +48,10 @@ const ApplicantSearchForm = () => {
     dispatch(clearMedicalScreeningDetails());
     dispatch(clearTravelDetails());
     dispatch(clearChestXrayDetails());
+    dispatch(clearSputumDetails());
     dispatch(clearTbCertificateDetails());
     dispatch(setApplicantPhotoFileName(""));
-    setApplicantPhotoFile(null);
+    setApplicantPhotoUrl(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -64,7 +66,7 @@ const ApplicantSearchForm = () => {
     setIsLoading(true);
     try {
       dispatch(setApplicantPassportDetails(passportDetails));
-      setApplicantPhotoFile(null);
+      setApplicantPhotoUrl(null);
 
       const applicantRes = await getApplicants(passportDetails);
       if (applicantRes.data.length === 0) {
@@ -76,25 +78,18 @@ const ApplicantSearchForm = () => {
 
       const applicationRes = await getApplication(applicantRes.data);
       if (applicationRes.data.applicantPhotoUrl) {
-        try {
-          const env = import.meta.env.VITE_ENVIRONMENT as string | undefined;
-          const fixedUrl =
-            env === "local"
-              ? applicationRes.data.applicantPhotoUrl.replace(
-                  /172\.\d+\.\d+\.\d+:4566/,
-                  "localhost:4566",
-                )
-              : applicationRes.data.applicantPhotoUrl;
-          const response = await fetch(fixedUrl);
-          const blob = await response.blob();
-          const urlParts = applicationRes.data.applicantPhotoUrl.split("/");
-          const filename = urlParts.pop()?.split("?")[0] ?? "applicant-photo.jpg";
-          const photoFile = new File([blob], filename, { type: blob.type });
-          setApplicantPhotoFile(photoFile);
-          dispatch(setApplicantPhotoFileName(filename));
-        } catch (photoError) {
-          console.error("Error fetching or processing applicant photo:", photoError);
-        }
+        const env = import.meta.env.VITE_ENVIRONMENT as string | undefined;
+        const fixedUrl =
+          env === "local"
+            ? applicationRes.data.applicantPhotoUrl.replace(
+                /172\.\d+\.\d+\.\d+:4566/,
+                "localhost:4566",
+              )
+            : applicationRes.data.applicantPhotoUrl;
+        setApplicantPhotoUrl(fixedUrl);
+        const urlParts = applicationRes.data.applicantPhotoUrl.split("/");
+        const filename = urlParts.pop()?.split("?")[0] ?? "applicant-photo.jpg";
+        dispatch(setApplicantPhotoFileName(filename));
       }
 
       if (applicationRes.data.travelInformation) {
@@ -105,6 +100,9 @@ const ApplicantSearchForm = () => {
       }
       if (applicationRes.data.chestXray) {
         dispatch(setChestXrayFromApiResponse(applicationRes.data.chestXray));
+      }
+      if (applicationRes.data.sputumDetails) {
+        dispatch(setSputumDetailsFromApiResponse(applicationRes.data.sputumDetails));
       }
       if (applicationRes.data.tbCertificate) {
         dispatch(setTbCertificateFromApiResponse(applicationRes.data.tbCertificate));

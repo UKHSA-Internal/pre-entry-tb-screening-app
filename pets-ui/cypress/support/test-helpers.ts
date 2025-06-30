@@ -4,6 +4,7 @@ import { countryList } from "../../src/utils/countryList";
 import { loginViaB2C } from "./commands";
 import { ApplicantConfirmationPage } from "./page-objects/applicantConfirmationPage";
 import { ApplicantDetailsPage } from "./page-objects/applicantDetailsPage";
+import { ApplicantPhotoUploadPage } from "./page-objects/applicantPhotoUploadPage";
 import { ApplicantSearchPage } from "./page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "./page-objects/applicantSummaryPage";
 import { ChestXrayConfirmationPage } from "./page-objects/chestXrayConfirmationPage";
@@ -11,9 +12,16 @@ import { ChestXrayFindingsPage } from "./page-objects/chestXrayFindingsPage";
 import { ChestXrayPage } from "./page-objects/chestXrayQuestionPage";
 import { ChestXraySummaryPage } from "./page-objects/chestXraySummaryPage";
 import { ChestXrayUploadPage } from "./page-objects/chestXrayUploadPage";
+import { EnterSputumSampleResultsPage } from "./page-objects/enterSputumSampleResultsPage";
 import { MedicalConfirmationPage } from "./page-objects/medicalConfirmationPage";
 import { MedicalScreeningPage } from "./page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "./page-objects/medicalSummaryPage";
+import { SputumCollectionPage } from "./page-objects/sputumCollectionPage";
+import { SputumQuestionPage } from "./page-objects/sputumQuestionPage";
+import { TbCertificateConfirmationPage } from "./page-objects/tbCertificateConfirmationPage";
+import { TbClearanceCertificateSummaryPage } from "./page-objects/tbCertificateSummaryPage";
+import { TbClearanceCertificatePage } from "./page-objects/tbClearanceCertificatePage";
+import { TBProgressTrackerPage } from "./page-objects/tbProgressTrackerPage";
 import { TravelConfirmationPage } from "./page-objects/travelConfirmationPage";
 import { TravelInformationPage } from "./page-objects/travelInformationPage";
 import { TravelSummaryPage } from "./page-objects/travelSummaryPage";
@@ -38,6 +46,7 @@ export function getRandomPassportNumber(): string {
 
   return prefix + digits;
 }
+
 export { testData };
 
 /**
@@ -95,11 +104,89 @@ export function generateApplicantData() {
 }
 
 /**
+ * Helper function to generate standard sputum collection test data
+ */
+export function generateSputumCollectionData() {
+  return {
+    sample1: {
+      date: { day: "10", month: "03", year: "2025" },
+      collectionMethod: "Coughed up",
+    },
+    sample2: {
+      date: { day: "11", month: "03", year: "2025" },
+      collectionMethod: "Induced",
+    },
+    sample3: {
+      date: { day: "12", month: "03", year: "2025" },
+      collectionMethod: "Coughed up",
+    },
+  };
+}
+
+// Type definitions for sputum results (matching the page object)
+export type SputumResult = "Negative" | "Positive" | "Inconclusive";
+
+export interface SampleResultData {
+  smearResult: SputumResult;
+  cultureResult: SputumResult;
+}
+
+export interface AllSampleResultsData {
+  sample1: SampleResultData;
+  sample2: SampleResultData;
+  sample3: SampleResultData;
+}
+
+/**
+ * Helper function to generate standard sputum results test data
+ */
+export function generateSputumResultsData(
+  resultType: "allNegative" | "allPositive" | "mixed" | "allInconclusive" = "allNegative",
+): AllSampleResultsData {
+  // Import the type from the page object to ensure consistency
+  type SputumResult = "Negative" | "Positive" | "Inconclusive";
+
+  const negative: SputumResult = "Negative";
+  const positive: SputumResult = "Positive";
+  const inconclusive: SputumResult = "Inconclusive";
+
+  switch (resultType) {
+    case "allNegative":
+      return {
+        sample1: { smearResult: negative, cultureResult: negative },
+        sample2: { smearResult: negative, cultureResult: negative },
+        sample3: { smearResult: negative, cultureResult: negative },
+      };
+    case "allPositive":
+      return {
+        sample1: { smearResult: positive, cultureResult: positive },
+        sample2: { smearResult: positive, cultureResult: positive },
+        sample3: { smearResult: positive, cultureResult: positive },
+      };
+    case "mixed":
+      return {
+        sample1: { smearResult: negative, cultureResult: positive },
+        sample2: { smearResult: positive, cultureResult: negative },
+        sample3: { smearResult: inconclusive, cultureResult: inconclusive },
+      };
+    case "allInconclusive":
+      return {
+        sample1: { smearResult: inconclusive, cultureResult: inconclusive },
+        sample2: { smearResult: inconclusive, cultureResult: inconclusive },
+        sample3: { smearResult: inconclusive, cultureResult: inconclusive },
+      };
+    default:
+      return generateSputumResultsData("allNegative");
+  }
+}
+
+/**
  * Create a new applicant and go through the initial application process
  * Returns the applicant data used
  */
 export function createNewApplicant() {
   const applicantSearchPage = new ApplicantSearchPage();
+  const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
 
@@ -127,32 +214,47 @@ export function createNewApplicant() {
 
   // Fill Applicant Details
   applicantDetailsPage.verifyPageLoaded();
-  applicantDetailsPage.fillFullName(applicantData.fullName);
-  applicantDetailsPage.selectSex(applicantData.sex);
-  applicantDetailsPage.selectNationality(applicantData.countryName);
-  applicantDetailsPage.fillBirthDate(
-    applicantData.birthDay,
-    applicantData.birthMonth,
-    applicantData.birthYear,
-  );
-  applicantDetailsPage.fillPassportIssueDate(
-    applicantData.passportIssueDay,
-    applicantData.passportIssueMonth,
-    applicantData.passportIssueYear,
-  );
-  applicantDetailsPage.fillPassportExpiryDate(
-    applicantData.passportExpiryDay,
-    applicantData.passportExpiryMonth,
-    applicantData.passportExpiryYear,
-  );
-  applicantDetailsPage.fillAddressLine1(applicantData.addressLine1);
-  applicantDetailsPage.fillAddressLine2(applicantData.addressLine2);
-  applicantDetailsPage.fillAddressLine3(applicantData.addressLine3);
-  applicantDetailsPage.fillTownOrCity(applicantData.townOrCity);
-  applicantDetailsPage.fillProvinceOrState(applicantData.provinceOrState);
-  applicantDetailsPage.selectAddressCountry(applicantData.countryName);
-  applicantDetailsPage.fillPostcode(applicantData.postcode);
+  applicantDetailsPage.fillCompleteForm({
+    fullName: applicantData.fullName,
+    sex: applicantData.sex,
+    nationality: applicantData.countryName,
+    birthDay: applicantData.birthDay,
+    birthMonth: applicantData.birthMonth,
+    birthYear: applicantData.birthYear,
+    passportIssueDay: applicantData.passportIssueDay,
+    passportIssueMonth: applicantData.passportIssueMonth,
+    passportIssueYear: applicantData.passportIssueYear,
+    passportExpiryDay: applicantData.passportExpiryDay,
+    passportExpiryMonth: applicantData.passportExpiryMonth,
+    passportExpiryYear: applicantData.passportExpiryYear,
+    addressLine1: applicantData.addressLine1,
+    addressLine2: applicantData.addressLine2,
+    addressLine3: applicantData.addressLine3,
+    townOrCity: applicantData.townOrCity,
+    provinceOrState: applicantData.provinceOrState,
+    addressCountry: applicantData.countryName,
+    postcode: applicantData.postcode,
+  });
   applicantDetailsPage.submitForm();
+
+  // Verify redirection to the Applicant Photo page
+  cy.url().should("include", "/applicant-photo");
+  applicantPhotoUploadPage.verifyPageLoaded();
+
+  // Check applicant information is displayed correctly
+  applicantPhotoUploadPage.verifyApplicantInfo({
+    Name: applicantData.fullName,
+    "Date of birth": `${applicantData.birthDay}/${applicantData.birthMonth}/${applicantData.birthYear}`,
+    "Passport number": applicantData.passportNumber,
+  });
+
+  // Upload Applicant Photo file
+  applicantPhotoUploadPage
+    .uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg")
+    .verifyUploadSuccess();
+
+  // Continue to Applicant Summary page
+  applicantPhotoUploadPage.clickContinue();
 
   // Verify and confirm applicant summary
   applicantSummaryPage.verifyPageLoaded();
@@ -193,13 +295,15 @@ export function navigateToMedicalScreeningPage() {
 
   // Complete the travel information section
   travelInformationPage.verifyPageLoaded();
-  travelInformationPage.selectVisaType(applicantData.visaType);
-  travelInformationPage.fillAddressLine1(applicantData.ukAddressLine1);
-  travelInformationPage.fillAddressLine2(applicantData.ukAddressLine2);
-  travelInformationPage.fillTownOrCity(applicantData.ukTownOrCity);
-  travelInformationPage.fillPostcode(applicantData.ukPostcode);
-  travelInformationPage.fillMobileNumber(applicantData.mobileNumber);
-  travelInformationPage.fillEmail(applicantData.email);
+  travelInformationPage.fillCompleteForm({
+    visaType: applicantData.visaType,
+    ukAddressLine1: applicantData.ukAddressLine1,
+    ukAddressLine2: applicantData.ukAddressLine2,
+    ukTownOrCity: applicantData.ukTownOrCity,
+    ukPostcode: applicantData.ukPostcode,
+    mobileNumber: applicantData.mobileNumber,
+    email: applicantData.email,
+  });
   travelInformationPage.submitForm();
 
   // Complete travel summary
@@ -278,7 +382,7 @@ export function navigateToChestXrayFindingsPage() {
 
   // Upload an X-ray file
   chestXrayUploadPage.verifyPageLoaded();
-  chestXrayUploadPage.uploadPosteroAnteriorXray("cypress/fixtures/test-image.png");
+  chestXrayUploadPage.uploadPosteroAnteriorXray("cypress/fixtures/test-chest-xray.dcm");
   chestXrayUploadPage.verifyUploadSuccess();
   chestXrayUploadPage.clickContinue();
 
@@ -286,13 +390,11 @@ export function navigateToChestXrayFindingsPage() {
 }
 
 /**
- * Helper function to navigate to the TB Certificate page
+ * Helper function to navigate to the Sputum Question page
  * Returns the applicant data used
  */
-export function navigateToTbCertificatePage() {
+export function navigateToSputumQuestionPage() {
   const chestXrayFindingsPage = new ChestXrayFindingsPage();
-  const chestXraySummaryPage = new ChestXraySummaryPage();
-  const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
 
   // Navigate to the chest X-ray findings page
   const applicantData = navigateToChestXrayFindingsPage();
@@ -303,13 +405,261 @@ export function navigateToTbCertificatePage() {
   chestXrayFindingsPage.selectMinorFindings(["1.1 Single fibrous streak or band or scar"]);
   chestXrayFindingsPage.clickSaveAndContinue();
 
-  // Complete the X-ray summary page
+  return applicantData;
+}
+
+/**
+ * Helper function to navigate to the Sputum Collection page
+ * Returns the applicant data used
+ */
+export function navigateToSputumCollectionPage() {
+  const sputumQuestionPage = new SputumQuestionPage();
+  const chestXraySummaryPage = new ChestXraySummaryPage();
+  const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
+  const tbProgressTrackerPage = new TBProgressTrackerPage();
+
+  // Navigate to the sputum question page
+  const applicantData = navigateToSputumQuestionPage();
+
+  // Select "Yes" for sputum collection
+  sputumQuestionPage.verifyPageLoaded();
+  sputumQuestionPage.selectSputumRequiredYes();
+  sputumQuestionPage.clickContinue();
+
+  // Continue through chest X-ray summary
   chestXraySummaryPage.verifyPageLoaded();
   chestXraySummaryPage.clickSaveAndContinue();
 
-  // Navigate through confirmation to TB certificate page
+  // Continue through chest X-ray confirmation to get to progress tracker
   chestXrayConfirmationPage.verifyPageLoaded();
   chestXrayConfirmationPage.clickContinueButton();
+
+  // From the progress tracker, click on sputum collection
+  tbProgressTrackerPage.verifyPageLoaded();
+  tbProgressTrackerPage.clickTaskLink("Sputum collection and results");
+
+  return applicantData;
+}
+
+/**
+ * Helper function to navigate to the Enter Sputum Sample Results page
+ * Returns the applicant data used
+ */
+export function navigateToEnterSputumSampleResultsPage() {
+  const sputumCollectionPage = new SputumCollectionPage();
+
+  // Navigate to the sputum collection page
+  const applicantData = navigateToSputumCollectionPage();
+
+  // Fill sputum collection data for all three samples
+  const sputumData = generateSputumCollectionData();
+
+  // Complete sputum collection
+  sputumCollectionPage.verifyPageLoaded();
+  sputumCollectionPage.fillAllSamples(sputumData);
+  sputumCollectionPage.clickSaveAndContinueToResults();
+
+  return applicantData;
+}
+
+/**
+ * Helper function to complete the sputum collection and results flow
+ * Returns the applicant data used
+ */
+export function completeSputumCollectionAndResults() {
+  const enterSputumSampleResultsPage = new EnterSputumSampleResultsPage();
+
+  // Navigate to the enter sputum sample results page
+  const applicantData = navigateToEnterSputumSampleResultsPage();
+
+  // Use the page object's built-in method for filling negative results
+  enterSputumSampleResultsPage.verifyPageLoaded();
+  enterSputumSampleResultsPage.fillWithAllNegativeResults();
+  enterSputumSampleResultsPage.clickSaveAndContinue();
+
+  return applicantData;
+}
+
+/**
+ * Helper function to navigate to the Progress Tracker
+ * Returns the applicant data used
+ */
+export function navigateToProgressTracker() {
+  const sputumQuestionPage = new SputumQuestionPage();
+  const chestXraySummaryPage = new ChestXraySummaryPage();
+  const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
+
+  // Navigate to the sputum question page
+  const applicantData = navigateToSputumQuestionPage();
+
+  // Select "No" for sputum collection
+  sputumQuestionPage.verifyPageLoaded();
+  sputumQuestionPage.selectSputumRequiredNo();
+  sputumQuestionPage.clickContinue();
+
+  // Continue through chest X-ray summary
+  chestXraySummaryPage.verifyPageLoaded();
+  chestXraySummaryPage.clickSaveAndContinue();
+
+  // Continue through chest X-ray confirmation to get to progress tracker
+  chestXrayConfirmationPage.verifyPageLoaded();
+  chestXrayConfirmationPage.clickContinueButton();
+
+  return applicantData;
+}
+
+/**
+ * Helper function to navigate to the Progress Tracker with sputum "Yes" selected
+ * Returns the applicant data used
+ */
+export function navigateToProgressTrackerWithSputumYes() {
+  const sputumQuestionPage = new SputumQuestionPage();
+  const chestXraySummaryPage = new ChestXraySummaryPage();
+  const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
+
+  // Navigate to the sputum question page
+  const applicantData = navigateToSputumQuestionPage();
+
+  // Select "Yes" for sputum collection
+  sputumQuestionPage.verifyPageLoaded();
+  sputumQuestionPage.selectSputumRequiredYes();
+  sputumQuestionPage.clickContinue();
+
+  // Continue through chest X-ray summary
+  chestXraySummaryPage.verifyPageLoaded();
+  chestXraySummaryPage.clickSaveAndContinue();
+
+  // Continue through chest X-ray confirmation to get to progress tracker
+  chestXrayConfirmationPage.verifyPageLoaded();
+  chestXrayConfirmationPage.clickContinueButton();
+
+  return applicantData;
+}
+
+/**
+ * Helper function to navigate to the Progress Tracker with completed sputum collection
+ * Returns the applicant data used
+ */
+export function navigateToProgressTrackerWithCompletedSputum() {
+  // Complete the entire sputum collection and results flow
+  const applicantData = completeSputumCollectionAndResults();
+
+  // Should now be back at the progress tracker
+  return applicantData;
+}
+
+/**
+ * Helper function to navigate to the TB Certificate page via Progress Tracker
+ * This enforces the business rule that TB certificate declaration can only be accessed
+ * after all prerequisite tasks are completed (JIRA TBBETA-550)
+ * Returns the applicant data used
+ */
+export function navigateToTbCertificatePageViaTracker() {
+  const tbProgressTrackerPage = new TBProgressTrackerPage();
+
+  // Navigate to the progress tracker first
+  const applicantData = navigateToProgressTracker();
+
+  // Click on TB certificate declaration from the tracker
+  tbProgressTrackerPage.verifyPageLoaded();
+  tbProgressTrackerPage.clickTaskLink("TB certificate declaration");
+
+  return applicantData;
+}
+
+/**
+ * Helper function to navigate to the TB Certificate page with completed sputum
+ * This enforces the business rule that TB certificate declaration can only be accessed
+ * after all prerequisite tasks are completed (including sputum if required)
+ * Returns the applicant data used
+ */
+export function navigateToTbCertificatePageViaTrackerWithSputum() {
+  const tbProgressTrackerPage = new TBProgressTrackerPage();
+
+  // Navigate to the progress tracker with completed sputum
+  const applicantData = navigateToProgressTrackerWithCompletedSputum();
+
+  // Click on TB certificate declaration from the tracker
+  tbProgressTrackerPage.verifyPageLoaded();
+  tbProgressTrackerPage.clickTaskLink("TB certificate declaration");
+
+  return applicantData;
+}
+
+/**
+ * Helper function to navigate to the TB Certificate page (UPDATED)
+ * This maintains backward compatibility by using the new flow
+ * Returns the applicant data used
+ */
+export function navigateToTbCertificatePage() {
+  return navigateToTbCertificatePageViaTracker();
+}
+
+/**
+ * Helper function to complete the entire flow up to TB certificate completion
+ * Returns the applicant data used
+ */
+export function completeFullFlowToTbCertificate() {
+  const tbClearanceCertificatePage = new TbClearanceCertificatePage();
+  const tbClearanceCertificateSummaryPage = new TbClearanceCertificateSummaryPage();
+  const tbCertificateConfirmationPage = new TbCertificateConfirmationPage();
+
+  // Navigate to TB certificate page via the tracker
+  const applicantData = navigateToTbCertificatePageViaTracker();
+
+  // Complete TB certificate
+  tbClearanceCertificatePage.verifyPageLoaded();
+  tbClearanceCertificatePage.fillFormWithValidData({
+    clearanceIssued: "Yes",
+    physicianComments: "No signs of active tuberculosis. Chest X-ray clear.",
+    certificateDay: "19",
+    certificateMonth: "03",
+    certificateYear: "2025",
+    certificateNumber: applicantData.tbCertificateNumber,
+  });
+
+  // Complete TB certificate summary
+  tbClearanceCertificateSummaryPage.verifyPageLoaded();
+  tbClearanceCertificateSummaryPage.clickSaveAndContinue();
+
+  // Complete TB certificate confirmation
+  tbCertificateConfirmationPage.verifyPageLoaded();
+  tbCertificateConfirmationPage.clickFinishButton();
+
+  return applicantData;
+}
+
+/**
+ * Helper function to complete the entire flow up to TB certificate completion with sputum
+ * Returns the applicant data used
+ */
+export function completeFullFlowToTbCertificateWithSputum() {
+  const tbClearanceCertificatePage = new TbClearanceCertificatePage();
+  const tbClearanceCertificateSummaryPage = new TbClearanceCertificateSummaryPage();
+  const tbCertificateConfirmationPage = new TbCertificateConfirmationPage();
+
+  // Navigate to TB certificate page via the tracker with completed sputum
+  const applicantData = navigateToTbCertificatePageViaTrackerWithSputum();
+
+  // Complete TB certificate
+  tbClearanceCertificatePage.verifyPageLoaded();
+  tbClearanceCertificatePage.fillFormWithValidData({
+    clearanceIssued: "Yes",
+    physicianComments:
+      "No signs of active tuberculosis. Chest X-ray clear. Sputum samples negative.",
+    certificateDay: "19",
+    certificateMonth: "03",
+    certificateYear: "2025",
+    certificateNumber: applicantData.tbCertificateNumber,
+  });
+
+  // Complete TB certificate summary
+  tbClearanceCertificateSummaryPage.verifyPageLoaded();
+  tbClearanceCertificateSummaryPage.clickSaveAndContinue();
+
+  // Complete TB certificate confirmation
+  tbCertificateConfirmationPage.verifyPageLoaded();
+  tbCertificateConfirmationPage.clickFinishButton();
 
   return applicantData;
 }

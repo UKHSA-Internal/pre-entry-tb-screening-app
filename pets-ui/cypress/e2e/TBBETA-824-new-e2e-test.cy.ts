@@ -297,10 +297,10 @@ describe("PETS Application End-to-End Tests", () => {
       .selectMinorFindings(["1.1 Single fibrous streak or band or scar"])
       .clickSaveAndContinue();
 
-    //Complete Sputum Collection
+    // Complete Sputum Collection
     sputumQuestionPage.verifyPageLoaded();
-    // Select "Yes" for Sputum Collection and continue
-    sputumQuestionPage.selectSputumRequiredYes().clickContinue();
+    // Select "No" for Sputum Collection and continue
+    sputumQuestionPage.selectSputumRequiredNo().clickContinue();
 
     // Verify redirection to chest X-ray summary page
     cy.url().should("include", "/chest-xray-summary");
@@ -315,11 +315,14 @@ describe("PETS Application End-to-End Tests", () => {
       "Passport number": passportNumber,
     });
 
-    // Verify X-ray summary information - only validating these 2 fields as the others do not populate on the summary page
+    // Verify X-ray summary information - only verify fields that are definitely populated
     chestXraySummaryPage.verifyXraySummaryInfo({
       "Select X-ray status": "Yes",
       "Enter radiological outcome": "Chest X-ray normal",
     });
+
+    // Verify sputum field separately with a more specific check
+    chestXraySummaryPage.verifySummaryValue("Sputum required?", "No");
 
     // Verify change links exist
     chestXraySummaryPage.verifyChangeLinksExist();
@@ -331,11 +334,47 @@ describe("PETS Application End-to-End Tests", () => {
     chestXrayConfirmationPage.verifyPageLoaded();
     chestXrayConfirmationPage.verifyConfirmationPanel();
     chestXrayConfirmationPage.verifyNextStepsSection();
-    chestXrayConfirmationPage.verifyContinueText();
-    chestXrayConfirmationPage.verifyTrackerLink();
     chestXrayConfirmationPage.verifyBreadcrumbNavigation();
     chestXrayConfirmationPage.verifyServiceName();
     chestXrayConfirmationPage.clickContinueButton();
+
+    // Verify redirection to TB Screening Progress Tracker page
+    cy.url().should("include", "/tracker");
+
+    // Verify TB Screening Progress Tracker page
+    tbProgressTrackerPage.verifyPageLoaded();
+
+    // Check applicant information is displayed correctly
+    tbProgressTrackerPage.verifyApplicantInfo({
+      Name: "Jane Smith",
+      "Date of birth": "15/03/2000",
+      "Passport number": passportNumber,
+    });
+
+    // Verify task status information
+    tbProgressTrackerPage.verifyVisaApplicantDetailsCompleted();
+
+    // Verify complete all sections text
+    tbProgressTrackerPage.verifyCompleteAllSectionsText();
+
+    // Verify task links exist
+    tbProgressTrackerPage.verifyTaskLinksExist();
+
+    // Verify service name
+    tbProgressTrackerPage.verifyServiceName();
+
+    // Verify task statuses - updated based on new flow
+    tbProgressTrackerPage.verifyAllTaskStatuses({
+      "Visa applicant details": "Completed",
+      "Travel information": "Completed",
+      "Medical history and TB symptoms": "Completed",
+      "Radiological outcome": "Completed",
+      "Sputum collection and results": "Not required",
+      "TB certificate declaration": "Not yet started",
+    });
+
+    // Now click on TB certificate declaration to continue the flow
+    tbProgressTrackerPage.clickTaskLink("TB certificate declaration");
 
     // TB Clearance Certificate Page
     tbClearanceCertificatePage.verifyPageLoaded();
@@ -398,21 +437,28 @@ describe("PETS Application End-to-End Tests", () => {
     // Click finish button to complete
     tbCertificateConfirmationPage.clickFinishButton();
 
-    // Verify redirection to TB Screening Progress Tracker page
+    // Verify redirection back to TB Screening Progress Tracker page
     cy.url().should("include", "/tracker");
 
-    // Verify TB Screening Progress Tracker page
+    // Final verification of TB Screening Progress Tracker page
     tbProgressTrackerPage.verifyPageLoaded();
 
-    // Check applicant information is displayed correctly
+    // Check applicant information is still displayed correctly
     tbProgressTrackerPage.verifyApplicantInfo({
       Name: "Jane Smith",
       "Date of birth": "15/03/2000",
       "Passport number": passportNumber,
     });
 
-    // Verify task status information
-    tbProgressTrackerPage.verifyVisaApplicantDetailsCompleted();
+    // Verify final task statuses - TB certificate should now be completed
+    tbProgressTrackerPage.verifyAllTaskStatuses({
+      "Visa applicant details": "Completed",
+      "Travel information": "Completed",
+      "Medical history and TB symptoms": "Completed",
+      "Radiological outcome": "Completed",
+      "Sputum collection and results": "Not required",
+      "TB certificate declaration": "Completed", // Now completed
+    });
 
     // Verify complete all sections text
     tbProgressTrackerPage.verifyCompleteAllSectionsText();
@@ -420,20 +466,7 @@ describe("PETS Application End-to-End Tests", () => {
     // Verify task links exist
     tbProgressTrackerPage.verifyTaskLinksExist();
 
-    // Verify sputum test information text
-    tbProgressTrackerPage.verifySputumTestInformationText();
-
     // Verify service name
     tbProgressTrackerPage.verifyServiceName();
-
-    // Verify task statuses
-    tbProgressTrackerPage.verifyAllTaskStatuses({
-      "Visa applicant details": "Completed",
-      "Travel information": "Completed",
-      "Medical history and TB symptoms": "Completed",
-      "Radiological outcome": "Completed",
-      "Sputum collection and results": "Not yet started",
-      "TB certificate declaration": "Completed",
-    });
   });
 });

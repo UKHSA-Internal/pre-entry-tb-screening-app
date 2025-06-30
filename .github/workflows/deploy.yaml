@@ -37,7 +37,7 @@ jobs:
 
       - name: Notify Teams Chat
         run: |
-          pnpm notify:teams '${{ secrets.TECH_TEAM_CHAT }}' '⌛️${{ github.actor }} has just triggered App deployment to ${{ inputs.environment }}.'
+          pnpm notify:teams '${{ secrets.TECH_TEAM_CHAT }}' 'Clinic app: ⌛️${{ github.actor }} has just triggered App deployment to ${{ inputs.environment }}.'
 
   load-deployment-config:
     name: Load deployment config for Core Services Lambda
@@ -337,12 +337,12 @@ jobs:
       - name: Notify Teams Chat(Dev and QAT)
         if: contains('dev qat', inputs.environment)
         run: |
-          pnpm notify:teams '${{ secrets.APP_DEPLOYMENT_NOTIFICATION_CHAT }}' '${{ github.ref_name }} has been deployed to ${{ inputs.environment }}'
+          pnpm notify:teams '${{ secrets.APP_DEPLOYMENT_NOTIFICATION_CHAT }}' 'Clinic app: ${{ github.ref_name }} has been deployed to ${{ inputs.environment }}'
 
       - name: Notify Teams Chat(Preprod and Prod)
         if: contains('prod preprod', inputs.environment)
         run: |
-          pnpm notify:teams '${{ secrets.TECH_TEAM_CHAT }}' '🚀 App deployment to ${{ inputs.environment }} ran successfully'
+          pnpm notify:teams '${{ secrets.TECH_TEAM_CHAT }}' 'Clinic app: 🚀 App deployment to ${{ inputs.environment }} ran successfully'
 
       - name: Get Pull Request Number
         id: get_pr

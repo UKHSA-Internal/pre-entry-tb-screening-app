@@ -4,6 +4,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   DateType,
   PostedSputumSampleType,
+  PostedSputumType,
   ReceivedSputumType,
   ReduxSputumCollectionType,
   ReduxSputumCultureResultType,
@@ -16,6 +17,7 @@ import { ApplicationStatus, BackendApplicationStatus, PositiveOrNegative } from 
 
 const initialState: ReduxSputumType = {
   status: ApplicationStatus.NOT_YET_STARTED,
+  version: undefined,
   sample1: {
     collection: {
       submittedToDatabase: false,
@@ -180,8 +182,33 @@ export const sputumSlice = createSlice({
         };
       }
     },
-    clearSputumDetails: () => {
-      JSON.parse(JSON.stringify(initialState));
+    clearSputumDetails: (state) => {
+      state.status = ApplicationStatus.NOT_YET_STARTED;
+      state.version = undefined;
+      state.sample1.collection.submittedToDatabase = false;
+      state.sample1.collection.dateOfSample = { year: "", month: "", day: "" };
+      state.sample1.collection.collectionMethod = "";
+      state.sample1.cultureResults.submittedToDatabase = false;
+      state.sample1.cultureResults.cultureResult = PositiveOrNegative.NOT_YET_ENTERED;
+      state.sample1.smearResults.submittedToDatabase = false;
+      state.sample1.smearResults.smearResult = PositiveOrNegative.NOT_YET_ENTERED;
+      state.sample1.lastUpdatedDate = { year: "", month: "", day: "" };
+      state.sample2.collection.submittedToDatabase = false;
+      state.sample2.collection.dateOfSample = { year: "", month: "", day: "" };
+      state.sample2.collection.collectionMethod = "";
+      state.sample2.cultureResults.submittedToDatabase = false;
+      state.sample2.cultureResults.cultureResult = PositiveOrNegative.NOT_YET_ENTERED;
+      state.sample2.smearResults.submittedToDatabase = false;
+      state.sample2.smearResults.smearResult = PositiveOrNegative.NOT_YET_ENTERED;
+      state.sample2.lastUpdatedDate = { year: "", month: "", day: "" };
+      state.sample3.collection.submittedToDatabase = false;
+      state.sample3.collection.dateOfSample = { year: "", month: "", day: "" };
+      state.sample3.collection.collectionMethod = "";
+      state.sample3.cultureResults.submittedToDatabase = false;
+      state.sample3.cultureResults.cultureResult = PositiveOrNegative.NOT_YET_ENTERED;
+      state.sample3.smearResults.submittedToDatabase = false;
+      state.sample3.smearResults.smearResult = PositiveOrNegative.NOT_YET_ENTERED;
+      state.sample3.lastUpdatedDate = { year: "", month: "", day: "" };
     },
     setSputumDetailsFromApiResponse: (state, action: PayloadAction<ReceivedSputumType>) => {
       state.status =
@@ -189,17 +216,24 @@ export const sputumSlice = createSlice({
           ? ApplicationStatus.COMPLETE
           : ApplicationStatus.IN_PROGRESS;
 
+      state.version = action.payload.version;
+
       const setCollectionDetails = (
         sampleData: PostedSputumSampleType | undefined,
         target: ReduxSputumSampleType,
       ) => {
         if (sampleData) {
-          const [year, month, day] = sampleData.dateOfSample.split("-");
+          const dateStr = sampleData.dateOfSample.includes("T")
+            ? sampleData.dateOfSample.split("T")[0]
+            : sampleData.dateOfSample;
+          const [year, month, day] = dateStr.split("-");
           target.collection.dateOfSample = { year, month, day };
           target.collection.collectionMethod = sampleData.collectionMethod;
+          target.collection.submittedToDatabase = true;
         } else {
           target.collection.dateOfSample = { year: "", month: "", day: "" };
           target.collection.collectionMethod = "";
+          target.collection.submittedToDatabase = false;
         }
       };
 
@@ -234,19 +268,27 @@ export const sputumSlice = createSlice({
         target: ReduxSputumSampleType,
       ) => {
         if (sampleData) {
-          const [year, month, day] = sampleData.dateUpdated.split("-");
+          const dateStr = sampleData.dateUpdated.includes("T")
+            ? sampleData.dateUpdated.split("T")[0]
+            : sampleData.dateUpdated;
+          const [year, month, day] = dateStr.split("-");
           target.lastUpdatedDate = { year, month, day };
         } else {
           target.lastUpdatedDate = { year: "", month: "", day: "" };
         }
       };
 
-      for (const sample of Object.keys(state) as ReduxSputumSampleKeys[]) {
-        setCollectionDetails(action.payload[sample], state[sample]);
-        setSmearResults(action.payload[sample]?.smearResult, state[sample]);
-        setCultureResults(action.payload[sample]?.cultureResult, state[sample]);
-        setLastUpdatedDate(action.payload[sample], state[sample]);
+      const sampleKeys: ReduxSputumSampleKeys[] = ["sample1", "sample2", "sample3"];
+      for (const sample of sampleKeys) {
+        const sampleData = action.payload.sputumSamples?.[sample as keyof PostedSputumType];
+        setCollectionDetails(sampleData, state[sample]);
+        setSmearResults(sampleData?.smearResult, state[sample]);
+        setCultureResults(sampleData?.cultureResult, state[sample]);
+        setLastUpdatedDate(sampleData, state[sample]);
       }
+    },
+    setSputumVersion: (state, action: PayloadAction<number>) => {
+      state.version = action.payload;
     },
   },
 });
@@ -268,6 +310,7 @@ export const {
   setSputumDetails,
   clearSputumDetails,
   setSputumDetailsFromApiResponse,
+  setSputumVersion,
 } = sputumSlice.actions;
 
 export const sputumReducer = sputumSlice.reducer;

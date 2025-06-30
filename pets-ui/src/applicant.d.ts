@@ -36,6 +36,7 @@ type ReceivedApplicationDetailsType = {
   travelInformation: ReceivedTravelDetailsType | undefined;
   medicalScreening: ReceivedMedicalScreeningType | undefined;
   chestXray: ReceivedChestXrayDetailsType | undefined;
+  sputumDetails: ReceivedSputumType | undefined;
   tbCertificate: ReceivedTbCertificateType | undefined;
 };
 
@@ -184,6 +185,7 @@ type ReceivedChestXrayDetailsType = PostedChestXrayDetailsType & ReceivedApplica
 type PostedChestXrayNotTakenType = {
   reasonXrayWasNotTaken: string;
   xrayWasNotTakenFurtherDetails: string;
+  isSputumRequired: YesOrNo;
 };
 
 type ReceivedChestXrayNotTakenType = PostedChestXrayNotTakenType &
@@ -215,12 +217,13 @@ type ReduxSputumSampleType = {
 
 type ReduxSputumType = {
   status: ApplicationStatus;
+  version?: number;
   sample1: ReduxSputumSampleType;
   sample2: ReduxSputumSampleType;
   sample3: ReduxSputumSampleType;
 };
 
-type ReduxSputumSampleKeys = Exclude<keyof ReduxSputumType, "status">;
+type ReduxSputumSampleKeys = Exclude<keyof ReduxSputumType, "status" | "version">;
 
 type PostedSputumSampleType = {
   dateOfSample: string;
@@ -236,7 +239,10 @@ type PostedSputumType = {
   sample3?: PostedSputumSampleType;
 };
 
-type ReceivedSputumType = PostedSputumType & ReceivedApplicationAttributesType;
+type ReceivedSputumType = ReceivedApplicationAttributesType & {
+  sputumSamples: PostedSputumType;
+  version?: number;
+};
 
 // TB Declaration certificate types
 type ReduxTbCertificateType = {
