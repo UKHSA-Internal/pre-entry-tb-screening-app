@@ -297,7 +297,7 @@ describe("PETS Application End-to-End Tests", () => {
       .selectMinorFindings(["1.1 Single fibrous streak or band or scar"])
       .clickSaveAndContinue();
 
-    // Complete Sputum Collection - this now comes AFTER chest X-ray findings
+    // Complete Sputum Collection
     sputumQuestionPage.verifyPageLoaded();
     // Select "No" for Sputum Collection and continue
     sputumQuestionPage.selectSputumRequiredNo().clickContinue();
@@ -322,7 +322,7 @@ describe("PETS Application End-to-End Tests", () => {
     });
 
     // Verify sputum field separately with a more specific check
-    //chestXraySummaryPage.verifySummaryValue("Sputum required?", "No");
+    chestXraySummaryPage.verifySummaryValue("Sputum required?", "No");
 
     // Verify change links exist
     chestXraySummaryPage.verifyChangeLinksExist();
