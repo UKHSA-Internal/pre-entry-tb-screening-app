@@ -42,8 +42,6 @@ function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement)
     let displayValue: string;
     if (summaryElement.value) {
       displayValue = summaryElement.value;
-    } else if (summaryElement.emptyValueText) {
-      displayValue = summaryElement.emptyValueText;
     } else {
       displayValue = "";
     }
