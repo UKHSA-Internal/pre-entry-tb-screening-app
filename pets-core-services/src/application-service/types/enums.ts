@@ -60,3 +60,16 @@ export enum ImageType {
   Dicom = "Dicom",
   Photo = "Photo",
 }
+
+export enum SmearAndCultureResultOptions {
+  POSITIVE = "Positive",
+  NEGATIVE = "Negative",
+  INCONCLUSIVE = "Inconclusive",
+}
+
+export enum SputumCollectionMethod {
+  COUGHED_UP = "Coughed up",
+  INDUCED = "Induced",
+  GASTRIC_LAVAGE = "Gastric lavage",
+  NOT_KNOWN = "Not known",
+}

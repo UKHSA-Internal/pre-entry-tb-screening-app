@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 
+import BackLink from "../backLink/backLink";
 import Breadcrumb, { IBreadcrumbItem } from "../breadcrumb/breadcrumb";
 import Footer from "../footer/footer";
 import Header from "../header/header";
@@ -10,10 +11,16 @@ import SkipLink from "../skipLink/skipLink";
 interface ContainerProps {
   title: string;
   breadcrumbItems?: IBreadcrumbItem[];
+  backLinkTo?: string;
   children: ReactNode;
 }
 
-const Container = ({ title, children, breadcrumbItems = [] }: Readonly<ContainerProps>) => {
+const Container = ({
+  title,
+  children,
+  breadcrumbItems = [],
+  backLinkTo = "",
+}: Readonly<ContainerProps>) => {
   const pageStart = useRef<HTMLDivElement | null>(null);
   const mainContent = useRef<HTMLDivElement | null>(null);
   const location = useLocation();
@@ -38,6 +45,7 @@ const Container = ({ title, children, breadcrumbItems = [] }: Readonly<Container
       <Header />
       <div className="govuk-width-container">
         {breadcrumbItems && <Breadcrumb items={breadcrumbItems} />}
+        {backLinkTo && <BackLink href={backLinkTo} />}
         <main
           className="govuk-main-wrapper"
           id="main-content"

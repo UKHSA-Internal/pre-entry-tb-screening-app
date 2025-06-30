@@ -5,6 +5,7 @@ import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { ApplicantPhoto } from "../models/applicant-photo";
 import { ChestXRayDbOps } from "../models/chest-xray";
 import { MedicalScreening } from "../models/medical-screening";
+import { SputumDetailsDbOps } from "../models/sputum-details";
 import { TbCertificateDbOps } from "../models/tb-certificate";
 import { TravelInformation } from "../models/travel-information";
 
@@ -26,6 +27,7 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
     const travelInformation = await TravelInformation.getByApplicationId(applicationId);
     const medicalScreening = await MedicalScreening.getByApplicationId(applicationId);
     const chestXray = await ChestXRayDbOps.getByApplicationId(applicationId);
+    const sputumDetails = await SputumDetailsDbOps.getByApplicationId(applicationId);
     const tbCertificate = await TbCertificateDbOps.getByApplicationId(applicationId);
 
     return createHttpResponse(200, {
@@ -34,6 +36,7 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
       travelInformation: travelInformation?.toJson(),
       medicalScreening: medicalScreening?.toJson(),
       chestXray: chestXray?.toJson(),
+      sputumDetails: sputumDetails?.toJson(),
       tbCertificate: tbCertificate?.toJson(),
     });
   } catch (error) {

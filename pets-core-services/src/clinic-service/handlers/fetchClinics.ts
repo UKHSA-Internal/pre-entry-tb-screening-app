@@ -1,6 +1,26 @@
 import { APIGatewayProxyEvent } from "aws-lambda";
 
-// eslint-disable-next-line @typescript-eslint/require-await
+import { createHttpResponse } from "../../shared/http";
+import { logger } from "../../shared/logger";
+import { Clinic } from "../models/clinics";
+
 export const fetchClinicsHandler = async (event: APIGatewayProxyEvent) => {
-  return { statusCode: 200, body: JSON.stringify(event) };
+  logger.info(`API End point: ${event.path}`);
+
+  try {
+    logger.info("All Clinics details handler triggered");
+    const clinics: Clinic[] = await Clinic.getAllClinics();
+
+    if (!clinics || clinics?.length < 1)
+      return createHttpResponse(404, { message: "No clinics exist" });
+
+    return createHttpResponse(
+      200,
+      clinics.map((clinic: Clinic) => clinic.toJson()),
+    );
+  } catch (error) {
+    logger.error(error, "Fetching Clinics Failed");
+
+    return createHttpResponse(500, { message: "Something went wrong" });
+  }
 };

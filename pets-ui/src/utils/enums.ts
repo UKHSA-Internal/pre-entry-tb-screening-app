@@ -30,6 +30,7 @@ export enum YesOrNo {
 export enum PositiveOrNegative {
   POSITIVE = "Positive",
   NEGATIVE = "Negative",
+  INCONCLUSIVE = "Inconclusive",
   NOT_YET_ENTERED = "Not yet entered",
 }
 
