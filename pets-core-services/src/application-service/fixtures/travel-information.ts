@@ -16,7 +16,7 @@ export const seededTravelInformation: Omit<ITravelInformation, "dateCreated" | "
   },
   {
     applicationId: seededApplications[2].applicationId,
-    visaCategory: VisaOptions.Skilledworker,
+    visaCategory: VisaOptions.SkilledWorker,
     ukAddressLine1: "29 Maple Street",
     ukAddressLine2: "Camden",
     ukAddressTownOrCity: "London",
