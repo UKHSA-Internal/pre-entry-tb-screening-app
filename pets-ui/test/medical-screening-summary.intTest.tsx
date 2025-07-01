@@ -95,7 +95,7 @@ describe("MedicalScreeningReview", () => {
     expect(screen.getAllByRole("term")[5]).toHaveTextContent("TB symptoms");
     expect(screen.getAllByRole("definition")[7]).toHaveTextContent("Cough, Night sweats");
     expect(screen.getAllByRole("term")[6]).toHaveTextContent("Other symptoms");
-    expect(screen.getAllByRole("definition")[9]).toHaveTextContent("Enter other symptoms");
+    expect(screen.getAllByRole("definition")[9]).toHaveTextContent("");
     expect(screen.getAllByRole("term")[7]).toHaveTextContent("Applicant history if under 11");
     expect(screen.getAllByRole("definition")[10]).toHaveTextContent(
       "Not applicable - applicant is aged 11 or over",
@@ -103,9 +103,7 @@ describe("MedicalScreeningReview", () => {
     expect(screen.getAllByRole("term")[8]).toHaveTextContent(
       "Additional details of applicant history if under 11",
     );
-    expect(screen.getAllByRole("definition")[12]).toHaveTextContent(
-      "Enter additional details of applicant history if under 11",
-    );
+    expect(screen.getAllByRole("definition")[12]).toHaveTextContent("");
     expect(screen.getAllByRole("term")[9]).toHaveTextContent(
       "Has the applicant ever had tuberculosis?",
     );
@@ -119,9 +117,7 @@ describe("MedicalScreeningReview", () => {
     expect(screen.getAllByRole("term")[12]).toHaveTextContent(
       "Details of applicant's close contact with any person with active pulmonary tuberculosis",
     );
-    expect(screen.getAllByRole("definition")[19]).toHaveTextContent(
-      "Enter details of applicant's close contact with any person with active pulmonary tuberculosis (optional)",
-    );
+    expect(screen.getAllByRole("definition")[19]).toHaveTextContent("");
     expect(screen.getAllByRole("term")[13]).toHaveTextContent("Is the applicant pregnant?");
     expect(screen.getAllByRole("definition")[20]).toHaveTextContent("Don't know");
     expect(screen.getAllByRole("term")[14]).toHaveTextContent(
