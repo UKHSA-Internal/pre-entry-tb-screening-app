@@ -7,6 +7,8 @@ import { ChestXRayDbOps } from "../application-service/models/chest-xray";
 import { MedicalScreening } from "../application-service/models/medical-screening";
 import { TbCertificateDbOps } from "../application-service/models/tb-certificate";
 import { TravelInformation } from "../application-service/models/travel-information";
+import { seededClinics } from "../clinic-service/fixtures/clinics";
+import { Clinic } from "../clinic-service/models/clinics";
 import { seededApplications } from "../shared/fixtures/application";
 import { Applicant } from "../shared/models/applicant";
 import { Application } from "../shared/models/application";
@@ -30,6 +32,9 @@ export const seedDatabase = async () => {
   }
   for (const tbCertificate of seededTbCertificate) {
     await TbCertificateDbOps.createTbCertificate(tbCertificate);
+  }
+  for (const clinic of seededClinics) {
+    await Clinic.createNewClinic(clinic);
   }
 };
 
