@@ -1,7 +1,6 @@
-import { useNavigate } from "react-router-dom";
+import React from "react";
 
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
-import Button from "@/components/button/button";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { selectApplicant } from "@/redux/applicantSlice";
@@ -11,7 +10,7 @@ import { selectMedicalScreening } from "@/redux/medicalScreeningSlice";
 import { selectSputum } from "@/redux/sputumSlice";
 import { selectTbCertificate } from "@/redux/tbCertificateSlice";
 import { selectTravel } from "@/redux/travelSlice";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus } from "@/utils/enums";
 
 interface TaskProps {
   description: string;
@@ -27,6 +26,10 @@ const Task = (props: Readonly<TaskProps>) => {
     props.prerequisiteTaskStatuses.every(
       (status) => status == ApplicationStatus.COMPLETE || status == ApplicationStatus.NOT_REQUIRED,
     );
+
+  const taskDescriptionStaticStyle: React.CSSProperties = {
+    marginBottom: 0,
+  };
 
   return (
     <li className="govuk-task-list__item govuk-task-list__item--with-link">
@@ -50,7 +53,7 @@ const Task = (props: Readonly<TaskProps>) => {
           />
         )}
         {(!allPrerequisitesComplete || props.status == ApplicationStatus.NOT_REQUIRED) && (
-          <p className="govuk-body" style={{ marginBottom: 0 }}>
+          <p className="govuk-body" style={taskDescriptionStaticStyle}>
             {props.description}
           </p>
         )}
@@ -80,8 +83,6 @@ const Task = (props: Readonly<TaskProps>) => {
 };
 
 const ProgressTracker = () => {
-  const navigate = useNavigate();
-
   const applicantData = useAppSelector(selectApplicant);
   const travelData = useAppSelector(selectTravel);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
@@ -102,40 +103,58 @@ const ProgressTracker = () => {
   } else if (allSputumSamplesSubmitted) {
     sputumLink = "/enter-sputum-sample-results";
   }
+  const headerStyle: React.CSSProperties = {
+    display: "flex",
+    alignItems: "flex-start",
+    marginBottom: "20px",
+  };
+
+  const headerContentStyle: React.CSSProperties = {
+    flexGrow: 1,
+  };
+
+  const photoContainerStyle: React.CSSProperties = {
+    marginLeft: "20px",
+    border: "1px solid #b1b4b6",
+    display: "flex",
+    alignItems: "stretch",
+  };
+
+  const photoStyle: React.CSSProperties = {
+    display: "block",
+    height: "100%",
+    maxHeight: "150px",
+    width: "auto",
+    objectFit: "cover",
+  };
+
+  const startSearchStyle: React.CSSProperties = {
+    marginTop: "60px",
+  };
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "flex-start", marginBottom: "20px" }}>
-        <div style={{ flexGrow: 1 }}>
-          <ApplicantDataHeader applicantData={applicantData} />
+      <div style={headerStyle}>
+        <div style={headerContentStyle}>
+          <ApplicantDataHeader
+            applicantData={applicantData}
+            tbCertificateStatus={tbCertificateData.status}
+            tbCertificateIsIssued={tbCertificateData.isIssued}
+          />
         </div>
         {applicantPhotoContext?.applicantPhotoDataUrl && (
-          <div
-            style={{
-              marginLeft: "20px",
-              border: "1px solid #b1b4b6",
-              display: "flex",
-              alignItems: "stretch",
-            }}
-          >
+          <div style={photoContainerStyle}>
             <img
               src={applicantPhotoContext.applicantPhotoDataUrl}
               alt={"Applicant"}
               title={applicantData.applicantPhotoFileName ?? undefined}
-              style={{
-                display: "block",
-                height: "100%",
-                maxHeight: "150px",
-                width: "auto",
-                objectFit: "cover",
-              }}
+              style={photoStyle}
             />
           </div>
         )}
       </div>
 
-      <p className="govuk-body">Complete all sections.</p>
-
+      <h2 className="govuk-heading-s">1. Visa applicant information</h2>
       <ul className="govuk-task-list">
         <Task
           description="Visa applicant details"
@@ -151,6 +170,10 @@ const ProgressTracker = () => {
           linkWhenComplete="/travel-summary"
           prerequisiteTaskStatuses={[applicantData.status]}
         />
+      </ul>
+
+      <h2 className="govuk-heading-s">2. Medical screening</h2>
+      <ul className="govuk-task-list">
         <Task
           description="Medical history and TB symptoms"
           status={medicalScreeningData.status}
@@ -181,8 +204,12 @@ const ProgressTracker = () => {
             chestXrayData.status,
           ]}
         />
+      </ul>
+
+      <h2 className="govuk-heading-s">3. Review outcome</h2>
+      <ul className="govuk-task-list">
         <Task
-          description="TB certificate declaration"
+          description="TB certificate outcome"
           status={tbCertificateData.status}
           linkWhenIncomplete="/tb-certificate-declaration"
           linkWhenComplete="/tb-certificate-summary"
@@ -196,14 +223,17 @@ const ProgressTracker = () => {
         />
       </ul>
 
-      <Button
-        id="search-again"
-        type={ButtonType.DEFAULT}
-        text="Search again"
-        handleClick={() => {
-          navigate("/applicant-search");
-        }}
-      />
+      <h2 className="govuk-heading-s" style={startSearchStyle}>
+        Start a new search
+      </h2>
+      <p className="govuk-body">
+        <LinkLabel
+          className="govuk-link"
+          to="/applicant-search"
+          title="Search for another visa applicant"
+          externalLink={false}
+        />
+      </p>
     </div>
   );
 };
