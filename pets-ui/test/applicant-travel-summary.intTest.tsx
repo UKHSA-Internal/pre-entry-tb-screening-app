@@ -59,7 +59,9 @@ describe("TravelReview", () => {
     expect(screen.getAllByRole("term")[1]).toHaveTextContent("UK address line 1");
     expect(screen.getAllByRole("definition")[2]).toHaveTextContent("Edinburgh Castle, Castlehill");
     expect(screen.getAllByRole("term")[2]).toHaveTextContent("UK address line 2");
-    expect(screen.getAllByRole("definition")[4]).toHaveTextContent("");
+    expect(screen.getAllByRole("definition")[4]).toHaveTextContent(
+      "Enter UK address line 2 (optional)",
+    );
     expect(screen.getAllByRole("term")[3]).toHaveTextContent("UK town or city");
     expect(screen.getAllByRole("definition")[5]).toHaveTextContent("Edinburgh");
     expect(screen.getAllByRole("term")[4]).toHaveTextContent("UK postcode");
