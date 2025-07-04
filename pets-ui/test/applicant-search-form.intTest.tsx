@@ -169,7 +169,7 @@ describe("ApplicantSearchForm", () => {
         ukAddressTownOrCity: "London",
         ukEmailAddress: "Maxwell@Spiffington.com",
         ukMobileNumber: "071234567890",
-        visaCategory: "Family Reunion",
+        visaCategory: "Visitor",
       },
       medicalScreening: {
         applicationId: "abc-123",
@@ -268,7 +268,7 @@ describe("ApplicantSearchForm", () => {
       townOrCity: "London",
       ukEmail: "Maxwell@Spiffington.com",
       ukMobileNumber: "071234567890",
-      visaType: "Family Reunion",
+      visaType: "Visitor",
     });
     expect(store.getState().medicalScreening).toEqual({
       age: "43",
@@ -580,7 +580,7 @@ describe("ApplicantSearchForm", () => {
         ukAddressTownOrCity: "London",
         ukEmailAddress: "Maxwell@Spiffington.com",
         ukMobileNumber: "071234567890",
-        visaCategory: "Family Reunion",
+        visaCategory: "Visitor",
       },
     });
 

@@ -369,3 +369,49 @@ jobs:
             })
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  populate-dynamodb-with-clinics-data:
+    name: Read data from JSON file and save Clinics to DynamoDB
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    timeout-minutes: 5
+    needs: load-deployment-config
+
+    env:
+      ENVIRONMENT: ${{ inputs.environment }}
+      CLINICSDATA: "clinicsData.dynamoDB.${{ inputs.environment }}.json"
+      WORKDIR: "pets-core-services/src/clinic-service"
+      JSONCLINICSDATA: "clinicsData.json"
+      CLINIC_SERVICE_DATABASE_NAME: ${{ vars.CLINIC_SERVICE_DATABASE_NAME }}
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: "eu-west-2"
+          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_DEPLOY_ROLE_NAME }}"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setting up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python library (boto3)
+        run: python -m pip install boto3
+
+      - name: Run conversion/validation script
+        run: python scripts/convert_json_to_dynamodbjson.py
+
+      - name: Printing out the new file
+        run: awk 'NR<20' $CLINICSDATA && echo ...
+        working-directory: "pets-core-services/src/clinic-service"
+
+      - name: Executing batch-write-item
+        working-directory: "pets-core-services/src/clinic-service"
+        run: |
+          aws dynamodb batch-write-item --request-items file://clinicsData.dynamoDB.${{ inputs.environment }}.json \
+            --return-consumed-capacity INDEXES \
+            --return-item-collection-metrics SIZE

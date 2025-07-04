@@ -38,5 +38,9 @@ beforeEach(async () => {
 
   process.env.APPLICATION_SERVICE_DATABASE_NAME = `test_application_table_${crypto.randomUUID()}`;
   await createTable(process.env.APPLICATION_SERVICE_DATABASE_NAME, []);
+
+  process.env.CLINIC_SERVICE_DATABASE_NAME = `test_clinic_table_${crypto.randomUUID()}`;
+  await createTable(process.env.CLINIC_SERVICE_DATABASE_NAME, []);
+
   await seedDatabase();
 }, 12000);
