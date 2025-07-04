@@ -85,22 +85,20 @@ describe("MedicalScreeningReview", () => {
     expect(screen.getAllByRole("term")[1]).toHaveTextContent(
       "Does the applicant have TB symptoms?",
     );
-    expect(screen.getAllByRole("definition")[5]).toHaveTextContent("Yes");
-    expect(screen.getAllByRole("term")[5]).toHaveTextContent("TB symptoms");
-    expect(screen.getAllByRole("definition")[7]).toHaveTextContent("Cough, Night sweats");
-    expect(screen.getAllByRole("term")[6]).toHaveTextContent("Other symptoms");
-    expect(screen.getAllByRole("definition")[9]).toHaveTextContent(
-      "Enter other symptoms (optional)",
-    );
-    expect(screen.getAllByRole("term")[7]).toHaveTextContent("Applicant history if under 11");
-    expect(screen.getAllByRole("definition")[10]).toHaveTextContent(
+    expect(screen.getAllByRole("definition")[2]).toHaveTextContent("Yes");
+    expect(screen.getAllByRole("term")[2]).toHaveTextContent("TB symptoms");
+    expect(screen.getAllByRole("definition")[4]).toHaveTextContent("Cough, Night sweats");
+    expect(screen.getAllByRole("term")[3]).toHaveTextContent("Other symptoms");
+    expect(screen.getAllByRole("definition")[6]).toHaveTextContent("Enter other symptoms");
+    expect(screen.getAllByRole("term")[4]).toHaveTextContent("Applicant history if under 11");
+    expect(screen.getAllByRole("definition")[7]).toHaveTextContent(
       "Not applicable - applicant is aged 11 or over",
     );
     expect(screen.getAllByRole("term")[5]).toHaveTextContent(
       "Additional details of applicant history if under 11",
     );
-    expect(screen.getAllByRole("definition")[12]).toHaveTextContent(
-      "Enter additional details of applicant history if under 11 (optional)",
+    expect(screen.getAllByRole("definition")[9]).toHaveTextContent(
+      "Enter additional details of applicant history if under 11",
     );
     expect(screen.getAllByRole("term")[6]).toHaveTextContent(
       "Has the applicant ever had tuberculosis?",
