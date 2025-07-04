@@ -10,7 +10,7 @@ import {
 } from "./save-travel-information";
 
 const newTravelDetails: SaveTravelInformationEvent["parsedBody"] = {
-  visaCategory: VisaOptions.Students,
+  visaCategory: VisaOptions.Student,
   ukAddressLine1: "first line",
   ukAddressTownOrCity: "uk address town",
   ukAddressPostcode: "uk address postcode",

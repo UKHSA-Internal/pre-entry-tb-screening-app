@@ -3,11 +3,9 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { postChestXrayDetails } from "@/api/api";
-import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
-import { selectApplicant } from "@/redux/applicantSlice";
 import { selectApplication } from "@/redux/applicationSlice";
 import { selectChestXray, setChestXrayStatus } from "@/redux/chestXraySlice";
 import { useAppSelector } from "@/redux/hooks";
@@ -17,7 +15,6 @@ import { spreadArrayIfNotEmpty } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
 const ChestXraySummary = () => {
-  const applicantData = useAppSelector(selectApplicant);
   const applicationData = useAppSelector(selectApplication);
   const chestXrayData = useAppSelector(selectChestXray);
   const dispatch = useDispatch();
@@ -156,7 +153,6 @@ const ChestXraySummary = () => {
   return (
     <div>
       {isLoading && <Spinner />}
-      <ApplicantDataHeader applicantData={applicantData} />
 
       {chestXrayData.chestXrayTaken == YesOrNo.YES && (
         <Summary status={chestXrayData.status} summaryElements={xrayTakenSummaryData} />

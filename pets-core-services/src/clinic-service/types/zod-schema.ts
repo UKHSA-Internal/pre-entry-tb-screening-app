@@ -8,11 +8,23 @@ export const ClinicSchema = z
     clinicId: z.string().openapi({
       description: "ID of the Clinic",
     }),
-    clinicName: z.string().openapi({
+    name: z.string().openapi({
       description: "Name of the Clinic",
     }),
-    iom: z.boolean().openapi({
-      description: "Is the Clinic an IOM clinic",
+    country: z.string().openapi({
+      description: "Country of the Clinic",
+    }),
+    city: z.string().openapi({
+      description: "City of the Clinic",
+    }),
+    startDate: z.string().openapi({
+      description: "Start Date of the Clinic",
+    }),
+    endDate: z.union([z.string(), z.null()]).optional().openapi({
+      description: "End Date of the Clinic",
+    }),
+    createdBy: z.string().openapi({
+      description: "Creator's email",
     }),
   })
   .openapi("Clinic", { description: "Details about a Clinic" });

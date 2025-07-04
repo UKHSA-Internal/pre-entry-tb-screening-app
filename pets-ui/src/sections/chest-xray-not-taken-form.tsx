@@ -3,13 +3,11 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { ReduxChestXrayDetailsType } from "@/applicant";
-import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
-import { selectApplicant } from "@/redux/applicantSlice";
 import {
   selectChestXray,
   setReasonXrayWasNotTaken,
@@ -21,7 +19,6 @@ import { ButtonType, RadioIsInline } from "@/utils/enums";
 const ChestXrayNotTakenForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const applicantData = useAppSelector(selectApplicant);
   const chestXrayData = useAppSelector(selectChestXray);
 
   const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
@@ -67,7 +64,6 @@ const ChestXrayNotTakenForm = () => {
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
         <Heading level={1} size="l" title="Enter reason X-ray not taken" />
-        <ApplicantDataHeader applicantData={applicantData} />
         <div ref={reasonXrayNotTakenRef}>
           <Radio
             id="reason-xray-not-taken"

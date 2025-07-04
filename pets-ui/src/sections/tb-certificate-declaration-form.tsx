@@ -3,7 +3,6 @@ import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-for
 import { useLocation, useNavigate } from "react-router";
 
 import { DateType, ReduxTbCertificateType } from "@/applicant";
-import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import DateTextInput from "@/components/dateTextInput/dateTextInput";
 import ErrorDisplay from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
@@ -11,7 +10,6 @@ import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
-import { selectApplicant } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   selectTbCertificate,
@@ -26,7 +24,6 @@ import { validateDate } from "@/utils/helpers";
 import { formRegex } from "@/utils/records";
 
 const TbCertificateDeclarationForm = () => {
-  const applicantData = useAppSelector(selectApplicant);
   const tbCertificateData = useAppSelector(selectTbCertificate);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -82,8 +79,6 @@ const TbCertificateDeclarationForm = () => {
         {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
 
         <Heading level={1} size="l" title="Enter TB clearance certificate declaration" />
-
-        <ApplicantDataHeader applicantData={applicantData} />
 
         <div ref={tbClearanceIssued}>
           <Radio
