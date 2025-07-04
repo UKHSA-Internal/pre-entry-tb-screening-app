@@ -10,7 +10,7 @@ import { selectMedicalScreening } from "@/redux/medicalScreeningSlice";
 import { selectSputum } from "@/redux/sputumSlice";
 import { selectTbCertificate } from "@/redux/tbCertificateSlice";
 import { selectTravel } from "@/redux/travelSlice";
-import { ApplicationStatus } from "@/utils/enums";
+import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 
 interface TaskProps {
   description: string;
@@ -18,6 +18,7 @@ interface TaskProps {
   linkWhenIncomplete: string;
   linkWhenComplete: string;
   prerequisiteTaskStatuses: ApplicationStatus[];
+  customCompletionStatus?: React.ReactNode;
 }
 
 const Task = (props: Readonly<TaskProps>) => {
@@ -70,7 +71,11 @@ const Task = (props: Readonly<TaskProps>) => {
       )}
       {props.status == ApplicationStatus.COMPLETE && (
         <div className="govuk-task-list__status">
-          <strong className="govuk-tag govuk-tag--green">Completed</strong>
+          {props.customCompletionStatus ? (
+            props.customCompletionStatus
+          ) : (
+            <strong className="govuk-tag govuk-tag--green">Completed</strong>
+          )}
         </div>
       )}
       {props.status == ApplicationStatus.NOT_REQUIRED && (
@@ -130,6 +135,11 @@ const ProgressTracker = () => {
 
   const startSearchStyle: React.CSSProperties = {
     marginTop: "60px",
+  };
+
+  const certificateNotIssuedStyle: React.CSSProperties = {
+    maxWidth: "none",
+    whiteSpace: "nowrap",
   };
 
   return (
@@ -220,6 +230,15 @@ const ProgressTracker = () => {
             chestXrayData.status,
             sputumData.status,
           ]}
+          customCompletionStatus={
+            tbCertificateData.isIssued === YesOrNo.YES ? (
+              <strong className="govuk-tag govuk-tag--green">Certificate issued</strong>
+            ) : (
+              <strong className="govuk-tag govuk-tag--red" style={certificateNotIssuedStyle}>
+                Certificate not issued
+              </strong>
+            )
+          }
         />
       </ul>
 

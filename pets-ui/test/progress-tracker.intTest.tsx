@@ -191,7 +191,7 @@ test("Progress tracker page displays incomplete application sections correctly &
     { preloadedState: incompleteState },
   );
 
-  expect(screen.getByText("TB screening progress tracker")).toBeInTheDocument();
+  expect(screen.getByText("Complete UK pre-entry health screening")).toBeInTheDocument();
 
   expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
   expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Reginald Backwaters");
@@ -259,7 +259,7 @@ test("Progress tracker page displays complete application sections correctly, li
     { preloadedState: completeState },
   );
 
-  expect(screen.getByText("TB screening progress tracker")).toBeInTheDocument();
+  expect(screen.getByText("Complete UK pre-entry health screening")).toBeInTheDocument();
 
   expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
   expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Chelsea Cummerbund");
@@ -306,7 +306,7 @@ test("Progress tracker page displays complete application sections correctly, li
   expect(tbCertificateListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
-  expect(within(tbCertificateListItem as HTMLElement).getByText("Completed"));
+  expect(within(tbCertificateListItem as HTMLElement).getByText("Certificate issued"));
   const img = await screen.findByAltText(/applicant/i);
   expect(img).toBeInTheDocument();
 

@@ -4,8 +4,8 @@ import ProgressTracker from "@/sections/progress-tracker";
 
 export default function ProgressTrackerPage() {
   return (
-    <Container title="TB screening progress tracker">
-      <Heading level={1} size="l" title="TB screening progress tracker" />
+    <Container title="Complete UK pre-entry health screening">
+      <Heading level={1} size="l" title="Complete UK pre-entry health screening" />
       <ProgressTracker />
     </Container>
   );
