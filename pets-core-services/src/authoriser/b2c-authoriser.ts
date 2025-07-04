@@ -36,6 +36,9 @@ export const handler = async (
     const roleMap =
       assertEnvExists(process.env.VITE_ROLE_MAP) && JSON.parse(process.env.VITE_ROLE_MAP ?? "{}");
 
+    const clinicAppTenantId = assertEnvExists(process.env.VITE_MSAL_TENANT_ID);
+    const clinicAppClientId = assertEnvExists(process.env.VITE_MSAL_CLIENT_ID);
+
     if (!event.headers) {
       logger.error("Headers are missing");
       throw new Error("Headers are required");
@@ -79,7 +82,11 @@ export const handler = async (
 
     const verifiedPayload = await verifier.verify(token);
 
-    if (!verifiedPayload.ClinicID) {
+    if (
+      clientId === clinicAppClientId &&
+      tenantId === clinicAppTenantId &&
+      !verifiedPayload.ClinicID
+    ) {
       logger.error("Missing ClinicID");
     }
 
