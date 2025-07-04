@@ -3,7 +3,6 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 import { ReduxApplicantDetailsType } from "@/applicant";
-import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FileUpload from "@/components/fileUpload/fileUpload";
 import Heading from "@/components/heading/heading";
@@ -57,8 +56,6 @@ const ApplicantPhotoForm = () => {
           <div>
             {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
             <Heading level={1} size="l" title="Upload visa applicant photo (optional)" />
-
-            <ApplicantDataHeader applicantData={applicantData} />
 
             <div style={{ marginTop: 70, marginBottom: 100 }}>
               <p className="govuk-body">
