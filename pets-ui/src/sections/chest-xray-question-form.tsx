@@ -3,12 +3,10 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { ReduxChestXrayDetailsType } from "@/applicant";
-import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
-import { selectApplicant } from "@/redux/applicantSlice";
 import {
   clearChestXrayNotTakenDetails,
   clearChestXrayTakenDetails,
@@ -24,7 +22,6 @@ const ChestXrayQuestionForm = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const navigate = useNavigate();
-  const applicantData = useAppSelector(selectApplicant);
   const chestXrayData = useAppSelector(selectChestXray);
 
   const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
@@ -67,7 +64,6 @@ const ChestXrayQuestionForm = () => {
         {!!errors?.chestXrayTaken && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
         <Heading level={1} size="l" title="Select X-ray status" />
-        <ApplicantDataHeader applicantData={applicantData} />
         <div ref={chestXrayTakenRef}>
           <Radio
             heading="Has the visa applicant had a chest X-ray?"

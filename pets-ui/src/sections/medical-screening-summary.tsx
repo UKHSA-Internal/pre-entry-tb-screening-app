@@ -3,11 +3,9 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { postMedicalDetails } from "@/api/api";
-import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
-import { selectApplicant } from "@/redux/applicantSlice";
 import { selectApplication } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectMedicalScreening, setMedicalScreeningStatus } from "@/redux/medicalScreeningSlice";
@@ -15,7 +13,6 @@ import { ApplicationStatus, ButtonType } from "@/utils/enums";
 import { attributeToComponentId } from "@/utils/records";
 
 const MedicalScreeningReview = () => {
-  const applicantData = useAppSelector(selectApplicant);
   const applicationData = useAppSelector(selectApplication);
   const medicalData = useAppSelector(selectMedicalScreening);
   const dispatch = useDispatch();
@@ -148,7 +145,6 @@ const MedicalScreeningReview = () => {
   return (
     <div>
       {isLoading && <Spinner />}
-      <ApplicantDataHeader applicantData={applicantData} />
 
       <Summary status={medicalData.status} summaryElements={summaryData} />
 
