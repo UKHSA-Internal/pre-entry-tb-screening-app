@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 
-import { ApplicationStatus } from "@/utils/enums";
+import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 import ApplicantDataHeader from "./applicantDataHeader";
@@ -41,7 +41,11 @@ describe("applicantDataHeader", () => {
   it("correctly displays values", () => {
     renderWithProviders(
       <Router>
-        <ApplicantDataHeader applicantData={applicantData} />
+        <ApplicantDataHeader
+          applicantData={applicantData}
+          tbCertificateStatus={ApplicationStatus.NOT_YET_STARTED}
+          tbCertificateIsIssued={YesOrNo.YES}
+        />
       </Router>,
     );
 
