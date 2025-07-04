@@ -137,7 +137,6 @@ describe("MedicalScreeningReview", () => {
     expect(screen.getAllByRole("definition")[19]).toHaveTextContent("No");
     expect(screen.getAllByRole("term")[12]).toHaveTextContent("Physical examination notes");
     expect(screen.getAllByRole("definition")[21]).toHaveTextContent(
-
       "Details of physical examination.",
     );
 
