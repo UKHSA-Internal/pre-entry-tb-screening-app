@@ -71,9 +71,7 @@ const Task = (props: Readonly<TaskProps>) => {
       )}
       {props.status == ApplicationStatus.COMPLETE && (
         <div className="govuk-task-list__status">
-          {props.customCompletionStatus ? (
-            props.customCompletionStatus
-          ) : (
+          {props.customCompletionStatus ?? (
             <strong className="govuk-tag govuk-tag--green">Completed</strong>
           )}
         </div>
