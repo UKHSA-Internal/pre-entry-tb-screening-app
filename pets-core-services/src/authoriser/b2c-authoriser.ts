@@ -38,6 +38,7 @@ export const handler = async (
 
     const clinicAppTenantId = assertEnvExists(process.env.VITE_MSAL_TENANT_ID);
     const clinicAppClientId = assertEnvExists(process.env.VITE_MSAL_CLIENT_ID);
+    let isClinicApp = false;
 
     if (!event.headers) {
       logger.error("Headers are missing");
@@ -82,11 +83,10 @@ export const handler = async (
 
     const verifiedPayload = await verifier.verify(token);
 
-    if (
-      clientId === clinicAppClientId &&
-      tenantId === clinicAppTenantId &&
-      !verifiedPayload.ClinicID
-    ) {
+    if (clientId === clinicAppClientId && tenantId === clinicAppTenantId) {
+      isClinicApp = true;
+    }
+    if (isClinicApp && !verifiedPayload.ClinicID) {
       logger.error("Missing ClinicID");
     }
 
@@ -105,7 +105,7 @@ export const handler = async (
     }
 
     logger.info("token verified successfully");
-    callback(null, generatePolicy("user", "Allow", verifiedPayload));
+    callback(null, generatePolicy("user", "Allow", verifiedPayload, isClinicApp));
   } catch (error) {
     logger.error(error, "Authorization failed");
     callback("Unauthorized");
@@ -116,6 +116,7 @@ const generatePolicy = (
   principalId: string,
   effect: StatementEffect,
   payload: JwtPayload,
+  isClinicApp: boolean,
 ): APIGatewayAuthorizerResult => {
   logger.info({ effect, principalId }, "Generating Policy");
 
@@ -123,6 +124,8 @@ const generatePolicy = (
   const b2cRoles = payload.roles as string[];
 
   const b2cRolesLowerCase = b2cRoles.map((role) => role.toLowerCase());
+
+  logger.info(b2cRolesLowerCase);
 
   logger.info("Filtering invalid roles");
   const filterPredicate = (role: string): role is Roles => {
@@ -143,9 +146,12 @@ const generatePolicy = (
   };
 
   assert(payload.email);
-  assert(payload.ClinicID);
-  const clinicId = payload.ClinicID as string;
   const createdBy = payload.email as string;
+  let clinicId;
+  if (isClinicApp) {
+    assert(payload.ClinicID);
+    clinicId = payload.ClinicID as string;
+  }
   const context = {
     clinicId,
     createdBy,
