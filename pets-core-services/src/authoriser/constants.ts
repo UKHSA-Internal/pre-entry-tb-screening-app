@@ -7,8 +7,8 @@ export enum Roles {
   ApplicantsRead = "applicants.read",
   ClinicsRead = "clinics.read",
   ImagingWrite = "imaging.write",
-  QualityReviewRead = "QualityReview.Read",
-  QualityReviewWrite = "QualityReview.Write",
+  QualityReviewRead = "qualityreview.read",
+  QualityReviewWrite = "qualityReview.write",
 }
 const AWS_ACCOUNT_ID = assertEnvExists(process.env.AWS_ACCOUNT_ID);
 const API_GATEWAY_ID = assertEnvExists(process.env.API_GATEWAY_ID);
