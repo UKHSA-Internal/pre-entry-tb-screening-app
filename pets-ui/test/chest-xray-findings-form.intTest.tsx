@@ -32,7 +32,6 @@ describe("ChestXrayFindings Form", () => {
       </Router>,
     );
 
-    expect(screen.getByText("Name")).toBeInTheDocument;
     expect(screen.getByText("Chest X-ray normal")).toBeInTheDocument;
     expect(screen.getByText("Give further details (optional)")).toBeInTheDocument;
     expect(screen.getByText("Radiographic findings")).toBeInTheDocument;

@@ -3,7 +3,6 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 
 import { ReduxChestXrayDetailsType } from "@/applicant";
-import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Checkbox from "@/components/checkbox/checkbox";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
@@ -11,7 +10,6 @@ import NotificationBanner from "@/components/notificationBanner/notificationBann
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
-import { selectApplicant } from "@/redux/applicantSlice";
 import {
   selectChestXray,
   setXrayActiveTbFindings,
@@ -25,7 +23,6 @@ import { ButtonType, RadioIsInline } from "@/utils/enums";
 import { toArray } from "@/utils/helpers";
 
 const ChestXrayFindingsForm = () => {
-  const applicantData = useAppSelector(selectApplicant);
   const chestXrayData = useAppSelector(selectChestXray);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -86,8 +83,6 @@ const ChestXrayFindingsForm = () => {
           list={["chest X-ray", "radiology report", "medical record form"]}
         />
         <Heading level={1} size="l" title="Enter radiological outcome and findings" />
-
-        <ApplicantDataHeader applicantData={applicantData} />
 
         <div ref={xrayResult}>
           <Radio
