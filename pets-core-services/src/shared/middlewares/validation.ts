@@ -1,10 +1,10 @@
 import middy from "@middy/core";
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import { APIGatewayProxyResult } from "aws-lambda";
 import { z } from "zod";
 
 import { createHttpResponse } from "../http";
 import { logger } from "../logger";
-import { RouteParam } from "../types";
+import { PetsAPIGatewayProxyEvent, RouteParam } from "../types";
 
 export type ValidateRequestType = {
   requestSchema?: z.ZodTypeAny;
@@ -16,7 +16,7 @@ export const validateRequest = ({
   queryStringParametersSchema,
   headersSchema,
 }: ValidateRequestType): middy.MiddlewareObj<
-  APIGatewayProxyEvent,
+  PetsAPIGatewayProxyEvent,
   APIGatewayProxyResult | void
 > => {
   return {
