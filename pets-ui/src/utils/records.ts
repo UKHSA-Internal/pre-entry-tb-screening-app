@@ -133,32 +133,124 @@ const dateEntryMustBeInTheFuture: string[] = ["passportExpiryDate"];
 
 const visaOptions = [
   {
-    value: "Family Reunion",
-    label: "Family Reunion",
+    value: "HM Armed Forces",
+    label: "HM Armed Forces",
   },
   {
-    value: "Settlement and Dependents",
-    label: "Settlement and Dependents",
+    value: "Visitor",
+    label: "Visitor",
   },
   {
-    value: "Students",
-    label: "Students",
+    value: "Student",
+    label: "Student",
   },
   {
-    value: "Work",
-    label: "Work",
+    value: "Short-term Student (English language)",
+    label: "Short-term Student (English language)",
   },
   {
-    value: "Working Holiday Maker",
-    label: "Working Holiday Maker",
+    value: "Child student",
+    label: "Child student",
   },
   {
-    value: "Government Sponsored",
-    label: "Government Sponsored",
+    value: "Parent of child student",
+    label: "Parent of child student",
   },
   {
-    value: "British National (Overseas)",
-    label: "British National (Overseas)",
+    value: "Skilled worker",
+    label: "Skilled worker",
+  },
+  {
+    value: "Global Business Mobility routes",
+    label: "Global Business Mobility routes",
+  },
+  {
+    value: "T2 Minister of religion",
+    label: "T2 Minister of religion",
+  },
+  {
+    value: "Representative of an Overseas Business",
+    label: "Representative of an Overseas Business",
+  },
+  {
+    value: "UK Ancestry",
+    label: "UK Ancestry",
+  },
+  {
+    value: "Global Talent",
+    label: "Global Talent",
+  },
+  {
+    value: "High Potential Individual (HPI) ",
+    label: "High Potential Individual (HPI) ",
+  },
+  {
+    value: "Scale-Up",
+    label: "Scale-Up",
+  },
+  {
+    value: "Start-Up",
+    label: "Start-Up",
+  },
+  {
+    value: "Innovator Founder",
+    label: "Innovator Founder",
+  },
+  {
+    value: "International Sportsperson",
+    label: "International Sportsperson",
+  },
+  {
+    value: "Domestic Workers in a Private Household",
+    label: "Domestic Workers in a Private Household",
+  },
+  {
+    value: "Temporary Work – Youth Mobility Scheme",
+    label: "Temporary Work – Youth Mobility Scheme",
+  },
+  {
+    value: "Temporary Work – Creative Worker",
+    label: "Temporary Work – Creative Worker",
+  },
+  {
+    value: "Temporary Work – Religious Worker ",
+    label: "Temporary Work – Religious Worker ",
+  },
+  {
+    value: "Temporary Work - Charity Worker",
+    label: "Temporary Work - Charity Worker",
+  },
+  {
+    value: "Temporary Work – International Agreement",
+    label: "Temporary Work – International Agreement",
+  },
+  {
+    value: "Temporary Work – Government Authorised Exchange",
+    label: "Temporary Work – Government Authorised Exchange",
+  },
+  {
+    value: "Hong Kong British National (Overseas)",
+    label: "Hong Kong British National (Overseas)",
+  },
+  {
+    value: "Adult Dependent Relative ",
+    label: "Adult Dependent Relative ",
+  },
+  {
+    value: "Victim of Domestic Abuse",
+    label: "Victim of Domestic Abuse",
+  },
+  {
+    value: "Bereaved Partner",
+    label: "Bereaved Partner",
+  },
+  {
+    value: "Gurkha and Hong Kong military unit veteran discharged before 1 July 1997",
+    label: "Gurkha and Hong Kong military unit veteran discharged before 1 July 1997",
+  },
+  {
+    value: "Returning Resident",
+    label: "Returning Resident",
   },
 ];
 

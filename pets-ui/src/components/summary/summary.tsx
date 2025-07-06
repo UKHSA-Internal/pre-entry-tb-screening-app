@@ -39,16 +39,28 @@ function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement)
       </div>
     );
   } else {
-    let displayValue: string;
     if (summaryElement.value) {
-      displayValue = summaryElement.value;
-    } else if (summaryElement.emptyValueText) {
-      displayValue = summaryElement.emptyValueText;
+      return <dd className="govuk-summary-list__value">{summaryElement.value}</dd>;
+    } else if (
+      summaryElement.emptyValueText &&
+      summaryElement.link &&
+      status !== ApplicationStatus.COMPLETE
+    ) {
+      return (
+        <dd className="govuk-summary-list__value">
+          <LinkLabel
+            to={summaryElement.link}
+            title={summaryElement.emptyValueText}
+            hiddenLabel=""
+            externalLink={false}
+          />
+        </dd>
+      );
     } else {
-      displayValue = "";
+      const displayValue =
+        status === ApplicationStatus.COMPLETE ? "" : summaryElement.emptyValueText || "";
+      return <dd className="govuk-summary-list__value">{displayValue}</dd>;
     }
-
-    return <dd className="govuk-summary-list__value">{displayValue}</dd>;
   }
 }
 
