@@ -10,20 +10,20 @@ interface ApplicantDataHeaderProps {
 }
 
 export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderProps>) {
-  let overallTbScreeningStatus: string;
+  let overallTbScreeningStatus: ApplicationStatus;
 
   if (
     props.tbCertificateStatus === ApplicationStatus.COMPLETE &&
     props.tbCertificateIsIssued === YesOrNo.YES
   ) {
-    overallTbScreeningStatus = "Certificate issued";
+    overallTbScreeningStatus = ApplicationStatus.CERTIFICATE_ISSUED;
   } else if (
     props.tbCertificateStatus === ApplicationStatus.COMPLETE &&
     props.tbCertificateIsIssued === YesOrNo.NO
   ) {
-    overallTbScreeningStatus = "Certificate not issued";
+    overallTbScreeningStatus = ApplicationStatus.CERTIFICATE_NOT_ISSUED;
   } else {
-    overallTbScreeningStatus = "In progress";
+    overallTbScreeningStatus = ApplicationStatus.IN_PROGRESS;
   }
 
   const certificateNotIssuedStyle: React.CSSProperties = {
@@ -54,15 +54,15 @@ export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderP
       <div className="govuk-summary-list__row">
         <dt className="govuk-summary-list__key">TB screening</dt>
         <dd className="govuk-summary-list__value">
-          {overallTbScreeningStatus === "Certificate issued" && (
+          {overallTbScreeningStatus === ApplicationStatus.CERTIFICATE_ISSUED && (
             <strong className="govuk-tag govuk-tag--green">Certificate issued</strong>
           )}
-          {overallTbScreeningStatus === "Certificate not issued" && (
+          {overallTbScreeningStatus === ApplicationStatus.CERTIFICATE_NOT_ISSUED && (
             <strong className="govuk-tag govuk-tag--red" style={certificateNotIssuedStyle}>
               Certificate not issued
             </strong>
           )}
-          {overallTbScreeningStatus === "In progress" && (
+          {overallTbScreeningStatus === ApplicationStatus.IN_PROGRESS && (
             <strong className="govuk-tag govuk-tag--yellow">In progress</strong>
           )}
         </dd>
