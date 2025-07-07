@@ -25,7 +25,11 @@ const Task = (props: Readonly<TaskProps>) => {
   const allPrerequisitesComplete =
     props.prerequisiteTaskStatuses.length < 1 ||
     props.prerequisiteTaskStatuses.every(
-      (status) => status == ApplicationStatus.COMPLETE || status == ApplicationStatus.NOT_REQUIRED,
+      (status) =>
+        status == ApplicationStatus.COMPLETE ||
+        status == ApplicationStatus.NOT_REQUIRED ||
+        status == ApplicationStatus.CERTIFICATE_ISSUED ||
+        status == ApplicationStatus.CERTIFICATE_NOT_ISSUED,
     );
 
   return (
