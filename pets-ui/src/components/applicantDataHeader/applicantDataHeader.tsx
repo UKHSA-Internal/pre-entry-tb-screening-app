@@ -10,18 +10,21 @@ interface ApplicantDataHeaderProps {
 }
 
 export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderProps>) {
-  const getOverallTbScreeningStatus = () => {
-    if (props.tbCertificateStatus === ApplicationStatus.COMPLETE) {
-      if (props.tbCertificateIsIssued === YesOrNo.YES) {
-        return "Certificate issued";
-      } else if (props.tbCertificateIsIssued === YesOrNo.NO) {
-        return "Certificate not issued";
-      }
-    }
-    return "In progress";
-  };
+  let overallTbScreeningStatus: string;
 
-  const overallTbScreeningStatus = getOverallTbScreeningStatus();
+  if (
+    props.tbCertificateStatus === ApplicationStatus.COMPLETE &&
+    props.tbCertificateIsIssued === YesOrNo.YES
+  ) {
+    overallTbScreeningStatus = "Certificate issued";
+  } else if (
+    props.tbCertificateStatus === ApplicationStatus.COMPLETE &&
+    props.tbCertificateIsIssued === YesOrNo.NO
+  ) {
+    overallTbScreeningStatus = "Certificate not issued";
+  } else {
+    overallTbScreeningStatus = "In progress";
+  }
 
   const certificateNotIssuedStyle: React.CSSProperties = {
     maxWidth: "none",

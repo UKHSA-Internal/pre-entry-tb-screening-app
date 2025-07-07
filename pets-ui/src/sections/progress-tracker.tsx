@@ -18,7 +18,7 @@ interface TaskProps {
   linkWhenIncomplete: string;
   linkWhenComplete: string;
   prerequisiteTaskStatuses: ApplicationStatus[];
-  customCompletionStatus?: React.ReactNode;
+  statusOverride?: React.ReactNode;
 }
 
 const Task = (props: Readonly<TaskProps>) => {
@@ -27,10 +27,6 @@ const Task = (props: Readonly<TaskProps>) => {
     props.prerequisiteTaskStatuses.every(
       (status) => status == ApplicationStatus.COMPLETE || status == ApplicationStatus.NOT_REQUIRED,
     );
-
-  const taskDescriptionStaticStyle: React.CSSProperties = {
-    marginBottom: 0,
-  };
 
   return (
     <li className="govuk-task-list__item govuk-task-list__item--with-link">
@@ -53,11 +49,10 @@ const Task = (props: Readonly<TaskProps>) => {
             externalLink={false}
           />
         )}
-        {(!allPrerequisitesComplete || props.status == ApplicationStatus.NOT_REQUIRED) && (
-          <p className="govuk-body" style={taskDescriptionStaticStyle}>
-            {props.description}
-          </p>
-        )}
+        {(!allPrerequisitesComplete || props.status == ApplicationStatus.NOT_REQUIRED) &&
+          props.status !== ApplicationStatus.COMPLETE && (
+            <p className="govuk-body task-description-static">{props.description}</p>
+          )}
       </div>
       {props.status == ApplicationStatus.NOT_YET_STARTED && (
         <div className="govuk-task-list__status">
@@ -71,7 +66,7 @@ const Task = (props: Readonly<TaskProps>) => {
       )}
       {props.status == ApplicationStatus.COMPLETE && (
         <div className="govuk-task-list__status">
-          {props.customCompletionStatus ?? (
+          {props.statusOverride ?? (
             <strong className="govuk-tag govuk-tag--green">Completed</strong>
           )}
         </div>
@@ -106,44 +101,26 @@ const ProgressTracker = () => {
   } else if (allSputumSamplesSubmitted) {
     sputumLink = "/enter-sputum-sample-results";
   }
-  const headerStyle: React.CSSProperties = {
-    display: "flex",
-    alignItems: "flex-start",
-    marginBottom: "20px",
-  };
 
-  const headerContentStyle: React.CSSProperties = {
-    flexGrow: 1,
-  };
-
-  const photoContainerStyle: React.CSSProperties = {
-    marginLeft: "20px",
-    border: "1px solid #b1b4b6",
-    display: "flex",
-    alignItems: "stretch",
-  };
-
-  const photoStyle: React.CSSProperties = {
-    display: "block",
-    height: "100%",
-    maxHeight: "150px",
-    width: "auto",
-    objectFit: "cover",
-  };
-
-  const startSearchStyle: React.CSSProperties = {
-    marginTop: "60px",
-  };
-
-  const certificateNotIssuedStyle: React.CSSProperties = {
-    maxWidth: "none",
-    whiteSpace: "nowrap",
-  };
+  let tbCertificateStatusOverride = undefined;
+  if (tbCertificateData.status === ApplicationStatus.COMPLETE) {
+    if (tbCertificateData.isIssued === YesOrNo.YES) {
+      tbCertificateStatusOverride = (
+        <strong className="govuk-tag govuk-tag--green">Certificate issued</strong>
+      );
+    } else {
+      tbCertificateStatusOverride = (
+        <strong className="govuk-tag govuk-tag--red progress-tracker-certificate-not-issued">
+          Certificate not issued
+        </strong>
+      );
+    }
+  }
 
   return (
     <div>
-      <div style={headerStyle}>
-        <div style={headerContentStyle}>
+      <div className="progress-tracker-header">
+        <div className="progress-tracker-header-content">
           <ApplicantDataHeader
             applicantData={applicantData}
             tbCertificateStatus={tbCertificateData.status}
@@ -151,12 +128,12 @@ const ProgressTracker = () => {
           />
         </div>
         {applicantPhotoContext?.applicantPhotoDataUrl && (
-          <div style={photoContainerStyle}>
+          <div className="progress-tracker-photo-container">
             <img
               src={applicantPhotoContext.applicantPhotoDataUrl}
               alt={"Applicant"}
               title={applicantData.applicantPhotoFileName ?? undefined}
-              style={photoStyle}
+              className="progress-tracker-photo"
             />
           </div>
         )}
@@ -228,21 +205,11 @@ const ProgressTracker = () => {
             chestXrayData.status,
             sputumData.status,
           ]}
-          customCompletionStatus={
-            tbCertificateData.isIssued === YesOrNo.YES ? (
-              <strong className="govuk-tag govuk-tag--green">Certificate issued</strong>
-            ) : (
-              <strong className="govuk-tag govuk-tag--red" style={certificateNotIssuedStyle}>
-                Certificate not issued
-              </strong>
-            )
-          }
+          statusOverride={tbCertificateStatusOverride}
         />
       </ul>
 
-      <h2 className="govuk-heading-s" style={startSearchStyle}>
-        Start a new search
-      </h2>
+      <h2 className="govuk-heading-s progress-tracker-start-search">Start a new search</h2>
       <p className="govuk-body">
         <LinkLabel
           className="govuk-link"
