@@ -14,6 +14,8 @@ export enum ApplicationStatus {
   COMPLETE = "Complete",
   IN_PROGRESS = "In progress",
   NOT_REQUIRED = "Not required",
+  CERTIFICATE_ISSUED = "Certificate issued",
+  CERTIFICATE_NOT_ISSUED = "Certificate not issued",
 }
 
 export enum BackendApplicationStatus {

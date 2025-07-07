@@ -1,10 +1,36 @@
+import React from "react";
+
 import { ReduxApplicantDetailsType } from "@/applicant";
+import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 
 interface ApplicantDataHeaderProps {
   applicantData: ReduxApplicantDetailsType;
+  tbCertificateStatus: ApplicationStatus;
+  tbCertificateIsIssued: YesOrNo;
 }
 
 export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderProps>) {
+  let overallTbScreeningStatus: ApplicationStatus;
+
+  if (
+    props.tbCertificateStatus === ApplicationStatus.COMPLETE &&
+    props.tbCertificateIsIssued === YesOrNo.YES
+  ) {
+    overallTbScreeningStatus = ApplicationStatus.CERTIFICATE_ISSUED;
+  } else if (
+    props.tbCertificateStatus === ApplicationStatus.COMPLETE &&
+    props.tbCertificateIsIssued === YesOrNo.NO
+  ) {
+    overallTbScreeningStatus = ApplicationStatus.CERTIFICATE_NOT_ISSUED;
+  } else {
+    overallTbScreeningStatus = ApplicationStatus.IN_PROGRESS;
+  }
+
+  const certificateNotIssuedStyle: React.CSSProperties = {
+    maxWidth: "none",
+    whiteSpace: "nowrap",
+  };
+
   return (
     <dl className="govuk-summary-list">
       <div className="govuk-summary-list__row">
@@ -23,6 +49,23 @@ export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderP
       <div className="govuk-summary-list__row">
         <dt className="govuk-summary-list__key">Passport number</dt>
         <dd className="govuk-summary-list__value">{props.applicantData.passportNumber}</dd>
+      </div>
+
+      <div className="govuk-summary-list__row">
+        <dt className="govuk-summary-list__key">TB screening</dt>
+        <dd className="govuk-summary-list__value">
+          {overallTbScreeningStatus === ApplicationStatus.CERTIFICATE_ISSUED && (
+            <strong className="govuk-tag govuk-tag--green">Certificate issued</strong>
+          )}
+          {overallTbScreeningStatus === ApplicationStatus.CERTIFICATE_NOT_ISSUED && (
+            <strong className="govuk-tag govuk-tag--red" style={certificateNotIssuedStyle}>
+              Certificate not issued
+            </strong>
+          )}
+          {overallTbScreeningStatus === ApplicationStatus.IN_PROGRESS && (
+            <strong className="govuk-tag govuk-tag--yellow">In progress</strong>
+          )}
+        </dd>
       </div>
     </dl>
   );
