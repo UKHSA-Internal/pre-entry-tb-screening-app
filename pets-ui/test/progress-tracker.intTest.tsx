@@ -1,5 +1,4 @@
 import { screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
 import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -182,7 +181,7 @@ const completeState = {
   tbCertificate: { status: ApplicationStatus.COMPLETE, ...tbCertSlice },
 };
 
-test("Progress tracker page displays incomplete application sections correctly & links to applicant details form", async () => {
+test("Progress tracker page displays incomplete application sections correctly & links to applicant details form", () => {
   renderWithProviders(
     <Router>
       <ApplicantPhotoProvider>
@@ -192,9 +191,7 @@ test("Progress tracker page displays incomplete application sections correctly &
     { preloadedState: incompleteState },
   );
 
-  const user = userEvent.setup();
-
-  expect(screen.getByText("TB screening progress tracker")).toBeInTheDocument();
+  expect(screen.getByText("Complete UK pre-entry health screening")).toBeInTheDocument();
 
   expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
   expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Reginald Backwaters");
@@ -230,15 +227,15 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
   expect(within(chestXrayListItem as HTMLElement).getByText("Not yet started"));
 
-  const tbCertificateText = screen.getByText(/TB certificate declaration/i);
+  const tbCertificateText = screen.getByText(/TB certificate outcome/i);
   const tbCertificateListItem = tbCertificateText.closest("li");
   expect(tbCertificateListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
   expect(within(tbCertificateListItem as HTMLElement).getByText("Not yet started"));
 
-  await user.click(screen.getByRole("button"));
-  expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-search");
+  const searchLink = screen.getByRole("link", { name: /Search for another visa applicant/i });
+  expect(searchLink).toHaveAttribute("href", "/applicant-search");
 });
 
 test("Progress tracker page displays complete application sections correctly, links to summary page, and displays applicant photo from context", async () => {
@@ -262,9 +259,7 @@ test("Progress tracker page displays complete application sections correctly, li
     { preloadedState: completeState },
   );
 
-  const user = userEvent.setup();
-
-  expect(screen.getByText("TB screening progress tracker")).toBeInTheDocument();
+  expect(screen.getByText("Complete UK pre-entry health screening")).toBeInTheDocument();
 
   expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
   expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Chelsea Cummerbund");
@@ -305,16 +300,16 @@ test("Progress tracker page displays complete application sections correctly, li
   expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
   expect(within(chestXrayListItem as HTMLElement).getByText("Completed"));
 
-  const tbCertificateLink = screen.getByRole("link", { name: /TB certificate declaration/i });
+  const tbCertificateLink = screen.getByRole("link", { name: /TB certificate outcome/i });
   expect(tbCertificateLink).toHaveAttribute("href", "/tb-certificate-summary");
   const tbCertificateListItem = tbCertificateLink.closest("li");
   expect(tbCertificateListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
-  expect(within(tbCertificateListItem as HTMLElement).getByText("Completed"));
+  expect(within(tbCertificateListItem as HTMLElement).getByText("Certificate issued"));
   const img = await screen.findByAltText(/applicant/i);
   expect(img).toBeInTheDocument();
 
-  await user.click(screen.getByRole("button"));
-  expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-search");
+  const searchLink = screen.getByRole("link", { name: /Search for another visa applicant/i });
+  expect(searchLink).toHaveAttribute("href", "/applicant-search");
 });

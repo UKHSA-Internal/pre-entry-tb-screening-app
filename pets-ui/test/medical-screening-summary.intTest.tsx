@@ -6,7 +6,7 @@ import { Mock } from "vitest";
 
 import { petsApi } from "@/api/api";
 import MedicalScreeningReview from "@/sections/medical-screening-summary";
-import { ApplicationStatus } from "@/utils/enums";
+import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -56,10 +56,23 @@ const applicantState = {
   postcode: "",
 };
 
+const tbCertificateState = {
+  status: ApplicationStatus.NOT_YET_STARTED,
+  isIssued: YesOrNo.NO,
+  comments: "",
+  certificateDate: {
+    year: "",
+    month: "",
+    day: "",
+  },
+  certificateNumber: "",
+};
+
 const preloadedState = {
   medicalScreening: { ...medicalScreeningState },
   application: { ...applicationState },
   applicant: { ...applicantState },
+  tbCertificate: { ...tbCertificateState },
 };
 
 describe("MedicalScreeningReview", () => {
