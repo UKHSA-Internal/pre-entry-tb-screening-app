@@ -17,8 +17,8 @@ export default function ApplicantConfirmation() {
       <Confirmation
         confirmationText={"Applicant record created"}
         furtherInfo={furtherInfo}
-        buttonText={"Continue to travel information"}
-        buttonLink={"/travel-details"}
+        buttonText={"Continue"}
+        buttonLink={"/tracker"}
         whatHappensNext
       />
     </Container>
