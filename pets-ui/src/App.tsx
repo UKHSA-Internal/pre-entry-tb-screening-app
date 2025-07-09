@@ -28,6 +28,7 @@ import SputumCollectionPage from "./pages/sputum-collection";
 import SputumConfirmation from "./pages/sputum-confirmation";
 import SputumQuestionPage from "./pages/sputum-question";
 import TbCertificateDeclarationPage from "./pages/tb-certificate-declaration";
+import TbCertificateQuestionPage from "./pages/tb-certificate-question";
 import TbConfirmationPage from "./pages/tb-confirmation";
 import TbSummaryPage from "./pages/tb-summary";
 import TravelConfirmation from "./pages/travel-confirmation";
@@ -280,6 +281,16 @@ function App() {
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <EnterSputumSampleResultsPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/tb-certificate-question"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <TbCertificateQuestionPage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }

@@ -200,7 +200,7 @@ const ProgressTracker = () => {
         <Task
           description="TB certificate outcome"
           status={tbCertificateData.status}
-          linkWhenIncomplete="/tb-certificate-declaration"
+          linkWhenIncomplete="/tb-certificate-question"
           linkWhenComplete="/tb-certificate-summary"
           prerequisiteTaskStatuses={[
             applicantData.status,

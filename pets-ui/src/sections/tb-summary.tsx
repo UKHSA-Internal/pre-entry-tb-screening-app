@@ -53,7 +53,7 @@ const TbSummary = () => {
     {
       key: "TB clearance certificate issued?",
       value: tbCertificateData.isIssued,
-      link: `/tb-certificate-declaration#${attributeToComponentId.isIssued}`,
+      link: `/tb-certificate-question#${attributeToComponentId.isIssued}`,
       hiddenLabel: "TB clearance certificate",
       emptyValueText: "Enter whether a TB clearance certificate has been issued (optional)",
     },
