@@ -59,6 +59,10 @@ const SputumResultsForm = () => {
     marginBottom: "70px",
   };
 
+  const tableHeadersStyle: React.CSSProperties = {
+    marginBottom: "0px",
+  };
+
   const columnCenterStyle: React.CSSProperties = {
     textAlign: "center",
   };
@@ -348,7 +352,7 @@ const SputumResultsForm = () => {
         <form onSubmit={handleSubmit(onSubmit)} style={formStyle}>
           {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}{" "}
           <Heading level={1} size="l" title="Enter sputum sample results" style={headingStyle} />
-          <div className="govuk-grid-row">
+          <div className="govuk-grid-row govuk-body" style={tableHeadersStyle}>
             <div className="govuk-grid-column-one-third">
               <strong>Sample</strong>
             </div>
@@ -363,7 +367,7 @@ const SputumResultsForm = () => {
             className="govuk-section-break govuk-section-break--m govuk-section-break--visible"
             style={hrFirstStyle}
           />
-          <div className="govuk-grid-row" style={flexRowStyle}>
+          <div className="govuk-grid-row govuk-body" style={flexRowStyle}>
             <div className="govuk-grid-column-one-third">
               <span>{getSampleDate("sample1")}</span>
             </div>
@@ -412,7 +416,7 @@ const SputumResultsForm = () => {
             className="govuk-section-break govuk-section-break--m govuk-section-break--visible"
             style={hrStyle}
           />
-          <div className="govuk-grid-row" style={flexRowStyle}>
+          <div className="govuk-grid-row govuk-body" style={flexRowStyle}>
             <div className="govuk-grid-column-one-third">
               <span>{getSampleDate("sample2")}</span>
             </div>
@@ -461,7 +465,7 @@ const SputumResultsForm = () => {
             className="govuk-section-break govuk-section-break--m govuk-section-break--visible"
             style={hrStyle}
           />
-          <div className="govuk-grid-row" style={flexRowStyle}>
+          <div className="govuk-grid-row govuk-body" style={flexRowStyle}>
             <div className="govuk-grid-column-one-third">
               <span>{getSampleDate("sample3")}</span>
             </div>
