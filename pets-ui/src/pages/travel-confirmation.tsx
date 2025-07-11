@@ -18,8 +18,8 @@ export default function TravelConfirmation() {
       <Confirmation
         confirmationText={"Travel information record created"}
         furtherInfo={furtherInfo}
-        buttonText={"Continue to medical screening"}
-        buttonLink={"/medical-screening"}
+        buttonText={"Continue"}
+        buttonLink={"/tracker"}
         whatHappensNext
       />
     </Container>

@@ -29,5 +29,5 @@ test("Medical screening confirmation page renders correctly & redirects on butto
   const user = userEvent.setup();
   expect(screen.getByText("Medical screening record created")).toBeTruthy();
   await user.click(screen.getAllByRole("button")[0]);
-  expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-question");
+  expect(useNavigateMock).toHaveBeenLastCalledWith("/tracker");
 });

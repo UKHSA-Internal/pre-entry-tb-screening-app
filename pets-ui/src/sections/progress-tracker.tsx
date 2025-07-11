@@ -1,7 +1,6 @@
-import { useNavigate } from "react-router-dom";
+import React from "react";
 
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
-import Button from "@/components/button/button";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { selectApplicant } from "@/redux/applicantSlice";
@@ -11,7 +10,7 @@ import { selectMedicalScreening } from "@/redux/medicalScreeningSlice";
 import { selectSputum } from "@/redux/sputumSlice";
 import { selectTbCertificate } from "@/redux/tbCertificateSlice";
 import { selectTravel } from "@/redux/travelSlice";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 
 interface TaskProps {
   description: string;
@@ -19,13 +18,18 @@ interface TaskProps {
   linkWhenIncomplete: string;
   linkWhenComplete: string;
   prerequisiteTaskStatuses: ApplicationStatus[];
+  statusOverride?: React.ReactNode;
 }
 
 const Task = (props: Readonly<TaskProps>) => {
   const allPrerequisitesComplete =
     props.prerequisiteTaskStatuses.length < 1 ||
     props.prerequisiteTaskStatuses.every(
-      (status) => status == ApplicationStatus.COMPLETE || status == ApplicationStatus.NOT_REQUIRED,
+      (status) =>
+        status == ApplicationStatus.COMPLETE ||
+        status == ApplicationStatus.NOT_REQUIRED ||
+        status == ApplicationStatus.CERTIFICATE_ISSUED ||
+        status == ApplicationStatus.CERTIFICATE_NOT_ISSUED,
     );
 
   return (
@@ -49,11 +53,10 @@ const Task = (props: Readonly<TaskProps>) => {
             externalLink={false}
           />
         )}
-        {(!allPrerequisitesComplete || props.status == ApplicationStatus.NOT_REQUIRED) && (
-          <p className="govuk-body" style={{ marginBottom: 0 }}>
-            {props.description}
-          </p>
-        )}
+        {(!allPrerequisitesComplete || props.status == ApplicationStatus.NOT_REQUIRED) &&
+          props.status !== ApplicationStatus.COMPLETE && (
+            <p className="govuk-body task-description-static">{props.description}</p>
+          )}
       </div>
       {props.status == ApplicationStatus.NOT_YET_STARTED && (
         <div className="govuk-task-list__status">
@@ -67,7 +70,9 @@ const Task = (props: Readonly<TaskProps>) => {
       )}
       {props.status == ApplicationStatus.COMPLETE && (
         <div className="govuk-task-list__status">
-          <strong className="govuk-tag govuk-tag--green">Completed</strong>
+          {props.statusOverride ?? (
+            <strong className="govuk-tag govuk-tag--green">Completed</strong>
+          )}
         </div>
       )}
       {props.status == ApplicationStatus.NOT_REQUIRED && (
@@ -80,8 +85,6 @@ const Task = (props: Readonly<TaskProps>) => {
 };
 
 const ProgressTracker = () => {
-  const navigate = useNavigate();
-
   const applicantData = useAppSelector(selectApplicant);
   const travelData = useAppSelector(selectTravel);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
@@ -103,39 +106,44 @@ const ProgressTracker = () => {
     sputumLink = "/enter-sputum-sample-results";
   }
 
+  let tbCertificateStatusOverride = undefined;
+  if (tbCertificateData.status === ApplicationStatus.COMPLETE) {
+    if (tbCertificateData.isIssued === YesOrNo.YES) {
+      tbCertificateStatusOverride = (
+        <strong className="govuk-tag govuk-tag--green">Certificate issued</strong>
+      );
+    } else {
+      tbCertificateStatusOverride = (
+        <strong className="govuk-tag govuk-tag--red progress-tracker-certificate-not-issued">
+          Certificate not issued
+        </strong>
+      );
+    }
+  }
+
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "flex-start", marginBottom: "20px" }}>
-        <div style={{ flexGrow: 1 }}>
-          <ApplicantDataHeader applicantData={applicantData} />
+      <div className="progress-tracker-header">
+        <div className="progress-tracker-header-content">
+          <ApplicantDataHeader
+            applicantData={applicantData}
+            tbCertificateStatus={tbCertificateData.status}
+            tbCertificateIsIssued={tbCertificateData.isIssued}
+          />
         </div>
         {applicantPhotoContext?.applicantPhotoDataUrl && (
-          <div
-            style={{
-              marginLeft: "20px",
-              border: "1px solid #b1b4b6",
-              display: "flex",
-              alignItems: "stretch",
-            }}
-          >
+          <div className="progress-tracker-photo-container">
             <img
               src={applicantPhotoContext.applicantPhotoDataUrl}
               alt={"Applicant"}
               title={applicantData.applicantPhotoFileName ?? undefined}
-              style={{
-                display: "block",
-                height: "100%",
-                maxHeight: "150px",
-                width: "auto",
-                objectFit: "cover",
-              }}
+              className="progress-tracker-photo"
             />
           </div>
         )}
       </div>
 
-      <p className="govuk-body">Complete all sections.</p>
-
+      <h2 className="govuk-heading-s">1. Visa applicant information</h2>
       <ul className="govuk-task-list">
         <Task
           description="Visa applicant details"
@@ -151,6 +159,10 @@ const ProgressTracker = () => {
           linkWhenComplete="/travel-summary"
           prerequisiteTaskStatuses={[applicantData.status]}
         />
+      </ul>
+
+      <h2 className="govuk-heading-s">2. Medical screening</h2>
+      <ul className="govuk-task-list">
         <Task
           description="Medical history and TB symptoms"
           status={medicalScreeningData.status}
@@ -181,8 +193,12 @@ const ProgressTracker = () => {
             chestXrayData.status,
           ]}
         />
+      </ul>
+
+      <h2 className="govuk-heading-s">3. Review outcome</h2>
+      <ul className="govuk-task-list">
         <Task
-          description="TB certificate declaration"
+          description="TB certificate outcome"
           status={tbCertificateData.status}
           linkWhenIncomplete="/tb-certificate-declaration"
           linkWhenComplete="/tb-certificate-summary"
@@ -193,17 +209,19 @@ const ProgressTracker = () => {
             chestXrayData.status,
             sputumData.status,
           ]}
+          statusOverride={tbCertificateStatusOverride}
         />
       </ul>
 
-      <Button
-        id="search-again"
-        type={ButtonType.DEFAULT}
-        text="Search again"
-        handleClick={() => {
-          navigate("/applicant-search");
-        }}
-      />
+      <h2 className="govuk-heading-s progress-tracker-start-search">Start a new search</h2>
+      <p className="govuk-body">
+        <LinkLabel
+          className="govuk-link"
+          to="/applicant-search"
+          title="Search for another visa applicant"
+          externalLink={false}
+        />
+      </p>
     </div>
   );
 };
