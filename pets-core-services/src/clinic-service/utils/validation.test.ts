@@ -62,7 +62,7 @@ describe("Load and validate Clinics from json file", () => {
     expect(result).toHaveLength(0);
     expect(consoleMock).toHaveBeenCalled();
     expect(consoleMock).toHaveBeenLastCalledWith(
-      SyntaxError(`Unexpected token 'i', "it's not json" is not valid JSON`),
+      SyntaxError(`Unexpected token i in JSON at position 0`),
     );
   });
 
