@@ -172,7 +172,7 @@ jobs:
           role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_DEPLOY_ROLE_NAME }}"
 
       - name: Deploy Spec to API Gateway
-        run: aws apigateway put-rest-api --rest-api-id ${{ vars.API_GATEWAY_ID }} --mode overwrite --body fileb://$SPEC_FILE
+        run: aws apigateway put-rest-api --rest-api-id ${{ vars.API_GATEWAY_ID }} --mode merge --body fileb://$SPEC_FILE
         working-directory: pets-core-services
 
       - name: Update API Gateway Stage
