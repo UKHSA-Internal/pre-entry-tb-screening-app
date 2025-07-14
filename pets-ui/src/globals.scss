@@ -18,3 +18,47 @@ input[type='file'].hide-text {
     font-size: 19px;
   }
 }
+
+.progress-tracker-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+
+.progress-tracker-header-content {
+  flex-grow: 1;
+}
+
+
+.progress-tracker-photo-container {
+  margin-left: 20px;
+  border: 1px solid #b1b4b6;
+  display: flex;
+  align-items: stretch;
+}
+
+
+.progress-tracker-photo {
+  display: block;
+  height: 100%;
+  max-height: 150px;
+  width: auto;
+  object-fit: cover;
+}
+
+
+.progress-tracker-start-search {
+  margin-top: 60px;
+}
+
+
+.progress-tracker-certificate-not-issued {
+  max-width: none;
+  white-space: nowrap;
+}
+
+
+.task-description-static {
+  margin-bottom: 0;
+}

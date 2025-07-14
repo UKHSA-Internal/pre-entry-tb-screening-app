@@ -6,6 +6,7 @@ import { PetsRoute } from "../../shared/types";
 import { createClinicHandler } from "../handlers/createClinic";
 import { fetchClinicsHandler } from "../handlers/fetchClinics";
 import { getClinicHandler } from "../handlers/getClinic";
+import { isActiveClinicHandler } from "../handlers/isActiveClinic";
 import { ClinicSchema } from "../types/zod-schema";
 extendZodWithOpenApi(z);
 
@@ -34,6 +35,19 @@ export const routes: PetsRoute[] = [
       country: z
         .string({ description: "When specified, returns only clinics in Country" })
         .optional(),
+    },
+  },
+  {
+    method: "GET",
+    path: "/clinics/isactive",
+    handler: isActiveClinicHandler,
+    responseSchema: ClinicSchema.openapi({
+      description: "True if the clinic is an active one",
+    }),
+    queryParams: {
+      clinicId: z.string({
+        description: "When specified, returns only the clinic with matching clinicId",
+      }),
     },
   },
 ];

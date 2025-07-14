@@ -38,11 +38,6 @@ describe("ChestXrayNotTakenPage", () => {
       expect(breadcrumbElement.closest("a")).toHaveAttribute("href", item.href);
     });
   });
-  it("renders the applicantDataHeader component ", () => {
-    expect(screen.getByText("Name")).toBeInTheDocument();
-    expect(screen.getByText("Date of birth")).toBeInTheDocument();
-    expect(screen.getByText("Passport number")).toBeInTheDocument();
-  });
   it("renders the page titles and descriptions ", () => {
     expect(screen.getByText("Enter reason X-ray not taken")).toBeInTheDocument();
     expect(screen.getByText("Reason X-ray not taken")).toBeInTheDocument();

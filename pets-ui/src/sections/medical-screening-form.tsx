@@ -3,7 +3,6 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { ReduxMedicalScreeningType } from "@/applicant";
-import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Checkbox from "@/components/checkbox/checkbox";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
@@ -11,7 +10,6 @@ import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
-import { selectApplicant } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   selectMedicalScreening,
@@ -31,7 +29,6 @@ const MedicalScreeningForm = () => {
     formState: { errors },
   } = methods;
 
-  const applicantData = useAppSelector(selectApplicant);
   const medicalData = useAppSelector(selectMedicalScreening);
   const dispatch = useAppDispatch();
 
@@ -98,8 +95,6 @@ const MedicalScreeningForm = () => {
         <p className="govuk-body">
           Enter the applicant&apos;s profile information. You should answer every question.
         </p>
-
-        <ApplicantDataHeader applicantData={applicantData} />
 
         <div ref={ageRef}>
           <FreeText

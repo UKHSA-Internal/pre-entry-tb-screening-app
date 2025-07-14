@@ -3,13 +3,11 @@ import { FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-fo
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { ReduxChestXrayDetailsType } from "@/applicant";
-import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FileUpload from "@/components/fileUpload/fileUpload";
 import Heading from "@/components/heading/heading";
 import Spinner from "@/components/spinner/spinner";
 import SubmitButton from "@/components/submitButton/submitButton";
-import { selectApplicant } from "@/redux/applicantSlice";
 import { selectApplication } from "@/redux/applicationSlice";
 import {
   selectChestXray,
@@ -84,7 +82,6 @@ const DicomUploadModule = (
 };
 
 const ChestXrayForm = () => {
-  const applicantData = useAppSelector(selectApplicant);
   const chestXrayData = useAppSelector(selectChestXray);
   const applicationData = useAppSelector(selectApplication);
   const dispatch = useAppDispatch();
@@ -178,8 +175,6 @@ const ChestXrayForm = () => {
           <div>
             {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
             <Heading level={1} size="l" title="Upload chest X-ray images" />
-
-            <ApplicantDataHeader applicantData={applicantData} />
 
             <div ref={paXray}>
               <DicomUploadModule

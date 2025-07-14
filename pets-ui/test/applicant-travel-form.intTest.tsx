@@ -32,7 +32,7 @@ describe("ApplicantTravelForm", () => {
     const user = userEvent.setup();
 
     fireEvent.change(screen.getAllByRole("combobox")[0], {
-      target: { value: "Government Sponsored" },
+      target: { value: "Visitor" },
     });
     await user.type(screen.getByTestId("address-1"), "Edinburgh Castle, Castlehill");
     await user.type(screen.getByTestId("town-or-city"), "Edinburgh");
@@ -40,7 +40,7 @@ describe("ApplicantTravelForm", () => {
     await user.type(screen.getByTestId("mobile-number"), "07321900900");
     await user.type(screen.getByTestId("email"), "sigmund.sigmundson@asgard.gov");
 
-    expect(screen.getAllByRole("combobox")[0]).toHaveValue("Government Sponsored");
+    expect(screen.getAllByRole("combobox")[0]).toHaveValue("Visitor");
     expect(screen.getByTestId("address-1")).toHaveValue("Edinburgh Castle, Castlehill");
     expect(screen.getByTestId("town-or-city")).toHaveValue("Edinburgh");
     expect(screen.getByTestId("postcode")).toHaveValue("EH1 2NG");
@@ -57,7 +57,7 @@ describe("ApplicantTravelForm", () => {
       townOrCity: "Edinburgh",
       ukEmail: "sigmund.sigmundson@asgard.gov",
       ukMobileNumber: "07321900900",
-      visaType: "Government Sponsored",
+      visaType: "Visitor",
     });
     expect(useNavigateMock).toHaveBeenLastCalledWith("/travel-summary");
   });
