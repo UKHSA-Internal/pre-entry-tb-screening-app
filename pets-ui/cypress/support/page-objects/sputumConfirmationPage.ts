@@ -1,4 +1,4 @@
-//This holds all fields of the Chest X-ray Confirmation Page
+//This holds all fields of the Sputum Confirmation Page
 export class SputumConfirmationPage {
   visit(): void {
     cy.visit("/sputum-confirmation");
@@ -6,54 +6,58 @@ export class SputumConfirmationPage {
 
   // Verify page loaded
   verifyPageLoaded(): void {
-    cy.contains("h1.govuk-panel__title", "All sputum sample information confirmed").should(
-      "be.visible",
-    );
+    cy.contains("h1", "All sputum sample information confirmed").should("be.visible");
+    cy.get(".govuk-panel--confirmation").should("be.visible");
   }
 
-  // Verify confirmation panel
+  // Verify confirmation panel is displayed
   verifyConfirmationPanel(): void {
     cy.get(".govuk-panel--confirmation").should("be.visible");
-    cy.contains("h1.govuk-panel__title", "All sputum sample information confirmed").should(
-      "be.visible",
-    );
+    cy.contains("h1", "All sputum sample information confirmed").should("be.visible");
   }
 
-  // Verify next steps section
+  // Verify the "What happens next" section
   verifyNextStepsSection(): void {
-    cy.contains("h2.govuk-heading-m", "What happens next").should("be.visible");
-
-    cy.contains("p.govuk-body", "You can now return to the progress tracker.").should("be.visible");
+    cy.contains("h2", "What happens next").should("be.visible");
+    cy.contains("p", "You can now return to the progress tracker.").should("be.visible");
   }
 
-  // Click continue button
+  // Click the continue button
   clickContinueButton(): void {
-    cy.contains("button", "Continue").click();
+    cy.contains("button", "Continue").should("be.visible").click();
+  }
+
+  // Verify redirection after clicking continue
+  verifyRedirectionAfterContinue(): void {
+    cy.url().should("include", "/tracker");
+  }
+
+  // Verify back link navigation
+  verifyBackLinkNavigation(): void {
+    cy.get(".govuk-back-link")
+      .should("be.visible")
+      .and("contain", "Back")
+      .and("have.attr", "href", "/sputum-confirmation");
+  }
+
+  // Verify page title
+  verifyPageTitle(): void {
+    cy.title().should("include", "Complete UK Pre-Entry Health Screening");
   }
 
   // Verify service name in header
   verifyServiceName(): void {
-    cy.contains(".govuk-header__service-name", "Complete UK Pre-Entry Health Screening").should(
-      "be.visible",
-    );
+    cy.get(".govuk-header__service-name")
+      .should("be.visible")
+      .and("contain", "Complete UK Pre-Entry Health Screening");
   }
 
-  // Get the current URL
-  getCurrentUrl(): Cypress.Chainable<string> {
-    return cy.url();
-  }
-
-  // Check URL after form submission
-  checkRedirectionAfterSubmit(expectedUrlPath: string): void {
-    this.clickContinueButton();
-    cy.url().should("include", expectedUrlPath);
-  }
-
-  // Check all elements on the page
-  verifyAllPageElements(): void {
-    this.verifyPageLoaded();
+  // Check all elements on confirmation page
+  verifyAllConfirmationElements(): void {
     this.verifyConfirmationPanel();
     this.verifyNextStepsSection();
+    cy.contains("button", "Continue").should("be.visible");
+    this.verifyBackLinkNavigation();
     this.verifyServiceName();
   }
 }

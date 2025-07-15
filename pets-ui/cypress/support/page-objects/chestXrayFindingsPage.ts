@@ -12,18 +12,8 @@ export class ChestXrayFindingsPage extends BasePage {
       .should("be.visible")
       .and("contain", "Enter radiological outcome and findings");
 
-    // Check the summary list is present
-    cy.get(".govuk-summary-list").should("be.visible");
-    return this;
-  }
-
-  // Verify applicant information section
-  verifyApplicantInfo(expectedValues: {
-    Name?: string;
-    "Date of birth"?: string;
-    "Passport number"?: string;
-  }): this {
-    this.verifySummaryValues(expectedValues);
+    // Check the form is present
+    cy.get("form").should("be.visible");
     return this;
   }
 
@@ -32,6 +22,30 @@ export class ChestXrayFindingsPage extends BasePage {
     cy.get(".govuk-notification-banner").should("be.visible");
     cy.get(".govuk-notification-banner__title").should("contain", "Important");
     cy.get(".govuk-notification-banner__content").should("contain", "pulmonary TB");
+    return this;
+  }
+
+  // Verify radiological outcome section
+  verifyRadiologicalOutcomeSection(): this {
+    cy.contains("h2", "Radiological outcome").should("be.visible");
+    cy.get('input[name="xrayResult"]').should("have.length", 3);
+    cy.get('input[name="xrayResult"][value="Chest X-ray normal"]').should("be.visible");
+    cy.get('input[name="xrayResult"][value="Non-TB abnormality"]').should("be.visible");
+    cy.get('input[name="xrayResult"][value="Old or active TB"]').should("be.visible");
+    return this;
+  }
+
+  // Verify details section
+  verifyDetailsSection(): this {
+    cy.contains("h3", "Details").should("be.visible");
+    cy.get('textarea[name="xrayResultDetail"]').should("be.visible");
+    cy.get("#xray-result-detail-hint").should("contain", "Give further details (optional)");
+    return this;
+  }
+
+  // Verify radiographic findings section
+  verifyRadiographicFindingsSection(): this {
+    cy.contains("h2", "Radiographic findings").should("be.visible");
     return this;
   }
 
@@ -53,7 +67,7 @@ export class ChestXrayFindingsPage extends BasePage {
 
   // Enter result details
   enterXrayResultDetails(details: string): this {
-    this.fillTextarea("X-ray result details", details);
+    cy.get('textarea[name="xrayResultDetail"]').clear().type(details);
     return this;
   }
 
@@ -111,9 +125,9 @@ export class ChestXrayFindingsPage extends BasePage {
     return cy.get('input[name="xrayResult"]:checked').invoke("val");
   }
 
-  // Click save and continue button - using base class method
+  // Click save and continue button
   clickSaveAndContinue(): this {
-    super.submitForm("Save and continue");
+    cy.get('button[type="submit"]').contains("Save and continue").should("be.visible").click();
     return this;
   }
 
@@ -191,19 +205,34 @@ export class ChestXrayFindingsPage extends BasePage {
     return this;
   }
 
+  // Verify back link navigation
+  verifyBackLinkNavigation(): this {
+    cy.get(".govuk-back-link")
+      .should("be.visible")
+      .and("contain", "Back")
+      .and("have.attr", "href", "/chest-xray-upload");
+    return this;
+  }
+
+  // Verify service name in header
+  verifyServiceName(): this {
+    cy.get(".govuk-header__service-name")
+      .should("be.visible")
+      .and("contain", "Complete UK Pre-Entry Health Screening");
+    return this;
+  }
+
   // Check all elements on the page
-  verifyAllPageElements(applicantInfo: {
-    Name?: string;
-    "Date of birth"?: string;
-    "Passport number"?: string;
-  }): this {
+  verifyAllPageElements(): this {
     this.verifyPageLoaded()
-      .verifyApplicantInfo(applicantInfo)
       .verifyNotificationBanner()
+      .verifyRadiologicalOutcomeSection()
+      .verifyDetailsSection()
+      .verifyRadiographicFindingsSection()
       .verifyMinorFindingsSection()
       .verifyAssociatedMinorFindingsSection()
       .verifyActiveTbFindingsSection()
-      .verifyBreadcrumbNavigation()
+      .verifyBackLinkNavigation()
       .verifyServiceName();
     return this;
   }

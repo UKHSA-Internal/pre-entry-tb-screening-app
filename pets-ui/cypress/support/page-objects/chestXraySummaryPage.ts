@@ -14,19 +14,6 @@ export class ChestXraySummaryPage {
     cy.get(".govuk-summary-list").should("be.visible");
   }
 
-  // Verify applicant information
-  verifyApplicantInfo(expectedValues: {
-    Name?: string;
-    "Date of birth"?: string;
-    "Passport number"?: string;
-  }): void {
-    Object.entries(expectedValues).forEach(([key, value]) => {
-      if (value !== undefined) {
-        this.verifySummaryValue(key, value);
-      }
-    });
-  }
-
   // Get summary value for a specific field
   getSummaryValue(fieldKey: string): Cypress.Chainable<string> {
     return cy
@@ -44,9 +31,12 @@ export class ChestXraySummaryPage {
   verifyXraySummaryInfo(expectedValues: {
     "Select X-ray status"?: string;
     "Postero anterior X-ray"?: string;
+    "Apical lordotic X-ray"?: string;
+    "Lateral decubitus X-ray"?: string;
     "Enter radiological outcome"?: string;
     "Radiological details"?: string;
     "Enter radiographic findings"?: string;
+    "Sputum required?"?: string;
   }): void {
     Object.entries(expectedValues).forEach(([key, expectedValue]) => {
       if (expectedValue !== undefined) {
@@ -64,12 +54,16 @@ export class ChestXraySummaryPage {
   verifyField(fieldKey: string, expectedValue?: string, optionalLink: boolean = false): void {
     cy.contains("dt.govuk-summary-list__key", fieldKey).then(($dt) => {
       const $value = $dt.siblings(".govuk-summary-list__value");
+      const $valueColumn = $dt.siblings(".govuk-summary-value-column");
+
+      // Check both possible value containers (some fields use different classes)
+      const $actualValue = $value.length > 0 ? $value : $valueColumn;
 
       // Check if this field contains an optional link
-      if ($value.find("a").length > 0) {
+      if ($actualValue.find("a").length > 0) {
         if (optionalLink) {
           // Verify we have the expected optional link
-          cy.wrap($value).find("a").should("contain", fieldKey);
+          cy.wrap($actualValue).find("a").should("contain", fieldKey);
         } else if (expectedValue) {
           // This is to check where expecting a value but found a link - this should then fail
           throw new Error(
@@ -79,7 +73,7 @@ export class ChestXraySummaryPage {
       } else {
         // Field has a value, not a link
         if (expectedValue) {
-          cy.wrap($value)
+          cy.wrap($actualValue)
             .invoke("text")
             .then((text) => {
               // Trim the text to handle whitespace (This is inline with Will's fix for whitespaces)
@@ -110,25 +104,30 @@ export class ChestXraySummaryPage {
     const fields = [
       { key: "Select X-ray status", expectedHref: "/chest-xray-question#chest-xray-taken" },
       { key: "Postero anterior X-ray", expectedHref: "/chest-xray-upload#postero-anterior-xray" },
+      { key: "Apical lordotic X-ray", expectedHref: "/chest-xray-upload#apical-lordotic-xray" },
+      { key: "Lateral decubitus X-ray", expectedHref: "/chest-xray-upload#lateral-decubitus-xray" },
       { key: "Enter radiological outcome", expectedHref: "/chest-xray-findings#xray-result" },
       { key: "Radiological details", expectedHref: "/chest-xray-findings#xray-result-detail" },
       {
         key: "Enter radiographic findings",
         expectedHref: "/chest-xray-findings#xray-minor-findings",
       },
+      { key: "Sputum required?", expectedHref: "/sputum-question" },
     ];
 
     // Check each field
     fields.forEach((field) => {
       // First check if the field key exists
       cy.contains("dt.govuk-summary-list__key", field.key).then(($dt) => {
-        // Get the value cell
+        // Get the value cell (check both possible classes)
         const $value = $dt.siblings(".govuk-summary-list__value");
+        const $valueColumn = $dt.siblings(".govuk-summary-value-column");
+        const $actualValue = $value.length > 0 ? $value : $valueColumn;
 
         // Check if value contains a link (optional field not filled)
-        if ($value.find("a").length > 0) {
+        if ($actualValue.find("a").length > 0) {
           // Check the link URL for optional fields
-          cy.wrap($value).find("a").should("have.attr", "href", field.expectedHref);
+          cy.wrap($actualValue).find("a").should("have.attr", "href", field.expectedHref);
         } else {
           // Value is populated, should have a change link
           const $actions = $dt.siblings(".govuk-summary-list__actions");
@@ -145,17 +144,17 @@ export class ChestXraySummaryPage {
     });
   }
 
-  // Click Confirm
+  // Click Save and continue
   clickSaveAndContinue(): void {
-    cy.contains("button", "Save and continue").click();
+    cy.get('button[type="submit"]').contains("Save and continue").click();
   }
 
-  // Verify breadcrumb navigation
-  verifyBreadcrumbNavigation(): void {
-    cy.get(".govuk-breadcrumbs__list-item")
-      .contains("Application progress tracker")
+  // Verify back link navigation
+  verifyBackLinkNavigation(): void {
+    cy.get(".govuk-back-link")
       .should("be.visible")
-      .and("have.attr", "href", "/tracker");
+      .and("contain", "Back")
+      .and("have.attr", "href", "/sputum-question");
   }
 
   // Verify service name in header
@@ -177,25 +176,20 @@ export class ChestXraySummaryPage {
   }
 
   // Check all elements on the page
-  verifyAllPageElements(
-    applicantInfo: {
-      Name?: string;
-      "Date of birth"?: string;
-      "Passport number"?: string;
-    },
-    xrayInfo: {
-      "Select X-ray status"?: string;
-      "Postero anterior X-ray"?: string;
-      "Enter radiological outcome"?: string;
-      "Radiological details"?: string;
-      "Enter radiographic findings"?: string;
-    },
-  ): void {
+  verifyAllPageElements(xrayInfo: {
+    "Select X-ray status"?: string;
+    "Postero anterior X-ray"?: string;
+    "Apical lordotic X-ray"?: string;
+    "Lateral decubitus X-ray"?: string;
+    "Enter radiological outcome"?: string;
+    "Radiological details"?: string;
+    "Enter radiographic findings"?: string;
+    "Sputum required?"?: string;
+  }): void {
     this.verifyPageLoaded();
-    this.verifyApplicantInfo(applicantInfo);
     this.verifyXraySummaryInfo(xrayInfo);
     this.verifyChangeLinksExist();
-    this.verifyBreadcrumbNavigation();
+    this.verifyBackLinkNavigation();
     this.verifyServiceName();
   }
 }

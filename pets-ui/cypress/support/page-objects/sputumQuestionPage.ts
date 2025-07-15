@@ -8,7 +8,7 @@ export class SputumQuestionPage extends BasePage {
   // Verify page loaded
   verifyPageLoaded(): SputumQuestionPage {
     this.verifyPageHeading("Is a sputum collection required?");
-    cy.get("#sputum-required").should("be.visible");
+    cy.get("form").should("be.visible");
     return this;
   }
 
@@ -155,13 +155,30 @@ export class SputumQuestionPage extends BasePage {
     return this;
   }
 
+  // Verify back link navigation
+  verifyBackLinkNavigation(): SputumQuestionPage {
+    cy.get(".govuk-back-link")
+      .should("be.visible")
+      .and("contain", "Back")
+      .and("have.attr", "href", "/chest-xray-findings");
+    return this;
+  }
+
+  // Verify service name in header
+  verifyServiceName(): SputumQuestionPage {
+    cy.get(".govuk-header__service-name")
+      .should("be.visible")
+      .and("contain", "Complete UK Pre-Entry Health Screening");
+    return this;
+  }
+
   // Check all elements on the page
   verifyAllPageElements(): SputumQuestionPage {
     this.verifyPageLoaded();
     this.verifySputumQuestionDisplayed();
     this.verifyRadioButtonsDisplayed();
     this.verifyContinueButtonDisplayed();
-    this.verifyBreadcrumbNavigation();
+    this.verifyBackLinkNavigation();
     this.verifyServiceName();
     return this;
   }

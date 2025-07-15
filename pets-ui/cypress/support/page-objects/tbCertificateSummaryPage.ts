@@ -14,19 +14,6 @@ export class TbClearanceCertificateSummaryPage {
     cy.get(".govuk-summary-list").should("be.visible");
   }
 
-  // Verify applicant information
-  verifyApplicantInfo(expectedValues: {
-    Name?: string;
-    "Date of birth"?: string;
-    "Passport number"?: string;
-  }): void {
-    Object.entries(expectedValues).forEach(([key, value]) => {
-      if (value !== undefined) {
-        this.verifySummaryValue(key, value);
-      }
-    });
-  }
-
   // Get summary value for a specific field
   getSummaryValue(fieldKey: string): Cypress.Chainable<string> {
     return cy
@@ -54,7 +41,16 @@ export class TbClearanceCertificateSummaryPage {
     });
   }
 
-  // Check if fields have a "Change" link
+  // Verify field shows optional link instead of value
+  verifyFieldShowsOptionalLink(fieldKey: string, expectedLinkText: string): void {
+    cy.contains("dt.govuk-summary-list__key", fieldKey)
+      .siblings(".govuk-summary-list__value")
+      .find("a")
+      .should("be.visible")
+      .and("contain", expectedLinkText);
+  }
+
+  // Check if a specific field has a "Change" link
   checkChangeLink(fieldKey: string): Cypress.Chainable {
     return cy
       .contains("dt.govuk-summary-list__key", fieldKey)
@@ -70,37 +66,55 @@ export class TbClearanceCertificateSummaryPage {
 
   // Check specific change links exist with correct URLs
   verifyChangeLinksExist(): void {
-    cy.contains("dt.govuk-summary-list__key", "TB clearance certificate issued?")
-      .siblings(".govuk-summary-list__actions")
-      .find("a")
-      .should("have.attr", "href", "/tb-certificate-declaration#tb-clearance-issued");
+    // Check fields that may have change links (only when they have values, not optional links)
+    cy.get(".govuk-summary-list__row").each(($row) => {
+      const $value = $row.find("dd.govuk-summary-list__value");
+      const $actions = $row.find("dd.govuk-summary-list__actions");
 
-    cy.contains("dt.govuk-summary-list__key", "Physician comments")
-      .siblings(".govuk-summary-list__actions")
-      .find("a")
-      .should("have.attr", "href", "/tb-certificate-declaration#physician-comments");
-
-    cy.contains("dt.govuk-summary-list__key", "Date of TB clearance certificate")
-      .siblings(".govuk-summary-list__actions")
-      .find("a")
-      .should("have.attr", "href", "/tb-certificate-declaration#tb-certificate-date");
-
-    cy.contains("dt.govuk-summary-list__key", "TB clearance certificate number")
-      .siblings(".govuk-summary-list__actions")
-      .find("a")
-      .should("have.attr", "href", "/tb-certificate-declaration#tb-certificate-number");
+      // Only verify change links for rows that have actual values (not optional links)
+      if ($actions.length > 0 && $value.find("a").length === 0) {
+        cy.wrap($actions)
+          .find("a")
+          .should("contain", "Change")
+          .and("have.attr", "href")
+          .and("include", "/tb-certificate-declaration");
+      }
+    });
   }
 
-  // Click confirm button
+  // Verify specific change link URLs
+  verifySpecificChangeLinks(): void {
+    const expectedLinks = {
+      "TB clearance certificate issued?": "/tb-certificate-declaration#tb-clearance-issued",
+      "Date of TB clearance certificate": "/tb-certificate-declaration#tb-certificate-date",
+      "TB clearance certificate number": "/tb-certificate-declaration#tb-certificate-number",
+    };
+
+    Object.entries(expectedLinks).forEach(([fieldKey, expectedHref]) => {
+      cy.contains("dt.govuk-summary-list__key", fieldKey).then(($key) => {
+        const $row = $key.closest(".govuk-summary-list__row");
+        const $actions = $row.find("dd.govuk-summary-list__actions");
+
+        if ($actions.length > 0) {
+          cy.wrap($actions)
+            .find("a")
+            .should("contain", "Change")
+            .and("have.attr", "href", expectedHref);
+        }
+      });
+    });
+  }
+
+  // Click Save and Continue button
   clickSaveAndContinue(): void {
-    cy.contains("button", "Save and continue").click();
+    cy.get('button[type="submit"]').contains("Save and continue").should("be.visible").click();
   }
 
-  // Verify breadcrumb navigation
-  verifyBreadcrumbNavigation(): void {
-    cy.get(".govuk-breadcrumbs__list-item")
-      .contains("Application progress tracker")
+  // Verify back link navigation
+  verifyBackLinkNavigation(): void {
+    cy.get(".govuk-back-link")
       .should("be.visible")
+      .and("contain", "Back")
       .and("have.attr", "href", "/tracker");
   }
 
@@ -110,7 +124,6 @@ export class TbClearanceCertificateSummaryPage {
       .should("be.visible")
       .and("contain", "Complete UK Pre-Entry Health Screening");
   }
-
   // Get the current URL
   getCurrentUrl(): Cypress.Chainable<string> {
     return cy.url();
@@ -122,25 +135,84 @@ export class TbClearanceCertificateSummaryPage {
     cy.url().should("include", expectedUrlPath);
   }
 
-  // Check all elements on the page
-  verifyAllPageElements(
-    applicantInfo: {
-      Name?: string;
-      "Date of birth"?: string;
-      "Passport number"?: string;
+  // Verify save and continue button
+  verifySaveAndContinueButton(): void {
+    cy.get('button[type="submit"]')
+      .should("be.visible")
+      .and("be.enabled")
+      .and("contain.text", "Save and continue");
+  }
+
+  // Verify all required fields are present
+  verifyRequiredFieldsPresent(): void {
+    const requiredFields = [
+      "TB clearance certificate issued?",
+      "Physician comments",
+      "Date of TB clearance certificate",
+      "TB clearance certificate number",
+    ];
+
+    requiredFields.forEach((field) => {
+      cy.contains("dt.govuk-summary-list__key", field).should("be.visible");
+    });
+  }
+
+  // Handle mixed scenarios where some fields have values and others show optional links
+  verifyMixedFieldScenario(
+    fieldsWithValues: {
+      [key: string]: string;
     },
-    tbCertificateInfo: {
-      "TB clearance certificate issued?"?: string;
-      "Physician comments"?: string;
-      "Date of TB clearance certificate"?: string;
-      "TB clearance certificate number"?: string;
+    fieldsWithOptionalLinks: {
+      [key: string]: string;
     },
   ): void {
+    // Verify fields with actual values
+    Object.entries(fieldsWithValues).forEach(([fieldKey, expectedValue]) => {
+      this.verifySummaryValue(fieldKey, expectedValue);
+    });
+
+    // Verify fields with optional links
+    Object.entries(fieldsWithOptionalLinks).forEach(([fieldKey, expectedLinkText]) => {
+      this.verifyFieldShowsOptionalLink(fieldKey, expectedLinkText);
+    });
+  }
+
+  // Verify dynamic scenario
+  verifyDynamicScenario(expectedData: {
+    fieldsWithValues?: { [key: string]: string };
+    fieldsWithOptionalLinks?: { [key: string]: string };
+  }): void {
+    if (expectedData.fieldsWithValues) {
+      Object.entries(expectedData.fieldsWithValues).forEach(([fieldKey, expectedValue]) => {
+        this.verifySummaryValue(fieldKey, expectedValue);
+      });
+    }
+
+    if (expectedData.fieldsWithOptionalLinks) {
+      Object.entries(expectedData.fieldsWithOptionalLinks).forEach(
+        ([fieldKey, expectedLinkText]) => {
+          this.verifyFieldShowsOptionalLink(fieldKey, expectedLinkText);
+        },
+      );
+    }
+  }
+
+  // Check all elements on the page
+  verifyAllPageElements(tbCertificateInfo?: {
+    "TB clearance certificate issued?"?: string;
+    "Physician comments"?: string;
+    "Date of TB clearance certificate"?: string;
+    "TB clearance certificate number"?: string;
+  }): void {
     this.verifyPageLoaded();
-    this.verifyApplicantInfo(applicantInfo);
-    this.verifyTbCertificateSummaryInfo(tbCertificateInfo);
+    this.verifyRequiredFieldsPresent();
     this.verifyChangeLinksExist();
-    this.verifyBreadcrumbNavigation();
+    this.verifySaveAndContinueButton();
+    this.verifyBackLinkNavigation();
     this.verifyServiceName();
+
+    if (tbCertificateInfo) {
+      this.verifyTbCertificateSummaryInfo(tbCertificateInfo);
+    }
   }
 }

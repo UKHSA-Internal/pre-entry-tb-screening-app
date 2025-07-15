@@ -28,15 +28,23 @@ export class TbCertificateConfirmationPage {
 
   // Click finish button
   clickFinishButton(): void {
-    cy.contains("button", "Finish").click();
+    cy.get('button[type="submit"]').contains("Finish").should("be.visible").click();
   }
 
-  // Verify breadcrumb navigation
-  verifyBreadcrumbNavigation(): void {
-    cy.get(".govuk-breadcrumbs__list-item")
-      .contains("Application progress tracker")
+  // Verify finish button is displayed
+  verifyFinishButton(): void {
+    cy.get('button[type="submit"]')
       .should("be.visible")
-      .and("have.attr", "href", "/tracker");
+      .and("be.enabled")
+      .and("contain.text", "Finish");
+  }
+
+  // Verify back link navigation
+  verifyBackLinkNavigation(): void {
+    cy.get(".govuk-back-link")
+      .should("be.visible")
+      .and("contain", "Back")
+      .and("have.attr", "href", "/tb-certificate-summary");
   }
 
   // Verify service name in header
@@ -44,6 +52,12 @@ export class TbCertificateConfirmationPage {
     cy.get(".govuk-header__service-name")
       .should("be.visible")
       .and("contain", "Complete UK Pre-Entry Health Screening");
+  }
+
+  // Verify grid layout structure
+  verifyGridLayout(): void {
+    cy.get(".govuk-grid-row").should("be.visible");
+    cy.get(".govuk-grid-column-two-thirds").should("be.visible");
   }
 
   // Get the current URL
@@ -62,7 +76,9 @@ export class TbCertificateConfirmationPage {
     this.verifyPageLoaded();
     this.verifyConfirmationPanel();
     this.verifyConfirmationMessage();
-    this.verifyBreadcrumbNavigation();
+    this.verifyFinishButton();
+    this.verifyGridLayout();
+    this.verifyBackLinkNavigation();
     this.verifyServiceName();
   }
 }

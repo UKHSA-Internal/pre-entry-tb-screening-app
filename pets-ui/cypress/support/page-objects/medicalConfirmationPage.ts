@@ -6,41 +6,38 @@ export class MedicalConfirmationPage {
 
   // Verify page loaded
   verifyPageLoaded(): void {
-    cy.contains("h1", "Medical screening record created").should("be.visible");
+    cy.contains("h1", "Medical history and TB symptoms confirmed").should("be.visible");
     cy.get(".govuk-panel--confirmation").should("be.visible");
   }
 
   // Verify confirmation panel is displayed
   verifyConfirmationPanel(): void {
     cy.get(".govuk-panel--confirmation").should("be.visible");
-    cy.contains("h1", "Medical screening record created").should("be.visible");
+    cy.contains("h1", "Medical history and TB symptoms confirmed").should("be.visible");
   }
 
   // Verify the "What happens next" section
   verifyNextStepsSection(): void {
     cy.contains("h2", "What happens next").should("be.visible");
-    cy.contains(
-      "p",
-      "The applicant is now ready to conduct their chest x-ray or sputum test.",
-    ).should("be.visible");
+    cy.contains("p", "You can now return to the progress tracker.").should("be.visible");
   }
 
   // Click the continue button
   clickContinueButton(): void {
-    cy.contains("button", "Continue to chest X-ray").should("be.visible").click();
+    cy.contains("button", "Continue").should("be.visible").click();
   }
 
   // Verify redirection after clicking continue
   verifyRedirectionAfterContinue(): void {
-    cy.url().should("include", "/chest-xray");
+    cy.url().should("include", "/tracker");
   }
 
-  // Verify breadcrumb navigation
-  verifyBreadcrumbNavigation(): void {
-    cy.get(".govuk-breadcrumbs__list-item")
-      .contains("Application progress tracker")
+  // Verify back link navigation
+  verifyBackLinkNavigation(): void {
+    cy.get(".govuk-back-link")
       .should("be.visible")
-      .and("have.attr", "href", "/tracker");
+      .and("contain", "Back")
+      .and("have.attr", "href", "/medical-summary");
   }
 
   // Verify page title
@@ -55,26 +52,12 @@ export class MedicalConfirmationPage {
       .and("contain", "Complete UK Pre-Entry Health Screening");
   }
 
-  // Verify footer contains license information
-  verifyFooterLicense(): void {
-    cy.get(".govuk-footer__licence-description")
-      .should("be.visible")
-      .and("contain", "Open Government Licence");
-  }
-
-  // Verify footer contains crown copyright
-  verifyCrownCopyright(): void {
-    cy.get(".govuk-footer__copyright-logo").should("be.visible").and("contain", "Crown copyright");
-  }
-
   // Check all elements on confirmation page
   verifyAllConfirmationElements(): void {
     this.verifyConfirmationPanel();
     this.verifyNextStepsSection();
-    cy.contains("button", "Continue to chest X-ray").should("be.visible");
-    this.verifyBreadcrumbNavigation();
+    cy.contains("button", "Continue").should("be.visible");
+    this.verifyBackLinkNavigation();
     this.verifyServiceName();
-    this.verifyFooterLicense();
-    this.verifyCrownCopyright();
   }
 }

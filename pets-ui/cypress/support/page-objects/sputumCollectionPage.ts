@@ -82,6 +82,7 @@ export class SputumCollectionPage extends BasePage {
   // Page verification
   verifyPageLoaded(): SputumCollectionPage {
     super.verifyPageHeading("Enter sputum sample collection information");
+    cy.get("form").should("be.visible");
     return this;
   }
 
@@ -376,12 +377,6 @@ export class SputumCollectionPage extends BasePage {
     cy.get('[data-testid="date-sample-3-taken-day"]').should("have.value", "");
     cy.get('[data-testid="date-sample-3-taken-month"]').should("have.value", "");
     cy.get('[data-testid="date-sample-3-taken-year"]').should("have.value", "");
-
-    // Verify dropdowns show "Select" option
-    //cy.get('[name="collectionMethodSample1"]').should("have.value", "");
-    //cy.get('[name="collectionMethodSample2"]').should("have.value", "");
-    //cy.get('[name="collectionMethodSample3"]').should("have.value", "");
-
     return this;
   }
 
@@ -461,9 +456,8 @@ export class SputumCollectionPage extends BasePage {
 
   // Verify page structure and GOV.UK components
   verifyPageStructure(): SputumCollectionPage {
-    // Verify breadcrumbs
-    cy.get(".govuk-breadcrumbs").should("be.visible");
-    cy.get(".govuk-breadcrumbs__link").should("contain.text", "Application progress tracker");
+    // Verify back link
+    cy.get(".govuk-back-link").should("be.visible");
 
     // Verify form structure
     cy.get("form").should("be.visible");
@@ -491,6 +485,23 @@ export class SputumCollectionPage extends BasePage {
     return this;
   }
 
+  // Verify back link navigation
+  verifyBackLinkNavigation(): SputumCollectionPage {
+    cy.get(".govuk-back-link")
+      .should("be.visible")
+      .and("contain", "Back")
+      .and("have.attr", "href", "/tracker");
+    return this;
+  }
+
+  // Verify service name in header
+  verifyServiceName(): SputumCollectionPage {
+    cy.get(".govuk-header__service-name")
+      .should("be.visible")
+      .and("contain", "Complete UK Pre-Entry Health Screening");
+    return this;
+  }
+
   // Helper method to get collection method options
   getCollectionMethodOptions(): string[] {
     return SputumCollectionPage.getTestCollectionMethods();
@@ -505,6 +516,16 @@ export class SputumCollectionPage extends BasePage {
   // Verify redirection to progress tracker
   verifyRedirectionToProgressTracker(): SputumCollectionPage {
     this.verifyUrlContains("/tracker");
+    return this;
+  }
+
+  // Check all elements on the page
+  verifyAllPageElements(): SputumCollectionPage {
+    this.verifyPageLoaded();
+    this.verifySectionHeaders();
+    this.verifyPageStructure();
+    this.verifyBackLinkNavigation();
+    this.verifyServiceName();
     return this;
   }
 }
