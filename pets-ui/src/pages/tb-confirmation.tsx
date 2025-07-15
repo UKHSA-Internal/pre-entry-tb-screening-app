@@ -75,18 +75,10 @@ export default function TbConfirmationPage() {
             )}
           </div>
 
-          <p className="govuk-body">
-            {isCertificateIssued
-              ? "The visa applicant TB screening is complete."
-              : "The visa applicant TB screening is complete."}
-          </p>
+          <p className="govuk-body">The visa applicant TB screening is complete.</p>
 
           <h2 className="govuk-heading-m">What happens next</h2>
-          <p className="govuk-body">
-            {isCertificateIssued
-              ? "We've sent the certificate information to UKHSA."
-              : "We've sent the certificate information to UKHSA."}
-          </p>
+          <p className="govuk-body">We&apos;ve sent the certificate information to UKHSA.</p>
 
           {isCertificateIssued && (
             <div style={actionButtonStyles}>
