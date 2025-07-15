@@ -124,10 +124,9 @@ const TbSummary = () => {
             key: "Date of birth",
             value: (() => {
               if (
-                applicantData.dateOfBirth &&
-                applicantData.dateOfBirth.day &&
-                applicantData.dateOfBirth.month &&
-                applicantData.dateOfBirth.year
+                applicantData.dateOfBirth?.day &&
+                applicantData.dateOfBirth?.month &&
+                applicantData.dateOfBirth?.year
               ) {
                 const dobDate = new Date(
                   parseInt(applicantData.dateOfBirth.year),
@@ -154,10 +153,9 @@ const TbSummary = () => {
             key: "Passport issue date",
             value: (() => {
               if (
-                applicantData.passportIssueDate &&
-                applicantData.passportIssueDate.day &&
-                applicantData.passportIssueDate.month &&
-                applicantData.passportIssueDate.year
+                applicantData.passportIssueDate?.day &&
+                applicantData.passportIssueDate?.month &&
+                applicantData.passportIssueDate?.year
               ) {
                 const passportIssueDate = new Date(
                   parseInt(applicantData.passportIssueDate.year),
@@ -174,10 +172,9 @@ const TbSummary = () => {
             key: "Passport expiry date",
             value: (() => {
               if (
-                applicantData.passportExpiryDate &&
-                applicantData.passportExpiryDate.day &&
-                applicantData.passportExpiryDate.month &&
-                applicantData.passportExpiryDate.year
+                applicantData.passportExpiryDate?.day &&
+                applicantData.passportExpiryDate?.month &&
+                applicantData.passportExpiryDate?.year
               ) {
                 const passportExpiryDate = new Date(
                   parseInt(applicantData.passportExpiryDate.year),
@@ -299,10 +296,9 @@ const TbSummary = () => {
             key: "Certificate issue date",
             value: (() => {
               if (
-                tbCertificateData.certificateDate &&
-                tbCertificateData.certificateDate.day &&
-                tbCertificateData.certificateDate.month &&
-                tbCertificateData.certificateDate.year
+                tbCertificateData.certificateDate?.day &&
+                tbCertificateData.certificateDate?.month &&
+                tbCertificateData.certificateDate?.year
               ) {
                 const issueDate = new Date(
                   parseInt(tbCertificateData.certificateDate.year),
@@ -319,10 +315,9 @@ const TbSummary = () => {
             key: "Certificate expiry date",
             value: (() => {
               if (
-                tbCertificateData.certificateDate &&
-                tbCertificateData.certificateDate.day &&
-                tbCertificateData.certificateDate.month &&
-                tbCertificateData.certificateDate.year
+                tbCertificateData.certificateDate?.day &&
+                tbCertificateData.certificateDate?.month &&
+                tbCertificateData.certificateDate?.year
               ) {
                 const issueDate = new Date(
                   parseInt(tbCertificateData.certificateDate.year),
