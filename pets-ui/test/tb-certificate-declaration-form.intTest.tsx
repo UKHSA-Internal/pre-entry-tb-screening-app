@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/unbound-method */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -29,17 +26,16 @@ describe("TB Certificate Declaration Page", () => {
       </Router>,
     );
 
-    expect(screen.getByText("Has a TB clearance certificate been issued?")).toBeInTheDocument;
-    expect(screen.getByText("Yes")).toBeInTheDocument;
-    expect(screen.getByText("Give further details (optional)")).toBeInTheDocument;
-    expect(screen.getByText("If a clearance certificate has been issued, give:")).toBeInTheDocument;
-    expect(screen.getByText("Date of TB clearance certificate")).toBeInTheDocument;
-    expect(screen.getByText("For example, 30 3 2024")).toBeInTheDocument;
-    expect(screen.getByText("Month")).toBeInTheDocument;
-    expect(screen.getByText("TB clearance certificate number")).toBeInTheDocument;
+    expect(screen.getByText("Enter clinic and certificate information")).toBeInTheDocument();
+    expect(screen.getByText("Clinic name")).toBeInTheDocument();
+    expect(screen.getByText("Certificate reference number")).toBeInTheDocument();
+    expect(screen.getByText("Certificate issue date")).toBeInTheDocument();
+    expect(screen.getByText("Certificate issue expiry")).toBeInTheDocument();
+    expect(screen.getByText("Declaring Physician's name")).toBeInTheDocument();
+    expect(screen.getByText("Physician's notes (optional)")).toBeInTheDocument();
   });
 
-  test("errors when tb certificate issued selection is missing", async () => {
+  test("errors when required fields are missing", async () => {
     renderWithProviders(
       <Router>
         <TbCertificateDeclarationForm />
@@ -49,32 +45,25 @@ describe("TB Certificate Declaration Page", () => {
     fireEvent.click(screen.getByText("Continue"));
 
     await waitFor(() => {
-      expect(
-        screen.getByText(
-          "Select yes if a TB clearance certificate has been issued or no if it has not",
-        ),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Enter the declaring physician's name")).toBeInTheDocument();
     });
   });
 
-  test("errors for tb clearance certificate date and tb clearance certificate number show when those fields are empty and 'Yes' is selected", async () => {
+  test("displays clinic information and form fields", () => {
     renderWithProviders(
       <Router>
         <TbCertificateDeclarationForm />
       </Router>,
     );
 
-    const radioButtons = screen.getAllByTestId("tb-clearance-issued");
-    fireEvent.click(radioButtons[0]);
+    expect(screen.getByText("Clinic name")).toBeInTheDocument();
+    expect(screen.getByText("Lakeside Medical & TB Screening Centre")).toBeInTheDocument();
+    expect(screen.getByText("Certificate reference number")).toBeInTheDocument();
+    expect(screen.getByText("Certificate issue date")).toBeInTheDocument();
+    expect(screen.getByText("Certificate issue expiry")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText("Continue"));
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("TB clearance certificate date must include a day, month and year"),
-      ).toBeInTheDocument();
-      expect(screen.getByText("Enter the TB clearance certificate number")).toBeInTheDocument();
-    });
+    expect(screen.getByTestId("declaring-physician-name")).toBeInTheDocument();
+    expect(screen.getByTestId("physician-comments")).toBeInTheDocument();
   });
 
   test("renders page elements correctly", () => {
@@ -90,6 +79,6 @@ describe("TB Certificate Declaration Page", () => {
     expect(breadcrumbElement).toBeInTheDocument();
     expect(breadcrumbElement.closest("a")).toHaveAttribute("href", "/tracker");
 
-    expect(screen.getByText("Enter TB clearance certificate declaration")).toBeInTheDocument();
+    expect(screen.getByText("Enter clinic and certificate information")).toBeInTheDocument();
   });
 });

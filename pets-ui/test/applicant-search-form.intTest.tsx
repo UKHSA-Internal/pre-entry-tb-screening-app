@@ -274,6 +274,7 @@ describe("ApplicantSearchForm", () => {
       age: "43",
       closeContactWithTb: "Yes",
       closeContactWithTbDetail: "details1",
+      completionDate: "2025-01-01",
       menstrualPeriods: "No",
       otherSymptomsDetail: "Other symptoms",
       physicalExamNotes: "Exam notes",
@@ -313,6 +314,8 @@ describe("ApplicantSearchForm", () => {
         year: "2025",
       },
       certificateNumber: "XYZ789",
+      declaringPhysicianName: "",
+      reasonNotIssued: "",
     });
     expect(store.getState().applicant.applicantPhotoFileName).toBe("photo.jpg");
     expect(contextUrl).toBe("http://localhost:4566/photos/photo.jpg");

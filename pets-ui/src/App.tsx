@@ -28,6 +28,7 @@ import SputumCollectionPage from "./pages/sputum-collection";
 import SputumConfirmation from "./pages/sputum-confirmation";
 import SputumQuestionPage from "./pages/sputum-question";
 import TbCertificateDeclarationPage from "./pages/tb-certificate-declaration";
+import TbCertificateNotIssuedPage from "./pages/tb-certificate-not-issued";
 import TbCertificateQuestionPage from "./pages/tb-certificate-question";
 import TbConfirmationPage from "./pages/tb-confirmation";
 import TbSummaryPage from "./pages/tb-summary";
@@ -301,6 +302,16 @@ function App() {
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <TbCertificateDeclarationPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/tb-certificate-not-issued"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <TbCertificateNotIssuedPage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }

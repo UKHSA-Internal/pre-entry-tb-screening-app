@@ -62,3 +62,14 @@ input[type='file'].hide-text {
 .task-description-static {
   margin-bottom: 0;
 }
+
+.applicant-photo-summary {
+  width: 100%;
+  height: auto;
+}
+
+.certificate-reference-nowrap {
+  .govuk-summary-list__row:first-child .govuk-summary-list__value {
+    white-space: nowrap;
+  }
+}

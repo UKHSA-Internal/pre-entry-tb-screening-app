@@ -124,6 +124,7 @@ type ReduxMedicalScreeningType = {
   pregnant: string;
   menstrualPeriods: string;
   physicalExamNotes: string;
+  completionDate?: string;
 };
 
 type PostedMedicalScreeningType = {
@@ -162,6 +163,7 @@ type ReduxChestXrayDetailsType = {
   xrayAssociatedMinorFindings: string[];
   xrayActiveTbFindings: string[];
   isSputumRequired: YesOrNo;
+  completionDate?: string;
 };
 
 type PostedChestXrayDetailsType = {
@@ -251,6 +253,8 @@ type ReduxTbCertificateType = {
   comments: string;
   certificateDate: DateType;
   certificateNumber: string;
+  reasonNotIssued?: string;
+  declaringPhysicianName?: string;
 };
 
 type PostedTbCertificateType = {
@@ -258,6 +262,8 @@ type PostedTbCertificateType = {
   comments: string;
   issueDate: string;
   certificateNumber: string;
+  reasonNotIssued?: string;
+  declaringPhysicianName?: string;
 };
 
 type ReceivedTbCertificateType = PostedTbCertificateType & ReceivedApplicationAttributesType;
@@ -265,6 +271,8 @@ type ReceivedTbCertificateType = PostedTbCertificateType & ReceivedApplicationAt
 type PostedTbCertificateNotIssuedType = {
   isIssued: YesOrNo;
   comments: string;
+  reasonNotIssued?: string;
+  declaringPhysicianName?: string;
 };
 
 type ReceivedTbCertificateNotIssuedType = PostedTbCertificateNotIssuedType &

@@ -19,6 +19,7 @@ const initialState: ReduxMedicalScreeningType = {
   pregnant: "",
   menstrualPeriods: "",
   physicalExamNotes: "",
+  completionDate: undefined,
 };
 
 export const medicalScreeningSlice = createSlice({
@@ -101,6 +102,7 @@ export const medicalScreeningSlice = createSlice({
       state.pregnant = "";
       state.menstrualPeriods = "";
       state.physicalExamNotes = "";
+      state.completionDate = undefined;
     },
     setMedicalScreeningDetailsFromApiResponse: (
       state,
@@ -125,6 +127,7 @@ export const medicalScreeningSlice = createSlice({
       state.pregnant = action.payload.pregnant;
       state.menstrualPeriods = action.payload.haveMenstralPeriod;
       state.physicalExamNotes = action.payload.physicalExaminationNotes;
+      state.completionDate = action.payload.dateCreated;
     },
   },
 });

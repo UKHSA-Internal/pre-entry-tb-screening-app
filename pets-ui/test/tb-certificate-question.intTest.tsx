@@ -88,7 +88,7 @@ describe("TbCertificateQuestionPage", () => {
     await user.click(screen.getByRole("button", { name: "Continue" }));
     expect(await screen.findByText("There is a problem")).toBeInTheDocument();
 
-    const expectedErrorMessageText = "Select yes if you will issue a TB certificate";
+    const expectedErrorMessageText = "Select yes if you will issue a TB clearance certificate";
     const expectedErrorLinkName = `Error: ${expectedErrorMessageText}`;
 
     const errorLinkInSummary = screen.getByRole("link", { name: expectedErrorLinkName });
@@ -115,7 +115,9 @@ describe("TbCertificateQuestionPage", () => {
     const radioGroupElement = yesRadio.closest("fieldset");
     expect(radioGroupElement).toBeInTheDocument();
     expect(
-      within(radioGroupElement!).queryByText("Select yes if you will issue a TB certificate"),
+      within(radioGroupElement!).queryByText(
+        "Select yes if you will issue a TB clearance certificate",
+      ),
     ).not.toBeInTheDocument();
   });
 
@@ -126,11 +128,11 @@ describe("TbCertificateQuestionPage", () => {
     expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-declaration");
   });
 
-  it("when 'No' selected and continue pressed, it navigates to /tb-certificate-summary", async () => {
+  it("when 'No' selected and continue pressed, it navigates to /tb-certificate-not-issued", async () => {
     const radioNo = screen.getByRole("radio", { name: "No" });
     await user.click(radioNo);
     await user.click(screen.getByRole("button", { name: "Continue" }));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-summary");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-not-issued");
   });
 
   it("scrolls to the TB certificate radio group if location hash is #tb-clearance-issued", () => {

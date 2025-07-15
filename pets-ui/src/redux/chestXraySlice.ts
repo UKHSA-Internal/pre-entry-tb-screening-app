@@ -21,6 +21,7 @@ const initialState: ReduxChestXrayDetailsType = {
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
   isSputumRequired: YesOrNo.NULL,
+  completionDate: undefined,
 };
 
 export const chestXraySlice = createSlice({
@@ -137,6 +138,7 @@ export const chestXraySlice = createSlice({
       state.xrayAssociatedMinorFindings = [];
       state.xrayActiveTbFindings = [];
       state.isSputumRequired = YesOrNo.NULL;
+      state.completionDate = undefined;
     },
     setChestXrayFromApiResponse: (state, action: PayloadAction<ReceivedChestXrayDetailsType>) => {
       state.status =
@@ -162,6 +164,7 @@ export const chestXraySlice = createSlice({
         ? [...action.payload.xrayActiveTbFindings]
         : [];
       state.isSputumRequired = action.payload.isSputumRequired;
+      state.completionDate = action.payload.dateCreated;
     },
   },
 });

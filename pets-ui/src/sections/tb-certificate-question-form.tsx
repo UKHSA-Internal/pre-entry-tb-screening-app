@@ -8,15 +8,8 @@ import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import {
-  selectTbCertificate,
-  setCertficateDate,
-  setCertificateNumber,
-  setComments,
-  setIsIssued,
-  setTbCertificateStatus,
-} from "@/redux/tbCertificateSlice";
-import { ApplicationStatus, ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
+import { selectTbCertificate, setIsIssued } from "@/redux/tbCertificateSlice";
+import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
 
 const TbCertificateQuestionForm = () => {
   const dispatch = useAppDispatch();
@@ -36,11 +29,7 @@ const TbCertificateQuestionForm = () => {
     if (data.isIssued === YesOrNo.YES) {
       navigate("/tb-certificate-declaration");
     } else {
-      dispatch(setComments(""));
-      dispatch(setCertficateDate({ year: "", month: "", day: "" }));
-      dispatch(setCertificateNumber(""));
-      dispatch(setTbCertificateStatus(ApplicationStatus.IN_PROGRESS));
-      navigate("/tb-certificate-summary");
+      navigate("/tb-certificate-not-issued");
     }
   };
 
@@ -63,14 +52,14 @@ const TbCertificateQuestionForm = () => {
         <Heading level={1} size="l" title="Will you issue a TB clearance certificate?" />
         <div ref={isIssuedRef}>
           <Radio
-            id="will-issue-certificate"
+            id="tb-clearance-issued"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Yes", "No"]}
             sortAnswersAlphabetically={false}
             errorMessage={errors?.isIssued?.message ?? ""}
             formValue="isIssued"
             defaultValue={tbCertificateData.isIssued}
-            required="Select yes if you will issue a TB certificate"
+            required="Select yes if you will issue a TB clearance certificate"
             divStyle={{ marginTop: 40 }}
           />
         </div>
