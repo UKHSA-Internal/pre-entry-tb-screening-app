@@ -47,7 +47,7 @@ export const handler = async (
     });
 
     const payload = await verifier.verify(token);
-
+    console.info(payload);
     if (!payload.ClinicID) {
       logger.error("Missing ClinicID");
     }
