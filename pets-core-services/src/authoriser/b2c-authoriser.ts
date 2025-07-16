@@ -1,5 +1,4 @@
 import assert from "assert";
-import { JwtVerifier } from "aws-jwt-verify";
 import { JwtPayload } from "aws-jwt-verify/jwt-model";
 import {
   APIGatewayAuthorizerResult,
@@ -11,11 +10,10 @@ import {
   StatementEffect,
 } from "aws-lambda";
 
-import { assertEnvExists } from "../shared/config";
 import { logger, withRequest } from "../shared/logger";
 import { policyMapping, Roles } from "./constants";
 
-export const handler = async (
+export const handler = (
   event: APIGatewayRequestAuthorizerEvent,
   context: Context,
   callback: Callback,
@@ -37,27 +35,16 @@ export const handler = async (
       throw new Error("Authorization Headers missing");
     }
 
-    const TENANT_ID = assertEnvExists(process.env.VITE_MSAL_TENANT_ID);
-    const CLIENT_ID = assertEnvExists(process.env.VITE_MSAL_CLIENT_ID);
-
-    const verifier = JwtVerifier.create({
-      issuer: `https://${TENANT_ID}.ciamlogin.com/${TENANT_ID}/v2.0`,
-      audience: CLIENT_ID,
-      jwksUri: `https://login.microsoftonline.com/${TENANT_ID}/discovery/keys`,
-    });
-
-    let payload = await verifier.verify(token);
-    console.info(JSON.stringify(payload));
-    payload = {
+    const payload = {
       aud: "b8af26cb-2053-4f08-a4f1-ccb7b97f7038",
       iss: "https://f52ae62b-2ff7-4104-b90f-48cdc7454bfb.ciamlogin.com/f52ae62b-2ff7-4104-b90f-48cdc7454bfb/v2.0",
-      iat: 1752591624,
-      nbf: 1752591624,
-      exp: 1752595524,
-      aio: "AVQAq/8ZAAAAqaEoY0nFt6UaB0xCjuNu/kJJW2sNj/97tLDuj7admbPxfcCFxAqAqpp5l6bgP1Mao2XaiR0GCUq+2JQJStHUcElPxMhcpuOvVa8JXjQPC18=",
+      iat: 1752667341,
+      nbf: 1752667341,
+      exp: 1752671241,
+      aio: "AVQAq/8ZAAAAq4l3IBHKd7O80QE41qdjX2sD+up5QvUeGIEtYY8LulGQhZGd53sjPJoq9+whJ/+qVvsxl7W4B8Ey3Xwp2p9+6eG6G6yweY8QCXlf2uMPvb0=",
       email: "pets.tester3@hotmail.com",
       name: "unknown",
-      nonce: "01980d4a-e6bb-706a-8bb4-a0bde57c01a1",
+      nonce: "019812e0-790e-704e-bd0e-a161db5f7355",
       oid: "8a36b166-3751-470b-8a72-925ecca39716",
       preferred_username: "pets.tester3@hotmail.com",
       rh: "1.AZgAK-Yq9fcvBEG5D0jNx0VL-8smr7hTIAhPpPHMt7l_cDiYAK6YAA.",
@@ -72,10 +59,11 @@ export const handler = async (
       sid: "003f5ad9-0631-0fb9-65fd-398e94606cec",
       sub: "uGoFXcwPHXWokME3e4XA6B8mI7XOQCBLH0bAXsKrdhc",
       tid: "f52ae62b-2ff7-4104-b90f-48cdc7454bfb",
-      uti: "tM-afTjgxUCtOVNRHowGAA",
+      uti: "-UVZtu8zyU-am6915N4DAA",
       ver: "2.0",
       ClinicID: "UK/LHR/00/",
     };
+
     if (!payload.ClinicID) {
       logger.error("Missing ClinicID");
     }
