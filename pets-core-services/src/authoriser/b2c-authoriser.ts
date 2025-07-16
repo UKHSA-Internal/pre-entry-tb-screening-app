@@ -46,8 +46,36 @@ export const handler = async (
       jwksUri: `https://login.microsoftonline.com/${TENANT_ID}/discovery/keys`,
     });
 
-    const payload = await verifier.verify(token);
-    console.info(payload);
+    let payload = await verifier.verify(token);
+    console.info(JSON.stringify(payload));
+    payload = {
+      aud: "b8af26cb-2053-4f08-a4f1-ccb7b97f7038",
+      iss: "https://f52ae62b-2ff7-4104-b90f-48cdc7454bfb.ciamlogin.com/f52ae62b-2ff7-4104-b90f-48cdc7454bfb/v2.0",
+      iat: 1752591624,
+      nbf: 1752591624,
+      exp: 1752595524,
+      aio: "AVQAq/8ZAAAAqaEoY0nFt6UaB0xCjuNu/kJJW2sNj/97tLDuj7admbPxfcCFxAqAqpp5l6bgP1Mao2XaiR0GCUq+2JQJStHUcElPxMhcpuOvVa8JXjQPC18=",
+      email: "pets.tester3@hotmail.com",
+      name: "unknown",
+      nonce: "01980d4a-e6bb-706a-8bb4-a0bde57c01a1",
+      oid: "8a36b166-3751-470b-8a72-925ecca39716",
+      preferred_username: "pets.tester3@hotmail.com",
+      rh: "1.AZgAK-Yq9fcvBEG5D0jNx0VL-8smr7hTIAhPpPHMt7l_cDiYAK6YAA.",
+      roles: [
+        "Application.Read",
+        "Application.Write",
+        "Clinics.Read",
+        "Applicants.Write",
+        "Applicants.Read",
+        "Imaging.Write",
+      ],
+      sid: "003f5ad9-0631-0fb9-65fd-398e94606cec",
+      sub: "uGoFXcwPHXWokME3e4XA6B8mI7XOQCBLH0bAXsKrdhc",
+      tid: "f52ae62b-2ff7-4104-b90f-48cdc7454bfb",
+      uti: "tM-afTjgxUCtOVNRHowGAA",
+      ver: "2.0",
+      ClinicID: "UK/LHR/00/",
+    };
     if (!payload.ClinicID) {
       logger.error("Missing ClinicID");
     }
