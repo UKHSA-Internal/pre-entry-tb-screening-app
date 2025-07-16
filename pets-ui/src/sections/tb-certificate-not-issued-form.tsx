@@ -17,7 +17,7 @@ import {
   setReasonNotIssued,
   setTbCertificateStatus,
 } from "@/redux/tbCertificateSlice";
-import { ApplicationStatus, ButtonType, RadioIsInline } from "@/utils/enums";
+import { ApplicationStatus, ButtonType, RadioIsInline, TBCertNotIssuedReason } from "@/utils/enums";
 import { formRegex } from "@/utils/records";
 
 const TbCertificateNotIssuedForm = () => {
@@ -71,9 +71,9 @@ const TbCertificateNotIssuedForm = () => {
             label="Why are you not issuing a certificate"
             isInline={RadioIsInline.FALSE}
             answerOptions={[
-              "Confirmed or suspected TB",
-              "Testing postponed",
-              "Visa applicant has withdrawn their TB application",
+              TBCertNotIssuedReason.CONFIRMED_SUSPECTED_TB,
+              TBCertNotIssuedReason.TESTING_POSTPONED,
+              TBCertNotIssuedReason.APPLICATION_WITHDRAWN,
             ]}
             sortAnswersAlphabetically={false}
             errorMessage={errors?.reasonNotIssued?.message ?? ""}

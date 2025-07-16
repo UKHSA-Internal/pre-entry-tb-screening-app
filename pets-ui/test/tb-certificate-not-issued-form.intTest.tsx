@@ -47,9 +47,7 @@ describe("TbCertificateNotIssuedForm", () => {
 
     expect(screen.getByText("Confirmed or suspected TB")).toBeInTheDocument();
     expect(screen.getByText("Testing postponed")).toBeInTheDocument();
-    expect(
-      screen.getByText("Visa applicant has withdrawn their TB application"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Visa applicant has withdrawn their TB screening")).toBeInTheDocument();
   });
 
   it("shows validation errors when submitting empty form", async () => {
