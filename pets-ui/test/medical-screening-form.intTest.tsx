@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
+import MedicalScreeningPage from "@/pages/medical-screening";
 import MedicalScreeningForm from "@/sections/medical-screening-form";
 import { renderWithProviders } from "@/utils/test-utils";
 
@@ -14,6 +15,11 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
     useNavigate: (): Mock => useNavigateMock,
   };
 });
+
+vi.mock("react-helmet-async", () => ({
+  Helmet: () => <>{}</>,
+  HelmetProvider: () => <>{}</>,
+}));
 
 describe("MedicalScreeningForm", () => {
   beforeEach(() => {
@@ -123,6 +129,7 @@ describe("MedicalScreeningForm", () => {
       expect(screen.getAllByText(error.slice(7))[0]).toHaveAttribute("aria-label", error);
     });
   });
+
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
     renderWithProviders(
       <Router>
@@ -132,5 +139,18 @@ describe("MedicalScreeningForm", () => {
     await user.click(screen.getByRole("button"));
     const errorSummaryDiv = screen.getByTestId("error-summary");
     expect(errorSummaryDiv).toHaveFocus();
+  });
+
+  it("back link points to tracker", () => {
+    renderWithProviders(
+      <Router>
+        <MedicalScreeningPage />
+      </Router>,
+    );
+
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/tracker");
+    expect(link).toHaveClass("govuk-back-link");
   });
 });

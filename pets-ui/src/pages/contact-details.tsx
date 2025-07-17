@@ -3,7 +3,7 @@ import ApplicantForm from "@/sections/applicant-details-form";
 
 export default function ContactDetailsPage() {
   return (
-    <Container title="Applicant details form">
+    <Container title="Applicant details form" backLinkTo="/applicant-results">
       <ApplicantForm />
     </Container>
   );

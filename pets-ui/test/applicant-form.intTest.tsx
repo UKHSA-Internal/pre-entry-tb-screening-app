@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
+import ContactDetailsPage from "@/pages/contact-details";
 import ApplicantForm from "@/sections/applicant-details-form";
 import { ApplicationStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
@@ -15,6 +16,11 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
     useNavigate: (): Mock => useNavigateMock,
   };
 });
+
+vi.mock("react-helmet-async", () => ({
+  Helmet: () => <>{}</>,
+  HelmetProvider: () => <>{}</>,
+}));
 
 const preloadedState = {
   applicant: {
@@ -198,6 +204,7 @@ describe("ApplicantForm", () => {
       expect(screen.getAllByText(error.slice(7))[0]).toHaveAttribute("aria-label", error);
     });
   });
+
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
     renderWithProviders(
       <Router>
@@ -207,5 +214,17 @@ describe("ApplicantForm", () => {
     await user.click(screen.getByRole("button"));
     const errorSummaryDiv = screen.getByTestId("error-summary");
     expect(errorSummaryDiv).toHaveFocus();
+  });
+
+  it("back link points to applicant results page", () => {
+    renderWithProviders(
+      <Router>
+        <ContactDetailsPage />
+      </Router>,
+    );
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/applicant-results");
+    expect(link).toHaveClass("govuk-back-link");
   });
 });

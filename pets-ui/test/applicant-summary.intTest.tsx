@@ -5,6 +5,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import { petsApi } from "@/api/api";
+import ApplicantSummaryPage from "@/pages/applicant-summary";
 import ApplicantReview from "@/sections/applicant-details-summary";
 import { ApplicationStatus, ImageType } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
@@ -31,6 +32,11 @@ vi.mock("@/context/applicantPhotoContext", () => ({
     applicantPhotoFile: mockApplicantPhotoFile,
     setApplicantPhotoFile: vi.fn(),
   }),
+}));
+
+vi.mock("react-helmet-async", () => ({
+  Helmet: () => <>{}</>,
+  HelmetProvider: () => <>{}</>,
 }));
 
 const user = userEvent.setup();
@@ -182,5 +188,101 @@ describe("ApplicantReview", () => {
       "abc-123",
       ImageType.Photo,
     );
+  });
+
+  test("back link points to tracker when status is complete", () => {
+    const preloadedState = {
+      applicant: {
+        status: ApplicationStatus.COMPLETE,
+        fullName: "Sigmund Sigmundson",
+        sex: "Male",
+        dateOfBirth: {
+          year: "1901",
+          month: "1",
+          day: "1",
+        },
+        countryOfNationality: "NOR",
+        passportNumber: "1234",
+        countryOfIssue: "FIN",
+        passportIssueDate: {
+          year: "1902",
+          month: "feb",
+          day: "2",
+        },
+        passportExpiryDate: {
+          year: "2053",
+          month: "march",
+          day: "3",
+        },
+        applicantHomeAddress1: "The Bell Tower",
+        applicantHomeAddress2: "Hallgrimskirkja",
+        applicantHomeAddress3: "Hallgrimstorg 1",
+        townOrCity: "Reykjavik",
+        provinceOrState: "Reykjavik",
+        country: "ISL",
+        postcode: "101",
+        applicantPhotoFileName: "photo.jpg",
+      },
+    };
+
+    renderWithProviders(
+      <Router>
+        <ApplicantSummaryPage />
+      </Router>,
+      { preloadedState },
+    );
+
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/tracker");
+    expect(link).toHaveClass("govuk-back-link");
+  });
+
+  test("back link points to applicant photo page when status is not complete", () => {
+    const preloadedState = {
+      applicant: {
+        status: ApplicationStatus.IN_PROGRESS,
+        fullName: "Sigmund Sigmundson",
+        sex: "Male",
+        dateOfBirth: {
+          year: "1901",
+          month: "1",
+          day: "1",
+        },
+        countryOfNationality: "NOR",
+        passportNumber: "1234",
+        countryOfIssue: "FIN",
+        passportIssueDate: {
+          year: "1902",
+          month: "feb",
+          day: "2",
+        },
+        passportExpiryDate: {
+          year: "2053",
+          month: "march",
+          day: "3",
+        },
+        applicantHomeAddress1: "The Bell Tower",
+        applicantHomeAddress2: "Hallgrimskirkja",
+        applicantHomeAddress3: "Hallgrimstorg 1",
+        townOrCity: "Reykjavik",
+        provinceOrState: "Reykjavik",
+        country: "ISL",
+        postcode: "101",
+        applicantPhotoFileName: "photo.jpg",
+      },
+    };
+
+    renderWithProviders(
+      <Router>
+        <ApplicantSummaryPage />
+      </Router>,
+      { preloadedState },
+    );
+
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/applicant-photo");
+    expect(link).toHaveClass("govuk-back-link");
   });
 });
