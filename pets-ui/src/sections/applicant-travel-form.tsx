@@ -73,11 +73,11 @@ const ApplicantTravelForm = () => {
         <div ref={visaTypeRef}>
           <Dropdown
             id="visa-type"
-            heading="Visa type"
+            heading="Visa category"
             options={visaOptions}
             errorMessage={errors?.visaType?.message ?? ""}
             formValue="visaType"
-            required="Select a visa type"
+            required="Select a visa category"
             defaultValue={travelData.visaType}
           />
         </div>

@@ -43,10 +43,10 @@ const TravelReview = () => {
 
   const summaryData = [
     {
-      key: "Visa type",
+      key: "Visa category",
       value: travelData.visaType,
       link: `/travel-details#${attributeToComponentId.visaType}`,
-      hiddenLabel: "visa type",
+      hiddenLabel: "visa category",
     },
     {
       key: "UK address line 1",

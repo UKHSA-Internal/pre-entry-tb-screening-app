@@ -54,7 +54,7 @@ describe("TravelReview", () => {
 
     mock.onPost("/application/abc-123/travel-information").reply(200);
 
-    expect(screen.getAllByRole("term")[0]).toHaveTextContent("Visa type");
+    expect(screen.getAllByRole("term")[0]).toHaveTextContent("Visa category");
     expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Government Sponsored");
     expect(screen.getAllByRole("term")[1]).toHaveTextContent("UK address line 1");
     expect(screen.getAllByRole("definition")[2]).toHaveTextContent("Edinburgh Castle, Castlehill");

@@ -73,10 +73,10 @@ describe("ApplicantTravelForm", () => {
 
     await user.click(submitButton);
 
-    expect(screen.getAllByText("Error: Select a visa type".slice(7))).toHaveLength(2);
-    expect(screen.getAllByText("Error: Select a visa type".slice(7))[0]).toHaveAttribute(
+    expect(screen.getAllByText("Error: Select a visa category".slice(7))).toHaveLength(2);
+    expect(screen.getAllByText("Error: Select a visa category".slice(7))[0]).toHaveAttribute(
       "aria-label",
-      "Error: Select a visa type",
+      "Error: Select a visa category",
     );
   });
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
