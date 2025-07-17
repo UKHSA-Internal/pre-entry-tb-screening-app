@@ -3,7 +3,7 @@ import TbCertificateDeclarationForm from "@/sections/tb-certificate-declaration-
 
 export default function TbCertificateDeclarationPage() {
   return (
-    <Container title="TB Certificate Declaration" backLinkTo="/tracker">
+    <Container title="TB Certificate Declaration" backLinkTo="/tb-certificate-question">
       <TbCertificateDeclarationForm />
     </Container>
   );

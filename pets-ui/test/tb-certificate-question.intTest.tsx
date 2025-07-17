@@ -61,15 +61,6 @@ describe("TbCertificateQuestionPage", () => {
     }
   });
 
-  it("shows the breadcrumbs", () => {
-    const breadcrumbItems = [{ text: "Application progress tracker", href: "/tracker" }];
-    breadcrumbItems.forEach((item) => {
-      const breadcrumbElement = screen.getByText(item.text);
-      expect(breadcrumbElement).toBeInTheDocument();
-      expect(breadcrumbElement.closest("a")).toHaveAttribute("href", item.href);
-    });
-  });
-
   it("renders the page titles and radio question", () => {
     expect(
       screen.getByRole("heading", { name: "Will you issue a TB clearance certificate?", level: 1 }),

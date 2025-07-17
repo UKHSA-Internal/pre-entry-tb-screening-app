@@ -77,7 +77,7 @@ describe("TB Certificate Declaration Page", () => {
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/tracker");
+    expect(link).toHaveAttribute("href", "/tb-certificate-question");
     expect(link).toHaveClass("govuk-back-link");
 
     expect(screen.getByText("Enter clinic and certificate information")).toBeInTheDocument();
