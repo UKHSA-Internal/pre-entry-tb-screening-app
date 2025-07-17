@@ -24,6 +24,10 @@ type ReceivedApplicationAttributesType = {
   status: BackendApplicationStatus;
 };
 
+type ReduxNavigationSliceType = {
+  checkSputumPreviousPage: string;
+};
+
 // Application types
 type ApplicationIdAndDateCreatedType = {
   applicationId: string;

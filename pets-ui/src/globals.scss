@@ -25,11 +25,9 @@ input[type='file'].hide-text {
   margin-bottom: 20px;
 }
 
-
 .progress-tracker-header-content {
   flex-grow: 1;
 }
-
 
 .progress-tracker-photo-container {
   margin-left: 20px;
@@ -37,7 +35,6 @@ input[type='file'].hide-text {
   display: flex;
   align-items: stretch;
 }
-
 
 .progress-tracker-photo {
   display: block;
@@ -47,17 +44,14 @@ input[type='file'].hide-text {
   object-fit: cover;
 }
 
-
 .progress-tracker-start-search {
   margin-top: 60px;
 }
-
 
 .progress-tracker-certificate-not-issued {
   max-width: none;
   white-space: nowrap;
 }
-
 
 .task-description-static {
   margin-bottom: 0;
@@ -72,4 +66,8 @@ input[type='file'].hide-text {
   .govuk-summary-list__row:first-child .govuk-summary-list__value {
     white-space: nowrap;
   }
+}
+
+.file-upload-existing-file {
+  margin: 0;
 }
