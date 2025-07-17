@@ -5,6 +5,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import { petsApi } from "@/api/api";
+import MedicalSummaryPage from "@/pages/medical-screening-summary";
 import MedicalScreeningReview from "@/sections/medical-screening-summary";
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
@@ -17,6 +18,11 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
     useNavigate: (): Mock => useNavigateMock,
   };
 });
+
+vi.mock("react-helmet-async", () => ({
+  Helmet: () => <>{}</>,
+  HelmetProvider: () => <>{}</>,
+}));
 
 const medicalScreeningState = {
   status: ApplicationStatus.NOT_YET_STARTED,
@@ -163,5 +169,71 @@ describe("MedicalScreeningReview", () => {
     expect(mock.history[0].url).toEqual("/application/abc-123/medical-screening");
     expect(mock.history).toHaveLength(1);
     expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
+  });
+
+  test("back link points to tracker when status is complete", () => {
+    const preloadedState = {
+      medicalScreening: {
+        status: ApplicationStatus.COMPLETE,
+        age: "",
+        tbSymptoms: "",
+        tbSymptomsList: [],
+        otherSymptomsDetail: "",
+        underElevenConditions: [],
+        underElevenConditionsDetail: "",
+        previousTb: "",
+        previousTbDetail: "",
+        closeContactWithTb: "",
+        closeContactWithTbDetail: "",
+        pregnant: "",
+        menstrualPeriods: "",
+        physicalExamNotes: "",
+      },
+    };
+
+    renderWithProviders(
+      <Router>
+        <MedicalSummaryPage />
+      </Router>,
+      { preloadedState },
+    );
+
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/tracker");
+    expect(link).toHaveClass("govuk-back-link");
+  });
+
+  test("back link points to medical screening form page status is not complete", () => {
+    const preloadedState = {
+      medicalScreening: {
+        status: ApplicationStatus.IN_PROGRESS,
+        age: "",
+        tbSymptoms: "",
+        tbSymptomsList: [],
+        otherSymptomsDetail: "",
+        underElevenConditions: [],
+        underElevenConditionsDetail: "",
+        previousTb: "",
+        previousTbDetail: "",
+        closeContactWithTb: "",
+        closeContactWithTbDetail: "",
+        pregnant: "",
+        menstrualPeriods: "",
+        physicalExamNotes: "",
+      },
+    };
+
+    renderWithProviders(
+      <Router>
+        <MedicalSummaryPage />
+      </Router>,
+      { preloadedState },
+    );
+
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/medical-screening");
+    expect(link).toHaveClass("govuk-back-link");
   });
 });

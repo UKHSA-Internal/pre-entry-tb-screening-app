@@ -57,13 +57,11 @@ describe("SputumQuestionPage", () => {
     }
   });
 
-  it("shows the breadcrumbs", () => {
-    const breadcrumbItems = [{ text: "Application progress tracker", href: "/tracker" }];
-    breadcrumbItems.forEach((item) => {
-      const breadcrumbElement = screen.getByText(item.text);
-      expect(breadcrumbElement).toBeInTheDocument();
-      expect(breadcrumbElement.closest("a")).toHaveAttribute("href", item.href);
-    });
+  it("displays the back link", () => {
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/chest-xray-not-taken");
+    expect(link).toHaveClass("govuk-back-link");
   });
 
   it("renders the page titles and radio question", () => {
