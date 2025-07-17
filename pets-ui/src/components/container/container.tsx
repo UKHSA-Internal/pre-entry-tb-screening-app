@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 
 import BackLink from "../backLink/backLink";
+import Beta from "../beta/beta";
 import Breadcrumb, { IBreadcrumbItem } from "../breadcrumb/breadcrumb";
 import Footer from "../footer/footer";
 import Header from "../header/header";
@@ -13,6 +14,7 @@ interface ContainerProps {
   breadcrumbItems?: IBreadcrumbItem[];
   backLinkTo?: string;
   children: ReactNode;
+  feedbackUrl?: string;
 }
 
 const Container = ({
@@ -20,6 +22,7 @@ const Container = ({
   children,
   breadcrumbItems = [],
   backLinkTo = "",
+  feedbackUrl = "https://forms.office.com/pages/responsepage.aspx?id=mRRO7jVKLkutR188-d6GZtaAaJfrhApCue13O2-oStFUNlIyRkRMWVBNQkszSTJISDJGU1pJTTkxNy4u&route=shorturl",
 }: Readonly<ContainerProps>) => {
   const pageStart = useRef<HTMLDivElement | null>(null);
   const mainContent = useRef<HTMLDivElement | null>(null);
@@ -44,6 +47,7 @@ const Container = ({
       <SkipLink />
       <Header />
       <div className="govuk-width-container">
+        <Beta feedbackUrl={feedbackUrl} />
         {breadcrumbItems && <Breadcrumb items={breadcrumbItems} />}
         {backLinkTo && <BackLink href={backLinkTo} />}
         <main
