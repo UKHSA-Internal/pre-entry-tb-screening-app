@@ -20,7 +20,7 @@ describe("Authorizer Lambda", () => {
     callback = vi.fn();
   });
 
-  it("should return an Allow policy for a valid token", () => {
+  it("should return an Allow policy for a valid token", async () => {
     // Arrange
     const mockToken = "valid.jwt.token";
     const mockPayload = {
@@ -45,7 +45,7 @@ describe("Authorizer Lambda", () => {
     };
 
     // Act
-    handler(event, context, callback);
+    await handler(event, context, callback);
 
     // Assert
     expect(mockVerify).toHaveBeenCalledWith(mockToken);
@@ -114,7 +114,7 @@ describe("Authorizer Lambda", () => {
     });
   });
 
-  it("Unmapped role in token should be ignored for a valid token", () => {
+  it("Unmapped role in token should be ignored for a valid token", async () => {
     // Arrange
     const mockToken = "valid.jwt.token";
     const mockPayload = {
@@ -132,7 +132,7 @@ describe("Authorizer Lambda", () => {
     };
 
     // Act
-    handler(event, context, callback);
+    await handler(event, context, callback);
 
     // Assert
     expect(mockVerify).toHaveBeenCalledWith(mockToken);
@@ -149,7 +149,7 @@ describe("Authorizer Lambda", () => {
     });
   });
 
-  it("should return Unauthorized if Clinic ID is missing", () => {
+  it("should return Unauthorized if Clinic ID is missing", async () => {
     // Arrange
     const mockToken = "valid.jwt.token";
     const mockPayload = {
@@ -173,28 +173,28 @@ describe("Authorizer Lambda", () => {
     };
 
     // Act
-    handler(event, context, callback);
+    await handler(event, context, callback);
 
     expect(callback).toHaveBeenCalledWith("Unauthorized");
   });
 
-  it("should return Unauthorized if headers are missing", () => {
+  it("should return Unauthorized if headers are missing", async () => {
     const event = {} as APIGatewayRequestAuthorizerEvent;
 
-    handler(event, context, callback);
+    await handler(event, context, callback);
 
     expect(callback).toHaveBeenCalledWith("Unauthorized");
   });
 
-  it("should return Unauthorized if Authorization header is missing", () => {
+  it("should return Unauthorized if Authorization header is missing", async () => {
     const event = { ...mockRequestAuthoriserEvent, headers: {} };
 
-    handler(event, context, callback);
+    await handler(event, context, callback);
 
     expect(callback).toHaveBeenCalledWith("Unauthorized");
   });
 
-  it("should return Unauthorized if token verification fails", () => {
+  it("should return Unauthorized if token verification fails", async () => {
     // Arrange
     const mockToken = "invalid.jwt.token";
 
@@ -206,7 +206,7 @@ describe("Authorizer Lambda", () => {
     mockVerify.mockRejectedValue(new Error("Invalid Token"));
 
     // Act
-    handler(event, context, callback);
+    await handler(event, context, callback);
 
     // Assert
     expect(mockVerify).toHaveBeenCalledWith(mockToken);
