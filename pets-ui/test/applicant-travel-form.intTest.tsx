@@ -57,7 +57,7 @@ describe("ApplicantTravelForm", () => {
       townOrCity: "Edinburgh",
       ukEmail: "sigmund.sigmundson@asgard.gov",
       ukMobileNumber: "07321900900",
-      visaType: "Visitor",
+      visaCategory: "Visitor",
     });
     expect(useNavigateMock).toHaveBeenLastCalledWith("/travel-summary");
   });

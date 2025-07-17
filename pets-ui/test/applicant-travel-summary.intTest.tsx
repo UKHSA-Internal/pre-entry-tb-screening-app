@@ -26,7 +26,7 @@ const travelState = {
   townOrCity: "Edinburgh",
   ukEmail: "sigmund.sigmundson@asgard.gov",
   ukMobileNumber: "07321900900",
-  visaType: "Government Sponsored",
+  visaCategory: "Government Sponsored",
 };
 
 const applicationState = { applicationId: "abc-123", dateCreated: "" };

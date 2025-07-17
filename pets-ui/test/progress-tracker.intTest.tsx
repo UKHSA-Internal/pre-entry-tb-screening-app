@@ -59,7 +59,7 @@ const travelSlice = {
   townOrCity: "Town",
   ukEmail: "email.email@com",
   ukMobileNumber: "07321900900",
-  visaType: "Government Sponsored",
+  visaCategory: "Government Sponsored",
 };
 
 const medicalScreeningSlice = {

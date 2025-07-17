@@ -85,7 +85,7 @@ type ReceivedApplicantDetailsType = PostedApplicantDetailsType & ReceivedApplica
 // Travel types
 type ReduxTravelDetailsType = {
   status: ApplicationStatus;
-  visaType: string;
+  visaCategory: string;
   applicantUkAddress1?: string;
   applicantUkAddress2?: string;
   applicantUkAddress3?: string;

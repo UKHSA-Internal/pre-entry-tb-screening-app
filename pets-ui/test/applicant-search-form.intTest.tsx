@@ -76,7 +76,7 @@ const emptyTravelSlice = {
   townOrCity: "",
   ukEmail: "",
   ukMobileNumber: "",
-  visaType: "",
+  visaCategory: "",
 };
 const emptyMedicalSlice = {
   age: "",
@@ -268,7 +268,7 @@ describe("ApplicantSearchForm", () => {
       townOrCity: "London",
       ukEmail: "Maxwell@Spiffington.com",
       ukMobileNumber: "071234567890",
-      visaType: "Visitor",
+      visaCategory: "Visitor",
     });
     expect(store.getState().medicalScreening).toEqual({
       age: "43",

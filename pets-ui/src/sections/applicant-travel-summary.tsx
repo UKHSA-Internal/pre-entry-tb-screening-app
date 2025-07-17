@@ -24,7 +24,7 @@ const TravelReview = () => {
     setIsLoading(true);
     try {
       await postTravelDetails(applicationData.applicationId, {
-        visaCategory: travelData.visaType,
+        visaCategory: travelData.visaCategory,
         ukAddressLine1: travelData.applicantUkAddress1,
         ukAddressLine2: travelData.applicantUkAddress2,
         ukAddressTownOrCity: travelData.townOrCity,
@@ -44,8 +44,8 @@ const TravelReview = () => {
   const summaryData = [
     {
       key: "Visa category",
-      value: travelData.visaType,
-      link: `/travel-details#${attributeToComponentId.visaType}`,
+      value: travelData.visaCategory,
+      link: `/travel-details#${attributeToComponentId.visaCategory}`,
       hiddenLabel: "visa category",
     },
     {
