@@ -10,7 +10,6 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import {
   clearChestXrayNotTakenDetails,
   clearChestXrayTakenDetails,
-  clearIsSputumRequired,
   selectChestXray,
   setChestXrayStatus,
   setChestXrayTaken,

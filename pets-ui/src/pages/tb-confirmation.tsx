@@ -1,8 +1,6 @@
 import React from "react";
 
-import { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
 import Button from "@/components/button/button";
-import Confirmation from "@/components/confirmation/confirmation";
 import Container from "@/components/container/container";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import { useAppSelector } from "@/redux/hooks";
@@ -11,13 +9,6 @@ import { ButtonType, YesOrNo } from "@/utils/enums";
 
 export default function TbConfirmationPage() {
   const tbCertificateData = useAppSelector(selectTbCertificate);
-
-  const breadcrumbItems: IBreadcrumbItem[] = [
-    {
-      text: "Application progress tracker",
-      href: "/tracker",
-    },
-  ];
 
   const isCertificateIssued = tbCertificateData.isIssued === YesOrNo.YES;
 
@@ -51,12 +42,6 @@ export default function TbConfirmationPage() {
 
   return (
     <Container title="TB screening complete" backLinkTo="/tb-certificate-summary">
-      <Confirmation
-        confirmationText="TB screening complete"
-        furtherInfo={["Thank you for recording the visa applicant's TB screening."]}
-        buttonLink="/tracker"
-        buttonText="Finish"
-      />
       <div className="govuk-grid-row">
         <div className="govuk-grid-column-two-thirds">
           <div
