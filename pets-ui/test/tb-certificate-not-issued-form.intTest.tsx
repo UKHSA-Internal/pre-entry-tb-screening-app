@@ -31,8 +31,8 @@ describe("TbCertificateNotIssuedForm", () => {
 
     expect(screen.getByText("Why are you not issuing a certificate?")).toBeInTheDocument();
     expect(screen.getByText("Why are you not issuing a certificate")).toBeInTheDocument();
-    expect(screen.getByText("Declaring Physician name")).toBeInTheDocument();
-    expect(screen.getByText("Physician comments (Optional)")).toBeInTheDocument();
+    expect(screen.getByText("Declaring Physician's name")).toBeInTheDocument();
+    expect(screen.getByText("Physician's notes (Optional)")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Continue" })).toBeInTheDocument();
   });
 
@@ -63,8 +63,8 @@ describe("TbCertificateNotIssuedForm", () => {
     fireEvent.click(continueButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Select why you are not issuing a certificate")).toBeInTheDocument();
-      expect(screen.getByText("Enter the declaring physician name")).toBeInTheDocument();
+      expect(screen.getAllByText("Select why you are not issuing a certificate")).toHaveLength(2);
+      expect(screen.getAllByText("Enter the declaring physician's name")).toHaveLength(2);
     });
   });
 
@@ -80,10 +80,10 @@ describe("TbCertificateNotIssuedForm", () => {
     const reasonRadio = screen.getByDisplayValue("Confirmed or suspected TB");
     fireEvent.click(reasonRadio);
 
-    const physicianNameInput = screen.getByLabelText("Declaring Physician name");
+    const physicianNameInput = screen.getByLabelText("Declaring Physician's name");
     fireEvent.change(physicianNameInput, { target: { value: "Dr. Smith" } });
 
-    const commentsTextarea = screen.getByLabelText("Physician comments (Optional)");
+    const commentsTextarea = screen.getByLabelText("Physician's notes (Optional)");
     fireEvent.change(commentsTextarea, { target: { value: "Test comments" } });
 
     const continueButton = screen.getByRole("button", { name: "Continue" });
@@ -106,7 +106,7 @@ describe("TbCertificateNotIssuedForm", () => {
     const reasonRadio = screen.getByDisplayValue("Testing postponed");
     fireEvent.click(reasonRadio);
 
-    const physicianNameInput = screen.getByLabelText("Declaring Physician name");
+    const physicianNameInput = screen.getByLabelText("Declaring Physician's name");
     fireEvent.change(physicianNameInput, { target: { value: "Dr. Smith123" } });
 
     const continueButton = screen.getByRole("button", { name: "Continue" });

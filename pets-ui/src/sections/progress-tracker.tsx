@@ -201,7 +201,7 @@ const ProgressTracker = () => {
           description="TB certificate outcome"
           status={tbCertificateData.status}
           linkWhenIncomplete="/tb-certificate-question"
-          linkWhenComplete="/tb-certificate-summary"
+          linkWhenComplete="/tb-certificate-confirmation"
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,

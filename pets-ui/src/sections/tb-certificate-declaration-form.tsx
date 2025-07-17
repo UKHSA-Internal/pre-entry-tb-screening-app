@@ -136,10 +136,10 @@ const TbCertificateDeclarationForm = () => {
           <FreeText
             id="declaring-physician-name"
             errorMessage={errors?.declaringPhysicianName?.message ?? ""}
-            heading="Declaring Physician's name"
+            label="Declaring Physician's name"
             formValue="declaringPhysicianName"
             patternValue={formRegex.fullName}
-            patternError="Declaring physician name must contain only letters, spaces, hyphens and apostrophes"
+            patternError="Declaring physician's name must contain only letters, spaces, hyphens and apostrophes"
             defaultValue={tbCertificateData.declaringPhysicianName}
             required="Enter the declaring physician's name"
           />
@@ -153,7 +153,7 @@ const TbCertificateDeclarationForm = () => {
             formValue="comments"
             rows={5}
             defaultValue={tbCertificateData.comments}
-            heading="Physician's notes (optional)"
+            label="Physician's notes (optional)"
           />
         </div>
 

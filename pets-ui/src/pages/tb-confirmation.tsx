@@ -103,7 +103,7 @@ export default function TbConfirmationPage() {
 
           <p className="govuk-body">
             <LinkLabel
-              to="/search"
+              to="/applicant-search"
               title="Search for another visa applicant"
               externalLink={false}
             />

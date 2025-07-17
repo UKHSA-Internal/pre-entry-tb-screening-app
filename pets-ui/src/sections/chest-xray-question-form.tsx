@@ -41,10 +41,6 @@ const ChestXrayQuestionForm = () => {
       dispatch(clearChestXrayTakenDetails());
       navigate("/chest-xray-not-taken");
     }
-
-    if (data.chestXrayTaken != chestXrayData.chestXrayTaken) {
-      dispatch(clearIsSputumRequired());
-    }
   };
 
   const errorsToShow = Object.keys(errors);

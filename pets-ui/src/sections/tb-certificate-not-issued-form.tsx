@@ -87,10 +87,10 @@ const TbCertificateNotIssuedForm = () => {
         <div ref={declaringPhysicianNameRef}>
           <FreeText
             id="declaring-physician-name"
-            label="Declaring Physician name"
+            label="Declaring Physician's name"
             errorMessage={errors?.declaringPhysicianName?.message ?? ""}
             formValue="declaringPhysicianName"
-            required="Enter the declaring physician name"
+            required="Enter the declaring physician's name"
             patternValue={formRegex.lettersSpacesAndPunctuation}
             patternError="Physician name must contain only letters, spaces and punctuation"
             defaultValue={tbCertificateData.declaringPhysicianName}
@@ -101,7 +101,7 @@ const TbCertificateNotIssuedForm = () => {
         <div ref={commentsRef}>
           <TextArea
             id="physician-comments"
-            label="Physician comments (Optional)"
+            label="Physician's notes (Optional)"
             errorMessage={errors?.comments?.message ?? ""}
             formValue="comments"
             required={false}
