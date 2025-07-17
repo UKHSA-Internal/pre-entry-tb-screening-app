@@ -16,6 +16,7 @@ import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { setCheckSputumPreviousPage } from "@/redux/navigationSlice";
 import {
   selectSputum,
   setSample1Collection,
@@ -245,6 +246,7 @@ const SputumCollectionForm = () => {
     });
 
     if (submittedBy === "save-progress") {
+      dispatch(setCheckSputumPreviousPage("/sputum-collection"));
       navigate("/check-sputum-sample-information");
     } else if (submittedBy === "save-and-continue-to-results") {
       navigate("/enter-sputum-sample-results");

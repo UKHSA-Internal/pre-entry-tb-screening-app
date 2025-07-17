@@ -52,7 +52,7 @@ export default function SputumConfirmation() {
   })();
 
   return (
-    <Container breadcrumbItems={[]} title="Sputum confirmation">
+    <Container title="Sputum confirmation" backLinkTo="/check-sputum-sample-information">
       <Confirmation
         confirmationText={confirmationText}
         furtherInfo={furtherInfo}

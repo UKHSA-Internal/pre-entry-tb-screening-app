@@ -10,6 +10,7 @@ import {
   ReduxSputumSampleType,
   ReduxSputumType,
 } from "@/applicant";
+import CheckSputumSampleInformationPage from "@/pages/check-sputum-sample-information";
 import SputumSummary from "@/sections/sputum-summary";
 import { ApplicationStatus, PositiveOrNegative, SputumCollectionMethod } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
@@ -29,6 +30,11 @@ vi.mock("@/api/api", () => ({
       version: 1,
     },
   }),
+}));
+
+vi.mock("react-helmet-async", () => ({
+  Helmet: () => <>{}</>,
+  HelmetProvider: () => <>{}</>,
 }));
 
 const mockPostSputumDetails = postSputumDetails as Mock;
@@ -273,5 +279,195 @@ describe("SputumSummary", () => {
 
     const noDataTexts = screen.getAllByText("No data");
     expect(noDataTexts).toHaveLength(8);
+  });
+
+  test("back link points to tracker when status is complete", () => {
+    const preloadedState = {
+      sputum: {
+        status: ApplicationStatus.COMPLETE,
+        sample1: {
+          collection: {
+            submittedToDatabase: false,
+            dateOfSample: {
+              year: "",
+              month: "",
+              day: "",
+            },
+            collectionMethod: "",
+          },
+          smearResults: {
+            submittedToDatabase: false,
+            smearResult: PositiveOrNegative.NOT_YET_ENTERED,
+          },
+          cultureResults: {
+            submittedToDatabase: false,
+            cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
+          },
+          lastUpdatedDate: {
+            year: "",
+            month: "",
+            day: "",
+          },
+        },
+        sample2: {
+          collection: {
+            submittedToDatabase: false,
+            dateOfSample: {
+              year: "",
+              month: "",
+              day: "",
+            },
+            collectionMethod: "",
+          },
+          smearResults: {
+            submittedToDatabase: false,
+            smearResult: PositiveOrNegative.NOT_YET_ENTERED,
+          },
+          cultureResults: {
+            submittedToDatabase: false,
+            cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
+          },
+          lastUpdatedDate: {
+            year: "",
+            month: "",
+            day: "",
+          },
+        },
+        sample3: {
+          collection: {
+            submittedToDatabase: false,
+            dateOfSample: {
+              year: "",
+              month: "",
+              day: "",
+            },
+            collectionMethod: "",
+          },
+          smearResults: {
+            submittedToDatabase: false,
+            smearResult: PositiveOrNegative.NOT_YET_ENTERED,
+          },
+          cultureResults: {
+            submittedToDatabase: false,
+            cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
+          },
+          lastUpdatedDate: {
+            year: "",
+            month: "",
+            day: "",
+          },
+        },
+      },
+      navigation: {
+        checkSputumPreviousPage: "/prev-page",
+      },
+    };
+
+    renderWithProviders(
+      <Router>
+        <CheckSputumSampleInformationPage />
+      </Router>,
+      { preloadedState },
+    );
+
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/tracker");
+    expect(link).toHaveClass("govuk-back-link");
+  });
+
+  test("back link points to previous page when status is not complete", () => {
+    const preloadedState = {
+      sputum: {
+        status: ApplicationStatus.IN_PROGRESS,
+        sample1: {
+          collection: {
+            submittedToDatabase: false,
+            dateOfSample: {
+              year: "",
+              month: "",
+              day: "",
+            },
+            collectionMethod: "",
+          },
+          smearResults: {
+            submittedToDatabase: false,
+            smearResult: PositiveOrNegative.NOT_YET_ENTERED,
+          },
+          cultureResults: {
+            submittedToDatabase: false,
+            cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
+          },
+          lastUpdatedDate: {
+            year: "",
+            month: "",
+            day: "",
+          },
+        },
+        sample2: {
+          collection: {
+            submittedToDatabase: false,
+            dateOfSample: {
+              year: "",
+              month: "",
+              day: "",
+            },
+            collectionMethod: "",
+          },
+          smearResults: {
+            submittedToDatabase: false,
+            smearResult: PositiveOrNegative.NOT_YET_ENTERED,
+          },
+          cultureResults: {
+            submittedToDatabase: false,
+            cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
+          },
+          lastUpdatedDate: {
+            year: "",
+            month: "",
+            day: "",
+          },
+        },
+        sample3: {
+          collection: {
+            submittedToDatabase: false,
+            dateOfSample: {
+              year: "",
+              month: "",
+              day: "",
+            },
+            collectionMethod: "",
+          },
+          smearResults: {
+            submittedToDatabase: false,
+            smearResult: PositiveOrNegative.NOT_YET_ENTERED,
+          },
+          cultureResults: {
+            submittedToDatabase: false,
+            cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
+          },
+          lastUpdatedDate: {
+            year: "",
+            month: "",
+            day: "",
+          },
+        },
+      },
+      navigation: {
+        checkSputumPreviousPage: "/prev-page",
+      },
+    };
+
+    renderWithProviders(
+      <Router>
+        <CheckSputumSampleInformationPage />
+      </Router>,
+      { preloadedState },
+    );
+
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/prev-page");
+    expect(link).toHaveClass("govuk-back-link");
   });
 });

@@ -1,22 +1,12 @@
-import { IBreadcrumbItem } from "@/components/breadcrumb/breadcrumb";
 import Confirmation from "@/components/confirmation/confirmation";
 import Container from "@/components/container/container";
 
 export default function ApplicantConfirmation() {
-  const breadcrumbItems: IBreadcrumbItem[] = [
-    {
-      text: "Application progress tracker",
-      href: "/tracker",
-    },
-  ];
-
-  const furtherInfo = ["You can now add travel information for this applicant."];
-
   return (
-    <Container breadcrumbItems={breadcrumbItems} title="Applicant details confirmation">
+    <Container title="Applicant details confirmation" backLinkTo="/applicant-summary">
       <Confirmation
-        confirmationText={"Applicant record created"}
-        furtherInfo={furtherInfo}
+        confirmationText={"Visa applicant details confirmed"}
+        furtherInfo={["You can now return to the progress tracker."]}
         buttonText={"Continue"}
         buttonLink={"/tracker"}
         whatHappensNext
