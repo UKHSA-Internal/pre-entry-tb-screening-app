@@ -5,7 +5,7 @@ import { getDateWithoutTime } from "../../shared/date";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { TaskStatus } from "../../shared/types/enum";
-import { YesOrNo } from "../types/enums";
+import { TBCertNotIssuedReason, YesOrNo } from "../types/enums";
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
@@ -15,10 +15,16 @@ abstract class TbCertificateBase {
 
   dateCreated: Date;
   createdBy: string;
+  referenceNumber: string;
+  physicianName: string;
+  comments?: string;
 
   constructor(details: TbCertificateBase) {
     this.applicationId = details.applicationId;
     this.status = details.status;
+    this.referenceNumber = details.referenceNumber;
+    this.physicianName = details.physicianName;
+    this.comments = details.comments;
 
     // Audit
     this.dateCreated = details.dateCreated;
@@ -35,21 +41,28 @@ type ITbCertificateIssued = {
   isIssued: YesOrNo.Yes;
   comments?: string;
   issueDate: Date;
+  expiryDate: Date;
+  clinicName: string;
+  physicianName: string;
   certificateNumber: string;
+  referenceNumber: string;
 };
 
 export type NewTbCertificateIssuedDetails = Omit<
   ITbCertificateIssued,
-  "dateCreated" | "issueDate" | "status"
+  "dateCreated" | "issueDate" | "expiryDate" | "status"
 > & {
   issueDate: Date | string;
+  expiryDate: Date | string;
 };
 
 export class TbCertificateIssued extends TbCertificateBase {
   isIssued: YesOrNo.Yes;
-  comments?: string;
   issueDate: Date;
+  expiryDate: Date;
+  clinicName: string;
   certificateNumber: string;
+  referenceNumber: string;
 
   constructor(details: ITbCertificateIssued) {
     super(details);
@@ -57,18 +70,26 @@ export class TbCertificateIssued extends TbCertificateBase {
     this.isIssued = details.isIssued;
     this.comments = details.comments;
     this.issueDate = details.issueDate;
+    this.expiryDate = details.expiryDate;
+    this.clinicName = details.clinicName;
+    this.physicianName = details.physicianName;
     this.certificateNumber = details.certificateNumber;
+    this.referenceNumber = details.referenceNumber;
   }
 
   toJson() {
     return {
       applicationId: this.applicationId,
       status: this.status,
-      isIssued: this.isIssued,
-      comments: this.comments,
-      issueDate: getDateWithoutTime(this.issueDate),
-      certificateNumber: this.certificateNumber,
       dateCreated: this.dateCreated,
+      isIssued: this.isIssued,
+      issueDate: getDateWithoutTime(this.issueDate),
+      expiryDate: getDateWithoutTime(this.expiryDate),
+      clinicName: this.clinicName,
+      physicianName: this.physicianName,
+      comments: this.comments,
+      certificateNumber: this.certificateNumber,
+      referenceNumber: this.referenceNumber,
     };
   }
 }
@@ -80,7 +101,10 @@ type ITbCertificateNotIssued = {
   createdBy: string;
 
   isIssued: YesOrNo.No;
+  notIssuedReason: TBCertNotIssuedReason;
+  physicianName: string;
   comments?: string;
+  referenceNumber: string;
 };
 
 export type NewTbCertificateNotIssuedDetails = Omit<
@@ -90,13 +114,15 @@ export type NewTbCertificateNotIssuedDetails = Omit<
 
 export class TbCertificateNotIssued extends TbCertificateBase {
   isIssued: YesOrNo.No;
-  comments?: string;
+  notIssuedReason: TBCertNotIssuedReason;
 
   constructor(details: ITbCertificateNotIssued) {
     super(details);
 
     this.isIssued = details.isIssued;
     this.comments = details.comments;
+    this.physicianName = details.physicianName;
+    this.notIssuedReason = details.notIssuedReason;
   }
 
   toJson() {
@@ -104,8 +130,11 @@ export class TbCertificateNotIssued extends TbCertificateBase {
       applicationId: this.applicationId,
       status: this.status,
       isIssued: this.isIssued,
+      physicianName: this.physicianName,
+      notIssuedREason: this.notIssuedReason,
       comments: this.comments,
       dateCreated: this.dateCreated,
+      referenceNumber: this.referenceNumber,
     };
   }
 }
@@ -122,6 +151,7 @@ export class TbCertificateDbOps {
             ...tbCertificate,
             dateCreated: tbCertificate.dateCreated.toISOString(),
             issueDate: tbCertificate.issueDate.toISOString(),
+            expiryDate: tbCertificate.expiryDate.toISOString(),
             pk: TbCertificateDbOps.getPk(tbCertificate.applicationId),
             sk: TbCertificateDbOps.sk,
           }
@@ -146,6 +176,7 @@ export class TbCertificateDbOps {
               dateCreated: new Date(),
               status: TaskStatus.completed,
               issueDate: new Date(details.issueDate),
+              expiryDate: new Date(details.expiryDate),
             }
           : {
               ...details,
@@ -206,6 +237,7 @@ export class TbCertificateDbOps {
               ...dbItem,
               dateCreated: new Date(dbItem.dateCreated),
               issueDate: new Date(dbItem.issueDate),
+              expiryDate: new Date(dbItem.expiryDate),
             })
           : new TbCertificateNotIssued({
               ...dbItem,

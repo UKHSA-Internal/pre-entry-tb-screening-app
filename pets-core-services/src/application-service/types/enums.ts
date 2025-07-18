@@ -96,3 +96,9 @@ export enum SputumCollectionMethod {
   GASTRIC_LAVAGE = "Gastric lavage",
   NOT_KNOWN = "Not known",
 }
+
+export enum TBCertNotIssuedReason {
+  CONFIRMED_SUSPECTED_TB = "Confimed or suspected TB",
+  TESTING_POSTPONED = "Testing postponed",
+  APPLICATION_WITHDRAWN = "Visa applicant has withdrawn their TB screening",
+}

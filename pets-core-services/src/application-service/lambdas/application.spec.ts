@@ -19,6 +19,7 @@ import {
   MenstrualPeriods,
   PregnancyStatus,
   SputumCollectionMethod,
+  TBCertNotIssuedReason,
   VisaOptions,
   YesOrNo,
 } from "../types/enums";
@@ -356,8 +357,12 @@ describe("Test for Application Lambda", () => {
         body: JSON.stringify({
           comments: "comments",
           issueDate: "2025-01-01",
+          expiryDate: "2025-06-01",
+          clinicName: "Lakeside Medical & TB Screening Centre",
+          physicianName: "Dr.Annelie Botha",
           isIssued: YesOrNo.Yes,
           certificateNumber: "123456",
+          referenceNumber: seededApplications[0].applicationId,
         }),
       };
 
@@ -368,7 +373,7 @@ describe("Test for Application Lambda", () => {
       expect(response.statusCode).toBe(200);
     });
 
-    test("Saving TB certificate successfully when not issued", async () => {
+    test("Saving TB certificate details successfully when not issued", async () => {
       // Arrange;
       const event: PetsAPIGatewayProxyEvent = {
         ...mockAPIGwEvent,
@@ -378,6 +383,9 @@ describe("Test for Application Lambda", () => {
         body: JSON.stringify({
           comments: "comments",
           isIssued: YesOrNo.No,
+          physicianName: "Dr.Annelie Botha",
+          notIssuedReason: TBCertNotIssuedReason.CONFIRMED_SUSPECTED_TB,
+          referenceNumber: seededApplications[0].applicationId,
         }),
       };
 
