@@ -68,7 +68,7 @@ const TbCertificateNotIssuedForm = () => {
         <div ref={reasonNotIssuedRef}>
           <Radio
             id="reason-not-issued"
-            label="Why are you not issuing a certificate"
+            label=""
             isInline={RadioIsInline.FALSE}
             answerOptions={[
               TBCertNotIssuedReason.CONFIRMED_SUSPECTED_TB,

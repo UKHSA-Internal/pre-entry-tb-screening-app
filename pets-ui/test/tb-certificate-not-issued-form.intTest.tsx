@@ -30,7 +30,6 @@ describe("TbCertificateNotIssuedForm", () => {
     );
 
     expect(screen.getByText("Why are you not issuing a certificate?")).toBeInTheDocument();
-    expect(screen.getByText("Why are you not issuing a certificate")).toBeInTheDocument();
     expect(screen.getByText("Declaring Physician's name")).toBeInTheDocument();
     expect(screen.getByText("Physician's notes (Optional)")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Continue" })).toBeInTheDocument();
