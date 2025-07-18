@@ -1,7 +1,6 @@
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
-import { BrowserRouter as Router } from "react-router-dom";
 import { describe, expect, it, Mock } from "vitest";
 
 import ChestXrayUploadPage from "@/pages/chest-xray-upload";
@@ -42,11 +41,9 @@ const user = userEvent.setup();
 describe("ChestXrayUploadPage", () => {
   it("displays breadcrumb correctly", () => {
     renderWithProviders(
-      <Router>
-        <HelmetProvider>
-          <ChestXrayUploadPage />
-        </HelmetProvider>
-      </Router>,
+      <HelmetProvider>
+        <ChestXrayUploadPage />
+      </HelmetProvider>,
     );
 
     const link = screen.getByRole("link", { name: "Back" });
@@ -58,11 +55,7 @@ describe("ChestXrayUploadPage", () => {
 
 describe("ChestXrayForm Section", () => {
   it("renders components correctly when state is empty", () => {
-    renderWithProviders(
-      <Router>
-        <ChestXrayForm />
-      </Router>,
-    );
+    renderWithProviders(<ChestXrayForm />);
     expect(screen.getByText("Postero-anterior X-ray")).toBeInTheDocument();
     expect(screen.getByText("Apical lordotic X-ray (optional)")).toBeInTheDocument();
     expect(screen.getByText("Lateral decubitus X-ray (optional)")).toBeInTheDocument();
@@ -92,12 +85,7 @@ describe("ChestXrayForm Section", () => {
         isSputumRequired: YesOrNo.NULL,
       },
     };
-    renderWithProviders(
-      <Router>
-        <ChestXrayForm />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<ChestXrayForm />, { preloadedState });
 
     expect(screen.getByText("Postero-anterior X-ray")).toBeInTheDocument();
     expect(screen.getByText("Apical lordotic X-ray (optional)")).toBeInTheDocument();
@@ -116,12 +104,7 @@ describe("ChestXrayForm Section", () => {
       application: { applicationId: "abc-123", dateCreated: "" },
     };
 
-    renderWithProviders(
-      <Router>
-        <ChestXrayForm />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<ChestXrayForm />, { preloadedState });
 
     const posteroAnteriorInput: HTMLInputElement = screen.getByTestId("postero-anterior-xray");
     const apicalLordoticInput: HTMLInputElement = screen.getByTestId("apical-lordotic-xray");
@@ -180,11 +163,7 @@ describe("ChestXrayForm Section", () => {
   });
 
   it("errors when postero anterior xray is missing", async () => {
-    renderWithProviders(
-      <Router>
-        <ChestXrayForm />
-      </Router>,
-    );
+    renderWithProviders(<ChestXrayForm />);
 
     const posteroAnteriorInput: HTMLInputElement = screen.getByTestId("postero-anterior-xray");
     const submitButton = screen.getByRole("button", { name: /continue/i });
@@ -202,11 +181,7 @@ describe("ChestXrayForm Section", () => {
   });
 
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
-    renderWithProviders(
-      <Router>
-        <ChestXrayForm />
-      </Router>,
-    );
+    renderWithProviders(<ChestXrayForm />);
 
     const submitButton = screen.getByRole("button", { name: /continue/i });
     await user.click(submitButton);

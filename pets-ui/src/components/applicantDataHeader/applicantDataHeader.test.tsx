@@ -1,5 +1,4 @@
 import { screen } from "@testing-library/react";
-import { BrowserRouter as Router } from "react-router-dom";
 
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
@@ -40,13 +39,11 @@ const applicantData = {
 describe("applicantDataHeader", () => {
   it("correctly displays values", () => {
     renderWithProviders(
-      <Router>
-        <ApplicantDataHeader
-          applicantData={applicantData}
-          tbCertificateStatus={ApplicationStatus.NOT_YET_STARTED}
-          tbCertificateIsIssued={YesOrNo.YES}
-        />
-      </Router>,
+      <ApplicantDataHeader
+        applicantData={applicantData}
+        tbCertificateStatus={ApplicationStatus.NOT_YET_STARTED}
+        tbCertificateIsIssued={YesOrNo.YES}
+      />,
     );
 
     expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");

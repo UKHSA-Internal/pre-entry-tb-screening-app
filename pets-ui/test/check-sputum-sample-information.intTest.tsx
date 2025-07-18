@@ -1,6 +1,5 @@
 import { cleanup, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock, vi } from "vitest";
 
 import { postSputumDetails } from "@/api/api";
@@ -122,32 +121,22 @@ describe("SputumSummary", () => {
   });
 
   it("should render page title", () => {
-    renderWithProviders(
-      <Router>
-        <SputumSummary />
-      </Router>,
-      {
-        preloadedState: {
-          applicant: initialApplicantData,
-          sputum: initialSputumDataEmpty,
-        },
+    renderWithProviders(<SputumSummary />, {
+      preloadedState: {
+        applicant: initialApplicantData,
+        sputum: initialSputumDataEmpty,
       },
-    );
+    });
 
     expect(screen.getByText("Check sputum sample information and results")).toBeInTheDocument();
   });
   it("should not show Change links when there is no data", () => {
-    renderWithProviders(
-      <Router>
-        <SputumSummary />
-      </Router>,
-      {
-        preloadedState: {
-          applicant: initialApplicantData,
-          sputum: initialSputumDataEmpty,
-        },
+    renderWithProviders(<SputumSummary />, {
+      preloadedState: {
+        applicant: initialApplicantData,
+        sputum: initialSputumDataEmpty,
       },
-    );
+    });
 
     const noDataTexts = screen.getAllByText("No data");
     expect(noDataTexts).toHaveLength(12);
@@ -165,17 +154,12 @@ describe("SputumSummary", () => {
       sample1: sampleWithData,
     };
 
-    renderWithProviders(
-      <Router>
-        <SputumSummary />
-      </Router>,
-      {
-        preloadedState: {
-          applicant: initialApplicantData,
-          sputum: sputumDataWithSample1,
-        },
+    renderWithProviders(<SputumSummary />, {
+      preloadedState: {
+        applicant: initialApplicantData,
+        sputum: sputumDataWithSample1,
       },
-    );
+    });
     expect(screen.getByText("15/06/2025")).toBeInTheDocument();
     expect(screen.getByText(SputumCollectionMethod.COUGHED_UP)).toBeInTheDocument();
     expect(screen.getByText(PositiveOrNegative.POSITIVE)).toBeInTheDocument();
@@ -196,17 +180,12 @@ describe("SputumSummary", () => {
       status: ApplicationStatus.IN_PROGRESS,
     };
 
-    renderWithProviders(
-      <Router>
-        <SputumSummary />
-      </Router>,
-      {
-        preloadedState: {
-          applicant: initialApplicantData,
-          sputum: sputumDataPartial,
-        },
+    renderWithProviders(<SputumSummary />, {
+      preloadedState: {
+        applicant: initialApplicantData,
+        sputum: sputumDataPartial,
       },
-    );
+    });
 
     const saveButton = screen.getByText("Save and continue");
     await user.click(saveButton);
@@ -218,17 +197,12 @@ describe("SputumSummary", () => {
   it("should not call API when no sample data entered", async () => {
     const user = userEvent.setup();
 
-    renderWithProviders(
-      <Router>
-        <SputumSummary />
-      </Router>,
-      {
-        preloadedState: {
-          applicant: initialApplicantData,
-          sputum: { ...initialSputumDataEmpty, status: ApplicationStatus.NOT_YET_STARTED },
-        },
+    renderWithProviders(<SputumSummary />, {
+      preloadedState: {
+        applicant: initialApplicantData,
+        sputum: { ...initialSputumDataEmpty, status: ApplicationStatus.NOT_YET_STARTED },
       },
-    );
+    });
 
     await user.click(screen.getByText("Save and continue"));
     expect(mockPostSputumDetails).not.toHaveBeenCalled();
@@ -257,17 +231,12 @@ describe("SputumSummary", () => {
       sample1: sampleSubmittedToDb,
     };
 
-    renderWithProviders(
-      <Router>
-        <SputumSummary />
-      </Router>,
-      {
-        preloadedState: {
-          applicant: initialApplicantData,
-          sputum: sputumDataSubmitted,
-        },
+    renderWithProviders(<SputumSummary />, {
+      preloadedState: {
+        applicant: initialApplicantData,
+        sputum: sputumDataSubmitted,
       },
-    );
+    });
 
     expect(screen.getByText("15/06/2025")).toBeInTheDocument();
     expect(screen.getByText(SputumCollectionMethod.COUGHED_UP)).toBeInTheDocument();
@@ -363,12 +332,7 @@ describe("SputumSummary", () => {
       },
     };
 
-    renderWithProviders(
-      <Router>
-        <CheckSputumSampleInformationPage />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<CheckSputumSampleInformationPage />, { preloadedState });
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
@@ -458,12 +422,7 @@ describe("SputumSummary", () => {
       },
     };
 
-    renderWithProviders(
-      <Router>
-        <CheckSputumSampleInformationPage />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<CheckSputumSampleInformationPage />, { preloadedState });
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();

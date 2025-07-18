@@ -1,6 +1,5 @@
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock, vi } from "vitest";
 
 import { postSputumDetails } from "@/api/api";
@@ -179,12 +178,9 @@ describe("SputumCollectionForm", () => {
   const user = userEvent.setup();
 
   test("renders the form with initial (empty) values from Redux store", () => {
-    renderWithProviders(
-      <Router>
-        <SputumCollectionForm />
-      </Router>,
-      { preloadedState: preloadedStateWithEmptySputum },
-    );
+    renderWithProviders(<SputumCollectionForm />, {
+      preloadedState: preloadedStateWithEmptySputum,
+    });
 
     expect(
       screen.getByRole("heading", { name: "Enter sputum sample collection information", level: 1 }),
@@ -208,12 +204,9 @@ describe("SputumCollectionForm", () => {
   });
 
   test("renders the form with pre-filled values from Redux store", () => {
-    renderWithProviders(
-      <Router>
-        <SputumCollectionForm />
-      </Router>,
-      { preloadedState: preloadedStateWithPartialSputum },
-    );
+    renderWithProviders(<SputumCollectionForm />, {
+      preloadedState: preloadedStateWithPartialSputum,
+    });
 
     expect(
       screen.getByLabelText("Day", { selector: "input[id='date-sample-1-taken-day']" }),
@@ -228,12 +221,9 @@ describe("SputumCollectionForm", () => {
   });
 
   test("renders all samples as editable forms (no read-only display)", () => {
-    renderWithProviders(
-      <Router>
-        <SputumCollectionForm />
-      </Router>,
-      { preloadedState: preloadedStateWithSubmittedSample },
-    );
+    renderWithProviders(<SputumCollectionForm />, {
+      preloadedState: preloadedStateWithSubmittedSample,
+    });
 
     expect(
       screen.getByLabelText("Day", { selector: "input[id='date-sample-1-taken-day']" }),
@@ -249,12 +239,9 @@ describe("SputumCollectionForm", () => {
   });
 
   test("when form is submitted with empty required fields then errors are displayed", async () => {
-    renderWithProviders(
-      <Router>
-        <SputumCollectionForm />
-      </Router>,
-      { preloadedState: preloadedStateWithEmptySputum },
-    );
+    renderWithProviders(<SputumCollectionForm />, {
+      preloadedState: preloadedStateWithEmptySputum,
+    });
 
     await user.click(screen.getByText("Save and continue to results", { selector: "button" }));
 
@@ -268,12 +255,9 @@ describe("SputumCollectionForm", () => {
   });
 
   test("shows validation errors for incomplete date fields", async () => {
-    renderWithProviders(
-      <Router>
-        <SputumCollectionForm />
-      </Router>,
-      { preloadedState: preloadedStateWithEmptySputum },
-    );
+    renderWithProviders(<SputumCollectionForm />, {
+      preloadedState: preloadedStateWithEmptySputum,
+    });
 
     await user.type(
       screen.getByLabelText("Day", { selector: "input[id='date-sample-1-taken-day']" }),
@@ -290,12 +274,9 @@ describe("SputumCollectionForm", () => {
   });
 
   test("shows validation errors for invalid dates", async () => {
-    renderWithProviders(
-      <Router>
-        <SputumCollectionForm />
-      </Router>,
-      { preloadedState: preloadedStateWithEmptySputum },
-    );
+    renderWithProviders(<SputumCollectionForm />, {
+      preloadedState: preloadedStateWithEmptySputum,
+    });
 
     await user.type(
       screen.getByLabelText("Day", { selector: "input[id='date-sample-1-taken-day']" }),
@@ -317,12 +298,9 @@ describe("SputumCollectionForm", () => {
   });
 
   test("updates store and navigates to '/check-sputum-sample-information' on 'Save progress' with valid data for all samples", async () => {
-    const { store } = renderWithProviders(
-      <Router>
-        <SputumCollectionForm />
-      </Router>,
-      { preloadedState: preloadedStateWithEmptySputum },
-    );
+    const { store } = renderWithProviders(<SputumCollectionForm />, {
+      preloadedState: preloadedStateWithEmptySputum,
+    });
 
     await user.type(
       screen.getByLabelText("Day", { selector: "input[id='date-sample-1-taken-day']" }),
@@ -400,12 +378,9 @@ describe("SputumCollectionForm", () => {
   });
 
   test("updates store and navigates to '/enter-sputum-sample-results' on 'Save and continue to results' with all samples valid", async () => {
-    const { store } = renderWithProviders(
-      <Router>
-        <SputumCollectionForm />
-      </Router>,
-      { preloadedState: preloadedStateWithEmptySputum },
-    );
+    const { store } = renderWithProviders(<SputumCollectionForm />, {
+      preloadedState: preloadedStateWithEmptySputum,
+    });
 
     await user.type(
       screen.getByLabelText("Day", { selector: "input[id='date-sample-1-taken-day']" }),
@@ -465,12 +440,9 @@ describe("SputumCollectionForm", () => {
   });
 
   test("handles form with pre-filled data correctly", async () => {
-    const { store } = renderWithProviders(
-      <Router>
-        <SputumCollectionForm />
-      </Router>,
-      { preloadedState: preloadedStateWithMixedSamples },
-    );
+    const { store } = renderWithProviders(<SputumCollectionForm />, {
+      preloadedState: preloadedStateWithMixedSamples,
+    });
 
     expect(
       screen.getByLabelText("Day", { selector: "input[id='date-sample-1-taken-day']" }),
@@ -505,12 +477,9 @@ describe("SputumCollectionForm", () => {
   });
 
   test("handles form submission without API errors since no API calls are made", async () => {
-    renderWithProviders(
-      <Router>
-        <SputumCollectionForm />
-      </Router>,
-      { preloadedState: preloadedStateWithEmptySputum },
-    );
+    renderWithProviders(<SputumCollectionForm />, {
+      preloadedState: preloadedStateWithEmptySputum,
+    });
 
     await user.type(
       screen.getByLabelText("Day", { selector: "input[id='date-sample-1-taken-day']" }),
@@ -563,12 +532,9 @@ describe("SputumCollectionForm", () => {
   });
 
   test("saves form data to Redux state without API calls", async () => {
-    const { store } = renderWithProviders(
-      <Router>
-        <SputumCollectionForm />
-      </Router>,
-      { preloadedState: preloadedStateWithEmptySputum },
-    );
+    const { store } = renderWithProviders(<SputumCollectionForm />, {
+      preloadedState: preloadedStateWithEmptySputum,
+    });
 
     await user.type(
       screen.getByLabelText("Day", { selector: "input[id='date-sample-1-taken-day']" }),
@@ -631,12 +597,9 @@ describe("SputumCollectionForm", () => {
   });
 
   test("shows validation errors when no samples have data and save progress is clicked", async () => {
-    renderWithProviders(
-      <Router>
-        <SputumCollectionForm />
-      </Router>,
-      { preloadedState: preloadedStateWithEmptySputum },
-    );
+    renderWithProviders(<SputumCollectionForm />, {
+      preloadedState: preloadedStateWithEmptySputum,
+    });
 
     await user.click(screen.getByText("Save progress", { selector: "button" }));
 
@@ -646,12 +609,9 @@ describe("SputumCollectionForm", () => {
   });
 
   test("shows validation errors when only one sample is filled (all three required)", async () => {
-    renderWithProviders(
-      <Router>
-        <SputumCollectionForm />
-      </Router>,
-      { preloadedState: preloadedStateWithEmptySputum },
-    );
+    renderWithProviders(<SputumCollectionForm />, {
+      preloadedState: preloadedStateWithEmptySputum,
+    });
 
     await user.type(
       screen.getByLabelText("Day", { selector: "input[id='date-sample-2-taken-day']" }),
@@ -675,12 +635,9 @@ describe("SputumCollectionForm", () => {
   });
 
   test("renders all collection method options", () => {
-    renderWithProviders(
-      <Router>
-        <SputumCollectionForm />
-      </Router>,
-      { preloadedState: preloadedStateWithEmptySputum },
-    );
+    renderWithProviders(<SputumCollectionForm />, {
+      preloadedState: preloadedStateWithEmptySputum,
+    });
 
     const coughedUpOptions = screen.getAllByRole("option", { name: "Coughed up" });
     const inducedOptions = screen.getAllByRole("option", { name: "Induced" });
@@ -694,12 +651,9 @@ describe("SputumCollectionForm", () => {
   });
 
   test("shows correct sample headings and structure", () => {
-    renderWithProviders(
-      <Router>
-        <SputumCollectionForm />
-      </Router>,
-      { preloadedState: preloadedStateWithEmptySputum },
-    );
+    renderWithProviders(<SputumCollectionForm />, {
+      preloadedState: preloadedStateWithEmptySputum,
+    });
 
     expect(screen.getByRole("heading", { name: "Sputum sample 1", level: 2 })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Sputum sample 2", level: 2 })).toBeInTheDocument();
@@ -718,11 +672,7 @@ describe("SputumCollectionForm", () => {
   });
 
   test("back link points to tracker", () => {
-    renderWithProviders(
-      <Router>
-        <SputumCollectionPage />
-      </Router>,
-    );
+    renderWithProviders(<SputumCollectionPage />);
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();

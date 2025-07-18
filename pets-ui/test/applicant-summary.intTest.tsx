@@ -1,7 +1,6 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MockAdapter from "axios-mock-adapter";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import { petsApi } from "@/api/api";
@@ -83,12 +82,7 @@ describe("ApplicantReview", () => {
       },
     };
 
-    renderWithProviders(
-      <Router>
-        <ApplicantReview />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<ApplicantReview />, { preloadedState });
 
     mock.onPost("/application").reply(200, { applicationId: "abc-123" });
     mock.onPost("/applicant/register/abc-123").reply(200);
@@ -135,11 +129,7 @@ describe("ApplicantReview", () => {
   });
 
   test("user is navigated to error page when first api call is unsuccessful", async () => {
-    renderWithProviders(
-      <Router>
-        <ApplicantReview />
-      </Router>,
-    );
+    renderWithProviders(<ApplicantReview />);
 
     mock.onPost("/application").reply(500);
 
@@ -151,11 +141,7 @@ describe("ApplicantReview", () => {
   });
 
   test("user is navigated to error page when second api call is unsuccessful", async () => {
-    renderWithProviders(
-      <Router>
-        <ApplicantReview />
-      </Router>,
-    );
+    renderWithProviders(<ApplicantReview />);
 
     mock.onPost("/application").reply(200, { applicationId: "abc-123" });
     mock.onPost("/applicant/register/abc-123").reply(500);
@@ -173,12 +159,7 @@ describe("ApplicantReview", () => {
       application: { applicationId: "abc-123", dateCreated: "" },
     };
 
-    renderWithProviders(
-      <Router>
-        <ApplicantReview />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<ApplicantReview />, { preloadedState });
 
     await user.click(screen.getByRole("button"));
 
@@ -225,12 +206,7 @@ describe("ApplicantReview", () => {
       },
     };
 
-    renderWithProviders(
-      <Router>
-        <ApplicantSummaryPage />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<ApplicantSummaryPage />, { preloadedState });
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
@@ -273,12 +249,7 @@ describe("ApplicantReview", () => {
       },
     };
 
-    renderWithProviders(
-      <Router>
-        <ApplicantSummaryPage />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<ApplicantSummaryPage />, { preloadedState });
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();

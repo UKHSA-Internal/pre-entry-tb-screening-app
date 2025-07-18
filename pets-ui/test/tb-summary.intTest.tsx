@@ -2,7 +2,6 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MockAdapter from "axios-mock-adapter";
 import { HelmetProvider } from "react-helmet-async";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import { petsApi } from "@/api/api";
@@ -38,11 +37,9 @@ describe("TBSummaryPage", () => {
   describe("General UI Tests", () => {
     beforeEach(() => {
       renderWithProviders(
-        <Router>
-          <HelmetProvider>
-            <TbSummaryPage />
-          </HelmetProvider>
-        </Router>,
+        <HelmetProvider>
+          <TbSummaryPage />
+        </HelmetProvider>,
       );
     });
     it("displays the back link", () => {
@@ -62,11 +59,9 @@ describe("TBSummaryPage", () => {
     };
     beforeEach(() => {
       renderWithProviders(
-        <Router>
-          <HelmetProvider>
-            <TbSummaryPage />
-          </HelmetProvider>
-        </Router>,
+        <HelmetProvider>
+          <TbSummaryPage />
+        </HelmetProvider>,
         { preloadedState },
       );
       mock = new MockAdapter(petsApi);

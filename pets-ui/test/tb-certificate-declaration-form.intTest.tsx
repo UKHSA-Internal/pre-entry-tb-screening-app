@@ -3,7 +3,6 @@
 
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import TbCertificateDeclarationPage from "@/pages/tb-certificate-declaration";
@@ -23,11 +22,7 @@ beforeEach(() => useNavigateMock.mockClear());
 
 describe("TB Certificate Declaration Page", () => {
   test("renders form correctly", () => {
-    renderWithProviders(
-      <Router>
-        <TbCertificateDeclarationForm />
-      </Router>,
-    );
+    renderWithProviders(<TbCertificateDeclarationForm />);
 
     expect(screen.getByText("Has a TB clearance certificate been issued?")).toBeInTheDocument;
     expect(screen.getByText("Yes")).toBeInTheDocument;
@@ -40,11 +35,7 @@ describe("TB Certificate Declaration Page", () => {
   });
 
   test("errors when tb certificate issued selection is missing", async () => {
-    renderWithProviders(
-      <Router>
-        <TbCertificateDeclarationForm />
-      </Router>,
-    );
+    renderWithProviders(<TbCertificateDeclarationForm />);
 
     fireEvent.click(screen.getByText("Continue"));
 
@@ -58,11 +49,7 @@ describe("TB Certificate Declaration Page", () => {
   });
 
   test("errors for tb clearance certificate date and tb clearance certificate number show when those fields are empty and 'Yes' is selected", async () => {
-    renderWithProviders(
-      <Router>
-        <TbCertificateDeclarationForm />
-      </Router>,
-    );
+    renderWithProviders(<TbCertificateDeclarationForm />);
 
     const radioButtons = screen.getAllByTestId("tb-clearance-issued");
     fireEvent.click(radioButtons[0]);
@@ -79,11 +66,9 @@ describe("TB Certificate Declaration Page", () => {
 
   test("renders page elements correctly", () => {
     renderWithProviders(
-      <Router>
-        <HelmetProvider>
-          <TbCertificateDeclarationPage />
-        </HelmetProvider>
-      </Router>,
+      <HelmetProvider>
+        <TbCertificateDeclarationPage />
+      </HelmetProvider>,
     );
 
     const link = screen.getByRole("link", { name: "Back" });

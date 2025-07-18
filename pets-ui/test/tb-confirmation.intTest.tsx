@@ -1,6 +1,5 @@
 import { fireEvent, screen } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import TbConfirmationPage from "@/pages/tb-confirmation";
@@ -18,11 +17,9 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 describe("Tb Confirmation page", () => {
   beforeEach(() => {
     renderWithProviders(
-      <Router>
-        <HelmetProvider>
-          <TbConfirmationPage />
-        </HelmetProvider>
-      </Router>,
+      <HelmetProvider>
+        <TbConfirmationPage />
+      </HelmetProvider>,
     );
   });
 

@@ -1,16 +1,13 @@
-import { render, screen } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
+import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import Beta from "./beta";
+import { renderWithProviders } from "@/utils/test-utils";
 
-const renderWithRouter = (component: React.ReactElement) => {
-  return render(<BrowserRouter>{component}</BrowserRouter>);
-};
+import Beta from "./phaseBanner";
 
 describe("Beta Component", () => {
   it("renders the beta banner with default", () => {
-    renderWithRouter(<Beta />);
+    renderWithProviders(<Beta />);
 
     expect(screen.getByText("BETA")).toBeInTheDocument();
 
@@ -24,7 +21,7 @@ describe("Beta Component", () => {
 
   it("renders with custom feedback URL", () => {
     const customFeedbackUrl = "https://example.com/feedback";
-    renderWithRouter(<Beta feedbackUrl={customFeedbackUrl} />);
+    renderWithProviders(<Beta feedbackUrl={customFeedbackUrl} />);
 
     const feedbackLink = screen.getByRole("link", { name: "feedback" });
     expect(feedbackLink).toBeInTheDocument();

@@ -3,10 +3,10 @@ import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 
 import BackLink from "../backLink/backLink";
-import Beta from "../beta/beta";
 import Breadcrumb, { IBreadcrumbItem } from "../breadcrumb/breadcrumb";
 import Footer from "../footer/footer";
 import Header from "../header/header";
+import Beta from "../phaseBanner/phaseBanner";
 import SkipLink from "../skipLink/skipLink";
 
 interface ContainerProps {
