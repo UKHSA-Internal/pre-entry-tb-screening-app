@@ -5,14 +5,6 @@ import { context, mockRequestAuthoriserEvent } from "../test/mocks/events";
 import { handler } from "./b2c-authoriser";
 import { verifyJwtToken } from "./verifyJwtToken";
 
-// const mockVerify = vi.fn();
-// vi.mock("aws-jwt-verify", () => ({
-//   JwtVerifier: {
-//     create: vi.fn(() => ({
-//       verify: mockVerify,
-//     })),
-//   },
-// }));
 vi.mock("./verifyJwtToken");
 const mockVerifyJwtToken = verifyJwtToken as unknown as ReturnType<typeof vi.fn>;
 
