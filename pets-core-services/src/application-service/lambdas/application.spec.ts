@@ -384,6 +384,7 @@ describe("Test for Application Lambda", () => {
           comments: "comments",
           isIssued: YesOrNo.No,
           physicianName: "Dr.Annelie Botha",
+          clinicName: "Lakeside Medical & TB Screening Centre",
           notIssuedReason: TBCertNotIssuedReason.CONFIRMED_SUSPECTED_TB,
           referenceNumber: seededApplications[0].applicationId,
         }),

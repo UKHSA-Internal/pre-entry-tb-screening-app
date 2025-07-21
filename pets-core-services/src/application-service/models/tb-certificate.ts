@@ -17,6 +17,7 @@ abstract class TbCertificateBase {
   createdBy: string;
   referenceNumber: string;
   physicianName: string;
+  clinicName: string;
   comments?: string;
 
   constructor(details: TbCertificateBase) {
@@ -24,6 +25,7 @@ abstract class TbCertificateBase {
     this.status = details.status;
     this.referenceNumber = details.referenceNumber;
     this.physicianName = details.physicianName;
+    this.clinicName = details.clinicName;
     this.comments = details.comments;
 
     // Audit
@@ -60,7 +62,6 @@ export class TbCertificateIssued extends TbCertificateBase {
   isIssued: YesOrNo.Yes;
   issueDate: Date;
   expiryDate: Date;
-  clinicName: string;
   certificateNumber: string;
   referenceNumber: string;
 
@@ -102,6 +103,7 @@ type ITbCertificateNotIssued = {
 
   isIssued: YesOrNo.No;
   notIssuedReason: TBCertNotIssuedReason;
+  clinicName: string;
   physicianName: string;
   comments?: string;
   referenceNumber: string;
@@ -122,6 +124,7 @@ export class TbCertificateNotIssued extends TbCertificateBase {
     this.isIssued = details.isIssued;
     this.comments = details.comments;
     this.physicianName = details.physicianName;
+    this.clinicName = details.clinicName;
     this.notIssuedReason = details.notIssuedReason;
   }
 
@@ -131,6 +134,7 @@ export class TbCertificateNotIssued extends TbCertificateBase {
       status: this.status,
       isIssued: this.isIssued,
       physicianName: this.physicianName,
+      clinicName: this.clinicName,
       notIssuedREason: this.notIssuedReason,
       comments: this.comments,
       dateCreated: this.dateCreated,

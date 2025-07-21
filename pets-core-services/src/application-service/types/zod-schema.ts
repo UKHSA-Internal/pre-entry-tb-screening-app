@@ -144,6 +144,9 @@ export const TbCertificateIssuedRequestSchema = z.object({
 
 export const TbCertificateNotIssuedRequestSchema = z.object({
   isIssued: z.literal(YesOrNo.No),
+  clinicName: z.string().openapi({
+    description: "Clinic Name",
+  }),
   physicianName: z.string().openapi({
     description: "Physician's Name",
   }),
