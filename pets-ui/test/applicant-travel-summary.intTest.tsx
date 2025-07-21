@@ -108,7 +108,7 @@ describe("TravelReview", () => {
     const preloadedState = {
       travel: {
         status: ApplicationStatus.COMPLETE,
-        visaType: "",
+        visaCategory: "",
         applicantUkAddress1: "",
         applicantUkAddress2: "",
         townOrCity: "",
@@ -135,7 +135,7 @@ describe("TravelReview", () => {
     const preloadedState = {
       travel: {
         status: ApplicationStatus.IN_PROGRESS,
-        visaType: "",
+        visaCategory: "",
         applicantUkAddress1: "",
         applicantUkAddress2: "",
         townOrCity: "",
