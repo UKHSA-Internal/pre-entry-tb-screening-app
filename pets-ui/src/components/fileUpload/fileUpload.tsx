@@ -73,7 +73,7 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
               <span className="govuk-visually-hidden">Error:</span> {errorText}
             </p>
           )}
-          <div data-module="govuk-file-upload">
+          <div data-module="govuk-file-upload" className="govuk-body file-upload-existing-file">
             <div key={props.id}>
               <input
                 id={props.id}
