@@ -1,5 +1,4 @@
 import assert from "assert";
-import { JwtVerifier } from "aws-jwt-verify";
 import { JwtPayload } from "aws-jwt-verify/jwt-model";
 import {
   APIGatewayAuthorizerResult,
@@ -11,9 +10,9 @@ import {
   StatementEffect,
 } from "aws-lambda";
 
-import { assertEnvExists } from "../shared/config";
 import { logger, withRequest } from "../shared/logger";
 import { policyMapping, Roles } from "./constants";
+import { verifyJwtToken } from "./verifyJwtToken";
 
 export const handler = async (
   event: APIGatewayRequestAuthorizerEvent,
@@ -37,16 +36,19 @@ export const handler = async (
       throw new Error("Authorization Headers missing");
     }
 
-    const TENANT_ID = assertEnvExists(process.env.VITE_MSAL_TENANT_ID);
-    const CLIENT_ID = assertEnvExists(process.env.VITE_MSAL_CLIENT_ID);
+    // const TENANT_ID = assertEnvExists(process.env.VITE_MSAL_TENANT_ID);
+    // const CLIENT_ID = assertEnvExists(process.env.VITE_MSAL_CLIENT_ID);
 
-    const verifier = JwtVerifier.create({
-      issuer: `https://${TENANT_ID}.ciamlogin.com/${TENANT_ID}/v2.0`,
-      audience: CLIENT_ID,
-      jwksUri: `https://login.microsoftonline.com/${TENANT_ID}/discovery/keys`,
-    });
+    // const verifier = JwtVerifier.create({
+    //   issuer: `https://${TENANT_ID}.ciamlogin.com/${TENANT_ID}/v2.0`,
+    //   audience: CLIENT_ID,
+    //   jwksUri: `https://login.microsoftonline.com/${TENANT_ID}/discovery/keys`,
+    //   cacheMaxAge: 60, // Keep this low
+    //   fetchJwksOnKidMiss: true, // Retry JWKS fetch on unknown kid
+    // });
 
-    const payload = await verifier.verify(token);
+    // const payload = await verifier.verify(token);
+    const payload = await verifyJwtToken(token);
 
     if (!payload.ClinicID) {
       logger.error("Missing ClinicID");
