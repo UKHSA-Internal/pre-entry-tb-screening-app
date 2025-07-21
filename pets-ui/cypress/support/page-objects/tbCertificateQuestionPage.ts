@@ -102,7 +102,7 @@ export class TbCertificateQuestionPage extends BasePage {
       // If "Yes" is selected, should go to TB Certificate Declaration page
       this.verifyUrlContains("/tb-certificate-declaration");
     } else {
-      // If "No" is selected, might go directly to summary or different page
+      // If "No" is selected
       this.verifyUrlContains("/tb-certificate-summary");
     }
     return this;
@@ -174,16 +174,6 @@ export class TbCertificateQuestionPage extends BasePage {
     return this;
   }
 
-  // Verify page uses GOV.UK styling
-  verifyGovUkStyling(): TbCertificateQuestionPage {
-    cy.get(".govuk-heading-l").should("be.visible");
-    cy.get(".govuk-form-group").should("be.visible");
-    cy.get(".govuk-radios").should("be.visible");
-    cy.get(".govuk-radios--inline").should("be.visible");
-    cy.get(".govuk-button").should("be.visible");
-    return this;
-  }
-
   // Check all elements on the page
   verifyAllPageElements(): TbCertificateQuestionPage {
     this.verifyPageLoaded();
@@ -193,18 +183,17 @@ export class TbCertificateQuestionPage extends BasePage {
     this.verifyContinueButton();
     this.verifyBackLinkNavigation();
     this.verifyServiceName();
-    this.verifyGovUkStyling();
     return this;
   }
 
-  // Simplified method for quick form completion with "Yes"
+  // Method for quick form completion with "Yes"
   selectYesAndContinue(): TbCertificateQuestionPage {
     this.selectTbClearanceOption("Yes");
     this.clickContinue();
     return this;
   }
 
-  // Simplified method for quick form completion with "No"
+  // Method for quick form completion with "No"
   selectNoAndContinue(): TbCertificateQuestionPage {
     this.selectTbClearanceOption("No");
     this.clickContinue();

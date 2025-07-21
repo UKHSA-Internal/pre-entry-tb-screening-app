@@ -279,7 +279,7 @@ export class TravelSummaryPage extends BasePage {
     return this;
   }
 
-  // Helper method to verify if a field has a value or shows "Enter" link
+  // Method to verify if a field has a value or shows "Enter" link
   verifyFieldHasValueOrEnterLink(fieldKey: string, expectedValue?: string): TravelSummaryPage {
     if (expectedValue) {
       this.verifySummaryValue(fieldKey, expectedValue);

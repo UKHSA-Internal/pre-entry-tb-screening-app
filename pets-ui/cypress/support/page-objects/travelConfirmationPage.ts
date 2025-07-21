@@ -103,7 +103,7 @@ export class TravelConfirmationPage extends BasePage {
     return this;
   }
 
-  // Descriptive method for the full flow
+  // Descriptive method for the full Page flow
   completeConfirmationFlow(): TravelConfirmationPage {
     this.verifyAllPageElements();
     this.clickContinue();

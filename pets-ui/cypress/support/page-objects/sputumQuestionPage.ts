@@ -32,7 +32,7 @@ export class SputumQuestionPage extends BasePage {
     return this;
   }
 
-  // Alternative method using radio button checking with name and value
+  // Method using radio button checking with name and value
   selectSputumRequired(option: "Yes" | "No"): SputumQuestionPage {
     cy.get(`input[name="isSputumRequired"][value="${option}"]`).check();
     return this;

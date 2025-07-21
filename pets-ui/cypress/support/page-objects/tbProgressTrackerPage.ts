@@ -254,7 +254,7 @@ export class TBProgressTrackerPage {
       .and("have.attr", "href");
   }
 
-  // Verify task is NOT a clickable link (should only be a plain text)
+  // Verify task is NOT a clickable link
   verifyTaskIsNotClickable(taskName: string): void {
     this.verifyTaskExists(taskName);
 
@@ -571,6 +571,5 @@ export class TBProgressTrackerPage {
   verifyTasksWithClickabilityValidation(): void {
     this.verifyAllTasksExist();
     this.verifySequentialTaskFlow();
-    //this.verifyCompletedTasksAreClickable();
   }
 }

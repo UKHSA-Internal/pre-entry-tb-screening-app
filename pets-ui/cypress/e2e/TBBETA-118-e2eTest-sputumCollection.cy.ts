@@ -153,14 +153,14 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
 
-    //confirm above details to proceed to next page
+    // Confirm above details to proceed to next page
     applicantSummaryPage.confirmDetails();
 
     // Verify applicant confirmation page
     applicantConfirmationPage.verifyPageLoaded();
     applicantConfirmationPage.verifyNextStepsText();
 
-    // Click continue - this goes to tracker, NOT travel information
+    // Click continue - this goes to tracker
     applicantConfirmationPage.clickContinue();
 
     // Verify we're on the tracker
@@ -173,7 +173,6 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     // NOW verify the travel information page
     travelInformationPage.verifyPageLoaded();
 
-    // **UPDATED SECTION: Using random visa type selection**
     // Fill travel information with random visa type and capture the selected visa
     travelInformationPage
       .fillCompleteFormWithRandomVisa({
@@ -196,7 +195,6 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     // Submit the form
     travelInformationPage.submitForm();
 
-    // **UPDATED SECTION: Using random visa verification methods**
     // Review Travel Summary with random visa type
     travelSummaryPage.verifyPageLoaded();
 
@@ -204,7 +202,6 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     travelSummaryPage.verifyVisaTypeIsValid();
 
     // Verify details by clicking change links and checking fields
-    // Test the change links functionality (simplified to avoid field selector issues)
     travelSummaryPage.clickChangeLink("UK address line 1");
     cy.url().should("include", "/travel-details");
     cy.go("back");
@@ -417,8 +414,6 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     enterSputumSampleResultsPage.verifyPageLoaded();
     enterSputumSampleResultsPage.verifyAllPageElements();
 
-    //enterSputumSampleResultsPage.verifySampleDates();
-
     // Fill sputum sample results
     enterSputumSampleResultsPage.fillWithAllNegativeResults();
 
@@ -570,24 +565,6 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
       Sex: "Female",
     });
 
-    /* // Verify address section
-    tbCertificateSummaryPage.verifyCurrentAddressSection();
-    tbCertificateSummaryPage.verifyCurrentAddress({
-      "Address line 1": "123 High Street",
-      "Address line 2": "Apartment 4B",
-      "Town or city": "London",
-      Postcode: "SW1A 1AA",
-    });
-
-    // Verify proposed UK address section
-    tbCertificateSummaryPage.verifyProposedUkAddressSection();
-    tbCertificateSummaryPage.verifyProposedUkAddress({
-      "Address line 1": "456 Park Lane",
-      "Address line 2": "Floor 2",
-      "Town or city": "Manchester",
-      Postcode: "M1 1AA",
-    }); */
-
     // Verify clinic and certificate information section
     tbCertificateSummaryPage.verifyClinicCertificateSection();
     tbCertificateSummaryPage.verifyClinicCertificateInfo({
@@ -618,7 +595,6 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     tbCertificateSummaryPage.verifyChangeLinksExist();
 
     // Test the change links functionality
-    // Click on "Declaring physician name" change link to verify it works
     tbCertificateSummaryPage.verifyChangeLinksExist();
 
     // Verify back link navigation
@@ -642,9 +618,6 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     // Verify TB Certificate Confirmation page loaded
     tbCertificateConfirmationPage.verifyPageLoaded();
 
-    // Verify all page elements and structure
-    //tbCertificateConfirmationPage.verifyAllPageElements();
-
     // Verify confirmation panel with correct title
     tbCertificateConfirmationPage.verifyConfirmationPanel();
 
@@ -658,7 +631,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     tbCertificateConfirmationPage.getCertificateReferenceNumber().then((certRef: string) => {
       cy.log(`Certificate Reference Number: ${certRef}`);
       cy.wrap(certRef).should("not.be.empty");
-      // Store as alias for potential later use in the test
+      // Store in test for potential later use in the test
       cy.wrap(certRef).as("certificateReference");
     });
 

@@ -114,13 +114,12 @@ export class TbCertificateDeclarationPage extends BasePage {
     return this;
   }
 
-  // FIXED: Verify form sections based on actual DOM structure
+  // Verify form sections
   verifyFormSections(): TbCertificateDeclarationPage {
-    // Check for the actual field labels as shown in the screenshot
     cy.contains("label", "Declaring Physician's name").should("be.visible");
     cy.contains("label", "Physician's notes (optional)").should("be.visible");
 
-    // Check for the form fields themselves
+    // Check for the form fields
     cy.get('input[name="declaringPhysicianName"]').should("be.visible");
     cy.get('textarea[name="comments"]').should("be.visible");
     return this;
@@ -145,7 +144,7 @@ export class TbCertificateDeclarationPage extends BasePage {
     return this;
   }
 
-  // FIXED: Verify field labels and structure based on actual DOM
+  // Verify field labels and structure
   verifyFieldLabelsAndStructure(): TbCertificateDeclarationPage {
     // Verify declaring physician name field structure
     cy.contains("label", "Declaring Physician's name").should("be.visible");
@@ -304,11 +303,10 @@ export class TbCertificateDeclarationPage extends BasePage {
 
   // Verify expected clinic information is displayed
   verifyExpectedClinicInformation(): TbCertificateDeclarationPage {
-    // Based on what's visible in the screenshot
     this.verifyClinicInformation({
       clinicName: "Lakeside Medical & TB Screening Centre",
     });
-    // Note: The certificate reference number and dates are dynamic, so we just verify they exist
+    // Verify TB certificate reference number and dates exist
     cy.contains("dt.govuk-summary-list__key", "Certificate reference number")
       .siblings(".govuk-summary-list__value")
       .should("not.be.empty");
@@ -337,14 +335,14 @@ export class TbCertificateDeclarationPage extends BasePage {
     return this;
   }
 
-  // Simplified method for quick form completion
+  // Method for quick form completion
   completeFormWithMinimalData(physicianName: string): TbCertificateDeclarationPage {
     this.fillDeclaringPhysicianName(physicianName);
     this.clickContinue();
     return this;
   }
 
-  // Simplified method for complete form completion
+  // Method for complete form completion
   completeFormWithAllData(physicianName: string, comments: string): TbCertificateDeclarationPage {
     this.fillDeclaringPhysicianName(physicianName);
     this.fillPhysicianComments(comments);

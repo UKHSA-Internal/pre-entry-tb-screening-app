@@ -14,13 +14,13 @@ export class TravelInformationPage extends BasePage {
     return this;
   }
 
-  // Form field methods - Updated based on actual DOM
+  // Form field methods
   selectVisaType(visaType: string): TravelInformationPage {
     cy.get('[name="visaType"]').select(visaType);
     return this;
   }
 
-  // New method to select a random visa type
+  // Method to select a random visa type
   selectRandomVisaType(): TravelInformationPage {
     const randomVisa = randomElement(visaType);
     cy.log(`Selecting random visa type: ${randomVisa}`);
@@ -135,9 +135,9 @@ export class TravelInformationPage extends BasePage {
     return this;
   }
 
-  // Fill all required fields with valid data - Updated to support random visa selection
+  // Fill all required fields with valid data
   fillCompleteForm(details: {
-    visaType?: string; // Made optional to allow random selection
+    visaType?: string;
     ukAddressLine1: string;
     ukAddressLine2?: string;
     ukTownOrCity: string;
@@ -166,7 +166,7 @@ export class TravelInformationPage extends BasePage {
     return this;
   }
 
-  // New method to fill form with random visa type and return the selected visa
+  // Method to fill form with random visa type and return the selected visa
   fillCompleteFormWithRandomVisa(details: {
     ukAddressLine1: string;
     ukAddressLine2?: string;
@@ -325,7 +325,7 @@ export class TravelInformationPage extends BasePage {
     return this;
   }
 
-  // Complete form submission flow - Updated to support random visa
+  // Complete form submission flow
   completeFormSubmission(formData: {
     visaType?: string; // Made optional
     ukAddressLine1: string;
@@ -340,7 +340,7 @@ export class TravelInformationPage extends BasePage {
     return this;
   }
 
-  // New method: Complete form submission with random visa and return the selected visa
+  // Complete form submission with random visa and return the selected visa
   completeFormSubmissionWithRandomVisa(formData: {
     ukAddressLine1: string;
     ukAddressLine2?: string;
