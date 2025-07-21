@@ -2,11 +2,12 @@ import { JwtVerifier } from "aws-jwt-verify";
 import { JwtPayload } from "aws-jwt-verify/jwt-model";
 
 import { assertEnvExists } from "../shared/config";
+import { logger } from "../shared/logger";
 
 const TENANT_ID = assertEnvExists(process.env.VITE_MSAL_TENANT_ID);
 const CLIENT_ID = assertEnvExists(process.env.VITE_MSAL_CLIENT_ID);
 
-const verifier = JwtVerifier.create({
+export const verifier = JwtVerifier.create({
   issuer: `https://${TENANT_ID}.ciamlogin.com/${TENANT_ID}/v2.0`,
   audience: CLIENT_ID,
   jwksUri: `https://login.microsoftonline.com/${TENANT_ID}/discovery/keys`,
@@ -21,18 +22,18 @@ export async function verifyJwtToken(token: string): Promise<JwtPayload> {
   } catch (err: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (err.name === "KidNotFoundInJwksError") {
-      console.warn("JWKS miss — retrying JWKS fetch due to unknown kid...");
+      logger.warn("JWKS miss — retrying JWKS fetch due to unknown kid...");
       try {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
         await (verifier as any)._fetchJwks(true); //  Private API, works for now
         return await verifier.verify(token); // Retry after forced refresh
       } catch (retryErr) {
-        console.error("Retry failed: still can't verify token", retryErr);
+        logger.error("Retry failed: still can't verify token", retryErr);
         throw retryErr;
       }
     }
     // Unexpected verification failure
-    console.error(" Token verification failed:", err);
+    logger.error(" Token verification failed:", err);
     throw err;
   }
 }
