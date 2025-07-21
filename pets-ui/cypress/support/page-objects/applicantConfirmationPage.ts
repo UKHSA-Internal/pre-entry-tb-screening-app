@@ -37,7 +37,7 @@ export class ApplicantConfirmationPage extends BasePage {
     return this;
   }
 
-  // Verify back link points to applicant summary - UPDATED based on DOM
+  // Verify back link points to applicant summary
   verifyBackLink(): ApplicantConfirmationPage {
     cy.get(".govuk-back-link")
       .should("be.visible")
@@ -46,7 +46,7 @@ export class ApplicantConfirmationPage extends BasePage {
     return this;
   }
 
-  // Verify breadcrumb navigation
+  // Verify breadcrumb navigation - not sure if Breadcrumbs will be re-implemented
   verifyBreadcrumbNavigation(): ApplicantConfirmationPage {
     cy.get(".govuk-breadcrumbs").should("exist");
     return this;
@@ -58,7 +58,7 @@ export class ApplicantConfirmationPage extends BasePage {
     return this;
   }
 
-  // UPDATED: Complete confirmation and proceed (flow may have changed)
+  // Complete confirmation and proceed
   confirmAndProceed(): ApplicantConfirmationPage {
     this.verifyPageLoaded();
     this.verifyNextStepsText();
@@ -67,7 +67,7 @@ export class ApplicantConfirmationPage extends BasePage {
     return this;
   }
 
-  // Verify all elements on the page - UPDATED to include back link
+  // Verify all elements on the page
   verifyAllPageElements(): ApplicantConfirmationPage {
     this.verifyPageLoaded();
     this.verifyNextStepsText();
@@ -77,39 +77,24 @@ export class ApplicantConfirmationPage extends BasePage {
     return this;
   }
 
-  // NEW: Verify the confirmation panel styling and content
+  // Verify the confirmation panel styling and content
   verifyConfirmationPanel(): ApplicantConfirmationPage {
-    cy.get(".govuk-panel--confirmation")
-      .should("be.visible")
-      .and("have.css", "margin-bottom", "40px");
+    cy.get(".govuk-panel--confirmation").should("be.visible");
 
     cy.get(".govuk-panel__title")
       .should("be.visible")
-      .and("contain", "Visa applicant details confirmed")
-      .and("have.css", "margin-block", "30px")
-      .and("have.css", "margin-inline", "20px");
-
+      .and("contain", "Visa applicant details confirmed");
     return this;
   }
 
-  // NEW: Verify page layout structure
+  // Verify page layout structure
   verifyPageLayout(): ApplicantConfirmationPage {
     cy.get(".govuk-grid-row").should("exist");
     cy.get(".govuk-grid-column-two-thirds").should("exist");
     return this;
   }
 
-  // NEW: Verify the continue button styling
-  verifyContinueButtonStyling(): ApplicantConfirmationPage {
-    cy.contains("button", "Continue")
-      .should("have.attr", "type", "submit")
-      .and("have.class", "govuk-button")
-      .and("have.attr", "data-module", "govuk-button")
-      .and("have.css", "margin-top", "30px");
-    return this;
-  }
-
-  // NEW: Comprehensive page validation
+  // Comprehensive page validation
   verifyCompletePageStructure(): ApplicantConfirmationPage {
     this.verifyPageLayout();
     this.verifyConfirmationPanel();

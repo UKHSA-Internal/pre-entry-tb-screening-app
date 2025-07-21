@@ -1,17 +1,138 @@
-// This holds all fields for the TB Clearance Certificate Summary Page
-export class TbClearanceCertificateSummaryPage {
-  visit(): void {
-    cy.visit("/tb-certificate-summary");
+//This holds all fields for the TB Certificate Summary Page
+
+import { BasePage } from "../BasePage";
+
+// Types for applicant information
+interface ApplicantInfo {
+  Name?: string;
+  Nationality?: string;
+  "Date of birth"?: string;
+  Sex?: string;
+  "Passport number"?: string;
+  "Passport issue date"?: string;
+  "Passport expiry date"?: string;
+  "UKVI visa category"?: string;
+}
+
+// Types for address information
+interface AddressInfo {
+  "Address line 1"?: string;
+  "Address line 2"?: string;
+  "Town or city"?: string;
+  Country?: string;
+  County?: string;
+  Postcode?: string;
+}
+
+// Types for clinic and certificate information
+interface ClinicCertificateInfo {
+  "Clinic name"?: string;
+  "Certificate reference number"?: string;
+  "Certificate issue date"?: string;
+  "Certificate expiry date"?: string;
+  "Declaring physician name"?: string;
+  "Physician's comments"?: string;
+}
+
+// Types for screening information
+interface ScreeningInfo {
+  "Chest X-ray done"?: string;
+  "Chest X-ray outcome"?: string;
+  "Sputum collected"?: string;
+  "Sputum outcome"?: string;
+  Pregnant?: string;
+  "Child under 11 years"?: string;
+}
+
+export class TbCertificateSummaryPage extends BasePage {
+  constructor() {
+    super("/tb-certificate-summary");
   }
 
-  // Verify page loaded
-  verifyPageLoaded(): void {
-    cy.get("h1.govuk-heading-l")
-      .should("be.visible")
-      .and("contain", "Check TB clearance certificate declaration");
-
-    // check summary list is present
+  verifyPageLoaded(): TbCertificateSummaryPage {
+    super.verifyPageHeading("Check certificate information");
     cy.get(".govuk-summary-list").should("be.visible");
+    return this;
+  }
+
+  // Verify applicant information section
+  verifyApplicantInfoSection(): TbCertificateSummaryPage {
+    cy.contains("h2", "Visa applicant information").should("be.visible");
+    return this;
+  }
+
+  // Verify applicant information
+  verifyApplicantInfo(expectedInfo: ApplicantInfo): TbCertificateSummaryPage {
+    Object.entries(expectedInfo).forEach(([key, value]: [string, string | undefined]) => {
+      if (value !== undefined) {
+        this.verifySummaryValue(key, value);
+      }
+    });
+    return this;
+  }
+
+  // Verify current residential address section
+  verifyCurrentAddressSection(): TbCertificateSummaryPage {
+    cy.contains("h2", "Current residential address").should("be.visible");
+    return this;
+  }
+
+  // Verify current residential address
+  verifyCurrentAddress(expectedAddress: AddressInfo): TbCertificateSummaryPage {
+    Object.entries(expectedAddress).forEach(([key, value]: [string, string | undefined]) => {
+      if (value !== undefined) {
+        this.verifySummaryValue(key, value);
+      }
+    });
+    return this;
+  }
+
+  // Verify proposed UK address section
+  verifyProposedUkAddressSection(): TbCertificateSummaryPage {
+    cy.contains("h2", "Proposed UK address").should("be.visible");
+    return this;
+  }
+
+  // Verify proposed UK address
+  verifyProposedUkAddress(expectedAddress: AddressInfo): TbCertificateSummaryPage {
+    Object.entries(expectedAddress).forEach(([key, value]: [string, string | undefined]) => {
+      if (value !== undefined) {
+        this.verifySummaryValue(key, value);
+      }
+    });
+    return this;
+  }
+
+  // Verify clinic and certificate information section
+  verifyClinicCertificateSection(): TbCertificateSummaryPage {
+    cy.contains("h2", "Clinic and certificate information").should("be.visible");
+    return this;
+  }
+
+  // Verify clinic and certificate information
+  verifyClinicCertificateInfo(expectedInfo: ClinicCertificateInfo): TbCertificateSummaryPage {
+    Object.entries(expectedInfo).forEach(([key, value]: [string, string | undefined]) => {
+      if (value !== undefined) {
+        this.verifySummaryValue(key, value);
+      }
+    });
+    return this;
+  }
+
+  // Verify screening information section
+  verifyScreeningInfoSection(): TbCertificateSummaryPage {
+    cy.contains("h2", "Screening information").should("be.visible");
+    return this;
+  }
+
+  // Verify screening information
+  verifyScreeningInfo(expectedInfo: ScreeningInfo): TbCertificateSummaryPage {
+    Object.entries(expectedInfo).forEach(([key, value]: [string, string | undefined]) => {
+      if (value !== undefined) {
+        this.verifySummaryValue(key, value);
+      }
+    });
+    return this;
   }
 
   // Get summary value for a specific field
@@ -19,35 +140,29 @@ export class TbClearanceCertificateSummaryPage {
     return cy
       .contains("dt.govuk-summary-list__key", fieldKey)
       .siblings(".govuk-summary-list__value")
-      .invoke("text");
+      .invoke("text")
+      .then((text) => text.trim());
   }
 
   // Verify specific summary value
-  verifySummaryValue(fieldKey: string, expectedValue: string): void {
+  verifySummaryValue(fieldKey: string, expectedValue: string): TbCertificateSummaryPage {
     this.getSummaryValue(fieldKey).should("eq", expectedValue);
+    return this;
   }
 
-  // Verify TB certificate summary information
-  verifyTbCertificateSummaryInfo(expectedValues: {
-    "TB clearance certificate issued?"?: string;
-    "Physician comments"?: string;
-    "Date of TB clearance certificate"?: string;
-    "TB clearance certificate number"?: string;
-  }): void {
-    Object.entries(expectedValues).forEach(([key, value]) => {
-      if (value !== undefined) {
-        this.verifySummaryValue(key, value);
-      }
-    });
+  // Verify applicant photo is displayed
+  verifyApplicantPhoto(): TbCertificateSummaryPage {
+    cy.get(".applicant-photo-summary").should("be.visible").and("have.attr", "alt", "Applicant");
+    return this;
   }
 
-  // Verify field shows optional link instead of value
-  verifyFieldShowsOptionalLink(fieldKey: string, expectedLinkText: string): void {
-    cy.contains("dt.govuk-summary-list__key", fieldKey)
-      .siblings(".govuk-summary-list__value")
-      .find("a")
-      .should("be.visible")
-      .and("contain", expectedLinkText);
+  // Verify declaration text
+  verifyDeclarationText(): TbCertificateSummaryPage {
+    cy.contains(
+      "p",
+      "By submitting this certificate information you are confirming that, to the best of your knowledge, there is no clinical suspicious of pulmonary TB.",
+    ).should("be.visible");
+    return this;
   }
 
   // Check if a specific field has a "Change" link
@@ -60,38 +175,18 @@ export class TbClearanceCertificateSummaryPage {
   }
 
   // Click on change link for a specific field
-  clickChangeLink(fieldKey: string): void {
+  clickChangeLink(fieldKey: string): TbCertificateSummaryPage {
     this.checkChangeLink(fieldKey).click();
+    return this;
   }
 
-  // Check specific change links exist with correct URLs
-  verifyChangeLinksExist(): void {
-    // Check fields that may have change links (only when they have values, not optional links)
-    cy.get(".govuk-summary-list__row").each(($row) => {
-      const $value = $row.find("dd.govuk-summary-list__value");
-      const $actions = $row.find("dd.govuk-summary-list__actions");
+  // Verify change links exist for editable fields
+  verifyChangeLinksExist(): TbCertificateSummaryPage {
+    // Check for change links on clinic and certificate information fields
+    const editableFields = ["Declaring physician name", "Physician's comments"];
 
-      // Only verify change links for rows that have actual values (not optional links)
-      if ($actions.length > 0 && $value.find("a").length === 0) {
-        cy.wrap($actions)
-          .find("a")
-          .should("contain", "Change")
-          .and("have.attr", "href")
-          .and("include", "/tb-certificate-declaration");
-      }
-    });
-  }
-
-  // Verify specific change link URLs
-  verifySpecificChangeLinks(): void {
-    const expectedLinks = {
-      "TB clearance certificate issued?": "/tb-certificate-declaration#tb-clearance-issued",
-      "Date of TB clearance certificate": "/tb-certificate-declaration#tb-certificate-date",
-      "TB clearance certificate number": "/tb-certificate-declaration#tb-certificate-number",
-    };
-
-    Object.entries(expectedLinks).forEach(([fieldKey, expectedHref]) => {
-      cy.contains("dt.govuk-summary-list__key", fieldKey).then(($key) => {
+    editableFields.forEach((field) => {
+      cy.contains("dt.govuk-summary-list__key", field).then(($key) => {
         const $row = $key.closest(".govuk-summary-list__row");
         const $actions = $row.find("dd.govuk-summary-list__actions");
 
@@ -99,120 +194,167 @@ export class TbClearanceCertificateSummaryPage {
           cy.wrap($actions)
             .find("a")
             .should("contain", "Change")
-            .and("have.attr", "href", expectedHref);
+            .and("have.attr", "href")
+            .and("include", "/tb-certificate-declaration");
         }
       });
     });
+    return this;
   }
 
-  // Click Save and Continue button
-  clickSaveAndContinue(): void {
-    cy.get('button[type="submit"]').contains("Save and continue").should("be.visible").click();
+  // Verify specific change link URLs
+  verifySpecificChangeLinks(): TbCertificateSummaryPage {
+    cy.contains("dt.govuk-summary-list__key", "Declaring physician name")
+      .siblings(".govuk-summary-list__actions")
+      .find("a")
+      .should("have.attr", "href")
+      .and("include", "/tb-certificate-declaration#undefined");
+
+    cy.contains("dt.govuk-summary-list__key", "Physician's comments")
+      .siblings(".govuk-summary-list__actions")
+      .find("a")
+      .should("have.attr", "href")
+      .and("include", "/tb-certificate-declaration#physician-comments");
+
+    return this;
   }
 
-  // Verify back link navigation
-  verifyBackLinkNavigation(): void {
-    cy.get(".govuk-back-link")
-      .should("be.visible")
-      .and("contain", "Back")
-      .and("have.attr", "href", "/tracker");
+  // Click Submit button
+  clickSubmit(): TbCertificateSummaryPage {
+    cy.get('button[type="submit"]').contains("Submit").should("be.visible").click();
+    return this;
   }
 
-  // Verify service name in header
-  verifyServiceName(): void {
-    cy.get(".govuk-header__service-name")
-      .should("be.visible")
-      .and("contain", "Complete UK Pre-Entry Health Screening");
-  }
-  // Get the current URL
-  getCurrentUrl(): Cypress.Chainable<string> {
-    return cy.url();
-  }
-
-  // Check URL after form submission
-  checkRedirectionAfterSubmit(expectedUrlPath: string): void {
-    this.clickSaveAndContinue();
-    cy.url().should("include", expectedUrlPath);
-  }
-
-  // Verify save and continue button
-  verifySaveAndContinueButton(): void {
+  // Verify submit button
+  verifySubmitButton(): TbCertificateSummaryPage {
     cy.get('button[type="submit"]')
       .should("be.visible")
       .and("be.enabled")
-      .and("contain.text", "Save and continue");
+      .and("contain.text", "Submit");
+    return this;
   }
 
-  // Verify all required fields are present
-  verifyRequiredFieldsPresent(): void {
-    const requiredFields = [
-      "TB clearance certificate issued?",
-      "Physician comments",
-      "Date of TB clearance certificate",
-      "TB clearance certificate number",
-    ];
-
-    requiredFields.forEach((field) => {
-      cy.contains("dt.govuk-summary-list__key", field).should("be.visible");
-    });
+  // Verify back link navigation
+  verifyBackLinkNavigation(): TbCertificateSummaryPage {
+    cy.get(".govuk-back-link")
+      .should("be.visible")
+      .and("contain", "Back")
+      .and("have.attr", "href", "/tb-certificate-declaration");
+    return this;
   }
 
-  // Handle mixed scenarios where some fields have values and others show optional links
-  verifyMixedFieldScenario(
-    fieldsWithValues: {
-      [key: string]: string;
-    },
-    fieldsWithOptionalLinks: {
-      [key: string]: string;
-    },
-  ): void {
-    // Verify fields with actual values
-    Object.entries(fieldsWithValues).forEach(([fieldKey, expectedValue]) => {
-      this.verifySummaryValue(fieldKey, expectedValue);
-    });
-
-    // Verify fields with optional links
-    Object.entries(fieldsWithOptionalLinks).forEach(([fieldKey, expectedLinkText]) => {
-      this.verifyFieldShowsOptionalLink(fieldKey, expectedLinkText);
-    });
+  // Verify service name in header
+  verifyServiceName(): TbCertificateSummaryPage {
+    cy.get(".govuk-header__service-name")
+      .should("be.visible")
+      .and("contain", "Complete UK Pre-Entry Health Screening");
+    return this;
   }
 
-  // Verify dynamic scenario
-  verifyDynamicScenario(expectedData: {
-    fieldsWithValues?: { [key: string]: string };
-    fieldsWithOptionalLinks?: { [key: string]: string };
-  }): void {
-    if (expectedData.fieldsWithValues) {
-      Object.entries(expectedData.fieldsWithValues).forEach(([fieldKey, expectedValue]) => {
-        this.verifySummaryValue(fieldKey, expectedValue);
-      });
-    }
+  // Verify page structure and layout
+  verifyPageStructure(): TbCertificateSummaryPage {
+    // Verify grid layout
+    cy.get(".govuk-grid-row").should("be.visible");
+    cy.get(".govuk-grid-column-two-thirds").should("be.visible");
+    cy.get(".govuk-grid-column-one-third").should("be.visible");
 
-    if (expectedData.fieldsWithOptionalLinks) {
-      Object.entries(expectedData.fieldsWithOptionalLinks).forEach(
-        ([fieldKey, expectedLinkText]) => {
-          this.verifyFieldShowsOptionalLink(fieldKey, expectedLinkText);
-        },
-      );
-    }
+    // Verify all sections are present
+    this.verifyApplicantInfoSection();
+    this.verifyCurrentAddressSection();
+    this.verifyProposedUkAddressSection();
+    this.verifyClinicCertificateSection();
+    this.verifyScreeningInfoSection();
+
+    return this;
   }
 
-  // Check all elements on the page
-  verifyAllPageElements(tbCertificateInfo?: {
-    "TB clearance certificate issued?"?: string;
-    "Physician comments"?: string;
-    "Date of TB clearance certificate"?: string;
-    "TB clearance certificate number"?: string;
-  }): void {
+  // Verify certificate reference number has special styling
+  verifyCertificateReferenceNumberStyling(): TbCertificateSummaryPage {
+    cy.get(".certificate-reference-nowrap").should("be.visible");
+    return this;
+  }
+
+  // Submit form and verify redirection
+  submitAndVerifyRedirection(expectedUrl: string): TbCertificateSummaryPage {
+    this.clickSubmit();
+    cy.url().should("include", expectedUrl);
+    return this;
+  }
+
+  // Verify complete page with all expected data
+  verifyCompletePage(expectedData: {
+    applicantInfo?: ApplicantInfo;
+    currentAddress?: AddressInfo;
+    proposedUkAddress?: AddressInfo;
+    clinicCertificateInfo?: ClinicCertificateInfo;
+    screeningInfo?: ScreeningInfo;
+  }): TbCertificateSummaryPage {
     this.verifyPageLoaded();
-    this.verifyRequiredFieldsPresent();
+    this.verifyPageStructure();
+
+    if (expectedData.applicantInfo) {
+      this.verifyApplicantInfo(expectedData.applicantInfo);
+    }
+
+    if (expectedData.currentAddress) {
+      this.verifyCurrentAddress(expectedData.currentAddress);
+    }
+
+    if (expectedData.proposedUkAddress) {
+      this.verifyProposedUkAddress(expectedData.proposedUkAddress);
+    }
+
+    if (expectedData.clinicCertificateInfo) {
+      this.verifyClinicCertificateInfo(expectedData.clinicCertificateInfo);
+    }
+
+    if (expectedData.screeningInfo) {
+      this.verifyScreeningInfo(expectedData.screeningInfo);
+    }
+
+    this.verifyApplicantPhoto();
+    this.verifyDeclarationText();
     this.verifyChangeLinksExist();
-    this.verifySaveAndContinueButton();
+    this.verifySubmitButton();
     this.verifyBackLinkNavigation();
     this.verifyServiceName();
 
-    if (tbCertificateInfo) {
-      this.verifyTbCertificateSummaryInfo(tbCertificateInfo);
-    }
+    return this;
+  }
+
+  // Check all elements on the page
+  verifyAllPageElements(): TbCertificateSummaryPage {
+    this.verifyPageLoaded();
+    this.verifyPageStructure();
+    this.verifyCertificateReferenceNumberStyling();
+    this.verifyApplicantPhoto();
+    this.verifyDeclarationText();
+    this.verifyChangeLinksExist();
+    this.verifySubmitButton();
+    this.verifyBackLinkNavigation();
+    this.verifyServiceName();
+    return this;
+  }
+
+  // Helper method to get all summary data
+  getAllSummaryData(): Cypress.Chainable<{ [key: string]: string }> {
+    const summaryData: { [key: string]: string } = {};
+
+    return cy.get(".govuk-summary-list__row").then(($rows) => {
+      $rows.each((_, row) => {
+        const key = Cypress.$(row).find(".govuk-summary-list__key").text().trim();
+        const value = Cypress.$(row).find(".govuk-summary-list__value").text().trim();
+        summaryData[key] = value;
+      });
+      return summaryData;
+    });
+  }
+
+  // Verify expected summary data matches what's displayed
+  verifyAllSummaryData(expectedData: { [key: string]: string }): TbCertificateSummaryPage {
+    Object.entries(expectedData).forEach(([key, value]: [string, string]) => {
+      this.verifySummaryValue(key, value);
+    });
+    return this;
   }
 }

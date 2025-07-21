@@ -10,6 +10,7 @@ import {
   ReduxSputumSampleType,
   ReduxSputumType,
 } from "@/applicant";
+import SputumCollectionPage from "@/pages/sputum-collection";
 import SputumCollectionForm from "@/sections/sputum-collection-form";
 import { ApplicationStatus, PositiveOrNegative } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
@@ -25,6 +26,11 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 
 vi.mock("@/api/api", () => ({
   postSputumDetails: vi.fn(),
+}));
+
+vi.mock("react-helmet-async", () => ({
+  Helmet: () => <>{}</>,
+  HelmetProvider: () => <>{}</>,
 }));
 
 const mockPostSputumDetails = postSputumDetails as Mock;
@@ -709,5 +715,18 @@ describe("SputumCollectionForm", () => {
       screen.getAllByRole("heading", { name: "Date sample 3 was taken on", level: 3 }),
     ).toHaveLength(1);
     expect(screen.getAllByRole("heading", { name: "Collection method", level: 3 })).toHaveLength(3);
+  });
+
+  test("back link points to tracker", () => {
+    renderWithProviders(
+      <Router>
+        <SputumCollectionPage />
+      </Router>,
+    );
+
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/tracker");
+    expect(link).toHaveClass("govuk-back-link");
   });
 });

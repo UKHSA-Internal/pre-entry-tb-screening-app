@@ -1,5 +1,6 @@
 // This holds all the fields on the Travel Information Page
 import { BasePage } from "../BasePage";
+import { randomElement, visaType } from "../test-utils";
 
 export class TravelInformationPage extends BasePage {
   constructor() {
@@ -13,10 +14,26 @@ export class TravelInformationPage extends BasePage {
     return this;
   }
 
-  // Form field methods
+  // Form field methods - Updated based on actual DOM
   selectVisaType(visaType: string): TravelInformationPage {
     cy.get('[name="visaType"]').select(visaType);
     return this;
+  }
+
+  // New method to select a random visa type
+  selectRandomVisaType(): TravelInformationPage {
+    const randomVisa = randomElement(visaType);
+    cy.log(`Selecting random visa type: ${randomVisa}`);
+    this.selectVisaType(randomVisa);
+    return this;
+  }
+
+  // Method to get the currently selected visa type
+  getSelectedVisaType(): Cypress.Chainable<string> {
+    return cy
+      .get('[name="visaType"]')
+      .invoke("val")
+      .then((value) => value as string);
   }
 
   fillAddressLine1(address: string): TravelInformationPage {
@@ -51,13 +68,76 @@ export class TravelInformationPage extends BasePage {
 
   // Submit Form
   submitForm(): TravelInformationPage {
-    cy.contains("button", "Save and continue").click();
+    cy.get('button[type="submit"]').contains("Save and continue").click();
     return this;
   }
 
-  // Fill all required fields with valid data
+  // Verify form sections are displayed
+  verifyFormSections(): TravelInformationPage {
+    cy.contains("h2", "Applicant's UK address (optional)").should("be.visible");
+    cy.get("#visa-type").should("be.visible");
+    cy.get("#address-1").should("be.visible");
+    cy.get("#address-2").should("be.visible");
+    cy.get("#town-or-city").should("be.visible");
+    cy.get("#postcode").should("be.visible");
+    cy.get("#mobile-number").should("be.visible");
+    cy.get("#email").should("be.visible");
+    return this;
+  }
+
+  // Verify field labels
+  verifyFieldLabels(): TravelInformationPage {
+    cy.contains("label", "Address line 1 (optional)").should("be.visible");
+    cy.contains("label", "Address line 2 (optional)").should("be.visible");
+    cy.contains("label", "Town/city (optional)").should("be.visible");
+    cy.contains("label", "Postcode (optional)").should("be.visible");
+    cy.contains("h2", "Phone number (optional)").should("be.visible");
+    cy.contains("h2", "Email address (optional)").should("be.visible");
+    return this;
+  }
+
+  // Verify all fields are empty initially
+  verifyAllFieldsEmpty(): TravelInformationPage {
+    cy.get("#address-1-field").should("have.value", "");
+    cy.get("#address-2-field").should("have.value", "");
+    cy.get("#town-or-city-field").should("have.value", "");
+    cy.get("#postcode-field").should("have.value", "");
+    cy.get('[name="ukMobileNumber"]').should("have.value", "");
+    cy.get('[name="ukEmail"]').should("have.value", "");
+    return this;
+  }
+
+  // Verify visa type dropdown options
+  verifyVisaTypeOptions(): TravelInformationPage {
+    cy.get('[name="visaType"]').should("be.visible");
+    cy.get('[name="visaType"] option').should("have.length.at.least", 20);
+    cy.get('[name="visaType"] option[value="Student"]').should("exist");
+    cy.get('[name="visaType"] option[value="Visitor"]').should("exist");
+    cy.get('[name="visaType"] option[value="HM Armed Forces"]').should("exist");
+    return this;
+  }
+
+  // Verify back link
+  verifyBackLink(): TravelInformationPage {
+    cy.get(".govuk-back-link")
+      .should("be.visible")
+      .and("contain", "Back")
+      .and("have.attr", "href", "/tracker");
+    return this;
+  }
+
+  // Verify submit button
+  verifySubmitButton(): TravelInformationPage {
+    cy.get('button[type="submit"]')
+      .should("be.visible")
+      .and("be.enabled")
+      .and("contain.text", "Save and continue");
+    return this;
+  }
+
+  // Fill all required fields with valid data - Updated to support random visa selection
   fillCompleteForm(details: {
-    visaType: string;
+    visaType?: string; // Made optional to allow random selection
     ukAddressLine1: string;
     ukAddressLine2?: string;
     ukTownOrCity: string;
@@ -65,7 +145,13 @@ export class TravelInformationPage extends BasePage {
     mobileNumber: string;
     email: string;
   }): TravelInformationPage {
-    this.selectVisaType(details.visaType);
+    // Use provided visa type or select random one
+    if (details.visaType) {
+      this.selectVisaType(details.visaType);
+    } else {
+      this.selectRandomVisaType();
+    }
+
     this.fillAddressLine1(details.ukAddressLine1);
 
     if (details.ukAddressLine2) {
@@ -77,6 +163,67 @@ export class TravelInformationPage extends BasePage {
     this.fillMobileNumber(details.mobileNumber);
     this.fillEmail(details.email);
 
+    return this;
+  }
+
+  // New method to fill form with random visa type and return the selected visa
+  fillCompleteFormWithRandomVisa(details: {
+    ukAddressLine1: string;
+    ukAddressLine2?: string;
+    ukTownOrCity: string;
+    ukPostcode: string;
+    mobileNumber: string;
+    email: string;
+  }): Cypress.Chainable<string> {
+    const randomVisa = randomElement(visaType);
+    cy.log(`Using random visa type: ${randomVisa}`);
+
+    this.selectVisaType(randomVisa);
+    this.fillAddressLine1(details.ukAddressLine1);
+
+    if (details.ukAddressLine2) {
+      this.fillAddressLine2(details.ukAddressLine2);
+    }
+
+    this.fillTownOrCity(details.ukTownOrCity);
+    this.fillPostcode(details.ukPostcode);
+    this.fillMobileNumber(details.mobileNumber);
+    this.fillEmail(details.email);
+
+    return cy.wrap(randomVisa);
+  }
+
+  // Verify form is filled with expected data
+  verifyFormFilledWith(expectedData: {
+    visaType?: string;
+    ukAddressLine1?: string;
+    ukAddressLine2?: string;
+    ukTownOrCity?: string;
+    ukPostcode?: string;
+    mobileNumber?: string;
+    email?: string;
+  }): TravelInformationPage {
+    if (expectedData.visaType) {
+      cy.get('[name="visaType"]').should("have.value", expectedData.visaType);
+    }
+    if (expectedData.ukAddressLine1) {
+      cy.get("#address-1-field").should("have.value", expectedData.ukAddressLine1);
+    }
+    if (expectedData.ukAddressLine2) {
+      cy.get("#address-2-field").should("have.value", expectedData.ukAddressLine2);
+    }
+    if (expectedData.ukTownOrCity) {
+      cy.get("#town-or-city-field").should("have.value", expectedData.ukTownOrCity);
+    }
+    if (expectedData.ukPostcode) {
+      cy.get("#postcode-field").should("have.value", expectedData.ukPostcode);
+    }
+    if (expectedData.mobileNumber) {
+      cy.get('[name="ukMobileNumber"]').should("have.value", expectedData.mobileNumber);
+    }
+    if (expectedData.email) {
+      cy.get('[name="ukEmail"]').should("have.value", expectedData.email);
+    }
     return this;
   }
 
@@ -92,7 +239,7 @@ export class TravelInformationPage extends BasePage {
     return this;
   }
 
-  // Validate field errors
+  // Validate field errors - Updated with correct field IDs
   validateVisaTypeError(): TravelInformationPage {
     this.validateFieldError("visa-type");
     return this;
@@ -135,33 +282,76 @@ export class TravelInformationPage extends BasePage {
     if (errors.visaType) {
       this.validateFieldError("visa-type", errors.visaType);
     }
-
     if (errors.ukAddressLine1) {
       this.validateFieldError("address-1", errors.ukAddressLine1);
     }
-
     if (errors.ukTownOrCity) {
       this.validateFieldError("town-or-city", errors.ukTownOrCity);
     }
-
     if (errors.ukPostcode) {
       this.validateFieldError("postcode", errors.ukPostcode);
     }
-
     if (errors.mobileNumber) {
       this.validateFieldError("mobile-number", errors.mobileNumber);
     }
-
     if (errors.email) {
       this.validateFieldError("email", errors.email);
     }
-
     return this;
   }
 
-  // Verify redirection to confirmation page
+  // Verify redirection to summary page
   verifyRedirectionToSummaryPage(): TravelInformationPage {
     this.verifyUrlContains("/travel-summary");
     return this;
+  }
+
+  // Verify all page elements
+  verifyAllPageElements(): TravelInformationPage {
+    this.verifyPageLoaded();
+    this.verifyFormSections();
+    this.verifyFieldLabels();
+    this.verifyVisaTypeOptions();
+    this.verifySubmitButton();
+    this.verifyBackLink();
+    this.verifyServiceName();
+    return this;
+  }
+
+  // Submit form and verify redirection
+  submitAndVerifyRedirection(): TravelInformationPage {
+    this.submitForm();
+    this.verifyRedirectionToSummaryPage();
+    return this;
+  }
+
+  // Complete form submission flow - Updated to support random visa
+  completeFormSubmission(formData: {
+    visaType?: string; // Made optional
+    ukAddressLine1: string;
+    ukAddressLine2?: string;
+    ukTownOrCity: string;
+    ukPostcode: string;
+    mobileNumber: string;
+    email: string;
+  }): TravelInformationPage {
+    this.fillCompleteForm(formData);
+    this.submitAndVerifyRedirection();
+    return this;
+  }
+
+  // New method: Complete form submission with random visa and return the selected visa
+  completeFormSubmissionWithRandomVisa(formData: {
+    ukAddressLine1: string;
+    ukAddressLine2?: string;
+    ukTownOrCity: string;
+    ukPostcode: string;
+    mobileNumber: string;
+    email: string;
+  }): Cypress.Chainable<string> {
+    return this.fillCompleteFormWithRandomVisa(formData).then((selectedVisa) => {
+      this.submitAndVerifyRedirection();
+      return cy.wrap(selectedVisa);
+    });
   }
 }

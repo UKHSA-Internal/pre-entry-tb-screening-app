@@ -1,13 +1,17 @@
+import { BasePage } from "../BasePage";
+
 //This holds all fields of the Medical Summary Page
-export class MedicalSummaryPage {
-  visit(): void {
-    cy.visit("/medical-summary");
+export class MedicalSummaryPage extends BasePage {
+  constructor() {
+    super("/medical-summary");
   }
 
   // Verify page loaded
-  verifyPageLoaded(): void {
+  verifyPageLoaded(): MedicalSummaryPage {
+    cy.url().should("include", "/medical-summary");
     cy.contains("h1", "Check medical screening").should("be.visible");
     cy.get(".govuk-summary-list").should("be.visible");
+    return this;
   }
 
   // Get summary value for a specific field
@@ -19,19 +23,21 @@ export class MedicalSummaryPage {
   }
 
   // Verify specific summary value
-  verifySummaryValue(fieldKey: string, expectedValue: string): void {
+  verifySummaryValue(fieldKey: string, expectedValue: string): MedicalSummaryPage {
     this.getSummaryValue(fieldKey).should("eq", expectedValue);
+    return this;
   }
 
   // Click change link for a specific field
-  clickChangeLink(fieldKey: string): void {
+  clickChangeLink(fieldKey: string): MedicalSummaryPage {
     cy.contains("dt.govuk-summary-list__key", fieldKey)
       .siblings(".govuk-summary-list__actions")
       .find("a")
       .click();
+    return this;
   }
 
-  // Verify all summary values (removed "Name" field as it's not in current DOM)
+  // Verify all summary values
   verifyAllSummaryValues(expectedValues: {
     Age?: string;
     "Does the applicant have TB symptoms?"?: string;
@@ -46,12 +52,13 @@ export class MedicalSummaryPage {
     "Is the applicant pregnant?"?: string;
     "Does the applicant have menstrual periods?"?: string;
     "Physical examination notes"?: string;
-  }): void {
+  }): MedicalSummaryPage {
     Object.entries(expectedValues).forEach(([key, value]) => {
       if (value !== undefined) {
         this.verifySummaryValue(key, value);
       }
     });
+    return this;
   }
 
   // Validate that summary matches the entered medical screening data
@@ -69,7 +76,7 @@ export class MedicalSummaryPage {
     pregnant?: "Yes" | "No" | "Don't know" | "N/A";
     menstrualPeriods?: "Yes" | "No" | "N/A";
     physicalExamNotes?: string;
-  }): void {
+  }): MedicalSummaryPage {
     // convert value to string
     const processValue = (value: string | string[] | undefined): string => {
       if (value === undefined) return "";
@@ -136,6 +143,7 @@ export class MedicalSummaryPage {
           break;
       }
     });
+    return this;
   }
 
   // Validation method to check all entered fields
@@ -153,7 +161,7 @@ export class MedicalSummaryPage {
     pregnant?: "Yes" | "No" | "Don't know" | "N/A";
     menstrualPeriods?: "Yes" | "No" | "N/A";
     physicalExamNotes?: string;
-  }): void {
+  }): MedicalSummaryPage {
     // Verify all the fields exist in the summary
     const expectedFields = [
       "Age",
@@ -181,6 +189,7 @@ export class MedicalSummaryPage {
 
     // Validate the entered data matches the summary
     this.validateSummaryMatchesEnteredData(enteredData);
+    return this;
   }
 
   getAllSummaryValues(): Cypress.Chainable<{ [key: string]: string }> {
@@ -198,8 +207,9 @@ export class MedicalSummaryPage {
   }
 
   // Submit form to confirm details
-  confirmDetails(): void {
+  confirmDetails(): MedicalSummaryPage {
     cy.get("button[type='submit']").contains("Save and continue").should("be.visible").click();
+    return this;
   }
 
   isFieldPresent(fieldKey: string): Cypress.Chainable<boolean> {
@@ -210,8 +220,9 @@ export class MedicalSummaryPage {
   }
 
   // Verify redirection after confirming details
-  verifyRedirectionAfterConfirm(): void {
-    cy.url().should("include", "/");
+  verifyRedirectionAfterConfirm(): MedicalSummaryPage {
+    cy.url().should("include", "/medical-confirmation");
+    return this;
   }
 
   getTotalSummaryItems(): Cypress.Chainable<number> {
@@ -219,12 +230,13 @@ export class MedicalSummaryPage {
   }
 
   // Verify breadcrumb navigation
-  verifyBreadcrumbNavigation(): void {
+  verifyBreadcrumbNavigation(): MedicalSummaryPage {
     cy.get(".govuk-breadcrumbs").should("exist");
+    return this;
   }
 
-  // Verify all change links work by checking they point to the correct fragment identifiers
-  verifyChangeLinksTargets(): void {
+  // Verify all change links work by checking they point to the url fragments
+  verifyChangeLinksTargets(): MedicalSummaryPage {
     const expectedFragments = {
       Age: "#age",
       "Does the applicant have TB symptoms?": "#tb-symptoms",
@@ -250,26 +262,29 @@ export class MedicalSummaryPage {
         .should("have.attr", "href")
         .and("include", fragment);
     });
+    return this;
   }
 
   // Verify back link points to medical screening
-  verifyBackLink(): void {
+  verifyBackLink(): MedicalSummaryPage {
     cy.get(".govuk-back-link")
       .should("be.visible")
       .and("have.attr", "href", "/medical-screening")
       .and("contain", "Back");
+    return this;
   }
 
   // Verify service name in header
-  verifyServiceName(): void {
+  verifyServiceName(): MedicalSummaryPage {
     cy.get(".govuk-header__service-name")
       .should("be.visible")
       .and("contain", "Complete UK Pre-Entry Health Screening")
       .and("have.attr", "href", "/");
+    return this;
   }
 
   // Verify optional fields show "Enter" links when empty
-  verifyOptionalFields(): void {
+  verifyOptionalFields(): MedicalSummaryPage {
     const optionalFields = [
       "TB symptoms",
       "Other symptoms",
@@ -286,18 +301,20 @@ export class MedicalSummaryPage {
         .should("exist")
         .and("contain", "Enter");
     });
+    return this;
   }
 
   // Verify continue button styling
-  verifyContinueButton(): void {
+  verifyContinueButton(): MedicalSummaryPage {
     cy.get("button[type='submit']")
       .should("contain", "Save and continue")
       .and("have.class", "govuk-button")
       .and("have.attr", "data-module", "govuk-button");
+    return this;
   }
 
   // Verify all fields are present on the page
-  verifyAllFieldsPresent(): void {
+  verifyAllFieldsPresent(): MedicalSummaryPage {
     const requiredFields = [
       "Age",
       "Does the applicant have TB symptoms?",
@@ -317,10 +334,11 @@ export class MedicalSummaryPage {
     requiredFields.forEach((field) => {
       cy.contains("dt.govuk-summary-list__key", field).should("exist");
     });
+    return this;
   }
 
   // Verify current page structure
-  verifyCurrentPageStructure(): void {
+  verifyCurrentPageStructure(): MedicalSummaryPage {
     this.verifyPageLoaded();
     this.verifyAllFieldsPresent();
     this.verifyChangeLinksTargets();
@@ -328,23 +346,26 @@ export class MedicalSummaryPage {
     this.verifyContinueButton();
     this.verifyBackLink();
     this.verifyServiceName();
+    return this;
   }
 
   // Verify page elements comprehensively
-  verifyAllPageElements(): void {
+  verifyAllPageElements(): MedicalSummaryPage {
     this.verifyCurrentPageStructure();
     this.verifyBreadcrumbNavigation();
+    return this;
   }
 
   // Complete form submission flow
-  completeFormSubmission(): void {
+  completeFormSubmission(): MedicalSummaryPage {
     this.verifyPageLoaded();
     this.confirmDetails();
     this.verifyRedirectionAfterConfirm();
+    return this;
   }
 
   // Helper method to verify if a field has a value or shows "Enter" link
-  verifyFieldHasValueOrEnterLink(fieldKey: string, expectedValue?: string): void {
+  verifyFieldHasValueOrEnterLink(fieldKey: string, expectedValue?: string): MedicalSummaryPage {
     if (expectedValue) {
       this.verifySummaryValue(fieldKey, expectedValue);
     } else {
@@ -353,5 +374,6 @@ export class MedicalSummaryPage {
         .siblings(".govuk-summary-list__value")
         .should("exist");
     }
+    return this;
   }
 }

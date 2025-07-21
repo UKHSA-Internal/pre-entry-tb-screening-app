@@ -12,6 +12,7 @@ import {
 
 import { logger, withRequest } from "../shared/logger";
 import { policyMapping, Roles } from "./constants";
+import { verifyJwtToken } from "./verifyJwtToken";
 
 export const handler = (
   event: APIGatewayRequestAuthorizerEvent,
@@ -35,6 +36,7 @@ export const handler = (
       throw new Error("Authorization Headers missing");
     }
 
+<<<<<<< HEAD
     const payload = {
       aud: "b8af26cb-2053-4f08-a4f1-ccb7b97f7038",
       iss: "https://f52ae62b-2ff7-4104-b90f-48cdc7454bfb.ciamlogin.com/f52ae62b-2ff7-4104-b90f-48cdc7454bfb/v2.0",
@@ -63,6 +65,9 @@ export const handler = (
       ver: "2.0",
       ClinicID: "UK/LHR/00/",
     };
+=======
+    const payload = await verifyJwtToken(token);
+>>>>>>> origin
 
     if (!payload.ClinicID) {
       logger.error("Missing ClinicID");

@@ -1,5 +1,6 @@
 // This holds all the fields on the Travel Summary Page
 import { BasePage } from "../BasePage";
+import { randomElement, visaType } from "../test-utils";
 
 export class TravelSummaryPage extends BasePage {
   constructor() {
@@ -35,12 +36,12 @@ export class TravelSummaryPage extends BasePage {
     return this;
   }
 
-  // Verify field value after clicking change
+  // Verify field value after clicking change link
   verifyFieldValueOnChangePage(fieldName: string, expectedValue: string): TravelSummaryPage {
     const fieldSelectors: Record<string, string> = {
       "Visa type": '[name="visaType"]',
-      "UK address line 1": '[name="address1"]',
-      "UK address line 2": '[name="address2"]',
+      "UK address line 1": '[name="applicantUkAddress1"]',
+      "UK address line 2": '[name="applicantUkAddress2"]',
       "UK town or city": '[name="townOrCity"]',
       "UK postcode": '[name="postcode"]',
       "UK mobile number": '[name="ukMobileNumber"]',
@@ -57,7 +58,7 @@ export class TravelSummaryPage extends BasePage {
     return this;
   }
 
-  // Verify URL after clicking change
+  // Verify URL after clicking change link
   verifyUrlOnChangePage(expectedUrl: string): TravelSummaryPage {
     cy.url().should("include", expectedUrl);
     return this;
@@ -71,9 +72,34 @@ export class TravelSummaryPage extends BasePage {
     return this;
   }
 
+  // Verify random visa type is displayed
+  verifyRandomVisaTypeDisplayed(expectedVisaType: string): TravelSummaryPage {
+    this.verifySummaryValue("Visa type", expectedVisaType);
+    cy.log(`Verified random visa type on summary page: ${expectedVisaType}`);
+    return this;
+  }
+
+  // Method to get the displayed visa type
+  getDisplayedVisaType(): Cypress.Chainable<string> {
+    return cy
+      .contains("dt.govuk-summary-list__key", "Visa type")
+      .siblings(".govuk-summary-list__value")
+      .invoke("text")
+      .then((text) => text.trim());
+  }
+
+  // Verify visa type is one of the valid options
+  verifyVisaTypeIsValid(): TravelSummaryPage {
+    this.getDisplayedVisaType().then((displayedVisa) => {
+      expect(visaType).to.include(displayedVisa);
+      cy.log(`Verified visa type "${displayedVisa}" is valid`);
+    });
+    return this;
+  }
+
   // Verify all required summary values are present
   verifyRequiredSummaryValues(
-    visaType: string,
+    visaTypeValue: string,
     address1: string,
     townOrCity: string,
     postcode: string,
@@ -81,7 +107,7 @@ export class TravelSummaryPage extends BasePage {
     email: string,
   ): TravelSummaryPage {
     const expectedValues = {
-      "Visa type": visaType,
+      "Visa type": visaTypeValue,
       "UK address line 1": address1,
       "UK town or city": townOrCity,
       "UK postcode": postcode,
@@ -93,6 +119,26 @@ export class TravelSummaryPage extends BasePage {
       this.verifySummaryValue(key, value);
     });
     return this;
+  }
+
+  // Verify summary values with random visa type
+  verifyRequiredSummaryValuesWithRandomVisa(
+    expectedVisaType: string,
+    address1: string,
+    townOrCity: string,
+    postcode: string,
+    mobileNumber: string,
+    email: string,
+  ): TravelSummaryPage {
+    cy.log(`Verifying summary with random visa type: ${expectedVisaType}`);
+    return this.verifyRequiredSummaryValues(
+      expectedVisaType,
+      address1,
+      townOrCity,
+      postcode,
+      mobileNumber,
+      email,
+    );
   }
 
   // Verify back link points to travel details
@@ -185,6 +231,16 @@ export class TravelSummaryPage extends BasePage {
     return this;
   }
 
+  // Complete form submission flow with random visa verification
+  completeFormSubmissionWithRandomVisa(expectedVisaType: string): TravelSummaryPage {
+    this.verifyPageLoaded();
+    this.verifyRandomVisaTypeDisplayed(expectedVisaType);
+    this.verifyVisaTypeIsValid();
+    this.submitForm();
+    this.verifyRedirectionToConfirmationPage();
+    return this;
+  }
+
   // Verify current page structure
   verifyCurrentPageStructure(): TravelSummaryPage {
     this.verifyPageLoaded();
@@ -196,9 +252,29 @@ export class TravelSummaryPage extends BasePage {
     return this;
   }
 
+  // Verify current page structure with random visa
+  verifyCurrentPageStructureWithRandomVisa(expectedVisaType: string): TravelSummaryPage {
+    this.verifyPageLoaded();
+    this.verifyRandomVisaTypeDisplayed(expectedVisaType);
+    this.verifyVisaTypeIsValid();
+    this.verifyAllFieldsPresent();
+    this.verifyChangeLinksTargets();
+    this.verifyOptionalAddressField();
+    this.verifyBackLink();
+    this.verifyServiceName();
+    return this;
+  }
+
   // Verify page elements
   verifyAllPageElements(): TravelSummaryPage {
     this.verifyCurrentPageStructure();
+    this.verifyBreadcrumbNavigation();
+    return this;
+  }
+
+  // Verify page elements with random visa
+  verifyAllPageElementsWithRandomVisa(expectedVisaType: string): TravelSummaryPage {
+    this.verifyCurrentPageStructureWithRandomVisa(expectedVisaType);
     this.verifyBreadcrumbNavigation();
     return this;
   }
@@ -224,5 +300,31 @@ export class TravelSummaryPage extends BasePage {
       }
     });
     return this;
+  }
+
+  // Method to change visa type from summary page and verify random selection
+  changeVisaTypeToRandom(): Cypress.Chainable<string> {
+    const newRandomVisa = randomElement(visaType);
+    cy.log(`Changing to new random visa type: ${newRandomVisa}`);
+
+    this.clickChangeLink("Visa type");
+    cy.get('[name="visaType"]').select(newRandomVisa);
+    cy.get('button[type="submit"]').click();
+
+    return cy.wrap(newRandomVisa);
+  }
+
+  // Method to verify the change flow works with random visa types
+  verifyChangeFlowWithRandomVisa(originalVisa: string): Cypress.Chainable<string> {
+    // Verify original visa is displayed
+    this.verifyRandomVisaTypeDisplayed(originalVisa);
+
+    // Change to a different random visa
+    return this.changeVisaTypeToRandom().then((newVisa) => {
+      // Verify the new visa is displayed
+      this.verifyRandomVisaTypeDisplayed(newVisa);
+      this.verifyVisaTypeIsValid();
+      return cy.wrap(newVisa);
+    });
   }
 }

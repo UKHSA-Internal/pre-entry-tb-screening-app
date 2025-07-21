@@ -27,7 +27,7 @@ test("Medical screening confirmation page renders correctly & redirects on butto
   );
 
   const user = userEvent.setup();
-  expect(screen.getByText("Medical screening record created")).toBeTruthy();
+  expect(screen.getByText("Medical history and TB symptoms confirmed")).toBeTruthy();
   await user.click(screen.getAllByRole("button")[0]);
   expect(useNavigateMock).toHaveBeenLastCalledWith("/tracker");
 });

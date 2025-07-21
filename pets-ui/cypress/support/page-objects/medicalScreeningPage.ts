@@ -20,18 +20,25 @@ export class MedicalScreeningPage extends BasePage {
     super("/medical-screening");
   }
 
+  // Verify Medical Screening Page
   verifyPageLoaded(): MedicalScreeningPage {
-    this.verifyPageHeading("Medical screening");
+    cy.url().should("include", "/medical-screening");
+    cy.get("h1.govuk-heading-l").should("contain", "Medical screening");
+    cy.contains(
+      "p",
+      "Enter the applicant's profile information. You should answer every question.",
+    ).should("be.visible");
     return this;
   }
 
+  // Fill in form with valid data
   fillAge(age: string): MedicalScreeningPage {
-    this.fillTextInput("Applicant age", age);
+    cy.get("#age-field").clear().type(age);
     return this;
   }
 
   selectTbSymptoms(option: "Yes" | "No"): MedicalScreeningPage {
-    this.checkRadio("tbSymptoms", option);
+    cy.get(`input[name="tbSymptoms"][value="${option}"]`).check({ force: true });
     return this;
   }
 
@@ -47,64 +54,52 @@ export class MedicalScreeningPage extends BasePage {
   }
 
   fillOtherSymptoms(text: string): MedicalScreeningPage {
-    this.fillTextarea('If you have selected "Other symptoms", list these', text);
+    cy.get("#other-symptoms-detail-field").clear().type(text);
     return this;
   }
 
   selectUnderElevenOption(option: string): MedicalScreeningPage {
-    this.checkRadio("underElevenConditions", option);
+    cy.get(`input[name="underElevenConditions"][value="${option}"]`).check({ force: true });
     return this;
   }
 
   fillUnderElevenDetails(text: string): MedicalScreeningPage {
-    this.fillTextarea("You can give details of the procedure or condition", text);
+    cy.get("#under-eleven-conditions-detail-field").clear().type(text);
     return this;
   }
 
   selectPreviousTb(option: "Yes" | "No"): MedicalScreeningPage {
-    this.checkRadio("previousTb", option);
+    cy.get(`input[name="previousTb"][value="${option}"]`).check({ force: true });
     return this;
   }
 
   fillPreviousTbDetails(text: string): MedicalScreeningPage {
-    cy.contains("fieldset", "Has the applicant ever had tuberculosis?")
-      .contains("label", "If yes, give details")
-      .parent()
-      .find("textarea")
-      .should("be.visible")
-      .clear()
-      .type(text);
+    cy.get("#previous-tb-detail-field").clear().type(text);
     return this;
   }
 
   selectCloseContact(option: "Yes" | "No"): MedicalScreeningPage {
-    this.checkRadio("closeContactWithTb", option);
+    cy.get(`input[name="closeContactWithTb"][value="${option}"]`).check({ force: true });
     return this;
   }
 
   fillCloseContactDetails(text: string): MedicalScreeningPage {
-    cy.contains("fieldset", "active pulmonary tuberculosis")
-      .contains("label", "If yes, give details")
-      .parent()
-      .find("textarea")
-      .should("be.visible")
-      .clear()
-      .type(text);
+    cy.get("#close-contact-with-tb-detail-field").clear().type(text);
     return this;
   }
 
   selectPregnancyStatus(option: "Yes" | "No" | "Don't know" | "N/A"): MedicalScreeningPage {
-    this.checkRadio("pregnant", option);
+    cy.get(`input[name="pregnant"][value="${option}"]`).check({ force: true });
     return this;
   }
 
   selectMenstrualPeriods(option: "Yes" | "No" | "N/A"): MedicalScreeningPage {
-    this.checkRadio("menstrualPeriods", option);
+    cy.get(`input[name="menstrualPeriods"][value="${option}"]`).check({ force: true });
     return this;
   }
 
   fillPhysicalExamNotes(text: string): MedicalScreeningPage {
-    this.fillTextarea("Physical examination notes", text);
+    cy.get("#physical-exam-notes-field").clear().type(text);
     return this;
   }
 
@@ -142,13 +137,13 @@ export class MedicalScreeningPage extends BasePage {
 
   // Form submission
   submitForm(): MedicalScreeningPage {
-    super.submitForm("Save and continue");
+    cy.get('button[type="submit"]').contains("Save and continue").click();
     return this;
   }
 
-  // Check redirection
+  // Verify redirection to Medical Summary Page
   verifyRedirectedToSummary(): MedicalScreeningPage {
-    this.verifyUrlContains("/medical-summary");
+    cy.url().should("include", "/medical-summary");
     return this;
   }
 
@@ -247,6 +242,45 @@ export class MedicalScreeningPage extends BasePage {
       });
     });
 
+    return this;
+  }
+
+  // Verify all form fields are present
+  verifyAllFieldsPresent(): MedicalScreeningPage {
+    cy.get("#age-field").should("be.visible");
+    cy.get('input[name="tbSymptoms"]').should("exist");
+    cy.get('input[name="previousTb"]').should("exist");
+    cy.get('input[name="closeContactWithTb"]').should("exist");
+    cy.get('input[name="pregnant"]').should("exist");
+    cy.get('input[name="menstrualPeriods"]').should("exist");
+    cy.get("#physical-exam-notes-field").should("be.visible");
+    return this;
+  }
+
+  // Verify back link
+  verifyBackLink(): MedicalScreeningPage {
+    cy.get(".govuk-back-link")
+      .should("be.visible")
+      .and("have.attr", "href", "/tracker")
+      .and("contain", "Back");
+    return this;
+  }
+
+  // Verify service name
+  verifyServiceName(): MedicalScreeningPage {
+    cy.get(".govuk-header__service-name")
+      .should("be.visible")
+      .and("contain", "Complete UK Pre-Entry Health Screening")
+      .and("have.attr", "href", "/");
+    return this;
+  }
+
+  // Comprehensive page verification
+  verifyAllPageElements(): MedicalScreeningPage {
+    this.verifyPageLoaded();
+    this.verifyAllFieldsPresent();
+    this.verifyBackLink();
+    this.verifyServiceName();
     return this;
   }
 }

@@ -93,9 +93,10 @@ describe("ChestXrayFindings Form", () => {
       </Router>,
     );
 
-    const breadcrumbElement = screen.getByText("Application progress tracker");
-    expect(breadcrumbElement).toBeInTheDocument();
-    expect(breadcrumbElement.closest("a")).toHaveAttribute("href", "/tracker");
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/chest-xray-upload");
+    expect(link).toHaveClass("govuk-back-link");
 
     expect(screen.getByText("Important")).toBeInTheDocument();
     expect(
