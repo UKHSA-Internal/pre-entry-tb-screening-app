@@ -29,8 +29,6 @@ describe("TB Certificate Declaration Page", () => {
       </Router>,
     );
 
-    expect(screen.getByText("Name")).toBeInTheDocument;
-    expect(screen.getByText("Date of birth")).toBeInTheDocument;
     expect(screen.getByText("Has a TB clearance certificate been issued?")).toBeInTheDocument;
     expect(screen.getByText("Yes")).toBeInTheDocument;
     expect(screen.getByText("Give further details (optional)")).toBeInTheDocument;
@@ -88,9 +86,10 @@ describe("TB Certificate Declaration Page", () => {
       </Router>,
     );
 
-    const breadcrumbElement = screen.getByText("Application progress tracker");
-    expect(breadcrumbElement).toBeInTheDocument();
-    expect(breadcrumbElement.closest("a")).toHaveAttribute("href", "/tracker");
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/tracker");
+    expect(link).toHaveClass("govuk-back-link");
 
     expect(screen.getByText("Enter TB clearance certificate declaration")).toBeInTheDocument();
   });

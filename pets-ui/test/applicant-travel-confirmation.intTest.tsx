@@ -27,7 +27,7 @@ test("Travel confirmation page renders correctly & redirects on button click", a
   );
 
   const user = userEvent.setup();
-  expect(screen.getByText("Travel information record created")).toBeTruthy();
+  expect(screen.getByText("Travel information confirmed")).toBeTruthy();
   await user.click(screen.getAllByRole("button")[0]);
-  expect(useNavigateMock).toHaveBeenLastCalledWith("/medical-screening");
+  expect(useNavigateMock).toHaveBeenLastCalledWith("/tracker");
 });

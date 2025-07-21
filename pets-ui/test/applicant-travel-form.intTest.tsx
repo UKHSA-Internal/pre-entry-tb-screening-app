@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
+import TravelDetailsPage from "@/pages/travel-details";
 import ApplicantTravelForm from "@/sections/applicant-travel-form";
 import { renderWithProviders } from "@/utils/test-utils";
 
@@ -14,6 +15,11 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
     useNavigate: (): Mock => useNavigateMock,
   };
 });
+
+vi.mock("react-helmet-async", () => ({
+  Helmet: () => <>{}</>,
+  HelmetProvider: () => <>{}</>,
+}));
 
 describe("ApplicantTravelForm", () => {
   beforeEach(() => {
@@ -32,7 +38,7 @@ describe("ApplicantTravelForm", () => {
     const user = userEvent.setup();
 
     fireEvent.change(screen.getAllByRole("combobox")[0], {
-      target: { value: "Government Sponsored" },
+      target: { value: "Visitor" },
     });
     await user.type(screen.getByTestId("address-1"), "Edinburgh Castle, Castlehill");
     await user.type(screen.getByTestId("town-or-city"), "Edinburgh");
@@ -40,7 +46,7 @@ describe("ApplicantTravelForm", () => {
     await user.type(screen.getByTestId("mobile-number"), "07321900900");
     await user.type(screen.getByTestId("email"), "sigmund.sigmundson@asgard.gov");
 
-    expect(screen.getAllByRole("combobox")[0]).toHaveValue("Government Sponsored");
+    expect(screen.getAllByRole("combobox")[0]).toHaveValue("Visitor");
     expect(screen.getByTestId("address-1")).toHaveValue("Edinburgh Castle, Castlehill");
     expect(screen.getByTestId("town-or-city")).toHaveValue("Edinburgh");
     expect(screen.getByTestId("postcode")).toHaveValue("EH1 2NG");
@@ -57,7 +63,7 @@ describe("ApplicantTravelForm", () => {
       townOrCity: "Edinburgh",
       ukEmail: "sigmund.sigmundson@asgard.gov",
       ukMobileNumber: "07321900900",
-      visaType: "Government Sponsored",
+      visaType: "Visitor",
     });
     expect(useNavigateMock).toHaveBeenLastCalledWith("/travel-summary");
   });
@@ -79,6 +85,7 @@ describe("ApplicantTravelForm", () => {
       "Error: Select a visa type",
     );
   });
+
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
     renderWithProviders(
       <Router>
@@ -88,5 +95,18 @@ describe("ApplicantTravelForm", () => {
     await user.click(screen.getByRole("button"));
     const errorSummaryDiv = screen.getByTestId("error-summary");
     expect(errorSummaryDiv).toHaveFocus();
+  });
+
+  it("back link points to tracker", () => {
+    renderWithProviders(
+      <Router>
+        <TravelDetailsPage />
+      </Router>,
+    );
+
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/tracker");
+    expect(link).toHaveClass("govuk-back-link");
   });
 });

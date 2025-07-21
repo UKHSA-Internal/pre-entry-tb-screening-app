@@ -5,6 +5,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import { petsApi } from "@/api/api";
+import TravelSummaryPage from "@/pages/travel-summary";
 import TravelReview from "@/sections/applicant-travel-summary";
 import { ApplicationStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
@@ -17,6 +18,11 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
     useNavigate: (): Mock => useNavigateMock,
   };
 });
+
+vi.mock("react-helmet-async", () => ({
+  Helmet: () => <>{}</>,
+  HelmetProvider: () => <>{}</>,
+}));
 
 const travelState = {
   applicantUkAddress1: "Edinburgh Castle, Castlehill",
@@ -59,7 +65,9 @@ describe("TravelReview", () => {
     expect(screen.getAllByRole("term")[1]).toHaveTextContent("UK address line 1");
     expect(screen.getAllByRole("definition")[2]).toHaveTextContent("Edinburgh Castle, Castlehill");
     expect(screen.getAllByRole("term")[2]).toHaveTextContent("UK address line 2");
-    expect(screen.getAllByRole("definition")[4]).toHaveTextContent("Enter UK address line 2");
+    expect(screen.getAllByRole("definition")[4]).toHaveTextContent(
+      "Enter UK address line 2 (optional)",
+    );
     expect(screen.getAllByRole("term")[3]).toHaveTextContent("UK town or city");
     expect(screen.getAllByRole("definition")[5]).toHaveTextContent("Edinburgh");
     expect(screen.getAllByRole("term")[4]).toHaveTextContent("UK postcode");
@@ -94,5 +102,59 @@ describe("TravelReview", () => {
     expect(mock.history[0].url).toEqual("/application/abc-123/travel-information");
     expect(mock.history).toHaveLength(1);
     expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
+  });
+
+  test("back link points to tracker when status is complete", () => {
+    const preloadedState = {
+      travel: {
+        status: ApplicationStatus.COMPLETE,
+        visaType: "",
+        applicantUkAddress1: "",
+        applicantUkAddress2: "",
+        townOrCity: "",
+        postcode: "",
+        ukMobileNumber: "",
+        ukEmail: "",
+      },
+    };
+
+    renderWithProviders(
+      <Router>
+        <TravelSummaryPage />
+      </Router>,
+      { preloadedState },
+    );
+
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/tracker");
+    expect(link).toHaveClass("govuk-back-link");
+  });
+
+  test("back link points to travel details form page status is not complete", () => {
+    const preloadedState = {
+      travel: {
+        status: ApplicationStatus.IN_PROGRESS,
+        visaType: "",
+        applicantUkAddress1: "",
+        applicantUkAddress2: "",
+        townOrCity: "",
+        postcode: "",
+        ukMobileNumber: "",
+        ukEmail: "",
+      },
+    };
+
+    renderWithProviders(
+      <Router>
+        <TravelSummaryPage />
+      </Router>,
+      { preloadedState },
+    );
+
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/travel-details");
+    expect(link).toHaveClass("govuk-back-link");
   });
 });
