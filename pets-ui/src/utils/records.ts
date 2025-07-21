@@ -181,8 +181,8 @@ const visaOptions = [
     label: "Global Talent",
   },
   {
-    value: "High Potential Individual (HPI) ",
-    label: "High Potential Individual (HPI) ",
+    value: "High Potential Individual (HPI)",
+    label: "High Potential Individual (HPI)",
   },
   {
     value: "Scale-Up",
@@ -213,8 +213,8 @@ const visaOptions = [
     label: "Temporary Work – Creative Worker",
   },
   {
-    value: "Temporary Work – Religious Worker ",
-    label: "Temporary Work – Religious Worker ",
+    value: "Temporary Work – Religious Worker",
+    label: "Temporary Work – Religious Worker",
   },
   {
     value: "Temporary Work - Charity Worker",
@@ -233,8 +233,8 @@ const visaOptions = [
     label: "Hong Kong British National (Overseas)",
   },
   {
-    value: "Adult Dependent Relative ",
-    label: "Adult Dependent Relative ",
+    value: "Adult Dependent Relative",
+    label: "Adult Dependent Relative",
   },
   {
     value: "Victim of Domestic Abuse",
