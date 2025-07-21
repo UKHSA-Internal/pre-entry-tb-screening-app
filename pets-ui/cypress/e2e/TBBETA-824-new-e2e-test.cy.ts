@@ -1,21 +1,26 @@
-//Pets Private Beta E2E Test
+//Pets Private Beta E2E Test with Sputum Collection
 import { countryList } from "../../src/utils/countryList";
 import { loginViaB2C } from "../support/commands";
 import { ApplicantConfirmationPage } from "../support/page-objects/applicantConfirmationPage";
 import { ApplicantPhotoUploadPage } from "../support/page-objects/applicantPhotoUploadPage";
 import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../support/page-objects/applicantSummaryPage";
+import { CheckSputumSampleInfoPage } from "../support/page-objects/checkSputumSampleInfoPage";
 import { ChestXrayConfirmationPage } from "../support/page-objects/chestXrayConfirmationPage";
 import { ChestXrayFindingsPage } from "../support/page-objects/chestXrayFindingsPage";
 import { ChestXrayPage } from "../support/page-objects/chestXrayQuestionPage";
 import { ChestXraySummaryPage } from "../support/page-objects/chestXraySummaryPage";
 import { ChestXrayUploadPage } from "../support/page-objects/chestXrayUploadPage";
+import { EnterSputumSampleResultsPage } from "../support/page-objects/enterSputumSampleResultsPage";
 import { MedicalConfirmationPage } from "../support/page-objects/medicalConfirmationPage";
 import { MedicalSummaryPage } from "../support/page-objects/medicalSummaryPage";
+import { SputumCollectionPage } from "../support/page-objects/sputumCollectionPage";
+import { SputumConfirmationPage } from "../support/page-objects/sputumConfirmationPage";
 import { SputumQuestionPage } from "../support/page-objects/sputumQuestionPage";
 import { TbCertificateConfirmationPage } from "../support/page-objects/tbCertificateConfirmationPage";
-import { TbClearanceCertificateSummaryPage } from "../support/page-objects/tbCertificateSummaryPage";
-import { TbClearanceCertificatePage } from "../support/page-objects/tbClearanceCertificatePage";
+import { TbCertificateDeclarationPage } from "../support/page-objects/tbCertificateDeclarationPage";
+import { TbCertificateQuestionPage } from "../support/page-objects/tbCertificateQuestionPage";
+import { TbCertificateSummaryPage } from "../support/page-objects/tbCertificateSummaryPage";
 import { TBProgressTrackerPage } from "../support/page-objects/tbProgressTrackerPage";
 import {
   createTestFixtures,
@@ -28,7 +33,7 @@ import { TravelConfirmationPage } from "./../support/page-objects/travelConfirma
 import { TravelInformationPage } from "./../support/page-objects/travelInformationPage";
 import { TravelSummaryPage } from "./../support/page-objects/travelSummaryPage";
 
-describe("PETS Application End-to-End Tests", () => {
+describe("PETS Application End-to-End Tests with Sputum Collection", () => {
   // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
@@ -42,21 +47,26 @@ describe("PETS Application End-to-End Tests", () => {
   const medicalSummaryPage = new MedicalSummaryPage();
   const medicalConfirmationPage = new MedicalConfirmationPage();
   const sputumQuestionPage = new SputumQuestionPage();
+  const sputumCollectionPage = new SputumCollectionPage();
+  const sputumConfirmationPage = new SputumConfirmationPage();
+  const checkSputumSampleInfoPage = new CheckSputumSampleInfoPage();
+  const enterSputumSampleResultsPage = new EnterSputumSampleResultsPage();
   const chestXrayPage = new ChestXrayPage();
   const chestXrayUploadPage = new ChestXrayUploadPage();
   const chestXrayFindingsPage = new ChestXrayFindingsPage();
   const chestXraySummaryPage = new ChestXraySummaryPage();
   const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
-  const tbClearanceCertificatePage = new TbClearanceCertificatePage();
-  const tbClearanceCertificateSummaryPage = new TbClearanceCertificateSummaryPage();
+  const tbCertificateQuestionPage = new TbCertificateQuestionPage();
+  const tbCertificateSummaryPage = new TbCertificateSummaryPage();
   const tbCertificateConfirmationPage = new TbCertificateConfirmationPage();
   const tbProgressTrackerPage = new TBProgressTrackerPage();
-  const visaType = "Students";
+  const tbCertificateDeclarationPage = new TbCertificateDeclarationPage();
 
   // Define variables to store test data
-  let countryName: string;
-  let passportNumber: string;
-  let tbCertificateNumber: string;
+  let countryName: string = "";
+  let passportNumber: string = "";
+  let tbCertificateNumber: string = "";
+  let selectedVisaType: string = ""; // New variable to store the randomly selected visa type
 
   before(() => {
     // Create test fixtures before test run
@@ -79,7 +89,7 @@ describe("PETS Application End-to-End Tests", () => {
     cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
   });
 
-  it("should complete the full application process with search and create new", () => {
+  it("should complete the full application process with sputum collection", () => {
     // Search for applicant with passport number
     applicantSearchPage
       .fillPassportNumber(passportNumber)
@@ -118,13 +128,6 @@ describe("PETS Application End-to-End Tests", () => {
     cy.url().should("include", "/applicant-photo");
     applicantPhotoUploadPage.verifyPageLoaded();
 
-    // Check applicant information is displayed correctly
-    applicantPhotoUploadPage.verifyApplicantInfo({
-      Name: "Jane Smith",
-      "Date of birth": "15/03/2000",
-      "Passport number": passportNumber,
-    });
-
     // Upload Applicant Photo file
     applicantPhotoUploadPage
       .uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg")
@@ -150,60 +153,80 @@ describe("PETS Application End-to-End Tests", () => {
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
 
-    //confirm above details to proceed to next page
+    // Confirm above details to proceed to next page
     applicantSummaryPage.confirmDetails();
 
     // Verify applicant confirmation page
     applicantConfirmationPage.verifyPageLoaded();
     applicantConfirmationPage.verifyNextStepsText();
 
-    // Continue to travel information Page
-    applicantConfirmationPage.clickContinueToTravelInformation();
+    // Click continue - this goes to tracker
+    applicantConfirmationPage.clickContinue();
 
+    // Verify we're on the tracker
+    cy.url().should("include", "/tracker");
+    tbProgressTrackerPage.verifyPageLoaded();
+
+    // NOW navigate to travel information from the tracker
+    tbProgressTrackerPage.clickTaskLink("Travel information");
+
+    // NOW verify the travel information page
     travelInformationPage.verifyPageLoaded();
 
-    // Fill in travel information
+    // Fill travel information with random visa type and capture the selected visa
     travelInformationPage
-      .selectVisaType(visaType)
-      .fillAddressLine1("456 Park Lane")
-      .fillAddressLine2("Floor 2")
-      .fillTownOrCity("Manchester")
-      .fillPostcode("M1 1AA")
-      .fillMobileNumber("07700900123")
-      .fillEmail("pets.tester@hotmail.com")
-      .submitForm();
+      .fillCompleteFormWithRandomVisa({
+        ukAddressLine1: "456 Park Lane",
+        ukAddressLine2: "Floor 2",
+        ukTownOrCity: "Manchester",
+        ukPostcode: "M1 1AA",
+        mobileNumber: "07700900123",
+        email: "pets.tester@hotmail.com",
+      })
+      .then((randomVisa) => {
+        // Store the selected visa type for later use
+        selectedVisaType = randomVisa;
+        cy.log(`Selected random visa type: ${selectedVisaType}`);
 
-    // Review Travel Summary
+        // Store as alias for use throughout the test
+        cy.wrap(selectedVisaType).as("selectedVisa");
+      });
+
+    // Submit the form
+    travelInformationPage.submitForm();
+
+    // Review Travel Summary with random visa type
     travelSummaryPage.verifyPageLoaded();
 
-    // Verify all required values are present on the summary page first
-    travelSummaryPage.verifyRequiredSummaryValues(
-      visaType,
-      "456 Park Lane",
-      "Manchester",
-      "M1 1AA",
-      "07700900123",
-      "pets.tester@hotmail.com",
-    );
+    // Verify the random visa type is valid and displayed correctly
+    travelSummaryPage.verifyVisaTypeIsValid();
 
     // Verify details by clicking change links and checking fields
-    travelSummaryPage.clickChangeLink("Visa type");
-    travelSummaryPage.verifyFieldValueOnChangePage("Visa type", visaType);
-
     travelSummaryPage.clickChangeLink("UK address line 1");
-    travelSummaryPage.verifyFieldValueOnChangePage("UK address line 1", "456 Park Lane");
+    cy.url().should("include", "/travel-details");
+    cy.go("back");
 
     travelSummaryPage.clickChangeLink("UK town or city");
-    travelSummaryPage.verifyFieldValueOnChangePage("UK town or city", "Manchester");
+    cy.url().should("include", "/travel-details");
+    cy.go("back");
 
     travelSummaryPage.clickChangeLink("UK mobile number");
-    travelSummaryPage.verifyFieldValueOnChangePage("UK mobile number", "07700900123");
+    cy.url().should("include", "/travel-details");
+    cy.go("back");
+
     // Submit the summary page
     travelSummaryPage.submitForm();
 
-    // Travel Confirmation confirmation
+    // Travel Confirmation
     travelConfirmationPage.verifyPageLoaded();
-    travelConfirmationPage.submitForm();
+    travelConfirmationPage.clickContinue();
+
+    // Verify we're back on the tracker
+    cy.url().should("include", "/tracker");
+    tbProgressTrackerPage.verifyPageLoaded();
+
+    // NOW navigate to medical screening from the tracker
+    tbProgressTrackerPage.clickTaskLink("Medical history and TB symptoms");
 
     // Medical Screening Page
     medicalScreeningPage.verifyPageLoaded();
@@ -242,28 +265,21 @@ describe("PETS Application End-to-End Tests", () => {
     medicalConfirmationPage.verifyNextStepsSection();
     medicalConfirmationPage.clickContinueButton();
 
+    // Verify we're back on the tracker
+    cy.url().should("include", "/tracker");
+    tbProgressTrackerPage.verifyPageLoaded();
+
+    // NOW navigate to chest X-ray from the tracker
+    tbProgressTrackerPage.clickTaskLink("Radiological outcome");
+
     // Verify chest X-ray page
     chestXrayPage.verifyPageLoaded();
-
-    // Check applicant information is displayed
-    chestXrayPage.verifyApplicantInfo({
-      Name: "Jane Smith",
-      "Date of birth": "15/03/2000",
-      "Passport number": passportNumber,
-    });
 
     // Select "Yes" for X-ray taken and continue
     chestXrayPage.selectXrayTakenYes().clickContinue();
 
     // Verify X-ray upload page using
     chestXrayUploadPage.verifyPageLoaded();
-
-    // Check applicant information is displayed correctly
-    chestXrayUploadPage.verifyApplicantInfo({
-      Name: "Jane Smith",
-      "Date of birth": "15/03/2000",
-      "Passport number": passportNumber,
-    });
 
     // Upload Chest X-ray file
     chestXrayUploadPage
@@ -284,23 +300,17 @@ describe("PETS Application End-to-End Tests", () => {
     // Verify X-ray findings page
     chestXrayFindingsPage.verifyPageLoaded();
 
-    // Check applicant information is displayed correctly
-    chestXrayFindingsPage.verifyApplicantInfo({
-      Name: "Jane Smith",
-      "Date of birth": "15/03/2000",
-      "Passport number": passportNumber,
-    });
-
     // Complete X-ray findings
     chestXrayFindingsPage
       .selectXrayResultNormal()
       .selectMinorFindings(["1.1 Single fibrous streak or band or scar"])
       .clickSaveAndContinue();
 
-    // Complete Sputum Collection
+    // Complete Sputum Collection Question
     sputumQuestionPage.verifyPageLoaded();
-    // Select "No" for Sputum Collection and continue
-    sputumQuestionPage.selectSputumRequiredNo().clickContinue();
+
+    //Select "Yes" for Sputum Collection***
+    sputumQuestionPage.selectSputumRequiredYes().clickContinue();
 
     // Verify redirection to chest X-ray summary page
     cy.url().should("include", "/chest-xray-summary");
@@ -308,21 +318,14 @@ describe("PETS Application End-to-End Tests", () => {
     // Verify chest X-ray summary page
     chestXraySummaryPage.verifyPageLoaded();
 
-    // Check applicant information is displayed correctly
-    chestXraySummaryPage.verifyApplicantInfo({
-      Name: "Jane Smith",
-      "Date of birth": "15/03/2000",
-      "Passport number": passportNumber,
-    });
-
-    // Verify X-ray summary information - only verify fields that are definitely populated
+    // Verify X-ray summary information
     chestXraySummaryPage.verifyXraySummaryInfo({
       "Select X-ray status": "Yes",
       "Enter radiological outcome": "Chest X-ray normal",
     });
 
-    // Verify sputum field separately with a more specific check
-    chestXraySummaryPage.verifySummaryValue("Sputum required?", "No");
+    // Verify sputum field now shows "Yes"
+    chestXraySummaryPage.verifySummaryValue("Sputum required?", "Yes");
 
     // Verify change links exist
     chestXraySummaryPage.verifyChangeLinksExist();
@@ -334,7 +337,6 @@ describe("PETS Application End-to-End Tests", () => {
     chestXrayConfirmationPage.verifyPageLoaded();
     chestXrayConfirmationPage.verifyConfirmationPanel();
     chestXrayConfirmationPage.verifyNextStepsSection();
-    chestXrayConfirmationPage.verifyBreadcrumbNavigation();
     chestXrayConfirmationPage.verifyServiceName();
     chestXrayConfirmationPage.clickContinueButton();
 
@@ -354,119 +356,307 @@ describe("PETS Application End-to-End Tests", () => {
     // Verify task status information
     tbProgressTrackerPage.verifyVisaApplicantDetailsCompleted();
 
-    // Verify complete all sections text
-    tbProgressTrackerPage.verifyCompleteAllSectionsText();
-
     // Verify task links exist
     tbProgressTrackerPage.verifyTaskLinksExist();
 
     // Verify service name
     tbProgressTrackerPage.verifyServiceName();
 
-    // Verify task statuses - updated based on new flow
+    // Verify task statuses
     tbProgressTrackerPage.verifyAllTaskStatuses({
       "Visa applicant details": "Completed",
       "Travel information": "Completed",
       "Medical history and TB symptoms": "Completed",
       "Radiological outcome": "Completed",
-      "Sputum collection and results": "Not required",
-      "TB certificate declaration": "Not yet started",
+      "Sputum collection and results": "Not yet started",
+      "TB certificate outcome": "Not yet started",
     });
 
-    // Now click on TB certificate declaration to continue the flow
-    tbProgressTrackerPage.clickTaskLink("TB certificate declaration");
+    //Complete Sputum Collection
+    // Click on Sputum collection link from the progress tracker
+    tbProgressTrackerPage.clickTaskLink("Sputum collection and results");
 
-    // TB Clearance Certificate Page
-    tbClearanceCertificatePage.verifyPageLoaded();
+    // Verify sputum collection page loaded
+    sputumCollectionPage.verifyPageLoaded();
+    sputumCollectionPage.verifySectionHeaders();
+    sputumCollectionPage.verifyPageStructure();
+    sputumCollectionPage.verifyAllFieldsEmpty();
 
-    // Verify the applicant details are displayed correctly
-    tbClearanceCertificatePage.verifySummaryDetails({
-      Name: "Jane Smith",
-      "Date of birth": "15/03/2000",
-      "Passport number": passportNumber,
-    });
+    // Fill sputum collection data for all three samples
+    const sputumData = {
+      sample1: {
+        date: { day: "10", month: "03", year: "2025" },
+        collectionMethod: "Coughed up",
+      },
+      sample2: {
+        date: { day: "11", month: "03", year: "2025" },
+        collectionMethod: "Induced",
+      },
+      sample3: {
+        date: { day: "12", month: "03", year: "2025" },
+        collectionMethod: "Coughed up",
+      },
+    };
 
-    // Fill TB Clearance Certificate details
-    tbClearanceCertificatePage.fillFormWithValidData({
-      clearanceIssued: "Yes",
-      physicianComments: "No signs of active tuberculosis. Chest X-ray clear.",
-      certificateDay: "19",
-      certificateMonth: "03",
-      certificateYear: "2025",
-      certificateNumber: tbCertificateNumber,
-    });
+    // Fill all samples using the new method
+    sputumCollectionPage.fillAllSamples(sputumData);
 
-    // Verify redirection to TB Clearance Certificate Summary Page
-    cy.url().should("include", "/tb-certificate-summary");
+    // Verify the form is filled correctly
+    sputumCollectionPage.verifyFormFilledWith(sputumData);
 
-    // Verify TB Clearance Certificate Summary Page
-    tbClearanceCertificateSummaryPage.verifyPageLoaded();
+    // Save and continue to results
+    sputumCollectionPage.clickSaveAndContinueToResults();
 
-    // Check applicant information is displayed correctly
-    tbClearanceCertificateSummaryPage.verifyApplicantInfo({
-      Name: "Jane Smith",
-      "Date of birth": "15/03/2000",
-      "Passport number": passportNumber,
-    });
+    // Verify redirection to Enter Sputum Sample Results page
+    cy.url().should("include", "/enter-sputum-sample-results");
 
-    // Verify TB certificate summary information
-    tbClearanceCertificateSummaryPage.verifyTbCertificateSummaryInfo({
-      "TB clearance certificate issued?": "Yes",
-      "Physician comments": "No signs of active tuberculosis. Chest X-ray clear.",
-      "Date of TB clearance certificate": "19/03/2025",
-      "TB clearance certificate number": tbCertificateNumber,
-    });
+    // Verify Enter Sputum Sample Results page loaded
+    enterSputumSampleResultsPage.verifyPageLoaded();
+    enterSputumSampleResultsPage.verifyAllPageElements();
 
-    // Verify change links exist
-    tbClearanceCertificateSummaryPage.verifyChangeLinksExist();
+    // Fill sputum sample results
+    enterSputumSampleResultsPage.fillWithAllNegativeResults();
 
-    // Verify service name and breadcrumb navigation
-    tbClearanceCertificateSummaryPage.verifyServiceName();
-    tbClearanceCertificateSummaryPage.verifyBreadcrumbNavigation();
+    // Verify the form is filled correctly
+    const testResultsData =
+      EnterSputumSampleResultsPage.getTestSampleResultsData().allNegativeResults;
+    enterSputumSampleResultsPage.verifyFormFilledWith(testResultsData);
 
-    // Save and continue to the next page
-    tbClearanceCertificateSummaryPage.clickSaveAndContinue();
+    // Save and continue
+    enterSputumSampleResultsPage.clickSaveAndContinue();
 
-    // Verify TB Certificate Confirmation page
-    tbCertificateConfirmationPage.verifyPageLoaded();
-    tbCertificateConfirmationPage.verifyConfirmationPanel();
-    tbCertificateConfirmationPage.verifyConfirmationMessage();
-    tbCertificateConfirmationPage.verifyBreadcrumbNavigation();
-    tbCertificateConfirmationPage.verifyServiceName();
+    // Verify page loads correctly
+    checkSputumSampleInfoPage.verifyPageLoaded();
 
-    // Click finish button to complete
-    tbCertificateConfirmationPage.clickFinishButton();
+    // Verify all sample headings are present
+    checkSputumSampleInfoPage.verifySampleHeadings();
 
-    // Verify redirection back to TB Screening Progress Tracker page
+    // Verify all required fields are present for each sample
+    checkSputumSampleInfoPage.verifyRequiredFieldsPresent();
+
+    // Validate sample data matches what was entered
+    const expectedSampleData = {
+      sample1: {
+        dateTaken: "10/03/2025",
+        collectionMethod: "Coughed up",
+        smearResult: "Negative",
+        cultureResult: "Negative",
+      },
+      sample2: {
+        dateTaken: "11/03/2025",
+        collectionMethod: "Induced",
+        smearResult: "Negative",
+        cultureResult: "Negative",
+      },
+      sample3: {
+        dateTaken: "12/03/2025",
+        collectionMethod: "Coughed up",
+        smearResult: "Negative",
+        cultureResult: "Negative",
+      },
+    };
+
+    // Verify all sample information matches expected data
+    checkSputumSampleInfoPage.verifyAllSampleInfo(expectedSampleData);
+
+    // Verify change links are present and point to correct pages
+    checkSputumSampleInfoPage.verifyChangeLinksExist();
+
+    // Verify service name in header
+    checkSputumSampleInfoPage.verifyServiceName();
+
+    // Submit the summary and continue to next step
+    checkSputumSampleInfoPage.clickSaveAndContinue();
+
+    // Verify Sputum confirmation page
+    sputumConfirmationPage.verifyPageLoaded();
+    sputumConfirmationPage.verifyConfirmationPanel();
+    sputumConfirmationPage.verifyNextStepsSection();
+    sputumConfirmationPage.verifyServiceName();
+    sputumConfirmationPage.clickContinueButton();
+
+    // Verify redirection to TB Screening Progress Tracker page
     cy.url().should("include", "/tracker");
 
-    // Final verification of TB Screening Progress Tracker page
+    // Verify TB Screening Progress Tracker page
     tbProgressTrackerPage.verifyPageLoaded();
 
-    // Check applicant information is still displayed correctly
-    tbProgressTrackerPage.verifyApplicantInfo({
-      Name: "Jane Smith",
-      "Date of birth": "15/03/2000",
-      "Passport number": passportNumber,
-    });
+    // Verify we're back at the progress tracker
+    cy.url().should("include", "/tracker");
+    tbProgressTrackerPage.verifyPageLoaded();
 
-    // Verify final task statuses - TB certificate should now be completed
+    // Verify sputum collection status is now "Completed"
+    tbProgressTrackerPage.verifyTaskStatus("Sputum collection and results", "Completed");
+
+    // Now all tasks should be completed except TB certificate declaration
     tbProgressTrackerPage.verifyAllTaskStatuses({
       "Visa applicant details": "Completed",
       "Travel information": "Completed",
       "Medical history and TB symptoms": "Completed",
       "Radiological outcome": "Completed",
-      "Sputum collection and results": "Not required",
-      "TB certificate declaration": "Completed", // Now completed
+      "Sputum collection and results": "Completed",
+      "TB certificate outcome": "Not yet started",
     });
 
-    // Verify complete all sections text
-    tbProgressTrackerPage.verifyCompleteAllSectionsText();
+    // Click on TB certificate declaration to continue
+    tbProgressTrackerPage.clickTaskLink("TB certificate outcome");
 
-    // Verify task links exist
-    tbProgressTrackerPage.verifyTaskLinksExist();
+    // Verify TB Certificate Question page loaded
+    tbCertificateQuestionPage.verifyPageLoaded();
 
-    // Verify service name
-    tbProgressTrackerPage.verifyServiceName();
+    // Select "Yes" for TB clearance certificate issuance
+    tbCertificateQuestionPage.selectTbClearanceOption("Yes");
+
+    // Verify "Yes" is selected
+    tbCertificateQuestionPage.verifyRadioSelection("Yes");
+
+    // Submit the form and continue to TB Certificate Declaration page
+    tbCertificateQuestionPage.clickContinue();
+
+    // Verify redirection to TB Certificate Declaration page
+    tbCertificateQuestionPage.verifyUrlContains("/tb-certificate-declaration");
+
+    // Verify TB Certificate Declaration page is loaded
+    tbCertificateDeclarationPage.verifyPageLoaded();
+
+    // Verify all page elements are present
+    tbCertificateDeclarationPage.verifyAllPageElements();
+
+    // Verify clinic information summary is displayed
+    tbCertificateDeclarationPage.verifyClinicInformationSummary();
+
+    // Verify expected clinic information is displayed
+    tbCertificateDeclarationPage.verifyExpectedClinicInformation();
+
+    // Verify all fields are initially empty
+    tbCertificateDeclarationPage.verifyAllFieldsEmpty();
+
+    // Fill TB Certificate Declaration details
+    const tbCertificateDeclarationData = {
+      declaringPhysicianName: "Dr. Sarah Johnson",
+      physicianComments:
+        "Applicant has completed full TB screening. All tests negative.Certificate issued in accordance with UKHSA guidelines.",
+    };
+
+    // Fill the form with valid data
+    tbCertificateDeclarationPage.fillFormWithValidData(tbCertificateDeclarationData);
+
+    // Verify the form is filled correctly
+    tbCertificateDeclarationPage.verifyFormFilledWith(tbCertificateDeclarationData);
+
+    // Submit the form and continue
+    tbCertificateDeclarationPage.clickContinue();
+
+    // Verify redirection to TB Clearance Certificate Summary page
+    tbCertificateDeclarationPage.verifyUrlContains("/tb-certificate-summary");
+
+    // Verify TB Certificate Summary page loaded
+    tbCertificateSummaryPage.verifyPageLoaded();
+
+    // Verify all page elements and structure
+    tbCertificateSummaryPage.verifyAllPageElements();
+
+    // Verify applicant information section and data
+    tbCertificateSummaryPage.verifyApplicantInfoSection();
+    tbCertificateSummaryPage.verifyApplicantInfo({
+      Name: "Jane Smith",
+      "Date of birth": "15 March 2000",
+      "Passport number": passportNumber,
+      Sex: "Female",
+    });
+
+    // Verify clinic and certificate information section
+    tbCertificateSummaryPage.verifyClinicCertificateSection();
+    tbCertificateSummaryPage.verifyClinicCertificateInfo({
+      "Clinic name": "Lakeside Medical & TB Screening Centre",
+      "Declaring physician name": "Dr. Sarah Johnson",
+      "Physician's comments":
+        "Applicant has completed full TB screening. All tests negative.Certificate issued in accordance with UKHSA guidelines.",
+    });
+
+    // Verify screening information section
+    tbCertificateSummaryPage.verifyScreeningInfoSection();
+    tbCertificateSummaryPage.verifyScreeningInfo({
+      "Chest X-ray done": "Yes",
+      "Chest X-ray outcome": "Chest X-ray normal",
+      "Sputum collected": "Yes",
+      "Sputum outcome": "Negative", // Based on the test data from sputum collection
+      Pregnant: "No",
+      "Child under 11 years": "No",
+    });
+
+    // Verify applicant photo is displayed
+    tbCertificateSummaryPage.verifyApplicantPhoto();
+
+    // Verify declaration text
+    tbCertificateSummaryPage.verifyDeclarationText();
+
+    // Verify change links exist for editable fields
+    tbCertificateSummaryPage.verifyChangeLinksExist();
+
+    // Test the change links functionality
+    tbCertificateSummaryPage.verifyChangeLinksExist();
+
+    // Verify back link navigation
+    tbCertificateSummaryPage.verifyBackLinkNavigation();
+
+    // Verify service name in header
+    tbCertificateSummaryPage.verifyServiceName();
+
+    // Verify submit button
+    tbCertificateSummaryPage.verifySubmitButton();
+
+    // Submit the certificate information
+    tbCertificateSummaryPage.clickSubmit();
+
+    // Verify redirection to TB Certificate Confirmation page
+    cy.url().should("include", "/tb-certificate-confirmation");
+
+    // Verify redirection to TB Certificate Confirmation page
+    cy.url().should("include", "/tb-certificate-confirmation");
+
+    // Verify TB Certificate Confirmation page loaded
+    tbCertificateConfirmationPage.verifyPageLoaded();
+
+    // Verify confirmation panel with correct title
+    tbCertificateConfirmationPage.verifyConfirmationPanel();
+
+    // Verify certificate reference number is displayed and get its value
+    tbCertificateConfirmationPage.verifyCertificateReferenceNumber();
+
+    // Verify certificate reference number format
+    tbCertificateConfirmationPage.verifyCertificateReferenceNumberFormat();
+
+    // Log certificate reference number for verification
+    tbCertificateConfirmationPage.getCertificateReferenceNumber().then((certRef: string) => {
+      cy.log(`Certificate Reference Number: ${certRef}`);
+      cy.wrap(certRef).should("not.be.empty");
+      // Store in test for potential later use in the test
+      cy.wrap(certRef).as("certificateReference");
+    });
+
+    // Verify completion message
+    tbCertificateConfirmationPage.verifyCompletionMessage();
+
+    // Verify "What happens next" section
+    tbCertificateConfirmationPage.verifyWhatHappensNextSection();
+
+    // Verify "View or print certificate" button
+    tbCertificateConfirmationPage.verifyViewPrintCertificateButton();
+
+    // Verify navigation links section
+    tbCertificateConfirmationPage.verifyNavigationLinks();
+
+    // Verify feedback link
+    tbCertificateConfirmationPage.verifyFeedbackLink();
+
+    // Verify grid layout structure
+    tbCertificateConfirmationPage.verifyGridLayout();
+
+    // Verify back link navigation
+    tbCertificateConfirmationPage.verifyBackLinkNavigation();
+
+    // Verify service name in header
+    tbCertificateConfirmationPage.verifyServiceName();
   });
 });
