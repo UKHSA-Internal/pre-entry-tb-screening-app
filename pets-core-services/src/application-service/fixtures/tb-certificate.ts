@@ -23,6 +23,7 @@ export const seededTbCertificate: Array<
   {
     applicationId: seededApplications[2].applicationId,
     isIssued: YesOrNo.No,
+    clinicName: "Lakeside Medical & TB Screening Centre",
     physicianName: "Dr.Annelie Botha",
     notIssuedReason: TBCertNotIssuedReason.CONFIRMED_SUSPECTED_TB,
     comments: "TB is present",
