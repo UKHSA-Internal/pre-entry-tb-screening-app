@@ -6,7 +6,7 @@ import BackLink from "../backLink/backLink";
 import Breadcrumb, { IBreadcrumbItem } from "../breadcrumb/breadcrumb";
 import Footer from "../footer/footer";
 import Header from "../header/header";
-import Beta from "../phaseBanner/phaseBanner";
+import PhaseBanner from "../phaseBanner/phaseBanner";
 import SkipLink from "../skipLink/skipLink";
 
 interface ContainerProps {
@@ -22,7 +22,6 @@ const Container = ({
   children,
   breadcrumbItems = [],
   backLinkTo = "",
-  feedbackUrl = "https://forms.office.com/pages/responsepage.aspx?id=mRRO7jVKLkutR188-d6GZtaAaJfrhApCue13O2-oStFUNlIyRkRMWVBNQkszSTJISDJGU1pJTTkxNy4u&route=shorturl",
 }: Readonly<ContainerProps>) => {
   const pageStart = useRef<HTMLDivElement | null>(null);
   const mainContent = useRef<HTMLDivElement | null>(null);
@@ -47,7 +46,7 @@ const Container = ({
       <SkipLink />
       <Header />
       <div className="govuk-width-container">
-        <Beta feedbackUrl={feedbackUrl} />
+        <PhaseBanner />
         {breadcrumbItems && <Breadcrumb items={breadcrumbItems} />}
         {backLinkTo && <BackLink href={backLinkTo} />}
         <main

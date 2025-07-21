@@ -3,11 +3,11 @@ import { describe, expect, it } from "vitest";
 
 import { renderWithProviders } from "@/utils/test-utils";
 
-import Beta from "./phaseBanner";
+import PhaseBanner from "./phaseBanner";
 
 describe("Beta Component", () => {
   it("renders the beta banner with default", () => {
-    renderWithProviders(<Beta />);
+    renderWithProviders(<PhaseBanner />);
 
     expect(screen.getByText("BETA")).toBeInTheDocument();
 
@@ -16,15 +16,20 @@ describe("Beta Component", () => {
 
     const feedbackLink = screen.getByRole("link", { name: "feedback" });
     expect(feedbackLink).toBeInTheDocument();
-    expect(feedbackLink).toHaveAttribute("href", "/feedback");
+    expect(feedbackLink).toHaveAttribute(
+      "href",
+      "https://forms.office.com/pages/responsepage.aspx?id=mRRO7jVKLkutR188-d6GZtaAaJfrhApCue13O2-oStFUNlIyRkRMWVBNQkszSTJISDJGU1pJTTkxNy4u&route=shorturl",
+    );
   });
 
   it("renders with custom feedback URL", () => {
-    const customFeedbackUrl = "https://example.com/feedback";
-    renderWithProviders(<Beta feedbackUrl={customFeedbackUrl} />);
+    renderWithProviders(<PhaseBanner />);
 
     const feedbackLink = screen.getByRole("link", { name: "feedback" });
     expect(feedbackLink).toBeInTheDocument();
-    expect(feedbackLink).toHaveAttribute("href", customFeedbackUrl);
+    expect(feedbackLink).toHaveAttribute(
+      "href",
+      "https://forms.office.com/pages/responsepage.aspx?id=mRRO7jVKLkutR188-d6GZtaAaJfrhApCue13O2-oStFUNlIyRkRMWVBNQkszSTJISDJGU1pJTTkxNy4u&route=shorturl",
+    );
   });
 });
