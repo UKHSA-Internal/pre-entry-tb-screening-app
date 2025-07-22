@@ -118,26 +118,8 @@ const formatDateForDisplay = (date: DateType): string => {
     return "";
   }
 
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
-  const monthIndex = parseInt(month, 10) - 1;
-  const monthName = monthNames[monthIndex];
-  const dayNumber = parseInt(day, 10);
-
-  return `${dayNumber} ${monthName} ${year}`;
+  const dateToDisplay = new Date(parseInt(date.year), parseInt(date.month) - 1, parseInt(date.day));
+  return `${dateToDisplay.getDate()} ${dateToDisplay.toLocaleDateString("en-GB", { month: "long" })} ${dateToDisplay.getFullYear()}`;
 };
 
 const calculateCertificateExpiryDate = (

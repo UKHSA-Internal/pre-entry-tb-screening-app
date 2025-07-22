@@ -137,14 +137,7 @@ const TbSummary = () => {
           },
           {
             key: "Date of birth",
-            value: (() => {
-              const dobDate = new Date(
-                parseInt(applicantData.dateOfBirth.year),
-                parseInt(applicantData.dateOfBirth.month) - 1,
-                parseInt(applicantData.dateOfBirth.day),
-              );
-              return `${dobDate.getDate()} ${dobDate.toLocaleDateString("en-GB", { month: "long" })} ${dobDate.getFullYear()}`;
-            })(),
+            value: formatDateForDisplay(applicantData.dateOfBirth),
             hiddenLabel: "Date of birth",
           },
           {
@@ -159,26 +152,12 @@ const TbSummary = () => {
           },
           {
             key: "Passport issue date",
-            value: (() => {
-              const passportIssueDate = new Date(
-                parseInt(applicantData.passportIssueDate.year),
-                parseInt(applicantData.passportIssueDate.month) - 1,
-                parseInt(applicantData.passportIssueDate.day),
-              );
-              return `${passportIssueDate.getDate()} ${passportIssueDate.toLocaleDateString("en-GB", { month: "long" })} ${passportIssueDate.getFullYear()}`;
-            })(),
+            value: formatDateForDisplay(applicantData.passportIssueDate),
             hiddenLabel: "Passport issue date",
           },
           {
             key: "Passport expiry date",
-            value: (() => {
-              const passportExpiryDate = new Date(
-                parseInt(applicantData.passportExpiryDate.year),
-                parseInt(applicantData.passportExpiryDate.month) - 1,
-                parseInt(applicantData.passportExpiryDate.day),
-              );
-              return `${passportExpiryDate.getDate()} ${passportExpiryDate.toLocaleDateString("en-GB", { month: "long" })} ${passportExpiryDate.getFullYear()}`;
-            })(),
+            value: formatDateForDisplay(applicantData.passportExpiryDate),
             hiddenLabel: "Passport expiry date",
           },
           {
