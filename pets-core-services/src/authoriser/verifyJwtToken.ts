@@ -21,19 +21,19 @@ export async function verifyJwtToken(token: string): Promise<JwtPayload> {
     return await verifier.verify(token);
   } catch (err: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (err.name === "KidNotFoundInJwksError") {
+    if (err.type === "KidNotFoundInJwksError") {
       logger.warn("JWKS miss — retrying JWKS fetch due to unknown kid...");
       try {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
         await (verifier as any)._fetchJwks(true); //  Private API, works for now
         return await verifier.verify(token); // Retry after forced refresh
       } catch (retryErr) {
-        logger.error("Retry failed: still can't verify token", retryErr);
+        logger.error(retryErr, "Retry failed: still can't verify token");
         throw retryErr;
       }
     }
     // Unexpected verification failure
-    logger.error(" Token verification failed:", err);
+    logger.error(err, "Token verification failed");
     throw err;
   }
 }
