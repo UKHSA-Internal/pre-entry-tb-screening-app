@@ -66,7 +66,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
   let countryName: string = "";
   let passportNumber: string = "";
   let tbCertificateNumber: string = "";
-  let selectedVisaType: string = ""; // New variable to store the randomly selected visa type
+  let selectedVisaType: string = "";
 
   before(() => {
     // Create test fixtures before test run
