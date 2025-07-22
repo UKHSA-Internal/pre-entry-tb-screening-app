@@ -46,7 +46,7 @@ export default function Confirmation({
         >
           <h1 className="govuk-panel__title confirmation-panel__title">
             {props.confirmationText.split("\n").map((line, index) => (
-              <React.Fragment key={index}>
+              <React.Fragment key={line}>
                 {line}
                 {index < props.confirmationText.split("\n").length - 1 && <br />}
               </React.Fragment>
