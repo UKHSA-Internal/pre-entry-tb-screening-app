@@ -18,8 +18,12 @@ describe("Tests for TB Certificate Model", () => {
     isIssued: YesOrNo.Yes,
     comments: "comments",
     issueDate: "2025-01-21",
+    expiryDate: "2025-06-21",
     certificateNumber: "123456",
     createdBy: "test-tb-certificate-creator",
+    clinicName: "Lakeside Medical & TB Screening Centre",
+    physicianName: "Dr.Annelie Botha",
+    referenceNumber: "test-application-id",
   };
 
   test("Creating new tb certificate", async () => {
@@ -37,6 +41,7 @@ describe("Tests for TB Certificate Model", () => {
       ...newTbCertificate,
       dateCreated: new Date(expectedDateTime),
       issueDate: new Date("2025-01-21"),
+      expiryDate: new Date("2025-06-21"),
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -45,6 +50,7 @@ describe("Tests for TB Certificate Model", () => {
       Item: {
         ...newTbCertificate,
         issueDate: "2025-01-21T00:00:00.000Z",
+        expiryDate: "2025-06-21T00:00:00.000Z",
         pk: "APPLICATION#test-application-id",
         sk: "APPLICATION#TB#CERTIFICATE",
       },
@@ -76,6 +82,7 @@ describe("Tests for TB Certificate Model", () => {
       ...newTbCertificate,
       dateCreated: new Date("2025-02-07"),
       issueDate: new Date("2025-01-21"),
+      expiryDate: new Date("2025-06-21"),
     });
   });
 });
