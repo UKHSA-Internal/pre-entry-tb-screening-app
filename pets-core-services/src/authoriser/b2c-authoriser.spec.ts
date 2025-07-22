@@ -3,10 +3,15 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { context, mockRequestAuthoriserEvent } from "../test/mocks/events";
 import { handler } from "./b2c-authoriser";
-import { verifyJwtToken } from "./verifyJwtToken";
 
-vi.mock("./verifyJwtToken");
-const mockVerifyJwtToken = verifyJwtToken as unknown as ReturnType<typeof vi.fn>;
+const mockVerify = vi.fn();
+vi.mock("aws-jwt-verify", () => ({
+  JwtVerifier: {
+    create: vi.fn(() => ({
+      verify: mockVerify,
+    })),
+  },
+}));
 
 describe("Authorizer Lambda", () => {
   let callback: Callback;
@@ -32,7 +37,7 @@ describe("Authorizer Lambda", () => {
       sub: "user123",
     };
 
-    mockVerifyJwtToken.mockResolvedValue(mockPayload);
+    mockVerify.mockResolvedValue(mockPayload);
 
     const event = {
       ...mockRequestAuthoriserEvent,
@@ -43,7 +48,7 @@ describe("Authorizer Lambda", () => {
     handler(event, context, callback);
 
     // Assert
-    expect(mockVerifyJwtToken).toHaveBeenCalledWith(mockToken);
+    expect(mockVerify).toHaveBeenCalledWith(mockToken);
     expect(callback).toHaveBeenCalledWith(null, {
       context: {
         clinicId: "Apollo Clinic",
@@ -119,7 +124,7 @@ describe("Authorizer Lambda", () => {
       sub: "user123",
     };
 
-    mockVerifyJwtToken.mockResolvedValue(mockPayload);
+    mockVerify.mockResolvedValue(mockPayload);
 
     const event = {
       ...mockRequestAuthoriserEvent,
@@ -130,7 +135,7 @@ describe("Authorizer Lambda", () => {
     handler(event, context, callback);
 
     // Assert
-    expect(mockVerifyJwtToken).toHaveBeenCalledWith(mockToken);
+    expect(mockVerify).toHaveBeenCalledWith(mockToken);
     expect(callback).toHaveBeenCalledWith(null, {
       context: {
         clinicId: "Apollo Clinic",
@@ -160,7 +165,7 @@ describe("Authorizer Lambda", () => {
       sub: "user123",
     };
 
-    mockVerifyJwtToken.mockResolvedValue(mockPayload);
+    mockVerify.mockResolvedValue(mockPayload);
 
     const event = {
       ...mockRequestAuthoriserEvent,
@@ -198,13 +203,13 @@ describe("Authorizer Lambda", () => {
       headers: { Authorization: `Bearer ${mockToken}` },
     };
 
-    mockVerifyJwtToken.mockRejectedValue(new Error("Invalid Token"));
+    mockVerify.mockRejectedValue(new Error("Invalid Token"));
 
     // Act
     handler(event, context, callback);
 
     // Assert
-    expect(mockVerifyJwtToken).toHaveBeenCalledWith(mockToken);
+    expect(mockVerify).toHaveBeenCalledWith(mockToken);
     expect(callback).toHaveBeenCalledWith("Unauthorized");
   });
 });

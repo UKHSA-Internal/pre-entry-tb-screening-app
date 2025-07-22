@@ -1,4 +1,5 @@
 import assert from "assert";
+import { JwtVerifier } from "aws-jwt-verify";
 import { JwtPayload } from "aws-jwt-verify/jwt-model";
 import {
   APIGatewayAuthorizerResult,
@@ -10,9 +11,9 @@ import {
   StatementEffect,
 } from "aws-lambda";
 
+import { assertEnvExists } from "../shared/config";
 import { logger, withRequest } from "../shared/logger";
 import { policyMapping, Roles } from "./constants";
-import { verifyJwtToken } from "./verifyJwtToken";
 
 export const handler = (
   event: APIGatewayRequestAuthorizerEvent,
@@ -36,7 +37,16 @@ export const handler = (
       throw new Error("Authorization Headers missing");
     }
 
-    const payload = await verifyJwtToken(token);
+    const TENANT_ID = assertEnvExists(process.env.VITE_MSAL_TENANT_ID);
+    const CLIENT_ID = assertEnvExists(process.env.VITE_MSAL_CLIENT_ID);
+
+    const verifier = JwtVerifier.create({
+      issuer: `https://${TENANT_ID}.ciamlogin.com/${TENANT_ID}/v2.0`,
+      audience: CLIENT_ID,
+      jwksUri: `https://${TENANT_ID}.ciamlogin.com/${TENANT_ID}/discovery/v2.0/keys`,
+    });
+
+    const payload = await verifier.verify(token);
 
     if (!payload.ClinicID) {
       logger.error("Missing ClinicID");
