@@ -7,9 +7,13 @@ import { SaveTbCertificateEvent, saveTbCertificateHandler } from "./save-tb-cert
 
 const newTbCertificate: SaveTbCertificateEvent["parsedBody"] = {
   isIssued: YesOrNo.Yes,
+  expiryDate: "2025-06-01",
+  clinicName: "Lakeside Medical & TB Screening Centre",
+  physicianName: "Dr.Annelie Botha",
   comments: "comments",
   issueDate: "2025-01-21",
   certificateNumber: "123456",
+  referenceNumber: "123456",
 };
 
 describe("Test for Saving TB Certificate into DB", () => {
