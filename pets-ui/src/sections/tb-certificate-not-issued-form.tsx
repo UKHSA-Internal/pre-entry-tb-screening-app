@@ -34,7 +34,7 @@ const TbCertificateNotIssuedForm = () => {
 
   const onSubmit: SubmitHandler<ReduxTbCertificateType> = (data) => {
     dispatch(setReasonNotIssued(data.reasonNotIssued || ""));
-    dispatch(setDeclaringPhysicianName(data.declaringPhysicianName || ""));
+    dispatch(setDeclaringPhysicianName(data.declaringPhysicianName));
     dispatch(setComments(data.comments));
     dispatch(setTbCertificateStatus(ApplicationStatus.IN_PROGRESS));
     navigate("/tb-certificate-summary");

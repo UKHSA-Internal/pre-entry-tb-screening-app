@@ -1,5 +1,6 @@
 import { DateType } from "@/applicant";
 
+import { countryList } from "./countryList";
 import {
   dateEntryMustBeInTheFuture,
   dateEntryMustBeInThePast,
@@ -139,6 +140,51 @@ const formatDateForDisplay = (date: DateType): string => {
   return `${dayNumber} ${monthName} ${year}`;
 };
 
+const calculateCertificateExpiryDate = (
+  issueDate: DateType,
+  hasCloseContactWithTb: boolean,
+): DateType => {
+  const { year, month, day } = issueDate;
+  if (!year || !month || !day) return issueDate;
+
+  const jsDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  const expiryMonths = hasCloseContactWithTb ? 3 : 6;
+  jsDate.setMonth(jsDate.getMonth() + expiryMonths);
+
+  return {
+    year: jsDate.getFullYear().toString(),
+    month: (jsDate.getMonth() + 1).toString(),
+    day: jsDate.getDate().toString(),
+  };
+};
+
+const calculateCertificateIssueDate = (
+  chestXrayCompletionDate: DateType | undefined,
+  chestXrayTaken: string | undefined,
+  medicalScreeningCompletionDate: DateType | undefined,
+): DateType => {
+  if (chestXrayCompletionDate && chestXrayTaken === "Yes") {
+    const { year, month, day } = chestXrayCompletionDate;
+    if (year && month && day) {
+      return chestXrayCompletionDate;
+    }
+  }
+
+  if (medicalScreeningCompletionDate) {
+    const { year, month, day } = medicalScreeningCompletionDate;
+    if (year && month && day) {
+      return medicalScreeningCompletionDate;
+    }
+  }
+
+  const today = new Date();
+  return {
+    year: today.getFullYear().toString(),
+    month: (today.getMonth() + 1).toString(),
+    day: today.getDate().toString(),
+  };
+};
+
 const spreadArrayIfNotEmpty = (...arrays: string[][]) => {
   return arrays.flatMap((array) => (array?.length ? array : []));
 };
@@ -158,9 +204,17 @@ const toArray = (input: boolean | string | string[]) => {
   }
 };
 
+const getCountryName = (countryCode: string) => {
+  const country = countryList.find((c) => c.value === countryCode);
+  return country ? country.label : countryCode;
+};
+
 export {
+  calculateCertificateExpiryDate,
+  calculateCertificateIssueDate,
   formatDateForDisplay,
   formatDateType,
+  getCountryName,
   hasInvalidCharacters,
   isDateInTheFuture,
   isDateInThePast,

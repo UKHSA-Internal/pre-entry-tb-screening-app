@@ -3,7 +3,10 @@ import TbCertificateNotIssuedForm from "@/sections/tb-certificate-not-issued-for
 
 export default function TbCertificateNotIssuedPage() {
   return (
-    <Container title="Why are you not issuing a certificate?" backLinkTo="/tb-certificate-question">
+    <Container
+      title="Why are you not issuing a certificate? - Complete UK pre-entry health screening - GOV.UK"
+      backLinkTo="/tb-certificate-question"
+    >
       <TbCertificateNotIssuedForm />
     </Container>
   );

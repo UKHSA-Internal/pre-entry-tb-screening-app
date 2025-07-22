@@ -21,7 +21,12 @@ import {
   setDeclaringPhysicianName,
   setTbCertificateStatus,
 } from "@/redux/tbCertificateSlice";
-import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import {
+  calculateCertificateExpiryDate,
+  calculateCertificateIssueDate,
+  formatDateForDisplay,
+} from "@/utils/helpers";
 import { formRegex } from "@/utils/records";
 
 const TbCertificateDeclarationForm = () => {
@@ -32,25 +37,18 @@ const TbCertificateDeclarationForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const calculateCertificateIssueDate = () => {
-    if (chestXrayData.completionDate && chestXrayData.chestXrayTaken === YesOrNo.YES) {
-      return new Date(chestXrayData.completionDate);
-    }
+  const issueDate = calculateCertificateIssueDate(
+    chestXrayData.completionDate,
+    chestXrayData.chestXrayTaken,
+    medicalScreeningData.completionDate,
+  );
+  const todayFormatted = formatDateForDisplay(issueDate);
 
-    if (medicalScreeningData.completionDate) {
-      return new Date(medicalScreeningData.completionDate);
-    }
-
-    return new Date();
-  };
-
-  const issueDate = calculateCertificateIssueDate();
-  const todayFormatted = `${issueDate.getDate()} ${issueDate.toLocaleDateString("en-GB", { month: "long" })} ${issueDate.getFullYear()}`;
-
-  const expiryDate = new Date(issueDate);
-  const expiryMonths = medicalScreeningData.closeContactWithTb === "Yes" ? 3 : 6;
-  expiryDate.setMonth(expiryDate.getMonth() + expiryMonths);
-  const expiryFormatted = `${expiryDate.getDate()} ${expiryDate.toLocaleDateString("en-GB", { month: "long" })} ${expiryDate.getFullYear()}`;
+  const expiryDate = calculateCertificateExpiryDate(
+    issueDate,
+    medicalScreeningData.closeContactWithTb === "Yes",
+  );
+  const expiryFormatted = formatDateForDisplay(expiryDate);
 
   const methods = useForm<ReduxTbCertificateType>({ reValidateMode: "onSubmit" });
   const {
@@ -63,13 +61,13 @@ const TbCertificateDeclarationForm = () => {
 
     dispatch(
       setCertficateDate({
-        day: issueDate.getDate().toString(),
-        month: (issueDate.getMonth() + 1).toString(),
-        year: issueDate.getFullYear().toString(),
+        day: issueDate.day,
+        month: issueDate.month,
+        year: issueDate.year,
       }),
     );
     dispatch(setCertificateNumber(applicationData.applicationId));
-    dispatch(setDeclaringPhysicianName(data.declaringPhysicianName || ""));
+    dispatch(setDeclaringPhysicianName(data.declaringPhysicianName));
     dispatch(setTbCertificateStatus(ApplicationStatus.IN_PROGRESS));
     navigate("/tb-certificate-summary");
   };

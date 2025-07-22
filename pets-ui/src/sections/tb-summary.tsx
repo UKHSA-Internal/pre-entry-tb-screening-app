@@ -15,9 +15,14 @@ import { selectMedicalScreening } from "@/redux/medicalScreeningSlice";
 import { selectSputum } from "@/redux/sputumSlice";
 import { selectTbCertificate, setTbCertificateStatus } from "@/redux/tbCertificateSlice";
 import { selectTravel } from "@/redux/travelSlice";
-import { countryList } from "@/utils/countryList";
 import { ApplicationStatus, ButtonType, PositiveOrNegative, YesOrNo } from "@/utils/enums";
-import { standardiseDayOrMonth } from "@/utils/helpers";
+import {
+  calculateCertificateExpiryDate,
+  calculateCertificateIssueDate,
+  formatDateForDisplay,
+  getCountryName,
+  standardiseDayOrMonth,
+} from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
 const TbSummary = () => {
@@ -34,45 +39,36 @@ const TbSummary = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const getCountryName = (countryCode: string) => {
-    const country = countryList.find((c) => c.value === countryCode);
-    return country ? country.label : countryCode;
-  };
-
   const calculateSputumOutcome = () => {
     if (chestXrayData.isSputumRequired === YesOrNo.NO) {
       return "Not provided";
     }
 
     const samples = [sputumData.sample1, sputumData.sample2, sputumData.sample3];
-    let hasPositiveResult = false;
     let hasAnyResults = false;
 
     for (const sample of samples) {
-      if (sample.smearResults.smearResult === PositiveOrNegative.POSITIVE) {
-        hasPositiveResult = true;
-      }
-      if (sample.smearResults.smearResult !== PositiveOrNegative.NOT_YET_ENTERED) {
+      const smearResult = sample.smearResults.smearResult;
+      const cultureResult = sample.cultureResults.cultureResult;
+
+      if (
+        smearResult === PositiveOrNegative.POSITIVE ||
+        cultureResult === PositiveOrNegative.POSITIVE
+      ) {
+        return PositiveOrNegative.POSITIVE;
+      } else if (
+        smearResult !== PositiveOrNegative.NOT_YET_ENTERED ||
+        cultureResult !== PositiveOrNegative.NOT_YET_ENTERED
+      ) {
         hasAnyResults = true;
       }
-
-      if (sample.cultureResults.cultureResult === PositiveOrNegative.POSITIVE) {
-        hasPositiveResult = true;
-      }
-      if (sample.cultureResults.cultureResult !== PositiveOrNegative.NOT_YET_ENTERED) {
-        hasAnyResults = true;
-      }
-    }
-
-    if (hasPositiveResult) {
-      return "Positive";
     }
 
     if (hasAnyResults) {
-      return "Negative";
+      return PositiveOrNegative.NEGATIVE;
+    } else {
+      return "Not provided";
     }
-
-    return "Not provided";
   };
 
   const handleSubmit = async () => {
@@ -80,18 +76,39 @@ const TbSummary = () => {
     try {
       if (tbCertificateData.isIssued == YesOrNo.YES) {
         const certificateIssueDateStr = `${tbCertificateData.certificateDate.year}-${standardiseDayOrMonth(tbCertificateData.certificateDate.month)}-${standardiseDayOrMonth(tbCertificateData.certificateDate.day)}`;
+        const issueDate = calculateCertificateIssueDate(
+          chestXrayData.completionDate,
+          chestXrayData.chestXrayTaken,
+          medicalScreeningData.completionDate,
+        );
+        const expiryDate = calculateCertificateExpiryDate(
+          issueDate,
+          medicalScreeningData.closeContactWithTb === "Yes",
+        );
+        const certificateExpiryDateStr = `${expiryDate.year}-${standardiseDayOrMonth(expiryDate.month)}-${standardiseDayOrMonth(expiryDate.day)}`;
+
         await postTbCerificateDetails(applicationData.applicationId, {
           isIssued: tbCertificateData.isIssued,
           comments: tbCertificateData.comments,
           issueDate: certificateIssueDateStr,
+          expiryDate: certificateExpiryDateStr,
           certificateNumber: tbCertificateData.certificateNumber,
+          clinicName: "Lakeside Medical & TB Screening Centre",
+          physicianName: tbCertificateData.declaringPhysicianName,
+          referenceNumber: applicationData.applicationId,
         });
       } else if (tbCertificateData.isIssued == YesOrNo.NO) {
+        if (!tbCertificateData.reasonNotIssued || !tbCertificateData.declaringPhysicianName) {
+          throw new Error("Missing required fields for certificate not issued");
+        }
+
         await postTbCerificateDetails(applicationData.applicationId, {
           isIssued: tbCertificateData.isIssued,
           comments: tbCertificateData.comments,
-          reasonNotIssued: tbCertificateData.reasonNotIssued,
-          declaringPhysicianName: tbCertificateData.declaringPhysicianName,
+          notIssuedReason: tbCertificateData.reasonNotIssued,
+          clinicName: "Lakeside Medical & TB Screening Centre",
+          physicianName: tbCertificateData.declaringPhysicianName,
+          referenceNumber: applicationData.applicationId,
         });
       } else {
         throw new Error("certificateIssued field missing");
@@ -110,107 +127,84 @@ const TbSummary = () => {
       ? [
           {
             key: "Name",
-            value: applicantData.fullName || "Not provided",
+            value: applicantData.fullName,
             hiddenLabel: "Name",
           },
           {
             key: "Nationality",
-            value: applicantData.countryOfNationality
-              ? getCountryName(applicantData.countryOfNationality)
-              : "Not provided",
+            value: getCountryName(applicantData.countryOfNationality),
             hiddenLabel: "Nationality",
           },
           {
             key: "Date of birth",
             value: (() => {
-              if (
-                applicantData.dateOfBirth?.day &&
-                applicantData.dateOfBirth?.month &&
-                applicantData.dateOfBirth?.year
-              ) {
-                const dobDate = new Date(
-                  parseInt(applicantData.dateOfBirth.year),
-                  parseInt(applicantData.dateOfBirth.month) - 1,
-                  parseInt(applicantData.dateOfBirth.day),
-                );
-                return `${dobDate.getDate()} ${dobDate.toLocaleDateString("en-GB", { month: "long" })} ${dobDate.getFullYear()}`;
-              }
-              return "Not provided";
+              const dobDate = new Date(
+                parseInt(applicantData.dateOfBirth.year),
+                parseInt(applicantData.dateOfBirth.month) - 1,
+                parseInt(applicantData.dateOfBirth.day),
+              );
+              return `${dobDate.getDate()} ${dobDate.toLocaleDateString("en-GB", { month: "long" })} ${dobDate.getFullYear()}`;
             })(),
             hiddenLabel: "Date of birth",
           },
           {
             key: "Sex",
-            value: applicantData.sex || "Not provided",
+            value: applicantData.sex,
             hiddenLabel: "Sex",
           },
           {
             key: "Passport number",
-            value: applicantData.passportNumber || "Not provided",
+            value: applicantData.passportNumber,
             hiddenLabel: "Passport number",
           },
           {
             key: "Passport issue date",
             value: (() => {
-              if (
-                applicantData.passportIssueDate?.day &&
-                applicantData.passportIssueDate?.month &&
-                applicantData.passportIssueDate?.year
-              ) {
-                const passportIssueDate = new Date(
-                  parseInt(applicantData.passportIssueDate.year),
-                  parseInt(applicantData.passportIssueDate.month) - 1,
-                  parseInt(applicantData.passportIssueDate.day),
-                );
-                return `${passportIssueDate.getDate()} ${passportIssueDate.toLocaleDateString("en-GB", { month: "long" })} ${passportIssueDate.getFullYear()}`;
-              }
-              return "Not provided";
+              const passportIssueDate = new Date(
+                parseInt(applicantData.passportIssueDate.year),
+                parseInt(applicantData.passportIssueDate.month) - 1,
+                parseInt(applicantData.passportIssueDate.day),
+              );
+              return `${passportIssueDate.getDate()} ${passportIssueDate.toLocaleDateString("en-GB", { month: "long" })} ${passportIssueDate.getFullYear()}`;
             })(),
             hiddenLabel: "Passport issue date",
           },
           {
             key: "Passport expiry date",
             value: (() => {
-              if (
-                applicantData.passportExpiryDate?.day &&
-                applicantData.passportExpiryDate?.month &&
-                applicantData.passportExpiryDate?.year
-              ) {
-                const passportExpiryDate = new Date(
-                  parseInt(applicantData.passportExpiryDate.year),
-                  parseInt(applicantData.passportExpiryDate.month) - 1,
-                  parseInt(applicantData.passportExpiryDate.day),
-                );
-                return `${passportExpiryDate.getDate()} ${passportExpiryDate.toLocaleDateString("en-GB", { month: "long" })} ${passportExpiryDate.getFullYear()}`;
-              }
-              return "Not provided";
+              const passportExpiryDate = new Date(
+                parseInt(applicantData.passportExpiryDate.year),
+                parseInt(applicantData.passportExpiryDate.month) - 1,
+                parseInt(applicantData.passportExpiryDate.day),
+              );
+              return `${passportExpiryDate.getDate()} ${passportExpiryDate.toLocaleDateString("en-GB", { month: "long" })} ${passportExpiryDate.getFullYear()}`;
             })(),
             hiddenLabel: "Passport expiry date",
           },
           {
             key: "UKVI visa category",
-            value: travelData.visaType || "Not provided",
+            value: travelData.visaType,
             hiddenLabel: "UKVI visa category",
           },
         ]
       : [
           {
             key: "Reason for not issuing certificate",
-            value: tbCertificateData.reasonNotIssued || "Not provided",
+            value: tbCertificateData.reasonNotIssued,
             link: `/tb-certificate-not-issued#${attributeToComponentId.reasonNotIssued}`,
             hiddenLabel: "Reason for not issuing certificate",
             emptyValueText: "Enter reason for not issuing certificate",
           },
           {
             key: "Declaring Physician's name",
-            value: tbCertificateData.declaringPhysicianName || "Not provided",
+            value: tbCertificateData.declaringPhysicianName,
             link: `/tb-certificate-not-issued#${attributeToComponentId.declaringPhysicianName}`,
             hiddenLabel: "Declaring Physician's name",
             emptyValueText: "Enter declaring physician name",
           },
           {
             key: "Physician's comments",
-            value: tbCertificateData.comments || "Not provided",
+            value: tbCertificateData.comments,
             link: `/tb-certificate-not-issued#${attributeToComponentId.comments}`,
             hiddenLabel: "Physician's comments",
             emptyValueText: "Enter physician's comments",
@@ -222,27 +216,27 @@ const TbSummary = () => {
       ? [
           {
             key: "Address line 1",
-            value: applicantData.applicantHomeAddress1 || "Not provided",
+            value: applicantData.applicantHomeAddress1,
             hiddenLabel: "Current address line 1",
           },
           {
             key: "Address line 2",
-            value: applicantData.applicantHomeAddress2 || "Not provided",
+            value: applicantData.applicantHomeAddress2,
             hiddenLabel: "Current address line 2",
           },
           {
             key: "Town or city",
-            value: applicantData.townOrCity || "Not provided",
+            value: applicantData.townOrCity,
             hiddenLabel: "Current town or city",
           },
           {
             key: "Country",
-            value: applicantData.country ? getCountryName(applicantData.country) : "Not provided",
+            value: getCountryName(applicantData.country),
             hiddenLabel: "Current country",
           },
           {
             key: "Postcode",
-            value: applicantData.postcode || "Not provided",
+            value: applicantData.postcode,
             hiddenLabel: "Current postcode",
           },
         ]
@@ -253,27 +247,27 @@ const TbSummary = () => {
       ? [
           {
             key: "Address line 1",
-            value: travelData.applicantUkAddress1 || "Not provided",
+            value: travelData.applicantUkAddress1,
             hiddenLabel: "UK address line 1",
           },
           {
             key: "Address line 2",
-            value: travelData.applicantUkAddress2 || "Not provided",
+            value: travelData.applicantUkAddress2,
             hiddenLabel: "UK address line 2",
           },
           {
             key: "Town or city",
-            value: travelData.townOrCity || "Not provided",
+            value: travelData.townOrCity,
             hiddenLabel: "UK town or city",
           },
           {
             key: "County",
-            value: travelData.applicantUkAddress3 || "Not provided",
+            value: travelData.applicantUkAddress3,
             hiddenLabel: "UK county",
           },
           {
             key: "Postcode",
-            value: travelData.postcode || "Not provided",
+            value: travelData.postcode,
             hiddenLabel: "UK postcode",
           },
         ]
@@ -289,62 +283,35 @@ const TbSummary = () => {
           },
           {
             key: "Certificate reference number",
-            value: tbCertificateData.certificateNumber || "Not provided",
+            value: tbCertificateData.certificateNumber,
             hiddenLabel: "Certificate reference number",
           },
           {
             key: "Certificate issue date",
-            value: (() => {
-              if (
-                tbCertificateData.certificateDate?.day &&
-                tbCertificateData.certificateDate?.month &&
-                tbCertificateData.certificateDate?.year
-              ) {
-                const issueDate = new Date(
-                  parseInt(tbCertificateData.certificateDate.year),
-                  parseInt(tbCertificateData.certificateDate.month) - 1,
-                  parseInt(tbCertificateData.certificateDate.day),
-                );
-                return `${issueDate.getDate()} ${issueDate.toLocaleDateString("en-GB", { month: "long" })} ${issueDate.getFullYear()}`;
-              }
-              return "Not provided";
-            })(),
+            value: formatDateForDisplay(tbCertificateData.certificateDate),
             hiddenLabel: "Certificate issue date",
           },
           {
             key: "Certificate expiry date",
             value: (() => {
-              if (
-                tbCertificateData.certificateDate?.day &&
-                tbCertificateData.certificateDate?.month &&
-                tbCertificateData.certificateDate?.year
-              ) {
-                const issueDate = new Date(
-                  parseInt(tbCertificateData.certificateDate.year),
-                  parseInt(tbCertificateData.certificateDate.month) - 1,
-                  parseInt(tbCertificateData.certificateDate.day),
-                );
-                const expiryDate = new Date(issueDate);
-
-                const expiryMonths = medicalScreeningData.closeContactWithTb === "Yes" ? 3 : 6;
-                expiryDate.setMonth(expiryDate.getMonth() + expiryMonths);
-
-                return `${expiryDate.getDate()} ${expiryDate.toLocaleDateString("en-GB", { month: "long" })} ${expiryDate.getFullYear()}`;
-              }
-              return "Not provided";
+              const expiryDate = calculateCertificateExpiryDate(
+                tbCertificateData.certificateDate,
+                medicalScreeningData.closeContactWithTb === "Yes",
+              );
+              return formatDateForDisplay(expiryDate);
             })(),
             hiddenLabel: "Certificate expiry date",
           },
           {
             key: "Declaring physician name",
-            value: tbCertificateData.declaringPhysicianName || "Not provided",
+            value: tbCertificateData.declaringPhysicianName,
             link: `/tb-certificate-declaration#${attributeToComponentId.declaringPhysicianName}`,
             hiddenLabel: "Declaring physician name",
             emptyValueText: "Enter declaring physician name",
           },
           {
             key: "Physician's comments",
-            value: tbCertificateData.comments || "Not provided",
+            value: tbCertificateData.comments,
             link: `/tb-certificate-declaration#${attributeToComponentId.comments}`,
             hiddenLabel: "Physician's comments",
             emptyValueText: "Enter physician's comments",
@@ -357,17 +324,17 @@ const TbSummary = () => {
       ? [
           {
             key: "Chest X-ray done",
-            value: chestXrayData.chestXrayTaken || "Not provided",
+            value: chestXrayData.chestXrayTaken,
             hiddenLabel: "Chest X-ray done",
           },
           {
             key: "Chest X-ray outcome",
-            value: chestXrayData.xrayResult || "Not provided",
+            value: chestXrayData.xrayResult,
             hiddenLabel: "Chest X-ray outcome",
           },
           {
             key: "Sputum collected",
-            value: chestXrayData.isSputumRequired || "Not provided",
+            value: chestXrayData.isSputumRequired,
             hiddenLabel: "Sputum collected",
           },
           {
@@ -377,20 +344,17 @@ const TbSummary = () => {
           },
           {
             key: "Pregnant",
-            value: medicalScreeningData.pregnant || "Not provided",
+            value: medicalScreeningData.pregnant,
             hiddenLabel: "Pregnant",
           },
           {
             key: "Child under 11 years",
             value: (() => {
-              if (medicalScreeningData.age !== undefined && medicalScreeningData.age !== null) {
-                const age =
-                  typeof medicalScreeningData.age === "string"
-                    ? parseInt(medicalScreeningData.age)
-                    : medicalScreeningData.age;
-                return age < 11 ? "Yes" : "No";
-              }
-              return "Not provided";
+              const age =
+                typeof medicalScreeningData.age === "string"
+                  ? parseInt(medicalScreeningData.age)
+                  : medicalScreeningData.age;
+              return age < 11 ? "Yes" : "No";
             })(),
             hiddenLabel: "Child under 11 years",
           },
@@ -436,7 +400,7 @@ const TbSummary = () => {
                 <Summary status={tbCertificateData.status} summaryElements={screeningData} />
               </>
             )}
-            <p>
+            <p className="govuk-body">
               By submitting this certificate information you are confirming that, to the best of
               your knowledge, there is no clinical suspicious of pulmonary TB.
             </p>

@@ -71,3 +71,34 @@ input[type='file'].hide-text {
 .file-upload-existing-file {
   margin: 0;
 }
+
+.confirmation-panel {
+  margin-bottom: 40px;
+}
+
+
+.confirmation-panel--warning {
+  background-color: #d4351c;
+  border: 5px solid #d4351c;
+}
+
+
+.confirmation-panel__title {
+  color: white;
+}
+
+
+.confirmation-panel__body {
+  color: white;
+  font-size: 36px;
+}
+
+
+.confirmation-panel__reference-number {
+  font-size: 36px;
+}
+
+
+.confirmation-action-button {
+  margin-bottom: 20px;
+}

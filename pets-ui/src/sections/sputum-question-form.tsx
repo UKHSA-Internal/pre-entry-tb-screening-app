@@ -19,9 +19,6 @@ const SputumQuestionForm = () => {
 
   const methods = useForm<ReduxChestXrayDetailsType>({
     reValidateMode: "onSubmit",
-    defaultValues: {
-      isSputumRequired: chestXrayData.isSputumRequired,
-    },
   });
   const {
     handleSubmit,

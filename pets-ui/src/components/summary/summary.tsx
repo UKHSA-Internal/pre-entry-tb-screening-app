@@ -58,7 +58,9 @@ function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement)
       );
     } else {
       const displayValue =
-        status === ApplicationStatus.COMPLETE ? "" : summaryElement.emptyValueText || "";
+        status === ApplicationStatus.COMPLETE
+          ? ""
+          : summaryElement.emptyValueText || "Not provided";
       return <dd className="govuk-summary-list__value">{displayValue}</dd>;
     }
   }

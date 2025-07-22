@@ -98,7 +98,7 @@ export enum SputumCollectionMethod {
 }
 
 export enum TBCertNotIssuedReason {
-  CONFIRMED_SUSPECTED_TB = "Confimed or suspected TB",
+  CONFIRMED_SUSPECTED_TB = "Confirmed or suspected TB",
   TESTING_POSTPONED = "Testing postponed",
   APPLICATION_WITHDRAWN = "Visa applicant has withdrawn their TB screening",
 }

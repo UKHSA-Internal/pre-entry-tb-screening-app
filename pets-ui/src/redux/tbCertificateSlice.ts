@@ -71,8 +71,12 @@ export const tbCertificateSlice = createSlice({
             day: "",
           };
       state.certificateNumber = action.payload.certificateNumber;
-      state.reasonNotIssued = action.payload.reasonNotIssued || "";
-      state.declaringPhysicianName = action.payload.declaringPhysicianName || "";
+      if (action.payload.physicianName) {
+        state.declaringPhysicianName = action.payload.physicianName;
+      }
+      if (action.payload.notIssuedReason) {
+        state.reasonNotIssued = action.payload.notIssuedReason;
+      }
     },
   },
 });

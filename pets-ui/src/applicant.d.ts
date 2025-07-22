@@ -128,7 +128,7 @@ type ReduxMedicalScreeningType = {
   pregnant: string;
   menstrualPeriods: string;
   physicalExamNotes: string;
-  completionDate?: string;
+  completionDate: DateType;
 };
 
 type PostedMedicalScreeningType = {
@@ -167,7 +167,7 @@ type ReduxChestXrayDetailsType = {
   xrayAssociatedMinorFindings: string[];
   xrayActiveTbFindings: string[];
   isSputumRequired: YesOrNo;
-  completionDate?: string;
+  completionDate: DateType;
 };
 
 type PostedChestXrayDetailsType = {
@@ -258,25 +258,42 @@ type ReduxTbCertificateType = {
   certificateDate: DateType;
   certificateNumber: string;
   reasonNotIssued?: string;
-  declaringPhysicianName?: string;
+  declaringPhysicianName: string;
 };
 
 type PostedTbCertificateType = {
   isIssued: YesOrNo;
-  comments: string;
+  comments?: string;
   issueDate: string;
+  expiryDate: string;
   certificateNumber: string;
-  reasonNotIssued?: string;
-  declaringPhysicianName?: string;
+  clinicName: string;
+  physicianName: string;
+  referenceNumber: string;
 };
 
-type ReceivedTbCertificateType = PostedTbCertificateType & ReceivedApplicationAttributesType;
+type ReceivedTbCertificateType = {
+  applicationId: string;
+  status: BackendApplicationStatus;
+  isIssued: YesOrNo;
+  comments?: string;
+  issueDate: string;
+  expiryDate: string;
+  certificateNumber: string;
+  clinicName: string;
+  physicianName: string;
+  referenceNumber: string;
+  notIssuedReason?: string;
+  dateCreated: Date;
+};
 
 type PostedTbCertificateNotIssuedType = {
   isIssued: YesOrNo;
-  comments: string;
-  reasonNotIssued?: string;
-  declaringPhysicianName?: string;
+  comments?: string;
+  notIssuedReason: string;
+  clinicName: string;
+  physicianName: string;
+  referenceNumber: string;
 };
 
 type ReceivedTbCertificateNotIssuedType = PostedTbCertificateNotIssuedType &
