@@ -31,6 +31,7 @@ const tbState: ReduxTbCertificateType = {
     day: "25",
   },
   certificateNumber: "12345",
+  declaringPhysicianName: "Test Testov",
 };
 
 describe("TBSummaryPage", () => {
