@@ -10,40 +10,27 @@ import { logger } from "../../shared/logger";
  */
 class StreamService {
   /**
-   * Extract INSERT events from the DynamoDB Stream, convert them
-   * to a JS object and expand the test results into multiple ones for each test type
-   * Example:
-   * Convert
-   * test-result
-   *  ├── test-type-1
-   *  ├── test-type-2
-   *  └── test-type-3
-   *  into
-   *  test-result
-   *  └── test-type-1
-   *  test-result
-   *  └── test-type-2
-   *  test-result
-   *  └── test-type-3
+   * Extract INSERT events from the DynamoDB Stream
    * @param event
    */
   public static getTestResultStream(record: DynamoDBRecord) {
     logger.info(record);
-    let records = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let records: Record<string, any>[] = [];
     // Create from a test result with multiple test types, multiple test result with one test type each
     if (
       record.eventName === "INSERT" ||
       (record.eventName === "MODIFY" && StreamService.isProcessModifyEventsEnabled())
     ) {
       if (record.dynamodb && record.dynamodb.NewImage) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
         const unmarshalledRecord = unmarshall((record as any).dynamodb.NewImage);
-        records = StreamService.expandRecords([unmarshalledRecord]);
+        records = [unmarshalledRecord];
       }
     } else {
       logger.info("event name was not of correct type");
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
     return records;
   }
 
@@ -66,43 +53,20 @@ class StreamService {
    * into multiple records with a single test type
    * @param records
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private static expandRecords(records: any): any[] {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, prettier/prettier, @typescript-eslint/no-unsafe-call
     return records
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
         .map((record: any) => {
-          // Separate each test type in a record to form multiple records
-          const splittedRecords: any[] = [];
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
           const templateRecord: any = Object.assign({}, record);
           Object.assign(templateRecord, {});
-          logger.info("before for each");
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          if (record.testTypes instanceof Array) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-            record.testTypes?.forEach((testType: any, i: number, array: any[]) => {
-              logger.info("in for each");
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-              const clonedRecord: any = Object.assign({}, templateRecord); // Create record from template
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-              Object.assign(clonedRecord, { testTypes: testType }); // Assign it the test type
-              Object.assign(clonedRecord, {
-                // Assign certificate order number
-                order: {
-                  current: i + 1,
-                  total: array.length,
-                },
-              });
 
-              splittedRecords.push(clonedRecord);
-            });
-          }
-
-          logger.info("after for each");
           // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-          return splittedRecords;
+          return templateRecord;
         })
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, prettier/prettier, @typescript-eslint/no-unsafe-member-access
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, prettier/prettier, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
         .reduce((acc: any[], val: any) => acc.concat(val), []); // Flatten the array
   }
 }

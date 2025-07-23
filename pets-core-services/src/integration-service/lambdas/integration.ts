@@ -1,5 +1,7 @@
 import { SQSClient } from "@aws-sdk/client-sqs";
 import {
+  Callback,
+  Context,
   // Callback,
   // Context,
   DynamoDBBatchItemFailure,
@@ -11,18 +13,20 @@ import {
 import { logger } from "../../shared/logger";
 import { SQService } from "../services/SQService";
 import { StreamService } from "../services/StreamService";
-import { Utils } from "../utils/Utils";
+// import { Utils } from "../utils/Utils";
 
 /**
  * λ function to process a DynamoDB stream of test results into a queue for certificate generation.
  * @param event - DynamoDB Stream event
- * @param context - λ Context
- * @param callback - callback function
+ * @param _context - λ Context
+ * @param _callback - callback function
  */
 const handler: Handler = async (
   event: DynamoDBStreamEvent,
-  // context?: Context,
-  // callback?: Callback,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  context?: Context,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  callback?: Callback,
 ): Promise<DynamoDBBatchResponse> => {
   if (!event) {
     logger.error("ERROR: event is not defined.");
@@ -30,9 +34,10 @@ const handler: Handler = async (
   }
 
   const batchItemFailures: DynamoDBBatchItemFailure[] = [];
-  // TODO: names might need to change
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let expandedRecords: any[] = [];
-  let certGenFilteredRecords: any[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const certGenFilteredRecords: any[] = [];
   let sqService: SQService;
 
   try {
@@ -50,10 +55,7 @@ const handler: Handler = async (
       expandedRecords = StreamService.getTestResultStream(record);
       logger.info(`Number of Retrieved records: ${expandedRecords.length}`);
 
-      certGenFilteredRecords = Utils.filterCertificateGenerationRecords(expandedRecords);
-      logger.info(`Number of Filtered Retrieved Records: ${certGenFilteredRecords.length}`);
-
-      for (const record of certGenFilteredRecords) {
+      for (const record of expandedRecords) {
         const stringifiedRecord = JSON.stringify(record);
         logger.info(stringifiedRecord);
         await sqService.sendCertGenMessage(stringifiedRecord);
@@ -61,7 +63,8 @@ const handler: Handler = async (
 
       logger.info(`event ${record.dynamodb?.SequenceNumber} successfully processed`);
     } catch (err) {
-      logger.error(err);
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      logger.error(`ERROR: ${err}`);
       logger.info("expandedRecords");
       logger.info(JSON.stringify(expandedRecords));
       logger.info("certGenFilteredRecords");
