@@ -1,7 +1,7 @@
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import { useAppSelector } from "@/redux/hooks";
-import { selectMedicalScreening } from "@/redux/medicalScreeningSlice";
+import { selectMedicalScreening } from "@/redux/store";
 import MedicalScreeningReview from "@/sections/medical-screening-summary";
 import { ApplicationStatus } from "@/utils/enums";
 

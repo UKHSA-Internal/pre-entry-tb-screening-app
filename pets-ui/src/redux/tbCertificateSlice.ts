@@ -1,4 +1,3 @@
-import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { DateType, ReceivedTbCertificateType, ReduxTbCertificateType } from "@/applicant";
@@ -76,5 +75,3 @@ export const {
 } = tbCertificateSlice.actions;
 
 export const tbCertificateReducer = tbCertificateSlice.reducer;
-
-export const selectTbCertificate = (state: RootState) => state.tbCertificate;

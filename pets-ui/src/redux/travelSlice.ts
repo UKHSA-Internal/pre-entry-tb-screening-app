@@ -1,4 +1,3 @@
-import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { ReceivedTravelDetailsType, ReduxTravelDetailsType } from "@/applicant";
@@ -94,5 +93,3 @@ export const {
 } = travelSlice.actions;
 
 export const travelReducer = travelSlice.reducer;
-
-export const selectTravel = (state: RootState) => state.travel;

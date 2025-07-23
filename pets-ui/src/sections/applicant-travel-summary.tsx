@@ -6,9 +6,9 @@ import { postTravelDetails } from "@/api/api";
 import Button from "@/components/button/button";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
-import { selectApplication } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { selectTravel, setTravelDetailsStatus } from "@/redux/travelSlice";
+import { selectApplication, selectTravel } from "@/redux/store";
+import { setTravelDetailsStatus } from "@/redux/travelSlice";
 import { ApplicationStatus, ButtonType } from "@/utils/enums";
 import { attributeToComponentId } from "@/utils/records";
 
