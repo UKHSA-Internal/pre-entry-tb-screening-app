@@ -38,31 +38,27 @@ function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement)
             )}
       </div>
     );
+  } else if (summaryElement.value) {
+    return <dd className="govuk-summary-list__value">{summaryElement.value}</dd>;
+  } else if (
+    summaryElement.emptyValueText &&
+    summaryElement.link &&
+    status !== ApplicationStatus.COMPLETE
+  ) {
+    return (
+      <dd className="govuk-summary-list__value">
+        <LinkLabel
+          to={summaryElement.link}
+          title={summaryElement.emptyValueText}
+          hiddenLabel=""
+          externalLink={false}
+        />
+      </dd>
+    );
   } else {
-    if (summaryElement.value) {
-      return <dd className="govuk-summary-list__value">{summaryElement.value}</dd>;
-    } else if (
-      summaryElement.emptyValueText &&
-      summaryElement.link &&
-      status !== ApplicationStatus.COMPLETE
-    ) {
-      return (
-        <dd className="govuk-summary-list__value">
-          <LinkLabel
-            to={summaryElement.link}
-            title={summaryElement.emptyValueText}
-            hiddenLabel=""
-            externalLink={false}
-          />
-        </dd>
-      );
-    } else {
-      const displayValue =
-        status === ApplicationStatus.COMPLETE
-          ? ""
-          : summaryElement.emptyValueText || "Not provided";
-      return <dd className="govuk-summary-list__value">{displayValue}</dd>;
-    }
+    const displayValue =
+      status === ApplicationStatus.COMPLETE ? "" : summaryElement.emptyValueText || "Not provided";
+    return <dd className="govuk-summary-list__value">{displayValue}</dd>;
   }
 }
 
