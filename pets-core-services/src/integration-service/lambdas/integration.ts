@@ -57,18 +57,16 @@ const handler: Handler = async (
 
       for (const record of expandedRecords) {
         const stringifiedRecord = JSON.stringify(record);
-        logger.info(stringifiedRecord);
+        logger.info(`stringifiedRecord: ${stringifiedRecord}`);
         await sqService.sendCertGenMessage(stringifiedRecord);
       }
 
       logger.info(`event ${record.dynamodb?.SequenceNumber} successfully processed`);
     } catch (err) {
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      logger.error(`ERROR: ${err}`);
-      logger.info("expandedRecords");
-      logger.info(JSON.stringify(expandedRecords));
-      logger.info("certGenFilteredRecords");
-      logger.info(JSON.stringify(certGenFilteredRecords));
+      logger.error(`ERR / ${err}`);
+      logger.info(`ERR / expandedRecords: ${JSON.stringify(expandedRecords)}`);
+      logger.info(`ERR / certGenFilteredRecords: ${JSON.stringify(certGenFilteredRecords)}`);
       batchItemFailures.push({
         itemIdentifier: record.dynamodb?.SequenceNumber ?? "",
       });
