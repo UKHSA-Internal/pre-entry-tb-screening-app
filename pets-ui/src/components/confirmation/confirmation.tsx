@@ -82,7 +82,7 @@ export default function Confirmation({
 
         {props.furtherInfo.map((info, i) => {
           return (
-            <p className="govuk-body" key={i}>
+            <p className="govuk-body" key={"info" + i}>
               {info}
             </p>
           );
