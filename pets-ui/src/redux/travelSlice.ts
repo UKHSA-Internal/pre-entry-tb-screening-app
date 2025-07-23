@@ -1,4 +1,3 @@
-import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { ReceivedTravelDetailsType, ReduxTravelDetailsType } from "@/applicant";
@@ -6,7 +5,7 @@ import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
 
 const initialState: ReduxTravelDetailsType = {
   status: ApplicationStatus.NOT_YET_STARTED,
-  visaType: "",
+  visaCategory: "",
   applicantUkAddress1: "",
   applicantUkAddress2: "",
   townOrCity: "",
@@ -22,8 +21,8 @@ export const travelSlice = createSlice({
     setTravelDetailsStatus: (state, action: PayloadAction<ApplicationStatus>) => {
       state.status = action.payload;
     },
-    setVisaType: (state, action: PayloadAction<string>) => {
-      state.visaType = action.payload;
+    setVisaCategory: (state, action: PayloadAction<string>) => {
+      state.visaCategory = action.payload;
     },
     setApplicantUkAddress1: (state, action: PayloadAction<string>) => {
       state.applicantUkAddress1 = action.payload;
@@ -44,7 +43,7 @@ export const travelSlice = createSlice({
       state.ukEmail = action.payload;
     },
     setTravelDetails: (state, action: PayloadAction<ReduxTravelDetailsType>) => {
-      state.visaType = action.payload.visaType;
+      state.visaCategory = action.payload.visaCategory;
       state.applicantUkAddress1 = action.payload.applicantUkAddress1 ?? "";
       state.applicantUkAddress2 = action.payload.applicantUkAddress2 ?? "";
       state.townOrCity = action.payload.townOrCity ?? "";
@@ -54,7 +53,7 @@ export const travelSlice = createSlice({
     },
     clearTravelDetails: (state) => {
       state.status = ApplicationStatus.NOT_YET_STARTED;
-      state.visaType = "";
+      state.visaCategory = "";
       state.applicantUkAddress1 = "";
       state.applicantUkAddress2 = "";
       state.townOrCity = "";
@@ -67,7 +66,7 @@ export const travelSlice = createSlice({
         action.payload.status == BackendApplicationStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
           : ApplicationStatus.IN_PROGRESS;
-      state.visaType = action.payload.visaCategory;
+      state.visaCategory = action.payload.visaCategory;
       state.applicantUkAddress1 = action.payload.ukAddressLine1 ?? "";
       state.applicantUkAddress2 = action.payload.ukAddressLine2 ?? "";
       state.applicantUkAddress3 = action.payload.ukAddressLine3 ?? "";
@@ -81,7 +80,7 @@ export const travelSlice = createSlice({
 
 export const {
   setTravelDetailsStatus,
-  setVisaType,
+  setVisaCategory,
   setApplicantUkAddress1,
   setApplicantUkAddress2,
   setTownOrCity,
@@ -94,5 +93,3 @@ export const {
 } = travelSlice.actions;
 
 export const travelReducer = travelSlice.reducer;
-
-export const selectTravel = (state: RootState) => state.travel;

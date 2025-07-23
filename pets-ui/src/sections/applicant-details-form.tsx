@@ -10,12 +10,9 @@ import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
-import {
-  selectApplicant,
-  setApplicantDetails,
-  setApplicantDetailsStatus,
-} from "@/redux/applicantSlice";
+import { setApplicantDetails, setApplicantDetailsStatus } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { selectApplicant } from "@/redux/store";
 import { ApplicationStatus, ButtonType, RadioIsInline } from "@/utils/enums";
 import { validateDate } from "@/utils/helpers";
 import { countryList, formRegex } from "@/utils/records";

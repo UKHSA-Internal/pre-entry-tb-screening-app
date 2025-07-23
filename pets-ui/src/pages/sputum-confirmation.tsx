@@ -1,7 +1,7 @@
 import Confirmation from "@/components/confirmation/confirmation";
 import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
-import { selectSputum } from "@/redux/sputumSlice";
+import { selectSputum } from "@/redux/store";
 import { ApplicationStatus, PositiveOrNegative } from "@/utils/enums";
 
 export default function SputumConfirmation() {

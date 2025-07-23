@@ -11,8 +11,8 @@ import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { selectTbCertificate } from "@/redux/store";
 import {
-  selectTbCertificate,
   setCertficateDate,
   setCertificateNumber,
   setComments,

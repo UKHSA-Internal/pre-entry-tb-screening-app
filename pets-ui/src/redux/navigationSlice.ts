@@ -1,4 +1,3 @@
-import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { ReduxNavigationSliceType } from "@/applicant";
@@ -23,5 +22,3 @@ export const navigationSlice = createSlice({
 export const { setCheckSputumPreviousPage, clearNavigationDetails } = navigationSlice.actions;
 
 export const navigationReducer = navigationSlice.reducer;
-
-export const selectNavigation = (state: RootState) => state.navigation;

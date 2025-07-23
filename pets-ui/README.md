@@ -1,4 +1,4 @@
-# Complete UK Pre-Entry Health Screening - UI
+# Complete UK pre-entry health screening - UI
 
 ## Setup
 
