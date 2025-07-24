@@ -106,7 +106,7 @@ export class LocalInfrastructureStack extends cdk.Stack {
       ],
     });
 
-    new Queue(this, process.env.INTEGRATION_SERVICE_QUEUE_NAME as string, {
+    new Queue(this, "integration-lambda", {
       queueName: process.env.INTEGRATION_SERVICE_QUEUE_NAME,
     });
   }

@@ -78,7 +78,7 @@ describe("cert-gen-init", () => {
     const config = {
       sqs: {
         local: {
-          QueueName: [process.env.INTEGRATION_SERVICE_QUEUE_NAME as string],
+          QueueName: ["just-name"],
         },
       },
     };
