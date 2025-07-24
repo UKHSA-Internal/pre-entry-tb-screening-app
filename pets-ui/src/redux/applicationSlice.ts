@@ -1,4 +1,3 @@
-import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { ApplicationIdAndDateCreatedType } from "@/applicant";
@@ -33,5 +32,3 @@ export const { setApplicationId, setDateCreated, setApplicationDetails, clearApp
   applicationSlice.actions;
 
 export const applicationReducer = applicationSlice.reducer;
-
-export const selectApplication = (state: RootState) => state.application;

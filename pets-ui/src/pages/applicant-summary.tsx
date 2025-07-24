@@ -1,7 +1,7 @@
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
-import { selectApplicant } from "@/redux/applicantSlice";
 import { useAppSelector } from "@/redux/hooks";
+import { selectApplicant } from "@/redux/store";
 import ApplicantReview from "@/sections/applicant-details-summary";
 import { ApplicationStatus } from "@/utils/enums";
 

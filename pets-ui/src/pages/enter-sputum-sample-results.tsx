@@ -1,6 +1,6 @@
 import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
-import { selectSputum } from "@/redux/sputumSlice";
+import { selectSputum } from "@/redux/store";
 import SputumResultsForm from "@/sections/sputum-results-form";
 
 export default function EnterSputumSampleResultsPage() {

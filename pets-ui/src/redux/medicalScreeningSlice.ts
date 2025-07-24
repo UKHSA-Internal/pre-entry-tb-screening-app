@@ -1,4 +1,3 @@
-import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { ReceivedMedicalScreeningType, ReduxMedicalScreeningType } from "@/applicant";
@@ -150,5 +149,3 @@ export const {
 } = medicalScreeningSlice.actions;
 
 export const medicalScreeningReducer = medicalScreeningSlice.reducer;
-
-export const selectMedicalScreening = (state: RootState) => state.medicalScreening;

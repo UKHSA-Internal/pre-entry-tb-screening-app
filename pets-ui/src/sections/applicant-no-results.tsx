@@ -3,8 +3,8 @@ import { useNavigate } from "react-router";
 import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import StartButton from "@/components/startButton/startButton";
-import { selectApplicant } from "@/redux/applicantSlice";
 import { useAppSelector } from "@/redux/hooks";
+import { selectApplicant } from "@/redux/store";
 
 const ApplicantEmptyResult = () => {
   const applicantSearchData = useAppSelector(selectApplicant);

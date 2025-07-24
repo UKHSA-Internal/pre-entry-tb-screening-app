@@ -1,7 +1,6 @@
 import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
-import { selectNavigation } from "@/redux/navigationSlice";
-import { selectSputum } from "@/redux/sputumSlice";
+import { selectNavigation, selectSputum } from "@/redux/store";
 import SputumSummary from "@/sections/sputum-summary";
 import { ApplicationStatus } from "@/utils/enums";
 
