@@ -32,7 +32,7 @@ describe("handler Function", () => {
     it("should invoke SQS service with correct params", async () => {
       const sendCertGenMessage = vi.fn();
       SQService.prototype.sendCertGenMessage = sendCertGenMessage;
-      StreamService.getTestResultStream = vi
+      StreamService.getClinicDataStream = vi
         .fn()
         .mockReturnValue([{ TestRecord: "updateStatusMessage" }]);
       // Utils.filterCertificateGenerationRecords = vi
@@ -55,13 +55,13 @@ describe("handler Function", () => {
 
   describe("when SQService throws error", () => {
     it("should throw error if code is not InvalidParameterValue", async () => {
-      StreamService.getTestResultStream = vi.fn().mockReturnValue([{}]);
+      StreamService.getClinicDataStream = vi.fn().mockReturnValue([{}]);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
       const myError = new Error("It Broke!") as any;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       myError.code = "SomeError";
       SQService.prototype.sendCertGenMessage = vi.fn().mockRejectedValue(myError);
-      StreamService.getTestResultStream = vi.fn().mockReturnValue([{ test: "thing" }]);
+      StreamService.getClinicDataStream = vi.fn().mockReturnValue([{ test: "thing" }]);
       // Utils.filterCertificateGenerationRecords = vi.fn().mockReturnValue([{ test: "thing" }]);
 
       expect.assertions(1);
@@ -74,13 +74,13 @@ describe("handler Function", () => {
       expect(returnedInfo.batchItemFailures.length).toBe(1);
     });
     it("should not throw error if code is InvalidParameterValue", async () => {
-      StreamService.getTestResultStream = vi.fn().mockReturnValue([{}]);
+      StreamService.getClinicDataStream = vi.fn().mockReturnValue([{}]);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
       const myError = new Error("It Broke!") as any;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       myError.code = "InvalidParameterValue";
       SQService.prototype.sendCertGenMessage = vi.fn().mockRejectedValue(myError);
-      StreamService.getTestResultStream = vi.fn().mockReturnValue([{ test: "thing" }]);
+      StreamService.getClinicDataStream = vi.fn().mockReturnValue([{ test: "thing" }]);
       // Utils.filterCertificateGenerationRecords = vi.fn().mockReturnValue([{ test: "thing" }]);
 
       expect.assertions(1);

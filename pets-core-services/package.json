@@ -14,7 +14,6 @@
     "@aws-sdk/util-dynamodb": "3.788.0",
     "@middy/core": "^6.0.0",
     "@middy/http-router": "^6.0.0",
-    "@smithy/smithy-client": "^3.7.0",
     "aws-jwt-verify": "^5.0.0",
     "aws-xray-sdk": "^3.10.1",
     "clean-deep": "^3.4.0",

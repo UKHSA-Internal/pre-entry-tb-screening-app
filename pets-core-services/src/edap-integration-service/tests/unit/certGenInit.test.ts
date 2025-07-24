@@ -1,18 +1,15 @@
 import {
   CreateQueueCommand,
-  DeleteQueueCommand,
   GetQueueUrlCommand,
   GetQueueUrlRequest,
   ReceiveMessageCommand,
-  ReceiveMessageCommandOutput,
   SendMessageCommand,
   SendMessageCommandOutput,
   SQSClient,
 } from "@aws-sdk/client-sqs";
-// import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { DynamoDBRecord } from "aws-lambda";
 import { mockClient } from "aws-sdk-client-mock";
-import { beforeEach, describe, expect, it, test } from "vitest";
+import { beforeEach, describe, expect, test } from "vitest";
 
 import { SQService } from "../../services/SQService";
 import { StreamService } from "../../services/StreamService";
@@ -30,7 +27,7 @@ describe("cert-gen-init", () => {
   describe("StreamService", () => {
     describe("when fetching test result stream and the eventName is INSERT", () => {
       test("should result in an array of filtered js objects", () => {
-        processedEvent = StreamService.getTestResultStream(event.Records[0] as DynamoDBRecord);
+        processedEvent = StreamService.getClinicDataStream(event.Records[0] as DynamoDBRecord);
         expect(processedEvent).toEqual([
           {
             applicationId: "b3dc3b1e-2dbf-4e91-9d2b-ca089b679baf",
@@ -48,14 +45,14 @@ describe("cert-gen-init", () => {
       test("shouldn't result in an array of filtered js objects when PROCESS_MODIFY_EVENTS is false", () => {
         process.env.PROCESS_MODIFY_EVENTS = "false";
         event.Records[0].eventName = "MODIFY";
-        processedEvent = StreamService.getTestResultStream(event.Records[0] as DynamoDBRecord);
+        processedEvent = StreamService.getClinicDataStream(event.Records[0] as DynamoDBRecord);
         expect(processedEvent).toHaveLength(0);
       });
 
       test("should result in an array of filtered js objects when PROCESS_MODIFY_EVENTS is true", () => {
         process.env.PROCESS_MODIFY_EVENTS = "true";
         event.Records[0].eventName = "MODIFY";
-        processedEvent = StreamService.getTestResultStream(event.Records[0] as DynamoDBRecord);
+        processedEvent = StreamService.getClinicDataStream(event.Records[0] as DynamoDBRecord);
         expect(processedEvent).toHaveLength(1);
         expect(processedEvent).toEqual(applicationData);
       });
@@ -64,7 +61,7 @@ describe("cert-gen-init", () => {
         process.env.PROCESS_MODIFY_EVENTS = "";
         event.Records[0].eventName = "MODIFY";
         expect(() => {
-          StreamService.getTestResultStream(event.Records[0] as DynamoDBRecord);
+          StreamService.getClinicDataStream(event.Records[0] as DynamoDBRecord);
         }).toThrowError();
       });
     });
@@ -73,7 +70,7 @@ describe("cert-gen-init", () => {
   describe("SQService", () => {
     const client = mockClient(SQSClient);
     const mock = new SQMockClient();
-    const sqService = new SQService(client as unknown as SQSClient);
+    const sqService = new SQService();
     // const config = Configuration.getInstance().getConfig();
     const config = {
       sqs: {
@@ -124,14 +121,6 @@ describe("cert-gen-init", () => {
             expect(error.message).toEqual("Queue cert-gen-q was not found.");
           });
         });
-
-        it("should fail to read any records from the queue", () => {
-          return sqService.getMessages().catch((error: any) => {
-            expect(error).toBeInstanceOf(Error);
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            expect(error.message).toEqual("Queue cert-gen-q was not found.");
-          });
-        });
       });
 
       describe("and the queue does exist", () => {
@@ -153,25 +142,6 @@ describe("cert-gen-init", () => {
             console.error(error);
             expect(error).toBeFalsy();
           });
-        });
-
-        test("should successfully read the added records from the queue", async () => {
-          return sqService
-            .getMessages()
-            .then((messages: ReceiveMessageCommandOutput) => {
-              expect(
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-                messages.Messages?.map((message) => JSON.parse(message.Body as string)),
-              ).toEqual(processedEvent);
-              void sqService.sqsClient.send(
-                new DeleteQueueCommand({
-                  QueueUrl: "sqs://queue/cert-gen-q",
-                }),
-              );
-            })
-            .catch((error) => {
-              console.info(error);
-            });
         });
       });
     });

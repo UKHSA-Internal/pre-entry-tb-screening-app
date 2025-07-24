@@ -2,11 +2,8 @@ import {
   CreateQueueRequest,
   DeleteQueueRequest,
   GetQueueUrlRequest,
-  // GetQueueUrlResult,
   ReceiveMessageRequest,
-  // ReceiveMessageResult,
   SendMessageRequest,
-  // SendMessageResult,
 } from "@aws-sdk/client-sqs";
 
 interface IQueue {

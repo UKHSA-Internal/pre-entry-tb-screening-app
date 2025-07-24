@@ -2,31 +2,25 @@ import {
   GetQueueUrlCommand,
   GetQueueUrlCommandOutput,
   MessageAttributeValue,
-  ReceiveMessageCommand,
-  ReceiveMessageCommandOutput,
   SendMessageCommand,
   SendMessageCommandInput,
   SQSClient,
 } from "@aws-sdk/client-sqs";
-import { ServiceException } from "@smithy/smithy-client";
 
+import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
-import { Service } from "../models/injector/ServiceDecorator";
+
+const { sqsClient } = awsClients;
 
 /**
  * Service class for interfacing with the Simple Queue Service
  */
 
-@Service()
 class SQService {
   public readonly sqsClient: SQSClient;
 
-  /**
-   * Constructor for the ActivityService class
-   * @param sqsClient - The Simple Queue Service client
-   */
-  constructor(sqsClient: SQSClient) {
-    this.sqsClient = new SQSClient({ ...sqsClient, region: "eu-west-2" });
+  constructor() {
+    this.sqsClient = sqsClient;
   }
 
   /**
@@ -66,19 +60,6 @@ class SQService {
 
     // Send a message to the queue
     await this.sqsClient.send(new SendMessageCommand(params as SendMessageCommandInput));
-  }
-
-  /**
-   * Get the messages in the queue
-   */
-
-  public async getMessages(): Promise<ReceiveMessageCommandOutput | ServiceException> {
-    // Get the queue URL for the provided queue name
-    const queueUrlResult: GetQueueUrlCommandOutput = await this.sqsClient.send(
-      new GetQueueUrlCommand({ QueueName: process.env.INTEGRATION_SERVICE_QUEUE_NAME as string }),
-    );
-    // Get the messages from the queue
-    return this.sqsClient.send(new ReceiveMessageCommand({ QueueUrl: queueUrlResult.QueueUrl! }));
   }
 }
 

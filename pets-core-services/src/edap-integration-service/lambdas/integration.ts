@@ -1,9 +1,6 @@
-import { SQSClient } from "@aws-sdk/client-sqs";
 import {
   Callback,
   Context,
-  // Callback,
-  // Context,
   DynamoDBBatchItemFailure,
   DynamoDBBatchResponse,
   DynamoDBStreamEvent,
@@ -13,7 +10,6 @@ import {
 import { logger } from "../../shared/logger";
 import { SQService } from "../services/SQService";
 import { StreamService } from "../services/StreamService";
-// import { Utils } from "../utils/Utils";
 
 /**
  * λ function to process a DynamoDB stream of test results into a queue for certificate generation.
@@ -43,7 +39,7 @@ const handler: Handler = async (
   try {
     // Instantiate the Simple Queue Service
 
-    sqService = new SQService(new SQSClient());
+    sqService = new SQService();
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     logger.error(`Error creating SQS instance:  ${e}`);
@@ -52,7 +48,7 @@ const handler: Handler = async (
 
   for (const record of event.Records) {
     try {
-      expandedRecords = StreamService.getTestResultStream(record);
+      expandedRecords = StreamService.getClinicDataStream(record);
       logger.info(`Number of Retrieved records: ${expandedRecords.length}`);
 
       for (const record of expandedRecords) {
@@ -70,6 +66,7 @@ const handler: Handler = async (
       batchItemFailures.push({
         itemIdentifier: record.dynamodb?.SequenceNumber ?? "",
       });
+      // TODO: Send batchItemFailures to DLQ
     }
   }
 

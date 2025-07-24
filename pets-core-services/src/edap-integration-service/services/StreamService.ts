@@ -13,7 +13,7 @@ class StreamService {
    * Extract INSERT events from the DynamoDB Stream
    * @param event
    */
-  public static getTestResultStream(record: DynamoDBRecord) {
+  public static getClinicDataStream(record: DynamoDBRecord) {
     logger.info(record);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let records: Record<string, any>[] = [];
