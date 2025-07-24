@@ -8,12 +8,12 @@ export class TbCertificateConfirmationPage extends BasePage {
   }
 
   verifyPageLoaded(): TbCertificateConfirmationPage {
-    cy.get(".govuk-panel--confirmation").should("be.visible");
-    cy.get(".govuk-panel__title").should("be.visible").and("contain", "TB screening complete");
+    cy.url().should("include", "/tb-certificate-confirmation");
+    cy.get(".govuk-panel").should("be.visible");
     return this;
   }
 
-  // Verify confirmation panel is displayed with correct content
+  // Verify confirmation panel is displayed with correct content (Certificate ISSUED)
   verifyConfirmationPanel(): TbCertificateConfirmationPage {
     cy.get(".govuk-panel--confirmation").should("be.visible");
     cy.get(".govuk-panel__title")
@@ -23,7 +23,24 @@ export class TbCertificateConfirmationPage extends BasePage {
     return this;
   }
 
-  // Verify certificate reference number is displayed
+  // Verify confirmation panel for Certificate NOT ISSUED
+  verifyConfirmationPanelNotIssued(): TbCertificateConfirmationPage {
+    cy.get(".govuk-panel--warning").should("be.visible");
+    cy.get(".govuk-panel__title")
+      .should("be.visible")
+      .and("contain", "TB screening complete")
+      .and("contain", "Certificate not issued");
+    return this;
+  }
+
+  // Verify warning panel styling for not issued
+  verifyWarningPanelStyling(): TbCertificateConfirmationPage {
+    cy.get(".confirmation-panel--warning").should("be.visible");
+    cy.get(".govuk-panel--warning").should("have.class", "confirmation-panel--warning");
+    return this;
+  }
+
+  // Verify certificate reference number is displayed (only for issued certificates)
   verifyCertificateReferenceNumber(expectedRefNumber?: string): TbCertificateConfirmationPage {
     cy.get(".govuk-panel__body")
       .should("be.visible")
@@ -51,7 +68,7 @@ export class TbCertificateConfirmationPage extends BasePage {
     return this;
   }
 
-  // Verify "View or print certificate" button
+  // Verify "View or print certificate" button (only for issued certificates)
   verifyViewPrintCertificateButton(): TbCertificateConfirmationPage {
     cy.get('button[type="submit"]')
       .should("be.visible")
@@ -76,6 +93,11 @@ export class TbCertificateConfirmationPage extends BasePage {
       .should("be.visible")
       .and("contain", "View a summary for this visa applicant");
 
+    // Verify "Search for another visa applicant" link
+    cy.contains(".govuk-link", "Search for another visa applicant")
+      .should("be.visible")
+      .and("have.attr", "href", "/applicant-search");
+
     return this;
   }
 
@@ -84,6 +106,8 @@ export class TbCertificateConfirmationPage extends BasePage {
     cy.get('a[href*="forms.office.com"]')
       .should("be.visible")
       .and("contain", "What did you think of this service?");
+
+    cy.contains("(takes 30 seconds)").should("be.visible");
     return this;
   }
 
@@ -93,12 +117,17 @@ export class TbCertificateConfirmationPage extends BasePage {
     return this;
   }
 
+  clickSearchForAnotherApplicantLink(): TbCertificateConfirmationPage {
+    cy.contains(".govuk-link", "Search for another visa applicant").click();
+    return this;
+  }
+
   clickFeedbackLink(): TbCertificateConfirmationPage {
     cy.get('a[href*="forms.office.com"]').click();
     return this;
   }
 
-  // Verify back link navigation
+  // Verify back link navigation - context sensitive
   verifyBackLinkNavigation(): TbCertificateConfirmationPage {
     cy.get(".govuk-back-link")
       .should("be.visible")
@@ -122,7 +151,7 @@ export class TbCertificateConfirmationPage extends BasePage {
     return this;
   }
 
-  // Get certificate reference number value
+  // Get certificate reference number value (only for issued certificates)
   getCertificateReferenceNumber(): Cypress.Chainable<string> {
     return cy
       .get(".govuk-panel__body strong")
@@ -139,34 +168,19 @@ export class TbCertificateConfirmationPage extends BasePage {
     return this;
   }
 
-  // Get the current URL
-  getCurrentUrl(): Cypress.Chainable<string> {
-    return cy.url();
-  }
-
-  // Check URL after navigation
-  checkRedirectionAfterAction(expectedUrlPath: string): TbCertificateConfirmationPage {
-    cy.url().should("include", expectedUrlPath);
-    return this;
-  }
-
-  // Verify all content sections are present
-  verifyAllContentSections(): TbCertificateConfirmationPage {
+  // Verification for Certificate ISSUED scenario
+  verifyCompleteIssuedPage(expectedCertificateRef?: string): TbCertificateConfirmationPage {
+    this.verifyPageLoaded();
     this.verifyConfirmationPanel();
-    this.verifyCertificateReferenceNumber();
+    this.verifyCertificateReferenceNumber(expectedCertificateRef);
     this.verifyCompletionMessage();
     this.verifyWhatHappensNextSection();
     this.verifyViewPrintCertificateButton();
     this.verifyNavigationLinks();
     this.verifyFeedbackLink();
-    return this;
-  }
-
-  // Complete page verification
-  verifyCompletePage(expectedCertificateRef?: string): TbCertificateConfirmationPage {
-    this.verifyPageLoaded();
     this.verifyGridLayout();
-    this.verifyAllContentSections();
+    this.verifyBackLinkNavigation();
+    this.verifyServiceName();
 
     if (expectedCertificateRef) {
       this.verifyCertificateReferenceNumber(expectedCertificateRef);
@@ -174,19 +188,16 @@ export class TbCertificateConfirmationPage extends BasePage {
       this.verifyCertificateReferenceNumberFormat();
     }
 
-    this.verifyBackLinkNavigation();
-    this.verifyServiceName();
     return this;
   }
 
-  // Verify all elements on the page
-  verifyAllPageElements(): TbCertificateConfirmationPage {
+  // Vserification for Certificate NOT ISSUED scenarios
+  verifyCompleteNotIsuedPage(): TbCertificateConfirmationPage {
     this.verifyPageLoaded();
-    this.verifyConfirmationPanel();
-    this.verifyCertificateReferenceNumber();
+    this.verifyConfirmationPanelNotIssued();
+    this.verifyWarningPanelStyling();
     this.verifyCompletionMessage();
     this.verifyWhatHappensNextSection();
-    this.verifyViewPrintCertificateButton();
     this.verifyNavigationLinks();
     this.verifyFeedbackLink();
     this.verifyGridLayout();
@@ -195,14 +206,60 @@ export class TbCertificateConfirmationPage extends BasePage {
     return this;
   }
 
-  // Test all navigation options
-  testAllNavigationOptions(): TbCertificateConfirmationPage {
-    // Test view/print certificate button
-    this.verifyViewPrintCertificateButton();
-
-    // Test navigation links (but don't actually click to maintain test flow)
+  // Context-sensitive verification that automatically detects the scenario
+  verifyAllPageElements(): TbCertificateConfirmationPage {
+    this.verifyPageLoaded();
+    this.verifyCompletionMessage();
+    this.verifyWhatHappensNextSection();
     this.verifyNavigationLinks();
     this.verifyFeedbackLink();
+    this.verifyGridLayout();
+    this.verifyBackLinkNavigation();
+    this.verifyServiceName();
+
+    // Detect which scenario we're in and verify accordingly
+    cy.get("body").then(($body) => {
+      if ($body.find(".govuk-panel--confirmation").length > 0) {
+        // Certificate issued scenario
+        this.verifyConfirmationPanel();
+        this.verifyCertificateReferenceNumber();
+        this.verifyViewPrintCertificateButton();
+      } else if ($body.find(".govuk-panel--warning").length > 0) {
+        // Certificate not issued scenario
+        this.verifyConfirmationPanelNotIssued();
+        this.verifyWarningPanelStyling();
+      }
+    });
+
+    return this;
+  }
+
+  // Navigate to tracker via summary link
+  navigateToTracker(): TbCertificateConfirmationPage {
+    this.clickViewSummaryLink();
+    cy.url().should("include", "/tracker");
+    return this;
+  }
+
+  // Navigate to applicant search
+  navigateToApplicantSearch(): TbCertificateConfirmationPage {
+    this.clickSearchForAnotherApplicantLink();
+    cy.url().should("include", "/applicant-search");
+    return this;
+  }
+
+  // Test all navigation options
+  testAllNavigationOptions(): TbCertificateConfirmationPage {
+    // Test view summary link (but don't actually click to maintain test flow)
+    this.verifyNavigationLinks();
+    this.verifyFeedbackLink();
+
+    // For issued certificates, test view/print certificate button
+    cy.get("body").then(($body) => {
+      if ($body.find('button:contains("View or print certificate")').length > 0) {
+        this.verifyViewPrintCertificateButton();
+      }
+    });
 
     return this;
   }
@@ -220,8 +277,10 @@ export class TbCertificateConfirmationPage extends BasePage {
     return this.verifyViewPrintCertificateButton();
   }
 
-  checkRedirectionAfterFinish(expectedUrlPath: string): TbCertificateConfirmationPage {
-    this.clickViewPrintCertificateButton();
-    return this.checkRedirectionAfterAction(expectedUrlPath);
+  // Complete confirmation and navigate to tracker
+  completeConfirmationAndGoToTracker(): TbCertificateConfirmationPage {
+    this.verifyAllPageElements();
+    this.navigateToTracker();
+    return this;
   }
 }

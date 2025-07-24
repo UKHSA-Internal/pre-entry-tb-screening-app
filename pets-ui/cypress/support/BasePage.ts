@@ -18,7 +18,7 @@ export class BasePage {
     return this;
   }
 
-  // Get summary value for a specific field - common across many pages
+  // Get summary value for a specific field
   getSummaryValue(fieldKey: string): Cypress.Chainable<string> {
     return cy
       .contains("dt.govuk-summary-list__key", fieldKey)

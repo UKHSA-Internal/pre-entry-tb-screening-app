@@ -49,10 +49,11 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
   const tbProgressTrackerPage = new TBProgressTrackerPage();
 
   // Define variables to store test data
+  let countryCode: string = "";
   let countryName: string = "";
   let passportNumber: string = "";
   let tbCertificateNumber: string = "";
-  let selectedVisaType: string = ""; // New variable to store the randomly selected visa type
+  let selectedVisaType: string = "";
 
   before(() => {
     // Create test fixtures before test run
@@ -65,13 +66,15 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     applicantSearchPage.verifyPageLoaded();
     // Generate random country and passport number
     const randomCountry = randomElement(countryList);
-    countryName = randomCountry?.value;
+    countryCode = randomCountry?.value; // For form filling (e.g., "BRB")
+    countryName = randomCountry?.label; // For validation (e.g., "Barbados")
     passportNumber = getRandomPassportNumber();
     tbCertificateNumber = "TB" + Math.floor(10000000 + Math.random() * 90000000);
 
     // Log what we're using for debugging
     cy.log(`Using passport number: ${passportNumber}`);
-    cy.log(`Using country: ${countryName}`);
+    cy.log(`Using country code: ${countryCode}`);
+    cy.log(`Using country name: ${countryName}`);
     cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
   });
 
@@ -79,7 +82,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     // Search for applicant with passport number
     applicantSearchPage
       .fillPassportNumber(passportNumber)
-      .selectCountryOfIssue(countryName)
+      .selectCountryOfIssue(countryCode) // Use country code for form filling
       .submitSearch();
 
     // Verify no matching record found and click create new
@@ -97,7 +100,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     applicantDetailsPage
       .fillFullName("Jane Smith")
       .selectSex("Female")
-      .selectNationality(countryName)
+      .selectNationality(countryCode) // Use country code for form filling
       .fillBirthDate("15", "03", "2000")
       .fillPassportIssueDate("10", "05", "2018")
       .fillPassportExpiryDate("10", "05", "2028")
@@ -106,7 +109,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
       .fillAddressLine3("Downtown")
       .fillTownOrCity("London")
       .fillProvinceOrState("Greater London")
-      .selectAddressCountry(countryName)
+      .selectAddressCountry(countryCode) // Use country code for form filling
       .fillPostcode("SW1A 1AA")
       .submitForm();
 
@@ -137,7 +140,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     // Verify some of the submitted data appears correctly in the summary
     applicantSummaryPage.verifySummaryValue("Name", "Jane Smith");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
-    applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
+    applicantSummaryPage.verifySummaryValue("Country of issue", countryName); // Use country name for validation
 
     // Confirm above details to proceed to next page
     applicantSummaryPage.confirmDetails();

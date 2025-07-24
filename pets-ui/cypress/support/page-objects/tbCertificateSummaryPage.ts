@@ -1,4 +1,4 @@
-//This holds all fields for the TB Certificate Summary Page
+//This holds all fields for the TB Certificate Summary Page - Handles both Cert issued and not issued scenarios
 
 import { BasePage } from "../BasePage";
 
@@ -44,94 +44,244 @@ interface ScreeningInfo {
   "Child under 11 years"?: string;
 }
 
+// Types for certificate not issued information
+interface CertificateNotIssuedInfo {
+  "Reason for not issuing certificate"?: string;
+  "Declaring Physician's name"?: string;
+  "Physician's comments"?: string;
+}
+
 export class TbCertificateSummaryPage extends BasePage {
   constructor() {
     super("/tb-certificate-summary");
   }
 
   verifyPageLoaded(): TbCertificateSummaryPage {
-    super.verifyPageHeading("Check certificate information");
+    cy.url().should("include", "/tb-certificate-summary");
     cy.get(".govuk-summary-list").should("be.visible");
     return this;
   }
 
-  // Verify applicant information section
+  // Helper method to check if we're in issued mode
+  isIssuedMode(): Cypress.Chainable<boolean> {
+    return cy.get("h1").then(($h1) => {
+      const heading = $h1.text().trim();
+      return heading.includes("Check certificate information");
+    });
+  }
+
+  // Helper method to check if we're in not issued mode
+  isNotIssuedMode(): Cypress.Chainable<boolean> {
+    return cy.get("h1").then(($h1) => {
+      const heading = $h1.text().trim();
+      return heading.includes("Check TB clearance outcome");
+    });
+  }
+
+  // Verify page heading based on certificate status
+  verifyPageHeadingForIssued(): TbCertificateSummaryPage {
+    cy.get("h1").should("contain", "Check certificate information");
+    return this;
+  }
+
+  verifyPageHeadingForNotIssued(): TbCertificateSummaryPage {
+    cy.get("h1").should("contain", "Check TB clearance outcome");
+    return this;
+  }
+
+  // CONDITIONAL METHODS FOR BOTH SCENARIOS
+  // Verify applicant information section - only if in issued mode
   verifyApplicantInfoSection(): TbCertificateSummaryPage {
-    cy.contains("h2", "Visa applicant information").should("be.visible");
+    this.isIssuedMode().then((isIssued) => {
+      if (isIssued) {
+        cy.contains("h2", "Visa applicant information").should("be.visible");
+      }
+    });
     return this;
   }
 
-  // Verify applicant information
+  // Verify applicant information - only if in issued mode
   verifyApplicantInfo(expectedInfo: ApplicantInfo): TbCertificateSummaryPage {
-    Object.entries(expectedInfo).forEach(([key, value]: [string, string | undefined]) => {
-      if (value !== undefined) {
-        this.verifySummaryValue(key, value);
+    this.isIssuedMode().then((isIssued) => {
+      if (isIssued) {
+        Object.entries(expectedInfo).forEach(([key, value]: [string, string | undefined]) => {
+          if (value !== undefined) {
+            this.verifySummaryValue(key, value);
+          }
+        });
       }
     });
     return this;
   }
 
-  // Verify current residential address section
+  // Verify current residential address section - only if in issued mode
   verifyCurrentAddressSection(): TbCertificateSummaryPage {
-    cy.contains("h2", "Current residential address").should("be.visible");
+    this.isIssuedMode().then((isIssued) => {
+      if (isIssued) {
+        cy.contains("h2", "Current residential address").should("be.visible");
+      }
+    });
     return this;
   }
 
-  // Verify current residential address
+  // Verify current residential address - only if in issued mode
   verifyCurrentAddress(expectedAddress: AddressInfo): TbCertificateSummaryPage {
-    Object.entries(expectedAddress).forEach(([key, value]: [string, string | undefined]) => {
-      if (value !== undefined) {
-        this.verifySummaryValue(key, value);
+    this.isIssuedMode().then((isIssued) => {
+      if (isIssued) {
+        Object.entries(expectedAddress).forEach(([key, value]: [string, string | undefined]) => {
+          if (value !== undefined) {
+            this.verifySummaryValue(key, value);
+          }
+        });
       }
     });
     return this;
   }
 
-  // Verify proposed UK address section
+  // Verify proposed UK address section - only if in issued mode
   verifyProposedUkAddressSection(): TbCertificateSummaryPage {
-    cy.contains("h2", "Proposed UK address").should("be.visible");
+    this.isIssuedMode().then((isIssued) => {
+      if (isIssued) {
+        cy.contains("h2", "Proposed UK address").should("be.visible");
+      }
+    });
     return this;
   }
 
-  // Verify proposed UK address
+  // Verify proposed UK address - only if in issued mode
   verifyProposedUkAddress(expectedAddress: AddressInfo): TbCertificateSummaryPage {
-    Object.entries(expectedAddress).forEach(([key, value]: [string, string | undefined]) => {
-      if (value !== undefined) {
-        this.verifySummaryValue(key, value);
+    this.isIssuedMode().then((isIssued) => {
+      if (isIssued) {
+        Object.entries(expectedAddress).forEach(([key, value]: [string, string | undefined]) => {
+          if (value !== undefined) {
+            this.verifySummaryValue(key, value);
+          }
+        });
       }
     });
     return this;
   }
 
-  // Verify clinic and certificate information section
+  // Verify clinic and certificate information section - only if in issued mode
   verifyClinicCertificateSection(): TbCertificateSummaryPage {
-    cy.contains("h2", "Clinic and certificate information").should("be.visible");
+    this.isIssuedMode().then((isIssued) => {
+      if (isIssued) {
+        cy.contains("h2", "Clinic and certificate information").should("be.visible");
+      }
+    });
     return this;
   }
 
-  // Verify clinic and certificate information
+  // Verify clinic and certificate information - only if in issued mode
   verifyClinicCertificateInfo(expectedInfo: ClinicCertificateInfo): TbCertificateSummaryPage {
-    Object.entries(expectedInfo).forEach(([key, value]: [string, string | undefined]) => {
-      if (value !== undefined) {
-        this.verifySummaryValue(key, value);
+    this.isIssuedMode().then((isIssued) => {
+      if (isIssued) {
+        Object.entries(expectedInfo).forEach(([key, value]: [string, string | undefined]) => {
+          if (value !== undefined) {
+            this.verifySummaryValue(key, value);
+          }
+        });
       }
     });
     return this;
   }
 
-  // Verify screening information section
+  // Verify screening information section - only if in issued mode
   verifyScreeningInfoSection(): TbCertificateSummaryPage {
-    cy.contains("h2", "Screening information").should("be.visible");
+    this.isIssuedMode().then((isIssued) => {
+      if (isIssued) {
+        cy.contains("h2", "Screening information").should("be.visible");
+      }
+    });
     return this;
   }
 
-  // Verify screening information
+  // Verify screening information - only if in issued mode
   verifyScreeningInfo(expectedInfo: ScreeningInfo): TbCertificateSummaryPage {
-    Object.entries(expectedInfo).forEach(([key, value]: [string, string | undefined]) => {
-      if (value !== undefined) {
-        this.verifySummaryValue(key, value);
+    this.isIssuedMode().then((isIssued) => {
+      if (isIssued) {
+        Object.entries(expectedInfo).forEach(([key, value]: [string, string | undefined]) => {
+          if (value !== undefined) {
+            this.verifySummaryValue(key, value);
+          }
+        });
       }
     });
+    return this;
+  }
+
+  // Verify applicant photo - only if in issued mode
+  verifyApplicantPhoto(): TbCertificateSummaryPage {
+    this.isIssuedMode().then((isIssued) => {
+      if (isIssued) {
+        cy.get(".applicant-photo-summary")
+          .should("be.visible")
+          .and("have.attr", "alt", "Applicant");
+      }
+    });
+    return this;
+  }
+
+  // Verify declaration text - only if in issued mode
+  verifyDeclarationText(): TbCertificateSummaryPage {
+    this.isIssuedMode().then((isIssued) => {
+      if (isIssued) {
+        cy.contains(
+          "p",
+          "By submitting this certificate information you are confirming that, to the best of your knowledge, there is no clinical suspicious of pulmonary TB.",
+        ).should("be.visible");
+      }
+    });
+    return this;
+  }
+
+  // Verify certificate not issued summary data - only if in not issued mode
+  verifyCertificateNotIssuedInfo(expectedInfo: CertificateNotIssuedInfo): TbCertificateSummaryPage {
+    this.isNotIssuedMode().then((isNotIssued) => {
+      if (isNotIssued) {
+        Object.entries(expectedInfo).forEach(([key, value]: [string, string | undefined]) => {
+          if (value !== undefined) {
+            this.verifySummaryValue(key, value);
+          }
+        });
+      }
+    });
+    return this;
+  }
+
+  // Verify the page is in "certificate not issued" mode
+  verifyCertificateNotIssuedMode(): TbCertificateSummaryPage {
+    this.verifyPageHeadingForNotIssued();
+
+    // In Cert not issued mode, we should see the specific fields for not issuing
+    cy.contains("dt.govuk-summary-list__key", "Reason for not issuing certificate").should(
+      "be.visible",
+    );
+    cy.contains("dt.govuk-summary-list__key", "Declaring Physician's name").should("be.visible");
+
+    // Verify that issued-mode elements do NOT exist
+    cy.contains("h2", "Visa applicant information").should("not.exist");
+    cy.contains("h2", "Clinic and certificate information").should("not.exist");
+    cy.contains("h2", "Screening information").should("not.exist");
+    cy.get(".applicant-photo-summary").should("not.exist");
+
+    return this;
+  }
+
+  // Verify the page is in "certificate issued" mode
+  verifyCertificateIssuedMode(): TbCertificateSummaryPage {
+    this.verifyPageHeadingForIssued();
+
+    // Verify that issued-mode sections exist
+    cy.contains("h2", "Visa applicant information").should("be.visible");
+    cy.contains("h2", "Clinic and certificate information").should("be.visible");
+    cy.contains("h2", "Screening information").should("be.visible");
+
+    // Verify that not-issued-mode specific elements do NOT exist
+    cy.contains("dt.govuk-summary-list__key", "Reason for not issuing certificate").should(
+      "not.exist",
+    );
+
     return this;
   }
 
@@ -150,21 +300,6 @@ export class TbCertificateSummaryPage extends BasePage {
     return this;
   }
 
-  // Verify applicant photo is displayed
-  verifyApplicantPhoto(): TbCertificateSummaryPage {
-    cy.get(".applicant-photo-summary").should("be.visible").and("have.attr", "alt", "Applicant");
-    return this;
-  }
-
-  // Verify declaration text
-  verifyDeclarationText(): TbCertificateSummaryPage {
-    cy.contains(
-      "p",
-      "By submitting this certificate information you are confirming that, to the best of your knowledge, there is no clinical suspicious of pulmonary TB.",
-    ).should("be.visible");
-    return this;
-  }
-
   // Check if a specific field has a "Change" link
   checkChangeLink(fieldKey: string): Cypress.Chainable {
     return cy
@@ -180,42 +315,55 @@ export class TbCertificateSummaryPage extends BasePage {
     return this;
   }
 
-  // Verify change links exist for editable fields
+  // Verify change links exist for editable fields (for issued certificates)
   verifyChangeLinksExist(): TbCertificateSummaryPage {
-    // Check for change links on clinic and certificate information fields
-    const editableFields = ["Declaring physician name", "Physician's comments"];
+    this.isIssuedMode().then((isIssued) => {
+      if (isIssued) {
+        const editableFields = ["Declaring physician name", "Physician's comments"];
 
-    editableFields.forEach((field) => {
-      cy.contains("dt.govuk-summary-list__key", field).then(($key) => {
-        const $row = $key.closest(".govuk-summary-list__row");
-        const $actions = $row.find("dd.govuk-summary-list__actions");
+        editableFields.forEach((field) => {
+          cy.contains("dt.govuk-summary-list__key", field).then(($key) => {
+            const $row = $key.closest(".govuk-summary-list__row");
+            const $actions = $row.find("dd.govuk-summary-list__actions");
 
-        if ($actions.length > 0) {
-          cy.wrap($actions)
-            .find("a")
-            .should("contain", "Change")
-            .and("have.attr", "href")
-            .and("include", "/tb-certificate-declaration");
-        }
-      });
+            if ($actions.length > 0) {
+              cy.wrap($actions)
+                .find("a")
+                .should("contain", "Change")
+                .and("have.attr", "href")
+                .and("include", "/tb-certificate-declaration");
+            }
+          });
+        });
+      }
     });
     return this;
   }
 
-  // Verify specific change link URLs
-  verifySpecificChangeLinks(): TbCertificateSummaryPage {
-    cy.contains("dt.govuk-summary-list__key", "Declaring physician name")
-      .siblings(".govuk-summary-list__actions")
-      .find("a")
-      .should("have.attr", "href")
-      .and("include", "/tb-certificate-declaration#undefined");
+  // Verify change links for Cert not issued scenario
+  verifyChangeLinksForNotIssued(): TbCertificateSummaryPage {
+    this.isNotIssuedMode().then((isNotIssued) => {
+      if (isNotIssued) {
+        const editableFields = [
+          "Reason for not issuing certificate",
+          "Declaring Physician's name",
+          "Physician's comments",
+        ];
 
-    cy.contains("dt.govuk-summary-list__key", "Physician's comments")
-      .siblings(".govuk-summary-list__actions")
-      .find("a")
-      .should("have.attr", "href")
-      .and("include", "/tb-certificate-declaration#physician-comments");
-
+        editableFields.forEach((field) => {
+          cy.get("body").then(($body) => {
+            if ($body.find(`dt:contains("${field}")`).length > 0) {
+              cy.contains("dt.govuk-summary-list__key", field)
+                .siblings(".govuk-summary-list__actions")
+                .find("a")
+                .should("contain", "Change")
+                .and("have.attr", "href")
+                .and("include", "/tb-certificate-not-issued");
+            }
+          });
+        });
+      }
+    });
     return this;
   }
 
@@ -234,12 +382,21 @@ export class TbCertificateSummaryPage extends BasePage {
     return this;
   }
 
-  // Verify back link navigation
+  // Verify back link navigation - context sensitive
   verifyBackLinkNavigation(): TbCertificateSummaryPage {
-    cy.get(".govuk-back-link")
-      .should("be.visible")
-      .and("contain", "Back")
-      .and("have.attr", "href", "/tb-certificate-declaration");
+    cy.get(".govuk-back-link").should("be.visible").and("contain", "Back");
+    return this;
+  }
+
+  // Verify back link for issued certificate
+  verifyBackLinkForIssued(): TbCertificateSummaryPage {
+    cy.get(".govuk-back-link").should("have.attr", "href", "/tb-certificate-declaration");
+    return this;
+  }
+
+  // Verify back link for not issued certificate
+  verifyBackLinkForNotIssued(): TbCertificateSummaryPage {
+    cy.get(".govuk-back-link").should("have.attr", "href", "/tb-certificate-not-issued");
     return this;
   }
 
@@ -251,29 +408,6 @@ export class TbCertificateSummaryPage extends BasePage {
     return this;
   }
 
-  // Verify page structure and layout
-  verifyPageStructure(): TbCertificateSummaryPage {
-    // Verify grid layout
-    cy.get(".govuk-grid-row").should("be.visible");
-    cy.get(".govuk-grid-column-two-thirds").should("be.visible");
-    cy.get(".govuk-grid-column-one-third").should("be.visible");
-
-    // Verify all sections are present
-    this.verifyApplicantInfoSection();
-    this.verifyCurrentAddressSection();
-    this.verifyProposedUkAddressSection();
-    this.verifyClinicCertificateSection();
-    this.verifyScreeningInfoSection();
-
-    return this;
-  }
-
-  // Verify certificate reference number has special styling
-  verifyCertificateReferenceNumberStyling(): TbCertificateSummaryPage {
-    cy.get(".certificate-reference-nowrap").should("be.visible");
-    return this;
-  }
-
   // Submit form and verify redirection
   submitAndVerifyRedirection(expectedUrl: string): TbCertificateSummaryPage {
     this.clickSubmit();
@@ -281,8 +415,20 @@ export class TbCertificateSummaryPage extends BasePage {
     return this;
   }
 
-  // Verify complete page with all expected data
-  verifyCompletePage(expectedData: {
+  // Complete verification for Certificate NOT Issued scenario
+  verifyCompleteNotIssuedPage(expectedData: CertificateNotIssuedInfo): TbCertificateSummaryPage {
+    this.verifyPageLoaded();
+    this.verifyCertificateNotIssuedMode();
+    this.verifyCertificateNotIssuedInfo(expectedData);
+    this.verifyChangeLinksForNotIssued();
+    this.verifySubmitButton();
+    this.verifyBackLinkForNotIssued();
+    this.verifyServiceName();
+    return this;
+  }
+
+  // Verify complete page with all expected data (for issued certificates)
+  verifyCompleteIssuedPage(expectedData: {
     applicantInfo?: ApplicantInfo;
     currentAddress?: AddressInfo;
     proposedUkAddress?: AddressInfo;
@@ -290,7 +436,7 @@ export class TbCertificateSummaryPage extends BasePage {
     screeningInfo?: ScreeningInfo;
   }): TbCertificateSummaryPage {
     this.verifyPageLoaded();
-    this.verifyPageStructure();
+    this.verifyCertificateIssuedMode();
 
     if (expectedData.applicantInfo) {
       this.verifyApplicantInfo(expectedData.applicantInfo);
@@ -316,23 +462,34 @@ export class TbCertificateSummaryPage extends BasePage {
     this.verifyDeclarationText();
     this.verifyChangeLinksExist();
     this.verifySubmitButton();
-    this.verifyBackLinkNavigation();
+    this.verifyBackLinkForIssued();
     this.verifyServiceName();
 
     return this;
   }
 
-  // Check all elements on the page
+  // Check all elements on the page - auto-detects mode and verifies it accordingly
   verifyAllPageElements(): TbCertificateSummaryPage {
     this.verifyPageLoaded();
-    this.verifyPageStructure();
-    this.verifyCertificateReferenceNumberStyling();
-    this.verifyApplicantPhoto();
-    this.verifyDeclarationText();
-    this.verifyChangeLinksExist();
     this.verifySubmitButton();
     this.verifyBackLinkNavigation();
     this.verifyServiceName();
+
+    // Auto-detect mode and verify accordingly
+    cy.get("body").then(($body) => {
+      if ($body.find('h1:contains("Check certificate information")').length > 0) {
+        // Certificate issued mode
+        this.verifyCertificateIssuedMode();
+        this.verifyApplicantPhoto();
+        this.verifyDeclarationText();
+        this.verifyChangeLinksExist();
+      } else {
+        // Certificate not issued mode
+        this.verifyCertificateNotIssuedMode();
+        this.verifyChangeLinksForNotIssued();
+      }
+    });
+
     return this;
   }
 
@@ -355,6 +512,34 @@ export class TbCertificateSummaryPage extends BasePage {
     Object.entries(expectedData).forEach(([key, value]: [string, string]) => {
       this.verifySummaryValue(key, value);
     });
+    return this;
+  }
+
+  // Test change links functionality for not issued scenario
+  testChangeLinksForNotIssued(): TbCertificateSummaryPage {
+    this.isNotIssuedMode().then((isNotIssued) => {
+      if (isNotIssued) {
+        // Test reason change link
+        this.clickChangeLink("Reason for not issuing certificate");
+        cy.url().should("include", "/tb-certificate-not-issued");
+        cy.go("back");
+
+        // Test physician name change link
+        this.clickChangeLink("Declaring Physician's name");
+        cy.url().should("include", "/tb-certificate-not-issued");
+        cy.go("back");
+
+        // Test physician comments change link (if exists)
+        cy.get("body").then(($body) => {
+          if ($body.find('dt:contains("Physician\'s comments")').length > 0) {
+            this.clickChangeLink("Physician's comments");
+            cy.url().should("include", "/tb-certificate-not-issued");
+            cy.go("back");
+          }
+        });
+      }
+    });
+
     return this;
   }
 }
