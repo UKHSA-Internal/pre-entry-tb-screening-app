@@ -15,7 +15,7 @@ import { assertEnvExists } from "../shared/config";
 import { logger, withRequest } from "../shared/logger";
 import { policyMapping, Roles } from "./constants";
 
-export const handler = (
+export const handler = async (
   event: APIGatewayRequestAuthorizerEvent,
   context: Context,
   callback: Callback,
