@@ -1,3 +1,4 @@
+import { selectTbCertificate } from "@redux/store";
 import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -8,7 +9,7 @@ import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectTbCertificate, setIsIssued } from "@/redux/tbCertificateSlice";
+import { setIsIssued } from "@/redux/tbCertificateSlice";
 import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
 
 const TbCertificateQuestionForm = () => {

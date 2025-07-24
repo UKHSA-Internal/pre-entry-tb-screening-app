@@ -9,10 +9,13 @@ import Heading from "@/components/heading/heading";
 import SubmitButton from "@/components/submitButton/submitButton";
 import Summary from "@/components/summary/summary";
 import TextArea from "@/components/textArea/textArea";
-import { selectApplication } from "@/redux/applicationSlice";
-import { selectChestXray } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectTbCertificate } from "@/redux/store";
+import {
+  selectApplication,
+  selectChestXray,
+  selectMedicalScreening,
+  selectTbCertificate,
+} from "@/redux/store";
 import {
   setCertficateDate,
   setCertificateNumber,

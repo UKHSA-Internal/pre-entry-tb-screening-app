@@ -1,3 +1,4 @@
+import { selectTbCertificate } from "@redux/store";
 import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -11,7 +12,6 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
-  selectTbCertificate,
   setComments,
   setDeclaringPhysicianName,
   setReasonNotIssued,

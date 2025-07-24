@@ -4,7 +4,7 @@ import Confirmation from "@/components/confirmation/confirmation";
 import Container from "@/components/container/container";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import { useAppSelector } from "@/redux/hooks";
-import { selectTbCertificate } from "@/redux/tbCertificateSlice";
+import { selectTbCertificate } from "@/redux/store";
 import { YesOrNo } from "@/utils/enums";
 
 export default function TbConfirmationPage() {
