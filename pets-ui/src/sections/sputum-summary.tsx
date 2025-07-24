@@ -7,10 +7,8 @@ import Button from "@/components/button/button";
 import Heading from "@/components/heading/heading";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
-import { selectApplication } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import {
-  selectSputum,
   setSample1Collection,
   setSample1CultureResults,
   setSample1SmearResults,
@@ -23,6 +21,7 @@ import {
   setSputumStatus,
   setSputumVersion,
 } from "@/redux/sputumSlice";
+import { selectApplication, selectSputum } from "@/redux/store";
 import { ApplicationStatus, ButtonType, PositiveOrNegative } from "@/utils/enums";
 import { formatDateType } from "@/utils/helpers";
 

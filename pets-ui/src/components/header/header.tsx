@@ -23,7 +23,7 @@ export default function Header() {
         </div>
         <div className="govuk-header__content">
           <LinkLabel
-            title="Complete UK Pre-Entry Health Screening"
+            title="Complete UK pre-entry health screening"
             to="/"
             externalLink={false}
             className="govuk-header__link govuk-header__service-name"

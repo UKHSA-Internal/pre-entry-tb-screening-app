@@ -10,7 +10,6 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setCheckSputumPreviousPage } from "@/redux/navigationSlice";
 import {
-  selectSputum,
   setSample1CultureResults,
   setSample1SmearResults,
   setSample2CultureResults,
@@ -18,6 +17,7 @@ import {
   setSample3CultureResults,
   setSample3SmearResults,
 } from "@/redux/sputumSlice";
+import { selectSputum } from "@/redux/store";
 import { ButtonType, PositiveOrNegative } from "@/utils/enums";
 import { formatDateForDisplay } from "@/utils/helpers";
 import { sputumResultsValidationMessages } from "@/utils/records";

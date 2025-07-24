@@ -8,9 +8,7 @@ import FileUpload from "@/components/fileUpload/fileUpload";
 import Heading from "@/components/heading/heading";
 import Spinner from "@/components/spinner/spinner";
 import SubmitButton from "@/components/submitButton/submitButton";
-import { selectApplication } from "@/redux/applicationSlice";
 import {
-  selectChestXray,
   setApicalLordoticXrayFile,
   setApicalLordoticXrayFileName,
   setLateralDecubitusXrayFile,
@@ -19,6 +17,7 @@ import {
   setPosteroAnteriorXrayFileName,
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { selectApplication, selectChestXray } from "@/redux/store";
 import { ButtonType, ImageType } from "@/utils/enums";
 import uploadFile from "@/utils/uploadFile";
 

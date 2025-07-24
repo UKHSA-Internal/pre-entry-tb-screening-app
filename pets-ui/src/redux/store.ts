@@ -12,12 +12,12 @@ import { travelReducer } from "./travelSlice";
 const rootReducer = combineReducers({
   applicant: applicantReducer,
   application: applicationReducer,
-  medicalScreening: medicalScreeningReducer,
-  travel: travelReducer,
   chestXray: chestXrayReducer,
+  medicalScreening: medicalScreeningReducer,
+  navigation: navigationReducer,
   sputum: sputumReducer,
   tbCertificate: tbCertificateReducer,
-  navigation: navigationReducer,
+  travel: travelReducer,
 });
 
 export const setupStore = (preloadedState?: Partial<RootState>) => {
@@ -31,3 +31,12 @@ export const setupStore = (preloadedState?: Partial<RootState>) => {
 export type RootState = ReturnType<typeof rootReducer>;
 export type AppStore = ReturnType<typeof setupStore>;
 export type AppDispatch = AppStore["dispatch"];
+
+export const selectApplicant = (state: RootState) => state.applicant;
+export const selectApplication = (state: RootState) => state.application;
+export const selectChestXray = (state: RootState) => state.chestXray;
+export const selectMedicalScreening = (state: RootState) => state.medicalScreening;
+export const selectNavigation = (state: RootState) => state.navigation;
+export const selectSputum = (state: RootState) => state.sputum;
+export const selectTbCertificate = (state: RootState) => state.tbCertificate;
+export const selectTravel = (state: RootState) => state.travel;

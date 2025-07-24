@@ -12,9 +12,8 @@ import TextArea from "@/components/textArea/textArea";
 import { selectApplication } from "@/redux/applicationSlice";
 import { selectChestXray } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectMedicalScreening } from "@/redux/medicalScreeningSlice";
+import { selectTbCertificate } from "@/redux/store";
 import {
-  selectTbCertificate,
   setCertficateDate,
   setCertificateNumber,
   setComments,

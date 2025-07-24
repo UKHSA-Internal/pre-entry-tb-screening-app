@@ -59,7 +59,7 @@ const travelSlice = {
   townOrCity: "Town",
   ukEmail: "email.email@com",
   ukMobileNumber: "07321900900",
-  visaType: "Government Sponsored",
+  visaCategory: "Government Sponsored",
 };
 
 const medicalScreeningSlice = {
@@ -194,7 +194,7 @@ test("Progress tracker page displays incomplete application sections correctly &
     { preloadedState: incompleteState },
   );
 
-  expect(screen.getByText("Complete UK pre-entry health screening")).toBeInTheDocument();
+  expect(screen.getAllByText("Complete UK pre-entry health screening")).toHaveLength(2);
 
   expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
   expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Reginald Backwaters");
@@ -262,7 +262,7 @@ test("Progress tracker page displays complete application sections correctly, li
     { preloadedState: completeState },
   );
 
-  expect(screen.getByText("Complete UK pre-entry health screening")).toBeInTheDocument();
+  expect(screen.getAllByText("Complete UK pre-entry health screening")).toHaveLength(2);
 
   expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
   expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Chelsea Cummerbund");

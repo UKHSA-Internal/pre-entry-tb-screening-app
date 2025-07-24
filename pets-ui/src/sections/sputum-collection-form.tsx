@@ -18,12 +18,12 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setCheckSputumPreviousPage } from "@/redux/navigationSlice";
 import {
-  selectSputum,
   setSample1Collection,
   setSample2Collection,
   setSample3Collection,
   setSputumStatus,
 } from "@/redux/sputumSlice";
+import { selectSputum } from "@/redux/store";
 import { ApplicationStatus, ButtonType, SputumCollectionMethod } from "@/utils/enums";
 import { validateDate } from "@/utils/helpers";
 import { dateValidationMessages } from "@/utils/records";

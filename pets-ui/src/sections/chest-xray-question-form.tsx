@@ -10,11 +10,12 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import {
   clearChestXrayNotTakenDetails,
   clearChestXrayTakenDetails,
-  selectChestXray,
+  clearIsSputumRequired,
   setChestXrayStatus,
   setChestXrayTaken,
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { selectChestXray } from "@/redux/store";
 import { ApplicationStatus, ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
 
 const ChestXrayQuestionForm = () => {

@@ -1,4 +1,3 @@
-import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import {
@@ -214,5 +213,3 @@ export const {
 } = applicantSlice.actions;
 
 export const applicantReducer = applicantSlice.reducer;
-
-export const selectApplicant = (state: RootState) => state.applicant;

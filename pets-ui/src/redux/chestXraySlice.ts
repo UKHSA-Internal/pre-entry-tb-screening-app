@@ -1,4 +1,3 @@
-import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { ReceivedChestXrayDetailsType, ReduxChestXrayDetailsType } from "@/applicant";
@@ -211,5 +210,3 @@ export const {
 } = chestXraySlice.actions;
 
 export const chestXrayReducer = chestXraySlice.reducer;
-
-export const selectChestXray = (state: RootState) => state.chestXray;

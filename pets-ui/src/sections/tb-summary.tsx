@@ -7,14 +7,11 @@ import Button from "@/components/button/button";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
-import { selectApplicant } from "@/redux/applicantSlice";
-import { selectApplication } from "@/redux/applicationSlice";
-import { selectChestXray } from "@/redux/chestXraySlice";
-import { useAppSelector } from "@/redux/hooks";
-import { selectMedicalScreening } from "@/redux/medicalScreeningSlice";
-import { selectSputum } from "@/redux/sputumSlice";
-import { selectTbCertificate, setTbCertificateStatus } from "@/redux/tbCertificateSlice";
-import { selectTravel } from "@/redux/travelSlice";
+import { selectApplicant } from "@/redux/store";
+import { selectChestXray } from "@/redux/store";
+import { selectMedicalScreening } from "@/redux/store";
+import { selectSputum } from "@/redux/store";
+import { selectTravel } from "@/redux/store";
 import { ApplicationStatus, ButtonType, PositiveOrNegative, YesOrNo } from "@/utils/enums";
 import {
   calculateCertificateExpiryDate,
@@ -23,6 +20,11 @@ import {
   getCountryName,
   standardiseDayOrMonth,
 } from "@/utils/helpers";
+import { useAppSelector } from "@/redux/hooks";
+import { selectApplication, selectTbCertificate } from "@/redux/store";
+import { setTbCertificateStatus } from "@/redux/tbCertificateSlice";
+import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
+import { formatDateType, standardiseDayOrMonth } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
 const TbSummary = () => {

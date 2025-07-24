@@ -1,7 +1,7 @@
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import { useAppSelector } from "@/redux/hooks";
-import { selectTbCertificate } from "@/redux/tbCertificateSlice";
+import { selectTravel } from "@/redux/store";
 import TbSummary from "@/sections/tb-summary";
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 
