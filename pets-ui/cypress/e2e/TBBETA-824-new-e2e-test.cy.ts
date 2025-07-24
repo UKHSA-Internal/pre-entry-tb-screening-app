@@ -121,10 +121,10 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
       .fillAddressLine1("123 High Street")
       .fillAddressLine2("Apartment 4B")
       .fillAddressLine3("Downtown")
-      .fillTownOrCity("London")
-      .fillProvinceOrState("Greater London")
+      .fillTownOrCity("St. Marten")
+      .fillProvinceOrState("Holestown")
       .selectAddressCountry(countryCode) // Use country code for form filling
-      .fillPostcode("SW1A 1AA")
+      .fillPostcode("94109")
       .submitForm();
 
     // Verify redirection to the Applicant Photo page
