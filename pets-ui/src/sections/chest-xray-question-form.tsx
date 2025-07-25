@@ -10,7 +10,6 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import {
   clearChestXrayNotTakenDetails,
   clearChestXrayTakenDetails,
-  clearIsSputumRequired,
   setChestXrayStatus,
   setChestXrayTaken,
 } from "@/redux/chestXraySlice";
@@ -40,10 +39,6 @@ const ChestXrayQuestionForm = () => {
     } else {
       dispatch(clearChestXrayTakenDetails());
       navigate("/chest-xray-not-taken");
-    }
-
-    if (data.chestXrayTaken != chestXrayData.chestXrayTaken) {
-      dispatch(clearIsSputumRequired());
     }
   };
 

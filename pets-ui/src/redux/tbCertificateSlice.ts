@@ -13,6 +13,8 @@ const initialState: ReduxTbCertificateType = {
     day: "",
   },
   certificateNumber: "",
+  reasonNotIssued: "",
+  declaringPhysicianName: "",
 };
 
 export const tbCertificateSlice = createSlice({
@@ -34,12 +36,20 @@ export const tbCertificateSlice = createSlice({
     setCertificateNumber: (state, action: PayloadAction<string>) => {
       state.certificateNumber = action.payload;
     },
+    setReasonNotIssued: (state, action: PayloadAction<string>) => {
+      state.reasonNotIssued = action.payload;
+    },
+    setDeclaringPhysicianName: (state, action: PayloadAction<string>) => {
+      state.declaringPhysicianName = action.payload;
+    },
     clearTbCertificateDetails: (state) => {
       state.status = ApplicationStatus.NOT_YET_STARTED;
       state.isIssued = YesOrNo.NULL;
       state.comments = "";
       state.certificateDate = { year: "", month: "", day: "" };
       state.certificateNumber = "";
+      state.reasonNotIssued = "";
+      state.declaringPhysicianName = "";
     },
     setTbCertificateFromApiResponse: (state, action: PayloadAction<ReceivedTbCertificateType>) => {
       state.status =
@@ -60,6 +70,12 @@ export const tbCertificateSlice = createSlice({
             day: "",
           };
       state.certificateNumber = action.payload.certificateNumber;
+      if (action.payload.physicianName) {
+        state.declaringPhysicianName = action.payload.physicianName;
+      }
+      if (action.payload.notIssuedReason) {
+        state.reasonNotIssued = action.payload.notIssuedReason;
+      }
     },
   },
 });
@@ -70,6 +86,8 @@ export const {
   setComments,
   setCertficateDate,
   setCertificateNumber,
+  setReasonNotIssued,
+  setDeclaringPhysicianName,
   clearTbCertificateDetails,
   setTbCertificateFromApiResponse,
 } = tbCertificateSlice.actions;

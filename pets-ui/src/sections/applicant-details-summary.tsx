@@ -11,7 +11,7 @@ import { setApplicationDetails } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
 import { ApplicationStatus, ButtonType, ImageType } from "@/utils/enums";
-import { standardiseDayOrMonth } from "@/utils/helpers";
+import { getCountryName, standardiseDayOrMonth } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 import uploadFile from "@/utils/uploadFile";
 
@@ -87,7 +87,7 @@ const ApplicantReview = () => {
     },
     {
       key: "Country of nationality",
-      value: applicantData.countryOfNationality,
+      value: getCountryName(applicantData.countryOfNationality),
       link: `/contact#${attributeToComponentId.countryOfNationality}`,
       hiddenLabel: "country of nationality",
     },
@@ -105,7 +105,7 @@ const ApplicantReview = () => {
     },
     {
       key: "Country of issue",
-      value: applicantData.countryOfIssue,
+      value: getCountryName(applicantData.countryOfIssue),
       link: `/contact#${attributeToComponentId.countryOfIssue}`,
       hiddenLabel: "country of issue",
     },
@@ -155,7 +155,7 @@ const ApplicantReview = () => {
     },
     {
       key: "Country",
-      value: applicantData.country,
+      value: getCountryName(applicantData.country),
       link: `/contact#${attributeToComponentId.country}`,
       hiddenLabel: "country",
     },
