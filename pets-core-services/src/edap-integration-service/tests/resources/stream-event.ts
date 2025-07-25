@@ -11,11 +11,11 @@ export const mainEvent = {
       dynamodb: {
         ApproximateCreationDateTime: 1550751349,
         Keys: {
-          vin: {
-            S: "XMGDE02FS0H012345",
+          pk: {
+            S: "APPLICATION#b3dc3b1e-2dbf-4e91-9d2b-ca089b679baf",
           },
-          testResultId: {
-            S: "1",
+          sk: {
+            S: "APPLICATION#ROOT",
           },
         },
         NewImage: {
