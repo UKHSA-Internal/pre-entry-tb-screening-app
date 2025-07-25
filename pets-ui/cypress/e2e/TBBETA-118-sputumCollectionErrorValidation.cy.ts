@@ -141,6 +141,8 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     applicantSummaryPage.verifySummaryValue("Name", "Jane Smith");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName); // Use country name for validation
+    applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
+    applicantSummaryPage.verifySummaryValue("Country", countryName);
 
     // Confirm above details to proceed to next page
     applicantSummaryPage.confirmDetails();
