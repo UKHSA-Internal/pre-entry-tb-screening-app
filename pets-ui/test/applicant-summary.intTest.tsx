@@ -98,13 +98,13 @@ describe("ApplicantReview", () => {
     expect(screen.getAllByRole("term")[1]).toHaveTextContent("Sex");
     expect(screen.getAllByRole("definition")[2]).toHaveTextContent("Male");
     expect(screen.getAllByRole("term")[2]).toHaveTextContent("Country of nationality");
-    expect(screen.getAllByRole("definition")[4]).toHaveTextContent("NOR");
+    expect(screen.getAllByRole("definition")[4]).toHaveTextContent("Norway");
     expect(screen.getAllByRole("term")[3]).toHaveTextContent("Date of birth");
     expect(screen.getAllByRole("definition")[6]).toHaveTextContent("1/1/1901");
     expect(screen.getAllByRole("term")[4]).toHaveTextContent("Passport number");
     expect(screen.getAllByRole("definition")[8]).toHaveTextContent("1234");
     expect(screen.getAllByRole("term")[5]).toHaveTextContent("Country of issue");
-    expect(screen.getAllByRole("definition")[10]).toHaveTextContent("FIN");
+    expect(screen.getAllByRole("definition")[10]).toHaveTextContent("Finland");
     expect(screen.getAllByRole("term")[6]).toHaveTextContent("Passport issue date");
     expect(screen.getAllByRole("definition")[12]).toHaveTextContent("2/feb/1902");
     expect(screen.getAllByRole("term")[7]).toHaveTextContent("Passport expiry date");
@@ -120,7 +120,7 @@ describe("ApplicantReview", () => {
     expect(screen.getAllByRole("term")[12]).toHaveTextContent("Province or state");
     expect(screen.getAllByRole("definition")[24]).toHaveTextContent("Reykjavik");
     expect(screen.getAllByRole("term")[13]).toHaveTextContent("Country");
-    expect(screen.getAllByRole("definition")[26]).toHaveTextContent("ISL");
+    expect(screen.getAllByRole("definition")[26]).toHaveTextContent("Iceland");
     expect(screen.getAllByRole("term")[14]).toHaveTextContent("Postcode");
     expect(screen.getAllByRole("definition")[28]).toHaveTextContent("101");
     expect(screen.getAllByRole("term")[15]).toHaveTextContent("Applicant Photo");

@@ -18,7 +18,9 @@ const SputumQuestionForm = () => {
   const navigate = useNavigate();
   const chestXrayData = useAppSelector(selectChestXray);
 
-  const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxChestXrayDetailsType>({
+    reValidateMode: "onSubmit",
+  });
   const {
     handleSubmit,
     formState: { errors },

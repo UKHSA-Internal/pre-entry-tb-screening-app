@@ -24,13 +24,17 @@ import {
   setMedicalScreeningDetailsFromApiResponse,
 } from "@/redux/medicalScreeningSlice";
 import { clearNavigationDetails } from "@/redux/navigationSlice";
-import { clearSputumDetails, setSputumDetailsFromApiResponse } from "@/redux/sputumSlice";
+import {
+  clearSputumDetails,
+  setSputumDetailsFromApiResponse,
+  setSputumStatus,
+} from "@/redux/sputumSlice";
 import {
   clearTbCertificateDetails,
   setTbCertificateFromApiResponse,
 } from "@/redux/tbCertificateSlice";
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
-import { ButtonType } from "@/utils/enums";
+import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/records";
 
 import { getApplicants, getApplication } from "../api/api";
@@ -102,8 +106,14 @@ const ApplicantSearchForm = () => {
       }
       if (applicationRes.data.chestXray) {
         dispatch(setChestXrayFromApiResponse(applicationRes.data.chestXray));
+        if (applicationRes.data.chestXray.isSputumRequired === YesOrNo.NO) {
+          dispatch(setSputumStatus(ApplicationStatus.NOT_REQUIRED));
+        }
       }
-      if (applicationRes.data.sputumDetails) {
+      if (
+        applicationRes.data.sputumDetails &&
+        applicationRes.data.chestXray?.isSputumRequired !== YesOrNo.NO
+      ) {
         dispatch(setSputumDetailsFromApiResponse(applicationRes.data.sputumDetails));
       }
       if (applicationRes.data.tbCertificate) {

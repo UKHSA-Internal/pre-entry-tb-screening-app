@@ -39,6 +39,7 @@ const chestXrayTakenState: ReduxChestXrayDetailsType = {
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
   isSputumRequired: YesOrNo.YES,
+  completionDate: { year: "", month: "", day: "" },
 };
 
 const chestXrayNotTakenState: ReduxChestXrayDetailsType = {
@@ -58,6 +59,7 @@ const chestXrayNotTakenState: ReduxChestXrayDetailsType = {
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
   isSputumRequired: YesOrNo.YES,
+  completionDate: { year: "", month: "", day: "" },
 };
 
 describe("ChestXraySummaryPage", () => {

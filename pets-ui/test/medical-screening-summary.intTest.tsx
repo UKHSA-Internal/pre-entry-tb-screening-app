@@ -39,6 +39,7 @@ const medicalScreeningState = {
   tbSymptomsList: ["Cough", "Night sweats"],
   underElevenConditions: ["Not applicable - applicant is aged 11 or over"],
   underElevenConditionsDetail: "",
+  completionDate: { year: "", month: "", day: "" },
 };
 
 const applicationState = { applicationId: "abc-123", dateCreated: "" };
@@ -72,6 +73,7 @@ const tbCertificateState = {
     day: "",
   },
   certificateNumber: "",
+  declaringPhysicianName: "",
 };
 
 const preloadedState = {
@@ -188,6 +190,7 @@ describe("MedicalScreeningReview", () => {
         pregnant: "",
         menstrualPeriods: "",
         physicalExamNotes: "",
+        completionDate: { year: "", month: "", day: "" },
       },
     };
 
@@ -221,6 +224,7 @@ describe("MedicalScreeningReview", () => {
         pregnant: "",
         menstrualPeriods: "",
         physicalExamNotes: "",
+        completionDate: { year: "", month: "", day: "" },
       },
     };
 

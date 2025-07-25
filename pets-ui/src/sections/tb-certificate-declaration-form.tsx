@@ -1,69 +1,95 @@
 import { useEffect, useRef } from "react";
-import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 
-import { DateType, ReduxTbCertificateType } from "@/applicant";
-import DateTextInput from "@/components/dateTextInput/dateTextInput";
+import { ReduxTbCertificateType } from "@/applicant";
 import ErrorDisplay from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
-import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
+import Summary from "@/components/summary/summary";
 import TextArea from "@/components/textArea/textArea";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectTbCertificate } from "@/redux/store";
+import {
+  selectApplication,
+  selectChestXray,
+  selectMedicalScreening,
+  selectTbCertificate,
+} from "@/redux/store";
 import {
   setCertficateDate,
   setCertificateNumber,
   setComments,
-  setIsIssued,
+  setDeclaringPhysicianName,
   setTbCertificateStatus,
 } from "@/redux/tbCertificateSlice";
-import { ApplicationStatus, ButtonType, RadioIsInline } from "@/utils/enums";
-import { validateDate } from "@/utils/helpers";
+import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import {
+  calculateCertificateExpiryDate,
+  calculateCertificateIssueDate,
+  formatDateForDisplay,
+} from "@/utils/helpers";
 import { formRegex } from "@/utils/records";
 
 const TbCertificateDeclarationForm = () => {
+  const applicationData = useAppSelector(selectApplication);
+  const chestXrayData = useAppSelector(selectChestXray);
+  const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const tbCertificateData = useAppSelector(selectTbCertificate);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  const issueDate = calculateCertificateIssueDate(
+    chestXrayData.completionDate,
+    chestXrayData.chestXrayTaken,
+    medicalScreeningData.completionDate,
+  );
+  const todayFormatted = formatDateForDisplay(issueDate);
+
+  const expiryDate = calculateCertificateExpiryDate(
+    issueDate,
+    medicalScreeningData.closeContactWithTb === "Yes",
+  );
+  const expiryFormatted = formatDateForDisplay(expiryDate);
+
   const methods = useForm<ReduxTbCertificateType>({ reValidateMode: "onSubmit" });
   const {
-    control,
     handleSubmit,
-    watch,
     formState: { errors },
   } = methods;
 
-  const isTbClearanceIssued = watch("isIssued") as unknown as string;
+  const onSubmit: SubmitHandler<ReduxTbCertificateType> = (data) => {
+    dispatch(setComments(data.comments));
 
-  const onSubmit: SubmitHandler<ReduxTbCertificateType> = (tbCertificateData) => {
-    dispatch(setIsIssued(tbCertificateData.isIssued));
-    dispatch(setComments(tbCertificateData.comments));
-    dispatch(setCertficateDate(tbCertificateData.certificateDate));
-    dispatch(setCertificateNumber(tbCertificateData.certificateNumber));
+    dispatch(
+      setCertficateDate({
+        day: issueDate.day,
+        month: issueDate.month,
+        year: issueDate.year,
+      }),
+    );
+    dispatch(setCertificateNumber(applicationData.applicationId));
+    dispatch(setDeclaringPhysicianName(data.declaringPhysicianName));
     dispatch(setTbCertificateStatus(ApplicationStatus.IN_PROGRESS));
     navigate("/tb-certificate-summary");
   };
 
   const errorsToShow = Object.keys(errors);
 
-  // Required to scroll to the correct element when a change link on the summary page is clicked
   const location = useLocation();
-  const tbClearanceIssued = useRef<HTMLDivElement | null>(null);
-  const tbPhysicanComments = useRef<HTMLDivElement | null>(null);
-  const tbCertificateDate = useRef<HTMLDivElement | null>(null);
-  const tbCertificateNumber = useRef<HTMLDivElement | null>(null);
+  const certificateIssueDate = useRef<HTMLDivElement | null>(null);
+  const certificateIssueExpiry = useRef<HTMLDivElement | null>(null);
+  const declaringPhysicianName = useRef<HTMLDivElement | null>(null);
+  const physicianComments = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (location.hash) {
       const target = location.hash.substring(1);
       const refMap: { [key: string]: HTMLElement | null } = {
-        "tb-clearance-issued": tbClearanceIssued.current,
-        "physician-comments": tbPhysicanComments.current,
-        "tb-certificate-date": tbCertificateDate.current,
-        "tb-certificate-number": tbCertificateNumber.current,
+        "certificate-issue-date": certificateIssueDate.current,
+        "certificate-issue-expiry": certificateIssueExpiry.current,
+        "declaring-physician-name": declaringPhysicianName.current,
+        "physician-comments": physicianComments.current,
       };
 
       const targetRef = refMap[target];
@@ -78,84 +104,56 @@ const TbCertificateDeclarationForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
 
-        <Heading level={1} size="l" title="Enter TB clearance certificate declaration" />
+        <Heading level={1} size="l" title="Enter clinic and certificate information" />
 
-        <div ref={tbClearanceIssued}>
-          <Radio
-            heading="Has a TB clearance certificate been issued?"
-            id="tb-clearance-issued"
-            isInline={RadioIsInline.FALSE}
-            answerOptions={["Yes", "No"]}
-            sortAnswersAlphabetically={false}
-            errorMessage={errors?.isIssued?.message ?? ""}
-            formValue="isIssued"
-            required="Select yes if a TB clearance certificate has been issued or no if it has not"
-            defaultValue={tbCertificateData.isIssued}
+        <Summary
+          status={tbCertificateData.status}
+          summaryElements={[
+            {
+              key: "Clinic name",
+              value: "Lakeside Medical & TB Screening Centre",
+              hiddenLabel: "Clinic name",
+            },
+            {
+              key: "Certificate reference number",
+              value: applicationData.applicationId,
+              hiddenLabel: "Certificate reference number",
+            },
+            {
+              key: "Certificate issue date",
+              value: todayFormatted,
+              hiddenLabel: "Certificate issue date",
+            },
+            {
+              key: "Certificate issue expiry",
+              value: expiryFormatted,
+              hiddenLabel: "Certificate issue expiry",
+            },
+          ]}
+        />
+
+        <div ref={declaringPhysicianName}>
+          <FreeText
+            id="declaring-physician-name"
+            errorMessage={errors?.declaringPhysicianName?.message ?? ""}
+            label="Declaring Physician's name"
+            formValue="declaringPhysicianName"
+            patternValue={formRegex.fullName}
+            patternError="Declaring physician's name must contain only letters, spaces, hyphens and apostrophes"
+            defaultValue={tbCertificateData.declaringPhysicianName}
+            required="Enter the declaring physician's name"
           />
         </div>
 
-        <div ref={tbPhysicanComments}>
+        <div ref={physicianComments}>
           <TextArea
             id="physician-comments"
             required={false}
             errorMessage={errors?.comments?.message ?? ""}
             formValue="comments"
-            rows={10}
+            rows={5}
             defaultValue={tbCertificateData.comments}
-            heading="Give further details (optional)"
-          />
-        </div>
-
-        <Heading
-          level={2}
-          size="m"
-          style={{ marginBottom: 20, marginTop: 60 }}
-          title="If a clearance certificate has been issued, give:"
-        />
-
-        <div ref={tbCertificateDate}>
-          <Controller
-            name="certificateDate"
-            control={control}
-            defaultValue={{
-              day: tbCertificateData.certificateDate.day,
-              month: tbCertificateData.certificateDate.month,
-              year: tbCertificateData.certificateDate.year,
-            }}
-            rules={{
-              validate: (value: DateType) => {
-                if (isTbClearanceIssued === "Yes") {
-                  return validateDate(value, "certificateDate");
-                }
-                return true;
-              },
-            }}
-            render={({ field: { value, onChange } }) => (
-              <DateTextInput
-                heading="Date of TB clearance certificate"
-                value={value}
-                setDateValue={onChange}
-                id={"tb-certificate-date"}
-                autocomplete={false}
-                hint="For example, 30 3 2024"
-                errorMessage={errors?.certificateDate?.message ?? ""}
-              />
-            )}
-          />
-        </div>
-
-        <div ref={tbCertificateNumber}>
-          <FreeText
-            id="tb-certificate-number"
-            errorMessage={errors?.certificateNumber?.message ?? ""}
-            heading="TB clearance certificate number"
-            formValue="certificateNumber"
-            patternValue={formRegex.lettersAndNumbers}
-            patternError="TB clearance certificate number must contain only letters and numbers"
-            defaultValue={tbCertificateData.certificateNumber}
-            required={
-              isTbClearanceIssued === "Yes" ? "Enter the TB clearance certificate number" : false
-            }
+            label="Physician's notes (optional)"
           />
         </div>
 

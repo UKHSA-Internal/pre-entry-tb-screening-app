@@ -76,6 +76,7 @@ const medicalScreeningSlice = {
   tbSymptomsList: ["Cough", "Night sweats"],
   underElevenConditions: ["Not applicable - applicant is aged 11 or over"],
   underElevenConditionsDetail: "",
+  completionDate: { year: "", month: "", day: "" },
 };
 
 const chestXraySlice = {
@@ -94,6 +95,7 @@ const chestXraySlice = {
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
   isSputumRequired: YesOrNo.NO,
+  completionDate: { year: "", month: "", day: "" },
 };
 
 const tbCertSlice = {
@@ -105,6 +107,7 @@ const tbCertSlice = {
     day: "25",
   },
   certificateNumber: "12345",
+  declaringPhysicianName: "Test Testov",
 };
 
 const incompleteState = {
@@ -301,7 +304,7 @@ test("Progress tracker page displays complete application sections correctly, li
   expect(within(chestXrayListItem as HTMLElement).getByText("Completed"));
 
   const tbCertificateLink = screen.getByRole("link", { name: /TB certificate outcome/i });
-  expect(tbCertificateLink).toHaveAttribute("href", "/tb-certificate-summary");
+  expect(tbCertificateLink).toHaveAttribute("href", "/tb-certificate-confirmation");
   const tbCertificateListItem = tbCertificateLink.closest("li");
   expect(tbCertificateListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
