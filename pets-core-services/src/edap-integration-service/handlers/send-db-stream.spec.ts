@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 
 import { context } from "../../test/mocks/events";
 import { mainEvent } from "../tests/resources/stream-event";
-import { handler } from "./integration";
+import { handler } from "./send-db-stream";
 
 describe("Test for Integration Lambda", () => {
   test("Fetching an application", async () => {

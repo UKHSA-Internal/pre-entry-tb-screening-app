@@ -11,12 +11,12 @@ import { DynamoDBRecord } from "aws-lambda";
 import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test } from "vitest";
 
-import { SQService } from "../../services/SQService";
-import { StreamService } from "../../services/StreamService";
-import { SQMockClient } from "../models/SQMockClient";
-import { applicationData } from "../resources/db-data/data-application";
-import { mainEvent } from "../resources/stream-event";
-import { eventType } from "../resources/types";
+import { applicationData } from "../tests/db-data/data-application";
+import { SQMockClient } from "../tests/models/SQMockClient";
+import { mainEvent } from "../tests/resources/stream-event";
+import { eventType } from "../tests/resources/types";
+import { SQService } from "./sqs-service";
+import { StreamService } from "./stream-service";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const event: eventType = JSON.parse(JSON.stringify(mainEvent));

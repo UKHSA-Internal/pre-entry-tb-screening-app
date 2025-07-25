@@ -1,9 +1,9 @@
 import { Context } from "aws-lambda";
 import { afterAll, describe, expect, it, vi } from "vitest";
 
-import { handler } from "../../lambdas/integration";
-import { SQService } from "../../services/SQService";
-import { StreamService } from "../../services/StreamService";
+import { SQService } from "../models/sqs-service";
+import { StreamService } from "../models/stream-service";
+import { handler } from "./send-db-stream";
 
 describe("handler Function", () => {
   const ctx = "" as unknown as Context;

@@ -1,4 +1,4 @@
-import { applicationDynamoDbJSON } from "./db-data/data-application";
+import { applicationDynamoDbJSON } from "../db-data/data-application";
 
 export const mainEvent = {
   Records: [

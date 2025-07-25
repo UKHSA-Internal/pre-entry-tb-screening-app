@@ -8,8 +8,8 @@ import {
 } from "aws-lambda";
 
 import { logger } from "../../shared/logger";
-import { SQService } from "../services/SQService";
-import { StreamService } from "../services/StreamService";
+import { SQService } from "../models/sqs-service";
+import { StreamService } from "../models/stream-service";
 
 /**
  * λ function to process a DynamoDB stream of test results into a queue for certificate generation.
