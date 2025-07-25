@@ -84,7 +84,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     // Search for applicant with passport number
     applicantSearchPage
       .fillPassportNumber(passportNumber)
-      .selectCountryOfIssue(countryCode)
+      .selectCountryOfIssue(countryName)
       .submitSearch();
 
     // Verify no matching record found and click create new
@@ -97,14 +97,14 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     applicantDetailsPage
       .fillFullName("Jane Tester-Doe")
       .selectSex("Female")
-      .selectNationality(countryCode)
+      .selectNationality(countryName)
       .fillBirthDate("12", "11", "1990")
       .fillPassportIssueDate("20", "01", "2020")
       .fillPassportExpiryDate("20", "01", "2030")
       .fillAddressLine1("456 Oak Tree Avenue")
       .fillTownOrCity("St. Peters")
       .fillProvinceOrState("Dreamland")
-      .selectAddressCountry(countryCode)
+      .selectAddressCountry(countryName)
       .fillPostcode("62409")
       .submitForm();
 

@@ -46,7 +46,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     // Search for applicant with passport number
     applicantSearchPage
       .fillPassportNumber(passportNumber)
-      .selectCountryOfIssue(countryCode) // Use country code for form filling
+      .selectCountryOfIssue(countryName) // Use country code for form filling
       .submitSearch();
 
     // Verify no matching record found and click create new
@@ -64,7 +64,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     applicantDetailsPage
       .fillFullName("Jon Tester")
       .selectSex("Male")
-      .selectNationality(countryCode) // Use country code for form filling
+      .selectNationality(countryName) // Use country code for form filling
       .fillBirthDate("15", "09", "1990");
 
     // Set issue date after expiry date
@@ -76,7 +76,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     applicantDetailsPage.fillAddressLine1("789 Test Road");
     applicantDetailsPage.fillTownOrCity("Sydney");
     applicantDetailsPage.fillProvinceOrState("Greater London");
-    applicantDetailsPage.selectAddressCountry(countryCode);
+    applicantDetailsPage.selectAddressCountry(countryName);
     applicantDetailsPage.fillPostcode("2000");
 
     // Submit the form

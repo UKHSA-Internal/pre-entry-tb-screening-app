@@ -46,7 +46,7 @@ describe("Applicant Details Form - Invalid Month Format Test", () => {
     // Search for applicant with passport number
     applicantSearchPage
       .fillPassportNumber(passportNumber)
-      .selectCountryOfIssue(countryCode) // Use country code for form filling
+      .selectCountryOfIssue(countryName) // Use country code for form filling
       .submitSearch();
 
     // Verify no matching record found and click create new
@@ -64,7 +64,7 @@ describe("Applicant Details Form - Invalid Month Format Test", () => {
     applicantDetailsPage
       .fillFullName("Jane Smith")
       .selectSex("Female")
-      .selectNationality(countryCode) // Use country code for form filling
+      .selectNationality(countryName) // Use country code for form filling
       .fillBirthDate("15", "JAZ", "1985")
       .fillPassportIssueDate("10", "05", "2015")
       .fillPassportExpiryDate("10", "05", "2035")
@@ -73,7 +73,7 @@ describe("Applicant Details Form - Invalid Month Format Test", () => {
       .fillAddressLine3("Downtown")
       .fillTownOrCity("St. Marten")
       .fillProvinceOrState("Holestown")
-      .selectAddressCountry(countryCode) // Use country code for form filling
+      .selectAddressCountry(countryName) // Use country code for form filling
       .fillPostcode("94109")
       .submitForm();
 

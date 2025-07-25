@@ -10,21 +10,20 @@ describe("Applicant Details Form - Invalid Date Format Test", () => {
   // Define variables to store test data
   //let countryName: string;
   let passportNumber: string;
-  let countryCode: string;
-
+  let countryName: string;
   beforeEach(() => {
     loginViaB2C();
     applicantSearchPage.visit();
     applicantSearchPage.verifyPageLoaded();
     // Generate random country and passport number
     const randomCountry = randomElement(countryList);
-    countryCode = randomCountry?.value; // For form filling (e.g., "BRB")
+    countryName = randomCountry?.label;
     //countryName = randomCountry?.label;
     passportNumber = getRandomPassportNumber();
 
     // Navigate to the applicant details page
     applicantSearchPage.fillPassportNumber(passportNumber);
-    applicantSearchPage.selectCountryOfIssue(countryCode);
+    applicantSearchPage.selectCountryOfIssue(countryName);
     applicantSearchPage.submitSearch();
 
     // Verify no matching record found and click create new
@@ -41,8 +40,8 @@ describe("Applicant Details Form - Invalid Date Format Test", () => {
     // Fill form with valid data except for birth date
     applicantDetailsPage.fillFullName("Sarah Brown");
     applicantDetailsPage.selectSex("Female");
-    applicantDetailsPage.selectNationality(countryCode);
-    applicantDetailsPage.selectCountryOfIssue(countryCode);
+    applicantDetailsPage.selectNationality(countryName);
+    applicantDetailsPage.selectCountryOfIssue(countryName);
 
     // Enter an INVALID MONTH
     applicantDetailsPage.fillBirthDate("15", "JAN", "1988");
@@ -55,7 +54,7 @@ describe("Applicant Details Form - Invalid Date Format Test", () => {
     applicantDetailsPage.fillAddressLine1("321 Test Blvd");
     applicantDetailsPage.fillTownOrCity("Toronto");
     applicantDetailsPage.fillProvinceOrState("Ontario");
-    applicantDetailsPage.selectAddressCountry(countryCode);
+    applicantDetailsPage.selectAddressCountry(countryName);
     applicantDetailsPage.fillPostcode("M5V 2A8");
 
     // Submit the form

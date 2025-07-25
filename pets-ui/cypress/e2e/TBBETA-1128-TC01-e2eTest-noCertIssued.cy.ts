@@ -93,7 +93,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     // Search for applicant with passport number
     applicantSearchPage
       .fillPassportNumber(passportNumber)
-      .selectCountryOfIssue(countryCode) // Use country code for form filling
+      .selectCountryOfIssue(countryName) // Use country code for form filling
       .submitSearch();
 
     // Verify no matching record found and click create new
@@ -111,7 +111,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     applicantDetailsPage
       .fillFullName("John Doe")
       .selectSex("Male")
-      .selectNationality(countryCode) // Use country code for form filling
+      .selectNationality(countryName) // Use country code for form filling
       .fillBirthDate("20", "05", "1995")
       .fillPassportIssueDate("15", "08", "2019")
       .fillPassportExpiryDate("15", "08", "2029")
@@ -120,7 +120,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       .fillAddressLine3("Stanbic Heights")
       .fillTownOrCity("Hallstatt")
       .fillProvinceOrState("Hallstatt")
-      .selectAddressCountry(countryCode) // Use country code for form filling
+      .selectAddressCountry(countryName) // Use country code for form filling
       .fillPostcode("84209")
       .submitForm();
 

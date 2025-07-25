@@ -55,7 +55,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
     // Search for applicant with passport number
     applicantSearchPage
       .fillPassportNumber(passportNumber)
-      .selectCountryOfIssue(countryCode) // Use country code for form filling
+      .selectCountryOfIssue(countryName)
       .submitSearch();
 
     // Verify no matching record found and click create new
@@ -73,7 +73,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
     applicantDetailsPage
       .fillFullName("Tess Tester-Test")
       .selectSex("Female")
-      .selectNationality(countryCode) // Use country code for form filling
+      .selectNationality(countryName) // Use country code for form filling
       .fillBirthDate("01", "03", "1998")
       .fillPassportIssueDate("10", "05", "2020")
       .fillPassportExpiryDate("10", "05", "2030")
@@ -82,7 +82,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
       .fillAddressLine3("Downtown")
       .fillTownOrCity("London")
       .fillProvinceOrState("Testershire")
-      .selectAddressCountry(countryCode) // Use country code for form filling
+      .selectAddressCountry(countryName) // Use country code for form filling
       .fillPostcode("SW1A 1AA")
       .submitForm();
 

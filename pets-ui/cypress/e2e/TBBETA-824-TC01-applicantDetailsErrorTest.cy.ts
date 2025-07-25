@@ -8,7 +8,7 @@ describe("Applicant Details Form - Empty Form Error Test", () => {
   const applicantDetailsPage = new ApplicantDetailsPage();
   const applicantSearchPage = new ApplicantSearchPage();
   // Define variables to store test data
-  let countryCode: string = "";
+  let countryName: string = "";
   let passportNumber: string = "";
 
   beforeEach(() => {
@@ -17,12 +17,12 @@ describe("Applicant Details Form - Empty Form Error Test", () => {
     applicantSearchPage.verifyPageLoaded();
     // Generate random country and passport number
     const randomCountry = randomElement(countryList);
-    countryCode = randomCountry?.value; // For form filling (e.g., "BRB")
+    countryName = randomCountry?.label; // For validation (e.g., "Barbados")
     passportNumber = getRandomPassportNumber();
 
     // Navigate to the applicant details page
     applicantSearchPage.fillPassportNumber(passportNumber);
-    applicantSearchPage.selectCountryOfIssue(countryCode);
+    applicantSearchPage.selectCountryOfIssue(countryName);
     applicantSearchPage.submitSearch();
 
     // Verify no matching record found and click create new
