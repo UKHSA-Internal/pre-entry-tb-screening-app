@@ -82,6 +82,11 @@ const emptyMedicalSlice = {
   age: "",
   closeContactWithTb: "",
   closeContactWithTbDetail: "",
+  completionDate: {
+    year: "",
+    month: "",
+    day: "",
+  },
   menstrualPeriods: "",
   otherSymptomsDetail: "",
   physicalExamNotes: "",
@@ -111,6 +116,11 @@ const emptyChestXraySlice = {
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
   isSputumRequired: YesOrNo.NULL,
+  completionDate: {
+    year: "",
+    month: "",
+    day: "",
+  },
 };
 
 describe("ApplicantSearchForm", () => {
@@ -203,6 +213,8 @@ describe("ApplicantSearchForm", () => {
         xrayMinorFindings: [],
         xrayAssociatedMinorFindings: [],
         xrayActiveTbFindings: [],
+        dateCreated: "2025-01-01",
+        isSputumRequired: YesOrNo.YES,
       },
       tbCertificate: {
         status: "completed",
@@ -274,6 +286,11 @@ describe("ApplicantSearchForm", () => {
       age: "43",
       closeContactWithTb: "Yes",
       closeContactWithTbDetail: "details1",
+      completionDate: {
+        year: "2025",
+        month: "01",
+        day: "01",
+      },
       menstrualPeriods: "No",
       otherSymptomsDetail: "Other symptoms",
       physicalExamNotes: "Exam notes",
@@ -302,6 +319,12 @@ describe("ApplicantSearchForm", () => {
       xrayMinorFindings: [],
       xrayAssociatedMinorFindings: [],
       xrayActiveTbFindings: [],
+      isSputumRequired: YesOrNo.YES,
+      completionDate: {
+        year: "2025",
+        month: "01",
+        day: "01",
+      },
     });
     expect(store.getState().tbCertificate).toEqual({
       status: ApplicationStatus.COMPLETE,
@@ -313,6 +336,8 @@ describe("ApplicantSearchForm", () => {
         year: "2025",
       },
       certificateNumber: "XYZ789",
+      declaringPhysicianName: "",
+      reasonNotIssued: "",
     });
     expect(store.getState().applicant.applicantPhotoFileName).toBe("photo.jpg");
     expect(contextUrl).toBe("http://localhost:4566/photos/photo.jpg");

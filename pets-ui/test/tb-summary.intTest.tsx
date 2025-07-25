@@ -7,6 +7,7 @@ import { Mock } from "vitest";
 
 import { petsApi } from "@/api/api";
 import { ReduxTbCertificateType } from "@/applicant";
+import { ApplicantPhotoProvider } from "@/context/applicantPhotoContext";
 import TbSummaryPage from "@/pages/tb-summary";
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
@@ -30,6 +31,7 @@ const tbState: ReduxTbCertificateType = {
     day: "25",
   },
   certificateNumber: "12345",
+  declaringPhysicianName: "Test Testov",
 };
 
 describe("TBSummaryPage", () => {
@@ -40,7 +42,9 @@ describe("TBSummaryPage", () => {
       renderWithProviders(
         <Router>
           <HelmetProvider>
-            <TbSummaryPage />
+            <ApplicantPhotoProvider>
+              <TbSummaryPage />
+            </ApplicantPhotoProvider>
           </HelmetProvider>
         </Router>,
       );
@@ -52,7 +56,7 @@ describe("TBSummaryPage", () => {
       expect(link).toHaveClass("govuk-back-link");
     });
     it("renders the page titles and descriptions ", () => {
-      expect(screen.getByText("Check TB clearance certificate declaration")).toBeInTheDocument();
+      expect(screen.getByText("Check certificate information")).toBeInTheDocument();
     });
   });
   describe("TB Summary Data & post request", () => {
@@ -64,7 +68,9 @@ describe("TBSummaryPage", () => {
       renderWithProviders(
         <Router>
           <HelmetProvider>
-            <TbSummaryPage />
+            <ApplicantPhotoProvider>
+              <TbSummaryPage />
+            </ApplicantPhotoProvider>
           </HelmetProvider>
         </Router>,
         { preloadedState },
@@ -73,14 +79,12 @@ describe("TBSummaryPage", () => {
       useNavigateMock.mockClear();
     });
     it("renders the page titles and data ", () => {
-      expect(screen.getByText("TB clearance certificate issued?")).toBeInTheDocument();
-      expect(screen.getByText("Yes")).toBeInTheDocument();
-      expect(screen.getByText("Physician comments")).toBeInTheDocument();
-      expect(screen.getByText("Extra Details")).toBeInTheDocument();
-      expect(screen.getByText("Date of TB clearance certificate")).toBeInTheDocument();
-      expect(screen.getByText("25/03/2025")).toBeInTheDocument();
-      expect(screen.getByText("TB clearance certificate number")).toBeInTheDocument();
+      expect(screen.getByText("Certificate reference number")).toBeInTheDocument();
       expect(screen.getByText("12345")).toBeInTheDocument();
+      expect(screen.getAllByText("Physician's comments")[0]).toBeInTheDocument();
+      expect(screen.getByText("Extra Details")).toBeInTheDocument();
+      expect(screen.getByText("Certificate issue date")).toBeInTheDocument();
+      expect(screen.getByText("25 March 2025")).toBeInTheDocument();
     });
     it("when continue pressed, it navigates to /tb-certificate-confirmation", async () => {
       mock.onPost("/application/abc-123/tb-certificate").reply(200);

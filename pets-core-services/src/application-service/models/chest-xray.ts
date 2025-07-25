@@ -141,6 +141,7 @@ export class ChestXRayNotTaken extends ChestXRayBase {
       reasonXrayWasNotTaken: this.reasonXrayWasNotTaken,
       xrayWasNotTakenFurtherDetails: this.xrayWasNotTakenFurtherDetails,
       dateCreated: this.dateCreated,
+      isSputumRequired: this.isSputumRequired,
     };
   }
 }
