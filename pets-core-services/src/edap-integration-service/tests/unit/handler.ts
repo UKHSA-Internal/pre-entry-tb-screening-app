@@ -31,7 +31,7 @@ describe("handler Function", () => {
   describe("with good event", () => {
     it("should invoke SQS service with correct params", async () => {
       const sendCertGenMessage = vi.fn();
-      SQService.prototype.sendCertGenMessage = sendCertGenMessage;
+      SQService.prototype.sendDbStreamMessage = sendCertGenMessage;
       StreamService.getClinicDataStream = vi
         .fn()
         .mockReturnValue([{ TestRecord: "updateStatusMessage" }]);
@@ -60,7 +60,7 @@ describe("handler Function", () => {
       const myError = new Error("It Broke!") as any;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       myError.code = "SomeError";
-      SQService.prototype.sendCertGenMessage = vi.fn().mockRejectedValue(myError);
+      SQService.prototype.sendDbStreamMessage = vi.fn().mockRejectedValue(myError);
       StreamService.getClinicDataStream = vi.fn().mockReturnValue([{ test: "thing" }]);
       // Utils.filterCertificateGenerationRecords = vi.fn().mockReturnValue([{ test: "thing" }]);
 
@@ -79,7 +79,7 @@ describe("handler Function", () => {
       const myError = new Error("It Broke!") as any;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       myError.code = "InvalidParameterValue";
-      SQService.prototype.sendCertGenMessage = vi.fn().mockRejectedValue(myError);
+      SQService.prototype.sendDbStreamMessage = vi.fn().mockRejectedValue(myError);
       StreamService.getClinicDataStream = vi.fn().mockReturnValue([{ test: "thing" }]);
       // Utils.filterCertificateGenerationRecords = vi.fn().mockReturnValue([{ test: "thing" }]);
 

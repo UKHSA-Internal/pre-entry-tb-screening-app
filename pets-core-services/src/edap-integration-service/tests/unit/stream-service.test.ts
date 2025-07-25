@@ -21,11 +21,11 @@ import { eventType } from "../resources/types";
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const event: eventType = JSON.parse(JSON.stringify(mainEvent));
 
-describe("cert-gen-init", () => {
+describe("init", () => {
   let processedEvent: any;
 
   describe("StreamService", () => {
-    describe("when fetching test result stream and the eventName is INSERT", () => {
+    describe("when fetching data stream and the eventName is INSERT", () => {
       test("should result in an array of filtered js objects", () => {
         processedEvent = StreamService.getClinicDataStream(event.Records[0] as DynamoDBRecord);
         expect(processedEvent).toEqual([
@@ -41,28 +41,12 @@ describe("cert-gen-init", () => {
       });
     });
 
-    describe("when fetching test result stream and the eventName is MODIFY", () => {
-      test("shouldn't result in an array of filtered js objects when PROCESS_MODIFY_EVENTS is false", () => {
-        process.env.PROCESS_MODIFY_EVENTS = "false";
-        event.Records[0].eventName = "MODIFY";
-        processedEvent = StreamService.getClinicDataStream(event.Records[0] as DynamoDBRecord);
-        expect(processedEvent).toHaveLength(0);
-      });
-
+    describe("when fetching data stream and the eventName is MODIFY", () => {
       test("should result in an array of filtered js objects when PROCESS_MODIFY_EVENTS is true", () => {
-        process.env.PROCESS_MODIFY_EVENTS = "true";
         event.Records[0].eventName = "MODIFY";
         processedEvent = StreamService.getClinicDataStream(event.Records[0] as DynamoDBRecord);
         expect(processedEvent).toHaveLength(1);
         expect(processedEvent).toEqual(applicationData);
-      });
-
-      test("should throw an error if PROCESS_MODIFY_EVENTS is not true or false", () => {
-        process.env.PROCESS_MODIFY_EVENTS = "";
-        event.Records[0].eventName = "MODIFY";
-        expect(() => {
-          StreamService.getClinicDataStream(event.Records[0] as DynamoDBRecord);
-        }).toThrowError();
       });
     });
   });
@@ -108,12 +92,12 @@ describe("cert-gen-init", () => {
     });
     describe("when adding a record to the queue", () => {
       describe("and the queue does not exist", () => {
-        test("should successfully add the records to the certGen queue", () => {
+        test("should successfully add the records to the queue", () => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-redundant-type-constituents
           const sendMessagePromises: Array<Promise<any | SendMessageCommandOutput>> = [];
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
           processedEvent.forEach((record: any) => {
-            sendMessagePromises.push(sqService.sendCertGenMessage(JSON.stringify(record)));
+            sendMessagePromises.push(sqService.sendDbStreamMessage(JSON.stringify(record)));
           });
           return Promise.all(sendMessagePromises).catch((error: any) => {
             expect(error).toBeInstanceOf(Error);
@@ -124,7 +108,7 @@ describe("cert-gen-init", () => {
       });
 
       describe("and the queue does exist", () => {
-        test("should successfully add the records to the certGen queue", () => {
+        test("should successfully add the records to the queue", () => {
           const sendMessagePromises: Array<Promise<any>> = [];
           void sqService.sqsClient.send(
             new CreateQueueCommand({
@@ -134,7 +118,7 @@ describe("cert-gen-init", () => {
 
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
           processedEvent.forEach((record: any) => {
-            sendMessagePromises.push(sqService.sendCertGenMessage(JSON.stringify(record)));
+            sendMessagePromises.push(sqService.sendDbStreamMessage(JSON.stringify(record)));
           });
 
           expect.assertions(0);

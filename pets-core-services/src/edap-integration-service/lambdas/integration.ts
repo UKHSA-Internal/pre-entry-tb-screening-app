@@ -54,7 +54,7 @@ const handler: Handler = async (
       for (const record of expandedRecords) {
         const stringifiedRecord = JSON.stringify(record);
         logger.info(`stringifiedRecord: ${stringifiedRecord}`);
-        await sqService.sendCertGenMessage(stringifiedRecord);
+        await sqService.sendDbStreamMessage(stringifiedRecord);
       }
 
       logger.info(`event ${record.dynamodb?.SequenceNumber} successfully processed`);
