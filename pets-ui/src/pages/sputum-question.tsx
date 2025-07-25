@@ -1,6 +1,6 @@
 import Container from "@/components/container/container";
-import { selectChestXray } from "@/redux/chestXraySlice";
 import { useAppSelector } from "@/redux/hooks";
+import { selectChestXray } from "@/redux/store";
 import SputumQuestionForm from "@/sections/sputum-question-form";
 import { YesOrNo } from "@/utils/enums";
 

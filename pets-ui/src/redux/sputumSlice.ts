@@ -1,4 +1,3 @@
-import { RootState } from "@redux/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import {
@@ -314,5 +313,3 @@ export const {
 } = sputumSlice.actions;
 
 export const sputumReducer = sputumSlice.reducer;
-
-export const selectSputum = (state: RootState) => state.sputum;

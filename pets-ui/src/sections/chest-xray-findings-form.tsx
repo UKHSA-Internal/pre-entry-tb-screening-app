@@ -11,7 +11,6 @@ import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
 import {
-  selectChestXray,
   setXrayActiveTbFindings,
   setXrayAssociatedMinorFindings,
   setXrayMinorFindings,
@@ -19,6 +18,7 @@ import {
   setXrayResultDetail,
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { selectChestXray } from "@/redux/store";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 import { toArray } from "@/utils/helpers";
 

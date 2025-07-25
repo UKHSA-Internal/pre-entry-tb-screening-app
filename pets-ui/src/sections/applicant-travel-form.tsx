@@ -9,7 +9,8 @@ import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectTravel, setTravelDetails, setTravelDetailsStatus } from "@/redux/travelSlice";
+import { selectTravel } from "@/redux/store";
+import { setTravelDetails, setTravelDetailsStatus } from "@/redux/travelSlice";
 import { ApplicationStatus, ButtonType } from "@/utils/enums";
 import { formRegex, visaOptions } from "@/utils/records";
 
@@ -35,7 +36,7 @@ const ApplicantTravelForm = () => {
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
   const location = useLocation();
-  const visaTypeRef = useRef<HTMLDivElement | null>(null);
+  const visaCategoryRef = useRef<HTMLDivElement | null>(null);
   const addressLine1Ref = useRef<HTMLDivElement | null>(null);
   const addressLine2Ref = useRef<HTMLDivElement | null>(null);
   const townRef = useRef<HTMLDivElement | null>(null);
@@ -46,7 +47,7 @@ const ApplicantTravelForm = () => {
     if (location.hash) {
       const target = location.hash.substring(1);
       const refMap: { [key: string]: HTMLElement | null } = {
-        "visa-type": visaTypeRef.current,
+        "visa-category": visaCategoryRef.current,
         "address-1": addressLine1Ref.current,
         "address-2": addressLine2Ref.current,
         "town-or-city": townRef.current,
@@ -70,15 +71,15 @@ const ApplicantTravelForm = () => {
         <Heading level={1} size="l" title="Travel information" />
         <p className="govuk-body">Enter the applicant&apos;s travel information below.</p>
 
-        <div ref={visaTypeRef}>
+        <div ref={visaCategoryRef}>
           <Dropdown
-            id="visa-type"
-            heading="Visa type"
+            id="visa-category"
+            heading="Visa category"
             options={visaOptions}
-            errorMessage={errors?.visaType?.message ?? ""}
-            formValue="visaType"
-            required="Select a visa type"
-            defaultValue={travelData.visaType}
+            errorMessage={errors?.visaCategory?.message ?? ""}
+            formValue="visaCategory"
+            required="Select a visa category"
+            defaultValue={travelData.visaCategory}
           />
         </div>
 

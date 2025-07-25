@@ -6,9 +6,9 @@ import { postTravelDetails } from "@/api/api";
 import Button from "@/components/button/button";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
-import { selectApplication } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { selectTravel, setTravelDetailsStatus } from "@/redux/travelSlice";
+import { selectApplication, selectTravel } from "@/redux/store";
+import { setTravelDetailsStatus } from "@/redux/travelSlice";
 import { ApplicationStatus, ButtonType } from "@/utils/enums";
 import { attributeToComponentId } from "@/utils/records";
 
@@ -24,7 +24,7 @@ const TravelReview = () => {
     setIsLoading(true);
     try {
       await postTravelDetails(applicationData.applicationId, {
-        visaCategory: travelData.visaType,
+        visaCategory: travelData.visaCategory,
         ukAddressLine1: travelData.applicantUkAddress1,
         ukAddressLine2: travelData.applicantUkAddress2,
         ukAddressTownOrCity: travelData.townOrCity,
@@ -43,10 +43,10 @@ const TravelReview = () => {
 
   const summaryData = [
     {
-      key: "Visa type",
-      value: travelData.visaType,
-      link: `/travel-details#${attributeToComponentId.visaType}`,
-      hiddenLabel: "visa type",
+      key: "Visa category",
+      value: travelData.visaCategory,
+      link: `/travel-details#${attributeToComponentId.visaCategory}`,
+      hiddenLabel: "visa category",
     },
     {
       key: "UK address line 1",
