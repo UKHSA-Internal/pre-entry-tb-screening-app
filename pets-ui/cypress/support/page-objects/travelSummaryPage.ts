@@ -39,7 +39,7 @@ export class TravelSummaryPage extends BasePage {
   // Verify field value after clicking change link
   verifyFieldValueOnChangePage(fieldName: string, expectedValue: string): TravelSummaryPage {
     const fieldSelectors: Record<string, string> = {
-      "Visa type": '[name="visaType"]',
+      "Visa category": '[name="visaCategory"]',
       "UK address line 1": '[name="applicantUkAddress1"]',
       "UK address line 2": '[name="applicantUkAddress2"]',
       "UK town or city": '[name="townOrCity"]',
@@ -74,7 +74,7 @@ export class TravelSummaryPage extends BasePage {
 
   // Verify random visa type is displayed
   verifyRandomVisaTypeDisplayed(expectedVisaType: string): TravelSummaryPage {
-    this.verifySummaryValue("Visa type", expectedVisaType);
+    this.verifySummaryValue("Visa category", expectedVisaType);
     cy.log(`Verified random visa type on summary page: ${expectedVisaType}`);
     return this;
   }
@@ -82,7 +82,7 @@ export class TravelSummaryPage extends BasePage {
   // Method to get the displayed visa type
   getDisplayedVisaType(): Cypress.Chainable<string> {
     return cy
-      .contains("dt.govuk-summary-list__key", "Visa type")
+      .contains("dt.govuk-summary-list__key", "Visa category")
       .siblings(".govuk-summary-list__value")
       .invoke("text")
       .then((text) => text.trim());
@@ -107,7 +107,7 @@ export class TravelSummaryPage extends BasePage {
     email: string,
   ): TravelSummaryPage {
     const expectedValues = {
-      "Visa type": visaTypeValue,
+      "Visa category": visaTypeValue,
       "UK address line 1": address1,
       "UK town or city": townOrCity,
       "UK postcode": postcode,
@@ -162,7 +162,7 @@ export class TravelSummaryPage extends BasePage {
   // Verify all change links have correct href values
   verifyChangeLinksTargets(): TravelSummaryPage {
     const expectedFragments = {
-      "Visa type": "#visa-type",
+      "Visa category": "#visa-category",
       "UK address line 1": "#address-1",
       "UK address line 2": "#address-2",
       "UK town or city": "#town-or-city",
@@ -194,7 +194,7 @@ export class TravelSummaryPage extends BasePage {
   // Verify all fields are present on the page
   verifyAllFieldsPresent(): TravelSummaryPage {
     const requiredFields = [
-      "Visa type",
+      "Visa category",
       "UK address line 1",
       "UK address line 2",
       "UK town or city",
@@ -307,8 +307,8 @@ export class TravelSummaryPage extends BasePage {
     const newRandomVisa = randomElement(visaType);
     cy.log(`Changing to new random visa type: ${newRandomVisa}`);
 
-    this.clickChangeLink("Visa type");
-    cy.get('[name="visaType"]').select(newRandomVisa);
+    this.clickChangeLink("Visa category");
+    cy.get('[name="visaCategory"]').select(newRandomVisa);
     cy.get('button[type="submit"]').click();
 
     return cy.wrap(newRandomVisa);

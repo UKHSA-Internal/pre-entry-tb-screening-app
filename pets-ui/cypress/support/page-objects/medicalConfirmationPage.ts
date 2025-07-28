@@ -51,7 +51,7 @@ export class MedicalConfirmationPage extends BasePage {
 
   // Verify page title
   verifyPageTitle(): MedicalConfirmationPage {
-    cy.title().should("include", "Complete UK Pre-Entry Health Screening");
+    cy.title().should("include", "Complete UK pre-entry health screening");
     return this;
   }
 
@@ -59,7 +59,7 @@ export class MedicalConfirmationPage extends BasePage {
   verifyServiceName(): MedicalConfirmationPage {
     cy.get(".govuk-header__service-name")
       .should("be.visible")
-      .and("contain", "Complete UK Pre-Entry Health Screening");
+      .and("contain", "Complete UK pre-entry health screening");
     return this;
   }
 

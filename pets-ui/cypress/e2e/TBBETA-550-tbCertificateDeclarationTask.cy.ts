@@ -124,6 +124,8 @@ describe("TB certificate declaration task links should NOT be clickable until al
     applicantConfirmationPage.verifyPageLoaded();
     applicantConfirmationPage.verifyNextStepsText();
 
+    // Click continue - this goes to tracker
+    applicantConfirmationPage.clickContinue();
     // Verify we're on the tracker page
     cy.url().should("include", "/tracker");
     tbProgressTrackerPage.verifyPageLoaded();
@@ -174,7 +176,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
     tbProgressTrackerPage.verifyTaskIsNotClickable("Medical history and TB symptoms");
     tbProgressTrackerPage.verifyTaskIsNotClickable("Radiological outcome");
     tbProgressTrackerPage.verifyTaskIsNotClickable("Sputum collection and results");
-    tbProgressTrackerPage.verifyTaskIsNotClickable("TB certificate declaration");
+    tbProgressTrackerPage.verifyTaskIsNotClickable("TB certificate outcome");
 
     // Verify we can click on the "Travel information" link
     tbProgressTrackerPage.clickTaskLink("Travel information");
@@ -193,7 +195,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
     tbProgressTrackerPage.verifyPageLoaded();
 
     // Verify TB certificate declaration is NOT clickable when other tasks are incomplete
-    tbProgressTrackerPage.verifyTaskIsNotClickable("TB certificate declaration");
+    tbProgressTrackerPage.verifyTaskIsNotClickable("TB certificate outcome");
 
     // Attempt to manually navigate to TB certificate declaration page (this should be blocked)
     cy.visit("/tb-certificate-declaration", { failOnStatusCode: false });

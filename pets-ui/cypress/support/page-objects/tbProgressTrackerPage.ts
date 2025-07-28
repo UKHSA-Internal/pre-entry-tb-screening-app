@@ -44,9 +44,10 @@ export class TBProgressTrackerPage {
       .within(() => {
         cy.get("img.progress-tracker-photo")
           .should("be.visible")
-          .and("have.attr", "src")
-          .and("not.be.empty")
-          .and("have.attr", "alt", "Applicant");
+          .should("have.attr", "src")
+          .should("not.be.empty");
+
+        cy.get("img.progress-tracker-photo").should("have.attr", "alt", "Applicant");
       });
   }
 
@@ -197,7 +198,7 @@ export class TBProgressTrackerPage {
   verifyServiceName(): void {
     cy.get(".govuk-header__service-name")
       .should("be.visible")
-      .and("contain", "Complete UK Pre-Entry Health Screening");
+      .and("contain", "Complete UK pre-entry health screening");
   }
 
   // Check URL

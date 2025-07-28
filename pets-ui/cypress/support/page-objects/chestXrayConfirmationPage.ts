@@ -39,7 +39,7 @@ export class ChestXrayConfirmationPage {
   verifyServiceName(): void {
     cy.get(".govuk-header__service-name")
       .should("be.visible")
-      .and("contain", "Complete UK Pre-Entry Health Screening");
+      .and("contain", "Complete UK pre-entry health screening");
   }
 
   // Get the current URL

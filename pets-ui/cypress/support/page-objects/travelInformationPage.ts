@@ -16,7 +16,7 @@ export class TravelInformationPage extends BasePage {
 
   // Form field methods
   selectVisaType(visaType: string): TravelInformationPage {
-    cy.get('[name="visaType"]').select(visaType);
+    cy.get('[name="visaCategory"]').select(visaType);
     return this;
   }
 
@@ -31,7 +31,7 @@ export class TravelInformationPage extends BasePage {
   // Method to get the currently selected visa type
   getSelectedVisaType(): Cypress.Chainable<string> {
     return cy
-      .get('[name="visaType"]')
+      .get('[name="visaCategory"]')
       .invoke("val")
       .then((value) => value as string);
   }
@@ -75,7 +75,7 @@ export class TravelInformationPage extends BasePage {
   // Verify form sections are displayed
   verifyFormSections(): TravelInformationPage {
     cy.contains("h2", "Applicant's UK address (optional)").should("be.visible");
-    cy.get("#visa-type").should("be.visible");
+    cy.get("#visa-category").should("be.visible");
     cy.get("#address-1").should("be.visible");
     cy.get("#address-2").should("be.visible");
     cy.get("#town-or-city").should("be.visible");
@@ -109,11 +109,11 @@ export class TravelInformationPage extends BasePage {
 
   // Verify visa type dropdown options
   verifyVisaTypeOptions(): TravelInformationPage {
-    cy.get('[name="visaType"]').should("be.visible");
-    cy.get('[name="visaType"] option').should("have.length.at.least", 20);
-    cy.get('[name="visaType"] option[value="Student"]').should("exist");
-    cy.get('[name="visaType"] option[value="Visitor"]').should("exist");
-    cy.get('[name="visaType"] option[value="HM Armed Forces"]').should("exist");
+    cy.get('[name="visaCategory"]').should("be.visible");
+    cy.get('[name="visaCategory"] option').should("have.length.at.least", 20);
+    cy.get('[name="visaCategory"] option[value="Student"]').should("exist");
+    cy.get('[name="visaCategory"] option[value="Visitor"]').should("exist");
+    cy.get('[name="visaCategory"] option[value="HM Armed Forces"]').should("exist");
     return this;
   }
 
@@ -204,7 +204,7 @@ export class TravelInformationPage extends BasePage {
     email?: string;
   }): TravelInformationPage {
     if (expectedData.visaType) {
-      cy.get('[name="visaType"]').should("have.value", expectedData.visaType);
+      cy.get('[name="visaCategory"]').should("have.value", expectedData.visaType);
     }
     if (expectedData.ukAddressLine1) {
       cy.get("#address-1-field").should("have.value", expectedData.ukAddressLine1);
@@ -280,7 +280,7 @@ export class TravelInformationPage extends BasePage {
     email?: string;
   }): TravelInformationPage {
     if (errors.visaType) {
-      this.validateFieldError("visa-type", errors.visaType);
+      this.validateFieldError("visa-category", errors.visaType);
     }
     if (errors.ukAddressLine1) {
       this.validateFieldError("address-1", errors.ukAddressLine1);

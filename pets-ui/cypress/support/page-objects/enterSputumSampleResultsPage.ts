@@ -672,7 +672,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
   verifyServiceName(): EnterSputumSampleResultsPage {
     cy.get(".govuk-header__service-name")
       .should("be.visible")
-      .and("contain", "Complete UK Pre-Entry Health Screening");
+      .and("contain", "Complete UK pre-entry health screening");
     return this;
   }
 

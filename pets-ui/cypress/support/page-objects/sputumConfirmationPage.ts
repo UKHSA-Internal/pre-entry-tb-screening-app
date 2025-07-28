@@ -42,14 +42,14 @@ export class SputumConfirmationPage {
 
   // Verify page title
   verifyPageTitle(): void {
-    cy.title().should("include", "Complete UK Pre-Entry Health Screening");
+    cy.title().should("include", "Complete UK pre-entry health screening");
   }
 
   // Verify service name in header
   verifyServiceName(): void {
     cy.get(".govuk-header__service-name")
       .should("be.visible")
-      .and("contain", "Complete UK Pre-Entry Health Screening");
+      .and("contain", "Complete UK pre-entry health screening");
   }
 
   // Check all elements on confirmation page
