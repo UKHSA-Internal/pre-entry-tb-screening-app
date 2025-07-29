@@ -18,7 +18,7 @@ export const testData = {
   },
 };
 
-const stringAssert = (value: any) => {
+const stringAssert = (value: unknown) => {
   assert(value);
   assert(typeof value === "string");
   return value;
