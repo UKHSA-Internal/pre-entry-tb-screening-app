@@ -6,6 +6,14 @@ export default function Footer() {
       <div className="govuk-width-container">
         <div className="govuk-footer__meta">
           <div className="govuk-footer__meta-item govuk-footer__meta-item--grow">
+            <div className="govuk-footer__meta-item">
+              <LinkLabel
+                title="Accessibility statement"
+                className="govuk-footer__link"
+                to="https://www.gov.uk/help/accessibility-statement"
+                externalLink
+              />
+            </div>
             <svg
               aria-hidden="true"
               focusable="false"

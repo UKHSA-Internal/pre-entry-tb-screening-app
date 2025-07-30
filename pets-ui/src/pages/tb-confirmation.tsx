@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 import Confirmation from "@/components/confirmation/confirmation";
 import Container from "@/components/container/container";
@@ -8,6 +9,7 @@ import { selectTbCertificate } from "@/redux/store";
 import { YesOrNo } from "@/utils/enums";
 
 export default function TbConfirmationPage() {
+  const navigate = useNavigate();
   const tbCertificateData = useAppSelector(selectTbCertificate);
 
   const isCertificateIssued = tbCertificateData.isIssued === YesOrNo.YES;
@@ -55,7 +57,7 @@ export default function TbConfirmationPage() {
             ? {
                 text: "View or print certificate",
                 onClick: () => {
-                  console.info("View certificate clicked");
+                  navigate("/tb-certificate-print");
                 },
               }
             : undefined

@@ -43,7 +43,7 @@ const ApplicantSearchForm = () => {
   const navigate = useNavigate();
   const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
   const dispatch = useAppDispatch();
-  const { setApplicantPhotoUrl } = useApplicantPhoto();
+  const { setApplicantPhotoUrl, setApplicantPhotoFile } = useApplicantPhoto();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -58,8 +58,7 @@ const ApplicantSearchForm = () => {
     dispatch(setApplicantPhotoFileName(""));
     setApplicantPhotoUrl(null);
     dispatch(clearNavigationDetails());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch, setApplicantPhotoUrl]);
 
   const {
     handleSubmit,
@@ -92,10 +91,14 @@ const ApplicantSearchForm = () => {
                 "localhost:4566",
               )
             : applicationRes.data.applicantPhotoUrl;
-        setApplicantPhotoUrl(fixedUrl);
+
         const urlParts = applicationRes.data.applicantPhotoUrl.split("/");
         const filename = urlParts.pop()?.split("?")[0] ?? "applicant-photo.jpg";
         dispatch(setApplicantPhotoFileName(filename));
+        const response = await fetch(fixedUrl);
+        const blob = await response.blob();
+        const file = new File([blob], filename, { type: blob.type });
+        setApplicantPhotoFile(file);
       }
 
       if (applicationRes.data.travelInformation) {
