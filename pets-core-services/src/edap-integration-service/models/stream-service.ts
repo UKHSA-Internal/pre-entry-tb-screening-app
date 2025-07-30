@@ -17,7 +17,6 @@ class StreamService {
     logger.info(record);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let records: Record<string, any>[] = [];
-    // Create from a test result with multiple test types, multiple test result with one test type each
     if (record.eventName === "INSERT" || record.eventName === "MODIFY") {
       if (record.dynamodb && record.dynamodb.NewImage) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any

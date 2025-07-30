@@ -35,9 +35,6 @@ describe("handler Function", () => {
       StreamService.getClinicDataStream = vi
         .fn()
         .mockReturnValue([{ TestRecord: "updateStatusMessage" }]);
-      // Utils.filterCertificateGenerationRecords = vi
-      //   .fn()
-      //   .mockReturnValue([{ TestRecord: "certGenMessage" }]);
 
       try {
         await handler({ Records: ["this is an event"] }, ctx, () => {
@@ -62,7 +59,6 @@ describe("handler Function", () => {
       myError.code = "SomeError";
       SQService.prototype.sendDbStreamMessage = vi.fn().mockRejectedValue(myError);
       StreamService.getClinicDataStream = vi.fn().mockReturnValue([{ test: "thing" }]);
-      // Utils.filterCertificateGenerationRecords = vi.fn().mockReturnValue([{ test: "thing" }]);
 
       expect.assertions(1);
 
@@ -81,7 +77,6 @@ describe("handler Function", () => {
       myError.code = "InvalidParameterValue";
       SQService.prototype.sendDbStreamMessage = vi.fn().mockRejectedValue(myError);
       StreamService.getClinicDataStream = vi.fn().mockReturnValue([{ test: "thing" }]);
-      // Utils.filterCertificateGenerationRecords = vi.fn().mockReturnValue([{ test: "thing" }]);
 
       expect.assertions(1);
       try {

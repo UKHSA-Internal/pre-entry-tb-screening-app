@@ -9,8 +9,9 @@ import {
 } from "@aws-sdk/client-sqs";
 import { DynamoDBRecord } from "aws-lambda";
 import { mockClient } from "aws-sdk-client-mock";
-import { beforeEach, describe, expect, test } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
+import { logger } from "../../shared/logger";
 import { applicationData } from "../tests/db-data/data-application";
 import { SQMockClient } from "../tests/models/SQMockClient";
 import { mainEvent } from "../tests/resources/stream-event";
@@ -47,6 +48,15 @@ describe("init", () => {
         processedEvent = StreamService.getClinicDataStream(event.Records[0] as DynamoDBRecord);
         expect(processedEvent).toHaveLength(1);
         expect(processedEvent).toEqual(applicationData);
+      });
+    });
+
+    describe("when fetching data stream and the eventName is other than INSERT or MODIFY", () => {
+      test("should create appropriate message about it", () => {
+        const loggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
+        event.Records[0].eventName = "OTHER?";
+        processedEvent = StreamService.getClinicDataStream(event.Records[0] as DynamoDBRecord);
+        expect(loggerMock).toHaveBeenNthCalledWith(2, "event name was not of correct type");
       });
     });
   });
