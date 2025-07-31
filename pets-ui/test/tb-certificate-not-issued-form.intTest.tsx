@@ -1,6 +1,5 @@
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
-import { BrowserRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 
 import TbCertificateNotIssuedForm from "@/sections/tb-certificate-not-issued-form";
@@ -23,9 +22,7 @@ describe("TbCertificateNotIssuedForm", () => {
   it("renders the form with all required fields", () => {
     renderWithProviders(
       <HelmetProvider>
-        <BrowserRouter>
-          <TbCertificateNotIssuedForm />
-        </BrowserRouter>
+        <TbCertificateNotIssuedForm />
       </HelmetProvider>,
     );
 
@@ -38,9 +35,7 @@ describe("TbCertificateNotIssuedForm", () => {
   it("displays all radio button options for reason not issued", () => {
     renderWithProviders(
       <HelmetProvider>
-        <BrowserRouter>
-          <TbCertificateNotIssuedForm />
-        </BrowserRouter>
+        <TbCertificateNotIssuedForm />
       </HelmetProvider>,
     );
 
@@ -52,9 +47,7 @@ describe("TbCertificateNotIssuedForm", () => {
   it("shows validation errors when submitting empty form", async () => {
     renderWithProviders(
       <HelmetProvider>
-        <BrowserRouter>
-          <TbCertificateNotIssuedForm />
-        </BrowserRouter>
+        <TbCertificateNotIssuedForm />
       </HelmetProvider>,
     );
 
@@ -70,9 +63,7 @@ describe("TbCertificateNotIssuedForm", () => {
   it("allows form submission with valid data", async () => {
     renderWithProviders(
       <HelmetProvider>
-        <BrowserRouter>
-          <TbCertificateNotIssuedForm />
-        </BrowserRouter>
+        <TbCertificateNotIssuedForm />
       </HelmetProvider>,
     );
 
@@ -96,9 +87,7 @@ describe("TbCertificateNotIssuedForm", () => {
   it("validates physician name field pattern", async () => {
     renderWithProviders(
       <HelmetProvider>
-        <BrowserRouter>
-          <TbCertificateNotIssuedForm />
-        </BrowserRouter>
+        <TbCertificateNotIssuedForm />
       </HelmetProvider>,
     );
 
