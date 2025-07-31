@@ -1,15 +1,28 @@
 import { countryList } from "../../src/utils/countryList";
 import { loginViaB2C } from "../support/commands";
-import { ApplicantDetailsPage } from "../support/page-objects/applicantDetailsPage";
 import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
-import { getRandomPassportNumber, randomElement } from "../support/test-utils";
+import {
+  createTestFixtures,
+  getRandomPassportNumber,
+  randomElement,
+} from "../support/test-helpers";
+import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetailsPage";
 
-describe("Applicant Details Form - Invalid Date Relationship Test", () => {
-  const applicantDetailsPage = new ApplicantDetailsPage();
+describe("PETS Application End-to-End Tests with Sputum Collection", () => {
+  // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
+  const applicantDetailsPage = new ApplicantDetailsPage();
+
   // Define variables to store test data
-  let countryName: string;
-  let passportNumber: string;
+  let countryCode: string = "";
+  let countryName: string = "";
+  let passportNumber: string = "";
+  let tbCertificateNumber: string = "";
+
+  before(() => {
+    // Create test fixtures before test run
+    createTestFixtures();
+  });
 
   beforeEach(() => {
     loginViaB2C();
@@ -17,13 +30,24 @@ describe("Applicant Details Form - Invalid Date Relationship Test", () => {
     applicantSearchPage.verifyPageLoaded();
     // Generate random country and passport number
     const randomCountry = randomElement(countryList);
-    countryName = randomCountry?.value;
+    countryCode = randomCountry?.value; // For form filling (e.g., "BRB")
+    countryName = randomCountry?.label; // For validation (e.g., "Barbados")
     passportNumber = getRandomPassportNumber();
+    tbCertificateNumber = "TB" + Math.floor(10000000 + Math.random() * 90000000);
 
-    // Navigate to the applicant details page
-    applicantSearchPage.fillPassportNumber(passportNumber);
-    applicantSearchPage.selectCountryOfIssue(countryName);
-    applicantSearchPage.submitSearch();
+    // Log what we're using for debugging
+    cy.log(`Using passport number: ${passportNumber}`);
+    cy.log(`Using country code: ${countryCode}`);
+    cy.log(`Using country name: ${countryName}`);
+    cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
+  });
+
+  it("should display error when passport issue date is after expiry date", () => {
+    // Search for applicant with passport number
+    applicantSearchPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName) // Use country code for form filling
+      .submitSearch();
 
     // Verify no matching record found and click create new
     applicantSearchPage.verifyNoMatchingRecordMessage(20000);
@@ -32,17 +56,16 @@ describe("Applicant Details Form - Invalid Date Relationship Test", () => {
 
     // Verify redirection to the contact page
     applicantSearchPage.verifyRedirectionToCreateApplicantPage();
-    applicantDetailsPage.verifyPageLoaded();
-  });
 
-  it("should display error when passport issue date is after expiry date", () => {
-    // Fill form with valid data except for passport dates
-    applicantDetailsPage.fillFullName("Michael Johnson");
-    applicantDetailsPage.selectSex("Male");
-    applicantDetailsPage.selectNationality(countryName);
-    applicantDetailsPage.selectCountryOfIssue(countryName);
-    applicantDetailsPage.fillBirthDate("15", "09", "1990");
-    applicantDetailsPage.fillPassportNumber(passportNumber);
+    // Fill Applicant Details
+    applicantDetailsPage.verifyPageLoaded();
+
+    // Fill in applicant details
+    applicantDetailsPage
+      .fillFullName("Jon Tester")
+      .selectSex("Male")
+      .selectNationality(countryName) // Use country code for form filling
+      .fillBirthDate("15", "09", "1990");
 
     // Set issue date after expiry date
     const currentYear = new Date().getFullYear();

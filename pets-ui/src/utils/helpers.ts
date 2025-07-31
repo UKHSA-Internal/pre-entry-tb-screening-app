@@ -1,5 +1,6 @@
 import { DateType } from "@/applicant";
 
+import { countryList } from "./countryList";
 import {
   dateEntryMustBeInTheFuture,
   dateEntryMustBeInThePast,
@@ -117,26 +118,53 @@ const formatDateForDisplay = (date: DateType): string => {
     return "";
   }
 
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+  const dateToDisplay = new Date(parseInt(date.year), parseInt(date.month) - 1, parseInt(date.day));
+  return `${dateToDisplay.getDate()} ${dateToDisplay.toLocaleDateString("en-GB", { month: "long" })} ${dateToDisplay.getFullYear()}`;
+};
 
-  const monthIndex = parseInt(month, 10) - 1;
-  const monthName = monthNames[monthIndex];
-  const dayNumber = parseInt(day, 10);
+const calculateCertificateExpiryDate = (
+  issueDate: DateType,
+  hasCloseContactWithTb: boolean,
+): DateType => {
+  const { year, month, day } = issueDate;
+  if (!year || !month || !day) return issueDate;
 
-  return `${dayNumber} ${monthName} ${year}`;
+  const jsDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  const expiryMonths = hasCloseContactWithTb ? 3 : 6;
+  jsDate.setMonth(jsDate.getMonth() + expiryMonths);
+
+  return {
+    year: jsDate.getFullYear().toString(),
+    month: (jsDate.getMonth() + 1).toString(),
+    day: jsDate.getDate().toString(),
+  };
+};
+
+const calculateCertificateIssueDate = (
+  chestXrayCompletionDate: DateType | undefined,
+  chestXrayTaken: string | undefined,
+  medicalScreeningCompletionDate: DateType | undefined,
+): DateType => {
+  if (chestXrayCompletionDate && chestXrayTaken === "Yes") {
+    const { year, month, day } = chestXrayCompletionDate;
+    if (year && month && day) {
+      return chestXrayCompletionDate;
+    }
+  }
+
+  if (medicalScreeningCompletionDate) {
+    const { year, month, day } = medicalScreeningCompletionDate;
+    if (year && month && day) {
+      return medicalScreeningCompletionDate;
+    }
+  }
+
+  const today = new Date();
+  return {
+    year: today.getFullYear().toString(),
+    month: (today.getMonth() + 1).toString(),
+    day: today.getDate().toString(),
+  };
 };
 
 const spreadArrayIfNotEmpty = (...arrays: string[][]) => {
@@ -158,9 +186,17 @@ const toArray = (input: boolean | string | string[]) => {
   }
 };
 
+const getCountryName = (countryCode: string) => {
+  const country = countryList.find((c) => c.value === countryCode);
+  return country ? country.label : countryCode;
+};
+
 export {
+  calculateCertificateExpiryDate,
+  calculateCertificateIssueDate,
   formatDateForDisplay,
   formatDateType,
+  getCountryName,
   hasInvalidCharacters,
   isDateInTheFuture,
   isDateInThePast,

@@ -1,7 +1,7 @@
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import { useAppSelector } from "@/redux/hooks";
-import { selectTravel } from "@/redux/travelSlice";
+import { selectTravel } from "@/redux/store";
 import TravelReview from "@/sections/applicant-travel-summary";
 import { ApplicationStatus } from "@/utils/enums";
 

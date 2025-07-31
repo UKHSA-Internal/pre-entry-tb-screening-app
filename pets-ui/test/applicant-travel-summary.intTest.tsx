@@ -31,7 +31,7 @@ const travelState = {
   townOrCity: "Edinburgh",
   ukEmail: "sigmund.sigmundson@asgard.gov",
   ukMobileNumber: "07321900900",
-  visaType: "Government Sponsored",
+  visaCategory: "Government Sponsored",
 };
 
 const applicationState = { applicationId: "abc-123", dateCreated: "" };
@@ -54,7 +54,7 @@ describe("TravelReview", () => {
 
     mock.onPost("/application/abc-123/travel-information").reply(200);
 
-    expect(screen.getAllByRole("term")[0]).toHaveTextContent("Visa type");
+    expect(screen.getAllByRole("term")[0]).toHaveTextContent("Visa category");
     expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Government Sponsored");
     expect(screen.getAllByRole("term")[1]).toHaveTextContent("UK address line 1");
     expect(screen.getAllByRole("definition")[2]).toHaveTextContent("Edinburgh Castle, Castlehill");
@@ -97,7 +97,7 @@ describe("TravelReview", () => {
     const preloadedState = {
       travel: {
         status: ApplicationStatus.COMPLETE,
-        visaType: "",
+        visaCategory: "",
         applicantUkAddress1: "",
         applicantUkAddress2: "",
         townOrCity: "",
@@ -119,7 +119,7 @@ describe("TravelReview", () => {
     const preloadedState = {
       travel: {
         status: ApplicationStatus.IN_PROGRESS,
-        visaType: "",
+        visaCategory: "",
         applicantUkAddress1: "",
         applicantUkAddress2: "",
         townOrCity: "",

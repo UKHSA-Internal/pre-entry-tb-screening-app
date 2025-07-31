@@ -10,12 +10,11 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import {
   clearChestXrayNotTakenDetails,
   clearChestXrayTakenDetails,
-  clearIsSputumRequired,
-  selectChestXray,
   setChestXrayStatus,
   setChestXrayTaken,
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { selectChestXray } from "@/redux/store";
 import { ApplicationStatus, ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
 
 const ChestXrayQuestionForm = () => {
@@ -40,10 +39,6 @@ const ChestXrayQuestionForm = () => {
     } else {
       dispatch(clearChestXrayTakenDetails());
       navigate("/chest-xray-not-taken");
-    }
-
-    if (data.chestXrayTaken != chestXrayData.chestXrayTaken) {
-      dispatch(clearIsSputumRequired());
     }
   };
 

@@ -84,6 +84,11 @@ describe("MedicalScreeningForm", () => {
       age: "99",
       closeContactWithTb: "No",
       closeContactWithTbDetail: "",
+      completionDate: {
+        year: "",
+        month: "",
+        day: "",
+      },
       menstrualPeriods: "No",
       otherSymptomsDetail: "",
       physicalExamNotes: "Details of physical examination.",

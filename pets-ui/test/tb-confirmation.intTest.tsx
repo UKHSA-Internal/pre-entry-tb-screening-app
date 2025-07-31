@@ -1,4 +1,4 @@
-import { fireEvent, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { Mock } from "vitest";
 
@@ -24,15 +24,7 @@ describe("Tb Confirmation page", () => {
   });
 
   test("Page renders with correct text", () => {
-    expect(screen.getByText("TB screening complete")).toBeInTheDocument();
-    expect(
-      screen.getByText("Thank you for recording the visa applicant's TB screening."),
-    ).toBeInTheDocument();
-  });
-
-  test("Finish button redirects user to '/tracker' page", () => {
-    fireEvent.click(screen.getByText("Finish"));
-
-    expect(useNavigateMock).toHaveBeenCalledWith("/tracker");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("TB screening complete");
+    expect(screen.getByText("The visa applicant TB screening is complete.")).toBeInTheDocument();
   });
 });

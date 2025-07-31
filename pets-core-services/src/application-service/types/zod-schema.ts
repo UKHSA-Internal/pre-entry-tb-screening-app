@@ -10,6 +10,7 @@ import {
   PregnancyStatus,
   SmearAndCultureResultOptions,
   SputumCollectionMethod,
+  TBCertNotIssuedReason,
   TbSymptomsOptions,
   VisaOptions,
   YesOrNo,
@@ -118,21 +119,45 @@ export const MedicalScreeningResponseSchema = MedicalScreeningRequestSchema.exte
 
 export const TbCertificateIssuedRequestSchema = z.object({
   isIssued: z.literal(YesOrNo.Yes),
+  clinicName: z.string().openapi({
+    description: "Clinic Name",
+  }),
+  physicianName: z.string().openapi({
+    description: "Physician's Name",
+  }),
   comments: z.string().optional().openapi({
-    description: "Physican's comments",
+    description: "Physician's comments",
   }),
   issueDate: z.string().date().openapi({
     description: "Date of certificate issue in ISO format",
   }),
+  expiryDate: z.string().date().openapi({
+    description: "Date of certificate expiry in ISO format",
+  }),
   certificateNumber: z.string().openapi({
     description: "Clearance certificate number",
+  }),
+  referenceNumber: z.string().openapi({
+    description: "Reference number(Application Id)",
   }),
 });
 
 export const TbCertificateNotIssuedRequestSchema = z.object({
   isIssued: z.literal(YesOrNo.No),
+  clinicName: z.string().openapi({
+    description: "Clinic Name",
+  }),
+  physicianName: z.string().openapi({
+    description: "Physician's Name",
+  }),
   comments: z.string().optional().openapi({
-    description: "Physican's comments",
+    description: "Physician's comments",
+  }),
+  notIssuedReason: z.nativeEnum(TBCertNotIssuedReason).openapi({
+    description: "Clearance certificate not issued reason",
+  }),
+  referenceNumber: z.string().openapi({
+    description: "Reference number(Application Id)",
   }),
 });
 

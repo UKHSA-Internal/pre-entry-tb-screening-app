@@ -111,6 +111,7 @@ describe("ChestXrayFindings Form", () => {
         xrayAssociatedMinorFindings: [],
         xrayActiveTbFindings: [],
         isSputumRequired: YesOrNo.NULL,
+        completionDate: { year: "", month: "", day: "" },
       },
     };
     renderWithProviders(

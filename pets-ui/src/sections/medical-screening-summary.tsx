@@ -6,9 +6,9 @@ import { postMedicalDetails } from "@/api/api";
 import Button from "@/components/button/button";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
-import { selectApplication } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { selectMedicalScreening, setMedicalScreeningStatus } from "@/redux/medicalScreeningSlice";
+import { setMedicalScreeningStatus } from "@/redux/medicalScreeningSlice";
+import { selectApplication, selectMedicalScreening } from "@/redux/store";
 import { ApplicationStatus, ButtonType } from "@/utils/enums";
 import { attributeToComponentId } from "@/utils/records";
 

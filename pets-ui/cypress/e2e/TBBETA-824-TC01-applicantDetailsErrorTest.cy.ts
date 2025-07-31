@@ -8,8 +8,8 @@ describe("Applicant Details Form - Empty Form Error Test", () => {
   const applicantDetailsPage = new ApplicantDetailsPage();
   const applicantSearchPage = new ApplicantSearchPage();
   // Define variables to store test data
-  let countryName: string;
-  let passportNumber: string;
+  let countryName: string = "";
+  let passportNumber: string = "";
 
   beforeEach(() => {
     loginViaB2C();
@@ -17,7 +17,7 @@ describe("Applicant Details Form - Empty Form Error Test", () => {
     applicantSearchPage.verifyPageLoaded();
     // Generate random country and passport number
     const randomCountry = randomElement(countryList);
-    countryName = randomCountry?.value;
+    countryName = randomCountry?.label; // For validation (e.g., "Barbados")
     passportNumber = getRandomPassportNumber();
 
     // Navigate to the applicant details page

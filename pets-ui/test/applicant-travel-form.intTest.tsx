@@ -58,7 +58,7 @@ describe("ApplicantTravelForm", () => {
       townOrCity: "Edinburgh",
       ukEmail: "sigmund.sigmundson@asgard.gov",
       ukMobileNumber: "07321900900",
-      visaType: "Visitor",
+      visaCategory: "Visitor",
     });
     expect(useNavigateMock).toHaveBeenLastCalledWith("/travel-summary");
   });
@@ -70,10 +70,10 @@ describe("ApplicantTravelForm", () => {
 
     await user.click(submitButton);
 
-    expect(screen.getAllByText("Error: Select a visa type".slice(7))).toHaveLength(2);
-    expect(screen.getAllByText("Error: Select a visa type".slice(7))[0]).toHaveAttribute(
+    expect(screen.getAllByText("Error: Select a visa category".slice(7))).toHaveLength(2);
+    expect(screen.getAllByText("Error: Select a visa category".slice(7))[0]).toHaveAttribute(
       "aria-label",
-      "Error: Select a visa type",
+      "Error: Select a visa category",
     );
   });
 

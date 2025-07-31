@@ -83,6 +83,7 @@ describe("ChestXrayForm Section", () => {
         xrayAssociatedMinorFindings: [],
         xrayActiveTbFindings: [],
         isSputumRequired: YesOrNo.NULL,
+        completionDate: { year: "", month: "", day: "" },
       },
     };
     renderWithProviders(<ChestXrayForm />, { preloadedState });

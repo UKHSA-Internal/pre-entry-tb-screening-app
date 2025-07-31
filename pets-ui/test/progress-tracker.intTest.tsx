@@ -58,7 +58,7 @@ const travelSlice = {
   townOrCity: "Town",
   ukEmail: "email.email@com",
   ukMobileNumber: "07321900900",
-  visaType: "Government Sponsored",
+  visaCategory: "Government Sponsored",
 };
 
 const medicalScreeningSlice = {
@@ -75,6 +75,7 @@ const medicalScreeningSlice = {
   tbSymptomsList: ["Cough", "Night sweats"],
   underElevenConditions: ["Not applicable - applicant is aged 11 or over"],
   underElevenConditionsDetail: "",
+  completionDate: { year: "", month: "", day: "" },
 };
 
 const chestXraySlice = {
@@ -93,6 +94,7 @@ const chestXraySlice = {
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
   isSputumRequired: YesOrNo.NO,
+  completionDate: { year: "", month: "", day: "" },
 };
 
 const tbCertSlice = {
@@ -104,6 +106,7 @@ const tbCertSlice = {
     day: "25",
   },
   certificateNumber: "12345",
+  declaringPhysicianName: "Test Testov",
 };
 
 const incompleteState = {
@@ -188,7 +191,7 @@ test("Progress tracker page displays incomplete application sections correctly &
     { preloadedState: incompleteState },
   );
 
-  expect(screen.getByText("Complete UK pre-entry health screening")).toBeInTheDocument();
+  expect(screen.getAllByText("Complete UK pre-entry health screening")).toHaveLength(2);
 
   expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
   expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Reginald Backwaters");
@@ -254,7 +257,7 @@ test("Progress tracker page displays complete application sections correctly, li
     { preloadedState: completeState },
   );
 
-  expect(screen.getByText("Complete UK pre-entry health screening")).toBeInTheDocument();
+  expect(screen.getAllByText("Complete UK pre-entry health screening")).toHaveLength(2);
 
   expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
   expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Chelsea Cummerbund");
@@ -296,7 +299,7 @@ test("Progress tracker page displays complete application sections correctly, li
   expect(within(chestXrayListItem as HTMLElement).getByText("Completed"));
 
   const tbCertificateLink = screen.getByRole("link", { name: /TB certificate outcome/i });
-  expect(tbCertificateLink).toHaveAttribute("href", "/tb-certificate-summary");
+  expect(tbCertificateLink).toHaveAttribute("href", "/tb-certificate-confirmation");
   const tbCertificateListItem = tbCertificateLink.closest("li");
   expect(tbCertificateListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
