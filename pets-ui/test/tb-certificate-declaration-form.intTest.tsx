@@ -40,7 +40,7 @@ describe("TB Certificate Declaration Page", () => {
     });
   });
 
-  test("errors for tb clearance certificate date and tb clearance certificate number show when those fields are empty and 'Yes' is selected", async () => {
+  test("errors for tb clearance certificate date and tb clearance certificate number show when those fields are empty and 'Yes' is selected", () => {
     renderWithProviders(<TbCertificateDeclarationForm />);
 
     expect(screen.getByText("Clinic name")).toBeInTheDocument();
