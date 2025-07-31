@@ -1,6 +1,6 @@
 import {
   CreateQueueRequest,
-  DeleteQueueRequest,
+  // DeleteQueueRequest,
   GetQueueUrlRequest,
   ReceiveMessageRequest,
   SendMessageRequest,
