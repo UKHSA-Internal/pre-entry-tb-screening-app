@@ -11,4 +11,11 @@ describe("Footer component", () => {
     expect(footer).toBeTruthy();
     expect(text).toBeTruthy();
   });
+
+  it("renders the accessibility statement link", () => {
+    render(<Footer />);
+    const link = screen.getByRole("link", { name: "Accessibility statement" });
+    expect(link).toBeTruthy();
+    expect(link.getAttribute("href")).toBe("https://www.gov.uk/help/accessibility-statement");
+  });
 });
