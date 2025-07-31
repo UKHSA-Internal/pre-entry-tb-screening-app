@@ -106,8 +106,16 @@ export class LocalInfrastructureStack extends cdk.Stack {
       ],
     });
 
+    const edapDLQ = new Queue(this, "edap-integration-dlq", {
+      queueName: process.env.INTEGRATION_SERVICE_DLQ_NAME,
+    });
+
     new Queue(this, "integration-lambda", {
       queueName: process.env.INTEGRATION_SERVICE_QUEUE_NAME,
+      deadLetterQueue: {
+        queue: edapDLQ,
+        maxReceiveCount: 3,
+      },
     });
   }
 }

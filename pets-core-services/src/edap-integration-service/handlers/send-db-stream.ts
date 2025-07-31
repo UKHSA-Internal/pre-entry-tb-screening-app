@@ -31,14 +31,11 @@ const handler: Handler = async (
 
   const batchItemFailures: DynamoDBBatchItemFailure[] = [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let expandedRecords: any[] = [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const certGenFilteredRecords: any[] = [];
+  let records: any[] = [];
   let sqService: SQService;
 
   try {
     // Instantiate the Simple Queue Service
-
     sqService = new SQService();
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -48,10 +45,10 @@ const handler: Handler = async (
 
   for (const record of event.Records) {
     try {
-      expandedRecords = StreamService.getClinicDataStream(record);
-      logger.info(`Number of Retrieved records: ${expandedRecords.length}`);
+      records = StreamService.getClinicDataStream(record);
+      logger.info(`Number of Retrieved records: ${records.length}`);
 
-      for (const record of expandedRecords) {
+      for (const record of records) {
         const stringifiedRecord = JSON.stringify(record);
         logger.info(`stringifiedRecord: ${stringifiedRecord}`);
         await sqService.sendDbStreamMessage(stringifiedRecord);
@@ -61,8 +58,7 @@ const handler: Handler = async (
     } catch (err) {
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       logger.error(`ERR / ${err}`);
-      logger.info(`ERR / expandedRecords: ${JSON.stringify(expandedRecords)}`);
-      logger.info(`ERR / certGenFilteredRecords: ${JSON.stringify(certGenFilteredRecords)}`);
+      logger.info(`ERR / expandedRecords: ${JSON.stringify(records)}`);
       batchItemFailures.push({
         itemIdentifier: record.dynamodb?.SequenceNumber ?? "",
       });
