@@ -8,38 +8,38 @@ export class ChestXrayPage extends BasePage {
   // Verify page loaded
   verifyPageLoaded(): ChestXrayPage {
     this.verifyPageHeading("Select X-ray status");
-    cy.get(".govuk-summary-list").should("be.visible");
-    return this;
-  }
-
-  // Verify applicant information section
-  verifyApplicantInfo(expectedValues: {
-    Name?: string;
-    "Date of birth"?: string;
-    "Passport number"?: string;
-  }): ChestXrayPage {
-    this.verifySummaryValues(expectedValues);
+    cy.get("form").should("be.visible");
     return this;
   }
 
   // Verify X-ray question is displayed
   verifyXrayQuestionDisplayed(): ChestXrayPage {
     cy.contains("h2", "Has the visa applicant had a chest X-ray?").should("be.visible");
-    cy.get(".govuk-fieldset__legend")
+    cy.get(".govuk-label")
       .contains("This would typically be the postero-anterior chest X-ray")
       .should("be.visible");
     return this;
   }
 
+  // Verify radio buttons are displayed
+  verifyRadioButtonsDisplayed(): ChestXrayPage {
+    cy.get(".govuk-radios__item").should("have.length", 2);
+    cy.get('input[name="chestXrayTaken"][value="Yes"]').should("be.visible");
+    cy.get('input[name="chestXrayTaken"][value="No"]').should("be.visible");
+    cy.contains("label", "Yes").should("be.visible");
+    cy.contains("label", "No").should("be.visible");
+    return this;
+  }
+
   // Select "Yes" for X-ray taken
   selectXrayTakenYes(): ChestXrayPage {
-    this.checkRadio("chestXrayTaken", "Yes");
+    cy.get('input[name="chestXrayTaken"][value="Yes"]').check();
     return this;
   }
 
   // Select "No" for X-ray taken
   selectXrayTakenNo(): ChestXrayPage {
-    this.checkRadio("chestXrayTaken", "No");
+    cy.get('input[name="chestXrayTaken"][value="No"]').check();
     return this;
   }
 
@@ -55,7 +55,7 @@ export class ChestXrayPage extends BasePage {
 
   // Click continue button
   clickContinue(): ChestXrayPage {
-    super.submitForm("Continue");
+    cy.get('button[type="submit"]').contains("Continue").should("be.visible").click();
     return this;
   }
 
@@ -87,16 +87,29 @@ export class ChestXrayPage extends BasePage {
     return this;
   }
 
+  // Verify back link navigation
+  verifyBackLinkNavigation(): ChestXrayPage {
+    cy.get(".govuk-back-link")
+      .should("be.visible")
+      .and("contain", "Back")
+      .and("have.attr", "href", "/tracker");
+    return this;
+  }
+
+  // Verify service name in header
+  verifyServiceName(): ChestXrayPage {
+    cy.get(".govuk-header__service-name")
+      .should("be.visible")
+      .and("contain", "Complete UK pre-entry health screening");
+    return this;
+  }
+
   // Check all elements on the page
-  verifyAllPageElements(applicantInfo: {
-    Name?: string;
-    "Date of birth"?: string;
-    "Passport number"?: string;
-  }): ChestXrayPage {
+  verifyAllPageElements(): ChestXrayPage {
     this.verifyPageLoaded();
-    this.verifyApplicantInfo(applicantInfo);
     this.verifyXrayQuestionDisplayed();
-    this.verifyBreadcrumbNavigation();
+    this.verifyRadioButtonsDisplayed();
+    this.verifyBackLinkNavigation();
     this.verifyServiceName();
     return this;
   }
