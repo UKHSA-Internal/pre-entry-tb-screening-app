@@ -7,6 +7,7 @@ export class ChestXrayConfirmationPage {
   // Verify page loaded
   verifyPageLoaded(): void {
     cy.contains("h1.govuk-panel__title", "Radiological outcome confirmed").should("be.visible");
+    cy.get(".govuk-panel--confirmation").should("be.visible");
   }
 
   // Verify confirmation panel
@@ -18,28 +19,27 @@ export class ChestXrayConfirmationPage {
   // Verify next steps section
   verifyNextStepsSection(): void {
     cy.contains("h2.govuk-heading-m", "What happens next").should("be.visible");
-
     cy.contains("p.govuk-body", "You can now return to the progress tracker.").should("be.visible");
   }
 
   // Click continue button
   clickContinueButton(): void {
-    cy.contains("button", "Continue").click();
+    cy.get('button[type="submit"]').contains("Continue").should("be.visible").click();
   }
 
-  // Verify breadcrumb navigation
-  verifyBreadcrumbNavigation(): void {
-    cy.contains(".govuk-breadcrumbs__list-item", "Application progress tracker")
+  // Verify back link navigation
+  verifyBackLinkNavigation(): void {
+    cy.get(".govuk-back-link")
       .should("be.visible")
-      .find("a")
-      .should("have.attr", "href", "/tracker");
+      .and("contain", "Back")
+      .and("have.attr", "href", "/chest-xray-summary");
   }
 
   // Verify service name in header
   verifyServiceName(): void {
-    cy.contains(".govuk-header__service-name", "Complete UK Pre-Entry Health Screening").should(
-      "be.visible",
-    );
+    cy.get(".govuk-header__service-name")
+      .should("be.visible")
+      .and("contain", "Complete UK pre-entry health screening");
   }
 
   // Get the current URL
@@ -58,7 +58,7 @@ export class ChestXrayConfirmationPage {
     this.verifyPageLoaded();
     this.verifyConfirmationPanel();
     this.verifyNextStepsSection();
-    this.verifyBreadcrumbNavigation();
+    this.verifyBackLinkNavigation();
     this.verifyServiceName();
   }
 }

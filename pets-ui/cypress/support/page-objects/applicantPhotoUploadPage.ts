@@ -7,30 +7,14 @@ export class ApplicantPhotoUploadPage extends BasePage {
     super("/applicant-photo");
   }
 
-  /* visit(): void {
-    cy.visit("/applicant-photo");
-  } */
-
   // Verify page loaded
   verifyPageLoaded(): ApplicantPhotoUploadPage {
     this.verifyPageHeading("Upload visa applicant photo (optional)");
-    cy.get(".govuk-summary-list").should("be.visible");
-    return this;
-  }
-
-  // Verify applicant information section
-  verifyApplicantInfo(expectedValues: {
-    Name?: string;
-    "Date of birth"?: string;
-    "Passport number"?: string;
-  }): ApplicantPhotoUploadPage {
-    this.verifySummaryValues(expectedValues);
     return this;
   }
 
   // Verify Applicant upload section is displayed
   verifyApplicantPhotoUploadSectionDisplayed(): ApplicantPhotoUploadPage {
-    // Check if the upload file message is displayed
     cy.get(".govuk-body")
       .should("be.visible")
       .and(
@@ -42,48 +26,35 @@ export class ApplicantPhotoUploadPage extends BasePage {
 
   // Upload Applicant Photo file
   uploadApplicantPhotoFile(filePath: string): ApplicantPhotoUploadPage {
-    cy.get('input[id="applicant-photo"], input[name="applicantPhotoFileName"]').selectFile(
-      filePath,
-      { force: true },
-    );
+    cy.get('[data-testid="applicant-photo"]').selectFile(filePath, { force: true });
     return this;
   }
 
   // Verify file is uploaded
   verifyFileUploaded(): ApplicantPhotoUploadPage {
-    // Check that the file input isn't empty
-    cy.get("#applicant-photo").should("exist");
+    cy.get('[data-testid="applicant-photo"]').should("exist");
     return this;
   }
 
   // Clear uploaded file
   clearUploadedFile(): ApplicantPhotoUploadPage {
-    cy.get("#applicant-photo").clear();
+    cy.get('[data-testid="applicant-photo"]').clear();
     return this;
   }
 
   // Click continue button
   clickContinue(): ApplicantPhotoUploadPage {
-    // Wait for any potential upload processing to complete
-    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
+    cy.get("button[type='submit']").contains("Continue").should("be.visible").and("be.enabled");
     cy.wait(1000);
-    cy.get("button").contains("Continue").click({ force: true });
+    cy.get("button[type='submit']").contains("Continue").click({ force: true });
     return this;
   }
 
   // Verify upload success for photo
   verifyUploadSuccess(): ApplicantPhotoUploadPage {
-    // Just verify that the button is enabled and no errors are shown
-    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
+    cy.get("button[type='submit']").contains("Continue").should("be.visible").and("be.enabled");
     cy.get(".govuk-error-message").should("not.exist");
     cy.get(".govuk-error-summary").should("not.exist");
-    return this;
-  }
-
-  // Verify upload error state
-  verifyUploadError(): ApplicantPhotoUploadPage {
-    cy.get("#applicant-photo-error").should("be.visible");
-    cy.get(".govuk-error-message").should("be.visible");
     return this;
   }
 
@@ -94,7 +65,7 @@ export class ApplicantPhotoUploadPage extends BasePage {
     return this;
   }
 
-  // Verify form validation - ensure file type validation
+  // Verify form validation - ensure photo is optional
   verifyFormValidation(): ApplicantPhotoUploadPage {
     // Submit form without uploading photo
     this.clickContinue();
@@ -127,7 +98,7 @@ export class ApplicantPhotoUploadPage extends BasePage {
     cy.get(".govuk-error-message").should("be.visible").and("contain", expectedErrorMessage);
 
     // Verify the form group has error styling
-    cy.get("#applicant-photo").should("have.class", "govuk-form-group--error");
+    cy.get(".govuk-form-group--error").should("exist");
 
     return this;
   }
@@ -143,24 +114,9 @@ export class ApplicantPhotoUploadPage extends BasePage {
     return this;
   }
 
-  // Verify accepted file types
+  // Verify accepted file types are mentioned in instructions
   verifyAcceptedFileTypes(): ApplicantPhotoUploadPage {
-    // Verify the instructions mention accepted file types
     cy.get(".govuk-body").should("contain", "JPG, JPEG or PNG");
-    return this;
-  }
-
-  // Check all elements on the page
-  verifyAllPageElements(applicantInfo: {
-    Name?: string;
-    "Date of birth"?: string;
-    "Passport number"?: string;
-  }): ApplicantPhotoUploadPage {
-    this.verifyPageLoaded();
-    this.verifyApplicantInfo(applicantInfo);
-    this.verifyApplicantPhotoUploadSectionDisplayed();
-    this.verifyBreadcrumbNavigation();
-    this.verifyServiceName();
     return this;
   }
 
@@ -169,6 +125,24 @@ export class ApplicantPhotoUploadPage extends BasePage {
     cy.get(".govuk-error-summary").should("not.exist");
     cy.get(".govuk-error-message").should("not.exist");
     cy.get(".govuk-form-group--error").should("not.exist");
+    return this;
+  }
+
+  // Verify invalid file type scenarios
+  verifyInvalidFileType(filePath: string): ApplicantPhotoUploadPage {
+    return this.verifyFileTypeValidation(filePath, "The selected file must be a JPG, JPEG or PNG");
+  }
+
+  // Verify large file scenarios
+  verifyOversizedFile(filePath: string): ApplicantPhotoUploadPage {
+    return this.verifyFileSizeValidation(filePath);
+  }
+
+  // Main validation method for file types
+  validateFileTypes(): ApplicantPhotoUploadPage {
+    this.verifyPageLoaded();
+    this.verifyApplicantPhotoUploadSectionDisplayed();
+    this.verifyAcceptedFileTypes();
     return this;
   }
 }

@@ -7,6 +7,7 @@ import { ApplicantDetailsPage } from "./page-objects/applicantDetailsPage";
 import { ApplicantPhotoUploadPage } from "./page-objects/applicantPhotoUploadPage";
 import { ApplicantSearchPage } from "./page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "./page-objects/applicantSummaryPage";
+import { CheckSputumSampleInfoPage } from "./page-objects/checkSputumSampleInfoPage";
 import { ChestXrayConfirmationPage } from "./page-objects/chestXrayConfirmationPage";
 import { ChestXrayFindingsPage } from "./page-objects/chestXrayFindingsPage";
 import { ChestXrayPage } from "./page-objects/chestXrayQuestionPage";
@@ -17,10 +18,12 @@ import { MedicalConfirmationPage } from "./page-objects/medicalConfirmationPage"
 import { MedicalScreeningPage } from "./page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "./page-objects/medicalSummaryPage";
 import { SputumCollectionPage } from "./page-objects/sputumCollectionPage";
+import { SputumConfirmationPage } from "./page-objects/sputumConfirmationPage";
 import { SputumQuestionPage } from "./page-objects/sputumQuestionPage";
 import { TbCertificateConfirmationPage } from "./page-objects/tbCertificateConfirmationPage";
-import { TbClearanceCertificateSummaryPage } from "./page-objects/tbCertificateSummaryPage";
-import { TbClearanceCertificatePage } from "./page-objects/tbClearanceCertificatePage";
+import { TbCertificateDeclarationPage } from "./page-objects/tbCertificateDeclarationPage";
+import { TbCertificateQuestionPage } from "./page-objects/tbCertificateQuestionPage";
+import { TbCertificateSummaryPage } from "./page-objects/tbCertificateSummaryPage";
 import { TBProgressTrackerPage } from "./page-objects/tbProgressTrackerPage";
 import { TravelConfirmationPage } from "./page-objects/travelConfirmationPage";
 import { TravelInformationPage } from "./page-objects/travelInformationPage";
@@ -189,6 +192,7 @@ export function createNewApplicant() {
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
+  const applicantConfirmationPage = new ApplicantConfirmationPage();
 
   // Generate random test data
   const applicantData = generateApplicantData();
@@ -241,13 +245,6 @@ export function createNewApplicant() {
   cy.url().should("include", "/applicant-photo");
   applicantPhotoUploadPage.verifyPageLoaded();
 
-  // Check applicant information is displayed correctly
-  applicantPhotoUploadPage.verifyApplicantInfo({
-    Name: applicantData.fullName,
-    "Date of birth": `${applicantData.birthDay}/${applicantData.birthMonth}/${applicantData.birthYear}`,
-    "Passport number": applicantData.passportNumber,
-  });
-
   // Upload Applicant Photo file
   applicantPhotoUploadPage
     .uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg")
@@ -260,22 +257,27 @@ export function createNewApplicant() {
   applicantSummaryPage.verifyPageLoaded();
   applicantSummaryPage.confirmDetails();
 
+  // Complete applicant confirmation and go to tracker
+  applicantConfirmationPage.verifyPageLoaded();
+  applicantConfirmationPage.verifyNextStepsText();
+  applicantConfirmationPage.clickContinue();
+
   return applicantData;
 }
 
 /**
- * Helper function to navigate to the Travel Information page
+ * Helper function to navigate to the Travel Information page from the tracker
  * Returns the applicant data used
  */
 export function navigateToTravelInfoPage() {
-  const applicantConfirmationPage = new ApplicantConfirmationPage();
+  const tbProgressTrackerPage = new TBProgressTrackerPage();
 
   // Create a new applicant first
   const applicantData = createNewApplicant();
 
-  // Proceed to travel information page
-  applicantConfirmationPage.verifyPageLoaded();
-  applicantConfirmationPage.clickContinueToTravelInformation();
+  // Navigate to travel information from the tracker
+  tbProgressTrackerPage.verifyPageLoaded();
+  tbProgressTrackerPage.clickTaskLink("Travel information");
 
   return applicantData;
 }
@@ -289,6 +291,7 @@ export function navigateToMedicalScreeningPage() {
   const travelInformationPage = new TravelInformationPage();
   const travelSummaryPage = new TravelSummaryPage();
   const travelConfirmationPage = new TravelConfirmationPage();
+  const tbProgressTrackerPage = new TBProgressTrackerPage();
 
   // First navigate to the travel information page
   const applicantData = navigateToTravelInfoPage();
@@ -310,9 +313,13 @@ export function navigateToMedicalScreeningPage() {
   travelSummaryPage.verifyPageLoaded();
   travelSummaryPage.submitForm();
 
-  // Complete travel confirmation and continue to medical screening
+  // Complete travel confirmation and return to tracker
   travelConfirmationPage.verifyPageLoaded();
-  travelConfirmationPage.submitForm();
+  travelConfirmationPage.clickContinue();
+
+  // Navigate to medical screening from the tracker
+  tbProgressTrackerPage.verifyPageLoaded();
+  tbProgressTrackerPage.clickTaskLink("Medical history and TB symptoms");
 
   return applicantData;
 }
@@ -326,28 +333,34 @@ export function navigateToChestXrayPage() {
   const medicalScreeningPage = new MedicalScreeningPage();
   const medicalSummaryPage = new MedicalSummaryPage();
   const medicalConfirmationPage = new MedicalConfirmationPage();
+  const tbProgressTrackerPage = new TBProgressTrackerPage();
 
   // Navigate to the medical screening page
   const applicantData = navigateToMedicalScreeningPage();
 
   // Complete the medical screening
   medicalScreeningPage.verifyPageLoaded();
-  medicalScreeningPage.fillAge(applicantData.age);
-  medicalScreeningPage.selectTbSymptoms("No");
-  medicalScreeningPage.selectPreviousTb("No");
-  medicalScreeningPage.selectCloseContact("No");
-  medicalScreeningPage.selectPregnancyStatus("No");
-  medicalScreeningPage.selectMenstrualPeriods("No");
-  medicalScreeningPage.fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.");
-  medicalScreeningPage.submitForm();
+  medicalScreeningPage
+    .fillAge(applicantData.age)
+    .selectTbSymptoms("No")
+    .selectPreviousTb("No")
+    .selectCloseContact("No")
+    .selectPregnancyStatus("No")
+    .selectMenstrualPeriods("No")
+    .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.")
+    .submitForm();
 
   // Complete medical summary
   medicalSummaryPage.verifyPageLoaded();
   medicalSummaryPage.confirmDetails();
 
-  // Navigate through confirmation to chest X-ray page
+  // Navigate through confirmation to return to tracker
   medicalConfirmationPage.verifyPageLoaded();
   medicalConfirmationPage.clickContinueButton();
+
+  // Navigate to chest X-ray from the tracker
+  tbProgressTrackerPage.verifyPageLoaded();
+  tbProgressTrackerPage.clickTaskLink("Radiological outcome");
 
   return applicantData;
 }
@@ -468,6 +481,8 @@ export function navigateToEnterSputumSampleResultsPage() {
  */
 export function completeSputumCollectionAndResults() {
   const enterSputumSampleResultsPage = new EnterSputumSampleResultsPage();
+  const checkSputumSampleInfoPage = new CheckSputumSampleInfoPage();
+  const sputumConfirmationPage = new SputumConfirmationPage();
 
   // Navigate to the enter sputum sample results page
   const applicantData = navigateToEnterSputumSampleResultsPage();
@@ -476,6 +491,14 @@ export function completeSputumCollectionAndResults() {
   enterSputumSampleResultsPage.verifyPageLoaded();
   enterSputumSampleResultsPage.fillWithAllNegativeResults();
   enterSputumSampleResultsPage.clickSaveAndContinue();
+
+  // Complete the sputum sample info check page
+  checkSputumSampleInfoPage.verifyPageLoaded();
+  checkSputumSampleInfoPage.clickSaveAndContinue();
+
+  // Complete sputum confirmation
+  sputumConfirmationPage.verifyPageLoaded();
+  sputumConfirmationPage.clickContinueButton();
 
   return applicantData;
 }
@@ -549,50 +572,103 @@ export function navigateToProgressTrackerWithCompletedSputum() {
 }
 
 /**
- * Helper function to navigate to the TB Certificate page via Progress Tracker
- * This enforces the business rule that TB certificate declaration can only be accessed
- * after all prerequisite tasks are completed (JIRA TBBETA-550)
+ * Helper function to navigate to the TB Certificate Question page via Progress Tracker
  * Returns the applicant data used
  */
-export function navigateToTbCertificatePageViaTracker() {
+export function navigateToTbCertificateQuestionPageViaTracker() {
   const tbProgressTrackerPage = new TBProgressTrackerPage();
 
   // Navigate to the progress tracker first
   const applicantData = navigateToProgressTracker();
 
-  // Click on TB certificate declaration from the tracker
+  // Click on TB certificate outcome from the tracker
   tbProgressTrackerPage.verifyPageLoaded();
-  tbProgressTrackerPage.clickTaskLink("TB certificate declaration");
+  tbProgressTrackerPage.clickTaskLink("TB certificate outcome");
 
   return applicantData;
 }
 
 /**
- * Helper function to navigate to the TB Certificate page with completed sputum
- * This enforces the business rule that TB certificate declaration can only be accessed
- * after all prerequisite tasks are completed (including sputum if required)
+ * Helper function to navigate to the TB Certificate Declaration page via Progress Tracker
  * Returns the applicant data used
  */
-export function navigateToTbCertificatePageViaTrackerWithSputum() {
+export function navigateToTbCertificateDeclarationPageViaTracker() {
+  const tbCertificateQuestionPage = new TbCertificateQuestionPage();
+
+  // Navigate to the TB certificate question page first
+  const applicantData = navigateToTbCertificateQuestionPageViaTracker();
+
+  // Select "Yes" for TB clearance certificate issuance
+  tbCertificateQuestionPage.verifyPageLoaded();
+  tbCertificateQuestionPage.selectTbClearanceOption("Yes");
+  tbCertificateQuestionPage.clickContinue();
+
+  return applicantData;
+}
+
+/**
+ * Helper function to navigate to the TB Certificate Declaration page with completed sputum
+ * Returns the applicant data used
+ */
+export function navigateToTbCertificateDeclarationPageViaTrackerWithSputum() {
   const tbProgressTrackerPage = new TBProgressTrackerPage();
+  const tbCertificateQuestionPage = new TbCertificateQuestionPage();
 
   // Navigate to the progress tracker with completed sputum
   const applicantData = navigateToProgressTrackerWithCompletedSputum();
 
-  // Click on TB certificate declaration from the tracker
+  // Click on TB certificate outcome from the tracker
   tbProgressTrackerPage.verifyPageLoaded();
-  tbProgressTrackerPage.clickTaskLink("TB certificate declaration");
+  tbProgressTrackerPage.clickTaskLink("TB certificate outcome");
+
+  // Select "Yes" for TB clearance certificate issuance
+  tbCertificateQuestionPage.verifyPageLoaded();
+  tbCertificateQuestionPage.selectTbClearanceOption("Yes");
+  tbCertificateQuestionPage.clickContinue();
 
   return applicantData;
 }
 
 /**
- * Helper function to navigate to the TB Certificate page (UPDATED)
- * This maintains backward compatibility by using the new flow
+ * Helper function to navigate to the TB Certificate Summary page
  * Returns the applicant data used
  */
-export function navigateToTbCertificatePage() {
-  return navigateToTbCertificatePageViaTracker();
+export function navigateToTbCertificateSummaryPage() {
+  const tbCertificateDeclarationPage = new TbCertificateDeclarationPage();
+
+  // Navigate to TB certificate declaration page
+  const applicantData = navigateToTbCertificateDeclarationPageViaTracker();
+
+  // Fill TB Certificate Declaration details
+  const tbCertificateDeclarationData = {
+    declaringPhysicianName: "Dr. Sarah Johnson",
+    physicianComments:
+      "Applicant has completed full TB screening. All tests negative. Certificate issued in accordance with UKHSA guidelines.",
+  };
+
+  // Complete TB certificate declaration
+  tbCertificateDeclarationPage.verifyPageLoaded();
+  tbCertificateDeclarationPage.fillFormWithValidData(tbCertificateDeclarationData);
+  tbCertificateDeclarationPage.clickContinue();
+
+  return applicantData;
+}
+
+/**
+ * Helper function to navigate to the TB Certificate Confirmation page
+ * Returns the applicant data used
+ */
+export function navigateToTbCertificateConfirmationPage() {
+  const tbCertificateSummaryPage = new TbCertificateSummaryPage();
+
+  // Navigate to TB certificate summary page
+  const applicantData = navigateToTbCertificateSummaryPage();
+
+  // Submit the certificate information
+  tbCertificateSummaryPage.verifyPageLoaded();
+  tbCertificateSummaryPage.clickSubmit();
+
+  return applicantData;
 }
 
 /**
@@ -600,31 +676,13 @@ export function navigateToTbCertificatePage() {
  * Returns the applicant data used
  */
 export function completeFullFlowToTbCertificate() {
-  const tbClearanceCertificatePage = new TbClearanceCertificatePage();
-  const tbClearanceCertificateSummaryPage = new TbClearanceCertificateSummaryPage();
   const tbCertificateConfirmationPage = new TbCertificateConfirmationPage();
 
-  // Navigate to TB certificate page via the tracker
-  const applicantData = navigateToTbCertificatePageViaTracker();
+  // Navigate to TB certificate confirmation page
+  const applicantData = navigateToTbCertificateConfirmationPage();
 
-  // Complete TB certificate
-  tbClearanceCertificatePage.verifyPageLoaded();
-  tbClearanceCertificatePage.fillFormWithValidData({
-    clearanceIssued: "Yes",
-    physicianComments: "No signs of active tuberculosis. Chest X-ray clear.",
-    certificateDay: "19",
-    certificateMonth: "03",
-    certificateYear: "2025",
-    certificateNumber: applicantData.tbCertificateNumber,
-  });
-
-  // Complete TB certificate summary
-  tbClearanceCertificateSummaryPage.verifyPageLoaded();
-  tbClearanceCertificateSummaryPage.clickSaveAndContinue();
-
-  // Complete TB certificate confirmation
+  // Verify TB certificate confirmation page
   tbCertificateConfirmationPage.verifyPageLoaded();
-  tbCertificateConfirmationPage.clickFinishButton();
 
   return applicantData;
 }
@@ -634,32 +692,31 @@ export function completeFullFlowToTbCertificate() {
  * Returns the applicant data used
  */
 export function completeFullFlowToTbCertificateWithSputum() {
-  const tbClearanceCertificatePage = new TbClearanceCertificatePage();
-  const tbClearanceCertificateSummaryPage = new TbClearanceCertificateSummaryPage();
+  const tbCertificateDeclarationPage = new TbCertificateDeclarationPage();
+  const tbCertificateSummaryPage = new TbCertificateSummaryPage();
   const tbCertificateConfirmationPage = new TbCertificateConfirmationPage();
 
-  // Navigate to TB certificate page via the tracker with completed sputum
-  const applicantData = navigateToTbCertificatePageViaTrackerWithSputum();
+  // Navigate to TB certificate declaration page with completed sputum
+  const applicantData = navigateToTbCertificateDeclarationPageViaTrackerWithSputum();
 
-  // Complete TB certificate
-  tbClearanceCertificatePage.verifyPageLoaded();
-  tbClearanceCertificatePage.fillFormWithValidData({
-    clearanceIssued: "Yes",
+  // Fill TB Certificate Declaration details
+  const tbCertificateDeclarationData = {
+    declaringPhysicianName: "Dr. Sarah Johnson",
     physicianComments:
-      "No signs of active tuberculosis. Chest X-ray clear. Sputum samples negative.",
-    certificateDay: "19",
-    certificateMonth: "03",
-    certificateYear: "2025",
-    certificateNumber: applicantData.tbCertificateNumber,
-  });
+      "Applicant has completed full TB screening. All tests negative. Sputum samples negative. Certificate issued in accordance with UKHSA guidelines.",
+  };
+
+  // Complete TB certificate declaration
+  tbCertificateDeclarationPage.verifyPageLoaded();
+  tbCertificateDeclarationPage.fillFormWithValidData(tbCertificateDeclarationData);
+  tbCertificateDeclarationPage.clickContinue();
 
   // Complete TB certificate summary
-  tbClearanceCertificateSummaryPage.verifyPageLoaded();
-  tbClearanceCertificateSummaryPage.clickSaveAndContinue();
+  tbCertificateSummaryPage.verifyPageLoaded();
+  tbCertificateSummaryPage.clickSubmit();
 
-  // Complete TB certificate confirmation
+  // Verify TB certificate confirmation
   tbCertificateConfirmationPage.verifyPageLoaded();
-  tbCertificateConfirmationPage.clickFinishButton();
 
   return applicantData;
 }
@@ -722,4 +779,117 @@ export function withLongTimeout(selector: string, timeout = 30000) {
  */
 export function loginToApplication() {
   loginViaB2C();
+}
+
+/**
+ * Generate TB Certificate Declaration data for testing
+ */
+export function generateTbCertificateDeclarationData() {
+  return {
+    declaringPhysicianName: "Dr. Sarah Johnson",
+    physicianComments:
+      "Applicant has completed full TB screening. All tests negative. Certificate issued in accordance with UKHSA guidelines.",
+  };
+}
+
+/**
+ * Generate TB Certificate Declaration data with sputum for testing
+ */
+export function generateTbCertificateDeclarationDataWithSputum() {
+  return {
+    declaringPhysicianName: "Dr. Sarah Johnson",
+    physicianComments:
+      "Applicant has completed full TB screening. All tests negative. Sputum samples negative. Certificate issued in accordance with UKHSA guidelines.",
+  };
+}
+
+/**
+ * Helper function to generate expected sputum sample data for verification
+ */
+export function generateExpectedSputumSampleData() {
+  const sputumData = generateSputumCollectionData();
+
+  return {
+    sample1: {
+      dateTaken: `${sputumData.sample1.date.day}/${sputumData.sample1.date.month}/${sputumData.sample1.date.year}`,
+      collectionMethod: sputumData.sample1.collectionMethod,
+      smearResult: "Negative",
+      cultureResult: "Negative",
+    },
+    sample2: {
+      dateTaken: `${sputumData.sample2.date.day}/${sputumData.sample2.date.month}/${sputumData.sample2.date.year}`,
+      collectionMethod: sputumData.sample2.collectionMethod,
+      smearResult: "Negative",
+      cultureResult: "Negative",
+    },
+    sample3: {
+      dateTaken: `${sputumData.sample3.date.day}/${sputumData.sample3.date.month}/${sputumData.sample3.date.year}`,
+      collectionMethod: sputumData.sample3.collectionMethod,
+      smearResult: "Negative",
+      cultureResult: "Negative",
+    },
+  };
+}
+
+/**
+ * Helper function to verify task statuses on progress tracker
+ */
+export function verifyStandardTaskStatuses() {
+  const tbProgressTrackerPage = new TBProgressTrackerPage();
+
+  tbProgressTrackerPage.verifyAllTaskStatuses({
+    "Visa applicant details": "Completed",
+    "Travel information": "Completed",
+    "Medical history and TB symptoms": "Completed",
+    "Radiological outcome": "Completed",
+    "Sputum collection and results": "Not yet started",
+    "TB certificate outcome": "Not yet started",
+  });
+}
+
+/**
+ * Helper function to verify completed task statuses on progress tracker
+ */
+export function verifyAllCompletedTaskStatuses() {
+  const tbProgressTrackerPage = new TBProgressTrackerPage();
+
+  tbProgressTrackerPage.verifyAllTaskStatuses({
+    "Visa applicant details": "Completed",
+    "Travel information": "Completed",
+    "Medical history and TB symptoms": "Completed",
+    "Radiological outcome": "Completed",
+    "Sputum collection and results": "Completed",
+    "TB certificate outcome": "Not yet started",
+  });
+}
+
+/**
+ * Helper function to verify task statuses with completed sputum
+ */
+export function verifyTaskStatusesWithCompletedSputum() {
+  const tbProgressTrackerPage = new TBProgressTrackerPage();
+
+  tbProgressTrackerPage.verifyAllTaskStatuses({
+    "Visa applicant details": "Completed",
+    "Travel information": "Completed",
+    "Medical history and TB symptoms": "Completed",
+    "Radiological outcome": "Completed",
+    "Sputum collection and results": "Completed",
+    "TB certificate outcome": "Not yet started",
+  });
+}
+
+/**
+ * Backward compatibility - redirects to new method names
+ */
+export function navigateToTbCertificatePage() {
+  return navigateToTbCertificateQuestionPageViaTracker();
+}
+
+export function navigateToTbCertificatePageViaTracker() {
+  return navigateToTbCertificateQuestionPageViaTracker();
+}
+
+export function navigateToTbCertificatePageViaTrackerWithSputum() {
+  return navigateToTbCertificateDeclarationPageViaTrackerWithSputum();
 }

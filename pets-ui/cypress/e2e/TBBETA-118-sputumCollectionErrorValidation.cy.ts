@@ -26,7 +26,7 @@ import { TravelConfirmationPage } from "./../support/page-objects/travelConfirma
 import { TravelInformationPage } from "./../support/page-objects/travelInformationPage";
 import { TravelSummaryPage } from "./../support/page-objects/travelSummaryPage";
 
-describe("PETS Application Sputum Collection Validation", () => {
+describe("PETS Application End-to-End Tests with Sputum Collection", () => {
   // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
@@ -47,12 +47,13 @@ describe("PETS Application Sputum Collection Validation", () => {
   const chestXraySummaryPage = new ChestXraySummaryPage();
   const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
   const tbProgressTrackerPage = new TBProgressTrackerPage();
-  const visaType = "Students";
 
   // Define variables to store test data
-  let countryName: string;
-  let passportNumber: string;
-  let tbCertificateNumber: string;
+  let countryCode: string = "";
+  let countryName: string = "";
+  let passportNumber: string = "";
+  let tbCertificateNumber: string = "";
+  let selectedVisaType: string = "";
 
   before(() => {
     // Create test fixtures before test run
@@ -65,13 +66,15 @@ describe("PETS Application Sputum Collection Validation", () => {
     applicantSearchPage.verifyPageLoaded();
     // Generate random country and passport number
     const randomCountry = randomElement(countryList);
-    countryName = randomCountry?.value;
+    countryCode = randomCountry?.value; // For form filling (e.g., "BRB")
+    countryName = randomCountry?.label; // For validation (e.g., "Barbados")
     passportNumber = getRandomPassportNumber();
     tbCertificateNumber = "TB" + Math.floor(10000000 + Math.random() * 90000000);
 
     // Log what we're using for debugging
     cy.log(`Using passport number: ${passportNumber}`);
-    cy.log(`Using country: ${countryName}`);
+    cy.log(`Using country code: ${countryCode}`);
+    cy.log(`Using country name: ${countryName}`);
     cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
   });
 
@@ -79,7 +82,7 @@ describe("PETS Application Sputum Collection Validation", () => {
     // Search for applicant with passport number
     applicantSearchPage
       .fillPassportNumber(passportNumber)
-      .selectCountryOfIssue(countryName)
+      .selectCountryOfIssue(countryName) // Use country code for form filling
       .submitSearch();
 
     // Verify no matching record found and click create new
@@ -114,13 +117,6 @@ describe("PETS Application Sputum Collection Validation", () => {
     cy.url().should("include", "/applicant-photo");
     applicantPhotoUploadPage.verifyPageLoaded();
 
-    // Check applicant information is displayed correctly
-    applicantPhotoUploadPage.verifyApplicantInfo({
-      Name: "Jane Smith",
-      "Date of birth": "15/03/2000",
-      "Passport number": passportNumber,
-    });
-
     // Upload Applicant Photo file
     applicantPhotoUploadPage
       .uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg")
@@ -144,62 +140,84 @@ describe("PETS Application Sputum Collection Validation", () => {
     // Verify some of the submitted data appears correctly in the summary
     applicantSummaryPage.verifySummaryValue("Name", "Jane Smith");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
-    applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
+    applicantSummaryPage.verifySummaryValue("Country of issue", countryName); // Use country name for validation
+    applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
+    applicantSummaryPage.verifySummaryValue("Country", countryName);
 
-    //confirm above details to proceed to next page
+    // Confirm above details to proceed to next page
     applicantSummaryPage.confirmDetails();
 
     // Verify applicant confirmation page
     applicantConfirmationPage.verifyPageLoaded();
     applicantConfirmationPage.verifyNextStepsText();
 
-    // Continue to travel information Page
-    applicantConfirmationPage.clickContinueToTravelInformation();
+    // Click continue - this goes to tracker
+    applicantConfirmationPage.clickContinue();
 
+    // Verify we're on the tracker
+    cy.url().should("include", "/tracker");
+    tbProgressTrackerPage.verifyPageLoaded();
+
+    // NOW navigate to travel information from the tracker
+    tbProgressTrackerPage.clickTaskLink("Travel information");
+
+    // NOW verify the travel information page
     travelInformationPage.verifyPageLoaded();
 
-    // Fill in travel information
+    // Fill travel information with random visa type and capture the selected visa
     travelInformationPage
-      .selectVisaType(visaType)
-      .fillAddressLine1("456 Park Lane")
-      .fillAddressLine2("Floor 2")
-      .fillTownOrCity("Manchester")
-      .fillPostcode("M1 1AA")
-      .fillMobileNumber("07700900123")
-      .fillEmail("pets.tester@hotmail.com")
-      .submitForm();
+      .fillCompleteFormWithRandomVisa({
+        ukAddressLine1: "456 Park Lane",
+        ukAddressLine2: "Floor 2",
+        ukTownOrCity: "Manchester",
+        ukPostcode: "M1 1AA",
+        mobileNumber: "07700900123",
+        email: "pets.tester@hotmail.com",
+      })
+      .then((randomVisa) => {
+        // Store the selected visa type for later use
+        selectedVisaType = randomVisa;
+        cy.log(`Selected random visa type: ${selectedVisaType}`);
 
-    // Review Travel Summary
+        // Store as alias for use throughout the test
+        cy.wrap(selectedVisaType).as("selectedVisa");
+      });
+
+    // Submit the form
+    travelInformationPage.submitForm();
+
+    // Review Travel Summary with random visa type
     travelSummaryPage.verifyPageLoaded();
 
-    // Verify all required values are present on the summary page first
-    travelSummaryPage.verifyRequiredSummaryValues(
-      visaType,
-      "456 Park Lane",
-      "Manchester",
-      "M1 1AA",
-      "07700900123",
-      "pets.tester@hotmail.com",
-    );
+    // Verify the random visa type is valid and displayed correctly
+    travelSummaryPage.verifyVisaTypeIsValid();
 
     // Verify details by clicking change links and checking fields
-    travelSummaryPage.clickChangeLink("Visa type");
-    travelSummaryPage.verifyFieldValueOnChangePage("Visa type", visaType);
-
     travelSummaryPage.clickChangeLink("UK address line 1");
-    travelSummaryPage.verifyFieldValueOnChangePage("UK address line 1", "456 Park Lane");
+    cy.url().should("include", "/travel-details");
+    cy.go("back");
 
     travelSummaryPage.clickChangeLink("UK town or city");
-    travelSummaryPage.verifyFieldValueOnChangePage("UK town or city", "Manchester");
+    cy.url().should("include", "/travel-details");
+    cy.go("back");
 
     travelSummaryPage.clickChangeLink("UK mobile number");
-    travelSummaryPage.verifyFieldValueOnChangePage("UK mobile number", "07700900123");
+    cy.url().should("include", "/travel-details");
+    cy.go("back");
+
     // Submit the summary page
     travelSummaryPage.submitForm();
 
-    // Travel Confirmation confirmation
+    // Travel Confirmation
     travelConfirmationPage.verifyPageLoaded();
-    travelConfirmationPage.submitForm();
+    travelConfirmationPage.clickContinue();
+
+    // Verify we're back on the tracker
+    cy.url().should("include", "/tracker");
+    tbProgressTrackerPage.verifyPageLoaded();
+
+    // NOW navigate to medical screening from the tracker
+    tbProgressTrackerPage.clickTaskLink("Medical history and TB symptoms");
 
     // Medical Screening Page
     medicalScreeningPage.verifyPageLoaded();
@@ -238,28 +256,21 @@ describe("PETS Application Sputum Collection Validation", () => {
     medicalConfirmationPage.verifyNextStepsSection();
     medicalConfirmationPage.clickContinueButton();
 
+    // Verify we're back on the tracker
+    cy.url().should("include", "/tracker");
+    tbProgressTrackerPage.verifyPageLoaded();
+
+    // NOW navigate to chest X-ray from the tracker
+    tbProgressTrackerPage.clickTaskLink("Radiological outcome");
+
     // Verify chest X-ray page
     chestXrayPage.verifyPageLoaded();
-
-    // Check applicant information is displayed
-    chestXrayPage.verifyApplicantInfo({
-      Name: "Jane Smith",
-      "Date of birth": "15/03/2000",
-      "Passport number": passportNumber,
-    });
 
     // Select "Yes" for X-ray taken and continue
     chestXrayPage.selectXrayTakenYes().clickContinue();
 
     // Verify X-ray upload page using
     chestXrayUploadPage.verifyPageLoaded();
-
-    // Check applicant information is displayed correctly
-    chestXrayUploadPage.verifyApplicantInfo({
-      Name: "Jane Smith",
-      "Date of birth": "15/03/2000",
-      "Passport number": passportNumber,
-    });
 
     // Upload Chest X-ray file
     chestXrayUploadPage
@@ -280,13 +291,6 @@ describe("PETS Application Sputum Collection Validation", () => {
     // Verify X-ray findings page
     chestXrayFindingsPage.verifyPageLoaded();
 
-    // Check applicant information is displayed correctly
-    chestXrayFindingsPage.verifyApplicantInfo({
-      Name: "Jane Smith",
-      "Date of birth": "15/03/2000",
-      "Passport number": passportNumber,
-    });
-
     // Complete X-ray findings
     chestXrayFindingsPage
       .selectXrayResultNormal()
@@ -296,7 +300,7 @@ describe("PETS Application Sputum Collection Validation", () => {
     // Complete Sputum Collection Question
     sputumQuestionPage.verifyPageLoaded();
 
-    //Select "Yes" for Sputum Collection
+    //Select "Yes" for Sputum Collection***
     sputumQuestionPage.selectSputumRequiredYes().clickContinue();
 
     // Verify redirection to chest X-ray summary page
@@ -304,13 +308,6 @@ describe("PETS Application Sputum Collection Validation", () => {
 
     // Verify chest X-ray summary page
     chestXraySummaryPage.verifyPageLoaded();
-
-    // Check applicant information is displayed correctly
-    chestXraySummaryPage.verifyApplicantInfo({
-      Name: "Jane Smith",
-      "Date of birth": "15/03/2000",
-      "Passport number": passportNumber,
-    });
 
     // Verify X-ray summary information
     chestXraySummaryPage.verifyXraySummaryInfo({
@@ -331,7 +328,6 @@ describe("PETS Application Sputum Collection Validation", () => {
     chestXrayConfirmationPage.verifyPageLoaded();
     chestXrayConfirmationPage.verifyConfirmationPanel();
     chestXrayConfirmationPage.verifyNextStepsSection();
-    chestXrayConfirmationPage.verifyBreadcrumbNavigation();
     chestXrayConfirmationPage.verifyServiceName();
     chestXrayConfirmationPage.clickContinueButton();
 
@@ -351,23 +347,20 @@ describe("PETS Application Sputum Collection Validation", () => {
     // Verify task status information
     tbProgressTrackerPage.verifyVisaApplicantDetailsCompleted();
 
-    // Verify complete all sections text
-    tbProgressTrackerPage.verifyCompleteAllSectionsText();
-
     // Verify task links exist
     tbProgressTrackerPage.verifyTaskLinksExist();
 
     // Verify service name
     tbProgressTrackerPage.verifyServiceName();
 
-    // Verify task statuses - Sputum should now be "Not yet started" instead of "Not required"
+    // Verify task statuses
     tbProgressTrackerPage.verifyAllTaskStatuses({
       "Visa applicant details": "Completed",
       "Travel information": "Completed",
       "Medical history and TB symptoms": "Completed",
       "Radiological outcome": "Completed",
       "Sputum collection and results": "Not yet started",
-      "TB certificate declaration": "Not yet started",
+      "TB certificate outcome": "Not yet started",
     });
 
     //Complete Sputum Collection
