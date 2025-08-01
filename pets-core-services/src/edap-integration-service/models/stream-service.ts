@@ -20,8 +20,13 @@ class StreamService {
     if (record.eventName === "INSERT" || record.eventName === "MODIFY") {
       if (record.dynamodb && record.dynamodb.NewImage) {
         try {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-          records = [unmarshall((record as any).dynamodb.NewImage)];
+          records = [
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+            unmarshall((record as any).dynamodb.NewImage, {
+              wrapNumbers: false,
+              convertWithoutMapWrapper: true,
+            }),
+          ];
         } catch (error) {
           // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
           logger.error(`unmarshall error: ${error}`);
