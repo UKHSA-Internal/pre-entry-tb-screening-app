@@ -26,7 +26,7 @@ export const mainEvent = {
         StreamViewType: "NEW_AND_OLD_IMAGES",
       },
       eventSourceARN:
-        "arn:aws:dynamodb:eu-west-2:006106226016:table/cvs-develop-test-results/stream/2019-02-21T09:49:27.002",
+        "arn:aws:dynamodb:eu-west-2:108782068086:table/application-details/stream/2019-02-21T09:49:27.002",
     },
   ],
 };

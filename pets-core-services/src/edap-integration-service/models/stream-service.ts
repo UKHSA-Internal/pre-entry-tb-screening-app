@@ -14,13 +14,19 @@ class StreamService {
    * @param event
    */
   public static getClinicDataStream(record: DynamoDBRecord) {
-    logger.info(record);
+    logger.info("record:", record);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let records: Record<string, any>[] = [];
     if (record.eventName === "INSERT" || record.eventName === "MODIFY") {
       if (record.dynamodb && record.dynamodb.NewImage) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-        records = [unmarshall((record as any).dynamodb.NewImage)];
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+          records = [unmarshall((record as any).dynamodb.NewImage)];
+        } catch (error) {
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+          logger.error(`unmarshall error: ${error}`);
+          logger.error(`NewImage: ${JSON.stringify(record.dynamodb.NewImage)}`);
+        }
       }
     } else {
       logger.info("event name was not of correct type");
