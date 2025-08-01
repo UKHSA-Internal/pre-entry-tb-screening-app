@@ -1,6 +1,4 @@
-// import { DynamoDB } from "aws-sdk";
-import { unmarshall } from "@aws-sdk/util-dynamodb";
-import { DynamoDBRecord } from "aws-lambda";
+import { DynamoDBRecord, StreamRecord } from "aws-lambda";
 
 import { logger } from "../../shared/logger";
 
@@ -15,18 +13,11 @@ class StreamService {
    */
   public static getClinicDataStream(record: DynamoDBRecord) {
     logger.info("record:", record);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let records: Record<string, any>[] = [];
+    let records: StreamRecord["NewImage"][] = [];
     if (record.eventName === "INSERT" || record.eventName === "MODIFY") {
       if (record.dynamodb && record.dynamodb.NewImage) {
         try {
-          records = [
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-            unmarshall((record as any).dynamodb.NewImage, {
-              wrapNumbers: false,
-              convertWithoutMapWrapper: true,
-            }),
-          ];
+          records = [record.dynamodb.NewImage];
         } catch (error) {
           // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
           logger.error(`unmarshall error: ${error}`);
