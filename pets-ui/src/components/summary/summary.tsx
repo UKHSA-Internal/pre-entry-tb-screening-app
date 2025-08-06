@@ -36,10 +36,10 @@ function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement)
     } else {
       return <dd className="govuk-summary-list__value">{summaryElement.value}</dd>;
     }
+  } else {
+    const displayValue = status === ApplicationStatus.COMPLETE ? "" : "Not provided";
+    return <dd className="govuk-summary-list__value">{displayValue}</dd>;
   }
-
-  const displayValue = status === ApplicationStatus.COMPLETE ? "" : "Not provided";
-  return <dd className="govuk-summary-list__value">{displayValue}</dd>;
 }
 
 export default function Summary(props: Readonly<SummaryProps>) {
