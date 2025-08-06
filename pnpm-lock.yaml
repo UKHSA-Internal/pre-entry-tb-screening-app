@@ -277,6 +277,9 @@ importers:
       cypress-mochawesome-reporter:
         specifier: ^3.8.2
         version: 3.8.2(cypress@14.5.0)(mocha@11.0.1)
+      cypress-multi-reporters:
+        specifier: ^2.0.5
+        version: 2.0.5(mocha@11.0.1)
       eslint-plugin-cypress:
         specifier: ^4.1.0
         version: 4.1.0(eslint@9.20.1)
@@ -295,6 +298,9 @@ importers:
       jsdom:
         specifier: ^25.0.1
         version: 25.0.1
+      mocha-junit-reporter:
+        specifier: ^2.2.1
+        version: 2.2.1(mocha@11.0.1)
       mochawesome:
         specifier: ^7.1.3
         version: 7.1.3(mocha@11.0.1)
@@ -459,6 +465,7 @@ packages:
   '@aws-sdk/lib-dynamodb@3.788.0':
     resolution: {integrity: sha512-GYs8E4agxy/uElb8eoZ9RVcF+w43wkVxAowq6VQ+Jpw2oH7pxwrkqG1mIJpoJGYLvic+tJO0pL4xLUI4ULeVTg==}
     engines: {node: '>=18.0.0'}
+    deprecated: Please upgrade to @aws-sdk/lib-dynamodb@3.850.0 to support Command reuse https://github.com/aws/aws-sdk-js-v3/issues/7217.
     peerDependencies:
       '@aws-sdk/client-dynamodb': ^3.788.0
 
@@ -2356,6 +2363,9 @@ packages:
   character-reference-invalid@1.1.4:
     resolution: {integrity: sha512-mKKUkUbhPpQlCOfIuZkvSEgktjPFIsZKRRbC6KWVEMvlzblj3i3asQv5ODsrwt0N3pHAEvjP8KTQPHkp0+6jOg==}
 
+  charenc@0.0.2:
+    resolution: {integrity: sha512-yrLQ/yVUFXkzg7EDQsPieE/53+0RlaWTs+wBrvW36cyilJ2SaDWfl4Yj7MtLTXleV9uEKefbAGUPv2/iWSooRA==}
+
   check-error@2.1.1:
     resolution: {integrity: sha512-OAlb+T7V4Op9OwdkjmguYRqncdlx5JiofwOAUkmTF+jNdHwzTaTs4sRAGpzLF3oOz5xAyDGrPgeIDFQmDOTiJw==}
     engines: {node: '>= 16'}
@@ -2488,6 +2498,9 @@ packages:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
 
+  crypt@0.0.2:
+    resolution: {integrity: sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==}
+
   css.escape@1.5.1:
     resolution: {integrity: sha512-YUifsXXuknHlUsmlgyY0PKzgPOr7/FjCePfHNt0jxm83wHZi44VDMQ7/fGNkjY3/jV1MC+1CmZbaHzugyeRtpg==}
 
@@ -2504,6 +2517,12 @@ packages:
     hasBin: true
     peerDependencies:
       cypress: '>=6.2.0'
+
+  cypress-multi-reporters@2.0.5:
+    resolution: {integrity: sha512-5ReXlNE7C/9/rpDI3z0tAJbPXsTHK7P3ogvUtBntQlmctRQ+sSMts7dIQY5MTb0XfBSge3CuwvNvaoqtw90KSQ==}
+    engines: {node: '>=6.0.0'}
+    peerDependencies:
+      mocha: '>=3.1.2'
 
   cypress@14.5.0:
     resolution: {integrity: sha512-1HOnKvWep0LkWuFwPeWkZ0TDl7ivi2/Mz+WNU4dfkeLJaFndS3Ow6TXT7YjuTqLFI2peJKzPKljVUFdymI2K5g==}
@@ -3384,6 +3403,9 @@ packages:
     resolution: {integrity: sha512-wa56o2/ElJMYqjCjGkXri7it5FbebW5usLw/nPmCMs5DeZ7eziSYZhSmPRn0txqeW4LnAmQQU7FgqLpsEFKM4A==}
     engines: {node: '>= 0.4'}
 
+  is-buffer@1.1.6:
+    resolution: {integrity: sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==}
+
   is-buffer@2.0.5:
     resolution: {integrity: sha512-i2R6zNFDwgEHJyQUtJEk0XFi1i0dPFn/oqjK3/vPCcDeJvW5NQ83V8QbicfF1SupOaB0h8ntgBC2YiE7dfyctQ==}
     engines: {node: '>=4'}
@@ -3761,6 +3783,9 @@ packages:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
 
+  md5@2.3.0:
+    resolution: {integrity: sha512-T1GITYmFaKuO91vxyoQMFETst+O71VUPEU3ze5GNzDm0OWdP8v1ziTaAEPUr/3kLsY3Sftgz242A1SetQiDL7g==}
+
   merge-stream@2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
 
@@ -3818,8 +3843,18 @@ packages:
     resolution: {integrity: sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw==}
     engines: {node: '>=16 || 14 >=14.17'}
 
+  mkdirp@3.0.1:
+    resolution: {integrity: sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==}
+    engines: {node: '>=10'}
+    hasBin: true
+
   mnemonist@0.38.3:
     resolution: {integrity: sha512-2K9QYubXx/NAjv4VLq1d1Ly8pWNC5L3BrixtdkyTegXWJIqY+zLNDhhX/A+ZwWt70tB1S8H4BE8FLYEFyNoOBw==}
+
+  mocha-junit-reporter@2.2.1:
+    resolution: {integrity: sha512-iDn2tlKHn8Vh8o4nCzcUVW4q7iXp7cC4EB78N0cDHIobLymyHNwe0XG8HEHHjc3hJlXm0Vy6zcrxaIhnI2fWmw==}
+    peerDependencies:
+      mocha: '>=2.2.5'
 
   mocha@11.0.1:
     resolution: {integrity: sha512-+3GkODfsDG71KSCQhc4IekSW+ItCK/kiez1Z28ksWvYhKXV/syxMlerR/sC7whDp7IyreZ4YxceMLdTs5hQE8A==}
@@ -3897,6 +3932,7 @@ packages:
   node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
     engines: {node: '>=10.5.0'}
+    deprecated: Use your platform's native DOMException instead
 
   node-fetch-commonjs@3.3.2:
     resolution: {integrity: sha512-VBlAiynj3VMLrotgwOS3OyECFxas5y7ltLcK4t41lMUZeaK15Ym4QRkqN0EQKAFL42q9i21EPKjzLUPfltR72A==}
@@ -8433,6 +8469,8 @@ snapshots:
 
   character-reference-invalid@1.1.4: {}
 
+  charenc@0.0.2: {}
+
   check-error@2.1.1: {}
 
   check-more-types@2.24.0: {}
@@ -8571,6 +8609,8 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
+  crypt@0.0.2: {}
+
   css.escape@1.5.1: {}
 
   cssstyle@4.1.0:
@@ -8589,6 +8629,15 @@ snapshots:
       mochawesome-report-generator: 6.2.0
     transitivePeerDependencies:
       - mocha
+
+  cypress-multi-reporters@2.0.5(mocha@11.0.1):
+    dependencies:
+      debug: 4.4.0(supports-color@8.1.1)
+      lodash: 4.17.21
+      mocha: 11.0.1
+      semver: 7.7.1
+    transitivePeerDependencies:
+      - supports-color
 
   cypress@14.5.0:
     dependencies:
@@ -9699,6 +9748,8 @@ snapshots:
       call-bound: 1.0.4
       has-tostringtag: 1.0.2
 
+  is-buffer@1.1.6: {}
+
   is-buffer@2.0.5: {}
 
   is-bun-module@1.3.0:
@@ -10084,6 +10135,12 @@ snapshots:
 
   math-intrinsics@1.1.0: {}
 
+  md5@2.3.0:
+    dependencies:
+      charenc: 0.0.2
+      crypt: 0.0.2
+      is-buffer: 1.1.6
+
   merge-stream@2.0.0: {}
 
   merge2@1.4.1: {}
@@ -10131,9 +10188,22 @@ snapshots:
 
   minipass@7.1.2: {}
 
+  mkdirp@3.0.1: {}
+
   mnemonist@0.38.3:
     dependencies:
       obliterator: 1.6.1
+
+  mocha-junit-reporter@2.2.1(mocha@11.0.1):
+    dependencies:
+      debug: 4.4.0(supports-color@8.1.1)
+      md5: 2.3.0
+      mkdirp: 3.0.1
+      mocha: 11.0.1
+      strip-ansi: 6.0.1
+      xml: 1.0.1
+    transitivePeerDependencies:
+      - supports-color
 
   mocha@11.0.1:
     dependencies:

@@ -1,4 +1,4 @@
-//Pets Private Beta E2E Test with Sputum Collection
+//Pets Private Beta Tests
 import { countryList } from "../../src/utils/countryList";
 import { loginViaB2C } from "../support/commands";
 import { ApplicantConfirmationPage } from "../support/page-objects/applicantConfirmationPage";
