@@ -1,7 +1,6 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import ChestXrayNotTaken from "@/pages/chest-xray-not-taken";
@@ -19,11 +18,9 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 describe("ChestXrayNotTakenPage", () => {
   beforeEach(() => {
     renderWithProviders(
-      <Router>
-        <HelmetProvider>
-          <ChestXrayNotTaken />
-        </HelmetProvider>
-      </Router>,
+      <HelmetProvider>
+        <ChestXrayNotTaken />
+      </HelmetProvider>,
     );
   });
 

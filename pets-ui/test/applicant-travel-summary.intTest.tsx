@@ -1,7 +1,6 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MockAdapter from "axios-mock-adapter";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import { petsApi } from "@/api/api";
@@ -50,12 +49,7 @@ describe("TravelReview", () => {
   });
 
   test("state is displayed correctly & user is navigated to confirmation page when travel details are posted successfully", async () => {
-    renderWithProviders(
-      <Router>
-        <TravelReview />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<TravelReview />, { preloadedState });
     const user = userEvent.setup();
 
     mock.onPost("/application/abc-123/travel-information").reply(200);
@@ -85,12 +79,7 @@ describe("TravelReview", () => {
   });
 
   test("user is navigated to error page when api call is unsuccessful", async () => {
-    renderWithProviders(
-      <Router>
-        <TravelReview />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<TravelReview />, { preloadedState });
     const user = userEvent.setup();
 
     mock.onPost("/application/abc-123/travel-information").reply(500);
@@ -116,12 +105,7 @@ describe("TravelReview", () => {
       },
     };
 
-    renderWithProviders(
-      <Router>
-        <TravelSummaryPage />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<TravelSummaryPage />, { preloadedState });
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
@@ -143,12 +127,7 @@ describe("TravelReview", () => {
       },
     };
 
-    renderWithProviders(
-      <Router>
-        <TravelSummaryPage />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<TravelSummaryPage />, { preloadedState });
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();

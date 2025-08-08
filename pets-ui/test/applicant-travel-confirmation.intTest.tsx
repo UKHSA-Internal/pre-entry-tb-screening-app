@@ -1,6 +1,5 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import TravelConfirmation from "@/pages/travel-confirmation";
@@ -20,11 +19,7 @@ vi.mock("react-helmet-async", () => ({
 }));
 
 test("Travel confirmation page renders correctly & redirects on button click", async () => {
-  renderWithProviders(
-    <Router>
-      <TravelConfirmation />
-    </Router>,
-  );
+  renderWithProviders(<TravelConfirmation />);
 
   const user = userEvent.setup();
   expect(screen.getByText("Travel information confirmed")).toBeTruthy();

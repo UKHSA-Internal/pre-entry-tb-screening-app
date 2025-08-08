@@ -1,5 +1,4 @@
 import { screen } from "@testing-library/react";
-import { BrowserRouter as Router } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 
 import { renderWithProviders } from "@/utils/test-utils";
@@ -24,13 +23,11 @@ const tableData: TableRow[] = [
 describe("Summary Component", () => {
   it("renders correctly when all props are specified", () => {
     renderWithProviders(
-      <Router>
-        <Table
-          title="Example Title"
-          columnHeaders={["Column one", "Column two", "Column three"]}
-          tableRows={tableData}
-        />
-      </Router>,
+      <Table
+        title="Example Title"
+        columnHeaders={["Column one", "Column two", "Column three"]}
+        tableRows={tableData}
+      />,
     );
 
     const expectedTextList = [
@@ -57,11 +54,7 @@ describe("Summary Component", () => {
   });
 
   it("renders correctly when optional props are omitted", () => {
-    renderWithProviders(
-      <Router>
-        <Table tableRows={tableData} />
-      </Router>,
-    );
+    renderWithProviders(<Table tableRows={tableData} />);
 
     const expectedTextList = [
       "Title 1",

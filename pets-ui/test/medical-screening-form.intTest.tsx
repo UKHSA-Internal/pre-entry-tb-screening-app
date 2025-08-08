@@ -1,6 +1,5 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import MedicalScreeningPage from "@/pages/medical-screening";
@@ -29,11 +28,7 @@ describe("MedicalScreeningForm", () => {
   const user = userEvent.setup();
 
   it("when MedicalScreeningForm is filled correctly then state is updated and user is navigated to summary page", async () => {
-    const { store } = renderWithProviders(
-      <Router>
-        <MedicalScreeningForm />
-      </Router>,
-    );
+    const { store } = renderWithProviders(<MedicalScreeningForm />);
 
     const user = userEvent.setup();
 
@@ -110,11 +105,7 @@ describe("MedicalScreeningForm", () => {
   });
 
   it("state is updated from MedicalScreeningForm and then read by MedicalScreeningReview", async () => {
-    renderWithProviders(
-      <Router>
-        <MedicalScreeningForm />
-      </Router>,
-    );
+    renderWithProviders(<MedicalScreeningForm />);
 
     const submitButton = screen.getByRole("button", { name: /Save and Continue/i });
 
@@ -136,22 +127,14 @@ describe("MedicalScreeningForm", () => {
   });
 
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
-    renderWithProviders(
-      <Router>
-        <MedicalScreeningForm />
-      </Router>,
-    );
+    renderWithProviders(<MedicalScreeningForm />);
     await user.click(screen.getByRole("button"));
     const errorSummaryDiv = screen.getByTestId("error-summary");
     expect(errorSummaryDiv).toHaveFocus();
   });
 
   it("back link points to tracker", () => {
-    renderWithProviders(
-      <Router>
-        <MedicalScreeningPage />
-      </Router>,
-    );
+    renderWithProviders(<MedicalScreeningPage />);
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();

@@ -1,6 +1,5 @@
 import { screen } from "@testing-library/react";
 import { setupServer } from "msw/node";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import ApplicantResultsPage from "@/pages/applicant-results";
@@ -67,12 +66,7 @@ test("No results section is correctly displayed with information from the Redux 
     },
   };
 
-  renderWithProviders(
-    <Router>
-      <ApplicantResultsPage />
-    </Router>,
-    { preloadedState },
-  );
+  renderWithProviders(<ApplicantResultsPage />, { preloadedState });
 
   expect(screen.getByText("No matching record found")).toBeInTheDocument();
   expect(screen.getByText("No matches for passport number 12345")).toBeInTheDocument();
