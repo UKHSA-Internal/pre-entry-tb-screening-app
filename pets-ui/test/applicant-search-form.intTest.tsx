@@ -2,7 +2,6 @@ import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MockAdapter from "axios-mock-adapter";
 import React from "react";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import { ApplicantPhotoProvider, useApplicantPhoto } from "@/context/applicantPhotoContext";
@@ -141,12 +140,10 @@ describe("ApplicantSearchForm", () => {
     };
 
     const { store } = renderWithProviders(
-      <Router>
-        <ApplicantPhotoProvider>
-          <ContextChecker />
-          <ApplicantSearchForm />
-        </ApplicantPhotoProvider>
-      </Router>,
+      <ApplicantPhotoProvider>
+        <ContextChecker />
+        <ApplicantSearchForm />
+      </ApplicantPhotoProvider>,
     );
     const user = userEvent.setup();
 
@@ -346,11 +343,9 @@ describe("ApplicantSearchForm", () => {
 
   test("store is correctly populated and user is navigated to error page when applicant search is successful & application search returns a non-200 response", async () => {
     const { store } = renderWithProviders(
-      <Router>
-        <ApplicantPhotoProvider>
-          <ApplicantSearchForm />
-        </ApplicantPhotoProvider>
-      </Router>,
+      <ApplicantPhotoProvider>
+        <ApplicantSearchForm />
+      </ApplicantPhotoProvider>,
     );
     const user = userEvent.setup();
 
@@ -426,11 +421,9 @@ describe("ApplicantSearchForm", () => {
 
   test("store is correctly populated and user is navigated to error page when applicant search is successful & application search returns 500", async () => {
     const { store } = renderWithProviders(
-      <Router>
-        <ApplicantPhotoProvider>
-          <ApplicantSearchForm />
-        </ApplicantPhotoProvider>
-      </Router>,
+      <ApplicantPhotoProvider>
+        <ApplicantSearchForm />
+      </ApplicantPhotoProvider>,
     );
     const user = userEvent.setup();
 
@@ -506,11 +499,9 @@ describe("ApplicantSearchForm", () => {
 
   test("user is navigated to applicant results page when applicant search returns an empty array", async () => {
     const { store } = renderWithProviders(
-      <Router>
-        <ApplicantPhotoProvider>
-          <ApplicantSearchForm />
-        </ApplicantPhotoProvider>
-      </Router>,
+      <ApplicantPhotoProvider>
+        <ApplicantSearchForm />
+      </ApplicantPhotoProvider>,
     );
     const user = userEvent.setup();
 
@@ -536,11 +527,9 @@ describe("ApplicantSearchForm", () => {
 
   test("user is navigated to applicant results page when applicant search returns 500", async () => {
     const { store } = renderWithProviders(
-      <Router>
-        <ApplicantPhotoProvider>
-          <ApplicantSearchForm />
-        </ApplicantPhotoProvider>
-      </Router>,
+      <ApplicantPhotoProvider>
+        <ApplicantSearchForm />
+      </ApplicantPhotoProvider>,
     );
     const user = userEvent.setup();
 
@@ -568,11 +557,9 @@ describe("ApplicantSearchForm", () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     const { store } = renderWithProviders(
-      <Router>
-        <ApplicantPhotoProvider>
-          <ApplicantSearchForm />
-        </ApplicantPhotoProvider>
-      </Router>,
+      <ApplicantPhotoProvider>
+        <ApplicantSearchForm />
+      </ApplicantPhotoProvider>,
     );
     const user = userEvent.setup();
 

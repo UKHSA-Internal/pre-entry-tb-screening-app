@@ -6,6 +6,7 @@ import BackLink from "../backLink/backLink";
 import Breadcrumb, { IBreadcrumbItem } from "../breadcrumb/breadcrumb";
 import Footer from "../footer/footer";
 import Header from "../header/header";
+import PhaseBanner from "../phaseBanner/phaseBanner";
 import SkipLink from "../skipLink/skipLink";
 
 interface ContainerProps {
@@ -13,6 +14,7 @@ interface ContainerProps {
   breadcrumbItems?: IBreadcrumbItem[];
   backLinkTo?: string;
   children: ReactNode;
+  feedbackUrl?: string;
 }
 
 const Container = ({
@@ -44,6 +46,7 @@ const Container = ({
       <SkipLink />
       <Header />
       <div className="govuk-width-container">
+        <PhaseBanner />
         {breadcrumbItems && <Breadcrumb items={breadcrumbItems} />}
         {backLinkTo && <BackLink href={backLinkTo} />}
         <main

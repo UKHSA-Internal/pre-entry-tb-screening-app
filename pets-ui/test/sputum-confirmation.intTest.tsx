@@ -1,6 +1,5 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import SputumConfirmation from "@/pages/sputum-confirmation";
@@ -100,12 +99,7 @@ const preloadedState = {
 
 test("Sputum confirmation page renders correctly when sputum task is in progress & redirects on button click", async () => {
   preloadedState.sputum.status = ApplicationStatus.IN_PROGRESS;
-  renderWithProviders(
-    <Router>
-      <SputumConfirmation />
-    </Router>,
-    { preloadedState },
-  );
+  renderWithProviders(<SputumConfirmation />, { preloadedState });
 
   const user = userEvent.setup();
   expect(screen.getByText("Partial sputum sample information confirmed")).toBeTruthy();
@@ -115,12 +109,7 @@ test("Sputum confirmation page renders correctly when sputum task is in progress
 
 test("Sputum confirmation page renders correctly when sputum task is completed & redirects on button click", async () => {
   preloadedState.sputum.status = ApplicationStatus.COMPLETE;
-  renderWithProviders(
-    <Router>
-      <SputumConfirmation />
-    </Router>,
-    { preloadedState },
-  );
+  renderWithProviders(<SputumConfirmation />, { preloadedState });
 
   const user = userEvent.setup();
   expect(screen.getByText("All sputum sample information confirmed")).toBeTruthy();

@@ -1,6 +1,5 @@
 import { fireEvent, screen } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import ApplicantConfirmation from "@/pages/applicant-confirmation";
@@ -18,11 +17,9 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 describe("Applicant Confirmation page", () => {
   beforeEach(() => {
     renderWithProviders(
-      <Router>
-        <HelmetProvider>
-          <ApplicantConfirmation />
-        </HelmetProvider>
-      </Router>,
+      <HelmetProvider>
+        <ApplicantConfirmation />
+      </HelmetProvider>,
     );
   });
 
