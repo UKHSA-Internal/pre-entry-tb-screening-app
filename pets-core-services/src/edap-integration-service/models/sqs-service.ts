@@ -48,6 +48,7 @@ class SQService {
     const queueUrlResult: GetQueueUrlCommandOutput = await this.sqsClient.send(
       new GetQueueUrlCommand({ QueueName: queueName }),
     );
+    logger.info(`Queue URL result: ${JSON.stringify(queueUrlResult)}`);
 
     const params = {
       QueueUrl: queueUrlResult.QueueUrl,

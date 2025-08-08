@@ -1,6 +1,8 @@
+import { DynamoDBStreamEvent } from "aws-lambda";
+
 import { applicationDynamoDbJSON } from "../db-data/data-application";
 
-export const mainEvent = {
+export const mainEvent: DynamoDBStreamEvent = {
   Records: [
     {
       eventID: "31686e42312621b7ae06baf52be29800",
@@ -18,9 +20,7 @@ export const mainEvent = {
             S: "APPLICATION#ROOT",
           },
         },
-        NewImage: {
-          ...applicationDynamoDbJSON[0],
-        },
+        NewImage: applicationDynamoDbJSON[0],
         SequenceNumber: "210600000000000318969213",
         SizeBytes: 1554,
         StreamViewType: "NEW_AND_OLD_IMAGES",

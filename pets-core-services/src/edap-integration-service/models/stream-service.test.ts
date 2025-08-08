@@ -7,7 +7,7 @@ import {
   SendMessageCommandOutput,
   SQSClient,
 } from "@aws-sdk/client-sqs";
-import { DynamoDBRecord } from "aws-lambda";
+import { DynamoDBStreamEvent } from "aws-lambda";
 import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
@@ -15,12 +15,11 @@ import { logger } from "../../shared/logger";
 import { applicationData } from "../tests/db-data/data-application";
 import { SQMockClient } from "../tests/models/SQMockClient";
 import { mainEvent } from "../tests/resources/stream-event";
-import { eventType } from "../tests/resources/types";
 import { SQService } from "./sqs-service";
 import { StreamService } from "./stream-service";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const event: eventType = JSON.parse(JSON.stringify(mainEvent));
+const event: DynamoDBStreamEvent = JSON.parse(JSON.stringify(mainEvent));
 
 describe("init", () => {
   let processedEvent: any;
@@ -28,7 +27,7 @@ describe("init", () => {
   describe("StreamService", () => {
     describe("when fetching data stream and the eventName is INSERT", () => {
       test("should result in an array of filtered js objects", () => {
-        processedEvent = StreamService.getClinicDataStream(event.Records[0] as DynamoDBRecord);
+        processedEvent = StreamService.getClinicDataStream(event.Records[0]);
         expect(processedEvent).toEqual([
           {
             applicationId: "b3dc3b1e-2dbf-4e91-9d2b-ca089b679baf",
@@ -45,7 +44,7 @@ describe("init", () => {
     describe("when fetching data stream and the eventName is MODIFY", () => {
       test("should result in an array of filtered js objects when PROCESS_MODIFY_EVENTS is true", () => {
         event.Records[0].eventName = "MODIFY";
-        processedEvent = StreamService.getClinicDataStream(event.Records[0] as DynamoDBRecord);
+        processedEvent = StreamService.getClinicDataStream(event.Records[0]);
         expect(processedEvent).toHaveLength(1);
         expect(processedEvent).toEqual(applicationData);
       });
@@ -54,8 +53,9 @@ describe("init", () => {
     describe("when fetching data stream and the eventName is other than INSERT or MODIFY", () => {
       test("should create appropriate message about it", () => {
         const loggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
+        // @ts-expect-error ignore
         event.Records[0].eventName = "OTHER?";
-        processedEvent = StreamService.getClinicDataStream(event.Records[0] as DynamoDBRecord);
+        processedEvent = StreamService.getClinicDataStream(event.Records[0]);
         expect(loggerMock).toHaveBeenNthCalledWith(2, "event name was not of correct type");
       });
     });

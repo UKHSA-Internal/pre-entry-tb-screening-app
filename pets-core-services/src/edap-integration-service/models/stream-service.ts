@@ -1,7 +1,7 @@
 import { DynamoDBRecord, StreamRecord } from "aws-lambda";
+import { DynamoDB } from "aws-sdk";
 
 import { logger } from "../../shared/logger";
-
 /**
  * Service class for interpreting and formatting
  * incoming DynamoDB streams
@@ -13,22 +13,28 @@ class StreamService {
    */
   public static getClinicDataStream(record: DynamoDBRecord) {
     logger.info("record:", record);
-    let records: StreamRecord["NewImage"][] = [];
+    const dbrecord: StreamRecord["NewImage"][] = [];
+
     if (record.eventName === "INSERT" || record.eventName === "MODIFY") {
       if (record.dynamodb && record.dynamodb.NewImage) {
+        const newImage: DynamoDB.AttributeMap = record.dynamodb.NewImage;
+
         try {
-          records = [record.dynamodb.NewImage];
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+          const unmarshalled = DynamoDB.Converter.unmarshall(newImage);
+
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+          return [unmarshalled];
         } catch (error) {
-          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-          logger.error(`unmarshall error: ${error}`);
-          logger.error(`NewImage: ${JSON.stringify(record.dynamodb.NewImage)}`);
+          logger.error("unmarshall error:", error);
+          logger.error("error in record:", record);
         }
       }
     } else {
       logger.info("event name was not of correct type");
     }
 
-    return records;
+    return dbrecord;
   }
 }
 

@@ -3,6 +3,7 @@ import {
   Context,
   DynamoDBBatchItemFailure,
   DynamoDBBatchResponse,
+  DynamoDBRecord,
   DynamoDBStreamEvent,
   Handler,
 } from "aws-lambda";
@@ -30,8 +31,7 @@ const handler: Handler = async (
   }
 
   const batchItemFailures: DynamoDBBatchItemFailure[] = [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let records: any[] = [];
+  let newRecord: (DynamoDBRecord | undefined)[] = [];
   let sqService: SQService;
 
   try {
@@ -45,20 +45,18 @@ const handler: Handler = async (
 
   for (const record of event.Records) {
     try {
-      records = StreamService.getClinicDataStream(record);
-      logger.info(`Number of Retrieved records: ${records.length}`);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      newRecord = StreamService.getClinicDataStream(record);
+      logger.info(`Number of Retrieved records: ${newRecord.length}`);
 
-      for (const record of records) {
-        const stringifiedRecord = JSON.stringify(record);
-        logger.info(`stringifiedRecord: ${stringifiedRecord}`);
-        await sqService.sendDbStreamMessage(stringifiedRecord);
-      }
+      const stringifiedRecord = JSON.stringify(newRecord);
+      logger.info(`stringifiedRecord: ${stringifiedRecord}`);
+      await sqService.sendDbStreamMessage(stringifiedRecord);
 
       logger.info(`event ${record.dynamodb?.SequenceNumber} successfully processed`);
     } catch (err) {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      logger.error(`ERR / ${err}`);
-      logger.info(`ERR / expandedRecords: ${JSON.stringify(records)}`);
+      logger.error("ERR:", err);
+      logger.info("ERR records:", newRecord);
       batchItemFailures.push({
         itemIdentifier: record.dynamodb?.SequenceNumber ?? "",
       });

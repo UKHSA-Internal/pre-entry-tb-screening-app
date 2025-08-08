@@ -1,3 +1,5 @@
+import { StreamRecord } from "aws-lambda";
+
 export const applicationData = [
   {
     pk: "APPLICATION#b3dc3b1e-2dbf-4e91-9d2b-ca089b679baf",
@@ -9,7 +11,7 @@ export const applicationData = [
   },
 ];
 
-export const applicationDynamoDbJSON = [
+export const applicationDynamoDbJSON: StreamRecord["NewImage"][] = [
   {
     pk: {
       S: "APPLICATION#b3dc3b1e-2dbf-4e91-9d2b-ca089b679baf",
