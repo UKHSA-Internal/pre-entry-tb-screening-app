@@ -20,15 +20,15 @@ class StreamService {
         const newImage: DynamoDB.AttributeMap = record.dynamodb.NewImage;
 
         try {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
           const unmarshalled = DynamoDB.Converter.unmarshall(newImage);
 
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return [unmarshalled];
         } catch (error) {
           logger.error("unmarshall error:", error);
           logger.error("error in record:", record);
         }
+      } else {
+        logger.info(record);
       }
     } else {
       logger.info("event name was not of correct type");

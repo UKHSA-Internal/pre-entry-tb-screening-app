@@ -40,7 +40,7 @@ export class LocalInfrastructureStack extends cdk.Stack {
         // "../../pets-core-services/src/edap-integration-service/lambdas/edap-integration.ts",
         "../../pets-core-services/src/edap-integration-service/handlers/send-db-stream.ts",
       ),
-      functionName: process.env.INTEGRATION_SERVICE_LAMBDA_NAME,
+      functionName: process.env.EDAP_INTEGRATION_LAMBDA_NAME,
     });
 
     new HotReloadedLambda(this, "authoriser-lambda", {
@@ -108,11 +108,11 @@ export class LocalInfrastructureStack extends cdk.Stack {
     });
 
     const edapDLQ = new Queue(this, "edap-integration-dlq", {
-      queueName: process.env.INTEGRATION_SERVICE_DLQ_NAME,
+      queueName: process.env.EDAP_INTEGRATION_DLQ_NAME,
     });
 
     new Queue(this, "integration-lambda", {
-      queueName: process.env.INTEGRATION_SERVICE_QUEUE_NAME,
+      queueName: process.env.EDAP_INTEGRATION_QUEUE_NAME,
       deadLetterQueue: {
         queue: edapDLQ,
         maxReceiveCount: 3,

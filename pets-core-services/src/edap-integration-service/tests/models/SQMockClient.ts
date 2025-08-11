@@ -1,6 +1,5 @@
 import {
   CreateQueueRequest,
-  // DeleteQueueRequest,
   GetQueueUrlRequest,
   ReceiveMessageRequest,
   SendMessageRequest,
@@ -29,15 +28,6 @@ class SQMockClient {
       queueMessages: [],
     });
   }
-
-  // /**
-  //  * Removes a queue
-  //  * @param params - the delete queue request
-  //  */
-  // public deleteQueue(params: DeleteQueueRequest) {
-  //   const foundQueueIndex = this.queues.findIndex((queue) => queue.queueURL === params.QueueUrl);
-  //   this.queues.splice(foundQueueIndex, 1);
-  // }
 
   /**
    * Get a mock queue URL

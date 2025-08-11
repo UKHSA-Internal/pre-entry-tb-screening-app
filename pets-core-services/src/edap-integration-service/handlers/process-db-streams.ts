@@ -9,11 +9,11 @@ import {
 } from "aws-lambda";
 
 import { logger } from "../../shared/logger";
-import { SQService } from "../models/sqs-service";
-import { StreamService } from "../models/stream-service";
+import { SQService } from "../services/sqs-service";
+import { StreamService } from "../services/stream-service";
 
 /**
- * λ function to process a DynamoDB stream of test results into a queue for certificate generation.
+ * λ function to process a DynamoDB stream of pets clinic application s into a queue for EDAP integration.
  * @param event - DynamoDB Stream event
  * @param _context - λ Context
  * @param _callback - callback function
@@ -45,7 +45,6 @@ const handler: Handler = async (
 
   for (const record of event.Records) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       newRecord = StreamService.getClinicDataStream(record);
       logger.info(`Number of Retrieved records: ${newRecord.length}`);
 

@@ -1,9 +1,10 @@
 import { Context } from "aws-lambda";
 import { afterAll, describe, expect, it, vi } from "vitest";
 
-import { SQService } from "../models/sqs-service";
-import { StreamService } from "../models/stream-service";
-import { handler } from "./send-db-stream";
+import { SQService } from "../services/sqs-service";
+import { StreamService } from "../services/stream-service";
+import { mainEvent } from "../tests/resources/stream-event";
+import { handler } from "./process-db-streams";
 
 describe("handler Function", () => {
   const ctx = "" as unknown as Context;
@@ -30,23 +31,22 @@ describe("handler Function", () => {
 
   describe("with good event", () => {
     it("should invoke SQS service with correct params", async () => {
-      const sendCertGenMessage = vi.fn();
-      SQService.prototype.sendDbStreamMessage = sendCertGenMessage;
-      StreamService.getClinicDataStream = vi
-        .fn()
-        .mockReturnValue([{ TestRecord: "updateStatusMessage" }]);
+      const result = [{ test: "result" }];
+      const sendDbStreamMessage = vi.fn();
+      SQService.prototype.sendDbStreamMessage = sendDbStreamMessage;
+      StreamService.getClinicDataStream = vi.fn().mockReturnValue(result);
 
       try {
-        await handler({ Records: ["this is an event"] }, ctx, () => {
+        await handler(mainEvent, ctx, () => {
           return;
         });
       } catch (e) {
+        expect(e).toMatchObject({ what: "?" });
         console.error(e);
       }
-      expect(sendCertGenMessage).toHaveBeenCalledWith(
-        JSON.stringify({ TestRecord: "updateStatusMessage" }),
-      );
-      expect(sendCertGenMessage).toHaveBeenCalledTimes(1);
+
+      expect(sendDbStreamMessage).toHaveBeenCalledWith(JSON.stringify(result));
+      expect(sendDbStreamMessage).toHaveBeenCalledTimes(1);
     });
   });
 

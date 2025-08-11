@@ -44,6 +44,6 @@ beforeEach(async () => {
 
   await seedDatabase();
 
-  process.env.INTEGRATION_SERVICE_QUEUE_NAME = `test_sqs_queue_${crypto.randomUUID()}`;
-  await createQueue(process.env.INTEGRATION_SERVICE_QUEUE_NAME, {});
+  process.env.EDAP_INTEGRATION_QUEUE_NAME = `test_sqs_queue_${crypto.randomUUID()}`;
+  await createQueue(process.env.EDAP_INTEGRATION_QUEUE_NAME, {});
 }, 12000);

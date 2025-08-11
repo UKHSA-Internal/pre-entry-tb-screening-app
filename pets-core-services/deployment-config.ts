@@ -33,8 +33,8 @@ const config: DeploymentConfig[] = [
     path: join(__dirname, "./src/dicom-service/lambdas/quarantine.ts"),
   },
   {
-    lambdaName: process.env.INTEGRATION_SERVICE_LAMBDA_NAME,
-    s3Bucket: process.env.INTEGRATION_SERVICE_LAMBDA_BUCKET,
+    lambdaName: process.env.EDAP_INTEGRATION_LAMBDA_NAME,
+    s3Bucket: process.env.EDAP_INTEGRATION_LAMBDA_BUCKET,
     // path: join(__dirname, "./src/edap-integration-service/lambdas/edap-integration.ts"),
     path: join(__dirname, "./src/edap-integration-service/handlers/send-db-stream.ts"),
   },

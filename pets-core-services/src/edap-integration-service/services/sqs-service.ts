@@ -24,13 +24,13 @@ class SQService {
   }
 
   /**
-   * Send a message to cert-gen queue
+   * Send a message to EDAP integration queue
    * @param messageBody
    */
   public sendDbStreamMessage(messageBody: string) {
     logger.info(`Message Body to be sent: ${messageBody}`);
 
-    return this.sendMessage(messageBody, process.env.INTEGRATION_SERVICE_QUEUE_NAME as string);
+    return this.sendMessage(messageBody, process.env.EDAP_INTEGRATION_QUEUE_NAME as string);
   }
 
   /**

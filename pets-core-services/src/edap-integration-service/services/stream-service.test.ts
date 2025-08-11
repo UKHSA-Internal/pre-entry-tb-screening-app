@@ -112,7 +112,7 @@ describe("init", () => {
           return Promise.all(sendMessagePromises).catch((error: any) => {
             expect(error).toBeInstanceOf(Error);
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            expect(error.message).toEqual("Queue cert-gen-q was not found.");
+            expect(error.message).toEqual("Queue was not found.");
           });
         });
       });
@@ -122,7 +122,7 @@ describe("init", () => {
           const sendMessagePromises: Array<Promise<any>> = [];
           void sqService.sqsClient.send(
             new CreateQueueCommand({
-              QueueName: "cert-gen-q",
+              QueueName: "test-queue",
             }),
           );
 
