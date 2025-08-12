@@ -12,7 +12,7 @@ class StreamService {
    * @param event
    */
   public static getClinicDataStream(record: DynamoDBRecord) {
-    logger.info("record:", record);
+    logger.info(`record: ${JSON.stringify(record)}`);
     const dbrecord: StreamRecord["NewImage"] = {};
 
     if (record.eventName === "INSERT" || record.eventName === "MODIFY") {
