@@ -1,6 +1,5 @@
 import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import ContactDetailsPage from "@/pages/contact-details";
@@ -64,12 +63,7 @@ describe("ApplicantForm", () => {
   const user = userEvent.setup();
 
   it("when ApplicantForm is not filled then errors are displayed", async () => {
-    renderWithProviders(
-      <Router>
-        <ApplicantForm />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<ApplicantForm />, { preloadedState });
     const user = userEvent.setup();
     await user.click(screen.getByRole("button"));
 
@@ -98,11 +92,7 @@ describe("ApplicantForm", () => {
   });
 
   it("when ApplicantForm is filled correctly then state is updated and user is navigated to summary page", async () => {
-    const { store } = renderWithProviders(
-      <Router>
-        <ApplicantForm />
-      </Router>,
-    );
+    const { store } = renderWithProviders(<ApplicantForm />);
 
     await user.type(screen.getByTestId("name"), "Sigmund Sigmundson");
     await user.click(screen.getAllByTestId("sex")[1]);
@@ -174,11 +164,7 @@ describe("ApplicantForm", () => {
   });
 
   it("errors when applicant details are missing", async () => {
-    renderWithProviders(
-      <Router>
-        <ApplicantForm />
-      </Router>,
-    );
+    renderWithProviders(<ApplicantForm />);
 
     const submitButton = screen.getByRole("button", { name: /Save and Continue/i });
 
@@ -206,22 +192,14 @@ describe("ApplicantForm", () => {
   });
 
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
-    renderWithProviders(
-      <Router>
-        <ApplicantForm />
-      </Router>,
-    );
+    renderWithProviders(<ApplicantForm />);
     await user.click(screen.getByRole("button"));
     const errorSummaryDiv = screen.getByTestId("error-summary");
     expect(errorSummaryDiv).toHaveFocus();
   });
 
   it("back link points to applicant results page", () => {
-    renderWithProviders(
-      <Router>
-        <ContactDetailsPage />
-      </Router>,
-    );
+    renderWithProviders(<ContactDetailsPage />);
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute("href", "/applicant-results");

@@ -6,7 +6,7 @@ import { MemoryRouter } from "react-router-dom";
 import { expect, test, vi } from "vitest";
 
 import { ApplicantPhotoProvider } from "@/context/applicantPhotoContext";
-import { renderWithProviders } from "@/utils/test-utils";
+import { renderWithProvidersWithoutRouter } from "@/utils/test-utils";
 
 import App from "../src/App";
 
@@ -37,7 +37,7 @@ afterEach(() => {
 test("In authenticated state, user is taken to Applicant Search page ('/applicant-search') when accessing landing page ('/') via browser", async () => {
   await msalTester.isLogged();
 
-  renderWithProviders(
+  renderWithProvidersWithoutRouter(
     <MemoryRouter initialEntries={["/"]}>
       <MsalProvider instance={msalTester.client}>
         <ApplicantPhotoProvider>
@@ -55,7 +55,7 @@ test("In authenticated state, user is taken to Applicant Search page ('/applican
 test("In authenticated state, user is able to access authenticated paths", async () => {
   await msalTester.isLogged();
 
-  renderWithProviders(
+  renderWithProvidersWithoutRouter(
     <MemoryRouter initialEntries={["/applicant-search"]}>
       <MsalProvider instance={msalTester.client}>
         <ApplicantPhotoProvider>
@@ -73,7 +73,7 @@ test("In authenticated state, user is able to access authenticated paths", async
 test("In unauthenticated state, user is taken to landing page ('/') when accessing landing page via browser", async () => {
   await msalTester.isNotLogged();
 
-  renderWithProviders(
+  renderWithProvidersWithoutRouter(
     <MemoryRouter initialEntries={["/"]}>
       <MsalProvider instance={msalTester.client}>
         <ApplicantPhotoProvider>
@@ -91,7 +91,7 @@ test("In unauthenticated state, user is taken to landing page ('/') when accessi
 test("In unauthenticated state, user is taken to landing page ('/') if they try to access an authenticated path", async () => {
   await msalTester.isNotLogged();
 
-  renderWithProviders(
+  renderWithProvidersWithoutRouter(
     <MemoryRouter initialEntries={["/applicant-results"]}>
       <MsalProvider instance={msalTester.client}>
         <ApplicantPhotoProvider>
@@ -109,7 +109,7 @@ test("In unauthenticated state, user is taken to landing page ('/') if they try 
 test("In unauthenticated state, user is taken to redirect to B2C page if they click sign-in on landing page", async () => {
   await msalTester.isNotLogged();
 
-  renderWithProviders(
+  renderWithProvidersWithoutRouter(
     <MemoryRouter initialEntries={["/"]}>
       <MsalProvider instance={msalTester.client}>
         <ApplicantPhotoProvider>

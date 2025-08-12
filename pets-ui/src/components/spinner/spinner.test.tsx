@@ -1,5 +1,4 @@
 import { screen } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 
 import { renderWithProviders } from "@/utils/test-utils";
@@ -8,11 +7,7 @@ import Spinner from "./spinner";
 
 describe("Spinner component", () => {
   it("renders correctly when isLoading is true", () => {
-    renderWithProviders(
-      <BrowserRouter>
-        <Spinner />
-      </BrowserRouter>,
-    );
+    renderWithProviders(<Spinner />);
 
     const spinnerElement = screen.getByTestId("spinner");
     const overlayElement = screen.getByTestId("spinner-overlay");

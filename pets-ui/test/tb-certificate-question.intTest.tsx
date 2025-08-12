@@ -1,7 +1,7 @@
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
-import { BrowserRouter as Router, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest";
 
 import TbCertificateQuestionPage from "@/pages/tb-certificate-question";
@@ -40,11 +40,9 @@ describe("TbCertificateQuestionPage", () => {
     window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMockFn;
 
     renderWithProviders(
-      <Router>
-        <HelmetProvider>
-          <TbCertificateQuestionPage />
-        </HelmetProvider>
-      </Router>,
+      <HelmetProvider>
+        <TbCertificateQuestionPage />
+      </HelmetProvider>,
     );
   });
 
@@ -135,11 +133,9 @@ describe("TbCertificateQuestionPage", () => {
 
     cleanup();
     renderWithProviders(
-      <Router>
-        <HelmetProvider>
-          <TbCertificateQuestionPage />
-        </HelmetProvider>
-      </Router>,
+      <HelmetProvider>
+        <TbCertificateQuestionPage />
+      </HelmetProvider>,
     );
 
     expect(scrollIntoViewMockFn).toHaveBeenCalledTimes(1);

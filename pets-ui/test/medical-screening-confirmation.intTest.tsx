@@ -1,6 +1,5 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import MedicalConfirmation from "@/pages/medical-screening-confirmation";
@@ -20,11 +19,7 @@ vi.mock("react-helmet-async", () => ({
 }));
 
 test("Medical screening confirmation page renders correctly & redirects on button click", async () => {
-  renderWithProviders(
-    <Router>
-      <MedicalConfirmation />
-    </Router>,
-  );
+  renderWithProviders(<MedicalConfirmation />);
 
   const user = userEvent.setup();
   expect(screen.getByText("Medical history and TB symptoms confirmed")).toBeTruthy();
