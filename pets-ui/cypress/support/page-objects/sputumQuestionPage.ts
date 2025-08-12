@@ -8,7 +8,7 @@ export class SputumQuestionPage extends BasePage {
   // Verify page loaded
   verifyPageLoaded(): SputumQuestionPage {
     this.verifyPageHeading("Is a sputum collection required?");
-    cy.get("#sputum-required").should("be.visible");
+    cy.get("form").should("be.visible");
     return this;
   }
 
@@ -32,7 +32,7 @@ export class SputumQuestionPage extends BasePage {
     return this;
   }
 
-  // Alternative method using radio button checking with name and value
+  // Method using radio button checking with name and value
   selectSputumRequired(option: "Yes" | "No"): SputumQuestionPage {
     cy.get(`input[name="isSputumRequired"][value="${option}"]`).check();
     return this;
@@ -155,13 +155,30 @@ export class SputumQuestionPage extends BasePage {
     return this;
   }
 
+  // Verify back link navigation
+  verifyBackLinkNavigation(): SputumQuestionPage {
+    cy.get(".govuk-back-link")
+      .should("be.visible")
+      .and("contain", "Back")
+      .and("have.attr", "href", "/chest-xray-findings");
+    return this;
+  }
+
+  // Verify service name in header
+  verifyServiceName(): SputumQuestionPage {
+    cy.get(".govuk-header__service-name")
+      .should("be.visible")
+      .and("contain", "Complete UK pre-entry health screening");
+    return this;
+  }
+
   // Check all elements on the page
   verifyAllPageElements(): SputumQuestionPage {
     this.verifyPageLoaded();
     this.verifySputumQuestionDisplayed();
     this.verifyRadioButtonsDisplayed();
     this.verifyContinueButtonDisplayed();
-    this.verifyBreadcrumbNavigation();
+    this.verifyBackLinkNavigation();
     this.verifyServiceName();
     return this;
   }

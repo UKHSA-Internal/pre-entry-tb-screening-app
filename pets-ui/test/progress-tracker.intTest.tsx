@@ -1,7 +1,6 @@
 import { screen, within } from "@testing-library/react";
 import { setupServer } from "msw/node";
 import React from "react";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import { ApplicantPhotoProvider, useApplicantPhoto } from "@/context/applicantPhotoContext";
@@ -186,11 +185,9 @@ const completeState = {
 
 test("Progress tracker page displays incomplete application sections correctly & links to applicant details form", () => {
   renderWithProviders(
-    <Router>
-      <ApplicantPhotoProvider>
-        <ProgressTrackerPage />
-      </ApplicantPhotoProvider>
-    </Router>,
+    <ApplicantPhotoProvider>
+      <ProgressTrackerPage />
+    </ApplicantPhotoProvider>,
     { preloadedState: incompleteState },
   );
 
@@ -252,13 +249,11 @@ test("Progress tracker page displays complete application sections correctly, li
   };
 
   renderWithProviders(
-    <Router>
-      <ApplicantPhotoProvider>
-        <SetPhoto>
-          <ProgressTrackerPage />
-        </SetPhoto>
-      </ApplicantPhotoProvider>
-    </Router>,
+    <ApplicantPhotoProvider>
+      <SetPhoto>
+        <ProgressTrackerPage />
+      </SetPhoto>
+    </ApplicantPhotoProvider>,
     { preloadedState: completeState },
   );
 

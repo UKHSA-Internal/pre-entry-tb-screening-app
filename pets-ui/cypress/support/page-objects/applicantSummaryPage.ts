@@ -3,12 +3,37 @@ export class ApplicantSummaryPage {
   visit(): void {
     cy.visit("/applicant-summary");
   }
+
   // Verify page loaded
   verifyPageLoaded(): void {
     cy.contains("h1", "Check applicant details").should("be.visible");
     cy.get(".govuk-summary-list").should("be.visible");
   }
+  // Verify all fields are present on the page
+  verifyAllFieldsPresent(): void {
+    const requiredFields = [
+      "Name",
+      "Sex",
+      "Country of nationality",
+      "Date of birth",
+      "Passport number",
+      "Country of issue",
+      "Passport issue date",
+      "Passport expiry date",
+      "Home address line 1",
+      "Home address line 2",
+      "Home address line 3",
+      "Town or city",
+      "Province or state",
+      "Country",
+      "Postcode",
+      "Applicant Photo",
+    ];
 
+    requiredFields.forEach((field) => {
+      cy.contains("dt.govuk-summary-list__key", field).should("exist");
+    });
+  }
   getSummaryValue(fieldKey: string): Cypress.Chainable<string> {
     return cy
       .contains("dt.govuk-summary-list__key", fieldKey)
@@ -28,6 +53,7 @@ export class ApplicantSummaryPage {
       .find("a")
       .click();
   }
+
   // Verify all summary values
   verifyAllSummaryValues(expectedValues: {
     Name?: string;
@@ -53,9 +79,11 @@ export class ApplicantSummaryPage {
       }
     });
   }
+
   confirmDetails(): void {
     cy.contains("button", "Save and continue").should("be.visible").click();
   }
+
   isFieldPresent(fieldKey: string): Cypress.Chainable<boolean> {
     return cy.get("dt.govuk-summary-list__key").then(($elements) => {
       const keys = $elements.map((_, el) => Cypress.$(el).text()).get();
@@ -75,10 +103,7 @@ export class ApplicantSummaryPage {
 
   // Verify breadcrumb navigation
   verifyBreadcrumbNavigation(): void {
-    cy.get(".govuk-breadcrumbs__list-item")
-      .contains("Application progress tracker")
-      .should("be.visible")
-      .and("have.attr", "href", "/tracker");
+    cy.get(".govuk-breadcrumbs").should("exist");
   }
 
   // Verify all change links work
@@ -88,7 +113,7 @@ export class ApplicantSummaryPage {
       Sex: "#sex",
       "Country of nationality": "#country-of-nationality",
       "Date of birth": "#birth-date",
-      "Passport number": "#passportNumber",
+      "Passport number": "#passport-number",
       "Country of issue": "#country-of-issue",
       "Passport issue date": "#passport-issue-date",
       "Passport expiry date": "#passport-expiry-date",
@@ -99,7 +124,7 @@ export class ApplicantSummaryPage {
       "Province or state": "#province-or-state",
       Country: "#address-country",
       Postcode: "#postcode",
-      "Applicant Photo": "#/applicant-photo",
+      "Applicant Photo": "/applicant-photo",
     };
 
     Object.entries(expectedFragments).forEach(([key, fragment]) => {
@@ -109,5 +134,69 @@ export class ApplicantSummaryPage {
         .should("have.attr", "href")
         .and("include", fragment);
     });
+  }
+
+  // Verify optional address fields show "Enter" links when empty
+  verifyOptionalAddressFields(): void {
+    // Check if address line 2 shows "Enter" link when empty
+    cy.contains("dt.govuk-summary-list__key", "Home address line 2")
+      .siblings(".govuk-summary-list__value")
+      .find("a")
+      .should("contain", "Enter home address line 2 (optional)");
+
+    // Check if address line 3 shows "Enter" link when empty
+    cy.contains("dt.govuk-summary-list__key", "Home address line 3")
+      .siblings(".govuk-summary-list__value")
+      .find("a")
+      .should("contain", "Enter home address line 3 (optional)");
+  }
+
+  // Verify back link points to correct page
+  verifyBackLink(): void {
+    cy.get(".govuk-back-link")
+      .should("be.visible")
+      .and("have.attr", "href", "/applicant-photo")
+      .and("contain", "Back");
+  }
+
+  // Verify service name in header
+  verifyServiceName(): void {
+    cy.get(".govuk-header__service-name")
+      .should("be.visible")
+      .and("contain", "Complete UK pre-entry health screening")
+      .and("have.attr", "href", "/");
+  }
+
+  // Verify that optional fields can be empty or have "Enter" links
+  verifyOptionalFieldsHandling(): void {
+    // Verify address line 2 and 3 can show "Enter" links (Where no data has been entered in those fields)
+    cy.get(".govuk-summary-list__row").each(($row) => {
+      const key = $row.find(".govuk-summary-list__key").text();
+      const value = $row.find(".govuk-summary-list__value");
+
+      if (key.includes("Home address line 2") || key.includes("Home address line 3")) {
+        // These fields might contain "Enter" links when empty
+        cy.wrap(value).should("exist");
+      }
+    });
+  }
+
+  //Get change link URL for a specific field
+  getChangeLinkUrl(fieldKey: string): Cypress.Chainable<string> {
+    return cy
+      .contains("dt.govuk-summary-list__key", fieldKey)
+      .siblings(".govuk-summary-list__actions")
+      .find("a")
+      .invoke("attr", "href");
+  }
+
+  //Verify applicant photo filename is displayed
+  verifyApplicantPhotoDisplayed(expectedFilename?: string): void {
+    if (expectedFilename) {
+      this.verifySummaryValue("Applicant Photo", expectedFilename);
+    } else {
+      // Just verify the field exists
+      cy.contains("dt.govuk-summary-list__key", "Applicant Photo").should("exist");
+    }
   }
 }

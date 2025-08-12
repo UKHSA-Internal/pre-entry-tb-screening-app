@@ -1,7 +1,6 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import ChestXrayConfirmation from "@/pages/chest-xray-confirmation";
@@ -34,11 +33,7 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 test("Chest X-ray Information confirmation page renders correctly & redirects on button click", async () => {
-  renderWithProviders(
-    <Router>
-      <ChestXrayConfirmation />
-    </Router>,
-  );
+  renderWithProviders(<ChestXrayConfirmation />);
 
   const button = screen.getAllByRole("button")[0];
   const user = userEvent.setup();

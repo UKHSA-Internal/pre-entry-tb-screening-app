@@ -1,6 +1,5 @@
 import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import TravelDetailsPage from "@/pages/travel-details";
@@ -29,11 +28,7 @@ describe("ApplicantTravelForm", () => {
   const user = userEvent.setup();
 
   it("when ApplicantTravelForm is filled correctly then state is updated and user is navigated to summary page", async () => {
-    const { store } = renderWithProviders(
-      <Router>
-        <ApplicantTravelForm />
-      </Router>,
-    );
+    const { store } = renderWithProviders(<ApplicantTravelForm />);
 
     const user = userEvent.setup();
 
@@ -69,11 +64,7 @@ describe("ApplicantTravelForm", () => {
   });
 
   it("errors when travel details are missing", async () => {
-    renderWithProviders(
-      <Router>
-        <ApplicantTravelForm />
-      </Router>,
-    );
+    renderWithProviders(<ApplicantTravelForm />);
 
     const submitButton = screen.getByRole("button", { name: /Save and Continue/i });
 
@@ -87,22 +78,14 @@ describe("ApplicantTravelForm", () => {
   });
 
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
-    renderWithProviders(
-      <Router>
-        <ApplicantTravelForm />
-      </Router>,
-    );
+    renderWithProviders(<ApplicantTravelForm />);
     await user.click(screen.getByRole("button"));
     const errorSummaryDiv = screen.getByTestId("error-summary");
     expect(errorSummaryDiv).toHaveFocus();
   });
 
   it("back link points to tracker", () => {
-    renderWithProviders(
-      <Router>
-        <TravelDetailsPage />
-      </Router>,
-    );
+    renderWithProviders(<TravelDetailsPage />);
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();

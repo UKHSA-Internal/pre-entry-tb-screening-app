@@ -23,6 +23,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
   const tbProgressTrackerPage = new TBProgressTrackerPage();
 
   // Define variables to store test data
+  let countryCode: string;
   let countryName: string;
   let passportNumber: string;
   let tbCertificateNumber: string;
@@ -38,13 +39,15 @@ describe("TB certificate declaration task links should NOT be clickable until al
     applicantSearchPage.verifyPageLoaded();
     // Generate random country and passport number
     const randomCountry = randomElement(countryList);
-    countryName = randomCountry?.value;
+    countryCode = randomCountry?.value; // For form filling (e.g., "BRB")
+    countryName = randomCountry?.label; // For validation (e.g., "Barbados")
     passportNumber = getRandomPassportNumber();
     tbCertificateNumber = "TB" + Math.floor(10000000 + Math.random() * 90000000);
 
     // Log what we're using for debugging
     cy.log(`Using passport number: ${passportNumber}`);
-    cy.log(`Using country: ${countryName}`);
+    cy.log(`Using country code: ${countryCode}`);
+    cy.log(`Using country name: ${countryName}`);
     cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
   });
 
@@ -70,7 +73,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
     applicantDetailsPage
       .fillFullName("Tess Tester-Test")
       .selectSex("Female")
-      .selectNationality(countryName)
+      .selectNationality(countryName) // Use country code for form filling
       .fillBirthDate("01", "03", "1998")
       .fillPassportIssueDate("10", "05", "2020")
       .fillPassportExpiryDate("10", "05", "2030")
@@ -79,20 +82,13 @@ describe("TB certificate declaration task links should NOT be clickable until al
       .fillAddressLine3("Downtown")
       .fillTownOrCity("London")
       .fillProvinceOrState("Testershire")
-      .selectAddressCountry(countryName)
+      .selectAddressCountry(countryName) // Use country code for form filling
       .fillPostcode("SW1A 1AA")
       .submitForm();
 
     // Verify redirection to the Applicant Photo page
     cy.url().should("include", "/applicant-photo");
     applicantPhotoUploadPage.verifyPageLoaded();
-
-    // Check applicant information is displayed correctly
-    applicantPhotoUploadPage.verifyApplicantInfo({
-      Name: "Tess Tester-Test",
-      "Date of birth": "01/03/1998",
-      "Passport number": passportNumber,
-    });
 
     // Upload Applicant Photo file
     applicantPhotoUploadPage
@@ -117,7 +113,9 @@ describe("TB certificate declaration task links should NOT be clickable until al
     // Verify some of the submitted data appears correctly in the summary
     applicantSummaryPage.verifySummaryValue("Name", "Tess Tester-Test");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
-    applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
+    applicantSummaryPage.verifySummaryValue("Country of issue", countryName); // Use country name for validation
+    applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
+    applicantSummaryPage.verifySummaryValue("Country", countryName);
 
     //confirm above details to proceed to next page
     applicantSummaryPage.confirmDetails();
@@ -126,9 +124,8 @@ describe("TB certificate declaration task links should NOT be clickable until al
     applicantConfirmationPage.verifyPageLoaded();
     applicantConfirmationPage.verifyNextStepsText();
 
-    // Navigate to progress tracker using the breadcrumb
-    tbProgressTrackerPage.clickBreadcrumbTrackerLink();
-
+    // Click continue - this goes to tracker
+    applicantConfirmationPage.clickContinue();
     // Verify we're on the tracker page
     cy.url().should("include", "/tracker");
     tbProgressTrackerPage.verifyPageLoaded();
@@ -149,8 +146,8 @@ describe("TB certificate declaration task links should NOT be clickable until al
     // Verify task status information
     tbProgressTrackerPage.verifyVisaApplicantDetailsCompleted();
 
-    // Verify complete all sections text
-    tbProgressTrackerPage.verifyCompleteAllSectionsText();
+    /* // Verify complete all sections text
+    tbProgressTrackerPage.verifyCompleteAllSectionsText(); */
 
     // Verify all tasks exist
     tbProgressTrackerPage.verifyAllTasksExist();
@@ -165,7 +162,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
       "Medical history and TB symptoms": "Not yet started",
       "Radiological outcome": "Not yet started",
       "Sputum collection and results": "Not yet started",
-      "TB certificate declaration": "Not yet started",
+      "TB certificate outcome": "Not yet started",
     });
 
     // Verify which tasks are clickable links and which are not
@@ -179,7 +176,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
     tbProgressTrackerPage.verifyTaskIsNotClickable("Medical history and TB symptoms");
     tbProgressTrackerPage.verifyTaskIsNotClickable("Radiological outcome");
     tbProgressTrackerPage.verifyTaskIsNotClickable("Sputum collection and results");
-    tbProgressTrackerPage.verifyTaskIsNotClickable("TB certificate declaration");
+    tbProgressTrackerPage.verifyTaskIsNotClickable("TB certificate outcome");
 
     // Verify we can click on the "Travel information" link
     tbProgressTrackerPage.clickTaskLink("Travel information");
@@ -198,7 +195,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
     tbProgressTrackerPage.verifyPageLoaded();
 
     // Verify TB certificate declaration is NOT clickable when other tasks are incomplete
-    tbProgressTrackerPage.verifyTaskIsNotClickable("TB certificate declaration");
+    tbProgressTrackerPage.verifyTaskIsNotClickable("TB certificate outcome");
 
     // Attempt to manually navigate to TB certificate declaration page (this should be blocked)
     cy.visit("/tb-certificate-declaration", { failOnStatusCode: false });

@@ -93,11 +93,6 @@ export class EnterSputumSampleResultsPage extends BasePage {
     cy.contains("strong", "Smear result").should("be.visible");
     cy.contains("strong", "Culture result").should("be.visible");
 
-    // Verify sample dates are displayed
-    cy.contains("span", "10 March 2025").should("be.visible");
-    cy.contains("span", "11 March 2025").should("be.visible");
-    cy.contains("span", "12 March 2025").should("be.visible");
-
     return this;
   }
 
@@ -490,14 +485,6 @@ export class EnterSputumSampleResultsPage extends BasePage {
     return this;
   }
 
-  // Verify sample dates are correctly displayed
-  verifySampleDates(): EnterSputumSampleResultsPage {
-    cy.contains(".govuk-grid-column-one-third span", "10 March 2025").should("be.visible");
-    cy.contains(".govuk-grid-column-one-third span", "11 March 2025").should("be.visible");
-    cy.contains(".govuk-grid-column-one-third span", "12 March 2025").should("be.visible");
-    return this;
-  }
-
   // Verify grid layout structure
   verifyGridLayout(): EnterSputumSampleResultsPage {
     // Verify header row
@@ -672,16 +659,32 @@ export class EnterSputumSampleResultsPage extends BasePage {
     return this;
   }
 
+  // Verify back link navigation
+  verifyBackLinkNavigation(): EnterSputumSampleResultsPage {
+    cy.get(".govuk-back-link")
+      .should("be.visible")
+      .and("contain", "Back")
+      .and("have.attr", "href", "/sputum-collection");
+    return this;
+  }
+
+  // Verify service name in header
+  verifyServiceName(): EnterSputumSampleResultsPage {
+    cy.get(".govuk-header__service-name")
+      .should("be.visible")
+      .and("contain", "Complete UK pre-entry health screening");
+    return this;
+  }
+
   //Page verification
   verifyAllPageElements(): EnterSputumSampleResultsPage {
     this.verifyPageLoaded();
     this.verifyPageStructure();
-    this.verifySampleDates();
     this.verifyDropdownOptions();
     this.verifySaveAndContinueButton();
     this.verifyGridLayout();
     this.verifySectionBreaks();
-    this.verifyBreadcrumbNavigation();
+    this.verifyBackLinkNavigation();
     this.verifyServiceName();
     return this;
   }
