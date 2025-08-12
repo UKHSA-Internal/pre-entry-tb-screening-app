@@ -34,6 +34,16 @@ class SQService {
   }
 
   /**
+   * Send a message to DLQ
+   * @param messageBody
+   */
+  public sendToDLQ(messageBody: string) {
+    logger.info(`Message Body to be sent to DLQ: ${messageBody}`);
+
+    return this.sendMessage(messageBody, process.env.EDAP_INTEGRATION_DLQ_NAME as string);
+  }
+
+  /**
    * Send a message to the specified queue (the AWS SQS queue URL is resolved based on the queueName for each message )
    * @param messageBody - A string message body
    * @param messageAttributes - A MessageAttributeMap

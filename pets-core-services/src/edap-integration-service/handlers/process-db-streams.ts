@@ -58,7 +58,12 @@ const handler: Handler = async (
       batchItemFailures.push({
         itemIdentifier: record.dynamodb?.SequenceNumber ?? "",
       });
-      // TODO: Send batchItemFailures to DLQ
+      try {
+        await sqService.sendToDLQ(JSON.stringify(record) ?? new String(record));
+      } catch (error) {
+        logger.error(error);
+        throw new Error("Record can't be sent in the SQS/DLQ message");
+      }
     }
   }
 
