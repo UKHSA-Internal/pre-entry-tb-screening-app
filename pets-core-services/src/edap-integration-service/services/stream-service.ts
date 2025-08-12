@@ -16,7 +16,7 @@ class StreamService {
     const dbrecord: StreamRecord["NewImage"][] = [];
 
     if (record.eventName === "INSERT" || record.eventName === "MODIFY") {
-      if (record.dynamodb && record.dynamodb.NewImage) {
+      if (record?.dynamodb?.NewImage) {
         const newImage: DynamoDB.AttributeMap = record.dynamodb.NewImage;
 
         try {

@@ -41,9 +41,8 @@ class AWSClients {
   }
 
   get sqsClient(): SQSClient {
-    if (!this._sqsClient) {
-      this._sqsClient = new SQSClient({ region: "eu-west-2" });
-    }
+    this._sqsClient = this._sqsClient ?? new SQSClient({ region: "eu-west-2" });
+
     return this._sqsClient;
   }
 }
