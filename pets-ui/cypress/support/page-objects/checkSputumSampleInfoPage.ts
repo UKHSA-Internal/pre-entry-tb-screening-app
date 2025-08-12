@@ -341,22 +341,22 @@ export class CheckSputumSampleInfoPage {
 
   // Click Save and Continue button
   clickSaveAndContinue(): void {
-    cy.contains("button", "Save and continue").should("be.visible").click();
+    cy.get('button[type="submit"]').contains("Save and continue").should("be.visible").click();
   }
 
-  // Verify breadcrumb navigation
-  verifyBreadcrumbNavigation(): void {
-    cy.get(".govuk-breadcrumbs__list-item")
-      .contains("Application progress tracker")
+  // Verify back link navigation
+  verifyBackLinkNavigation(): void {
+    cy.get(".govuk-back-link")
       .should("be.visible")
-      .and("have.attr", "href", "/tracker");
+      .and("contain", "Back")
+      .and("have.attr", "href", "/enter-sputum-sample-results");
   }
 
   // Verify service name in header
   verifyServiceName(): void {
     cy.get(".govuk-header__service-name")
       .should("be.visible")
-      .and("contain", "Complete UK Pre-Entry Health Screening");
+      .and("contain", "Complete UK pre-entry health screening");
   }
 
   // Get the current URL
@@ -395,7 +395,7 @@ export class CheckSputumSampleInfoPage {
     this.verifySampleHeadings();
     this.verifyRequiredFieldsPresent();
     this.verifyChangeLinksExist();
-    this.verifyBreadcrumbNavigation();
+    this.verifyBackLinkNavigation();
     this.verifyServiceName();
 
     if (expectedSampleData) {
@@ -411,7 +411,7 @@ export class CheckSputumSampleInfoPage {
     });
 
     // Verify collection method values
-    const validCollectionMethods = ["Coughed up", "Induced"];
+    const validCollectionMethods = ["Coughed up", "Induced", "Gastric lavage", "Not known"];
     [1, 2, 3].forEach((sampleNum) => {
       this.getSampleSummaryValue(sampleNum, "Collection method").should(
         "be.oneOf",
@@ -429,10 +429,10 @@ export class CheckSputumSampleInfoPage {
 
   // Check that Save and Continue button is enabled
   verifySaveAndContinueButton(): void {
-    cy.contains("button", "Save and continue")
+    cy.get('button[type="submit"]')
+      .contains("Save and continue")
       .should("be.visible")
-      .and("be.enabled")
-      .and("have.attr", "type", "submit");
+      .and("be.enabled");
   }
 
   // Verify sample from scenario where sample 1 is Negative for smear and is positive for culture

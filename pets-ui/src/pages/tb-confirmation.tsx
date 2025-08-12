@@ -1,14 +1,65 @@
+import React from "react";
+
 import Confirmation from "@/components/confirmation/confirmation";
 import Container from "@/components/container/container";
+import LinkLabel from "@/components/linkLabel/LinkLabel";
+import { useAppSelector } from "@/redux/hooks";
+import { selectTbCertificate } from "@/redux/store";
+import { YesOrNo } from "@/utils/enums";
 
 export default function TbConfirmationPage() {
+  const tbCertificateData = useAppSelector(selectTbCertificate);
+
+  const isCertificateIssued = tbCertificateData.isIssued === YesOrNo.YES;
+
+  const furtherInfo = [
+    <LinkLabel
+      key="tracker"
+      to="/tracker"
+      title="View a summary for this visa applicant"
+      externalLink={false}
+    />,
+    <LinkLabel
+      key="search"
+      to="/applicant-search"
+      title="Search for another visa applicant"
+      externalLink={false}
+    />,
+    <React.Fragment key="feedback">
+      <LinkLabel
+        to="https://forms.office.com/pages/responsepage.aspx?id=mRRO7jVKLkutR188-d6GZtaAaJfrhApCue13O2-oStFUNlIyRkRMWVBNQkszSTJISDJGU1pJTTkxNy4u&route=shorturl"
+        title="What did you think of this service?"
+        externalLink={true}
+      />{" "}
+      (takes 30 seconds)
+    </React.Fragment>,
+  ];
+
   return (
     <Container title="TB screening complete" backLinkTo="/tb-certificate-summary">
       <Confirmation
-        confirmationText="TB screening complete"
-        furtherInfo={["Thank you for recording the visa applicant's TB screening."]}
-        buttonLink="/tracker"
-        buttonText="Finish"
+        confirmationText={
+          isCertificateIssued
+            ? "TB screening complete\nCertificate issued"
+            : "TB screening complete\nCertificate not issued"
+        }
+        isSuccess={isCertificateIssued}
+        showApplicationNumber={isCertificateIssued}
+        applicationNumber={tbCertificateData.certificateNumber}
+        preWhatHappensNextText="The visa applicant TB screening is complete."
+        whatHappensNext={true}
+        postWhatHappensNextText="We've sent the certificate information to UKHSA."
+        furtherInfo={furtherInfo}
+        actionButton={
+          isCertificateIssued
+            ? {
+                text: "View or print certificate",
+                onClick: () => {
+                  console.info("View certificate clicked");
+                },
+              }
+            : undefined
+        }
       />
     </Container>
   );

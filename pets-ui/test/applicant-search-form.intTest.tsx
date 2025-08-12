@@ -2,7 +2,6 @@ import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MockAdapter from "axios-mock-adapter";
 import React from "react";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import { ApplicantPhotoProvider, useApplicantPhoto } from "@/context/applicantPhotoContext";
@@ -76,12 +75,17 @@ const emptyTravelSlice = {
   townOrCity: "",
   ukEmail: "",
   ukMobileNumber: "",
-  visaType: "",
+  visaCategory: "",
 };
 const emptyMedicalSlice = {
   age: "",
   closeContactWithTb: "",
   closeContactWithTbDetail: "",
+  completionDate: {
+    year: "",
+    month: "",
+    day: "",
+  },
   menstrualPeriods: "",
   otherSymptomsDetail: "",
   physicalExamNotes: "",
@@ -111,6 +115,11 @@ const emptyChestXraySlice = {
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
   isSputumRequired: YesOrNo.NULL,
+  completionDate: {
+    year: "",
+    month: "",
+    day: "",
+  },
 };
 
 describe("ApplicantSearchForm", () => {
@@ -131,12 +140,10 @@ describe("ApplicantSearchForm", () => {
     };
 
     const { store } = renderWithProviders(
-      <Router>
-        <ApplicantPhotoProvider>
-          <ContextChecker />
-          <ApplicantSearchForm />
-        </ApplicantPhotoProvider>
-      </Router>,
+      <ApplicantPhotoProvider>
+        <ContextChecker />
+        <ApplicantSearchForm />
+      </ApplicantPhotoProvider>,
     );
     const user = userEvent.setup();
 
@@ -203,6 +210,8 @@ describe("ApplicantSearchForm", () => {
         xrayMinorFindings: [],
         xrayAssociatedMinorFindings: [],
         xrayActiveTbFindings: [],
+        dateCreated: "2025-01-01",
+        isSputumRequired: YesOrNo.YES,
       },
       tbCertificate: {
         status: "completed",
@@ -268,12 +277,17 @@ describe("ApplicantSearchForm", () => {
       townOrCity: "London",
       ukEmail: "Maxwell@Spiffington.com",
       ukMobileNumber: "071234567890",
-      visaType: "Visitor",
+      visaCategory: "Visitor",
     });
     expect(store.getState().medicalScreening).toEqual({
       age: "43",
       closeContactWithTb: "Yes",
       closeContactWithTbDetail: "details1",
+      completionDate: {
+        year: "2025",
+        month: "01",
+        day: "01",
+      },
       menstrualPeriods: "No",
       otherSymptomsDetail: "Other symptoms",
       physicalExamNotes: "Exam notes",
@@ -302,6 +316,12 @@ describe("ApplicantSearchForm", () => {
       xrayMinorFindings: [],
       xrayAssociatedMinorFindings: [],
       xrayActiveTbFindings: [],
+      isSputumRequired: YesOrNo.YES,
+      completionDate: {
+        year: "2025",
+        month: "01",
+        day: "01",
+      },
     });
     expect(store.getState().tbCertificate).toEqual({
       status: ApplicationStatus.COMPLETE,
@@ -313,6 +333,8 @@ describe("ApplicantSearchForm", () => {
         year: "2025",
       },
       certificateNumber: "XYZ789",
+      declaringPhysicianName: "",
+      reasonNotIssued: "",
     });
     expect(store.getState().applicant.applicantPhotoFileName).toBe("photo.jpg");
     expect(contextUrl).toBe("http://localhost:4566/photos/photo.jpg");
@@ -321,11 +343,9 @@ describe("ApplicantSearchForm", () => {
 
   test("store is correctly populated and user is navigated to error page when applicant search is successful & application search returns a non-200 response", async () => {
     const { store } = renderWithProviders(
-      <Router>
-        <ApplicantPhotoProvider>
-          <ApplicantSearchForm />
-        </ApplicantPhotoProvider>
-      </Router>,
+      <ApplicantPhotoProvider>
+        <ApplicantSearchForm />
+      </ApplicantPhotoProvider>,
     );
     const user = userEvent.setup();
 
@@ -401,11 +421,9 @@ describe("ApplicantSearchForm", () => {
 
   test("store is correctly populated and user is navigated to error page when applicant search is successful & application search returns 500", async () => {
     const { store } = renderWithProviders(
-      <Router>
-        <ApplicantPhotoProvider>
-          <ApplicantSearchForm />
-        </ApplicantPhotoProvider>
-      </Router>,
+      <ApplicantPhotoProvider>
+        <ApplicantSearchForm />
+      </ApplicantPhotoProvider>,
     );
     const user = userEvent.setup();
 
@@ -481,11 +499,9 @@ describe("ApplicantSearchForm", () => {
 
   test("user is navigated to applicant results page when applicant search returns an empty array", async () => {
     const { store } = renderWithProviders(
-      <Router>
-        <ApplicantPhotoProvider>
-          <ApplicantSearchForm />
-        </ApplicantPhotoProvider>
-      </Router>,
+      <ApplicantPhotoProvider>
+        <ApplicantSearchForm />
+      </ApplicantPhotoProvider>,
     );
     const user = userEvent.setup();
 
@@ -511,11 +527,9 @@ describe("ApplicantSearchForm", () => {
 
   test("user is navigated to applicant results page when applicant search returns 500", async () => {
     const { store } = renderWithProviders(
-      <Router>
-        <ApplicantPhotoProvider>
-          <ApplicantSearchForm />
-        </ApplicantPhotoProvider>
-      </Router>,
+      <ApplicantPhotoProvider>
+        <ApplicantSearchForm />
+      </ApplicantPhotoProvider>,
     );
     const user = userEvent.setup();
 
@@ -543,11 +557,9 @@ describe("ApplicantSearchForm", () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     const { store } = renderWithProviders(
-      <Router>
-        <ApplicantPhotoProvider>
-          <ApplicantSearchForm />
-        </ApplicantPhotoProvider>
-      </Router>,
+      <ApplicantPhotoProvider>
+        <ApplicantSearchForm />
+      </ApplicantPhotoProvider>,
     );
     const user = userEvent.setup();
 

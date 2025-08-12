@@ -1,7 +1,6 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MockAdapter from "axios-mock-adapter";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import { petsApi } from "@/api/api";
@@ -32,7 +31,7 @@ const travelState = {
   townOrCity: "Edinburgh",
   ukEmail: "sigmund.sigmundson@asgard.gov",
   ukMobileNumber: "07321900900",
-  visaType: "Government Sponsored",
+  visaCategory: "Government Sponsored",
 };
 
 const applicationState = { applicationId: "abc-123", dateCreated: "" };
@@ -50,32 +49,25 @@ describe("TravelReview", () => {
   });
 
   test("state is displayed correctly & user is navigated to confirmation page when travel details are posted successfully", async () => {
-    renderWithProviders(
-      <Router>
-        <TravelReview />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<TravelReview />, { preloadedState });
     const user = userEvent.setup();
 
     mock.onPost("/application/abc-123/travel-information").reply(200);
 
-    expect(screen.getAllByRole("term")[0]).toHaveTextContent("Visa type");
+    expect(screen.getAllByRole("term")[0]).toHaveTextContent("Visa category");
     expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Government Sponsored");
     expect(screen.getAllByRole("term")[1]).toHaveTextContent("UK address line 1");
     expect(screen.getAllByRole("definition")[2]).toHaveTextContent("Edinburgh Castle, Castlehill");
     expect(screen.getAllByRole("term")[2]).toHaveTextContent("UK address line 2");
-    expect(screen.getAllByRole("definition")[4]).toHaveTextContent(
-      "Enter UK address line 2 (optional)",
-    );
+    expect(screen.getAllByRole("definition")[4]).toHaveTextContent("Not provided");
     expect(screen.getAllByRole("term")[3]).toHaveTextContent("UK town or city");
-    expect(screen.getAllByRole("definition")[5]).toHaveTextContent("Edinburgh");
+    expect(screen.getAllByRole("definition")[6]).toHaveTextContent("Edinburgh");
     expect(screen.getAllByRole("term")[4]).toHaveTextContent("UK postcode");
-    expect(screen.getAllByRole("definition")[7]).toHaveTextContent("EH1 2NG");
+    expect(screen.getAllByRole("definition")[8]).toHaveTextContent("EH1 2NG");
     expect(screen.getAllByRole("term")[5]).toHaveTextContent("UK mobile number");
-    expect(screen.getAllByRole("definition")[9]).toHaveTextContent("07321900900");
+    expect(screen.getAllByRole("definition")[10]).toHaveTextContent("07321900900");
     expect(screen.getAllByRole("term")[6]).toHaveTextContent("UK email address");
-    expect(screen.getAllByRole("definition")[11]).toHaveTextContent(
+    expect(screen.getAllByRole("definition")[12]).toHaveTextContent(
       "sigmund.sigmundson@asgard.gov",
     );
 
@@ -87,12 +79,7 @@ describe("TravelReview", () => {
   });
 
   test("user is navigated to error page when api call is unsuccessful", async () => {
-    renderWithProviders(
-      <Router>
-        <TravelReview />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<TravelReview />, { preloadedState });
     const user = userEvent.setup();
 
     mock.onPost("/application/abc-123/travel-information").reply(500);
@@ -108,7 +95,7 @@ describe("TravelReview", () => {
     const preloadedState = {
       travel: {
         status: ApplicationStatus.COMPLETE,
-        visaType: "",
+        visaCategory: "",
         applicantUkAddress1: "",
         applicantUkAddress2: "",
         townOrCity: "",
@@ -118,12 +105,7 @@ describe("TravelReview", () => {
       },
     };
 
-    renderWithProviders(
-      <Router>
-        <TravelSummaryPage />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<TravelSummaryPage />, { preloadedState });
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
@@ -135,7 +117,7 @@ describe("TravelReview", () => {
     const preloadedState = {
       travel: {
         status: ApplicationStatus.IN_PROGRESS,
-        visaType: "",
+        visaCategory: "",
         applicantUkAddress1: "",
         applicantUkAddress2: "",
         townOrCity: "",
@@ -145,12 +127,7 @@ describe("TravelReview", () => {
       },
     };
 
-    renderWithProviders(
-      <Router>
-        <TravelSummaryPage />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<TravelSummaryPage />, { preloadedState });
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();

@@ -12,10 +12,10 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
-  selectMedicalScreening,
   setMedicalScreeningDetails,
   setMedicalScreeningStatus,
 } from "@/redux/medicalScreeningSlice";
+import { selectMedicalScreening } from "@/redux/store";
 import { ApplicationStatus, ButtonType, RadioIsInline } from "@/utils/enums";
 import { toArray } from "@/utils/helpers";
 import { formRegex } from "@/utils/records";

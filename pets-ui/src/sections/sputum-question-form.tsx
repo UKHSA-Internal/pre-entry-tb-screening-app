@@ -7,8 +7,9 @@ import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
-import { selectChestXray, setSputumCollectionTaken } from "@/redux/chestXraySlice";
+import { setSputumCollectionTaken } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { selectChestXray } from "@/redux/store";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 
 const SputumQuestionForm = () => {
@@ -17,7 +18,9 @@ const SputumQuestionForm = () => {
   const navigate = useNavigate();
   const chestXrayData = useAppSelector(selectChestXray);
 
-  const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxChestXrayDetailsType>({
+    reValidateMode: "onSubmit",
+  });
   const {
     handleSubmit,
     formState: { errors },

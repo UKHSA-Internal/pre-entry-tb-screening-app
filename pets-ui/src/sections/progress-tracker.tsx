@@ -3,13 +3,15 @@ import React from "react";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
-import { selectApplicant } from "@/redux/applicantSlice";
-import { selectChestXray } from "@/redux/chestXraySlice";
 import { useAppSelector } from "@/redux/hooks";
-import { selectMedicalScreening } from "@/redux/medicalScreeningSlice";
-import { selectSputum } from "@/redux/sputumSlice";
-import { selectTbCertificate } from "@/redux/tbCertificateSlice";
-import { selectTravel } from "@/redux/travelSlice";
+import {
+  selectApplicant,
+  selectChestXray,
+  selectMedicalScreening,
+  selectSputum,
+  selectTbCertificate,
+  selectTravel,
+} from "@/redux/store";
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 
 interface TaskProps {
@@ -200,8 +202,8 @@ const ProgressTracker = () => {
         <Task
           description="TB certificate outcome"
           status={tbCertificateData.status}
-          linkWhenIncomplete="/tb-certificate-declaration"
-          linkWhenComplete="/tb-certificate-summary"
+          linkWhenIncomplete="/tb-certificate-question"
+          linkWhenComplete="/tb-certificate-confirmation"
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,

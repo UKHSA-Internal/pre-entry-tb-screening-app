@@ -2,7 +2,6 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MockAdapter from "axios-mock-adapter";
 import { HelmetProvider } from "react-helmet-async";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import { petsApi } from "@/api/api";
@@ -39,6 +38,7 @@ const chestXrayTakenState: ReduxChestXrayDetailsType = {
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
   isSputumRequired: YesOrNo.YES,
+  completionDate: { year: "", month: "", day: "" },
 };
 
 const chestXrayNotTakenState: ReduxChestXrayDetailsType = {
@@ -58,6 +58,7 @@ const chestXrayNotTakenState: ReduxChestXrayDetailsType = {
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
   isSputumRequired: YesOrNo.YES,
+  completionDate: { year: "", month: "", day: "" },
 };
 
 describe("ChestXraySummaryPage", () => {
@@ -72,11 +73,9 @@ describe("ChestXraySummaryPage", () => {
       mock = new MockAdapter(petsApi);
       useNavigateMock.mockClear();
       renderWithProviders(
-        <Router>
-          <HelmetProvider>
-            <ChestXraySummaryPage />
-          </HelmetProvider>
-        </Router>,
+        <HelmetProvider>
+          <ChestXraySummaryPage />
+        </HelmetProvider>,
         { preloadedState },
       );
     });
@@ -116,11 +115,9 @@ describe("ChestXraySummaryPage", () => {
     };
     beforeEach(() => {
       renderWithProviders(
-        <Router>
-          <HelmetProvider>
-            <ChestXraySummaryPage />
-          </HelmetProvider>
-        </Router>,
+        <HelmetProvider>
+          <ChestXraySummaryPage />
+        </HelmetProvider>,
         { preloadedState },
       );
     });
@@ -151,11 +148,9 @@ describe("ChestXraySummaryPage", () => {
     };
     beforeEach(() => {
       renderWithProviders(
-        <Router>
-          <HelmetProvider>
-            <ChestXraySummaryPage />
-          </HelmetProvider>
-        </Router>,
+        <HelmetProvider>
+          <ChestXraySummaryPage />
+        </HelmetProvider>,
         { preloadedState },
       );
     });

@@ -1,7 +1,6 @@
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock, vi } from "vitest";
 
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
@@ -43,11 +42,9 @@ describe("ApplicantPhotoForm", () => {
     };
 
     renderWithProviders(
-      <Router>
-        <HelmetProvider>
-          <ApplicantPhotoForm />
-        </HelmetProvider>
-      </Router>,
+      <HelmetProvider>
+        <ApplicantPhotoForm />
+      </HelmetProvider>,
       { preloadedState },
     );
 
@@ -61,11 +58,7 @@ describe("ApplicantPhotoForm", () => {
   });
 
   it("submits form without a file and navigates", async () => {
-    renderWithProviders(
-      <Router>
-        <ApplicantPhotoForm />
-      </Router>,
-    );
+    renderWithProviders(<ApplicantPhotoForm />);
 
     fireEvent.click(screen.getByText("Continue"));
     await waitFor(() => {
@@ -76,11 +69,7 @@ describe("ApplicantPhotoForm", () => {
   it("uploads a valid image and submits", async () => {
     vi.mocked(validateFiles).mockResolvedValue(true);
 
-    renderWithProviders(
-      <Router>
-        <ApplicantPhotoForm />
-      </Router>,
-    );
+    renderWithProviders(<ApplicantPhotoForm />);
 
     const file = new File(["dummy content"], "photo.jpg", { type: "image/jpeg" });
     const input: HTMLInputElement = screen.getByTestId("applicant-photo");
@@ -98,11 +87,7 @@ describe("ApplicantPhotoForm", () => {
   it("shows error and disallow continue button if validation fails", async () => {
     vi.mocked(validateFiles).mockResolvedValue(["The selected file must be a JPG, JPEG or PNG"]);
 
-    renderWithProviders(
-      <Router>
-        <ApplicantPhotoForm />
-      </Router>,
-    );
+    renderWithProviders(<ApplicantPhotoForm />);
 
     const file = new File(["dummy content"], "photo.pdf", { type: "image/pdf" });
     const input: HTMLInputElement = screen.getByTestId("applicant-photo");
@@ -121,11 +106,7 @@ describe("ApplicantPhotoForm", () => {
   it("removes validation error on file change", async () => {
     vi.mocked(validateFiles).mockResolvedValue(["The selected file must be a JPG, JPEG or PNG"]);
 
-    renderWithProviders(
-      <Router>
-        <ApplicantPhotoForm />
-      </Router>,
-    );
+    renderWithProviders(<ApplicantPhotoForm />);
 
     const invalidFile = new File(["dummy content"], "photo.pdf", { type: "image/pdf" });
     const input: HTMLInputElement = screen.getByTestId("applicant-photo");

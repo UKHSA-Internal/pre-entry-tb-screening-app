@@ -3,7 +3,6 @@
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import ChestXrayFindingsPage from "@/pages/chest-xray-findings";
@@ -26,11 +25,7 @@ const user = userEvent.setup();
 
 describe("ChestXrayFindings Form", () => {
   it("renders form correctly", () => {
-    renderWithProviders(
-      <Router>
-        <ChestXrayFindingsForm />
-      </Router>,
-    );
+    renderWithProviders(<ChestXrayFindingsForm />);
 
     expect(screen.getByText("Chest X-ray normal")).toBeInTheDocument;
     expect(screen.getByText("Give further details (optional)")).toBeInTheDocument;
@@ -54,11 +49,7 @@ describe("ChestXrayFindings Form", () => {
   });
 
   it("errors when x-ray result selection is missing", async () => {
-    renderWithProviders(
-      <Router>
-        <ChestXrayFindingsForm />
-      </Router>,
-    );
+    renderWithProviders(<ChestXrayFindingsForm />);
 
     fireEvent.click(screen.getByText("Save and continue"));
 
@@ -72,11 +63,7 @@ describe("ChestXrayFindings Form", () => {
   });
 
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
-    renderWithProviders(
-      <Router>
-        <ChestXrayFindingsForm />
-      </Router>,
-    );
+    renderWithProviders(<ChestXrayFindingsForm />);
     fireEvent.click(screen.getByText("Save and continue"));
     await waitFor(() => {
       const errorSummaryDiv = screen.getByTestId("error-summary");
@@ -86,11 +73,9 @@ describe("ChestXrayFindings Form", () => {
 
   it("renders page elements correctly", () => {
     renderWithProviders(
-      <Router>
-        <HelmetProvider>
-          <ChestXrayFindingsPage />
-        </HelmetProvider>
-      </Router>,
+      <HelmetProvider>
+        <ChestXrayFindingsPage />
+      </HelmetProvider>,
     );
 
     const link = screen.getByRole("link", { name: "Back" });
@@ -126,14 +111,13 @@ describe("ChestXrayFindings Form", () => {
         xrayAssociatedMinorFindings: [],
         xrayActiveTbFindings: [],
         isSputumRequired: YesOrNo.NULL,
+        completionDate: { year: "", month: "", day: "" },
       },
     };
     renderWithProviders(
-      <Router>
-        <HelmetProvider>
-          <ChestXrayFindingsPage />
-        </HelmetProvider>
-      </Router>,
+      <HelmetProvider>
+        <ChestXrayFindingsPage />
+      </HelmetProvider>,
       { preloadedState },
     );
     await user.click(screen.getAllByTestId("xray-result")[0]);

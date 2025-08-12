@@ -1,7 +1,7 @@
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
-import { selectChestXray } from "@/redux/chestXraySlice";
 import { useAppSelector } from "@/redux/hooks";
+import { selectChestXray } from "@/redux/store";
 import ChestXraySummary from "@/sections/chest-xray-summary";
 import { ApplicationStatus } from "@/utils/enums";
 

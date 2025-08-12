@@ -8,8 +8,9 @@ import FileUpload from "@/components/fileUpload/fileUpload";
 import Heading from "@/components/heading/heading";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
-import { selectApplicant, setApplicantPhotoFileName } from "@/redux/applicantSlice";
+import { setApplicantPhotoFileName } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { selectApplicant } from "@/redux/store";
 import { ButtonType, ImageType } from "@/utils/enums";
 
 const ApplicantPhotoForm = () => {

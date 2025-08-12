@@ -1,6 +1,5 @@
 import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import TravelDetailsPage from "@/pages/travel-details";
@@ -29,11 +28,7 @@ describe("ApplicantTravelForm", () => {
   const user = userEvent.setup();
 
   it("when ApplicantTravelForm is filled correctly then state is updated and user is navigated to summary page", async () => {
-    const { store } = renderWithProviders(
-      <Router>
-        <ApplicantTravelForm />
-      </Router>,
-    );
+    const { store } = renderWithProviders(<ApplicantTravelForm />);
 
     const user = userEvent.setup();
 
@@ -63,46 +58,34 @@ describe("ApplicantTravelForm", () => {
       townOrCity: "Edinburgh",
       ukEmail: "sigmund.sigmundson@asgard.gov",
       ukMobileNumber: "07321900900",
-      visaType: "Visitor",
+      visaCategory: "Visitor",
     });
     expect(useNavigateMock).toHaveBeenLastCalledWith("/travel-summary");
   });
 
   it("errors when travel details are missing", async () => {
-    renderWithProviders(
-      <Router>
-        <ApplicantTravelForm />
-      </Router>,
-    );
+    renderWithProviders(<ApplicantTravelForm />);
 
     const submitButton = screen.getByRole("button", { name: /Save and Continue/i });
 
     await user.click(submitButton);
 
-    expect(screen.getAllByText("Error: Select a visa type".slice(7))).toHaveLength(2);
-    expect(screen.getAllByText("Error: Select a visa type".slice(7))[0]).toHaveAttribute(
+    expect(screen.getAllByText("Error: Select a visa category".slice(7))).toHaveLength(2);
+    expect(screen.getAllByText("Error: Select a visa category".slice(7))[0]).toHaveAttribute(
       "aria-label",
-      "Error: Select a visa type",
+      "Error: Select a visa category",
     );
   });
 
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
-    renderWithProviders(
-      <Router>
-        <ApplicantTravelForm />
-      </Router>,
-    );
+    renderWithProviders(<ApplicantTravelForm />);
     await user.click(screen.getByRole("button"));
     const errorSummaryDiv = screen.getByTestId("error-summary");
     expect(errorSummaryDiv).toHaveFocus();
   });
 
   it("back link points to tracker", () => {
-    renderWithProviders(
-      <Router>
-        <TravelDetailsPage />
-      </Router>,
-    );
+    renderWithProviders(<TravelDetailsPage />);
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();

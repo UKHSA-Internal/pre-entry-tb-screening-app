@@ -1,7 +1,6 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MockAdapter from "axios-mock-adapter";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import { petsApi } from "@/api/api";
@@ -83,12 +82,7 @@ describe("ApplicantReview", () => {
       },
     };
 
-    renderWithProviders(
-      <Router>
-        <ApplicantReview />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<ApplicantReview />, { preloadedState });
 
     mock.onPost("/application").reply(200, { applicationId: "abc-123" });
     mock.onPost("/applicant/register/abc-123").reply(200);
@@ -98,13 +92,13 @@ describe("ApplicantReview", () => {
     expect(screen.getAllByRole("term")[1]).toHaveTextContent("Sex");
     expect(screen.getAllByRole("definition")[2]).toHaveTextContent("Male");
     expect(screen.getAllByRole("term")[2]).toHaveTextContent("Country of nationality");
-    expect(screen.getAllByRole("definition")[4]).toHaveTextContent("NOR");
+    expect(screen.getAllByRole("definition")[4]).toHaveTextContent("Norway");
     expect(screen.getAllByRole("term")[3]).toHaveTextContent("Date of birth");
     expect(screen.getAllByRole("definition")[6]).toHaveTextContent("1/1/1901");
     expect(screen.getAllByRole("term")[4]).toHaveTextContent("Passport number");
     expect(screen.getAllByRole("definition")[8]).toHaveTextContent("1234");
     expect(screen.getAllByRole("term")[5]).toHaveTextContent("Country of issue");
-    expect(screen.getAllByRole("definition")[10]).toHaveTextContent("FIN");
+    expect(screen.getAllByRole("definition")[10]).toHaveTextContent("Finland");
     expect(screen.getAllByRole("term")[6]).toHaveTextContent("Passport issue date");
     expect(screen.getAllByRole("definition")[12]).toHaveTextContent("2/feb/1902");
     expect(screen.getAllByRole("term")[7]).toHaveTextContent("Passport expiry date");
@@ -120,7 +114,7 @@ describe("ApplicantReview", () => {
     expect(screen.getAllByRole("term")[12]).toHaveTextContent("Province or state");
     expect(screen.getAllByRole("definition")[24]).toHaveTextContent("Reykjavik");
     expect(screen.getAllByRole("term")[13]).toHaveTextContent("Country");
-    expect(screen.getAllByRole("definition")[26]).toHaveTextContent("ISL");
+    expect(screen.getAllByRole("definition")[26]).toHaveTextContent("Iceland");
     expect(screen.getAllByRole("term")[14]).toHaveTextContent("Postcode");
     expect(screen.getAllByRole("definition")[28]).toHaveTextContent("101");
     expect(screen.getAllByRole("term")[15]).toHaveTextContent("Applicant Photo");
@@ -135,11 +129,7 @@ describe("ApplicantReview", () => {
   });
 
   test("user is navigated to error page when first api call is unsuccessful", async () => {
-    renderWithProviders(
-      <Router>
-        <ApplicantReview />
-      </Router>,
-    );
+    renderWithProviders(<ApplicantReview />);
 
     mock.onPost("/application").reply(500);
 
@@ -151,11 +141,7 @@ describe("ApplicantReview", () => {
   });
 
   test("user is navigated to error page when second api call is unsuccessful", async () => {
-    renderWithProviders(
-      <Router>
-        <ApplicantReview />
-      </Router>,
-    );
+    renderWithProviders(<ApplicantReview />);
 
     mock.onPost("/application").reply(200, { applicationId: "abc-123" });
     mock.onPost("/applicant/register/abc-123").reply(500);
@@ -173,12 +159,7 @@ describe("ApplicantReview", () => {
       application: { applicationId: "abc-123", dateCreated: "" },
     };
 
-    renderWithProviders(
-      <Router>
-        <ApplicantReview />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<ApplicantReview />, { preloadedState });
 
     await user.click(screen.getByRole("button"));
 
@@ -225,12 +206,7 @@ describe("ApplicantReview", () => {
       },
     };
 
-    renderWithProviders(
-      <Router>
-        <ApplicantSummaryPage />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<ApplicantSummaryPage />, { preloadedState });
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
@@ -273,12 +249,7 @@ describe("ApplicantReview", () => {
       },
     };
 
-    renderWithProviders(
-      <Router>
-        <ApplicantSummaryPage />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<ApplicantSummaryPage />, { preloadedState });
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
