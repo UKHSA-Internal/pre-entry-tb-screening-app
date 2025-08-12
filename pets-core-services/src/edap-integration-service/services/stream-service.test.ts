@@ -28,16 +28,14 @@ describe("init", () => {
     describe("when fetching data stream and the eventName is INSERT", () => {
       test("should result in an array of filtered js objects", () => {
         processedEvent = StreamService.getClinicDataStream(event.Records[0]);
-        expect(processedEvent).toEqual([
-          {
-            applicationId: "b3dc3b1e-2dbf-4e91-9d2b-ca089b679baf",
-            clinicId: "UK/PETS/02",
-            createdBy: "pets.tester1@hotmail.com",
-            dateCreated: "2025-04-22T10:10:26.714Z",
-            pk: "APPLICATION#b3dc3b1e-2dbf-4e91-9d2b-ca089b679baf",
-            sk: "APPLICATION#ROOT",
-          },
-        ]);
+        expect(processedEvent).toEqual({
+          applicationId: "b3dc3b1e-2dbf-4e91-9d2b-ca089b679baf",
+          clinicId: "UK/PETS/02",
+          createdBy: "pets.tester1@hotmail.com",
+          dateCreated: "2025-04-22T10:10:26.714Z",
+          pk: "APPLICATION#b3dc3b1e-2dbf-4e91-9d2b-ca089b679baf",
+          sk: "APPLICATION#ROOT",
+        });
       });
     });
 
@@ -45,8 +43,7 @@ describe("init", () => {
       test("should result in an array of filtered js objects when PROCESS_MODIFY_EVENTS is true", () => {
         event.Records[0].eventName = "MODIFY";
         processedEvent = StreamService.getClinicDataStream(event.Records[0]);
-        expect(processedEvent).toHaveLength(1);
-        expect(processedEvent).toEqual(applicationData);
+        expect(processedEvent).toMatchObject(applicationData[0]);
       });
     });
 
@@ -105,10 +102,7 @@ describe("init", () => {
         test("should successfully add the records to the queue", () => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-redundant-type-constituents
           const sendMessagePromises: Array<Promise<any | SendMessageCommandOutput>> = [];
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-          processedEvent.forEach((record: any) => {
-            sendMessagePromises.push(sqService.sendDbStreamMessage(JSON.stringify(record)));
-          });
+          sendMessagePromises.push(sqService.sendDbStreamMessage(JSON.stringify(processedEvent)));
           return Promise.all(sendMessagePromises).catch((error: any) => {
             expect(error).toBeInstanceOf(Error);
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -126,10 +120,7 @@ describe("init", () => {
             }),
           );
 
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-          processedEvent.forEach((record: any) => {
-            sendMessagePromises.push(sqService.sendDbStreamMessage(JSON.stringify(record)));
-          });
+          sendMessagePromises.push(sqService.sendDbStreamMessage(JSON.stringify(processedEvent)));
 
           expect.assertions(0);
           return Promise.all(sendMessagePromises).catch((error: any) => {

@@ -13,16 +13,14 @@ class StreamService {
    */
   public static getClinicDataStream(record: DynamoDBRecord) {
     logger.info("record:", record);
-    const dbrecord: StreamRecord["NewImage"][] = [];
+    const dbrecord: StreamRecord["NewImage"] = {};
 
     if (record.eventName === "INSERT" || record.eventName === "MODIFY") {
       if (record?.dynamodb?.NewImage) {
         const newImage: DynamoDB.AttributeMap = record.dynamodb.NewImage;
 
         try {
-          const unmarshalled = DynamoDB.Converter.unmarshall(newImage);
-
-          return [unmarshalled];
+          return DynamoDB.Converter.unmarshall(newImage);
         } catch (error) {
           logger.error("unmarshall error:", error);
           logger.error("error in record:", record);

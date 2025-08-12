@@ -31,7 +31,7 @@ const handler: Handler = async (
   }
 
   const batchItemFailures: DynamoDBBatchItemFailure[] = [];
-  let newRecord: (DynamoDBRecord | undefined)[] = [];
+  let newRecord: DynamoDBRecord | undefined = {};
   let sqService: SQService;
 
   try {
@@ -46,7 +46,6 @@ const handler: Handler = async (
   for (const record of event.Records) {
     try {
       newRecord = StreamService.getClinicDataStream(record);
-      logger.info(`Number of Retrieved records: ${newRecord.length}`);
 
       const stringifiedRecord = JSON.stringify(newRecord);
       logger.info(`stringifiedRecord: ${stringifiedRecord}`);
