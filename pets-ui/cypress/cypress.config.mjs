@@ -43,7 +43,7 @@ export default defineConfig({
   reporterOptions: {
     reportDir: "cypress/reports/mochawesome",
     charts: true,
-    reportPageTitle: `Pets UI Test Results${(process.env.CI || process.env.GITHUB_ACTIONS) && process.env.ENVIRONMENT ? ` - ${process.env.ENVIRONMENT}` : ''}`,
+    reportPageTitle: `Pets UI Test Results${(process.env.CI || process.env.GITHUB_ACTIONS) && process.env.ENVIRONMENT ? ` - ${process.env.ENVIRONMENT}` : ""}`,
     embeddedScreenshots: true,
     inlineAssets: true,
     saveAllAttempts: false,
