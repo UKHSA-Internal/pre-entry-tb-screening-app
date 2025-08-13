@@ -26,12 +26,34 @@ jobs:
       fail-fast: false
       matrix:
         browser: [chrome, firefox, edge]
-        environment:
-          - ${{ github.event.inputs.environment == 'all' && 'qat' || github.event.inputs.environment }}
-          - ${{ github.event.inputs.environment == 'all' && 'dev' || '' }}
-          - ${{ github.event.inputs.environment == 'all' && 'preprod' || '' }}
-        exclude:
-          - environment: ""
+        include:
+          # QAT environment - always run
+          - browser: chrome
+            environment: qat
+          - browser: firefox
+            environment: qat
+          - browser: edge
+            environment: qat
+          # DEV environment - run if 'all' or 'dev' selected
+          - browser: chrome
+            environment: dev
+            run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'dev' }}
+          - browser: firefox
+            environment: dev
+            run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'dev' }}
+          - browser: edge
+            environment: dev
+            run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'dev' }}
+          # PREPROD environment - run if 'all' or 'preprod' selected
+          - browser: chrome
+            environment: preprod
+            run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'preprod' }}
+          - browser: firefox
+            environment: preprod
+            run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'preprod' }}
+          - browser: edge
+            environment: preprod
+            run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'preprod' }}
 
     env:
       TARGET_ENV: ${{ matrix.environment }}
@@ -49,25 +71,37 @@ jobs:
       USER_6_PASSWORD: ${{ secrets.USER_6_PASSWORD }}
 
     steps:
+      - name: Skip job if not selected
+        if: ${{ matrix.run_condition == 'false' }}
+        run: |
+          echo "Skipping ${{ matrix.browser }} on ${{ matrix.environment }} - not selected"
+          exit 0
+
       - name: Checkout code
+        if: ${{ matrix.run_condition != 'false' }}
         uses: actions/checkout@v4
 
       - name: Install pnpm
+        if: ${{ matrix.run_condition != 'false' }}
         uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
+        if: ${{ matrix.run_condition != 'false' }}
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
           cache: "pnpm"
 
       - name: Install dependencies
+        if: ${{ matrix.run_condition != 'false' }}
         run: pnpm i
 
       - name: Debug available Cypress specs
+        if: ${{ matrix.run_condition != 'false' }}
         run: ls -R pets-ui/cypress/e2e
 
       - name: Cache Cypress binary
+        if: ${{ matrix.run_condition != 'false' }}
         id: cache-cypress-binary
         uses: actions/cache@v4
         with:
@@ -75,13 +109,14 @@ jobs:
           key: cypress-binary-nightly-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
 
       - name: Install Cypress Binary
-        if: steps.cache-cypress-binary.outputs.cache-hit != 'true'
+        if: ${{ matrix.run_condition != 'false' && steps.cache-cypress-binary.outputs.cache-hit != 'true' }}
         run: |
           pnpm exec cypress install --force
           pnpm exec cypress verify
         working-directory: pets-ui
 
       - name: Set target URL based on environment
+        if: ${{ matrix.run_condition != 'false' }}
         run: |
           case "${{ matrix.environment }}" in
             "qat")
@@ -100,11 +135,12 @@ jobs:
           echo "Testing against: $APP_DOMAIN"
 
       - name: Start Local Environment (only if needed)
-        if: ${{ matrix.environment == 'local' || matrix.environment == '' }}
+        if: ${{ matrix.run_condition != 'false' && (matrix.environment == 'local' || matrix.environment == '') }}
         run: |
           pnpm start & sleep 120
 
       - name: Cypress run tests
+        if: ${{ matrix.run_condition != 'false' }}
         uses: cypress-io/github-action@v6
         continue-on-error: true
         id: initial_attempt
@@ -118,7 +154,7 @@ jobs:
           APP_DOMAIN: ${{ env.APP_DOMAIN }}
 
       - name: Retry if failed
-        if: steps.initial_attempt.outcome != 'success'
+        if: ${{ matrix.run_condition != 'false' && steps.initial_attempt.outcome != 'success' }}
         uses: cypress-io/github-action@v6
         id: retry_attempt
         with:
@@ -131,7 +167,7 @@ jobs:
           APP_DOMAIN: ${{ env.APP_DOMAIN }}
 
       - name: Upload Failed Tests Screenshots
-        if: failure()
+        if: ${{ matrix.run_condition != 'false' && failure() }}
         uses: actions/upload-artifact@v4
         with:
           name: nightly-failed-screenshots-${{ matrix.browser }}-${{ matrix.environment }}
@@ -139,7 +175,7 @@ jobs:
           retention-days: 7
 
       - name: Merge Mochawesome Reports
-        if: always()
+        if: ${{ matrix.run_condition != 'false' && always() }}
         run: |
           JSON_DIR=pets-ui/cypress/reports/mochawesome/.jsons
           if ls ${JSON_DIR}/*.json 1> /dev/null 2>&1; then
@@ -149,7 +185,7 @@ jobs:
           fi
 
       - name: Upload Mochawesome Report
-        if: always()
+        if: ${{ matrix.run_condition != 'false' && always() }}
         uses: actions/upload-artifact@v4
         with:
           name: nightly-mochawesome-report-${{ matrix.browser }}-${{ matrix.environment }}
@@ -160,7 +196,9 @@ jobs:
       - name: Store browser-environment result
         if: always()
         run: |
-          if [[ "${{ steps.initial_attempt.outcome }}" == "success" ]] || [[ "${{ steps.retry_attempt.outcome }}" == "success" ]]; then
+          if [[ "${{ matrix.run_condition }}" == "false" ]]; then
+            echo "SKIP" > ${{ matrix.browser }}-${{ matrix.environment }}-result.txt
+          elif [[ "${{ steps.initial_attempt.outcome }}" == "success" ]] || [[ "${{ steps.retry_attempt.outcome }}" == "success" ]]; then
             echo "PASS" > ${{ matrix.browser }}-${{ matrix.environment }}-result.txt
           else
             echo "FAIL" > ${{ matrix.browser }}-${{ matrix.environment }}-result.txt
@@ -260,6 +298,8 @@ jobs:
                 else
                   ROW="$ROW ❌ |"
                 fi
+              elif [ "$RESULT" = "SKIP" ]; then
+                ROW="$ROW ⏭️ |"
               else
                 ROW="$ROW ✅ |"
               fi
@@ -358,6 +398,7 @@ jobs:
                 .matrix th { background: #f8f9fa; font-weight: bold; }
                 .status-pass { background: #d4edda; color: #155724; }
                 .status-fail { background: #f8d7da; color: #721c24; }
+                .status-skip { background: #fff3cd; color: #856404; }
               </style>
             </head>
             <body>
@@ -416,7 +457,7 @@ jobs:
                             <td><strong>Edge</strong></td>
                             <td class="status-${data.combinations.edge.qat.toLowerCase()}">${data.combinations.edge.qat}</td>
                             <td class="status-${data.combinations.edge.dev.toLowerCase()}">${data.combinations.edge.dev}</td>
-                            <td class="status-${data.combinations.edge.preprod.toLowerCase()}">${data.combinations.edge.preprod}</td>
+                            <td class="status-${data.combinations.edge.preprod.toLowerCase()}">${data.combinations.edge.preprod</td>
                           </tr>
                         </tbody>
                       </table>
