@@ -4,7 +4,12 @@ on:
   schedule:
     # Runs at 1 AM UTC every weekday (Monday to Friday)
     - cron: "0 1 * * 1-5"
-  workflow_dispatch: # Allows manual triggering through GitHub UI
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment (dev, preprod, qat)"
+        required: true
+        default: "qat"
 
 # Add permissions for GitHub Pages deployment
 permissions:
@@ -23,6 +28,7 @@ jobs:
         browser: [chrome, firefox, edge]
 
     env:
+      TARGET_ENV: ${{ github.event.inputs.environment }}
       USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
       USER_1_PASSWORD: ${{ secrets.USER_1_PASSWORD }}
       USER_2_EMAIL: ${{ secrets.USER_2_EMAIL }}
@@ -82,6 +88,8 @@ jobs:
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
           config-file: cypress/cypress.config.mjs
+        env:
+          ENVIRONMENT: ${{ env.TARGET_ENV }}
 
       - name: Retry if failed
         if: steps.initial_attempt.outcome != 'success'
@@ -269,6 +277,7 @@ jobs:
               "edge": "${{ steps.summary.outputs.edge_status }}"
             },
             "runUrl": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "environment": "${{ github.event.inputs.environment }}",
             "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
           }
           EOF
@@ -278,28 +287,36 @@ jobs:
           if [ ! -f "dashboard/index.html" ]; then
             cat > dashboard/index.html << 'EOF'
           <!DOCTYPE html>
-          <html><head><title>Pre-Entry TB Screening - Nightly Test Dashboard</title></head>
-          <body><h1>Dashboard Loading...</h1>
-          <script>
-          setTimeout(() => {
-            fetch('./test-results.json').then(r => r.json()).then(data => {
-              document.body.innerHTML = `
-                <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto;">
-                  <h1>🌙 Pre-Entry TB Screening - Nightly Tests: ${data.overallStatus}</h1>
-                  <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                    <p><strong>Browser Results:</strong></p>
-                    <p>Chrome: <span style="color: ${data.browsers.chrome === 'PASS' ? 'green' : 'red'}">${data.browsers.chrome}</span> | 
-                       Firefox: <span style="color: ${data.browsers.firefox === 'PASS' ? 'green' : 'red'}">${data.browsers.firefox}</span> | 
-                       Edge: <span style="color: ${data.browsers.edge === 'PASS' ? 'green' : 'red'}">${data.browsers.edge}</span></p>
-                  </div>
-                  <p><strong>Success Rate:</strong> ${data.successRate} | <strong>Failed Tests:</strong> ${data.failedTests}</p>
-                  <p><strong>Last Updated:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
-                  <p><a href="${data.runUrl}" target="_blank" style="background: #0066cc; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px;">📊 View Detailed Results</a></p>
-                </div>
-              `;
-            });
-          }, 100);
-          </script></body></html>
+          <html>
+            <head>
+              <title>Pre-Entry TB Screening - Nightly Test Dashboard</title>
+            </head>
+            <body>
+              <h1>Dashboard Loading...</h1>
+              <h2>Environment: <span id="env-name" style="color: #333;"></span></h2>
+              <script>
+                setTimeout(() => {
+                  fetch('./test-results.json').then(r => r.json()).then(data => {
+                    document.getElementById('env-name').textContent = data.environment;
+                    document.body.innerHTML = `
+                      <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto;">
+                        <h1>🌙 Pre-Entry TB Screening - Nightly Tests: ${data.overallStatus}</h1>
+                        <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                          <p><strong>Browser Results:</strong></p>
+                          <p>Chrome: <span style="color: ${data.browsers.chrome === 'PASS' ? 'green' : 'red'}">${data.browsers.chrome}</span> | 
+                             Firefox: <span style="color: ${data.browsers.firefox === 'PASS' ? 'green' : 'red'}">${data.browsers.firefox}</span> | 
+                             Edge: <span style="color: ${data.browsers.edge === 'PASS' ? 'green' : 'red'}">${data.browsers.edge}</span></p>
+                        </div>
+                        <p><strong>Success Rate:</strong> ${data.successRate} | <strong>Failed Tests:</strong> ${data.failedTests}</p>
+                        <p><strong>Last Updated:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
+                        <p><a href="${data.runUrl}" target="_blank" style="background: #0066cc; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px;">📊 View Detailed Results</a></p>
+                      </div>
+                    `;
+                  });
+                }, 100);
+              </script>
+            </body>
+          </html>
           EOF
           fi
 
