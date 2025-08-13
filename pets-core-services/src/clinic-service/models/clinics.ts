@@ -118,7 +118,7 @@ export class Clinic extends IClinic {
       const command = new GetCommand(params);
       const data: GetCommandOutput = await docClient.send(command);
 
-      if (data?.Item && data.Item?.name === undefined) {
+      if (!data?.Item || !data.Item.name) {
         logger.info("No clinic details found");
         return;
       }
@@ -129,7 +129,7 @@ export class Clinic extends IClinic {
 
       return new Clinic({
         ...dbItem,
-        startDate: new Date(dbItem.startDate),
+        startDate: dbItem.startDate,
         endDate: dbItem.endDate ? new Date(dbItem.endDate) : null,
       });
     } catch (error) {
@@ -142,13 +142,22 @@ export class Clinic extends IClinic {
    * It gets all Clinics
    * @returns array of Clinic objects
    */
-  static async getAllClinics(): Promise<Clinic[]> {
+  static async getAllClinics(country: string | undefined): Promise<Clinic[]> {
     try {
       logger.info(`Finding all clinics in '${process.env.CLINIC_SERVICE_DATABASE_NAME}'`);
 
       const params: ScanCommandInput = {
         TableName: Clinic.getTableName(),
       };
+      if (country) {
+        params.FilterExpression = "#cv = :countryVal";
+        params.ExpressionAttributeNames = {
+          "#cv": "country",
+        };
+        params.ExpressionAttributeValues = {
+          ":countryVal": country,
+        };
+      }
       const command = new ScanCommand(params);
       const data: ScanCommandOutput = await docClient.send(command);
 

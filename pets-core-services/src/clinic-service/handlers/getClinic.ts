@@ -14,7 +14,7 @@ export const getClinicHandler = async (event: APIGatewayProxyEvent) => {
     try {
       logger.info(`clinicId from queryStringParameters: ${clinicId}`);
       const clinic = await Clinic.getClinicById(clinicId);
-      if (!clinic) return createHttpResponse(404, { message: "No clinics exist" });
+      if (!clinic) return createHttpResponse(404, { message: "Clinic Details Not Found" });
 
       return createHttpResponse(200, JSON.stringify({ clinic }));
     } catch (error) {

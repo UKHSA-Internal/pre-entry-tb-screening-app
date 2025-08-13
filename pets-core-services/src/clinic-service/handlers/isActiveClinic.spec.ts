@@ -82,7 +82,7 @@ describe("Fetching an active clinic", () => {
       {},
       { ...mockAPIGwEvent, queryStringParameters: { clinicId: clinicsDetails[0].clinicId } },
     );
-    ddbMock.rejects("DB Error");
+    ddbMock.on(QueryCommand).rejects("DB Error");
 
     const res = await isActiveClinicHandler({ ...mockEvent });
 

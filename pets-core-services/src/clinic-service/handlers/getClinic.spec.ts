@@ -1,13 +1,14 @@
-import { ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { GetCommand } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
 import { describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
 import { CountryCode } from "../../shared/country";
 import { logger } from "../../shared/logger";
+import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { NewClinic } from "../models/clinics";
-import { fetchClinicsHandler } from "./fetchClinics";
+import { getClinicHandler } from "./getClinic";
 
 const clinicsDetails: NewClinic[] = [
   {
@@ -30,49 +31,49 @@ const clinicsDetails: NewClinic[] = [
   },
 ];
 
-describe("Fetching Clinic", () => {
+describe("Fetching Clinics", () => {
   const ddbMock = mockClient(awsClients.dynamoDBDocClient);
-
+  const event: PetsAPIGatewayProxyEvent = {
+    ...mockAPIGwEvent,
+    resource: "/clinics/{clinicId}",
+    path: "/clinics/12345",
+    pathParameters: {
+      clinicId: "12345",
+    },
+    httpMethod: "GET",
+  };
   test("success response", async () => {
-    ddbMock.on(ScanCommand).resolves({
-      Items: [
-        {
-          ...clinicsDetails[0],
-          pk: "CLINIC#clinic-id-01",
-          sk: "CLINIC#ROOT",
-        },
-        {
-          ...clinicsDetails[1],
-          pk: "CLINIC#clinic-id-02",
-          sk: "CLINIC#ROOT",
-        },
-      ],
+    ddbMock.on(GetCommand).resolves({
+      Item: {
+        ...clinicsDetails[0],
+        pk: "CLINIC#t12345",
+        sk: "CLINIC#ROOT",
+      },
     });
 
-    const res = await fetchClinicsHandler({ ...mockAPIGwEvent });
+    const res = await getClinicHandler({ ...event });
     expect(res.statusCode).toBe(200);
   });
 
   test("error response 500", async () => {
     const loggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
-    ddbMock.on(ScanCommand).rejects("DB Error");
+    ddbMock.on(GetCommand).rejects("DB Error");
 
-    const res = await fetchClinicsHandler({ ...mockAPIGwEvent });
+    const res = await getClinicHandler({ ...event });
     expect(res.statusCode).toBe(500);
-    expect(loggerMock).toHaveBeenCalled();
-    expect(loggerMock).toHaveBeenLastCalledWith(Error("DB Error"), "Fetching Clinics Failed");
+    expect(loggerMock).toHaveBeenLastCalledWith(
+      "Fetching clinic with ID: 12345 failed",
+      Error("DB Error"),
+    );
   });
 
   test("error response with status code 404", async () => {
     const loggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
-    ddbMock.on(ScanCommand).resolves({ Items: [] });
+    ddbMock.on(GetCommand).resolves({ Item: [] });
 
-    const res = await fetchClinicsHandler({ ...mockAPIGwEvent });
+    const res = await getClinicHandler({ ...event });
     expect(res.statusCode).toBe(404);
     expect(loggerMock).toHaveBeenCalled();
-    expect(loggerMock).toHaveBeenLastCalledWith(
-      { resultCount: 0 },
-      "Clinics data fetched successfully",
-    );
+    expect(loggerMock).toHaveBeenLastCalledWith("No clinic details found");
   });
 });
