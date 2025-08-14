@@ -21,6 +21,7 @@
     "cypress:run:preprod": "cross-env ENVIRONMENT=preprod cypress run -C cypress/cypress.config.mjs"
   },
   "dependencies": {
+    "@aws-sdk/client-sqs": "^3.864.0",
     "@azure/msal-browser": "^4.2.1",
     "@azure/msal-react": "^3.0.4",
     "@reduxjs/toolkit": "^2.3.0",
