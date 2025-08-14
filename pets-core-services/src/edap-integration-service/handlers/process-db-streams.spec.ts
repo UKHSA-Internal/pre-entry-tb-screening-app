@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 
 import { context } from "../../test/mocks/events";
 import { mainEvent } from "../tests/resources/stream-event";
-import { handler } from "./process-db-streams";
+import { edapIntegrationHandler } from "./process-db-streams";
 
 describe("Test for Integration Lambda", () => {
   test("Fetching an application", async () => {
@@ -12,7 +12,7 @@ describe("Test for Integration Lambda", () => {
 
     // Act
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const response = await handler(event, context, () => {});
+    const response = await edapIntegrationHandler(event, context, () => {});
 
     // Assert
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access

@@ -4,7 +4,7 @@ import { afterAll, describe, expect, it, vi } from "vitest";
 import { SQService } from "../services/sqs-service";
 import { StreamService } from "../services/stream-service";
 import { mainEvent } from "../tests/resources/stream-event";
-import { handler } from "./process-db-streams";
+import { edapIntegrationHandler } from "./process-db-streams";
 
 describe("handler Function", () => {
   const ctx = "" as unknown as Context;
@@ -17,7 +17,7 @@ describe("handler Function", () => {
     it("should return undefined", async () => {
       expect.assertions(1);
       try {
-        await handler(undefined, ctx, () => {
+        await edapIntegrationHandler(undefined, ctx, () => {
           return;
         });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,7 +37,7 @@ describe("handler Function", () => {
       StreamService.getClinicDataStream = vi.fn().mockReturnValue(result);
 
       try {
-        await handler(mainEvent, ctx, () => {
+        await edapIntegrationHandler(mainEvent, ctx, () => {
           return;
         });
       } catch (e) {
@@ -63,9 +63,13 @@ describe("handler Function", () => {
       expect.assertions(1);
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const returnedInfo = await handler({ Records: ["this is an event"] }, ctx, () => {
-        return;
-      });
+      const returnedInfo = await edapIntegrationHandler(
+        { Records: ["this is an event"] },
+        ctx,
+        () => {
+          return;
+        },
+      );
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       expect(returnedInfo.batchItemFailures.length).toBe(1);
     });
@@ -81,7 +85,7 @@ describe("handler Function", () => {
       expect.assertions(1);
       try {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const result = await handler({ Records: ["this is an event"] }, ctx, () => {
+        const result = await edapIntegrationHandler({ Records: ["this is an event"] }, ctx, () => {
           return;
         });
         expect(result).toBe({});

@@ -1,5 +1,5 @@
 import { Handler } from "aws-lambda";
 
-import { handler } from "../handlers/process-db-streams";
+import { edapIntegrationHandler } from "../handlers/process-db-streams";
 
-export const lambdaHandler: Handler = handler;
+export const handler: Handler = edapIntegrationHandler;

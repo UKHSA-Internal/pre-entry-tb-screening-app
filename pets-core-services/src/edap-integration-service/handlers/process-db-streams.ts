@@ -18,7 +18,7 @@ import { StreamService } from "../services/stream-service";
  * @param _context - λ Context
  * @param _callback - callback function
  */
-const handler: Handler = async (
+const edapIntegrationHandler: Handler = async (
   event: DynamoDBStreamEvent,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   context?: Context,
@@ -70,4 +70,4 @@ const handler: Handler = async (
   return { batchItemFailures };
 };
 
-export { handler };
+export { edapIntegrationHandler };

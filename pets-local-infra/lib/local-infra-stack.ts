@@ -37,8 +37,7 @@ export class LocalInfrastructureStack extends cdk.Stack {
     new HotReloadedLambda(this, "integration-service-lambda", {
       entry: join(
         __dirname,
-        // "../../pets-core-services/src/edap-integration-service/lambdas/edap-integration.ts",
-        "../../pets-core-services/src/edap-integration-service/handlers/process-db-streams.ts",
+        "../../pets-core-services/src/edap-integration-service/lambdas/edap-integration.ts",
       ),
       functionName: process.env.EDAP_INTEGRATION_LAMBDA_NAME,
     });

@@ -2,7 +2,7 @@ import { Context } from "aws-lambda";
 import { afterAll, describe, expect, it, vi } from "vitest";
 
 import { logger } from "../../shared/logger";
-import { lambdaHandler } from "./edap-integration";
+import { handler } from "./edap-integration";
 
 describe("Lambda", () => {
   const ctx = "" as unknown as Context;
@@ -20,7 +20,7 @@ describe("Lambda", () => {
       }),
     }));
 
-    await expect(lambdaHandler({}, ctx, () => {})).rejects.toEqual(
+    await expect(handler({}, ctx, () => {})).rejects.toEqual(
       new Error("event.Records is not iterable"),
     );
 
