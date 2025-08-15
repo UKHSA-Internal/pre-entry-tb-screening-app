@@ -50,7 +50,7 @@ describe("integrationHandler", () => {
   });
 
   test("processes a record successfully", async () => {
-    getClinicDataStreamMock.mockImplementation((record) => ({ applicationId: "1234" }));
+    getClinicDataStreamMock.mockImplementation(() => ({ applicationId: "1234" }));
     sendDbStreamMessageMock.mockResolvedValue(undefined);
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
