@@ -59,7 +59,7 @@ const edapIntegrationHandler: Handler = async (
         itemIdentifier: record.dynamodb?.SequenceNumber ?? "",
       });
       try {
-        await sqService.sendToDLQ(JSON.stringify(record) ?? new String(record));
+        await sqService.sendToDLQ(JSON.stringify(record) ?? null);
       } catch (error) {
         logger.error(error);
         throw new Error("Record can't be sent in the SQS/DLQ message");
