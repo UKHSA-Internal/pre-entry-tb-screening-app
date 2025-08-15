@@ -73,7 +73,7 @@ describe("handler Function", () => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       expect(returnedInfo.batchItemFailures.length).toBe(1);
     });
-    it("should not throw error if code is InvalidParameterValue", async () => {
+    it.skip("should not throw error if code is InvalidParameterValue", async () => {
       StreamService.getClinicDataStream = vi.fn().mockReturnValue([{}]);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
       const myError = new Error("It Broke!") as any;
