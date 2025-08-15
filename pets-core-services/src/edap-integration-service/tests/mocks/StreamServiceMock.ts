@@ -5,5 +5,5 @@ export const getClinicDataStreamMock = vi.fn();
 
 // Mocked StreamService class
 export class StreamService {
-  static getClinicDataStream = getClinicDataStreamMock;
+  public static readonly getClinicDataStream = getClinicDataStreamMock;
 }
