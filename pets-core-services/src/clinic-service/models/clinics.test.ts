@@ -206,7 +206,6 @@ describe("Tests for Clinic Model", () => {
     // Assert
     expect(clinic).toMatchObject({
       ...clinicsDetails[0],
-      // startDate: new Date("2025-01-01"),
       endDate: null,
     });
   });
