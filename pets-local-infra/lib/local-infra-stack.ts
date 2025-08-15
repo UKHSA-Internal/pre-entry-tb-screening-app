@@ -5,6 +5,7 @@ import { AttributeType, Table, TableProps } from "aws-cdk-lib/aws-dynamodb";
 import { Code, Function, Runtime } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunctionProps } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Bucket, HttpMethods } from "aws-cdk-lib/aws-s3";
+import { Queue } from "aws-cdk-lib/aws-sqs";
 import { Construct } from "constructs";
 import { basename, dirname, join, posix, relative, sep } from "path";
 export class LocalInfrastructureStack extends cdk.Stack {
@@ -31,6 +32,14 @@ export class LocalInfrastructureStack extends cdk.Stack {
         "../../pets-core-services/src/application-service/lambdas/application.ts",
       ),
       functionName: process.env.APPLICATION_SERVICE_LAMBDA_NAME,
+    });
+
+    new HotReloadedLambda(this, "integration-service-lambda", {
+      entry: join(
+        __dirname,
+        "../../pets-core-services/src/edap-integration-service/lambdas/edap-integration.ts",
+      ),
+      functionName: process.env.EDAP_INTEGRATION_LAMBDA_NAME,
     });
 
     new HotReloadedLambda(this, "authoriser-lambda", {
@@ -95,6 +104,18 @@ export class LocalInfrastructureStack extends cdk.Stack {
           allowedHeaders: ["*"],
         },
       ],
+    });
+
+    const edapDLQ = new Queue(this, "edap-integration-dlq", {
+      queueName: process.env.EDAP_INTEGRATION_DLQ_NAME,
+    });
+
+    new Queue(this, "integration-lambda", {
+      queueName: process.env.EDAP_INTEGRATION_QUEUE_NAME,
+      deadLetterQueue: {
+        queue: edapDLQ,
+        maxReceiveCount: 3,
+      },
     });
   }
 }
