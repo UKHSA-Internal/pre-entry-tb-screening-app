@@ -118,7 +118,7 @@ export class Clinic extends IClinic {
       const command = new GetCommand(params);
       const data: GetCommandOutput = await docClient.send(command);
 
-      if (!data?.Item || !data.Item.name) {
+      if (!data?.Item?.name) {
         logger.info("No clinic details found");
         return;
       }
@@ -133,7 +133,7 @@ export class Clinic extends IClinic {
         endDate: dbItem.endDate ? new Date(dbItem.endDate) : null,
       });
     } catch (error) {
-      logger.error(error, "Error retrieving clinic details");
+      logger.error(error, `Error retrieving  clinic with 'clinicId': ${clinicId}`);
       throw error;
     }
   }
