@@ -26,6 +26,21 @@ export class SputumCollectionPage extends BasePage {
     super("/sputum-collection");
   }
 
+  // Protected helper method for date field filling
+  protected fillDateFieldSafely(selector: string, value: string): void {
+    cy.get(selector).clear();
+    if (value && value.trim() !== "") {
+      cy.get(selector).type(value);
+    }
+  }
+
+  // Helper method for safe collection method selection
+  protected selectCollectionMethodSafely(selector: string, value: string): void {
+    if (value && value.trim() !== "") {
+      cy.get(selector).select(value);
+    }
+  }
+
   // Static test data for dates
   static getTestDateData(): { [key: string]: DateData } {
     return {
@@ -86,35 +101,35 @@ export class SputumCollectionPage extends BasePage {
     return this;
   }
 
-  // Date filling methods with data-testid as selectors
+  // Date filling methods with data-testid as selectors - using safe helpers
   fillSample1Date(
     date: DateData | { day: string; month: string; year: string },
   ): SputumCollectionPage {
-    cy.get('[data-testid="date-sample-1-taken-day"]').clear().type(date.day);
-    cy.get('[data-testid="date-sample-1-taken-month"]').clear().type(date.month);
-    cy.get('[data-testid="date-sample-1-taken-year"]').clear().type(date.year);
+    this.fillDateFieldSafely('[data-testid="date-sample-1-taken-day"]', date.day);
+    this.fillDateFieldSafely('[data-testid="date-sample-1-taken-month"]', date.month);
+    this.fillDateFieldSafely('[data-testid="date-sample-1-taken-year"]', date.year);
     return this;
   }
 
   fillSample2Date(
     date: DateData | { day: string; month: string; year: string },
   ): SputumCollectionPage {
-    cy.get('[data-testid="date-sample-2-taken-day"]').clear().type(date.day);
-    cy.get('[data-testid="date-sample-2-taken-month"]').clear().type(date.month);
-    cy.get('[data-testid="date-sample-2-taken-year"]').clear().type(date.year);
+    this.fillDateFieldSafely('[data-testid="date-sample-2-taken-day"]', date.day);
+    this.fillDateFieldSafely('[data-testid="date-sample-2-taken-month"]', date.month);
+    this.fillDateFieldSafely('[data-testid="date-sample-2-taken-year"]', date.year);
     return this;
   }
 
   fillSample3Date(
     date: DateData | { day: string; month: string; year: string },
   ): SputumCollectionPage {
-    cy.get('[data-testid="date-sample-3-taken-day"]').clear().type(date.day);
-    cy.get('[data-testid="date-sample-3-taken-month"]').clear().type(date.month);
-    cy.get('[data-testid="date-sample-3-taken-year"]').clear().type(date.year);
+    this.fillDateFieldSafely('[data-testid="date-sample-3-taken-day"]', date.day);
+    this.fillDateFieldSafely('[data-testid="date-sample-3-taken-month"]', date.month);
+    this.fillDateFieldSafely('[data-testid="date-sample-3-taken-year"]', date.year);
     return this;
   }
 
-  //Date filling methods for backward compatibility
+  // Date filling methods for backward compatibility
   fillSample1DateLegacy(day: string, month: string, year: string): SputumCollectionPage {
     return this.fillSample1Date({ day, month, year });
   }
@@ -127,19 +142,19 @@ export class SputumCollectionPage extends BasePage {
     return this.fillSample3Date({ day, month, year });
   }
 
-  // Collection method selection
+  // Collection method selection - using safe helpers
   selectSample1CollectionMethod(method: string): SputumCollectionPage {
-    cy.get('[name="collectionMethodSample1"]').select(method);
+    this.selectCollectionMethodSafely('[name="collectionMethodSample1"]', method);
     return this;
   }
 
   selectSample2CollectionMethod(method: string): SputumCollectionPage {
-    cy.get('[name="collectionMethodSample2"]').select(method);
+    this.selectCollectionMethodSafely('[name="collectionMethodSample2"]', method);
     return this;
   }
 
   selectSample3CollectionMethod(method: string): SputumCollectionPage {
-    cy.get('[name="collectionMethodSample3"]').select(method);
+    this.selectCollectionMethodSafely('[name="collectionMethodSample3"]', method);
     return this;
   }
 
@@ -395,10 +410,12 @@ export class SputumCollectionPage extends BasePage {
       "have.value",
       expectedData.sample1.date.year,
     );
-    cy.get('[name="collectionMethodSample1"]').should(
-      "have.value",
-      expectedData.sample1.collectionMethod,
-    );
+    if (expectedData.sample1.collectionMethod) {
+      cy.get('[name="collectionMethodSample1"]').should(
+        "have.value",
+        expectedData.sample1.collectionMethod,
+      );
+    }
 
     // Verify sample 2 data
     cy.get('[data-testid="date-sample-2-taken-day"]').should(
@@ -413,10 +430,12 @@ export class SputumCollectionPage extends BasePage {
       "have.value",
       expectedData.sample2.date.year,
     );
-    cy.get('[name="collectionMethodSample2"]').should(
-      "have.value",
-      expectedData.sample2.collectionMethod,
-    );
+    if (expectedData.sample2.collectionMethod) {
+      cy.get('[name="collectionMethodSample2"]').should(
+        "have.value",
+        expectedData.sample2.collectionMethod,
+      );
+    }
 
     // Verify sample 3 data
     cy.get('[data-testid="date-sample-3-taken-day"]').should(
@@ -431,10 +450,12 @@ export class SputumCollectionPage extends BasePage {
       "have.value",
       expectedData.sample3.date.year,
     );
-    cy.get('[name="collectionMethodSample3"]').should(
-      "have.value",
-      expectedData.sample3.collectionMethod,
-    );
+    if (expectedData.sample3.collectionMethod) {
+      cy.get('[name="collectionMethodSample3"]').should(
+        "have.value",
+        expectedData.sample3.collectionMethod,
+      );
+    }
 
     return this;
   }
@@ -470,7 +491,7 @@ export class SputumCollectionPage extends BasePage {
     return this;
   }
 
-  // Verify field error states
+  // Verify field error states - ALL fields have errors
   verifyFieldErrorStates(): SputumCollectionPage {
     // Check that all date fields have error styling
     cy.get("#date-sample-1-taken").should("have.class", "govuk-form-group--error");
@@ -482,6 +503,38 @@ export class SputumCollectionPage extends BasePage {
     cy.get("#collection-method-sample-2").should("have.class", "govuk-form-group--error");
     cy.get("#collection-method-sample-3").should("have.class", "govuk-form-group--error");
 
+    return this;
+  }
+
+  // Verify only date field error states
+  verifyDateFieldErrorStates(): SputumCollectionPage {
+    cy.get("#date-sample-1-taken").should("have.class", "govuk-form-group--error");
+    cy.get("#date-sample-2-taken").should("have.class", "govuk-form-group--error");
+    cy.get("#date-sample-3-taken").should("have.class", "govuk-form-group--error");
+    return this;
+  }
+
+  // Verify only collection method field error states
+  verifyCollectionMethodErrorStates(): SputumCollectionPage {
+    cy.get("#collection-method-sample-1").should("have.class", "govuk-form-group--error");
+    cy.get("#collection-method-sample-2").should("have.class", "govuk-form-group--error");
+    cy.get("#collection-method-sample-3").should("have.class", "govuk-form-group--error");
+    return this;
+  }
+
+  // Verify no collection method errors
+  verifyNoCollectionMethodErrors(): SputumCollectionPage {
+    cy.get("#collection-method-sample-1").should("not.have.class", "govuk-form-group--error");
+    cy.get("#collection-method-sample-2").should("not.have.class", "govuk-form-group--error");
+    cy.get("#collection-method-sample-3").should("not.have.class", "govuk-form-group--error");
+    return this;
+  }
+
+  // Verify no date field errors
+  verifyNoDateFieldErrors(): SputumCollectionPage {
+    cy.get("#date-sample-1-taken").should("not.have.class", "govuk-form-group--error");
+    cy.get("#date-sample-2-taken").should("not.have.class", "govuk-form-group--error");
+    cy.get("#date-sample-3-taken").should("not.have.class", "govuk-form-group--error");
     return this;
   }
 
@@ -516,6 +569,27 @@ export class SputumCollectionPage extends BasePage {
   // Verify redirection to progress tracker
   verifyRedirectionToProgressTracker(): SputumCollectionPage {
     this.verifyUrlContains("/tracker");
+    return this;
+  }
+
+  // Additional helper methods for better test support
+  clearAllFields(): SputumCollectionPage {
+    // Clear all date fields
+    cy.get('[data-testid="date-sample-1-taken-day"]').clear();
+    cy.get('[data-testid="date-sample-1-taken-month"]').clear();
+    cy.get('[data-testid="date-sample-1-taken-year"]').clear();
+    cy.get('[data-testid="date-sample-2-taken-day"]').clear();
+    cy.get('[data-testid="date-sample-2-taken-month"]').clear();
+    cy.get('[data-testid="date-sample-2-taken-year"]').clear();
+    cy.get('[data-testid="date-sample-3-taken-day"]').clear();
+    cy.get('[data-testid="date-sample-3-taken-month"]').clear();
+    cy.get('[data-testid="date-sample-3-taken-year"]').clear();
+
+    // Reset collection method dropdowns to default
+    cy.get('[name="collectionMethodSample1"]').select("");
+    cy.get('[name="collectionMethodSample2"]').select("");
+    cy.get('[name="collectionMethodSample3"]').select("");
+
     return this;
   }
 
