@@ -2,8 +2,8 @@ name: Nightly Cypress Tests - QAT & DEV
 
 on:
   schedule:
-    # Runs at 2 AM UTC every weekday (Monday to Friday)
-    - cron: "0 2 * * 1-5"
+    # Runs at 1 AM UTC every weekday (Monday to Friday)
+    - cron: "0 1 * * 1-5"
   workflow_dispatch:
     inputs:
       environment:
