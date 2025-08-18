@@ -22,18 +22,20 @@ jobs:
     name: Run Nightly Cypress Tests - ${{ matrix.browser }} on ${{ matrix.environment }}
     runs-on: ubuntu-latest
     strategy:
-      # Don't fail fast - run all tests even if some fail
       fail-fast: false
       matrix:
         browser: [chrome, firefox, edge]
         include:
-          # QAT environment - always run
+          # QAT environment - always run on schedule, or if explicitly selected
           - browser: chrome
             environment: qat
+            run_condition: ${{ github.event_name == 'schedule' || github.event.inputs.environment == 'all' || github.event.inputs.environment == 'qat' }}
           - browser: firefox
             environment: qat
+            run_condition: ${{ github.event_name == 'schedule' || github.event.inputs.environment == 'all' || github.event.inputs.environment == 'qat' }}
           - browser: edge
             environment: qat
+            run_condition: ${{ github.event_name == 'schedule' || github.event.inputs.environment == 'all' || github.event.inputs.environment == 'qat' }}
           # DEV environment - run if 'all' or 'dev' selected
           - browser: chrome
             environment: dev
@@ -44,7 +46,7 @@ jobs:
           - browser: edge
             environment: dev
             run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'dev' }}
-          # PREPROD environment - run if 'all' or 'preprod' selected
+          # PREPROD environment - SKIP on schedule, only run if explicitly selected
           - browser: chrome
             environment: preprod
             run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'preprod' }}
@@ -72,36 +74,36 @@ jobs:
 
     steps:
       - name: Skip job if not selected
-        if: ${{ matrix.run_condition == 'false' }}
+        if: ${{ !matrix.run_condition }}
         run: |
           echo "Skipping ${{ matrix.browser }} on ${{ matrix.environment }} - not selected"
           exit 0
 
       - name: Checkout code
-        if: ${{ matrix.run_condition != 'false' }}
+        if: ${{ matrix.run_condition }}
         uses: actions/checkout@v4
 
       - name: Install pnpm
-        if: ${{ matrix.run_condition != 'false' }}
+        if: ${{ matrix.run_condition }}
         uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
-        if: ${{ matrix.run_condition != 'false' }}
+        if: ${{ matrix.run_condition }}
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
           cache: "pnpm"
 
       - name: Install dependencies
-        if: ${{ matrix.run_condition != 'false' }}
+        if: ${{ matrix.run_condition }}
         run: pnpm i
 
       - name: Debug available Cypress specs
-        if: ${{ matrix.run_condition != 'false' }}
+        if: ${{ matrix.run_condition }}
         run: ls -R pets-ui/cypress/e2e
 
       - name: Cache Cypress binary
-        if: ${{ matrix.run_condition != 'false' }}
+        if: ${{ matrix.run_condition }}
         id: cache-cypress-binary
         uses: actions/cache@v4
         with:
@@ -109,14 +111,14 @@ jobs:
           key: cypress-binary-nightly-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
 
       - name: Install Cypress Binary
-        if: ${{ matrix.run_condition != 'false' && steps.cache-cypress-binary.outputs.cache-hit != 'true' }}
+        if: ${{ matrix.run_condition && steps.cache-cypress-binary.outputs.cache-hit != 'true' }}
         run: |
           pnpm exec cypress install --force
           pnpm exec cypress verify
         working-directory: pets-ui
 
       - name: Set target URL based on environment
-        if: ${{ matrix.run_condition != 'false' }}
+        if: ${{ matrix.run_condition }}
         run: |
           case "${{ matrix.environment }}" in
             "qat")
@@ -135,12 +137,12 @@ jobs:
           echo "Testing against: $APP_DOMAIN"
 
       - name: Start Local Environment (only if needed)
-        if: ${{ matrix.run_condition != 'false' && (matrix.environment == 'local' || matrix.environment == '') }}
+        if: ${{ matrix.run_condition && (matrix.environment == 'local' || matrix.environment == '') }}
         run: |
           pnpm start & sleep 120
 
       - name: Cypress run tests
-        if: ${{ matrix.run_condition != 'false' }}
+        if: ${{ matrix.run_condition }}
         uses: cypress-io/github-action@v6
         continue-on-error: true
         id: initial_attempt
@@ -154,7 +156,7 @@ jobs:
           APP_DOMAIN: ${{ env.APP_DOMAIN }}
 
       - name: Retry if failed
-        if: ${{ matrix.run_condition != 'false' && steps.initial_attempt.outcome != 'success' }}
+        if: ${{ matrix.run_condition && steps.initial_attempt.outcome != 'success' }}
         uses: cypress-io/github-action@v6
         id: retry_attempt
         with:
@@ -167,7 +169,7 @@ jobs:
           APP_DOMAIN: ${{ env.APP_DOMAIN }}
 
       - name: Upload Failed Tests Screenshots
-        if: ${{ matrix.run_condition != 'false' && failure() }}
+        if: ${{ matrix.run_condition && failure() }}
         uses: actions/upload-artifact@v4
         with:
           name: nightly-failed-screenshots-${{ matrix.browser }}-${{ matrix.environment }}
@@ -175,7 +177,7 @@ jobs:
           retention-days: 7
 
       - name: Merge Mochawesome Reports
-        if: ${{ matrix.run_condition != 'false' && always() }}
+        if: ${{ matrix.run_condition && always() }}
         run: |
           JSON_DIR=pets-ui/cypress/reports/mochawesome/.jsons
           if ls ${JSON_DIR}/*.json 1> /dev/null 2>&1; then
@@ -185,14 +187,13 @@ jobs:
           fi
 
       - name: Upload Mochawesome Report
-        if: ${{ matrix.run_condition != 'false' && always() }}
+        if: ${{ matrix.run_condition && always() }}
         uses: actions/upload-artifact@v4
         with:
           name: nightly-mochawesome-report-${{ matrix.browser }}-${{ matrix.environment }}
           path: pets-ui/cypress/reports/mochawesome/
           retention-days: 7
 
-      # Store browser-environment result for dashboard
       - name: Store browser-environment result
         if: always()
         run: |
@@ -217,7 +218,6 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
 
-    # Configure GitHub Pages
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -230,14 +230,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: all-artifacts
-          pattern: "*"
-
-      - name: Debug artifacts structure
-        run: |
-          echo "=== Artifacts Structure ==="
-          find all-artifacts -type f -name "*.txt" | head -20
-          echo "=== Sample result file ==="
-          find all-artifacts -name "*result.txt" | head -1 | xargs cat || echo "No result files found"
 
       - name: Generate test summary report
         id: summary
@@ -247,22 +239,15 @@ jobs:
           echo "**Run Date**: $(date)" >> nightly-summary.md
           echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
           echo "" >> nightly-summary.md
-
-          # Initialize counters
           TOTAL_COMBINATIONS=9
           FAILED_COMBINATIONS=0
           FAILED_TESTS=0
-
           echo "## Browser x Environment Test Results" >> nightly-summary.md
           echo "" >> nightly-summary.md
           echo "| Browser | QAT | DEV | PREPROD |" >> nightly-summary.md
           echo "|---------|-----|-----|---------|" >> nightly-summary.md
-
-          # Use regular variables instead of associative arrays
           ENVIRONMENTS="qat dev preprod"
           BROWSERS="chrome firefox edge"
-
-          # Initialize status variables
           chrome_qat_status="UNKNOWN"
           chrome_dev_status="UNKNOWN"
           chrome_preprod_status="UNKNOWN"
@@ -272,23 +257,17 @@ jobs:
           edge_qat_status="UNKNOWN"
           edge_dev_status="UNKNOWN"
           edge_preprod_status="UNKNOWN"
-
-          # Check each combination result
           for browser in $BROWSERS; do
             ROW="| $browser |"
             for env in $ENVIRONMENTS; do
               RESULT_FILE="all-artifacts/browser-result-$browser-$env/${browser}-${env}-result.txt"
               SCREENSHOT_DIR="all-artifacts/nightly-failed-screenshots-$browser-$env"
-              
               if [ -f "$RESULT_FILE" ]; then
                 RESULT=$(cat "$RESULT_FILE")
               else
                 RESULT="UNKNOWN"
               fi
-              
-              # Store status using eval to create dynamic variable names
               eval "${browser}_${env}_status=\"$RESULT\""
-              
               if [ "$RESULT" = "FAIL" ]; then
                 FAILED_COMBINATIONS=$((FAILED_COMBINATIONS + 1))
                 if [ -d "$SCREENSHOT_DIR" ] && [ "$(ls -A "$SCREENSHOT_DIR" 2>/dev/null)" ]; then
@@ -299,17 +278,14 @@ jobs:
                   ROW="$ROW ❌ |"
                 fi
               elif [ "$RESULT" = "SKIP" ]; then
-                ROW="$ROW ⏭️ |"
+                ROW="$ROW ⭐️ |"
               else
                 ROW="$ROW ✅ |"
               fi
             done
             echo "$ROW" >> nightly-summary.md
           done
-
           echo "" >> nightly-summary.md
-
-          # Overall status
           if [ $FAILED_COMBINATIONS -eq 0 ]; then
             echo "## ✅ Overall Status: PASSED" >> nightly-summary.md
             echo "All browser-environment combinations passed!" >> nightly-summary.md
@@ -321,17 +297,11 @@ jobs:
             echo "status=FAIL" >> $GITHUB_OUTPUT
             OVERALL_STATUS="FAIL"
           fi
-
-          # Calculate success rate
           SUCCESS_RATE=$(( (TOTAL_COMBINATIONS - FAILED_COMBINATIONS) * 100 / TOTAL_COMBINATIONS ))
-
-          # Set outputs for dashboard
           echo "overall_status=$OVERALL_STATUS" >> $GITHUB_OUTPUT
           echo "failed_tests=$FAILED_TESTS" >> $GITHUB_OUTPUT
           echo "success_rate=${SUCCESS_RATE}%" >> $GITHUB_OUTPUT
           echo "failed_combinations=$FAILED_COMBINATIONS" >> $GITHUB_OUTPUT
-
-          # Set individual statuses using eval to read dynamic variable names
           for browser in $BROWSERS; do
             for env in $ENVIRONMENTS; do
               eval "status=\$${browser}_${env}_status"
@@ -457,7 +427,7 @@ jobs:
                             <td><strong>Edge</strong></td>
                             <td class="status-${data.combinations.edge.qat.toLowerCase()}">${data.combinations.edge.qat}</td>
                             <td class="status-${data.combinations.edge.dev.toLowerCase()}">${data.combinations.edge.dev}</td>
-                            <td class="status-${data.combinations.edge.preprod.toLowerCase()}">${data.combinations.edge.preprod</td>
+                            <td class="status-${data.combinations.edge.preprod.toLowerCase()}">${data.combinations.edge.preprod}</td>
                           </tr>
                         </tbody>
                       </table>
