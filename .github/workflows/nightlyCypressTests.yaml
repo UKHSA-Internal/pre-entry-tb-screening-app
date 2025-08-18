@@ -1,4 +1,4 @@
-name: Nightly Cypress Tests
+name: Nightly Cypress Tests - QAT & DEV
 
 on:
   schedule:
