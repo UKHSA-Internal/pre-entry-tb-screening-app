@@ -1,4 +1,4 @@
-name: Nightly Cypress Tests
+name: Nightly Cypress Tests - QAT & DEV
 
 on:
   schedule:
@@ -36,16 +36,16 @@ jobs:
           - browser: edge
             environment: qat
             run_condition: ${{ github.event_name == 'schedule' || github.event.inputs.environment == 'all' || github.event.inputs.environment == 'qat' }}
-          # DEV environment - run if 'all' or 'dev' selected
+          # DEV environment - always run on schedule, or if explicitly selected
           - browser: chrome
             environment: dev
-            run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'dev' }}
+            run_condition: ${{ github.event_name == 'schedule' || github.event.inputs.environment == 'all' || github.event.inputs.environment == 'dev' }}
           - browser: firefox
             environment: dev
-            run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'dev' }}
+            run_condition: ${{ github.event_name == 'schedule' || github.event.inputs.environment == 'all' || github.event.inputs.environment == 'dev' }}
           - browser: edge
             environment: dev
-            run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'dev' }}
+            run_condition: ${{ github.event_name == 'schedule' || github.event.inputs.environment == 'all' || github.event.inputs.environment == 'dev' }}
 
     env:
       TARGET_ENV: ${{ matrix.environment }}
@@ -222,7 +222,7 @@ jobs:
         id: summary
         shell: bash
         run: |
-          echo "# 🌙 Nightly Cypress Test Results" > nightly-summary.md
+          echo "# 🌙 Nightly Cypress Test Results - QAT & DEV" > nightly-summary.md
           echo "**Run Date**: $(date)" >> nightly-summary.md
           echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
           echo "" >> nightly-summary.md
@@ -288,7 +288,7 @@ jobs:
           echo "failed_combinations=$FAILED_COMBINATIONS" >> $GITHUB_OUTPUT
           for browser in $BROWSERS; do
             for env in $ENVIRONMENTS; do
-              eval "status=\$${browser}_${env}_status"
+              eval "status=\${browser}_${env}_status"
               echo "${browser}_${env}_status=$status" >> $GITHUB_OUTPUT
             done
           done
@@ -334,7 +334,7 @@ jobs:
           <!DOCTYPE html>
           <html>
             <head>
-              <title>Pre-Entry TB Screening - Nightly Test Dashboard</title>
+              <title>Pre-Entry TB Screening - Nightly Test Dashboard (QAT & DEV)</title>
               <style>
                 body { font-family: Arial, sans-serif; padding: 20px; max-width: 1000px; margin: 0 auto; }
                 .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px; }
@@ -355,7 +355,7 @@ jobs:
             <body>
               <div class="header">
                 <h1>🌙 Pre-Entry TB Screening - Nightly Tests</h1>
-                <p>Cross-Browser & Cross-Environment Testing Dashboard</p>
+                <p>Cross-Browser & Cross-Environment Testing Dashboard (QAT & DEV)</p>
               </div>
               <div id="content">Loading...</div>
               <script>
@@ -437,7 +437,7 @@ jobs:
       - name: Upload summary report
         uses: actions/upload-artifact@v4
         with:
-          name: nightly-summary-report
+          name: nightly-summary-report-qat-dev
           path: nightly-summary.md
           retention-days: 7
 
