@@ -382,3 +382,19 @@ export const ApplicationSchema = z.object({
   sputumDetails: SputumResponseSchema,
   tbCertificate: TbCertificateResponseSchema,
 });
+
+export const RadiologicalOutcomeRequestSchema = z.object({
+  xrayResult: z.string().openapi({ description: "X ray result" }),
+  xrayResultDetail: z.string().openapi({ description: "X ray result details" }),
+  xrayMinorFindings: z.array(z.string()).openapi({
+    description: "Minor findings",
+  }),
+  xrayAssociatedMinorFindings: z.array(z.string()).openapi({
+    description: "Associated Minor Findings",
+  }),
+  xrayActiveTbFindings: z.array(z.string()).openapi({
+    description: "Active TB Findings",
+  }),
+  dateCreated: z.string().or(z.date()).openapi({ description: "Date created" }),
+  status: z.string().openapi({ description: "Status" }),
+});
