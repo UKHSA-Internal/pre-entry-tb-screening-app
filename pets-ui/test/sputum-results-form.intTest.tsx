@@ -1,6 +1,5 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock, vi } from "vitest";
 
 import { DateType, ReduxSputumSampleType, ReduxSputumType } from "@/applicant";
@@ -69,12 +68,9 @@ describe("SputumResultsForm", () => {
   });
 
   test("renders sample headings and dates", () => {
-    renderWithProviders(
-      <Router>
-        <SputumResultsForm />
-      </Router>,
-      { preloadedState: buildPreloadedState(defaultSputumState) },
-    );
+    renderWithProviders(<SputumResultsForm />, {
+      preloadedState: buildPreloadedState(defaultSputumState),
+    });
 
     expect(
       screen.getByRole("heading", { name: /Enter sputum sample results/i, level: 1 }),
@@ -103,12 +99,7 @@ describe("SputumResultsForm", () => {
       sample1: submittedSample,
     });
 
-    renderWithProviders(
-      <Router>
-        <SputumResultsForm />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<SputumResultsForm />, { preloadedState });
 
     const selects = screen.getAllByRole("combobox");
 
@@ -117,12 +108,9 @@ describe("SputumResultsForm", () => {
   });
 
   test("user can select results and navigate on save", async () => {
-    const { store } = renderWithProviders(
-      <Router>
-        <SputumResultsForm />
-      </Router>,
-      { preloadedState: buildPreloadedState(defaultSputumState) },
-    );
+    const { store } = renderWithProviders(<SputumResultsForm />, {
+      preloadedState: buildPreloadedState(defaultSputumState),
+    });
 
     const user = userEvent.setup();
 
@@ -140,12 +128,9 @@ describe("SputumResultsForm", () => {
   });
 
   test("shows validation error when no results entered and user clicks save", async () => {
-    renderWithProviders(
-      <Router>
-        <SputumResultsForm />
-      </Router>,
-      { preloadedState: buildPreloadedState(defaultSputumState) },
-    );
+    renderWithProviders(<SputumResultsForm />, {
+      preloadedState: buildPreloadedState(defaultSputumState),
+    });
 
     const user = userEvent.setup();
 
@@ -162,12 +147,9 @@ describe("SputumResultsForm", () => {
   });
 
   test("saves successfully when only smear results are provided", async () => {
-    renderWithProviders(
-      <Router>
-        <SputumResultsForm />
-      </Router>,
-      { preloadedState: buildPreloadedState(defaultSputumState) },
-    );
+    renderWithProviders(<SputumResultsForm />, {
+      preloadedState: buildPreloadedState(defaultSputumState),
+    });
 
     const user = userEvent.setup();
 
@@ -187,12 +169,9 @@ describe("SputumResultsForm", () => {
   });
 
   test("saves successfully when only culture results are provided", async () => {
-    renderWithProviders(
-      <Router>
-        <SputumResultsForm />
-      </Router>,
-      { preloadedState: buildPreloadedState(defaultSputumState) },
-    );
+    renderWithProviders(<SputumResultsForm />, {
+      preloadedState: buildPreloadedState(defaultSputumState),
+    });
 
     const user = userEvent.setup();
 
@@ -212,12 +191,9 @@ describe("SputumResultsForm", () => {
   });
 
   test("allows save when both smear and culture results are entered", async () => {
-    renderWithProviders(
-      <Router>
-        <SputumResultsForm />
-      </Router>,
-      { preloadedState: buildPreloadedState(defaultSputumState) },
-    );
+    renderWithProviders(<SputumResultsForm />, {
+      preloadedState: buildPreloadedState(defaultSputumState),
+    });
 
     const user = userEvent.setup();
 
@@ -244,12 +220,9 @@ describe("SputumResultsForm", () => {
       sample3: createEmptySample(),
     };
 
-    renderWithProviders(
-      <Router>
-        <SputumResultsForm />
-      </Router>,
-      { preloadedState: buildPreloadedState(stateWithOnlyOneSample) },
-    );
+    renderWithProviders(<SputumResultsForm />, {
+      preloadedState: buildPreloadedState(stateWithOnlyOneSample),
+    });
 
     const user = userEvent.setup();
 
@@ -284,12 +257,9 @@ describe("SputumResultsForm", () => {
       },
     };
 
-    renderWithProviders(
-      <Router>
-        <SputumResultsForm />
-      </Router>,
-      { preloadedState: buildPreloadedState(stateWithExistingValues) },
-    );
+    renderWithProviders(<SputumResultsForm />, {
+      preloadedState: buildPreloadedState(stateWithExistingValues),
+    });
 
     const user = userEvent.setup();
 
@@ -321,12 +291,9 @@ describe("SputumResultsForm", () => {
       },
     };
 
-    renderWithProviders(
-      <Router>
-        <SputumResultsForm />
-      </Router>,
-      { preloadedState: buildPreloadedState(stateWithNoResults) },
-    );
+    renderWithProviders(<SputumResultsForm />, {
+      preloadedState: buildPreloadedState(stateWithNoResults),
+    });
 
     const user = userEvent.setup();
 
@@ -421,12 +388,7 @@ describe("SputumResultsForm", () => {
       },
     };
 
-    renderWithProviders(
-      <Router>
-        <EnterSputumSampleResultsPage />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<EnterSputumSampleResultsPage />, { preloadedState });
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
@@ -513,12 +475,7 @@ describe("SputumResultsForm", () => {
       },
     };
 
-    renderWithProviders(
-      <Router>
-        <EnterSputumSampleResultsPage />
-      </Router>,
-      { preloadedState },
-    );
+    renderWithProviders(<EnterSputumSampleResultsPage />, { preloadedState });
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();

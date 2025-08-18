@@ -28,9 +28,7 @@ const summaryArrayData = [
 describe("Summary Component", () => {
   it("renders correctly when props are specified", () => {
     renderWithProviders(
-      <Router>
-        <Summary status={ApplicationStatus.NOT_YET_STARTED} summaryElements={summaryData} />
-      </Router>,
+      <Summary status={ApplicationStatus.NOT_YET_STARTED} summaryElements={summaryData} />,
     );
     expect(screen.getByText("Example Title")).toBeInTheDocument();
     expect(screen.getByText("A typical value")).toBeInTheDocument();

@@ -1,7 +1,7 @@
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
-import { BrowserRouter as Router, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest";
 
 import SputumQuestionPage from "@/pages/sputum-question";
@@ -36,11 +36,9 @@ describe("SputumQuestionPage", () => {
     window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMockFn;
 
     renderWithProviders(
-      <Router>
-        <HelmetProvider>
-          <SputumQuestionPage />
-        </HelmetProvider>
-      </Router>,
+      <HelmetProvider>
+        <SputumQuestionPage />
+      </HelmetProvider>,
     );
   });
 
@@ -136,11 +134,9 @@ describe("SputumQuestionPage", () => {
 
     cleanup();
     renderWithProviders(
-      <Router>
-        <HelmetProvider>
-          <SputumQuestionPage />
-        </HelmetProvider>
-      </Router>,
+      <HelmetProvider>
+        <SputumQuestionPage />
+      </HelmetProvider>,
     );
 
     expect(scrollIntoViewMockFn).toHaveBeenCalledTimes(1);

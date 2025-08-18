@@ -1,0 +1,507 @@
+name: Nightly Cypress Tests
+
+on:
+  schedule:
+    # Runs at 1 AM UTC every weekday (Monday to Friday)
+    - cron: "0 1 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment (dev, preprod, qat, all)"
+        required: true
+        default: "all"
+
+# Add permissions for GitHub Pages deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  cypress-nightly:
+    name: Run Nightly Cypress Tests - ${{ matrix.browser }} on ${{ matrix.environment }}
+    runs-on: ubuntu-latest
+    strategy:
+      # Don't fail fast - run all tests even if some fail
+      fail-fast: false
+      matrix:
+        browser: [chrome, firefox, edge]
+        include:
+          # QAT environment - always run
+          - browser: chrome
+            environment: qat
+          - browser: firefox
+            environment: qat
+          - browser: edge
+            environment: qat
+          # DEV environment - run if 'all' or 'dev' selected
+          - browser: chrome
+            environment: dev
+            run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'dev' }}
+          - browser: firefox
+            environment: dev
+            run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'dev' }}
+          - browser: edge
+            environment: dev
+            run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'dev' }}
+          # PREPROD environment - run if 'all' or 'preprod' selected
+          - browser: chrome
+            environment: preprod
+            run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'preprod' }}
+          - browser: firefox
+            environment: preprod
+            run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'preprod' }}
+          - browser: edge
+            environment: preprod
+            run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'preprod' }}
+
+    env:
+      TARGET_ENV: ${{ matrix.environment }}
+      USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
+      USER_1_PASSWORD: ${{ secrets.USER_1_PASSWORD }}
+      USER_2_EMAIL: ${{ secrets.USER_2_EMAIL }}
+      USER_2_PASSWORD: ${{ secrets.USER_2_PASSWORD }}
+      USER_3_EMAIL: ${{ secrets.USER_3_EMAIL }}
+      USER_3_PASSWORD: ${{ secrets.USER_3_PASSWORD }}
+      USER_4_EMAIL: ${{ secrets.USER_4_EMAIL }}
+      USER_4_PASSWORD: ${{ secrets.USER_4_PASSWORD }}
+      USER_5_EMAIL: ${{ secrets.USER_5_EMAIL }}
+      USER_5_PASSWORD: ${{ secrets.USER_5_PASSWORD }}
+      USER_6_EMAIL: ${{ secrets.USER_6_EMAIL }}
+      USER_6_PASSWORD: ${{ secrets.USER_6_PASSWORD }}
+
+    steps:
+      - name: Skip job if not selected
+        if: ${{ matrix.run_condition == 'false' }}
+        run: |
+          echo "Skipping ${{ matrix.browser }} on ${{ matrix.environment }} - not selected"
+          exit 0
+
+      - name: Checkout code
+        if: ${{ matrix.run_condition != 'false' }}
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        if: ${{ matrix.run_condition != 'false' }}
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        if: ${{ matrix.run_condition != 'false' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "pnpm"
+
+      - name: Install dependencies
+        if: ${{ matrix.run_condition != 'false' }}
+        run: pnpm i
+
+      - name: Debug available Cypress specs
+        if: ${{ matrix.run_condition != 'false' }}
+        run: ls -R pets-ui/cypress/e2e
+
+      - name: Cache Cypress binary
+        if: ${{ matrix.run_condition != 'false' }}
+        id: cache-cypress-binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-binary-nightly-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
+
+      - name: Install Cypress Binary
+        if: ${{ matrix.run_condition != 'false' && steps.cache-cypress-binary.outputs.cache-hit != 'true' }}
+        run: |
+          pnpm exec cypress install --force
+          pnpm exec cypress verify
+        working-directory: pets-ui
+
+      - name: Set target URL based on environment
+        if: ${{ matrix.run_condition != 'false' }}
+        run: |
+          case "${{ matrix.environment }}" in
+            "qat")
+              echo "APP_DOMAIN=https://clinics.test.pets.ukhsa.gov.uk" >> $GITHUB_ENV
+              ;;
+            "dev")
+              echo "APP_DOMAIN=https://clinics.dev.pets.ukhsa.gov.uk" >> $GITHUB_ENV
+              ;;
+            "preprod")
+              echo "APP_DOMAIN=https://clinics.preprod.pets.ukhsa.gov.uk" >> $GITHUB_ENV
+              ;;
+            *)
+              echo "APP_DOMAIN=http://localhost:3000" >> $GITHUB_ENV
+              ;;
+          esac
+          echo "Testing against: $APP_DOMAIN"
+
+      - name: Start Local Environment (only if needed)
+        if: ${{ matrix.run_condition != 'false' && (matrix.environment == 'local' || matrix.environment == '') }}
+        run: |
+          pnpm start & sleep 120
+
+      - name: Cypress run tests
+        if: ${{ matrix.run_condition != 'false' }}
+        uses: cypress-io/github-action@v6
+        continue-on-error: true
+        id: initial_attempt
+        with:
+          install: false
+          working-directory: pets-ui
+          browser: ${{ matrix.browser }}
+          config-file: cypress/cypress.config.mjs
+        env:
+          ENVIRONMENT: ${{ matrix.environment }}
+          APP_DOMAIN: ${{ env.APP_DOMAIN }}
+
+      - name: Retry if failed
+        if: ${{ matrix.run_condition != 'false' && steps.initial_attempt.outcome != 'success' }}
+        uses: cypress-io/github-action@v6
+        id: retry_attempt
+        with:
+          install: false
+          working-directory: pets-ui
+          browser: ${{ matrix.browser }}
+          config-file: cypress/cypress.config.mjs
+        env:
+          ENVIRONMENT: ${{ matrix.environment }}
+          APP_DOMAIN: ${{ env.APP_DOMAIN }}
+
+      - name: Upload Failed Tests Screenshots
+        if: ${{ matrix.run_condition != 'false' && failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-failed-screenshots-${{ matrix.browser }}-${{ matrix.environment }}
+          path: pets-ui/cypress/screenshots
+          retention-days: 7
+
+      - name: Merge Mochawesome Reports
+        if: ${{ matrix.run_condition != 'false' && always() }}
+        run: |
+          JSON_DIR=pets-ui/cypress/reports/mochawesome/.jsons
+          if ls ${JSON_DIR}/*.json 1> /dev/null 2>&1; then
+            npx mochawesome-merge ${JSON_DIR}/*.json > pets-ui/cypress/reports/mochawesome/mochawesome.json
+          else
+            echo "No mochawesome JSON files found. Skipping merge."
+          fi
+
+      - name: Upload Mochawesome Report
+        if: ${{ matrix.run_condition != 'false' && always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-mochawesome-report-${{ matrix.browser }}-${{ matrix.environment }}
+          path: pets-ui/cypress/reports/mochawesome/
+          retention-days: 7
+
+      # Store browser-environment result for dashboard
+      - name: Store browser-environment result
+        if: always()
+        run: |
+          if [[ "${{ matrix.run_condition }}" == "false" ]]; then
+            echo "SKIP" > ${{ matrix.browser }}-${{ matrix.environment }}-result.txt
+          elif [[ "${{ steps.initial_attempt.outcome }}" == "success" ]] || [[ "${{ steps.retry_attempt.outcome }}" == "success" ]]; then
+            echo "PASS" > ${{ matrix.browser }}-${{ matrix.environment }}-result.txt
+          else
+            echo "FAIL" > ${{ matrix.browser }}-${{ matrix.environment }}-result.txt
+          fi
+
+      - name: Upload browser-environment result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-result-${{ matrix.browser }}-${{ matrix.environment }}
+          path: ${{ matrix.browser }}-${{ matrix.environment }}-result.txt
+
+  generate-summary-and-deploy:
+    name: Generate Summary and Deploy Dashboard
+    needs: cypress-nightly
+    if: always()
+    runs-on: ubuntu-latest
+
+    # Configure GitHub Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-artifacts
+          pattern: "*"
+
+      - name: Debug artifacts structure
+        run: |
+          echo "=== Artifacts Structure ==="
+          find all-artifacts -type f -name "*.txt" | head -20
+          echo "=== Sample result file ==="
+          find all-artifacts -name "*result.txt" | head -1 | xargs cat || echo "No result files found"
+
+      - name: Generate test summary report
+        id: summary
+        shell: bash
+        run: |
+          echo "# 🌙 Nightly Cypress Test Results" > nightly-summary.md
+          echo "**Run Date**: $(date)" >> nightly-summary.md
+          echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
+          echo "" >> nightly-summary.md
+
+          # Initialize counters
+          TOTAL_COMBINATIONS=9
+          FAILED_COMBINATIONS=0
+          FAILED_TESTS=0
+
+          echo "## Browser x Environment Test Results" >> nightly-summary.md
+          echo "" >> nightly-summary.md
+          echo "| Browser | QAT | DEV | PREPROD |" >> nightly-summary.md
+          echo "|---------|-----|-----|---------|" >> nightly-summary.md
+
+          # Use regular variables instead of associative arrays
+          ENVIRONMENTS="qat dev preprod"
+          BROWSERS="chrome firefox edge"
+
+          # Initialize status variables
+          chrome_qat_status="UNKNOWN"
+          chrome_dev_status="UNKNOWN"
+          chrome_preprod_status="UNKNOWN"
+          firefox_qat_status="UNKNOWN"
+          firefox_dev_status="UNKNOWN"
+          firefox_preprod_status="UNKNOWN"
+          edge_qat_status="UNKNOWN"
+          edge_dev_status="UNKNOWN"
+          edge_preprod_status="UNKNOWN"
+
+          # Check each combination result
+          for browser in $BROWSERS; do
+            ROW="| $browser |"
+            for env in $ENVIRONMENTS; do
+              RESULT_FILE="all-artifacts/browser-result-$browser-$env/${browser}-${env}-result.txt"
+              SCREENSHOT_DIR="all-artifacts/nightly-failed-screenshots-$browser-$env"
+              
+              if [ -f "$RESULT_FILE" ]; then
+                RESULT=$(cat "$RESULT_FILE")
+              else
+                RESULT="UNKNOWN"
+              fi
+              
+              # Store status using eval to create dynamic variable names
+              eval "${browser}_${env}_status=\"$RESULT\""
+              
+              if [ "$RESULT" = "FAIL" ]; then
+                FAILED_COMBINATIONS=$((FAILED_COMBINATIONS + 1))
+                if [ -d "$SCREENSHOT_DIR" ] && [ "$(ls -A "$SCREENSHOT_DIR" 2>/dev/null)" ]; then
+                  SCREENSHOT_COUNT=$(find "$SCREENSHOT_DIR" -name "*.png" -o -name "*.jpg" | wc -l)
+                  ROW="$ROW ❌ ($SCREENSHOT_COUNT) |"
+                  FAILED_TESTS=$((FAILED_TESTS + SCREENSHOT_COUNT))
+                else
+                  ROW="$ROW ❌ |"
+                fi
+              elif [ "$RESULT" = "SKIP" ]; then
+                ROW="$ROW ⏭️ |"
+              else
+                ROW="$ROW ✅ |"
+              fi
+            done
+            echo "$ROW" >> nightly-summary.md
+          done
+
+          echo "" >> nightly-summary.md
+
+          # Overall status
+          if [ $FAILED_COMBINATIONS -eq 0 ]; then
+            echo "## ✅ Overall Status: PASSED" >> nightly-summary.md
+            echo "All browser-environment combinations passed!" >> nightly-summary.md
+            echo "status=PASS" >> $GITHUB_OUTPUT
+            OVERALL_STATUS="PASS"
+          else
+            echo "## ❌ Overall Status: FAILED" >> nightly-summary.md
+            echo "$FAILED_COMBINATIONS out of $TOTAL_COMBINATIONS combination(s) have failing tests." >> nightly-summary.md
+            echo "status=FAIL" >> $GITHUB_OUTPUT
+            OVERALL_STATUS="FAIL"
+          fi
+
+          # Calculate success rate
+          SUCCESS_RATE=$(( (TOTAL_COMBINATIONS - FAILED_COMBINATIONS) * 100 / TOTAL_COMBINATIONS ))
+
+          # Set outputs for dashboard
+          echo "overall_status=$OVERALL_STATUS" >> $GITHUB_OUTPUT
+          echo "failed_tests=$FAILED_TESTS" >> $GITHUB_OUTPUT
+          echo "success_rate=${SUCCESS_RATE}%" >> $GITHUB_OUTPUT
+          echo "failed_combinations=$FAILED_COMBINATIONS" >> $GITHUB_OUTPUT
+
+          # Set individual statuses using eval to read dynamic variable names
+          for browser in $BROWSERS; do
+            for env in $ENVIRONMENTS; do
+              eval "status=\$${browser}_${env}_status"
+              echo "${browser}_${env}_status=$status" >> $GITHUB_OUTPUT
+            done
+          done
+
+      - name: Create dashboard directory
+        run: |
+          mkdir -p dashboard
+          cp .github/pages/index.html dashboard/ || echo "index.html not found, will create default"
+
+      - name: Generate dashboard data JSON
+        shell: bash
+        run: |
+          cat > dashboard/test-results.json << EOF
+          {
+            "overallStatus": "${{ steps.summary.outputs.overall_status }}",
+            "successRate": "${{ steps.summary.outputs.success_rate }}",
+            "failedTests": ${{ steps.summary.outputs.failed_tests }},
+            "failedCombinations": ${{ steps.summary.outputs.failed_combinations }},
+            "totalCombinations": 9,
+            "lastRunHours": 0,
+            "combinations": {
+              "chrome": {
+                "qat": "${{ steps.summary.outputs.chrome_qat_status }}",
+                "dev": "${{ steps.summary.outputs.chrome_dev_status }}",
+                "preprod": "${{ steps.summary.outputs.chrome_preprod_status }}"
+              },
+              "firefox": {
+                "qat": "${{ steps.summary.outputs.firefox_qat_status }}",
+                "dev": "${{ steps.summary.outputs.firefox_dev_status }}",
+                "preprod": "${{ steps.summary.outputs.firefox_preprod_status }}"
+              },
+              "edge": {
+                "qat": "${{ steps.summary.outputs.edge_qat_status }}",
+                "dev": "${{ steps.summary.outputs.edge_dev_status }}",
+                "preprod": "${{ steps.summary.outputs.edge_preprod_status }}"
+              }
+            },
+            "runUrl": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
+          }
+          EOF
+
+      - name: Create updated dashboard HTML
+        run: |
+          cat > dashboard/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Pre-Entry TB Screening - Nightly Test Dashboard</title>
+              <style>
+                body { font-family: Arial, sans-serif; padding: 20px; max-width: 1000px; margin: 0 auto; }
+                .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px; }
+                .stats { display: flex; justify-content: space-around; margin: 20px 0; }
+                .stat { background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center; min-width: 120px; }
+                .stat-value { font-size: 2em; font-weight: bold; margin-bottom: 5px; }
+                .pass { color: #28a745; }
+                .fail { color: #dc3545; }
+                .matrix { margin: 20px 0; }
+                .matrix table { width: 100%; border-collapse: collapse; }
+                .matrix th, .matrix td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+                .matrix th { background: #f8f9fa; font-weight: bold; }
+                .status-pass { background: #d4edda; color: #155724; }
+                .status-fail { background: #f8d7da; color: #721c24; }
+                .status-skip { background: #fff3cd; color: #856404; }
+              </style>
+            </head>
+            <body>
+              <div class="header">
+                <h1>🌙 Pre-Entry TB Screening - Nightly Tests</h1>
+                <p>Cross-Browser & Cross-Environment Testing Dashboard</p>
+              </div>
+              <div id="content">Loading...</div>
+              <script>
+                fetch('./test-results.json').then(r => r.json()).then(data => {
+                  const content = `
+                    <div class="stats">
+                      <div class="stat">
+                        <div class="stat-value ${data.overallStatus === 'PASS' ? 'pass' : 'fail'}">${data.overallStatus}</div>
+                        <div>Overall Status</div>
+                      </div>
+                      <div class="stat">
+                        <div class="stat-value">${data.successRate}</div>
+                        <div>Success Rate</div>
+                      </div>
+                      <div class="stat">
+                        <div class="stat-value">${data.failedCombinations}/${data.totalCombinations}</div>
+                        <div>Failed Combinations</div>
+                      </div>
+                      <div class="stat">
+                        <div class="stat-value">${data.failedTests}</div>
+                        <div>Failed Tests</div>
+                      </div>
+                    </div>
+                    
+                    <div class="matrix">
+                      <h3>Browser × Environment Results</h3>
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Browser</th>
+                            <th>QAT</th>
+                            <th>DEV</th>
+                            <th>PREPROD</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><strong>Chrome</strong></td>
+                            <td class="status-${data.combinations.chrome.qat.toLowerCase()}">${data.combinations.chrome.qat}</td>
+                            <td class="status-${data.combinations.chrome.dev.toLowerCase()}">${data.combinations.chrome.dev}</td>
+                            <td class="status-${data.combinations.chrome.preprod.toLowerCase()}">${data.combinations.chrome.preprod}</td>
+                          </tr>
+                          <tr>
+                            <td><strong>Firefox</strong></td>
+                            <td class="status-${data.combinations.firefox.qat.toLowerCase()}">${data.combinations.firefox.qat}</td>
+                            <td class="status-${data.combinations.firefox.dev.toLowerCase()}">${data.combinations.firefox.dev}</td>
+                            <td class="status-${data.combinations.firefox.preprod.toLowerCase()}">${data.combinations.firefox.preprod}</td>
+                          </tr>
+                          <tr>
+                            <td><strong>Edge</strong></td>
+                            <td class="status-${data.combinations.edge.qat.toLowerCase()}">${data.combinations.edge.qat}</td>
+                            <td class="status-${data.combinations.edge.dev.toLowerCase()}">${data.combinations.edge.dev}</td>
+                            <td class="status-${data.combinations.edge.preprod.toLowerCase()}">${data.combinations.edge.preprod</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    
+                    <div style="margin-top: 20px; text-align: center;">
+                      <p><strong>Last Updated:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
+                      <a href="${data.runUrl}" target="_blank" style="background: #0066cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">📊 View Detailed Results</a>
+                    </div>
+                  `;
+                  document.getElementById('content').innerHTML = content;
+                });
+              </script>
+            </body>
+          </html>
+          EOF
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./dashboard"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Upload summary report
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-summary-report
+          path: nightly-summary.md
+          retention-days: 7
+
+      # Set final workflow status
+      - name: Set workflow conclusion
+        if: always()
+        run: |
+          echo "🔗 Dashboard URL: ${{ steps.deployment.outputs.page_url }}"
+          if [[ "${{ steps.summary.outputs.status }}" == "PASS" ]]; then
+            echo "::notice::✅ All nightly tests passed! Dashboard updated at ${{ steps.deployment.outputs.page_url }}"
+          else
+            echo "::error::❌ Some nightly tests failed. Check dashboard: ${{ steps.deployment.outputs.page_url }}"
+            exit 1
+          fi

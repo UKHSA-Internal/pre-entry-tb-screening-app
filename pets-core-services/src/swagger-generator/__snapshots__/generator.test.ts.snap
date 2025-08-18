@@ -11,7 +11,7 @@ exports[`writeApiDocumentation > should generate API documentation and write to 
         "name": "Authorization",
         "type": "apiKey",
         "x-amazon-apigateway-authorizer": {
-          "authorizerCredentials": "arn:aws:iam::000000000000:role/api_gateway_auth_invocation",
+          "authorizerCredentials": "arn:aws:iam::000000000000:role/api_gateway_auth_invocation_api-gateway-authoriser",
           "authorizerResultTtlInSeconds": 0,
           "authorizerUri": "arn:aws:apigateway:eu-west-2:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-2:000000000000:function:test-lambda-name/invocations",
           "identitySource": "method.request.header.Authorization",

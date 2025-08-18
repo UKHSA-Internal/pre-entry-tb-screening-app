@@ -1,6 +1,5 @@
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Mock } from "vitest";
 
 import TbCertificateDeclarationPage from "@/pages/tb-certificate-declaration";
@@ -20,11 +19,7 @@ beforeEach(() => useNavigateMock.mockClear());
 
 describe("TB Certificate Declaration Page", () => {
   test("renders form correctly", () => {
-    renderWithProviders(
-      <Router>
-        <TbCertificateDeclarationForm />
-      </Router>,
-    );
+    renderWithProviders(<TbCertificateDeclarationForm />);
 
     expect(screen.getByText("Enter clinic and certificate information")).toBeInTheDocument();
     expect(screen.getByText("Clinic name")).toBeInTheDocument();
@@ -35,12 +30,8 @@ describe("TB Certificate Declaration Page", () => {
     expect(screen.getByText("Physician's notes (optional)")).toBeInTheDocument();
   });
 
-  test("errors when required fields are missing", async () => {
-    renderWithProviders(
-      <Router>
-        <TbCertificateDeclarationForm />
-      </Router>,
-    );
+  test("errors when tb certificate issued selection is missing", async () => {
+    renderWithProviders(<TbCertificateDeclarationForm />);
 
     fireEvent.click(screen.getByText("Continue"));
 
@@ -49,12 +40,8 @@ describe("TB Certificate Declaration Page", () => {
     });
   });
 
-  test("displays clinic information and form fields", () => {
-    renderWithProviders(
-      <Router>
-        <TbCertificateDeclarationForm />
-      </Router>,
-    );
+  test("errors for tb clearance certificate date and tb clearance certificate number show when those fields are empty and 'Yes' is selected", () => {
+    renderWithProviders(<TbCertificateDeclarationForm />);
 
     expect(screen.getByText("Clinic name")).toBeInTheDocument();
     expect(screen.getByText("Lakeside Medical & TB Screening Centre")).toBeInTheDocument();
@@ -68,11 +55,9 @@ describe("TB Certificate Declaration Page", () => {
 
   test("renders page elements correctly", () => {
     renderWithProviders(
-      <Router>
-        <HelmetProvider>
-          <TbCertificateDeclarationPage />
-        </HelmetProvider>
-      </Router>,
+      <HelmetProvider>
+        <TbCertificateDeclarationPage />
+      </HelmetProvider>,
     );
 
     const link = screen.getByRole("link", { name: "Back" });

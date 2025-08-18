@@ -4,10 +4,11 @@ import {
   CreateTableCommand,
   GlobalSecondaryIndex,
 } from "@aws-sdk/client-dynamodb";
+import { CreateQueueCommand, QueueAttributeName } from "@aws-sdk/client-sqs";
 
 import awsClients from "../shared/clients/aws";
 
-const { dynamoDBDocClient } = awsClients;
+const { dynamoDBDocClient, sqsClient } = awsClients;
 
 export const createTable = async (
   tableName: string,
@@ -41,4 +42,15 @@ export const createTable = async (
     GlobalSecondaryIndexes,
   });
   await dynamoDBDocClient.send(createTableCommand);
+};
+
+export const createQueue = async (
+  queueName: string,
+  attributes: Partial<Record<QueueAttributeName, string>> | undefined,
+) => {
+  const createQueueCommand = new CreateQueueCommand({
+    QueueName: queueName,
+    Attributes: { ...attributes },
+  });
+  await sqsClient.send(createQueueCommand);
 };
