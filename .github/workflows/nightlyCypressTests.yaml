@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Target environment (dev, preprod, qat, all)"
+        description: "Target environment (dev, qat, all)"
         required: true
         default: "all"
 
@@ -46,16 +46,6 @@ jobs:
           - browser: edge
             environment: dev
             run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'dev' }}
-          # PREPROD environment - SKIP on schedule, only run if explicitly selected
-          - browser: chrome
-            environment: preprod
-            run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'preprod' }}
-          - browser: firefox
-            environment: preprod
-            run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'preprod' }}
-          - browser: edge
-            environment: preprod
-            run_condition: ${{ github.event.inputs.environment == 'all' || github.event.inputs.environment == 'preprod' }}
 
     env:
       TARGET_ENV: ${{ matrix.environment }}
@@ -126,9 +116,6 @@ jobs:
               ;;
             "dev")
               echo "APP_DOMAIN=https://clinics.dev.pets.ukhsa.gov.uk" >> $GITHUB_ENV
-              ;;
-            "preprod")
-              echo "APP_DOMAIN=https://clinics.preprod.pets.ukhsa.gov.uk" >> $GITHUB_ENV
               ;;
             *)
               echo "APP_DOMAIN=http://localhost:3000" >> $GITHUB_ENV
@@ -239,24 +226,21 @@ jobs:
           echo "**Run Date**: $(date)" >> nightly-summary.md
           echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
           echo "" >> nightly-summary.md
-          TOTAL_COMBINATIONS=9
+          TOTAL_COMBINATIONS=6
           FAILED_COMBINATIONS=0
           FAILED_TESTS=0
           echo "## Browser x Environment Test Results" >> nightly-summary.md
           echo "" >> nightly-summary.md
-          echo "| Browser | QAT | DEV | PREPROD |" >> nightly-summary.md
-          echo "|---------|-----|-----|---------|" >> nightly-summary.md
-          ENVIRONMENTS="qat dev preprod"
+          echo "| Browser | QAT | DEV |" >> nightly-summary.md
+          echo "|---------|-----|-----|" >> nightly-summary.md
+          ENVIRONMENTS="qat dev"
           BROWSERS="chrome firefox edge"
           chrome_qat_status="UNKNOWN"
           chrome_dev_status="UNKNOWN"
-          chrome_preprod_status="UNKNOWN"
           firefox_qat_status="UNKNOWN"
           firefox_dev_status="UNKNOWN"
-          firefox_preprod_status="UNKNOWN"
           edge_qat_status="UNKNOWN"
           edge_dev_status="UNKNOWN"
-          edge_preprod_status="UNKNOWN"
           for browser in $BROWSERS; do
             ROW="| $browser |"
             for env in $ENVIRONMENTS; do
@@ -323,23 +307,20 @@ jobs:
             "successRate": "${{ steps.summary.outputs.success_rate }}",
             "failedTests": ${{ steps.summary.outputs.failed_tests }},
             "failedCombinations": ${{ steps.summary.outputs.failed_combinations }},
-            "totalCombinations": 9,
+            "totalCombinations": 6,
             "lastRunHours": 0,
             "combinations": {
               "chrome": {
                 "qat": "${{ steps.summary.outputs.chrome_qat_status }}",
-                "dev": "${{ steps.summary.outputs.chrome_dev_status }}",
-                "preprod": "${{ steps.summary.outputs.chrome_preprod_status }}"
+                "dev": "${{ steps.summary.outputs.chrome_dev_status }}"
               },
               "firefox": {
                 "qat": "${{ steps.summary.outputs.firefox_qat_status }}",
-                "dev": "${{ steps.summary.outputs.firefox_dev_status }}",
-                "preprod": "${{ steps.summary.outputs.firefox_preprod_status }}"
+                "dev": "${{ steps.summary.outputs.firefox_dev_status }}"
               },
               "edge": {
                 "qat": "${{ steps.summary.outputs.edge_qat_status }}",
-                "dev": "${{ steps.summary.outputs.edge_dev_status }}",
-                "preprod": "${{ steps.summary.outputs.edge_preprod_status }}"
+                "dev": "${{ steps.summary.outputs.edge_dev_status }}"
               }
             },
             "runUrl": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
@@ -407,7 +388,6 @@ jobs:
                             <th>Browser</th>
                             <th>QAT</th>
                             <th>DEV</th>
-                            <th>PREPROD</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -415,19 +395,16 @@ jobs:
                             <td><strong>Chrome</strong></td>
                             <td class="status-${data.combinations.chrome.qat.toLowerCase()}">${data.combinations.chrome.qat}</td>
                             <td class="status-${data.combinations.chrome.dev.toLowerCase()}">${data.combinations.chrome.dev}</td>
-                            <td class="status-${data.combinations.chrome.preprod.toLowerCase()}">${data.combinations.chrome.preprod}</td>
                           </tr>
                           <tr>
                             <td><strong>Firefox</strong></td>
                             <td class="status-${data.combinations.firefox.qat.toLowerCase()}">${data.combinations.firefox.qat}</td>
                             <td class="status-${data.combinations.firefox.dev.toLowerCase()}">${data.combinations.firefox.dev}</td>
-                            <td class="status-${data.combinations.firefox.preprod.toLowerCase()}">${data.combinations.firefox.preprod}</td>
                           </tr>
                           <tr>
                             <td><strong>Edge</strong></td>
                             <td class="status-${data.combinations.edge.qat.toLowerCase()}">${data.combinations.edge.qat}</td>
                             <td class="status-${data.combinations.edge.dev.toLowerCase()}">${data.combinations.edge.dev}</td>
-                            <td class="status-${data.combinations.edge.preprod.toLowerCase()}">${data.combinations.edge.preprod}</td>
                           </tr>
                         </tbody>
                       </table>
