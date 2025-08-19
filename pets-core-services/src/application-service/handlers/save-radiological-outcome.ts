@@ -17,7 +17,7 @@ export const saveRadiologicalOutcomeHandler = async (event: SaveRadiologicalOutc
   try {
     const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
 
-    logger.info({ applicationId }, "Save Medical Screening handler triggered");
+    logger.info({ applicationId }, "Save Radiological Outcome handler triggered");
 
     const { parsedBody } = event;
 
@@ -25,7 +25,7 @@ export const saveRadiologicalOutcomeHandler = async (event: SaveRadiologicalOutc
       logger.error("Event missing parsed body");
 
       return createHttpResponse(500, {
-        message: "Internal Server Error: Medical Screening Request not parsed correctly",
+        message: "Internal Server Error: Radiological Outcome Request not parsed correctly",
       });
     }
 
@@ -37,7 +37,7 @@ export const saveRadiologicalOutcomeHandler = async (event: SaveRadiologicalOutc
       });
     } catch (error) {
       if (error instanceof ConditionalCheckFailedException)
-        return createHttpResponse(400, { message: "Medical Screening already saved" });
+        return createHttpResponse(400, { message: "Radiological Outcome already saved" });
       throw error;
     }
 
@@ -45,7 +45,7 @@ export const saveRadiologicalOutcomeHandler = async (event: SaveRadiologicalOutc
       ...radiologicalOutcome.toJson(),
     });
   } catch (err) {
-    logger.error(err, "Error saving Medical Screening");
+    logger.error(err, "Error saving Radiological Outcome");
     return createHttpResponse(500, { message: "Something went wrong" });
   }
 };

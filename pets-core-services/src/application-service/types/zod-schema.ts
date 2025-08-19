@@ -381,13 +381,17 @@ export const RadiologicalOutcomeRequestSchema = z.object({
   xrayActiveTbFindings: z.array(z.string()).openapi({
     description: "Active TB Findings",
   }),
-  dateCreated: z.string().or(z.date()).openapi({ description: "Date created" }),
-  status: z.string().openapi({ description: "Status" }),
 });
 
 export const RadiologicalOutcomeResponseSchema = RadiologicalOutcomeRequestSchema.extend({
   applicationId: z.string().openapi({
     description: "ID of application",
+  }),
+  dateCreated: z.string().or(z.date()).openapi({
+    description: "Creation Date in UTC timezone",
+  }),
+  status: z.string().openapi({
+    description: "Status of Task",
   }),
 });
 

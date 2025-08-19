@@ -124,7 +124,6 @@ export class RadiologicalOutcome extends IRadiologicalOutcome {
     return {
       applicationId: this.applicationId,
       status: this.status,
-
       xrayResult: this.xrayResult,
       xrayResultDetail: this.xrayResultDetail,
       xrayMinorFindings: this.xrayMinorFindings,
