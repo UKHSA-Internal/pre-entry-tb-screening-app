@@ -42,7 +42,11 @@ export const validateRequest = ({
           Object.assign(request.event, { parsedBody: parsedResult.data });
         }
 
-        if (queryStringParametersSchema) {
+        if (
+          queryStringParametersSchema &&
+          event.queryStringParameters &&
+          Object.keys(event.queryStringParameters).length > 0
+        ) {
           const { queryStringParameters } = event;
           const parsedResult = z
             .object(queryStringParametersSchema)

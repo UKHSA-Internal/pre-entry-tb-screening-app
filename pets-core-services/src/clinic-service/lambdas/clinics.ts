@@ -46,7 +46,7 @@ export const routes: PetsRoute[] = [
     }),
     queryParams: {
       clinicId: z.string({
-        description: "When specified, returns only the clinic with matching clinicId",
+        description: "When specified, returns only the clinic which is active",
       }),
     },
   },

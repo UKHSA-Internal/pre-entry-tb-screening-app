@@ -1,11 +1,10 @@
 {
   "extends": "../tsconfig.json",
+  "types": ["vitest/globals"],
   "compilerOptions": {
     "target": "es2022",
     "module": "commonjs",
-    "lib": [
-        "es2022"
-    ],
+    "lib": ["es2022"],
     "strict": true,
     "preserveConstEnums": true,
     "noEmit": false,
@@ -27,13 +26,9 @@
     "inlineSourceMap": true,
     "inlineSources": true,
     "declaration": true,
-    "composite": true,
+    "composite": true
   },
-  "exclude": [
-    "node_modules",
-  ],
-  "include": [
-    "**/*.ts"
-  ],
+  "exclude": ["node_modules"],
+  "include": ["**/*.ts"],
   "references": []
 }

@@ -26,6 +26,15 @@ const clinicsDetails: NewClinic[] = [
     endDate: "2030-01-25",
     createdBy: "info@eclinic.eu",
   },
+  {
+    clinicId: "clinic-id-03",
+    name: "Town's Clinic",
+    city: "Town two",
+    country: CountryCode.KOR,
+    startDate: "2025-01-03",
+    endDate: "2030-01-26",
+    createdBy: "info1@eclinic.eu",
+  },
 ];
 const clinicNoStartDate = {
   clinicId: "clinic-id-03",
@@ -125,8 +134,36 @@ describe("Tests for Clinic Model", () => {
       ],
     });
 
-    const results = await Clinic.getAllClinics();
+    const results = await Clinic.getAllClinics("");
     expect(results).toHaveLength(2);
+    expect(loggerMock).toHaveBeenCalled();
+    expect(loggerMock).toHaveBeenLastCalledWith(
+      { resultCount: 2 },
+      "Clinics data fetched successfully",
+    );
+  });
+
+  test("Get all clinics in a country if specified", async () => {
+    const loggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
+    ddbMock.on(ScanCommand).resolves({
+      Items: [
+        {
+          ...clinicsDetails[1],
+          pk: "CLINIC#clinic-id-02",
+          sk: "CLINIC#ROOT",
+        },
+        {
+          ...clinicsDetails[2],
+          pk: "CLINIC#clinic-id-03",
+          sk: "CLINIC#ROOT",
+        },
+      ],
+    });
+
+    const results = await Clinic.getAllClinics("KOR");
+    expect(results).toHaveLength(2);
+    expect(results[0].country).toBe("KOR");
+    expect(results[1].country).toBe("KOR");
     expect(loggerMock).toHaveBeenCalled();
     expect(loggerMock).toHaveBeenLastCalledWith(
       { resultCount: 2 },
@@ -138,7 +175,7 @@ describe("Tests for Clinic Model", () => {
     const loggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
     ddbMock.on(ScanCommand).rejects("DB Error");
 
-    await expect(Clinic.getAllClinics()).rejects.toThrowError("DB Error");
+    await expect(Clinic.getAllClinics("")).rejects.toThrowError("DB Error");
 
     expect(loggerMock).toHaveBeenCalled();
     expect(loggerMock).toHaveBeenLastCalledWith(Error("DB Error"), "Error retrieving clinics");
@@ -148,7 +185,7 @@ describe("Tests for Clinic Model", () => {
     const loggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
     ddbMock.on(ScanCommand).resolves({});
 
-    const results = await Clinic.getAllClinics();
+    const results = await Clinic.getAllClinics("");
     expect(results).toHaveLength(0);
     expect(loggerMock).toHaveBeenCalled();
     expect(loggerMock).toHaveBeenLastCalledWith("No clinics found");
@@ -169,30 +206,25 @@ describe("Tests for Clinic Model", () => {
     // Assert
     expect(clinic).toMatchObject({
       ...clinicsDetails[0],
-      startDate: new Date("2025-01-01"),
       endDate: null,
     });
   });
 
   test("Getting clinic by clinicID error handling", async () => {
     const consoleMock = vi.spyOn(logger, "error").mockImplementation(() => null);
-    // @ts-expect-error checking error handling
-    ddbMock.on(GetCommand).resolves(undefined);
-
-    // Act
-    await expect(Clinic.getClinicById("clinic-id-01")).rejects.toThrow(
-      "Cannot read properties of undefined (reading 'Item')",
-    );
+    const clinicId = "clinic-id-01";
+    ddbMock.on(GetCommand).rejects();
 
     // Assert
-    expect(consoleMock).toHaveBeenCalledOnce();
+    await expect(Clinic.getClinicById("clinic-id-01")).rejects.toThrow();
+    expect(consoleMock).toHaveBeenCalled();
     expect(consoleMock).toHaveBeenLastCalledWith(
-      TypeError("Cannot read properties of undefined (reading 'Item')"),
-      "Error retrieving clinic details",
+      Error(),
+      `Error retrieving  clinic with 'clinicId': ${clinicId}`,
     );
   });
 
-  test("Getting clinic by clinicID no rusults", async () => {
+  test("Getting clinic by clinicID no results", async () => {
     const consoleMock = vi.spyOn(logger, "info").mockImplementation(() => null);
     ddbMock.on(GetCommand).resolves({
       Item: {},

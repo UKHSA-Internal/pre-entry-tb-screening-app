@@ -3,8 +3,8 @@ import { execSync } from "child_process";
 import crypto from "crypto";
 import { beforeAll, beforeEach } from "vitest";
 
-import { createTable } from "./db-ops";
 import { seedDatabase } from "./seed-data";
+import { createQueue, createTable } from "./service-utils";
 
 beforeAll(() => {
   const isPowerShell =
@@ -43,4 +43,7 @@ beforeEach(async () => {
   await createTable(process.env.CLINIC_SERVICE_DATABASE_NAME, []);
 
   await seedDatabase();
+
+  process.env.EDAP_INTEGRATION_QUEUE_NAME = `test_sqs_queue_${crypto.randomUUID()}`;
+  await createQueue(process.env.EDAP_INTEGRATION_QUEUE_NAME, {});
 }, 12000);

@@ -12,9 +12,16 @@
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
     "cypress:open": "cypress open -C cypress/cypress.config.mjs",
-    "cypress:run": "cypress run -C cypress/cypress.config.mjs"
+    "cypress:run": "cypress run -C cypress/cypress.config.mjs",
+    "cypress:open:qat": "cross-env ENVIRONMENT=qat cypress open -C cypress/cypress.config.mjs",
+    "cypress:open:dev": "cross-env ENVIRONMENT=dev cypress open -C cypress/cypress.config.mjs",
+    "cypress:open:preprod": "cross-env ENVIRONMENT=preprod cypress open -C cypress/cypress.config.mjs",
+    "cypress:run:qat": "cross-env ENVIRONMENT=qat cypress run -C cypress/cypress.config.mjs",
+    "cypress:run:dev": "cross-env ENVIRONMENT=dev cypress run -C cypress/cypress.config.mjs",
+    "cypress:run:preprod": "cross-env ENVIRONMENT=preprod cypress run -C cypress/cypress.config.mjs"
   },
   "dependencies": {
+    "@aws-sdk/client-sqs": "^3.864.0",
     "@azure/msal-browser": "^4.2.1",
     "@azure/msal-react": "^3.0.4",
     "@reduxjs/toolkit": "^2.3.0",
@@ -46,6 +53,7 @@
     "@types/react-redux": "^7.1.34",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "axios-mock-adapter": "^2.1.0",
+    "cross-env": "^7.0.3",
     "cypress": "^14.5.0",
     "cypress-mochawesome-reporter": "^3.8.2",
     "cypress-multi-reporters": "^2.0.5",

@@ -1,4 +1,4 @@
-import { ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { APIGatewayProxyResult } from "aws-lambda";
 import { mockClient } from "aws-sdk-client-mock";
 import { describe, expect, test, vi } from "vitest";
@@ -67,6 +67,13 @@ describe("Test for Clinic Lambda", () => {
       httpMethod: "GET",
     };
 
+    ddbMock.on(GetCommand).resolves({
+      Item: {
+        ...clinicDetails[0],
+        pk: "CLINIC#t12345",
+        sk: "CLINIC#ROOT",
+      },
+    });
     // Act
     const response: APIGatewayProxyResult = await handler(event, context);
 
@@ -83,6 +90,7 @@ describe("Test for Clinic Lambda", () => {
       path: "/clinics",
       httpMethod: "GET",
     };
+
     ddbMock.on(ScanCommand).resolves({
       Items: [
         {
@@ -109,25 +117,6 @@ describe("Test for Clinic Lambda", () => {
       { resultCount: 1 },
       "Clinics data fetched successfully",
     );
-  });
-
-  test("Checking an active clinic", async () => {
-    // Arrange;
-    const event: PetsAPIGatewayProxyEvent = {
-      ...mockAPIGwEvent,
-      resource: "/clinics/active",
-      path: "/clinics/active",
-      queryStringParameters: {
-        clinicId: "1",
-      },
-      httpMethod: "GET",
-    };
-
-    // Act
-    const response: APIGatewayProxyResult = await handler(event, context);
-
-    // Assert
-    expect(response.statusCode).toBe(200);
   });
 
   test("Checking an active Clinic", async () => {
