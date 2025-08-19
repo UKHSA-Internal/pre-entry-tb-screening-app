@@ -125,7 +125,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: screenshots-${{ matrix.browser }}-${{ matrix.environment.name }}-${{ strategy.job-index }}-${{ github.run_id }}
+          name: screenshots-${{ matrix.browser }}-${{ matrix.environment.name }}-${{ github.run_number }}-${{ github.run_attempt }}
           path: pets-ui/cypress/screenshots
           retention-days: 7
           if-no-files-found: ignore
@@ -144,7 +144,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: report-${{ matrix.browser }}-${{ matrix.environment.name }}-${{ strategy.job-index }}-${{ github.run_id }}
+          name: report-${{ matrix.browser }}-${{ matrix.environment.name }}-${{ github.run_number }}-${{ github.run_attempt }}
           path: pets-ui/cypress/reports/mochawesome/
           retention-days: 7
           if-no-files-found: ignore
@@ -158,13 +158,16 @@ jobs:
           else
             echo "FAIL" > ${{ matrix.browser }}-${{ matrix.environment.name }}-result.txt
           fi
+          # Add timestamp to make filename unique
+          TIMESTAMP=$(date +%s%N)
+          cp ${{ matrix.browser }}-${{ matrix.environment.name }}-result.txt ${{ matrix.browser }}-${{ matrix.environment.name }}-${TIMESTAMP}-result.txt
 
       - name: Upload browser-environment result
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: result-${{ matrix.browser }}-${{ matrix.environment.name }}-${{ strategy.job-index }}-${{ github.run_id }}
-          path: ${{ matrix.browser }}-${{ matrix.environment.name }}-result.txt
+          name: result-${{ matrix.browser }}-${{ matrix.environment.name }}-${{ github.run_number }}-${{ github.run_attempt }}
+          path: ${{ matrix.browser }}-${{ matrix.environment.name }}-*-result.txt
           if-no-files-found: ignore
 
   generate-summary-and-deploy:
@@ -222,20 +225,22 @@ jobs:
             ROW="| $browser"
             
             for env in "${ENVIRONMENTS[@]}"; do
-              # Find result file with pattern matching since job-index varies
-              RESULT_FILE=$(find all-artifacts -name "result-${browser}-${env}-*-${{ github.run_id }}" -type d | head -1)
+              # Find result file with pattern matching
+              RESULT_FILE=$(find all-artifacts -name "result-${browser}-${env}-${{ github.run_number }}-*" -type d | head -1)
               if [ -n "$RESULT_FILE" ]; then
-                RESULT_FILE="$RESULT_FILE/${browser}-${env}-result.txt"
-              fi
-              
-              # Find screenshot directory with pattern matching
-              SCREENSHOT_DIR=$(find all-artifacts -name "screenshots-${browser}-${env}-*-${{ github.run_id }}" -type d | head -1)
-              
-              if [ -f "$RESULT_FILE" ]; then
-                RESULT=$(cat "$RESULT_FILE")
+                # Find the actual result file inside the directory
+                ACTUAL_RESULT_FILE=$(find "$RESULT_FILE" -name "${browser}-${env}-*-result.txt" | head -1)
+                if [ -f "$ACTUAL_RESULT_FILE" ]; then
+                  RESULT=$(cat "$ACTUAL_RESULT_FILE")
+                else
+                  RESULT="UNKNOWN"
+                fi
               else
                 RESULT="UNKNOWN"
               fi
+              
+              # Find screenshot directory with pattern matching
+              SCREENSHOT_DIR=$(find all-artifacts -name "screenshots-${browser}-${env}-${{ github.run_number }}-*" -type d | head -1)
               
               BROWSER_ENV_STATUS["${browser}_${env}"]="$RESULT"
               
