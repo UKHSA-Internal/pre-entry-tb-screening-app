@@ -18,7 +18,7 @@ permissions:
   id-token: write
 
 jobs:
-  # Add a job to determine environments
+  # Simple job to determine which environments to test
   determine-environments:
     name: Determine Target Environments
     runs-on: ubuntu-latest
@@ -28,14 +28,9 @@ jobs:
       - name: Set environments
         id: set-environments
         run: |
-          echo "Event name: ${{ github.event_name }}"
-          echo "Manual input: ${{ github.event.inputs.environment }}"
-
           if [[ "${{ github.event_name }}" == "schedule" ]] || [[ "${{ github.event.inputs.environment }}" == "all" ]] || [[ "${{ github.event.inputs.environment }}" == "" ]]; then
-            echo "Running tests on all environments: qat, dev, preprod"
             echo 'environments=["qat", "dev", "preprod"]' >> $GITHUB_OUTPUT
           else
-            echo "Running tests on single environment: ${{ github.event.inputs.environment }}"
             echo 'environments=["${{ github.event.inputs.environment }}"]' >> $GITHUB_OUTPUT
           fi
 
@@ -44,13 +39,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: determine-environments
     strategy:
-      # Don't fail fast - run all tests even if some fail
       fail-fast: false
       matrix:
         browser: [chrome, firefox, edge]
         environment: ${{ fromJson(needs.determine-environments.outputs.environments) }}
 
     env:
+      # Set the environment for the Cypress config to pick up
+      ENVIRONMENT: ${{ matrix.environment }}
       TARGET_ENV: ${{ matrix.environment }}
       USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
       USER_1_PASSWORD: ${{ secrets.USER_1_PASSWORD }}
@@ -98,26 +94,9 @@ jobs:
           pnpm exec cypress verify
         working-directory: pets-ui
 
-      - name: Set target URL based on environment
-        run: |
-          case "${{ matrix.environment }}" in
-            "qat")
-              echo "APP_DOMAIN=https://clinics.test.pets.ukhsa.gov.uk" >> $GITHUB_ENV
-              ;;
-            "dev")
-              echo "APP_DOMAIN=https://clinics.dev.pets.ukhsa.gov.uk" >> $GITHUB_ENV
-              ;;
-            "preprod")
-              echo "APP_DOMAIN=https://clinics.preprod.pets.ukhsa.gov.uk" >> $GITHUB_ENV
-              ;;
-            *)
-              echo "APP_DOMAIN=http://localhost:3000" >> $GITHUB_ENV
-              ;;
-          esac
-          echo "Testing against: $APP_DOMAIN"
-
-      - name: Start Local Environment (only if needed)
-        if: ${{ matrix.environment == 'local' || matrix.environment == '' }}
+      # Only start local environment if testing locally (not for remote environments)
+      - name: Start Local Environment
+        if: ${{ matrix.environment == 'local' }}
         run: |
           pnpm start & sleep 120
 
@@ -129,9 +108,7 @@ jobs:
           install: false
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
-        env:
-          ENVIRONMENT: ${{ matrix.environment }}
-          APP_DOMAIN: ${{ env.APP_DOMAIN }}
+          config-file: cypress/cypress.config.mjs
 
       - name: Retry if failed
         if: steps.initial_attempt.outcome != 'success'
@@ -141,9 +118,7 @@ jobs:
           install: false
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
-        env:
-          ENVIRONMENT: ${{ matrix.environment }}
-          APP_DOMAIN: ${{ env.APP_DOMAIN }}
+          config-file: cypress/cypress.config.mjs
 
       - name: Upload Failed Tests Screenshots
         if: failure()
@@ -209,16 +184,8 @@ jobs:
           path: all-artifacts
           pattern: "*"
 
-      - name: Debug artifacts structure
-        run: |
-          echo "=== Artifacts Structure ==="
-          find all-artifacts -type f -name "*.txt" | head -20
-          echo "=== Sample result file ==="
-          find all-artifacts -name "*result.txt" | head -1 | xargs cat || echo "No result files found"
-
       - name: Generate test summary report
         id: summary
-        shell: bash
         run: |
           echo "# 🌙 Nightly Cypress Test Results" > nightly-summary.md
           echo "**Run Date**: $(date)" >> nightly-summary.md
@@ -239,7 +206,7 @@ jobs:
           echo "| Browser | QAT | DEV | PREPROD |" >> nightly-summary.md
           echo "|---------|-----|-----|---------|" >> nightly-summary.md
 
-          # Use regular variables instead of associative arrays
+          # Check results for each browser-environment combination
           ENVIRONMENTS="qat dev preprod"
           BROWSERS="chrome firefox edge"
 
@@ -337,7 +304,6 @@ jobs:
           cp .github/pages/index.html dashboard/ || echo "index.html not found, will create default"
 
       - name: Generate dashboard data JSON
-        shell: bash
         run: |
           cat > dashboard/test-results.json << EOF
           {
@@ -371,9 +337,10 @@ jobs:
           }
           EOF
 
-      - name: Create updated dashboard HTML
+      - name: Create default index.html if not exists
         run: |
-          cat > dashboard/index.html << 'EOF'
+          if [ ! -f "dashboard/index.html" ]; then
+            cat > dashboard/index.html << 'EOF'
           <!DOCTYPE html>
           <html>
             <head>
@@ -477,6 +444,7 @@ jobs:
             </body>
           </html>
           EOF
+          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
