@@ -4,7 +4,7 @@ on:
   schedule:
     # Runs at 1 AM UTC every weekday (Monday to Friday)
     - cron: "0 1 * * 1-5"
-  workflow_dispatch:
+  workflow_dispatch: # Allows manual triggering through GitHub UI
     inputs:
       environment:
         description: "Target environment (dev, preprod, qat, all)"
@@ -19,20 +19,14 @@ permissions:
 
 jobs:
   cypress-nightly:
-    name: Run Nightly Cypress Tests - ${{ matrix.browser }} on ${{ matrix.environment }}
+    name: Run Nightly Cypress Tests - ${{ matrix.browser }}
     runs-on: ubuntu-latest
     strategy:
       # Don't fail fast - run all tests even if some fail
       fail-fast: false
       matrix:
         browser: [chrome, firefox, edge]
-        environment:
-          - ${{ github.event.inputs.environment == 'all' && 'qat' || github.event.inputs.environment }}
-          - ${{ github.event.inputs.environment == 'all' && 'dev' || '' }}
-          - ${{ github.event.inputs.environment == 'all' && 'preprod' || '' }}
-        exclude:
-          - environment: ""
-
+        environment: [qat, dev, preprod]
     env:
       TARGET_ENV: ${{ matrix.environment }}
       USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
@@ -81,25 +75,7 @@ jobs:
           pnpm exec cypress verify
         working-directory: pets-ui
 
-      - name: Set target URL based on environment
-        run: |
-          case "${{ matrix.environment }}" in
-            "qat")
-              echo "APP_DOMAIN=https://clinics.test.pets.ukhsa.gov.uk" >> $GITHUB_ENV
-              ;;
-            "dev")
-              echo "APP_DOMAIN=https://clinics.dev.pets.ukhsa.gov.uk" >> $GITHUB_ENV
-              ;;
-            "preprod")
-              echo "APP_DOMAIN=https://clinics.preprod.pets.ukhsa.gov.uk" >> $GITHUB_ENV
-              ;;
-            *)
-              echo "APP_DOMAIN=http://localhost:3000" >> $GITHUB_ENV
-              ;;
-          esac
-          echo "Testing against: $APP_DOMAIN"
-      - name: Start Local Environment (only if needed)
-        if: ${{ matrix.environment == 'local' || matrix.environment == '' }}
+      - name: Start Local Environment
         run: |
           pnpm start & sleep 120
       - name: Cypress run tests
@@ -111,9 +87,6 @@ jobs:
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
           config-file: cypress/cypress.config.mjs
-        env:
-          ENVIRONMENT: ${{ matrix.environment }}
-          APP_DOMAIN: ${{ env.APP_DOMAIN }}
 
       - name: Retry if failed
         if: steps.initial_attempt.outcome != 'success'
@@ -124,15 +97,12 @@ jobs:
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
           config-file: cypress/cypress.config.mjs
-        env:
-          ENVIRONMENT: ${{ matrix.environment }}
-          APP_DOMAIN: ${{ env.APP_DOMAIN }}
 
       - name: Upload Failed Tests Screenshots
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: nightly-failed-screenshots-${{ matrix.browser }}-${{ matrix.environment }}
+          name: nightly-failed-screenshots-${{ matrix.browser }}
           path: pets-ui/cypress/screenshots
           retention-days: 7
 
@@ -149,25 +119,25 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: nightly-mochawesome-report-${{ matrix.browser }}-${{ matrix.environment }}
+          name: nightly-mochawesome-report-${{ matrix.browser }}
           path: pets-ui/cypress/reports/mochawesome/
           retention-days: 7
 
-      # Store browser-environment result for dashboard
-      - name: Store browser-environment result
+      # Store browser result for dashboard
+      - name: Store browser result
         if: always()
         run: |
           if [[ "${{ steps.initial_attempt.outcome }}" == "success" ]] || [[ "${{ steps.retry_attempt.outcome }}" == "success" ]]; then
-            echo "PASS" > ${{ matrix.browser }}-${{ matrix.environment }}-result.txt
+            echo "PASS" > ${{ matrix.browser }}-result.txt
           else
-            echo "FAIL" > ${{ matrix.browser }}-${{ matrix.environment }}-result.txt
+            echo "FAIL" > ${{ matrix.browser }}-result.txt
           fi
-      - name: Upload browser-environment result
+      - name: Upload browser result
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: browser-result-${{ matrix.browser }}-${{ matrix.environment }}
-          path: ${{ matrix.browser }}-${{ matrix.environment }}-result.txt
+          name: browser-result-${{ matrix.browser }}
+          path: ${{ matrix.browser }}-result.txt
 
   generate-summary-and-deploy:
     name: Generate Summary and Deploy Dashboard
@@ -198,205 +168,131 @@ jobs:
           echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
           echo "" >> nightly-summary.md
           # Initialize counters
-          TOTAL_COMBINATIONS=9
-          FAILED_COMBINATIONS=0
+          TOTAL_BROWSERS=3
+          FAILED_BROWSERS=0
           FAILED_TESTS=0
-          echo "## Browser x Environment Test Results" >> nightly-summary.md
+          echo "## Browser Test Results" >> nightly-summary.md
           echo "" >> nightly-summary.md
-          echo "| Browser | QAT | DEV | PREPROD |" >> nightly-summary.md
-          echo "|---------|-----|-----|---------|" >> nightly-summary.md
-          # Initialize status variables for JSON
-          declare -A STATUSES
-          ENVIRONMENTS=("qat" "dev" "preprod")
-          BROWSERS=("chrome" "firefox" "edge")
-          # Check each combination result
-          for browser in "${BROWSERS[@]}"; do
-            ROW="| $browser |"
-            for env in "${ENVIRONMENTS[@]}"; do
-              RESULT_FILE="all-artifacts/browser-result-$browser-$env/${browser}-${env}-result.txt"
-              SCREENSHOT_DIR="all-artifacts/nightly-failed-screenshots-$browser-$env"
-              
-              if [ -f "$RESULT_FILE" ]; then
-                RESULT=$(cat "$RESULT_FILE")
+          echo "| Browser | Status | Screenshots |" >> nightly-summary.md
+          echo "|---------|--------|-------------|" >> nightly-summary.md
+          # Initialize browser status variables
+          CHROME_STATUS="PASS"
+          FIREFOX_STATUS="PASS"
+          EDGE_STATUS="PASS"
+          # Check each browser result
+          for browser in chrome firefox edge; do
+            SCREENSHOT_DIR="all-artifacts/nightly-failed-screenshots-$browser"
+            RESULT_FILE="all-artifacts/browser-result-$browser/${browser}-result.txt"
+            
+            # Check result file
+            if [ -f "$RESULT_FILE" ]; then
+              BROWSER_RESULT=$(cat "$RESULT_FILE")
+            else
+              BROWSER_RESULT="UNKNOWN"
+            fi
+            
+            # Set browser status variables for JSON
+            case $browser in
+              chrome) CHROME_STATUS="$BROWSER_RESULT" ;;
+              firefox) FIREFOX_STATUS="$BROWSER_RESULT" ;;
+              edge) EDGE_STATUS="$BROWSER_RESULT" ;;
+            esac
+            
+            if [ "$BROWSER_RESULT" = "FAIL" ]; then
+              ((FAILED_BROWSERS++))
+              if [ -d "$SCREENSHOT_DIR" ] && [ "$(ls -A $SCREENSHOT_DIR 2>/dev/null)" ]; then
+                SCREENSHOT_COUNT=$(find "$SCREENSHOT_DIR" -name "*.png" -o -name "*.jpg" | wc -l)
+                echo "| $browser | ❌ Failed | $SCREENSHOT_COUNT failure(s) |" >> nightly-summary.md
+                FAILED_TESTS=$((FAILED_TESTS + SCREENSHOT_COUNT))
               else
-                RESULT="UNKNOWN"
+                echo "| $browser | ❌ Failed | No screenshots |" >> nightly-summary.md
               fi
-              
-              # Store status for JSON
-              STATUSES["${browser}_${env}"]="$RESULT"
-              
-              if [ "$RESULT" = "FAIL" ]; then
-                ((FAILED_COMBINATIONS++))
-                if [ -d "$SCREENSHOT_DIR" ] && [ "$(ls -A $SCREENSHOT_DIR 2>/dev/null)" ]; then
-                  SCREENSHOT_COUNT=$(find "$SCREENSHOT_DIR" -name "*.png" -o -name "*.jpg" | wc -l)
-                  ROW="$ROW ❌ ($SCREENSHOT_COUNT) |"
-                  FAILED_TESTS=$((FAILED_TESTS + SCREENSHOT_COUNT))
-                else
-                  ROW="$ROW ❌ |"
-                fi
-              else
-                ROW="$ROW ✅ |"
-              fi
-            done
-            echo "$ROW" >> nightly-summary.md
+            else
+              echo "| $browser | ✅ Passed | - |" >> nightly-summary.md
+            fi
           done
           echo "" >> nightly-summary.md
           # Overall status
-          if [ $FAILED_COMBINATIONS -eq 0 ]; then
+          if [ $FAILED_BROWSERS -eq 0 ]; then
             echo "## ✅ Overall Status: PASSED" >> nightly-summary.md
-            echo "All browser-environment combinations passed!" >> nightly-summary.md
+            echo "All browser tests completed successfully!" >> nightly-summary.md
             echo "status=PASS" >> $GITHUB_OUTPUT
             OVERALL_STATUS="PASS"
           else
             echo "## ❌ Overall Status: FAILED" >> nightly-summary.md
-            echo "$FAILED_COMBINATIONS out of $TOTAL_COMBINATIONS combination(s) have failing tests." >> nightly-summary.md
+            echo "$FAILED_BROWSERS out of $TOTAL_BROWSERS browser(s) have failing tests." >> nightly-summary.md
             echo "status=FAIL" >> $GITHUB_OUTPUT
             OVERALL_STATUS="FAIL"
           fi
-          # Calculate success rate
-          SUCCESS_RATE=$(( (TOTAL_COMBINATIONS - FAILED_COMBINATIONS) * 100 / TOTAL_COMBINATIONS ))
+          # Calculate success rate (mock calculation - you can enhance this)
+          if [ $FAILED_BROWSERS -eq 0 ]; then
+            SUCCESS_RATE="100%"
+          elif [ $FAILED_BROWSERS -eq 1 ]; then
+            SUCCESS_RATE="67%"
+          elif [ $FAILED_BROWSERS -eq 2 ]; then
+            SUCCESS_RATE="33%"
+          else
+            SUCCESS_RATE="0%"
+          fi
           # Set outputs for dashboard
           echo "overall_status=$OVERALL_STATUS" >> $GITHUB_OUTPUT
+          echo "chrome_status=$CHROME_STATUS" >> $GITHUB_OUTPUT
+          echo "firefox_status=$FIREFOX_STATUS" >> $GITHUB_OUTPUT
+          echo "edge_status=$EDGE_STATUS" >> $GITHUB_OUTPUT
           echo "failed_tests=$FAILED_TESTS" >> $GITHUB_OUTPUT
-          echo "success_rate=${SUCCESS_RATE}%" >> $GITHUB_OUTPUT
-          echo "failed_combinations=$FAILED_COMBINATIONS" >> $GITHUB_OUTPUT
-          # Set individual statuses
-          for browser in "${BROWSERS[@]}"; do
-            for env in "${ENVIRONMENTS[@]}"; do
-              echo "${browser}_${env}_status=${STATUSES["${browser}_${env}"]}" >> $GITHUB_OUTPUT
-            done
-          done
+          echo "success_rate=$SUCCESS_RATE" >> $GITHUB_OUTPUT
       - name: Create dashboard directory
         run: |
           mkdir -p dashboard
           cp .github/pages/index.html dashboard/ || echo "index.html not found, will create default"
       - name: Generate dashboard data JSON
         run: |
+          # Calculate hours since last run (approximate)
+          HOURS_AGO=$(( ($(date +%s) - $(date -d "1 hour ago" +%s)) / 3600 ))
           cat > dashboard/test-results.json << EOF
           {
             "overallStatus": "${{ steps.summary.outputs.overall_status }}",
             "successRate": "${{ steps.summary.outputs.success_rate }}",
             "failedTests": ${{ steps.summary.outputs.failed_tests }},
-            "failedCombinations": ${{ steps.summary.outputs.failed_combinations }},
-            "totalCombinations": 9,
             "lastRunHours": 0,
-            "combinations": {
-              "chrome": {
-                "qat": "${{ steps.summary.outputs.chrome_qat_status }}",
-                "dev": "${{ steps.summary.outputs.chrome_dev_status }}",
-                "preprod": "${{ steps.summary.outputs.chrome_preprod_status }}"
-              },
-              "firefox": {
-                "qat": "${{ steps.summary.outputs.firefox_qat_status }}",
-                "dev": "${{ steps.summary.outputs.firefox_dev_status }}",
-                "preprod": "${{ steps.summary.outputs.firefox_preprod_status }}"
-              },
-              "edge": {
-                "qat": "${{ steps.summary.outputs.edge_qat_status }}",
-                "dev": "${{ steps.summary.outputs.edge_dev_status }}",
-                "preprod": "${{ steps.summary.outputs.edge_preprod_status }}"
-              }
+            "browsers": {
+              "chrome": "${{ steps.summary.outputs.chrome_status }}",
+              "firefox": "${{ steps.summary.outputs.firefox_status }}",
+              "edge": "${{ steps.summary.outputs.edge_status }}"
             },
             "runUrl": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
             "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
           }
           EOF
-      - name: Create updated dashboard HTML
+      - name: Create default index.html if not exists
         run: |
-          cat > dashboard/index.html << 'EOF'
+          if [ ! -f "dashboard/index.html" ]; then
+            cat > dashboard/index.html << 'EOF'
           <!DOCTYPE html>
-          <html>
-            <head>
-              <title>Pre-Entry TB Screening - Nightly Test Dashboard</title>
-              <style>
-                body { font-family: Arial, sans-serif; padding: 20px; max-width: 1000px; margin: 0 auto; }
-                .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px; }
-                .stats { display: flex; justify-content: space-around; margin: 20px 0; }
-                .stat { background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center; min-width: 120px; }
-                .stat-value { font-size: 2em; font-weight: bold; margin-bottom: 5px; }
-                .pass { color: #28a745; }
-                .fail { color: #dc3545; }
-                .matrix { margin: 20px 0; }
-                .matrix table { width: 100%; border-collapse: collapse; }
-                .matrix th, .matrix td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-                .matrix th { background: #f8f9fa; font-weight: bold; }
-                .status-pass { background: #d4edda; color: #155724; }
-                .status-fail { background: #f8d7da; color: #721c24; }
-              </style>
-            </head>
-            <body>
-              <div class="header">
-                <h1>🌙 Pre-Entry TB Screening - Nightly Tests</h1>
-                <p>Cross-Browser & Cross-Environment Testing Dashboard</p>
-              </div>
-              <div id="content">Loading...</div>
-              <script>
-                fetch('./test-results.json').then(r => r.json()).then(data => {
-                  const content = `
-                    <div class="stats">
-                      <div class="stat">
-                        <div class="stat-value ${data.overallStatus === 'PASS' ? 'pass' : 'fail'}">${data.overallStatus}</div>
-                        <div>Overall Status</div>
-                      </div>
-                      <div class="stat">
-                        <div class="stat-value">${data.successRate}</div>
-                        <div>Success Rate</div>
-                      </div>
-                      <div class="stat">
-                        <div class="stat-value">${data.failedCombinations}/${data.totalCombinations}</div>
-                        <div>Failed Combinations</div>
-                      </div>
-                      <div class="stat">
-                        <div class="stat-value">${data.failedTests}</div>
-                        <div>Failed Tests</div>
-                      </div>
-                    </div>
-                    
-                    <div class="matrix">
-                      <h3>Browser × Environment Results</h3>
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>Browser</th>
-                            <th>QAT</th>
-                            <th>DEV</th>
-                            <th>PREPROD</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td><strong>Chrome</strong></td>
-                            <td class="status-${data.combinations.chrome.qat.toLowerCase()}">${data.combinations.chrome.qat}</td>
-                            <td class="status-${data.combinations.chrome.dev.toLowerCase()}">${data.combinations.chrome.dev}</td>
-                            <td class="status-${data.combinations.chrome.preprod.toLowerCase()}">${data.combinations.chrome.preprod}</td>
-                          </tr>
-                          <tr>
-                            <td><strong>Firefox</strong></td>
-                            <td class="status-${data.combinations.firefox.qat.toLowerCase()}">${data.combinations.firefox.qat}</td>
-                            <td class="status-${data.combinations.firefox.dev.toLowerCase()}">${data.combinations.firefox.dev}</td>
-                            <td class="status-${data.combinations.firefox.preprod.toLowerCase()}">${data.combinations.firefox.preprod}</td>
-                          </tr>
-                          <tr>
-                            <td><strong>Edge</strong></td>
-                            <td class="status-${data.combinations.edge.qat.toLowerCase()}">${data.combinations.edge.qat}</td>
-                            <td class="status-${data.combinations.edge.dev.toLowerCase()}">${data.combinations.edge.dev}</td>
-                            <td class="status-${data.combinations.edge.preprod.toLowerCase()}">${data.combinations.edge.preprod}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    
-                    <div style="margin-top: 20px; text-align: center;">
-                      <p><strong>Last Updated:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
-                      <a href="${data.runUrl}" target="_blank" style="background: #0066cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">📊 View Detailed Results</a>
-                    </div>
-                  `;
-                  document.getElementById('content').innerHTML = content;
-                });
-              </script>
-            </body>
-          </html>
+          <html><head><title>Pre-Entry TB Screening - Nightly Test Dashboard</title></head>
+          <body><h1>Dashboard Loading...</h1>
+          <script>
+          setTimeout(() => {
+            fetch('./test-results.json').then(r => r.json()).then(data => {
+              document.body.innerHTML = `
+                <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto;">
+                  <h1>🌙 Pre-Entry TB Screening - Nightly Tests: ${data.overallStatus}</h1>
+                  <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <p><strong>Browser Results:</strong></p>
+                    <p>Chrome: <span style="color: ${data.browsers.chrome === 'PASS' ? 'green' : 'red'}">${data.browsers.chrome}</span> | 
+                       Firefox: <span style="color: ${data.browsers.firefox === 'PASS' ? 'green' : 'red'}">${data.browsers.firefox}</span> | 
+                       Edge: <span style="color: ${data.browsers.edge === 'PASS' ? 'green' : 'red'}">${data.browsers.edge}</span></p>
+                  </div>
+                  <p><strong>Success Rate:</strong> ${data.successRate} | <strong>Failed Tests:</strong> ${data.failedTests}</p>
+                  <p><strong>Last Updated:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
+                  <p><a href="${data.runUrl}" target="_blank" style="background: #0066cc; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px;">📊 View Detailed Results</a></p>
+                </div>
+              `;
+            });
+          }, 100);
+          </script></body></html>
           EOF
+          fi
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
