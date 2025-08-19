@@ -125,9 +125,10 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: nightly-failed-screenshots-${{ matrix.browser }}-${{ matrix.environment.name }}
+          name: nightly-failed-screenshots-${{ matrix.browser }}-${{ matrix.environment.name }}-${{ github.run_id }}
           path: pets-ui/cypress/screenshots
           retention-days: 7
+          if-no-files-found: ignore
 
       - name: Merge Mochawesome Reports
         if: always()
@@ -143,9 +144,10 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: nightly-mochawesome-report-${{ matrix.browser }}-${{ matrix.environment.name }}
+          name: nightly-mochawesome-report-${{ matrix.browser }}-${{ matrix.environment.name }}-${{ github.run_id }}
           path: pets-ui/cypress/reports/mochawesome/
           retention-days: 7
+          if-no-files-found: ignore
 
       # Store browser+environment result for dashboard
       - name: Store browser-environment result
@@ -161,8 +163,9 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: browser-result-${{ matrix.browser }}-${{ matrix.environment.name }}
+          name: browser-result-${{ matrix.browser }}-${{ matrix.environment.name }}-${{ github.run_id }}
           path: ${{ matrix.browser }}-${{ matrix.environment.name }}-result.txt
+          if-no-files-found: ignore
 
   generate-summary-and-deploy:
     name: Generate Summary and Deploy Dashboard
@@ -183,7 +186,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: all-artifacts
-          pattern: "*"
+          pattern: "*${{ github.run_id }}*"
 
       - name: Generate test summary report
         id: summary
@@ -192,36 +195,36 @@ jobs:
           echo "**Run Date**: $(date)" >> nightly-summary.md
           echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
           echo "" >> nightly-summary.md
-
+          
           # Initialize counters
           TOTAL_COMBINATIONS=9  # 3 browsers × 3 environments
           FAILED_COMBINATIONS=0
           FAILED_TESTS=0
-
+          
           echo "## Browser × Environment Test Results" >> nightly-summary.md
           echo "" >> nightly-summary.md
           echo "| Browser | QAT | DEV | PREPROD |" >> nightly-summary.md
           echo "|---------|-----|-----|---------|" >> nightly-summary.md
-
+          
           # Initialize status variables for JSON output
           declare -A BROWSER_ENV_STATUS
           ENVIRONMENTS=("qat" "dev" "preprod")
           BROWSERS=("chrome" "firefox" "edge")
-
+          
           # Initialize all combinations to PASS (will be overridden if failed)
           for browser in "${BROWSERS[@]}"; do
             for env in "${ENVIRONMENTS[@]}"; do
               BROWSER_ENV_STATUS["${browser}_${env}"]="PASS"
             done
           done
-
+          
           # Check results for each browser
           for browser in "${BROWSERS[@]}"; do
             ROW="| $browser"
             
             for env in "${ENVIRONMENTS[@]}"; do
-              RESULT_FILE="all-artifacts/browser-result-${browser}-${env}/${browser}-${env}-result.txt"
-              SCREENSHOT_DIR="all-artifacts/nightly-failed-screenshots-${browser}-${env}"
+              RESULT_FILE="all-artifacts/browser-result-${browser}-${env}-${{ github.run_id }}/${browser}-${env}-result.txt"
+              SCREENSHOT_DIR="all-artifacts/nightly-failed-screenshots-${browser}-${env}-${{ github.run_id }}"
               
               if [ -f "$RESULT_FILE" ]; then
                 RESULT=$(cat "$RESULT_FILE")
@@ -250,15 +253,15 @@ jobs:
             ROW="$ROW |"
             echo "$ROW" >> nightly-summary.md
           done
-
+          
           echo "" >> nightly-summary.md
-
+          
           # Environment summary
           echo "## Environment Summary" >> nightly-summary.md
           echo "" >> nightly-summary.md
           echo "| Environment | Status | Failed Browsers |" >> nightly-summary.md
           echo "|-------------|--------|-----------------|" >> nightly-summary.md
-
+          
           for env in "${ENVIRONMENTS[@]}"; do
             ENV_FAILED=0
             for browser in "${BROWSERS[@]}"; do
@@ -273,9 +276,9 @@ jobs:
               echo "| ${env^^} | ❌ Failed | $ENV_FAILED/3 |" >> nightly-summary.md
             fi
           done
-
+          
           echo "" >> nightly-summary.md
-
+          
           # Overall status
           if [ $FAILED_COMBINATIONS -eq 0 ]; then
             echo "## ✅ Overall Status: PASSED" >> nightly-summary.md
@@ -288,16 +291,16 @@ jobs:
             echo "status=FAIL" >> $GITHUB_OUTPUT
             OVERALL_STATUS="FAIL"
           fi
-
+          
           # Calculate success rate
           SUCCESS_RATE=$(( (TOTAL_COMBINATIONS - FAILED_COMBINATIONS) * 100 / TOTAL_COMBINATIONS ))
-
+          
           # Set outputs for dashboard
           echo "overall_status=$OVERALL_STATUS" >> $GITHUB_OUTPUT
           echo "failed_tests=$FAILED_TESTS" >> $GITHUB_OUTPUT
           echo "success_rate=${SUCCESS_RATE}%" >> $GITHUB_OUTPUT
           echo "failed_combinations=$FAILED_COMBINATIONS" >> $GITHUB_OUTPUT
-
+          
           # Set individual browser-environment status outputs
           for browser in "${BROWSERS[@]}"; do
             for env in "${ENVIRONMENTS[@]}"; do
