@@ -10,8 +10,8 @@ export default function Footer() {
               <LinkLabel
                 title="Accessibility statement"
                 className="govuk-footer__link"
-                to="https://www.gov.uk/help/accessibility-statement"
-                externalLink
+                to="/accessibility-statement"
+                externalLink={false}
               />
             </div>
             <svg
