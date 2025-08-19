@@ -42,6 +42,7 @@ jobs:
       USER_5_PASSWORD: ${{ secrets.USER_5_PASSWORD }}
       USER_6_EMAIL: ${{ secrets.USER_6_EMAIL }}
       USER_6_PASSWORD: ${{ secrets.USER_6_PASSWORD }}
+      ENVIRONMENT: ${{ matrix.environment.name }}
       CYPRESS_BASE_URL: ${{ matrix.environment.url }}
 
     steps:
@@ -77,6 +78,19 @@ jobs:
           pnpm exec cypress verify
         working-directory: pets-ui
 
+      - name: Debug Environment Configuration
+        run: |
+          echo "Testing against environment: ${{ matrix.environment.name }}"
+          echo "Base URL: ${{ matrix.environment.url }}"
+          echo "CYPRESS_BASE_URL: $CYPRESS_BASE_URL"
+          # Test environment accessibility
+          if curl -f -s -I "${{ matrix.environment.url }}" > /dev/null; then
+            echo "✅ Environment ${{ matrix.environment.name }} is accessible"
+          else
+            echo "❌ Environment ${{ matrix.environment.name }} is not accessible"
+            echo "This may cause test failures"
+          fi
+
       - name: Start Local Environment
         run: |
           pnpm start & sleep 120
@@ -90,6 +104,7 @@ jobs:
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
           config-file: cypress/cypress.config.mjs
+          config: baseUrl=${{ matrix.environment.url }}
         env:
           CYPRESS_BASE_URL: ${{ matrix.environment.url }}
 
@@ -102,6 +117,7 @@ jobs:
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
           config-file: cypress/cypress.config.mjs
+          config: baseUrl=${{ matrix.environment.url }}
         env:
           CYPRESS_BASE_URL: ${{ matrix.environment.url }}
 
