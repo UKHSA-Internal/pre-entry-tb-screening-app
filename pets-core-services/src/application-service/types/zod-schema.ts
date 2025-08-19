@@ -369,20 +369,6 @@ export const SputumResponseSchema = SputumRequestSchema.extend({
   }),
 });
 
-export const ApplicationSchema = z.object({
-  applicationId: z.string().openapi({
-    description: "application id",
-  }),
-  applicantPhotoUrl: z.string().openapi({
-    description: "Presigned Url for applicant Photo",
-  }),
-  travelInformation: TravelInformationResponseSchema,
-  medicalScreening: MedicalScreeningResponseSchema,
-  chestXray: ChestXRayResponseSchema,
-  sputumDetails: SputumResponseSchema,
-  tbCertificate: TbCertificateResponseSchema,
-});
-
 export const RadiologicalOutcomeRequestSchema = z.object({
   xrayResult: z.string().openapi({ description: "X ray result" }),
   xrayResultDetail: z.string().openapi({ description: "X ray result details" }),
@@ -397,4 +383,24 @@ export const RadiologicalOutcomeRequestSchema = z.object({
   }),
   dateCreated: z.string().or(z.date()).openapi({ description: "Date created" }),
   status: z.string().openapi({ description: "Status" }),
+});
+
+export const RadiologicalOutcomeResponseSchema = RadiologicalOutcomeRequestSchema.extend({
+  applicationId: z.string().openapi({
+    description: "ID of application",
+  }),
+});
+
+export const ApplicationSchema = z.object({
+  applicationId: z.string().openapi({
+    description: "application id",
+  }),
+  applicantPhotoUrl: z.string().openapi({
+    description: "Presigned Url for applicant Photo",
+  }),
+  travelInformation: TravelInformationResponseSchema,
+  medicalScreening: MedicalScreeningResponseSchema,
+  chestXray: ChestXRayResponseSchema,
+  sputumDetails: SputumResponseSchema,
+  tbCertificate: TbCertificateResponseSchema,
 });
