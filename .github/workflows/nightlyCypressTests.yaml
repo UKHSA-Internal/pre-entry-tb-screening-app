@@ -129,7 +129,6 @@ jobs:
           install: false
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
-          config-file: cypress.config.mjs
         env:
           ENVIRONMENT: ${{ matrix.environment }}
           APP_DOMAIN: ${{ env.APP_DOMAIN }}
@@ -142,7 +141,6 @@ jobs:
           install: false
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
-          config-file: cypress.config.mjs
         env:
           ENVIRONMENT: ${{ matrix.environment }}
           APP_DOMAIN: ${{ env.APP_DOMAIN }}
