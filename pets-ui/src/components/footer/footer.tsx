@@ -1,6 +1,18 @@
+import { useLocation } from "react-router-dom";
+
+import { useAppDispatch } from "@/redux/hooks";
+import { setPreviousPage } from "@/redux/navigationSlice";
+
 import LinkLabel from "../linkLabel/LinkLabel";
 
 export default function Footer() {
+  const location = useLocation();
+  const dispatch = useAppDispatch();
+
+  const handleStorePreviousPage: React.MouseEventHandler<HTMLAnchorElement> = () => {
+    dispatch(setPreviousPage(location.pathname));
+  };
+
   return (
     <footer className="govuk-footer">
       <div className="govuk-width-container">
@@ -12,6 +24,7 @@ export default function Footer() {
                 className="govuk-footer__link"
                 to="/accessibility-statement"
                 externalLink={false}
+                onClick={handleStorePreviousPage}
               />
             </div>
             <svg

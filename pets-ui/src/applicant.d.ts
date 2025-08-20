@@ -26,6 +26,7 @@ type ReceivedApplicationAttributesType = {
 
 type ReduxNavigationSliceType = {
   checkSputumPreviousPage: string;
+  previousPage: string;
 };
 
 // Application types
