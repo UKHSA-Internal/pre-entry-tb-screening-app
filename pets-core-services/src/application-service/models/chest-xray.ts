@@ -4,7 +4,7 @@ import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { TaskStatus } from "../../shared/types/enum";
-import { ChestXRayNotTakenReason, ChestXRayResult, YesOrNo } from "../types/enums";
+import { ChestXRayNotTakenReason, YesOrNo } from "../types/enums";
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
@@ -42,12 +42,6 @@ type IChestXRayTaken = {
   apicalLordoticXray?: string;
   lateralDecubitusXrayFileName?: string;
   lateralDecubitusXray?: string;
-
-  xrayResult: ChestXRayResult;
-  xrayResultDetail?: string;
-  xrayMinorFindings: string[];
-  xrayAssociatedMinorFindings: string[];
-  xrayActiveTbFindings: string[];
 };
 
 export type NewChestXRayTaken = Omit<IChestXRayTaken, "dateCreated" | "status">;
@@ -60,11 +54,6 @@ export class ChestXRayTaken extends ChestXRayBase {
   apicalLordoticXray?: string;
   lateralDecubitusXrayFileName?: string;
   lateralDecubitusXray?: string;
-  xrayResult: ChestXRayResult;
-  xrayResultDetail?: string;
-  xrayMinorFindings: string[];
-  xrayAssociatedMinorFindings: string[];
-  xrayActiveTbFindings: string[];
 
   constructor(details: IChestXRayTaken) {
     super(details);
@@ -76,12 +65,6 @@ export class ChestXRayTaken extends ChestXRayBase {
     this.apicalLordoticXray = details.apicalLordoticXray;
     this.lateralDecubitusXrayFileName = details.lateralDecubitusXrayFileName;
     this.lateralDecubitusXray = details.lateralDecubitusXray;
-
-    this.xrayResult = details.xrayResult;
-    this.xrayResultDetail = details.xrayResultDetail;
-    this.xrayMinorFindings = details.xrayMinorFindings;
-    this.xrayAssociatedMinorFindings = details.xrayAssociatedMinorFindings;
-    this.xrayActiveTbFindings = details.xrayActiveTbFindings;
   }
 
   toJson() {
@@ -95,11 +78,6 @@ export class ChestXRayTaken extends ChestXRayBase {
       apicalLordoticXray: this.apicalLordoticXray,
       lateralDecubitusXrayFileName: this.lateralDecubitusXrayFileName,
       lateralDecubitusXray: this.lateralDecubitusXray,
-      xrayResult: this.xrayResult,
-      xrayResultDetail: this.xrayResultDetail,
-      xrayMinorFindings: this.xrayMinorFindings,
-      xrayAssociatedMinorFindings: this.xrayAssociatedMinorFindings,
-      xrayActiveTbFindings: this.xrayActiveTbFindings,
       dateCreated: this.dateCreated,
       isSputumRequired: this.isSputumRequired,
     };

@@ -1,6 +1,6 @@
 import { seededApplications } from "../../shared/fixtures/application";
 import { NewChestXRayNotTaken, NewChestXRayTaken } from "../models/chest-xray";
-import { ChestXRayNotTakenReason, ChestXRayResult, YesOrNo } from "../types/enums";
+import { ChestXRayNotTakenReason, YesOrNo } from "../types/enums";
 
 export const seededChestXray: Array<NewChestXRayTaken | NewChestXRayNotTaken> = [
   {
@@ -18,10 +18,6 @@ export const seededChestXray: Array<NewChestXRayTaken | NewChestXRayNotTaken> = 
     lateralDecubitusXray:
       "dicom/Apollo Clinic/BRB/ABC1234JANE/generated-app-id-2/lateral-decubitus.dcm",
     createdBy: "shane.park@iom.com",
-    xrayResult: ChestXRayResult.Normal,
-    xrayMinorFindings: [],
-    xrayAssociatedMinorFindings: [],
-    xrayActiveTbFindings: [],
     isSputumRequired: YesOrNo.No,
   },
   {
