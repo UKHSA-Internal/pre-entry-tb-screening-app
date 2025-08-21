@@ -1,6 +1,7 @@
-import { render, screen } from "@testing-library/react";
-import { BrowserRouter as Router } from "react-router-dom";
+import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+
+import { renderWithProviders } from "@/utils/test-utils";
 
 import { ErrorFallback } from "./errorFallback";
 
@@ -11,11 +12,7 @@ vi.mock("react-helmet-async", () => ({
 
 describe("Error Summary Component", () => {
   it("renders correctly when props are specified", () => {
-    render(
-      <Router>
-        <ErrorFallback />
-      </Router>,
-    );
+    renderWithProviders(<ErrorFallback />);
 
     expect(
       screen.getByText(
