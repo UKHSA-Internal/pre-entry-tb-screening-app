@@ -85,9 +85,9 @@ jobs:
           echo "CYPRESS_BASE_URL: $CYPRESS_BASE_URL"
           # Test environment accessibility
           if curl -f -s -I "${{ matrix.environment.url }}" > /dev/null; then
-            echo "✅ Environment ${{ matrix.environment.name }} is accessible"
+            echo "✓ Environment ${{ matrix.environment.name }} is accessible"
           else
-            echo "❌ Environment ${{ matrix.environment.name }} is not accessible"
+            echo "✗ Environment ${{ matrix.environment.name }} is not accessible"
             echo "This may cause test failures"
           fi
 
@@ -288,9 +288,9 @@ jobs:
             done
             
             if [ $ENV_FAILED -eq 0 ]; then
-              echo "| ${env^^} | ✅ Passed | 0/3 |" >> nightly-summary.md
+              echo "| ${env^^} | ✓ Passed | 0/3 |" >> nightly-summary.md
             else
-              echo "| ${env^^} | ❌ Failed | $ENV_FAILED/3 |" >> nightly-summary.md
+              echo "| ${env^^} | ✗ Failed | $ENV_FAILED/3 |" >> nightly-summary.md
             fi
           done
           
@@ -298,12 +298,12 @@ jobs:
           
           # Overall status
           if [ $FAILED_COMBINATIONS -eq 0 ]; then
-            echo "## ✅ Overall Status: PASSED" >> nightly-summary.md
+            echo "## ✓ Overall Status: PASSED" >> nightly-summary.md
             echo "All browser×environment combinations completed successfully!" >> nightly-summary.md
             echo "status=PASS" >> $GITHUB_OUTPUT
             OVERALL_STATUS="PASS"
           else
-            echo "## ❌ Overall Status: FAILED" >> nightly-summary.md
+            echo "## ✗ Overall Status: FAILED" >> nightly-summary.md
             echo "$FAILED_COMBINATIONS out of $TOTAL_COMBINATIONS browser×environment combination(s) have failing tests." >> nightly-summary.md
             echo "status=FAIL" >> $GITHUB_OUTPUT
             OVERALL_STATUS="FAIL"
@@ -439,10 +439,10 @@ jobs:
       - name: Set workflow conclusion
         if: always()
         run: |
-          echo "🔗 Dashboard URL: ${{ steps.deployment.outputs.page_url }}"
+          echo "Dashboard URL: ${{ steps.deployment.outputs.page_url }}"
           if [[ "${{ steps.summary.outputs.status }}" == "PASS" ]]; then
-            echo "::notice::✅ All nightly tests passed across all environments! Dashboard updated at ${{ steps.deployment.outputs.page_url }}"
+            echo "::notice::✓ All nightly tests passed across all environments! Dashboard updated at ${{ steps.deployment.outputs.page_url }}"
           else
-            echo "::error::❌ Some nightly tests failed across environments. Check dashboard: ${{ steps.deployment.outputs.page_url }}"
+            echo "::error::✗ Some nightly tests failed across environments. Check dashboard: ${{ steps.deployment.outputs.page_url }}"
             exit 1
           fi
