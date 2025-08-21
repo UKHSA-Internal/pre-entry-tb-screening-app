@@ -7,7 +7,7 @@ import { selectNavigation } from "@/redux/store";
 
 export default function PrivacyNoticePage() {
   const navigation = useAppSelector(selectNavigation);
-  const backLinkTo = navigation.privacyStatementPreviousPage || "/";
+  const backLinkTo = navigation.privacyNoticePreviousPage || "/";
   return (
     <Container
       title="Privacy notice - Complete UK pre-entry health screening - GOV.UK"
