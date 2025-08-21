@@ -200,11 +200,11 @@ jobs:
           echo "" >> nightly-summary.md
           
           # Initialize counters
-          TOTAL_COMBINATIONS=9  # 3 browsers Ã— 3 environments
+          TOTAL_COMBINATIONS=9  # 3 browsers × 3 environments
           FAILED_COMBINATIONS=0
           FAILED_TESTS=0
           
-          echo "## Browser Ã— Environment Test Results" >> nightly-summary.md
+          echo "## Browser × Environment Test Results" >> nightly-summary.md
           echo "" >> nightly-summary.md
           echo "| Browser | QAT | DEV | PREPROD |" >> nightly-summary.md
           echo "|---------|-----|-----|---------|" >> nightly-summary.md
