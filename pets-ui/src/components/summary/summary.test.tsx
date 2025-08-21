@@ -1,5 +1,4 @@
-import { render, screen } from "@testing-library/react";
-import { BrowserRouter as Router } from "react-router-dom";
+import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { ApplicationStatus } from "@/utils/enums";
@@ -35,20 +34,16 @@ describe("Summary Component", () => {
     expect(screen.getByText("Hidden Label Example")).toBeInTheDocument();
   });
   it("renders an array of strings", () => {
-    render(
-      <Router>
-        <Summary status={ApplicationStatus.NOT_YET_STARTED} summaryElements={summaryArrayData} />
-      </Router>,
+    renderWithProviders(
+      <Summary status={ApplicationStatus.NOT_YET_STARTED} summaryElements={summaryArrayData} />,
     );
     expect(screen.getByText("A typical value")).toBeInTheDocument();
     expect(screen.getByText("Another value")).toBeInTheDocument();
     expect(screen.getByText("A third value")).toBeInTheDocument();
   });
   it("renders a link attached to the word 'Change'", () => {
-    render(
-      <Router>
-        <Summary status={ApplicationStatus.NOT_YET_STARTED} summaryElements={summaryData} />
-      </Router>,
+    renderWithProviders(
+      <Summary status={ApplicationStatus.NOT_YET_STARTED} summaryElements={summaryData} />,
     );
     expect(screen.getByText("Change")).toBeInTheDocument();
     expect(screen.getAllByRole("definition")).toHaveLength(2);
@@ -57,10 +52,8 @@ describe("Summary Component", () => {
     expect(changeLink.getAttribute("href")).toEqual("/example-link");
   });
   it("does not render a link attached to the word 'Change' when the status is complete", () => {
-    render(
-      <Router>
-        <Summary status={ApplicationStatus.COMPLETE} summaryElements={summaryData} />
-      </Router>,
+    renderWithProviders(
+      <Summary status={ApplicationStatus.COMPLETE} summaryElements={summaryData} />,
     );
     expect(screen.getAllByRole("definition")).toHaveLength(1);
   });

@@ -1,4 +1,5 @@
 import { useMsal } from "@azure/msal-react";
+import { useEffect } from "react";
 
 import { loginRequest } from "@/auth/auth";
 import Container from "@/components/container/container";
@@ -6,9 +7,17 @@ import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import List from "@/components/list/list";
 import StartButton from "@/components/startButton/startButton";
+import { useAppDispatch } from "@/redux/hooks";
+import { clearNavigationDetails } from "@/redux/navigationSlice";
 
 export default function HomePage() {
   const { instance } = useMsal();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(clearNavigationDetails());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const initializeSignIn = () => {
     instance
