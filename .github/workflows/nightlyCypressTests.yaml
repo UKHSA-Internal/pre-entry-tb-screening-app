@@ -258,12 +258,12 @@ jobs:
                   ROW="$ROW | âŒ ($SCREENSHOT_COUNT)"
                   FAILED_TESTS=$((FAILED_TESTS + SCREENSHOT_COUNT))
                 else
-                  ROW="$ROW | âŒ"
+                  ROW="$ROW | ❌"
                 fi
               elif [ "$RESULT" = "PASS" ]; then
-                ROW="$ROW | âœ…"
+                ROW="$ROW | ✅"
               else
-                ROW="$ROW | â""
+                ROW="$ROW | ❓""
               fi
             done
             
@@ -372,7 +372,7 @@ jobs:
           <script>
           setTimeout(() => {
             fetch('./test-results.json').then(r => r.json()).then(data => {
-              const getStatusIcon = (status) => status === 'PASS' ? 'âœ…' : 'âŒ';
+              const getStatusIcon = (status) => status === 'PASS' ? '✅' : '❌';
               const getStatusColor = (status) => status === 'PASS' ? 'green' : 'red';
               
               let environmentTable = '<table style="border-collapse: collapse; width: 100%; margin: 15px 0;">';
