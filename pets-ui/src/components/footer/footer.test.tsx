@@ -29,6 +29,6 @@ describe("Footer component", () => {
     const link = screen.getByRole("link", { name: "Accessibility statement" });
     await user.click(link);
     const nav = selectNavigation(store.getState());
-    expect(nav.previousPage).toBe("/");
+    expect(nav.accessibilityStatementPreviousPage).toBe("/");
   });
 });

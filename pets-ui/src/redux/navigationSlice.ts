@@ -4,7 +4,7 @@ import { ReduxNavigationSliceType } from "@/applicant";
 
 const initialState: ReduxNavigationSliceType = {
   checkSputumPreviousPage: "",
-  previousPage: "",
+  accessibilityStatementPreviousPage: "",
 };
 
 export const navigationSlice = createSlice({
@@ -15,11 +15,11 @@ export const navigationSlice = createSlice({
       state.checkSputumPreviousPage = action.payload;
     },
     setPreviousPage: (state, action: PayloadAction<string>) => {
-      state.previousPage = action.payload;
+      state.accessibilityStatementPreviousPage = action.payload;
     },
     clearNavigationDetails: (state) => {
       state.checkSputumPreviousPage = "";
-      state.previousPage = "";
+      state.accessibilityStatementPreviousPage = "";
     },
   },
 });

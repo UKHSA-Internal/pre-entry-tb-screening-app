@@ -58,14 +58,14 @@ describe("AccessibilityStatementPage", () => {
     const backLink = screen.getByRole("link", { name: "Back" });
     expect(backLink).toHaveAttribute("href", "/");
     const nav = selectNavigation(store.getState());
-    expect(nav.previousPage).toBe("");
+    expect(nav.accessibilityStatementPreviousPage).toBe("");
   });
 
   it("uses stored previous page for the back link when set", () => {
     const preloadedState = {
       navigation: {
         checkSputumPreviousPage: "",
-        previousPage: "/applicant-search",
+        accessibilityStatementPreviousPage: "/applicant-search",
       },
     };
     renderWithProviders(

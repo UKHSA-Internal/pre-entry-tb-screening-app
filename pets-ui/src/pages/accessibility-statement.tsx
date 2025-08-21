@@ -7,7 +7,7 @@ import { selectNavigation } from "@/redux/store";
 
 export default function AccessibilityStatementPage() {
   const navigation = useAppSelector(selectNavigation);
-  const backLinkTo = navigation.previousPage || "/";
+  const backLinkTo = navigation.accessibilityStatementPreviousPage || "/";
   return (
     <Container
       title="Accessibility statement - Complete UK pre-entry health screening - GOV.UK"

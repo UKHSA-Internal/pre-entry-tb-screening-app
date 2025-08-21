@@ -16,7 +16,8 @@ export default function HomePage() {
 
   useEffect(() => {
     dispatch(clearNavigationDetails());
-  }, [dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const initializeSignIn = () => {
     instance
