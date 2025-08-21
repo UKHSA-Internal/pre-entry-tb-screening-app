@@ -330,6 +330,7 @@ describe("SputumSummary", () => {
       navigation: {
         checkSputumPreviousPage: "/prev-page",
         accessibilityStatementPreviousPage: "",
+        privacyStatementPreviousPage: "",
       },
     };
 
@@ -421,6 +422,7 @@ describe("SputumSummary", () => {
       navigation: {
         checkSputumPreviousPage: "/prev-page",
         accessibilityStatementPreviousPage: "",
+        privacyStatementPreviousPage: "",
       },
     };
 
