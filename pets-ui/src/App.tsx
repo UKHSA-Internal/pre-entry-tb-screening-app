@@ -3,6 +3,7 @@ import "./globals.scss";
 import { Route, Routes } from "react-router-dom";
 
 import { AuthenticatedRoute, UnauthenticatedRoute } from "./auth/authRoutes";
+import AccessibilityStatementPage from "./pages/accessibility-statement";
 import ApiDocs from "./pages/api-docs";
 import ApplicantConfirmation from "./pages/applicant-confirmation";
 import ApplicantPhotoPage from "./pages/applicant-photo";
@@ -344,6 +345,7 @@ function App() {
           </AuthenticatedRoute>
         }
       />
+      <Route path="/accessibility-statement" element={<AccessibilityStatementPage />} />
       <Route path="/error" element={<ErrorPage />} />
     </Routes>
   );
