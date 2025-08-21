@@ -255,7 +255,7 @@ jobs:
                 ((FAILED_COMBINATIONS++))
                 if [ -d "$SCREENSHOT_DIR" ] && [ "$(ls -A $SCREENSHOT_DIR 2>/dev/null)" ]; then
                   SCREENSHOT_COUNT=$(find "$SCREENSHOT_DIR" -name "*.png" -o -name "*.jpg" 2>/dev/null | wc -l)
-                  ROW="$ROW | âŒ ($SCREENSHOT_COUNT)"
+                  ROW="$ROW | ❌ ($SCREENSHOT_COUNT)"
                   FAILED_TESTS=$((FAILED_TESTS + SCREENSHOT_COUNT))
                 else
                   ROW="$ROW | ❌"
@@ -265,7 +265,7 @@ jobs:
               else
                 ROW="$ROW | ❓"
               fi
-            done
+              done
             
             ROW="$ROW |"
             echo "$ROW" >> nightly-summary.md
