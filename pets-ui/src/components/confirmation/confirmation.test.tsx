@@ -1,6 +1,7 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { BrowserRouter as Router } from "react-router-dom";
+import { fireEvent, screen } from "@testing-library/react";
 import { describe, expect, it, Mock } from "vitest";
+
+import { renderWithProviders } from "@/utils/test-utils";
 
 import LinkLabel from "../linkLabel/LinkLabel";
 import Confirmation from "./confirmation";
@@ -25,15 +26,13 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 
 describe("Confirmation component", () => {
   beforeEach(() => {
-    render(
-      <Router>
-        <Confirmation
-          confirmationText={"Confirmation GreenBox Text"}
-          furtherInfo={furtherInfo}
-          buttonText={"Continue to next step"}
-          buttonLink={"/next-step"}
-        />
-      </Router>,
+    renderWithProviders(
+      <Confirmation
+        confirmationText={"Confirmation GreenBox Text"}
+        furtherInfo={furtherInfo}
+        buttonText={"Continue to next step"}
+        buttonLink={"/next-step"}
+      />,
     );
   });
   it("Renders the confirmation text elements correctly", () => {
@@ -56,16 +55,14 @@ describe("Confirmation component", () => {
     expect(useNavigateMock).toHaveBeenCalledWith("/next-step");
   });
   it("Renders the title 'What happens next' when whatHappensNext is true", () => {
-    render(
-      <Router>
-        <Confirmation
-          confirmationText={"Confirmation GreenBox Text"}
-          furtherInfo={furtherInfo}
-          buttonText={"Continue to next step"}
-          buttonLink={"/next-step"}
-          whatHappensNext={true}
-        />
-      </Router>,
+    renderWithProviders(
+      <Confirmation
+        confirmationText={"Confirmation GreenBox Text"}
+        furtherInfo={furtherInfo}
+        buttonText={"Continue to next step"}
+        buttonLink={"/next-step"}
+        whatHappensNext={true}
+      />,
     );
 
     expect(screen.getByText("What happens next")).toBeInTheDocument();

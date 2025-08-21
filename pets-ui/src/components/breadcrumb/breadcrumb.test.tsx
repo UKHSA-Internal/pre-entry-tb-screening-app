@@ -1,6 +1,7 @@
-import { render, screen } from "@testing-library/react";
-import { BrowserRouter as Router } from "react-router-dom";
+import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+
+import { renderWithProviders } from "@/utils/test-utils";
 
 import Breadcrumb, { IBreadcrumbItem } from "./breadcrumb";
 
@@ -17,21 +18,13 @@ const breadcrumbItems: IBreadcrumbItem[] = [
 
 describe("Breadcrumb component", () => {
   it("renders text correctly", () => {
-    render(
-      <Router>
-        <Breadcrumb items={breadcrumbItems} />
-      </Router>,
-    );
+    renderWithProviders(<Breadcrumb items={breadcrumbItems} />);
     expect(screen.getAllByRole("listitem")).toHaveLength(2);
     expect(screen.getByText("crumb-1")).toBeTruthy();
     expect(screen.getByText("crumb-2")).toBeTruthy();
   });
   it("renders links correctly", () => {
-    render(
-      <Router>
-        <Breadcrumb items={breadcrumbItems} />
-      </Router>,
-    );
+    renderWithProviders(<Breadcrumb items={breadcrumbItems} />);
     expect(screen.getAllByRole("link")).toHaveLength(2);
     const crumbOne = screen.getAllByRole("link")[0];
     const crumbTwo = screen.getAllByRole("link")[1];
