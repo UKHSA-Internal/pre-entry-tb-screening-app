@@ -85,9 +85,9 @@ jobs:
           echo "CYPRESS_BASE_URL: $CYPRESS_BASE_URL"
           # Test environment accessibility
           if curl -f -s -I "${{ matrix.environment.url }}" > /dev/null; then
-            echo "✅ Environment ${{ matrix.environment.name }} is accessible"
+            echo "âœ… Environment ${{ matrix.environment.name }} is accessible"
           else
-            echo "❌ Environment ${{ matrix.environment.name }} is not accessible"
+            echo "âŒ Environment ${{ matrix.environment.name }} is not accessible"
             echo "This may cause test failures"
           fi
 
@@ -192,18 +192,19 @@ jobs:
 
       - name: Generate test summary report
         id: summary
+        shell: bash
         run: |
-          echo "# 🌙 Nightly Cypress Test Results" > nightly-summary.md
+          echo "# ðŸŒ™ Nightly Cypress Test Results" > nightly-summary.md
           echo "**Run Date**: $(date)" >> nightly-summary.md
           echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
           echo "" >> nightly-summary.md
           
           # Initialize counters
-          TOTAL_COMBINATIONS=9  # 3 browsers × 3 environments
+          TOTAL_COMBINATIONS=9  # 3 browsers Ã— 3 environments
           FAILED_COMBINATIONS=0
           FAILED_TESTS=0
           
-          echo "## Browser × Environment Test Results" >> nightly-summary.md
+          echo "## Browser Ã— Environment Test Results" >> nightly-summary.md
           echo "" >> nightly-summary.md
           echo "| Browser | QAT | DEV | PREPROD |" >> nightly-summary.md
           echo "|---------|-----|-----|---------|" >> nightly-summary.md
@@ -220,43 +221,49 @@ jobs:
             done
           done
           
+          # Debug: Show what artifacts we have
+          echo "Available artifacts:"
+          find all-artifacts -type d -name "*result*" 2>/dev/null || echo "No result artifacts found"
+          
           # Check results for each browser
           for browser in "${BROWSERS[@]}"; do
             ROW="| $browser"
             
             for env in "${ENVIRONMENTS[@]}"; do
               # Find result file with pattern matching
-              RESULT_FILE=$(find all-artifacts -name "result-${browser}-${env}-${{ github.run_number }}-*" -type d | head -1)
+              RESULT_FILE=$(find all-artifacts -name "result-${browser}-${env}-${{ github.run_number }}-*" -type d 2>/dev/null | head -1)
               if [ -n "$RESULT_FILE" ]; then
                 # Find the actual result file inside the directory
-                ACTUAL_RESULT_FILE=$(find "$RESULT_FILE" -name "${browser}-${env}-*-result.txt" | head -1)
+                ACTUAL_RESULT_FILE=$(find "$RESULT_FILE" -name "${browser}-${env}-*-result.txt" 2>/dev/null | head -1)
                 if [ -f "$ACTUAL_RESULT_FILE" ]; then
                   RESULT=$(cat "$ACTUAL_RESULT_FILE")
                 else
-                  RESULT="UNKNOWN"
+                  echo "Warning: No result file found for ${browser}-${env}"
+                  RESULT="NOT_RUN"
                 fi
               else
-                RESULT="UNKNOWN"
+                echo "Warning: No artifact directory found for ${browser}-${env}"
+                RESULT="NOT_RUN"
               fi
               
               # Find screenshot directory with pattern matching
-              SCREENSHOT_DIR=$(find all-artifacts -name "screenshots-${browser}-${env}-${{ github.run_number }}-*" -type d | head -1)
+              SCREENSHOT_DIR=$(find all-artifacts -name "screenshots-${browser}-${env}-${{ github.run_number }}-*" -type d 2>/dev/null | head -1)
               
               BROWSER_ENV_STATUS["${browser}_${env}"]="$RESULT"
               
               if [ "$RESULT" = "FAIL" ]; then
                 ((FAILED_COMBINATIONS++))
                 if [ -d "$SCREENSHOT_DIR" ] && [ "$(ls -A $SCREENSHOT_DIR 2>/dev/null)" ]; then
-                  SCREENSHOT_COUNT=$(find "$SCREENSHOT_DIR" -name "*.png" -o -name "*.jpg" | wc -l)
-                  ROW="$ROW | ❌ ($SCREENSHOT_COUNT)"
+                  SCREENSHOT_COUNT=$(find "$SCREENSHOT_DIR" -name "*.png" -o -name "*.jpg" 2>/dev/null | wc -l)
+                  ROW="$ROW | âŒ ($SCREENSHOT_COUNT)"
                   FAILED_TESTS=$((FAILED_TESTS + SCREENSHOT_COUNT))
                 else
-                  ROW="$ROW | ❌"
+                  ROW="$ROW | âŒ"
                 fi
               elif [ "$RESULT" = "PASS" ]; then
-                ROW="$ROW | ✅"
+                ROW="$ROW | âœ…"
               else
-                ROW="$ROW | ❓"
+                ROW="$ROW | â""
               fi
             done
             
@@ -281,9 +288,9 @@ jobs:
             done
             
             if [ $ENV_FAILED -eq 0 ]; then
-              echo "| ${env^^} | ✅ Passed | 0/3 |" >> nightly-summary.md
+              echo "| ${env^^} | âœ… Passed | 0/3 |" >> nightly-summary.md
             else
-              echo "| ${env^^} | ❌ Failed | $ENV_FAILED/3 |" >> nightly-summary.md
+              echo "| ${env^^} | âŒ Failed | $ENV_FAILED/3 |" >> nightly-summary.md
             fi
           done
           
@@ -291,13 +298,13 @@ jobs:
           
           # Overall status
           if [ $FAILED_COMBINATIONS -eq 0 ]; then
-            echo "## ✅ Overall Status: PASSED" >> nightly-summary.md
-            echo "All browser×environment combinations completed successfully!" >> nightly-summary.md
+            echo "## âœ… Overall Status: PASSED" >> nightly-summary.md
+            echo "All browserÃ—environment combinations completed successfully!" >> nightly-summary.md
             echo "status=PASS" >> $GITHUB_OUTPUT
             OVERALL_STATUS="PASS"
           else
-            echo "## ❌ Overall Status: FAILED" >> nightly-summary.md
-            echo "$FAILED_COMBINATIONS out of $TOTAL_COMBINATIONS browser×environment combination(s) have failing tests." >> nightly-summary.md
+            echo "## âŒ Overall Status: FAILED" >> nightly-summary.md
+            echo "$FAILED_COMBINATIONS out of $TOTAL_COMBINATIONS browserÃ—environment combination(s) have failing tests." >> nightly-summary.md
             echo "status=FAIL" >> $GITHUB_OUTPUT
             OVERALL_STATUS="FAIL"
           fi
@@ -365,7 +372,7 @@ jobs:
           <script>
           setTimeout(() => {
             fetch('./test-results.json').then(r => r.json()).then(data => {
-              const getStatusIcon = (status) => status === 'PASS' ? '✅' : '❌';
+              const getStatusIcon = (status) => status === 'PASS' ? 'âœ…' : 'âŒ';
               const getStatusColor = (status) => status === 'PASS' ? 'green' : 'red';
               
               let environmentTable = '<table style="border-collapse: collapse; width: 100%; margin: 15px 0;">';
@@ -383,7 +390,7 @@ jobs:
               
               document.body.innerHTML = `
                 <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 1000px; margin: 0 auto;">
-                  <h1>🌙 Pre-Entry TB Screening - Nightly Tests: ${data.overallStatus}</h1>
+                  <h1>ðŸŒ™ Pre-Entry TB Screening - Nightly Tests: ${data.overallStatus}</h1>
                   <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 15px 0;">
                     <h3>Cross-Environment Test Results</h3>
                     ${environmentTable}
@@ -400,7 +407,7 @@ jobs:
                     </div>
                   </div>
                   <p><strong>Last Updated:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
-                  <p><a href="${data.runUrl}" target="_blank" style="background: #0066cc; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px;">📊 View Detailed Results</a></p>
+                  <p><a href="${data.runUrl}" target="_blank" style="background: #0066cc; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px;">ðŸ"Š View Detailed Results</a></p>
                 </div>
               `;
             });
@@ -432,10 +439,10 @@ jobs:
       - name: Set workflow conclusion
         if: always()
         run: |
-          echo "🔗 Dashboard URL: ${{ steps.deployment.outputs.page_url }}"
+          echo "ðŸ"— Dashboard URL: ${{ steps.deployment.outputs.page_url }}"
           if [[ "${{ steps.summary.outputs.status }}" == "PASS" ]]; then
-            echo "::notice::✅ All nightly tests passed across all environments! Dashboard updated at ${{ steps.deployment.outputs.page_url }}"
+            echo "::notice::âœ… All nightly tests passed across all environments! Dashboard updated at ${{ steps.deployment.outputs.page_url }}"
           else
-            echo "::error::❌ Some nightly tests failed across environments. Check dashboard: ${{ steps.deployment.outputs.page_url }}"
+            echo "::error::âŒ Some nightly tests failed across environments. Check dashboard: ${{ steps.deployment.outputs.page_url }}"
             exit 1
           fi
