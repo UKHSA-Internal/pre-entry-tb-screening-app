@@ -9,6 +9,7 @@ import { generateImageUploadUrlHandler } from "../handlers/generate-image-upload
 import { getApplicationHandler } from "../handlers/get-application";
 import { saveChestXRayHandler } from "../handlers/save-chest-ray";
 import { saveMedicalScreeningHandler } from "../handlers/save-medical-screening";
+import { saveSputumDecisionHandler } from "../handlers/save-sputum-decision";
 import { saveSputumDetailsHandler } from "../handlers/save-sputum-details";
 import { saveTbCertificateHandler } from "../handlers/save-tb-certificate";
 import { saveTravelInformationHandler } from "../handlers/save-travel-information";
@@ -23,6 +24,8 @@ import {
   ImageUploadUrlResponseSchema,
   MedicalScreeningRequestSchema,
   MedicalScreeningResponseSchema,
+  SputumDecisionRequestSchema,
+  SputumDecisionResponseSchema,
   SputumRequestSchema,
   SputumResponseSchema,
   TbCertificateRequestSchema,
@@ -104,6 +107,20 @@ export const routes: PetsRoute[] = [
     }),
     responseSchema: TbCertificateResponseSchema.openapi({
       description: "Saved TB Certificate Details",
+    }),
+  },
+  {
+    method: "POST",
+    path: "/application/{applicationId}/sputum-decision",
+    handler: middy<PetsAPIGatewayProxyEvent>()
+      .before(setApplicationIdContext)
+      .before(validateApplication)
+      .handler(saveSputumDecisionHandler),
+    requestBodySchema: SputumDecisionRequestSchema.openapi({
+      description: "Sputum Decision Details of an Applicant",
+    }),
+    responseSchema: SputumDecisionResponseSchema.openapi({
+      description: "Sputum Decision Details",
     }),
   },
   {

@@ -369,6 +369,16 @@ export const SputumResponseSchema = SputumRequestSchema.extend({
   }),
 });
 
+export const SputumDecisionRequestSchema = z.object({
+  sputumRequired: z.nativeEnum(YesOrNo).openapi({ description: "Sputum required: yes/no" }),
+  dateCreated: z.string().date().openapi({ description: "Creation Date in UTC timezone" }),
+  status: z.nativeEnum(TaskStatus).openapi({ description: "Status of Task" }),
+});
+
+export const SputumDecisionResponseSchema = SputumDecisionRequestSchema.extend({
+  applicationId: z.string().openapi({ description: "ID of application" }),
+});
+
 export const ApplicationSchema = z.object({
   applicationId: z.string().openapi({
     description: "application id",
