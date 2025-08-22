@@ -121,10 +121,6 @@ describe("Getting Application Handler", () => {
         lateralDecubitusXrayFileName: "lateral-decubitus.dicom",
         lateralDecubitusXray:
           "dicom/Apollo Clinic/BRB/ABC1234JANE/generated-app-id-2/lateral-decubitus.dcm",
-        xrayResult: "Chest X-ray normal",
-        xrayActiveTbFindings: [],
-        xrayAssociatedMinorFindings: [],
-        xrayMinorFindings: [],
         applicationId: seededApplications[1].applicationId,
         dateCreated: expect.any(String),
         status: "completed",

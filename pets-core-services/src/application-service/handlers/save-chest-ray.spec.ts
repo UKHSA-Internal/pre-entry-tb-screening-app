@@ -18,10 +18,6 @@ const newChestXrayTaken: SaveChestXrayEvent["parsedBody"] = {
   lateralDecubitusXrayFileName: "lateral-decubitus.dicom",
   lateralDecubitusXray:
     "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/lateral-decubitus.dcm",
-  xrayResult: ChestXRayResult.NonTbAbnormal,
-  xrayMinorFindings: ["test", "minor", "findings"],
-  xrayAssociatedMinorFindings: ["test", "associated", "minor", "findings"],
-  xrayActiveTbFindings: ["test", "active", "tb", "findings"],
   isSputumRequired: YesOrNo.No,
 };
 
