@@ -6,7 +6,7 @@ import awsClients from "../../shared/clients/aws";
 import { seededApplications } from "../../shared/fixtures/application";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededChestXray } from "../fixtures/chest-xray";
-import { ChestXRayResult, YesOrNo } from "../types/enums";
+import { YesOrNo } from "../types/enums";
 import { SaveChestXrayEvent, saveChestXRayHandler } from "./save-chest-ray";
 
 const newChestXrayTaken: SaveChestXrayEvent["parsedBody"] = {
