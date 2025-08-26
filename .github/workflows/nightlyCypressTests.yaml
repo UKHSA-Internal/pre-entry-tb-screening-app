@@ -5,6 +5,17 @@ on:
     # Runs at 1 AM UTC every weekday (Monday to Friday)
     - cron: "0 1 * * 1-5"
   workflow_dispatch: # Allows manual triggering through GitHub UI
+    inputs:
+      target_environments:
+        description: 'Select environments to test'
+        required: false
+        type: choice
+        options:
+          - "all"
+          - "qat"
+          - "dev"
+          - "preprod"
+        default: "all"
 
 # Add permissions for GitHub Pages deployment
 permissions:
@@ -14,20 +25,21 @@ permissions:
 
 jobs:
   cypress-nightly:
-    name: Run Nightly Cypress Tests - ${{ matrix.browser }} (${{ matrix.environment }})
+    name: Run Nightly Cypress Tests - ${{ matrix.browser }} (${{ matrix.environment_name }})
     runs-on: ubuntu-latest
     strategy:
       # Don't fail fast - run all tests even if some fail
       fail-fast: false
       matrix:
         browser: [chrome, firefox, edge]
-        environment:
-          - name: qat
-            url: https://clinics.test.pets.ukhsa.gov.uk
-          - name: dev
-            url: https://clinics.dev.pets.ukhsa.gov.uk
-          - name: preprod
-            url: https://clinics.preprod.pets.ukhsa.gov.uk
+        environment_name: ${{ github.event.inputs.target_environments == 'qat' && fromJSON('["qat"]') || github.event.inputs.target_environments == 'dev' && fromJSON('["dev"]') || github.event.inputs.target_environments == 'preprod' && fromJSON('["preprod"]') || fromJSON('["qat", "dev", "preprod"]') }}
+        include:
+          - environment_name: qat
+            environment_url: https://clinics.test.pets.ukhsa.gov.uk
+          - environment_name: dev
+            environment_url: https://clinics.dev.pets.ukhsa.gov.uk
+          - environment_name: preprod
+            environment_url: https://clinics.preprod.pets.ukhsa.gov.uk
 
     env:
       USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
@@ -42,8 +54,8 @@ jobs:
       USER_5_PASSWORD: ${{ secrets.USER_5_PASSWORD }}
       USER_6_EMAIL: ${{ secrets.USER_6_EMAIL }}
       USER_6_PASSWORD: ${{ secrets.USER_6_PASSWORD }}
-      ENVIRONMENT: ${{ matrix.environment.name }}
-      CYPRESS_BASE_URL: ${{ matrix.environment.url }}
+      ENVIRONMENT: ${{ matrix.environment_name }}
+      CYPRESS_BASE_URL: ${{ matrix.environment_url }}
 
     steps:
       - name: Checkout code
@@ -61,9 +73,6 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
-      - name: Debug available Cypress specs
-        run: ls -R pets-ui/cypress/e2e
-
       - name: Cache Cypress binary
         id: cache-cypress-binary
         uses: actions/cache@v4
@@ -78,20 +87,9 @@ jobs:
           pnpm exec cypress verify
         working-directory: pets-ui
 
-      - name: Debug Environment Configuration
-        run: |
-          echo "Testing against environment: ${{ matrix.environment.name }}"
-          echo "Base URL: ${{ matrix.environment.url }}"
-          echo "CYPRESS_BASE_URL: $CYPRESS_BASE_URL"
-          # Test environment accessibility
-          if curl -f -s -I "${{ matrix.environment.url }}" > /dev/null; then
-            echo "✓ Environment ${{ matrix.environment.name }} is accessible"
-          else
-            echo "✗ Environment ${{ matrix.environment.name }} is not accessible"
-            echo "This may cause test failures"
-          fi
-
+      # Only start local environment for local testing
       - name: Start Local Environment
+        if: matrix.environment_name == 'local'
         run: |
           pnpm start & sleep 120
 
@@ -104,9 +102,9 @@ jobs:
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
           config-file: cypress/cypress.config.mjs
-          config: baseUrl=${{ matrix.environment.url }}
+          config: baseUrl=${{ matrix.environment_url }}
         env:
-          CYPRESS_BASE_URL: ${{ matrix.environment.url }}
+          CYPRESS_BASE_URL: ${{ matrix.environment_url }}
 
       - name: Retry if failed
         if: steps.initial_attempt.outcome != 'success'
@@ -117,15 +115,15 @@ jobs:
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
           config-file: cypress/cypress.config.mjs
-          config: baseUrl=${{ matrix.environment.url }}
+          config: baseUrl=${{ matrix.environment_url }}
         env:
-          CYPRESS_BASE_URL: ${{ matrix.environment.url }}
+          CYPRESS_BASE_URL: ${{ matrix.environment_url }}
 
       - name: Upload Failed Tests Screenshots
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: screenshots-${{ matrix.browser }}-${{ matrix.environment.name }}-${{ github.run_number }}-${{ github.run_attempt }}
+          name: screenshots-${{ matrix.browser }}-${{ matrix.environment_name }}-${{ strategy.job-index }}
           path: pets-ui/cypress/screenshots
           retention-days: 7
           if-no-files-found: ignore
@@ -144,7 +142,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: report-${{ matrix.browser }}-${{ matrix.environment.name }}-${{ github.run_number }}-${{ github.run_attempt }}
+          name: report-${{ matrix.browser }}-${{ matrix.environment_name }}-${{ strategy.job-index }}
           path: pets-ui/cypress/reports/mochawesome/
           retention-days: 7
           if-no-files-found: ignore
@@ -154,20 +152,17 @@ jobs:
         if: always()
         run: |
           if [[ "${{ steps.initial_attempt.outcome }}" == "success" ]] || [[ "${{ steps.retry_attempt.outcome }}" == "success" ]]; then
-            echo "PASS" > ${{ matrix.browser }}-${{ matrix.environment.name }}-result.txt
+            echo "PASS" > ${{ matrix.browser }}-${{ matrix.environment_name }}-result.txt
           else
-            echo "FAIL" > ${{ matrix.browser }}-${{ matrix.environment.name }}-result.txt
+            echo "FAIL" > ${{ matrix.browser }}-${{ matrix.environment_name }}-result.txt
           fi
-          # Add timestamp to make filename unique
-          TIMESTAMP=$(date +%s%N)
-          cp ${{ matrix.browser }}-${{ matrix.environment.name }}-result.txt ${{ matrix.browser }}-${{ matrix.environment.name }}-${TIMESTAMP}-result.txt
 
       - name: Upload browser-environment result
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: result-${{ matrix.browser }}-${{ matrix.environment.name }}-${{ github.run_number }}-${{ github.run_attempt }}
-          path: ${{ matrix.browser }}-${{ matrix.environment.name }}-*-result.txt
+          name: result-${{ matrix.browser }}-${{ matrix.environment_name }}-${{ strategy.job-index }}
+          path: ${{ matrix.browser }}-${{ matrix.environment_name }}-result.txt
           if-no-files-found: ignore
 
   generate-summary-and-deploy:
@@ -192,7 +187,6 @@ jobs:
 
       - name: Generate test summary report
         id: summary
-        shell: bash
         run: |
           echo "# 🌙 Nightly Cypress Test Results" > nightly-summary.md
           echo "**Run Date**: $(date)" >> nightly-summary.md
@@ -204,57 +198,51 @@ jobs:
           FAILED_COMBINATIONS=0
           FAILED_TESTS=0
           
-          echo "## Browser × Environment Test Results" >> nightly-summary.md
+          echo "## Test Results Matrix" >> nightly-summary.md
           echo "" >> nightly-summary.md
-          echo "| Browser | QAT | DEV | PREPROD |" >> nightly-summary.md
+          echo "| Browser | DEV | QAT | PREPROD |" >> nightly-summary.md
           echo "|---------|-----|-----|---------|" >> nightly-summary.md
           
           # Initialize status variables for JSON output
           declare -A BROWSER_ENV_STATUS
-          ENVIRONMENTS=("qat" "dev" "preprod")
-          BROWSERS=("chrome" "firefox" "edge")
+          ENVIRONMENTS=("dev" "qat" "preprod")
+          BROWSERS=("chrome" "edge" "firefox")
           
-          # Initialize all combinations to PASS (will be overridden if failed)
+          # Initialize all combinations to NOT RUN
           for browser in "${BROWSERS[@]}"; do
             for env in "${ENVIRONMENTS[@]}"; do
-              BROWSER_ENV_STATUS["${browser}_${env}"]="PASS"
+              BROWSER_ENV_STATUS["${browser}_${env}"]="NOT RUN"
             done
           done
           
-          # Debug: Show what artifacts we have
-          echo "Available artifacts:"
-          find all-artifacts -type d -name "*result*" 2>/dev/null || echo "No result artifacts found"
-          
           # Check results for each browser
           for browser in "${BROWSERS[@]}"; do
-            ROW="| $browser"
+            ROW="| ${browser^}"
             
             for env in "${ENVIRONMENTS[@]}"; do
               # Find result file with pattern matching
-              RESULT_FILE=$(find all-artifacts -name "result-${browser}-${env}-${{ github.run_number }}-*" -type d 2>/dev/null | head -1)
+              RESULT_FILE=$(find all-artifacts -name "result-${browser}-${env}-*" -type d | head -1)
               if [ -n "$RESULT_FILE" ]; then
                 # Find the actual result file inside the directory
-                ACTUAL_RESULT_FILE=$(find "$RESULT_FILE" -name "${browser}-${env}-*-result.txt" 2>/dev/null | head -1)
+                ACTUAL_RESULT_FILE=$(find "$RESULT_FILE" -name "${browser}-${env}-result.txt" | head -1)
                 if [ -f "$ACTUAL_RESULT_FILE" ]; then
                   RESULT=$(cat "$ACTUAL_RESULT_FILE")
                 else
-                  echo "Warning: No result file found for ${browser}-${env}"
-                  RESULT="NOT_RUN"
+                  RESULT="NOT RUN"
                 fi
               else
-                echo "Warning: No artifact directory found for ${browser}-${env}"
-                RESULT="NOT_RUN"
+                RESULT="NOT RUN"
               fi
               
               # Find screenshot directory with pattern matching
-              SCREENSHOT_DIR=$(find all-artifacts -name "screenshots-${browser}-${env}-${{ github.run_number }}-*" -type d 2>/dev/null | head -1)
+              SCREENSHOT_DIR=$(find all-artifacts -name "screenshots-${browser}-${env}-*" -type d | head -1)
               
               BROWSER_ENV_STATUS["${browser}_${env}"]="$RESULT"
               
               if [ "$RESULT" = "FAIL" ]; then
                 ((FAILED_COMBINATIONS++))
                 if [ -d "$SCREENSHOT_DIR" ] && [ "$(ls -A $SCREENSHOT_DIR 2>/dev/null)" ]; then
-                  SCREENSHOT_COUNT=$(find "$SCREENSHOT_DIR" -name "*.png" -o -name "*.jpg" 2>/dev/null | wc -l)
+                  SCREENSHOT_COUNT=$(find "$SCREENSHOT_DIR" -name "*.png" -o -name "*.jpg" | wc -l)
                   ROW="$ROW | ❌ ($SCREENSHOT_COUNT)"
                   FAILED_TESTS=$((FAILED_TESTS + SCREENSHOT_COUNT))
                 else
@@ -265,33 +253,10 @@ jobs:
               else
                 ROW="$ROW | ❓"
               fi
-              done
+            done
             
             ROW="$ROW |"
             echo "$ROW" >> nightly-summary.md
-          done
-          
-          echo "" >> nightly-summary.md
-          
-          # Environment summary
-          echo "## Environment Summary" >> nightly-summary.md
-          echo "" >> nightly-summary.md
-          echo "| Environment | Status | Failed Browsers |" >> nightly-summary.md
-          echo "|-------------|--------|-----------------|" >> nightly-summary.md
-          
-          for env in "${ENVIRONMENTS[@]}"; do
-            ENV_FAILED=0
-            for browser in "${BROWSERS[@]}"; do
-              if [ "${BROWSER_ENV_STATUS[${browser}_${env}]}" = "FAIL" ]; then
-                ((ENV_FAILED++))
-              fi
-            done
-            
-            if [ $ENV_FAILED -eq 0 ]; then
-              echo "| ${env^^} | ✅ Passed | 0/3 |" >> nightly-summary.md
-            else
-              echo "| ${env^^} | ❌ Failed | $ENV_FAILED/3 |" >> nightly-summary.md
-            fi
           done
           
           echo "" >> nightly-summary.md
@@ -318,6 +283,10 @@ jobs:
           echo "success_rate=${SUCCESS_RATE}%" >> $GITHUB_OUTPUT
           echo "failed_combinations=$FAILED_COMBINATIONS" >> $GITHUB_OUTPUT
           
+          # Update environments array to match new order
+          ENVIRONMENTS=("dev" "qat" "preprod")
+          BROWSERS=("chrome" "edge" "firefox")
+          
           # Set individual browser-environment status outputs
           for browser in "${BROWSERS[@]}"; do
             for env in "${ENVIRONMENTS[@]}"; do
@@ -341,20 +310,20 @@ jobs:
             "totalCombinations": 9,
             "lastRunHours": 0,
             "environments": {
-              "qat": {
-                "chrome": "${{ steps.summary.outputs.chrome_qat_status }}",
-                "firefox": "${{ steps.summary.outputs.firefox_qat_status }}",
-                "edge": "${{ steps.summary.outputs.edge_qat_status }}"
-              },
               "dev": {
                 "chrome": "${{ steps.summary.outputs.chrome_dev_status }}",
-                "firefox": "${{ steps.summary.outputs.firefox_dev_status }}",
-                "edge": "${{ steps.summary.outputs.edge_dev_status }}"
+                "edge": "${{ steps.summary.outputs.edge_dev_status }}",
+                "firefox": "${{ steps.summary.outputs.firefox_dev_status }}"
+              },
+              "qat": {
+                "chrome": "${{ steps.summary.outputs.chrome_qat_status }}",
+                "edge": "${{ steps.summary.outputs.edge_qat_status }}",
+                "firefox": "${{ steps.summary.outputs.firefox_qat_status }}"
               },
               "preprod": {
                 "chrome": "${{ steps.summary.outputs.chrome_preprod_status }}",
-                "firefox": "${{ steps.summary.outputs.firefox_preprod_status }}",
-                "edge": "${{ steps.summary.outputs.edge_preprod_status }}"
+                "edge": "${{ steps.summary.outputs.edge_preprod_status }}",
+                "firefox": "${{ steps.summary.outputs.firefox_preprod_status }}"
               }
             },
             "runUrl": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
@@ -372,18 +341,33 @@ jobs:
           <script>
           setTimeout(() => {
             fetch('./test-results.json').then(r => r.json()).then(data => {
-              const getStatusIcon = (status) => status === 'PASS' ? '✅' : '❌';
-              const getStatusColor = (status) => status === 'PASS' ? 'green' : 'red';
+              const getStatusIcon = (status) => {
+                switch(status) {
+                  case 'PASS': return '✅';
+                  case 'FAIL': return '❌';
+                  case 'NOT RUN': return '❓';
+                  default: return '❓';
+                }
+              };
+              const getStatusColor = (status) => {
+                switch(status) {
+                  case 'PASS': return 'green';
+                  case 'FAIL': return 'red';
+                  case 'NOT RUN': return 'orange';
+                  default: return 'orange';
+                }
+              };
               
               let environmentTable = '<table style="border-collapse: collapse; width: 100%; margin: 15px 0;">';
-              environmentTable += '<tr style="background: #f0f0f0;"><th style="border: 1px solid #ddd; padding: 8px;">Environment</th><th style="border: 1px solid #ddd; padding: 8px;">Chrome</th><th style="border: 1px solid #ddd; padding: 8px;">Firefox</th><th style="border: 1px solid #ddd; padding: 8px;">Edge</th></tr>';
+              environmentTable += '<tr style="background: #f0f0f0;"><th style="border: 1px solid #ddd; padding: 8px;">Browser</th><th style="border: 1px solid #ddd; padding: 8px;">DEV</th><th style="border: 1px solid #ddd; padding: 8px;">QAT</th><th style="border: 1px solid #ddd; padding: 8px;">PREPROD</th></tr>';
               
-              ['qat', 'dev', 'preprod'].forEach(env => {
+              ['chrome', 'edge', 'firefox'].forEach(browser => {
+                const capitalizedBrowser = browser.charAt(0).toUpperCase() + browser.slice(1);
                 environmentTable += `<tr>
-                  <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">${env.toUpperCase()}</td>
-                  <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: ${getStatusColor(data.environments[env].chrome)}">${getStatusIcon(data.environments[env].chrome)} ${data.environments[env].chrome}</td>
-                  <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: ${getStatusColor(data.environments[env].firefox)}">${getStatusIcon(data.environments[env].firefox)} ${data.environments[env].firefox}</td>
-                  <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: ${getStatusColor(data.environments[env].edge)}">${getStatusIcon(data.environments[env].edge)} ${data.environments[env].edge}</td>
+                  <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">${capitalizedBrowser}</td>
+                  <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: ${getStatusColor(data.environments.dev[browser])}">${getStatusIcon(data.environments.dev[browser])} ${data.environments.dev[browser]}</td>
+                  <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: ${getStatusColor(data.environments.qat[browser])}">${getStatusIcon(data.environments.qat[browser])} ${data.environments.qat[browser]}</td>
+                  <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: ${getStatusColor(data.environments.preprod[browser])}">${getStatusIcon(data.environments.preprod[browser])} ${data.environments.preprod[browser]}</td>
                 </tr>`;
               });
               environmentTable += '</table>';
@@ -392,7 +376,7 @@ jobs:
                 <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 1000px; margin: 0 auto;">
                   <h1>🌙 Pre-Entry TB Screening - Nightly Tests: ${data.overallStatus}</h1>
                   <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                    <h3>Cross-Environment Test Results</h3>
+                    <h3>Test Results Matrix</h3>
                     ${environmentTable}
                   </div>
                   <div style="display: flex; gap: 20px; margin: 20px 0;">
@@ -410,6 +394,8 @@ jobs:
                   <p><a href="${data.runUrl}" target="_blank" style="background: #0066cc; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px;">📊 View Detailed Results</a></p>
                 </div>
               `;
+            }).catch(err => {
+              document.body.innerHTML = '<div style="padding: 20px; color: red;">Error loading test results: ' + err.message + '</div>';
             });
           }, 100);
           </script></body></html>
@@ -439,7 +425,7 @@ jobs:
       - name: Set workflow conclusion
         if: always()
         run: |
-          echo "Dashboard URL: ${{ steps.deployment.outputs.page_url }}"
+          echo "🔗 Dashboard URL: ${{ steps.deployment.outputs.page_url }}"
           if [[ "${{ steps.summary.outputs.status }}" == "PASS" ]]; then
             echo "::notice::✅ All nightly tests passed across all environments! Dashboard updated at ${{ steps.deployment.outputs.page_url }}"
           else
