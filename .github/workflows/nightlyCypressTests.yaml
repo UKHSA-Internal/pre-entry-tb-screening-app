@@ -85,9 +85,9 @@ jobs:
           echo "CYPRESS_BASE_URL: $CYPRESS_BASE_URL"
           # Test environment accessibility
           if curl -f -s -I "${{ matrix.environment.url }}" > /dev/null; then
-            echo "✅ Environment ${{ matrix.environment.name }} is accessible"
+            echo "✓ Environment ${{ matrix.environment.name }} is accessible"
           else
-            echo "❌ Environment ${{ matrix.environment.name }} is not accessible"
+            echo "✗ Environment ${{ matrix.environment.name }} is not accessible"
             echo "This may cause test failures"
           fi
 
@@ -192,6 +192,7 @@ jobs:
 
       - name: Generate test summary report
         id: summary
+        shell: bash
         run: |
           echo "# 🌙 Nightly Cypress Test Results" > nightly-summary.md
           echo "**Run Date**: $(date)" >> nightly-summary.md
@@ -220,34 +221,40 @@ jobs:
             done
           done
           
+          # Debug: Show what artifacts we have
+          echo "Available artifacts:"
+          find all-artifacts -type d -name "*result*" 2>/dev/null || echo "No result artifacts found"
+          
           # Check results for each browser
           for browser in "${BROWSERS[@]}"; do
             ROW="| $browser"
             
             for env in "${ENVIRONMENTS[@]}"; do
               # Find result file with pattern matching
-              RESULT_FILE=$(find all-artifacts -name "result-${browser}-${env}-${{ github.run_number }}-*" -type d | head -1)
+              RESULT_FILE=$(find all-artifacts -name "result-${browser}-${env}-${{ github.run_number }}-*" -type d 2>/dev/null | head -1)
               if [ -n "$RESULT_FILE" ]; then
                 # Find the actual result file inside the directory
-                ACTUAL_RESULT_FILE=$(find "$RESULT_FILE" -name "${browser}-${env}-*-result.txt" | head -1)
+                ACTUAL_RESULT_FILE=$(find "$RESULT_FILE" -name "${browser}-${env}-*-result.txt" 2>/dev/null | head -1)
                 if [ -f "$ACTUAL_RESULT_FILE" ]; then
                   RESULT=$(cat "$ACTUAL_RESULT_FILE")
                 else
-                  RESULT="UNKNOWN"
+                  echo "Warning: No result file found for ${browser}-${env}"
+                  RESULT="NOT_RUN"
                 fi
               else
-                RESULT="UNKNOWN"
+                echo "Warning: No artifact directory found for ${browser}-${env}"
+                RESULT="NOT_RUN"
               fi
               
               # Find screenshot directory with pattern matching
-              SCREENSHOT_DIR=$(find all-artifacts -name "screenshots-${browser}-${env}-${{ github.run_number }}-*" -type d | head -1)
+              SCREENSHOT_DIR=$(find all-artifacts -name "screenshots-${browser}-${env}-${{ github.run_number }}-*" -type d 2>/dev/null | head -1)
               
               BROWSER_ENV_STATUS["${browser}_${env}"]="$RESULT"
               
               if [ "$RESULT" = "FAIL" ]; then
                 ((FAILED_COMBINATIONS++))
                 if [ -d "$SCREENSHOT_DIR" ] && [ "$(ls -A $SCREENSHOT_DIR 2>/dev/null)" ]; then
-                  SCREENSHOT_COUNT=$(find "$SCREENSHOT_DIR" -name "*.png" -o -name "*.jpg" | wc -l)
+                  SCREENSHOT_COUNT=$(find "$SCREENSHOT_DIR" -name "*.png" -o -name "*.jpg" 2>/dev/null | wc -l)
                   ROW="$ROW | ❌ ($SCREENSHOT_COUNT)"
                   FAILED_TESTS=$((FAILED_TESTS + SCREENSHOT_COUNT))
                 else
@@ -258,7 +265,7 @@ jobs:
               else
                 ROW="$ROW | ❓"
               fi
-            done
+              done
             
             ROW="$ROW |"
             echo "$ROW" >> nightly-summary.md
@@ -432,7 +439,7 @@ jobs:
       - name: Set workflow conclusion
         if: always()
         run: |
-          echo "🔗 Dashboard URL: ${{ steps.deployment.outputs.page_url }}"
+          echo "Dashboard URL: ${{ steps.deployment.outputs.page_url }}"
           if [[ "${{ steps.summary.outputs.status }}" == "PASS" ]]; then
             echo "::notice::✅ All nightly tests passed across all environments! Dashboard updated at ${{ steps.deployment.outputs.page_url }}"
           else
