@@ -10,6 +10,7 @@ interface LabelProps {
   id?: string;
   hiddenLabel?: string;
   externalLink: boolean;
+  openInNewTab?: boolean;
 }
 
 // excludes internal page navigations (e.g. error summary, skip to main content)
@@ -25,6 +26,8 @@ const LinkLabel = ({
       style={props.style}
       onClick={props.onClick}
       data-module={props.dataModule}
+      target={props.openInNewTab ? "_blank" : undefined}
+      rel={props.openInNewTab ? "noopener noreferrer" : undefined}
     >
       {props.title}
     </a>

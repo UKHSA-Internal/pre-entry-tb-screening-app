@@ -36,7 +36,7 @@ export default function AccessibilityStatementPage() {
           ]}
         />
         <p className="govuk-body">
-          We’ve also made the website text as simple as possible to understand.
+          We&apos;ve also made the website text as simple as possible to understand.
         </p>
         <p className="govuk-body">
           <LinkLabel
@@ -44,6 +44,7 @@ export default function AccessibilityStatementPage() {
             to="https://mcmw.abilitynet.org.uk/"
             externalLink
             className="govuk-link"
+            openInNewTab
           />{" "}
           has advice on making your device easier to use if you have a disability.
         </p>
@@ -68,13 +69,14 @@ export default function AccessibilityStatementPage() {
         <p className="govuk-body">
           The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public
           Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018
-          (the ‘accessibility regulations’). If you’re not happy with how we respond to your
-          complaint,{" "}
+          (the ‘accessibility regulations&apos;). If you&apos;re not happy with how we respond to
+          your complaint,{" "}
           <LinkLabel
             title="contact the Equality Advisory and Support Service (EASS) (opens in new tab)"
             to="https://www.equalityadvisoryservice.com/"
             externalLink
             className="govuk-link"
+            openInNewTab
           />
           .
         </p>
@@ -84,7 +86,7 @@ export default function AccessibilityStatementPage() {
         <Heading
           level={2}
           size="l"
-          title="Technical information about this website’s accessibility"
+          title="Technical information about this website's accessibility"
         />
         <p className="govuk-body">
           UK Health Security Agency (UKHSA) is committed to making its website accessible, in
@@ -102,6 +104,7 @@ export default function AccessibilityStatementPage() {
             to="https://www.w3.org/TR/WCAG22/"
             externalLink
             className="govuk-link"
+            openInNewTab
           />{" "}
           AA standard.
         </p>
@@ -134,7 +137,7 @@ export default function AccessibilityStatementPage() {
       </section>
 
       <section className="govuk-!-margin-bottom-6">
-        <Heading level={2} size="l" title="What we’re doing to improve accessibility" />
+        <Heading level={2} size="l" title="What we're doing to improve accessibility" />
         <p className="govuk-body">
           We are testing our service with users with a variety of accessibility needs. We will keep
           testing our content to understand where we are non-compliant with accessibility standards.

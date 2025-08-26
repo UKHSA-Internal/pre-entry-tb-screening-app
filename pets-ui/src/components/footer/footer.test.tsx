@@ -16,6 +16,13 @@ describe("Footer component", () => {
     expect(text).toBeTruthy();
   });
 
+  it("renders the privacy notice link", () => {
+    renderWithProviders(<Footer />);
+    const link = screen.getByRole("link", { name: "Privacy" });
+    expect(link).toBeTruthy();
+    expect(link.getAttribute("href")).toBe("/privacy-notice");
+  });
+
   it("renders the accessibility statement link", () => {
     renderWithProviders(<Footer />);
     const link = screen.getByRole("link", { name: "Accessibility statement" });
