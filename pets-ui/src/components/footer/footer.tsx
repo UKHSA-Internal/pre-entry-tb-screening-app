@@ -1,11 +1,52 @@
+import { useLocation } from "react-router-dom";
+
+import { useAppDispatch } from "@/redux/hooks";
+import {
+  setAccessibilityStatementPreviousPage,
+  setPrivacyNoticePreviousPage,
+} from "@/redux/navigationSlice";
+
 import LinkLabel from "../linkLabel/LinkLabel";
 
 export default function Footer() {
+  const location = useLocation();
+  const dispatch = useAppDispatch();
+
+  const handleAccessibilityStatementPreviousPage: React.MouseEventHandler<
+    HTMLAnchorElement
+  > = () => {
+    dispatch(setAccessibilityStatementPreviousPage(location.pathname));
+  };
+  const handlePrivacyNoticePreviousPage: React.MouseEventHandler<HTMLAnchorElement> = () => {
+    dispatch(setPrivacyNoticePreviousPage(location.pathname));
+  };
+
   return (
     <footer className="govuk-footer">
       <div className="govuk-width-container">
         <div className="govuk-footer__meta">
           <div className="govuk-footer__meta-item govuk-footer__meta-item--grow">
+            <h3 className="govuk-visually-hidden">Support links</h3>
+            <ul className="govuk-footer__inline-list">
+              <li className="govuk-footer__inline-list-item">
+                <LinkLabel
+                  title="Privacy"
+                  className="govuk-footer__link"
+                  to="/privacy-notice"
+                  externalLink={false}
+                  onClick={handlePrivacyNoticePreviousPage}
+                />
+              </li>
+              <li className="govuk-footer__inline-list-item">
+                <LinkLabel
+                  title="Accessibility statement"
+                  className="govuk-footer__link"
+                  to="/accessibility-statement"
+                  externalLink={false}
+                  onClick={handleAccessibilityStatementPreviousPage}
+                />
+              </li>
+            </ul>
             <svg
               aria-hidden="true"
               focusable="false"
