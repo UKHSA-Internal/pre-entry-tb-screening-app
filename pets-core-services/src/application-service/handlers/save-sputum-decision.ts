@@ -23,7 +23,7 @@ export const saveSputumDecisionHandler = async (event: SaveSputumDecisionEvent) 
     if (!parsedBody) {
       logger.error("Event missing parsed body");
       return createHttpResponse(500, {
-        message: "Internal Server Error: Sputum Decision Request missing",
+        message: "Internal Server Error: Sputum Decision Request not parsed correctly",
       });
     }
 

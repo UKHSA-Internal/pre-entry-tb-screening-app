@@ -1,10 +1,12 @@
 import { seededApplicants } from "../applicant-service/fixtures/applicants";
 import { seededChestXray } from "../application-service/fixtures/chest-xray";
 import { seededMedicalScreening } from "../application-service/fixtures/medical-screening";
+import { seededSputumDecision } from "../application-service/fixtures/sputum-decision";
 import { seededTbCertificate } from "../application-service/fixtures/tb-certificate";
 import { seededTravelInformation } from "../application-service/fixtures/travel-information";
 import { ChestXRayDbOps } from "../application-service/models/chest-xray";
 import { MedicalScreening } from "../application-service/models/medical-screening";
+import { SputumDecision } from "../application-service/models/sputum-decision";
 import { TbCertificateDbOps } from "../application-service/models/tb-certificate";
 import { TravelInformation } from "../application-service/models/travel-information";
 import { seededClinics } from "../clinic-service/fixtures/clinics";
@@ -29,6 +31,9 @@ export const seedDatabase = async () => {
   }
   for (const chestXray of seededChestXray) {
     await ChestXRayDbOps.createChestXray(chestXray);
+  }
+  for (const sputumDecision of seededSputumDecision) {
+    await SputumDecision.createSputumDecision(sputumDecision);
   }
   for (const tbCertificate of seededTbCertificate) {
     await TbCertificateDbOps.createTbCertificate(tbCertificate);
