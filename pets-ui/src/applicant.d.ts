@@ -259,6 +259,7 @@ type ReduxTbCertificateType = {
   certificateNumber: string;
   reasonNotIssued?: string;
   declaringPhysicianName: string;
+  clinic: ClinicType;
 };
 
 type PostedTbCertificateType = {
@@ -310,4 +311,15 @@ type GenerateImageUploadUrlResponse = {
   uploadUrl: string;
   bucketPath: string;
   fields: Record<string, string>;
+};
+
+// Clinic type
+type ClinicType = {
+  clinicId: string;
+  name: string;
+  country: string;
+  city: string;
+  startDate: string;
+  endDate?: string | null;
+  createdBy: string;
 };

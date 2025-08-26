@@ -1,4 +1,4 @@
-import { PDFViewer, usePDF } from "@react-pdf/renderer";
+import { PDFDownloadLink, PDFViewer, usePDF } from "@react-pdf/renderer";
 import { useEffect, useMemo, useRef } from "react";
 
 import { CertificateTemplate } from "@/components/certificateTemplate/certificateTemplate";
@@ -10,6 +10,7 @@ import {
   selectApplicant,
   selectApplication,
   selectChestXray,
+  selectClinic,
   selectMedicalScreening,
   selectSputum,
   selectTbCertificate,
@@ -26,6 +27,7 @@ export default function TbCertificatePrintPage() {
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const sputumData = useAppSelector(selectSputum);
   const { applicantPhotoDataUrl } = useApplicantPhoto();
+  const clinic = useAppSelector(selectClinic);
 
   const certificate = useMemo(
     () => (
@@ -38,6 +40,7 @@ export default function TbCertificatePrintPage() {
         medicalScreeningData={medicalScreeningData}
         sputumData={sputumData}
         applicantPhotoUrl={applicantPhotoDataUrl}
+        clinic={clinic}
       />
     ),
     [
@@ -49,6 +52,7 @@ export default function TbCertificatePrintPage() {
       medicalScreeningData,
       sputumData,
       applicantPhotoDataUrl,
+      clinic,
     ],
   );
 
@@ -73,29 +77,50 @@ export default function TbCertificatePrintPage() {
         <div className="govuk-grid-column-full">
           <Heading level={1} size="l" title="TB clearance certificate" />
 
-          <div
-            onClick={handlePrint}
-            className="govuk-!-margin-bottom-6"
-            style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === "Enter" && handlePrint()}
-          >
-            <img
-              src="/assets/images/printer.svg"
-              alt="Print Certificate"
-              className="govuk-!-margin-right-2"
-              height="32"
-            />
-            <span className="govuk-link" style={{ fontSize: "1.25rem" }}>
-              Print the certificate
-            </span>
-          </div>
-
-          <div ref={certificateRef} className="certificate-container" style={{ height: "80vh" }}>
-            <PDFViewer style={{ width: "100%", height: "100%" }}>{certificate}</PDFViewer>
+          <div className="govuk-!-margin-bottom-6">
+            <div
+              onClick={handlePrint}
+              className="print-trigger govuk-!-margin-bottom-2"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === "Enter" && handlePrint()}
+            >
+              <img
+                src="/assets/images/printer.svg"
+                alt="Print Certificate"
+                className="govuk-!-margin-right-2"
+                height="32"
+              />
+              <span className="govuk-link">Print the certificate</span>
+            </div>
+            <PDFDownloadLink
+              document={certificate}
+              fileName={`${applicationData.applicationId}.pdf`}
+              className="print-trigger"
+            >
+              <img
+                src="/assets/images/download.svg"
+                alt="Download Certificate"
+                className="govuk-!-margin-right-2 certificate-image"
+                height="32"
+              />
+              <span className="govuk-link">Download the certificate</span>
+            </PDFDownloadLink>
           </div>
         </div>
+      </div>
+
+      <div
+        ref={certificateRef}
+        style={{
+          width: "1415px",
+          height: "1004px",
+          marginLeft: "calc(50% - 707.5px)",
+        }}
+      >
+        <PDFViewer style={{ width: "100%", height: "100%" }} showToolbar={false}>
+          {certificate}
+        </PDFViewer>
       </div>
     </Container>
   );

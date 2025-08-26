@@ -39,4 +39,5 @@ export const selectMedicalScreening = (state: RootState) => state.medicalScreeni
 export const selectNavigation = (state: RootState) => state.navigation;
 export const selectSputum = (state: RootState) => state.sputum;
 export const selectTbCertificate = (state: RootState) => state.tbCertificate;
+export const selectClinic = (state: RootState) => state.tbCertificate.clinic;
 export const selectTravel = (state: RootState) => state.travel;

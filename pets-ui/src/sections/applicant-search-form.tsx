@@ -34,6 +34,7 @@ import {
   setTbCertificateFromApiResponse,
 } from "@/redux/tbCertificateSlice";
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
+import { fetchClinic } from "@/utils/clinic";
 import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/records";
 
@@ -69,6 +70,7 @@ const ApplicantSearchForm = () => {
 
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (passportDetails) => {
     setIsLoading(true);
+    fetchClinic(dispatch);
     try {
       dispatch(setApplicantPassportDetails(passportDetails));
       setApplicantPhotoUrl(null);

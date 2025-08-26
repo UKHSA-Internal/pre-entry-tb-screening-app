@@ -12,6 +12,7 @@ import {
   selectApplicant,
   selectApplication,
   selectChestXray,
+  selectClinic,
   selectMedicalScreening,
   selectSputum,
   selectTbCertificate,
@@ -34,6 +35,7 @@ const TbSummary = () => {
   const applicationData = useAppSelector(selectApplication);
   const applicantData = useAppSelector(selectApplicant);
   const travelData = useAppSelector(selectTravel);
+  const clinic = useAppSelector(selectClinic);
   const chestXrayData = useAppSelector(selectChestXray);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const sputumData = useAppSelector(selectSputum);
@@ -66,7 +68,7 @@ const TbSummary = () => {
           issueDate: certificateIssueDateStr,
           expiryDate: certificateExpiryDateStr,
           certificateNumber: tbCertificateData.certificateNumber,
-          clinicName: "Lakeside Medical & TB Screening Centre",
+          clinicName: clinic.name,
           physicianName: tbCertificateData.declaringPhysicianName,
           referenceNumber: applicationData.applicationId,
         });
@@ -79,7 +81,7 @@ const TbSummary = () => {
           isIssued: tbCertificateData.isIssued,
           comments: tbCertificateData.comments,
           notIssuedReason: tbCertificateData.reasonNotIssued,
-          clinicName: "Lakeside Medical & TB Screening Centre",
+          clinicName: clinic.name,
           physicianName: tbCertificateData.declaringPhysicianName,
           referenceNumber: applicationData.applicationId,
         });
@@ -230,7 +232,7 @@ const TbSummary = () => {
       ? [
           {
             key: "Clinic name",
-            value: "Lakeside Medical & TB Screening Centre",
+            value: clinic.name,
             hiddenLabel: "Clinic name",
           },
           {

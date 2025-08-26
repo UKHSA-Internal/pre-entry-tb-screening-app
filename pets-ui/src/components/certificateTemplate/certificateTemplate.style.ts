@@ -2,136 +2,97 @@ import { StyleSheet } from "@react-pdf/renderer";
 
 export const styles = StyleSheet.create({
   page: {
-    padding: "15px",
-    fontFamily: "Helvetica",
-    fontSize: 8,
-    color: "#0b0c0c",
+    padding: 20,
+    fontSize: 9,
+    color: "#000000",
+    display: "flex",
+    flexDirection: "column",
   },
-  header: {
+  headerText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  headerLogoBlock: {
+    width: 100,
     display: "flex",
     flexDirection: "row",
+    justifyContent: "flex-start",
     alignItems: "flex-start",
-    paddingBottom: 10,
-    marginBottom: 15,
-    borderBottom: "2px solid #0b0c0c",
-  },
-  headerLeft: {
-    width: 150,
   },
   ukVisasLogo: {
-    maxWidth: 150,
+    width: 110,
   },
-  headerCenter: {
-    flex: 1,
-    alignSelf: "stretch",
+  layoutColumns: {
     display: "flex",
-    alignItems: "flex-start",
-    justifyContent: "flex-end",
-    padding: "0 20px",
+    flexDirection: "row",
+    gap: 12,
+    flexGrow: 1,
+    alignItems: "stretch",
   },
-  mainTitle: {
-    fontSize: 12,
-    fontWeight: "bold",
-    lineHeight: 1.2,
-    color: "#0b0c0c",
+  col: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    gap: 20,
+    justifyContent: "flex-start",
   },
-  headerRight: {
-    width: 100,
+  photoBox: {
+    border: "1.5px solid #000",
+    height: 200,
+    width: 150,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: "auto",
   },
-  headerImage: {
-    width: 80,
-    height: 100,
+  photo: {
+    width: 120,
+    height: 168,
+    objectFit: "cover",
   },
-  contentContainer: {
+  photoPlaceholderText: {
+    fontSize: 14,
+    color: "#bbb",
+  },
+  box: {
+    border: "1.5px solid #000",
+    padding: 14,
     display: "flex",
     flexDirection: "column",
     flexGrow: 1,
   },
-  topContentRow: {
-    display: "flex",
-    flexDirection: "row",
-    border: "1px solid #b1b4b6",
-    borderRadius: 4,
-    overflow: "hidden",
-    marginBottom: 5,
-  },
-  bottomContentRow: {
-    display: "flex",
-    flexDirection: "row",
-    border: "1px solid #b1b4b6",
-    borderRadius: 4,
-    overflow: "hidden",
-    width: "100%",
-  },
-  photoColumn: {
-    width: "20%",
-    borderRight: "1px solid #b1b4b6",
-  },
-  applicantPhoto: {
-    width: 96,
-    height: 116,
-    objectFit: "cover",
-    margin: "10px auto 0",
-  },
-  photoPlaceholder: {
-    width: 96,
-    height: 116,
-    objectFit: "cover",
-    margin: "10px auto",
-  },
-  contentColumn: {
-    flex: 1,
-    borderRight: "1px solid #b1b4b6",
-  },
-  bottomContentColumn: {
-    width: "50%",
-    borderRight: "1px solid #b1b4b6",
-  },
-  lastContentColumn: {
-    borderRight: "none",
-  },
-  sectionHeader: {
-    padding: "8px 12px",
-    backgroundColor: "#0b0c0c",
-    color: "white",
+  boxTitle: {
+    fontSize: 16,
     fontWeight: "bold",
-    fontSize: 9,
+    marginBottom: 6,
   },
-  summarySection: {
-    padding: 10,
+  boxSubtitle: {
+    fontSize: 12,
+    marginBottom: 8,
   },
-  summaryRow: {
+  field: {
+    marginBottom: 10,
+  },
+  label: {
+    fontSize: 11,
+    marginBottom: 2,
+  },
+  valueBox: {
+    border: "1.5px solid #000",
+    minHeight: 22,
+    padding: "5px 7px",
+    fontSize: 11,
     display: "flex",
     flexDirection: "row",
-    padding: "4px 0",
-    borderBottom: "1px solid #f3f2f1",
+    alignItems: "center",
   },
-  summaryKey: {
-    width: "40%",
-    fontSize: 8,
-    color: "#505a5f",
+  inlineRow: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 12,
   },
-  summaryValue: {
+  half: {
     flex: 1,
-    minHeight: 16,
-    paddingBottom: 2,
-    borderBottom: "1px solid #b1b4b6",
-    fontSize: 8,
-  },
-  commentsSection: {
-    paddingTop: 10,
-    marginTop: 10,
-    borderTop: "2px solid #b1b4b6",
-  },
-  commentsTitle: {
-    marginBottom: 4,
-    fontSize: 9,
-    fontWeight: "bold",
-  },
-  commentsContent: {
-    padding: 5,
-    border: "2px solid #b1b4b6",
-    borderRadius: 4,
-    lineHeight: 1.2,
   },
 });
