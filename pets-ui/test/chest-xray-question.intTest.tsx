@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
 import { describe, expect, it, Mock } from "vitest";
@@ -42,30 +42,34 @@ describe("ChestXrayUploadPage", () => {
   it("renders an error when continue button pressed but required question not answered", async () => {
     await user.click(screen.getByRole("button"));
 
-    expect(screen.getByText("There is a problem")).toBeInTheDocument();
-    expect(
-      screen.getAllByText(
-        "Select yes if the visa applicant has had a chest X-ray or no if they have not",
-      )[0],
-    ).toBeInTheDocument();
-    expect(
-      screen.getAllByText(
-        "Select yes if the visa applicant has had a chest X-ray or no if they have not",
-      )[1],
-    ).toBeInTheDocument();
-    expect(
-      screen.getAllByText(
-        "Select yes if the visa applicant has had a chest X-ray or no if they have not",
-      )[0],
-    ).toHaveAttribute(
-      "aria-label",
-      "Error: Select yes if the visa applicant has had a chest X-ray or no if they have not",
-    );
+    await waitFor(() => {
+      expect(screen.getByText("There is a problem")).toBeInTheDocument();
+      expect(
+        screen.getAllByText(
+          "Select yes if the visa applicant has had a chest X-ray or no if they have not",
+        )[0],
+      ).toBeInTheDocument();
+      expect(
+        screen.getAllByText(
+          "Select yes if the visa applicant has had a chest X-ray or no if they have not",
+        )[1],
+      ).toBeInTheDocument();
+      expect(
+        screen.getAllByText(
+          "Select yes if the visa applicant has had a chest X-ray or no if they have not",
+        )[0],
+      ).toHaveAttribute(
+        "aria-label",
+        "Error: Select yes if the visa applicant has had a chest X-ray or no if they have not",
+      );
+    });
   });
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
     await user.click(screen.getByRole("button"));
     const errorSummaryDiv = screen.getByTestId("error-summary");
-    expect(errorSummaryDiv).toHaveFocus();
+    await waitFor(() => {
+      expect(errorSummaryDiv).toHaveFocus();
+    });
   });
   it("does not render an error if continue button not clicked with no answer provided", () => {
     expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
