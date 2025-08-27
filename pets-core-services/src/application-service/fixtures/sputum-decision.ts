@@ -1,5 +1,4 @@
 import { seededApplications } from "../../shared/fixtures/application";
-// import { TaskStatus } from "../../shared/types/enum";
 import { ISputumDecision } from "../models/sputum-decision";
 import { YesOrNo } from "../types/enums";
 
