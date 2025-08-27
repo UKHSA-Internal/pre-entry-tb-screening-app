@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
 import { Mock } from "vitest";
@@ -42,16 +42,18 @@ describe("ChestXrayNotTakenPage", () => {
   it("renders an error when continue button pressed but required radio question not answered", async () => {
     await user.click(screen.getByRole("button"));
 
-    expect(screen.getByText("There is a problem")).toBeInTheDocument();
-    expect(
-      screen.getAllByText("Select the reason why the chest X-ray was not taken")[0],
-    ).toBeInTheDocument();
-    expect(
-      screen.getAllByText("Select the reason why the chest X-ray was not taken")[1],
-    ).toBeInTheDocument();
-    expect(
-      screen.getAllByText("Select the reason why the chest X-ray was not taken")[0],
-    ).toHaveAttribute("aria-label", "Error: Select the reason why the chest X-ray was not taken");
+    await waitFor(() => {
+      expect(screen.getByText("There is a problem")).toBeInTheDocument();
+      expect(
+        screen.getAllByText("Select the reason why the chest X-ray was not taken")[0],
+      ).toBeInTheDocument();
+      expect(
+        screen.getAllByText("Select the reason why the chest X-ray was not taken")[1],
+      ).toBeInTheDocument();
+      expect(
+        screen.getAllByText("Select the reason why the chest X-ray was not taken")[0],
+      ).toHaveAttribute("aria-label", "Error: Select the reason why the chest X-ray was not taken");
+    });
   });
   it("does not render an error if continue button not clicked", () => {
     expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
@@ -83,18 +85,22 @@ describe("ChestXrayNotTakenPage", () => {
 
     await user.click(screen.getByRole("button"));
 
-    expect(screen.queryByText("There is a problem")).toBeInTheDocument();
-    expect(screen.getAllByText("Enter reason X-ray not taken")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("Enter reason X-ray not taken")[1]).toBeInTheDocument();
-    expect(screen.getAllByText("Enter reason X-ray not taken")[0]).toHaveAttribute(
-      "aria-label",
-      "Error: Enter reason X-ray not taken",
-    );
+    await waitFor(() => {
+      expect(screen.queryByText("There is a problem")).toBeInTheDocument();
+      expect(screen.getAllByText("Enter reason X-ray not taken")[0]).toBeInTheDocument();
+      expect(screen.getAllByText("Enter reason X-ray not taken")[1]).toBeInTheDocument();
+      expect(screen.getAllByText("Enter reason X-ray not taken")[0]).toHaveAttribute(
+        "aria-label",
+        "Error: Enter reason X-ray not taken",
+      );
+    });
   });
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
     await user.click(screen.getByRole("button"));
     const errorSummaryDiv = screen.getByTestId("error-summary");
-    expect(errorSummaryDiv).toHaveFocus();
+    await waitFor(() => {
+      expect(errorSummaryDiv).toHaveFocus();
+    });
   });
   it("does not render an error if 'Other' option chosen, further details entered, and continue clicked", async () => {
     const radioButtons = screen.getAllByRole("radio");

@@ -99,6 +99,8 @@ describe("Container Component", () => {
     const skipLink = screen.getByText("Skip to main content");
     await user.click(skipLink);
     const mainElement = screen.getByRole("main");
-    expect(mainElement).toHaveFocus();
+    await waitFor(() => {
+      expect(mainElement).toHaveFocus();
+    });
   });
 });
