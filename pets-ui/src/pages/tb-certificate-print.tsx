@@ -1,4 +1,4 @@
-import { PDFDownloadLink, PDFViewer, usePDF } from "@react-pdf/renderer";
+import { PDFViewer, usePDF } from "@react-pdf/renderer";
 import { useEffect, useMemo, useRef } from "react";
 
 import { CertificateTemplate } from "@/components/certificateTemplate/certificateTemplate";
@@ -84,7 +84,7 @@ export default function TbCertificatePrintPage() {
             <a
               href={instance.url ?? "#"}
               onClick={handlePrint}
-              className="print-trigger govuk-link govuk-!-margin-bottom-2"
+              className="print-trigger govuk-link"
             >
               <img
                 src="/assets/images/printer.svg"
@@ -94,19 +94,6 @@ export default function TbCertificatePrintPage() {
               />
               <span>Print the certificate</span>
             </a>
-            <PDFDownloadLink
-              document={certificate}
-              fileName={`${applicationData.applicationId}.pdf`}
-              className="print-trigger govuk-link"
-            >
-              <img
-                src="/assets/images/download.svg"
-                alt="Download Certificate"
-                className="govuk-!-margin-right-2 certificate-image"
-                height="32"
-              />
-              <span>Download the certificate</span>
-            </PDFDownloadLink>
           </div>
         </div>
       </div>
