@@ -18,7 +18,7 @@ export function renderWithProviders(
     ...renderOptions
   }: ExtendedRenderOptions = {},
 ) {
-  function Wrapper({ children }: PropsWithChildren<object>): JSX.Element {
+  function Wrapper({ children }: PropsWithChildren<object>): React.JSX.Element {
     return (
       <Router>
         <Provider store={store}>{children}</Provider>;
@@ -40,7 +40,7 @@ export function renderWithProvidersWithoutRouter(
     ...renderOptions
   }: ExtendedRenderOptions = {},
 ) {
-  function Wrapper({ children }: PropsWithChildren<object>): JSX.Element {
+  function Wrapper({ children }: PropsWithChildren<object>): React.JSX.Element {
     return <Provider store={store}>{children}</Provider>;
   }
 

@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Mock } from "vitest";
 
@@ -23,6 +23,9 @@ vi.mock("react-helmet-async", () => ({
 describe("MedicalScreeningForm", () => {
   beforeEach(() => {
     useNavigateMock.mockClear();
+  });
+  afterEach(() => {
+    cleanup();
   });
 
   const user = userEvent.setup();
@@ -120,9 +123,11 @@ describe("MedicalScreeningForm", () => {
       "Error: Select whether the applicant has menstrual periods",
     ];
 
-    errorMessages.forEach((error) => {
-      expect(screen.getAllByText(error.slice(7))).toHaveLength(2);
-      expect(screen.getAllByText(error.slice(7))[0]).toHaveAttribute("aria-label", error);
+    await waitFor(() => {
+      errorMessages.forEach((error) => {
+        expect(screen.getAllByText(error.slice(7))).toHaveLength(2);
+        expect(screen.getAllByText(error.slice(7))[0]).toHaveAttribute("aria-label", error);
+      });
     });
   });
 
@@ -130,7 +135,9 @@ describe("MedicalScreeningForm", () => {
     renderWithProviders(<MedicalScreeningForm />);
     await user.click(screen.getByRole("button"));
     const errorSummaryDiv = screen.getByTestId("error-summary");
-    expect(errorSummaryDiv).toHaveFocus();
+    await waitFor(() => {
+      expect(errorSummaryDiv).toHaveFocus();
+    });
   });
 
   it("back link points to tracker", () => {
