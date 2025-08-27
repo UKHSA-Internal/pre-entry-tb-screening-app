@@ -1,5 +1,6 @@
+import { AttributeValue } from "@aws-sdk/client-dynamodb";
+import { unmarshall } from "@aws-sdk/util-dynamodb";
 import { DynamoDBRecord, StreamRecord } from "aws-lambda";
-import { DynamoDB } from "aws-sdk";
 
 import { logger } from "../../shared/logger";
 /**
@@ -17,10 +18,10 @@ class StreamService {
 
     if (record.eventName === "INSERT" || record.eventName === "MODIFY") {
       if (record?.dynamodb?.NewImage) {
-        const newImage: DynamoDB.AttributeMap = record.dynamodb.NewImage;
+        const newImage = record.dynamodb?.NewImage as Record<string, AttributeValue>;
 
         try {
-          return DynamoDB.Converter.unmarshall(newImage);
+          return unmarshall(newImage);
         } catch (error) {
           logger.error("unmarshall error:", error);
           logger.error("error in record:", record);
