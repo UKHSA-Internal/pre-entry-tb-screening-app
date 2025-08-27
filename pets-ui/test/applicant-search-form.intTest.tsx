@@ -1,4 +1,4 @@
-import { fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MockAdapter from "axios-mock-adapter";
 import React from "react";
@@ -378,9 +378,11 @@ describe("ApplicantSearchForm", () => {
         createdBy: "tmp@email.com",
       },
     });
-    expect(store.getState().applicant.applicantPhotoFileName).toBe("photo.jpg");
-    expect(contextUrl).toBe("http://localhost:4566/photos/photo.jpg");
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/tracker");
+    await waitFor(() => {
+      expect(store.getState().applicant.applicantPhotoFileName).toBe("photo.jpg");
+      expect(contextUrl).toBe("http://localhost:4566/photos/photo.jpg");
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/tracker");
+    });
   });
 
   test("store is correctly populated and user is navigated to error page when applicant search is successful & application search returns a non-200 response", async () => {

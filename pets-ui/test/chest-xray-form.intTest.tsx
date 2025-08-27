@@ -173,12 +173,14 @@ describe("ChestXrayForm Section", () => {
     expect(posteroAnteriorInput.files).toHaveLength(0);
 
     await user.click(submitButton);
-    expect(useNavigateMock).not.toHaveBeenCalled();
-    expect(screen.getAllByText("Select a postero-anterior X-ray image file")).toHaveLength(2);
-    expect(screen.getAllByText("Select a postero-anterior X-ray image file")[0]).toHaveAttribute(
-      "aria-label",
-      "Error: Select a postero-anterior X-ray image file",
-    );
+    await waitFor(() => {
+      expect(useNavigateMock).not.toHaveBeenCalled();
+      expect(screen.getAllByText("Select a postero-anterior X-ray image file")).toHaveLength(2);
+      expect(screen.getAllByText("Select a postero-anterior X-ray image file")[0]).toHaveAttribute(
+        "aria-label",
+        "Error: Select a postero-anterior X-ray image file",
+      );
+    });
   });
 
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
@@ -187,6 +189,8 @@ describe("ChestXrayForm Section", () => {
     const submitButton = screen.getByRole("button", { name: /continue/i });
     await user.click(submitButton);
     const errorSummaryDiv = screen.getByTestId("error-summary");
-    expect(errorSummaryDiv).toHaveFocus();
+    await waitFor(() => {
+      expect(errorSummaryDiv).toHaveFocus();
+    });
   });
 });

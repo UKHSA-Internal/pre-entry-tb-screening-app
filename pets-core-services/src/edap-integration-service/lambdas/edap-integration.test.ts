@@ -21,7 +21,7 @@ describe("Lambda", () => {
     }));
 
     await expect(handler({}, ctx, () => {})).rejects.toEqual(
-      new Error("event.Records is not iterable"),
+      new TypeError("event.Records is not iterable"),
     );
 
     errorloggerMock.mockRestore();
