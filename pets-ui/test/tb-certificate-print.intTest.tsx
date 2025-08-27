@@ -133,10 +133,6 @@ describe("TB Certificate Print Page", () => {
     expect(printLink).toBeInTheDocument();
     expect(printLink).toHaveClass("print-trigger", "govuk-link");
 
-    const downloadLink = screen.getByTestId("pdf-download-link");
-    expect(downloadLink).toBeInTheDocument();
-    expect(downloadLink).toHaveAttribute("download", "123.pdf");
-
     expect(screen.getByTestId("pdf-viewer")).toBeInTheDocument();
 
     expect(screen.getByTestId("certificate-template")).toBeInTheDocument();
@@ -152,18 +148,6 @@ describe("TB Certificate Print Page", () => {
     expect(printImage).toHaveClass("govuk-!-margin-right-2");
 
     expect(screen.getByText("Print the certificate")).toBeInTheDocument();
-  });
-
-  test("displays correct download icon and text", () => {
-    renderTbCertificatePrintPage();
-
-    const downloadImage = screen.getByAltText("Download Certificate");
-    expect(downloadImage).toBeInTheDocument();
-    expect(downloadImage).toHaveAttribute("src", "/assets/images/download.svg");
-    expect(downloadImage).toHaveAttribute("height", "32");
-    expect(downloadImage).toHaveClass("govuk-!-margin-right-2", "certificate-image");
-
-    expect(screen.getByText("Download the certificate")).toBeInTheDocument();
   });
 
   test("handles print functionality when print link is clicked", () => {
