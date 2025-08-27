@@ -72,18 +72,19 @@ export default function TbCertificatePrintPage() {
   };
 
   return (
-    <Container title="TB clearance certificate" backLinkTo="/tb-certificate-confirmation">
+    <Container
+      title="TB clearance certificate - Complete UK pre-entry health screening - GOV.UK"
+      backLinkTo="/tb-certificate-confirmation"
+    >
       <div className="govuk-grid-row">
         <div className="govuk-grid-column-full">
           <Heading level={1} size="l" title="TB clearance certificate" />
 
           <div className="govuk-!-margin-bottom-6">
-            <div
+            <a
+              href={instance.url ?? "#"}
               onClick={handlePrint}
-              className="print-trigger govuk-!-margin-bottom-2"
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === "Enter" && handlePrint()}
+              className="print-trigger govuk-link govuk-!-margin-bottom-2"
             >
               <img
                 src="/assets/images/printer.svg"
@@ -91,12 +92,12 @@ export default function TbCertificatePrintPage() {
                 className="govuk-!-margin-right-2"
                 height="32"
               />
-              <span className="govuk-link">Print the certificate</span>
-            </div>
+              <span>Print the certificate</span>
+            </a>
             <PDFDownloadLink
               document={certificate}
               fileName={`${applicationData.applicationId}.pdf`}
-              className="print-trigger"
+              className="print-trigger govuk-link"
             >
               <img
                 src="/assets/images/download.svg"
@@ -104,7 +105,7 @@ export default function TbCertificatePrintPage() {
                 className="govuk-!-margin-right-2 certificate-image"
                 height="32"
               />
-              <span className="govuk-link">Download the certificate</span>
+              <span>Download the certificate</span>
             </PDFDownloadLink>
           </div>
         </div>
@@ -113,9 +114,9 @@ export default function TbCertificatePrintPage() {
       <div
         ref={certificateRef}
         style={{
-          width: "1415px",
-          height: "1004px",
-          marginLeft: "calc(50% - 707.5px)",
+          width: "1100px",
+          height: "770px",
+          marginLeft: "calc(50% - 550px)",
         }}
       >
         <PDFViewer style={{ width: "100%", height: "100%" }} showToolbar={false}>

@@ -2,16 +2,16 @@ import { StyleSheet } from "@react-pdf/renderer";
 
 export const styles = StyleSheet.create({
   page: {
-    padding: 20,
+    padding: 18,
     fontSize: 9,
     color: "#000000",
     display: "flex",
     flexDirection: "column",
   },
   headerText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 8,
   },
   headerLogoBlock: {
     width: 100,

@@ -5,11 +5,29 @@ import React from "react";
 import { Mock } from "vitest";
 
 import { ApplicantPhotoProvider, useApplicantPhoto } from "@/context/applicantPhotoContext";
+import type { AppDispatch } from "@/redux/store";
 import ApplicantSearchForm from "@/sections/applicant-search-form";
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 import { petsApi } from "../src/api/api";
+
+vi.mock("@/utils/clinic", () => ({
+  fetchClinic: (dispatch: AppDispatch) => {
+    dispatch({
+      type: "tbCertificateDetails/setClinic",
+      payload: {
+        clinicId: "UK/LHR/00",
+        name: "PETS Test Clinic",
+        city: "London",
+        country: "GBR",
+        startDate: "2025-04-01",
+        endDate: null,
+        createdBy: "tmp@email.com",
+      },
+    });
+  },
+}));
 
 const useNavigateMock: Mock = vi.fn();
 vi.mock(`react-router-dom`, async (): Promise<unknown> => {
@@ -124,9 +142,24 @@ const emptyChestXraySlice = {
 
 describe("ApplicantSearchForm", () => {
   let mock: MockAdapter;
+  const originalFetch = global.fetch;
+  const successfulFetchMock = vi.fn<typeof fetch>(function _successfulFetchMock(
+    _input: RequestInfo | URL,
+    _init?: RequestInit,
+  ) {
+    void _input;
+    void _init;
+    const blob = new Blob(["dummy"], { type: "image/jpeg" });
+    return Promise.resolve(new Response(blob, { status: 200 }));
+  });
   beforeEach(() => {
     mock = new MockAdapter(petsApi);
     useNavigateMock.mockClear();
+    global.fetch = successfulFetchMock;
+  });
+  afterEach(() => {
+    global.fetch = originalFetch;
+    successfulFetchMock.mockClear();
   });
 
   test("store is correctly populated, applicant photo is handled, and user is navigated to tracker page when both api calls are successful", async () => {
@@ -335,6 +368,15 @@ describe("ApplicantSearchForm", () => {
       certificateNumber: "XYZ789",
       declaringPhysicianName: "",
       reasonNotIssued: "",
+      clinic: {
+        clinicId: "UK/LHR/00",
+        name: "PETS Test Clinic",
+        city: "London",
+        country: "GBR",
+        startDate: "2025-04-01",
+        endDate: null,
+        createdBy: "tmp@email.com",
+      },
     });
     expect(store.getState().applicant.applicantPhotoFileName).toBe("photo.jpg");
     expect(contextUrl).toBe("http://localhost:4566/photos/photo.jpg");
@@ -553,8 +595,17 @@ describe("ApplicantSearchForm", () => {
     expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
   });
 
-  test("should call console.error when fetching applicant photo fails", async () => {
+  test("should redirect to /error when fetching applicant photo fails", async () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const failingFetchMock = vi.fn<typeof fetch>(function _failingFetchMock(
+      _input: RequestInfo | URL,
+      _init?: RequestInit,
+    ) {
+      void _input;
+      void _init;
+      return Promise.reject(new Error("fetch failed"));
+    });
+    global.fetch = failingFetchMock;
 
     const { store } = renderWithProviders(
       <ApplicantPhotoProvider>
@@ -602,7 +653,7 @@ describe("ApplicantSearchForm", () => {
     await user.click(screen.getByRole("button"));
     await new Promise((resolve) => process.nextTick(resolve));
 
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/tracker");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
     expect(store.getState().applicant.applicantPhotoFileName).toBe("photo.jpg");
     consoleErrorSpy.mockRestore();
   });

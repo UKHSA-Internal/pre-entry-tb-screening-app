@@ -124,8 +124,10 @@ const formatDateForDisplay = (date: DateType): string => {
     return "";
   }
 
-  const dateToDisplay = new Date(parseInt(date.year), parseInt(date.month) - 1, parseInt(date.day));
-  return `${dateToDisplay.getDate()} ${dateToDisplay.toLocaleDateString("en-GB", { month: "long" })} ${dateToDisplay.getFullYear()}`;
+  const dateToDisplay = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  const paddedDay = dateToDisplay.getDate().toString().padStart(2, "0");
+  const monthName = dateToDisplay.toLocaleDateString("en-GB", { month: "long" });
+  return `${paddedDay} ${monthName} ${dateToDisplay.getFullYear()}`;
 };
 
 const calculateCertificateExpiryDate = (

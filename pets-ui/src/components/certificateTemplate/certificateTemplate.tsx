@@ -61,7 +61,7 @@ export const CertificateTemplate = ({
   clinic,
 }: CertificateTemplateProps) => {
   const fullName = applicantData.fullName;
-  const dob = `${applicantData.dateOfBirth.day}/${applicantData.dateOfBirth.month}/${applicantData.dateOfBirth.year}`;
+  const dob = formatDateForDisplay(applicantData.dateOfBirth);
   const certificateIssueDate = formatDateForDisplay(tbCertificateData.certificateDate);
   const expiryDateObj = calculateCertificateExpiryDate(
     tbCertificateData.certificateDate,
@@ -75,7 +75,7 @@ export const CertificateTemplate = ({
   const proposedUkPostcode = travelData.postcode || "Not provided";
 
   const resAddr1 = applicantData.applicantHomeAddress1;
-  const resAddr2 = applicantData.applicantHomeAddress2;
+  const resAddr2 = applicantData.applicantHomeAddress2 || "Not provided";
   const resTown = applicantData.townOrCity;
   const resCountry = getCountryName(applicantData.country);
   const nationality = getCountryName(applicantData.countryOfNationality);

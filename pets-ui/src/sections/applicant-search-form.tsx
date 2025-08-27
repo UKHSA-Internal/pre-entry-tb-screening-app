@@ -59,7 +59,8 @@ const ApplicantSearchForm = () => {
     dispatch(setApplicantPhotoFileName(""));
     setApplicantPhotoUrl(null);
     dispatch(clearNavigationDetails());
-  }, [dispatch, setApplicantPhotoUrl]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const {
     handleSubmit,
@@ -70,8 +71,8 @@ const ApplicantSearchForm = () => {
 
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (passportDetails) => {
     setIsLoading(true);
-    fetchClinic(dispatch);
     try {
+      fetchClinic(dispatch);
       dispatch(setApplicantPassportDetails(passportDetails));
       setApplicantPhotoUrl(null);
 
@@ -99,8 +100,16 @@ const ApplicantSearchForm = () => {
         dispatch(setApplicantPhotoFileName(filename));
         const response = await fetch(fixedUrl);
         const blob = await response.blob();
-        const file = new File([blob], filename, { type: blob.type });
-        setApplicantPhotoFile(file);
+        if (typeof File !== "undefined") {
+          try {
+            const file = new File([blob], filename, { type: blob.type });
+            setApplicantPhotoFile(file);
+          } catch {
+            setApplicantPhotoUrl(fixedUrl);
+          }
+        } else {
+          setApplicantPhotoUrl(fixedUrl);
+        }
       }
 
       if (applicationRes.data.travelInformation) {
