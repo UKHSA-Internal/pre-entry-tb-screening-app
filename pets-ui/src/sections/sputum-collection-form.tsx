@@ -52,7 +52,6 @@ const SputumCollectionForm = () => {
 
   const renderSampleEditableForm = (
     sampleNumber: 1 | 2 | 3,
-    sampleRef: React.RefObject<HTMLDivElement>,
     control: Control<SputumCollectionFormFields>,
     errors: FieldErrors<SputumCollectionFormFields>,
   ) => {
@@ -62,7 +61,7 @@ const SputumCollectionForm = () => {
 
     return (
       <div className="govuk-grid-row" style={{ display: "flex", alignItems: "flex-end" }}>
-        <div className="govuk-grid-column-one-half" ref={sampleRef}>
+        <div className="govuk-grid-column-one-half">
           <Controller
             name={dateFieldName}
             control={control}
@@ -255,10 +254,6 @@ const SputumCollectionForm = () => {
 
   const errorsToShow = Object.keys(errors);
 
-  const sample1DateRef = useRef<HTMLDivElement | null>(null);
-  const sample2DateRef = useRef<HTMLDivElement | null>(null);
-  const sample3DateRef = useRef<HTMLDivElement | null>(null);
-
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -280,7 +275,7 @@ const SputumCollectionForm = () => {
             <Heading level={3} size="s" title="Collection method" />
           </div>
         </div>
-        {renderSampleEditableForm(1, sample1DateRef, control, errors)}
+        {renderSampleEditableForm(1, control, errors)}
 
         <hr
           className="govuk-section-break govuk-section-break--l govuk-section-break--visible"
@@ -296,7 +291,7 @@ const SputumCollectionForm = () => {
             <Heading level={3} size="s" title="Collection method" />
           </div>
         </div>
-        {renderSampleEditableForm(2, sample2DateRef, control, errors)}
+        {renderSampleEditableForm(2, control, errors)}
 
         <hr
           className="govuk-section-break govuk-section-break--l govuk-section-break--visible"
@@ -312,7 +307,7 @@ const SputumCollectionForm = () => {
             <Heading level={3} size="s" title="Collection method" />
           </div>
         </div>
-        {renderSampleEditableForm(3, sample3DateRef, control, errors)}
+        {renderSampleEditableForm(3, control, errors)}
 
         <div style={{ marginTop: 40, display: "flex", gap: "20px" }}>
           <button

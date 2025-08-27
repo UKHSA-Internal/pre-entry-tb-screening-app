@@ -267,10 +267,12 @@ describe("SputumCollectionForm", () => {
 
     await user.click(screen.getByText("Save and continue to results", { selector: "button" }));
 
-    expect(screen.getByTestId("error-summary")).toBeInTheDocument();
-    expect(
-      screen.getAllByText(/Sputum sample 1 date must include a day, month and year/),
-    ).toHaveLength(2);
+    await waitFor(() => {
+      expect(screen.getByTestId("error-summary")).toBeInTheDocument();
+      expect(
+        screen.getAllByText(/Sputum sample 1 date must include a day, month and year/),
+      ).toHaveLength(2);
+    });
   });
 
   test("shows validation errors for invalid dates", async () => {
@@ -629,9 +631,11 @@ describe("SputumCollectionForm", () => {
 
     await user.click(screen.getByText("Save progress", { selector: "button" }));
 
-    expect(screen.getByTestId("error-summary")).toBeInTheDocument();
-    expect(screen.getAllByText("Enter the date sample 1 was taken on")).toHaveLength(2);
-    expect(screen.getAllByText("Enter the date sample 3 was taken on")).toHaveLength(2);
+    await waitFor(() => {
+      expect(screen.getByTestId("error-summary")).toBeInTheDocument();
+      expect(screen.getAllByText("Enter the date sample 1 was taken on")).toHaveLength(2);
+      expect(screen.getAllByText("Enter the date sample 3 was taken on")).toHaveLength(2);
+    });
   });
 
   test("renders all collection method options", () => {

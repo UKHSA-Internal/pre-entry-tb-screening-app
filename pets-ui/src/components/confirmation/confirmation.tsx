@@ -8,7 +8,7 @@ import Heading from "../heading/heading";
 
 export interface ConfirmationProps {
   confirmationText: string;
-  furtherInfo: Array<string | JSX.Element>;
+  furtherInfo: Array<string | React.JSX.Element>;
   buttonText?: string;
   buttonLink?: string;
   whatHappensNext?: boolean;
