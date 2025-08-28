@@ -54,7 +54,8 @@ export default function TbCertificatePrintPage() {
     updateInstance(certificate);
   }, [certificate, updateInstance]);
 
-  const handlePrint = () => {
+  const handlePrint = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (instance.url) {
       const printWindow = window.open(instance.url);
       printWindow?.addEventListener("load", () => {
