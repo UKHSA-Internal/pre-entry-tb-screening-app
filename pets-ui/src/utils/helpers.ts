@@ -235,14 +235,10 @@ const calculateSputumOutcome = (
 };
 
 const isChildUnder11 = (medicalScreeningData: ReduxMedicalScreeningType) => {
-  if (medicalScreeningData && medicalScreeningData.age) {
-    const age =
-      typeof medicalScreeningData.age === "string"
-        ? parseInt(medicalScreeningData.age)
-        : medicalScreeningData.age;
-    return age < 11 ? "Yes" : "No";
-  }
-  return "No";
+  const age = medicalScreeningData?.age;
+  if (!age) return "No";
+  const parsedAge = typeof age === "string" ? parseInt(age) : age;
+  return parsedAge < 11 ? "Yes" : "No";
 };
 
 export {

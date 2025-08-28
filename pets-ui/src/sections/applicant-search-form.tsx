@@ -69,6 +69,28 @@ const ApplicantSearchForm = () => {
 
   const errorsToShow = Object.keys(errors);
 
+  const handleApplicantPhoto = async (photoUrl: string) => {
+    const env = import.meta.env.VITE_ENVIRONMENT as string | undefined;
+    const fixedUrl =
+      env === "local" ? photoUrl.replace(/172\.\d+\.\d+\.\d+:4566/, "localhost:4566") : photoUrl;
+
+    const urlParts = photoUrl.split("/");
+    const filename = urlParts.pop()?.split("?")[0] ?? "applicant-photo.jpg";
+    dispatch(setApplicantPhotoFileName(filename));
+    const response = await fetch(fixedUrl);
+    const blob = await response.blob();
+    if (typeof File !== "undefined") {
+      try {
+        const file = new File([blob], filename, { type: blob.type });
+        setApplicantPhotoFile(file);
+      } catch {
+        setApplicantPhotoUrl(fixedUrl);
+      }
+    } else {
+      setApplicantPhotoUrl(fixedUrl);
+    }
+  };
+
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (passportDetails) => {
     setIsLoading(true);
     try {
@@ -86,30 +108,7 @@ const ApplicantSearchForm = () => {
 
       const applicationRes = await getApplication(applicantRes.data);
       if (applicationRes.data.applicantPhotoUrl) {
-        const env = import.meta.env.VITE_ENVIRONMENT as string | undefined;
-        const fixedUrl =
-          env === "local"
-            ? applicationRes.data.applicantPhotoUrl.replace(
-                /172\.\d+\.\d+\.\d+:4566/,
-                "localhost:4566",
-              )
-            : applicationRes.data.applicantPhotoUrl;
-
-        const urlParts = applicationRes.data.applicantPhotoUrl.split("/");
-        const filename = urlParts.pop()?.split("?")[0] ?? "applicant-photo.jpg";
-        dispatch(setApplicantPhotoFileName(filename));
-        const response = await fetch(fixedUrl);
-        const blob = await response.blob();
-        if (typeof File !== "undefined") {
-          try {
-            const file = new File([blob], filename, { type: blob.type });
-            setApplicantPhotoFile(file);
-          } catch {
-            setApplicantPhotoUrl(fixedUrl);
-          }
-        } else {
-          setApplicantPhotoUrl(fixedUrl);
-        }
+        await handleApplicantPhoto(applicationRes.data.applicantPhotoUrl);
       }
 
       if (applicationRes.data.travelInformation) {

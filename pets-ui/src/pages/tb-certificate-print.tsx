@@ -9,10 +9,8 @@ import { useAppSelector } from "@/redux/hooks";
 import {
   selectApplicant,
   selectApplication,
-  selectChestXray,
   selectClinic,
   selectMedicalScreening,
-  selectSputum,
   selectTbCertificate,
   selectTravel,
 } from "@/redux/store";
@@ -23,9 +21,7 @@ export default function TbCertificatePrintPage() {
   const applicationData = useAppSelector(selectApplication);
   const tbCertificateData = useAppSelector(selectTbCertificate);
   const travelData = useAppSelector(selectTravel);
-  const chestXrayData = useAppSelector(selectChestXray);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
-  const sputumData = useAppSelector(selectSputum);
   const { applicantPhotoDataUrl } = useApplicantPhoto();
   const clinic = useAppSelector(selectClinic);
 
@@ -36,9 +32,7 @@ export default function TbCertificatePrintPage() {
         applicationData={applicationData}
         tbCertificateData={tbCertificateData}
         travelData={travelData}
-        chestXrayData={chestXrayData}
         medicalScreeningData={medicalScreeningData}
-        sputumData={sputumData}
         applicantPhotoUrl={applicantPhotoDataUrl}
         clinic={clinic}
       />
@@ -48,9 +42,7 @@ export default function TbCertificatePrintPage() {
       applicationData,
       tbCertificateData,
       travelData,
-      chestXrayData,
       medicalScreeningData,
-      sputumData,
       applicantPhotoDataUrl,
       clinic,
     ],
@@ -101,9 +93,9 @@ export default function TbCertificatePrintPage() {
       <div
         ref={certificateRef}
         style={{
-          width: "1100px",
-          height: "770px",
-          marginLeft: "calc(50% - 550px)",
+          width: "1415px",
+          height: "1004px",
+          marginLeft: "calc(50% - 707.5px)",
         }}
       >
         <PDFViewer style={{ width: "100%", height: "100%" }} showToolbar={false}>

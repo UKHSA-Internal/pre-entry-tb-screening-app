@@ -4,9 +4,7 @@ import {
   ApplicationIdAndDateCreatedType,
   ClinicType,
   ReduxApplicantDetailsType,
-  ReduxChestXrayDetailsType,
   ReduxMedicalScreeningType,
-  ReduxSputumType,
   ReduxTbCertificateType,
   ReduxTravelDetailsType,
 } from "@/applicant";
@@ -23,9 +21,7 @@ interface CertificateTemplateProps {
   applicationData: ApplicationIdAndDateCreatedType;
   tbCertificateData: ReduxTbCertificateType;
   travelData: ReduxTravelDetailsType;
-  chestXrayData: ReduxChestXrayDetailsType;
   medicalScreeningData: ReduxMedicalScreeningType;
-  sputumData: ReduxSputumType;
   applicantPhotoUrl?: string | null;
   clinic: ClinicType;
 }
@@ -42,7 +38,7 @@ interface FieldProps {
 }
 
 const Field = ({ label, value }: FieldProps) => {
-  const display = value === undefined || value === null ? "" : value;
+  const display = value ?? "";
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
