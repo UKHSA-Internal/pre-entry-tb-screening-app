@@ -94,9 +94,9 @@ export default function TbCertificatePrintPage() {
       <div
         ref={certificateRef}
         style={{
-          width: "1415px",
-          height: "1004px",
-          marginLeft: "calc(50% - 707.5px)",
+          width: "1100px",
+          height: "770px",
+          marginLeft: "calc(50% - 550px)",
         }}
       >
         <PDFViewer style={{ width: "100%", height: "100%" }} showToolbar={false}>
