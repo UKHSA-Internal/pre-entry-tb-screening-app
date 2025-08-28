@@ -286,7 +286,7 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     // Complete Sputum Collection - Click on Sputum collection link
     tbProgressTrackerPage.clickTaskLink("Sputum collection and results");
 
-    // Verify sputum collection page loaded and fill data
+    // Verify sputum collection page is prefilled with data
     sputumCollectionPage.verifyPageLoaded();
     sputumCollectionPage.verifySectionHeaders();
     sputumCollectionPage.verifyPageStructure();

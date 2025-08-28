@@ -260,7 +260,7 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
 
     chestXrayUploadPage.clickContinue();
 
-    // Complete X-ray findings - Normal chest X-ray
+    // Complete X-ray findings - For Normal chest X-ray
     chestXrayFindingsPage.verifyPageLoaded();
     chestXrayFindingsPage.selectXrayResultNormal().clickSaveAndContinue();
 
