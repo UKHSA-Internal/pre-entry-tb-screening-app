@@ -1,28 +1,24 @@
 ## 1. What type of PR is this? (check all applicable)
 
 - [ ] Feature
-- [ ] Refactor
-- [ ] Bug Fix
-- [ ] Optimization/Performance
+- [ ] Hotfix
+- [ ] Release
+- [ ] Other: <!-- if other, please add details on a new line -->
+
+## 2. What areas of the service does it affect? (check all applicable)
+
 - [ ] UI
 - [ ] Backend
 - [ ] Infrastructure
-- [ ] CI
-- [ ] Documentation Update
-- [ ] Rollback
+- [ ] CI/CD
+- [ ] Other: <!-- if other, please add details on a new line -->
 
-If PR type is none of the above provide details here:
-<!-- replace this comment with details -->
+## 3. Briefly describe the main changes in this PR
 
-## 2. Briefly describe the main changes in this PR:
+## 4. Checklist
 
-## 3. Checklist
-
-- [ ] Title of this PR includes jira ticket number
-- [ ] Code compiles/runs correctly
+- [ ] Title of this PR includes jira ticket number or release version
+- [ ] Code compiles and runs correctly
 - [ ] All tests pass
 - [ ] Test coverage is >80%
-- [ ] Documentation updated (if applicable)
-- [ ] UI changes adhere to gov.uk design system (if applicable)
-- [ ] UI screenshots included below (if applicable)
-- [ ] Accessibility requirements satisfied (if applicable) (details TBD)
+- [ ] Documentation updated if applicable
