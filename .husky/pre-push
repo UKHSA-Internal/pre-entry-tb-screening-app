@@ -9,7 +9,7 @@ pattern="^((feature|hotfix)\/TBBETA-[0-9]+(-[a-z0-9-]+)?|release\/[0-9]+(\.[0-9]
 
 # Check if the branch name follows the convention
 if [[ ! $branch_name =~ $pattern ]]; then
-    echo "❌ ERROR: Branch name '$branch_name' does not follow sthe required convention:"
+    echo "❌ ERROR: Branch name '$branch_name' does not follow the required convention:"
     echo "   Feature branch expected format: feature/{ticket-number}-{short-description}"
     echo "   Example: feature/TBBETA-123-add-authentication"
     echo "   Hotfix branch expected format: hotfix/{ticket-number}-{short-description}"
