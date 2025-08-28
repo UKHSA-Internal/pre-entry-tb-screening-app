@@ -279,7 +279,7 @@ importers:
         version: 19.1.8(@types/react@19.1.11)
       '@vitejs/plugin-react-swc':
         specifier: ^3.5.0
-        version: 3.7.2(vite@5.4.19(@types/node@22.13.4)(sass@1.81.0))
+        version: 3.7.2(@swc/helpers@0.5.17)(vite@5.4.19(@types/node@22.13.4)(sass@1.81.0))
       axios-mock-adapter:
         specifier: ^2.1.0
         version: 2.1.0(axios@1.8.3)
@@ -3272,7 +3272,7 @@ packages:
   events@3.3.0:
     resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
     engines: {node: '>=0.8.x'}
-    
+
   execa@4.1.0:
     resolution: {integrity: sha512-j5W0//W7f8UxAn8hXVnwG8tLwdiUy4FJLcSupCg6maBYZDpyBvTApK7KyuI4bKj8KOh1r2YH+6ucuYtJv1bTZA==}
     engines: {node: '>=10'}
@@ -5512,7 +5512,7 @@ packages:
     resolution: {integrity: sha512-Rb46I4cGGVBmjamjphe8L/UnvJD+uPPtTkNvX5mZgqdbavhI4EbgIWJiIHXJ8bc/i9EQGPRh4DwEURJ552Do0A==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      
+
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
@@ -9207,11 +9207,10 @@ snapshots:
       '@typescript-eslint/types': 8.24.1
       eslint-visitor-keys: 4.2.0
 
-  '@vitejs/plugin-react-swc@3.7.2(vite@5.4.19(@types/node@22.13.4)(sass@1.81.0))':
+  '@vitejs/plugin-react-swc@3.7.2(@swc/helpers@0.5.17)(vite@5.4.19(@types/node@22.13.4)(sass@1.81.0))':
     dependencies:
-      '@swc/core': 1.9.2
+      '@swc/core': 1.9.2(@swc/helpers@0.5.17)
       vite: 5.4.19(@types/node@22.13.4)(sass@1.81.0)
-
     transitivePeerDependencies:
       - '@swc/helpers'
 
