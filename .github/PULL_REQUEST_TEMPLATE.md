@@ -22,3 +22,4 @@
 - [ ] All tests pass
 - [ ] Test coverage is >80%
 - [ ] Documentation updated if applicable
+- [ ] Accessibility requirements satisfied if applicable
