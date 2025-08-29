@@ -1,7 +1,7 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 
-import { boostrapLambdaRoutes } from "../../shared/bootstrap-lambda";
+import { boostrapLambdaRoutes } from "../../shared/bootstrap";
 import { CountryCode } from "../../shared/country";
 import { PetsRoute } from "../../shared/types";
 import { postApplicantHandler } from "../handlers/postApplicant";

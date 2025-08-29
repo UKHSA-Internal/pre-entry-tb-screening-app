@@ -5,10 +5,10 @@ import {
   APIGatewayProxyResult,
 } from "aws-lambda";
 
-import awsClients from "./clients/aws";
-import { assertEnvExists, isLocal } from "./config";
-import { createHttpResponse } from "./http";
-import { logger } from "./logger";
+import awsClients from "../clients/aws";
+import { assertEnvExists, isLocal } from "../config";
+import { createHttpResponse } from "../http";
+import { logger } from "../logger";
 
 /**
  * This is strictly for local environment due to lack of support from localstack
