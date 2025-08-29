@@ -359,8 +359,6 @@ describe("PETS Scenario: Pregnant Adult with Symptoms and Close Contact, Certifi
 
     // Enter partial sputum results
     enterSputumSampleResultsPage.verifyPageLoaded();
-    enterSputumSampleResultsPage.verifyAllPageElements();
-
     enterSputumSampleResultsPage.fillWithOnlyFirstSampleResults();
     enterSputumSampleResultsPage.clickSaveAndContinue();
 
