@@ -2,9 +2,9 @@ name: Pets Deployment - Test
 
 on:
   workflow_dispatch:
-  pull_request:
-    types: [closed]
-    branches: [develop]
+  push:
+    branches:
+      - develop
 
 jobs:
   deploy:
