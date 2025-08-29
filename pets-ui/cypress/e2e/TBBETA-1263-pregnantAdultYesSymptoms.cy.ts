@@ -437,9 +437,6 @@ describe("PETS Scenario: Pregnant Adult with Symptoms and Close Contact, Certifi
     tbCertificateDeclarationPage.verifyExpectedClinicInformation();
     tbCertificateDeclarationPage.verifyAllFieldsEmpty();
 
-    // Verify certificate issue date is same as medical history record date
-    cy.log("Verifying certificate issue date matches medical history record date");
-
     // Fill TB Certificate Declaration details
     const tbCertificateDeclarationData = {
       declaringPhysicianName: "Dr. Emily Watson",
@@ -514,9 +511,5 @@ describe("PETS Scenario: Pregnant Adult with Symptoms and Close Contact, Certifi
     tbCertificateConfirmationPage.verifyFeedbackLink();
     tbCertificateConfirmationPage.verifyGridLayout();
     tbCertificateConfirmationPage.verifyServiceName();
-
-    cy.log(
-      "Scenario completed successfully: Pregnant adult with symptoms and close contact, certificate issued with 3-month expiry",
-    );
   });
 });
