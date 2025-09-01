@@ -1,10 +1,9 @@
-import { APIGatewayProxyEvent } from "aws-lambda";
-
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
+import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { Clinic } from "../models/clinics";
 
-export const getClinicHandler = async (event: APIGatewayProxyEvent) => {
+export const getClinicHandler = async (event: PetsAPIGatewayProxyEvent) => {
   logger.info(`API End point: ${event.path}`);
 
   const clinicId = decodeURIComponent(event.pathParameters?.["clinicId"] ?? "").trim();

@@ -102,3 +102,17 @@ input[type='file'].hide-text {
 .confirmation-action-button {
   margin-bottom: 20px;
 }
+
+.print-trigger {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 1.25rem;
+  width: fit-content;
+} 
+
+.certificate-image{
+    padding-left: 4px;
+    padding-right: 4px;
+}

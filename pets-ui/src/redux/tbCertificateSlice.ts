@@ -1,6 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { DateType, ReceivedTbCertificateType, ReduxTbCertificateType } from "@/applicant";
+import {
+  ClinicType,
+  DateType,
+  ReceivedTbCertificateType,
+  ReduxTbCertificateType,
+} from "@/applicant";
 import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "@/utils/enums";
 
 const initialState: ReduxTbCertificateType = {
@@ -15,6 +20,14 @@ const initialState: ReduxTbCertificateType = {
   certificateNumber: "",
   reasonNotIssued: "",
   declaringPhysicianName: "",
+  clinic: {
+    clinicId: "",
+    name: "",
+    country: "",
+    city: "",
+    startDate: "",
+    createdBy: "",
+  },
 };
 
 export const tbCertificateSlice = createSlice({
@@ -42,6 +55,9 @@ export const tbCertificateSlice = createSlice({
     setDeclaringPhysicianName: (state, action: PayloadAction<string>) => {
       state.declaringPhysicianName = action.payload;
     },
+    setClinic: (state, action: PayloadAction<ClinicType>) => {
+      state.clinic = action.payload;
+    },
     clearTbCertificateDetails: (state) => {
       state.status = ApplicationStatus.NOT_YET_STARTED;
       state.isIssued = YesOrNo.NULL;
@@ -50,6 +66,14 @@ export const tbCertificateSlice = createSlice({
       state.certificateNumber = "";
       state.reasonNotIssued = "";
       state.declaringPhysicianName = "";
+      state.clinic = {
+        clinicId: "",
+        name: "",
+        country: "",
+        city: "",
+        startDate: "",
+        createdBy: "",
+      };
     },
     setTbCertificateFromApiResponse: (state, action: PayloadAction<ReceivedTbCertificateType>) => {
       state.status =
@@ -88,6 +112,7 @@ export const {
   setCertificateNumber,
   setReasonNotIssued,
   setDeclaringPhysicianName,
+  setClinic,
   clearTbCertificateDetails,
   setTbCertificateFromApiResponse,
 } = tbCertificateSlice.actions;

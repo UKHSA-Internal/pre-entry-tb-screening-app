@@ -73,6 +73,15 @@ const tbCertificateState = {
   },
   certificateNumber: "",
   declaringPhysicianName: "",
+  clinic: {
+    clinicId: "UK/LHR/00",
+    name: "PETS Test Clinic",
+    city: "London",
+    country: "GBR",
+    startDate: "2025-04-01",
+    endDate: null,
+    createdBy: "tmp@email.com",
+  },
 };
 
 const preloadedState = {
