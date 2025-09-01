@@ -90,7 +90,7 @@ export const styles = StyleSheet.create({
   inlineRow: {
     display: "flex",
     flexDirection: "row",
-    gap: 12,
+    gap: 2,
   },
   half: {
     flex: 1,
