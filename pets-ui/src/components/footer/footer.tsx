@@ -61,6 +61,7 @@ export default function Footer() {
           <div className="footer-meta govuk-footer__meta-item">
             <img
               aria-hidden="true"
+              alt=""
               src="assets/images/govuk-crest.svg"
               className="govuk-footer__licence-logo"
             ></img>
