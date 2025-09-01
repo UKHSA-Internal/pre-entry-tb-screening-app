@@ -3,7 +3,7 @@ import httpRouterHandler from "@middy/http-router";
 import { APIGatewayProxyEvent } from "aws-lambda";
 
 import { notFoundResponse } from "./http";
-import { simulateLambdaAuthorizer } from "./local-auth";
+import { simulateLambdaAuthorizer } from "./middlewares/local-auth";
 import { setRequestLoggingContext } from "./middlewares/logger";
 import { validateRequest } from "./middlewares/validation";
 import { PetsRoute } from "./types";

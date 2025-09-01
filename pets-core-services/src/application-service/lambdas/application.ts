@@ -2,7 +2,7 @@ import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import middy from "@middy/core";
 import { z } from "zod";
 
-import { boostrapLambdaRoutes } from "../../shared/bootstrap-lambda";
+import { boostrapLambdaRoutes } from "../../shared/bootstrap";
 import { PetsAPIGatewayProxyEvent, PetsRoute } from "../../shared/types";
 import { createApplicationHandler } from "../handlers/create-application";
 import { generateImageUploadUrlHandler } from "../handlers/generate-image-upload-url";

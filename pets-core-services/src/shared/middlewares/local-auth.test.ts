@@ -2,8 +2,8 @@ import { InvokeCommand } from "@aws-sdk/client-lambda";
 import { mockClient } from "aws-sdk-client-mock";
 import { afterEach, assert, beforeEach, describe, expect, it } from "vitest";
 
-import { mockAPIGwEvent } from "../test/mocks/events";
-import awsClients from "./clients/aws";
+import { mockAPIGwEvent } from "../../test/mocks/events";
+import awsClients from "../clients/aws";
 import { simulateLambdaAuthorizer } from "./local-auth";
 
 describe("simulateLambdaAuthorizer", () => {
