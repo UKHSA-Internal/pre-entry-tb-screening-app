@@ -527,141 +527,145 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     // Verify all page elements are present
     tbCertificateDeclarationPage.verifyAllPageElements();
 
-    // Verify clinic information summary is displayed
-    tbCertificateDeclarationPage.verifyClinicInformationSummary();
+    // Capture Clinic Name for verification
+    tbCertificateDeclarationPage.getClinicName().then((capturedClinicName: string) => {
+      cy.log(`Captured clinic name: ${capturedClinicName}`);
 
-    // Verify expected clinic information is displayed
-    tbCertificateDeclarationPage.verifyExpectedClinicInformation();
+      // Verify clinic information summary is displayed
+      tbCertificateDeclarationPage.verifyClinicInformationSummary();
 
-    // Verify all fields are initially empty
-    tbCertificateDeclarationPage.verifyAllFieldsEmpty();
+      // Verify expected clinic information is displayed
+      tbCertificateDeclarationPage.verifyClinicInformationIsPresent();
+      // Verify all fields are initially empty
+      tbCertificateDeclarationPage.verifyAllFieldsEmpty();
 
-    // Fill TB Certificate Declaration details
-    const tbCertificateDeclarationData = {
-      declaringPhysicianName: "Dr. Sarah Johnson",
-      physicianComments:
-        "Applicant has completed full TB screening. All tests negative.Certificate issued in accordance with UKHSA guidelines.",
-    };
+      // Fill TB Certificate Declaration details
+      const tbCertificateDeclarationData = {
+        declaringPhysicianName: "Dr. Sarah Johnson",
+        physicianComments:
+          "Applicant has completed full TB screening. All tests negative.Certificate issued in accordance with UKHSA guidelines.",
+      };
 
-    // Fill the form with valid data
-    tbCertificateDeclarationPage.fillFormWithValidData(tbCertificateDeclarationData);
+      // Fill the form with valid data
+      tbCertificateDeclarationPage.fillFormWithValidData(tbCertificateDeclarationData);
 
-    // Verify the form is filled correctly
-    tbCertificateDeclarationPage.verifyFormFilledWith(tbCertificateDeclarationData);
+      // Verify the form is filled correctly
+      tbCertificateDeclarationPage.verifyFormFilledWith(tbCertificateDeclarationData);
 
-    // Submit the form and continue
-    tbCertificateDeclarationPage.clickContinue();
+      // Submit the form and continue
+      tbCertificateDeclarationPage.clickContinue();
 
-    // Verify redirection to TB Clearance Certificate Summary page
-    tbCertificateDeclarationPage.verifyUrlContains("/tb-certificate-summary");
+      // Verify redirection to TB Clearance Certificate Summary page
+      tbCertificateDeclarationPage.verifyUrlContains("/tb-certificate-summary");
 
-    // Verify TB Certificate Summary page loaded
-    tbCertificateSummaryPage.verifyPageLoaded();
+      // Verify TB Certificate Summary page loaded
+      tbCertificateSummaryPage.verifyPageLoaded();
 
-    // Verify all page elements and structure
-    tbCertificateSummaryPage.verifyAllPageElements();
+      // Verify all page elements and structure
+      tbCertificateSummaryPage.verifyAllPageElements();
 
-    // Verify applicant information section and data
-    tbCertificateSummaryPage.verifyApplicantInfoSection();
-    tbCertificateSummaryPage.verifyApplicantInfo({
-      Name: "Jane Smith",
-      "Date of birth": "15 March 2000",
-      "Passport number": passportNumber,
-      Sex: "Female",
+      // Verify applicant information section and data
+      tbCertificateSummaryPage.verifyApplicantInfoSection();
+      tbCertificateSummaryPage.verifyApplicantInfo({
+        Name: "Jane Smith",
+        "Date of birth": "15 March 2000",
+        "Passport number": passportNumber,
+        Sex: "Female",
+      });
+
+      // Verify clinic and certificate information section
+      tbCertificateSummaryPage.verifyClinicCertificateSection();
+      tbCertificateSummaryPage.verifyClinicCertificateInfo({
+        "Clinic name": capturedClinicName,
+        "Declaring physician name": "Dr. Sarah Johnson",
+        "Physician's comments":
+          "Applicant has completed full TB screening. All tests negative.Certificate issued in accordance with UKHSA guidelines.",
+      });
+
+      // Verify screening information section
+      tbCertificateSummaryPage.verifyScreeningInfoSection();
+      tbCertificateSummaryPage.verifyScreeningInfo({
+        "Chest X-ray done": "Yes",
+        "Chest X-ray outcome": "Chest X-ray normal",
+        "Sputum collected": "Yes",
+        "Sputum outcome": "Negative", // Based on the test data from sputum collection
+        Pregnant: "No",
+        "Child under 11 years": "No",
+      });
+
+      // Verify applicant photo is displayed
+      tbCertificateSummaryPage.verifyApplicantPhoto();
+
+      // Verify declaration text
+      tbCertificateSummaryPage.verifyDeclarationText();
+
+      // Verify change links exist for editable fields
+      tbCertificateSummaryPage.verifyChangeLinksExist();
+
+      // Test the change links functionality
+      tbCertificateSummaryPage.verifyChangeLinksExist();
+
+      // Verify back link navigation
+      tbCertificateSummaryPage.verifyBackLinkNavigation();
+
+      // Verify service name in header
+      tbCertificateSummaryPage.verifyServiceName();
+
+      // Verify submit button
+      tbCertificateSummaryPage.verifySubmitButton();
+
+      // Submit the certificate information
+      tbCertificateSummaryPage.clickSubmit();
+
+      // Verify redirection to TB Certificate Confirmation page
+      cy.url().should("include", "/tb-certificate-confirmation");
+
+      // Verify redirection to TB Certificate Confirmation page
+      cy.url().should("include", "/tb-certificate-confirmation");
+
+      // Verify TB Certificate Confirmation page loaded
+      tbCertificateConfirmationPage.verifyPageLoaded();
+
+      // Verify confirmation panel with correct title
+      tbCertificateConfirmationPage.verifyConfirmationPanel();
+
+      // Verify certificate reference number is displayed and get its value
+      tbCertificateConfirmationPage.verifyCertificateReferenceNumber();
+
+      // Verify certificate reference number format
+      tbCertificateConfirmationPage.verifyCertificateReferenceNumberFormat();
+
+      // Log certificate reference number for verification
+      tbCertificateConfirmationPage.getCertificateReferenceNumber().then((certRef: string) => {
+        cy.log(`Certificate Reference Number: ${certRef}`);
+        cy.wrap(certRef).should("not.be.empty");
+        // Store in test for potential later use in the test
+        cy.wrap(certRef).as("certificateReference");
+      });
+
+      // Verify completion message
+      tbCertificateConfirmationPage.verifyCompletionMessage();
+
+      // Verify "What happens next" section
+      tbCertificateConfirmationPage.verifyWhatHappensNextSection();
+
+      // Verify "View or print certificate" button
+      tbCertificateConfirmationPage.verifyViewPrintCertificateButton();
+
+      // Verify navigation links section
+      tbCertificateConfirmationPage.verifyNavigationLinks();
+
+      // Verify feedback link
+      tbCertificateConfirmationPage.verifyFeedbackLink();
+
+      // Verify grid layout structure
+      tbCertificateConfirmationPage.verifyGridLayout();
+
+      // Verify back link navigation
+      tbCertificateConfirmationPage.verifyBackLinkNavigation();
+
+      // Verify service name in header
+      tbCertificateConfirmationPage.verifyServiceName();
     });
-
-    // Verify clinic and certificate information section
-    tbCertificateSummaryPage.verifyClinicCertificateSection();
-    tbCertificateSummaryPage.verifyClinicCertificateInfo({
-      "Clinic name": "Lakeside Medical & TB Screening Centre",
-      "Declaring physician name": "Dr. Sarah Johnson",
-      "Physician's comments":
-        "Applicant has completed full TB screening. All tests negative.Certificate issued in accordance with UKHSA guidelines.",
-    });
-
-    // Verify screening information section
-    tbCertificateSummaryPage.verifyScreeningInfoSection();
-    tbCertificateSummaryPage.verifyScreeningInfo({
-      "Chest X-ray done": "Yes",
-      "Chest X-ray outcome": "Chest X-ray normal",
-      "Sputum collected": "Yes",
-      "Sputum outcome": "Negative", // Based on the test data from sputum collection
-      Pregnant: "No",
-      "Child under 11 years": "No",
-    });
-
-    // Verify applicant photo is displayed
-    tbCertificateSummaryPage.verifyApplicantPhoto();
-
-    // Verify declaration text
-    tbCertificateSummaryPage.verifyDeclarationText();
-
-    // Verify change links exist for editable fields
-    tbCertificateSummaryPage.verifyChangeLinksExist();
-
-    // Test the change links functionality
-    tbCertificateSummaryPage.verifyChangeLinksExist();
-
-    // Verify back link navigation
-    tbCertificateSummaryPage.verifyBackLinkNavigation();
-
-    // Verify service name in header
-    tbCertificateSummaryPage.verifyServiceName();
-
-    // Verify submit button
-    tbCertificateSummaryPage.verifySubmitButton();
-
-    // Submit the certificate information
-    tbCertificateSummaryPage.clickSubmit();
-
-    // Verify redirection to TB Certificate Confirmation page
-    cy.url().should("include", "/tb-certificate-confirmation");
-
-    // Verify redirection to TB Certificate Confirmation page
-    cy.url().should("include", "/tb-certificate-confirmation");
-
-    // Verify TB Certificate Confirmation page loaded
-    tbCertificateConfirmationPage.verifyPageLoaded();
-
-    // Verify confirmation panel with correct title
-    tbCertificateConfirmationPage.verifyConfirmationPanel();
-
-    // Verify certificate reference number is displayed and get its value
-    tbCertificateConfirmationPage.verifyCertificateReferenceNumber();
-
-    // Verify certificate reference number format
-    tbCertificateConfirmationPage.verifyCertificateReferenceNumberFormat();
-
-    // Log certificate reference number for verification
-    tbCertificateConfirmationPage.getCertificateReferenceNumber().then((certRef: string) => {
-      cy.log(`Certificate Reference Number: ${certRef}`);
-      cy.wrap(certRef).should("not.be.empty");
-      // Store in test for potential later use in the test
-      cy.wrap(certRef).as("certificateReference");
-    });
-
-    // Verify completion message
-    tbCertificateConfirmationPage.verifyCompletionMessage();
-
-    // Verify "What happens next" section
-    tbCertificateConfirmationPage.verifyWhatHappensNextSection();
-
-    // Verify "View or print certificate" button
-    tbCertificateConfirmationPage.verifyViewPrintCertificateButton();
-
-    // Verify navigation links section
-    tbCertificateConfirmationPage.verifyNavigationLinks();
-
-    // Verify feedback link
-    tbCertificateConfirmationPage.verifyFeedbackLink();
-
-    // Verify grid layout structure
-    tbCertificateConfirmationPage.verifyGridLayout();
-
-    // Verify back link navigation
-    tbCertificateConfirmationPage.verifyBackLinkNavigation();
-
-    // Verify service name in header
-    tbCertificateConfirmationPage.verifyServiceName();
   });
 });

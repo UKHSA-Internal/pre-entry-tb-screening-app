@@ -311,83 +311,87 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
     // Verify TB Certificate Declaration page
     tbCertificateDeclarationPage.verifyPageLoaded();
     tbCertificateDeclarationPage.verifyAllPageElements();
-    tbCertificateDeclarationPage.verifyClinicInformationSummary();
-    tbCertificateDeclarationPage.verifyExpectedClinicInformation();
-    tbCertificateDeclarationPage.verifyAllFieldsEmpty();
+    // Capture Clinic Name for verification
+    tbCertificateDeclarationPage.getClinicName().then((capturedClinicName: string) => {
+      cy.log(`Captured clinic name: ${capturedClinicName}`);
+      tbCertificateDeclarationPage.verifyClinicInformationSummary();
+      tbCertificateDeclarationPage.verifyClinicInformationIsPresent();
+      tbCertificateDeclarationPage.verifyAllFieldsEmpty();
 
-    // Fill TB Certificate Declaration details
-    const tbCertificateDeclarationData = {
-      declaringPhysicianName: "Dr. Michael Johnson",
-      physicianComments:
-        "Adult applicant with history of tuberculosis. Current chest X-ray normal. All screening requirements completed. Certificate issued with 6-month validity as no close contact with active TB.",
-    };
+      // Fill TB Certificate Declaration details
+      const tbCertificateDeclarationData = {
+        declaringPhysicianName: "Dr. Michael Johnson",
+        physicianComments:
+          "Adult applicant with history of tuberculosis. Current chest X-ray normal. All screening requirements completed. Certificate issued with 6-month validity as no close contact with active TB.",
+      };
 
-    tbCertificateDeclarationPage.fillFormWithValidData(tbCertificateDeclarationData);
-    tbCertificateDeclarationPage.verifyFormFilledWith(tbCertificateDeclarationData);
-    tbCertificateDeclarationPage.clickContinue();
+      tbCertificateDeclarationPage.fillFormWithValidData(tbCertificateDeclarationData);
+      tbCertificateDeclarationPage.verifyFormFilledWith(tbCertificateDeclarationData);
+      tbCertificateDeclarationPage.clickContinue();
 
-    // Verify TB Certificate Summary page
-    tbCertificateSummaryPage.verifyPageLoaded();
-    tbCertificateSummaryPage.verifyAllPageElements();
+      // Verify TB Certificate Summary page
+      tbCertificateSummaryPage.verifyPageLoaded();
+      tbCertificateSummaryPage.verifyAllPageElements();
 
-    // Verify applicant information
-    tbCertificateSummaryPage.verifyApplicantInfoSection();
-    tbCertificateSummaryPage.verifyApplicantInfo({
-      Name: "John Tester",
-      "Date of birth": "15 March 1990",
-      "Passport number": passportNumber,
-      Sex: "Male",
+      // Verify applicant information
+      tbCertificateSummaryPage.verifyApplicantInfoSection();
+      tbCertificateSummaryPage.verifyApplicantInfo({
+        Name: "John Tester",
+        "Date of birth": "15 March 1990",
+        "Passport number": passportNumber,
+        Sex: "Male",
+      });
+
+      // Verify clinic and certificate information
+      tbCertificateSummaryPage.verifyClinicCertificateSection();
+      tbCertificateSummaryPage.verifyClinicCertificateInfo({
+        "Clinic name": capturedClinicName,
+        "Declaring physician name": "Dr. Michael Johnson",
+        "Physician's comments":
+          "Adult applicant with history of tuberculosis. Current chest X-ray normal. All screening requirements completed. Certificate issued with 6-month validity as no close contact with active TB.",
+      });
+
+      // Verify screening information
+      tbCertificateSummaryPage.verifyScreeningInfoSection();
+      tbCertificateSummaryPage.verifyScreeningInfo({
+        "Chest X-ray done": "Yes",
+        "Chest X-ray outcome": "Chest X-ray normal",
+        "Sputum collected": "No",
+        "Sputum outcome": "Not provided",
+        Pregnant: "No",
+        "Child under 11 years": "No",
+      });
+
+      tbCertificateSummaryPage.verifyApplicantPhoto();
+      tbCertificateSummaryPage.verifyDeclarationText();
+      tbCertificateSummaryPage.verifyChangeLinksExist();
+      tbCertificateSummaryPage.verifyServiceName();
+      tbCertificateSummaryPage.verifySubmitButton();
+
+      // Submit the certificate information
+      tbCertificateSummaryPage.clickSubmit();
+
+      // Verify TB Certificate Confirmation page
+      cy.url().should("include", "/tb-certificate-confirmation");
+      tbCertificateConfirmationPage.verifyPageLoaded();
+      tbCertificateConfirmationPage.verifyConfirmationPanel();
+      tbCertificateConfirmationPage.verifyCertificateReferenceNumber();
+      tbCertificateConfirmationPage.verifyCertificateReferenceNumberFormat();
+
+      // Log certificate reference number for verification
+      tbCertificateConfirmationPage.getCertificateReferenceNumber().then((certRef: string) => {
+        cy.log(`Certificate Reference Number: ${certRef}`);
+        cy.wrap(certRef).should("not.be.empty");
+        cy.wrap(certRef).as("certificateReference");
+      });
+
+      tbCertificateConfirmationPage.verifyCompletionMessage();
+      tbCertificateConfirmationPage.verifyWhatHappensNextSection();
+      tbCertificateConfirmationPage.verifyViewPrintCertificateButton();
+      tbCertificateConfirmationPage.verifyNavigationLinks();
+      tbCertificateConfirmationPage.verifyFeedbackLink();
+      tbCertificateConfirmationPage.verifyGridLayout();
+      tbCertificateConfirmationPage.verifyServiceName();
     });
-
-    // Verify clinic and certificate information
-    tbCertificateSummaryPage.verifyClinicCertificateSection();
-    tbCertificateSummaryPage.verifyClinicCertificateInfo({
-      "Clinic name": "Lakeside Medical & TB Screening Centre",
-      "Declaring physician name": "Dr. Michael Johnson",
-      "Physician's comments":
-        "Adult applicant with history of tuberculosis. Current chest X-ray normal. All screening requirements completed. Certificate issued with 6-month validity as no close contact with active TB.",
-    });
-
-    // Verify screening information
-    tbCertificateSummaryPage.verifyScreeningInfoSection();
-    tbCertificateSummaryPage.verifyScreeningInfo({
-      "Chest X-ray done": "Yes",
-      "Chest X-ray outcome": "Chest X-ray normal",
-      "Sputum collected": "No",
-      "Sputum outcome": "Not provided",
-      Pregnant: "No",
-      "Child under 11 years": "No",
-    });
-
-    tbCertificateSummaryPage.verifyApplicantPhoto();
-    tbCertificateSummaryPage.verifyDeclarationText();
-    tbCertificateSummaryPage.verifyChangeLinksExist();
-    tbCertificateSummaryPage.verifyServiceName();
-    tbCertificateSummaryPage.verifySubmitButton();
-
-    // Submit the certificate information
-    tbCertificateSummaryPage.clickSubmit();
-
-    // Verify TB Certificate Confirmation page
-    cy.url().should("include", "/tb-certificate-confirmation");
-    tbCertificateConfirmationPage.verifyPageLoaded();
-    tbCertificateConfirmationPage.verifyConfirmationPanel();
-    tbCertificateConfirmationPage.verifyCertificateReferenceNumber();
-    tbCertificateConfirmationPage.verifyCertificateReferenceNumberFormat();
-
-    // Log certificate reference number for verification
-    tbCertificateConfirmationPage.getCertificateReferenceNumber().then((certRef: string) => {
-      cy.log(`Certificate Reference Number: ${certRef}`);
-      cy.wrap(certRef).should("not.be.empty");
-      cy.wrap(certRef).as("certificateReference");
-    });
-
-    tbCertificateConfirmationPage.verifyCompletionMessage();
-    tbCertificateConfirmationPage.verifyWhatHappensNextSection();
-    tbCertificateConfirmationPage.verifyViewPrintCertificateButton();
-    tbCertificateConfirmationPage.verifyNavigationLinks();
-    tbCertificateConfirmationPage.verifyFeedbackLink();
-    tbCertificateConfirmationPage.verifyGridLayout();
-    tbCertificateConfirmationPage.verifyServiceName();
   });
 });

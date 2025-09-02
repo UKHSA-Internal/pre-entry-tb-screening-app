@@ -393,85 +393,89 @@ describe("Child with No Symptoms, No X-ray, Sputum Required, Certificate Issued 
     // Verify TB Certificate Declaration page
     tbCertificateDeclarationPage.verifyPageLoaded();
     tbCertificateDeclarationPage.verifyAllPageElements();
-    tbCertificateDeclarationPage.verifyClinicInformationSummary();
-    tbCertificateDeclarationPage.verifyExpectedClinicInformation();
-    tbCertificateDeclarationPage.verifyAllFieldsEmpty();
+    // Capture Clinic Name for verification
+    tbCertificateDeclarationPage.getClinicName().then((capturedClinicName: string) => {
+      cy.log(`Captured clinic name: ${capturedClinicName}`);
+      tbCertificateDeclarationPage.verifyClinicInformationSummary();
+      tbCertificateDeclarationPage.verifyClinicInformationIsPresent();
+      tbCertificateDeclarationPage.verifyAllFieldsEmpty();
 
-    // Fill TB Certificate Declaration details
-    const tbCertificateDeclarationData = {
-      declaringPhysicianName: "Dr. Rebecca Thompson",
-      physicianComments:
-        "Child applicant aged 6 years. No TB symptoms, history, or close contact. All sputum samples negative. Certificate issued with 6-month validity as no close contact with active TB.",
-    };
+      // Fill TB Certificate Declaration details
+      const tbCertificateDeclarationData = {
+        declaringPhysicianName: "Dr. Rebecca Thompson",
+        physicianComments:
+          "Child applicant aged 6 years. No TB symptoms, history, or close contact. All sputum samples negative. Certificate issued with 6-month validity as no close contact with active TB.",
+      };
 
-    tbCertificateDeclarationPage.fillFormWithValidData(tbCertificateDeclarationData);
-    tbCertificateDeclarationPage.verifyFormFilledWith(tbCertificateDeclarationData);
-    tbCertificateDeclarationPage.clickContinue();
+      tbCertificateDeclarationPage.fillFormWithValidData(tbCertificateDeclarationData);
+      tbCertificateDeclarationPage.verifyFormFilledWith(tbCertificateDeclarationData);
+      tbCertificateDeclarationPage.clickContinue();
 
-    // Verify TB Certificate Summary page
-    tbCertificateSummaryPage.verifyPageLoaded();
-    tbCertificateSummaryPage.verifyAllPageElements();
+      // Verify TB Certificate Summary page
+      tbCertificateSummaryPage.verifyPageLoaded();
+      tbCertificateSummaryPage.verifyAllPageElements();
 
-    // Verify applicant information
-    tbCertificateSummaryPage.verifyApplicantInfoSection();
-    tbCertificateSummaryPage.verifyApplicantInfo({
-      Name: "Emma Tester",
-      "Date of birth": "10 November 2018",
-      "Passport number": passportNumber,
-      Sex: "Female",
+      // Verify applicant information
+      tbCertificateSummaryPage.verifyApplicantInfoSection();
+      tbCertificateSummaryPage.verifyApplicantInfo({
+        Name: "Emma Tester",
+        "Date of birth": "10 November 2018",
+        "Passport number": passportNumber,
+        Sex: "Female",
+      });
+
+      // Verify clinic and certificate information
+      tbCertificateSummaryPage.verifyClinicCertificateSection();
+      tbCertificateSummaryPage.verifyClinicCertificateInfo({
+        "Clinic name": capturedClinicName,
+        "Declaring physician name": "Dr. Rebecca Thompson",
+        "Physician's comments":
+          "Child applicant aged 6 years. No TB symptoms, history, or close contact. All sputum samples negative. Certificate issued with 6-month validity as no close contact with active TB.",
+      });
+
+      // Verify screening information
+      tbCertificateSummaryPage.verifyScreeningInfoSection();
+      tbCertificateSummaryPage.verifyScreeningInfo({
+        "Chest X-ray done": "No",
+        "Chest X-ray outcome": "Not provided",
+        "Sputum collected": "Yes",
+        "Sputum outcome": "Negative",
+        Pregnant: "N/A",
+        "Child under 11 years": "Yes",
+      });
+
+      tbCertificateSummaryPage.verifyApplicantPhoto();
+      tbCertificateSummaryPage.verifyDeclarationText();
+      tbCertificateSummaryPage.verifyChangeLinksExist();
+      tbCertificateSummaryPage.verifyBackLinkNavigation();
+      tbCertificateSummaryPage.verifyServiceName();
+      tbCertificateSummaryPage.verifySubmitButton();
+
+      // Submit the certificate information
+      tbCertificateSummaryPage.clickSubmit();
+
+      // Verify TB Certificate Confirmation page
+      cy.url().should("include", "/tb-certificate-confirmation");
+      tbCertificateConfirmationPage.verifyPageLoaded();
+      tbCertificateConfirmationPage.verifyConfirmationPanel();
+      tbCertificateConfirmationPage.verifyCertificateReferenceNumber();
+      tbCertificateConfirmationPage.verifyCertificateReferenceNumberFormat();
+
+      // Log certificate reference number for verification
+      tbCertificateConfirmationPage.getCertificateReferenceNumber().then((certRef: string) => {
+        cy.log(`Certificate Reference Number: ${certRef}`);
+        cy.wrap(certRef).should("not.be.empty");
+        cy.wrap(certRef).as("certificateReference");
+      });
+
+      tbCertificateConfirmationPage.verifyCompletionMessage();
+      tbCertificateConfirmationPage.verifyWhatHappensNextSection();
+      tbCertificateConfirmationPage.verifyViewPrintCertificateButton();
+      tbCertificateConfirmationPage.verifyNavigationLinks();
+      tbCertificateConfirmationPage.verifyFeedbackLink();
+      tbCertificateConfirmationPage.verifyGridLayout();
+      tbCertificateConfirmationPage.verifyBackLinkNavigation();
+      tbCertificateConfirmationPage.verifyServiceName();
     });
-
-    // Verify clinic and certificate information
-    tbCertificateSummaryPage.verifyClinicCertificateSection();
-    tbCertificateSummaryPage.verifyClinicCertificateInfo({
-      "Clinic name": "Lakeside Medical & TB Screening Centre",
-      "Declaring physician name": "Dr. Rebecca Thompson",
-      "Physician's comments":
-        "Child applicant aged 6 years. No TB symptoms, history, or close contact. All sputum samples negative. Certificate issued with 6-month validity as no close contact with active TB.",
-    });
-
-    // Verify screening information
-    tbCertificateSummaryPage.verifyScreeningInfoSection();
-    tbCertificateSummaryPage.verifyScreeningInfo({
-      "Chest X-ray done": "No",
-      "Chest X-ray outcome": "Not provided",
-      "Sputum collected": "Yes",
-      "Sputum outcome": "Negative",
-      Pregnant: "N/A",
-      "Child under 11 years": "Yes",
-    });
-
-    tbCertificateSummaryPage.verifyApplicantPhoto();
-    tbCertificateSummaryPage.verifyDeclarationText();
-    tbCertificateSummaryPage.verifyChangeLinksExist();
-    tbCertificateSummaryPage.verifyBackLinkNavigation();
-    tbCertificateSummaryPage.verifyServiceName();
-    tbCertificateSummaryPage.verifySubmitButton();
-
-    // Submit the certificate information
-    tbCertificateSummaryPage.clickSubmit();
-
-    // Verify TB Certificate Confirmation page
-    cy.url().should("include", "/tb-certificate-confirmation");
-    tbCertificateConfirmationPage.verifyPageLoaded();
-    tbCertificateConfirmationPage.verifyConfirmationPanel();
-    tbCertificateConfirmationPage.verifyCertificateReferenceNumber();
-    tbCertificateConfirmationPage.verifyCertificateReferenceNumberFormat();
-
-    // Log certificate reference number for verification
-    tbCertificateConfirmationPage.getCertificateReferenceNumber().then((certRef: string) => {
-      cy.log(`Certificate Reference Number: ${certRef}`);
-      cy.wrap(certRef).should("not.be.empty");
-      cy.wrap(certRef).as("certificateReference");
-    });
-
-    tbCertificateConfirmationPage.verifyCompletionMessage();
-    tbCertificateConfirmationPage.verifyWhatHappensNextSection();
-    tbCertificateConfirmationPage.verifyViewPrintCertificateButton();
-    tbCertificateConfirmationPage.verifyNavigationLinks();
-    tbCertificateConfirmationPage.verifyFeedbackLink();
-    tbCertificateConfirmationPage.verifyGridLayout();
-    tbCertificateConfirmationPage.verifyBackLinkNavigation();
-    tbCertificateConfirmationPage.verifyServiceName();
   });
 });

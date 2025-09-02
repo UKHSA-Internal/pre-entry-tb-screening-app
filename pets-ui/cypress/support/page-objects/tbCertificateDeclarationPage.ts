@@ -94,6 +94,15 @@ export class TbCertificateDeclarationPage extends BasePage {
     return this;
   }
 
+  // Get clinic name from the summary list
+  getClinicName(): Cypress.Chainable<string> {
+    return cy
+      .contains("dt.govuk-summary-list__key", "Clinic name")
+      .siblings(".govuk-summary-list__value")
+      .invoke("text")
+      .then((text) => text.trim());
+  }
+
   // Verify specific clinic information values
   verifyClinicInformation(expectedInfo: Partial<ClinicInformation>): TbCertificateDeclarationPage {
     if (expectedInfo.clinicName) {
@@ -301,12 +310,12 @@ export class TbCertificateDeclarationPage extends BasePage {
     return this;
   }
 
-  // Verify expected clinic information is displayed
-  verifyExpectedClinicInformation(): TbCertificateDeclarationPage {
-    this.verifyClinicInformation({
-      clinicName: "Lakeside Medical & TB Screening Centre",
-    });
-    // Verify TB certificate reference number and dates exist
+  // Verify clinic information is present without hardcoding values
+  verifyClinicInformationIsPresent(): TbCertificateDeclarationPage {
+    // Verify TB certificate reference number and dates exist (without hardcoding values)
+    cy.contains("dt.govuk-summary-list__key", "Clinic name")
+      .siblings(".govuk-summary-list__value")
+      .should("not.be.empty");
     cy.contains("dt.govuk-summary-list__key", "Certificate reference number")
       .siblings(".govuk-summary-list__value")
       .should("not.be.empty");
