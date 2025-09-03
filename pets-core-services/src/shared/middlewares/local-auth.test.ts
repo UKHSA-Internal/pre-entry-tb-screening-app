@@ -1,7 +1,6 @@
 import { InvokeCommand } from "@aws-sdk/client-lambda";
-import assert from "assert";
 import { mockClient } from "aws-sdk-client-mock";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, assert, beforeEach, describe, expect, it } from "vitest";
 
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import awsClients from "../clients/aws";

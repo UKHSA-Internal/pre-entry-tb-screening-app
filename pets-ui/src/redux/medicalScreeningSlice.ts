@@ -138,7 +138,9 @@ export const medicalScreeningSlice = createSlice({
         ? {
             year: action.payload.dateCreated.split("-")[0],
             month: action.payload.dateCreated.split("-")[1],
-            day: action.payload.dateCreated.split("-")[2],
+            day: action.payload.dateCreated.includes("T")
+              ? action.payload.dateCreated.split("-")[2].split("T")[0]
+              : action.payload.dateCreated.split("-")[2],
           }
         : {
             year: "",
