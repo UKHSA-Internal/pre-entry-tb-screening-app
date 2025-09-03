@@ -107,6 +107,15 @@ const tbCertSlice = {
   },
   certificateNumber: "12345",
   declaringPhysicianName: "Test Testov",
+  clinic: {
+    clinicId: "UK/LHR/00",
+    name: "PETS Test Clinic",
+    city: "London",
+    country: "GBR",
+    startDate: "2025-04-01",
+    endDate: null,
+    createdBy: "tmp@email.com",
+  },
 };
 
 const incompleteState = {

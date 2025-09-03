@@ -1,4 +1,10 @@
-import { DateType } from "@/applicant";
+import {
+  DateType,
+  ReduxChestXrayDetailsType,
+  ReduxMedicalScreeningType,
+  ReduxSputumType,
+} from "@/applicant";
+import { PositiveOrNegative, YesOrNo } from "@/utils/enums";
 
 import { countryList } from "./countryList";
 import {
@@ -118,8 +124,10 @@ const formatDateForDisplay = (date: DateType): string => {
     return "";
   }
 
-  const dateToDisplay = new Date(parseInt(date.year), parseInt(date.month) - 1, parseInt(date.day));
-  return `${dateToDisplay.getDate()} ${dateToDisplay.toLocaleDateString("en-GB", { month: "long" })} ${dateToDisplay.getFullYear()}`;
+  const dateToDisplay = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  const paddedDay = dateToDisplay.getDate().toString().padStart(2, "0");
+  const monthName = dateToDisplay.toLocaleDateString("en-GB", { month: "long" });
+  return `${paddedDay} ${monthName} ${dateToDisplay.getFullYear()}`;
 };
 
 const calculateCertificateExpiryDate = (
@@ -191,13 +199,57 @@ const getCountryName = (countryCode: string) => {
   return country ? country.label : countryCode;
 };
 
+const calculateSputumOutcome = (
+  chestXrayData: ReduxChestXrayDetailsType,
+  sputumData: ReduxSputumType,
+) => {
+  if (chestXrayData.isSputumRequired === YesOrNo.NO) {
+    return "Not provided";
+  }
+
+  const samples = [sputumData.sample1, sputumData.sample2, sputumData.sample3];
+  let hasAnyResults = false;
+
+  for (const sample of samples) {
+    const smearResult = sample.smearResults.smearResult;
+    const cultureResult = sample.cultureResults.cultureResult;
+
+    if (
+      smearResult === PositiveOrNegative.POSITIVE ||
+      cultureResult === PositiveOrNegative.POSITIVE
+    ) {
+      return PositiveOrNegative.POSITIVE;
+    } else if (
+      smearResult !== PositiveOrNegative.NOT_YET_ENTERED ||
+      cultureResult !== PositiveOrNegative.NOT_YET_ENTERED
+    ) {
+      hasAnyResults = true;
+    }
+  }
+
+  if (hasAnyResults) {
+    return PositiveOrNegative.NEGATIVE;
+  } else {
+    return "Not provided";
+  }
+};
+
+const isChildUnder11 = (medicalScreeningData: ReduxMedicalScreeningType) => {
+  const age = medicalScreeningData?.age;
+  if (!age) return "No";
+  const parsedAge = typeof age === "string" ? parseInt(age) : age;
+  return parsedAge < 11 ? "Yes" : "No";
+};
+
 export {
   calculateCertificateExpiryDate,
   calculateCertificateIssueDate,
+  calculateSputumOutcome,
   formatDateForDisplay,
   formatDateType,
   getCountryName,
   hasInvalidCharacters,
+  isChildUnder11,
   isDateInTheFuture,
   isDateInThePast,
   isValidDate,

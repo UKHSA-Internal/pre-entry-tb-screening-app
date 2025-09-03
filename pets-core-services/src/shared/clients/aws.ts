@@ -27,16 +27,12 @@ class AWSClients {
   }
 
   get lambdaClient(): LambdaClient {
-    if (!this._lambdaClient) {
-      this._lambdaClient = new LambdaClient({ region: "eu-west-2" });
-    }
+    this._lambdaClient ??= new LambdaClient({ region: "eu-west-2" });
     return this._lambdaClient;
   }
 
   get s3Client(): S3Client {
-    if (!this._s3Client) {
-      this._s3Client = new S3Client({ region: "eu-west-2" });
-    }
+    this._s3Client ??= new S3Client({ region: "eu-west-2" });
     return this._s3Client;
   }
 

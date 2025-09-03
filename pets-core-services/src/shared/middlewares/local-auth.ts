@@ -14,6 +14,7 @@ import { logger } from "../logger";
  * This is strictly for local environment due to lack of support from localstack
  * Any changes to auth should absolutely be verified on AWS
  */
+
 export const simulateLambdaAuthorizer = async (request: {
   event: APIGatewayProxyEvent;
 }): Promise<APIGatewayProxyResult | void> => {
