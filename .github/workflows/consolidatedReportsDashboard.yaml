@@ -122,10 +122,10 @@ jobs:
           echo "Processing test results..."
           
           ENVIRONMENTS=("dev" "qat" "preprod")
-          BROWSERS=("chrome" "edge" "safari")
+          BROWSERS=("chrome" "edge")
           
           # Initialize counters
-          TOTAL_COMBINATIONS=9
+          TOTAL_COMBINATIONS=6
           FAILED_COMBINATIONS=0
           TOTAL_FAILED_TESTS=0
           

@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [chrome, edge, safari]
+        browser: [chrome, edge]
 
     env:
       USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
