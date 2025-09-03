@@ -1,119 +1,128 @@
 [
-    {
-        "clinicId": "test-clinic-id-3",
-        "name": "Q-Life Family clinic",
-        "city": "Lagos",
-        "country": "NGA",
-        "startDate": "2025-02-07",
-        "endDate": "2025-02-08",
-        "createdBy": "shane.park@iom.com"
-    },
-    {
-        "clinicId": "Apollo Clinic",
-        "name": "Q-Life Family clinic",
-        "city": "Lagos",
-        "country": "NGA",
-        "startDate": "2025-02-07",
-        "endDate": null,
-        "createdBy": "shawn.jones@clinic.com"
-    },
-    {
-        "clinicId": "3",
-        "name": "Q-Life Family clinic",
-        "city": "Lagos",
-        "country": "NGA",
-        "startDate": "2025-02-07",
-        "endDate": "",
-        "createdBy": "john.doe@email.com"
-    },
-    {
-        "clinicId": "4",
-        "name": "Q-Life Family clinic",
-        "city": "Lagos",
-        "country": "NGA",
-        "startDate": "2025-02-08",
-        "endDate": "225-01-10",
-        "createdBy": "sin.cos@encrypted.ai"
-    },
-    {
-        "clinicId": "5",
-        "name": "5tar Clinic",
-        "city": "Seoul",
-        "country": "KOR",
-        "startDate": "2024-04-14",
-        "endDate": "3",
-        "createdBy": "john.doe@email.com"
-    },
-    {
-        "clinicId": "6",
-        "name": "Ur Clinic",
-        "city": "Heaven",
-        "country": "XYZ",
-        "startDate": "2024-04-24",
-        "endDate": null,
-        "createdBy": "john.doe@email.com"
-    },
-    {
-        "clinicId": "7",
-        "name": "New Clinic",
-        "city": "Daegu",
-        "country": "KOR",
-        "startDate": "2024-04-17",
-        "endDate": null,
-        "createdBy": "joe.doe@email.com"
-    },
-    {
-        "clinicId": "8",
-        "name": "Bad date",
-        "city": "really",
-        "country": "KOR",
-        "startDate": "2024-04-44",
-        "endDate": null,
-        "createdBy": "johnny.doe@email.com"
-    },
-    {
-        "clinicId": "IND/NEW/01/",
-        "name": "Indraprastha Apollo Hospital",
-        "city": "New Delhi",
-        "country": "IND",
-        "startDate": "2025-04-01",
-        "endDate": null,
-        "createdBy": "tmp@email.com"
-    },
-    {
-        "clinicId": "SAF/PRE/01/",
-        "name": "Hatmed Medical Centre",
-        "city": "Pretoria",
-        "country": "ZAF",
-        "startDate": "2025-04-01",
-        "endDate": null,
-        "createdBy": "tmp@email.com"
-    },
-    {
-        "clinicId": "CHI/SHA/03/",
-        "name": "ParkwayHealth Shanghai Centre",
-        "city": "Shanghai",
-        "country": "CHN",
-        "startDate": "2025-04-01",
-        "endDate": null,
-        "createdBy": "tmp@email.com"
-    },
-    {
-        "clinicId": "PAK/ISL/05/",
-        "name": "AMC Medical Center",
-        "city": "Islambad",
-        "country": "PAK",
-        "startDate": "2025-04-01",
-        "endDate": null,
-        "createdBy": "tmp@email.com"
-    },
-    {
-        "clinicId": "PAK/LAH/01/",
-        "name": "AMC Medical Center",
-        "city": "Lahore",
-        "country": "PAK",
-        "startDate": "2025-04-01",
-        "endDate": null,
-        "createdBy": "tmp@email.com"
-    }
+  {
+    "clinicId": "test-clinic-id-3",
+    "name": "Q-Life Family clinic",
+    "city": "Lagos",
+    "country": "NGA",
+    "startDate": "2025-02-07",
+    "endDate": "2025-02-08",
+    "createdBy": "shane.park@iom.com"
+  },
+  {
+    "clinicId": "Apollo Clinic",
+    "name": "Q-Life Family clinic",
+    "city": "Lagos",
+    "country": "NGA",
+    "startDate": "2025-02-07",
+    "endDate": null,
+    "createdBy": "shawn.jones@clinic.com"
+  },
+  {
+    "clinicId": "3",
+    "name": "Q-Life Family clinic",
+    "city": "Lagos",
+    "country": "NGA",
+    "startDate": "2025-02-07",
+    "endDate": "",
+    "createdBy": "john.doe@email.com"
+  },
+  {
+    "clinicId": "4",
+    "name": "Q-Life Family clinic",
+    "city": "Lagos",
+    "country": "NGA",
+    "startDate": "2025-02-08",
+    "endDate": "225-01-10",
+    "createdBy": "sin.cos@encrypted.ai"
+  },
+  {
+    "clinicId": "5",
+    "name": "5tar Clinic",
+    "city": "Seoul",
+    "country": "KOR",
+    "startDate": "2024-04-14",
+    "endDate": "3",
+    "createdBy": "john.doe@email.com"
+  },
+  {
+    "clinicId": "6",
+    "name": "Ur Clinic",
+    "city": "Heaven",
+    "country": "XYZ",
+    "startDate": "2024-04-24",
+    "endDate": null,
+    "createdBy": "john.doe@email.com"
+  },
+  {
+    "clinicId": "7",
+    "name": "New Clinic",
+    "city": "Daegu",
+    "country": "KOR",
+    "startDate": "2024-04-17",
+    "endDate": null,
+    "createdBy": "joe.doe@email.com"
+  },
+  {
+    "clinicId": "8",
+    "name": "Bad date",
+    "city": "really",
+    "country": "KOR",
+    "startDate": "2024-04-44",
+    "endDate": null,
+    "createdBy": "johnny.doe@email.com"
+  },
+  {
+    "clinicId": "IND/NEW/01/",
+    "name": "Indraprastha Apollo Hospital",
+    "city": "New Delhi",
+    "country": "IND",
+    "startDate": "2025-04-01",
+    "endDate": null,
+    "createdBy": "tmp@email.com"
+  },
+  {
+    "clinicId": "SAF/PRE/01/",
+    "name": "Hatmed Medical Centre",
+    "city": "Pretoria",
+    "country": "ZAF",
+    "startDate": "2025-04-01",
+    "endDate": null,
+    "createdBy": "tmp@email.com"
+  },
+  {
+    "clinicId": "CHI/SHA/03/",
+    "name": "ParkwayHealth Shanghai Centre",
+    "city": "Shanghai",
+    "country": "CHN",
+    "startDate": "2025-04-01",
+    "endDate": null,
+    "createdBy": "tmp@email.com"
+  },
+  {
+    "clinicId": "PAK/ISL/05/",
+    "name": "AMC Medical Center",
+    "city": "Islambad",
+    "country": "PAK",
+    "startDate": "2025-04-01",
+    "endDate": null,
+    "createdBy": "tmp@email.com"
+  },
+  {
+    "clinicId": "PAK/LAH/01/",
+    "name": "AMC Medical Center",
+    "city": "Lahore",
+    "country": "PAK",
+    "startDate": "2025-04-01",
+    "endDate": null,
+    "createdBy": "tmp@email.com"
+  },
+  {
+    "clinicId": "UK/LHR/00/",
+    "name": "PETS Test Clinic",
+    "city": "London",
+    "country": "GBR",
+    "startDate": "2025-04-01",
+    "endDate": null,
+    "createdBy": "tmp@email.com"
+  }
 ]

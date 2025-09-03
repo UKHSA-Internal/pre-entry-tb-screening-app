@@ -13,6 +13,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   selectApplication,
   selectChestXray,
+  selectClinic,
   selectMedicalScreening,
   selectTbCertificate,
 } from "@/redux/store";
@@ -36,6 +37,7 @@ const TbCertificateDeclarationForm = () => {
   const chestXrayData = useAppSelector(selectChestXray);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const tbCertificateData = useAppSelector(selectTbCertificate);
+  const clinic = useAppSelector(selectClinic);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -111,7 +113,7 @@ const TbCertificateDeclarationForm = () => {
           summaryElements={[
             {
               key: "Clinic name",
-              value: "Lakeside Medical & TB Screening Centre",
+              value: clinic.name,
               hiddenLabel: "Clinic name",
             },
             {
