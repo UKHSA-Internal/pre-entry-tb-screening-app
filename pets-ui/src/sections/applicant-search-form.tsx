@@ -94,7 +94,7 @@ const ApplicantSearchForm = () => {
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (passportDetails) => {
     setIsLoading(true);
     try {
-      fetchClinic(dispatch);
+      await fetchClinic(dispatch);
       dispatch(setApplicantPassportDetails(passportDetails));
       setApplicantPhotoUrl(null);
 

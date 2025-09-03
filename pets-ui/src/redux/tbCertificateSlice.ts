@@ -86,7 +86,9 @@ export const tbCertificateSlice = createSlice({
         ? {
             year: action.payload.issueDate.split("-")[0],
             month: action.payload.issueDate.split("-")[1],
-            day: action.payload.issueDate.split("-")[2],
+            day: action.payload.issueDate.includes("T")
+              ? action.payload.issueDate.split("-")[2].split("T")[0]
+              : action.payload.issueDate.split("-")[2],
           }
         : {
             year: "",
