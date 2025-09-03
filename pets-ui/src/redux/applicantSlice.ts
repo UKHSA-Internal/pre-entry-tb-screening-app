@@ -164,17 +164,23 @@ export const applicantSlice = createSlice({
       state.dateOfBirth = {
         year: action.payload.dateOfBirth.split("-")[0],
         month: action.payload.dateOfBirth.split("-")[1],
-        day: action.payload.dateOfBirth.split("-")[2],
+        day: action.payload.dateOfBirth.includes("T")
+          ? action.payload.dateOfBirth.split("-")[2].split("T")[0]
+          : action.payload.dateOfBirth.split("-")[2],
       };
       state.passportIssueDate = {
         year: action.payload.issueDate.split("-")[0],
         month: action.payload.issueDate.split("-")[1],
-        day: action.payload.issueDate.split("-")[2],
+        day: action.payload.issueDate.includes("T")
+          ? action.payload.issueDate.split("-")[2].split("T")[0]
+          : action.payload.issueDate.split("-")[2],
       };
       state.passportExpiryDate = {
         year: action.payload.expiryDate.split("-")[0],
         month: action.payload.expiryDate.split("-")[1],
-        day: action.payload.expiryDate.split("-")[2],
+        day: action.payload.expiryDate.includes("T")
+          ? action.payload.expiryDate.split("-")[2].split("T")[0]
+          : action.payload.expiryDate.split("-")[2],
       };
       state.applicantHomeAddress1 = action.payload.applicantHomeAddress1;
       state.applicantHomeAddress2 = action.payload.applicantHomeAddress2 ?? "";
