@@ -41,7 +41,7 @@ describe("MedicalScreeningForm", () => {
     await user.click(screen.getAllByTestId("tb-symptoms-list")[1]);
     await user.click(screen.getAllByTestId("under-eleven-conditions")[5]);
     await user.click(screen.getAllByTestId("previous-tb")[0]);
-    await user.type(screen.getByTestId("previous-tb-detail"), "Details of previous TB.");
+    await user.type(screen.getByTestId("previous-tb-detail"), "Details of previous pulmonary TB.");
     await user.click(screen.getAllByTestId("close-contact-with-tb")[1]);
     await user.click(screen.getAllByTestId("pregnant")[2]);
     await user.click(screen.getAllByTestId("menstrual-periods")[1]);
@@ -66,7 +66,9 @@ describe("MedicalScreeningForm", () => {
     expect(screen.getByTestId("under-eleven-conditions-detail")).toHaveValue("");
     expect(screen.getAllByTestId("previous-tb")[0]).toBeChecked();
     expect(screen.getAllByTestId("previous-tb")[1]).not.toBeChecked();
-    expect(screen.getByTestId("previous-tb-detail")).toHaveValue("Details of previous TB.");
+    expect(screen.getByTestId("previous-tb-detail")).toHaveValue(
+      "Details of previous pulmonary TB.",
+    );
     expect(screen.getAllByTestId("close-contact-with-tb")[0]).not.toBeChecked();
     expect(screen.getAllByTestId("close-contact-with-tb")[1]).toBeChecked();
     expect(screen.getByTestId("close-contact-with-tb-detail")).toHaveValue("");
@@ -97,7 +99,7 @@ describe("MedicalScreeningForm", () => {
       physicalExamNotes: "Details of physical examination.",
       pregnant: "Don't know",
       previousTb: "Yes",
-      previousTbDetail: "Details of previous TB.",
+      previousTbDetail: "Details of previous pulmonary TB.",
       status: "In progress",
       tbSymptoms: "Yes",
       tbSymptomsList: ["Cough", "Night sweats"],
@@ -116,9 +118,9 @@ describe("MedicalScreeningForm", () => {
 
     const errorMessages = [
       "Error: Enter applicant's age in years",
-      "Error: Select whether the applicant has any TB symptoms",
-      "Error: Select whether the applicant has ever had tuberculosis",
-      "Error: Select whether the applicant has had close contact with any person with active pulmonary tuberculosis within the past year",
+      "Error: Select whether the applicant has any pulmonary TB symptoms",
+      "Error: Select whether the applicant has ever had pulmonary TB",
+      "Error: Select whether the applicant has had close contact with any person with active pulmonary TB within the past year",
       "Error: Select whether the applicant is pregnant",
       "Error: Select whether the applicant has menstrual periods",
     ];
