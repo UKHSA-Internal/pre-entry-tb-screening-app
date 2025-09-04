@@ -283,4 +283,126 @@ export class TbCertificateConfirmationPage extends BasePage {
     this.navigateToTracker();
     return this;
   }
+
+  // Updated methods for TbCertificateConfirmationPage to handle iframe certificate display
+
+  // Method to test certificate button that loads content in same page/iframe
+  testCertificateIframeDisplay(): TbCertificateConfirmationPage {
+    // Verify button exists before clicking
+    this.verifyViewPrintCertificateButton();
+
+    // Click the "View or print certificate" button
+    this.clickViewPrintCertificateButton();
+
+    // Wait for iframe content to load
+    cy.wait(2000);
+
+    // Check if an iframe appeared or content changed
+    cy.get("body").then(($body) => {
+      // Look for iframe containing certificate
+      const iframes = $body.find("iframe");
+      if (iframes.length > 0) {
+        cy.log("Certificate iframe detected");
+        this.verifyCertificateIframeLoaded();
+      } else {
+        // Check if URL changed but we're still on same domain
+        cy.url().then((url) => {
+          if (url.includes("certificate") || url.includes("print")) {
+            cy.log("Certificate page loaded in same window");
+            this.verifyCertificatePage();
+          } else {
+            cy.log("Button clicked - checking for other content changes");
+          }
+        });
+      }
+    });
+
+    return this;
+  }
+
+  // Method to verify certificate iframe is loaded and functional
+  verifyCertificateIframeLoaded(): TbCertificateConfirmationPage {
+    // Check for iframe with blob URL (as seen in the DOM)
+    cy.get('iframe[src*="blob:"]', { timeout: 10000 })
+      .should("be.visible")
+      .should("have.attr", "src")
+      .and("match", /^blob:/);
+
+    // Verify iframe container
+    cy.get('div[style*="width: 1100px"]')
+      .should("be.visible")
+      .should("have.css", "width", "1100px")
+      .should("have.css", "height", "770px");
+
+    // Verify print link is present
+    cy.get("a.print-trigger").should("be.visible").should("contain", "Print the certificate");
+
+    cy.log("Certificate iframe loaded successfully");
+
+    return this;
+  }
+
+  // Method to verify we're on a certificate page (if navigation occurred)
+  verifyCertificatePage(): TbCertificateConfirmationPage {
+    // Check for certificate page elements
+    cy.get("h1").should("contain", "TB clearance certificate");
+
+    // Look for certificate content or print functionality
+    cy.get("body").should("contain", "certificate");
+
+    cy.log("Certificate page verified");
+
+    return this;
+  }
+
+  // Method to test the print functionality within iframe
+  testPrintFunctionalityInIframe(): TbCertificateConfirmationPage {
+    // After iframe is loaded, test the print link
+    this.verifyCertificateIframeLoaded();
+
+    // Click the print link if it exists
+    cy.get("a.print-trigger").then(($printLink) => {
+      if ($printLink.length > 0) {
+        // Test print link (may trigger browser print dialog)
+        cy.wrap($printLink).click();
+        cy.log("Print link clicked");
+
+        // Wait for any print dialog or action
+        cy.wait(1000);
+
+        // Verify we're still on the same page
+        cy.get('iframe[src*="blob:"]').should("be.visible");
+      }
+    });
+
+    return this;
+  }
+
+  // Comprehensive test for certificate display and print functionality
+  testCompleteCertificateFlow(): TbCertificateConfirmationPage {
+    // Start on confirmation page
+    cy.url().should("include", "/tb-certificate-confirmation");
+    this.verifyViewPrintCertificateButton();
+
+    // Click to view certificate
+    this.testCertificateIframeDisplay();
+
+    // If iframe loaded, test print functionality
+    cy.get("body").then(($body) => {
+      if ($body.find('iframe[src*="blob:"]').length > 0) {
+        this.testPrintFunctionalityInIframe();
+
+        // Verify back navigation if back link exists
+        cy.get(".govuk-back-link").then(($backLink) => {
+          if ($backLink.length > 0) {
+            cy.wrap($backLink).should("contain", "Back").click();
+            cy.url().should("include", "/tb-certificate-confirmation");
+            cy.log("Successfully navigated back to confirmation page");
+          }
+        });
+      }
+    });
+
+    return this;
+  }
 }
