@@ -33,7 +33,7 @@ const medicalScreeningState = {
   physicalExamNotes: "Details of physical examination.",
   pregnant: "Don't know",
   previousTb: "Yes",
-  previousTbDetail: "Details of previous TB.",
+  previousTbDetail: "Details of previous pulmonary TB.",
   tbSymptoms: "Yes",
   tbSymptomsList: ["Cough", "Night sweats"],
   underElevenConditions: ["Not applicable - applicant is aged 11 or over"],
@@ -73,6 +73,15 @@ const tbCertificateState = {
   },
   certificateNumber: "",
   declaringPhysicianName: "",
+  clinic: {
+    clinicId: "UK/LHR/00",
+    name: "PETS Test Clinic",
+    city: "London",
+    country: "GBR",
+    startDate: "2025-04-01",
+    endDate: null,
+    createdBy: "tmp@email.com",
+  },
 };
 
 const preloadedState = {
@@ -98,10 +107,10 @@ describe("MedicalScreeningReview", () => {
     expect(screen.getAllByRole("term")[0]).toHaveTextContent("Age");
     expect(screen.getAllByRole("definition")[0]).toHaveTextContent("99");
     expect(screen.getAllByRole("term")[1]).toHaveTextContent(
-      "Does the applicant have TB symptoms?",
+      "Does the applicant have pulmonary TB symptoms?",
     );
     expect(screen.getAllByRole("definition")[2]).toHaveTextContent("Yes");
-    expect(screen.getAllByRole("term")[2]).toHaveTextContent("TB symptoms");
+    expect(screen.getAllByRole("term")[2]).toHaveTextContent("pulmonary TB symptoms");
     expect(screen.getAllByRole("definition")[4]).toHaveTextContent("Cough, Night sweats");
     expect(screen.getAllByRole("term")[3]).toHaveTextContent("Other symptoms");
     expect(screen.getAllByRole("definition")[6]).toHaveTextContent("Not provided");
@@ -114,17 +123,21 @@ describe("MedicalScreeningReview", () => {
     );
     expect(screen.getAllByRole("definition")[10]).toHaveTextContent("Not provided");
     expect(screen.getAllByRole("term")[6]).toHaveTextContent(
-      "Has the applicant ever had tuberculosis?",
+      "Has the applicant ever had pulmonary TB?",
     );
     expect(screen.getAllByRole("definition")[12]).toHaveTextContent("Yes");
-    expect(screen.getAllByRole("term")[7]).toHaveTextContent("Detail of applicant's previous TB");
-    expect(screen.getAllByRole("definition")[14]).toHaveTextContent("Details of previous TB.");
+    expect(screen.getAllByRole("term")[7]).toHaveTextContent(
+      "Detail of applicant's previous pulmonary TB",
+    );
+    expect(screen.getAllByRole("definition")[14]).toHaveTextContent(
+      "Details of previous pulmonary TB.",
+    );
     expect(screen.getAllByRole("term")[8]).toHaveTextContent(
-      "Has the applicant had close contact with any person with active pulmonary tuberculosis within the past year?",
+      "Has the applicant had close contact with any person with active pulmonary TB within the past year?",
     );
     expect(screen.getAllByRole("definition")[16]).toHaveTextContent("No");
     expect(screen.getAllByRole("term")[9]).toHaveTextContent(
-      "Details of applicant's close contact with any person with active pulmonary tuberculosis",
+      "Details of applicant's close contact with any person with active pulmonary TB",
     );
     expect(screen.getAllByRole("definition")[18]).toHaveTextContent("Not provided");
     expect(screen.getAllByRole("term")[10]).toHaveTextContent("Is the applicant pregnant?");

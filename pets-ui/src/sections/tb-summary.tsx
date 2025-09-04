@@ -12,18 +12,21 @@ import {
   selectApplicant,
   selectApplication,
   selectChestXray,
+  selectClinic,
   selectMedicalScreening,
   selectSputum,
   selectTbCertificate,
   selectTravel,
 } from "@/redux/store";
 import { setTbCertificateStatus } from "@/redux/tbCertificateSlice";
-import { ApplicationStatus, ButtonType, PositiveOrNegative, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
 import {
   calculateCertificateExpiryDate,
   calculateCertificateIssueDate,
+  calculateSputumOutcome,
   formatDateForDisplay,
   getCountryName,
+  isChildUnder11,
   standardiseDayOrMonth,
 } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
@@ -32,6 +35,7 @@ const TbSummary = () => {
   const applicationData = useAppSelector(selectApplication);
   const applicantData = useAppSelector(selectApplicant);
   const travelData = useAppSelector(selectTravel);
+  const clinic = useAppSelector(selectClinic);
   const chestXrayData = useAppSelector(selectChestXray);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const sputumData = useAppSelector(selectSputum);
@@ -41,38 +45,6 @@ const TbSummary = () => {
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
-
-  const calculateSputumOutcome = () => {
-    if (chestXrayData.isSputumRequired === YesOrNo.NO) {
-      return "Not provided";
-    }
-
-    const samples = [sputumData.sample1, sputumData.sample2, sputumData.sample3];
-    let hasAnyResults = false;
-
-    for (const sample of samples) {
-      const smearResult = sample.smearResults.smearResult;
-      const cultureResult = sample.cultureResults.cultureResult;
-
-      if (
-        smearResult === PositiveOrNegative.POSITIVE ||
-        cultureResult === PositiveOrNegative.POSITIVE
-      ) {
-        return PositiveOrNegative.POSITIVE;
-      } else if (
-        smearResult !== PositiveOrNegative.NOT_YET_ENTERED ||
-        cultureResult !== PositiveOrNegative.NOT_YET_ENTERED
-      ) {
-        hasAnyResults = true;
-      }
-    }
-
-    if (hasAnyResults) {
-      return PositiveOrNegative.NEGATIVE;
-    } else {
-      return "Not provided";
-    }
-  };
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -96,7 +68,7 @@ const TbSummary = () => {
           issueDate: certificateIssueDateStr,
           expiryDate: certificateExpiryDateStr,
           certificateNumber: tbCertificateData.certificateNumber,
-          clinicName: "Lakeside Medical & TB Screening Centre",
+          clinicName: clinic.name,
           physicianName: tbCertificateData.declaringPhysicianName,
           referenceNumber: applicationData.applicationId,
         });
@@ -109,7 +81,7 @@ const TbSummary = () => {
           isIssued: tbCertificateData.isIssued,
           comments: tbCertificateData.comments,
           notIssuedReason: tbCertificateData.reasonNotIssued,
-          clinicName: "Lakeside Medical & TB Screening Centre",
+          clinicName: clinic.name,
           physicianName: tbCertificateData.declaringPhysicianName,
           referenceNumber: applicationData.applicationId,
         });
@@ -260,7 +232,7 @@ const TbSummary = () => {
       ? [
           {
             key: "Clinic name",
-            value: "Lakeside Medical & TB Screening Centre",
+            value: clinic.name,
             hiddenLabel: "Clinic name",
           },
           {
@@ -321,7 +293,7 @@ const TbSummary = () => {
           },
           {
             key: "Sputum outcome",
-            value: calculateSputumOutcome(),
+            value: calculateSputumOutcome(chestXrayData, sputumData),
             hiddenLabel: "Sputum outcome",
           },
           {
@@ -331,13 +303,7 @@ const TbSummary = () => {
           },
           {
             key: "Child under 11 years",
-            value: (() => {
-              const age =
-                typeof medicalScreeningData.age === "string"
-                  ? parseInt(medicalScreeningData.age)
-                  : medicalScreeningData.age;
-              return age < 11 ? "Yes" : "No";
-            })(),
+            value: isChildUnder11(medicalScreeningData),
             hiddenLabel: "Child under 11 years",
           },
         ]

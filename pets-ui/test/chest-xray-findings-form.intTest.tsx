@@ -48,7 +48,7 @@ describe("ChestXrayFindings Form", () => {
     ).toBeInTheDocument;
   });
 
-  it("errors when x-ray result selection is missing", async () => {
+  it("errors when X-ray result selection is missing", async () => {
     renderWithProviders(<ChestXrayFindingsForm />);
 
     fireEvent.click(screen.getByText("Save and continue"));

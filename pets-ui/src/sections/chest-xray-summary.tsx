@@ -122,7 +122,7 @@ const ChestXraySummary = () => {
 
   const xrayNotTakenSummaryData = [
     {
-      key: "Select x-ray status",
+      key: "Select X-ray status",
       value: chestXrayData.chestXrayTaken,
       link: `/chest-xray-question#${attributeToComponentId.chestXrayTaken}`,
       hiddenLabel: "chest X-ray status",

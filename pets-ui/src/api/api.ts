@@ -3,6 +3,7 @@ import axios, { AxiosResponse } from "axios";
 import {
   ApplicantSearchFormType,
   ApplicationIdAndDateCreatedType,
+  ClinicType,
   GenerateImageUploadUrlRequest,
   GenerateImageUploadUrlResponse,
   PostedApplicantDetailsType,
@@ -138,4 +139,9 @@ export const generateImageUploadUrl = async (
     imageDetails,
   );
   return result as AxiosResponse<GenerateImageUploadUrlResponse>;
+};
+
+export const getClinicById = async (clinicId: string) => {
+  const result = await petsApi.get(`/clinics/${encodeURIComponent(clinicId)}`);
+  return result as AxiosResponse<{ clinic: ClinicType }>;
 };
