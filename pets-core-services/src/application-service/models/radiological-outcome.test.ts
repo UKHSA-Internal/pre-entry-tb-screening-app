@@ -3,6 +3,7 @@ import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
+import { logger } from "../../shared/logger";
 import { IRadiologicalOutcome, RadiologicalOutcome } from "./radiological-outcome";
 
 describe("Tests for Medical Screening Information Model", () => {
@@ -78,11 +79,31 @@ describe("Tests for Medical Screening Information Model", () => {
 
   test("Handling error while creating medical screening", async () => {
     // Arrange
+    const errorloggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
     ddbMock.on(PutCommand).rejects("ErR0r");
 
     // Act
     await expect(
       RadiologicalOutcome.createRadiologicalOutcome(newRadiologicalOutcome),
     ).rejects.toThrow("ErR0r");
+    expect(errorloggerMock).toHaveBeenCalledWith(
+      Error("ErR0r"),
+      "Error saving radiological outcome",
+    );
+  });
+
+  test("Handling error while getting medical screening", async () => {
+    // Arrange
+    const errorloggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    ddbMock.on(GetCommand).rejects("ErR0r");
+
+    // Act
+    await expect(
+      RadiologicalOutcome.getByApplicationId(newRadiologicalOutcome.applicationId),
+    ).rejects.toThrow("ErR0r");
+    expect(errorloggerMock).toHaveBeenCalledWith(
+      Error("ErR0r"),
+      "Error retrieving radiological outcome details",
+    );
   });
 });
