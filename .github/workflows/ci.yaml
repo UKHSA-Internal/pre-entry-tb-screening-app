@@ -165,6 +165,7 @@ jobs:
           name: mochawesome-reportmochawesome-report-${{ matrix.browser }}
           path: pets-ui/cypress/reports/mochawesome/
 
+
   core-services-tests:
     name: Run tests for core services
     runs-on: ubuntu-latest

@@ -185,7 +185,14 @@ export class EnterSputumSampleResultsPage extends BasePage {
     const testData = EnterSputumSampleResultsPage.getTestSampleResultsData().allInconclusiveResults;
     return this.fillAllSampleResults(testData);
   }
-
+  // Fill remaining samples (2 and 3) with negative results, leaving sample 1 unchanged
+  fillRemainingSamplesWithNegativeResults(): EnterSputumSampleResultsPage {
+    this.selectSample2SmearResult("Negative");
+    this.selectSample2CultureResult("Negative");
+    this.selectSample3SmearResult("Negative");
+    this.selectSample3CultureResult("Negative");
+    return this;
+  }
   //Methods for partial data scenarios
   fillWithOnlyFirstSampleResults(): EnterSputumSampleResultsPage {
     const testData = EnterSputumSampleResultsPage.getTestSampleResultsData().onlyFirstSampleResults;

@@ -1,4 +1,4 @@
-//Pets Private Beta E2E Test with Sputum Collection
+// Scenario: Adult Pregnant - Yes Symptoms, No History, Yes Contact, No X-ray uploaded, Yes Sputum required - TB Certificate Issued (3 months)
 import { countryList } from "../../src/utils/countryList";
 import { loginViaB2C } from "../support/commands";
 import { ApplicantConfirmationPage } from "../support/page-objects/applicantConfirmationPage";
@@ -7,10 +7,9 @@ import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage
 import { ApplicantSummaryPage } from "../support/page-objects/applicantSummaryPage";
 import { CheckSputumSampleInfoPage } from "../support/page-objects/checkSputumSampleInfoPage";
 import { ChestXrayConfirmationPage } from "../support/page-objects/chestXrayConfirmationPage";
-import { ChestXrayFindingsPage } from "../support/page-objects/chestXrayFindingsPage";
+import { ChestXrayNotTakenPage } from "../support/page-objects/chestXrayNotTakenPage";
 import { ChestXrayPage } from "../support/page-objects/chestXrayQuestionPage";
 import { ChestXraySummaryPage } from "../support/page-objects/chestXraySummaryPage";
-import { ChestXrayUploadPage } from "../support/page-objects/chestXrayUploadPage";
 import { EnterSputumSampleResultsPage } from "../support/page-objects/enterSputumSampleResultsPage";
 import { MedicalConfirmationPage } from "../support/page-objects/medicalConfirmationPage";
 import { MedicalSummaryPage } from "../support/page-objects/medicalSummaryPage";
@@ -33,7 +32,7 @@ import { TravelConfirmationPage } from "./../support/page-objects/travelConfirma
 import { TravelInformationPage } from "./../support/page-objects/travelInformationPage";
 import { TravelSummaryPage } from "./../support/page-objects/travelSummaryPage";
 
-describe("PETS Application End-to-End Tests with Sputum Collection", () => {
+describe("PETS Scenario: Pregnant Adult with Symptoms and Close Contact, Certificate Issued (3 months)", () => {
   // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
@@ -52,10 +51,9 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
   const checkSputumSampleInfoPage = new CheckSputumSampleInfoPage();
   const enterSputumSampleResultsPage = new EnterSputumSampleResultsPage();
   const chestXrayPage = new ChestXrayPage();
-  const chestXrayUploadPage = new ChestXrayUploadPage();
-  const chestXrayFindingsPage = new ChestXrayFindingsPage();
   const chestXraySummaryPage = new ChestXraySummaryPage();
   const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
+  const chestXrayNotTakenPage = new ChestXrayNotTakenPage();
   const tbCertificateQuestionPage = new TbCertificateQuestionPage();
   const tbCertificateSummaryPage = new TbCertificateSummaryPage();
   const tbCertificateConfirmationPage = new TbCertificateConfirmationPage();
@@ -68,6 +66,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
   let passportNumber: string = "";
   let tbCertificateNumber: string = "";
   let selectedVisaType: string = "";
+  let medicalRecordDate: string = "";
 
   before(() => {
     // Create test fixtures before test run
@@ -92,11 +91,11 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
   });
 
-  it("should complete the full application process with sputum collection", () => {
+  it("should complete the full application process for pregnant adult with symptoms and close contact, issue certificate with 3 month expiry", () => {
     // Search for applicant with passport number
     applicantSearchPage
       .fillPassportNumber(passportNumber)
-      .selectCountryOfIssue(countryName) // Use country code for form filling
+      .selectCountryOfIssue(countryName)
       .submitSearch();
 
     // Verify no matching record found and click create new
@@ -107,24 +106,24 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     // Verify redirection to the contact page
     applicantSearchPage.verifyRedirectionToCreateApplicantPage();
 
-    // Fill Applicant Details
+    // Fill Applicant Details for Adult Female
     applicantDetailsPage.verifyPageLoaded();
 
-    // Fill in applicant details
+    // Fill in applicant details for adult female
     applicantDetailsPage
-      .fillFullName("Jane Smith")
+      .fillFullName("Sarah Johnson")
       .selectSex("Female")
-      .selectNationality(countryName) // Use country code for form filling
-      .fillBirthDate("15", "03", "2000")
-      .fillPassportIssueDate("10", "05", "2018")
-      .fillPassportExpiryDate("10", "05", "2028")
-      .fillAddressLine1("123 High Street")
-      .fillAddressLine2("Apartment 4B")
-      .fillAddressLine3("Downtown")
-      .fillTownOrCity("St. Marten")
-      .fillProvinceOrState("Holestown")
-      .selectAddressCountry(countryName) // Use country code for form filling
-      .fillPostcode("94109")
+      .selectNationality(countryName)
+      .fillBirthDate("22", "08", "1992")
+      .fillPassportIssueDate("15", "01", "2019")
+      .fillPassportExpiryDate("15", "01", "2029")
+      .fillAddressLine1("789 Queen Street")
+      .fillAddressLine2("Suite 3A")
+      .fillAddressLine3("City Centre")
+      .fillTownOrCity("Dahome")
+      .fillProvinceOrState("Dahome")
+      .selectAddressCountry(countryName)
+      .fillPostcode("B1233")
       .submitForm();
 
     // Verify redirection to the Applicant Photo page
@@ -143,18 +142,14 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     // Continue to Applicant Summary page
     applicantPhotoUploadPage.clickContinue();
 
-    cy.url().then((url) => {
-      cy.log(`Current URL: ${url}`);
-    });
-
     // Verify redirection to the Applicant Summary page
     cy.url().should("include", "/applicant-summary");
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary
-    applicantSummaryPage.verifySummaryValue("Name", "Jane Smith");
+    applicantSummaryPage.verifySummaryValue("Name", "Sarah Johnson");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
-    applicantSummaryPage.verifySummaryValue("Country of issue", countryName); // Use country name for validation
+    applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
     applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
     applicantSummaryPage.verifySummaryValue("Country", countryName);
 
@@ -172,93 +167,75 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     cy.url().should("include", "/tracker");
     tbProgressTrackerPage.verifyPageLoaded();
 
-    // NOW navigate to travel information from the tracker
+    // Navigate to travel information from the tracker
     tbProgressTrackerPage.clickTaskLink("Travel information");
 
-    // NOW verify the travel information page
+    // Fill travel information
     travelInformationPage.verifyPageLoaded();
 
-    // Fill travel information with random visa type and capture the selected visa
     travelInformationPage
       .fillCompleteFormWithRandomVisa({
-        ukAddressLine1: "456 Park Lane",
-        ukAddressLine2: "Floor 2",
-        ukTownOrCity: "Manchester",
-        ukPostcode: "M1 1AA",
-        mobileNumber: "07700900123",
-        email: "pets.tester@hotmail.com",
+        ukAddressLine1: "321 Oxford Street",
+        ukAddressLine2: "Flat 1B",
+        ukTownOrCity: "London",
+        ukPostcode: "W1D 1AA",
+        mobileNumber: "07700900456",
+        email: "sarah.pets.test@gmail.com",
       })
       .then((randomVisa) => {
-        // Store the selected visa type for later use
         selectedVisaType = randomVisa;
         cy.log(`Selected random visa type: ${selectedVisaType}`);
-
-        // Store as alias for use throughout the test
         cy.wrap(selectedVisaType).as("selectedVisa");
       });
 
-    // Submit the form
     travelInformationPage.submitForm();
 
-    // Review Travel Summary with random visa type
+    // Review Travel Summary
     travelSummaryPage.verifyPageLoaded();
-
-    // Verify the random visa type is valid and displayed correctly
     travelSummaryPage.verifyVisaTypeIsValid();
-
-    // Verify details by clicking change links and checking fields
-    travelSummaryPage.clickChangeLink("UK address line 1");
-    cy.url().should("include", "/travel-details");
-    cy.go("back");
-
-    travelSummaryPage.clickChangeLink("UK town or city");
-    cy.url().should("include", "/travel-details");
-    cy.go("back");
-
-    travelSummaryPage.clickChangeLink("UK mobile number");
-    cy.url().should("include", "/travel-details");
-    cy.go("back");
-
-    // Submit the summary page
     travelSummaryPage.submitForm();
 
     // Travel Confirmation
     travelConfirmationPage.verifyPageLoaded();
     travelConfirmationPage.clickContinue();
 
-    // Verify we're back on the tracker
-    cy.url().should("include", "/tracker");
-    tbProgressTrackerPage.verifyPageLoaded();
-
-    // NOW navigate to medical screening from the tracker
+    // Navigate to medical screening from the tracker
     tbProgressTrackerPage.clickTaskLink("Medical history and TB symptoms");
 
-    // Medical Screening Page
+    // Medical Screening Page - Adult pregnant with symptoms, no TB history, has close contact
     medicalScreeningPage.verifyPageLoaded();
 
     medicalScreeningPage
-      .fillAge("25")
-      .selectTbSymptoms("No")
-      .selectPreviousTb("No")
-      .selectCloseContact("No")
-      .selectPregnancyStatus("No")
-      .selectMenstrualPeriods("No")
-      .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.")
+      .fillAge("31") // Adult age
+      .selectTbSymptoms("Yes") // Yes to symptoms
+      .selectPreviousTb("No") // No TB history
+      .selectCloseContact("Yes") // Yes close contact
+      .selectPregnancyStatus("Yes") // Pregnant
+      .selectMenstrualPeriods("N/A") // N/A due to pregnancy
+      .fillPhysicalExamNotes(
+        "Pregnant adult female with TB symptoms. Reports close contact with active TB case. Requires comprehensive screening.",
+      )
       .submitForm();
+
+    // Store the date when medical history is recorded for later verification
+    const currentDate = new Date().toLocaleDateString("en-GB");
+    medicalRecordDate = currentDate;
+    cy.wrap(medicalRecordDate).as("medicalRecordDate");
 
     // Verify redirection to medical summary
     medicalScreeningPage.verifyRedirectedToSummary();
     medicalSummaryPage.verifyPageLoaded();
 
-    //Validate the prefilled form
+    // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "25",
-      tbSymptoms: "No",
+      age: "31",
+      tbSymptoms: "Yes",
       previousTb: "No",
-      closeContactWithTb: "No",
-      pregnant: "No",
-      menstrualPeriods: "No",
-      physicalExamNotes: "No abnormalities detected. Patient appears healthy.",
+      closeContactWithTb: "Yes",
+      pregnant: "Yes",
+      menstrualPeriods: "N/A",
+      physicalExamNotes:
+        "Pregnant adult female with TB symptoms. Reports close contact with active TB case. Requires comprehensive screening.",
     });
 
     // Confirm medical details
@@ -270,118 +247,47 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     medicalConfirmationPage.verifyNextStepsSection();
     medicalConfirmationPage.clickContinueButton();
 
-    // Verify we're back on the tracker
-    cy.url().should("include", "/tracker");
-    tbProgressTrackerPage.verifyPageLoaded();
-
-    // NOW navigate to chest X-ray from the tracker
+    // Navigate to chest X-ray from the tracker
     tbProgressTrackerPage.clickTaskLink("Radiological outcome");
 
-    // Verify chest X-ray page
+    // Verify chest X-ray page - Select NO for X-ray (pregnant)
     chestXrayPage.verifyPageLoaded();
+    chestXrayPage.selectXrayTakenNo().clickContinue();
 
-    // Select "Yes" for X-ray taken and continue
-    chestXrayPage.selectXrayTakenYes().clickContinue();
+    // Verify X-ray reason page and select "Pregnant"
+    chestXrayNotTakenPage.verifyPageLoaded();
+    chestXrayNotTakenPage.selectPregnant();
+    chestXrayNotTakenPage.submitForm();
 
-    // Verify X-ray upload page using
-    chestXrayUploadPage.verifyPageLoaded();
-
-    // Upload Chest X-ray file
-    chestXrayUploadPage
-      .uploadPosteroAnteriorXray("cypress/fixtures/test-chest-xray.dcm")
-      .verifyUploadSuccess();
-
-    //Checking no errors appear
-    cy.get(".govuk-error-message").should("not.exist");
-    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
-
-    // Continue to X-ray findings page
-    chestXrayUploadPage.clickContinue();
-
-    cy.url().then((url) => {
-      cy.log(`Current URL: ${url}`);
-    });
-
-    // Verify X-ray findings page
-    chestXrayFindingsPage.verifyPageLoaded();
-
-    // Complete X-ray findings
-    chestXrayFindingsPage
-      .selectXrayResultNormal()
-      .selectMinorFindings(["1.1 Single fibrous streak or band or scar"])
-      .clickSaveAndContinue();
-
-    // Complete Sputum Collection Question
+    // Sputum Question - Select YES (required due to symptoms and close contact)
     sputumQuestionPage.verifyPageLoaded();
-
-    //Select "Yes" for Sputum Collection***
     sputumQuestionPage.selectSputumRequiredYes().clickContinue();
 
-    // Verify redirection to chest X-ray summary page
-    cy.url().should("include", "/chest-xray-summary");
-
-    // Verify chest X-ray summary page
+    // Verify chest X-ray summary
     chestXraySummaryPage.verifyPageLoaded();
-
-    // Verify X-ray summary information
-    chestXraySummaryPage.verifyXraySummaryInfo({
-      "Select X-ray status": "Yes",
-      "Enter radiological outcome": "Chest X-ray normal",
+    chestXraySummaryPage.verifyXrayNotTakenSummaryInfo({
+      "Select x-ray status": "No",
+      "Enter reason X-ray not taken": "Pregnant",
     });
 
-    // Verify sputum field now shows "Yes"
+    // Verify sputum field shows "Yes"
     chestXraySummaryPage.verifySummaryValue("Sputum required?", "Yes");
-
-    // Verify change links exist
-    chestXraySummaryPage.verifyChangeLinksExist();
-
-    // Save and continue to the next page
     chestXraySummaryPage.clickSaveAndContinue();
 
-    // Verify chest X-ray confirmation page
+    // Verify chest X-ray confirmation
     chestXrayConfirmationPage.verifyPageLoaded();
     chestXrayConfirmationPage.verifyConfirmationPanel();
     chestXrayConfirmationPage.verifyNextStepsSection();
-    chestXrayConfirmationPage.verifyServiceName();
     chestXrayConfirmationPage.clickContinueButton();
 
-    // Verify redirection to TB Screening Progress Tracker page
+    // Verify we're back at the progress tracker
     cy.url().should("include", "/tracker");
-
-    // Verify TB Screening Progress Tracker page
     tbProgressTrackerPage.verifyPageLoaded();
 
-    // Check applicant information is displayed correctly
-    tbProgressTrackerPage.verifyApplicantInfo({
-      Name: "Jane Smith",
-      "Date of birth": "15/03/2000",
-      "Passport number": passportNumber,
-    });
-
-    // Verify task status information
-    tbProgressTrackerPage.verifyVisaApplicantDetailsCompleted();
-
-    // Verify task links exist
-    tbProgressTrackerPage.verifyTaskLinksExist();
-
-    // Verify service name
-    tbProgressTrackerPage.verifyServiceName();
-
-    // Verify task statuses
-    tbProgressTrackerPage.verifyAllTaskStatuses({
-      "Visa applicant details": "Completed",
-      "Travel information": "Completed",
-      "Medical history and TB symptoms": "Completed",
-      "Radiological outcome": "Completed",
-      "Sputum collection and results": "Not yet started",
-      "TB certificate outcome": "Not yet started",
-    });
-
-    //Complete Sputum Collection
-    // Click on Sputum collection link from the progress tracker
+    // Complete Sputum Collection - Click on Sputum collection link
     tbProgressTrackerPage.clickTaskLink("Sputum collection and results");
 
-    // Verify sputum collection page loaded
+    // Verify sputum collection page loaded and fill data
     sputumCollectionPage.verifyPageLoaded();
     sputumCollectionPage.verifySectionHeaders();
     sputumCollectionPage.verifyPageStructure();
@@ -390,281 +296,221 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     // Fill sputum collection data for all three samples
     const sputumData = {
       sample1: {
-        date: { day: "10", month: "03", year: "2025" },
+        date: { day: "15", month: "02", year: "2025" },
         collectionMethod: "Coughed up",
       },
       sample2: {
-        date: { day: "11", month: "03", year: "2025" },
+        date: { day: "16", month: "02", year: "2025" },
         collectionMethod: "Induced",
       },
       sample3: {
-        date: { day: "12", month: "03", year: "2025" },
+        date: { day: "17", month: "02", year: "2025" },
         collectionMethod: "Coughed up",
       },
     };
 
-    // Fill all samples using the new method
     sputumCollectionPage.fillAllSamples(sputumData);
-
-    // Verify the form is filled correctly
     sputumCollectionPage.verifyFormFilledWith(sputumData);
 
-    // Save and continue to results
-    sputumCollectionPage.clickSaveAndContinueToResults();
+    // Test partial sputum collection
+    sputumCollectionPage.clickSaveProgress();
 
-    // Verify redirection to Enter Sputum Sample Results page
-    cy.url().should("include", "/enter-sputum-sample-results");
-
-    // Verify Enter Sputum Sample Results page loaded
-    enterSputumSampleResultsPage.verifyPageLoaded();
-    enterSputumSampleResultsPage.verifyAllPageElements();
-
-    // Fill sputum sample results
-    enterSputumSampleResultsPage.fillWithAllNegativeResults();
-
-    // Verify the form is filled correctly
-    const testResultsData =
-      EnterSputumSampleResultsPage.getTestSampleResultsData().allNegativeResults;
-    enterSputumSampleResultsPage.verifyFormFilledWith(testResultsData);
-
-    // Save and continue
-    enterSputumSampleResultsPage.clickSaveAndContinue();
-
-    // Verify page loads correctly
+    // Verify check sputum sample info page with partial data
     checkSputumSampleInfoPage.verifyPageLoaded();
-
-    // Verify all sample headings are present
     checkSputumSampleInfoPage.verifySampleHeadings();
-
-    // Verify all required fields are present for each sample
     checkSputumSampleInfoPage.verifyRequiredFieldsPresent();
 
-    // Validate sample data matches what was entered
-    const expectedSampleData = {
+    // Verify partial data is shown with "No data" for results
+    const partialSampleData = {
       sample1: {
-        dateTaken: "10/03/2025",
+        dateTaken: "15/02/2025",
         collectionMethod: "Coughed up",
-        smearResult: "Negative",
-        cultureResult: "Negative",
+        smearResult: "No data",
+        cultureResult: "No data",
       },
       sample2: {
-        dateTaken: "11/03/2025",
+        dateTaken: "16/02/2025",
+        collectionMethod: "Induced",
+        smearResult: "No data",
+        cultureResult: "No data",
+      },
+      sample3: {
+        dateTaken: "17/02/2025",
+        collectionMethod: "Coughed up",
+        smearResult: "No data",
+        cultureResult: "No data",
+      },
+    };
+
+    checkSputumSampleInfoPage.verifyAllSampleInfo(partialSampleData);
+    checkSputumSampleInfoPage.clickSaveAndContinue();
+
+    // Verify partial sputum confirmation
+    sputumConfirmationPage.verifyPageLoaded();
+    cy.contains("Partial sputum sample information confirmed").should("be.visible");
+    sputumConfirmationPage.clickContinueButton();
+
+    // Verify we're back at tracker with "In progress" status
+    cy.url().should("include", "/tracker");
+    tbProgressTrackerPage.verifyTaskStatus("Sputum collection and results", "In progress");
+
+    // Click on sputum collection again to enter results
+    tbProgressTrackerPage.clickTaskLink("Sputum collection and results");
+
+    // Enter partial sputum results
+    enterSputumSampleResultsPage.verifyPageLoaded();
+    enterSputumSampleResultsPage.fillWithOnlyFirstSampleResults();
+    enterSputumSampleResultsPage.clickSaveAndContinue();
+
+    // Continue with more partial results workflow as per scenario
+    checkSputumSampleInfoPage.verifyPageLoaded();
+    checkSputumSampleInfoPage.clickSaveAndContinue();
+
+    // Verify partial sputum confirmation
+    sputumConfirmationPage.verifyPageLoaded();
+    cy.contains("Partial sputum sample information confirmed").should("be.visible");
+    sputumConfirmationPage.clickContinueButton();
+
+    // Verify we're back at tracker with "In progress" status
+    cy.url().should("include", "/tracker");
+    tbProgressTrackerPage.verifyTaskStatus("Sputum collection and results", "In progress");
+
+    // Return to enter remaining results
+    tbProgressTrackerPage.clickTaskLink("Sputum collection and results");
+
+    // Fill remaining sputum results as negative
+    enterSputumSampleResultsPage.verifyPageLoaded();
+    enterSputumSampleResultsPage.fillRemainingSamplesWithNegativeResults();
+
+    enterSputumSampleResultsPage.clickSaveAndContinue();
+
+    // Final sputum verification
+    checkSputumSampleInfoPage.verifyPageLoaded();
+    const finalSampleData = {
+      sample1: {
+        dateTaken: "15/02/2025",
+        collectionMethod: "Coughed up",
+        smearResult: "Negative",
+        cultureResult: "Positive",
+      },
+      sample2: {
+        dateTaken: "16/02/2025",
         collectionMethod: "Induced",
         smearResult: "Negative",
         cultureResult: "Negative",
       },
       sample3: {
-        dateTaken: "12/03/2025",
+        dateTaken: "17/02/2025",
         collectionMethod: "Coughed up",
         smearResult: "Negative",
         cultureResult: "Negative",
       },
     };
 
-    // Verify all sample information matches expected data
-    checkSputumSampleInfoPage.verifyAllSampleInfo(expectedSampleData);
-
-    // Verify change links are present and point to correct pages
-    checkSputumSampleInfoPage.verifyChangeLinksExist();
-
-    // Verify service name in header
-    checkSputumSampleInfoPage.verifyServiceName();
-
-    // Submit the summary and continue to next step
+    checkSputumSampleInfoPage.verifyAllSampleInfo(finalSampleData);
     checkSputumSampleInfoPage.clickSaveAndContinue();
 
-    // Verify Sputum confirmation page
+    // Final sputum confirmation
     sputumConfirmationPage.verifyPageLoaded();
-    sputumConfirmationPage.verifyConfirmationPanel();
-    sputumConfirmationPage.verifyNextStepsSection();
-    sputumConfirmationPage.verifyServiceName();
+    cy.contains("All sputum sample information confirmed").should("be.visible");
     sputumConfirmationPage.clickContinueButton();
 
-    // Verify redirection to TB Screening Progress Tracker page
+    // Verify sputum collection is now completed
     cy.url().should("include", "/tracker");
-
-    // Verify TB Screening Progress Tracker page
-    tbProgressTrackerPage.verifyPageLoaded();
-
-    // Verify we're back at the progress tracker
-    cy.url().should("include", "/tracker");
-    tbProgressTrackerPage.verifyPageLoaded();
-
-    // Verify sputum collection status is now "Completed"
     tbProgressTrackerPage.verifyTaskStatus("Sputum collection and results", "Completed");
-
-    // Now all tasks should be completed except TB certificate declaration
-    tbProgressTrackerPage.verifyAllTaskStatuses({
-      "Visa applicant details": "Completed",
-      "Travel information": "Completed",
-      "Medical history and TB symptoms": "Completed",
-      "Radiological outcome": "Completed",
-      "Sputum collection and results": "Completed",
-      "TB certificate outcome": "Not yet started",
-    });
 
     // Click on TB certificate declaration to continue
     tbProgressTrackerPage.clickTaskLink("TB certificate outcome");
 
-    // Verify TB Certificate Question page loaded
+    // Verify TB Certificate Question page loaded and select YES
     tbCertificateQuestionPage.verifyPageLoaded();
-
-    // Select "Yes" for TB clearance certificate issuance
     tbCertificateQuestionPage.selectTbClearanceOption("Yes");
-
-    // Verify "Yes" is selected
     tbCertificateQuestionPage.verifyRadioSelection("Yes");
-
-    // Submit the form and continue to TB Certificate Declaration page
     tbCertificateQuestionPage.clickContinue();
 
-    // Verify redirection to TB Certificate Declaration page
-    tbCertificateQuestionPage.verifyUrlContains("/tb-certificate-declaration");
-
-    // Verify TB Certificate Declaration page is loaded
+    // Verify TB Certificate Declaration page
     tbCertificateDeclarationPage.verifyPageLoaded();
-
-    // Verify all page elements are present
     tbCertificateDeclarationPage.verifyAllPageElements();
-
     // Capture Clinic Name for verification
     tbCertificateDeclarationPage.getClinicName().then((capturedClinicName: string) => {
       cy.log(`Captured clinic name: ${capturedClinicName}`);
-
-      // Verify clinic information summary is displayed
       tbCertificateDeclarationPage.verifyClinicInformationSummary();
-
-      // Verify expected clinic information is displayed
       tbCertificateDeclarationPage.verifyClinicInformationIsPresent();
-      // Verify all fields are initially empty
       tbCertificateDeclarationPage.verifyAllFieldsEmpty();
 
       // Fill TB Certificate Declaration details
       const tbCertificateDeclarationData = {
-        declaringPhysicianName: "Dr. Sarah Johnson",
+        declaringPhysicianName: "Dr. Emily Watson",
         physicianComments:
-          "Applicant has completed full TB screening. All tests negative.Certificate issued in accordance with UKHSA guidelines.",
+          "Pregnant adult female with TB symptoms and close contact history. All sputum samples negative. Certificate issued with 3-month validity due to close contact with active TB.",
       };
 
-      // Fill the form with valid data
       tbCertificateDeclarationPage.fillFormWithValidData(tbCertificateDeclarationData);
-
-      // Verify the form is filled correctly
       tbCertificateDeclarationPage.verifyFormFilledWith(tbCertificateDeclarationData);
-
-      // Submit the form and continue
       tbCertificateDeclarationPage.clickContinue();
 
-      // Verify redirection to TB Clearance Certificate Summary page
-      tbCertificateDeclarationPage.verifyUrlContains("/tb-certificate-summary");
-
-      // Verify TB Certificate Summary page loaded
+      // Verify TB Certificate Summary page
       tbCertificateSummaryPage.verifyPageLoaded();
-
-      // Verify all page elements and structure
       tbCertificateSummaryPage.verifyAllPageElements();
 
-      // Verify applicant information section and data
+      // Verify applicant information
       tbCertificateSummaryPage.verifyApplicantInfoSection();
       tbCertificateSummaryPage.verifyApplicantInfo({
-        Name: "Jane Smith",
-        "Date of birth": "15 March 2000",
+        Name: "Sarah Johnson",
+        "Date of birth": "22 August 1992",
         "Passport number": passportNumber,
         Sex: "Female",
       });
 
-      // Verify clinic and certificate information section
+      // Verify clinic and certificate information
       tbCertificateSummaryPage.verifyClinicCertificateSection();
       tbCertificateSummaryPage.verifyClinicCertificateInfo({
         "Clinic name": capturedClinicName,
-        "Declaring physician name": "Dr. Sarah Johnson",
+        "Declaring physician name": "Dr. Emily Watson",
         "Physician's comments":
-          "Applicant has completed full TB screening. All tests negative.Certificate issued in accordance with UKHSA guidelines.",
+          "Pregnant adult female with TB symptoms and close contact history. All sputum samples negative. Certificate issued with 3-month validity due to close contact with active TB.",
       });
 
-      // Verify screening information section
+      // Verify screening information
       tbCertificateSummaryPage.verifyScreeningInfoSection();
       tbCertificateSummaryPage.verifyScreeningInfo({
-        "Chest X-ray done": "Yes",
-        "Chest X-ray outcome": "Chest X-ray normal",
+        "Chest X-ray done": "No",
+        "Chest X-ray outcome": "Not provided",
         "Sputum collected": "Yes",
-        "Sputum outcome": "Negative", // Based on the test data from sputum collection
-        Pregnant: "No",
+        "Sputum outcome": "Positive",
+        Pregnant: "Yes",
         "Child under 11 years": "No",
       });
 
-      // Verify applicant photo is displayed
       tbCertificateSummaryPage.verifyApplicantPhoto();
-
-      // Verify declaration text
       tbCertificateSummaryPage.verifyDeclarationText();
-
-      // Verify change links exist for editable fields
       tbCertificateSummaryPage.verifyChangeLinksExist();
-
-      // Test the change links functionality
-      tbCertificateSummaryPage.verifyChangeLinksExist();
-
-      // Verify back link navigation
-      tbCertificateSummaryPage.verifyBackLinkNavigation();
-
-      // Verify service name in header
       tbCertificateSummaryPage.verifyServiceName();
-
-      // Verify submit button
       tbCertificateSummaryPage.verifySubmitButton();
 
       // Submit the certificate information
       tbCertificateSummaryPage.clickSubmit();
 
-      // Verify redirection to TB Certificate Confirmation page
+      // Verify TB Certificate Confirmation page
       cy.url().should("include", "/tb-certificate-confirmation");
-
-      // Verify redirection to TB Certificate Confirmation page
-      cy.url().should("include", "/tb-certificate-confirmation");
-
-      // Verify TB Certificate Confirmation page loaded
       tbCertificateConfirmationPage.verifyPageLoaded();
-
-      // Verify confirmation panel with correct title
       tbCertificateConfirmationPage.verifyConfirmationPanel();
-
-      // Verify certificate reference number is displayed and get its value
       tbCertificateConfirmationPage.verifyCertificateReferenceNumber();
-
-      // Verify certificate reference number format
       tbCertificateConfirmationPage.verifyCertificateReferenceNumberFormat();
 
       // Log certificate reference number for verification
       tbCertificateConfirmationPage.getCertificateReferenceNumber().then((certRef: string) => {
         cy.log(`Certificate Reference Number: ${certRef}`);
         cy.wrap(certRef).should("not.be.empty");
-        // Store in test for potential later use in the test
         cy.wrap(certRef).as("certificateReference");
       });
 
-      // Verify completion message
       tbCertificateConfirmationPage.verifyCompletionMessage();
-
-      // Verify "What happens next" section
       tbCertificateConfirmationPage.verifyWhatHappensNextSection();
-
-      // Verify "View or print certificate" button
       tbCertificateConfirmationPage.verifyViewPrintCertificateButton();
-
-      // Verify navigation links section
       tbCertificateConfirmationPage.verifyNavigationLinks();
-
-      // Verify feedback link
       tbCertificateConfirmationPage.verifyFeedbackLink();
-
-      // Verify grid layout structure
       tbCertificateConfirmationPage.verifyGridLayout();
-
-      // Verify back link navigation
-      tbCertificateConfirmationPage.verifyBackLinkNavigation();
-
-      // Verify service name in header
       tbCertificateConfirmationPage.verifyServiceName();
     });
   });

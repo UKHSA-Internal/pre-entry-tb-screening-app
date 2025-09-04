@@ -251,6 +251,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     medicalSummaryPage.fullyValidateSummary({
       age: "29",
       tbSymptoms: "Yes",
+      tbSymptomsList: [],
       previousTb: "No",
       closeContactWithTb: "No",
       pregnant: "No",
