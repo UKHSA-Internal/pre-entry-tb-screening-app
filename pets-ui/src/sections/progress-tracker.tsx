@@ -8,6 +8,7 @@ import {
   selectApplicant,
   selectChestXray,
   selectMedicalScreening,
+  selectRadiologicalOutcome,
   selectSputum,
   selectTbCertificate,
   selectTravel,
@@ -91,6 +92,7 @@ const ProgressTracker = () => {
   const travelData = useAppSelector(selectTravel);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const chestXrayData = useAppSelector(selectChestXray);
+  const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
   const sputumData = useAppSelector(selectSputum);
   const tbCertificateData = useAppSelector(selectTbCertificate);
   const applicantPhotoContext = useApplicantPhoto();
@@ -173,14 +175,26 @@ const ProgressTracker = () => {
           prerequisiteTaskStatuses={[applicantData.status, travelData.status]}
         />
         <Task
-          description="Radiological outcome"
+          description="Upload chest X-ray images"
           status={chestXrayData.status}
+          linkWhenIncomplete="/upload-chest-xray"
+          linkWhenComplete="/chest-xray-summary"
+          prerequisiteTaskStatuses={[
+            applicantData.status,
+            travelData.status,
+            medicalScreeningData.status,
+          ]}
+        />
+        <Task
+          description="Radiological outcome"
+          status={radiologicalOutcomeData.status}
           linkWhenIncomplete="/chest-xray-question"
           linkWhenComplete="/chest-xray-summary"
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,
             medicalScreeningData.status,
+            chestXrayData.status,
           ]}
         />
         <Task
@@ -193,6 +207,7 @@ const ProgressTracker = () => {
             travelData.status,
             medicalScreeningData.status,
             chestXrayData.status,
+            radiologicalOutcomeData.status,
           ]}
         />
       </ul>
@@ -209,6 +224,7 @@ const ProgressTracker = () => {
             travelData.status,
             medicalScreeningData.status,
             chestXrayData.status,
+            radiologicalOutcomeData.status,
             sputumData.status,
           ]}
           statusOverride={tbCertificateStatusOverride}
