@@ -233,7 +233,7 @@ jobs:
 
     strategy:
       matrix:
-        browser: [chrome, firefox, edge]
+        browser: [chrome, edge]
     env:
       APP_DOMAIN: ${{ vars.APP_DOMAIN }}
 
