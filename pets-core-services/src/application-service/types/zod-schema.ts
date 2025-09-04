@@ -196,7 +196,6 @@ export const ChestXRayNotTakenRequestSchema = z.object({
   xrayWasNotTakenFurtherDetails: z.string().optional().openapi({
     description: "Further details on why X-ray was not taken",
   }),
-  isSputumRequired: z.nativeEnum(YesOrNo),
 });
 
 export const ChestXRayTakenRequestSchema = z.object({
@@ -219,7 +218,6 @@ export const ChestXRayTakenRequestSchema = z.object({
   lateralDecubitusXray: z.string().optional().openapi({
     description: "S3 Bucket Object key for the Lateral Decubitus X-Ray",
   }),
-  isSputumRequired: z.nativeEnum(YesOrNo),
 });
 
 export const ChestXRayRequestSchema = z.union([

@@ -18,7 +18,6 @@ const newChestXrayTaken: SaveChestXrayEvent["parsedBody"] = {
   lateralDecubitusXrayFileName: "lateral-decubitus.dicom",
   lateralDecubitusXray:
     "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/lateral-decubitus.dcm",
-  isSputumRequired: YesOrNo.No,
 };
 
 describe("Test for Saving Chest X-ray into DB", () => {

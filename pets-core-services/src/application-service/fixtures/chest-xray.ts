@@ -18,7 +18,6 @@ export const seededChestXray: Array<NewChestXRayTaken | NewChestXRayNotTaken> = 
     lateralDecubitusXray:
       "dicom/Apollo Clinic/BRB/ABC1234JANE/generated-app-id-2/lateral-decubitus.dcm",
     createdBy: "shane.park@iom.com",
-    isSputumRequired: YesOrNo.No,
   },
   {
     applicationId: seededApplications[2].applicationId,
@@ -26,6 +25,5 @@ export const seededChestXray: Array<NewChestXRayTaken | NewChestXRayNotTaken> = 
     reasonXrayWasNotTaken: ChestXRayNotTakenReason.Other,
     xrayWasNotTakenFurtherDetails: "Further Notes",
     createdBy: "shawn.jones@clinic.com",
-    isSputumRequired: YesOrNo.Yes,
   },
 ];

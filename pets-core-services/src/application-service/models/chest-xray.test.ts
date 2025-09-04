@@ -23,7 +23,6 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     apicalLordoticXray: "saved/bucket/path/for/apical/lordotic",
     lateralDecubitusXrayFileName: "lateral-decubitus.dicom",
     lateralDecubitusXray: "saved/bucket/path/for/lateral/decubitus",
-    isSputumRequired: YesOrNo.No,
   };
 
   const newChestXrayNotTaken: NewChestXRayNotTaken = {
@@ -32,7 +31,6 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     chestXrayTaken: YesOrNo.No,
     reasonXrayWasNotTaken: ChestXRayNotTakenReason.Other,
     xrayWasNotTakenFurtherDetails: "Extra Notes",
-    isSputumRequired: YesOrNo.Yes,
   };
 
   test.each([
