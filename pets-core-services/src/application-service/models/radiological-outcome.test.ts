@@ -75,4 +75,14 @@ describe("Tests for Medical Screening Information Model", () => {
       dateCreated: new Date("2025-02-07"),
     });
   });
+
+  test("Handling error while creating medical screening", async () => {
+    // Arrange
+    ddbMock.on(PutCommand).rejects("ErR0r");
+
+    // Act
+    await expect(
+      RadiologicalOutcome.createRadiologicalOutcome(newRadiologicalOutcome),
+    ).rejects.toThrow("ErR0r");
+  });
 });

@@ -387,10 +387,10 @@ export const RadiologicalOutcomeResponseSchema = RadiologicalOutcomeRequestSchem
   applicationId: z.string().openapi({
     description: "ID of application",
   }),
-  dateCreated: z.string().or(z.date()).openapi({
+  dateCreated: z.string().date().openapi({
     description: "Creation Date in UTC timezone",
   }),
-  status: z.string().openapi({
+  status: z.nativeEnum(TaskStatus).openapi({
     description: "Status of Task",
   }),
 });
@@ -405,6 +405,7 @@ export const ApplicationSchema = z.object({
   travelInformation: TravelInformationResponseSchema,
   medicalScreening: MedicalScreeningResponseSchema,
   chestXray: ChestXRayResponseSchema,
+  radiologicalOutcome: RadiologicalOutcomeResponseSchema,
   sputumDetails: SputumResponseSchema,
   tbCertificate: TbCertificateResponseSchema,
 });
