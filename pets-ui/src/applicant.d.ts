@@ -154,6 +154,31 @@ type ReceivedMedicalScreeningType = PostedMedicalScreeningType & ReceivedApplica
 // Chest X-ray types
 type ReduxChestXrayDetailsType = {
   status: ApplicationStatus;
+  posteroAnteriorXrayFileName: string;
+  posteroAnteriorXrayFile: string;
+  apicalLordoticXrayFileName?: string;
+  apicalLordoticXrayFile?: string;
+  lateralDecubitusXrayFileName?: string;
+  lateralDecubitusXrayFile?: string;
+  completionDate: DateType;
+};
+
+type PostedChestXrayDetailsType = {
+  chestXrayTaken: YesOrNo.YES;
+  posteroAnteriorXrayFileName: string;
+  posteroAnteriorXray: string;
+  apicalLordoticXrayFileName?: string;
+  apicalLordoticXray?: string;
+  lateralDecubitusXrayFileName?: string;
+  lateralDecubitusXray?: string;
+  completionDate: DateType;
+};
+
+type ReceivedChestXrayDetailsType = PostedChestXrayDetailsType & ReceivedApplicationAttributesType;
+
+// Radiological outcome types
+type ReduxRadiologicalOutcomeDetailsType = {
+  status: ApplicationStatus;
   chestXrayTaken: YesOrNo;
   posteroAnteriorXrayFileName: string;
   posteroAnteriorXrayFile: string;
@@ -172,7 +197,7 @@ type ReduxChestXrayDetailsType = {
   completionDate: DateType;
 };
 
-type PostedChestXrayDetailsType = {
+type PostedRadiologicalOutcomeDetailsType = {
   chestXrayTaken: YesOrNo;
   posteroAnteriorXrayFileName: string;
   posteroAnteriorXray: string;
@@ -188,15 +213,16 @@ type PostedChestXrayDetailsType = {
   isSputumRequired: YesOrNo;
 };
 
-type ReceivedChestXrayDetailsType = PostedChestXrayDetailsType & ReceivedApplicationAttributesType;
+type ReceivedRadiologicalOutcomeDetailsType = PostedRadiologicalOutcomeDetailsType &
+  ReceivedApplicationAttributesType;
 
-type PostedChestXrayNotTakenType = {
+type PostedRadiologicalOutcomeChestXrayNotTakenType = {
   reasonXrayWasNotTaken: string;
   xrayWasNotTakenFurtherDetails: string;
   isSputumRequired: YesOrNo;
 };
 
-type ReceivedChestXrayNotTakenType = PostedChestXrayNotTakenType &
+type ReceivedRadiologicalOutcomeNotTakenType = PostedRadiologicalOutcomeChestXrayNotTakenType &
   ReceivedApplicationAttributesType;
 
 // Sputum types
