@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   ReceivedRadiologicalOutcomeDetailsType,
   ReduxRadiologicalOutcomeDetailsType,
-} from "@/applicant";
+} from "@/types";
 import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "@/utils/enums";
 
 const initialState: ReduxRadiologicalOutcomeDetailsType = {

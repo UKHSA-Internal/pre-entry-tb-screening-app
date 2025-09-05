@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { ReduxMedicalScreeningType } from "@/applicant";
 import Checkbox from "@/components/checkbox/checkbox";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
@@ -16,6 +15,7 @@ import {
   setMedicalScreeningStatus,
 } from "@/redux/medicalScreeningSlice";
 import { selectMedicalScreening } from "@/redux/store";
+import { ReduxMedicalScreeningType } from "@/types";
 import { ApplicationStatus, ButtonType, RadioIsInline } from "@/utils/enums";
 import { toArray } from "@/utils/helpers";
 import { formRegex } from "@/utils/records";

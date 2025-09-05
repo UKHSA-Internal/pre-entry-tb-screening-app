@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ReceivedMedicalScreeningType, ReduxMedicalScreeningType } from "@/applicant";
+import { ReceivedMedicalScreeningType, ReduxMedicalScreeningType } from "@/types";
 import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
 
 const initialState: ReduxMedicalScreeningType = {

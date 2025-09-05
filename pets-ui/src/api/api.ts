@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 
+import { acquireTokenSilently } from "@/auth/auth";
 import {
   ApplicantSearchFormType,
   ApplicationIdAndDateCreatedType,
@@ -16,8 +17,7 @@ import {
   PostedTravelDetailsType,
   ReceivedApplicantDetailsType,
   ReceivedApplicationDetailsType,
-} from "@/applicant";
-import { acquireTokenSilently } from "@/auth/auth";
+} from "@/types";
 
 export const petsApi = axios.create({
   baseURL: "/api",

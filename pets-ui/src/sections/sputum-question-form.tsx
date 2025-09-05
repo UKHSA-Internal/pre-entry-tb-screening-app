@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { ReduxRadiologicalOutcomeDetailsType } from "@/applicant";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
@@ -10,6 +9,7 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setSputumCollectionTaken } from "@/redux/radiologicalOutcomeSlice";
 import { selectRadiologicalOutcome } from "@/redux/store";
+import { ReduxRadiologicalOutcomeDetailsType } from "@/types";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 
 const SputumQuestionForm = () => {

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import { ReduxApplicantDetailsType } from "@/applicant";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FileUpload from "@/components/fileUpload/fileUpload";
 import Heading from "@/components/heading/heading";
@@ -11,6 +10,7 @@ import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { setApplicantPhotoFileName } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
+import { ReduxApplicantDetailsType } from "@/types";
 import { ButtonType, ImageType } from "@/utils/enums";
 
 const ApplicantPhotoForm = () => {

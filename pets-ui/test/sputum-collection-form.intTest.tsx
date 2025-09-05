@@ -3,14 +3,14 @@ import userEvent from "@testing-library/user-event";
 import { Mock, vi } from "vitest";
 
 import { postSputumDetails } from "@/api/api";
+import SputumCollectionPage from "@/pages/sputum-collection";
+import SputumCollectionForm from "@/sections/sputum-collection-form";
 import {
   DateType,
   ReduxApplicantDetailsType,
   ReduxSputumSampleType,
   ReduxSputumType,
-} from "@/applicant";
-import SputumCollectionPage from "@/pages/sputum-collection";
-import SputumCollectionForm from "@/sections/sputum-collection-form";
+} from "@/types";
 import { ApplicationStatus, PositiveOrNegative } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 

@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 
-import { ReduxRadiologicalOutcomeDetailsType } from "@/applicant";
 import Checkbox from "@/components/checkbox/checkbox";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
@@ -19,6 +18,7 @@ import {
   setXrayResultDetail,
 } from "@/redux/radiologicalOutcomeSlice";
 import { selectRadiologicalOutcome } from "@/redux/store";
+import { ReduxRadiologicalOutcomeDetailsType } from "@/types";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 import { toArray } from "@/utils/helpers";
 

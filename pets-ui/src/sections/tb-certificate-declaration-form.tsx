@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 
-import { ReduxTbCertificateType } from "@/applicant";
 import ErrorDisplay from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
@@ -24,6 +23,7 @@ import {
   setDeclaringPhysicianName,
   setTbCertificateStatus,
 } from "@/redux/tbCertificateSlice";
+import { ReduxTbCertificateType } from "@/types";
 import { ApplicationStatus, ButtonType } from "@/utils/enums";
 import {
   calculateCertificateExpiryDate,

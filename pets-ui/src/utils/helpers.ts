@@ -3,7 +3,7 @@ import {
   ReduxMedicalScreeningType,
   ReduxRadiologicalOutcomeDetailsType,
   ReduxSputumType,
-} from "@/applicant";
+} from "@/types";
 import { PositiveOrNegative, YesOrNo } from "@/utils/enums";
 
 import { countryList } from "./countryList";

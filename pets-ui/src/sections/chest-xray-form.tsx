@@ -2,7 +2,6 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { ReduxChestXrayDetailsType } from "@/applicant";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FileUpload from "@/components/fileUpload/fileUpload";
 import Heading from "@/components/heading/heading";
@@ -18,6 +17,7 @@ import {
   setPosteroAnteriorXrayFileName,
 } from "@/redux/radiologicalOutcomeSlice";
 import { selectApplication, selectChestXray } from "@/redux/store";
+import { ReduxChestXrayDetailsType } from "@/types";
 import { ButtonType, ImageType } from "@/utils/enums";
 import uploadFile from "@/utils/uploadFile";
 

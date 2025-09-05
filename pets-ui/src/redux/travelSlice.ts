@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ReceivedTravelDetailsType, ReduxTravelDetailsType } from "@/applicant";
+import { ReceivedTravelDetailsType, ReduxTravelDetailsType } from "@/types";
 import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
 
 const initialState: ReduxTravelDetailsType = {

@@ -5,8 +5,8 @@ import { HelmetProvider } from "react-helmet-async";
 import { Mock } from "vitest";
 
 import { petsApi } from "@/api/api";
-import { ReduxRadiologicalOutcomeDetailsType } from "@/applicant";
 import ChestXraySummaryPage from "@/pages/chest-xray-summary";
+import { ReduxRadiologicalOutcomeDetailsType } from "@/types";
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 

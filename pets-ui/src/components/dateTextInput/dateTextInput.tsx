@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { DateType } from "@/applicant";
+import { DateType } from "@/types";
 
 import FieldWrapper from "../fieldWrapper/fieldWrapper";
 import { HeadingSize } from "../heading/heading";

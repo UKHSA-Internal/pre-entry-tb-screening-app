@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ReceivedChestXrayDetailsType, ReduxChestXrayDetailsType } from "@/applicant";
+import { ReceivedChestXrayDetailsType, ReduxChestXrayDetailsType } from "@/types";
 import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
 
 const initialState: ReduxChestXrayDetailsType = {

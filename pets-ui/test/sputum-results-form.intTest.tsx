@@ -2,9 +2,9 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Mock, vi } from "vitest";
 
-import { DateType, ReduxSputumSampleType, ReduxSputumType } from "@/applicant";
 import EnterSputumSampleResultsPage from "@/pages/enter-sputum-sample-results";
 import SputumResultsForm from "@/sections/sputum-results-form";
+import { DateType, ReduxSputumSampleType, ReduxSputumType } from "@/types";
 import { ApplicationStatus, PositiveOrNegative } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 

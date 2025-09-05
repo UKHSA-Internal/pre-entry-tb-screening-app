@@ -7,7 +7,7 @@ import {
   ReduxMedicalScreeningType,
   ReduxTbCertificateType,
   ReduxTravelDetailsType,
-} from "@/applicant";
+} from "@/types";
 import {
   calculateCertificateExpiryDate,
   formatDateForDisplay,

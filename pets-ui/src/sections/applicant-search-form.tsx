@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import { ApplicantSearchFormType } from "@/applicant";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
@@ -38,6 +37,7 @@ import {
   setTbCertificateFromApiResponse,
 } from "@/redux/tbCertificateSlice";
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
+import { ApplicantSearchFormType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/records";
