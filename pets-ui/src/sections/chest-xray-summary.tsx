@@ -7,7 +7,7 @@ import Button from "@/components/button/button";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
-import { setChestXrayStatus } from "@/redux/radiologicalOutcomeSlice";
+import { setRadiologicalOutcomeStatus } from "@/redux/radiologicalOutcomeSlice";
 import { setSputumStatus } from "@/redux/sputumSlice";
 import { selectApplication, selectRadiologicalOutcome } from "@/redux/store";
 import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
@@ -54,7 +54,7 @@ const ChestXraySummary = () => {
       if (radiologicalOutcomeData.isSputumRequired == YesOrNo.NO) {
         dispatch(setSputumStatus(ApplicationStatus.NOT_REQUIRED));
       }
-      dispatch(setChestXrayStatus(ApplicationStatus.COMPLETE));
+      dispatch(setRadiologicalOutcomeStatus(ApplicationStatus.COMPLETE));
       navigate("/chest-xray-confirmation");
     } catch (error) {
       console.error(error);
