@@ -17,6 +17,7 @@ import {
   setApplicantPhotoFileName,
 } from "@/redux/applicantSlice";
 import { clearApplicationDetails, setApplicationId } from "@/redux/applicationSlice";
+import { setChestXrayFromApiResponse } from "@/redux/chestXraySlice";
 import { useAppDispatch } from "@/redux/hooks";
 import {
   clearMedicalScreeningDetails,
@@ -24,8 +25,8 @@ import {
 } from "@/redux/medicalScreeningSlice";
 import { clearNavigationDetails } from "@/redux/navigationSlice";
 import {
-  clearChestXrayDetails,
-  setChestXrayFromApiResponse,
+  clearRadiologicalOutcomeDetails,
+  setRadiologicalOutcomeFromApiResponse,
 } from "@/redux/radiologicalOutcomeSlice";
 import {
   clearSputumDetails,
@@ -56,7 +57,7 @@ const ApplicantSearchForm = () => {
     dispatch(clearApplicationDetails());
     dispatch(clearMedicalScreeningDetails());
     dispatch(clearTravelDetails());
-    dispatch(clearChestXrayDetails());
+    dispatch(clearRadiologicalOutcomeDetails());
     dispatch(clearSputumDetails());
     dispatch(clearTbCertificateDetails());
     dispatch(setApplicantPhotoFileName(""));
@@ -120,15 +121,18 @@ const ApplicantSearchForm = () => {
       if (applicationRes.data.medicalScreening) {
         dispatch(setMedicalScreeningDetailsFromApiResponse(applicationRes.data.medicalScreening));
       }
-      if (applicationRes.data.radiologicalDetails) {
-        dispatch(setChestXrayFromApiResponse(applicationRes.data.radiologicalDetails));
-        if (applicationRes.data.radiologicalDetails.isSputumRequired === YesOrNo.NO) {
+      if (applicationRes.data.chestXray) {
+        dispatch(setChestXrayFromApiResponse(applicationRes.data.chestXray));
+      }
+      if (applicationRes.data.radiologicalOutcome) {
+        dispatch(setRadiologicalOutcomeFromApiResponse(applicationRes.data.radiologicalOutcome));
+        if (applicationRes.data.radiologicalOutcome.isSputumRequired === YesOrNo.NO) {
           dispatch(setSputumStatus(ApplicationStatus.NOT_REQUIRED));
         }
       }
       if (
         applicationRes.data.sputumDetails &&
-        applicationRes.data.radiologicalDetails?.isSputumRequired !== YesOrNo.NO
+        applicationRes.data.radiologicalOutcome?.isSputumRequired !== YesOrNo.NO
       ) {
         dispatch(setSputumDetailsFromApiResponse(applicationRes.data.sputumDetails));
       }
