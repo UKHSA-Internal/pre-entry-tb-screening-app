@@ -64,7 +64,7 @@ const chestXrayNotTakenState: ReduxRadiologicalOutcomeDetailsType = {
 describe("ChestXraySummaryPage", () => {
   const user = userEvent.setup();
   const preloadedState = {
-    chestXray: { ...chestXrayTakenState },
+    radiologicalOutcome: { ...chestXrayTakenState },
     application: { ...applicationState },
   };
   describe("General UI Tests", () => {
@@ -110,7 +110,7 @@ describe("ChestXraySummaryPage", () => {
   });
   describe("Chest X-ray Taken", () => {
     const preloadedState = {
-      chestXray: { ...chestXrayTakenState },
+      radiologicalOutcome: { ...chestXrayTakenState },
       application: { ...applicationState },
     };
     beforeEach(() => {
@@ -143,7 +143,7 @@ describe("ChestXraySummaryPage", () => {
   });
   describe("Chest Not X-ray Taken", () => {
     const preloadedState = {
-      chestXray: { ...chestXrayNotTakenState },
+      radiologicalOutcome: { ...chestXrayNotTakenState },
       application: { ...applicationState },
     };
     beforeEach(() => {

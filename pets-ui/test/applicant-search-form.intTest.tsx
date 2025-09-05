@@ -118,6 +118,20 @@ const emptyMedicalSlice = {
 };
 const emptyChestXraySlice = {
   status: ApplicationStatus.NOT_YET_STARTED,
+  posteroAnteriorXrayFileName: "",
+  posteroAnteriorXrayFile: "",
+  apicalLordoticXrayFileName: "",
+  apicalLordoticXrayFile: "",
+  lateralDecubitusXrayFileName: "",
+  lateralDecubitusXrayFile: "",
+  completionDate: {
+    year: "",
+    month: "",
+    day: "",
+  },
+};
+const emptyRadiologicalOutcomeSlice = {
+  status: ApplicationStatus.NOT_YET_STARTED,
   chestXrayTaken: YesOrNo.NULL,
   posteroAnteriorXrayFileName: "",
   posteroAnteriorXrayFile: "",
@@ -231,6 +245,17 @@ describe("ApplicantSearchForm", () => {
       },
       chestXray: {
         status: "completed",
+        posteroAnteriorXrayFileName: "pa-file-name",
+        posteroAnteriorXray: "pa-bucket",
+        apicalLordoticXrayFileName: "al-file-name",
+        apicalLordoticXray: "al-bucket",
+        lateralDecubitusXrayFileName: "ld-file-name",
+        lateralDecubitusXray: "ld-bucket",
+        dateCreated: "2025-01-01",
+        dateXrayTaken: "2024-12-31",
+      },
+      radiologicalOutcome: {
+        status: "completed",
         chestXrayTaken: YesOrNo.YES,
         posteroAnteriorXrayFileName: "pa-file-name",
         posteroAnteriorXray: "pa-bucket",
@@ -334,6 +359,20 @@ describe("ApplicantSearchForm", () => {
       underElevenConditionsDetail: "details2",
     });
     expect(store.getState().chestXray).toEqual({
+      status: ApplicationStatus.COMPLETE,
+      posteroAnteriorXrayFileName: "pa-file-name",
+      posteroAnteriorXrayFile: "pa-bucket",
+      apicalLordoticXrayFileName: "al-file-name",
+      apicalLordoticXrayFile: "al-bucket",
+      lateralDecubitusXrayFileName: "ld-file-name",
+      lateralDecubitusXrayFile: "ld-bucket",
+      completionDate: {
+        year: "2024",
+        month: "12",
+        day: "31",
+      },
+    });
+    expect(store.getState().radiologicalOutcome).toEqual({
       status: ApplicationStatus.COMPLETE,
       chestXrayTaken: YesOrNo.YES,
       posteroAnteriorXrayFileName: "pa-file-name",
@@ -459,6 +498,7 @@ describe("ApplicantSearchForm", () => {
     expect(store.getState().travel).toEqual(emptyTravelSlice);
     expect(store.getState().medicalScreening).toEqual(emptyMedicalSlice);
     expect(store.getState().chestXray).toEqual(emptyChestXraySlice);
+    expect(store.getState().radiologicalOutcome).toEqual(emptyRadiologicalOutcomeSlice);
 
     expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
   });
@@ -537,6 +577,7 @@ describe("ApplicantSearchForm", () => {
     expect(store.getState().travel).toEqual(emptyTravelSlice);
     expect(store.getState().medicalScreening).toEqual(emptyMedicalSlice);
     expect(store.getState().chestXray).toEqual(emptyChestXraySlice);
+    expect(store.getState().radiologicalOutcome).toEqual(emptyRadiologicalOutcomeSlice);
 
     expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
   });
@@ -599,6 +640,17 @@ describe("ApplicantSearchForm", () => {
         symptomsOther: "Other symptoms",
       },
       chestXray: {
+        status: "completed",
+        posteroAnteriorXrayFileName: "pa-file-name",
+        posteroAnteriorXray: "pa-bucket",
+        apicalLordoticXrayFileName: "al-file-name",
+        apicalLordoticXray: "al-bucket",
+        lateralDecubitusXrayFileName: "ld-file-name",
+        lateralDecubitusXray: "ld-bucket",
+        dateCreated: "2025-01-01T05:15:00Z",
+        dateXrayTaken: "2024-12-31T05:15:00Z",
+      },
+      radiologicalOutcome: {
         status: "completed",
         chestXrayTaken: YesOrNo.YES,
         posteroAnteriorXrayFileName: "pa-file-name",
@@ -689,6 +741,20 @@ describe("ApplicantSearchForm", () => {
     });
     expect(store.getState().chestXray).toEqual({
       status: ApplicationStatus.COMPLETE,
+      posteroAnteriorXrayFileName: "pa-file-name",
+      posteroAnteriorXrayFile: "pa-bucket",
+      apicalLordoticXrayFileName: "al-file-name",
+      apicalLordoticXrayFile: "al-bucket",
+      lateralDecubitusXrayFileName: "ld-file-name",
+      lateralDecubitusXrayFile: "ld-bucket",
+      completionDate: {
+        year: "2024",
+        month: "12",
+        day: "31",
+      },
+    });
+    expect(store.getState().radiologicalOutcome).toEqual({
+      status: ApplicationStatus.COMPLETE,
       chestXrayTaken: YesOrNo.YES,
       posteroAnteriorXrayFileName: "pa-file-name",
       posteroAnteriorXrayFile: "pa-bucket",
@@ -758,6 +824,7 @@ describe("ApplicantSearchForm", () => {
     expect(store.getState().travel).toEqual(emptyTravelSlice);
     expect(store.getState().medicalScreening).toEqual(emptyMedicalSlice);
     expect(store.getState().chestXray).toEqual(emptyChestXraySlice);
+    expect(store.getState().radiologicalOutcome).toEqual(emptyRadiologicalOutcomeSlice);
 
     expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-results");
   });
@@ -786,6 +853,7 @@ describe("ApplicantSearchForm", () => {
     expect(store.getState().travel).toEqual(emptyTravelSlice);
     expect(store.getState().medicalScreening).toEqual(emptyMedicalSlice);
     expect(store.getState().chestXray).toEqual(emptyChestXraySlice);
+    expect(store.getState().radiologicalOutcome).toEqual(emptyRadiologicalOutcomeSlice);
 
     expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
   });
