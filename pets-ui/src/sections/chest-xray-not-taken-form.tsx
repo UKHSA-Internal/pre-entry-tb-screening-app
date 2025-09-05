@@ -2,32 +2,39 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { ReduxChestXrayDetailsType } from "@/applicant";
+import { ReduxRadiologicalOutcomeDetailsType } from "@/applicant";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
-import { setReasonXrayWasNotTaken, setXrayWasNotTakenFurtherDetails } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectChestXray } from "@/redux/store";
+import {
+  setReasonXrayWasNotTaken,
+  setXrayWasNotTakenFurtherDetails,
+} from "@/redux/radiologicalOutcomeSlice";
+import { selectRadiologicalOutcome } from "@/redux/store";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 
 const ChestXrayNotTakenForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const chestXrayData = useAppSelector(selectChestXray);
+  const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
 
-  const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxRadiologicalOutcomeDetailsType>({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,
     formState: { errors },
     watch,
   } = methods;
 
-  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = (chestXrayData) => {
-    dispatch(setReasonXrayWasNotTaken(chestXrayData.reasonXrayWasNotTaken));
-    dispatch(setXrayWasNotTakenFurtherDetails(chestXrayData.xrayWasNotTakenFurtherDetails));
+  const onSubmit: SubmitHandler<ReduxRadiologicalOutcomeDetailsType> = (
+    formRadiologicalOutcomeData,
+  ) => {
+    dispatch(setReasonXrayWasNotTaken(formRadiologicalOutcomeData.reasonXrayWasNotTaken));
+    dispatch(
+      setXrayWasNotTakenFurtherDetails(formRadiologicalOutcomeData.xrayWasNotTakenFurtherDetails),
+    );
     navigate("/sputum-question");
   };
 
@@ -71,7 +78,7 @@ const ChestXrayNotTakenForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.reasonXrayWasNotTaken?.message ?? ""}
             formValue="reasonXrayWasNotTaken"
-            defaultValue={chestXrayData.reasonXrayWasNotTaken}
+            defaultValue={radiologicalOutcomeData.reasonXrayWasNotTaken}
             required="Select the reason why the chest X-ray was not taken"
             divStyle={{ marginTop: 40 }}
           />
@@ -87,7 +94,7 @@ const ChestXrayNotTakenForm = () => {
               watchedReasonXrayNotTaken === "Other" ? "Enter reason X-ray not taken" : false
             }
             rows={4}
-            defaultValue={chestXrayData.xrayWasNotTakenFurtherDetails ?? ""}
+            defaultValue={radiologicalOutcomeData.xrayWasNotTakenFurtherDetails ?? ""}
             divStyle={{ marginTop: 40 }}
           />
         </div>

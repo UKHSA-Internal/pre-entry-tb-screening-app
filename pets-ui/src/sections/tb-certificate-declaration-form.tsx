@@ -12,9 +12,9 @@ import TextArea from "@/components/textArea/textArea";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   selectApplication,
-  selectChestXray,
   selectClinic,
   selectMedicalScreening,
+  selectRadiologicalOutcome,
   selectTbCertificate,
 } from "@/redux/store";
 import {
@@ -34,7 +34,7 @@ import { formRegex } from "@/utils/records";
 
 const TbCertificateDeclarationForm = () => {
   const applicationData = useAppSelector(selectApplication);
-  const chestXrayData = useAppSelector(selectChestXray);
+  const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const tbCertificateData = useAppSelector(selectTbCertificate);
   const clinic = useAppSelector(selectClinic);
@@ -42,8 +42,8 @@ const TbCertificateDeclarationForm = () => {
   const navigate = useNavigate();
 
   const issueDate = calculateCertificateIssueDate(
-    chestXrayData.completionDate,
-    chestXrayData.chestXrayTaken,
+    radiologicalOutcomeData.completionDate,
+    radiologicalOutcomeData.chestXrayTaken,
     medicalScreeningData.completionDate,
   );
   const todayFormatted = formatDateForDisplay(issueDate);

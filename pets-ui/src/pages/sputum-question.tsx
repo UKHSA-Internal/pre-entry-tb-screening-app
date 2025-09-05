@@ -1,17 +1,17 @@
 import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
-import { selectChestXray } from "@/redux/store";
+import { selectRadiologicalOutcome } from "@/redux/store";
 import SputumQuestionForm from "@/sections/sputum-question-form";
 import { YesOrNo } from "@/utils/enums";
 
 export default function SputumQuestionPage() {
-  const chestXrayData = useAppSelector(selectChestXray);
+  const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
 
   return (
     <Container
       title="Is sputum collection required?"
       backLinkTo={
-        chestXrayData.chestXrayTaken == YesOrNo.YES
+        radiologicalOutcomeData.chestXrayTaken == YesOrNo.YES
           ? "/chest-xray-findings"
           : "/chest-xray-not-taken"
       }

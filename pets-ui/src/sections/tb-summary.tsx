@@ -11,9 +11,9 @@ import { useAppSelector } from "@/redux/hooks";
 import {
   selectApplicant,
   selectApplication,
-  selectChestXray,
   selectClinic,
   selectMedicalScreening,
+  selectRadiologicalOutcome,
   selectSputum,
   selectTbCertificate,
   selectTravel,
@@ -36,7 +36,7 @@ const TbSummary = () => {
   const applicantData = useAppSelector(selectApplicant);
   const travelData = useAppSelector(selectTravel);
   const clinic = useAppSelector(selectClinic);
-  const chestXrayData = useAppSelector(selectChestXray);
+  const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const sputumData = useAppSelector(selectSputum);
   const tbCertificateData = useAppSelector(selectTbCertificate);
@@ -52,8 +52,8 @@ const TbSummary = () => {
       if (tbCertificateData.isIssued == YesOrNo.YES) {
         const certificateIssueDateStr = `${tbCertificateData.certificateDate.year}-${standardiseDayOrMonth(tbCertificateData.certificateDate.month)}-${standardiseDayOrMonth(tbCertificateData.certificateDate.day)}`;
         const issueDate = calculateCertificateIssueDate(
-          chestXrayData.completionDate,
-          chestXrayData.chestXrayTaken,
+          radiologicalOutcomeData.completionDate,
+          radiologicalOutcomeData.chestXrayTaken,
           medicalScreeningData.completionDate,
         );
         const expiryDate = calculateCertificateExpiryDate(
@@ -278,22 +278,22 @@ const TbSummary = () => {
       ? [
           {
             key: "Chest X-ray done",
-            value: chestXrayData.chestXrayTaken,
+            value: radiologicalOutcomeData.chestXrayTaken,
             hiddenLabel: "Chest X-ray done",
           },
           {
             key: "Chest X-ray outcome",
-            value: chestXrayData.xrayResult,
+            value: radiologicalOutcomeData.xrayResult,
             hiddenLabel: "Chest X-ray outcome",
           },
           {
             key: "Sputum collected",
-            value: chestXrayData.isSputumRequired,
+            value: radiologicalOutcomeData.isSputumRequired,
             hiddenLabel: "Sputum collected",
           },
           {
             key: "Sputum outcome",
-            value: calculateSputumOutcome(chestXrayData, sputumData),
+            value: calculateSputumOutcome(radiologicalOutcomeData, sputumData),
             hiddenLabel: "Sputum outcome",
           },
           {

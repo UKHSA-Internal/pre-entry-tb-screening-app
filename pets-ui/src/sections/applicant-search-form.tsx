@@ -17,13 +17,16 @@ import {
   setApplicantPhotoFileName,
 } from "@/redux/applicantSlice";
 import { clearApplicationDetails, setApplicationId } from "@/redux/applicationSlice";
-import { clearChestXrayDetails, setChestXrayFromApiResponse } from "@/redux/chestXraySlice";
 import { useAppDispatch } from "@/redux/hooks";
 import {
   clearMedicalScreeningDetails,
   setMedicalScreeningDetailsFromApiResponse,
 } from "@/redux/medicalScreeningSlice";
 import { clearNavigationDetails } from "@/redux/navigationSlice";
+import {
+  clearChestXrayDetails,
+  setChestXrayFromApiResponse,
+} from "@/redux/radiologicalOutcomeSlice";
 import {
   clearSputumDetails,
   setSputumDetailsFromApiResponse,
@@ -117,15 +120,15 @@ const ApplicantSearchForm = () => {
       if (applicationRes.data.medicalScreening) {
         dispatch(setMedicalScreeningDetailsFromApiResponse(applicationRes.data.medicalScreening));
       }
-      if (applicationRes.data.chestXray) {
-        dispatch(setChestXrayFromApiResponse(applicationRes.data.chestXray));
-        if (applicationRes.data.chestXray.isSputumRequired === YesOrNo.NO) {
+      if (applicationRes.data.radiologicalDetails) {
+        dispatch(setChestXrayFromApiResponse(applicationRes.data.radiologicalDetails));
+        if (applicationRes.data.radiologicalDetails.isSputumRequired === YesOrNo.NO) {
           dispatch(setSputumStatus(ApplicationStatus.NOT_REQUIRED));
         }
       }
       if (
         applicationRes.data.sputumDetails &&
-        applicationRes.data.chestXray?.isSputumRequired !== YesOrNo.NO
+        applicationRes.data.radiologicalDetails?.isSputumRequired !== YesOrNo.NO
       ) {
         dispatch(setSputumDetailsFromApiResponse(applicationRes.data.sputumDetails));
       }

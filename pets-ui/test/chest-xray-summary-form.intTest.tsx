@@ -5,7 +5,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { Mock } from "vitest";
 
 import { petsApi } from "@/api/api";
-import { ReduxChestXrayDetailsType } from "@/applicant";
+import { ReduxRadiologicalOutcomeDetailsType } from "@/applicant";
 import ChestXraySummaryPage from "@/pages/chest-xray-summary";
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
@@ -21,7 +21,7 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 
 const applicationState = { applicationId: "abc-123", dateCreated: "" };
 
-const chestXrayTakenState: ReduxChestXrayDetailsType = {
+const chestXrayTakenState: ReduxRadiologicalOutcomeDetailsType = {
   status: ApplicationStatus.NOT_YET_STARTED,
   chestXrayTaken: YesOrNo.YES,
   posteroAnteriorXrayFileName: "PA Example FileName",
@@ -41,7 +41,7 @@ const chestXrayTakenState: ReduxChestXrayDetailsType = {
   completionDate: { year: "", month: "", day: "" },
 };
 
-const chestXrayNotTakenState: ReduxChestXrayDetailsType = {
+const chestXrayNotTakenState: ReduxRadiologicalOutcomeDetailsType = {
   status: ApplicationStatus.NOT_YET_STARTED,
   chestXrayTaken: YesOrNo.NO,
   posteroAnteriorXrayFileName: "",

@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 
-import { ReduxChestXrayDetailsType } from "@/applicant";
+import { ReduxRadiologicalOutcomeDetailsType } from "@/applicant";
 import Checkbox from "@/components/checkbox/checkbox";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
@@ -10,37 +10,41 @@ import NotificationBanner from "@/components/notificationBanner/notificationBann
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   setXrayActiveTbFindings,
   setXrayAssociatedMinorFindings,
   setXrayMinorFindings,
   setXrayResult,
   setXrayResultDetail,
-} from "@/redux/chestXraySlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectChestXray } from "@/redux/store";
+} from "@/redux/radiologicalOutcomeSlice";
+import { selectRadiologicalOutcome } from "@/redux/store";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 import { toArray } from "@/utils/helpers";
 
 const ChestXrayFindingsForm = () => {
-  const chestXrayData = useAppSelector(selectChestXray);
+  const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxRadiologicalOutcomeDetailsType>({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,
     formState: { errors },
   } = methods;
 
-  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = (formChestXrayData) => {
-    dispatch(setXrayResult(formChestXrayData.xrayResult));
-    dispatch(setXrayResultDetail(formChestXrayData.xrayResultDetail));
-    dispatch(setXrayMinorFindings(toArray(formChestXrayData.xrayMinorFindings)));
+  const onSubmit: SubmitHandler<ReduxRadiologicalOutcomeDetailsType> = (
+    formRadiologicalOutcomeData,
+  ) => {
+    dispatch(setXrayResult(formRadiologicalOutcomeData.xrayResult));
+    dispatch(setXrayResultDetail(formRadiologicalOutcomeData.xrayResultDetail));
+    dispatch(setXrayMinorFindings(toArray(formRadiologicalOutcomeData.xrayMinorFindings)));
     dispatch(
-      setXrayAssociatedMinorFindings(toArray(formChestXrayData.xrayAssociatedMinorFindings)),
+      setXrayAssociatedMinorFindings(
+        toArray(formRadiologicalOutcomeData.xrayAssociatedMinorFindings),
+      ),
     );
-    dispatch(setXrayActiveTbFindings(toArray(formChestXrayData.xrayActiveTbFindings)));
+    dispatch(setXrayActiveTbFindings(toArray(formRadiologicalOutcomeData.xrayActiveTbFindings)));
     navigate("/sputum-question");
   };
 
@@ -94,7 +98,7 @@ const ChestXrayFindingsForm = () => {
             errorMessage={errors?.xrayResult?.message ?? ""}
             formValue="xrayResult"
             required="Select radiological outcome"
-            defaultValue={chestXrayData.xrayResult}
+            defaultValue={radiologicalOutcomeData.xrayResult}
             divStyle={{ marginTop: 40 }}
           />
 
@@ -109,7 +113,7 @@ const ChestXrayFindingsForm = () => {
               errorMessage={errors?.xrayResultDetail?.message ?? ""}
               formValue="xrayResultDetail"
               rows={4}
-              defaultValue={chestXrayData.xrayResultDetail}
+              defaultValue={radiologicalOutcomeData.xrayResultDetail}
             />
           </div>
         </div>
@@ -140,7 +144,9 @@ const ChestXrayFindingsForm = () => {
               errorMessage={errors?.xrayMinorFindings?.message ?? ""}
               formValue="xrayMinorFindings"
               defaultValue={
-                chestXrayData.xrayMinorFindings.length ? chestXrayData.xrayMinorFindings : []
+                radiologicalOutcomeData.xrayMinorFindings.length
+                  ? radiologicalOutcomeData.xrayMinorFindings
+                  : []
               }
               divStyle={{ marginTop: 40, marginBottom: 10 }}
             />
@@ -164,8 +170,8 @@ const ChestXrayFindingsForm = () => {
               errorMessage={errors?.xrayAssociatedMinorFindings?.message ?? ""}
               formValue="xrayAssociatedMinorFindings"
               defaultValue={
-                chestXrayData.xrayAssociatedMinorFindings.length
-                  ? chestXrayData.xrayAssociatedMinorFindings
+                radiologicalOutcomeData.xrayAssociatedMinorFindings.length
+                  ? radiologicalOutcomeData.xrayAssociatedMinorFindings
                   : []
               }
               divStyle={{ marginTop: 40, marginBottom: 10 }}
@@ -193,7 +199,9 @@ const ChestXrayFindingsForm = () => {
               errorMessage={errors?.xrayActiveTbFindings?.message ?? ""}
               formValue="xrayActiveTbFindings"
               defaultValue={
-                chestXrayData.xrayActiveTbFindings.length ? chestXrayData.xrayActiveTbFindings : []
+                radiologicalOutcomeData.xrayActiveTbFindings.length
+                  ? radiologicalOutcomeData.xrayActiveTbFindings
+                  : []
               }
               divStyle={{ marginTop: 40, marginBottom: 10 }}
             />

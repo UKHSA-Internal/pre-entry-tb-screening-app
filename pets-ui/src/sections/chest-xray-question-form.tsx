@@ -2,34 +2,34 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { ReduxChestXrayDetailsType } from "@/applicant";
+import { ReduxRadiologicalOutcomeDetailsType } from "@/applicant";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   clearChestXrayNotTakenDetails,
   clearChestXrayTakenDetails,
   setChestXrayStatus,
   setChestXrayTaken,
-} from "@/redux/chestXraySlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectChestXray } from "@/redux/store";
+} from "@/redux/radiologicalOutcomeSlice";
+import { selectRadiologicalOutcome } from "@/redux/store";
 import { ApplicationStatus, ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
 
 const ChestXrayQuestionForm = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const navigate = useNavigate();
-  const chestXrayData = useAppSelector(selectChestXray);
+  const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
 
-  const methods = useForm<ReduxChestXrayDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxRadiologicalOutcomeDetailsType>({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,
     formState: { errors },
   } = methods;
 
-  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = (data) => {
+  const onSubmit: SubmitHandler<ReduxRadiologicalOutcomeDetailsType> = (data) => {
     dispatch(setChestXrayTaken(data.chestXrayTaken));
     dispatch(setChestXrayStatus(ApplicationStatus.IN_PROGRESS));
 
@@ -69,7 +69,7 @@ const ChestXrayQuestionForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.chestXrayTaken?.message ?? ""}
             formValue="chestXrayTaken"
-            defaultValue={chestXrayData.chestXrayTaken}
+            defaultValue={radiologicalOutcomeData.chestXrayTaken}
             required="Select yes if the visa applicant has had a chest X-ray or no if they have not"
             divStyle={{ marginTop: 40 }}
           />

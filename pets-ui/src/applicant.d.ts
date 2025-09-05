@@ -42,6 +42,7 @@ type ReceivedApplicationDetailsType = {
   travelInformation: ReceivedTravelDetailsType | undefined;
   medicalScreening: ReceivedMedicalScreeningType | undefined;
   chestXray: ReceivedChestXrayDetailsType | undefined;
+  radiologicalDetails: ReceivedRadiologicalOutcomeDetailsType | undefined;
   sputumDetails: ReceivedSputumType | undefined;
   tbCertificate: ReceivedTbCertificateType | undefined;
 };
