@@ -3,6 +3,7 @@ import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
+import { logger } from "../../shared/logger";
 import { YesOrNo } from "../types/enums";
 import { ISputumDecision, SputumDecision } from "./sputum-decision";
 
@@ -68,5 +69,35 @@ describe("Tests for Medical Screening Information Model", () => {
       ...sputumDecision,
       dateCreated: new Date("2025-02-07"),
     });
+  });
+
+  test("No data while getting medical screening by application ID", async () => {
+    const infoLoggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
+    ddbMock.on(GetCommand).resolves({
+      Item: undefined,
+    });
+
+    // Act
+    const sputumDecision = await SputumDecision.getByApplicationId(newSputumDecision.applicationId);
+
+    // Assert
+    expect(infoLoggerMock).toHaveBeenNthCalledWith(2, "No Sputum Decision found");
+    expect(sputumDecision).toBeFalsy();
+  });
+
+  test("Error handling getting medical screening by application ID", async () => {
+    const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    ddbMock.on(GetCommand).rejects("this error");
+
+    // Act
+    await expect(
+      SputumDecision.getByApplicationId(newSputumDecision.applicationId),
+    ).rejects.toThrow("this error");
+
+    // Assert
+    expect(errorLoggerMock).toHaveBeenCalledWith(
+      Error("this error"),
+      "Error retrieving Sputum Decision details",
+    );
   });
 });

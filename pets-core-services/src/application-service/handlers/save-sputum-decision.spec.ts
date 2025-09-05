@@ -1,6 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { seededApplications } from "../../shared/fixtures/application";
+import { logger } from "../../shared/logger";
 import { TaskStatus } from "../../shared/types/enum";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededSputumDecision } from "../fixtures/sputum-decision";
@@ -57,6 +58,7 @@ describe("Test for Sputum Decision into DB", () => {
 
   test("Missing required body returns a 500 response", async () => {
     // Arrange
+    const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
     const event: SaveSputumDecisionEvent = {
       ...mockAPIGwEvent,
     };
@@ -65,9 +67,39 @@ describe("Test for Sputum Decision into DB", () => {
     const response = await saveSputumDecisionHandler(event);
 
     // Assert
+    expect(errorLoggerMock).toHaveBeenCalledWith("Event missing parsed body");
     expect(response.statusCode).toBe(500);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Internal Server Error: Sputum Decision Request not parsed correctly",
+    });
+  });
+
+  test("Failed validation returns a 400 response", async () => {
+    // Arrange
+    const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    const event: SaveSputumDecisionEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+      parsedBody: {
+        ...newSputumDecisionDetails,
+        // @ts-expect-error error
+        sputumRequired: "IDK",
+      },
+    };
+
+    // Act
+    const response = await saveSputumDecisionHandler(event);
+
+    // Assert
+    expect(errorLoggerMock).toHaveBeenCalledWith("Validation failed", {
+      fieldErrors: {
+        sputumRequired: ["Invalid enum value. Expected 'Yes' | 'No', received 'IDK'"],
+      },
+      formErrors: [],
+    });
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Sputum Decision Request validation failed",
     });
   });
 
