@@ -17,6 +17,7 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     applicationId: "test-application-id",
     createdBy: "test-chest-xray-creator",
     chestXrayTaken: YesOrNo.Yes,
+    dateXrayTaken: "2025-05-05",
     posteroAnteriorXrayFileName: "posterior-anterior.dicom",
     posteroAnteriorXray: "saved/bucket/path/for/posterior/anterior",
     apicalLordoticXrayFileName: "apical-lordotic.dicom",
@@ -33,16 +34,7 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     xrayWasNotTakenFurtherDetails: "Extra Notes",
   };
 
-  test.each([
-    {
-      newChestXray: newChestXrayTaken,
-      title: "Chest X-ray taken",
-    },
-    {
-      newChestXray: newChestXrayNotTaken,
-      title: "Chest X-ray not taken",
-    },
-  ])("Creating new X-ray record for $title", async ({ newChestXray }) => {
+  test("Creating new X-ray record for Chest X-ray taken", async () => {
     // Arrange
     ddbMock.on(PutCommand);
     vi.useFakeTimers();
@@ -50,11 +42,12 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     vi.setSystemTime(expectedDateTime);
 
     // Act
-    const chestXray = await ChestXRayDbOps.createChestXray(newChestXray);
+    const chestXray = await ChestXRayDbOps.createChestXray(newChestXrayTaken);
 
     // Assert
     expect(chestXray).toMatchObject({
-      ...newChestXray,
+      ...newChestXrayTaken,
+      dateXrayTaken: new Date("2025-05-05"),
       dateCreated: new Date(expectedDateTime),
     });
 
@@ -62,7 +55,40 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     expect(ddbMock.commandCalls(PutCommand)[0].firstArg.input).toMatchObject({
       TableName: "test-application-details",
       Item: {
-        ...newChestXray,
+        ...newChestXrayTaken,
+        dateXrayTaken: new Date("2025-05-05").toISOString(),
+        pk: "APPLICATION#test-application-id",
+        sk: "APPLICATION#CHEST#XRAY",
+      },
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(ddbMock.commandCalls(PutCommand)[0].firstArg.input).toMatchObject({
+      ConditionExpression: "attribute_not_exists(pk) AND attribute_not_exists(sk)",
+    });
+  });
+
+  test("Creating new X-ray record for Chest X-ray not taken", async () => {
+    // Arrange
+    ddbMock.on(PutCommand);
+    vi.useFakeTimers();
+    const expectedDateTime = "2025-03-04";
+    vi.setSystemTime(expectedDateTime);
+
+    // Act
+    const chestXray = await ChestXRayDbOps.createChestXray(newChestXrayNotTaken);
+
+    // Assert
+    expect(chestXray).toMatchObject({
+      ...newChestXrayNotTaken,
+      dateCreated: new Date(expectedDateTime),
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(ddbMock.commandCalls(PutCommand)[0].firstArg.input).toMatchObject({
+      TableName: "test-application-details",
+      Item: {
+        ...newChestXrayNotTaken,
         pk: "APPLICATION#test-application-id",
         sk: "APPLICATION#CHEST#XRAY",
       },

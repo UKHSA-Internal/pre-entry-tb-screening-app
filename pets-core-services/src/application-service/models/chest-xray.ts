@@ -32,6 +32,7 @@ type IChestXRayTaken = {
   createdBy: string;
 
   chestXrayTaken: YesOrNo.Yes;
+  dateXrayTaken: Date;
   posteroAnteriorXrayFileName: string;
   posteroAnteriorXray: string;
   apicalLordoticXrayFileName?: string;
@@ -40,10 +41,16 @@ type IChestXRayTaken = {
   lateralDecubitusXray?: string;
 };
 
-export type NewChestXRayTaken = Omit<IChestXRayTaken, "dateCreated" | "status">;
+export type NewChestXRayTaken = Omit<
+  IChestXRayTaken,
+  "dateCreated" | "status" | "dateXrayTaken"
+> & {
+  dateXrayTaken: Date | string;
+};
 
 export class ChestXRayTaken extends ChestXRayBase {
   chestXrayTaken: YesOrNo.Yes;
+  dateXrayTaken: Date;
   posteroAnteriorXrayFileName: string;
   posteroAnteriorXray: string;
   apicalLordoticXrayFileName?: string;
@@ -55,6 +62,7 @@ export class ChestXRayTaken extends ChestXRayBase {
     super(details);
 
     this.chestXrayTaken = details.chestXrayTaken;
+    this.dateXrayTaken = new Date(details.dateXrayTaken);
     this.posteroAnteriorXrayFileName = details.posteroAnteriorXrayFileName;
     this.posteroAnteriorXray = details.posteroAnteriorXray;
     this.apicalLordoticXrayFileName = details.apicalLordoticXrayFileName;
@@ -68,6 +76,7 @@ export class ChestXRayTaken extends ChestXRayBase {
       applicationId: this.applicationId,
       status: this.status,
       chestXrayTaken: this.chestXrayTaken,
+      dateXrayTaken: this.dateXrayTaken,
       posteroAnteriorXrayFileName: this.posteroAnteriorXrayFileName,
       posteroAnteriorXray: this.posteroAnteriorXray,
       apicalLordoticXrayFileName: this.apicalLordoticXrayFileName,
@@ -125,11 +134,19 @@ export class ChestXRayDbOps {
   static async createChestXray(details: NewChestXRayTaken | NewChestXRayNotTaken) {
     try {
       logger.info("Saving Chest X-Ray Information to DB");
-      const updatedDetails = {
-        ...details,
-        dateCreated: new Date(),
-        status: TaskStatus.completed,
-      };
+      const updatedDetails =
+        details.chestXrayTaken === YesOrNo.Yes
+          ? {
+              ...details,
+              dateXrayTaken: new Date(details.dateXrayTaken),
+              dateCreated: new Date(),
+              status: TaskStatus.completed,
+            }
+          : {
+              ...details,
+              dateCreated: new Date(),
+              status: TaskStatus.completed,
+            };
 
       const chestXray =
         details.chestXrayTaken === YesOrNo.Yes
@@ -155,12 +172,21 @@ export class ChestXRayDbOps {
   }
 
   static todbItem(chestXray: ChestXRayTaken | ChestXRayNotTaken) {
-    const dbItem = {
-      ...chestXray,
-      dateCreated: chestXray.dateCreated.toISOString(),
-      pk: ChestXRayDbOps.getPk(chestXray.applicationId),
-      sk: ChestXRayDbOps.sk,
-    };
+    const dbItem =
+      chestXray.chestXrayTaken === YesOrNo.Yes
+        ? {
+            ...chestXray,
+            dateXrayTaken: chestXray.dateXrayTaken.toISOString(),
+            dateCreated: chestXray.dateCreated.toISOString(),
+            pk: ChestXRayDbOps.getPk(chestXray.applicationId),
+            sk: ChestXRayDbOps.sk,
+          }
+        : {
+            ...chestXray,
+            dateCreated: chestXray.dateCreated.toISOString(),
+            pk: ChestXRayDbOps.getPk(chestXray.applicationId),
+            sk: ChestXRayDbOps.sk,
+          };
     return dbItem;
   }
 
@@ -188,10 +214,17 @@ export class ChestXRayDbOps {
 
       const dbItem = data.Item as ReturnType<(typeof ChestXRayDbOps)["todbItem"]>;
 
-      const chestXrayProp = {
-        ...dbItem,
-        dateCreated: new Date(dbItem.dateCreated),
-      };
+      const chestXrayProp =
+        dbItem.chestXrayTaken === YesOrNo.Yes
+          ? new ChestXRayTaken({
+              ...dbItem,
+              dateXrayTaken: new Date(dbItem.dateXrayTaken),
+              dateCreated: new Date(dbItem.dateCreated),
+            })
+          : new ChestXRayNotTaken({
+              ...dbItem,
+              dateCreated: new Date(dbItem.dateCreated),
+            });
       return dbItem.chestXrayTaken === YesOrNo.Yes
         ? new ChestXRayTaken(chestXrayProp as IChestXRayTaken)
         : new ChestXRayNotTaken(chestXrayProp as IChestXRayNotTaken);

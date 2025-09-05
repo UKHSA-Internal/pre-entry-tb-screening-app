@@ -6,6 +6,7 @@ export const seededChestXray: Array<NewChestXRayTaken | NewChestXRayNotTaken> = 
   {
     applicationId: seededApplications[1].applicationId,
     chestXrayTaken: YesOrNo.Yes,
+    dateXrayTaken: "2025-09-04",
     posteroAnteriorXrayFileName: "posterior-anterior.dicom",
     posteroAnteriorXray:
       "dicom/Apollo Clinic/BRB/ABC1234JANE/generated-app-id-2/postero-anterior.dcm",

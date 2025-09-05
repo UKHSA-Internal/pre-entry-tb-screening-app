@@ -200,6 +200,9 @@ export const ChestXRayNotTakenRequestSchema = z.object({
 
 export const ChestXRayTakenRequestSchema = z.object({
   chestXrayTaken: z.literal(YesOrNo.Yes),
+  dateXrayTaken: z.string().or(z.date()).openapi({
+    description: "Date when the xray was taken (in ISO format)",
+  }),
   posteroAnteriorXrayFileName: z.string().openapi({
     description: "File name for the Postero Anterior X-Ray",
   }),

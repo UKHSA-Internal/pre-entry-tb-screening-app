@@ -11,6 +11,7 @@ import { SaveChestXrayEvent, saveChestXRayHandler } from "./save-chest-ray";
 
 const newChestXrayTaken: SaveChestXrayEvent["parsedBody"] = {
   chestXrayTaken: YesOrNo.Yes,
+  dateXrayTaken: "2025-05-05",
   posteroAnteriorXrayFileName: "posterior-anterior.dicom",
   posteroAnteriorXray: "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/postero-anterior.dcm",
   apicalLordoticXrayFileName: "apical-lordotic.dicom",
@@ -51,6 +52,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     expect(JSON.parse(response.body)).toMatchObject({
       applicationId: seededApplications[3].applicationId,
       ...newChestXrayTaken,
+      dateXrayTaken: expect.any(String),
       dateCreated: expect.any(String),
     });
   });

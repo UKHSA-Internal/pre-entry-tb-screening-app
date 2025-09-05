@@ -7,7 +7,6 @@ import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicantPhoto } from "../fixtures/applicant-photo";
 import { ImageHelper } from "../helpers/image-helper";
-import { YesOrNo } from "../types/enums";
 import { getApplicationHandler } from "./get-application";
 
 // Mock generateImageObjectkey
@@ -112,6 +111,7 @@ describe("Getting Application Handler", () => {
       },
       chestXray: {
         chestXrayTaken: "Yes",
+        dateXrayTaken: "2025-09-04T00:00:00.000Z",
         posteroAnteriorXrayFileName: "posterior-anterior.dicom",
         posteroAnteriorXray:
           "dicom/Apollo Clinic/BRB/ABC1234JANE/generated-app-id-2/postero-anterior.dcm",
@@ -124,7 +124,6 @@ describe("Getting Application Handler", () => {
         applicationId: seededApplications[1].applicationId,
         dateCreated: expect.any(String),
         status: "completed",
-        isSputumRequired: YesOrNo.No,
       },
       // Defined in pets-core-services\src\application-service\fixtures\tb-certificate.ts
       tbCertificate: {
