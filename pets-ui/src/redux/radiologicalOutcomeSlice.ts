@@ -34,7 +34,7 @@ export const radiologicalOutcomeSlice = createSlice({
   name: "radiologicalOutcomeDetails",
   initialState,
   reducers: {
-    setChestXrayStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+    setRadiologicalOutcomeStatus: (state, action: PayloadAction<ApplicationStatus>) => {
       state.status = action.payload;
     },
     setChestXrayTaken: (state, action: PayloadAction<YesOrNo>) => {
@@ -82,7 +82,10 @@ export const radiologicalOutcomeSlice = createSlice({
     setSputumCollectionTaken: (state, action: PayloadAction<YesOrNo>) => {
       state.isSputumRequired = action.payload;
     },
-    setChestXrayDetails: (state, action: PayloadAction<ReduxRadiologicalOutcomeDetailsType>) => {
+    setRadiologicalOutcomeDetails: (
+      state,
+      action: PayloadAction<ReduxRadiologicalOutcomeDetailsType>,
+    ) => {
       state.chestXrayTaken = action.payload.chestXrayTaken;
       state.posteroAnteriorXrayFileName = action.payload.posteroAnteriorXrayFileName;
       state.apicalLordoticXrayFileName = action.payload.apicalLordoticXrayFileName;
@@ -125,7 +128,7 @@ export const radiologicalOutcomeSlice = createSlice({
     clearIsSputumRequired: (state) => {
       state.isSputumRequired = YesOrNo.NULL;
     },
-    clearChestXrayDetails: (state) => {
+    clearRadiologicalOutcomeDetails: (state) => {
       state.status = ApplicationStatus.NOT_YET_STARTED;
       state.chestXrayTaken = YesOrNo.NULL;
       state.posteroAnteriorXrayFileName = "";
@@ -148,7 +151,7 @@ export const radiologicalOutcomeSlice = createSlice({
         day: "",
       };
     },
-    setChestXrayFromApiResponse: (
+    setRadiologicalOutcomeFromApiResponse: (
       state,
       action: PayloadAction<ReceivedRadiologicalOutcomeDetailsType>,
     ) => {
@@ -193,7 +196,7 @@ export const radiologicalOutcomeSlice = createSlice({
 });
 
 export const {
-  setChestXrayStatus,
+  setRadiologicalOutcomeStatus,
   setChestXrayTaken,
   setSputumCollectionTaken,
   setPosteroAnteriorXrayFileName,
@@ -209,12 +212,12 @@ export const {
   setXrayMinorFindings,
   setXrayAssociatedMinorFindings,
   setXrayActiveTbFindings,
-  setChestXrayDetails,
+  setRadiologicalOutcomeDetails,
   clearChestXrayTakenDetails,
   clearChestXrayNotTakenDetails,
   clearIsSputumRequired,
-  clearChestXrayDetails,
-  setChestXrayFromApiResponse,
+  clearRadiologicalOutcomeDetails,
+  setRadiologicalOutcomeFromApiResponse,
 } = radiologicalOutcomeSlice.actions;
 
 export const radiologicalOutcomeReducer = radiologicalOutcomeSlice.reducer;
