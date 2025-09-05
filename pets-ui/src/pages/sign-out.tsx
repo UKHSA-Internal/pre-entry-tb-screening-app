@@ -14,7 +14,7 @@ export default function SignOutPage() {
       const keysToRemove: string[] = [];
       for (let i = 0; i < window.localStorage.length; i += 1) {
         const key = window.localStorage.key(i);
-        if (key && key.startsWith("msal.")) {
+        if (key?.startsWith("msal.")) {
           keysToRemove.push(key);
         }
       }
@@ -37,9 +37,8 @@ export default function SignOutPage() {
     >
       <div className="govuk-grid-row govuk-!-margin-top-4">
         <div className="govuk-grid-column-two-thirds">
-          <div
+          <section
             className="govuk-notification-banner"
-            role="region"
             aria-labelledby="sign-out-banner-title"
             data-module="govuk-notification-banner"
           >
@@ -70,7 +69,7 @@ export default function SignOutPage() {
                 />
               </div>
             </div>
-          </div>
+          </section>
         </div>
       </div>
     </Container>
