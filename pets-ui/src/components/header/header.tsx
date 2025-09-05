@@ -1,6 +1,16 @@
+import { useMsal } from "@azure/msal-react";
+import { useLocation } from "react-router-dom";
+
+import { useAppDispatch } from "@/redux/hooks";
+import { setSignOutPreviousPage } from "@/redux/navigationSlice";
+
 import LinkLabel from "../linkLabel/LinkLabel";
 
 export default function Header() {
+  const { accounts } = useMsal();
+  const dispatch = useAppDispatch();
+  const location = useLocation();
+
   return (
     <header className="govuk-header" data-module="govuk-header">
       <div className="govuk-header__container govuk-width-container">
@@ -28,6 +38,17 @@ export default function Header() {
             externalLink={false}
             className="govuk-header__link govuk-header__service-name"
           />
+          {accounts.length > 0 ? (
+            <LinkLabel
+              title="Sign out"
+              to="/sign-out"
+              externalLink={false}
+              id="sign-out"
+              className="govuk-header__link govuk-header__service-name"
+              style={{ marginLeft: "100px" }}
+              onClick={() => dispatch(setSignOutPreviousPage(location.pathname))}
+            />
+          ) : null}
         </div>
       </div>
     </header>
