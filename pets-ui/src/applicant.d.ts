@@ -42,7 +42,7 @@ type ReceivedApplicationDetailsType = {
   travelInformation: ReceivedTravelDetailsType | undefined;
   medicalScreening: ReceivedMedicalScreeningType | undefined;
   chestXray: ReceivedChestXrayDetailsType | undefined;
-  radiologicalDetails: ReceivedRadiologicalOutcomeDetailsType | undefined;
+  radiologicalOutcome: ReceivedRadiologicalOutcomeDetailsType | undefined;
   sputumDetails: ReceivedSputumType | undefined;
   tbCertificate: ReceivedTbCertificateType | undefined;
 };
@@ -173,6 +173,7 @@ type PostedChestXrayDetailsType = {
   lateralDecubitusXrayFileName?: string;
   lateralDecubitusXray?: string;
   completionDate: DateType;
+  dateXrayTaken: string;
 };
 
 type ReceivedChestXrayDetailsType = PostedChestXrayDetailsType & ReceivedApplicationAttributesType;
