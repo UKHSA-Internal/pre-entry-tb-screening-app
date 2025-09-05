@@ -1,0 +1,125 @@
+name: Nightly Cypress Tests - QAT
+
+on:
+  schedule:
+    - cron: "0 1 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  test-qat:
+    name: QAT - ${{ matrix.browser }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chrome, edge]
+
+    env:
+      USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
+      USER_1_PASSWORD: ${{ secrets.USER_1_PASSWORD }}
+      USER_2_EMAIL: ${{ secrets.USER_2_EMAIL }}
+      USER_2_PASSWORD: ${{ secrets.USER_2_PASSWORD }}
+      USER_3_EMAIL: ${{ secrets.USER_3_EMAIL }}
+      USER_3_PASSWORD: ${{ secrets.USER_3_PASSWORD }}
+      USER_4_EMAIL: ${{ secrets.USER_4_EMAIL }}
+      USER_4_PASSWORD: ${{ secrets.USER_4_PASSWORD }}
+      USER_5_EMAIL: ${{ secrets.USER_5_EMAIL }}
+      USER_5_PASSWORD: ${{ secrets.USER_5_PASSWORD }}
+      USER_6_EMAIL: ${{ secrets.USER_6_EMAIL }}
+      USER_6_PASSWORD: ${{ secrets.USER_6_PASSWORD }}
+      ENVIRONMENT: qat
+      CYPRESS_BASE_URL: https://clinics.test.pets.ukhsa.gov.uk
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Cache Cypress binary
+        id: cache-cypress-binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-binary-nightly-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
+
+      - name: Install Cypress Binary
+        if: steps.cache-cypress-binary.outputs.cache-hit != 'true'
+        run: |
+          pnpm exec cypress install --force
+          pnpm exec cypress verify
+        working-directory: pets-ui
+
+      - name: Cypress run tests
+        uses: cypress-io/github-action@v6
+        continue-on-error: true
+        id: initial_attempt
+        with:
+          install: false
+          working-directory: pets-ui
+          browser: ${{ matrix.browser }}
+          config-file: cypress/cypress.config.mjs
+          config: baseUrl=https://clinics.test.pets.ukhsa.gov.uk
+
+      - name: Retry if failed
+        if: steps.initial_attempt.outcome != 'success'
+        uses: cypress-io/github-action@v6
+        id: retry_attempt
+        with:
+          install: false
+          working-directory: pets-ui
+          browser: ${{ matrix.browser }}
+          config-file: cypress/cypress.config.mjs
+          config: baseUrl=https://clinics.test.pets.ukhsa.gov.uk
+
+      - name: Upload Failed Tests Screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-qat-${{ matrix.browser }}
+          path: pets-ui/cypress/screenshots
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Store test results
+        if: always()
+        run: |
+          mkdir -p test-results
+          
+          # Determine final test result
+          if [[ "${{ steps.initial_attempt.outcome }}" == "success" ]] || [[ "${{ steps.retry_attempt.outcome }}" == "success" ]]; then
+            echo "PASS" > test-results/result.txt
+          else
+            echo "FAIL" > test-results/result.txt
+          fi
+          
+          # Store metadata
+          echo "qat" > test-results/environment.txt
+          echo "${{ matrix.browser }}" > test-results/browser.txt
+          echo "${{ github.run_id }}" > test-results/run_id.txt
+          echo "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)" > test-results/timestamp.txt
+          
+          # Count screenshots if any
+          SCREENSHOT_COUNT=0
+          if [ -d "pets-ui/cypress/screenshots" ]; then
+            SCREENSHOT_COUNT=$(find pets-ui/cypress/screenshots -name "*.png" -o -name "*.jpg" 2>/dev/null | wc -l)
+          fi
+          echo "$SCREENSHOT_COUNT" > test-results/screenshot_count.txt
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qat-${{ matrix.browser }}-results
+          path: test-results/
+          retention-days: 7

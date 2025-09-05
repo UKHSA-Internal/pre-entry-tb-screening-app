@@ -1,3 +1,5 @@
+// This holds all fields of the Medical Screening Page
+
 import { BasePage } from "../BasePage";
 
 // Interface for medical screening form data
@@ -275,6 +277,202 @@ export class MedicalScreeningPage extends BasePage {
     return this;
   }
 
+  // Method for selecting child TB history - maps to under eleven conditions
+  selectChildTbHistory(option: string): MedicalScreeningPage {
+    cy.get("#under-eleven-conditions fieldset").contains("label", option).click();
+
+    return this;
+  }
+
+  // More specific method for under eleven conditions with better naming
+  selectUnderElevenConditions(condition: string): MedicalScreeningPage {
+    cy.get("#under-eleven-conditions fieldset")
+      .contains("label", condition)
+      .find('input[type="checkbox"]')
+      .check({ force: true });
+
+    return this;
+  }
+
+  // Method to select multiple under eleven conditions
+  selectMultipleUnderElevenConditions(conditions: string[]): MedicalScreeningPage {
+    conditions.forEach((condition) => {
+      cy.get(`input[name="underElevenConditions"][value="${condition}"]`).check({ force: true });
+    });
+    return this;
+  }
+
+  // Verification methods for under eleven conditions
+  verifyUnderElevenConditionsVisible(): MedicalScreeningPage {
+    cy.get("#under-eleven-conditions").should("be.visible");
+    cy.contains("If the applicant is a child aged under 11, have they ever had:").should(
+      "be.visible",
+    );
+    return this;
+  }
+
+  verifyUnderElevenConditionSelected(condition: string): MedicalScreeningPage {
+    cy.get(`input[name="underElevenConditions"][value="${condition}"]`).should("be.checked");
+    return this;
+  }
+
+  // Method to verify all under eleven condition options are present
+  verifyAllUnderElevenConditionsPresent(): MedicalScreeningPage {
+    const expectedConditions = [
+      "Thoracic surgery",
+      "Cyanosis",
+      "Chronic respiratory disease",
+      "Respiratory insufficiency that limits activity",
+      "None of these",
+      "Not applicable - applicant is aged 11 or over",
+    ];
+
+    expectedConditions.forEach((condition) => {
+      cy.get(`input[name="underElevenConditions"][value="${condition}"]`).should("exist");
+    });
+    return this;
+  }
+
+  // Method to clear all under eleven conditions
+  clearAllUnderElevenConditions(): MedicalScreeningPage {
+    cy.get('input[name="underElevenConditions"]:checked').each(($el) => {
+      cy.wrap($el).uncheck({ force: true });
+    });
+    return this;
+  }
+
+  // Enhanced method for TB symptoms list with better verification
+  selectTbSymptomsListWithVerification(symptoms: string[]): MedicalScreeningPage {
+    symptoms.forEach((symptom) => {
+      cy.contains("label", symptom)
+        .find('input[type="checkbox"]')
+        .should("exist")
+        .check({ force: true })
+        .should("be.checked");
+
+      // Log for debugging
+      cy.log(`Selected TB symptom: ${symptom}`);
+    });
+    return this;
+  }
+
+  // Method to verify TB symptoms conditional display
+  verifyTbSymptomsListVisibility(shouldBeVisible: boolean): MedicalScreeningPage {
+    if (shouldBeVisible) {
+      cy.get("#tb-symptoms-list").should("be.visible");
+    } else {
+      cy.get("#tb-symptoms-list").should("not.be.visible");
+    }
+    return this;
+  }
+
+  // Method to verify conditional fields based on age
+  verifyConditionalFieldsForAge(age: number): MedicalScreeningPage {
+    if (age < 11) {
+      this.verifyUnderElevenConditionsVisible();
+      // Pregnancy should be N/A for children
+      cy.get('input[name="pregnant"][value="N/A"]').should("exist");
+      // Menstrual periods should be N/A for children
+      cy.get('input[name="menstrualPeriods"][value="N/A"]').should("exist");
+    } else {
+      // For adults, "Not applicable" should be available for under eleven conditions
+      cy.get(
+        'input[name="underElevenConditions"][value="Not applicable - applicant is aged 11 or over"]',
+      ).should("exist");
+    }
+    return this;
+  }
+
+  // Enhanced form validation for child-specific scenarios
+  validateChildFormData(data: {
+    age: string;
+    tbSymptoms: "Yes" | "No";
+    underElevenConditions?: string;
+    previousTb: "Yes" | "No";
+    closeContactWithTb: "Yes" | "No";
+    pregnant: "N/A";
+    menstrualPeriods: "N/A";
+    physicalExamNotes: string;
+  }): MedicalScreeningPage {
+    // Verify age field
+    cy.get("#age-field").should("have.value", data.age);
+
+    // Verify TB symptoms selection
+    cy.get(`input[name="tbSymptoms"][value="${data.tbSymptoms}"]`).should("be.checked");
+
+    // Verify under eleven conditions if specified
+    if (data.underElevenConditions) {
+      cy.get(`input[name="underElevenConditions"][value="${data.underElevenConditions}"]`).should(
+        "be.checked",
+      );
+    }
+
+    // Verify TB history
+    cy.get(`input[name="previousTb"][value="${data.previousTb}"]`).should("be.checked");
+
+    // Verify close contact
+    cy.get(`input[name="closeContactWithTb"][value="${data.closeContactWithTb}"]`).should(
+      "be.checked",
+    );
+
+    // Verify pregnancy status (should be N/A for children)
+    cy.get(`input[name="pregnant"][value="${data.pregnant}"]`).should("be.checked");
+
+    // Verify menstrual periods (should be N/A for children)
+    cy.get(`input[name="menstrualPeriods"][value="${data.menstrualPeriods}"]`).should("be.checked");
+
+    // Verify physical exam notes
+    cy.get("#physical-exam-notes-field").should("contain.value", data.physicalExamNotes);
+
+    return this;
+  }
+
+  // Method to fill form specifically for child applicants
+  fillChildForm(data: {
+    age: string;
+    tbSymptoms: "Yes" | "No";
+    underElevenConditions: string;
+    previousTb: "Yes" | "No";
+    closeContactWithTb: "Yes" | "No";
+    physicalExamNotes: string;
+  }): MedicalScreeningPage {
+    this.fillAge(data.age)
+      .selectTbSymptoms(data.tbSymptoms)
+      .selectChildTbHistory(data.underElevenConditions)
+      .selectPreviousTb(data.previousTb)
+      .selectCloseContact(data.closeContactWithTb)
+      .selectPregnancyStatus("N/A")
+      .selectMenstrualPeriods("N/A")
+      .fillPhysicalExamNotes(data.physicalExamNotes);
+
+    return this;
+  }
+
+  // Method to verify form state after conditional selections
+  verifyFormStateAfterSelection(): MedicalScreeningPage {
+    // Check if TB symptoms "Yes" is selected, then symptoms list should be visible
+    cy.get('input[name="tbSymptoms"]:checked').then(($selected) => {
+      if ($selected.val() === "Yes") {
+        cy.get("#tb-symptoms-list").should("be.visible");
+      }
+    });
+
+    // Check if previous TB "Yes" is selected, then detail field should be available
+    cy.get('input[name="previousTb"]:checked').then(($selected) => {
+      if ($selected.val() === "Yes") {
+        cy.get("#previous-tb-detail").should("be.visible");
+      }
+    });
+
+    // Check if close contact "Yes" is selected, then detail field should be available
+    cy.get('input[name="closeContactWithTb"]:checked').then(($selected) => {
+      if ($selected.val() === "Yes") {
+        cy.get("#close-contact-with-tb-detail").should("be.visible");
+      }
+    });
+
+    return this;
+  }
   // Comprehensive page verification
   verifyAllPageElements(): MedicalScreeningPage {
     this.verifyPageLoaded();
