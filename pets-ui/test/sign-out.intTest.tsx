@@ -1,10 +1,30 @@
-import { fireEvent, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import SignOutPage from "@/pages/sign-out";
 import { renderWithProvidersWithoutRouter } from "@/utils/test-utils";
+
+const mockNavigate = vi.fn();
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+const mockLogoutRedirect = vi.fn();
+vi.mock("@azure/msal-react", () => ({
+  useMsal: () => ({
+    instance: {
+      logoutRedirect: mockLogoutRedirect,
+    },
+    accounts: [],
+  }),
+}));
 
 const renderSignOut = () =>
   renderWithProvidersWithoutRouter(
@@ -29,15 +49,13 @@ const renderSignOut = () =>
   );
 
 describe("Sign out page", () => {
-  let replaceMock: (url?: string) => void;
+  let user: ReturnType<typeof userEvent.setup>;
 
   beforeEach(() => {
-    replaceMock = vi.fn();
-    Object.defineProperty(window, "location", {
-      value: { ...window.location, replace: replaceMock },
-      writable: true,
-      configurable: true,
-    });
+    user = userEvent.setup();
+    mockNavigate.mockClear();
+    mockLogoutRedirect.mockClear();
+    mockLogoutRedirect.mockResolvedValue(undefined);
 
     localStorage.clear();
     localStorage.setItem("msal.test", "value");
@@ -52,29 +70,27 @@ describe("Sign out page", () => {
     expect(screen.getByRole("button", { name: "Go back to screening" })).toBeInTheDocument();
   });
 
-  it("clears msal localStorage keys and redirects to /signed-out on confirm", () => {
+  it("calls msal logout redirect with /signed-out on confirm", async () => {
     renderSignOut();
     const signOutBtn = screen.getByRole("button", { name: "Sign out" });
-    fireEvent.click(signOutBtn);
+    await user.click(signOutBtn);
 
-    expect(localStorage.getItem("msal.test")).toBeNull();
-    expect(replaceMock).toHaveBeenCalledWith("/signed-out");
+    expect(mockLogoutRedirect).toHaveBeenCalledWith({
+      postLogoutRedirectUri: "/signed-out",
+    });
   });
 
-  it("navigates back to previous page when cancel clicked", () => {
+  it("navigates back to previous page when cancel clicked", async () => {
     renderSignOut();
     const cancelBtn = screen.getByRole("button", { name: "Go back to screening" });
-    fireEvent.click(cancelBtn);
-    expect(screen.getByText("Previous Page")).toBeInTheDocument();
+    await user.click(cancelBtn);
+    expect(mockNavigate).toHaveBeenCalledWith("/previous-page");
   });
 
-  it("does not redirect to /signed-out if an error occurs", () => {
-    vi.spyOn(Storage.prototype, "key").mockImplementation(() => {
-      throw new Error("error");
-    });
+  it("redirects to /error if MSAL logout fails", async () => {
+    mockLogoutRedirect.mockRejectedValue(new Error("MSAL logout error"));
     renderSignOut();
-    fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
-    expect(localStorage.getItem("msal.test")).toBe("value");
-    expect(replaceMock).not.toHaveBeenCalledWith("/signed-out");
+    await user.click(screen.getByRole("button", { name: "Sign out" }));
+    expect(mockNavigate).toHaveBeenCalledWith("/error");
   });
 });

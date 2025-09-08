@@ -367,7 +367,14 @@ function App() {
           </AuthenticatedRoute>
         }
       />
-      <Route path="/signed-out" element={<SignedOutPage />} />
+      <Route
+        path="/signed-out"
+        element={
+          <UnauthenticatedRoute>
+            <SignedOutPage />
+          </UnauthenticatedRoute>
+        }
+      />
       <Route path="/accessibility-statement" element={<AccessibilityStatementPage />} />
       <Route path="/privacy-notice" element={<PrivacyNoticePage />} />
       <Route path="/error" element={<ErrorPage />} />
