@@ -13,19 +13,14 @@ export default function SignOutPage() {
   const { instance } = useMsal();
 
   const handleSignOut = () => {
-    try {
-      instance
-        .logoutRedirect({
-          postLogoutRedirectUri: "/signed-out",
-        })
-        .catch((error) => {
-          console.error("MSAL logout error: ", error);
-          navigate("/error");
-        });
-    } catch (e) {
-      console.error("Sign out error: ", e);
-      navigate("/error");
-    }
+    instance
+      .logoutRedirect({
+        postLogoutRedirectUri: "/signed-out",
+      })
+      .catch((error) => {
+        console.error("MSAL logout error: ", error);
+        navigate("/error");
+      });
   };
 
   const navigation = useAppSelector(selectNavigation);
