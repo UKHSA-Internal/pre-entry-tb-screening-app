@@ -3,6 +3,7 @@ import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
+import { logger } from "../../shared/logger";
 import { ChestXRayNotTakenReason, YesOrNo } from "../types/enums";
 import { ChestXRayDbOps, NewChestXRayNotTaken, NewChestXRayTaken } from "./chest-xray";
 
@@ -129,5 +130,16 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
       ...chestXray,
       dateCreated: new Date("2025-02-07"),
     });
+  });
+
+  test("Handling error while getting Chest X-ray by applicationId", async () => {
+    const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    ddbMock.on(GetCommand).rejects(Error("DB error"));
+
+    // Act / Assert
+    await expect(
+      ChestXRayDbOps.getByApplicationId(newChestXrayTaken.applicationId),
+    ).rejects.toThrow("DB error");
+    expect(errorLoggerMock).toHaveBeenCalledWith(Error("DB error"), "Error retrieving Chest X-ray");
   });
 });
