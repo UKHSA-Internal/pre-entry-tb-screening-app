@@ -134,7 +134,6 @@ describe("Test for Sputum Decision into DB", () => {
     };
 
     // Act
-    // await expect(saveSputumDecisionHandler(event)).resolves.toBe("noooo");
     const response = await saveSputumDecisionHandler(event);
 
     // Assert
