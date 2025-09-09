@@ -371,7 +371,7 @@ jobs:
                           
                           let environmentTable = '<table><tr><th>Browser</th><th>DEV</th><th>QAT</th><th>PREPROD</th></tr>';
                           
-                          ['chrome', 'edge'].forEach(browser => {
+                          ['chrome', 'edge', 'firefox'].forEach(browser => {
                               const capitalizedBrowser = browser.charAt(0).toUpperCase() + browser.slice(1);
                               environmentTable += `<tr>
                                   <td><strong>${capitalizedBrowser}</strong></td>
