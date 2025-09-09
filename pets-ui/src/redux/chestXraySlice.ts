@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ReceivedChestXrayDetailsType, ReduxChestXrayDetailsType } from "@/types";
+import { DateType, ReceivedChestXrayDetailsType, ReduxChestXrayDetailsType } from "@/types";
 import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
 
 const initialState: ReduxChestXrayDetailsType = {
@@ -11,7 +11,7 @@ const initialState: ReduxChestXrayDetailsType = {
   apicalLordoticXrayFile: "",
   lateralDecubitusXrayFileName: "",
   lateralDecubitusXrayFile: "",
-  completionDate: {
+  dateXrayTaken: {
     year: "",
     month: "",
     day: "",
@@ -43,6 +43,9 @@ export const chestXraySlice = createSlice({
     setLateralDecubitusXrayFile: (state, action: PayloadAction<string | undefined>) => {
       state.lateralDecubitusXrayFile = action.payload;
     },
+    setDateXrayTaken: (state, action: PayloadAction<DateType>) => {
+      state.dateXrayTaken = action.payload;
+    },
     setChestXrayDetails: (state, action: PayloadAction<ReduxChestXrayDetailsType>) => {
       state.posteroAnteriorXrayFileName = action.payload.posteroAnteriorXrayFileName;
       state.apicalLordoticXrayFileName = action.payload.apicalLordoticXrayFileName;
@@ -59,7 +62,7 @@ export const chestXraySlice = createSlice({
       state.posteroAnteriorXrayFile = "";
       state.apicalLordoticXrayFile = "";
       state.lateralDecubitusXrayFile = "";
-      state.completionDate = {
+      state.dateXrayTaken = {
         year: "",
         month: "",
         day: "",
@@ -76,7 +79,7 @@ export const chestXraySlice = createSlice({
       state.apicalLordoticXrayFile = action.payload.apicalLordoticXray;
       state.lateralDecubitusXrayFileName = action.payload.lateralDecubitusXrayFileName;
       state.lateralDecubitusXrayFile = action.payload.lateralDecubitusXray;
-      state.completionDate = action.payload.dateXrayTaken
+      state.dateXrayTaken = action.payload.dateXrayTaken
         ? {
             year: action.payload.dateXrayTaken.split("-")[0],
             month: action.payload.dateXrayTaken.split("-")[1],
@@ -101,6 +104,7 @@ export const {
   setPosteroAnteriorXrayFile,
   setApicalLordoticXrayFile,
   setLateralDecubitusXrayFile,
+  setDateXrayTaken,
   setChestXrayDetails,
   clearChestXrayDetails,
   setChestXrayFromApiResponse,
