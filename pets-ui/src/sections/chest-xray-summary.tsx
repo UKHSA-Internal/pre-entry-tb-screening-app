@@ -4,19 +4,19 @@ import { useNavigate } from "react-router-dom";
 
 import { postChestXrayDetails } from "@/api/api";
 import Button from "@/components/button/button";
+import Heading from "@/components/heading/heading";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
 import { setRadiologicalOutcomeStatus } from "@/redux/radiologicalOutcomeSlice";
-import { setSputumStatus } from "@/redux/sputumSlice";
-import { selectApplication, selectRadiologicalOutcome } from "@/redux/store";
+import { selectApplication, selectChestXray } from "@/redux/store";
 import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
-import { spreadArrayIfNotEmpty } from "@/utils/helpers";
+import { spreadArrayIfNotEmpty, standardiseDayOrMonth } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
 const ChestXraySummary = () => {
   const applicationData = useAppSelector(selectApplication);
-  const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
+  const chestXrayData = useAppSelector(selectChestXray);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -26,34 +26,18 @@ const ChestXraySummary = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      if (radiologicalOutcomeData.chestXrayTaken == YesOrNo.YES) {
-        await postChestXrayDetails(applicationData.applicationId, {
-          chestXrayTaken: radiologicalOutcomeData.chestXrayTaken,
-          posteroAnteriorXrayFileName: radiologicalOutcomeData.posteroAnteriorXrayFileName,
-          posteroAnteriorXray: radiologicalOutcomeData.posteroAnteriorXrayFile,
-          apicalLordoticXrayFileName: radiologicalOutcomeData.apicalLordoticXrayFileName,
-          apicalLordoticXray: radiologicalOutcomeData.apicalLordoticXrayFile,
-          lateralDecubitusXrayFileName: radiologicalOutcomeData.lateralDecubitusXrayFileName,
-          lateralDecubitusXray: radiologicalOutcomeData.lateralDecubitusXrayFile,
-          xrayResult: radiologicalOutcomeData.xrayResult,
-          xrayResultDetail: radiologicalOutcomeData.xrayResultDetail,
-          xrayMinorFindings: radiologicalOutcomeData.xrayMinorFindings,
-          xrayAssociatedMinorFindings: radiologicalOutcomeData.xrayAssociatedMinorFindings,
-          xrayActiveTbFindings: radiologicalOutcomeData.xrayActiveTbFindings,
-          isSputumRequired: radiologicalOutcomeData.isSputumRequired,
-        });
-      } else {
-        await postChestXrayDetails(applicationData.applicationId, {
-          chestXrayTaken: radiologicalOutcomeData.chestXrayTaken,
-          reasonXrayWasNotTaken: radiologicalOutcomeData.reasonXrayWasNotTaken,
-          xrayWasNotTakenFurtherDetails: radiologicalOutcomeData.xrayWasNotTakenFurtherDetails,
-          isSputumRequired: radiologicalOutcomeData.isSputumRequired,
-        });
-      }
+      const dateXrayTakenStr = `${chestXrayData.dateXrayTaken.year}-${standardiseDayOrMonth(chestXrayData.dateXrayTaken.month)}-${standardiseDayOrMonth(chestXrayData.dateXrayTaken.day)}`;
+      await postChestXrayDetails(applicationData.applicationId, {
+        chestXrayTaken: YesOrNo.YES,
+        posteroAnteriorXrayFileName: chestXrayData.posteroAnteriorXrayFileName,
+        posteroAnteriorXray: chestXrayData.posteroAnteriorXrayFile,
+        apicalLordoticXrayFileName: chestXrayData.apicalLordoticXrayFileName,
+        apicalLordoticXray: chestXrayData.apicalLordoticXrayFile,
+        lateralDecubitusXrayFileName: chestXrayData.lateralDecubitusXrayFileName,
+        lateralDecubitusXray: chestXrayData.lateralDecubitusXrayFile,
+        dateXrayTaken: dateXrayTakenStr,
+      });
 
-      if (radiologicalOutcomeData.isSputumRequired == YesOrNo.NO) {
-        dispatch(setSputumStatus(ApplicationStatus.NOT_REQUIRED));
-      }
       dispatch(setRadiologicalOutcomeStatus(ApplicationStatus.COMPLETE));
       navigate("/chest-xray-confirmation");
     } catch (error) {
@@ -62,120 +46,49 @@ const ChestXraySummary = () => {
     }
   };
 
-  const xrayTakenSummaryData = [
+  const summaryData = [
     {
-      key: "Select X-ray status",
-      value: radiologicalOutcomeData.chestXrayTaken,
-      link: `/chest-xray-question#${attributeToComponentId.chestXrayTaken}`,
-      hiddenLabel: "chest X-ray Status",
+      key: "Date of X-ray",
+      value: `${chestXrayData.dateXrayTaken.day}/${chestXrayData.dateXrayTaken.month}/${chestXrayData.dateXrayTaken.year}`,
+      link: `/upload-chest-xray#${attributeToComponentId.dateXrayTaken}`,
+      hiddenLabel: "date of X-ray",
     },
     {
-      key: "Postero anterior X-ray",
-      value: radiologicalOutcomeData.posteroAnteriorXrayFileName,
-      link: `/chest-xray-upload#${attributeToComponentId.posteroAnteriorXrayFileName}`,
-      hiddenLabel: "postero anterior X-ray",
-    },
-    {
-      key: "Apical lordotic X-ray",
-      value: radiologicalOutcomeData.apicalLordoticXrayFileName,
-      link: `/chest-xray-upload#${attributeToComponentId.apicalLordoticXrayFileName}`,
-      hiddenLabel: "apical lordotic X-ray",
-      emptyValueText: "Upload apical lordotic X-ray (optional)",
-    },
-    {
-      key: "Lateral decubitus X-ray",
-      value: radiologicalOutcomeData.lateralDecubitusXrayFileName,
-      link: `/chest-xray-upload#${attributeToComponentId.lateralDecubitusXrayFileName}`,
-      hiddenLabel: "lateral decubitus X-ray",
-      emptyValueText: "Upload lateral decubitus X-ray (optional)",
-    },
-    {
-      key: "Enter radiological outcome",
-      value: radiologicalOutcomeData.xrayResult,
-      link: `/chest-xray-findings#${attributeToComponentId.xrayResult}`,
-      hiddenLabel: "radiological outcome",
-    },
-    {
-      key: "Radiological details",
-      value: radiologicalOutcomeData.xrayResultDetail,
-      link: `/chest-xray-findings#${attributeToComponentId.xrayResultDetail}`,
-      hiddenLabel: "X-ray Details",
-      emptyValueText: "Enter radiological details (optional)",
-    },
-    {
-      key: "Enter radiographic findings",
+      key: "Chest X-ray images",
       value: spreadArrayIfNotEmpty(
-        radiologicalOutcomeData.xrayMinorFindings,
-        radiologicalOutcomeData.xrayAssociatedMinorFindings,
-        radiologicalOutcomeData.xrayActiveTbFindings,
+        [chestXrayData.posteroAnteriorXrayFileName],
+        [chestXrayData.apicalLordoticXrayFileName ?? ""],
+        [chestXrayData.lateralDecubitusXrayFileName ?? ""],
       ),
-      link: `/chest-xray-findings#${attributeToComponentId.xrayMinorFindings}`,
-      hiddenLabel: "radiographic findings",
-      emptyValueText: "Enter radiographic findings (optional)",
-    },
-    {
-      key: "Sputum required?",
-      value: radiologicalOutcomeData.isSputumRequired,
-      link: `/sputum-question`,
-      hiddenLabel: "if sputum is required",
-    },
-  ];
-
-  const xrayNotTakenSummaryData = [
-    {
-      key: "Select X-ray status",
-      value: radiologicalOutcomeData.chestXrayTaken,
-      link: `/chest-xray-question#${attributeToComponentId.chestXrayTaken}`,
-      hiddenLabel: "chest X-ray status",
-      emptyValueText: "Enter X-ray status (optional)",
-    },
-    {
-      key: "Enter reason X-ray not taken",
-      value: radiologicalOutcomeData.reasonXrayWasNotTaken,
-      link: `/chest-xray-not-taken#${attributeToComponentId.reasonXrayWasNotTaken}`,
-      hiddenLabel: "Reason why X-ray was not taken",
-      emptyValueText: "Enter reason X-ray not taken (optional)",
-    },
-    {
-      key: "Details",
-      value: radiologicalOutcomeData.xrayWasNotTakenFurtherDetails,
-      link: `/chest-xray-not-taken#${attributeToComponentId.xrayWasNotTakenFurtherDetails}`,
-      hiddenLabel: "details",
-      emptyValueText: "Enter details (optional)",
-    },
-    {
-      key: "Sputum required?",
-      value: radiologicalOutcomeData.isSputumRequired,
-      link: `/sputum-question`,
-      hiddenLabel: "if sputum is required",
+      link: `/upload-chest-xray#${attributeToComponentId.posteroAnteriorXrayFileName}`,
+      hiddenLabel: "chest X-rays",
     },
   ];
 
   return (
     <div>
       {isLoading && <Spinner />}
+      <Summary status={chestXrayData.status} summaryElements={summaryData} />
 
-      {radiologicalOutcomeData.chestXrayTaken == YesOrNo.YES && (
-        <Summary status={radiologicalOutcomeData.status} summaryElements={xrayTakenSummaryData} />
-      )}
-      {radiologicalOutcomeData.chestXrayTaken == YesOrNo.NO && (
-        <Summary
-          status={radiologicalOutcomeData.status}
-          summaryElements={xrayNotTakenSummaryData}
-        />
-      )}
+      {(chestXrayData.status == ApplicationStatus.NOT_YET_STARTED ||
+        chestXrayData.status == ApplicationStatus.IN_PROGRESS) && (
+        <div>
+          <Heading title="Now send the X-ray information" level={2} size="m" />
+          <p className="govuk-body">
+            Upload all relevant chest X-ray images before you continue. You will not be able to
+            change or add images after you submit this information.
+          </p>
 
-      {(radiologicalOutcomeData.status == ApplicationStatus.NOT_YET_STARTED ||
-        radiologicalOutcomeData.status == ApplicationStatus.IN_PROGRESS) && (
-        <Button
-          id="confirm"
-          type={ButtonType.DEFAULT}
-          text="Save and continue"
-          handleClick={handleSubmit}
-        />
+          <Button
+            id="confirm"
+            type={ButtonType.DEFAULT}
+            text="Submit and continue"
+            handleClick={handleSubmit}
+          />
+        </div>
       )}
-      {(radiologicalOutcomeData.status == ApplicationStatus.COMPLETE ||
-        radiologicalOutcomeData.status == ApplicationStatus.NOT_REQUIRED) && (
+      {(chestXrayData.status == ApplicationStatus.COMPLETE ||
+        chestXrayData.status == ApplicationStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
           type={ButtonType.DEFAULT}
