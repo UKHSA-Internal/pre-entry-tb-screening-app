@@ -13,7 +13,6 @@ import ApplicantSummaryPage from "./pages/applicant-summary";
 import CheckSputumSampleInformationPage from "./pages/check-sputum-sample-information";
 import ChestXrayConfirmation from "./pages/chest-xray-confirmation";
 import ChestXrayFindingsPage from "./pages/chest-xray-findings";
-import ChestXrayNotTaken from "./pages/chest-xray-not-taken";
 import ChestXrayQuestionPage from "./pages/chest-xray-question";
 import ChestXraySummaryPage from "./pages/chest-xray-summary";
 import ChestXrayUploadPage from "./pages/chest-xray-upload";
@@ -180,31 +179,11 @@ function App() {
         }
       />
       <Route
-        path="/chest-xray-findings"
+        path="/upload-chest-xray"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
-              <ChestXrayFindingsPage />
-            </RedirectedRouteIfReduxEmpty>
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/chest-xray-question"
-        element={
-          <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <ChestXrayQuestionPage />
-            </RedirectedRouteIfReduxEmpty>
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/chest-xray-not-taken"
-        element={
-          <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <ChestXrayNotTaken />
+              <ChestXrayUploadPage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
@@ -220,17 +199,47 @@ function App() {
         }
       />
       <Route
-        path="/chest-xray-upload"
+        path="/chest-xray-confirmation"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
-              <ChestXrayUploadPage />
+              <ChestXrayConfirmation />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
       />
       <Route
-        path="/chest-xray-confirmation"
+        path="/radiological-outcome-chest-xray-results"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <ChestXrayQuestionPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/radiological-outcome-findings"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <ChestXrayFindingsPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/radiological-outcome-summary"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <ChestXraySummaryPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/radiological-outcome-confirmation"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
