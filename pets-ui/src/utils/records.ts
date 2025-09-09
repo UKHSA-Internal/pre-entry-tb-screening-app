@@ -61,6 +61,7 @@ const attributeToComponentId: { [key: string]: string } = {
   collectionMethodSample1: "collection-method-sample-1",
   collectionMethodSample2: "collection-method-sample-2",
   collectionMethodSample3: "collection-method-sample-3",
+  dateXrayTaken: "date-xray-taken",
 };
 
 const formRegex = {
@@ -104,6 +105,12 @@ const dateValidationMessages: Record<string, Record<string, string>> = {
     invalidCharError: "Sputum sample {sampleNumber} day, month and year must contain only numbers",
     invalidDateError: "Sputum sample {sampleNumber} date must be a valid date",
     dateMustBeInPastError: "Sputum sample {sampleNumber} date must be today or in the past",
+  },
+  dateXrayTaken: {
+    emptyFieldError: "The date the X-ray was taken must include a day, month and year",
+    invalidCharError: "The date the X-ray was taken day, month and year must contain only numbers",
+    invalidDateError: "The date the X-ray was taken must be a valid date",
+    dateMustBeInPastError: "The date the X-ray was taken must be today or in the past",
   },
 };
 
