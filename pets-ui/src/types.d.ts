@@ -161,7 +161,7 @@ type ReduxChestXrayDetailsType = {
   apicalLordoticXrayFile?: string;
   lateralDecubitusXrayFileName?: string;
   lateralDecubitusXrayFile?: string;
-  completionDate: DateType;
+  dateXrayTaken: DateType;
 };
 
 type PostedChestXrayDetailsType = {
@@ -172,7 +172,6 @@ type PostedChestXrayDetailsType = {
   apicalLordoticXray?: string;
   lateralDecubitusXrayFileName?: string;
   lateralDecubitusXray?: string;
-  completionDate: DateType;
   dateXrayTaken: string;
 };
 
