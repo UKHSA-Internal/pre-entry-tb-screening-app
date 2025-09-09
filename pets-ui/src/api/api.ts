@@ -8,6 +8,7 @@ import {
   GenerateImageUploadUrlRequest,
   GenerateImageUploadUrlResponse,
   PostedApplicantDetailsType,
+  PostedChestXrayDetailsType,
   PostedMedicalScreeningType,
   PostedRadiologicalOutcomeChestXrayNotTakenType,
   PostedRadiologicalOutcomeDetailsType,
@@ -95,11 +96,22 @@ export const postMedicalDetails = async (
 
 export const postChestXrayDetails = async (
   applicationId: string,
-  chestXrayDetails:
+  chestXrayDetails: PostedChestXrayDetailsType,
+) => {
+  const result = await petsApi.post(`/application/${applicationId}/chest-xray`, chestXrayDetails);
+  return { status: result.status, statusText: result.statusText };
+};
+
+export const postRadiologicalOutcomeDetails = async (
+  applicationId: string,
+  radiologicalOutcomeDetails:
     | PostedRadiologicalOutcomeDetailsType
     | PostedRadiologicalOutcomeChestXrayNotTakenType,
 ) => {
-  const result = await petsApi.post(`/application/${applicationId}/chest-xray`, chestXrayDetails);
+  const result = await petsApi.post(
+    `/application/${applicationId}/chest-xray`,
+    radiologicalOutcomeDetails,
+  );
   return { status: result.status, statusText: result.statusText };
 };
 
