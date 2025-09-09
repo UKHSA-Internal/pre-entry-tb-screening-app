@@ -16,7 +16,7 @@ import {
   setApplicantPhotoFileName,
 } from "@/redux/applicantSlice";
 import { clearApplicationDetails, setApplicationId } from "@/redux/applicationSlice";
-import { setChestXrayFromApiResponse } from "@/redux/chestXraySlice";
+import { clearChestXrayDetails, setChestXrayFromApiResponse } from "@/redux/chestXraySlice";
 import { useAppDispatch } from "@/redux/hooks";
 import {
   clearMedicalScreeningDetails,
@@ -57,6 +57,7 @@ const ApplicantSearchForm = () => {
     dispatch(clearApplicationDetails());
     dispatch(clearMedicalScreeningDetails());
     dispatch(clearTravelDetails());
+    dispatch(clearChestXrayDetails());
     dispatch(clearRadiologicalOutcomeDetails());
     dispatch(clearSputumDetails());
     dispatch(clearTbCertificateDetails());
