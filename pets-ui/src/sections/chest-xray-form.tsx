@@ -1,24 +1,27 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { Controller, FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import DateTextInput from "@/components/dateTextInput/dateTextInput";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FileUpload from "@/components/fileUpload/fileUpload";
 import Heading from "@/components/heading/heading";
 import Spinner from "@/components/spinner/spinner";
 import SubmitButton from "@/components/submitButton/submitButton";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   setApicalLordoticXrayFile,
   setApicalLordoticXrayFileName,
+  setDateXrayTaken,
   setLateralDecubitusXrayFile,
   setLateralDecubitusXrayFileName,
   setPosteroAnteriorXrayFile,
   setPosteroAnteriorXrayFileName,
-} from "@/redux/radiologicalOutcomeSlice";
+} from "@/redux/chestXraySlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectChestXray } from "@/redux/store";
-import { ReduxChestXrayDetailsType } from "@/types";
+import { DateType, ReduxChestXrayDetailsType } from "@/types";
 import { ButtonType, ImageType } from "@/utils/enums";
+import { validateDate } from "@/utils/helpers";
 import uploadFile from "@/utils/uploadFile";
 
 const DicomUploadModule = (
@@ -99,13 +102,14 @@ const ChestXrayForm = () => {
     criteriaMode: "all",
   });
   const {
+    control,
     handleSubmit,
     formState: { errors },
   } = methods;
 
   const errorsToShow = Object.keys(errors);
 
-  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = async () => {
+  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = async (chestXrayData) => {
     setIsLoading(true);
 
     if (PAFile && PAFileName) {
@@ -141,22 +145,25 @@ const ChestXrayForm = () => {
       dispatch(setLateralDecubitusXrayFileName(LDFileName));
     }
 
-    navigate("/chest-xray-findings");
+    dispatch(setDateXrayTaken(chestXrayData.dateXrayTaken));
+    navigate("/chest-xray-summary");
   };
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
   const location = useLocation();
-  const paXray = useRef<HTMLDivElement | null>(null);
-  const alXray = useRef<HTMLDivElement | null>(null);
-  const ldXray = useRef<HTMLDivElement | null>(null);
+  const dateXrayTakenRef = useRef<HTMLDivElement | null>(null);
+  const paXrayRef = useRef<HTMLDivElement | null>(null);
+  const alXrayRef = useRef<HTMLDivElement | null>(null);
+  const ldXrayRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (location.hash) {
       const target = location.hash.substring(1);
       const refMap: { [key: string]: HTMLElement | null } = {
-        "postero-anterior-xray": paXray.current,
-        "apical-lordotic-xray": alXray.current,
-        "lateral-decubitus-xray": ldXray.current,
+        "date-xray-taken": dateXrayTakenRef.current,
+        "postero-anterior-xray": paXrayRef.current,
+        "apical-lordotic-xray": alXrayRef.current,
+        "lateral-decubitus-xray": ldXrayRef.current,
       };
 
       const targetRef = refMap[target];
@@ -175,7 +182,38 @@ const ChestXrayForm = () => {
             {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
             <Heading level={1} size="l" title="Upload chest X-ray images" />
 
-            <div ref={paXray}>
+            <Heading level={2} size="m" title="When was the X-ray taken?" />
+            <div ref={dateXrayTakenRef}>
+              <Controller
+                name="dateXrayTaken"
+                control={control}
+                defaultValue={{
+                  day: chestXrayData.dateXrayTaken.day,
+                  month: chestXrayData.dateXrayTaken.month,
+                  year: chestXrayData.dateXrayTaken.year,
+                }}
+                rules={{
+                  validate: (value: DateType) => validateDate(value, "dateXrayTaken"),
+                }}
+                render={({ field: { value, onChange } }) => (
+                  <DateTextInput
+                    heading="When was the X-ray taken?"
+                    headingLevel={2}
+                    headingSize="m"
+                    hint="For example, 31 3 2025"
+                    value={value}
+                    setDateValue={onChange}
+                    id={"date-xray-taken"}
+                    autocomplete={false}
+                    errorMessage={errors?.dateXrayTaken?.message ?? ""}
+                  />
+                )}
+              />
+            </div>
+
+            <Heading level={2} size="m" title="Upload X-ray images" />
+
+            <div ref={paXrayRef}>
               <DicomUploadModule
                 id="postero-anterior-xray"
                 name="Postero-anterior"
@@ -189,7 +227,7 @@ const ChestXrayForm = () => {
               />
             </div>
 
-            <div ref={alXray}>
+            <div ref={alXrayRef}>
               <DicomUploadModule
                 id="apical-lordotic-xray"
                 caption="Apical lordotic X-ray (optional)"
@@ -202,7 +240,7 @@ const ChestXrayForm = () => {
               />
             </div>
 
-            <div ref={ldXray}>
+            <div ref={ldXrayRef}>
               <DicomUploadModule
                 id="lateral-decubitus-xray"
                 caption="Lateral decubitus X-ray (optional)"
