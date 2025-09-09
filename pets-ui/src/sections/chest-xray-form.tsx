@@ -28,7 +28,7 @@ const DicomUploadModule = (
   props: Readonly<{
     id: string;
     name: string;
-    caption?: string;
+    title: string;
     required: boolean;
     errors?: FieldErrors<ReduxChestXrayDetailsType>;
     formValue: string;
@@ -38,48 +38,23 @@ const DicomUploadModule = (
   }>,
 ) => {
   return (
-    <table className="govuk-table">
-      <caption
-        className="govuk-table__caption govuk-table__caption--m"
-        style={{ marginTop: "20px" }}
-      >
-        {props.caption}
-      </caption>
-      <thead className="govuk-table__head">
-        <tr className="govuk-table__row">
-          <th scope="col" className="govuk-table__header" style={{ width: "320px" }}>
-            Type of X-ray
-          </th>
-          <th scope="col" className="govuk-table__header">
-            File uploaded
-          </th>
-        </tr>
-      </thead>
-      <tbody className="govuk-table__body">
-        <tr className="govuk-table__row">
-          <th
-            scope="row"
-            className="govuk-table__header"
-            style={{ fontWeight: "normal", verticalAlign: "middle" }}
-          >
-            {props.name} view
-          </th>
-          <td className="govuk-table__cell">
-            <FileUpload
-              id={props.id}
-              formValue={props.formValue}
-              required={
-                props.required ? `Select a ${props.name.toLowerCase()} X-ray image file` : false
-              }
-              type={ImageType.Dicom}
-              setFileState={props.setFileState}
-              setFileName={props.setFileName}
-              existingFileName={props.existingFileName}
-            />
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div>
+      <Heading title={props.title} level={3} size="s"></Heading>
+
+      <p className="govuk-body">
+        Select a file to upload. File type must be DCM. Images must be less than 50MB.
+      </p>
+
+      <FileUpload
+        id={props.id}
+        formValue={props.formValue}
+        required={props.required ? `Select a ${props.name.toLowerCase()} X-ray image file` : false}
+        type={ImageType.Dicom}
+        setFileState={props.setFileState}
+        setFileName={props.setFileName}
+        existingFileName={props.existingFileName}
+      />
+    </div>
   );
 };
 
@@ -99,6 +74,7 @@ const ChestXrayForm = () => {
   const [LDFileName, setLDFileName] = useState<string>();
 
   const methods = useForm<ReduxChestXrayDetailsType>({
+    reValidateMode: "onSubmit",
     criteriaMode: "all",
   });
   const {
@@ -153,8 +129,6 @@ const ChestXrayForm = () => {
   const location = useLocation();
   const dateXrayTakenRef = useRef<HTMLDivElement | null>(null);
   const paXrayRef = useRef<HTMLDivElement | null>(null);
-  const alXrayRef = useRef<HTMLDivElement | null>(null);
-  const ldXrayRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (location.hash) {
@@ -162,8 +136,6 @@ const ChestXrayForm = () => {
       const refMap: { [key: string]: HTMLElement | null } = {
         "date-xray-taken": dateXrayTakenRef.current,
         "postero-anterior-xray": paXrayRef.current,
-        "apical-lordotic-xray": alXrayRef.current,
-        "lateral-decubitus-xray": ldXrayRef.current,
       };
 
       const targetRef = refMap[target];
@@ -182,7 +154,6 @@ const ChestXrayForm = () => {
             {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
             <Heading level={1} size="l" title="Upload chest X-ray images" />
 
-            <Heading level={2} size="m" title="When was the X-ray taken?" />
             <div ref={dateXrayTakenRef}>
               <Controller
                 name="dateXrayTaken"
@@ -216,9 +187,9 @@ const ChestXrayForm = () => {
             <div ref={paXrayRef}>
               <DicomUploadModule
                 id="postero-anterior-xray"
-                name="Postero-anterior"
+                title="Postero-anterior view"
                 formValue="posteroAnteriorXrayFileName"
-                caption="Postero-anterior X-ray"
+                name="Postero-anterior"
                 setFileState={setPAFile}
                 setFileName={setPAFileName}
                 required={true}
@@ -227,10 +198,10 @@ const ChestXrayForm = () => {
               />
             </div>
 
-            <div ref={alXrayRef}>
+            <div>
               <DicomUploadModule
                 id="apical-lordotic-xray"
-                caption="Apical lordotic X-ray (optional)"
+                title="Apical lordotic view (optional)"
                 formValue="apicalLordoticXrayFileName"
                 name="Apical-lordotic"
                 setFileState={setALFile}
@@ -240,10 +211,10 @@ const ChestXrayForm = () => {
               />
             </div>
 
-            <div ref={ldXrayRef}>
+            <div>
               <DicomUploadModule
                 id="lateral-decubitus-xray"
-                caption="Lateral decubitus X-ray (optional)"
+                title="Lateral decubitus view (optional)"
                 formValue="lateralDecubitusXrayFileName"
                 name="Lateral-decubitus"
                 setFileState={setLDFile}
