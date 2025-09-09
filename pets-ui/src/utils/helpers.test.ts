@@ -159,12 +159,12 @@ describe("validateDate function", () => {
       {
         value: { day: "09", month: "12", year: "1888" },
         field: "dateOfBirth",
-        expected: "Date of birth date must be a valid date",
+        expected: "Date of birth must be a real date",
       },
       {
         value: { day: "09", month: "12", year: "3000" },
         field: "dateOfBirth",
-        expected: "Date of birth date must be a valid date",
+        expected: "Date of birth must be a real date",
       },
     ];
 

@@ -243,7 +243,7 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
     // Verify multiple error messages are shown
     sputumCollectionPage.validateErrorSummaryContains([
       "Sputum sample 1 date must include a day, month and year",
-      "Sputum sample 2 date must be a valid date",
+      "Sputum sample 2 date must be a real date",
       "Enter Sputum sample 2 collection method",
       "Sputum sample 3 date must be today or in the past",
     ]);
@@ -252,7 +252,7 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
     sputumCollectionPage.validateSample1DateError(
       "Sputum sample 1 date must include a day, month and year",
     );
-    sputumCollectionPage.validateSample2DateError("Sputum sample 2 date must be a valid date");
+    sputumCollectionPage.validateSample2DateError("Sputum sample 2 date must be a real date");
     sputumCollectionPage.validateSample2CollectionMethodError();
     sputumCollectionPage.validateSample3DateError(
       "Sputum sample 3 date must be today or in the past",
@@ -261,7 +261,7 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
     // Verify comprehensive error state
     sputumCollectionPage.validateFormErrors({
       sample1Date: "Sputum sample 1 date must include a day, month and year",
-      sample2Date: "Sputum sample 2 date must be a valid date",
+      sample2Date: "Sputum sample 2 date must be a real date",
       sample2CollectionMethod: "Enter Sputum sample 2 collection method",
       sample3Date: "Sputum sample 3 date must be today or in the past",
     });
