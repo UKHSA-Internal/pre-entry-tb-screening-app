@@ -19,37 +19,31 @@ export default function SignedOutPage() {
 
   return (
     <Container title="You have signed out - Complete UK pre-entry health screening - GOV.UK">
-      <div className="govuk-grid-row">
-        <div className="govuk-grid-column-two-thirds">
-          <Heading level={1} size="l" title="You have signed out" />
-          <p className="govuk-body ">
-            You will need to sign in to continue or start a new screening.
-          </p>
-          <p>
-            <LinkLabel
-              key="sign-in"
-              className="govuk-link"
-              to="#"
-              title="Sign in"
-              externalLink={false}
-              onClick={(e) => {
-                e.preventDefault();
-                initializeSignIn();
-              }}
-            />
-          </p>
-          <p>
-            <LinkLabel
-              key="feedback"
-              className="govuk-link"
-              to="https://forms.office.com/pages/responsepage.aspx?id=mRRO7jVKLkutR188-d6GZtaAaJfrhApCue13O2-oStFUNlIyRkRMWVBNQkszSTJISDJGU1pJTTkxNy4u&route=shorturl"
-              title="What did you think of this service? (opens in new tab)"
-              externalLink={true}
-            />
-            (takes 10 minutes)
-          </p>
-        </div>
-      </div>
+      <Heading level={1} size="l" title="You have signed out" />
+      <p className="govuk-body ">You will need to sign in to continue or start a new screening.</p>
+      <p>
+        <LinkLabel
+          key="sign-in"
+          className="govuk-link"
+          to="#"
+          title="Sign in"
+          externalLink={false}
+          onClick={(e) => {
+            e.preventDefault();
+            initializeSignIn();
+          }}
+        />
+      </p>
+      <p>
+        <LinkLabel
+          key="feedback"
+          className="govuk-link"
+          to="https://forms.office.com/pages/responsepage.aspx?id=mRRO7jVKLkutR188-d6GZtaAaJfrhApCue13O2-oStFUNlIyRkRMWVBNQkszSTJISDJGU1pJTTkxNy4u&route=shorturl"
+          title="What did you think of this service? (opens in new tab)"
+          externalLink={true}
+        />
+        (takes 10 minutes)
+      </p>
     </Container>
   );
 }

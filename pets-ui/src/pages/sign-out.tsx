@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import Button from "@/components/button/button";
 import Container from "@/components/container/container";
+import Heading from "@/components/heading/heading";
 import NotificationBanner from "@/components/notificationBanner/notificationBanner";
 import { useAppSelector } from "@/redux/hooks";
 import { selectNavigation } from "@/redux/store";
@@ -31,32 +32,26 @@ export default function SignOutPage() {
       title="Sign out - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo={backLinkTo}
     >
-      <div className="govuk-grid-row govuk-!-margin-top-4">
-        <div className="govuk-grid-column-two-thirds">
-          <NotificationBanner bannerTitle="Important">
-            <h3 className="govuk-notification-banner__heading">
-              Are you sure you want to sign out?
-            </h3>
-            <p className="govuk-body govuk-!-font-size-19 govuk-!-margin-bottom-2">
-              Signing out will lose any unsaved information.
-            </p>
-            <div className="govuk-button-group">
-              <Button
-                id="sign-out-confirm"
-                type={ButtonType.WARNING}
-                text="Sign out"
-                handleClick={handleSignOut}
-              />
-              <Button
-                id="sign-out-cancel"
-                type={ButtonType.SECONDARY}
-                text="Go back to screening"
-                handleClick={() => navigate(backLinkTo)}
-              />
-            </div>
-          </NotificationBanner>
+      <NotificationBanner bannerTitle="Important">
+        <Heading level={3} size="m" title="Are you sure you want to sign out?"></Heading>
+        <p className="govuk-body govuk-!-font-size-19 govuk-!-margin-bottom-2">
+          Signing out will lose any unsaved information.
+        </p>
+        <div className="govuk-button-group">
+          <Button
+            id="sign-out-confirm"
+            type={ButtonType.WARNING}
+            text="Sign out"
+            handleClick={handleSignOut}
+          />
+          <Button
+            id="sign-out-cancel"
+            type={ButtonType.SECONDARY}
+            text="Go back to screening"
+            handleClick={() => navigate(backLinkTo)}
+          />
         </div>
-      </div>
+      </NotificationBanner>
     </Container>
   );
 }
