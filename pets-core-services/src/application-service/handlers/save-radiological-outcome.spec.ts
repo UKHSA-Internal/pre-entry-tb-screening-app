@@ -1,8 +1,10 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { seededApplications } from "../../shared/fixtures/application";
+import { logger } from "../../shared/logger";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededRadiologicalOutcome } from "../fixtures/radiological-outcome";
+import { RadiologicalOutcome } from "../models/radiological-outcome";
 import {
   SaveRadiologicalOutcomeEvent,
   saveRadiologicalOutcomeHandler,
@@ -54,6 +56,31 @@ describe("Test for Saving Radiological Outcome into DB", () => {
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Radiological Outcome already saved",
     });
+  });
+
+  test("Handling errors while creating radiological outcome", async () => {
+    // Arrange
+    const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    const radiologicalOutcomeMock = vi
+      .spyOn(RadiologicalOutcome, "createRadiologicalOutcome")
+      .mockRejectedValue(Error("It can't be created"));
+    const existingRadiologicalOutcome = seededRadiologicalOutcome[0];
+    const event: SaveRadiologicalOutcomeEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[1].applicationId },
+      parsedBody: existingRadiologicalOutcome,
+    };
+
+    // Act
+    const response = await saveRadiologicalOutcomeHandler(event);
+
+    // Assert
+    expect(errorLoggerMock).toHaveBeenCalledWith(
+      Error("It can't be created"),
+      "Error saving Radiological Outcome",
+    );
+    expect(response.statusCode).toEqual(500);
+    radiologicalOutcomeMock.mockReset();
   });
 
   test("Missing required body returns a 500 response", async () => {
