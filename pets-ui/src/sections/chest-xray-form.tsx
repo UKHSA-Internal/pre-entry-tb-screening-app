@@ -42,7 +42,7 @@ const DicomUploadModule = (
       <Heading title={props.title} level={3} size="s"></Heading>
 
       <p className="govuk-body">
-        Select a file to upload. File type must be DCM. Images must be less than 50MB.
+        Select a file to upload. File type must be DICOM. Images must be less than 50MB.
       </p>
 
       <FileUpload
