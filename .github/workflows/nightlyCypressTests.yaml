@@ -114,8 +114,14 @@ jobs:
          npm install -g mochawesome-merge mochawesome-report-generator jq
      - name: Merge mochawesome reports
        run: |
-         mochawesome-merge all-results/**/mochawesome*.json > mochawesome.json
-         marge mochawesome.json -f index -o dashboard --reportTitle "🌙 Pre-entry TB Screening - Nightly Cypress Test Results"
+         if find all-results -name "*.json" -type f | grep -q .; then
+           mochawesome-merge "all-results/**/*.json" > mochawesome.json
+           marge mochawesome.json -f index -o dashboard --reportTitle "🌙 Pre-entry TB Screening - Nightly Cypress Test Results"
+         else
+           echo "No test reports found, creating empty dashboard"
+           mkdir -p dashboard
+           echo "<h1>No test results available</h1>" > dashboard/index.html
+         fi
      - name: Upload Dashboard as Artifact
        uses: actions/upload-artifact@v4
        with:
