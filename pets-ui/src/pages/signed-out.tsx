@@ -1,22 +1,8 @@
-import { useMsal } from "@azure/msal-react";
-
-import { loginRequest } from "@/auth/auth";
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 
 export default function SignedOutPage() {
-  const { instance } = useMsal();
-
-  const initializeSignIn = () => {
-    instance
-      .loginRedirect({
-        scopes: loginRequest.scopes,
-        storeInCache: loginRequest.storeInCache,
-      })
-      .catch(() => new Error("Failed to initialize sign in"));
-  };
-
   return (
     <Container title="You have signed out - Complete UK pre-entry health screening - GOV.UK">
       <Heading level={1} size="l" title="You have signed out" />
@@ -25,13 +11,9 @@ export default function SignedOutPage() {
         <LinkLabel
           key="sign-in"
           className="govuk-link"
-          to="#"
+          to="/"
           title="Sign in"
           externalLink={false}
-          onClick={(e) => {
-            e.preventDefault();
-            initializeSignIn();
-          }}
         />
       </p>
       <p>

@@ -1,30 +1,11 @@
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import SignedOutPage from "@/pages/signed-out";
 import { renderWithProviders } from "@/utils/test-utils";
 
-const mockLoginRedirect = vi.fn();
-vi.mock("@azure/msal-react", () => ({
-  useMsal: () => ({
-    instance: {
-      loginRedirect: mockLoginRedirect,
-    },
-    accounts: [],
-  }),
-}));
-
 describe("Signed out page", () => {
-  let user: ReturnType<typeof userEvent.setup>;
-
-  beforeEach(() => {
-    user = userEvent.setup();
-    mockLoginRedirect.mockClear();
-    mockLoginRedirect.mockResolvedValue(undefined);
-  });
-
   const setup = () => {
     renderWithProviders(
       <HelmetProvider>
@@ -41,36 +22,10 @@ describe("Signed out page", () => {
     ).toBeInTheDocument();
   });
 
-  it("contains a sign in link", () => {
+  it("contains a sign in link back to root", () => {
     setup();
     const signInLink = screen.getByRole("link", { name: "Sign in" });
-    expect(signInLink).toBeInTheDocument();
-  });
-
-  it("calls MSAL loginRedirect when sign in link is clicked", async () => {
-    setup();
-    const signInLink = screen.getByRole("link", { name: "Sign in" });
-    await user.click(signInLink);
-
-    expect(mockLoginRedirect).toHaveBeenCalledWith({
-      scopes: [],
-      storeInCache: {
-        accessToken: true,
-        idToken: true,
-        refreshToken: true,
-      },
-    });
-  });
-
-  it("handles MSAL loginRedirect errors", async () => {
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    mockLoginRedirect.mockRejectedValue(new Error("MSAL login error"));
-    setup();
-    const signInLink = screen.getByRole("link", { name: "Sign in" });
-    await user.click(signInLink);
-
-    expect(mockLoginRedirect).toHaveBeenCalled();
-    consoleSpy.mockRestore();
+    expect(signInLink).toHaveAttribute("href", "/");
   });
 
   it("contains feedback link with correct URL and text", () => {
