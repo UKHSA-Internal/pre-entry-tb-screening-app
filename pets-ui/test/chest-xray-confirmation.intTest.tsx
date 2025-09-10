@@ -38,8 +38,9 @@ test("Chest X-ray Information confirmation page renders correctly & redirects on
   const button = screen.getAllByRole("button")[0];
   const user = userEvent.setup();
 
-  expect(screen.getByText("Radiological outcome confirmed")).toBeTruthy();
-  expect(screen.getByText("You can now return to the progress tracker.")).toBeTruthy();
+  expect(screen.getByText("Chest X-ray images confirmed")).toBeTruthy();
+  expect(screen.getByText("We have sent the chest X-ray images to UKHSA.")).toBeTruthy();
+  expect(screen.getByText("You can now view a summary for this visa applicant.")).toBeTruthy();
   expect(button).toHaveTextContent("Continue");
   await user.click(button);
   expect(useNavigateMock).toHaveBeenCalledWith("/tracker");

@@ -124,7 +124,7 @@ const emptyChestXraySlice = {
   apicalLordoticXrayFile: "",
   lateralDecubitusXrayFileName: "",
   lateralDecubitusXrayFile: "",
-  completionDate: {
+  dateXrayTaken: {
     year: "",
     month: "",
     day: "",
@@ -366,7 +366,7 @@ describe("ApplicantSearchForm", () => {
       apicalLordoticXrayFile: "al-bucket",
       lateralDecubitusXrayFileName: "ld-file-name",
       lateralDecubitusXrayFile: "ld-bucket",
-      completionDate: {
+      dateXrayTaken: {
         year: "2024",
         month: "12",
         day: "31",
@@ -747,7 +747,7 @@ describe("ApplicantSearchForm", () => {
       apicalLordoticXrayFile: "al-bucket",
       lateralDecubitusXrayFileName: "ld-file-name",
       lateralDecubitusXrayFile: "ld-bucket",
-      completionDate: {
+      dateXrayTaken: {
         year: "2024",
         month: "12",
         day: "31",
