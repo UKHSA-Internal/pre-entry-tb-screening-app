@@ -27,11 +27,8 @@ jobs:
         id: set-matrix
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            # Manual dispatch - use selected inputs
             ENV="${{ github.event.inputs.environment }}"
             BROWSER="${{ github.event.inputs.browser }}"
-            
-            # Set URL based on environment using our constants
             case $ENV in
               "dev")
                 URL="https://clinics.dev.pets.ukhsa.gov.uk"
@@ -46,8 +43,6 @@ jobs:
                 URL="http://localhost:3000"
                 ;;
             esac
-            
-            # Create matrix with single environment and browser
             MATRIX=$(cat <<EOF
           {
             "include": [
@@ -61,15 +56,11 @@ jobs:
           EOF
             )
           else
-            # Scheduled run - test all environments and browsers
-            # Generate all combinations programmatically
             ENVS=("dev" "qat" "preprod")
             ENV_URLS=("https://clinics.dev.pets.ukhsa.gov.uk" "https://clinics.test.pets.ukhsa.gov.uk" "https://clinics.preprod.pets.ukhsa.gov.uk")
             BROWSERS=("chrome" "firefox" "edge")
-            
             MATRIX='{"include":['
             FIRST=true
-            
             for i in "${!ENVS[@]}"; do
               for BROWSER in "${BROWSERS[@]}"; do
                 if [ "$FIRST" = true ]; then
@@ -80,11 +71,8 @@ jobs:
                 MATRIX="$MATRIX{\"env_name\":\"${ENVS[$i]}\",\"env_url\":\"${ENV_URLS[$i]}\",\"browser\":\"$BROWSER\"}"
               done
             done
-            
             MATRIX="$MATRIX]}"
           fi
-          
-          # Output the matrix
           echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
 
   cypress-tests:
@@ -191,17 +179,25 @@ jobs:
       - name: Install report tools
         run: |
           npm install -g mochawesome-merge mochawesome-report-generator jq
+      - name: Check for mochawesome JSONs
+        id: check_reports
+        run: |
+          count=$(find all-results -name 'mochawesome*.json' | wc -l)
+          echo "json_count=$count" >> $GITHUB_OUTPUT
       - name: Merge mochawesome reports
+        if: steps.check_reports.outputs.json_count != '0'
         run: |
           mochawesome-merge all-results/**/mochawesome*.json > mochawesome.json
           marge mochawesome.json -f index -o dashboard --reportTitle "🌙 Pre-entry TB Screening - Nightly Cypress Test Results"
       - name: Upload Dashboard as Artifact
+        if: steps.check_reports.outputs.json_count != '0'
         uses: actions/upload-artifact@v4
         with:
           name: nightly-dashboard
           path: dashboard
           retention-days: 7
       - name: Deploy Dashboard to GitHub Pages
+        if: steps.check_reports.outputs.json_count != '0'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
