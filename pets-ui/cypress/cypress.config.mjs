@@ -100,10 +100,8 @@ export default defineConfig({
   e2e: {
     baseUrl: getBaseUrl(),
     supportFile: "cypress/support/e2e.ts",
-    specPattern:
-      process.env.CI || process.env.GITHUB_ACTIONS
-        ? getNonSkippedSpecs()
-        : "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
+    // Static glob string for specPattern, as required by Cypress
+    specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
     experimentalStudio: true,
     setupNodeEvents: async (on, config) => {
       await setupMochawesomeReporter(on);
