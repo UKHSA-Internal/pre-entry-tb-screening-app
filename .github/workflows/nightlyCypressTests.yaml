@@ -22,10 +22,10 @@ on:
         default: "all"
         type: choice
         options: 
+          - all
           - chrome
           - firefox
           - edge
-         
 
 # Add permissions for GitHub Pages deployment
 permissions:
@@ -47,23 +47,27 @@ jobs:
           # Handle browser selection
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             # Manual trigger - use selected browsers
-            BROWSERS="${{ github.event.inputs.browsers }}"
+            BROWSER_SELECTION="${{ github.event.inputs.browsers }}"
             ENV_SELECTION="${{ github.event.inputs.environment }}"
           else
             # Scheduled trigger - use all browsers and environments
-            BROWSERS="chrome,firefox,edge"
+            BROWSER_SELECTION="all"
             ENV_SELECTION="all"
           fi
           
-          # Convert comma-separated browsers to JSON array
-          BROWSER_ARRAY=$(echo "\"$BROWSERS\"" | jq -r 'split(",") | map(select(length > 0))')
+          # Convert browser selection to JSON array
+          if [[ "$BROWSER_SELECTION" == "all" ]]; then
+            BROWSER_ARRAY='["chrome", "firefox", "edge"]'
+          else
+            BROWSER_ARRAY='["'$BROWSER_SELECTION'"]'
+          fi
           echo "browsers=$BROWSER_ARRAY" >> $GITHUB_OUTPUT
           
           # Handle environment selection
           if [[ "$ENV_SELECTION" == "all" ]]; then
             ENV_ARRAY='["qat", "dev", "preprod"]'
           else
-            ENV_ARRAY=$(echo "\"$ENV_SELECTION\"" | jq -r '[.]')
+            ENV_ARRAY='["'$ENV_SELECTION'"]'
           fi
           echo "environments=$ENV_ARRAY" >> $GITHUB_OUTPUT
           
