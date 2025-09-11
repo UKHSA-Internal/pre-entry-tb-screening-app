@@ -9,16 +9,22 @@ on:
       environment:
         description: 'Select environment to test'
         required: true
-        default: 'all'
+        default: "all"
         type: choice
-        options: [all, qat, dev, preprod]
-          
+        options: 
+          - all
+          - qat
+          - dev
+          - preprod
       browsers:
         description: 'Select browsers to test'
         required: true
-        default: 'all'
+        default: "all"
         type: choice
-        options: [all, chrome, firefox, edge]
+        options: 
+          - chrome
+          - firefox
+          - edge
          
 
 # Add permissions for GitHub Pages deployment
