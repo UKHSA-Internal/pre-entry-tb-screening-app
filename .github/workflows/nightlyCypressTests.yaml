@@ -127,7 +127,7 @@ jobs:
         id: initial_attempt
         continue-on-error: true
         with:
-          install: true
+          install: false
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
           config-file: cypress/cypress.config.mjs
