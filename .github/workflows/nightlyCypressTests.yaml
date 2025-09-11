@@ -12,14 +12,14 @@ on:
         default: 'all'
         type: choice
         options: [all, qat, dev, preprod]
-         
+          
       browsers:
         description: 'Select browsers to test'
         required: true
-        default: 'chrome,firefox,edge'
+        default: 'all'
         type: choice
-        options: [chrome, firefox, edge]
-        
+        options: [all, chrome, firefox, edge]
+         
 
 # Add permissions for GitHub Pages deployment
 permissions:
@@ -50,14 +50,14 @@ jobs:
           fi
           
           # Convert comma-separated browsers to JSON array
-          BROWSER_ARRAY=$(echo "$BROWSERS" | jq -R 'split(",") | map(select(length > 0))')
+          BROWSER_ARRAY=$(echo "\"$BROWSERS\"" | jq -r 'split(",") | map(select(length > 0))')
           echo "browsers=$BROWSER_ARRAY" >> $GITHUB_OUTPUT
           
           # Handle environment selection
           if [[ "$ENV_SELECTION" == "all" ]]; then
             ENV_ARRAY='["qat", "dev", "preprod"]'
           else
-            ENV_ARRAY=$(echo "[$ENV_SELECTION]" | jq -c 'map(select(length > 0))')
+            ENV_ARRAY=$(echo "\"$ENV_SELECTION\"" | jq -r '[.]')
           fi
           echo "environments=$ENV_ARRAY" >> $GITHUB_OUTPUT
           
