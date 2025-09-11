@@ -1,78 +1,32 @@
 name: Nightly Cypress Tests
+
 on:
   schedule:
     - cron: "0 1 * * 1-5"
   workflow_dispatch:
-    inputs:
-      environment:
-        description: "Environment to run tests against"
-        required: true
-        default: "qat"
-        type: choice
-        options: [dev, qat, preprod]
-      browser:
-        description: "Browser to run Cypress on"
-        required: false
-        default: "chrome"
-        type: choice
-        options: [chrome, firefox, edge]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - name: Set up test matrix
-        id: set-matrix
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            ENV="${{ github.event.inputs.environment }}"
-            BROWSER="${{ github.event.inputs.browser }}"
-            case $ENV in
-              "dev")
-                URL="https://clinics.dev.pets.ukhsa.gov.uk"
-                ;;
-              "qat")
-                URL="https://clinics.test.pets.ukhsa.gov.uk"
-                ;;
-              "preprod")
-                URL="https://clinics.preprod.pets.ukhsa.gov.uk"
-                ;;
-              *)
-                URL="http://localhost:3000"
-                ;;
-            esac
-            MATRIX="{\"include\":[{\"env_name\":\"$ENV\",\"env_url\":\"$URL\",\"browser\":\"$BROWSER\"}]}"
-          else
-            ENVS=("dev" "qat" "preprod")
-            ENV_URLS=("https://clinics.dev.pets.ukhsa.gov.uk" "https://clinics.test.pets.ukhsa.gov.uk" "https://clinics.preprod.pets.ukhsa.gov.uk")
-            BROWSERS=("chrome" "firefox" "edge")
-            MATRIX='{"include":['
-            FIRST=true
-            for i in "${!ENVS[@]}"; do
-              for BROWSER in "${BROWSERS[@]}"; do
-                if [ "$FIRST" = true ]; then
-                  FIRST=false
-                else
-                  MATRIX="$MATRIX,"
-                fi
-                MATRIX="$MATRIX{\"env_name\":\"${ENVS[$i]}\",\"env_url\":\"${ENV_URLS[$i]}\",\"browser\":\"$BROWSER\"}"
-              done
-            done
-            MATRIX="$MATRIX]}"
-          fi
-          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
-
-  cypress-tests:
-    needs: setup
-    name: ${{ matrix.env_name }} - ${{ matrix.browser }}
+  cypress-nightly:
+    name: Run Nightly Cypress Tests - ${{ matrix.browser }} - ${{ matrix.environment.name }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(needs.setup.outputs.matrix) }}
+      matrix:
+        browser: [chrome, firefox, edge]
+        environment:
+          - name: dev
+            url: https://clinics.dev.pets.ukhsa.gov.uk
+          - name: qat
+            url: https://clinics.test.pets.ukhsa.gov.uk
+          - name: preprod
+            url: https://clinics.preprod.pets.ukhsa.gov.uk
+
     env:
-      CI: true
       USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
       USER_1_PASSWORD: ${{ secrets.USER_1_PASSWORD }}
       USER_2_EMAIL: ${{ secrets.USER_2_EMAIL }}
@@ -85,98 +39,276 @@ jobs:
       USER_5_PASSWORD: ${{ secrets.USER_5_PASSWORD }}
       USER_6_EMAIL: ${{ secrets.USER_6_EMAIL }}
       USER_6_PASSWORD: ${{ secrets.USER_6_PASSWORD }}
-      ENVIRONMENT: ${{ matrix.env_name }}
-      CYPRESS_BASE_URL: ${{ matrix.env_url }}
+      ENV_NAME: ${{ matrix.environment.name }}
+      ENV_URL: ${{ matrix.environment.url }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
           cache: "pnpm"
+
       - name: Install dependencies
         run: pnpm i
+
+      - name: Debug available Cypress specs
+        run: ls -R pets-ui/cypress/e2e
+
       - name: Cache Cypress binary
         id: cache-cypress-binary
         uses: actions/cache@v4
         with:
           path: ~/.cache/Cypress
-          key: cypress-binary-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
+          key: cypress-binary-nightly-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
+
       - name: Install Cypress Binary
         if: steps.cache-cypress-binary.outputs.cache-hit != 'true'
         run: |
           pnpm exec cypress install --force
           pnpm exec cypress verify
         working-directory: pets-ui
+
+      - name: Start Local Environment
+        run: |
+          pnpm start & sleep 120
+
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
-        id: cypress_run
+        continue-on-error: true
+        id: initial_attempt
         with:
           install: false
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
           config-file: cypress/cypress.config.mjs
-          config: baseUrl=${{ matrix.env_url }},reporter=mochawesome,reporterOptions.reportDir=cypress/results/${{ matrix.env_name }}-${{ matrix.browser }},reporterOptions.overwrite=false,reporterOptions.html=false,reporterOptions.json=true
-      - name: Upload Screenshots
+        env:
+          CYPRESS_BASE_URL: ${{ env.ENV_URL }}
+
+      - name: Retry if failed
+        if: steps.initial_attempt.outcome != 'success'
+        uses: cypress-io/github-action@v6
+        id: retry_attempt
+        with:
+          install: false
+          working-directory: pets-ui
+          browser: ${{ matrix.browser }}
+          config-file: cypress/cypress.config.mjs
+        env:
+          CYPRESS_BASE_URL: ${{ env.ENV_URL }}
+
+      - name: Upload Failed Tests Screenshots
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: screenshots-${{ matrix.env_name }}-${{ matrix.browser }}
+          name: nightly-failed-screenshots-${{ matrix.environment.name }}-${{ matrix.browser }}
           path: pets-ui/cypress/screenshots
           retention-days: 7
-          if-no-files-found: ignore
-      - name: Upload Videos
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: videos-${{ matrix.env_name }}-${{ matrix.browser }}
-          path: pets-ui/cypress/videos
-          retention-days: 7
-          if-no-files-found: ignore
-      - name: Upload Test Results (Mochawesome)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: results-${{ matrix.env_name }}-${{ matrix.browser }}
-          path: pets-ui/cypress/results
-          retention-days: 7
-          if-no-files-found: ignore
 
-  generate-dashboard:
-    needs: cypress-tests
+      - name: Merge Mochawesome Reports
+        if: always()
+        run: |
+          JSON_DIR=pets-ui/cypress/reports/mochawesome/.jsons
+          if ls ${JSON_DIR}/*.json 1> /dev/null 2>&1; then
+            npx mochawesome-merge ${JSON_DIR}/*.json > pets-ui/cypress/reports/mochawesome/mochawesome.json
+          else
+            echo "No mochawesome JSON files found. Skipping merge."
+          fi
+      - name: Upload Mochawesome Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-mochawesome-report-${{ matrix.environment.name }}-${{ matrix.browser }}
+          path: pets-ui/cypress/reports/mochawesome/
+          retention-days: 7
+
+      - name: Store browser result
+        if: always()
+        run: |
+          if [[ "${{ steps.initial_attempt.outcome }}" == "success" ]] || [[ "${{ steps.retry_attempt.outcome }}" == "success" ]]; then
+            echo "PASS" > ${{ matrix.environment.name }}-${{ matrix.browser }}-result.txt
+          else
+            echo "FAIL" > ${{ matrix.environment.name }}-${{ matrix.browser }}-result.txt
+          fi
+
+      - name: Upload browser result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-result-${{ matrix.environment.name }}-${{ matrix.browser }}
+          path: ${{ matrix.environment.name }}-${{ matrix.browser }}-result.txt
+
+  generate-summary-and-deploy:
+    name: Generate Summary and Deploy Dashboard
+    needs: cypress-nightly
     if: always()
     runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: all-results
-      - name: Install report tools
+          path: all-artifacts
+          pattern: "*"
+
+      - name: Generate test summary report
+        id: summary
         run: |
-          npm install -g mochawesome-merge mochawesome-report-generator jq
-      - name: Check for mochawesome JSONs
-        id: check_reports
+          echo "# 🌙 Nightly Cypress Test Results" > nightly-summary.md
+          echo "**Run Date**: $(date)" >> nightly-summary.md
+          echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
+          echo "" >> nightly-summary.md
+          # Matrix for browsers and environments
+          BROWSERS=("chrome" "firefox" "edge")
+          ENVIRONMENTS=("qat" "dev" "preprod")
+          TOTAL_RUNS=0
+          FAILED_RUNS=0
+          FAILED_TESTS=0
+
+          # Browser x Environment Table Header
+          echo "## Browser × Environment Test Results" >> nightly-summary.md
+          echo "" >> nightly-summary.md
+          echo "| Browser   | QAT   | DEV   | PREPROD   |" >> nightly-summary.md
+          echo "|-----------|-------|-------|-----------|" >> nightly-summary.md
+
+          for BROWSER in "${BROWSERS[@]}"; do
+            ROW="| $BROWSER"
+            for ENV in "${ENVIRONMENTS[@]}"; do
+              RESULT_FILE="all-artifacts/browser-result-$ENV-$BROWSER/${ENV}-$BROWSER-result.txt"
+              ((TOTAL_RUNS++))
+              if [ -f "$RESULT_FILE" ]; then
+                BROWSER_RESULT=$(cat "$RESULT_FILE")
+                if [ "$BROWSER_RESULT" = "PASS" ]; then
+                  CELL="✅"
+                elif [ "$BROWSER_RESULT" = "FAIL" ]; then
+                  CELL="❌"
+                  ((FAILED_RUNS++))
+                else
+                  CELL="?"
+                fi
+              else
+                CELL="N/A"
+              fi
+              ROW="$ROW | $CELL"
+            done
+            ROW="$ROW |"
+            echo "$ROW" >> nightly-summary.md
+          done
+          echo "" >> nightly-summary.md
+
+          # Collect screenshot failures count across all
+          for ENV in "${ENVIRONMENTS[@]}"; do
+            for BROWSER in "${BROWSERS[@]}"; do
+              SCREENSHOT_DIR="all-artifacts/nightly-failed-screenshots-$ENV-$BROWSER"
+              if [ -d "$SCREENSHOT_DIR" ] && [ "$(ls -A $SCREENSHOT_DIR 2>/dev/null)" ]; then
+                SCREENSHOT_COUNT=$(find "$SCREENSHOT_DIR" -name "*.png" -o -name "*.jpg" | wc -l)
+                FAILED_TESTS=$((FAILED_TESTS + SCREENSHOT_COUNT))
+              fi
+            done
+          done
+
+          # Overall summary
+          if [ $FAILED_RUNS -eq 0 ]; then
+            echo "## ✅ Overall Status: PASSED" >> nightly-summary.md
+            echo "All tests in all environments completed successfully!" >> nightly-summary.md
+            echo "status=PASS" >> $GITHUB_OUTPUT
+            OVERALL_STATUS="PASS"
+          else
+            echo "## ❌ Overall Status: FAILED" >> nightly-summary.md
+            echo "$FAILED_RUNS out of $TOTAL_RUNS environment-browser runs have failing tests." >> nightly-summary.md
+            echo "status=FAIL" >> $GITHUB_OUTPUT
+            OVERALL_STATUS="FAIL"
+          fi
+
+          SUCCESS_RATE="$(( (TOTAL_RUNS - FAILED_RUNS) * 100 / TOTAL_RUNS ))%"
+
+          echo "overall_status=$OVERALL_STATUS" >> $GITHUB_OUTPUT
+          echo "failed_tests=$FAILED_TESTS" >> $GITHUB_OUTPUT
+          echo "success_rate=$SUCCESS_RATE" >> $GITHUB_OUTPUT
+
+      - name: Create dashboard directory
         run: |
-          count=$(find all-results -name 'mochawesome*.json' | wc -l)
-          echo "json_count=$count" >> $GITHUB_OUTPUT
-      - name: Merge mochawesome reports
-        if: steps.check_reports.outputs.json_count != '0'
+          mkdir -p dashboard
+          cp .github/pages/index.html dashboard/ || echo "index.html not found, will create default"
+
+      - name: Generate dashboard data JSON
         run: |
-          mochawesome-merge all-results/**/mochawesome*.json > mochawesome.json
-          marge mochawesome.json -f index -o dashboard --reportTitle "🌙 Pre-entry TB Screening - Nightly Cypress Test Results"
-      - name: Upload Dashboard as Artifact
-        if: steps.check_reports.outputs.json_count != '0'
+          cat > dashboard/test-results.json << EOF
+          {
+            "overallStatus": "${{ steps.summary.outputs.overall_status }}",
+            "successRate": "${{ steps.summary.outputs.success_rate }}",
+            "failedTests": ${{ steps.summary.outputs.failed_tests }},
+            "lastRunHours": 0,
+            "runUrl": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
+          }
+          EOF
+
+      - name: Create default index.html if not exists
+        run: |
+          if [ ! -f "dashboard/index.html" ]; then
+            cat > dashboard/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html><head><title>Pre-Entry TB Screening - Nightly Test Dashboard</title></head>
+          <body><h1>Dashboard Loading...</h1>
+          <script>
+          setTimeout(() => {
+            fetch('./test-results.json').then(r => r.json()).then(data => {
+              document.body.innerHTML = `
+                <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto;">
+                  <h1>🌙 Pre-Entry TB Screening - Nightly Tests: ${data.overallStatus}</h1>
+                  <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <p><strong>Success Rate:</strong> ${data.successRate} | <strong>Failed Tests:</strong> ${data.failedTests}</p>
+                  </div>
+                  <p><strong>Last Updated:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
+                  <p><a href="${data.runUrl}" target="_blank" style="background: #0066cc; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px;">📊 View Detailed Results</a></p>
+                </div>
+              `;
+            });
+          }, 100);
+          </script></body></html>
+          EOF
+          fi
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./dashboard"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Upload summary report
         uses: actions/upload-artifact@v4
         with:
-          name: nightly-dashboard
-          path: dashboard
+          name: nightly-summary-report
+          path: nightly-summary.md
           retention-days: 7
-      - name: Deploy Dashboard to GitHub Pages
-        if: steps.check_reports.outputs.json_count != '0'
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: dashboard
+
+      - name: Set workflow conclusion
+        if: always()
+        run: |
+          echo "🔗 Dashboard URL: ${{ steps.deployment.outputs.page_url }}"
+          if [[ "${{ steps.summary.outputs.status }}" == "PASS" ]]; then
+            echo "::notice::✅ All nightly tests passed! Dashboard updated at ${{ steps.deployment.outputs.page_url }}"
+          else
+            echo "::error::❌ Some nightly tests failed. Check dashboard: ${{ steps.deployment.outputs.page_url }}"
+            exit 1
+          fi

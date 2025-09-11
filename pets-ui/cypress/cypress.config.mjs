@@ -56,6 +56,13 @@ const createSQSClient = () => {
 
 // Function to get base URL based on environment
 const getBaseUrl = () => {
+  // Prefer explicit environment variables set by CI workflow
+  if (process.env.CYPRESS_BASE_URL) {
+    return process.env.CYPRESS_BASE_URL;
+  }
+  if (process.env.ENV_URL) {
+    return process.env.ENV_URL;
+  }
   if (process.env.APP_DOMAIN) {
     return process.env.APP_DOMAIN;
   }
