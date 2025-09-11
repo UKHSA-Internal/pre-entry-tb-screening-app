@@ -4,6 +4,21 @@ on:
   schedule:
     - cron: "0 1 * * 1-5"
   workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment"
+        required: false
+        default: "all"
+        type: choice
+        options: [all, dev, qat, preprod]
+          
+      browser:
+        description: "Browser"
+        required: false
+        default: "all"
+        type: choice
+        options: [all, chrome, firefox, edge]
+          
 
 permissions:
   contents: read
@@ -17,14 +32,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [chrome, firefox, edge]
-        environment:
-          - name: dev
-            url: https://clinics.dev.pets.ukhsa.gov.uk
-          - name: qat
-            url: https://clinics.test.pets.ukhsa.gov.uk
-          - name: preprod
-            url: https://clinics.preprod.pets.ukhsa.gov.uk
+        include:
+          - browser: chrome
+            environment: { name: dev, url: https://clinics.dev.pets.ukhsa.gov.uk }
+          - browser: chrome
+            environment: { name: qat, url: https://clinics.test.pets.ukhsa.gov.uk }
+          - browser: chrome
+            environment: { name: preprod, url: https://clinics.preprod.pets.ukhsa.gov.uk }
+          - browser: firefox
+            environment: { name: dev, url: https://clinics.dev.pets.ukhsa.gov.uk }
+          - browser: firefox
+            environment: { name: qat, url: https://clinics.test.pets.ukhsa.gov.uk }
+          - browser: firefox
+            environment: { name: preprod, url: https://clinics.preprod.pets.ukhsa.gov.uk }
+          - browser: edge
+            environment: { name: dev, url: https://clinics.dev.pets.ukhsa.gov.uk }
+          - browser: edge
+            environment: { name: qat, url: https://clinics.test.pets.ukhsa.gov.uk }
+          - browser: edge
+            environment: { name: preprod, url: https://clinics.preprod.pets.ukhsa.gov.uk }
 
     env:
       USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
@@ -43,6 +69,18 @@ jobs:
       ENV_URL: ${{ matrix.environment.url }}
 
     steps:
+      - name: Skip unwanted matrix combinations
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [[ "${{ github.event.inputs.browser }}" != "all" && "${{ matrix.browser }}" != "${{ github.event.inputs.browser }}" ]]; then
+            echo "Skipping browser ${{ matrix.browser }} because input is ${{ github.event.inputs.browser }}"
+            exit 78
+          fi
+          if [[ "${{ github.event.inputs.environment }}" != "all" && "${{ matrix.environment.name }}" != "${{ github.event.inputs.environment }}" ]]; then
+            echo "Skipping environment ${{ matrix.environment.name }} because input is ${{ github.event.inputs.environment }}"
+            exit 78
+          fi
+
       - name: Checkout code
         uses: actions/checkout@v4
 
