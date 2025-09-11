@@ -111,26 +111,15 @@ jobs:
           pnpm exec cypress install --force
           pnpm exec cypress verify
         working-directory: pets-ui
-      - name: Cypress run tests (first attempt)
+      - name: Cypress run tests
         uses: cypress-io/github-action@v6
-        id: initial_attempt
-        continue-on-error: true
+        id: cypress_run
         with:
           install: false
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
           config-file: cypress/cypress.config.mjs
           config: baseUrl=${{ matrix.env_url }},reporter=mochawesome,reporterOptions.reportDir=cypress/results/${{ matrix.env_name }}-${{ matrix.browser }},reporterOptions.overwrite=false,reporterOptions.html=false,reporterOptions.json=true
-      - name: Cypress run tests (retry if failed)
-        if: steps.initial_attempt.outcome != 'success'
-        uses: cypress-io/github-action@v6
-        id: retry_attempt
-        with:
-          install: false
-          working-directory: pets-ui
-          browser: ${{ matrix.browser }}
-          config-file: cypress/cypress.config.mjs
-          config: baseUrl=${{ matrix.env_url }},reporter=mochawesome,reporterOptions.reportDir=cypress/results/${{ matrix.env_name }}-${{ matrix.browser }}-retry,reporterOptions.overwrite=false,reporterOptions.html=false,reporterOptions.json=true
       - name: Upload Screenshots
         if: failure()
         uses: actions/upload-artifact@v4

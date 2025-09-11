@@ -103,6 +103,7 @@ export default defineConfig({
     // Static glob string for specPattern, as required by Cypress
     specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
     experimentalStudio: true,
+    retries: 2, // <-- Enable built-in test retries (change number if needed)
     setupNodeEvents: async (on, config) => {
       await setupMochawesomeReporter(on);
 
