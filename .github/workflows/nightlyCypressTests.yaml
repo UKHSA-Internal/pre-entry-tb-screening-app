@@ -43,18 +43,7 @@ jobs:
                 URL="http://localhost:3000"
                 ;;
             esac
-            MATRIX=$(cat <<EOF
-          {
-            "include": [
-              {
-                "env_name": "$ENV",
-                "env_url": "$URL",
-                "browser": "$BROWSER"
-              }
-            ]
-          }
-          EOF
-            )
+            MATRIX="{\"include\":[{\"env_name\":\"$ENV\",\"env_url\":\"$URL\",\"browser\":\"$BROWSER\"}]}"
           else
             ENVS=("dev" "qat" "preprod")
             ENV_URLS=("https://clinics.dev.pets.ukhsa.gov.uk" "https://clinics.test.pets.ukhsa.gov.uk" "https://clinics.preprod.pets.ukhsa.gov.uk")
