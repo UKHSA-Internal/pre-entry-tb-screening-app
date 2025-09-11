@@ -12,7 +12,7 @@ import {
 } from "@aws-sdk/client-sqs";
 import fs from "fs";
 import path from "path";
-import glob from "glob";
+import { glob } from "glob";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
