@@ -1,0 +1,135 @@
+name: Nightly Cypress Tests
+on:
+ schedule:
+   - cron: "0 1 * * 1-5"
+jobs:
+ cypress-tests:
+   name: ${{ matrix.env.name }} - ${{ matrix.browser }}
+   runs-on: ubuntu-latest
+   strategy:
+     fail-fast: false
+     matrix:
+       browser: [chrome, edge, firefox]
+       env:
+         - name: dev
+           url: https://clinics.dev.pets.ukhsa.gov.uk
+         - name: qat
+           url: https://clinics.test.pets.ukhsa.gov.uk
+         - name: preprod
+           url: https://clinics.preprod.pets.ukhsa.gov.uk
+   env:
+     USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
+     USER_1_PASSWORD: ${{ secrets.USER_1_PASSWORD }}
+     USER_2_EMAIL: ${{ secrets.USER_2_EMAIL }}
+     USER_2_PASSWORD: ${{ secrets.USER_2_PASSWORD }}
+     USER_3_EMAIL: ${{ secrets.USER_3_EMAIL }}
+     USER_3_PASSWORD: ${{ secrets.USER_3_PASSWORD }}
+     USER_4_EMAIL: ${{ secrets.USER_4_EMAIL }}
+     USER_4_PASSWORD: ${{ secrets.USER_4_PASSWORD }}
+     USER_5_EMAIL: ${{ secrets.USER_5_EMAIL }}
+     USER_5_PASSWORD: ${{ secrets.USER_5_PASSWORD }}
+     USER_6_EMAIL: ${{ secrets.USER_6_EMAIL }}
+     USER_6_PASSWORD: ${{ secrets.USER_6_PASSWORD }}
+     ENVIRONMENT: ${{ matrix.env.name }}
+     CYPRESS_BASE_URL: ${{ matrix.env.url }}
+   steps:
+     - name: Checkout code
+       uses: actions/checkout@v4
+     - name: Install pnpm
+       uses: pnpm/action-setup@v4
+     - name: Setup Node.js
+       uses: actions/setup-node@v4
+       with:
+         node-version: 18.x
+         cache: "pnpm"
+     - name: Install dependencies
+       run: pnpm i
+     - name: Cache Cypress binary
+       id: cache-cypress-binary
+       uses: actions/cache@v4
+       with:
+         path: ~/.cache/Cypress
+         key: cypress-binary-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
+     - name: Install Cypress Binary
+       if: steps.cache-cypress-binary.outputs.cache-hit != 'true'
+       run: |
+         pnpm exec cypress install --force
+         pnpm exec cypress verify
+       working-directory: pets-ui
+     - name: Cypress run tests (first attempt)
+       uses: cypress-io/github-action@v6
+       id: initial_attempt
+       continue-on-error: true
+       with:
+         install: false
+         working-directory: pets-ui
+         browser: ${{ matrix.browser }}
+         config-file: cypress/cypress.config.mjs
+         config: baseUrl=${{ matrix.env.url }},reporter=mochawesome,reporterOptions.reportDir=cypress/results/${{ matrix.env.name }}-${{ matrix.browser }},reporterOptions.overwrite=false,reporterOptions.html=false,reporterOptions.json=true
+     - name: Cypress run tests (retry if failed)
+       if: steps.initial_attempt.outcome != 'success'
+       uses: cypress-io/github-action@v6
+       id: retry_attempt
+       with:
+         install: false
+         working-directory: pets-ui
+         browser: ${{ matrix.browser }}
+         config-file: cypress/cypress.config.mjs
+         config: baseUrl=${{ matrix.env.url }},reporter=mochawesome,reporterOptions.reportDir=cypress/results/${{ matrix.env.name }}-${{ matrix.browser }}-retry,reporterOptions.overwrite=false,reporterOptions.html=false,reporterOptions.json=true
+     - name: Upload Screenshots
+       if: failure()
+       uses: actions/upload-artifact@v4
+       with:
+         name: screenshots-${{ matrix.env.name }}-${{ matrix.browser }}
+         path: pets-ui/cypress/screenshots
+         retention-days: 7
+         if-no-files-found: ignore
+     - name: Upload Videos
+       if: always()
+       uses: actions/upload-artifact@v4
+       with:
+         name: videos-${{ matrix.env.name }}-${{ matrix.browser }}
+         path: pets-ui/cypress/videos
+         retention-days: 7
+         if-no-files-found: ignore
+     - name: Upload Test Results (Mochawesome)
+       if: always()
+       uses: actions/upload-artifact@v4
+       with:
+         name: results-${{ matrix.env.name }}-${{ matrix.browser }}
+         path: pets-ui/cypress/results
+         retention-days: 7
+         if-no-files-found: ignore
+ generate-dashboard:
+   needs: cypress-tests
+   if: always()
+   runs-on: ubuntu-latest
+   steps:
+     - name: Download all artifacts
+       uses: actions/download-artifact@v4
+       with:
+         path: all-results
+     - name: Install report tools
+       run: |
+         npm install -g mochawesome-merge mochawesome-report-generator jq
+     - name: Merge mochawesome reports
+       run: |
+         if find all-results -name "*.json" -type f | grep -q .; then
+           mochawesome-merge "all-results/**/*.json" > mochawesome.json
+           marge mochawesome.json -f index -o dashboard --reportTitle "🌙 Pre-entry TB Screening - Nightly Cypress Test Results"
+         else
+           echo "No test reports found, creating empty dashboard"
+           mkdir -p dashboard
+           echo "<h1>No test results available</h1>" > dashboard/index.html
+         fi
+     - name: Upload Dashboard as Artifact
+       uses: actions/upload-artifact@v4
+       with:
+         name: nightly-dashboard
+         path: dashboard
+         retention-days: 7
+     - name: Deploy Dashboard to GitHub Pages
+       uses: peaceiris/actions-gh-pages@v3
+       with:
+         github_token: ${{ secrets.GITHUB_TOKEN }}
+         publish_dir: dashboard
