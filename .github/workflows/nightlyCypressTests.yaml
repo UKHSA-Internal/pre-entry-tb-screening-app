@@ -172,7 +172,7 @@ jobs:
           path: pets-ui/cypress/reports/mochawesome/
           retention-days: 7
 
-      - name: Store browser result
+      - name: Store env+browser result
         if: always()
         run: |
           if [[ "${{ steps.initial_attempt.outcome }}" == "success" ]] || [[ "${{ steps.retry_attempt.outcome }}" == "success" ]]; then
@@ -181,11 +181,11 @@ jobs:
             echo "FAIL" > ${{ matrix.environment }}-${{ matrix.browser }}-result.txt
           fi
 
-      - name: Upload browser result
+      - name: Upload env+browser result
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: browser-result-${{ matrix.environment }}-${{ matrix.browser }}
+          name: env-browser-result-${{ matrix.environment }}-${{ matrix.browser }}
           path: ${{ matrix.environment }}-${{ matrix.browser }}-result.txt
 
   generate-summary-and-deploy:
@@ -193,7 +193,7 @@ jobs:
     needs: [setup-matrix, cypress-nightly]
     if: always()
     runs-on: ubuntu-latest
-    continue-on-error: true   # ✅ allow this job to finish even when tests fail
+    continue-on-error: true   # allow report even if tests fail
 
     environment:
       name: github-pages
@@ -212,8 +212,47 @@ jobs:
       - name: Generate test summary report
         id: summary
         run: |
-          # … (no changes inside script) …
-          # everything that builds nightly-summary.md remains the same
+          echo "# 🌙 Nightly Cypress Test Results" > nightly-summary.md
+          echo "**Run Date**: $(date)" >> nightly-summary.md
+          echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
+          echo "" >> nightly-summary.md
+
+          ENV_LIST=("qat" "dev" "preprod")
+          BROWSER_LIST=("chrome" "firefox" "edge")
+
+          TOTAL=0
+          FAILS=0
+
+          for env in "${ENV_LIST[@]}"; do
+            echo "## Environment: $env" >> nightly-summary.md
+            echo "" >> nightly-summary.md
+            echo "| Browser | Status |" >> nightly-summary.md
+            echo "|---------|--------|" >> nightly-summary.md
+
+            for browser in "${BROWSER_LIST[@]}"; do
+              RESULT_FILE="all-artifacts/env-browser-result-${env}-${browser}/${env}-${browser}-result.txt"
+              STATUS="UNKNOWN"
+              if [ -f "$RESULT_FILE" ]; then
+                STATUS=$(cat "$RESULT_FILE")
+              fi
+              echo "| $browser | $([ "$STATUS" = "PASS" ] && echo "✅ PASS" || echo "❌ FAIL") |" >> nightly-summary.md
+              TOTAL=$((TOTAL+1))
+              if [ "$STATUS" != "PASS" ]; then
+                FAILS=$((FAILS+1))
+              fi
+            done
+            echo "" >> nightly-summary.md
+          done
+
+          if [ $FAILS -eq 0 ]; then
+            echo "## ✅ Overall Status: PASSED" >> nightly-summary.md
+            echo "All $TOTAL combinations passed." >> nightly-summary.md
+            echo "overall_status=PASS" >> $GITHUB_OUTPUT
+          else
+            echo "## ❌ Overall Status: FAILED" >> nightly-summary.md
+            echo "$FAILS of $TOTAL environment–browser combinations failed." >> nightly-summary.md
+            echo "overall_status=FAIL" >> $GITHUB_OUTPUT
+          fi
 
       - name: Create dashboard directory
         run: |
@@ -222,11 +261,35 @@ jobs:
 
       - name: Generate dashboard data JSON
         run: |
-          # … existing JSON generation script unchanged …
+          cat > dashboard/test-results.json << EOF
+          {
+            "overallStatus": "${{ steps.summary.outputs.overall_status }}",
+            "runUrl": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
+          }
+          EOF
 
       - name: Create default index.html if not exists
         run: |
-          # … existing default HTML generation unchanged …
+          if [ ! -f "dashboard/index.html" ]; then
+            cat > dashboard/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html><head><title>Nightly Test Dashboard</title></head>
+          <body><h1>Dashboard Loading...</h1>
+          <script>
+          setTimeout(() => {
+            fetch('./test-results.json').then(r => r.json()).then(data => {
+              document.body.innerHTML =
+                '<div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto;">' +
+                '<h1>🌙 Nightly Tests: ' + data.overallStatus + '</h1>' +
+                '<p><strong>Last Updated:</strong> ' + new Date(data.timestamp).toLocaleString() + '</p>' +
+                '<p><a href=\"' + data.runUrl + '\" target=\"_blank\">📊 View Detailed Results</a></p>' +
+                '</div>';
+            });
+          }, 100);
+          </script></body></html>
+          EOF
+          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -247,13 +310,12 @@ jobs:
           path: nightly-summary.md
           retention-days: 7
 
-      # ✅ updated to never break the workflow
       - name: Set workflow conclusion
         if: always()
         run: |
           echo "🔗 Dashboard URL: ${{ steps.deployment.outputs.page_url }}"
-          if [[ "${{ steps.summary.outputs.status }}" == "PASS" ]]; then
-            echo "::notice::✅ All tests passed! Dashboard updated at ${{ steps.deployment.outputs.page_url }}"
+          if [[ "${{ steps.summary.outputs.overall_status }}" == "PASS" ]]; then
+            echo "::notice::✅ All nightly tests passed! Dashboard updated at ${{ steps.deployment.outputs.page_url }}"
           else
             echo "::warning::⚠️ Some tests failed. Dashboard still updated at ${{ steps.deployment.outputs.page_url }}"
           fi
