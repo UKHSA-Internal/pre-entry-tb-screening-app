@@ -203,11 +203,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install required tools
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq bc
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: all-artifacts
           pattern: "*"
+
+      - name: Create dashboard directory
+        run: |
+          mkdir -p dashboard
 
       - name: Generate test summary report
         id: summary
@@ -217,17 +225,40 @@ jobs:
           echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
           echo "" >> nightly-summary.md
 
-          ENV_LIST=("qat" "dev" "preprod")
-          BROWSER_LIST=("chrome" "firefox" "edge")
+          # Get the actual matrix values used in this run
+          ENV_MATRIX='${{ needs.setup-matrix.outputs.environments }}'
+          BROWSER_MATRIX='${{ needs.setup-matrix.outputs.browsers }}'
+          
+          # Parse JSON arrays into bash arrays
+          ENV_LIST=($(echo $ENV_MATRIX | jq -r '.[]'))
+          BROWSER_LIST=($(echo $BROWSER_MATRIX | jq -r '.[]'))
 
           TOTAL=0
           FAILS=0
+          
+          # Initialize JSON structure for detailed results
+          echo "{" > dashboard/test-results.json
+          echo "  \"results\": {" >> dashboard/test-results.json
+
+          # Track if this is the first environment for JSON formatting
+          FIRST_ENV=true
 
           for env in "${ENV_LIST[@]}"; do
             echo "## Environment: $env" >> nightly-summary.md
             echo "" >> nightly-summary.md
             echo "| Browser | Status |" >> nightly-summary.md
             echo "|---------|--------|" >> nightly-summary.md
+            
+            # Add environment section to JSON
+            if [ "$FIRST_ENV" = true ]; then
+              echo "    \"$env\": {" >> dashboard/test-results.json
+              FIRST_ENV=false
+            else
+              echo "    \"$env\": {" >> dashboard/test-results.json
+            fi
+
+            # Track if this is the first browser for JSON formatting
+            FIRST_BROWSER=true
 
             for browser in "${BROWSER_LIST[@]}"; do
               RESULT_FILE="all-artifacts/env-browser-result-${env}-${browser}/${env}-${browser}-result.txt"
@@ -235,61 +266,468 @@ jobs:
               if [ -f "$RESULT_FILE" ]; then
                 STATUS=$(cat "$RESULT_FILE")
               fi
+              
+              # Add to markdown
               echo "| $browser | $([ "$STATUS" = "PASS" ] && echo "✅ PASS" || echo "❌ FAIL") |" >> nightly-summary.md
+              
+              # Add to JSON
+              if [ "$FIRST_BROWSER" = true ]; then
+                echo "      \"$browser\": \"$STATUS\"" >> dashboard/test-results.json
+                FIRST_BROWSER=false
+              else
+                echo "      \"$browser\": \"$STATUS\"" >> dashboard/test-results.json
+              fi
+              
               TOTAL=$((TOTAL+1))
               if [ "$STATUS" != "PASS" ]; then
                 FAILS=$((FAILS+1))
               fi
             done
+            
+            # Close environment object in JSON
+            if [ "$env" = "${ENV_LIST[-1]}" ]; then
+              echo "    }" >> dashboard/test-results.json
+            else
+              echo "    }," >> dashboard/test-results.json
+            fi
             echo "" >> nightly-summary.md
           done
 
+          # Finish JSON structure
+          echo "  }," >> dashboard/test-results.json
+          
           if [ $FAILS -eq 0 ]; then
             echo "## ✅ Overall Status: PASSED" >> nightly-summary.md
             echo "All $TOTAL combinations passed." >> nightly-summary.md
             echo "overall_status=PASS" >> $GITHUB_OUTPUT
+            OVERALL_STATUS="PASS"
           else
             echo "## ❌ Overall Status: FAILED" >> nightly-summary.md
             echo "$FAILS of $TOTAL environment–browser combinations failed." >> nightly-summary.md
             echo "overall_status=FAIL" >> $GITHUB_OUTPUT
+            OVERALL_STATUS="FAIL"
           fi
+          
+          # Add metadata to JSON
+          echo "  \"overallStatus\": \"$OVERALL_STATUS\"," >> dashboard/test-results.json
+          echo "  \"totalTests\": $TOTAL," >> dashboard/test-results.json
+          echo "  \"failedTests\": $FAILS," >> dashboard/test-results.json
+          if [ $TOTAL -gt 0 ]; then
+            SUCCESS_RATE=$(echo "scale=0; ($TOTAL-$FAILS)*100/$TOTAL" | bc)
+          else
+            SUCCESS_RATE=0
+          fi
+          echo "  \"successRate\": $SUCCESS_RATE," >> dashboard/test-results.json
+          echo "  \"runUrl\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"," >> dashboard/test-results.json
+          echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)\"" >> dashboard/test-results.json
+          echo "}" >> dashboard/test-results.json
 
-      - name: Create dashboard directory
+      - name: Create dashboard HTML
         run: |
-          mkdir -p dashboard
-          cp .github/pages/index.html dashboard/ || echo "index.html not found, will create default"
-
-      - name: Generate dashboard data JSON
-        run: |
-          cat > dashboard/test-results.json << EOF
-          {
-            "overallStatus": "${{ steps.summary.outputs.overall_status }}",
-            "runUrl": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
-          }
-          EOF
-
-      - name: Create default index.html if not exists
-        run: |
-          if [ ! -f "dashboard/index.html" ]; then
-            cat > dashboard/index.html << 'EOF'
+          cat > dashboard/index.html << 'EOF'
           <!DOCTYPE html>
-          <html><head><title>Nightly Test Dashboard</title></head>
-          <body><h1>Dashboard Loading...</h1>
-          <script>
-          setTimeout(() => {
-            fetch('./test-results.json').then(r => r.json()).then(data => {
-              document.body.innerHTML =
-                '<div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto;">' +
-                '<h1>🌙 Nightly Tests: ' + data.overallStatus + '</h1>' +
-                '<p><strong>Last Updated:</strong> ' + new Date(data.timestamp).toLocaleString() + '</p>' +
-                '<p><a href=\"' + data.runUrl + '\" target=\"_blank\">📊 View Detailed Results</a></p>' +
-                '</div>';
-            });
-          }, 100);
-          </script></body></html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>🌙 Pre-Entry TB Screening - Nightly Tests</title>
+              <style>
+                  body {
+                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                      margin: 0;
+                      padding: 0;
+                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                      min-height: 100vh;
+                  }
+                  
+                  .header {
+                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                      color: white;
+                      padding: 20px;
+                      text-align: center;
+                  }
+                  
+                  .header h1 {
+                      margin: 0;
+                      font-size: 2rem;
+                  }
+                  
+                  .subtitle {
+                      margin: 5px 0 0 0;
+                      opacity: 0.9;
+                  }
+                  
+                  .container {
+                      max-width: 1200px;
+                      margin: 0 auto;
+                      padding: 20px;
+                  }
+                  
+                  .metrics {
+                      display: grid;
+                      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                      gap: 20px;
+                      margin: 20px 0;
+                  }
+                  
+                  .metric-card {
+                      background: white;
+                      border-radius: 12px;
+                      padding: 24px;
+                      text-align: center;
+                      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                      transition: transform 0.2s ease, box-shadow 0.2s ease;
+                  }
+                  
+                  .metric-card:hover {
+                      transform: translateY(-2px);
+                      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+                  }
+                  
+                  .metric-value {
+                      font-size: 3rem;
+                      font-weight: bold;
+                      margin-bottom: 8px;
+                  }
+                  
+                  .metric-label {
+                      color: #666;
+                      text-transform: uppercase;
+                      font-size: 0.9rem;
+                      letter-spacing: 0.5px;
+                  }
+                  
+                  .status-pass { color: #22c55e; }
+                  .status-fail { color: #ef4444; }
+                  
+                  .browser-results {
+                      background: white;
+                      border-radius: 12px;
+                      padding: 24px;
+                      margin: 20px 0;
+                      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                  }
+                  
+                  .environment-section {
+                      margin: 30px 0;
+                      padding: 20px;
+                      border-left: 4px solid #667eea;
+                      background: #f8fafc;
+                      border-radius: 0 8px 8px 0;
+                  }
+                  
+                  .environment-header {
+                      margin-bottom: 20px;
+                  }
+                  
+                  .environment-title {
+                      font-size: 1.5rem;
+                      font-weight: bold;
+                      color: #374151;
+                      margin-bottom: 12px;
+                      text-transform: uppercase;
+                      letter-spacing: 1px;
+                  }
+                  
+                  .environment-stats {
+                      display: flex;
+                      gap: 20px;
+                      flex-wrap: wrap;
+                      margin-top: 8px;
+                  }
+                  
+                  .stat-item {
+                      background: white;
+                      padding: 8px 16px;
+                      border-radius: 20px;
+                      font-size: 0.9rem;
+                      font-weight: 600;
+                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                      border: 1px solid #e5e7eb;
+                  }
+                  
+                  .browser-grid {
+                      display: grid;
+                      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                      gap: 16px;
+                      margin-top: 20px;
+                  }
+                  
+                  .browser-card {
+                      background: white;
+                      border-radius: 12px;
+                      padding: 24px;
+                      text-align: center;
+                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                      transition: all 0.2s ease;
+                      border: 2px solid transparent;
+                  }
+                  
+                  .browser-card:hover {
+                      transform: translateY(-4px);
+                      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+                  }
+                  
+                  .browser-card.status-pass-card {
+                      border-color: #22c55e;
+                  }
+                  
+                  .browser-card.status-fail-card {
+                      border-color: #ef4444;
+                  }
+                  
+                  .browser-icon {
+                      font-size: 3rem;
+                      margin-bottom: 12px;
+                      display: block;
+                  }
+                  
+                  .browser-name {
+                      font-size: 1.25rem;
+                      font-weight: bold;
+                      margin-bottom: 12px;
+                      color: #374151;
+                  }
+                  
+                  .status-badge {
+                      padding: 8px 16px;
+                      border-radius: 20px;
+                      font-size: 0.9rem;
+                      font-weight: bold;
+                      text-transform: uppercase;
+                      letter-spacing: 0.5px;
+                  }
+                  
+                  .status-badge.pass {
+                      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+                      color: #166534;
+                      border: 2px solid #22c55e;
+                  }
+                  
+                  .status-badge.fail {
+                      background: linear-gradient(135deg, #fef2f2, #fecaca);
+                      color: #dc2626;
+                      border: 2px solid #ef4444;
+                  }
+                  
+                  .status-badge.unknown {
+                      background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+                      color: #6b7280;
+                      border: 2px solid #9ca3af;
+                  }
+                  
+                  .footer {
+                      text-align: center;
+                      margin-top: 40px;
+                      padding: 20px;
+                  }
+                  
+                  .link {
+                      display: inline-block;
+                      background: white;
+                      color: #667eea;
+                      text-decoration: none;
+                      font-weight: 600;
+                      padding: 12px 24px;
+                      border-radius: 8px;
+                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                      transition: all 0.2s ease;
+                  }
+                  
+                  .link:hover {
+                      background: #667eea;
+                      color: white;
+                      transform: translateY(-2px);
+                      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                  }
+                  
+                  .last-updated {
+                      color: white;
+                      margin-top: 16px;
+                      opacity: 0.9;
+                  }
+                  
+                  .loading {
+                      text-align: center;
+                      padding: 40px;
+                      color: white;
+                  }
+                  
+                  .spinner {
+                      border: 4px solid rgba(255, 255, 255, 0.3);
+                      border-radius: 50%;
+                      border-top: 4px solid white;
+                      width: 40px;
+                      height: 40px;
+                      animation: spin 1s linear infinite;
+                      margin: 0 auto 20px;
+                  }
+                  
+                  @keyframes spin {
+                      0% { transform: rotate(0deg); }
+                      100% { transform: rotate(360deg); }
+                  }
+                  
+                  @media (max-width: 768px) {
+                      .metrics {
+                          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                          gap: 16px;
+                      }
+                      
+                      .browser-grid {
+                          grid-template-columns: 1fr;
+                      }
+                      
+                      .metric-value {
+                          font-size: 2.5rem;
+                      }
+                      
+                      .header h1 {
+                          font-size: 1.5rem;
+                      }
+                  }
+              </style>
+          </head>
+          <body>
+              <div class="header">
+                  <h1>🌙 Pre-Entry TB Screening - Nightly Tests</h1>
+                  <p class="subtitle">Last 24 Hours | Auto-refreshes every 5 minutes</p>
+              </div>
+              
+              <div class="container">
+                  <div id="loading" class="loading">
+                      <div class="spinner"></div>
+                      <h2>Loading test results...</h2>
+                  </div>
+                  
+                  <div id="dashboard" style="display: none;">
+                      <!-- Content will be populated by JavaScript -->
+                  </div>
+              </div>
+
+              <script>
+                  function getBrowserIcon(browser) {
+                      const icons = {
+                          'chrome': '🌐',
+                          'firefox': '🔥', 
+                          'edge': '⚡',
+                          'safari': '🧭'
+                      };
+                      return icons[browser.toLowerCase()] || '🌐';
+                  }
+                  
+                  function formatTimestamp(timestamp) {
+                      return new Date(timestamp).toLocaleString();
+                  }
+                  
+                  function getStatusInfo(status) {
+                      const statusMap = {
+                          'PASS': { class: 'pass', text: '✅ PASS', cardClass: 'status-pass-card' },
+                          'FAIL': { class: 'fail', text: '❌ FAIL', cardClass: 'status-fail-card' },
+                          'UNKNOWN': { class: 'unknown', text: '⚪ UNKNOWN', cardClass: 'status-unknown-card' }
+                      };
+                      return statusMap[status] || statusMap['UNKNOWN'];
+                  }
+                  
+                  function createEnvironmentSection(envName, browsers) {
+                      let sectionHTML = '<div class="environment-section">';
+                      sectionHTML += '<div class="environment-title">Environment: ' + envName.toUpperCase() + '</div>';
+                      sectionHTML += '<div class="browser-grid">';
+                      
+                      Object.entries(browsers).forEach(function(entry) {
+                          const browser = entry[0];
+                          const status = entry[1];
+                          const statusInfo = getStatusInfo(status);
+                          
+                          sectionHTML += 
+                              '<div class="browser-card ' + statusInfo.cardClass + '">' +
+                                  '<div class="browser-icon">' + getBrowserIcon(browser) + '</div>' +
+                                  '<div class="browser-name">' + browser.charAt(0).toUpperCase() + browser.slice(1) + '</div>' +
+                                  '<span class="status-badge ' + statusInfo.class + '">' + statusInfo.text + '</span>' +
+                              '</div>';
+                      });
+                      
+                      sectionHTML += '</div></div>';
+                      return sectionHTML;
+                  }
+                  
+                  function createBrowserResults(results) {
+                      if (!results) {
+                          return '<div class="browser-results"><p>No test results available</p></div>';
+                      }
+                      
+                      let resultsHTML = '<div class="browser-results"><h2>Test Results by Environment</h2>';
+                      
+                      Object.entries(results).forEach(function(entry) {
+                          const envName = entry[0];
+                          const browsers = entry[1];
+                          resultsHTML += createEnvironmentSection(envName, browsers);
+                      });
+                      
+                      resultsHTML += '</div>';
+                      return resultsHTML;
+                  }
+                  
+                  function loadDashboard() {
+                      fetch('./test-results.json')
+                          .then(function(response) { return response.json(); })
+                          .then(function(data) {
+                              const dashboard = document.getElementById('dashboard');
+                              const loading = document.getElementById('loading');
+                              
+                              // Calculate hours ago
+                              const now = new Date();
+                              const testTime = new Date(data.timestamp);
+                              const hoursAgo = Math.floor((now - testTime) / (1000 * 60 * 60));
+                              
+                              dashboard.innerHTML = 
+                                  '<div class="metrics">' +
+                                      '<div class="metric-card">' +
+                                          '<div class="metric-value ' + (data.overallStatus === 'PASS' ? 'status-pass' : 'status-fail') + '">' +
+                                              data.overallStatus +
+                                          '</div>' +
+                                          '<div class="metric-label">Current Status</div>' +
+                                      '</div>' +
+                                      '<div class="metric-card">' +
+                                          '<div class="metric-value">' + (data.successRate || 0) + '%</div>' +
+                                          '<div class="metric-label">Success Rate (7D)</div>' +
+                                      '</div>' +
+                                      '<div class="metric-card">' +
+                                          '<div class="metric-value">' + (data.failedTests || 0) + '</div>' +
+                                          '<div class="metric-label">Failed Tests</div>' +
+                                      '</div>' +
+                                      '<div class="metric-card">' +
+                                          '<div class="metric-value">' + hoursAgo + '</div>' +
+                                          '<div class="metric-label">Hours Ago</div>' +
+                                      '</div>' +
+                                  '</div>' +
+                                  createBrowserResults(data.results) +
+                                  '<div class="footer">' +
+                                      '<a href="' + data.runUrl + '" target="_blank" class="link">📊 View Detailed Reports</a>' +
+                                      '<p class="last-updated">Updated: ' + formatTimestamp(data.timestamp) + '</p>' +
+                                  '</div>';
+                              
+                              loading.style.display = 'none';
+                              dashboard.style.display = 'block';
+                          })
+                          .catch(function(error) {
+                              console.error('Error loading test results:', error);
+                              document.getElementById('loading').innerHTML = 
+                                  '<div class="spinner"></div>' +
+                                  '<h2>Error loading test results</h2>' +
+                                  '<p>Please check console for details</p>';
+                          });
+                  }
+                  
+                  // Load dashboard on page load
+                  loadDashboard();
+                  
+                  // Auto-refresh every 5 minutes
+                  setInterval(loadDashboard, 5 * 60 * 1000);
+              </script>
+          </body>
+          </html>
           EOF
-          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
