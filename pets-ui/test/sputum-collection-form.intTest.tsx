@@ -55,7 +55,7 @@ const initialSputumSampleEmpty = {
 
 const submittedSputumSample = {
   collection: {
-    dateOfSample: { day: "10", month: "05", year: "2024" },
+    dateOfSample: { day: "10", month: "5", year: "2024" },
     collectionMethod: "Coughed up",
     submittedToDatabase: true,
   },
@@ -67,19 +67,19 @@ const submittedSputumSample = {
     cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
     submittedToDatabase: false,
   },
-  lastUpdatedDate: { day: "10", month: "05", year: "2024" },
+  lastUpdatedDate: { day: "10", month: "5", year: "2024" },
 };
 
 const defaultApplicantData: ReduxApplicantDetailsType & { applicationId: string } = {
   status: ApplicationStatus.IN_PROGRESS,
   fullName: "Test User One",
   sex: "Female",
-  dateOfBirth: { day: "10", month: "05", year: "1985" },
+  dateOfBirth: { day: "10", month: "5", year: "1985" },
   countryOfNationality: "GBR",
   passportNumber: "X12345678",
   countryOfIssue: "GBR",
-  passportIssueDate: { day: "01", month: "01", year: "2020" },
-  passportExpiryDate: { day: "01", month: "01", year: "2030" },
+  passportIssueDate: { day: "1", month: "1", year: "2020" },
+  passportExpiryDate: { day: "1", month: "1", year: "2030" },
   applicantHomeAddress1: "1 Test Street",
   townOrCity: "Testville",
   provinceOrState: "Testshire",
@@ -116,7 +116,7 @@ const preloadedStateWithPartialSputum = {
     status: ApplicationStatus.IN_PROGRESS,
     sample1: {
       collection: {
-        dateOfSample: { day: "05", month: "05", year: "2024" },
+        dateOfSample: { day: "5", month: "5", year: "2024" },
         collectionMethod: "Coughed up",
         submittedToDatabase: false,
       },
@@ -156,7 +156,7 @@ const preloadedStateWithMixedSamples = {
     sample1: JSON.parse(JSON.stringify(submittedSputumSample)) as ReduxSputumSampleType,
     sample2: {
       collection: {
-        dateOfSample: { day: "15", month: "06", year: "2024" },
+        dateOfSample: { day: "15", month: "6", year: "2024" },
         collectionMethod: "Induced",
         submittedToDatabase: false,
       },
@@ -210,10 +210,10 @@ describe("SputumCollectionForm", () => {
 
     expect(
       screen.getByLabelText("Day", { selector: "input[id='date-sample-1-taken-day']" }),
-    ).toHaveValue("05");
+    ).toHaveValue("5");
     expect(
       screen.getByLabelText("Month", { selector: "input[id='date-sample-1-taken-month']" }),
-    ).toHaveValue("05");
+    ).toHaveValue("5");
     expect(
       screen.getByLabelText("Year", { selector: "input[id='date-sample-1-taken-year']" }),
     ).toHaveValue("2024");
@@ -230,7 +230,7 @@ describe("SputumCollectionForm", () => {
     ).toHaveValue("10");
     expect(
       screen.getByLabelText("Month", { selector: "input[id='date-sample-1-taken-month']" }),
-    ).toHaveValue("05");
+    ).toHaveValue("5");
     expect(
       screen.getByLabelText("Year", { selector: "input[id='date-sample-1-taken-year']" }),
     ).toHaveValue("2024");
@@ -310,7 +310,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.type(
       screen.getByLabelText("Month", { selector: "input[id='date-sample-1-taken-month']" }),
-      "07",
+      "7",
     );
     await user.type(
       screen.getByLabelText("Year", { selector: "input[id='date-sample-1-taken-year']" }),
@@ -324,7 +324,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.type(
       screen.getByLabelText("Month", { selector: "input[id='date-sample-2-taken-month']" }),
-      "07",
+      "7",
     );
     await user.type(
       screen.getByLabelText("Year", { selector: "input[id='date-sample-2-taken-year']" }),
@@ -338,7 +338,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.type(
       screen.getByLabelText("Month", { selector: "input[id='date-sample-3-taken-month']" }),
-      "07",
+      "7",
     );
     await user.type(
       screen.getByLabelText("Year", { selector: "input[id='date-sample-3-taken-year']" }),
@@ -355,21 +355,21 @@ describe("SputumCollectionForm", () => {
       expect(sputumState.status).toBe(ApplicationStatus.IN_PROGRESS);
       expect(sputumState.sample1.collection.dateOfSample).toEqual({
         day: "15",
-        month: "07",
+        month: "7",
         year: "2024",
       });
       expect(sputumState.sample1.collection.collectionMethod).toBe("Induced");
       expect(sputumState.sample1.collection.submittedToDatabase).toBe(false);
       expect(sputumState.sample2.collection.dateOfSample).toEqual({
         day: "16",
-        month: "07",
+        month: "7",
         year: "2024",
       });
       expect(sputumState.sample2.collection.collectionMethod).toBe("Coughed up");
       expect(sputumState.sample2.collection.submittedToDatabase).toBe(false);
       expect(sputumState.sample3.collection.dateOfSample).toEqual({
         day: "17",
-        month: "07",
+        month: "7",
         year: "2024",
       });
       expect(sputumState.sample3.collection.collectionMethod).toBe("Gastric lavage");
@@ -386,11 +386,11 @@ describe("SputumCollectionForm", () => {
 
     await user.type(
       screen.getByLabelText("Day", { selector: "input[id='date-sample-1-taken-day']" }),
-      "01",
+      "1",
     );
     await user.type(
       screen.getByLabelText("Month", { selector: "input[id='date-sample-1-taken-month']" }),
-      "01",
+      "1",
     );
     await user.type(
       screen.getByLabelText("Year", { selector: "input[id='date-sample-1-taken-year']" }),
@@ -400,11 +400,11 @@ describe("SputumCollectionForm", () => {
 
     await user.type(
       screen.getByLabelText("Day", { selector: "input[id='date-sample-2-taken-day']" }),
-      "02",
+      "2",
     );
     await user.type(
       screen.getByLabelText("Month", { selector: "input[id='date-sample-2-taken-month']" }),
-      "01",
+      "1",
     );
     await user.type(
       screen.getByLabelText("Year", { selector: "input[id='date-sample-2-taken-year']" }),
@@ -414,11 +414,11 @@ describe("SputumCollectionForm", () => {
 
     await user.type(
       screen.getByLabelText("Day", { selector: "input[id='date-sample-3-taken-day']" }),
-      "03",
+      "3",
     );
     await user.type(
       screen.getByLabelText("Month", { selector: "input[id='date-sample-3-taken-month']" }),
-      "01",
+      "1",
     );
     await user.type(
       screen.getByLabelText("Year", { selector: "input[id='date-sample-3-taken-year']" }),
@@ -459,7 +459,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.type(
       screen.getByLabelText("Month", { selector: "input[id='date-sample-3-taken-month']" }),
-      "07",
+      "7",
     );
     await user.type(
       screen.getByLabelText("Year", { selector: "input[id='date-sample-3-taken-year']" }),
@@ -489,7 +489,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.type(
       screen.getByLabelText("Month", { selector: "input[id='date-sample-1-taken-month']" }),
-      "07",
+      "7",
     );
     await user.type(
       screen.getByLabelText("Year", { selector: "input[id='date-sample-1-taken-year']" }),
@@ -503,7 +503,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.type(
       screen.getByLabelText("Month", { selector: "input[id='date-sample-2-taken-month']" }),
-      "07",
+      "7",
     );
     await user.type(
       screen.getByLabelText("Year", { selector: "input[id='date-sample-2-taken-year']" }),
@@ -517,7 +517,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.type(
       screen.getByLabelText("Month", { selector: "input[id='date-sample-3-taken-month']" }),
-      "07",
+      "7",
     );
     await user.type(
       screen.getByLabelText("Year", { selector: "input[id='date-sample-3-taken-year']" }),
@@ -544,7 +544,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.type(
       screen.getByLabelText("Month", { selector: "input[id='date-sample-1-taken-month']" }),
-      "07",
+      "7",
     );
     await user.type(
       screen.getByLabelText("Year", { selector: "input[id='date-sample-1-taken-year']" }),
@@ -558,7 +558,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.type(
       screen.getByLabelText("Month", { selector: "input[id='date-sample-2-taken-month']" }),
-      "07",
+      "7",
     );
     await user.type(
       screen.getByLabelText("Year", { selector: "input[id='date-sample-2-taken-year']" }),
@@ -572,7 +572,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.type(
       screen.getByLabelText("Month", { selector: "input[id='date-sample-3-taken-month']" }),
-      "07",
+      "7",
     );
     await user.type(
       screen.getByLabelText("Year", { selector: "input[id='date-sample-3-taken-year']" }),
@@ -588,7 +588,7 @@ describe("SputumCollectionForm", () => {
       const sputumState = store.getState().sputum;
       expect(sputumState.sample1.collection.dateOfSample).toEqual({
         day: "15",
-        month: "07",
+        month: "7",
         year: "2024",
       });
       expect(sputumState.sample1.collection.collectionMethod).toBe("Coughed up");
@@ -621,7 +621,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.type(
       screen.getByLabelText("Month", { selector: "input[id='date-sample-2-taken-month']" }),
-      "07",
+      "7",
     );
     await user.type(
       screen.getByLabelText("Year", { selector: "input[id='date-sample-2-taken-year']" }),

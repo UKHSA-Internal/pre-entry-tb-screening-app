@@ -174,14 +174,10 @@ describe("ChestXrayForm Section", () => {
     await waitFor(() => {
       expect(useNavigateMock).not.toHaveBeenCalled();
       expect(screen.getAllByRole("listitem")).toHaveLength(2);
-      expect(
-        screen.getAllByText("The date the X-ray was taken must include a day, month and year"),
-      ).toHaveLength(2);
-      expect(
-        screen.getAllByText("The date the X-ray was taken must include a day, month and year")[0],
-      ).toHaveAttribute(
+      expect(screen.getAllByText("Enter the date the X-ray was taken")).toHaveLength(2);
+      expect(screen.getAllByText("Enter the date the X-ray was taken")[0]).toHaveAttribute(
         "aria-label",
-        "Error: The date the X-ray was taken must include a day, month and year",
+        "Error: Enter the date the X-ray was taken",
       );
       expect(screen.getAllByText("Select a postero-anterior X-ray image file")).toHaveLength(2);
       expect(screen.getAllByText("Select a postero-anterior X-ray image file")[0]).toHaveAttribute(

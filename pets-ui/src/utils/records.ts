@@ -107,9 +107,9 @@ const dateValidationMessages: Record<string, Record<string, string>> = {
     dateMustBeInPastError: "Sputum sample {sampleNumber} date must be today or in the past",
   },
   dateXrayTaken: {
-    emptyFieldError: "The date the X-ray was taken must include a day, month and year",
+    emptyFieldError: "Enter the date the X-ray was taken",
     invalidCharError: "The date the X-ray was taken day, month and year must contain only numbers",
-    invalidDateError: "The date the X-ray was taken must be a valid date",
+    invalidDateError: "The date the X-ray was taken must be a real date",
     dateMustBeInPastError: "The date the X-ray was taken must be today or in the past",
   },
 };
@@ -127,6 +127,7 @@ const dateEntryNames: Record<string, string> = {
   passportIssueDate: "Passport issue date",
   passportExpiryDate: "Passport expiry date",
   tbCertificateDate: "TB clearance certificate date",
+  dateXrayTaken: "The date the X-ray was taken",
 };
 
 const dateEntryMustBeInThePast: string[] = [
@@ -134,6 +135,7 @@ const dateEntryMustBeInThePast: string[] = [
   "passportIssueDate",
   "tbCertificateDate",
   "sputumSampleDate",
+  "dateXrayTaken",
 ];
 
 const dateEntryMustBeInTheFuture: string[] = ["passportExpiryDate"];

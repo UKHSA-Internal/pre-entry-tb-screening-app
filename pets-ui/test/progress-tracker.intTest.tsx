@@ -112,7 +112,7 @@ const tbCertSlice = {
   comments: "Extra Details",
   certificateDate: {
     year: "2025",
-    month: "03",
+    month: "3",
     day: "25",
   },
   certificateNumber: "12345",

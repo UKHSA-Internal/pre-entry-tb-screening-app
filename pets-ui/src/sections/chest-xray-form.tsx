@@ -176,6 +176,7 @@ const ChestXrayForm = () => {
                     setDateValue={onChange}
                     id={"date-xray-taken"}
                     autocomplete={false}
+                    showTodayYesterdayLinks
                     errorMessage={errors?.dateXrayTaken?.message ?? ""}
                   />
                 )}

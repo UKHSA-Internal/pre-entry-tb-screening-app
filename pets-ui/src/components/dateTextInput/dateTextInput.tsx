@@ -20,6 +20,7 @@ export interface DateProps {
   headingStyle?: React.CSSProperties;
   labelStyle?: React.CSSProperties;
   divStyle?: React.CSSProperties;
+  showTodayYesterdayLinks?: boolean;
 }
 
 interface AutocompleteI {
@@ -30,27 +31,49 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
   const { day, month, year } = props.value || {};
 
   const handleDayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = {
-      ...props.value,
-      day: e.target.value.trim(),
-    };
+    const raw = sanitiseDayOrMonth(e.target.value);
+    let clamped = raw;
+    if (raw) {
+      const num = Number(raw);
+      if (num < 1) clamped = "1";
+      else if (num > 31) clamped = "31";
+    }
+    const newValue = { ...props.value, day: clamped };
     props.setDateValue(newValue); // Update the whole date object
   };
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = {
-      ...props.value,
-      month: e.target.value.trim(),
-    };
+    const raw = sanitiseDayOrMonth(e.target.value);
+    let clamped = raw;
+    if (raw) {
+      const num = Number(raw);
+      if (num < 1) clamped = "1";
+      else if (num > 12) clamped = "12";
+    }
+    const newValue = { ...props.value, month: clamped };
     props.setDateValue(newValue); // Update the whole date object
   };
 
   const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = {
       ...props.value,
-      year: e.target.value.trim(),
+      year: sanitiseYear(e.target.value),
     };
     props.setDateValue(newValue); // Update the whole date object
+  };
+
+  const sanitiseDayOrMonth = (raw: string): string => {
+    const stripped = raw.replace(/\D/g, "");
+    if (!stripped) return "";
+    const limited = stripped.slice(0, 2);
+    return limited.length > 1 ? String(Number(limited)) : limited;
+  };
+
+  const sanitiseYear = (raw: string): string => {
+    const stripped = raw.replace(/\D/g, "");
+    if (!stripped) return "";
+    const limited = stripped.slice(0, 4);
+    return limited;
   };
 
   const autocompleteBDay: Record<"day" | "month" | "year", AutocompleteI> = {
@@ -82,6 +105,25 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
         `${props.errorMessage && "govuk-input--error"}`,
     );
   }, [props.errorMessage]);
+
+  const setDateTo = (date: Date) => {
+    props.setDateValue({
+      day: date.getDate().toString(),
+      month: (date.getMonth() + 1).toString(),
+      year: date.getFullYear().toString(),
+    });
+  };
+
+  const handleSetToday = () => {
+    const today = new Date();
+    setDateTo(today);
+  };
+
+  const handleSetYesterday = () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    setDateTo(yesterday);
+  };
 
   return (
     <FieldWrapper
@@ -149,6 +191,33 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
           </div>
         </div>
       </div>
+      {props.showTodayYesterdayLinks && (
+        <div className="govuk-body govuk-!-margin-top-2">
+          <span className="govuk-!-margin-right-2">Set to:</span>
+          <a
+            href="#"
+            className="govuk-link govuk-!-margin-right-3"
+            data-testid={`${props.id}-quickfill-today`}
+            onClick={(e) => {
+              e.preventDefault();
+              handleSetToday();
+            }}
+          >
+            Today
+          </a>
+          <a
+            href="#"
+            className="govuk-link"
+            data-testid={`${props.id}-quickfill-yesterday`}
+            onClick={(e) => {
+              e.preventDefault();
+              handleSetYesterday();
+            }}
+          >
+            Yesterday
+          </a>
+        </div>
+      )}
     </FieldWrapper>
   );
 };
