@@ -312,7 +312,6 @@ type GenerateImageUploadUrlRequest = {
 type GenerateImageUploadUrlResponse = {
   uploadUrl: string;
   bucketPath: string;
-  fields: Record<string, string>;
 };
 
 // Clinic type

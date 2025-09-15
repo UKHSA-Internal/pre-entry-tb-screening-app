@@ -2,11 +2,13 @@ import { GetObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 import awsClients from "../../shared/clients/aws";
-import { assertEnvExists } from "../../shared/config";
+import { assertEnvExists, isLocal } from "../../shared/config";
 import { logger } from "../../shared/logger";
 
 const { s3Client } = awsClients;
 const EXPIRY_TIME = 5 * 60; // 5 minutes
+const APP_DOMAIN = assertEnvExists(process.env.APP_DOMAIN);
+
 export class ImageHelper {
   static async getPresignedUrlforImage(bucket: string, key: string): Promise<string | null> {
     try {
@@ -29,11 +31,16 @@ export class ImageHelper {
         Key: object.Key,
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
       const presignedUrl: string = await getSignedUrl(s3Client, getCommand, {
         expiresIn: EXPIRY_TIME,
       });
-      return presignedUrl;
+
+      let appUrl = presignedUrl.replace(/^https:\/\/[^.]+\.s3\.[^/]+\.amazonaws\.com/, APP_DOMAIN);
+      if (isLocal()) {
+        appUrl = presignedUrl;
+      }
+
+      return appUrl;
     } catch (error) {
       logger.error("Error fetching image:", error);
       throw error;

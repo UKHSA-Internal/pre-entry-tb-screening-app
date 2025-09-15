@@ -1,11 +1,10 @@
-import { ChecksumAlgorithm, ServerSideEncryption } from "@aws-sdk/client-s3";
-import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
-import { Conditions } from "@aws-sdk/s3-presigned-post/dist-types/types";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import path from "path";
 import { z } from "zod";
 
 import awsClients from "../../shared/clients/aws";
-import { assertEnvExists, isLocal } from "../../shared/config";
+import { assertEnvExists, isLocal, isTest } from "../../shared/config";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Applicant } from "../../shared/models/applicant";
@@ -20,9 +19,10 @@ export type GenerateUploadEvent = PetsAPIGatewayProxyEvent & {
 };
 
 const IMAGE_BUCKET = assertEnvExists(process.env.IMAGE_BUCKET);
-const SSE_KEY_ID = assertEnvExists(process.env.SSE_KEY_ID);
+const SSE_KEY_ID = assertEnvExists(process.env.VITE_SSE_KEY_ID);
+const APP_DOMAIN = assertEnvExists(process.env.APP_DOMAIN);
+
 const EXPIRY_TIME = 5 * 60; // 5 minutes
-const MAX_FILE_SIZE_PHOTO = 10 * 1024 * 1024; // 10MB
 // Mapping extensions to MIME types for applicant photo
 const mimeTypes: Record<string, string> = {
   ".jpg": "image/jpeg",
@@ -35,7 +35,6 @@ export const generateImageUploadUrlHandler = async (event: GenerateUploadEvent) 
     const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
 
     const { parsedBody } = event;
-    let fileRestrictions: Conditions[] = [];
 
     if (!parsedBody) {
       logger.error("Event missing parsed body");
@@ -56,12 +55,6 @@ export const generateImageUploadUrlHandler = async (event: GenerateUploadEvent) 
           message: "Invalid file type. Only .jpg, .jpeg, and .png are allowed.",
         });
       }
-      //can’t specify multiple exact values directly in a pre-signed POST
-      // prefix-matching "image/" is the most effective solution for image/jpeg, image/png, etc
-      fileRestrictions = [
-        ["starts-with", "$Content-Type", contentType],
-        ["content-length-range", 0, MAX_FILE_SIZE_PHOTO],
-      ];
     }
     const applicant = await Applicant.getByApplicationId(applicationId);
     if (!applicant) {
@@ -78,29 +71,36 @@ export const generateImageUploadUrlHandler = async (event: GenerateUploadEvent) 
     });
 
     const client = awsClients.s3Client;
+    const SSE_ALGORITHM = "aws:kms"; // value for x-amz-server-side-encryption
 
-    const signedPost = await createPresignedPost(client, {
+    const command = new PutObjectCommand({
       Bucket: IMAGE_BUCKET,
       Key: objectKey,
-      Fields: {
-        "Content-Type": contentType,
-        "x-amz-checksum-sha256": parsedBody.checksum,
-        "x-amz-sdk-checksum-algorithm": ChecksumAlgorithm.SHA256,
-        "x-amz-server-side-encryption": ServerSideEncryption.aws_kms,
-        "x-amz-server-side-encryption-aws-kms-key-id": SSE_KEY_ID,
-      },
-      Conditions: fileRestrictions, // TBBETA-701: Future conditions to enforce size and file types
-      Expires: EXPIRY_TIME,
+      ContentType: contentType,
+      ServerSideEncryption: SSE_ALGORITHM, // -> signs x-amz-server-side-encryption
+      SSEKMSKeyId: SSE_KEY_ID,
+      ChecksumSHA256: parsedBody.checksum,
     });
-
-    let { url } = signedPost;
+    const url = await getSignedUrl(client, command, {
+      expiresIn: EXPIRY_TIME,
+      unhoistableHeaders: new Set(["x-amz-sdk-checksum-algorithm", "x-amz-checksum-sha256"]),
+    });
+    let appUrl = url.replace(/^https:\/\/[^.]+\.s3\.[^/]+\.amazonaws\.com/, APP_DOMAIN);
     if (isLocal()) {
       const localImageBucket = assertEnvExists(process.env.IMAGE_BUCKET);
-      url = `http://localhost:4566/${localImageBucket}`;
+      appUrl = url.replace(
+        /^http:\/\/(?:127\.0\.0\.1|localhost|172\.\d+\.\d+\.\d+):\d+\/[^/]+/,
+        `http://localhost:4566/${localImageBucket}`,
+      );
+    }
+    if (isTest()) {
+      appUrl = url.replace(
+        /^http:\/\/(?:127\.0\.0\.1|localhost|172\.\d+\.\d+\.\d+):\d+\/[^/]+/,
+        APP_DOMAIN,
+      );
     }
 
-    const { fields } = signedPost;
-    return createHttpResponse(200, { uploadUrl: url, bucketPath: objectKey, fields });
+    return createHttpResponse(200, { uploadUrl: appUrl, bucketPath: objectKey });
   } catch (error) {
     logger.error(error, "Error generating uploading url");
     return createHttpResponse(500, { message: "Something went wrong" });
