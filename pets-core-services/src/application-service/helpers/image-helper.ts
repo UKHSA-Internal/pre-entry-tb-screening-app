@@ -35,7 +35,10 @@ export class ImageHelper {
         expiresIn: EXPIRY_TIME,
       });
 
-      let appUrl = presignedUrl.replace(/^https:\/\/[^.]+\.s3\.[^/]+\.amazonaws\.com/, APP_DOMAIN);
+      let appUrl = presignedUrl.replace(
+        /^https:\/\/[^.]+\.s3\.[^/]+\.amazonaws\.com/,
+        APP_DOMAIN.replace(/\/$/, ""),
+      );
       if (isLocal()) {
         appUrl = presignedUrl;
       }

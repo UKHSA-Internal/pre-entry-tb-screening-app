@@ -85,7 +85,10 @@ export const generateImageUploadUrlHandler = async (event: GenerateUploadEvent) 
       expiresIn: EXPIRY_TIME,
       unhoistableHeaders: new Set(["x-amz-sdk-checksum-algorithm", "x-amz-checksum-sha256"]),
     });
-    let appUrl = url.replace(/^https:\/\/[^.]+\.s3\.[^/]+\.amazonaws\.com/, APP_DOMAIN);
+    let appUrl = url.replace(
+      /^https:\/\/[^.]+\.s3\.[^/]+\.amazonaws\.com/,
+      APP_DOMAIN.replace(/\/$/, ""),
+    );
     if (isLocal()) {
       const localImageBucket = assertEnvExists(process.env.IMAGE_BUCKET);
       appUrl = url.replace(
