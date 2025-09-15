@@ -1,15 +1,19 @@
+import { ReactNode } from "react";
+
 import List from "../list/list";
 
 interface NotificationBannerProps {
   bannerTitle: string;
   bannerText?: string;
   list?: string[];
+  children?: ReactNode;
 }
 
 export default function NotificationBanner({
   bannerTitle,
   bannerText,
   list,
+  children,
 }: Readonly<NotificationBannerProps>) {
   return (
     <section
@@ -33,6 +37,7 @@ export default function NotificationBanner({
             {list && <List items={list} style={{ marginBottom: 0 }} />}
           </>
         )}
+        {children}
       </div>
     </section>
   );

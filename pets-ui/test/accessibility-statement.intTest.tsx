@@ -67,6 +67,7 @@ describe("AccessibilityStatementPage", () => {
         checkSputumPreviousPage: "",
         accessibilityStatementPreviousPage: "/applicant-search",
         privacyNoticePreviousPage: "",
+        signOutPreviousPage: "",
       },
     };
     renderWithProviders(

@@ -6,6 +6,7 @@ const initialState: ReduxNavigationSliceType = {
   checkSputumPreviousPage: "",
   accessibilityStatementPreviousPage: "",
   privacyNoticePreviousPage: "",
+  signOutPreviousPage: "",
 };
 
 export const navigationSlice = createSlice({
@@ -21,10 +22,14 @@ export const navigationSlice = createSlice({
     setPrivacyNoticePreviousPage: (state, action: PayloadAction<string>) => {
       state.privacyNoticePreviousPage = action.payload;
     },
+    setSignOutPreviousPage: (state, action: PayloadAction<string>) => {
+      state.signOutPreviousPage = action.payload;
+    },
     clearNavigationDetails: (state) => {
       state.checkSputumPreviousPage = "";
       state.accessibilityStatementPreviousPage = "";
       state.privacyNoticePreviousPage = "";
+      state.signOutPreviousPage = "";
     },
   },
 });
@@ -33,6 +38,7 @@ export const {
   setCheckSputumPreviousPage,
   setAccessibilityStatementPreviousPage,
   setPrivacyNoticePreviousPage,
+  setSignOutPreviousPage,
   clearNavigationDetails,
 } = navigationSlice.actions;
 

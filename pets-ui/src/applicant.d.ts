@@ -28,6 +28,7 @@ type ReduxNavigationSliceType = {
   checkSputumPreviousPage: string;
   accessibilityStatementPreviousPage: string;
   privacyNoticePreviousPage: string;
+  signOutPreviousPage: string;
 };
 
 // Application types
