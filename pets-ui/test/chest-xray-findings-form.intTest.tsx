@@ -104,6 +104,7 @@ describe("ChestXrayFindings Form", () => {
         lateralDecubitusXrayFileName: "",
         lateralDecubitusXrayFile: "",
         reasonXrayWasNotTaken: "",
+        dateXrayTaken: { year: "", month: "", day: "" },
         xrayWasNotTakenFurtherDetails: "",
         xrayResult: "",
         xrayResultDetail: "",

@@ -84,6 +84,7 @@ const chestXraySlice = {
   apicalLordoticXrayFileName: "",
   apicalLordoticXrayFile: "",
   lateralDecubitusXrayFileName: "",
+  dateXrayTaken: { year: "", month: "", day: "" },
   lateralDecubitusXrayFile: "",
   completionDate: { year: "", month: "", day: "" },
 };
