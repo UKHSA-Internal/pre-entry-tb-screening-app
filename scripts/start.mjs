@@ -23,20 +23,19 @@ function runCommand(cmd) {
   }
 }
 
-async function readAndExportEnvVars(filePath) {
+function readAndExportEnvVars(filePath, requireq = []) {
   console.info(filePath);
   try {
     const secretsStr = readFileSync(filePath, "utf-8").toString();
     const secrets = parseEnv(secretsStr);
     const toExport = {};
 
-    for (let key in secrets) {
-      // const key = k.trim();
+    if (Object.keys(secrets).length === 0) {
+      throw new Error(`Could not export vars from the file: ${filePath}`);
+    }
 
-      if (
-        !filePath.endsWith(".local.secrets") ||
-        (filePath.endsWith(".local.secrets") && REQUIRED_SECRETS.includes(key))
-      ) {
+    for (let key in secrets) {
+      if (requireq.length === 0 || requireq.includes(key)) {
         toExport[key] = secrets[key];
       }
     }
@@ -51,8 +50,9 @@ async function readAndExportEnvVars(filePath) {
 
 // Export vars from .env file
 readAndExportEnvVars(resolve(process.cwd(), "configs/.env"));
-// Export vars from .env.local.secret file (only from REQUIRED_SECRETS)
-readAndExportEnvVars(resolve(process.cwd(), "configs/.env.local.secrets"));
+// Export vars from .env.local.secret file
+// (only the ones that are included in REQUIRED_SECRETS)
+readAndExportEnvVars(resolve(process.cwd(), "configs/.env.local.secrets"), REQUIRED_SECRETS);
 
 runCommand("git update-index --assume-unchanged pets-core-services/openapi-docs.json");
 runCommand("pnpm rimraf pets-local-infra/cdk.out");
