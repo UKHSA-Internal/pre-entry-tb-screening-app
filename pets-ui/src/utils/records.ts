@@ -79,31 +79,31 @@ const dateValidationMessages: Record<string, Record<string, string>> = {
   passportIssueDate: {
     emptyFieldError: "Passport issue date must include a day, month and year",
     invalidCharError: "Passport issue day, month and year must contain only numbers",
-    invalidDateError: "Passport issue date must be a valid date",
+    invalidDateError: "Passport issue date must be a real date",
     dateMustBeInPastError: "Passport issue date must be today or in the past",
   },
   passportExpiryDate: {
     emptyFieldError: "Passport expiry date must include a day, month and year",
     invalidCharError: "Passport expiry day, month and year must contain only numbers",
-    invalidDateError: "Passport expiry date must be a valid date",
+    invalidDateError: "Passport expiry date must be a real date",
     dateMustBeInFutureError: "Passport expiry date must be in the future",
   },
   dateOfBirth: {
     emptyFieldError: "Date of birth must include a day, month and year",
     invalidCharError: "Date of birth day, month and year must contain only numbers",
-    invalidDateError: "Date of birth date must be a valid date",
+    invalidDateError: "Date of birth must be a real date",
     dateMustBeInPastError: "Date of birth date must be in the past",
   },
   certificateDate: {
     emptyFieldError: "TB clearance certificate date must include a day, month and year",
     invalidCharError: "TB clearance certificate day, month and year must contain only numbers",
-    invalidDateError: "TB clearance certificate date must be a valid date",
+    invalidDateError: "TB clearance certificate date must be a real date",
     dateMustBeInPastError: "TB clearance certificate date must be today or in the past",
   },
   sputumSampleDate: {
     emptyFieldError: "Sputum sample {sampleNumber} date must include a day, month and year",
     invalidCharError: "Sputum sample {sampleNumber} day, month and year must contain only numbers",
-    invalidDateError: "Sputum sample {sampleNumber} date must be a valid date",
+    invalidDateError: "Sputum sample {sampleNumber} date must be a real date",
     dateMustBeInPastError: "Sputum sample {sampleNumber} date must be today or in the past",
   },
   dateXrayTaken: {
