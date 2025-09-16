@@ -40,15 +40,15 @@ export class MedicalSummaryPage extends BasePage {
   // Verify all summary values
   verifyAllSummaryValues(expectedValues: {
     Age?: string;
-    "Does the applicant have TB symptoms?"?: string;
-    "TB symptoms"?: string;
+    "Does the applicant have pulmonary TB symptoms?"?: string;
+    "pulmonary TB symptoms"?: string;
     "Other symptoms"?: string;
     "Applicant history if under 11"?: string;
     "Additional details of applicant history if under 11"?: string;
-    "Has the applicant ever had tuberculosis?"?: string;
-    "Detail of applicant's previous TB"?: string;
-    "Has the applicant had close contact with any person with active pulmonary tuberculosis within the past year?"?: string;
-    "Details of applicant's close contact with any person with active pulmonary tuberculosis"?: string;
+    "Has the applicant ever had pulmonary TB?"?: string;
+    "Detail of applicant's previous pulmonary TB"?: string;
+    "Has the applicant had close contact with any person with active pulmonary TB within the past year?"?: string;
+    "Details of applicant's close contact with any person with active pulmonary TB"?: string;
     "Is the applicant pregnant?"?: string;
     "Does the applicant have menstrual periods?"?: string;
     "Physical examination notes"?: string;
@@ -95,7 +95,7 @@ export class MedicalSummaryPage extends BasePage {
           this.verifySummaryValue("Age", processedValue);
           break;
         case "tbSymptoms":
-          this.verifySummaryValue("Does the applicant have TB symptoms?", processedValue);
+          this.verifySummaryValue("Does the applicant have pulmonary TB symptoms?", processedValue);
           break;
         case "tbSymptomsList":
           if (processedValue) {
@@ -115,20 +115,20 @@ export class MedicalSummaryPage extends BasePage {
           );
           break;
         case "previousTb":
-          this.verifySummaryValue("Has the applicant ever had tuberculosis?", processedValue);
+          this.verifySummaryValue("Has the applicant ever had pulmonary TB?", processedValue);
           break;
         case "previousTbDetail":
-          this.verifySummaryValue("Detail of applicant's previous TB", processedValue);
+          this.verifySummaryValue("Detail of applicant's previous pulmonary TB", processedValue);
           break;
         case "closeContactWithTb":
           this.verifySummaryValue(
-            "Has the applicant had close contact with any person with active pulmonary tuberculosis within the past year?",
+            "Has the applicant had close contact with any person with active pulmonary TB within the past year?",
             processedValue,
           );
           break;
         case "closeContactWithTbDetail":
           this.verifySummaryValue(
-            "Details of applicant's close contact with any person with active pulmonary tuberculosis",
+            "Details of applicant's close contact with any person with active pulmonary TB",
             processedValue,
           );
           break;
@@ -165,15 +165,15 @@ export class MedicalSummaryPage extends BasePage {
     // Verify all the fields exist in the summary
     const expectedFields = [
       "Age",
-      "Does the applicant have TB symptoms?",
-      "TB symptoms",
+      "Does the applicant have pulmonary TB symptoms?",
+      "pulmonary TB symptoms",
       "Other symptoms",
       "Applicant history if under 11",
       "Additional details of applicant history if under 11",
-      "Has the applicant ever had tuberculosis?",
-      "Detail of applicant's previous TB",
-      "Has the applicant had close contact with any person with active pulmonary tuberculosis within the past year?",
-      "Details of applicant's close contact with any person with active pulmonary tuberculosis",
+      "Has the applicant ever had pulmonary TB?",
+      "Detail of applicant's previous pulmonary TB",
+      "Has the applicant had close contact with any person with active pulmonary TB within the past year?",
+      "Details of applicant's close contact with any person with active pulmonary TB",
       "Is the applicant pregnant?",
       "Does the applicant have menstrual periods?",
       "Physical examination notes",
@@ -239,16 +239,16 @@ export class MedicalSummaryPage extends BasePage {
   verifyChangeLinksTargets(): MedicalSummaryPage {
     const expectedFragments = {
       Age: "#age",
-      "Does the applicant have TB symptoms?": "#tb-symptoms",
+      "Does the applicant have pulmonary TB symptoms?": "#tb-symptoms",
       "TB symptoms": "#tb-symptoms-list",
       "Other symptoms": "#other-symptoms-detail",
       "Applicant history if under 11": "#under-eleven-conditions",
       "Additional details of applicant history if under 11": "#under-eleven-conditions-detail",
-      "Has the applicant ever had tuberculosis?": "#previous-tb",
-      "Detail of applicant's previous TB": "#previous-tb-detail",
-      "Has the applicant had close contact with any person with active pulmonary tuberculosis within the past year?":
+      "Has the applicant ever had pulmonary TB?": "#previous-tb",
+      "Detail of applicant's previous pulmonary TB": "#previous-tb-detail",
+      "Has the applicant had close contact with any person with active pulmonary TB within the past year?":
         "#close-contact-with-tb",
-      "Details of applicant's close contact with any person with active pulmonary tuberculosis":
+      "Details of applicant's close contact with any person with active pulmonary TB":
         "#close-contact-with-tb-detail",
       "Is the applicant pregnant?": "#pregnant",
       "Does the applicant have menstrual periods?": "#menstrual-periods",
@@ -289,8 +289,8 @@ export class MedicalSummaryPage extends BasePage {
       "TB symptoms",
       "Other symptoms",
       "Additional details of applicant history if under 11",
-      "Detail of applicant's previous TB",
-      "Details of applicant's close contact with any person with active pulmonary tuberculosis",
+      "Detail of applicant's previous pulmonary TB",
+      "Details of applicant's close contact with any person with active pulmonary TB",
       "Physical examination notes",
     ];
 
@@ -317,15 +317,15 @@ export class MedicalSummaryPage extends BasePage {
   verifyAllFieldsPresent(): MedicalSummaryPage {
     const requiredFields = [
       "Age",
-      "Does the applicant have TB symptoms?",
+      "Does the applicant have pulmonary TB symptoms?",
       "TB symptoms",
       "Other symptoms",
       "Applicant history if under 11",
       "Additional details of applicant history if under 11",
-      "Has the applicant ever had tuberculosis?",
-      "Detail of applicant's previous TB",
-      "Has the applicant had close contact with any person with active pulmonary tuberculosis within the past year?",
-      "Details of applicant's close contact with any person with active pulmonary tuberculosis",
+      "Has the applicant ever had pulmonary TB?",
+      "Detail of applicant's previous pulmonary TB",
+      "Has the applicant had close contact with any person with active pulmonary TB within the past year?",
+      "Details of applicant's close contact with any person with active pulmonary TB",
       "Is the applicant pregnant?",
       "Does the applicant have menstrual periods?",
       "Physical examination notes",

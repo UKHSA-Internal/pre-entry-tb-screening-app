@@ -2,9 +2,9 @@ name: Pets CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, release/**]
   pull_request:
-    branches: [main, develop]
+    branches: [main, develop, release/**]
 
   workflow_dispatch:
 
@@ -164,6 +164,7 @@ jobs:
         with:
           name: mochawesome-reportmochawesome-report-${{ matrix.browser }}
           path: pets-ui/cypress/reports/mochawesome/
+
 
   core-services-tests:
     name: Run tests for core services

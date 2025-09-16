@@ -29,6 +29,7 @@
     "@types/swagger-ui-react": "^5.18.0",
     "axios": "^1.8.3",
     "dicom-parser": "^1.8.21",
+    "glob": "^11.0.3",
     "govuk-frontend": "^5.7.1",
     "msal-react-tester": "^0.3.1",
     "react": "^19.1.1",
@@ -40,7 +41,7 @@
     "react-router": "^6.28.0",
     "react-router-dom": "^6.28.0",
     "sass": "^1.81.0",
-    "swagger-ui-react": "^5.27.1"
+    "swagger-ui-react": "^5.28.0"
   },
   "devDependencies": {
     "@redux-devtools/core": "^4.1.1",

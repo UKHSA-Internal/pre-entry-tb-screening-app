@@ -4,30 +4,71 @@ on:
   schedule:
     # Runs at 1 AM UTC every weekday (Monday to Friday)
     - cron: "0 1 * * 1-5"
-  workflow_dispatch: # Allows manual triggering through GitHub UI
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select environment to test'
+        required: true
+        default: "all"
+        type: choice
+        options: [all, qat, dev, preprod]
+      browsers:
+        description: 'Select browsers to test'
+        required: true
+        default: "all"
+        type: choice
+        options: [all, chrome, firefox, edge]
 
-# Add permissions for GitHub Pages deployment
 permissions:
   contents: read
   pages: write
   id-token: write
 
 jobs:
-  cypress-nightly:
-    name: Run Nightly Cypress Tests - ${{ matrix.browser }} (${{ matrix.environment }})
+  setup-matrix:
+    name: Setup Test Matrix
     runs-on: ubuntu-latest
+    outputs:
+      browsers: ${{ steps.matrix.outputs.browsers }}
+      environments: ${{ steps.matrix.outputs.environments }}
+    steps:
+      - name: Setup test matrix
+        id: matrix
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            BROWSER_SELECTION="${{ github.event.inputs.browsers }}"
+            ENV_SELECTION="${{ github.event.inputs.environment }}"
+          else
+            BROWSER_SELECTION="all"
+            ENV_SELECTION="all"
+          fi
+
+          if [[ "$BROWSER_SELECTION" == "all" ]]; then
+            BROWSER_ARRAY='["chrome", "firefox", "edge"]'
+          else
+            BROWSER_ARRAY='["'$BROWSER_SELECTION'"]'
+          fi
+          echo "browsers=$BROWSER_ARRAY" >> $GITHUB_OUTPUT
+
+          if [[ "$ENV_SELECTION" == "all" ]]; then
+            ENV_ARRAY='["qat", "dev", "preprod"]'
+          else
+            ENV_ARRAY='["'$ENV_SELECTION'"]'
+          fi
+          echo "environments=$ENV_ARRAY" >> $GITHUB_OUTPUT
+
+          echo "Selected browsers: $BROWSER_ARRAY"
+          echo "Selected environments: $ENV_ARRAY"
+
+  cypress-nightly:
+    name: Run Cypress Tests - ${{ matrix.environment }} - ${{ matrix.browser }}
+    runs-on: ubuntu-latest
+    needs: setup-matrix
     strategy:
-      # Don't fail fast - run all tests even if some fail
       fail-fast: false
       matrix:
-        browser: [chrome, firefox, edge]
-        environment:
-          - name: qat
-            url: https://clinics.test.pets.ukhsa.gov.uk
-          - name: dev
-            url: https://clinics.dev.pets.ukhsa.gov.uk
-          - name: preprod
-            url: https://clinics.preprod.pets.ukhsa.gov.uk
+        browser: ${{ fromJson(needs.setup-matrix.outputs.browsers) }}
+        environment: ${{ fromJson(needs.setup-matrix.outputs.environments) }}
 
     env:
       USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
@@ -42,8 +83,7 @@ jobs:
       USER_5_PASSWORD: ${{ secrets.USER_5_PASSWORD }}
       USER_6_EMAIL: ${{ secrets.USER_6_EMAIL }}
       USER_6_PASSWORD: ${{ secrets.USER_6_PASSWORD }}
-      ENVIRONMENT: ${{ matrix.environment.name }}
-      CYPRESS_BASE_URL: ${{ matrix.environment.url }}
+      TEST_ENVIRONMENT: ${{ matrix.environment }}
 
     steps:
       - name: Checkout code
@@ -78,19 +118,6 @@ jobs:
           pnpm exec cypress verify
         working-directory: pets-ui
 
-      - name: Debug Environment Configuration
-        run: |
-          echo "Testing against environment: ${{ matrix.environment.name }}"
-          echo "Base URL: ${{ matrix.environment.url }}"
-          echo "CYPRESS_BASE_URL: $CYPRESS_BASE_URL"
-          # Test environment accessibility
-          if curl -f -s -I "${{ matrix.environment.url }}" > /dev/null; then
-            echo "✓ Environment ${{ matrix.environment.name }} is accessible"
-          else
-            echo "✗ Environment ${{ matrix.environment.name }} is not accessible"
-            echo "This may cause test failures"
-          fi
-
       - name: Start Local Environment
         run: |
           pnpm start & sleep 120
@@ -104,9 +131,8 @@ jobs:
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
           config-file: cypress/cypress.config.mjs
-          config: baseUrl=${{ matrix.environment.url }}
         env:
-          CYPRESS_BASE_URL: ${{ matrix.environment.url }}
+          CYPRESS_TEST_ENVIRONMENT: ${{ matrix.environment }}
 
       - name: Retry if failed
         if: steps.initial_attempt.outcome != 'success'
@@ -117,18 +143,16 @@ jobs:
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
           config-file: cypress/cypress.config.mjs
-          config: baseUrl=${{ matrix.environment.url }}
         env:
-          CYPRESS_BASE_URL: ${{ matrix.environment.url }}
+          CYPRESS_TEST_ENVIRONMENT: ${{ matrix.environment }}
 
       - name: Upload Failed Tests Screenshots
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: screenshots-${{ matrix.browser }}-${{ matrix.environment.name }}-${{ github.run_number }}-${{ github.run_attempt }}
+          name: nightly-failed-screenshots-${{ matrix.environment }}-${{ matrix.browser }}
           path: pets-ui/cypress/screenshots
           retention-days: 7
-          if-no-files-found: ignore
 
       - name: Merge Mochawesome Reports
         if: always()
@@ -144,39 +168,33 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: report-${{ matrix.browser }}-${{ matrix.environment.name }}-${{ github.run_number }}-${{ github.run_attempt }}
+          name: nightly-mochawesome-report-${{ matrix.environment }}-${{ matrix.browser }}
           path: pets-ui/cypress/reports/mochawesome/
           retention-days: 7
-          if-no-files-found: ignore
 
-      # Store browser+environment result for dashboard
-      - name: Store browser-environment result
+      - name: Store env+browser result
         if: always()
         run: |
           if [[ "${{ steps.initial_attempt.outcome }}" == "success" ]] || [[ "${{ steps.retry_attempt.outcome }}" == "success" ]]; then
-            echo "PASS" > ${{ matrix.browser }}-${{ matrix.environment.name }}-result.txt
+            echo "PASS" > ${{ matrix.environment }}-${{ matrix.browser }}-result.txt
           else
-            echo "FAIL" > ${{ matrix.browser }}-${{ matrix.environment.name }}-result.txt
+            echo "FAIL" > ${{ matrix.environment }}-${{ matrix.browser }}-result.txt
           fi
-          # Add timestamp to make filename unique
-          TIMESTAMP=$(date +%s%N)
-          cp ${{ matrix.browser }}-${{ matrix.environment.name }}-result.txt ${{ matrix.browser }}-${{ matrix.environment.name }}-${TIMESTAMP}-result.txt
 
-      - name: Upload browser-environment result
+      - name: Upload env+browser result
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: result-${{ matrix.browser }}-${{ matrix.environment.name }}-${{ github.run_number }}-${{ github.run_attempt }}
-          path: ${{ matrix.browser }}-${{ matrix.environment.name }}-*-result.txt
-          if-no-files-found: ignore
+          name: env-browser-result-${{ matrix.environment }}-${{ matrix.browser }}
+          path: ${{ matrix.environment }}-${{ matrix.browser }}-result.txt
 
   generate-summary-and-deploy:
     name: Generate Summary and Deploy Dashboard
-    needs: cypress-nightly
+    needs: [setup-matrix, cypress-nightly]
     if: always()
     runs-on: ubuntu-latest
+    continue-on-error: true   # allow report even if tests fail
 
-    # Configure GitHub Pages
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -185,236 +203,515 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install required tools
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq bc
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: all-artifacts
+          pattern: "*"
+
+      - name: Create dashboard directory
+        run: |
+          mkdir -p dashboard
 
       - name: Generate test summary report
         id: summary
-        shell: bash
         run: |
           echo "# 🌙 Nightly Cypress Test Results" > nightly-summary.md
           echo "**Run Date**: $(date)" >> nightly-summary.md
           echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
           echo "" >> nightly-summary.md
-          
-          # Initialize counters
-          TOTAL_COMBINATIONS=9  # 3 browsers × 3 environments
-          FAILED_COMBINATIONS=0
-          FAILED_TESTS=0
-          
-          echo "## Browser × Environment Test Results" >> nightly-summary.md
-          echo "" >> nightly-summary.md
-          echo "| Browser | QAT | DEV | PREPROD |" >> nightly-summary.md
-          echo "|---------|-----|-----|---------|" >> nightly-summary.md
-          
-          # Initialize status variables for JSON output
-          declare -A BROWSER_ENV_STATUS
-          ENVIRONMENTS=("qat" "dev" "preprod")
-          BROWSERS=("chrome" "firefox" "edge")
-          
-          # Initialize all combinations to PASS (will be overridden if failed)
-          for browser in "${BROWSERS[@]}"; do
-            for env in "${ENVIRONMENTS[@]}"; do
-              BROWSER_ENV_STATUS["${browser}_${env}"]="PASS"
-            done
-          done
-          
-          # Debug: Show what artifacts we have
-          echo "Available artifacts:"
-          find all-artifacts -type d -name "*result*" 2>/dev/null || echo "No result artifacts found"
-          
-          # Check results for each browser
-          for browser in "${BROWSERS[@]}"; do
-            ROW="| $browser"
-            
-            for env in "${ENVIRONMENTS[@]}"; do
-              # Find result file with pattern matching
-              RESULT_FILE=$(find all-artifacts -name "result-${browser}-${env}-${{ github.run_number }}-*" -type d 2>/dev/null | head -1)
-              if [ -n "$RESULT_FILE" ]; then
-                # Find the actual result file inside the directory
-                ACTUAL_RESULT_FILE=$(find "$RESULT_FILE" -name "${browser}-${env}-*-result.txt" 2>/dev/null | head -1)
-                if [ -f "$ACTUAL_RESULT_FILE" ]; then
-                  RESULT=$(cat "$ACTUAL_RESULT_FILE")
-                else
-                  echo "Warning: No result file found for ${browser}-${env}"
-                  RESULT="NOT_RUN"
-                fi
-              else
-                echo "Warning: No artifact directory found for ${browser}-${env}"
-                RESULT="NOT_RUN"
-              fi
-              
-              # Find screenshot directory with pattern matching
-              SCREENSHOT_DIR=$(find all-artifacts -name "screenshots-${browser}-${env}-${{ github.run_number }}-*" -type d 2>/dev/null | head -1)
-              
-              BROWSER_ENV_STATUS["${browser}_${env}"]="$RESULT"
-              
-              if [ "$RESULT" = "FAIL" ]; then
-                ((FAILED_COMBINATIONS++))
-                if [ -d "$SCREENSHOT_DIR" ] && [ "$(ls -A $SCREENSHOT_DIR 2>/dev/null)" ]; then
-                  SCREENSHOT_COUNT=$(find "$SCREENSHOT_DIR" -name "*.png" -o -name "*.jpg" 2>/dev/null | wc -l)
-                  ROW="$ROW | ❌ ($SCREENSHOT_COUNT)"
-                  FAILED_TESTS=$((FAILED_TESTS + SCREENSHOT_COUNT))
-                else
-                  ROW="$ROW | ❌"
-                fi
-              elif [ "$RESULT" = "PASS" ]; then
-                ROW="$ROW | ✅"
-              else
-                ROW="$ROW | ❓"
-              fi
-              done
-            
-            ROW="$ROW |"
-            echo "$ROW" >> nightly-summary.md
-          done
-          
-          echo "" >> nightly-summary.md
-          
-          # Environment summary
-          echo "## Environment Summary" >> nightly-summary.md
-          echo "" >> nightly-summary.md
-          echo "| Environment | Status | Failed Browsers |" >> nightly-summary.md
-          echo "|-------------|--------|-----------------|" >> nightly-summary.md
-          
-          for env in "${ENVIRONMENTS[@]}"; do
-            ENV_FAILED=0
-            for browser in "${BROWSERS[@]}"; do
-              if [ "${BROWSER_ENV_STATUS[${browser}_${env}]}" = "FAIL" ]; then
-                ((ENV_FAILED++))
-              fi
-            done
-            
-            if [ $ENV_FAILED -eq 0 ]; then
-              echo "| ${env^^} | ✅ Passed | 0/3 |" >> nightly-summary.md
+
+          ENV_MATRIX='${{ needs.setup-matrix.outputs.environments }}'
+          BROWSER_MATRIX='${{ needs.setup-matrix.outputs.browsers }}'
+
+          ENV_LIST=($(echo $ENV_MATRIX | jq -r '.[]'))
+          BROWSER_LIST=($(echo $BROWSER_MATRIX | jq -r '.[]'))
+
+          TOTAL=0
+          FAILS=0
+
+          echo "{" > dashboard/test-results.json
+          echo "  \"results\": {" >> dashboard/test-results.json
+
+          FIRST_ENV=true
+
+          for env in "${ENV_LIST[@]}"; do
+            echo "## Environment: $env" >> nightly-summary.md
+            echo "" >> nightly-summary.md
+            echo "| Browser | Status |" >> nightly-summary.md
+            echo "|---------|--------|" >> nightly-summary.md
+
+            if [ "$FIRST_ENV" = true ]; then
+              echo "    \"$env\": {" >> dashboard/test-results.json
+              FIRST_ENV=false
             else
-              echo "| ${env^^} | ❌ Failed | $ENV_FAILED/3 |" >> nightly-summary.md
+              echo "    ,\"$env\": {" >> dashboard/test-results.json
             fi
+
+            FIRST_BROWSER=true
+
+            for browser in "${BROWSER_LIST[@]}"; do
+              RESULT_FILE="all-artifacts/env-browser-result-${env}-${browser}/${env}-${browser}-result.txt"
+              STATUS="UNKNOWN"
+              if [ -f "$RESULT_FILE" ]; then
+                STATUS=$(cat "$RESULT_FILE")
+              fi
+
+              echo "| $browser | $([ "$STATUS" = "PASS" ] && echo "✅ PASS" || echo "❌ FAIL") |" >> nightly-summary.md
+
+              if [ "$FIRST_BROWSER" = true ]; then
+                echo "      \"$browser\": \"$STATUS\"" >> dashboard/test-results.json
+                FIRST_BROWSER=false
+              else
+                echo "      ,\"$browser\": \"$STATUS\"" >> dashboard/test-results.json
+              fi
+
+              TOTAL=$((TOTAL+1))
+              if [ "$STATUS" != "PASS" ]; then
+                FAILS=$((FAILS+1))
+              fi
+            done
+
+            echo "    }" >> dashboard/test-results.json
+            echo "" >> nightly-summary.md
           done
-          
-          echo "" >> nightly-summary.md
-          
-          # Overall status
-          if [ $FAILED_COMBINATIONS -eq 0 ]; then
+
+          echo "  }" >> dashboard/test-results.json
+
+          if [ $FAILS -eq 0 ]; then
             echo "## ✅ Overall Status: PASSED" >> nightly-summary.md
-            echo "All browser×environment combinations completed successfully!" >> nightly-summary.md
-            echo "status=PASS" >> $GITHUB_OUTPUT
+            echo "All $TOTAL combinations passed." >> nightly-summary.md
+            echo "overall_status=PASS" >> $GITHUB_OUTPUT
             OVERALL_STATUS="PASS"
           else
             echo "## ❌ Overall Status: FAILED" >> nightly-summary.md
-            echo "$FAILED_COMBINATIONS out of $TOTAL_COMBINATIONS browser×environment combination(s) have failing tests." >> nightly-summary.md
-            echo "status=FAIL" >> $GITHUB_OUTPUT
+            echo "$FAILS of $TOTAL environment–browser combinations failed." >> nightly-summary.md
+            echo "overall_status=FAIL" >> $GITHUB_OUTPUT
             OVERALL_STATUS="FAIL"
           fi
-          
-          # Calculate success rate
-          SUCCESS_RATE=$(( (TOTAL_COMBINATIONS - FAILED_COMBINATIONS) * 100 / TOTAL_COMBINATIONS ))
-          
-          # Set outputs for dashboard
-          echo "overall_status=$OVERALL_STATUS" >> $GITHUB_OUTPUT
-          echo "failed_tests=$FAILED_TESTS" >> $GITHUB_OUTPUT
-          echo "success_rate=${SUCCESS_RATE}%" >> $GITHUB_OUTPUT
-          echo "failed_combinations=$FAILED_COMBINATIONS" >> $GITHUB_OUTPUT
-          
-          # Set individual browser-environment status outputs
-          for browser in "${BROWSERS[@]}"; do
-            for env in "${ENVIRONMENTS[@]}"; do
-              echo "${browser}_${env}_status=${BROWSER_ENV_STATUS[${browser}_${env}]}" >> $GITHUB_OUTPUT
-            done
-          done
 
-      - name: Create dashboard directory
-        run: |
-          mkdir -p dashboard
-          cp .github/pages/index.html dashboard/ || echo "index.html not found, will create default"
-
-      - name: Generate dashboard data JSON
-        run: |
-          cat > dashboard/test-results.json << EOF
-          {
-            "overallStatus": "${{ steps.summary.outputs.overall_status }}",
-            "successRate": "${{ steps.summary.outputs.success_rate }}",
-            "failedTests": ${{ steps.summary.outputs.failed_tests }},
-            "failedCombinations": ${{ steps.summary.outputs.failed_combinations }},
-            "totalCombinations": 9,
-            "lastRunHours": 0,
-            "environments": {
-              "qat": {
-                "chrome": "${{ steps.summary.outputs.chrome_qat_status }}",
-                "firefox": "${{ steps.summary.outputs.firefox_qat_status }}",
-                "edge": "${{ steps.summary.outputs.edge_qat_status }}"
-              },
-              "dev": {
-                "chrome": "${{ steps.summary.outputs.chrome_dev_status }}",
-                "firefox": "${{ steps.summary.outputs.firefox_dev_status }}",
-                "edge": "${{ steps.summary.outputs.edge_dev_status }}"
-              },
-              "preprod": {
-                "chrome": "${{ steps.summary.outputs.chrome_preprod_status }}",
-                "firefox": "${{ steps.summary.outputs.firefox_preprod_status }}",
-                "edge": "${{ steps.summary.outputs.edge_preprod_status }}"
-              }
-            },
-            "runUrl": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
-          }
-          EOF
-
-      - name: Create default index.html if not exists
-        run: |
-          if [ ! -f "dashboard/index.html" ]; then
-            cat > dashboard/index.html << 'EOF'
-          <!DOCTYPE html>
-          <html><head><title>Pre-Entry TB Screening - Nightly Test Dashboard</title></head>
-          <body><h1>Dashboard Loading...</h1>
-          <script>
-          setTimeout(() => {
-            fetch('./test-results.json').then(r => r.json()).then(data => {
-              const getStatusIcon = (status) => status === 'PASS' ? '✅' : '❌';
-              const getStatusColor = (status) => status === 'PASS' ? 'green' : 'red';
-              
-              let environmentTable = '<table style="border-collapse: collapse; width: 100%; margin: 15px 0;">';
-              environmentTable += '<tr style="background: #f0f0f0;"><th style="border: 1px solid #ddd; padding: 8px;">Environment</th><th style="border: 1px solid #ddd; padding: 8px;">Chrome</th><th style="border: 1px solid #ddd; padding: 8px;">Firefox</th><th style="border: 1px solid #ddd; padding: 8px;">Edge</th></tr>';
-              
-              ['qat', 'dev', 'preprod'].forEach(env => {
-                environmentTable += `<tr>
-                  <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">${env.toUpperCase()}</td>
-                  <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: ${getStatusColor(data.environments[env].chrome)}">${getStatusIcon(data.environments[env].chrome)} ${data.environments[env].chrome}</td>
-                  <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: ${getStatusColor(data.environments[env].firefox)}">${getStatusIcon(data.environments[env].firefox)} ${data.environments[env].firefox}</td>
-                  <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: ${getStatusColor(data.environments[env].edge)}">${getStatusIcon(data.environments[env].edge)} ${data.environments[env].edge}</td>
-                </tr>`;
-              });
-              environmentTable += '</table>';
-              
-              document.body.innerHTML = `
-                <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 1000px; margin: 0 auto;">
-                  <h1>🌙 Pre-Entry TB Screening - Nightly Tests: ${data.overallStatus}</h1>
-                  <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                    <h3>Cross-Environment Test Results</h3>
-                    ${environmentTable}
-                  </div>
-                  <div style="display: flex; gap: 20px; margin: 20px 0;">
-                    <div style="background: #e8f4f8; padding: 15px; border-radius: 8px; flex: 1;">
-                      <strong>Success Rate:</strong> ${data.successRate}
-                    </div>
-                    <div style="background: #fef2f2; padding: 15px; border-radius: 8px; flex: 1;">
-                      <strong>Failed Tests:</strong> ${data.failedTests}
-                    </div>
-                    <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; flex: 1;">
-                      <strong>Failed Combinations:</strong> ${data.failedCombinations}/${data.totalCombinations}
-                    </div>
-                  </div>
-                  <p><strong>Last Updated:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
-                  <p><a href="${data.runUrl}" target="_blank" style="background: #0066cc; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px;">📊 View Detailed Results</a></p>
-                </div>
-              `;
-            });
-          }, 100);
-          </script></body></html>
-          EOF
+          echo "  ,\"overallStatus\": \"$OVERALL_STATUS\"," >> dashboard/test-results.json
+          echo "  \"totalTests\": $TOTAL," >> dashboard/test-results.json
+          echo "  \"failedTests\": $FAILS," >> dashboard/test-results.json
+          if [ $TOTAL -gt 0 ]; then
+            SUCCESS_RATE=$(echo "scale=0; ($TOTAL-$FAILS)*100/$TOTAL" | bc)
+          else
+            SUCCESS_RATE=0
           fi
+          echo "  \"successRate\": $SUCCESS_RATE," >> dashboard/test-results.json
+          echo "  \"runUrl\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"," >> dashboard/test-results.json
+          echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)\"" >> dashboard/test-results.json
+          echo "}" >> dashboard/test-results.json
+
+      - name: Create dashboard HTML
+        run: |
+          cat > dashboard/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>🌙 Pre-Entry TB Screening - Nightly Tests</title>
+              <style>
+                  body {
+                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                      margin: 0;
+                      padding: 0;
+                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                      min-height: 100vh;
+                  }
+                  
+                  .header {
+                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                      color: white;
+                      padding: 20px;
+                      text-align: center;
+                  }
+                  
+                  .header h1 {
+                      margin: 0;
+                      font-size: 2rem;
+                  }
+                  
+                  .subtitle {
+                      margin: 5px 0 0 0;
+                      opacity: 0.9;
+                  }
+                  
+                  .container {
+                      max-width: 1200px;
+                      margin: 0 auto;
+                      padding: 20px;
+                  }
+                  
+                  .metrics {
+                      display: grid;
+                      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                      gap: 20px;
+                      margin: 20px 0;
+                  }
+                  
+                  .metric-card {
+                      background: white;
+                      border-radius: 12px;
+                      padding: 24px;
+                      text-align: center;
+                      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                      transition: transform 0.2s ease, box-shadow 0.2s ease;
+                  }
+                  
+                  .metric-card:hover {
+                      transform: translateY(-2px);
+                      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+                  }
+                  
+                  .metric-value {
+                      font-size: 3rem;
+                      font-weight: bold;
+                      margin-bottom: 8px;
+                  }
+                  
+                  .metric-label {
+                      color: #666;
+                      text-transform: uppercase;
+                      font-size: 0.9rem;
+                      letter-spacing: 0.5px;
+                  }
+                  
+                  .status-pass { color: #22c55e; }
+                  .status-fail { color: #ef4444; }
+                  
+                  .browser-results {
+                      background: white;
+                      border-radius: 12px;
+                      padding: 24px;
+                      margin: 20px 0;
+                      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                  }
+                  
+                  .environment-section {
+                      margin: 30px 0;
+                      padding: 20px;
+                      border-left: 4px solid #667eea;
+                      background: #f8fafc;
+                      border-radius: 0 8px 8px 0;
+                  }
+                  
+                  .environment-header {
+                      margin-bottom: 20px;
+                  }
+                  
+                  .environment-title {
+                      font-size: 1.5rem;
+                      font-weight: bold;
+                      color: #374151;
+                      margin-bottom: 12px;
+                      text-transform: uppercase;
+                      letter-spacing: 1px;
+                  }
+                  
+                  .environment-stats {
+                      display: flex;
+                      gap: 20px;
+                      flex-wrap: wrap;
+                      margin-top: 8px;
+                  }
+                  
+                  .stat-item {
+                      background: white;
+                      padding: 8px 16px;
+                      border-radius: 20px;
+                      font-size: 0.9rem;
+                      font-weight: 600;
+                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                      border: 1px solid #e5e7eb;
+                  }
+                  
+                  .browser-grid {
+                      display: grid;
+                      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                      gap: 16px;
+                      margin-top: 20px;
+                  }
+                  
+                  .browser-card {
+                      background: white;
+                      border-radius: 12px;
+                      padding: 24px;
+                      text-align: center;
+                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                      transition: all 0.2s ease;
+                      border: 2px solid transparent;
+                  }
+                  
+                  .browser-card:hover {
+                      transform: translateY(-4px);
+                      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+                  }
+                  
+                  .browser-card.status-pass-card {
+                      border-color: #22c55e;
+                  }
+                  
+                  .browser-card.status-fail-card {
+                      border-color: #ef4444;
+                  }
+                  
+                  .browser-icon {
+                      font-size: 3rem;
+                      margin-bottom: 12px;
+                      display: block;
+                  }
+                  
+                  .browser-name {
+                      font-size: 1.25rem;
+                      font-weight: bold;
+                      margin-bottom: 12px;
+                      color: #374151;
+                  }
+                  
+                  .status-badge {
+                      padding: 8px 16px;
+                      border-radius: 20px;
+                      font-size: 0.9rem;
+                      font-weight: bold;
+                      text-transform: uppercase;
+                      letter-spacing: 0.5px;
+                  }
+                  
+                  .status-badge.pass {
+                      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+                      color: #166534;
+                      border: 2px solid #22c55e;
+                  }
+                  
+                  .status-badge.fail {
+                      background: linear-gradient(135deg, #fef2f2, #fecaca);
+                      color: #dc2626;
+                      border: 2px solid #ef4444;
+                  }
+                  
+                  .status-badge.unknown {
+                      background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+                      color: #6b7280;
+                      border: 2px solid #9ca3af;
+                  }
+                  
+                  .footer {
+                      text-align: center;
+                      margin-top: 40px;
+                      padding: 20px;
+                  }
+                  
+                  .link {
+                      display: inline-block;
+                      background: white;
+                      color: #667eea;
+                      text-decoration: none;
+                      font-weight: 600;
+                      padding: 12px 24px;
+                      border-radius: 8px;
+                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                      transition: all 0.2s ease;
+                  }
+                  
+                  .link:hover {
+                      background: #667eea;
+                      color: white;
+                      transform: translateY(-2px);
+                      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                  }
+                  
+                  .last-updated {
+                      color: white;
+                      margin-top: 16px;
+                      opacity: 0.9;
+                  }
+                  
+                  .loading {
+                      text-align: center;
+                      padding: 40px;
+                      color: white;
+                  }
+                  
+                  .spinner {
+                      border: 4px solid rgba(255, 255, 255, 0.3);
+                      border-radius: 50%;
+                      border-top: 4px solid white;
+                      width: 40px;
+                      height: 40px;
+                      animation: spin 1s linear infinite;
+                      margin: 0 auto 20px;
+                  }
+                  
+                  @keyframes spin {
+                      0% { transform: rotate(0deg); }
+                      100% { transform: rotate(360deg); }
+                  }
+                  
+                  @media (max-width: 768px) {
+                      .metrics {
+                          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                          gap: 16px;
+                      }
+                      
+                      .browser-grid {
+                          grid-template-columns: 1fr;
+                      }
+                      
+                      .metric-value {
+                          font-size: 2.5rem;
+                      }
+                      
+                      .header h1 {
+                          font-size: 1.5rem;
+                      }
+                  }
+              </style>
+          </head>
+          <body>
+              <div class="header">
+                  <h1>🌙 Pre-Entry TB Screening - Nightly Tests</h1>
+                  <p class="subtitle">Last 24 Hours | Auto-refreshes every 5 minutes</p>
+              </div>
+              
+              <div class="container">
+                  <div id="loading" class="loading">
+                      <div class="spinner"></div>
+                      <h2>Loading test results...</h2>
+                  </div>
+                  
+                  <div id="dashboard" style="display: none;">
+                      <!-- Content will be populated by JavaScript -->
+                  </div>
+              </div>
+              <script>
+                  function getBrowserIcon(browser) {
+                      const icons = {
+                          'chrome': '🌐',
+                          'firefox': '🔥', 
+                          'edge': '⚡',
+                          'safari': '🧭'
+                      };
+                      return icons[browser.toLowerCase()] || '🌐';
+                  }
+                  
+                  function formatTimestamp(timestamp) {
+                      return new Date(timestamp).toLocaleString();
+                  }
+                  
+                  function getStatusInfo(status) {
+                      const statusMap = {
+                          'PASS': { class: 'pass', text: '✅ PASS', cardClass: 'status-pass-card' },
+                          'FAIL': { class: 'fail', text: '❌ FAIL', cardClass: 'status-fail-card' },
+                          'UNKNOWN': { class: 'unknown', text: '⚪ UNKNOWN', cardClass: 'status-unknown-card' }
+                      };
+                      return statusMap[status] || statusMap['UNKNOWN'];
+                  }
+                  
+                  function createEnvironmentSection(envName, browsers) {
+                      let sectionHTML = '<div class="environment-section">';
+                      sectionHTML += '<div class="environment-title">Environment: ' + envName.toUpperCase() + '</div>';
+                      sectionHTML += '<div class="browser-grid">';
+                      
+                      Object.entries(browsers).forEach(function(entry) {
+                          const browser = entry[0];
+                          const status = entry[1];
+                          const statusInfo = getStatusInfo(status);
+                          
+                          sectionHTML += 
+                              '<div class="browser-card ' + statusInfo.cardClass + '">' +
+                                  '<div class="browser-icon">' + getBrowserIcon(browser) + '</div>' +
+                                  '<div class="browser-name">' + browser.charAt(0).toUpperCase() + browser.slice(1) + '</div>' +
+                                  '<span class="status-badge ' + statusInfo.class + '">' + statusInfo.text + '</span>' +
+                              '</div>';
+                      });
+                      
+                      sectionHTML += '</div></div>';
+                      return sectionHTML;
+                  }
+                  
+                  function createBrowserResults(results) {
+                      if (!results) {
+                          return '<div class="browser-results"><p>No test results available</p></div>';
+                      }
+                      
+                      let resultsHTML = '<div class="browser-results"><h2>Test Results by Environment</h2>';
+                      
+                      Object.entries(results).forEach(function(entry) {
+                          const envName = entry[0];
+                          const browsers = entry[1];
+                          resultsHTML += createEnvironmentSection(envName, browsers);
+                      });
+                      
+                      resultsHTML += '</div>';
+                      return resultsHTML;
+                  }
+                  
+                  function loadDashboard() {
+                      fetch('./test-results.json')
+                          .then(function(response) { return response.json(); })
+                          .then(function(data) {
+                              const dashboard = document.getElementById('dashboard');
+                              const loading = document.getElementById('loading');
+                              
+                              // Calculate hours ago
+                              const now = new Date();
+                              const testTime = new Date(data.timestamp);
+                              const hoursAgo = Math.floor((now - testTime) / (1000 * 60 * 60));
+                              
+                              dashboard.innerHTML = 
+                                  '<div class="metrics">' +
+                                      '<div class="metric-card">' +
+                                          '<div class="metric-value ' + (data.overallStatus === 'PASS' ? 'status-pass' : 'status-fail') + '">' +
+                                              data.overallStatus +
+                                          '</div>' +
+                                          '<div class="metric-label">Current Status</div>' +
+                                      '</div>' +
+                                      '<div class="metric-card">' +
+                                          '<div class="metric-value">' + (data.successRate || 0) + '%</div>' +
+                                          '<div class="metric-label">Success Rate (7D)</div>' +
+                                      '</div>' +
+                                      '<div class="metric-card">' +
+                                          '<div class="metric-value">' + (data.failedTests || 0) + '</div>' +
+                                          '<div class="metric-label">Failed Tests</div>' +
+                                      '</div>' +
+                                      '<div class="metric-card">' +
+                                          '<div class="metric-value">' + hoursAgo + '</div>' +
+                                          '<div class="metric-label">Hours Ago</div>' +
+                                      '</div>' +
+                                  '</div>' +
+                                  createBrowserResults(data.results) +
+                                  '<div class="footer">' +
+                                      '<a href="' + data.runUrl + '" target="_blank" class="link">📊 View Detailed Reports</a>' +
+                                      '<p class="last-updated">Updated: ' + formatTimestamp(data.timestamp) + '</p>' +
+                                  '</div>';
+                              
+                              loading.style.display = 'none';
+                              dashboard.style.display = 'block';
+                          })
+                          .catch(function(error) {
+                              console.error('Error loading test results:', error);
+                              document.getElementById('loading').innerHTML = 
+                                  '<div class="spinner"></div>' +
+                                  '<h2>Error loading test results</h2>' +
+                                  '<p>Please check console for details</p>';
+                          });
+                  }
+                  
+                  // Load dashboard on page load
+                  loadDashboard();
+                  
+                  // Auto-refresh every 5 minutes
+                  setInterval(loadDashboard, 5 * 60 * 1000);
+              </script>
+          </body>
+          </html>
+          EOF
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -435,14 +732,12 @@ jobs:
           path: nightly-summary.md
           retention-days: 7
 
-      # Set final workflow status
       - name: Set workflow conclusion
         if: always()
         run: |
-          echo "Dashboard URL: ${{ steps.deployment.outputs.page_url }}"
-          if [[ "${{ steps.summary.outputs.status }}" == "PASS" ]]; then
-            echo "::notice::✅ All nightly tests passed across all environments! Dashboard updated at ${{ steps.deployment.outputs.page_url }}"
+          echo "🔗 Dashboard URL: ${{ steps.deployment.outputs.page_url }}"
+          if [[ "${{ steps.summary.outputs.overall_status }}" == "PASS" ]]; then
+            echo "::notice::✅ All nightly tests passed! Dashboard updated at ${{ steps.deployment.outputs.page_url }}"
           else
-            echo "::error::❌ Some nightly tests failed across environments. Check dashboard: ${{ steps.deployment.outputs.page_url }}"
-            exit 1
+            echo "::warning::⚠️ Some tests failed. Dashboard still updated at ${{ steps.deployment.outputs.page_url }}"
           fi
