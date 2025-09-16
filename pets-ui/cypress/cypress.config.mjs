@@ -10,6 +10,9 @@ import {
   DeleteMessageCommand,
   PurgeQueueCommand,
 } from "@aws-sdk/client-sqs";
+import fs from "fs";
+import path from "path";
+import { glob } from "glob";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -22,6 +25,21 @@ async function setupMochawesomeReporter(on) {
 dotenv.config({
   path: resolve(__dirname, "../../configs/.env.local.secrets"), // Required only for local runs, CI environment secrets are retrieved from Actions Secrets
 });
+
+// Utility: return only spec files that have at least one runnable (non-skipped) test
+function getNonSkippedSpecs() {
+  const allSpecs = glob.sync("cypress/e2e/**/*.cy.{js,jsx,ts,tsx}");
+
+  return allSpecs.filter((spec) => {
+    const content = fs.readFileSync(path.resolve(spec), "utf-8");
+
+    // Check if file contains a runnable test/describe (not only skipped)
+    const hasRunnableIt = /\bit\((?!.*skip)/.test(content);
+    const hasRunnableDescribe = /\bdescribe\((?!.*skip)/.test(content);
+
+    return hasRunnableIt || hasRunnableDescribe;
+  });
+}
 
 // Initialize SQS client
 const createSQSClient = () => {
@@ -38,12 +56,17 @@ const createSQSClient = () => {
 
 // Function to get base URL based on environment
 const getBaseUrl = () => {
-  // Check for explicit APP_DOMAIN first (highest priority)
+  // Prefer explicit environment variables set by CI workflow
+  if (process.env.CYPRESS_BASE_URL) {
+    return process.env.CYPRESS_BASE_URL;
+  }
+  if (process.env.ENV_URL) {
+    return process.env.ENV_URL;
+  }
   if (process.env.APP_DOMAIN) {
     return process.env.APP_DOMAIN;
   }
 
-  // Check for environment-based URL selection (locally and in CI)
   const environment = process.env.ENVIRONMENT || process.env.TARGET_ENV;
 
   switch (environment) {
@@ -84,22 +107,21 @@ export default defineConfig({
   e2e: {
     baseUrl: getBaseUrl(),
     supportFile: "cypress/support/e2e.ts",
+    // Static glob string for specPattern, as required by Cypress
     specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
     experimentalStudio: true,
+    retries: 2, // <-- Enable built-in test retries (change number if needed)
     setupNodeEvents: async (on, config) => {
       await setupMochawesomeReporter(on);
 
-      // Log the target environment and URL for debugging
       const currentEnv = process.env.ENVIRONMENT || process.env.TARGET_ENV || "local";
       console.log(`🎯 Target Environment: ${currentEnv}`);
       console.log(`🌐 Base URL: ${config.baseUrl}`);
 
-      // Warn if running against remote environment locally
       if (!process.env.CI && !process.env.GITHUB_ACTIONS && currentEnv !== "local") {
         console.log(`⚠️  Running LOCAL Cypress against ${currentEnv.toUpperCase()} environment`);
       }
 
-      // SQS Tasks Setup
       const sqsClient = createSQSClient();
 
       on("task", {
@@ -176,7 +198,6 @@ export default defineConfig({
             return null;
           } catch (error) {
             console.error("❌ Error purging SQS queue:", error);
-            // Don't throw on purge errors as queue might already be empty
             console.warn("Continuing despite purge error...");
             return null;
           }
@@ -236,7 +257,6 @@ export default defineConfig({
     },
     experimentalModifyObstructiveThirdPartyCode: true,
     modifyObstructiveCode: true,
-    // Add environment-specific configuration (CI only)
     defaultCommandTimeout:
       (process.env.CI || process.env.GITHUB_ACTIONS) && process.env.ENVIRONMENT !== "local"
         ? 10000
@@ -259,9 +279,7 @@ export default defineConfig({
   },
   env: {
     ...process.env,
-    // Make environment info available to tests
     CURRENT_ENVIRONMENT: process.env.ENVIRONMENT || process.env.TARGET_ENV || "local",
-    // SQS Queue URLs for different environments
     PETS_SQS_QUEUE_URL: process.env.PETS_SQS_QUEUE_URL,
     PETS_DLQ_URL: process.env.PETS_DLQ_URL,
   },
