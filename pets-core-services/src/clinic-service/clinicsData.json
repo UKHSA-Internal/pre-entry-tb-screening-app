@@ -124,5 +124,14 @@
     "startDate": "2025-04-01",
     "endDate": null,
     "createdBy": "tmp@email.com"
+  },
+  {
+    "clinicId": "GBR/London/EU/04/00X",
+    "name": "Knightsbridge Doctors",
+    "city": "London",
+    "country": "GBR",
+    "startDate": "25-09-16",
+    "endDate": null,
+    "createdBy": "jaroslaw.m.michalski@ukhsa.gov.uk"
   }
 ]
