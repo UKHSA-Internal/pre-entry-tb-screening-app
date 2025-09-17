@@ -182,6 +182,24 @@ jobs:
           path: ${{ matrix.environment }}-${{ matrix.browser }}-count.txt
 
 
+      - name: Extract total test count
+        if: always()
+        run: |
+          JSON_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
+          COUNT=0
+          if [ -f "$JSON_FILE" ]; then
+            COUNT=$(jq '.stats.tests' "$JSON_FILE")
+          fi
+          echo "$COUNT" > ${TEST_ENVIRONMENT}-${{ matrix.browser }}-count.txt
+
+      - name: Upload env+browser count
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: env-browser-count-${{ matrix.environment }}-${{ matrix.browser }}
+          path: ${{ matrix.environment }}-${{ matrix.browser }}-count.txt
+
+
       - name: Upload Mochawesome Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -643,9 +661,7 @@ jobs:
                       
                       Object.entries(browsers).forEach(function(entry) {
                           const browser = entry[0];
-                          const browserData = entry[1];
-                          const status = browserData.status;
-                          const count = browserData.count;
+                          const status = entry[1];
                           const statusInfo = getStatusInfo(status);
                           
                           sectionHTML += 
