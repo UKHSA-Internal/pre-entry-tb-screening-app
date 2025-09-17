@@ -164,6 +164,24 @@ jobs:
             echo "No mochawesome JSON files found. Skipping merge."
           fi
 
+      - name: Extract total test count
+        if: always()
+        run: |
+          JSON_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
+          COUNT=0
+          if [ -f "$JSON_FILE" ]; then
+            COUNT=$(jq '.stats.tests' "$JSON_FILE")
+          fi
+          echo "$COUNT" > ${TEST_ENVIRONMENT}-${{ matrix.browser }}-count.txt
+
+      - name: Upload env+browser count
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: env-browser-count-${{ matrix.environment }}-${{ matrix.browser }}
+          path: ${{ matrix.environment }}-${{ matrix.browser }}-count.txt
+
+
       - name: Upload Mochawesome Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -242,8 +260,8 @@ jobs:
           for env in "${ENV_LIST[@]}"; do
             echo "## Environment: $env" >> nightly-summary.md
             echo "" >> nightly-summary.md
-            echo "| Browser | Status |" >> nightly-summary.md
-            echo "|---------|--------|" >> nightly-summary.md
+            echo "| Browser | Status | Tests |" >> nightly-summary.md
+            echo "|---------|--------|------|" >> nightly-summary.md
 
             if [ "$FIRST_ENV" = true ]; then
               echo "    \"$env\": {" >> dashboard/test-results.json
@@ -256,18 +274,23 @@ jobs:
 
             for browser in "${BROWSER_LIST[@]}"; do
               RESULT_FILE="all-artifacts/env-browser-result-${env}-${browser}/${env}-${browser}-result.txt"
+              COUNT_FILE="all-artifacts/env-browser-count-${env}-${browser}/${env}-${browser}-count.txt"
               STATUS="UNKNOWN"
+              TEST_COUNT=0
               if [ -f "$RESULT_FILE" ]; then
                 STATUS=$(cat "$RESULT_FILE")
               fi
+              if [ -f "$COUNT_FILE" ]; then
+                TEST_COUNT=$(cat "$COUNT_FILE")
+                fi
 
-              echo "| $browser | $([ "$STATUS" = "PASS" ] && echo "✅ PASS" || echo "❌ FAIL") |" >> nightly-summary.md
+              echo "| $browser | $([ "$STATUS" = "PASS" ] && echo "✅ PASS" || echo "❌ FAIL") | $TEST_COUNT |" >> nightly-summary.md
 
               if [ "$FIRST_BROWSER" = true ]; then
-                echo "      \"$browser\": \"$STATUS\"" >> dashboard/test-results.json
+                echo "      \"$browser\": { \"status\": \"$STATUS\", \"count\": $TEST_COUNT }" >> dashboard/test-results.json
                 FIRST_BROWSER=false
               else
-                echo "      ,\"$browser\": \"$STATUS\"" >> dashboard/test-results.json
+                echo "      ,\"$browser\": { \"status\": \"$STATUS\", \"count\": $TEST_COUNT }" >> dashboard/test-results.json
               fi
 
               TOTAL=$((TOTAL+1))
@@ -620,7 +643,9 @@ jobs:
                       
                       Object.entries(browsers).forEach(function(entry) {
                           const browser = entry[0];
-                          const status = entry[1];
+                          const browserData = entry[1];
+                          const status = browserData.status;
+                          const count = browserData.count;
                           const statusInfo = getStatusInfo(status);
                           
                           sectionHTML += 
@@ -628,6 +653,7 @@ jobs:
                                   '<div class="browser-icon">' + getBrowserIcon(browser) + '</div>' +
                                   '<div class="browser-name">' + browser.charAt(0).toUpperCase() + browser.slice(1) + '</div>' +
                                   '<span class="status-badge ' + statusInfo.class + '">' + statusInfo.text + '</span>' +
+                                  '<div style="margin-top:8px;font-weight:600;">Tests: ' + count + '</div>' +
                               '</div>';
                       });
                       
@@ -707,7 +733,7 @@ jobs:
                   loadDashboard();
                   
                   // Auto-refresh every 5 minutes
-                  setInterval(loadDashboard, 5 * 60 * 1000);
+                  setInterval(loadDashboard, 300000);
               </script>
           </body>
           </html>
