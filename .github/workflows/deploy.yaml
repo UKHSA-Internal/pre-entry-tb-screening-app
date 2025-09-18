@@ -88,9 +88,9 @@ jobs:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
       APP_DOMAIN: ${{ vars.APP_DOMAIN }}
-      SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
       VITE_MSAL_CLIENT_ID: ${{ secrets.VITE_MSAL_CLIENT_ID }}
       VITE_MSAL_TENANT_ID: ${{ secrets.VITE_MSAL_TENANT_ID }}
+      VITE_SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
 
     strategy:
       matrix:
@@ -146,7 +146,7 @@ jobs:
       APP_DOMAIN: ${{ vars.APP_DOMAIN }}
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
-      SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
+      VITE_SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
 
     steps:
       - name: Checkout code
@@ -191,9 +191,9 @@ jobs:
     env:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       APP_DOMAIN: ${{ vars.APP_DOMAIN }}
-      SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
       VITE_MSAL_CLIENT_ID: ${{ secrets.VITE_MSAL_CLIENT_ID }}
       VITE_MSAL_TENANT_ID: ${{ secrets.VITE_MSAL_TENANT_ID }}
+      VITE_SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
 
     steps:
       - name: Checkout code

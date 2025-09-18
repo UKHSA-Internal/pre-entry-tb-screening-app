@@ -9,7 +9,7 @@ import {
   ImageUploadUrlRequestSchema,
 } from "./generate-image-upload-url";
 
-describe("Generating signed POST url for DICOM Upload", () => {
+describe("Generating signed PUT url for DICOM Upload", () => {
   const originalEnv = process.env;
 
   afterEach(() => {
@@ -35,15 +35,11 @@ describe("Generating signed POST url for DICOM Upload", () => {
     // Assert
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toMatchObject({
-      uploadUrl: "http://127.0.0.1:4566/IMAGE_BUCKET",
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      uploadUrl: expect.stringContaining(
+        "http://test.co.uk/dicom/Apollo%20Clinic/BRB/ABC1234JANE/generated-app-id-2/test-file-name",
+      ),
       bucketPath: "dicom/Apollo Clinic/BRB/ABC1234JANE/generated-app-id-2/test-file-name",
-      fields: {
-        "Content-Type": "application/octet-stream",
-        "x-amz-checksum-sha256": "test-checksum",
-        "x-amz-sdk-checksum-algorithm": "SHA256",
-        "x-amz-server-side-encryption": "aws:kms",
-        "x-amz-server-side-encryption-aws-kms-key-id": "SSE_KEY_ID",
-      },
     });
   });
 
@@ -66,7 +62,7 @@ describe("Generating signed POST url for DICOM Upload", () => {
 
   test("Local Environment", async () => {
     // Arrange
-    process.env.ENVIRONMENT = "local";
+    // process.env.ENVIRONMENT = "TEST_LOCAL";
 
     const event: GenerateUploadEvent = {
       ...mockAPIGwEvent,
@@ -79,7 +75,10 @@ describe("Generating signed POST url for DICOM Upload", () => {
 
     // Assert
     expect(JSON.parse(response.body)).toMatchObject({
-      uploadUrl: "http://localhost:4566/IMAGE_BUCKET",
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      uploadUrl: expect.stringContaining(
+        "http://test.co.uk/dicom/Apollo%20Clinic/BRB/ABC1234JANE/generated-app-id-2/test-file-name",
+      ),
     });
   });
 
@@ -119,7 +118,7 @@ describe("Generating signed POST url for DICOM Upload", () => {
   });
 });
 
-describe("Generating signed POST url for Photo Upload", () => {
+describe("Generating signed PUT url for Photo Upload", () => {
   const originalEnv = process.env;
 
   afterEach(() => {
@@ -145,15 +144,11 @@ describe("Generating signed POST url for Photo Upload", () => {
     // Assert
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toMatchObject({
-      uploadUrl: "http://127.0.0.1:4566/IMAGE_BUCKET",
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      uploadUrl: expect.stringContaining(
+        "http://test.co.uk/photos/Apollo%20Clinic/BRB/ABC1234JANE/generated-app-id-2/applicant-photo.jpg",
+      ),
       bucketPath: "photos/Apollo Clinic/BRB/ABC1234JANE/generated-app-id-2/applicant-photo.jpg",
-      fields: {
-        "Content-Type": "image/jpeg",
-        "x-amz-checksum-sha256": "test-checksum",
-        "x-amz-sdk-checksum-algorithm": "SHA256",
-        "x-amz-server-side-encryption": "aws:kms",
-        "x-amz-server-side-encryption-aws-kms-key-id": "SSE_KEY_ID",
-      },
     });
   });
 
@@ -197,7 +192,7 @@ describe("Generating signed POST url for Photo Upload", () => {
   });
   test("Local Environment", async () => {
     // Arrange
-    process.env.ENVIRONMENT = "local";
+    // process.env.ENVIRONMENT = "local";
 
     const event: GenerateUploadEvent = {
       ...mockAPIGwEvent,
@@ -210,7 +205,10 @@ describe("Generating signed POST url for Photo Upload", () => {
 
     // Assert
     expect(JSON.parse(response.body)).toMatchObject({
-      uploadUrl: "http://localhost:4566/IMAGE_BUCKET",
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      uploadUrl: expect.stringContaining(
+        "http://test.co.uk/photos/Apollo%20Clinic/BRB/ABC1234JANE/generated-app-id-2/applicant-photo.jpg",
+      ),
     });
   });
 

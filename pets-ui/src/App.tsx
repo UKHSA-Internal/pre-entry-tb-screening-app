@@ -26,6 +26,8 @@ import MedicalConfirmation from "./pages/medical-screening-confirmation";
 import MedicalSummaryPage from "./pages/medical-screening-summary";
 import PrivacyNoticePage from "./pages/privacy-notice";
 import ProgressTrackerPage from "./pages/progress-tracker";
+import SignOutPage from "./pages/sign-out";
+import SignedOutPage from "./pages/signed-out";
 import SputumCollectionPage from "./pages/sputum-collection";
 import SputumConfirmation from "./pages/sputum-confirmation";
 import SputumQuestionPage from "./pages/sputum-question";
@@ -355,6 +357,22 @@ function App() {
           <AuthenticatedRoute>
             <ApiDocs />
           </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/sign-out"
+        element={
+          <AuthenticatedRoute>
+            <SignOutPage />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/signed-out"
+        element={
+          <UnauthenticatedRoute>
+            <SignedOutPage />
+          </UnauthenticatedRoute>
         }
       />
       <Route path="/accessibility-statement" element={<AccessibilityStatementPage />} />
