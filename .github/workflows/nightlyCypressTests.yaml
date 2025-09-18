@@ -100,6 +100,15 @@ jobs:
       - name: Debug available Cypress specs
         run: ls -R pets-ui/cypress/e2e
 
+      - name: Verify Cypress reporter configuration
+        run: |
+          echo "Checking if mochawesome is configured..."
+          if grep -q "mochawesome" pets-ui/package.json; then
+            echo "mochawesome found in package.json"
+          else
+            echo "mochawesome not found - test counts may not be available"
+          fi
+
       - name: Cache Cypress binary
         id: cache-cypress-binary
         uses: actions/cache@v4
@@ -155,6 +164,7 @@ jobs:
           JSON_DIR=pets-ui/cypress/reports/mochawesome/.jsons
           if ls ${JSON_DIR}/*.json 1> /dev/null 2>&1; then
             npx mochawesome-merge ${JSON_DIR}/*.json > pets-ui/cypress/reports/mochawesome/mochawesome.json
+            echo "Mochawesome reports merged successfully"
           else
             echo "No mochawesome JSON files found. Skipping merge."
           fi
@@ -164,106 +174,25 @@ jobs:
         id: extract_counts
         run: |
           JSON_FILE=pets-ui/cypress/reports/mochawesome/mochawesome.json
-          JSON_DIR=pets-ui/cypress/reports/mochawesome/.jsons
           PASSED_COUNT=0
           FAILED_COUNT=0
           TOTAL_COUNT=0
-          SKIPPED_COUNT=0
+          PENDING_COUNT=0
           
-          echo "🔍 Debug: Looking for mochawesome reports..."
-          echo "Expected merged file: $JSON_FILE"
-          echo "JSON directory: $JSON_DIR"
-          
-          # List all available report files for debugging
-          echo "📁 Available files in cypress/reports:"
-          find pets-ui/cypress/reports -type f -name "*.json" 2>/dev/null || echo "No JSON files found"
-          
-          # Check if merged file exists
-          if [ -f "$JSON_FILE" ]; then
-            echo "✅ Found merged mochawesome report"
-            echo "📄 Report preview (first 500 chars):"
-            head -c 500 "$JSON_FILE"
-            echo ""
-            
-            # Install jq if not available
-            if ! command -v jq >/dev/null 2>&1; then
-              echo "Installing jq..."
-              sudo apt-get update && sudo apt-get install -y jq
-            fi
-            
-            # Try multiple extraction methods for different mochawesome structures
-            if command -v jq >/dev/null 2>&1; then
-              echo "🔧 Trying mochawesome format extraction..."
-              
-              # Method 1: Standard mochawesome format
-              PASSED_COUNT=$(jq -r '.stats.passes // 0' "$JSON_FILE" 2>/dev/null || echo "0")
-              FAILED_COUNT=$(jq -r '.stats.failures // 0' "$JSON_FILE" 2>/dev/null || echo "0")
-              TOTAL_COUNT=$(jq -r '.stats.tests // 0' "$JSON_FILE" 2>/dev/null || echo "0")
-              SKIPPED_COUNT=$(jq -r '.stats.skipped // 0' "$JSON_FILE" 2>/dev/null || echo "0")
-              
-              # Method 2: Alternative structure (some versions use different keys)
-              if [ "$TOTAL_COUNT" = "0" ]; then
-                echo "🔄 Trying alternative extraction method..."
-                PASSED_COUNT=$(jq -r '.stats.testsRegistered - .stats.failures - .stats.skipped // 0' "$JSON_FILE" 2>/dev/null || echo "0")
-                FAILED_COUNT=$(jq -r '.stats.failures // 0' "$JSON_FILE" 2>/dev/null || echo "0")
-                TOTAL_COUNT=$(jq -r '.stats.testsRegistered // .stats.suites // 0' "$JSON_FILE" 2>/dev/null || echo "0")
-                SKIPPED_COUNT=$(jq -r '.stats.skipped // .stats.pending // 0' "$JSON_FILE" 2>/dev/null || echo "0")
-              fi
-              
-              # Method 3: Count from test results array
-              if [ "$TOTAL_COUNT" = "0" ]; then
-                echo "🔄 Trying test results array counting..."
-                TOTAL_COUNT=$(jq '[.results[]? // empty | .suites[]? // empty | .tests[]? // empty] | length' "$JSON_FILE" 2>/dev/null || echo "0")
-                PASSED_COUNT=$(jq '[.results[]? // empty | .suites[]? // empty | .tests[]? // empty | select(.state == "passed")] | length' "$JSON_FILE" 2>/dev/null || echo "0")
-                FAILED_COUNT=$(jq '[.results[]? // empty | .suites[]? // empty | .tests[]? // empty | select(.state == "failed")] | length' "$JSON_FILE" 2>/dev/null || echo "0")
-                SKIPPED_COUNT=$(jq '[.results[]? // empty | .suites[]? // empty | .tests[]? // empty | select(.state == "skipped" or .state == "pending")] | length' "$JSON_FILE" 2>/dev/null || echo "0")
-              fi
-              
-              # Debug: Show the actual stats structure
-              echo "📊 Available stats in report:"
-              jq '.stats // "No stats found"' "$JSON_FILE" 2>/dev/null || echo "Could not parse stats"
-            fi
+          if [ -f "$JSON_FILE" ] && command -v jq >/dev/null 2>&1; then
+            PASSED_COUNT=$(jq -r '.stats.passes // 0' "$JSON_FILE")
+            FAILED_COUNT=$(jq -r '.stats.failures // 0' "$JSON_FILE")
+            TOTAL_COUNT=$(jq -r '.stats.tests // 0' "$JSON_FILE")
+            PENDING_COUNT=$(jq -r '.stats.skipped // 0' "$JSON_FILE")
+            echo "Extracted from mochawesome: Total=$TOTAL_COUNT, Passed=$PASSED_COUNT, Failed=$FAILED_COUNT, Pending=$PENDING_COUNT"
           else
-            echo "❌ Merged mochawesome report not found"
-            
-            # Try to extract from individual JSON files
-            if ls ${JSON_DIR}/*.json 1> /dev/null 2>&1; then
-              echo "🔄 Trying to extract from individual JSON files..."
-              
-              for json_file in ${JSON_DIR}/*.json; do
-                echo "📄 Processing: $json_file"
-                if command -v jq >/dev/null 2>&1; then
-                  file_passed=$(jq -r '.stats.passes // 0' "$json_file" 2>/dev/null || echo "0")
-                  file_failed=$(jq -r '.stats.failures // 0' "$json_file" 2>/dev/null || echo "0")
-                  file_total=$(jq -r '.stats.tests // 0' "$json_file" 2>/dev/null || echo "0")
-                  file_skipped=$(jq -r '.stats.skipped // 0' "$json_file" 2>/dev/null || echo "0")
-                  
-                  PASSED_COUNT=$((PASSED_COUNT + file_passed))
-                  FAILED_COUNT=$((FAILED_COUNT + file_failed))
-                  TOTAL_COUNT=$((TOTAL_COUNT + file_total))
-                  SKIPPED_COUNT=$((SKIPPED_COUNT + file_skipped))
-                  
-                  echo "  Stats: Total=$file_total, Passed=$file_passed, Failed=$file_failed, Skipped=$file_skipped"
-                fi
-              done
-            else
-              echo "❌ No individual JSON files found either"
-            fi
+            echo "No mochawesome report found - test counts will be unavailable"
           fi
-          
-          # Ensure counts are numeric
-          PASSED_COUNT=${PASSED_COUNT:-0}
-          FAILED_COUNT=${FAILED_COUNT:-0}
-          TOTAL_COUNT=${TOTAL_COUNT:-0}
-          SKIPPED_COUNT=${SKIPPED_COUNT:-0}
           
           echo "passed_count=$PASSED_COUNT" >> $GITHUB_OUTPUT
           echo "failed_count=$FAILED_COUNT" >> $GITHUB_OUTPUT
           echo "total_count=$TOTAL_COUNT" >> $GITHUB_OUTPUT
-          echo "skipped_count=$SKIPPED_COUNT" >> $GITHUB_OUTPUT
-          
-          echo "📈 Final test counts for ${{ matrix.environment }}-${{ matrix.browser }}:"
-          echo "Total: $TOTAL_COUNT, Passed: $PASSED_COUNT, Failed: $FAILED_COUNT, Skipped: $SKIPPED_COUNT"
+          echo "pending_count=$PENDING_COUNT" >> $GITHUB_OUTPUT
 
       - name: Upload Mochawesome Report
         if: always()
@@ -292,7 +221,7 @@ jobs:
               "total": ${{ steps.extract_counts.outputs.total_count }},
               "passed": ${{ steps.extract_counts.outputs.passed_count }},
               "failed": ${{ steps.extract_counts.outputs.failed_count }},
-              "skipped": ${{ steps.extract_counts.outputs.skipped_count }}
+              "pending": ${{ steps.extract_counts.outputs.pending_count }}
             },
             "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
           }
@@ -353,7 +282,7 @@ jobs:
           TOTAL_TEST_COUNT=0
           TOTAL_PASSED_COUNT=0
           TOTAL_FAILED_COUNT=0
-          TOTAL_SKIPPED_COUNT=0
+          TOTAL_PENDING_COUNT=0
           
           echo "{" > dashboard/test-results.json
           echo "  \"results\": {" >> dashboard/test-results.json
@@ -361,7 +290,7 @@ jobs:
           for env in "${ENV_LIST[@]}"; do
             echo "## Environment: $env" >> nightly-summary.md
             echo "" >> nightly-summary.md
-            echo "| Browser | Status | Total Tests | Passed | Failed | Skipped |" >> nightly-summary.md
+            echo "| Browser | Status | Total Tests | Passed | Failed | Pending |" >> nightly-summary.md
             echo "|---------|--------|-------------|--------|--------|---------|" >> nightly-summary.md
             if [ "$FIRST_ENV" = true ]; then
               echo "    \"$env\": {" >> dashboard/test-results.json
@@ -377,7 +306,7 @@ jobs:
               TEST_COUNT=0
               PASSED_COUNT=0
               FAILED_COUNT=0
-              SKIPPED_COUNT=0
+              PENDING_COUNT=0
               
               if [ -f "$RESULT_FILE" ]; then
                 STATUS=$(cat "$RESULT_FILE")
@@ -388,10 +317,10 @@ jobs:
                 TEST_COUNT=$(jq -r '.testCounts.total // 0' "$RESULT_JSON_FILE")
                 PASSED_COUNT=$(jq -r '.testCounts.passed // 0' "$RESULT_JSON_FILE")
                 FAILED_COUNT=$(jq -r '.testCounts.failed // 0' "$RESULT_JSON_FILE")
-                SKIPPED_COUNT=$(jq -r '.testCounts.skipped // 0' "$RESULT_JSON_FILE")
+                PENDING_COUNT=$(jq -r '.testCounts.pending // 0' "$RESULT_JSON_FILE")
               fi
               
-              echo "| $browser | $([ "$STATUS" = "PASS" ] && echo "✅ PASS" || echo "❌ FAIL") | $TEST_COUNT | $PASSED_COUNT | $FAILED_COUNT | $SKIPPED_COUNT |" >> nightly-summary.md
+              echo "| $browser | $([ "$STATUS" = "PASS" ] && echo "✅ PASS" || echo "❌ FAIL") | $TEST_COUNT | $PASSED_COUNT | $FAILED_COUNT | $PENDING_COUNT |" >> nightly-summary.md
               
               if [ "$FIRST_BROWSER" = true ]; then
                 echo "      \"$browser\": {" >> dashboard/test-results.json
@@ -400,7 +329,7 @@ jobs:
                 echo "          \"total\": $TEST_COUNT," >> dashboard/test-results.json
                 echo "          \"passed\": $PASSED_COUNT," >> dashboard/test-results.json
                 echo "          \"failed\": $FAILED_COUNT," >> dashboard/test-results.json
-                echo "          \"skipped\": $SKIPPED_COUNT" >> dashboard/test-results.json
+                echo "          \"pending\": $PENDING_COUNT" >> dashboard/test-results.json
                 echo "        }" >> dashboard/test-results.json
                 echo "      }" >> dashboard/test-results.json
                 FIRST_BROWSER=false
@@ -411,7 +340,7 @@ jobs:
                 echo "          \"total\": $TEST_COUNT," >> dashboard/test-results.json
                 echo "          \"passed\": $PASSED_COUNT," >> dashboard/test-results.json
                 echo "          \"failed\": $FAILED_COUNT," >> dashboard/test-results.json
-                echo "          \"skipped\": $SKIPPED_COUNT" >> dashboard/test-results.json
+                echo "          \"pending\": $PENDING_COUNT" >> dashboard/test-results.json
                 echo "        }" >> dashboard/test-results.json
                 echo "      }" >> dashboard/test-results.json
               fi
@@ -425,7 +354,7 @@ jobs:
               TOTAL_TEST_COUNT=$((TOTAL_TEST_COUNT+TEST_COUNT))
               TOTAL_PASSED_COUNT=$((TOTAL_PASSED_COUNT+PASSED_COUNT))
               TOTAL_FAILED_COUNT=$((TOTAL_FAILED_COUNT+FAILED_COUNT))
-              TOTAL_SKIPPED_COUNT=$((TOTAL_SKIPPED_COUNT+SKIPPED_COUNT))
+              TOTAL_PENDING_COUNT=$((TOTAL_PENDING_COUNT+PENDING_COUNT))
             done
             echo "    }" >> dashboard/test-results.json
             echo "" >> nightly-summary.md
@@ -439,7 +368,7 @@ jobs:
           echo "- **Total Individual Tests**: $TOTAL_TEST_COUNT" >> nightly-summary.md
           echo "- **Total Passed**: $TOTAL_PASSED_COUNT" >> nightly-summary.md
           echo "- **Total Failed**: $TOTAL_FAILED_COUNT" >> nightly-summary.md
-          echo "- **Total Skipped**: $TOTAL_SKIPPED_COUNT" >> nightly-summary.md
+          echo "- **Total Pending**: $TOTAL_PENDING_COUNT" >> nightly-summary.md
           echo "" >> nightly-summary.md
           
           if [ $FAILS -eq 0 ]; then
@@ -459,7 +388,7 @@ jobs:
           echo "  \"totalTests\": $TOTAL_TEST_COUNT," >> dashboard/test-results.json
           echo "  \"totalPassed\": $TOTAL_PASSED_COUNT," >> dashboard/test-results.json
           echo "  \"totalFailed\": $TOTAL_FAILED_COUNT," >> dashboard/test-results.json
-          echo "  \"totalSkipped\": $TOTAL_SKIPPED_COUNT," >> dashboard/test-results.json
+          echo "  \"totalSkipped\": $TOTAL_PENDING_COUNT," >> dashboard/test-results.json
           if [ $TOTAL -gt 0 ]; then
             SUCCESS_RATE=$(echo "scale=0; ($TOTAL-$FAILS)*100/$TOTAL" | bc)
           else
@@ -677,7 +606,7 @@ jobs:
                   .count-item.total { border-left: 3px solid #3b82f6; }
                   .count-item.passed { border-left: 3px solid #22c55e; }
                   .count-item.failed { border-left: 3px solid #ef4444; }
-                  .count-item.skipped { border-left: 3px solid #f59e0b; }
+                  .count-item.pending { border-left: 3px solid #f59e0b; }
                   
                   .footer {
                       text-align: center;
@@ -814,9 +743,9 @@ jobs:
                                   <span class="count-value">${testCounts.failed || 0}</span>
                                   <div class="count-label">Failed</div>
                               </div>
-                              <div class="count-item skipped">
-                                  <span class="count-value">${testCounts.skipped || 0}</span>
-                                  <div class="count-label">Skipped</div>
+                              <div class="count-item pending">
+                                  <span class="count-value">${testCounts.pending || 0}</span>
+                                  <div class="count-label">Pending</div>
                               </div>
                           </div>
                       `;
