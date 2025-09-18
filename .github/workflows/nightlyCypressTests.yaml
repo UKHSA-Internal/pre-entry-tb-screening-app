@@ -42,24 +42,20 @@ jobs:
             BROWSER_SELECTION="all"
             ENV_SELECTION="all"
           fi
-
           if [[ "$BROWSER_SELECTION" == "all" ]]; then
             BROWSER_ARRAY='["chrome", "firefox", "edge"]'
           else
             BROWSER_ARRAY='["'$BROWSER_SELECTION'"]'
           fi
           echo "browsers=$BROWSER_ARRAY" >> $GITHUB_OUTPUT
-
           if [[ "$ENV_SELECTION" == "all" ]]; then
             ENV_ARRAY='["qat", "dev", "preprod"]'
           else
             ENV_ARRAY='["'$ENV_SELECTION'"]'
           fi
           echo "environments=$ENV_ARRAY" >> $GITHUB_OUTPUT
-
           echo "Selected browsers: $BROWSER_ARRAY"
           echo "Selected environments: $ENV_ARRAY"
-
   cypress-nightly:
     name: Run Cypress Tests - ${{ matrix.environment }} - ${{ matrix.browser }}
     runs-on: ubuntu-latest
@@ -121,7 +117,6 @@ jobs:
       - name: Start Local Environment
         run: |
           pnpm start & sleep 120
-
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
         continue-on-error: true
@@ -163,7 +158,6 @@ jobs:
           else
             echo "No mochawesome JSON files found. Skipping merge."
           fi
-
       - name: Upload Mochawesome Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -180,7 +174,6 @@ jobs:
           else
             echo "FAIL" > ${{ matrix.environment }}-${{ matrix.browser }}-result.txt
           fi
-
       - name: Upload env+browser result
         if: always()
         uses: actions/upload-artifact@v4
@@ -206,7 +199,6 @@ jobs:
       - name: Install required tools
         run: |
           sudo apt-get update && sudo apt-get install -y jq bc
-
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
@@ -216,7 +208,6 @@ jobs:
       - name: Create dashboard directory
         run: |
           mkdir -p dashboard
-
       - name: Generate test summary report
         id: summary
         run: |
@@ -224,64 +215,49 @@ jobs:
           echo "**Run Date**: $(date)" >> nightly-summary.md
           echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
           echo "" >> nightly-summary.md
-
           ENV_MATRIX='${{ needs.setup-matrix.outputs.environments }}'
           BROWSER_MATRIX='${{ needs.setup-matrix.outputs.browsers }}'
-
           ENV_LIST=($(echo $ENV_MATRIX | jq -r '.[]'))
           BROWSER_LIST=($(echo $BROWSER_MATRIX | jq -r '.[]'))
-
           TOTAL=0
           FAILS=0
-
           echo "{" > dashboard/test-results.json
           echo "  \"results\": {" >> dashboard/test-results.json
-
           FIRST_ENV=true
-
           for env in "${ENV_LIST[@]}"; do
             echo "## Environment: $env" >> nightly-summary.md
             echo "" >> nightly-summary.md
             echo "| Browser | Status |" >> nightly-summary.md
             echo "|---------|--------|" >> nightly-summary.md
-
             if [ "$FIRST_ENV" = true ]; then
               echo "    \"$env\": {" >> dashboard/test-results.json
               FIRST_ENV=false
             else
               echo "    ,\"$env\": {" >> dashboard/test-results.json
             fi
-
             FIRST_BROWSER=true
-
             for browser in "${BROWSER_LIST[@]}"; do
               RESULT_FILE="all-artifacts/env-browser-result-${env}-${browser}/${env}-${browser}-result.txt"
               STATUS="UNKNOWN"
               if [ -f "$RESULT_FILE" ]; then
                 STATUS=$(cat "$RESULT_FILE")
               fi
-
               echo "| $browser | $([ "$STATUS" = "PASS" ] && echo "✅ PASS" || echo "❌ FAIL") |" >> nightly-summary.md
-
               if [ "$FIRST_BROWSER" = true ]; then
                 echo "      \"$browser\": \"$STATUS\"" >> dashboard/test-results.json
                 FIRST_BROWSER=false
               else
                 echo "      ,\"$browser\": \"$STATUS\"" >> dashboard/test-results.json
               fi
-
               TOTAL=$((TOTAL+1))
               if [ "$STATUS" != "PASS" ]; then
                 FAILS=$((FAILS+1))
               fi
             done
-
             echo "    }" >> dashboard/test-results.json
             echo "" >> nightly-summary.md
           done
-
           echo "  }" >> dashboard/test-results.json
-
           if [ $FAILS -eq 0 ]; then
             echo "## ✅ Overall Status: PASSED" >> nightly-summary.md
             echo "All $TOTAL combinations passed." >> nightly-summary.md
@@ -293,7 +269,6 @@ jobs:
             echo "overall_status=FAIL" >> $GITHUB_OUTPUT
             OVERALL_STATUS="FAIL"
           fi
-
           echo "  ,\"overallStatus\": \"$OVERALL_STATUS\"," >> dashboard/test-results.json
           echo "  \"totalTests\": $TOTAL," >> dashboard/test-results.json
           echo "  \"failedTests\": $FAILS," >> dashboard/test-results.json
@@ -306,7 +281,6 @@ jobs:
           echo "  \"runUrl\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"," >> dashboard/test-results.json
           echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)\"" >> dashboard/test-results.json
           echo "}" >> dashboard/test-results.json
-
       - name: Create dashboard HTML
         run: |
           cat > dashboard/index.html << 'EOF'
@@ -712,7 +686,6 @@ jobs:
           </body>
           </html>
           EOF
-
       - name: Setup Pages
         uses: actions/configure-pages@v4
 

@@ -13,7 +13,7 @@ import { logger } from "../../shared/logger";
 import { EventBridgeEvent, EventBridgeEventDetails } from "../types";
 
 const QUARANTINE_BUCKET = assertEnvExists(process.env.QUARANTINE_BUCKET);
-const SSE_KEY_ID = assertEnvExists(process.env.SSE_KEY_ID);
+const SSE_KEY_ID = assertEnvExists(process.env.VITE_SSE_KEY_ID);
 const NO_THREATS_FOUND = "NO_THREATS_FOUND";
 
 export const handler = async (

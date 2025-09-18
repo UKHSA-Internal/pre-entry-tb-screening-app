@@ -18,22 +18,25 @@ const uploadFile = async (
   applicationId: string,
   imageType: ImageType,
 ) => {
+  const checksum = await computeBase64SHA256(file);
+
   const { data } = await generateImageUploadUrl(applicationId, {
     fileName: bucketFileName,
-    checksum: await computeBase64SHA256(file),
+    checksum,
     imageType: imageType,
   });
 
-  const { uploadUrl, bucketPath, fields } = data;
+  const { uploadUrl, bucketPath } = data;
+  const SSE_KEY_ID = import.meta.env.VITE_SSE_KEY_ID as string;
 
-  const form = new FormData();
-  Object.entries(fields).forEach(([field, value]) => {
-    form.append(field, value);
-  });
-  form.append("file", file);
-
-  await axios.post(uploadUrl, form, {
-    headers: { "Content-Type": "multipart/form-data" },
+  const SSE_ALGORITHM = "aws:kms";
+  await axios.put(uploadUrl, file, {
+    headers: {
+      "Content-Type": file.type,
+      "x-amz-server-side-encryption": SSE_ALGORITHM,
+      "x-amz-server-side-encryption-aws-kms-key-id": SSE_KEY_ID,
+      "x-amz-checksum-sha256": checksum,
+    },
   });
 
   return bucketPath;
