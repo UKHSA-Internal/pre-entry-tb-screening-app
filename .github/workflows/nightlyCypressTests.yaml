@@ -138,6 +138,7 @@ jobs:
         env:
           CYPRESS_TEST_ENVIRONMENT: ${{ matrix.environment }}
 
+
       - name: Retry if failed
         if: steps.initial_attempt.outcome != 'success'
         uses: cypress-io/github-action@v6
@@ -161,13 +162,16 @@ jobs:
       - name: Merge Mochawesome Reports
         if: always()
         run: |
-          JSON_DIR=pets-ui/cypress/reports/mochawesome/.jsons
+          JSON_DIR=pets-ui/cypress/reports/mochawesome/mochawesome.json
           if ls ${JSON_DIR}/*.json 1> /dev/null 2>&1; then
             npx mochawesome-merge ${JSON_DIR}/*.json > pets-ui/cypress/reports/mochawesome/mochawesome.json
             echo "Mochawesome reports merged successfully"
           else
             echo "No mochawesome JSON files found. Skipping merge."
           fi
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+    
 
       - name: Extract test counts from mochawesome report
         if: always()

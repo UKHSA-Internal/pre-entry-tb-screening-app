@@ -84,14 +84,14 @@ const getBaseUrl = () => {
 export default defineConfig({
   reporter: "cypress-mochawesome-reporter",
   reporterOptions: {
-    reportDir: "cypress/reports/mochawesome",
+    reportDir: "cypress/reports/mochawesome/.jsons",
     charts: true,
     reportPageTitle: `Pets UI Test Results${(process.env.CI || process.env.GITHUB_ACTIONS) && process.env.ENVIRONMENT ? ` - ${process.env.ENVIRONMENT}` : ""}`,
     embeddedScreenshots: true,
     inlineAssets: true,
     saveAllAttempts: false,
-    overwrite: true,
-    html: true,
+    overwrite: false,
+    html: false,
     json: true,
   },
   video: true,
