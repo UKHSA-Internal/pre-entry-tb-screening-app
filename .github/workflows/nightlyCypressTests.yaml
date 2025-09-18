@@ -860,3 +860,31 @@ jobs:
           </body>
           </html>
           EOF
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./dashboard"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Upload summary report
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-summary-report
+          path: nightly-summary.md
+          retention-days: 7
+
+      - name: Set workflow conclusion
+        if: always()
+        run: |
+          echo "🔗 Dashboard URL: ${{ steps.deployment.outputs.page_url }}"
+          if [[ "${{ steps.summary.outputs.overall_status }}" == "PASS" ]]; then
+            echo "::notice::✅ All nightly tests passed! Dashboard updated at ${{ steps.deployment.outputs.page_url }}"
+          else
+            echo "::warning::⚠️ Some tests failed. Dashboard still updated at ${{ steps.deployment.outputs.page_url }}"
+          fi
