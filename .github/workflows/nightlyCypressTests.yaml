@@ -169,6 +169,13 @@ jobs:
           else
             echo "No mochawesome JSON files found. Skipping merge."
           fi
+      - name: Upload merged mochawesome report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+         name: mochawesome-merged
+         path: pets-ui/cypress/reports/mochawesome/mochawesome.json
+
       - name: Show merged stats
         run: |
          jq '.stats' pets-ui/cypress/reports/mochawesome/mochawesome.json
