@@ -17,11 +17,6 @@ import { glob } from "glob";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-async function setupMochawesomeReporter(on) {
-  const reporter = await import("cypress-mochawesome-reporter/plugin");
-  reporter.default(on);
-}
-
 dotenv.config({
   path: resolve(__dirname, "../../configs/.env.local.secrets"), // Required only for local runs, CI environment secrets are retrieved from Actions Secrets
 });
@@ -82,17 +77,13 @@ const getBaseUrl = () => {
 };
 
 export default defineConfig({
-  reporter: "cypress-mochawesome-reporter",
+  reporter: "mochawesome",
   reporterOptions: {
-    reportDir: "cypress/reports/mochawesome/jsons",
-    charts: true,
-    reportPageTitle: `Pets UI Test Results${(process.env.CI || process.env.GITHUB_ACTIONS) && process.env.ENVIRONMENT ? ` - ${process.env.ENVIRONMENT}` : ""}`,
-    embeddedScreenshots: true,
-    inlineAssets: true,
-    saveAllAttempts: false,
+    reportDir: "cypress/reports/mochawesome",
     overwrite: false,
-    html: true,
+    html: false,
     json: true,
+    timestamp: "mmddyyyy_HHMMss",
   },
   video: true,
   videosFolder:
@@ -112,14 +103,15 @@ export default defineConfig({
     experimentalStudio: true,
     retries: 2, // <-- Enable built-in test retries (change number if needed)
     setupNodeEvents: async (on, config) => {
-      await setupMochawesomeReporter(on);
+      // Remove the cypress-mochawesome-reporter plugin setup
+      // await setupMochawesomeReporter(on);
 
       const currentEnv = process.env.ENVIRONMENT || process.env.TARGET_ENV || "local";
-      console.log(`🎯 Target Environment: ${currentEnv}`);
-      console.log(`🌐 Base URL: ${config.baseUrl}`);
+      console.log(`Target Environment: ${currentEnv}`);
+      console.log(`Base URL: ${config.baseUrl}`);
 
       if (!process.env.CI && !process.env.GITHUB_ACTIONS && currentEnv !== "local") {
-        console.log(`⚠️  Running LOCAL Cypress against ${currentEnv.toUpperCase()} environment`);
+        console.log(`Running LOCAL Cypress against ${currentEnv.toUpperCase()} environment`);
       }
 
       const sqsClient = createSQSClient();
@@ -127,7 +119,7 @@ export default defineConfig({
       on("task", {
         async sendSQSMessage({ queueUrl, messageBody, messageAttributes = {} }) {
           try {
-            console.log(`📤 Sending SQS message to: ${queueUrl}`);
+            console.log(`Sending SQS message to: ${queueUrl}`);
 
             const command = new SendMessageCommand({
               QueueUrl: queueUrl,
@@ -137,17 +129,17 @@ export default defineConfig({
             });
 
             const result = await sqsClient.send(command);
-            console.log(`✅ Message sent with ID: ${result.MessageId}`);
+            console.log(`Message sent with ID: ${result.MessageId}`);
             return result.MessageId;
           } catch (error) {
-            console.error("❌ Error sending SQS message:", error);
+            console.error("Error sending SQS message:", error);
             throw error;
           }
         },
 
         async receiveSQSMessages({ queueUrl, maxMessages = 10, waitTimeSeconds = 5 }) {
           try {
-            console.log(`📥 Receiving messages from: ${queueUrl}`);
+            console.log(`Receiving messages from: ${queueUrl}`);
 
             const command = new ReceiveMessageCommand({
               QueueUrl: queueUrl,
@@ -159,17 +151,17 @@ export default defineConfig({
 
             const result = await sqsClient.send(command);
             const messages = result.Messages || [];
-            console.log(`📨 Received ${messages.length} messages`);
+            console.log(`Received ${messages.length} messages`);
             return messages;
           } catch (error) {
-            console.error("❌ Error receiving SQS messages:", error);
+            console.error("Error receiving SQS messages:", error);
             throw error;
           }
         },
 
         async deleteSQSMessage({ queueUrl, receiptHandle }) {
           try {
-            console.log(`🗑️  Deleting message from: ${queueUrl}`);
+            console.log(`Deleting message from: ${queueUrl}`);
 
             const command = new DeleteMessageCommand({
               QueueUrl: queueUrl,
@@ -177,27 +169,27 @@ export default defineConfig({
             });
 
             await sqsClient.send(command);
-            console.log(`✅ Message deleted successfully`);
+            console.log(`Message deleted successfully`);
             return null;
           } catch (error) {
-            console.error("❌ Error deleting SQS message:", error);
+            console.error("Error deleting SQS message:", error);
             throw error;
           }
         },
 
         async purgeSQSQueue(queueUrl) {
           try {
-            console.log(`🧹 Purging queue: ${queueUrl}`);
+            console.log(`Purging queue: ${queueUrl}`);
 
             const command = new PurgeQueueCommand({
               QueueUrl: queueUrl,
             });
 
             await sqsClient.send(command);
-            console.log(`✅ Queue purged successfully`);
+            console.log(`Queue purged successfully`);
             return null;
           } catch (error) {
-            console.error("❌ Error purging SQS queue:", error);
+            console.error("Error purging SQS queue:", error);
             console.warn("Continuing despite purge error...");
             return null;
           }
@@ -211,7 +203,7 @@ export default defineConfig({
         }) {
           const startTime = Date.now();
 
-          console.log(`⏳ Waiting for ${expectedCount} messages in queue: ${queueUrl}`);
+          console.log(`Waiting for ${expectedCount} messages in queue: ${queueUrl}`);
 
           while (Date.now() - startTime < timeout) {
             try {
@@ -227,14 +219,14 @@ export default defineConfig({
               const messages = result.Messages || [];
 
               if (messages.length >= expectedCount) {
-                console.log(`✅ Found ${messages.length} messages (expected ${expectedCount})`);
+                console.log(`Found ${messages.length} messages (expected ${expectedCount})`);
                 return messages;
               }
 
-              console.log(`⏳ Found ${messages.length}/${expectedCount} messages, waiting...`);
+              console.log(`Found ${messages.length}/${expectedCount} messages, waiting...`);
               await new Promise((resolve) => setTimeout(resolve, pollInterval));
             } catch (error) {
-              console.error("❌ Error while waiting for messages:", error);
+              console.error("Error while waiting for messages:", error);
               await new Promise((resolve) => setTimeout(resolve, pollInterval));
             }
           }
