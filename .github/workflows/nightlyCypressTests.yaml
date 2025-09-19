@@ -231,12 +231,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mochawesome-merged-${{ matrix.environment }}-${{ matrix.browser }}
-          path: pets-ui/cypress/reports/mochawesome/jsons/mochawesome.json
+          path: pets-ui/cypress/reports/mochawesome/mochawesome.json
 
       - name: Show merged stats
         if: always()
         run: |
-          MERGED_FILE="pets-ui/cypress/reports/mochawesome/jsons/mochawesome.json"
+          MERGED_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
           if [ -f "$MERGED_FILE" ]; then
             echo "=== Merged Test Statistics ==="
             jq '.stats' "$MERGED_FILE"
@@ -250,7 +250,7 @@ jobs:
         if: always()
         id: extract_counts
         run: |
-          JSON_FILE="pets-ui/cypress/reports/mochawesome/jsons/mochawesome.json"
+          JSON_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
           if [ -f "$JSON_FILE" ]; then
             PASSED_COUNT=$(jq -r '.stats.passes // 0' "$JSON_FILE")
             FAILED_COUNT=$(jq -r '.stats.failures // 0' "$JSON_FILE")
