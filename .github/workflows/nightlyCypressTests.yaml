@@ -169,6 +169,9 @@ jobs:
           else
             echo "No mochawesome JSON files found. Skipping merge."
           fi
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
       - name: Upload merged mochawesome report
         if: always()
         uses: actions/upload-artifact@v4
@@ -180,35 +183,23 @@ jobs:
         run: |
          jq '.stats' pets-ui/cypress/reports/mochawesome/mochawesome.json
    
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
     
-
-      - name: Extract test counts from mochawesome report
+      - name: Extract test counts
         if: always()
-        id: extract_counts
         run: |
-          JSON_FILE=pets-ui/cypress/reports/mochawesome/mochawesome.json
-          PASSED_COUNT=0
-          FAILED_COUNT=0
-          TOTAL_COUNT=0
-          PENDING_COUNT=0
-          
-          if [ -f "$JSON_FILE" ] && command -v jq >/dev/null 2>&1; then
+          JSON_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
+          if [ -f "$JSON_FILE" ]; then
             PASSED_COUNT=$(jq -r '.stats.passes // 0' "$JSON_FILE")
             FAILED_COUNT=$(jq -r '.stats.failures // 0' "$JSON_FILE")
             TOTAL_COUNT=$(jq -r '.stats.tests // 0' "$JSON_FILE")
             PENDING_COUNT=$(jq -r '.stats.skipped // 0' "$JSON_FILE")
-            echo "Extracted from mochawesome: Total=$TOTAL_COUNT, Passed=$PASSED_COUNT, Failed=$FAILED_COUNT, Pending=$PENDING_COUNT"
+            echo "passed_count=$PASSED_COUNT" >> $GITHUB_OUTPUT
+            echo "failed_count=$FAILED_COUNT" >> $GITHUB_OUTPUT
+            echo "total_count=$TOTAL_COUNT" >> $GITHUB_OUTPUT
+            echo "pending_count=$PENDING_COUNT" >> $GITHUB_OUTPUT
           else
-            echo "No mochawesome report found - test counts will be unavailable"
+            echo "⚠️ No merged mochawesome report found – skipping jq extraction"
           fi
-          
-          echo "passed_count=$PASSED_COUNT" >> $GITHUB_OUTPUT
-          echo "failed_count=$FAILED_COUNT" >> $GITHUB_OUTPUT
-          echo "total_count=$TOTAL_COUNT" >> $GITHUB_OUTPUT
-          echo "pending_count=$PENDING_COUNT" >> $GITHUB_OUTPUT
-
       - name: Upload Mochawesome Report
         if: always()
         uses: actions/upload-artifact@v4
