@@ -167,23 +167,67 @@ jobs:
         if: always()
         run: |
           # Create reports directory if it doesn't exist
-          mkdir -p pets-ui/cypress/reports/mochawesome/jsons
+          mkdir -p pets-ui/cypress/reports/mochawesome
           
-          JSON_DIR="pets-ui/cypress/reports/mochawesome/jsons/.jsons"
-          MERGED_FILE="pets-ui/cypress/reports/mochawesome/jsons/mochawesome.json"
+          echo "=== Debugging Cypress Reports ==="
+          echo "Looking for cypress-mochawesome-reporter reports..."
+          find pets-ui/cypress -name "*.json" -type f 2>/dev/null || echo "No JSON files found in cypress directory"
           
-          if ls ${JSON_DIR}/*.json 1> /dev/null 2>&1; then
-            npx mochawesome-merge ${JSON_DIR}/*.json > ${MERGED_FILE}
-            echo "Mochawesome reports merged successfully"
-            echo "Merged file location: ${MERGED_FILE}"
-          else
-            echo "No mochawesome JSON files found in ${JSON_DIR}. Checking alternative locations..."
-            # Check if files are in a different location
-            find pets-ui/cypress/reports -name "*.json" -type f | head -10
+          # cypress-mochawesome-reporter puts files in reportDir/jsons by default
+          JSON_DIR="pets-ui/cypress/reports/mochawesome/jsons"
+          MERGED_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
+          
+          if [ -d "$JSON_DIR" ]; then
+            echo "Found jsons directory: $JSON_DIR"
+            ls -la "$JSON_DIR" 2>/dev/null || echo "Directory empty"
             
-            # Create a minimal report if no files found
-            echo '{"stats":{"suites":0,"tests":0,"passes":0,"pending":0,"failures":0}}' > ${MERGED_FILE}
-            echo "Created minimal mochawesome report"
+            # Look for JSON files (cypress-mochawesome-reporter creates files like mochawesome_001.json, mochawesome_002.json, etc.)
+            JSON_FILES=("$JSON_DIR"/*.json)
+            
+            if [ -f "${JSON_FILES[0]}" ]; then
+              echo "Found JSON report files:"
+              printf '%s\n' "${JSON_FILES[@]}"
+              
+              # Use mochawesome-merge to combine the reports
+              if command -v npx >/dev/null 2>&1; then
+                npx mochawesome-merge "${JSON_FILES[@]}" > "$MERGED_FILE"
+                echo "Reports merged successfully using mochawesome-merge"
+              else
+                echo "npx not available, trying direct merge"
+                # Simple JSON merge for cypress-mochawesome-reporter
+                echo '{"stats":{"suites":0,"tests":0,"passes":0,"pending":0,"failures":0},"results":[]}' > "$MERGED_FILE"
+                # Try to extract stats from first file if available
+                if command -v jq >/dev/null 2>&1 && [ -f "${JSON_FILES[0]}" ]; then
+                  jq -s 'reduce .[] as $item ({"stats":{"suites":0,"tests":0,"passes":0,"pending":0,"failures":0},"results":[]}; .stats.suites += ($item.stats.suites // 0) | .stats.tests += ($item.stats.tests // 0) | .stats.passes += ($item.stats.passes // 0) | .stats.pending += ($item.stats.pending // 0) | .stats.failures += ($item.stats.failures // 0) | .results += ($item.results // []))' "${JSON_FILES[@]}" > "$MERGED_FILE"
+                fi
+              fi
+              
+              # Verify the merged file
+              if [ -f "$MERGED_FILE" ] && [ -s "$MERGED_FILE" ]; then
+                echo "Merged file created successfully at: $MERGED_FILE"
+                echo "File size: $(wc -c < "$MERGED_FILE") bytes"
+              else
+                echo "Warning: Merged file is empty or missing"
+              fi
+            else
+              echo "No JSON report files found in $JSON_DIR"
+              echo "This could mean:"
+              echo "1. Tests didn't run successfully"
+              echo "2. cypress-mochawesome-reporter is not generating reports"
+              echo "3. Reporter configuration issue"
+              
+              # Create minimal fallback
+              echo '{"stats":{"suites":0,"tests":0,"passes":0,"pending":0,"failures":0},"results":[],"meta":{"mocha":{"version":"unknown"},"mochawesome":{"version":"unknown"}}}' > "$MERGED_FILE"
+              echo "Created minimal fallback report"
+            fi
+          else
+            echo "Reports directory not found: $JSON_DIR"
+            echo "Available directories in cypress/reports:"
+            find pets-ui/cypress/reports -type d 2>/dev/null || echo "No reports directory found"
+            
+            # Create minimal fallback
+            echo '{"stats":{"suites":0,"tests":0,"passes":0,"pending":0,"failures":0},"results":[],"meta":{"mocha":{"version":"unknown"},"mochawesome":{"version":"unknown"}}}' > "$MERGED_FILE"
+            echo "Created minimal fallback report"
           fi
 
       - name: Upload merged mochawesome report

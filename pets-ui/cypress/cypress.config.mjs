@@ -91,7 +91,7 @@ export default defineConfig({
     inlineAssets: true,
     saveAllAttempts: false,
     overwrite: false,
-    html: false,
+    html: true,
     json: true,
   },
   video: true,
