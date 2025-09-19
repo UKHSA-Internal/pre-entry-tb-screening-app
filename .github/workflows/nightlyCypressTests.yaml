@@ -162,7 +162,7 @@ jobs:
       - name: Merge Mochawesome Reports
         if: always()
         run: |
-          JSON_DIR="pets-ui/cypress/reports/mochawesome/.jsons"
+          JSON_DIR="pets-ui/cypress/reports/mochawesome/jsons"
           if ls ${JSON_DIR}/*.json 1> /dev/null 2>&1; then
             npx mochawesome-merge ${JSON_DIR}/*.json > pets-ui/cypress/reports/mochawesome/mochawesome.json
             echo "Mochawesome reports merged successfully"
