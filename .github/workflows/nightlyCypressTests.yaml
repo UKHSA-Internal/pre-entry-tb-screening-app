@@ -56,6 +56,7 @@ jobs:
           echo "environments=$ENV_ARRAY" >> $GITHUB_OUTPUT
           echo "Selected browsers: $BROWSER_ARRAY"
           echo "Selected environments: $ENV_ARRAY"
+
   cypress-nightly:
     name: Run Cypress Tests - ${{ matrix.environment }} - ${{ matrix.browser }}
     runs-on: ubuntu-latest
@@ -126,6 +127,7 @@ jobs:
       - name: Start Local Environment
         run: |
           pnpm start & sleep 120
+
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
         continue-on-error: true
@@ -137,7 +139,6 @@ jobs:
           config-file: cypress/cypress.config.mjs
         env:
           CYPRESS_TEST_ENVIRONMENT: ${{ matrix.environment }}
-
 
       - name: Retry if failed
         if: steps.initial_attempt.outcome != 'success'
@@ -159,47 +160,75 @@ jobs:
           path: pets-ui/cypress/screenshots
           retention-days: 7
 
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Merge Mochawesome Reports
         if: always()
         run: |
+          # Create reports directory if it doesn't exist
+          mkdir -p pets-ui/cypress/reports/mochawesome/jsons
+          
           JSON_DIR="pets-ui/cypress/reports/mochawesome/jsons/.jsons"
+          MERGED_FILE="pets-ui/cypress/reports/mochawesome/jsons/mochawesome.json"
+          
           if ls ${JSON_DIR}/*.json 1> /dev/null 2>&1; then
-            npx mochawesome-merge ${JSON_DIR}/*.json > pets-ui/cypress/reports/mochawesome/jsons/mochawesome.json
+            npx mochawesome-merge ${JSON_DIR}/*.json > ${MERGED_FILE}
             echo "Mochawesome reports merged successfully"
+            echo "Merged file location: ${MERGED_FILE}"
           else
-            echo "No mochawesome JSON files found. Skipping merge."
+            echo "No mochawesome JSON files found in ${JSON_DIR}. Checking alternative locations..."
+            # Check if files are in a different location
+            find pets-ui/cypress/reports -name "*.json" -type f | head -10
+            
+            # Create a minimal report if no files found
+            echo '{"stats":{"suites":0,"tests":0,"passes":0,"pending":0,"failures":0}}' > ${MERGED_FILE}
+            echo "Created minimal mochawesome report"
           fi
 
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
       - name: Upload merged mochawesome report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-         name: mochawesome-merged
-         path: pets-ui/cypress/reports/mochawesome/mochawesome.json
+          name: mochawesome-merged-${{ matrix.environment }}-${{ matrix.browser }}
+          path: pets-ui/cypress/reports/mochawesome/jsons/mochawesome.json
 
       - name: Show merged stats
-        run: |
-         jq '.stats' pets-ui/cypress/reports/mochawesome/mochawesome.json
-   
-    
-      - name: Extract test counts
         if: always()
         run: |
-          JSON_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
+          MERGED_FILE="pets-ui/cypress/reports/mochawesome/jsons/mochawesome.json"
+          if [ -f "$MERGED_FILE" ]; then
+            echo "=== Merged Test Statistics ==="
+            jq '.stats' "$MERGED_FILE"
+          else
+            echo "⚠️ Merged mochawesome report not found at $MERGED_FILE"
+            echo "Available files in reports directory:"
+            find pets-ui/cypress/reports -type f -name "*.json" 2>/dev/null || echo "No JSON files found"
+          fi
+
+      - name: Extract test counts
+        if: always()
+        id: extract_counts
+        run: |
+          JSON_FILE="pets-ui/cypress/reports/mochawesome/jsons/mochawesome.json"
           if [ -f "$JSON_FILE" ]; then
             PASSED_COUNT=$(jq -r '.stats.passes // 0' "$JSON_FILE")
             FAILED_COUNT=$(jq -r '.stats.failures // 0' "$JSON_FILE")
             TOTAL_COUNT=$(jq -r '.stats.tests // 0' "$JSON_FILE")
-            PENDING_COUNT=$(jq -r '.stats.skipped // 0' "$JSON_FILE")
+            PENDING_COUNT=$(jq -r '.stats.pending // 0' "$JSON_FILE")
             echo "passed_count=$PASSED_COUNT" >> $GITHUB_OUTPUT
             echo "failed_count=$FAILED_COUNT" >> $GITHUB_OUTPUT
             echo "total_count=$TOTAL_COUNT" >> $GITHUB_OUTPUT
             echo "pending_count=$PENDING_COUNT" >> $GITHUB_OUTPUT
+            echo "✅ Test counts extracted: Total=$TOTAL_COUNT, Passed=$PASSED_COUNT, Failed=$FAILED_COUNT, Pending=$PENDING_COUNT"
           else
-            echo "⚠️ No merged mochawesome report found – skipping jq extraction"
+            echo "⚠️ No merged mochawesome report found — using default values"
+            echo "passed_count=0" >> $GITHUB_OUTPUT
+            echo "failed_count=0" >> $GITHUB_OUTPUT
+            echo "total_count=0" >> $GITHUB_OUTPUT
+            echo "pending_count=0" >> $GITHUB_OUTPUT
           fi
+
       - name: Upload Mochawesome Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -263,6 +292,7 @@ jobs:
       - name: Install required tools
         run: |
           sudo apt-get update && sudo apt-get install -y jq bc
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
@@ -272,6 +302,7 @@ jobs:
       - name: Create dashboard directory
         run: |
           mkdir -p dashboard
+
       - name: Generate test summary report with counts
         id: summary
         run: |
@@ -279,10 +310,12 @@ jobs:
           echo "**Run Date**: $(date)" >> nightly-summary.md
           echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
           echo "" >> nightly-summary.md
+          
           ENV_MATRIX='${{ needs.setup-matrix.outputs.environments }}'
           BROWSER_MATRIX='${{ needs.setup-matrix.outputs.browsers }}'
           ENV_LIST=($(echo $ENV_MATRIX | jq -r '.[]'))
           BROWSER_LIST=($(echo $BROWSER_MATRIX | jq -r '.[]'))
+          
           TOTAL=0
           FAILS=0
           TOTAL_TEST_COUNT=0
@@ -293,17 +326,20 @@ jobs:
           echo "{" > dashboard/test-results.json
           echo "  \"results\": {" >> dashboard/test-results.json
           FIRST_ENV=true
+          
           for env in "${ENV_LIST[@]}"; do
             echo "## Environment: $env" >> nightly-summary.md
             echo "" >> nightly-summary.md
             echo "| Browser | Status | Total Tests | Passed | Failed | Pending |" >> nightly-summary.md
             echo "|---------|--------|-------------|--------|--------|---------|" >> nightly-summary.md
+            
             if [ "$FIRST_ENV" = true ]; then
               echo "    \"$env\": {" >> dashboard/test-results.json
               FIRST_ENV=false
             else
               echo "    ,\"$env\": {" >> dashboard/test-results.json
             fi
+            
             FIRST_BROWSER=true
             for browser in "${BROWSER_LIST[@]}"; do
               RESULT_FILE="all-artifacts/env-browser-result-${env}-${browser}/${env}-${browser}-result.txt"
@@ -384,10 +420,11 @@ jobs:
             OVERALL_STATUS="PASS"
           else
             echo "## ❌ Overall Status: FAILED" >> nightly-summary.md
-            echo "$FAILS of $TOTAL environment–browser combinations failed." >> nightly-summary.md
+            echo "$FAILS of $TOTAL environment—browser combinations failed." >> nightly-summary.md
             echo "overall_status=FAIL" >> $GITHUB_OUTPUT
             OVERALL_STATUS="FAIL"
           fi
+          
           echo "  ,\"overallStatus\": \"$OVERALL_STATUS\"," >> dashboard/test-results.json
           echo "  \"totalCombinations\": $TOTAL," >> dashboard/test-results.json
           echo "  \"failedCombinations\": $FAILS," >> dashboard/test-results.json
@@ -395,15 +432,18 @@ jobs:
           echo "  \"totalPassed\": $TOTAL_PASSED_COUNT," >> dashboard/test-results.json
           echo "  \"totalFailed\": $TOTAL_FAILED_COUNT," >> dashboard/test-results.json
           echo "  \"totalSkipped\": $TOTAL_PENDING_COUNT," >> dashboard/test-results.json
+          
           if [ $TOTAL -gt 0 ]; then
             SUCCESS_RATE=$(echo "scale=0; ($TOTAL-$FAILS)*100/$TOTAL" | bc)
           else
             SUCCESS_RATE=0
           fi
+          
           echo "  \"successRate\": $SUCCESS_RATE," >> dashboard/test-results.json
           echo "  \"runUrl\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"," >> dashboard/test-results.json
           echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)\"" >> dashboard/test-results.json
           echo "}" >> dashboard/test-results.json
+
       - name: Create enhanced dashboard HTML with test counts
         run: |
           cat > dashboard/index.html << 'EOF'
@@ -709,12 +749,12 @@ jobs:
               <script>
                   function getBrowserIcon(browser) {
                       const icons = {
-                          'chrome': '🌍',
+                          'chrome': '🌐',
                           'firefox': '🔥', 
                           'edge': '⚡',
                           'safari': '🧭'
                       };
-                      return icons[browser.toLowerCase()] || '🌍';
+                      return icons[browser.toLowerCase()] || '🌐';
                   }
                   
                   function formatTimestamp(timestamp) {
@@ -867,6 +907,7 @@ jobs:
           </body>
           </html>
           EOF
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
