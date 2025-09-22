@@ -43,8 +43,8 @@ function readAndExportEnvVars(filePath, requireq = []) {
     console.info("✅ Selected secrets exported as env vars");
     dotenv.populate(process.env, toExport);
   } catch (error) {
-    console.error("❌ Exporting secrets failed:", error);
-    process.exit(1);
+    console.error(`❌ Exporting secrets failed for env: ${process.env.ENVIRONMENT}`, error);
+    // This won't prevent the app from running, but some secrets/vars might be missing
   }
 }
 
