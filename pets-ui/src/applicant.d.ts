@@ -28,6 +28,7 @@ type ReduxNavigationSliceType = {
   checkSputumPreviousPage: string;
   accessibilityStatementPreviousPage: string;
   privacyNoticePreviousPage: string;
+  signOutPreviousPage: string;
 };
 
 // Application types
@@ -312,7 +313,17 @@ type GenerateImageUploadUrlRequest = {
 type GenerateImageUploadUrlResponse = {
   uploadUrl: string;
   bucketPath: string;
-  fields: Record<string, string>;
+};
+
+// Clinic type
+type ClinicType = {
+  clinicId: string;
+  name: string;
+  country: string;
+  city: string;
+  startDate: string;
+  endDate?: string | null;
+  createdBy: string;
 };
 
 // Clinic type

@@ -218,14 +218,14 @@ describe("Invalid Date Test On Sputum Collection Page", () => {
 
     // Verify specific error messages for invalid dates
     sputumCollectionPage.validateErrorSummaryContains([
-      "Sputum sample 1 date must be a valid date",
-      "Sputum sample 2 date must be a valid date",
+      "Sputum sample 1 date must be a real date",
+      "Sputum sample 2 date must be a real date",
       "Sputum sample 3 date must be today or in the past",
     ]);
 
     // Verify individual field errors
-    sputumCollectionPage.validateSample1DateError("Sputum sample 1 date must be a valid date");
-    sputumCollectionPage.validateSample2DateError("Sputum sample 2 date must be a valid date");
+    sputumCollectionPage.validateSample1DateError("Sputum sample 1 date must be a real date");
+    sputumCollectionPage.validateSample2DateError("Sputum sample 2 date must be a real date");
     sputumCollectionPage.validateSample3DateError(
       "Sputum sample 3 date must be today or in the past",
     );
