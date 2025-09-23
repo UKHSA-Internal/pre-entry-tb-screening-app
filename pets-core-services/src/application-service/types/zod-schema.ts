@@ -366,6 +366,32 @@ export const SputumResponseSchema = SputumRequestSchema.extend({
   }),
 });
 
+export const RadiologicalOutcomeRequestSchema = z.object({
+  xrayResult: z.string().openapi({ description: "X ray result" }),
+  xrayResultDetail: z.string().openapi({ description: "X ray result details" }),
+  xrayMinorFindings: z.array(z.string()).openapi({
+    description: "Minor findings",
+  }),
+  xrayAssociatedMinorFindings: z.array(z.string()).openapi({
+    description: "Associated Minor Findings",
+  }),
+  xrayActiveTbFindings: z.array(z.string()).openapi({
+    description: "Active TB Findings",
+  }),
+});
+
+export const RadiologicalOutcomeResponseSchema = RadiologicalOutcomeRequestSchema.extend({
+  applicationId: z.string().openapi({
+    description: "ID of application",
+  }),
+  dateCreated: z.string().date().openapi({
+    description: "Creation Date in UTC timezone",
+  }),
+  status: z.nativeEnum(TaskStatus).openapi({
+    description: "Status of Task",
+  }),
+});
+
 export const SputumDecisionRequestSchema = z.object({
   sputumRequired: z.nativeEnum(YesOrNo).openapi({ description: "Sputum required: yes/no" }),
 });
@@ -386,6 +412,7 @@ export const ApplicationSchema = z.object({
   travelInformation: TravelInformationResponseSchema,
   medicalScreening: MedicalScreeningResponseSchema,
   chestXray: ChestXRayResponseSchema,
+  radiologicalOutcome: RadiologicalOutcomeResponseSchema,
   sputumDecision: SputumDecisionResponseSchema,
   sputumDetails: SputumResponseSchema,
   tbCertificate: TbCertificateResponseSchema,
