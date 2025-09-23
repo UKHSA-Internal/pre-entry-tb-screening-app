@@ -49,7 +49,10 @@ function readAndExportEnvVars(filePath, requireq = []) {
 }
 
 // Export vars from .env file
-readAndExportEnvVars(resolve(process.cwd(), "configs/.env"));
+// For testing CI error handling
+// non-exixting file: .env2 is provided here
+// (the changes will be reverted later on, after testing's done)
+readAndExportEnvVars(resolve(process.cwd(), "configs/.env2"));
 // If it's not CI process, but on a dev's machine, then export some secrets, otherwise ignore it
 if (
   !process.env.CI &&
