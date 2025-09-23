@@ -44,15 +44,22 @@ function readAndExportEnvVars(filePath, requireq = []) {
     dotenv.populate(process.env, toExport);
   } catch (error) {
     console.error(`❌ Exporting secrets failed for env: ${process.env.ENVIRONMENT}`, error);
-    // This won't prevent the app from running, but some secrets/vars might be missing
+    throw error;
   }
 }
 
 // Export vars from .env file
 readAndExportEnvVars(resolve(process.cwd(), "configs/.env"));
-// Export vars from .env.local.secret file
-// (only the ones that are included in REQUIRED_SECRETS)
-readAndExportEnvVars(resolve(process.cwd(), "configs/.env.local.secrets"), REQUIRED_SECRETS);
+// If it's not CI process, but on a dev's machine, then export some secrets, otherwise ignore it
+if (
+  !process.env.CI &&
+  !process.env.GITHUB_ACTIONS &&
+  process.env.ENVIRONMENT.toLocaleLowerCase() === "local"
+) {
+  // Export vars from .env.local.secret file
+  // (only the ones that are included in REQUIRED_SECRETS)
+  readAndExportEnvVars(resolve(process.cwd(), "configs/.env.local.secrets"), REQUIRED_SECRETS);
+}
 
 runCommand("git update-index --assume-unchanged pets-core-services/openapi-docs.json");
 runCommand("pnpm rimraf pets-local-infra/cdk.out");
