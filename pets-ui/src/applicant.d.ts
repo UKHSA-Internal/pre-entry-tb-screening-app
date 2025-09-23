@@ -325,3 +325,14 @@ type ClinicType = {
   endDate?: string | null;
   createdBy: string;
 };
+
+// Clinic type
+type ClinicType = {
+  clinicId: string;
+  name: string;
+  country: string;
+  city: string;
+  startDate: string;
+  endDate?: string | null;
+  createdBy: string;
+};
