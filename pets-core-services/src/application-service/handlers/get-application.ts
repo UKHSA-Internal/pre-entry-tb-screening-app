@@ -5,6 +5,7 @@ import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { ApplicantPhoto } from "../models/applicant-photo";
 import { ChestXRayDbOps } from "../models/chest-xray";
 import { MedicalScreening } from "../models/medical-screening";
+import { RadiologicalOutcome } from "../models/radiological-outcome";
 import { SputumDetailsDbOps } from "../models/sputum-details";
 import { TbCertificateDbOps } from "../models/tb-certificate";
 import { TravelInformation } from "../models/travel-information";
@@ -29,6 +30,7 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
     const chestXray = await ChestXRayDbOps.getByApplicationId(applicationId);
     const sputumDetails = await SputumDetailsDbOps.getByApplicationId(applicationId);
     const tbCertificate = await TbCertificateDbOps.getByApplicationId(applicationId);
+    const radiologicalOutcome = await RadiologicalOutcome.getByApplicationId(applicationId);
 
     return createHttpResponse(200, {
       applicationId,
@@ -38,6 +40,7 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
       chestXray: chestXray?.toJson(),
       sputumDetails: sputumDetails?.toJson(),
       tbCertificate: tbCertificate?.toJson(),
+      radiologicalOutcome: radiologicalOutcome?.toJson(),
     });
   } catch (error) {
     logger.error(error, "Error retrieving application details");
