@@ -125,6 +125,16 @@ describe("Getting Application Handler", () => {
         dateCreated: expect.any(String),
         status: "completed",
       },
+      radiologicalOutcome: {
+        applicationId: "generated-app-id-2",
+        dateCreated: expect.any(String),
+        status: "completed",
+        xrayActiveTbFindings: ["Active TB Findings"],
+        xrayAssociatedMinorFindings: ["Associated Minor Findings"],
+        xrayMinorFindings: ["Minor Findings"],
+        xrayResult: "Chest X-ray normal",
+        xrayResultDetail: "Result details",
+      },
       // Defined in pets-core-services\src\application-service\fixtures\tb-certificate.ts
       tbCertificate: {
         applicationId: "generated-app-id-2",
