@@ -44,15 +44,13 @@ function readAndExportEnvVars(filePath, requireq = []) {
     dotenv.populate(process.env, toExport);
   } catch (error) {
     console.error(`❌ Exporting secrets failed for env: ${process.env.ENVIRONMENT}`, error);
+    // This should fail CI step/job
     process.exit(1);
   }
 }
 
 // Export vars from .env file
-// For testing CI error handling
-// non-exixting file: .env2 is provided here
-// (the changes will be reverted later on, after testing's done)
-readAndExportEnvVars(resolve(process.cwd(), "configs/.env2"));
+readAndExportEnvVars(resolve(process.cwd(), "configs/.env"));
 // If it's not CI process, but on a dev's machine, then export some secrets, otherwise ignore it
 if (
   !process.env.CI &&
