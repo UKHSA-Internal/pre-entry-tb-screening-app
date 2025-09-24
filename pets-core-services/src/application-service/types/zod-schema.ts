@@ -4,7 +4,6 @@ import { z } from "zod";
 import { TaskStatus } from "../../shared/types/enum";
 import {
   ChestXRayNotTakenReason,
-  ChestXRayResult,
   HistoryOfConditionsUnder11,
   MenstrualPeriods,
   PregnancyStatus,
@@ -197,11 +196,13 @@ export const ChestXRayNotTakenRequestSchema = z.object({
   xrayWasNotTakenFurtherDetails: z.string().optional().openapi({
     description: "Further details on why X-ray was not taken",
   }),
-  isSputumRequired: z.nativeEnum(YesOrNo),
 });
 
 export const ChestXRayTakenRequestSchema = z.object({
   chestXrayTaken: z.literal(YesOrNo.Yes),
+  dateXrayTaken: z.string().or(z.date()).openapi({
+    description: "Date when the xray was taken (in ISO format)",
+  }),
   posteroAnteriorXrayFileName: z.string().openapi({
     description: "File name for the Postero Anterior X-Ray",
   }),
@@ -220,22 +221,6 @@ export const ChestXRayTakenRequestSchema = z.object({
   lateralDecubitusXray: z.string().optional().openapi({
     description: "S3 Bucket Object key for the Lateral Decubitus X-Ray",
   }),
-  xrayResult: z.nativeEnum(ChestXRayResult).openapi({
-    description: "Chest X-Ray Result",
-  }),
-  xrayResultDetail: z.string().optional().openapi({
-    description: "Result Details",
-  }),
-  xrayMinorFindings: z.array(z.string()).openapi({
-    description: "Minor findings",
-  }),
-  xrayAssociatedMinorFindings: z.array(z.string()).openapi({
-    description: "Minor findings (occasionally associated with TB infection)",
-  }),
-  xrayActiveTbFindings: z.array(z.string()).openapi({
-    description: "Findings sometimes seen in active TB (or other conditions)",
-  }),
-  isSputumRequired: z.nativeEnum(YesOrNo),
 });
 
 export const ChestXRayRequestSchema = z.union([

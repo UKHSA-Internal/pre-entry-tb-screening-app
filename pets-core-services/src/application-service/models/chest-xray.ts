@@ -4,7 +4,7 @@ import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { TaskStatus } from "../../shared/types/enum";
-import { ChestXRayNotTakenReason, ChestXRayResult, YesOrNo } from "../types/enums";
+import { ChestXRayNotTakenReason, YesOrNo } from "../types/enums";
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
@@ -15,8 +15,6 @@ abstract class ChestXRayBase {
   dateCreated: Date;
   createdBy: string;
 
-  isSputumRequired: YesOrNo;
-
   constructor(details: ChestXRayBase) {
     this.applicationId = details.applicationId;
     this.status = details.status;
@@ -24,7 +22,6 @@ abstract class ChestXRayBase {
     // Audit
     this.dateCreated = details.dateCreated;
     this.createdBy = details.createdBy;
-    this.isSputumRequired = details.isSputumRequired;
   }
 }
 
@@ -33,55 +30,45 @@ type IChestXRayTaken = {
   status: TaskStatus;
   dateCreated: Date;
   createdBy: string;
-  isSputumRequired: YesOrNo;
 
   chestXrayTaken: YesOrNo.Yes;
+  dateXrayTaken: Date;
   posteroAnteriorXrayFileName: string;
   posteroAnteriorXray: string;
   apicalLordoticXrayFileName?: string;
   apicalLordoticXray?: string;
   lateralDecubitusXrayFileName?: string;
   lateralDecubitusXray?: string;
-
-  xrayResult: ChestXRayResult;
-  xrayResultDetail?: string;
-  xrayMinorFindings: string[];
-  xrayAssociatedMinorFindings: string[];
-  xrayActiveTbFindings: string[];
 };
 
-export type NewChestXRayTaken = Omit<IChestXRayTaken, "dateCreated" | "status">;
+export type NewChestXRayTaken = Omit<
+  IChestXRayTaken,
+  "dateCreated" | "status" | "dateXrayTaken"
+> & {
+  dateXrayTaken: Date | string;
+};
 
 export class ChestXRayTaken extends ChestXRayBase {
   chestXrayTaken: YesOrNo.Yes;
+  dateXrayTaken: Date;
   posteroAnteriorXrayFileName: string;
   posteroAnteriorXray: string;
   apicalLordoticXrayFileName?: string;
   apicalLordoticXray?: string;
   lateralDecubitusXrayFileName?: string;
   lateralDecubitusXray?: string;
-  xrayResult: ChestXRayResult;
-  xrayResultDetail?: string;
-  xrayMinorFindings: string[];
-  xrayAssociatedMinorFindings: string[];
-  xrayActiveTbFindings: string[];
 
   constructor(details: IChestXRayTaken) {
     super(details);
 
     this.chestXrayTaken = details.chestXrayTaken;
+    this.dateXrayTaken = new Date(details.dateXrayTaken);
     this.posteroAnteriorXrayFileName = details.posteroAnteriorXrayFileName;
     this.posteroAnteriorXray = details.posteroAnteriorXray;
     this.apicalLordoticXrayFileName = details.apicalLordoticXrayFileName;
     this.apicalLordoticXray = details.apicalLordoticXray;
     this.lateralDecubitusXrayFileName = details.lateralDecubitusXrayFileName;
     this.lateralDecubitusXray = details.lateralDecubitusXray;
-
-    this.xrayResult = details.xrayResult;
-    this.xrayResultDetail = details.xrayResultDetail;
-    this.xrayMinorFindings = details.xrayMinorFindings;
-    this.xrayAssociatedMinorFindings = details.xrayAssociatedMinorFindings;
-    this.xrayActiveTbFindings = details.xrayActiveTbFindings;
   }
 
   toJson() {
@@ -89,19 +76,14 @@ export class ChestXRayTaken extends ChestXRayBase {
       applicationId: this.applicationId,
       status: this.status,
       chestXrayTaken: this.chestXrayTaken,
+      dateXrayTaken: this.dateXrayTaken,
       posteroAnteriorXrayFileName: this.posteroAnteriorXrayFileName,
       posteroAnteriorXray: this.posteroAnteriorXray,
       apicalLordoticXrayFileName: this.apicalLordoticXrayFileName,
       apicalLordoticXray: this.apicalLordoticXray,
       lateralDecubitusXrayFileName: this.lateralDecubitusXrayFileName,
       lateralDecubitusXray: this.lateralDecubitusXray,
-      xrayResult: this.xrayResult,
-      xrayResultDetail: this.xrayResultDetail,
-      xrayMinorFindings: this.xrayMinorFindings,
-      xrayAssociatedMinorFindings: this.xrayAssociatedMinorFindings,
-      xrayActiveTbFindings: this.xrayActiveTbFindings,
       dateCreated: this.dateCreated,
-      isSputumRequired: this.isSputumRequired,
     };
   }
 }
@@ -111,7 +93,6 @@ type IChestXRayNotTaken = {
   status: TaskStatus;
   dateCreated: Date;
   createdBy: string;
-  isSputumRequired: YesOrNo;
 
   chestXrayTaken: YesOrNo.No;
   reasonXrayWasNotTaken: ChestXRayNotTakenReason;
@@ -141,7 +122,6 @@ export class ChestXRayNotTaken extends ChestXRayBase {
       reasonXrayWasNotTaken: this.reasonXrayWasNotTaken,
       xrayWasNotTakenFurtherDetails: this.xrayWasNotTakenFurtherDetails,
       dateCreated: this.dateCreated,
-      isSputumRequired: this.isSputumRequired,
     };
   }
 }
@@ -154,11 +134,19 @@ export class ChestXRayDbOps {
   static async createChestXray(details: NewChestXRayTaken | NewChestXRayNotTaken) {
     try {
       logger.info("Saving Chest X-Ray Information to DB");
-      const updatedDetails = {
-        ...details,
-        dateCreated: new Date(),
-        status: TaskStatus.completed,
-      };
+      const updatedDetails =
+        details.chestXrayTaken === YesOrNo.Yes
+          ? {
+              ...details,
+              dateXrayTaken: new Date(details.dateXrayTaken),
+              dateCreated: new Date(),
+              status: TaskStatus.completed,
+            }
+          : {
+              ...details,
+              dateCreated: new Date(),
+              status: TaskStatus.completed,
+            };
 
       const chestXray =
         details.chestXrayTaken === YesOrNo.Yes
@@ -184,12 +172,21 @@ export class ChestXRayDbOps {
   }
 
   static todbItem(chestXray: ChestXRayTaken | ChestXRayNotTaken) {
-    const dbItem = {
-      ...chestXray,
-      dateCreated: chestXray.dateCreated.toISOString(),
-      pk: ChestXRayDbOps.getPk(chestXray.applicationId),
-      sk: ChestXRayDbOps.sk,
-    };
+    const dbItem =
+      chestXray.chestXrayTaken === YesOrNo.Yes
+        ? {
+            ...chestXray,
+            dateXrayTaken: chestXray.dateXrayTaken.toISOString(),
+            dateCreated: chestXray.dateCreated.toISOString(),
+            pk: ChestXRayDbOps.getPk(chestXray.applicationId),
+            sk: ChestXRayDbOps.sk,
+          }
+        : {
+            ...chestXray,
+            dateCreated: chestXray.dateCreated.toISOString(),
+            pk: ChestXRayDbOps.getPk(chestXray.applicationId),
+            sk: ChestXRayDbOps.sk,
+          };
     return dbItem;
   }
 
@@ -217,10 +214,17 @@ export class ChestXRayDbOps {
 
       const dbItem = data.Item as ReturnType<(typeof ChestXRayDbOps)["todbItem"]>;
 
-      const chestXrayProp = {
-        ...dbItem,
-        dateCreated: new Date(dbItem.dateCreated),
-      };
+      const chestXrayProp =
+        dbItem.chestXrayTaken === YesOrNo.Yes
+          ? new ChestXRayTaken({
+              ...dbItem,
+              dateXrayTaken: new Date(dbItem.dateXrayTaken),
+              dateCreated: new Date(dbItem.dateCreated),
+            })
+          : new ChestXRayNotTaken({
+              ...dbItem,
+              dateCreated: new Date(dbItem.dateCreated),
+            });
       return dbItem.chestXrayTaken === YesOrNo.Yes
         ? new ChestXRayTaken(chestXrayProp as IChestXRayTaken)
         : new ChestXRayNotTaken(chestXrayProp as IChestXRayNotTaken);
