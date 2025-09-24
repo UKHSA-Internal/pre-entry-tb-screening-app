@@ -232,6 +232,7 @@ describe("Test for Application Lambda", () => {
         httpMethod: "POST",
         body: JSON.stringify({
           chestXrayTaken: YesOrNo.Yes,
+          dateXrayTaken: "2025-05-05",
           posteroAnteriorXrayFileName: "pa.dicom",
           posteroAnteriorXray:
             "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/postero-anterior.dcm",

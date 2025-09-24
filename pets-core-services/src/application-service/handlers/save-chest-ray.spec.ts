@@ -4,13 +4,16 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
 import { seededApplications } from "../../shared/fixtures/application";
+import { logger } from "../../shared/logger";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededChestXray } from "../fixtures/chest-xray";
-import { ChestXRayResult, YesOrNo } from "../types/enums";
+import { ChestXRayDbOps } from "../models/chest-xray";
+import { YesOrNo } from "../types/enums";
 import { SaveChestXrayEvent, saveChestXRayHandler } from "./save-chest-ray";
 
 const newChestXrayTaken: SaveChestXrayEvent["parsedBody"] = {
   chestXrayTaken: YesOrNo.Yes,
+  dateXrayTaken: "2025-05-05",
   posteroAnteriorXrayFileName: "posterior-anterior.dicom",
   posteroAnteriorXray: "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/postero-anterior.dcm",
   apicalLordoticXrayFileName: "apical-lordotic.dicom",
@@ -18,11 +21,6 @@ const newChestXrayTaken: SaveChestXrayEvent["parsedBody"] = {
   lateralDecubitusXrayFileName: "lateral-decubitus.dicom",
   lateralDecubitusXray:
     "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/lateral-decubitus.dcm",
-  xrayResult: ChestXRayResult.NonTbAbnormal,
-  xrayMinorFindings: ["test", "minor", "findings"],
-  xrayAssociatedMinorFindings: ["test", "associated", "minor", "findings"],
-  xrayActiveTbFindings: ["test", "active", "tb", "findings"],
-  isSputumRequired: YesOrNo.No,
 };
 
 describe("Test for Saving Chest X-ray into DB", () => {
@@ -56,6 +54,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     expect(JSON.parse(response.body)).toMatchObject({
       applicationId: seededApplications[3].applicationId,
       ...newChestXrayTaken,
+      dateXrayTaken: expect.any(String),
       dateCreated: expect.any(String),
     });
   });
@@ -75,6 +74,31 @@ describe("Test for Saving Chest X-ray into DB", () => {
     // Assert
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({ message: "Chest X-ray already saved" });
+  });
+
+  test("Handling error while saving a new", async () => {
+    // Arrange;
+    const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    const errorMessage = "Couldn't save it";
+    const chestXrayDbOpsMock = vi
+      .spyOn(ChestXRayDbOps, "createChestXray")
+      .mockImplementation(() => {
+        throw new Error(errorMessage);
+      });
+    const existingChestXray = seededChestXray[0];
+    const event: SaveChestXrayEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[1].applicationId },
+      parsedBody: existingChestXray,
+    };
+
+    // Act
+    const response = await saveChestXRayHandler(event);
+
+    // Assert
+    expect(response.statusCode).toEqual(500);
+    expect(errorLoggerMock).toHaveBeenCalledWith(Error(errorMessage), "Error saving Chest X-ray");
+    chestXrayDbOpsMock.mockReset();
   });
 
   test("Invalid Object Key for any image throws a 400 error", async () => {
@@ -112,12 +136,29 @@ describe("Test for Saving Chest X-ray into DB", () => {
     // Act
     const response = await saveChestXRayHandler(event);
 
-    // Act
     // Assert
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "postero-anterior.dcm image does not exist",
     });
+  });
+
+  test("Handling errors while checking Object in S3", async () => {
+    const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    const event: SaveChestXrayEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[3].applicationId },
+      parsedBody: newChestXrayTaken,
+    };
+
+    s3ClientMock.on(HeadObjectCommand).rejects(Error("S3 error"));
+
+    // Act
+    const resp = await saveChestXRayHandler(event);
+
+    // Assert
+    expect(resp.statusCode).toEqual(500);
+    expect(errorLoggerMock).toHaveBeenCalledWith(Error("S3 error"), "Error saving Chest X-ray");
   });
 
   test("Missing Applicant throws a 400 error", async () => {
