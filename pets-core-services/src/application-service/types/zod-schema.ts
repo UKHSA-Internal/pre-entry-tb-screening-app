@@ -377,6 +377,16 @@ export const RadiologicalOutcomeResponseSchema = RadiologicalOutcomeRequestSchem
   }),
 });
 
+export const SputumDecisionRequestSchema = z.object({
+  sputumRequired: z.nativeEnum(YesOrNo).openapi({ description: "Sputum required: yes/no" }),
+});
+
+export const SputumDecisionResponseSchema = SputumDecisionRequestSchema.extend({
+  applicationId: z.string().openapi({ description: "ID of application" }),
+  dateCreated: z.string().date().openapi({ description: "Creation Date in UTC timezone" }),
+  status: z.nativeEnum(TaskStatus).openapi({ description: "Status of Task" }),
+});
+
 export const ApplicationSchema = z.object({
   applicationId: z.string().openapi({
     description: "application id",
@@ -388,6 +398,7 @@ export const ApplicationSchema = z.object({
   medicalScreening: MedicalScreeningResponseSchema,
   chestXray: ChestXRayResponseSchema,
   radiologicalOutcome: RadiologicalOutcomeResponseSchema,
+  sputumDecision: SputumDecisionResponseSchema,
   sputumDetails: SputumResponseSchema,
   tbCertificate: TbCertificateResponseSchema,
 });
