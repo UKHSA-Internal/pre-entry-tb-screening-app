@@ -93,6 +93,7 @@ describe("Getting Application Handler", () => {
       },
       // Defined in pets-core-services/src/application-service/fixtures/medical-screening.ts
       medicalScreening: {
+        dateOfMedicalScreening: "2025-05-05T00:00:00.000Z",
         age: 25,
         symptomsOfTb: "Yes",
         symptoms: ["Cough", "Haemoptysis (coughing up blood)"],
@@ -106,6 +107,7 @@ describe("Getting Application Handler", () => {
         haveMenstralPeriod: "Yes",
         physicalExaminationNotes: "NA",
         applicationId: seededApplications[1].applicationId,
+        isXrayRequired: "Yes",
         dateCreated: expect.any(String),
         status: "completed",
       },

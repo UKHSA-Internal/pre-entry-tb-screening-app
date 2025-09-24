@@ -5,6 +5,7 @@ import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { TaskStatus } from "../../shared/types/enum";
 import {
+  ChestXRayNotTakenReason,
   HistoryOfConditionsUnder11,
   MenstrualPeriods,
   PregnancyStatus,
@@ -18,6 +19,7 @@ export abstract class IMedicalScreening {
   applicationId: string;
   status: TaskStatus;
 
+  dateOfMedicalScreening: Date;
   age: number;
   symptomsOfTb: YesOrNo;
   symptoms: TbSymptomsOptions[];
@@ -31,6 +33,8 @@ export abstract class IMedicalScreening {
   pregnant: PregnancyStatus;
   haveMenstralPeriod: MenstrualPeriods;
   physicalExaminationNotes: string;
+  isXrayRequired: YesOrNo;
+  reasonXrayNotRequired?: ChestXRayNotTakenReason;
 
   dateCreated: Date;
   createdBy: string;
@@ -39,6 +43,7 @@ export abstract class IMedicalScreening {
     this.applicationId = details.applicationId;
     this.status = details.status;
 
+    this.dateOfMedicalScreening = details.dateOfMedicalScreening;
     this.age = details.age;
     this.symptomsOfTb = details.symptomsOfTb;
     this.symptoms = details.symptoms;
@@ -52,11 +57,20 @@ export abstract class IMedicalScreening {
     this.pregnant = details.pregnant;
     this.haveMenstralPeriod = details.haveMenstralPeriod;
     this.physicalExaminationNotes = details.physicalExaminationNotes;
+    this.isXrayRequired = details.isXrayRequired;
+    this.reasonXrayNotRequired = details.reasonXrayNotRequired;
     // Audit
     this.dateCreated = details.dateCreated;
     this.createdBy = details.createdBy;
   }
 }
+
+export type NewMedicalScreening = Omit<
+  IMedicalScreening,
+  "dateCreated" | "status" | "dateOfMedicalScreening"
+> & {
+  dateOfMedicalScreening: Date | string;
+};
 
 export class MedicalScreening extends IMedicalScreening {
   static readonly getPk = (applicationId: string) => Application.getPk(applicationId);
@@ -72,6 +86,7 @@ export class MedicalScreening extends IMedicalScreening {
   private todbItem() {
     const dbItem = {
       ...this,
+      dateOfMedicalScreening: this.dateOfMedicalScreening.toISOString(),
       dateCreated: this.dateCreated.toISOString(),
       pk: MedicalScreening.getPk(this.applicationId),
       sk: MedicalScreening.sk,
@@ -79,12 +94,13 @@ export class MedicalScreening extends IMedicalScreening {
     return dbItem;
   }
 
-  static async createMedicalScreening(details: Omit<IMedicalScreening, "dateCreated" | "status">) {
+  static async createMedicalScreening(details: NewMedicalScreening) {
     try {
       logger.info("Saving Medical Screening to DB");
 
       const updatedDetails: IMedicalScreening = {
         ...details,
+        dateOfMedicalScreening: new Date(details.dateOfMedicalScreening),
         dateCreated: new Date(),
         status: TaskStatus.completed,
       };
@@ -135,6 +151,7 @@ export class MedicalScreening extends IMedicalScreening {
 
       const medicalScreening = new MedicalScreening({
         ...dbItem,
+        dateOfMedicalScreening: new Date(dbItem.dateOfMedicalScreening),
         dateCreated: new Date(dbItem.dateCreated),
       });
       return medicalScreening;
@@ -148,6 +165,7 @@ export class MedicalScreening extends IMedicalScreening {
     return {
       applicationId: this.applicationId,
       status: this.status,
+      dateOfMedicalScreening: this.dateOfMedicalScreening,
       age: this.age,
       symptomsOfTb: this.symptomsOfTb,
       symptoms: this.symptoms,
@@ -161,6 +179,8 @@ export class MedicalScreening extends IMedicalScreening {
       pregnant: this.pregnant,
       haveMenstralPeriod: this.haveMenstralPeriod,
       physicalExaminationNotes: this.physicalExaminationNotes,
+      isXrayRequired: this.isXrayRequired,
+      reasonXrayNotRequired: this.reasonXrayNotRequired,
       // Audit
       dateCreated: this.dateCreated,
     };

@@ -10,7 +10,7 @@ import {
   TbSymptomsOptions,
   YesOrNo,
 } from "../types/enums";
-import { IMedicalScreening, MedicalScreening } from "./medical-screening";
+import { MedicalScreening, NewMedicalScreening } from "./medical-screening";
 
 describe("Tests for Medical Screening Information Model", () => {
   const ddbMock = mockClient(awsClients.dynamoDBDocClient);
@@ -19,7 +19,8 @@ describe("Tests for Medical Screening Information Model", () => {
     ddbMock.reset();
   });
 
-  const newMedicalScreening: Omit<IMedicalScreening, "dateCreated" | "status"> = {
+  const newMedicalScreening: NewMedicalScreening = {
+    dateOfMedicalScreening: "2025-05-05",
     age: 23,
     applicationId: "test-application-id",
     symptomsOfTb: YesOrNo.Yes,
@@ -32,6 +33,7 @@ describe("Tests for Medical Screening Information Model", () => {
     haveMenstralPeriod: MenstrualPeriods.NA,
     physicalExaminationNotes: "No notes",
     createdBy: "test-medical-screening-creator",
+    isXrayRequired: YesOrNo.Yes,
   };
 
   test("Creating new medical sreening", async () => {
@@ -47,6 +49,7 @@ describe("Tests for Medical Screening Information Model", () => {
     // Assert
     expect(medicalScreening).toMatchObject({
       ...newMedicalScreening,
+      dateOfMedicalScreening: new Date(newMedicalScreening.dateOfMedicalScreening),
       dateCreated: new Date(expectedDateTime),
     });
 
@@ -55,6 +58,7 @@ describe("Tests for Medical Screening Information Model", () => {
       TableName: "test-application-details",
       Item: {
         ...newMedicalScreening,
+        dateOfMedicalScreening: new Date(newMedicalScreening.dateOfMedicalScreening).toISOString(),
         pk: "APPLICATION#test-application-id",
         sk: "APPLICATION#MEDICAL#SCREENING",
       },

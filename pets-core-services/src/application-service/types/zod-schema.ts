@@ -63,6 +63,9 @@ export const TravelInformationResponseSchema = TravelInformationRequestSchema.ex
 });
 
 export const MedicalScreeningRequestSchema = z.object({
+  dateOfMedicalScreening: z.string().date().openapi({
+    description: "Date of medical screening in ISO format",
+  }),
   age: z.number().min(1).openapi({
     description: "Applicant's age",
   }),
@@ -101,6 +104,12 @@ export const MedicalScreeningRequestSchema = z.object({
   }),
   physicalExaminationNotes: z.string().openapi({
     description: "Notes from Physical Examination",
+  }),
+  isXrayRequired: z.nativeEnum(YesOrNo).openapi({
+    description: "Is X-ray required?",
+  }),
+  reasonXrayNotRequired: z.nativeEnum(ChestXRayNotTakenReason).optional().openapi({
+    description: "Further details on why X-ray was not required",
   }),
 });
 
