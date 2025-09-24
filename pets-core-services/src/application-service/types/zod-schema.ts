@@ -4,7 +4,6 @@ import { z } from "zod";
 import { TaskStatus } from "../../shared/types/enum";
 import {
   ChestXRayNotTakenReason,
-  ChestXRayResult,
   HistoryOfConditionsUnder11,
   MenstrualPeriods,
   PregnancyStatus,
@@ -197,11 +196,13 @@ export const ChestXRayNotTakenRequestSchema = z.object({
   xrayWasNotTakenFurtherDetails: z.string().optional().openapi({
     description: "Further details on why X-ray was not taken",
   }),
-  isSputumRequired: z.nativeEnum(YesOrNo),
 });
 
 export const ChestXRayTakenRequestSchema = z.object({
   chestXrayTaken: z.literal(YesOrNo.Yes),
+  dateXrayTaken: z.string().or(z.date()).openapi({
+    description: "Date when the xray was taken (in ISO format)",
+  }),
   posteroAnteriorXrayFileName: z.string().openapi({
     description: "File name for the Postero Anterior X-Ray",
   }),
@@ -220,22 +221,6 @@ export const ChestXRayTakenRequestSchema = z.object({
   lateralDecubitusXray: z.string().optional().openapi({
     description: "S3 Bucket Object key for the Lateral Decubitus X-Ray",
   }),
-  xrayResult: z.nativeEnum(ChestXRayResult).openapi({
-    description: "Chest X-Ray Result",
-  }),
-  xrayResultDetail: z.string().optional().openapi({
-    description: "Result Details",
-  }),
-  xrayMinorFindings: z.array(z.string()).openapi({
-    description: "Minor findings",
-  }),
-  xrayAssociatedMinorFindings: z.array(z.string()).openapi({
-    description: "Minor findings (occasionally associated with TB infection)",
-  }),
-  xrayActiveTbFindings: z.array(z.string()).openapi({
-    description: "Findings sometimes seen in active TB (or other conditions)",
-  }),
-  isSputumRequired: z.nativeEnum(YesOrNo),
 });
 
 export const ChestXRayRequestSchema = z.union([
@@ -284,9 +269,6 @@ export const ImageUploadUrlResponseSchema = z.object({
   }),
   bucketPath: z.string().openapi({
     description: "Bucket Path for Uploaded File",
-  }),
-  fields: z.record(z.string(), z.string()).openapi({
-    description: "Required fields in file upload request",
   }),
 });
 
@@ -369,6 +351,42 @@ export const SputumResponseSchema = SputumRequestSchema.extend({
   }),
 });
 
+export const RadiologicalOutcomeRequestSchema = z.object({
+  xrayResult: z.string().openapi({ description: "X ray result" }),
+  xrayResultDetail: z.string().openapi({ description: "X ray result details" }),
+  xrayMinorFindings: z.array(z.string()).openapi({
+    description: "Minor findings",
+  }),
+  xrayAssociatedMinorFindings: z.array(z.string()).openapi({
+    description: "Associated Minor Findings",
+  }),
+  xrayActiveTbFindings: z.array(z.string()).openapi({
+    description: "Active TB Findings",
+  }),
+});
+
+export const RadiologicalOutcomeResponseSchema = RadiologicalOutcomeRequestSchema.extend({
+  applicationId: z.string().openapi({
+    description: "ID of application",
+  }),
+  dateCreated: z.string().date().openapi({
+    description: "Creation Date in UTC timezone",
+  }),
+  status: z.nativeEnum(TaskStatus).openapi({
+    description: "Status of Task",
+  }),
+});
+
+export const SputumDecisionRequestSchema = z.object({
+  sputumRequired: z.nativeEnum(YesOrNo).openapi({ description: "Sputum required: yes/no" }),
+});
+
+export const SputumDecisionResponseSchema = SputumDecisionRequestSchema.extend({
+  applicationId: z.string().openapi({ description: "ID of application" }),
+  dateCreated: z.string().date().openapi({ description: "Creation Date in UTC timezone" }),
+  status: z.nativeEnum(TaskStatus).openapi({ description: "Status of Task" }),
+});
+
 export const ApplicationSchema = z.object({
   applicationId: z.string().openapi({
     description: "application id",
@@ -379,6 +397,8 @@ export const ApplicationSchema = z.object({
   travelInformation: TravelInformationResponseSchema,
   medicalScreening: MedicalScreeningResponseSchema,
   chestXray: ChestXRayResponseSchema,
+  radiologicalOutcome: RadiologicalOutcomeResponseSchema,
+  sputumDecision: SputumDecisionResponseSchema,
   sputumDetails: SputumResponseSchema,
   tbCertificate: TbCertificateResponseSchema,
 });

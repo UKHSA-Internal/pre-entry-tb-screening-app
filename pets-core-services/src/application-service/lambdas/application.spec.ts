@@ -232,6 +232,7 @@ describe("Test for Application Lambda", () => {
         httpMethod: "POST",
         body: JSON.stringify({
           chestXrayTaken: YesOrNo.Yes,
+          dateXrayTaken: "2025-05-05",
           posteroAnteriorXrayFileName: "pa.dicom",
           posteroAnteriorXray:
             "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/postero-anterior.dcm",
@@ -518,6 +519,59 @@ describe("Test for Application Lambda", () => {
         "Error saving Sputum Details",
       );
       expect(response.statusCode).toBe(500);
+    });
+  });
+
+  describe("Radiological Outcome", () => {
+    test("Validating saving radiological outcome successfully", async () => {
+      // Arrange
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        resource: "/application/{applicationId}/radiological-outcome",
+        path: `/application/${seededApplications[0].applicationId}/radiological-outcome`,
+        httpMethod: "POST",
+      };
+
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+
+      // Assert
+      expect(response.statusCode).toBe(400);
+      expect(JSON.parse(response.body)).toMatchObject({
+        //   no: "yes",
+        // });
+        message: "Request Body failed validation",
+        validationError: {
+          xrayResult: ["Required"],
+          xrayResultDetail: ["Required"],
+          xrayMinorFindings: ["Required"],
+          xrayAssociatedMinorFindings: ["Required"],
+          xrayActiveTbFindings: ["Required"],
+        },
+      });
+    });
+
+    test("Saving radiological outcome successfully", async () => {
+      // Arrange;
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        resource: "/application/{applicationId}/radiological-outcome",
+        path: `/application/${seededApplications[0].applicationId}/radiological-outcome`,
+        httpMethod: "POST",
+        body: JSON.stringify({
+          xrayResult: "Chest X-ray normal",
+          xrayResultDetail: "Result details",
+          xrayMinorFindings: ["Minor Findings"],
+          xrayAssociatedMinorFindings: ["Associated Minor Findings"],
+          xrayActiveTbFindings: ["Active TB Findings"],
+        }),
+      };
+
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+
+      // Assert
+      expect(response.statusCode).toBe(200);
     });
   });
 });
