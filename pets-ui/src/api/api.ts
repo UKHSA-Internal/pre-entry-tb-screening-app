@@ -8,7 +8,7 @@ import {
   GenerateImageUploadUrlRequest,
   GenerateImageUploadUrlResponse,
   PostedApplicantDetailsType,
-  PostedChestXrayDetailsType,
+  PostedChestXrayUnionType,
   PostedMedicalScreeningType,
   PostedRadiologicalOutcomeChestXrayNotTakenType,
   PostedRadiologicalOutcomeDetailsType,
@@ -96,7 +96,7 @@ export const postMedicalDetails = async (
 
 export const postChestXrayDetails = async (
   applicationId: string,
-  chestXrayDetails: PostedChestXrayDetailsType,
+  chestXrayDetails: PostedChestXrayUnionType,
 ) => {
   const result = await petsApi.post(`/application/${applicationId}/chest-xray`, chestXrayDetails);
   return { status: result.status, statusText: result.statusText };
@@ -109,9 +109,19 @@ export const postRadiologicalOutcomeDetails = async (
     | PostedRadiologicalOutcomeChestXrayNotTakenType,
 ) => {
   const result = await petsApi.post(
-    `/application/${applicationId}/chest-xray`,
+    `/application/${applicationId}/radiological-outcome`,
     radiologicalOutcomeDetails,
   );
+  return { status: result.status, statusText: result.statusText };
+};
+
+export const postSputumRequirement = async (
+  applicationId: string,
+  sputumRequirement: { isSputumRequired: string },
+) => {
+  const result = await petsApi.post(`/application/${applicationId}/sputum-decision`, {
+    sputumRequired: sputumRequirement.isSputumRequired,
+  });
   return { status: result.status, statusText: result.statusText };
 };
 

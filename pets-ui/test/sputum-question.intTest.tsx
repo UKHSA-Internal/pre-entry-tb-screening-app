@@ -58,7 +58,7 @@ describe("SputumQuestionPage", () => {
   it("displays the back link", () => {
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/chest-xray-not-taken");
+    expect(link).toHaveAttribute("href", "/tracker");
     expect(link).toHaveClass("govuk-back-link");
   });
 
@@ -111,18 +111,18 @@ describe("SputumQuestionPage", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("when 'Yes' selected and continue pressed, it navigates to /chest-xray-summary", async () => {
+  it("when 'Yes' selected and continue pressed, it navigates to /sputum-decision-summary", async () => {
     const radioYes = screen.getByRole("radio", { name: "Yes" });
     await user.click(radioYes);
     await user.click(screen.getByRole("button", { name: "Continue" }));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-summary");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/sputum-decision-summary");
   });
 
   it("when 'No' selected and continue pressed, it navigates to /chest-xray-summary", async () => {
     const radioNo = screen.getByRole("radio", { name: "No" });
     await user.click(radioNo);
     await user.click(screen.getByRole("button", { name: "Continue" }));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-summary");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/sputum-decision-summary");
   });
 
   it("scrolls to the sputum collected radio group if location hash is #sputum-required", () => {

@@ -2,10 +2,10 @@ import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import { useAppSelector } from "@/redux/hooks";
 import { selectRadiologicalOutcome } from "@/redux/store";
-import ChestXraySummary from "@/sections/chest-xray-summary";
+import RadiologicalOutcomeSummary from "@/sections/radiological-outcome-summary";
 import { ApplicationStatus } from "@/utils/enums";
 
-export default function ChestXraySummaryPage() {
+export default function RadiologicalOutcomeSummaryPage() {
   const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
 
   return (
@@ -18,7 +18,7 @@ export default function ChestXraySummaryPage() {
       }
     >
       <Heading level={1} size="l" title="Check chest X-ray results and findings" />
-      <ChestXraySummary />
+      <RadiologicalOutcomeSummary />
     </Container>
   );
 }

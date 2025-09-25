@@ -1,7 +1,7 @@
 import {
   DateType,
   ReduxMedicalScreeningType,
-  ReduxRadiologicalOutcomeDetailsType,
+  ReduxSputumRequirementType,
   ReduxSputumType,
 } from "@/types";
 import { PositiveOrNegative, YesOrNo } from "@/utils/enums";
@@ -200,10 +200,10 @@ const getCountryName = (countryCode: string) => {
 };
 
 const calculateSputumOutcome = (
-  radiologicalOutcomeData: ReduxRadiologicalOutcomeDetailsType,
+  sputumRequirementData: ReduxSputumRequirementType,
   sputumData: ReduxSputumType,
 ) => {
-  if (radiologicalOutcomeData.isSputumRequired === YesOrNo.NO) {
+  if (sputumRequirementData.isSputumRequired === YesOrNo.NO) {
     return "Not provided";
   }
 

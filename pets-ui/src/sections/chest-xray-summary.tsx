@@ -7,8 +7,8 @@ import Button from "@/components/button/button";
 import Heading from "@/components/heading/heading";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
+import { setChestXrayStatus } from "@/redux/chestXraySlice";
 import { useAppSelector } from "@/redux/hooks";
-import { setRadiologicalOutcomeStatus } from "@/redux/radiologicalOutcomeSlice";
 import { selectApplication, selectChestXray } from "@/redux/store";
 import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
 import { spreadArrayIfNotEmpty, standardiseDayOrMonth } from "@/utils/helpers";
@@ -31,14 +31,14 @@ const ChestXraySummary = () => {
         chestXrayTaken: YesOrNo.YES,
         posteroAnteriorXrayFileName: chestXrayData.posteroAnteriorXrayFileName,
         posteroAnteriorXray: chestXrayData.posteroAnteriorXrayFile,
-        apicalLordoticXrayFileName: chestXrayData.apicalLordoticXrayFileName,
-        apicalLordoticXray: chestXrayData.apicalLordoticXrayFile,
-        lateralDecubitusXrayFileName: chestXrayData.lateralDecubitusXrayFileName,
-        lateralDecubitusXray: chestXrayData.lateralDecubitusXrayFile,
+        apicalLordoticXrayFileName: chestXrayData.apicalLordoticXrayFileName || undefined,
+        apicalLordoticXray: chestXrayData.apicalLordoticXrayFile || undefined,
+        lateralDecubitusXrayFileName: chestXrayData.lateralDecubitusXrayFileName || undefined,
+        lateralDecubitusXray: chestXrayData.lateralDecubitusXrayFile || undefined,
         dateXrayTaken: dateXrayTakenStr,
       });
 
-      dispatch(setRadiologicalOutcomeStatus(ApplicationStatus.COMPLETE));
+      dispatch(setChestXrayStatus(ApplicationStatus.COMPLETE));
       navigate("/chest-xray-confirmation");
     } catch (error) {
       console.error(error);
@@ -73,7 +73,7 @@ const ChestXraySummary = () => {
       {(chestXrayData.status == ApplicationStatus.NOT_YET_STARTED ||
         chestXrayData.status == ApplicationStatus.IN_PROGRESS) && (
         <div>
-          <Heading title="Now send the X-ray information" level={2} size="m" />
+          <Heading title="Now send your X-ray information" level={2} size="m" />
           <p className="govuk-body">
             Upload all relevant chest X-ray images before you continue. You will not be able to
             change or add images after you submit this information.
@@ -82,7 +82,7 @@ const ChestXraySummary = () => {
           <Button
             id="confirm"
             type={ButtonType.DEFAULT}
-            text="Submit and continue"
+            text="Save and continue"
             handleClick={handleSubmit}
           />
         </div>

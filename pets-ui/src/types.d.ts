@@ -44,6 +44,7 @@ type ReceivedApplicationDetailsType = {
   medicalScreening: ReceivedMedicalScreeningType | undefined;
   chestXray: ReceivedChestXrayDetailsType | undefined;
   radiologicalOutcome: ReceivedRadiologicalOutcomeDetailsType | undefined;
+  sputumRequirement: ReceivedSputumRequirementType | undefined;
   sputumDetails: ReceivedSputumType | undefined;
   tbCertificate: ReceivedTbCertificateType | undefined;
 };
@@ -182,12 +183,6 @@ type ReceivedChestXrayDetailsType = PostedChestXrayDetailsType & ReceivedApplica
 type ReduxRadiologicalOutcomeDetailsType = {
   status: ApplicationStatus;
   chestXrayTaken: YesOrNo;
-  posteroAnteriorXrayFileName: string;
-  posteroAnteriorXrayFile: string;
-  apicalLordoticXrayFileName?: string;
-  apicalLordoticXrayFile?: string;
-  lateralDecubitusXrayFileName?: string;
-  lateralDecubitusXrayFile?: string;
   reasonXrayWasNotTaken: string;
   xrayWasNotTakenFurtherDetails: string;
   xrayResult: string;
@@ -195,36 +190,48 @@ type ReduxRadiologicalOutcomeDetailsType = {
   xrayMinorFindings: string[];
   xrayAssociatedMinorFindings: string[];
   xrayActiveTbFindings: string[];
-  isSputumRequired: YesOrNo;
   completionDate: DateType;
 };
 
 type PostedRadiologicalOutcomeDetailsType = {
-  chestXrayTaken: YesOrNo;
-  posteroAnteriorXrayFileName: string;
-  posteroAnteriorXray: string;
-  apicalLordoticXrayFileName?: string;
-  apicalLordoticXray?: string;
-  lateralDecubitusXrayFileName?: string;
-  lateralDecubitusXray?: string;
   xrayResult: string;
   xrayResultDetail: string;
   xrayMinorFindings: string[];
   xrayAssociatedMinorFindings: string[];
   xrayActiveTbFindings: string[];
-  isSputumRequired: YesOrNo;
 };
 
 type ReceivedRadiologicalOutcomeDetailsType = PostedRadiologicalOutcomeDetailsType &
   ReceivedApplicationAttributesType;
 
 type PostedRadiologicalOutcomeChestXrayNotTakenType = {
+  chestXrayTaken: YesOrNo;
   reasonXrayWasNotTaken: string;
   xrayWasNotTakenFurtherDetails: string;
-  isSputumRequired: YesOrNo;
 };
 
 type ReceivedRadiologicalOutcomeNotTakenType = PostedRadiologicalOutcomeChestXrayNotTakenType &
+  ReceivedApplicationAttributesType;
+
+type PostedChestXrayNotTakenDetailsType = {
+  chestXrayTaken: YesOrNo.NO;
+  reasonXrayWasNotTaken: string;
+  xrayWasNotTakenFurtherDetails: string;
+};
+
+type PostedChestXrayUnionType = PostedChestXrayDetailsType | PostedChestXrayNotTakenDetailsType;
+
+type ReduxSputumRequirementType = {
+  status: ApplicationStatus;
+  isSputumRequired: YesOrNo;
+  completionDate?: DateType;
+};
+
+type PostedSputumRequirementType = {
+  isSputumRequired: YesOrNo;
+};
+
+type ReceivedSputumRequirementType = PostedSputumRequirementType &
   ReceivedApplicationAttributesType;
 
 // Sputum types

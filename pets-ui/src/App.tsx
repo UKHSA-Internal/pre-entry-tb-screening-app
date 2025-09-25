@@ -13,7 +13,7 @@ import ApplicantSummaryPage from "./pages/applicant-summary";
 import CheckSputumSampleInformationPage from "./pages/check-sputum-sample-information";
 import ChestXrayConfirmation from "./pages/chest-xray-confirmation";
 import ChestXrayFindingsPage from "./pages/chest-xray-findings";
-import ChestXrayQuestionPage from "./pages/chest-xray-question";
+import ChestXrayOutcomePage from "./pages/chest-xray-outcome";
 import ChestXraySummaryPage from "./pages/chest-xray-summary";
 import ChestXrayUploadPage from "./pages/chest-xray-upload";
 import ContactDetailsPage from "./pages/contact-details";
@@ -25,10 +25,14 @@ import MedicalConfirmation from "./pages/medical-screening-confirmation";
 import MedicalSummaryPage from "./pages/medical-screening-summary";
 import PrivacyNoticePage from "./pages/privacy-notice";
 import ProgressTrackerPage from "./pages/progress-tracker";
+import RadiologicalOutcomeConfirmation from "./pages/radiological-outcome-confirmation";
+import RadiologicalOutcomeSummaryPage from "./pages/radiological-outcome-summary";
 import SignOutPage from "./pages/sign-out";
 import SignedOutPage from "./pages/signed-out";
 import SputumCollectionPage from "./pages/sputum-collection";
 import SputumConfirmation from "./pages/sputum-confirmation";
+import SputumDecisionConfirmation from "./pages/sputum-decision-confirmation";
+import SputumDecisionSummaryPage from "./pages/sputum-decision-summary";
 import SputumQuestionPage from "./pages/sputum-question";
 import TbCertificateDeclarationPage from "./pages/tb-certificate-declaration";
 import TbCertificateNotIssuedPage from "./pages/tb-certificate-not-issued";
@@ -39,6 +43,8 @@ import TbSummaryPage from "./pages/tb-summary";
 import TravelConfirmation from "./pages/travel-confirmation";
 import TravelDetailsPage from "./pages/travel-details";
 import TravelSummaryPage from "./pages/travel-summary";
+import XrayNotRequiredReasonPage from "./pages/xray-not-required-reason";
+import XrayQuestionPage from "./pages/xray-question";
 import { RedirectedRouteIfReduxEmpty } from "./utils/redirect";
 
 function App() {
@@ -151,6 +157,26 @@ function App() {
         }
       />
       <Route
+        path="/xray-question"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <XrayQuestionPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/xray-not-required-reason"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <XrayNotRequiredReasonPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
         path="/travel-details"
         element={
           <AuthenticatedRoute>
@@ -215,7 +241,7 @@ function App() {
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
-              <ChestXrayQuestionPage />
+              <ChestXrayOutcomePage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
@@ -235,7 +261,7 @@ function App() {
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
-              <ChestXraySummaryPage />
+              <RadiologicalOutcomeSummaryPage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
@@ -245,7 +271,7 @@ function App() {
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
-              <ChestXrayConfirmation />
+              <RadiologicalOutcomeConfirmation />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
@@ -256,6 +282,26 @@ function App() {
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <SputumQuestionPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/sputum-decision-summary"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <SputumDecisionSummaryPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/sputum-decision-confirmation"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <SputumDecisionConfirmation />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }

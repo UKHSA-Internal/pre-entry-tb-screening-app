@@ -90,21 +90,14 @@ const chestXraySlice = {
 };
 
 const radiologicalOutcomeSlice = {
-  chestXrayTaken: YesOrNo.NO,
-  posteroAnteriorXrayFileName: "",
-  posteroAnteriorXrayFile: "",
-  apicalLordoticXrayFileName: "",
-  apicalLordoticXrayFile: "",
-  lateralDecubitusXrayFileName: "",
-  lateralDecubitusXrayFile: "",
-  reasonXrayWasNotTaken: "Pregnant",
-  xrayWasNotTakenFurtherDetails: "Further details",
+  chestXrayTaken: YesOrNo.NULL,
+  reasonXrayWasNotTaken: "",
+  xrayWasNotTakenFurtherDetails: "",
   xrayResult: "",
   xrayResultDetail: "",
   xrayMinorFindings: [],
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
-  isSputumRequired: YesOrNo.NO,
   completionDate: { year: "", month: "", day: "" },
 };
 
@@ -162,8 +155,13 @@ const incompleteState = {
   },
   travel: { status: ApplicationStatus.NOT_YET_STARTED, ...travelSlice },
   medicalScreening: { status: ApplicationStatus.NOT_YET_STARTED, ...medicalScreeningSlice },
-  chestXray: { status: ApplicationStatus.NOT_YET_STARTED, ...chestXraySlice },
+  chestXray: { status: ApplicationStatus.IN_PROGRESS, ...chestXraySlice },
   radiologicalOutcome: { status: ApplicationStatus.NOT_YET_STARTED, ...radiologicalOutcomeSlice },
+  sputumDecision: {
+    status: ApplicationStatus.NOT_YET_STARTED,
+    isSputumRequired: YesOrNo.NULL,
+    completionDate: { year: "", month: "", day: "" },
+  },
   tbCertificate: { status: ApplicationStatus.NOT_YET_STARTED, ...tbCertSlice },
 };
 
@@ -201,7 +199,16 @@ const completeState = {
   travel: { status: ApplicationStatus.COMPLETE, ...travelSlice },
   medicalScreening: { status: ApplicationStatus.COMPLETE, ...medicalScreeningSlice },
   chestXray: { status: ApplicationStatus.COMPLETE, ...chestXraySlice },
-  radiologicalOutcome: { status: ApplicationStatus.COMPLETE, ...radiologicalOutcomeSlice },
+  radiologicalOutcome: {
+    status: ApplicationStatus.COMPLETE,
+    ...radiologicalOutcomeSlice,
+    chestXrayTaken: YesOrNo.YES,
+  },
+  sputumDecision: {
+    status: ApplicationStatus.COMPLETE,
+    isSputumRequired: YesOrNo.NO,
+    completionDate: { year: "2025", month: "01", day: "15" },
+  },
   tbCertificate: { status: ApplicationStatus.COMPLETE, ...tbCertSlice },
 };
 
@@ -327,8 +334,9 @@ test("Progress tracker page displays complete application sections correctly, li
   expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
   expect(within(chestXrayListItem as HTMLElement).getByText("Completed"));
 
-  const radiologicalOutcomeText = screen.getByText(/Radiological outcome/i);
-  const radiologicalOutcomeListItem = radiologicalOutcomeText.closest("li");
+  const radiologicalOutcomeLink = screen.getByRole("link", { name: /Radiological outcome/i });
+  expect(radiologicalOutcomeLink).toHaveAttribute("href", "/radiological-outcome-summary");
+  const radiologicalOutcomeListItem = radiologicalOutcomeLink.closest("li");
   expect(radiologicalOutcomeListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );

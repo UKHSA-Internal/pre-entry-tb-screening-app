@@ -15,6 +15,7 @@ import {
   selectMedicalScreening,
   selectRadiologicalOutcome,
   selectSputum,
+  selectSputumDecision,
   selectTbCertificate,
   selectTravel,
 } from "@/redux/store";
@@ -37,6 +38,7 @@ const TbSummary = () => {
   const travelData = useAppSelector(selectTravel);
   const clinic = useAppSelector(selectClinic);
   const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
+  const sputumRequirementData = useAppSelector(selectSputumDecision);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const sputumData = useAppSelector(selectSputum);
   const tbCertificateData = useAppSelector(selectTbCertificate);
@@ -288,12 +290,12 @@ const TbSummary = () => {
           },
           {
             key: "Sputum collected",
-            value: radiologicalOutcomeData.isSputumRequired,
+            value: sputumRequirementData.isSputumRequired,
             hiddenLabel: "Sputum collected",
           },
           {
             key: "Sputum outcome",
-            value: calculateSputumOutcome(radiologicalOutcomeData, sputumData),
+            value: calculateSputumOutcome(sputumRequirementData, sputumData),
             hiddenLabel: "Sputum outcome",
           },
           {

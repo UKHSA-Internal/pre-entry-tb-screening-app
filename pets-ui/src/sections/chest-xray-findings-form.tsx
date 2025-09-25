@@ -5,8 +5,6 @@ import { useLocation, useNavigate } from "react-router";
 import Checkbox from "@/components/checkbox/checkbox";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
-import NotificationBanner from "@/components/notificationBanner/notificationBanner";
-import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -14,12 +12,11 @@ import {
   setXrayActiveTbFindings,
   setXrayAssociatedMinorFindings,
   setXrayMinorFindings,
-  setXrayResult,
   setXrayResultDetail,
 } from "@/redux/radiologicalOutcomeSlice";
 import { selectRadiologicalOutcome } from "@/redux/store";
 import { ReduxRadiologicalOutcomeDetailsType } from "@/types";
-import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { ButtonType } from "@/utils/enums";
 import { toArray } from "@/utils/helpers";
 
 const ChestXrayFindingsForm = () => {
@@ -36,7 +33,6 @@ const ChestXrayFindingsForm = () => {
   const onSubmit: SubmitHandler<ReduxRadiologicalOutcomeDetailsType> = (
     formRadiologicalOutcomeData,
   ) => {
-    dispatch(setXrayResult(formRadiologicalOutcomeData.xrayResult));
     dispatch(setXrayResultDetail(formRadiologicalOutcomeData.xrayResultDetail));
     dispatch(setXrayMinorFindings(toArray(formRadiologicalOutcomeData.xrayMinorFindings)));
     dispatch(
@@ -45,14 +41,13 @@ const ChestXrayFindingsForm = () => {
       ),
     );
     dispatch(setXrayActiveTbFindings(toArray(formRadiologicalOutcomeData.xrayActiveTbFindings)));
-    navigate("/sputum-question");
+    navigate("/radiological-outcome-summary");
   };
 
   const errorsToShow = Object.keys(errors);
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
   const location = useLocation();
-  const xrayResult = useRef<HTMLDivElement | null>(null);
   const xrayResultDetail = useRef<HTMLDivElement | null>(null);
   const xrayMinorFindings = useRef<HTMLDivElement | null>(null);
   const xrayAssociatedMinorFindings = useRef<HTMLDivElement | null>(null);
@@ -62,7 +57,6 @@ const ChestXrayFindingsForm = () => {
     if (location.hash) {
       const target = location.hash.substring(1);
       const refMap: { [key: string]: HTMLElement | null } = {
-        "xray-result": xrayResult.current,
         "xray-result-detail": xrayResultDetail.current,
         "xray-minor-findings": xrayMinorFindings.current,
         "xray-associated-minor-findings": xrayAssociatedMinorFindings.current,
@@ -81,49 +75,12 @@ const ChestXrayFindingsForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
-        <NotificationBanner
-          bannerTitle="Important"
-          bannerText="If a visa applicant's chest X-rays indicate that they have pulmonary TB, give them a referral letter and copies of the:"
-          list={["chest X-ray", "radiology report", "medical record form"]}
-        />
-        <Heading level={1} size="l" title="Enter radiological outcome and findings" />
-
-        <div ref={xrayResult}>
-          <Radio
-            id="xray-result"
-            heading="Radiological outcome"
-            isInline={RadioIsInline.FALSE}
-            answerOptions={["Chest X-ray normal", "Non-TB abnormality", "Old or active TB"]}
-            sortAnswersAlphabetically={false}
-            errorMessage={errors?.xrayResult?.message ?? ""}
-            formValue="xrayResult"
-            required="Select radiological outcome"
-            defaultValue={radiologicalOutcomeData.xrayResult}
-            divStyle={{ marginTop: 40 }}
-          />
-
-          <div ref={xrayResultDetail}>
-            <TextArea
-              id="xray-result-detail"
-              hint="Give further details (optional)"
-              headingLevel={3}
-              headingSize="s"
-              heading="Details"
-              required={false}
-              errorMessage={errors?.xrayResultDetail?.message ?? ""}
-              formValue="xrayResultDetail"
-              rows={4}
-              defaultValue={radiologicalOutcomeData.xrayResultDetail}
-            />
-          </div>
-        </div>
-
         <div id="radiographic-findings" className="govuk-form-group">
           <Heading
-            level={2}
-            size="m"
+            level={1}
+            size="l"
             style={{ marginBottom: -10, marginTop: 40 }}
-            title="Radiographic findings"
+            title="Enter X-ray findings"
           />
 
           <div ref={xrayMinorFindings}>
@@ -137,8 +94,9 @@ const ChestXrayFindingsForm = () => {
                 "2.3 Calcified nodule(s) in the hilum or mediastinum with no pulmonary granulomas",
               ]}
               heading="Minor findings"
-              headingLevel={3}
-              headingSize="s"
+              headingLevel={2}
+              headingSize="m"
+              hint="Select all that apply"
               required={false}
               sortAnswersAlphabetically={false}
               errorMessage={errors?.xrayMinorFindings?.message ?? ""}
@@ -163,8 +121,9 @@ const ChestXrayFindingsForm = () => {
                 "3.5 Costophrenic angle blunting (either side above the horizontal)",
               ]}
               heading="Minor findings (occasionally associated with TB infection)"
-              headingLevel={3}
-              headingSize="s"
+              headingLevel={2}
+              headingSize="m"
+              hint="Select all that apply"
               required={false}
               sortAnswersAlphabetically={false}
               errorMessage={errors?.xrayAssociatedMinorFindings?.message ?? ""}
@@ -192,8 +151,9 @@ const ChestXrayFindingsForm = () => {
                 "4.7 Any cavitating lesion or 'fluffy' or 'soft' lesions felt likely to represent active TB",
               ]}
               heading="Findings sometimes seen in active TB (or other conditions)"
-              headingLevel={3}
-              headingSize="s"
+              headingLevel={2}
+              headingSize="m"
+              hint="Select all that apply"
               required={false}
               sortAnswersAlphabetically={false}
               errorMessage={errors?.xrayActiveTbFindings?.message ?? ""}
@@ -208,7 +168,22 @@ const ChestXrayFindingsForm = () => {
           </div>
         </div>
 
-        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Save and continue" />
+        <div ref={xrayResultDetail}>
+          <TextArea
+            id="xray-result-detail"
+            hint="Add details if X-ray results are abnormal"
+            headingLevel={2}
+            headingSize="m"
+            heading="Give further details (optional)"
+            required={false}
+            errorMessage={errors?.xrayResultDetail?.message ?? ""}
+            formValue="xrayResultDetail"
+            rows={4}
+            defaultValue={radiologicalOutcomeData.xrayResultDetail}
+          />
+        </div>
+
+        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

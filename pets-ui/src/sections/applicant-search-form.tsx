@@ -28,6 +28,11 @@ import {
   setRadiologicalOutcomeFromApiResponse,
 } from "@/redux/radiologicalOutcomeSlice";
 import {
+  clearSputumDecision,
+  setSputumDecisionRequired,
+  setSputumDecisionStatus,
+} from "@/redux/sputumDecisionSlice";
+import {
   clearSputumDetails,
   setSputumDetailsFromApiResponse,
   setSputumStatus,
@@ -60,6 +65,7 @@ const ApplicantSearchForm = () => {
     dispatch(clearChestXrayDetails());
     dispatch(clearRadiologicalOutcomeDetails());
     dispatch(clearSputumDetails());
+    dispatch(clearSputumDecision());
     dispatch(clearTbCertificateDetails());
     dispatch(setApplicantPhotoFileName(""));
     setApplicantPhotoUrl(null);
@@ -127,13 +133,17 @@ const ApplicantSearchForm = () => {
       }
       if (applicationRes.data.radiologicalOutcome) {
         dispatch(setRadiologicalOutcomeFromApiResponse(applicationRes.data.radiologicalOutcome));
-        if (applicationRes.data.radiologicalOutcome.isSputumRequired === YesOrNo.NO) {
+      }
+      if (applicationRes.data.sputumRequirement) {
+        dispatch(setSputumDecisionRequired(applicationRes.data.sputumRequirement.isSputumRequired));
+        dispatch(setSputumDecisionStatus(ApplicationStatus.COMPLETE));
+        if (applicationRes.data.sputumRequirement.isSputumRequired === YesOrNo.NO) {
           dispatch(setSputumStatus(ApplicationStatus.NOT_REQUIRED));
         }
       }
       if (
         applicationRes.data.sputumDetails &&
-        applicationRes.data.radiologicalOutcome?.isSputumRequired !== YesOrNo.NO
+        applicationRes.data.sputumRequirement?.isSputumRequired !== YesOrNo.NO
       ) {
         dispatch(setSputumDetailsFromApiResponse(applicationRes.data.sputumDetails));
       }

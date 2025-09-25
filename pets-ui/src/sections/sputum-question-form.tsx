@@ -7,18 +7,21 @@ import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { setSputumCollectionTaken } from "@/redux/radiologicalOutcomeSlice";
-import { selectRadiologicalOutcome } from "@/redux/store";
-import { ReduxRadiologicalOutcomeDetailsType } from "@/types";
-import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { setSputumDecisionRequired, setSputumDecisionStatus } from "@/redux/sputumDecisionSlice";
+import { selectSputumDecision } from "@/redux/store";
+import { ApplicationStatus, ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
+
+interface SputumDecisionFormData {
+  isSputumRequired: YesOrNo;
+}
 
 const SputumQuestionForm = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const navigate = useNavigate();
-  const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
+  const sputumDecisionData = useAppSelector(selectSputumDecision);
 
-  const methods = useForm<ReduxRadiologicalOutcomeDetailsType>({
+  const methods = useForm<SputumDecisionFormData>({
     reValidateMode: "onSubmit",
   });
   const {
@@ -26,9 +29,11 @@ const SputumQuestionForm = () => {
     formState: { errors },
   } = methods;
 
-  const onSubmit: SubmitHandler<ReduxRadiologicalOutcomeDetailsType> = (data) => {
-    dispatch(setSputumCollectionTaken(data.isSputumRequired));
-    navigate("/chest-xray-summary");
+  const onSubmit: SubmitHandler<SputumDecisionFormData> = (data) => {
+    dispatch(setSputumDecisionRequired(data.isSputumRequired));
+    dispatch(setSputumDecisionStatus(ApplicationStatus.IN_PROGRESS));
+
+    navigate("/sputum-decision-summary");
   };
 
   const errorsToShow = Object.keys(errors);
@@ -55,7 +60,7 @@ const SputumQuestionForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.isSputumRequired?.message ?? ""}
             formValue="isSputumRequired"
-            defaultValue={radiologicalOutcomeData.isSputumRequired}
+            defaultValue={sputumDecisionData.isSputumRequired}
             required="Select yes if sputum collection is required"
             divStyle={{ marginTop: 40 }}
           />

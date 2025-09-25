@@ -76,6 +76,13 @@ const formRegex = {
 };
 
 const dateValidationMessages: Record<string, Record<string, string>> = {
+  completionDate: {
+    emptyFieldError: "The date the medical screening took place must include a day, month and year",
+    invalidCharError:
+      "The date the medical screening took place day, month and year must contain only numbers",
+    invalidDateError: "The date the medical screening took place must be a real date",
+    dateMustBeInPastError: "The date the medical screening took place must be today or in the past",
+  },
   passportIssueDate: {
     emptyFieldError: "Passport issue date must include a day, month and year",
     invalidCharError: "Passport issue day, month and year must contain only numbers",
@@ -123,6 +130,7 @@ const longNumericStrings = ["01", "02", "03", "04", "05", "06", "07", "08", "09"
 const shortNumericStrings = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
 const dateEntryNames: Record<string, string> = {
+  completionDate: "The date the medical screening took place",
   dateOfBirth: "Date of birth",
   passportIssueDate: "Passport issue date",
   passportExpiryDate: "Passport expiry date",
@@ -131,6 +139,7 @@ const dateEntryNames: Record<string, string> = {
 };
 
 const dateEntryMustBeInThePast: string[] = [
+  "completionDate",
   "dateOfBirth",
   "passportIssueDate",
   "tbCertificateDate",

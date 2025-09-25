@@ -8,13 +8,18 @@ import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
 import { setMedicalScreeningStatus } from "@/redux/medicalScreeningSlice";
-import { selectApplication, selectMedicalScreening } from "@/redux/store";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import {
+  selectApplication,
+  selectMedicalScreening,
+  selectRadiologicalOutcome,
+} from "@/redux/store";
+import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
 import { attributeToComponentId } from "@/utils/records";
 
 const MedicalScreeningReview = () => {
   const applicationData = useAppSelector(selectApplication);
   const medicalData = useAppSelector(selectMedicalScreening);
+  const radiologicalData = useAppSelector(selectRadiologicalOutcome);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -140,6 +145,24 @@ const MedicalScreeningReview = () => {
       hiddenLabel: "physical examination notes",
       emptyValueText: "Enter physical examination notes (optional)",
     },
+    {
+      key: "Is an X-ray required?",
+      value: radiologicalData.chestXrayTaken,
+      link: `/xray-question#${attributeToComponentId.chestXrayTaken}`,
+      hiddenLabel: "whether X-ray is required",
+      emptyValueText: "Enter whether X-ray is required (optional)",
+    },
+    ...(radiologicalData.chestXrayTaken === YesOrNo.NO && radiologicalData.reasonXrayWasNotTaken
+      ? [
+          {
+            key: "Reason X-ray is not required",
+            value: radiologicalData.reasonXrayWasNotTaken,
+            link: `/xray-not-required-reason#${attributeToComponentId.reasonXrayWasNotTaken}`,
+            hiddenLabel: "reason X-ray is not required",
+            emptyValueText: "Enter reason X-ray is not required (optional)",
+          },
+        ]
+      : []),
   ];
 
   return (

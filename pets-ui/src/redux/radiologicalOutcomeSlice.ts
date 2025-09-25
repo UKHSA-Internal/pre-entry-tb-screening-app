@@ -9,12 +9,6 @@ import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "@/utils/en
 const initialState: ReduxRadiologicalOutcomeDetailsType = {
   status: ApplicationStatus.NOT_YET_STARTED,
   chestXrayTaken: YesOrNo.NULL,
-  posteroAnteriorXrayFileName: "",
-  posteroAnteriorXrayFile: "",
-  apicalLordoticXrayFileName: "",
-  apicalLordoticXrayFile: "",
-  lateralDecubitusXrayFileName: "",
-  lateralDecubitusXrayFile: "",
   reasonXrayWasNotTaken: "",
   xrayWasNotTakenFurtherDetails: "",
   xrayResult: "",
@@ -22,7 +16,6 @@ const initialState: ReduxRadiologicalOutcomeDetailsType = {
   xrayMinorFindings: [],
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
-  isSputumRequired: YesOrNo.NULL,
   completionDate: {
     year: "",
     month: "",
@@ -39,24 +32,6 @@ export const radiologicalOutcomeSlice = createSlice({
     },
     setChestXrayTaken: (state, action: PayloadAction<YesOrNo>) => {
       state.chestXrayTaken = action.payload;
-    },
-    setPosteroAnteriorXrayFileName: (state, action: PayloadAction<string>) => {
-      state.posteroAnteriorXrayFileName = action.payload;
-    },
-    setApicalLordoticXrayFileName: (state, action: PayloadAction<string>) => {
-      state.apicalLordoticXrayFileName = action.payload;
-    },
-    setLateralDecubitusXrayFileName: (state, action: PayloadAction<string>) => {
-      state.lateralDecubitusXrayFileName = action.payload;
-    },
-    setPosteroAnteriorXrayFile: (state, action: PayloadAction<string>) => {
-      state.posteroAnteriorXrayFile = action.payload;
-    },
-    setApicalLordoticXrayFile: (state, action: PayloadAction<string | undefined>) => {
-      state.apicalLordoticXrayFile = action.payload;
-    },
-    setLateralDecubitusXrayFile: (state, action: PayloadAction<string | undefined>) => {
-      state.lateralDecubitusXrayFile = action.payload;
     },
     setReasonXrayWasNotTaken: (state, action: PayloadAction<string>) => {
       state.reasonXrayWasNotTaken = action.payload;
@@ -79,20 +54,11 @@ export const radiologicalOutcomeSlice = createSlice({
     setXrayWasNotTakenFurtherDetails: (state, action: PayloadAction<string>) => {
       state.xrayWasNotTakenFurtherDetails = action.payload;
     },
-    setSputumCollectionTaken: (state, action: PayloadAction<YesOrNo>) => {
-      state.isSputumRequired = action.payload;
-    },
     setRadiologicalOutcomeDetails: (
       state,
       action: PayloadAction<ReduxRadiologicalOutcomeDetailsType>,
     ) => {
       state.chestXrayTaken = action.payload.chestXrayTaken;
-      state.posteroAnteriorXrayFileName = action.payload.posteroAnteriorXrayFileName;
-      state.apicalLordoticXrayFileName = action.payload.apicalLordoticXrayFileName;
-      state.lateralDecubitusXrayFileName = action.payload.lateralDecubitusXrayFileName;
-      state.posteroAnteriorXrayFile = action.payload.posteroAnteriorXrayFile;
-      state.apicalLordoticXrayFile = action.payload.apicalLordoticXrayFile;
-      state.lateralDecubitusXrayFile = action.payload.lateralDecubitusXrayFile;
       state.reasonXrayWasNotTaken = action.payload.reasonXrayWasNotTaken;
       state.xrayWasNotTakenFurtherDetails = action.payload.xrayWasNotTakenFurtherDetails;
       state.xrayResult = action.payload.xrayResult;
@@ -106,15 +72,8 @@ export const radiologicalOutcomeSlice = createSlice({
       state.xrayActiveTbFindings = action.payload.xrayActiveTbFindings
         ? [...action.payload.xrayActiveTbFindings]
         : [];
-      state.isSputumRequired = action.payload.isSputumRequired;
     },
     clearChestXrayTakenDetails: (state) => {
-      state.posteroAnteriorXrayFileName = "";
-      state.apicalLordoticXrayFileName = "";
-      state.lateralDecubitusXrayFileName = "";
-      state.posteroAnteriorXrayFile = "";
-      state.apicalLordoticXrayFile = "";
-      state.lateralDecubitusXrayFile = "";
       state.xrayResult = "";
       state.xrayResultDetail = "";
       state.xrayMinorFindings = [];
@@ -125,18 +84,9 @@ export const radiologicalOutcomeSlice = createSlice({
       state.reasonXrayWasNotTaken = "";
       state.xrayWasNotTakenFurtherDetails = "";
     },
-    clearIsSputumRequired: (state) => {
-      state.isSputumRequired = YesOrNo.NULL;
-    },
     clearRadiologicalOutcomeDetails: (state) => {
       state.status = ApplicationStatus.NOT_YET_STARTED;
       state.chestXrayTaken = YesOrNo.NULL;
-      state.posteroAnteriorXrayFileName = "";
-      state.apicalLordoticXrayFileName = "";
-      state.lateralDecubitusXrayFileName = "";
-      state.posteroAnteriorXrayFile = "";
-      state.apicalLordoticXrayFile = "";
-      state.lateralDecubitusXrayFile = "";
       state.reasonXrayWasNotTaken = "";
       state.xrayWasNotTakenFurtherDetails = "";
       state.xrayResult = "";
@@ -144,7 +94,6 @@ export const radiologicalOutcomeSlice = createSlice({
       state.xrayMinorFindings = [];
       state.xrayAssociatedMinorFindings = [];
       state.xrayActiveTbFindings = [];
-      state.isSputumRequired = YesOrNo.NULL;
       state.completionDate = {
         year: "",
         month: "",
@@ -160,12 +109,6 @@ export const radiologicalOutcomeSlice = createSlice({
           ? ApplicationStatus.COMPLETE
           : ApplicationStatus.IN_PROGRESS;
       state.chestXrayTaken = action.payload.chestXrayTaken;
-      state.posteroAnteriorXrayFileName = action.payload.posteroAnteriorXrayFileName;
-      state.posteroAnteriorXrayFile = action.payload.posteroAnteriorXray;
-      state.apicalLordoticXrayFileName = action.payload.apicalLordoticXrayFileName;
-      state.apicalLordoticXrayFile = action.payload.apicalLordoticXray;
-      state.lateralDecubitusXrayFileName = action.payload.lateralDecubitusXrayFileName;
-      state.lateralDecubitusXrayFile = action.payload.lateralDecubitusXray;
       state.xrayResult = action.payload.xrayResult;
       state.xrayResultDetail = action.payload.xrayResultDetail;
       state.xrayMinorFindings = action.payload.xrayMinorFindings
@@ -177,7 +120,6 @@ export const radiologicalOutcomeSlice = createSlice({
       state.xrayActiveTbFindings = action.payload.xrayActiveTbFindings
         ? [...action.payload.xrayActiveTbFindings]
         : [];
-      state.isSputumRequired = action.payload.isSputumRequired;
       state.completionDate = action.payload.dateCreated
         ? {
             year: action.payload.dateCreated.split("-")[0],
@@ -198,13 +140,6 @@ export const radiologicalOutcomeSlice = createSlice({
 export const {
   setRadiologicalOutcomeStatus,
   setChestXrayTaken,
-  setSputumCollectionTaken,
-  setPosteroAnteriorXrayFileName,
-  setApicalLordoticXrayFileName,
-  setLateralDecubitusXrayFileName,
-  setPosteroAnteriorXrayFile,
-  setApicalLordoticXrayFile,
-  setLateralDecubitusXrayFile,
   setReasonXrayWasNotTaken,
   setXrayWasNotTakenFurtherDetails,
   setXrayResult,
@@ -215,7 +150,6 @@ export const {
   setRadiologicalOutcomeDetails,
   clearChestXrayTakenDetails,
   clearChestXrayNotTakenDetails,
-  clearIsSputumRequired,
   clearRadiologicalOutcomeDetails,
   setRadiologicalOutcomeFromApiResponse,
 } = radiologicalOutcomeSlice.actions;

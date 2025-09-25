@@ -12,6 +12,7 @@ export interface RadioProps {
   hint?: string;
   isInline: RadioIsInline;
   answerOptions: string[];
+  exclusiveAnswerOptions?: string[];
   sortAnswersAlphabetically: boolean;
   errorMessage: string;
   formValue: string;
@@ -28,8 +29,11 @@ export default function Radio(props: Readonly<RadioProps>) {
   const { register } = useFormContext();
 
   const answerOptions = [...props.answerOptions];
+  const exclusiveOptions = [...(props.exclusiveAnswerOptions ?? [])];
+
   if (props.sortAnswersAlphabetically) {
     answerOptions.sort((a, b) => a.localeCompare(b));
+    exclusiveOptions.sort((a, b) => a.localeCompare(b));
   }
 
   return (
@@ -64,6 +68,30 @@ export default function Radio(props: Readonly<RadioProps>) {
               <label className="govuk-label govuk-radios__label" htmlFor={optionId}>
                 {option}
               </label>
+            </div>
+          );
+        })}
+        {exclusiveOptions.map((option, index) => {
+          const optionId = `${props.id}-exclusive-${index}`;
+          return (
+            <div key={optionId}>
+              <div className="govuk-radios__divider">or</div>
+              <div className="govuk-radios__item">
+                <input
+                  className="govuk-radios__input"
+                  id={optionId}
+                  type="radio"
+                  data-testid={props.id}
+                  value={option}
+                  {...register(props.formValue, {
+                    required: props.required,
+                  })}
+                  defaultChecked={props.defaultValue === option}
+                />
+                <label className="govuk-label govuk-radios__label" htmlFor={optionId}>
+                  {option}
+                </label>
+              </div>
             </div>
           );
         })}

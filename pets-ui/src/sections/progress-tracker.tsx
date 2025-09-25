@@ -10,6 +10,7 @@ import {
   selectMedicalScreening,
   selectRadiologicalOutcome,
   selectSputum,
+  selectSputumDecision,
   selectTbCertificate,
   selectTravel,
 } from "@/redux/store";
@@ -93,6 +94,7 @@ const ProgressTracker = () => {
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const chestXrayData = useAppSelector(selectChestXray);
   const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
+  const sputumDecisionData = useAppSelector(selectSputumDecision);
   const sputumData = useAppSelector(selectSputum);
   const tbCertificateData = useAppSelector(selectTbCertificate);
   const applicantPhotoContext = useApplicantPhoto();
@@ -108,6 +110,19 @@ const ProgressTracker = () => {
     sputumLink = "/check-sputum-sample-information";
   } else if (allSputumSamplesSubmitted) {
     sputumLink = "/enter-sputum-sample-results";
+  }
+
+  let sputumCollectionStatus = sputumData.status;
+  if (sputumDecisionData.isSputumRequired === YesOrNo.NO) {
+    sputumCollectionStatus = ApplicationStatus.NOT_REQUIRED;
+  }
+
+  let chestXrayStatus = chestXrayData.status;
+  let radiologicalOutcomeStatus = radiologicalOutcomeData.status;
+
+  if (radiologicalOutcomeData.chestXrayTaken === YesOrNo.NO) {
+    chestXrayStatus = ApplicationStatus.NOT_REQUIRED;
+    radiologicalOutcomeStatus = ApplicationStatus.NOT_REQUIRED;
   }
 
   let tbCertificateStatusOverride = undefined;
@@ -176,7 +191,7 @@ const ProgressTracker = () => {
         />
         <Task
           description="Upload chest X-ray images"
-          status={chestXrayData.status}
+          status={chestXrayStatus}
           linkWhenIncomplete="/upload-chest-xray"
           linkWhenComplete="/chest-xray-summary"
           prerequisiteTaskStatuses={[
@@ -187,27 +202,41 @@ const ProgressTracker = () => {
         />
         <Task
           description="Radiological outcome"
-          status={radiologicalOutcomeData.status}
-          linkWhenIncomplete="/chest-xray-question"
-          linkWhenComplete="/chest-xray-summary"
+          status={radiologicalOutcomeStatus}
+          linkWhenIncomplete="/radiological-outcome-chest-xray-results"
+          linkWhenComplete="/radiological-outcome-summary"
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,
             medicalScreeningData.status,
-            chestXrayData.status,
+            chestXrayStatus,
+          ]}
+        />
+        <Task
+          description="Make a sputum decision"
+          status={sputumDecisionData.status}
+          linkWhenIncomplete="/sputum-question"
+          linkWhenComplete="/sputum-decision-summary"
+          prerequisiteTaskStatuses={[
+            applicantData.status,
+            travelData.status,
+            medicalScreeningData.status,
+            chestXrayStatus,
+            radiologicalOutcomeStatus,
           ]}
         />
         <Task
           description="Sputum collection and results"
-          status={sputumData.status}
+          status={sputumCollectionStatus}
           linkWhenIncomplete={sputumLink}
           linkWhenComplete={sputumLink}
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,
             medicalScreeningData.status,
-            chestXrayData.status,
-            radiologicalOutcomeData.status,
+            chestXrayStatus,
+            radiologicalOutcomeStatus,
+            sputumDecisionData.status,
           ]}
         />
       </ul>
@@ -223,9 +252,10 @@ const ProgressTracker = () => {
             applicantData.status,
             travelData.status,
             medicalScreeningData.status,
-            chestXrayData.status,
-            radiologicalOutcomeData.status,
-            sputumData.status,
+            chestXrayStatus,
+            radiologicalOutcomeStatus,
+            sputumDecisionData.status,
+            sputumCollectionStatus,
           ]}
           statusOverride={tbCertificateStatusOverride}
         />

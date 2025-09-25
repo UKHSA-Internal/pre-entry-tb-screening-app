@@ -133,12 +133,6 @@ const emptyChestXraySlice = {
 const emptyRadiologicalOutcomeSlice = {
   status: ApplicationStatus.NOT_YET_STARTED,
   chestXrayTaken: YesOrNo.NULL,
-  posteroAnteriorXrayFileName: "",
-  posteroAnteriorXrayFile: "",
-  apicalLordoticXrayFileName: "",
-  apicalLordoticXrayFile: "",
-  lateralDecubitusXrayFileName: "",
-  lateralDecubitusXrayFile: "",
   reasonXrayWasNotTaken: "",
   xrayWasNotTakenFurtherDetails: "",
   xrayResult: "",
@@ -146,7 +140,6 @@ const emptyRadiologicalOutcomeSlice = {
   xrayMinorFindings: [],
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
-  isSputumRequired: YesOrNo.NULL,
   completionDate: {
     year: "",
     month: "",
@@ -375,12 +368,6 @@ describe("ApplicantSearchForm", () => {
     expect(store.getState().radiologicalOutcome).toEqual({
       status: ApplicationStatus.COMPLETE,
       chestXrayTaken: YesOrNo.YES,
-      posteroAnteriorXrayFileName: "pa-file-name",
-      posteroAnteriorXrayFile: "pa-bucket",
-      apicalLordoticXrayFileName: "al-file-name",
-      apicalLordoticXrayFile: "al-bucket",
-      lateralDecubitusXrayFileName: "ld-file-name",
-      lateralDecubitusXrayFile: "ld-bucket",
       reasonXrayWasNotTaken: "",
       xrayWasNotTakenFurtherDetails: "",
       xrayResult: "normal",
@@ -388,7 +375,6 @@ describe("ApplicantSearchForm", () => {
       xrayMinorFindings: [],
       xrayAssociatedMinorFindings: [],
       xrayActiveTbFindings: [],
-      isSputumRequired: YesOrNo.YES,
       completionDate: {
         year: "2025",
         month: "01",
@@ -756,12 +742,6 @@ describe("ApplicantSearchForm", () => {
     expect(store.getState().radiologicalOutcome).toEqual({
       status: ApplicationStatus.COMPLETE,
       chestXrayTaken: YesOrNo.YES,
-      posteroAnteriorXrayFileName: "pa-file-name",
-      posteroAnteriorXrayFile: "pa-bucket",
-      apicalLordoticXrayFileName: "al-file-name",
-      apicalLordoticXrayFile: "al-bucket",
-      lateralDecubitusXrayFileName: "ld-file-name",
-      lateralDecubitusXrayFile: "ld-bucket",
       reasonXrayWasNotTaken: "",
       xrayWasNotTakenFurtherDetails: "",
       xrayResult: "normal",
@@ -769,7 +749,6 @@ describe("ApplicantSearchForm", () => {
       xrayMinorFindings: [],
       xrayAssociatedMinorFindings: [],
       xrayActiveTbFindings: [],
-      isSputumRequired: YesOrNo.YES,
       completionDate: {
         year: "2025",
         month: "01",
