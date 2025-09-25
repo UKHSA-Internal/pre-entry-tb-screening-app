@@ -367,7 +367,7 @@ describe("ApplicantSearchForm", () => {
     });
     expect(store.getState().radiologicalOutcome).toEqual({
       status: ApplicationStatus.COMPLETE,
-      chestXrayTaken: YesOrNo.YES,
+      chestXrayTaken: YesOrNo.NULL,
       reasonXrayWasNotTaken: "",
       xrayWasNotTakenFurtherDetails: "",
       xrayResult: "normal",
@@ -741,7 +741,7 @@ describe("ApplicantSearchForm", () => {
     });
     expect(store.getState().radiologicalOutcome).toEqual({
       status: ApplicationStatus.COMPLETE,
-      chestXrayTaken: YesOrNo.YES,
+      chestXrayTaken: YesOrNo.NULL,
       reasonXrayWasNotTaken: "",
       xrayWasNotTakenFurtherDetails: "",
       xrayResult: "normal",
