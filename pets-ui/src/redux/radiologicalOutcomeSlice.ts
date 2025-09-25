@@ -108,7 +108,6 @@ export const radiologicalOutcomeSlice = createSlice({
         action.payload.status == BackendApplicationStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
           : ApplicationStatus.IN_PROGRESS;
-      state.chestXrayTaken = action.payload.chestXrayTaken;
       state.xrayResult = action.payload.xrayResult;
       state.xrayResultDetail = action.payload.xrayResultDetail;
       state.xrayMinorFindings = action.payload.xrayMinorFindings
