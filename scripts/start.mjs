@@ -3,9 +3,6 @@ import concurrently from "concurrently";
 import { execSync } from "child_process";
 import { resolve } from "path";
 
-// Add here whatever should be exported as env vars from .env.local.secrets file
-const REQUIRED_SECRETS = ["VITE_MSAL_CLIENT_ID", "VITE_MSAL_TENANT_ID"];
-
 const isPowerShell =
   !!process.env.PSModulePath || process.env.ComSpec?.toLowerCase().includes("powershell.exe");
 let shell = "/bin/bash";
