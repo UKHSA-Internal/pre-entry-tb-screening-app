@@ -11,6 +11,7 @@ import { useAppSelector } from "@/redux/hooks";
 import {
   selectApplicant,
   selectApplication,
+  selectChestXray,
   selectClinic,
   selectMedicalScreening,
   selectRadiologicalOutcome,
@@ -37,6 +38,7 @@ const TbSummary = () => {
   const applicantData = useAppSelector(selectApplicant);
   const travelData = useAppSelector(selectTravel);
   const clinic = useAppSelector(selectClinic);
+  const chestXrayData = useAppSelector(selectChestXray);
   const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
   const sputumRequirementData = useAppSelector(selectSputumDecision);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
@@ -54,7 +56,7 @@ const TbSummary = () => {
       if (tbCertificateData.isIssued == YesOrNo.YES) {
         const certificateIssueDateStr = `${tbCertificateData.certificateDate.year}-${standardiseDayOrMonth(tbCertificateData.certificateDate.month)}-${standardiseDayOrMonth(tbCertificateData.certificateDate.day)}`;
         const issueDate = calculateCertificateIssueDate(
-          radiologicalOutcomeData.completionDate,
+          chestXrayData.dateXrayTaken,
           radiologicalOutcomeData.chestXrayTaken,
           medicalScreeningData.completionDate,
         );

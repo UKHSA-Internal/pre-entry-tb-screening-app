@@ -73,6 +73,7 @@ export const medicalScreeningSlice = createSlice({
     },
     setMedicalScreeningDetails: (state, action: PayloadAction<ReduxMedicalScreeningType>) => {
       state.age = action.payload.age;
+      state.completionDate = action.payload.completionDate;
       state.tbSymptoms = action.payload.tbSymptoms;
       state.tbSymptomsList = action.payload.tbSymptomsList
         ? [...action.payload.tbSymptomsList]

@@ -11,7 +11,11 @@ import { setChestXrayStatus } from "@/redux/chestXraySlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectChestXray } from "@/redux/store";
 import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
-import { spreadArrayIfNotEmpty, standardiseDayOrMonth } from "@/utils/helpers";
+import {
+  formatDateForDisplay,
+  spreadArrayIfNotEmpty,
+  standardiseDayOrMonth,
+} from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
 const ChestXraySummary = () => {
@@ -49,7 +53,7 @@ const ChestXraySummary = () => {
   const summaryData = [
     {
       key: "Date of X-ray",
-      value: `${chestXrayData.dateXrayTaken.day}/${chestXrayData.dateXrayTaken.month}/${chestXrayData.dateXrayTaken.year}`,
+      value: formatDateForDisplay(chestXrayData.dateXrayTaken),
       link: `/upload-chest-xray#${attributeToComponentId.dateXrayTaken}`,
       hiddenLabel: "date of X-ray",
     },

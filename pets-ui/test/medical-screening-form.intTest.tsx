@@ -92,9 +92,9 @@ describe("MedicalScreeningForm", () => {
       closeContactWithTb: "No",
       closeContactWithTbDetail: "",
       completionDate: {
-        day: "",
-        month: "",
-        year: "",
+        day: "15",
+        month: "6",
+        year: "2025",
       },
       menstrualPeriods: "No",
       otherSymptomsDetail: "",

@@ -61,18 +61,21 @@ const RadiologicalOutcomeSummary = () => {
     },
     {
       key: "X-ray findings",
-      value: spreadArrayIfNotEmpty(
-        radiologicalOutcomeData.xrayMinorFindings,
-        radiologicalOutcomeData.xrayAssociatedMinorFindings,
-        radiologicalOutcomeData.xrayActiveTbFindings,
-      ),
+      value: (() => {
+        const findings = spreadArrayIfNotEmpty(
+          radiologicalOutcomeData.xrayMinorFindings,
+          radiologicalOutcomeData.xrayAssociatedMinorFindings,
+          radiologicalOutcomeData.xrayActiveTbFindings,
+        );
+        return findings.length > 0 ? findings : "Not provided";
+      })(),
       link: `/radiological-outcome-findings#${attributeToComponentId.xrayMinorFindings}`,
       hiddenLabel: "X-ray findings",
       emptyValueText: "Enter X-ray findings (optional)",
     },
     {
       key: "Give further details (optional)",
-      value: radiologicalOutcomeData.xrayResultDetail,
+      value: radiologicalOutcomeData.xrayResultDetail || "Not provided",
       link: `/radiological-outcome-findings#${attributeToComponentId.xrayResultDetail}`,
       hiddenLabel: "further details",
       emptyValueText: "Give further details (optional)",

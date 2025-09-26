@@ -149,14 +149,14 @@ const calculateCertificateExpiryDate = (
 };
 
 const calculateCertificateIssueDate = (
-  chestXrayCompletionDate: DateType | undefined,
+  chestXrayUploadDate: DateType | undefined,
   chestXrayTaken: string | undefined,
   medicalScreeningCompletionDate: DateType | undefined,
 ): DateType => {
-  if (chestXrayCompletionDate && chestXrayTaken === "Yes") {
-    const { year, month, day } = chestXrayCompletionDate;
+  if (chestXrayTaken === "Yes" && chestXrayUploadDate) {
+    const { year, month, day } = chestXrayUploadDate;
     if (year && month && day) {
-      return chestXrayCompletionDate;
+      return chestXrayUploadDate;
     }
   }
 
