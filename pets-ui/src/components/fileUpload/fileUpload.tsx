@@ -27,6 +27,7 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
     props.existingFileName && props.existingFileName.length > 0,
   );
   const inputClass = showExistingFileName ? "govuk-file-upload hide-text" : "govuk-file-upload";
+  const [lastFile, setLastFile] = useState<File | undefined>(undefined);
 
   const displayError = (errorText: string | null) => {
     if (errorText) {
@@ -39,12 +40,12 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-
+    const files = e.target.files ? Array.from(e.target.files) : [];
     if (files && files.length > 0) {
       setShowExistingFileName(false);
       props.setFileState(files[0]);
       props.setFileName(files[0].name);
+      setLastFile(files[0]);
 
       // clear existing error message
       clearErrors(props.formValue);
@@ -83,8 +84,16 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
                 {...register(props.formValue, {
                   required: showExistingFileName ? false : props.required,
                   validate: async (files: File[]) => {
-                    if (files.length) {
-                      const validationResult = await validateFiles(files, props.type);
+                    let filesToValidate: File[] = [];
+                    if (files.length > 0) {
+                      filesToValidate = files;
+                    } else if (lastFile) {
+                      filesToValidate = [lastFile];
+                    }
+
+                    if (filesToValidate.length) {
+                      const validationResult = await validateFiles(filesToValidate, props.type);
+
                       if (validationResult !== true) {
                         // Show only the first error
                         const message = validationResult[0];
@@ -96,7 +105,7 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
                 })}
                 onChange={(e) => handleFileChange(e)}
               />
-              {showExistingFileName && props.existingFileName}
+              {showExistingFileName ? props.existingFileName : lastFile?.name}
             </div>
           </div>
         </fieldset>
