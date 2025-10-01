@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { postSputumRequirement } from "@/api/api";
 import Button from "@/components/button/button";
+import Heading from "@/components/heading/heading";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
@@ -25,7 +26,7 @@ const SputumDecisionSummary = () => {
     setIsLoading(true);
     try {
       await postSputumRequirement(applicationData.applicationId, {
-        isSputumRequired: sputumDecisionData.isSputumRequired,
+        sputumRequired: sputumDecisionData.isSputumRequired,
       });
 
       dispatch(setSputumDecisionStatus(ApplicationStatus.COMPLETE));
@@ -64,6 +65,12 @@ const SputumDecisionSummary = () => {
       {(sputumDecisionData.status == ApplicationStatus.NOT_YET_STARTED ||
         sputumDecisionData.status == ApplicationStatus.IN_PROGRESS) && (
         <div>
+          <Heading title="Now send the sputum decision" level={2} size="m" />
+          <p className="govuk-body">
+            You will not be able to change the collection details and results after you submit this
+            information. However, you will be able to return and complete any information that you
+            have not provided.
+          </p>
           <Button
             id="confirm-sputum-decision"
             type={ButtonType.DEFAULT}

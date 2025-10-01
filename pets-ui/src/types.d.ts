@@ -133,10 +133,13 @@ type ReduxMedicalScreeningType = {
   pregnant: string;
   menstrualPeriods: string;
   physicalExamNotes: string;
+  chestXrayTaken: YesOrNo;
+  reasonXrayNotRequired: string;
   completionDate: DateType;
 };
 
 type PostedMedicalScreeningType = {
+  dateOfMedicalScreening: string;
   age: number;
   contactWithPersonWithTb: string;
   contactWithTbDetails: string;
@@ -150,9 +153,15 @@ type PostedMedicalScreeningType = {
   symptoms: string[];
   symptomsOfTb: string;
   symptomsOther: string;
+  isXrayRequired: YesOrNo;
+  reasonXrayNotRequired?: string;
 };
 
-type ReceivedMedicalScreeningType = PostedMedicalScreeningType & ReceivedApplicationAttributesType;
+type ReceivedMedicalScreeningType = PostedMedicalScreeningType &
+  ReceivedApplicationAttributesType & {
+    isXrayRequired?: YesOrNo;
+    reasonXrayNotRequired?: string;
+  };
 
 // Chest X-ray types
 type ReduxChestXrayDetailsType = {
@@ -182,7 +191,6 @@ type ReceivedChestXrayDetailsType = PostedChestXrayDetailsType & ReceivedApplica
 // Radiological outcome types
 type ReduxRadiologicalOutcomeDetailsType = {
   status: ApplicationStatus;
-  chestXrayTaken: YesOrNo;
   reasonXrayWasNotTaken: string;
   xrayWasNotTakenFurtherDetails: string;
   xrayResult: string;
@@ -228,7 +236,7 @@ type ReduxSputumRequirementType = {
 };
 
 type PostedSputumRequirementType = {
-  isSputumRequired: YesOrNo;
+  sputumRequired: YesOrNo;
 };
 
 type ReceivedSputumRequirementType = PostedSputumRequirementType &

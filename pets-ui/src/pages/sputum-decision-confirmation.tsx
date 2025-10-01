@@ -7,7 +7,7 @@ export default function SputumDecisionConfirmation() {
       <Confirmation
         confirmationText={"Sputum decision confirmed"}
         furtherInfo={[
-          "We have recorded your sputum collection decision.",
+          "We have sent the sputum decision to UKHSA.",
           "You can now view a summary for this visa applicant.",
         ]}
         buttonText={"Continue"}

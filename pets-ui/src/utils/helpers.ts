@@ -125,9 +125,9 @@ const formatDateForDisplay = (date: DateType): string => {
   }
 
   const dateToDisplay = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-  const paddedDay = dateToDisplay.getDate().toString().padStart(2, "0");
+  const dayNumber = dateToDisplay.getDate().toString();
   const monthName = dateToDisplay.toLocaleDateString("en-GB", { month: "long" });
-  return `${paddedDay} ${monthName} ${dateToDisplay.getFullYear()}`;
+  return `${dayNumber} ${monthName} ${dateToDisplay.getFullYear()}`;
 };
 
 const calculateCertificateExpiryDate = (

@@ -51,7 +51,7 @@ const SputumQuestionForm = () => {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errors?.isSputumRequired && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
-        <Heading level={1} size="l" title="Is a sputum collection required?" />{" "}
+        <Heading level={1} size="l" title="Is sputum collection required?" />{" "}
         <div ref={isSputumRequiredRef}>
           <Radio
             id="sputum-required"

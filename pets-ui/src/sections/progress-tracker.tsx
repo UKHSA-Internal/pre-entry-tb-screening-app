@@ -120,7 +120,7 @@ const ProgressTracker = () => {
   let chestXrayStatus = chestXrayData.status;
   let radiologicalOutcomeStatus = radiologicalOutcomeData.status;
 
-  if (radiologicalOutcomeData.chestXrayTaken === YesOrNo.NO) {
+  if (medicalScreeningData.chestXrayTaken === YesOrNo.NO) {
     chestXrayStatus = ApplicationStatus.NOT_REQUIRED;
     radiologicalOutcomeStatus = ApplicationStatus.NOT_REQUIRED;
   }

@@ -39,12 +39,7 @@ const DicomUploadModule = (
 ) => {
   return (
     <div>
-      <Heading title={props.title} level={3} size="s"></Heading>
-
-      <p className="govuk-body">
-        Select a file to upload. File type must be DICOM. Images must be less than 50MB.
-      </p>
-
+      <Heading title={props.title} level={3} size="s" />
       <FileUpload
         id={props.id}
         formValue={props.formValue}
@@ -125,7 +120,6 @@ const ChestXrayForm = () => {
     navigate("/chest-xray-summary");
   };
 
-  // Required to scroll to the correct element when a change link on the summary page is clicked
   const location = useLocation();
   const dateXrayTakenRef = useRef<HTMLDivElement | null>(null);
   const paXrayRef = useRef<HTMLDivElement | null>(null);
@@ -184,6 +178,10 @@ const ChestXrayForm = () => {
             </div>
 
             <Heading level={2} size="m" title="Upload X-ray images" />
+            <p className="govuk-body">Upload a file</p>
+            <div className="govuk-hint">
+              File type must be DICOM. Images must be less than 50MB.
+            </div>
 
             <div ref={paXrayRef}>
               <DicomUploadModule

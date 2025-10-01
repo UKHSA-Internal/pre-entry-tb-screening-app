@@ -18,30 +18,43 @@ import {
 import { selectMedicalScreening } from "@/redux/store";
 import { DateType, ReduxMedicalScreeningType } from "@/types";
 import { ApplicationStatus, ButtonType, RadioIsInline } from "@/utils/enums";
-import { toArray, validateDate } from "@/utils/helpers";
+import { validateDate } from "@/utils/helpers";
 import { formRegex } from "@/utils/records";
 
 const MedicalScreeningForm = () => {
   const navigate = useNavigate();
 
-  const methods = useForm<ReduxMedicalScreeningType>({ reValidateMode: "onSubmit" });
+  const medicalData = useAppSelector(selectMedicalScreening);
+  const methods = useForm<ReduxMedicalScreeningType>({
+    reValidateMode: "onSubmit",
+    defaultValues: {
+      completionDate: medicalData.completionDate,
+      age: medicalData.age,
+      tbSymptoms: medicalData.tbSymptoms,
+      tbSymptomsList: medicalData.tbSymptomsList,
+      otherSymptomsDetail: medicalData.otherSymptomsDetail,
+      underElevenConditions: medicalData.underElevenConditions,
+      underElevenConditionsDetail: medicalData.underElevenConditionsDetail,
+      previousTb: medicalData.previousTb,
+      previousTbDetail: medicalData.previousTbDetail,
+      closeContactWithTb: medicalData.closeContactWithTb,
+      closeContactWithTbDetail: medicalData.closeContactWithTbDetail,
+      pregnant: medicalData.pregnant,
+      menstrualPeriods: medicalData.menstrualPeriods,
+      physicalExamNotes: medicalData.physicalExamNotes,
+    },
+  });
   const {
     handleSubmit,
     formState: { errors },
   } = methods;
 
-  const medicalData = useAppSelector(selectMedicalScreening);
   const dispatch = useAppDispatch();
 
   const onSubmit: SubmitHandler<ReduxMedicalScreeningType> = (medicalScreeningData) => {
-    const dataWithCorrectedLists = {
-      ...medicalScreeningData,
-      tbSymptomsList: toArray(medicalScreeningData.tbSymptomsList),
-      underElevenConditions: toArray(medicalScreeningData.underElevenConditions),
-    };
-    dispatch(setMedicalScreeningDetails(dataWithCorrectedLists));
+    dispatch(setMedicalScreeningDetails(medicalScreeningData));
     dispatch(setMedicalScreeningStatus(ApplicationStatus.IN_PROGRESS));
-    navigate("/xray-question");
+    navigate("/chest-xray-question");
   };
 
   const errorsToShow = Object.keys(errors);
@@ -171,7 +184,6 @@ const MedicalScreeningForm = () => {
             errorMessage={errors?.tbSymptomsList?.message ?? ""}
             formValue="tbSymptomsList"
             required={false}
-            defaultValue={medicalData.tbSymptomsList}
           />
         </div>
 
@@ -206,7 +218,6 @@ const MedicalScreeningForm = () => {
             errorMessage={errors?.underElevenConditions?.message ?? ""}
             formValue="underElevenConditions"
             required={false}
-            defaultValue={medicalData.underElevenConditions}
           />
         </div>
 

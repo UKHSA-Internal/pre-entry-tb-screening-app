@@ -17,14 +17,21 @@ import {
 import { selectRadiologicalOutcome } from "@/redux/store";
 import { ReduxRadiologicalOutcomeDetailsType } from "@/types";
 import { ButtonType } from "@/utils/enums";
-import { toArray } from "@/utils/helpers";
 
 const ChestXrayFindingsForm = () => {
   const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const methods = useForm<ReduxRadiologicalOutcomeDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxRadiologicalOutcomeDetailsType>({
+    reValidateMode: "onSubmit",
+    defaultValues: {
+      xrayResultDetail: radiologicalOutcomeData.xrayResultDetail,
+      xrayMinorFindings: radiologicalOutcomeData.xrayMinorFindings,
+      xrayAssociatedMinorFindings: radiologicalOutcomeData.xrayAssociatedMinorFindings,
+      xrayActiveTbFindings: radiologicalOutcomeData.xrayActiveTbFindings,
+    },
+  });
   const {
     handleSubmit,
     formState: { errors },
@@ -34,19 +41,16 @@ const ChestXrayFindingsForm = () => {
     formRadiologicalOutcomeData,
   ) => {
     dispatch(setXrayResultDetail(formRadiologicalOutcomeData.xrayResultDetail));
-    dispatch(setXrayMinorFindings(toArray(formRadiologicalOutcomeData.xrayMinorFindings)));
+    dispatch(setXrayMinorFindings(formRadiologicalOutcomeData.xrayMinorFindings));
     dispatch(
-      setXrayAssociatedMinorFindings(
-        toArray(formRadiologicalOutcomeData.xrayAssociatedMinorFindings),
-      ),
+      setXrayAssociatedMinorFindings(formRadiologicalOutcomeData.xrayAssociatedMinorFindings),
     );
-    dispatch(setXrayActiveTbFindings(toArray(formRadiologicalOutcomeData.xrayActiveTbFindings)));
+    dispatch(setXrayActiveTbFindings(formRadiologicalOutcomeData.xrayActiveTbFindings));
     navigate("/radiological-outcome-summary");
   };
 
   const errorsToShow = Object.keys(errors);
 
-  // Required to scroll to the correct element when a change link on the summary page is clicked
   const location = useLocation();
   const xrayResultDetail = useRef<HTMLDivElement | null>(null);
   const xrayMinorFindings = useRef<HTMLDivElement | null>(null);
@@ -101,11 +105,6 @@ const ChestXrayFindingsForm = () => {
               sortAnswersAlphabetically={false}
               errorMessage={errors?.xrayMinorFindings?.message ?? ""}
               formValue="xrayMinorFindings"
-              defaultValue={
-                radiologicalOutcomeData.xrayMinorFindings.length
-                  ? radiologicalOutcomeData.xrayMinorFindings
-                  : []
-              }
               divStyle={{ marginTop: 40, marginBottom: 10 }}
             />
           </div>
@@ -128,11 +127,6 @@ const ChestXrayFindingsForm = () => {
               sortAnswersAlphabetically={false}
               errorMessage={errors?.xrayAssociatedMinorFindings?.message ?? ""}
               formValue="xrayAssociatedMinorFindings"
-              defaultValue={
-                radiologicalOutcomeData.xrayAssociatedMinorFindings.length
-                  ? radiologicalOutcomeData.xrayAssociatedMinorFindings
-                  : []
-              }
               divStyle={{ marginTop: 40, marginBottom: 10 }}
             />
           </div>
@@ -158,11 +152,6 @@ const ChestXrayFindingsForm = () => {
               sortAnswersAlphabetically={false}
               errorMessage={errors?.xrayActiveTbFindings?.message ?? ""}
               formValue="xrayActiveTbFindings"
-              defaultValue={
-                radiologicalOutcomeData.xrayActiveTbFindings.length
-                  ? radiologicalOutcomeData.xrayActiveTbFindings
-                  : []
-              }
               divStyle={{ marginTop: 40, marginBottom: 10 }}
             />
           </div>

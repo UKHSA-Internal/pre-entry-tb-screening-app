@@ -14,7 +14,6 @@ import {
   selectChestXray,
   selectClinic,
   selectMedicalScreening,
-  selectRadiologicalOutcome,
   selectTbCertificate,
 } from "@/redux/store";
 import {
@@ -36,7 +35,6 @@ import { formRegex } from "@/utils/records";
 const TbCertificateDeclarationForm = () => {
   const applicationData = useAppSelector(selectApplication);
   const chestXrayData = useAppSelector(selectChestXray);
-  const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const tbCertificateData = useAppSelector(selectTbCertificate);
   const clinic = useAppSelector(selectClinic);
@@ -45,7 +43,7 @@ const TbCertificateDeclarationForm = () => {
 
   const issueDate = calculateCertificateIssueDate(
     chestXrayData.dateXrayTaken,
-    radiologicalOutcomeData.chestXrayTaken,
+    medicalScreeningData.chestXrayTaken,
     medicalScreeningData.completionDate,
   );
   const todayFormatted = formatDateForDisplay(issueDate);

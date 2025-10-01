@@ -4,11 +4,10 @@ import {
   ReceivedRadiologicalOutcomeDetailsType,
   ReduxRadiologicalOutcomeDetailsType,
 } from "@/types";
-import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
 
 const initialState: ReduxRadiologicalOutcomeDetailsType = {
   status: ApplicationStatus.NOT_YET_STARTED,
-  chestXrayTaken: YesOrNo.NULL,
   reasonXrayWasNotTaken: "",
   xrayWasNotTakenFurtherDetails: "",
   xrayResult: "",
@@ -29,9 +28,6 @@ export const radiologicalOutcomeSlice = createSlice({
   reducers: {
     setRadiologicalOutcomeStatus: (state, action: PayloadAction<ApplicationStatus>) => {
       state.status = action.payload;
-    },
-    setChestXrayTaken: (state, action: PayloadAction<YesOrNo>) => {
-      state.chestXrayTaken = action.payload;
     },
     setReasonXrayWasNotTaken: (state, action: PayloadAction<string>) => {
       state.reasonXrayWasNotTaken = action.payload;
@@ -58,7 +54,6 @@ export const radiologicalOutcomeSlice = createSlice({
       state,
       action: PayloadAction<ReduxRadiologicalOutcomeDetailsType>,
     ) => {
-      state.chestXrayTaken = action.payload.chestXrayTaken;
       state.reasonXrayWasNotTaken = action.payload.reasonXrayWasNotTaken;
       state.xrayWasNotTakenFurtherDetails = action.payload.xrayWasNotTakenFurtherDetails;
       state.xrayResult = action.payload.xrayResult;
@@ -86,7 +81,6 @@ export const radiologicalOutcomeSlice = createSlice({
     },
     clearRadiologicalOutcomeDetails: (state) => {
       state.status = ApplicationStatus.NOT_YET_STARTED;
-      state.chestXrayTaken = YesOrNo.NULL;
       state.reasonXrayWasNotTaken = "";
       state.xrayWasNotTakenFurtherDetails = "";
       state.xrayResult = "";
@@ -138,7 +132,6 @@ export const radiologicalOutcomeSlice = createSlice({
 
 export const {
   setRadiologicalOutcomeStatus,
-  setChestXrayTaken,
   setReasonXrayWasNotTaken,
   setXrayWasNotTakenFurtherDetails,
   setXrayResult,

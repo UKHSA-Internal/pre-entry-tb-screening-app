@@ -160,7 +160,7 @@ describe("SputumSummary", () => {
         sputum: sputumDataWithSample1,
       },
     });
-    expect(screen.getByText("15/06/2025")).toBeInTheDocument();
+    expect(screen.getByText("15 June 2025")).toBeInTheDocument();
     expect(screen.getByText(SputumCollectionMethod.COUGHED_UP)).toBeInTheDocument();
     expect(screen.getByText(PositiveOrNegative.POSITIVE)).toBeInTheDocument();
     expect(screen.getByText(PositiveOrNegative.NEGATIVE)).toBeInTheDocument();
@@ -238,7 +238,7 @@ describe("SputumSummary", () => {
       },
     });
 
-    expect(screen.getByText("15/06/2025")).toBeInTheDocument();
+    expect(screen.getByText("15 June 2025")).toBeInTheDocument();
     expect(screen.getByText(SputumCollectionMethod.COUGHED_UP)).toBeInTheDocument();
     expect(screen.getByText(PositiveOrNegative.POSITIVE)).toBeInTheDocument();
     expect(screen.getByText(PositiveOrNegative.NEGATIVE)).toBeInTheDocument();

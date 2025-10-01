@@ -1,6 +1,7 @@
 import { seededApplications } from "../../shared/fixtures/application";
-import { IMedicalScreening } from "../models/medical-screening";
+import { NewMedicalScreening } from "../models/medical-screening";
 import {
+  ChestXRayNotTakenReason,
   HistoryOfConditionsUnder11,
   MenstrualPeriods,
   PregnancyStatus,
@@ -8,9 +9,10 @@ import {
   YesOrNo,
 } from "../types/enums";
 
-export const seededMedicalScreening: Omit<IMedicalScreening, "dateCreated" | "status">[] = [
+export const seededMedicalScreening: NewMedicalScreening[] = [
   {
     applicationId: seededApplications[1].applicationId,
+    dateOfMedicalScreening: "2025-05-05",
     age: 25,
     symptomsOfTb: YesOrNo.Yes,
     symptoms: [TbSymptomsOptions.Cough, TbSymptomsOptions.Haemoptysis],
@@ -24,9 +26,11 @@ export const seededMedicalScreening: Omit<IMedicalScreening, "dateCreated" | "st
     haveMenstralPeriod: MenstrualPeriods.Yes,
     physicalExaminationNotes: "NA",
     createdBy: "shane.park@iom.com",
+    isXrayRequired: YesOrNo.Yes,
   },
   {
     applicationId: seededApplications[2].applicationId,
+    dateOfMedicalScreening: "2025-05-05",
     age: 10,
     symptomsOfTb: YesOrNo.Yes,
     symptoms: [TbSymptomsOptions.Cough],
@@ -39,5 +43,7 @@ export const seededMedicalScreening: Omit<IMedicalScreening, "dateCreated" | "st
     haveMenstralPeriod: MenstrualPeriods.No,
     physicalExaminationNotes: "NA",
     createdBy: "shawn.jones@clinic.com",
+    isXrayRequired: YesOrNo.No,
+    reasonXrayNotRequired: ChestXRayNotTakenReason.Other,
   },
 ];

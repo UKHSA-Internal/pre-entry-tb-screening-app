@@ -28,52 +28,62 @@ interface AutocompleteI {
 }
 
 const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
-  const { day, month, year } = props.value || {};
+  const [rawDay, setRawDay] = useState<string>(props.value?.day ?? "");
+  const [rawMonth, setRawMonth] = useState<string>(props.value?.month ?? "");
+  const [rawYear, setRawYear] = useState<string>(props.value?.year ?? "");
+
+  const normalizePart = (s: string): string => {
+    if (s === "") return "";
+    const noLeading = s.replace(/^0+/, "");
+    return noLeading === "" ? "0" : noLeading;
+  };
+
+  useEffect(() => {
+    const propsValue = props.value || { day: "", month: "", year: "" };
+    const isDayEqual = normalizePart(rawDay) === (propsValue.day ?? "");
+    const isMonthEqual = normalizePart(rawMonth) === (propsValue.month ?? "");
+    const isYearEqual = normalizePart(rawYear) === (propsValue.year ?? "");
+
+    if (!isDayEqual) setRawDay(propsValue.day ?? "");
+    if (!isMonthEqual) setRawMonth(propsValue.month ?? "");
+    if (!isYearEqual) setRawYear(propsValue.year ?? "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.value?.day, props.value?.month, props.value?.year]);
 
   const handleDayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = sanitiseDayOrMonth(e.target.value);
-    let clamped = raw;
-    if (raw) {
-      const num = Number(raw);
-      if (num < 1) clamped = "1";
-      else if (num > 31) clamped = "31";
+    const filtered = filterDayOrMonthRaw(e.target.value);
+
+    if (filtered.length <= 2) {
+      setRawDay(filtered);
+      const newValue = { ...props.value, day: normalizePart(filtered) };
+      props.setDateValue(newValue);
     }
-    const newValue = { ...props.value, day: clamped };
-    props.setDateValue(newValue); // Update the whole date object
   };
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = sanitiseDayOrMonth(e.target.value);
-    let clamped = raw;
-    if (raw) {
-      const num = Number(raw);
-      if (num < 1) clamped = "1";
-      else if (num > 12) clamped = "12";
+    const filtered = filterDayOrMonthRaw(e.target.value);
+    if (filtered.length <= 2) {
+      setRawMonth(filtered);
+      const newValue = { ...props.value, month: normalizePart(filtered) };
+      props.setDateValue(newValue);
     }
-    const newValue = { ...props.value, month: clamped };
-    props.setDateValue(newValue); // Update the whole date object
   };
 
   const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = {
-      ...props.value,
-      year: sanitiseYear(e.target.value),
-    };
-    props.setDateValue(newValue); // Update the whole date object
+    const filtered = filterYearRaw(e.target.value);
+    if (filtered.length <= 4) {
+      setRawYear(filtered);
+      const newValue = { ...props.value, year: normalizePart(filtered) };
+      props.setDateValue(newValue);
+    }
   };
 
-  const sanitiseDayOrMonth = (raw: string): string => {
-    const stripped = raw.replace(/\D/g, "");
-    if (!stripped) return "";
-    const limited = stripped.slice(0, 2);
-    return limited.length > 1 ? String(Number(limited)) : limited;
+  const filterDayOrMonthRaw = (raw: string): string => {
+    return raw.replace(/\D/g, "").slice(0, 2);
   };
 
-  const sanitiseYear = (raw: string): string => {
-    const stripped = raw.replace(/\D/g, "");
-    if (!stripped) return "";
-    const limited = stripped.slice(0, 4);
-    return limited;
+  const filterYearRaw = (raw: string): string => {
+    return raw.replace(/\D/g, "").slice(0, 4);
   };
 
   const autocompleteBDay: Record<"day" | "month" | "year", AutocompleteI> = {
@@ -151,8 +161,9 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
               data-testid={`${props.id}-day`}
               type="text"
               inputMode="numeric"
-              value={day || ""}
+              value={rawDay}
               onChange={handleDayChange}
+              maxLength={2}
             />
           </div>
         </div>
@@ -168,8 +179,9 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
               data-testid={`${props.id}-month`}
               type="text"
               inputMode="numeric"
-              value={month || ""}
+              value={rawMonth}
               onChange={handleMonthChange}
+              maxLength={2}
             />
           </div>
         </div>
@@ -185,8 +197,9 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
               data-testid={`${props.id}-year`}
               type="text"
               inputMode="numeric"
-              value={year || ""}
+              value={rawYear}
               onChange={handleYearChange}
+              maxLength={4}
             />
           </div>
         </div>

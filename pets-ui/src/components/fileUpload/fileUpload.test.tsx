@@ -119,4 +119,43 @@ describe("FileUpload Component", () => {
       expect(useNavigateMock).not.toHaveBeenCalled();
     });
   });
+
+  it("should trigger onChange when files are dropped", async () => {
+    vi.mocked(validateFiles).mockResolvedValue(true);
+
+    const dicomProps = { ...defaultProps, type: ImageType.Dicom };
+
+    renderWithFormProvider(
+      <>
+        <FileUpload {...dicomProps} />
+        <button type="submit">Submit</button>
+      </>,
+    );
+
+    await user.click(screen.getByText("Submit"));
+    await waitFor(() => {
+      expect(screen.getByText("File is required")).toBeInTheDocument();
+    });
+
+    const dropArea = screen
+      .getByTestId("test-file-upload")
+      .closest('[data-module="govuk-file-upload"]');
+    const dcmFile = new File(["dicom content"], "scan.dcm", { type: "application/dicom" });
+
+    fireEvent.drop(dropArea!, {
+      dataTransfer: {
+        files: [dcmFile],
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("scan.dcm")).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText("Submit"));
+
+    await waitFor(() => {
+      expect(screen.queryByText("File is required")).toBeNull();
+    });
+  });
 });

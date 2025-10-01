@@ -64,7 +64,7 @@ describe("SputumQuestionPage", () => {
 
   it("renders the page titles and radio question", () => {
     expect(
-      screen.getByRole("heading", { name: "Is a sputum collection required?", level: 1 }),
+      screen.getByRole("heading", { name: "Is sputum collection required?", level: 1 }),
     ).toBeInTheDocument();
 
     const yesRadio = screen.getByRole("radio", { name: "Yes" });

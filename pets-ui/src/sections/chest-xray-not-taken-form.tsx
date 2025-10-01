@@ -6,58 +6,50 @@ import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
-import TextArea from "@/components/textArea/textArea";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import {
-  setReasonXrayWasNotTaken,
-  setXrayWasNotTakenFurtherDetails,
-} from "@/redux/radiologicalOutcomeSlice";
-import { selectRadiologicalOutcome } from "@/redux/store";
-import { ReduxRadiologicalOutcomeDetailsType } from "@/types";
+import { setReasonXrayNotRequired } from "@/redux/medicalScreeningSlice";
+import { selectMedicalScreening } from "@/redux/store";
+import { ReduxMedicalScreeningType } from "@/types";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
 
 const ChestXrayNotTakenForm = () => {
   const dispatch = useAppDispatch();
+  const location = useLocation();
   const navigate = useNavigate();
-  const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
+  const medicalData = useAppSelector(selectMedicalScreening);
 
-  const methods = useForm<ReduxRadiologicalOutcomeDetailsType>({ reValidateMode: "onSubmit" });
+  const mapBackendToDisplay = (backendValue: string): string => {
+    if (backendValue === "Child") return "Child (under 11 years)";
+    return backendValue;
+  };
+
+  const mapDisplayToBackend = (displayValue: string): string => {
+    if (displayValue === "Child (under 11 years)") return "Child";
+    return displayValue;
+  };
+
+  const methods = useForm<ReduxMedicalScreeningType>({
+    reValidateMode: "onSubmit",
+  });
   const {
     handleSubmit,
     formState: { errors },
-    watch,
   } = methods;
 
-  const onSubmit: SubmitHandler<ReduxRadiologicalOutcomeDetailsType> = (
-    formRadiologicalOutcomeData,
-  ) => {
-    dispatch(setReasonXrayWasNotTaken(formRadiologicalOutcomeData.reasonXrayWasNotTaken));
-    dispatch(
-      setXrayWasNotTakenFurtherDetails(formRadiologicalOutcomeData.xrayWasNotTakenFurtherDetails),
-    );
-    navigate("/sputum-question");
+  const onSubmit: SubmitHandler<ReduxMedicalScreeningType> = (data) => {
+    const backendValue = mapDisplayToBackend(data.reasonXrayNotRequired || "");
+    dispatch(setReasonXrayNotRequired(backendValue));
+    navigate("/medical-summary");
   };
 
   const errorsToShow = Object.keys(errors);
-
-  const watchedReasonXrayNotTaken = watch("reasonXrayWasNotTaken") as unknown as string;
-
-  // Required to scroll to the correct element when a change link on the summary page is clicked
-  const location = useLocation();
-  const reasonXrayNotTakenRef = useRef<HTMLDivElement | null>(null);
-  const xrayNotTakenFurtherDetailsRef = useRef<HTMLDivElement | null>(null);
+  const reasonXrayWasNotTakenRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (location.hash) {
       const target = location.hash.substring(1);
-      const refMap: { [key: string]: HTMLElement | null } = {
-        "reason-xray-not-taken": reasonXrayNotTakenRef.current,
-        "xray-not-taken-further-details": xrayNotTakenFurtherDetailsRef.current,
-      };
-
-      const targetRef = refMap[target];
-      if (targetRef) {
-        targetRef.scrollIntoView();
+      if (target == "reason-xray-not-taken") {
+        reasonXrayWasNotTakenRef.current?.scrollIntoView();
       }
     }
   }, [location]);
@@ -65,40 +57,23 @@ const ChestXrayNotTakenForm = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
-
-        <Heading level={1} size="l" title="Enter reason X-ray not taken" />
-        <div ref={reasonXrayNotTakenRef}>
+        {!!errors?.reasonXrayNotRequired && (
+          <ErrorSummary errorsToShow={errorsToShow} errors={errors} />
+        )}
+        <Heading level={1} size="l" title="Reason X-ray is not required?" />
+        <div ref={reasonXrayWasNotTakenRef}>
           <Radio
             id="reason-xray-not-taken"
-            heading="Reason X-ray not taken"
-            label="Choose from the following options"
             isInline={RadioIsInline.FALSE}
-            answerOptions={["Child", "Pregnant", "Other"]}
+            answerOptions={["Child (under 11 years)", "Pregnant", "Other"]}
             sortAnswersAlphabetically={false}
-            errorMessage={errors?.reasonXrayWasNotTaken?.message ?? ""}
-            formValue="reasonXrayWasNotTaken"
-            defaultValue={radiologicalOutcomeData.reasonXrayWasNotTaken}
-            required="Select the reason why the chest X-ray was not taken"
+            errorMessage={(errors?.reasonXrayNotRequired?.message as string) ?? ""}
+            formValue="reasonXrayNotRequired"
+            defaultValue={mapBackendToDisplay(medicalData.reasonXrayNotRequired || "")}
+            required="Select a reason why X-ray is not required"
             divStyle={{ marginTop: 40 }}
           />
         </div>
-        <div ref={xrayNotTakenFurtherDetailsRef}>
-          <TextArea
-            id="xray-not-taken-further-details"
-            heading="Notes"
-            label="If other, give further details"
-            errorMessage={errors?.xrayWasNotTakenFurtherDetails?.message ?? ""}
-            formValue="xrayWasNotTakenFurtherDetails"
-            required={
-              watchedReasonXrayNotTaken === "Other" ? "Enter reason X-ray not taken" : false
-            }
-            rows={4}
-            defaultValue={radiologicalOutcomeData.xrayWasNotTakenFurtherDetails ?? ""}
-            divStyle={{ marginTop: 40 }}
-          />
-        </div>
-
         <SubmitButton id="Continue" type={ButtonType.DEFAULT} text="Continue" />
       </form>
     </FormProvider>

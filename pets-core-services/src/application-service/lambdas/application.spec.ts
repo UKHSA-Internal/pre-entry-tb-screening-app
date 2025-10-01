@@ -190,6 +190,7 @@ describe("Test for Application Lambda", () => {
         path: `/application/${seededApplications[0].applicationId}/medical-screening`,
         httpMethod: "POST",
         body: JSON.stringify({
+          dateOfMedicalScreening: "2025-05-05",
           age: 32,
           symptomsOfTb: YesOrNo.No,
           symptoms: [],
@@ -199,6 +200,7 @@ describe("Test for Application Lambda", () => {
           pregnant: PregnancyStatus.No,
           haveMenstralPeriod: MenstrualPeriods.NA,
           physicalExaminationNotes: "NA",
+          isXrayRequired: YesOrNo.Yes,
         }),
       };
 

@@ -97,6 +97,7 @@ const emptyTravelSlice = {
 };
 const emptyMedicalSlice = {
   age: "",
+  chestXrayTaken: "",
   closeContactWithTb: "",
   closeContactWithTbDetail: "",
   completionDate: {
@@ -110,6 +111,7 @@ const emptyMedicalSlice = {
   pregnant: "",
   previousTb: "",
   previousTbDetail: "",
+  reasonXrayNotRequired: "",
   status: "Not yet started",
   tbSymptoms: "",
   tbSymptomsList: [],
@@ -132,7 +134,6 @@ const emptyChestXraySlice = {
 };
 const emptyRadiologicalOutcomeSlice = {
   status: ApplicationStatus.NOT_YET_STARTED,
-  chestXrayTaken: YesOrNo.NULL,
   reasonXrayWasNotTaken: "",
   xrayWasNotTakenFurtherDetails: "",
   xrayResult: "",
@@ -332,6 +333,7 @@ describe("ApplicantSearchForm", () => {
     });
     expect(store.getState().medicalScreening).toEqual({
       age: "43",
+      chestXrayTaken: "",
       closeContactWithTb: "Yes",
       closeContactWithTbDetail: "details1",
       completionDate: {
@@ -345,6 +347,7 @@ describe("ApplicantSearchForm", () => {
       pregnant: "N/A",
       previousTb: "No",
       previousTbDetail: "details3",
+      reasonXrayNotRequired: "",
       status: ApplicationStatus.COMPLETE,
       tbSymptoms: "Yes",
       tbSymptomsList: ["symptom1", "symptom2"],
@@ -367,7 +370,6 @@ describe("ApplicantSearchForm", () => {
     });
     expect(store.getState().radiologicalOutcome).toEqual({
       status: ApplicationStatus.COMPLETE,
-      chestXrayTaken: YesOrNo.NULL,
       reasonXrayWasNotTaken: "",
       xrayWasNotTakenFurtherDetails: "",
       xrayResult: "normal",
@@ -706,6 +708,7 @@ describe("ApplicantSearchForm", () => {
     });
     expect(store.getState().medicalScreening).toEqual({
       age: "43",
+      chestXrayTaken: "",
       closeContactWithTb: "Yes",
       closeContactWithTbDetail: "details1",
       completionDate: {
@@ -719,6 +722,7 @@ describe("ApplicantSearchForm", () => {
       pregnant: "N/A",
       previousTb: "No",
       previousTbDetail: "details3",
+      reasonXrayNotRequired: "",
       status: ApplicationStatus.COMPLETE,
       tbSymptoms: "Yes",
       tbSymptomsList: ["symptom1", "symptom2"],
@@ -741,7 +745,6 @@ describe("ApplicantSearchForm", () => {
     });
     expect(store.getState().radiologicalOutcome).toEqual({
       status: ApplicationStatus.COMPLETE,
-      chestXrayTaken: YesOrNo.NULL,
       reasonXrayWasNotTaken: "",
       xrayWasNotTakenFurtherDetails: "",
       xrayResult: "normal",

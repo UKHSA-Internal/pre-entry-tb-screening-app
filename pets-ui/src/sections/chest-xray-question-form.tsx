@@ -7,43 +7,39 @@ import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import {
-  clearChestXrayNotTakenDetails,
-  clearChestXrayTakenDetails,
-  setChestXrayTaken,
-  setRadiologicalOutcomeStatus,
-} from "@/redux/radiologicalOutcomeSlice";
-import { selectRadiologicalOutcome } from "@/redux/store";
-import { ReduxRadiologicalOutcomeDetailsType } from "@/types";
-import { ApplicationStatus, ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
-
+import { setChestXrayTaken, setReasonXrayNotRequired } from "@/redux/medicalScreeningSlice";
+import { selectMedicalScreening } from "@/redux/store";
+import { ReduxMedicalScreeningType } from "@/types";
+import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
 const ChestXrayQuestionForm = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const navigate = useNavigate();
-  const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
+  const medicalData = useAppSelector(selectMedicalScreening);
 
-  const methods = useForm<ReduxRadiologicalOutcomeDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxMedicalScreeningType>({
+    reValidateMode: "onSubmit",
+  });
   const {
     handleSubmit,
     formState: { errors },
   } = methods;
 
-  const onSubmit: SubmitHandler<ReduxRadiologicalOutcomeDetailsType> = (data) => {
-    dispatch(setChestXrayTaken(data.chestXrayTaken));
-    dispatch(setRadiologicalOutcomeStatus(ApplicationStatus.IN_PROGRESS));
+  const onSubmit: SubmitHandler<ReduxMedicalScreeningType> = (data) => {
+    const xrayTakenValue = data.chestXrayTaken || YesOrNo.NULL;
+    dispatch(setChestXrayTaken(xrayTakenValue));
 
-    if (data.chestXrayTaken === YesOrNo.YES) {
-      dispatch(clearChestXrayNotTakenDetails());
-      navigate("/chest-xray-upload");
+    if (xrayTakenValue === YesOrNo.YES) {
+      dispatch(setReasonXrayNotRequired(""));
+      navigate("/medical-summary");
     } else {
-      dispatch(clearChestXrayTakenDetails());
       navigate("/chest-xray-not-taken");
     }
   };
 
   const errorsToShow = Object.keys(errors);
   const chestXrayTakenRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     if (location.hash) {
       const target = location.hash.substring(1);
@@ -57,20 +53,17 @@ const ChestXrayQuestionForm = () => {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errors?.chestXrayTaken && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
-
-        <Heading level={1} size="l" title="Select X-ray status" />
+        <Heading level={1} size="l" title="Is an X-ray required?" />{" "}
         <div ref={chestXrayTakenRef}>
           <Radio
-            heading="Has the visa applicant had a chest X-ray?"
             id="chest-xray-taken"
-            label="This would typically be the postero-anterior chest X-ray"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Yes", "No"]}
             sortAnswersAlphabetically={false}
-            errorMessage={errors?.chestXrayTaken?.message ?? ""}
+            errorMessage={(errors?.chestXrayTaken?.message as string) ?? ""}
             formValue="chestXrayTaken"
-            defaultValue={radiologicalOutcomeData.chestXrayTaken}
-            required="Select yes if the visa applicant has had a chest X-ray or no if they have not"
+            defaultValue={medicalData.chestXrayTaken || YesOrNo.NULL}
+            required="Select yes if X-ray is required"
             divStyle={{ marginTop: 40 }}
           />
         </div>

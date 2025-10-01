@@ -8,7 +8,11 @@ import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
 import { setRadiologicalOutcomeStatus } from "@/redux/radiologicalOutcomeSlice";
-import { selectApplication, selectRadiologicalOutcome } from "@/redux/store";
+import {
+  selectApplication,
+  selectMedicalScreening,
+  selectRadiologicalOutcome,
+} from "@/redux/store";
 import { PostedRadiologicalOutcomeDetailsType } from "@/types";
 import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
 import { spreadArrayIfNotEmpty } from "@/utils/helpers";
@@ -17,6 +21,7 @@ import { attributeToComponentId } from "@/utils/records";
 const RadiologicalOutcomeSummary = () => {
   const applicationData = useAppSelector(selectApplication);
   const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
+  const medicalScreeningData = useAppSelector(selectMedicalScreening);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -26,7 +31,7 @@ const RadiologicalOutcomeSummary = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      if (radiologicalOutcomeData.chestXrayTaken == YesOrNo.YES) {
+      if (medicalScreeningData.chestXrayTaken == YesOrNo.YES) {
         const payload: PostedRadiologicalOutcomeDetailsType = {
           xrayResult: radiologicalOutcomeData.xrayResult,
           xrayResultDetail: radiologicalOutcomeData.xrayResultDetail,
@@ -85,7 +90,7 @@ const RadiologicalOutcomeSummary = () => {
   const xrayNotTakenSummaryData = [
     {
       key: "Select X-ray status",
-      value: radiologicalOutcomeData.chestXrayTaken,
+      value: medicalScreeningData.chestXrayTaken,
       link: `/chest-xray-question#${attributeToComponentId.chestXrayTaken}`,
       hiddenLabel: "chest X-ray status",
       emptyValueText: "Enter X-ray status (optional)",
@@ -110,10 +115,10 @@ const RadiologicalOutcomeSummary = () => {
     <div>
       {isLoading && <Spinner />}
 
-      {radiologicalOutcomeData.chestXrayTaken == YesOrNo.YES && (
+      {medicalScreeningData.chestXrayTaken == YesOrNo.YES && (
         <Summary status={radiologicalOutcomeData.status} summaryElements={xrayTakenSummaryData} />
       )}
-      {radiologicalOutcomeData.chestXrayTaken == YesOrNo.NO && (
+      {medicalScreeningData.chestXrayTaken == YesOrNo.NO && (
         <Summary
           status={radiologicalOutcomeData.status}
           summaryElements={xrayNotTakenSummaryData}

@@ -8,11 +8,7 @@ import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
 import { setMedicalScreeningStatus } from "@/redux/medicalScreeningSlice";
-import {
-  selectApplication,
-  selectMedicalScreening,
-  selectRadiologicalOutcome,
-} from "@/redux/store";
+import { selectApplication, selectMedicalScreening } from "@/redux/store";
 import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
 import { formatDateForDisplay } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
@@ -20,16 +16,26 @@ import { attributeToComponentId } from "@/utils/records";
 const MedicalScreeningReview = () => {
   const applicationData = useAppSelector(selectApplication);
   const medicalData = useAppSelector(selectMedicalScreening);
-  const radiologicalData = useAppSelector(selectRadiologicalOutcome);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const mapBackendToDisplay = (backendValue: string): string => {
+    if (backendValue === "Child") return "Child (under 11 years)";
+    return backendValue;
+  };
+
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
       await postMedicalDetails(applicationData.applicationId, {
+        dateOfMedicalScreening:
+          medicalData.completionDate.year &&
+          medicalData.completionDate.month &&
+          medicalData.completionDate.day
+            ? `${medicalData.completionDate.year}-${medicalData.completionDate.month.padStart(2, "0")}-${medicalData.completionDate.day.padStart(2, "0")}`
+            : new Date().toISOString().split("T")[0],
         age: parseInt(medicalData.age),
         symptomsOfTb: medicalData.tbSymptoms,
         symptoms: medicalData.tbSymptomsList,
@@ -43,6 +49,8 @@ const MedicalScreeningReview = () => {
         pregnant: medicalData.pregnant,
         haveMenstralPeriod: medicalData.menstrualPeriods,
         physicalExaminationNotes: medicalData.physicalExamNotes,
+        isXrayRequired: medicalData.chestXrayTaken || YesOrNo.NULL,
+        reasonXrayNotRequired: medicalData.reasonXrayNotRequired || undefined,
       });
 
       dispatch(setMedicalScreeningStatus(ApplicationStatus.COMPLETE));
@@ -162,17 +170,18 @@ const MedicalScreeningReview = () => {
     },
     {
       key: "Is an X-ray required?",
-      value: radiologicalData.chestXrayTaken || "Not provided",
-      link: `/xray-question#${attributeToComponentId.chestXrayTaken}`,
+      value:
+        medicalData.chestXrayTaken !== YesOrNo.NULL ? medicalData.chestXrayTaken : "Not provided",
+      link: `/chest-xray-question#${attributeToComponentId.chestXrayTaken}`,
       hiddenLabel: "whether X-ray is required",
       emptyValueText: "Enter whether X-ray is required (optional)",
     },
-    ...(radiologicalData.chestXrayTaken === YesOrNo.NO && radiologicalData.reasonXrayWasNotTaken
+    ...(medicalData.chestXrayTaken === YesOrNo.NO && medicalData.reasonXrayNotRequired
       ? [
           {
             key: "Reason X-ray is not required",
-            value: radiologicalData.reasonXrayWasNotTaken || "Not provided",
-            link: `/xray-not-required-reason#${attributeToComponentId.reasonXrayWasNotTaken}`,
+            value: mapBackendToDisplay(medicalData.reasonXrayNotRequired) || "Not provided",
+            link: `/chest-xray-not-taken#${attributeToComponentId.reasonXrayWasNotTaken}`,
             hiddenLabel: "reason X-ray is not required",
             emptyValueText: "Enter reason X-ray is not required (optional)",
           },

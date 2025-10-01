@@ -57,7 +57,7 @@ const TbSummary = () => {
         const certificateIssueDateStr = `${tbCertificateData.certificateDate.year}-${standardiseDayOrMonth(tbCertificateData.certificateDate.month)}-${standardiseDayOrMonth(tbCertificateData.certificateDate.day)}`;
         const issueDate = calculateCertificateIssueDate(
           chestXrayData.dateXrayTaken,
-          radiologicalOutcomeData.chestXrayTaken,
+          medicalScreeningData.chestXrayTaken,
           medicalScreeningData.completionDate,
         );
         const expiryDate = calculateCertificateExpiryDate(
@@ -282,7 +282,7 @@ const TbSummary = () => {
       ? [
           {
             key: "Chest X-ray done",
-            value: radiologicalOutcomeData.chestXrayTaken,
+            value: medicalScreeningData.chestXrayTaken,
             hiddenLabel: "Chest X-ray done",
           },
           {

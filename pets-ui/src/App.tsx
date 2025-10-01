@@ -13,7 +13,9 @@ import ApplicantSummaryPage from "./pages/applicant-summary";
 import CheckSputumSampleInformationPage from "./pages/check-sputum-sample-information";
 import ChestXrayConfirmation from "./pages/chest-xray-confirmation";
 import ChestXrayFindingsPage from "./pages/chest-xray-findings";
+import ChestXrayNotTakenForm from "./pages/chest-xray-not-taken";
 import ChestXrayOutcomePage from "./pages/chest-xray-outcome";
+import ChestXrayQuestionPage from "./pages/chest-xray-question";
 import ChestXraySummaryPage from "./pages/chest-xray-summary";
 import ChestXrayUploadPage from "./pages/chest-xray-upload";
 import ContactDetailsPage from "./pages/contact-details";
@@ -43,8 +45,6 @@ import TbSummaryPage from "./pages/tb-summary";
 import TravelConfirmation from "./pages/travel-confirmation";
 import TravelDetailsPage from "./pages/travel-details";
 import TravelSummaryPage from "./pages/travel-summary";
-import XrayNotRequiredReasonPage from "./pages/xray-not-required-reason";
-import XrayQuestionPage from "./pages/xray-question";
 import { RedirectedRouteIfReduxEmpty } from "./utils/redirect";
 
 function App() {
@@ -157,21 +157,21 @@ function App() {
         }
       />
       <Route
-        path="/xray-question"
+        path="/chest-xray-question"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
-              <XrayQuestionPage />
+              <ChestXrayQuestionPage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
       />
       <Route
-        path="/xray-not-required-reason"
+        path="/chest-xray-not-taken"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
-              <XrayNotRequiredReasonPage />
+              <ChestXrayNotTakenForm />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }

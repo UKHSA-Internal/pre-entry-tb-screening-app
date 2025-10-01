@@ -135,15 +135,15 @@ const ApplicantSearchForm = () => {
         dispatch(setRadiologicalOutcomeFromApiResponse(applicationRes.data.radiologicalOutcome));
       }
       if (applicationRes.data.sputumRequirement) {
-        dispatch(setSputumDecisionRequired(applicationRes.data.sputumRequirement.isSputumRequired));
+        dispatch(setSputumDecisionRequired(applicationRes.data.sputumRequirement.sputumRequired));
         dispatch(setSputumDecisionStatus(ApplicationStatus.COMPLETE));
-        if (applicationRes.data.sputumRequirement.isSputumRequired === YesOrNo.NO) {
+        if (applicationRes.data.sputumRequirement.sputumRequired === YesOrNo.NO) {
           dispatch(setSputumStatus(ApplicationStatus.NOT_REQUIRED));
         }
       }
       if (
         applicationRes.data.sputumDetails &&
-        applicationRes.data.sputumRequirement?.isSputumRequired !== YesOrNo.NO
+        applicationRes.data.sputumRequirement?.sputumRequired !== YesOrNo.NO
       ) {
         dispatch(setSputumDetailsFromApiResponse(applicationRes.data.sputumDetails));
       }

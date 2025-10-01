@@ -76,7 +76,7 @@ describe("SputumResultsForm", () => {
       screen.getByRole("heading", { name: /Enter sputum sample results/i, level: 1 }),
     ).toBeInTheDocument();
 
-    expect(screen.getByText("05 May 2024")).toBeInTheDocument();
+    expect(screen.getByText("5 May 2024")).toBeInTheDocument();
 
     expect(screen.getAllByText("No date recorded")).toHaveLength(2);
   });

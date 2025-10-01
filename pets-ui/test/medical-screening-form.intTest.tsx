@@ -89,6 +89,7 @@ describe("MedicalScreeningForm", () => {
 
     expect(store.getState().medicalScreening).toEqual({
       age: "99",
+      chestXrayTaken: "",
       closeContactWithTb: "No",
       closeContactWithTbDetail: "",
       completionDate: {
@@ -102,13 +103,14 @@ describe("MedicalScreeningForm", () => {
       pregnant: "Do not know",
       previousTb: "Yes",
       previousTbDetail: "Details of previous pulmonary TB.",
+      reasonXrayNotRequired: "",
       status: "In progress",
       tbSymptoms: "Yes",
       tbSymptomsList: ["Cough", "Night sweats"],
       underElevenConditions: ["Not applicable - applicant is aged 11 or over"],
       underElevenConditionsDetail: "",
     });
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/xray-question");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-question");
   });
 
   it("state is updated from MedicalScreeningForm and then read by MedicalScreeningReview", async () => {

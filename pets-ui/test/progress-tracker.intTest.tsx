@@ -75,6 +75,8 @@ const medicalScreeningSlice = {
   tbSymptomsList: ["Cough", "Night sweats"],
   underElevenConditions: ["Not applicable - applicant is aged 11 or over"],
   underElevenConditionsDetail: "",
+  chestXrayTaken: YesOrNo.YES,
+  reasonXrayNotRequired: "",
   completionDate: { year: "", month: "", day: "" },
 };
 
@@ -90,7 +92,6 @@ const chestXraySlice = {
 };
 
 const radiologicalOutcomeSlice = {
-  chestXrayTaken: YesOrNo.NULL,
   reasonXrayWasNotTaken: "",
   xrayWasNotTakenFurtherDetails: "",
   xrayResult: "",
@@ -202,7 +203,6 @@ const completeState = {
   radiologicalOutcome: {
     status: ApplicationStatus.COMPLETE,
     ...radiologicalOutcomeSlice,
-    chestXrayTaken: YesOrNo.YES,
   },
   sputumDecision: {
     status: ApplicationStatus.COMPLETE,

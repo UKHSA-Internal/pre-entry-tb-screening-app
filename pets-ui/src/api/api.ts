@@ -117,10 +117,10 @@ export const postRadiologicalOutcomeDetails = async (
 
 export const postSputumRequirement = async (
   applicationId: string,
-  sputumRequirement: { isSputumRequired: string },
+  sputumRequirement: { sputumRequired: string },
 ) => {
   const result = await petsApi.post(`/application/${applicationId}/sputum-decision`, {
-    sputumRequired: sputumRequirement.isSputumRequired,
+    sputumRequired: sputumRequirement.sputumRequired,
   });
   return { status: result.status, statusText: result.statusText };
 };

@@ -38,6 +38,8 @@ const medicalScreeningState = {
   tbSymptomsList: ["Cough", "Night sweats"],
   underElevenConditions: ["Not applicable - applicant is aged 11 or over"],
   underElevenConditionsDetail: "",
+  chestXrayTaken: YesOrNo.YES,
+  reasonXrayNotRequired: "",
   completionDate: { year: "2025", month: "5", day: "31" },
 };
 
@@ -186,6 +188,8 @@ describe("MedicalScreeningReview", () => {
         pregnant: "",
         menstrualPeriods: "",
         physicalExamNotes: "",
+        chestXrayTaken: YesOrNo.YES,
+        reasonXrayNotRequired: "",
         completionDate: { year: "", month: "", day: "" },
       },
     };
@@ -215,6 +219,8 @@ describe("MedicalScreeningReview", () => {
         pregnant: "",
         menstrualPeriods: "",
         physicalExamNotes: "",
+        chestXrayTaken: YesOrNo.NULL,
+        reasonXrayNotRequired: "",
         completionDate: { year: "", month: "", day: "" },
       },
     };
@@ -223,7 +229,7 @@ describe("MedicalScreeningReview", () => {
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/xray-question");
+    expect(link).toHaveAttribute("href", "/chest-xray-question");
     expect(link).toHaveClass("govuk-back-link");
   });
 });
