@@ -15,6 +15,7 @@ export default tseslint.config(
       "pets-core-services/src/**/*.js",
       "pets-ui/dist/**",
       "**/coverage/**",
+      "pets-ui/cypress/reports/**",
     ],
   },
   {

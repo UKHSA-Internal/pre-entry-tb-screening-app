@@ -121,7 +121,7 @@ jobs:
         working-directory: pets-ui
 
       - name: Start Local Environment
-      - run: |
+        run: |
           pnpm start & sleep 120
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
