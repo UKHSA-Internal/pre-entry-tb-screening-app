@@ -66,7 +66,7 @@ describe("ApplicantTravelForm", () => {
   it("errors when travel details are missing", async () => {
     renderWithProviders(<ApplicantTravelForm />);
 
-    const submitButton = screen.getByRole("button", { name: /Save and Continue/i });
+    const submitButton = screen.getByRole("button", { name: /Continue/i });
 
     await user.click(submitButton);
 
