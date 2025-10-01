@@ -39,6 +39,7 @@ export class MedicalSummaryPage extends BasePage {
 
   // Verify all summary values
   verifyAllSummaryValues(expectedValues: {
+    "Date of medical screening"?: string;
     Age?: string;
     "Does the applicant have pulmonary TB symptoms?"?: string;
     "pulmonary TB symptoms"?: string;
@@ -63,6 +64,7 @@ export class MedicalSummaryPage extends BasePage {
 
   // Validate that summary matches the entered medical screening data
   validateSummaryMatchesEnteredData(enteredData: {
+    dateOfMedicalScreening?: string;
     age?: string;
     tbSymptoms?: "Yes" | "No";
     tbSymptomsList?: string[];
@@ -91,6 +93,9 @@ export class MedicalSummaryPage extends BasePage {
       const processedValue = processValue(value);
 
       switch (key) {
+        case "dateOfMedicalScreening":
+          this.verifySummaryValue("When did the medical screening take place?", processedValue);
+          break;
         case "age":
           this.verifySummaryValue("Age", processedValue);
           break;
@@ -148,6 +153,7 @@ export class MedicalSummaryPage extends BasePage {
 
   // Validation method to check all entered fields
   fullyValidateSummary(enteredData: {
+    dateOfMedicalScreening?: string;
     age?: string;
     tbSymptoms?: "Yes" | "No";
     tbSymptomsList?: string[];
@@ -164,6 +170,7 @@ export class MedicalSummaryPage extends BasePage {
   }): MedicalSummaryPage {
     // Verify all the fields exist in the summary
     const expectedFields = [
+      "Date of medical screening",
       "Age",
       "Does the applicant have pulmonary TB symptoms?",
       "pulmonary TB symptoms",
@@ -238,6 +245,7 @@ export class MedicalSummaryPage extends BasePage {
   // Verify all change links work by checking they point to the url fragments
   verifyChangeLinksTargets(): MedicalSummaryPage {
     const expectedFragments = {
+      "Date of medical screening": "#medical-screening-completion-date",
       Age: "#age",
       "Does the applicant have pulmonary TB symptoms?": "#tb-symptoms",
       "TB symptoms": "#tb-symptoms-list",
@@ -316,6 +324,7 @@ export class MedicalSummaryPage extends BasePage {
   // Verify all fields are present on the page
   verifyAllFieldsPresent(): MedicalSummaryPage {
     const requiredFields = [
+      "Date of medical screening",
       "Age",
       "Does the applicant have pulmonary TB symptoms?",
       "TB symptoms",

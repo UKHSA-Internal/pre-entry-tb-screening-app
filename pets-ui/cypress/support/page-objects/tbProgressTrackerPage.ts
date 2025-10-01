@@ -123,7 +123,9 @@ export class TBProgressTrackerPage {
     this.verifyTaskStatus("Visa applicant details", "Completed");
     this.verifyTaskStatus("Travel information", "Completed");
     this.verifyTaskStatus("Medical history and TB symptoms", "Completed");
+    this.verifyTaskStatus("Upload chest X-ray images", "Completed");
     this.verifyTaskStatus("Radiological outcome", "Completed");
+    this.verifyTaskStatus("Make a sputum decision", "Completed");
     this.verifyTaskStatus("Sputum collection and results", "Completed");
 
     // Verify TB certificate outcome shows "Certificate issued"
@@ -139,7 +141,9 @@ export class TBProgressTrackerPage {
       "Visa applicant details",
       "Travel information",
       "Medical history and TB symptoms",
+      "Upload chest X-ray images",
       "Radiological outcome",
+      "Make a sputum decision",
       "Sputum collection and results",
       "TB certificate outcome",
     ];
@@ -165,7 +169,9 @@ export class TBProgressTrackerPage {
       "Visa applicant details",
       "Travel information",
       "Medical history and TB symptoms",
+      "Upload chest X-ray images",
       "Radiological outcome",
+      "Make a sputum decision",
       "Sputum collection and results",
       "TB certificate outcome",
     ];
@@ -236,7 +242,9 @@ export class TBProgressTrackerPage {
     "Visa applicant details"?: string;
     "Travel information"?: string;
     "Medical history and TB symptoms"?: string;
+    "Upload chest X-ray images"?: string;
     "Radiological outcome"?: string;
+    "Make a sputum decision"?: string;
     "Sputum collection and results"?: string;
     "TB certificate outcome"?: string;
   }): void {
@@ -275,7 +283,9 @@ export class TBProgressTrackerPage {
       "Visa applicant details", // Section 1
       "Travel information",
       "Medical history and TB symptoms", // Section 2
+      "Upload chest X-ray images",
       "Radiological outcome",
+      "Make a sputum decision",
       "Sputum collection and results",
       "TB certificate outcome", // Section 3
     ];
@@ -322,7 +332,9 @@ export class TBProgressTrackerPage {
       "Visa applicant details",
       "Travel information",
       "Medical history and TB symptoms",
+      "Upload chest X-ray images",
       "Radiological outcome",
+      "Make a sputum decision",
       "Sputum collection and results",
       "TB certificate outcome",
     ];
@@ -369,7 +381,9 @@ export class TBProgressTrackerPage {
       "Visa applicant details",
       "Travel information",
       "Medical history and TB symptoms",
+      "Upload chest X-ray images",
       "Radiological outcome",
+      "Make a sputum decision",
       "Sputum collection and results",
       "TB certificate outcome",
     ];
@@ -401,7 +415,9 @@ export class TBProgressTrackerPage {
       "Visa applicant details",
       "Travel information",
       "Medical history and TB symptoms",
+      "Upload chest X-ray images",
       "Radiological outcome",
+      "Make a sputum decision",
       "Sputum collection and results",
       "TB certificate outcome",
     ];
@@ -508,7 +524,9 @@ export class TBProgressTrackerPage {
       "Visa applicant details",
       "Travel information",
       "Medical history and TB symptoms",
+      "Upload chest X-ray images",
       "Radiological outcome",
+      "Make a sputum decision",
       "Sputum collection and results",
       "TB certificate outcome",
     ];
@@ -533,8 +551,10 @@ export class TBProgressTrackerPage {
       "Visa applicant details", // Should be completed and clickable
       "Travel information", // Should be clickable if previous is completed
       "Medical history and TB symptoms", // Should be clickable only if Travel information is completed
-      "Radiological outcome", // Should be clickable only if Medical history is completed
-      "Sputum collection and results", // Should be clickable only if Radiological outcome is completed
+      "Upload chest X-ray images", // Should be clickable only if Medical history is completed
+      "Radiological outcome", // Should be clickable only if Upload chest X-ray is completed
+      "Make a sputum decision", // Should be clickable only if Radiological outcome is completed
+      "Sputum collection and results", // Should be clickable only if Make a sputum decision is completed
       "TB certificate outcome", // Should be clickable only if Sputum collection is completed
     ];
 
