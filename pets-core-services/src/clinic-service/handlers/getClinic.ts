@@ -17,7 +17,7 @@ export const getClinicHandler = async (event: PetsAPIGatewayProxyEvent) => {
 
       return createHttpResponse(200, JSON.stringify({ clinic }));
     } catch (error) {
-      logger.error(`Fetching clinic with ID: ${clinicId} failed`, error);
+      logger.error({ error }, `Fetching clinic with ID: ${clinicId} failed`);
 
       return createHttpResponse(500, { message: "Something went wrong" });
     }

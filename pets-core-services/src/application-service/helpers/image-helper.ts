@@ -45,7 +45,7 @@ export class ImageHelper {
 
       return appUrl;
     } catch (error) {
-      logger.error("Error fetching image:", error);
+      logger.error({ error }, "Error fetching image");
       throw error;
     }
   }
