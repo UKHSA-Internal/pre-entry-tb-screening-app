@@ -15,7 +15,7 @@ describe("Tests for Travel Information Model", () => {
 
   const newTravelInformation: Omit<ITravelInformation, "dateCreated" | "status"> = {
     applicationId: "test-application-id",
-    visaCategory: VisaOptions.Student,
+    visaCategory: VisaOptions.Study,
     ukAddressLine1: "first line",
     ukAddressTownOrCity: "uk address town",
     ukAddressPostcode: "uk address postcode",
