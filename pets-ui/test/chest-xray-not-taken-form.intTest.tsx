@@ -97,7 +97,7 @@ describe("ChestXrayNotTakenPage", () => {
 
     await user.click(radioButtons[0]);
     await user.click(screen.getByRole("button"));
-    
+
     expect(useNavigateMock).toHaveBeenCalled();
     expect(useNavigateMock).toHaveBeenCalledWith("/medical-summary");
   });
