@@ -33,7 +33,7 @@ describe("ApplicantTravelForm", () => {
     const user = userEvent.setup();
 
     fireEvent.change(screen.getAllByRole("combobox")[0], {
-      target: { value: "Visitor" },
+      target: { value: "Family reunion" },
     });
     await user.type(screen.getByTestId("address-1"), "Edinburgh Castle, Castlehill");
     await user.type(screen.getByTestId("town-or-city"), "Edinburgh");
@@ -41,7 +41,7 @@ describe("ApplicantTravelForm", () => {
     await user.type(screen.getByTestId("mobile-number"), "07321900900");
     await user.type(screen.getByTestId("email"), "sigmund.sigmundson@asgard.gov");
 
-    expect(screen.getAllByRole("combobox")[0]).toHaveValue("Visitor");
+    expect(screen.getAllByRole("combobox")[0]).toHaveValue("Family reunion");
     expect(screen.getByTestId("address-1")).toHaveValue("Edinburgh Castle, Castlehill");
     expect(screen.getByTestId("town-or-city")).toHaveValue("Edinburgh");
     expect(screen.getByTestId("postcode")).toHaveValue("EH1 2NG");
@@ -58,7 +58,7 @@ describe("ApplicantTravelForm", () => {
       townOrCity: "Edinburgh",
       ukEmail: "sigmund.sigmundson@asgard.gov",
       ukMobileNumber: "07321900900",
-      visaCategory: "Visitor",
+      visaCategory: "Family reunion",
     });
     expect(useNavigateMock).toHaveBeenLastCalledWith("/travel-summary");
   });
@@ -66,7 +66,7 @@ describe("ApplicantTravelForm", () => {
   it("errors when travel details are missing", async () => {
     renderWithProviders(<ApplicantTravelForm />);
 
-    const submitButton = screen.getByRole("button", { name: /Save and Continue/i });
+    const submitButton = screen.getByRole("button", { name: /Continue/i });
 
     await user.click(submitButton);
 

@@ -30,7 +30,7 @@ export const saveSputumDecisionHandler = async (event: SaveSputumDecisionEvent) 
     //  Validate Sputum  Details Request
     const parsed = SputumDecisionRequestSchema.safeParse(parsedBody);
     if (!parsed.success) {
-      logger.error("Validation failed", parsed.error.flatten());
+      logger.error({ error: parsed.error.flatten() }, "Validation failed");
       return createHttpResponse(400, {
         message: "Sputum Decision Request validation failed",
       });

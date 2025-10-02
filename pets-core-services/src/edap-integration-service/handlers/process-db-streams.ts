@@ -52,9 +52,9 @@ const edapIntegrationHandler: Handler = async (
       await sqService.sendDbStreamMessage(stringifiedRecord);
 
       logger.info(`event ${record.dynamodb?.SequenceNumber} successfully processed`);
-    } catch (err) {
-      logger.error("ERR:", err);
-      logger.info("ERR records:", newRecord);
+    } catch (error) {
+      logger.error({ error }, "ERROR");
+      logger.info({ newRecord }, "ERROR records");
       batchItemFailures.push({
         itemIdentifier: record.dynamodb?.SequenceNumber ?? "",
       });

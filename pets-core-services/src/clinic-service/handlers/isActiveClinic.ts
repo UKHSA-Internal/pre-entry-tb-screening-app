@@ -16,7 +16,7 @@ export const isActiveClinicHandler = async (event: PetsAPIGatewayProxyEvent) => 
 
       return createHttpResponse(200, JSON.stringify({ isActive: isActive }));
     } catch (error) {
-      logger.error(`Checking clinic with ID: ${clinicId} failed`, error);
+      logger.error({ error }, `Checking clinic with ID: ${clinicId} failed`);
 
       return createHttpResponse(500, { message: "Something went wrong" });
     }
