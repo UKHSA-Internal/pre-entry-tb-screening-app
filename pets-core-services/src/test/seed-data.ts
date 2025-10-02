@@ -5,8 +5,8 @@ import { seededRadiologicalOutcome } from "../application-service/fixtures/radio
 import { seededSputumDecision } from "../application-service/fixtures/sputum-decision";
 import { seededTbCertificate } from "../application-service/fixtures/tb-certificate";
 import { seededTravelInformation } from "../application-service/fixtures/travel-information";
-import { ChestXRayDbOps } from "../application-service/models/chest-xray";
-import { MedicalScreening } from "../application-service/models/medical-screening";
+import { ChestXRay } from "../application-service/models/chest-xray";
+import { MedicalScreeningDbOps } from "../application-service/models/medical-screening";
 import { RadiologicalOutcome } from "../application-service/models/radiological-outcome";
 import { SputumDecision } from "../application-service/models/sputum-decision";
 import { TbCertificateDbOps } from "../application-service/models/tb-certificate";
@@ -31,11 +31,11 @@ export const seedDatabase = async () => {
   }
 
   for (const medicalScreening of seededMedicalScreening) {
-    await MedicalScreening.createMedicalScreening(medicalScreening);
+    await MedicalScreeningDbOps.createMedicalScreening(medicalScreening);
   }
 
   for (const chestXray of seededChestXray) {
-    await ChestXRayDbOps.createChestXray(chestXray);
+    await ChestXRay.createChestXray(chestXray);
   }
 
   for (const radiologicalOutcome of seededRadiologicalOutcome) {

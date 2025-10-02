@@ -62,7 +62,7 @@ export const TravelInformationResponseSchema = TravelInformationRequestSchema.ex
   }),
 });
 
-export const MedicalScreeningRequestSchema = z.object({
+export const MedicalScreeningBaseSchema = z.object({
   dateOfMedicalScreening: z.string().date().openapi({
     description: "Date of medical screening in ISO format",
   }),
@@ -105,25 +105,59 @@ export const MedicalScreeningRequestSchema = z.object({
   physicalExaminationNotes: z.string().openapi({
     description: "Notes from Physical Examination",
   }),
-  isXrayRequired: z.nativeEnum(YesOrNo).openapi({
+});
+
+export const MedicalScreeningChestXRayRequiredRequestSchema = MedicalScreeningBaseSchema.extend({
+  isXrayRequired: z.literal(YesOrNo.Yes).openapi({
     description: "Is X-ray required?",
   }),
-  reasonXrayNotRequired: z.nativeEnum(ChestXRayNotTakenReason).optional().openapi({
+});
+export const MedicalScreeningChestXRayNotRequiredRequestSchema = MedicalScreeningBaseSchema.extend({
+  isXrayRequired: z.literal(YesOrNo.No).openapi({
+    description: "Is X-ray required?",
+  }),
+  reasonXrayNotRequired: z.nativeEnum(ChestXRayNotTakenReason).openapi({
+    description: "Further details on why X-ray was not required",
+  }),
+  xrayNotRequiredFurtherDetails: z.string().optional().openapi({
     description: "Further details on why X-ray was not required",
   }),
 });
 
-export const MedicalScreeningResponseSchema = MedicalScreeningRequestSchema.extend({
-  applicationId: z.string().openapi({
-    description: "ID of application",
-  }),
-  dateCreated: z.string().date().openapi({
-    description: "Creation Date in UTC timezone",
-  }),
-  status: z.nativeEnum(TaskStatus).openapi({
-    description: "Status of Task",
-  }),
-});
+export const MedicalScreeningRequestSchema = z.union([
+  MedicalScreeningChestXRayRequiredRequestSchema,
+  MedicalScreeningChestXRayNotRequiredRequestSchema,
+]);
+
+export const MedicalScreeningXrayRequiredResponseSchema =
+  MedicalScreeningChestXRayRequiredRequestSchema.extend({
+    applicationId: z.string().openapi({
+      description: "ID of application",
+    }),
+    dateCreated: z.string().date().openapi({
+      description: "Creation Date in UTC timezone",
+    }),
+    status: z.nativeEnum(TaskStatus).openapi({
+      description: "Status of Task",
+    }),
+  });
+
+export const MedicalScreeningXrayNotRequiredResponseSchema =
+  MedicalScreeningChestXRayNotRequiredRequestSchema.extend({
+    applicationId: z.string().openapi({
+      description: "ID of application",
+    }),
+    dateCreated: z.string().date().openapi({
+      description: "Creation Date in UTC timezone",
+    }),
+    status: z.nativeEnum(TaskStatus).openapi({
+      description: "Status of Task",
+    }),
+  });
+export const MedicalScreeningResponseSchema = z.union([
+  MedicalScreeningXrayRequiredResponseSchema,
+  MedicalScreeningXrayNotRequiredResponseSchema,
+]);
 
 export const TbCertificateIssuedRequestSchema = z.object({
   isIssued: z.literal(YesOrNo.Yes),
@@ -207,8 +241,7 @@ export const ChestXRayNotTakenRequestSchema = z.object({
   }),
 });
 
-export const ChestXRayTakenRequestSchema = z.object({
-  chestXrayTaken: z.literal(YesOrNo.Yes),
+export const ChestXRayRequestSchema = z.object({
   dateXrayTaken: z.string().or(z.date()).openapi({
     description: "Date when the xray was taken (in ISO format)",
   }),
@@ -232,12 +265,7 @@ export const ChestXRayTakenRequestSchema = z.object({
   }),
 });
 
-export const ChestXRayRequestSchema = z.union([
-  ChestXRayTakenRequestSchema,
-  ChestXRayNotTakenRequestSchema,
-]);
-
-const ChestXRayNotTakenResponseSchema = ChestXRayNotTakenRequestSchema.extend({
+export const ChestXRayResponseSchema = ChestXRayRequestSchema.extend({
   dateCreated: z.string().date().openapi({
     description: "Creation Date in UTC timezone",
   }),
@@ -245,20 +273,6 @@ const ChestXRayNotTakenResponseSchema = ChestXRayNotTakenRequestSchema.extend({
     description: "Status of Task",
   }),
 });
-
-const ChestXRayTakenResponseSchema = ChestXRayTakenRequestSchema.extend({
-  dateCreated: z.string().date().openapi({
-    description: "Creation Date in UTC timezone",
-  }),
-  status: z.nativeEnum(TaskStatus).openapi({
-    description: "Status of Task",
-  }),
-});
-
-export const ChestXRayResponseSchema = z.union([
-  ChestXRayTakenResponseSchema,
-  ChestXRayNotTakenResponseSchema,
-]);
 
 export const ImageUploadUrlRequestSchema = z.object({
   fileName: z.string().openapi({

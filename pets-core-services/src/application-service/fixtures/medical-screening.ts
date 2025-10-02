@@ -1,5 +1,8 @@
 import { seededApplications } from "../../shared/fixtures/application";
-import { NewMedicalScreening } from "../models/medical-screening";
+import {
+  NewMedicalScreeningChestXray,
+  NewMedicalScreeningNoChestXray,
+} from "../models/medical-screening";
 import {
   ChestXRayNotTakenReason,
   HistoryOfConditionsUnder11,
@@ -9,7 +12,9 @@ import {
   YesOrNo,
 } from "../types/enums";
 
-export const seededMedicalScreening: NewMedicalScreening[] = [
+export const seededMedicalScreening: Array<
+  NewMedicalScreeningChestXray | NewMedicalScreeningNoChestXray
+> = [
   {
     applicationId: seededApplications[1].applicationId,
     dateOfMedicalScreening: "2025-05-05",
