@@ -62,8 +62,8 @@ describe("Fetching Clinics", () => {
     const res = await getClinicHandler({ ...event });
     expect(res.statusCode).toBe(500);
     expect(loggerMock).toHaveBeenLastCalledWith(
+      { error: Error("DB Error") },
       "Fetching clinic with ID: 12345 failed",
-      Error("DB Error"),
     );
   });
 

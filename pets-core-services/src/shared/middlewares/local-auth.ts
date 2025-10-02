@@ -39,8 +39,8 @@ export const simulateLambdaAuthorizer = async (request: {
       }
 
       Object.assign(request.event, { requestContext: { authorizer: { ...payload.context } } });
-    } catch (err) {
-      logger.error("Authorization failed:", err);
+    } catch (error) {
+      logger.error({ error }, "Authorization failed");
       return createHttpResponse(500, { message: "Invalid token" });
     }
   }

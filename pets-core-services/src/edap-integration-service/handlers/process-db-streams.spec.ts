@@ -76,7 +76,7 @@ describe("integrationHandler", () => {
     expect(result.batchItemFailures).toHaveLength(1);
     expect(sendToDLQMock).toHaveBeenCalledTimes(1);
     expect(sendToDLQMock).toHaveBeenCalledWith(JSON.stringify(sampleEvent.Records[0]));
-    expect(logger.error).toHaveBeenCalledWith("ERR:", expect.any(Error));
+    expect(logger.error).toHaveBeenCalledWith({ error: expect.any(Error) }, "ERROR");
   });
 
   test("error in sending to DLQ throws", async () => {

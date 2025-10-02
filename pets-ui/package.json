@@ -27,7 +27,7 @@
     "@react-pdf/renderer": "^4.3.0",
     "@reduxjs/toolkit": "^2.8.2",
     "@types/swagger-ui-react": "^5.18.0",
-    "axios": "^1.8.3",
+    "axios": "^1.12.2",
     "dicom-parser": "^1.8.21",
     "glob": "^11.0.3",
     "govuk-frontend": "^5.7.1",
