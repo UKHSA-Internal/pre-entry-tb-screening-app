@@ -5,7 +5,7 @@ import { VisaOptions } from "../types/enums";
 export const seededTravelInformation: Omit<ITravelInformation, "dateCreated" | "status">[] = [
   {
     applicationId: seededApplications[1].applicationId,
-    visaCategory: VisaOptions.Student,
+    visaCategory: VisaOptions.Study,
     ukAddressLine1: "182 Willow Crescent",
     ukAddressLine2: "Northfield",
     ukAddressTownOrCity: "Birmingham",
@@ -16,7 +16,7 @@ export const seededTravelInformation: Omit<ITravelInformation, "dateCreated" | "
   },
   {
     applicationId: seededApplications[2].applicationId,
-    visaCategory: VisaOptions.SkilledWorker,
+    visaCategory: VisaOptions.DoNotKnow,
     ukAddressLine1: "29 Maple Street",
     ukAddressLine2: "Camden",
     ukAddressTownOrCity: "London",
