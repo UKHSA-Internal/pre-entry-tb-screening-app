@@ -109,8 +109,8 @@ describe("Fetching an active clinic", () => {
 
     // expect(consoleMock).toHaveBeenCalledOnce();
     expect(consoleMock).toHaveBeenCalledWith(
+      { error: Error("DB Error") },
       "Checking clinic with ID: clinic-id-02 failed",
-      Error("DB Error"),
     );
     expect(JSON.parse(res.body)).toMatchObject({ message: "Something went wrong" });
     expect(res.statusCode).toBe(500);
