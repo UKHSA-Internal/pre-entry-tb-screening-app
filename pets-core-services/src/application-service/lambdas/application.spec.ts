@@ -60,7 +60,7 @@ describe("Test for Application Lambda", () => {
 
   describe("Travel Information", () => {
     const newTravelInfo = {
-      visaCategory: VisaOptions.Student,
+      visaCategory: VisaOptions.Study,
       ukAddressLine1: "first line",
       ukAddressLine2: "second line",
       ukAddressTownOrCity: "town or city",
