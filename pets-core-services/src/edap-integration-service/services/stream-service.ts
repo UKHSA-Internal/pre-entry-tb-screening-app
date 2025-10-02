@@ -23,8 +23,8 @@ class StreamService {
         try {
           return unmarshall(newImage);
         } catch (error) {
-          logger.error("unmarshall error:", error);
-          logger.error("error in record:", record);
+          logger.error({ error }, "unmarshall error");
+          logger.error({ record }, "error in record");
         }
       } else {
         logger.info(record);
