@@ -21,7 +21,10 @@ export default function TbSummaryPage() {
       : "Check certificate information";
 
   return (
-    <Container title="TB Summary" backLinkTo={backLinkUrl}>
+    <Container
+      title={pageTitle + " - Complete UK pre-entry health screening - GOV.UK"}
+      backLinkTo={backLinkUrl}
+    >
       <Heading level={1} size="l" title={pageTitle} />
       <TbSummary />
     </Container>

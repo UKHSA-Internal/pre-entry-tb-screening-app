@@ -10,7 +10,7 @@ export default function MedicalSummaryPage() {
 
   return (
     <Container
-      title="Medical screening summary"
+      title="Check medical screening - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo={
         medicalData.status == ApplicationStatus.COMPLETE ? "/tracker" : "/medical-screening"
       }

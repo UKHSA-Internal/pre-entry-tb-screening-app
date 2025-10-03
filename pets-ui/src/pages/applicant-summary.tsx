@@ -10,7 +10,7 @@ export default function ApplicantSummaryPage() {
 
   return (
     <Container
-      title="Applicant details summary"
+      title="Check applicant details - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo={
         applicantData.status == ApplicationStatus.COMPLETE
           ? "/tracker"

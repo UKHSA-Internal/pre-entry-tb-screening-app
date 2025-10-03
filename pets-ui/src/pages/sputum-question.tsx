@@ -9,7 +9,7 @@ export default function SputumQuestionPage() {
 
   return (
     <Container
-      title="Is sputum collection required?"
+      title="Is sputum collection required? - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo={
         chestXrayData.chestXrayTaken == YesOrNo.YES
           ? "/chest-xray-findings"
