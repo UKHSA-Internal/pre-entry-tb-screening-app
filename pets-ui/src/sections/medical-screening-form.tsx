@@ -40,7 +40,7 @@ const MedicalScreeningForm = () => {
     };
     dispatch(setMedicalScreeningDetails(dataWithCorrectedLists));
     dispatch(setMedicalScreeningStatus(ApplicationStatus.IN_PROGRESS));
-    navigate("/medical-summary");
+    navigate("/check-medical-screening");
   };
 
   const errorsToShow = Object.keys(errors);

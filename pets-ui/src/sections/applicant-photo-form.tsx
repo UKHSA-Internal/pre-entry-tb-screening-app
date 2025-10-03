@@ -40,7 +40,7 @@ const ApplicantPhotoForm = () => {
       setApplicantPhotoFile(applicantPhoto);
     }
 
-    navigate("/applicant-summary");
+    navigate("/check-applicant-details");
   };
 
   useEffect(() => {

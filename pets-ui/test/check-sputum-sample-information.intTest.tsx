@@ -190,7 +190,7 @@ describe("SputumSummary", () => {
     const saveButton = screen.getByText("Save and continue");
     await user.click(saveButton);
 
-    expect(useNavigateMock).toHaveBeenCalledWith("/sputum-confirmation");
+    expect(useNavigateMock).toHaveBeenCalledWith("/sputum-sample-information-confirmed");
     expect(mockPostSputumDetails).toHaveBeenCalledTimes(1);
   });
 
@@ -206,7 +206,7 @@ describe("SputumSummary", () => {
 
     await user.click(screen.getByText("Save and continue"));
     expect(mockPostSputumDetails).not.toHaveBeenCalled();
-    expect(useNavigateMock).toHaveBeenCalledWith("/sputum-confirmation");
+    expect(useNavigateMock).toHaveBeenCalledWith("/sputum-sample-information-confirmed");
   });
 
   it("should not show Change links when data has been submitted to database", () => {

@@ -14,7 +14,9 @@ export default function EnterSputumSampleResultsPage() {
   return (
     <Container
       title="Enter sputum sample results"
-      backLinkTo={allSputumSamplesSubmitted ? "/tracker" : "/sputum-collection"}
+      backLinkTo={
+        allSputumSamplesSubmitted ? "/tracker" : "/enter-sputum-sample-collection-information"
+      }
     >
       <SputumResultsForm />
     </Container>

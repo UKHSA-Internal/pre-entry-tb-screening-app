@@ -106,7 +106,7 @@ describe("MedicalScreeningForm", () => {
       underElevenConditions: ["Not applicable - applicant is aged 11 or over"],
       underElevenConditionsDetail: "",
     });
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/medical-summary");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-medical-screening");
   });
 
   it("state is updated from MedicalScreeningForm and then read by MedicalScreeningReview", async () => {

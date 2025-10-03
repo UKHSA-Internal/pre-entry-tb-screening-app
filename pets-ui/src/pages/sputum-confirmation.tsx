@@ -52,7 +52,7 @@ export default function SputumConfirmation() {
   })();
 
   return (
-    <Container title="Sputum confirmation" backLinkTo="/check-sputum-sample-information">
+    <Container title="Sputum confirmation" backLinkTo="/check-sputum-sample-information-results">
       <Confirmation
         confirmationText={confirmationText}
         furtherInfo={furtherInfo}

@@ -23,7 +23,7 @@ export default function TbConfirmationPage() {
     />,
     <LinkLabel
       key="search"
-      to="/applicant-search"
+      to="/search-for-visa-applicant"
       title="Search for another visa applicant"
       externalLink={false}
     />,
@@ -57,7 +57,7 @@ export default function TbConfirmationPage() {
             ? {
                 text: "View or print certificate",
                 onClick: () => {
-                  navigate("/tb-certificate-print");
+                  navigate("/tb-clearance-certificate");
                 },
               }
             : undefined

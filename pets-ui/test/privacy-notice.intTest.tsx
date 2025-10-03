@@ -84,7 +84,7 @@ describe("PrivacyNoticePage", () => {
       navigation: {
         checkSputumPreviousPage: "",
         accessibilityStatementPreviousPage: "",
-        privacyNoticePreviousPage: "/applicant-search",
+        privacyNoticePreviousPage: "/search-for-visa-applicant",
         signOutPreviousPage: "",
       },
     };
@@ -95,6 +95,6 @@ describe("PrivacyNoticePage", () => {
       { preloadedState },
     );
     const backLink = screen.getByRole("link", { name: "Back" });
-    expect(backLink).toHaveAttribute("href", "/applicant-search");
+    expect(backLink).toHaveAttribute("href", "/search-for-visa-applicant");
   });
 });

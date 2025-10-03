@@ -29,7 +29,7 @@ const ApplicantTravelForm = () => {
   const onSubmit: SubmitHandler<ReduxTravelDetailsType> = (travelData) => {
     dispatch(setTravelDetails(travelData));
     dispatch(setTravelDetailsStatus(ApplicationStatus.IN_PROGRESS));
-    navigate("/travel-summary");
+    navigate("/check-travel-information");
   };
 
   const errorsToShow = Object.keys(errors);

@@ -759,7 +759,7 @@ describe("ApplicantSearchForm", () => {
     expect(store.getState().medicalScreening).toEqual(emptyMedicalSlice);
     expect(store.getState().chestXray).toEqual(emptyChestXraySlice);
 
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-results");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/no-matching-record-found");
   });
 
   test("user is navigated to applicant results page when applicant search returns 500", async () => {

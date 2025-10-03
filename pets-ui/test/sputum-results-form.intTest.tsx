@@ -120,7 +120,7 @@ describe("SputumResultsForm", () => {
 
     await user.click(screen.getByRole("button", { name: /Save and continue/i }));
 
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-sputum-sample-information");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-sputum-sample-information-results");
 
     const state = store.getState();
     expect(state.sputum.sample1.smearResults.smearResult).toBe(PositiveOrNegative.POSITIVE);
@@ -210,7 +210,7 @@ describe("SputumResultsForm", () => {
       screen.queryByRole("link", { name: /Error: Select result of culture test/i }),
     ).not.toBeInTheDocument();
 
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-sputum-sample-information");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-sputum-sample-information-results");
   });
 
   test("ignores samples without collection dates for validation", async () => {
@@ -238,7 +238,7 @@ describe("SputumResultsForm", () => {
       screen.queryByRole("link", { name: /Error: Select result of culture test/i }),
     ).not.toBeInTheDocument();
 
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-sputum-sample-information");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-sputum-sample-information-results");
   });
 
   test("allows save when existing non-database values are present", async () => {
@@ -272,7 +272,7 @@ describe("SputumResultsForm", () => {
       screen.queryByRole("link", { name: /Error: Select result of culture test/i }),
     ).not.toBeInTheDocument();
 
-    expect(useNavigateMock).toHaveBeenCalledWith("/check-sputum-sample-information");
+    expect(useNavigateMock).toHaveBeenCalledWith("/check-sputum-sample-information-results");
   });
 
   test("shows validation errors when there are no results from database and no new entries", async () => {
@@ -479,7 +479,7 @@ describe("SputumResultsForm", () => {
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/sputum-collection");
+    expect(link).toHaveAttribute("href", "/enter-sputum-sample-collection-information");
     expect(link).toHaveClass("govuk-back-link");
   });
 });

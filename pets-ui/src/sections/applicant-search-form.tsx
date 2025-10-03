@@ -100,7 +100,7 @@ const ApplicantSearchForm = () => {
 
       const applicantRes = await getApplicants(passportDetails);
       if (applicantRes.data.length === 0) {
-        navigate("/applicant-results");
+        navigate("/no-matching-record-found");
         return;
       }
       dispatch(setApplicantDetailsFromApiResponse(applicantRes.data[0]));

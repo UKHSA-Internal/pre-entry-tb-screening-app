@@ -12,7 +12,9 @@ export default function ApplicantSummaryPage() {
     <Container
       title="Applicant details summary"
       backLinkTo={
-        applicantData.status == ApplicationStatus.COMPLETE ? "/tracker" : "/applicant-photo"
+        applicantData.status == ApplicationStatus.COMPLETE
+          ? "/tracker"
+          : "/upload-visa-applicant-photo"
       }
     >
       <Heading level={1} size="l" title="Check applicant details" />

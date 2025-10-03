@@ -65,7 +65,7 @@ const ApplicantReview = () => {
       }
 
       dispatch(setApplicantDetailsStatus(ApplicationStatus.COMPLETE));
-      navigate("/applicant-confirmation");
+      navigate("/visa-applicant-details-confirmed");
     } catch (error) {
       console.error(error);
       navigate("/error");
@@ -76,100 +76,100 @@ const ApplicantReview = () => {
     {
       key: "Name",
       value: applicantData.fullName,
-      link: `/contact#${attributeToComponentId.fullName}`,
+      link: `/enter-applicant-information#${attributeToComponentId.fullName}`,
       hiddenLabel: "name",
     },
     {
       key: "Sex",
       value: applicantData.sex,
-      link: `/contact#${attributeToComponentId.sex}`,
+      link: `/enter-applicant-information#${attributeToComponentId.sex}`,
       hiddenLabel: "sex",
     },
     {
       key: "Country of nationality",
       value: getCountryName(applicantData.countryOfNationality),
-      link: `/contact#${attributeToComponentId.countryOfNationality}`,
+      link: `/enter-applicant-information#${attributeToComponentId.countryOfNationality}`,
       hiddenLabel: "country of nationality",
     },
     {
       key: "Date of birth",
       value: `${applicantData.dateOfBirth.day}/${applicantData.dateOfBirth.month}/${applicantData.dateOfBirth.year}`,
-      link: `/contact#${attributeToComponentId.dateOfBirth}`,
+      link: `/enter-applicant-information#${attributeToComponentId.dateOfBirth}`,
       hiddenLabel: "date of birth",
     },
     {
       key: "Passport number",
       value: applicantData.passportNumber,
-      link: `/contact#${attributeToComponentId.passportNumber}`,
+      link: `/enter-applicant-information#${attributeToComponentId.passportNumber}`,
       hiddenLabel: "passport number",
     },
     {
       key: "Country of issue",
       value: getCountryName(applicantData.countryOfIssue),
-      link: `/contact#${attributeToComponentId.countryOfIssue}`,
+      link: `/enter-applicant-information#${attributeToComponentId.countryOfIssue}`,
       hiddenLabel: "country of issue",
     },
     {
       key: "Passport issue date",
       value: `${applicantData.passportIssueDate.day}/${applicantData.passportIssueDate.month}/${applicantData.passportIssueDate.year}`,
-      link: `/contact#${attributeToComponentId.passportIssueDate}`,
+      link: `/enter-applicant-information#${attributeToComponentId.passportIssueDate}`,
       hiddenLabel: "passport issue date",
     },
     {
       key: "Passport expiry date",
       value: `${applicantData.passportExpiryDate.day}/${applicantData.passportExpiryDate.month}/${applicantData.passportExpiryDate.year}`,
-      link: `/contact#${attributeToComponentId.passportExpiryDate}`,
+      link: `/enter-applicant-information#${attributeToComponentId.passportExpiryDate}`,
       hiddenLabel: "passport expiry date",
     },
     {
       key: "Home address line 1",
       value: applicantData.applicantHomeAddress1,
-      link: `/contact#${attributeToComponentId.applicantHomeAddress1}`,
+      link: `/enter-applicant-information#${attributeToComponentId.applicantHomeAddress1}`,
       hiddenLabel: "home address line 1",
     },
     {
       key: "Home address line 2",
       value: applicantData.applicantHomeAddress2,
-      link: `/contact#${attributeToComponentId.applicantHomeAddress2}`,
+      link: `/enter-applicant-information#${attributeToComponentId.applicantHomeAddress2}`,
       hiddenLabel: "home address line 2",
       emptyValueText: "Enter home address line 2 (optional)",
     },
     {
       key: "Home address line 3",
       value: applicantData.applicantHomeAddress3,
-      link: `/contact#${attributeToComponentId.applicantHomeAddress3}`,
+      link: `/enter-applicant-information#${attributeToComponentId.applicantHomeAddress3}`,
       hiddenLabel: "home address line 3",
       emptyValueText: "Enter home address line 3 (optional)",
     },
     {
       key: "Town or city",
       value: applicantData.townOrCity,
-      link: `/contact#${attributeToComponentId.townOrCity}`,
+      link: `/enter-applicant-information#${attributeToComponentId.townOrCity}`,
       hiddenLabel: "home town or city",
     },
     {
       key: "Province or state",
       value: applicantData.provinceOrState,
-      link: `/contact#${attributeToComponentId.provinceOrState}`,
+      link: `/enter-applicant-information#${attributeToComponentId.provinceOrState}`,
       hiddenLabel: "home province or state",
     },
     {
       key: "Country",
       value: getCountryName(applicantData.country),
-      link: `/contact#${attributeToComponentId.country}`,
+      link: `/enter-applicant-information#${attributeToComponentId.country}`,
       hiddenLabel: "country",
     },
     {
       key: "Postcode",
       value: applicantData.postcode,
-      link: `/contact#${attributeToComponentId.postcode}`,
+      link: `/enter-applicant-information#${attributeToComponentId.postcode}`,
       hiddenLabel: "postcode",
       emptyValueText: "Enter postcode (optional)",
     },
     {
       key: "Applicant Photo",
       value: applicantData.applicantPhotoFileName,
-      link: "/applicant-photo",
+      link: "/upload-visa-applicant-photo",
       hiddenLabel: "applicant photo",
       emptyValueText: "Upload visa applicant photo (optional)",
     },

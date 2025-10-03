@@ -8,11 +8,11 @@ import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 export default function TbSummaryPage() {
   const tbCertificateData = useAppSelector(selectTbCertificate);
 
-  let backLinkUrl = "/tb-certificate-declaration";
+  let backLinkUrl = "/enter-clinic-certificate-information";
   if (tbCertificateData.status === ApplicationStatus.COMPLETE) {
     backLinkUrl = "/tracker";
   } else if (tbCertificateData.isIssued === YesOrNo.NO) {
-    backLinkUrl = "/tb-certificate-not-issued";
+    backLinkUrl = "/why-are-you-not-issuing-certificate";
   }
 
   const pageTitle =

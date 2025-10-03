@@ -3,7 +3,7 @@ import ApplicantEmptyResult from "@/sections/applicant-no-results";
 
 export default function ApplicantResultsPage() {
   return (
-    <Container title="Applicant results" backLinkTo="/applicant-search">
+    <Container title="Applicant results" backLinkTo="/search-for-visa-applicant">
       <ApplicantEmptyResult />
     </Container>
   );

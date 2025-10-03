@@ -3,7 +3,7 @@ import Container from "@/components/container/container";
 
 export default function ApplicantConfirmation() {
   return (
-    <Container title="Applicant details confirmation" backLinkTo="/applicant-summary">
+    <Container title="Applicant details confirmation" backLinkTo="/check-applicant-details">
       <Confirmation
         confirmationText={"Visa applicant details confirmed"}
         furtherInfo={["You can now return to the progress tracker."]}

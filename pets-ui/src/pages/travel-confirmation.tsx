@@ -3,7 +3,7 @@ import Container from "@/components/container/container";
 
 export default function TravelConfirmation() {
   return (
-    <Container title="Travel details confirmation" backLinkTo="/travel-summary">
+    <Container title="Travel details confirmation" backLinkTo="/check-travel-information">
       <Confirmation
         confirmationText={"Travel information confirmed"}
         furtherInfo={["You can now return to the progress tracker."]}

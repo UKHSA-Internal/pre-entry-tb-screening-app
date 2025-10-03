@@ -36,7 +36,7 @@ describe("Applicant Confirmation page", () => {
   test("Back link points to applicant summary page", () => {
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/applicant-summary");
+    expect(link).toHaveAttribute("href", "/check-applicant-details");
     expect(link).toHaveClass("govuk-back-link");
   });
 });

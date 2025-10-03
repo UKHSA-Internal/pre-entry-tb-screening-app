@@ -67,7 +67,7 @@ export default function TbCertificatePrintPage() {
   return (
     <Container
       title="TB clearance certificate - Complete UK pre-entry health screening - GOV.UK"
-      backLinkTo="/tb-certificate-confirmation"
+      backLinkTo="/tb-screening-complete"
     >
       <div className="govuk-grid-row">
         <div className="govuk-grid-column-full">

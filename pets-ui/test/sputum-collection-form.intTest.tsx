@@ -299,7 +299,7 @@ describe("SputumCollectionForm", () => {
     expect(screen.getByTestId("error-summary")).toBeInTheDocument();
   });
 
-  test("updates store and navigates to '/check-sputum-sample-information' on 'Save progress' with valid data for all samples", async () => {
+  test("updates store and navigates to '/check-sputum-sample-information-results' on 'Save progress' with valid data for all samples", async () => {
     const { store } = renderWithProviders(<SputumCollectionForm />, {
       preloadedState: preloadedStateWithEmptySputum,
     });
@@ -375,7 +375,7 @@ describe("SputumCollectionForm", () => {
       expect(sputumState.sample3.collection.collectionMethod).toBe("Gastric lavage");
       expect(sputumState.sample3.collection.submittedToDatabase).toBe(false);
       expect(sputumState.version).toBe(1);
-      expect(useNavigateMock).toHaveBeenCalledWith("/check-sputum-sample-information");
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-sputum-sample-information-results");
     });
   });
 
@@ -529,7 +529,7 @@ describe("SputumCollectionForm", () => {
 
     await waitFor(() => {
       expect(mockPostSputumDetails).not.toHaveBeenCalled();
-      expect(useNavigateMock).toHaveBeenCalledWith("/check-sputum-sample-information");
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-sputum-sample-information-results");
     });
   });
 
@@ -594,7 +594,7 @@ describe("SputumCollectionForm", () => {
       expect(sputumState.sample1.collection.collectionMethod).toBe("Coughed up");
       expect(sputumState.sample1.collection.submittedToDatabase).toBe(false);
 
-      expect(useNavigateMock).toHaveBeenCalledWith("/check-sputum-sample-information");
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-sputum-sample-information-results");
     });
   });
 

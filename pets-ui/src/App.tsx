@@ -54,7 +54,7 @@ function App() {
         }
       />
       <Route
-        path="/applicant-search"
+        path="/search-for-visa-applicant"
         element={
           <AuthenticatedRoute>
             <ApplicantSearchPage />
@@ -72,7 +72,7 @@ function App() {
         }
       />
       <Route
-        path="/applicant-results"
+        path="/no-matching-record-found"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -82,7 +82,7 @@ function App() {
         }
       />
       <Route
-        path="/contact"
+        path="/enter-applicant-information"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -92,7 +92,7 @@ function App() {
         }
       />
       <Route
-        path="/applicant-photo"
+        path="/upload-visa-applicant-photo"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -102,7 +102,7 @@ function App() {
         }
       />
       <Route
-        path="/applicant-summary"
+        path="/check-applicant-details"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -112,7 +112,7 @@ function App() {
         }
       />
       <Route
-        path="/applicant-confirmation"
+        path="/visa-applicant-details-confirmed"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -132,7 +132,7 @@ function App() {
         }
       />
       <Route
-        path="/medical-summary"
+        path="/check-medical-screening"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -142,7 +142,7 @@ function App() {
         }
       />
       <Route
-        path="/medical-confirmation"
+        path="/medical-history-tb-symptoms-confirmed"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -152,7 +152,7 @@ function App() {
         }
       />
       <Route
-        path="/travel-details"
+        path="/travel-information"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -162,7 +162,7 @@ function App() {
         }
       />
       <Route
-        path="/travel-summary"
+        path="/check-travel-information"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -172,7 +172,7 @@ function App() {
         }
       />
       <Route
-        path="/travel-confirmation"
+        path="/travel-information-confirmed"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -252,7 +252,7 @@ function App() {
         }
       />
       <Route
-        path="/sputum-confirmation"
+        path="/sputum-sample-information-confirmed"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -262,7 +262,7 @@ function App() {
         }
       />
       <Route
-        path="/sputum-collection"
+        path="/enter-sputum-sample-collection-information"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -272,7 +272,7 @@ function App() {
         }
       />
       <Route
-        path="/check-sputum-sample-information"
+        path="/check-sputum-sample-information-results"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -292,7 +292,7 @@ function App() {
         }
       />
       <Route
-        path="/tb-certificate-question"
+        path="/will-you-issue-tb-clearance-certificate"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -302,7 +302,7 @@ function App() {
         }
       />
       <Route
-        path="/tb-certificate-declaration"
+        path="/enter-clinic-certificate-information"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -312,7 +312,7 @@ function App() {
         }
       />
       <Route
-        path="/tb-certificate-not-issued"
+        path="/why-are-you-not-issuing-certificate"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -332,7 +332,7 @@ function App() {
         }
       />
       <Route
-        path="/tb-certificate-print"
+        path="/tb-clearance-certificate"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -342,7 +342,7 @@ function App() {
         }
       />
       <Route
-        path="/tb-certificate-confirmation"
+        path="/tb-screening-complete"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -360,7 +360,7 @@ function App() {
         }
       />
       <Route
-        path="/sign-out"
+        path="/are-you-sure-you-want-to-sign-out"
         element={
           <AuthenticatedRoute>
             <SignOutPage />
@@ -368,7 +368,7 @@ function App() {
         }
       />
       <Route
-        path="/signed-out"
+        path="/you-have-signed-out"
         element={
           <UnauthenticatedRoute>
             <SignedOutPage />

@@ -11,7 +11,9 @@ export default function TravelSummaryPage() {
   return (
     <Container
       title="Applicant travel information summary"
-      backLinkTo={travelData.status == ApplicationStatus.COMPLETE ? "/tracker" : "/travel-details"}
+      backLinkTo={
+        travelData.status == ApplicationStatus.COMPLETE ? "/tracker" : "/travel-information"
+      }
     >
       <Heading level={1} size="l" title="Check travel information" />
       <TravelReview />

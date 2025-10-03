@@ -16,7 +16,7 @@ export default function SignOutPage() {
   const handleSignOut = () => {
     instance
       .logoutRedirect({
-        postLogoutRedirectUri: "/signed-out",
+        postLogoutRedirectUri: "/you-have-signed-out",
       })
       .catch((error) => {
         console.error("MSAL logout error: ", error);
