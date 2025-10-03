@@ -80,7 +80,14 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
     processFiles(files);
 
     if (files.length > 0 && fileInputRef.current && typeof rhfOnChange === "function") {
-      if (typeof DataTransfer !== "undefined") {
+      if (typeof DataTransfer === "undefined") {
+        const syntheticEvent = {
+          target: {
+            files: files,
+          },
+        } as unknown as React.ChangeEvent<HTMLInputElement>;
+        void rhfOnChange(syntheticEvent);
+      } else {
         const dt = new DataTransfer();
         files.forEach((file) => dt.items.add(file));
         fileInputRef.current.files = dt.files;
@@ -88,13 +95,6 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
         const syntheticEvent = {
           target: fileInputRef.current,
         } as React.ChangeEvent<HTMLInputElement>;
-        void rhfOnChange(syntheticEvent);
-      } else {
-        const syntheticEvent = {
-          target: {
-            files: files,
-          },
-        } as unknown as React.ChangeEvent<HTMLInputElement>;
         void rhfOnChange(syntheticEvent);
       }
     }
@@ -163,6 +163,9 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
           <div
             data-module="govuk-file-upload"
             className="govuk-body file-upload-existing-file"
+            role="application"
+            aria-label="File drop zone"
+            tabIndex={0}
             onDrop={handleDrop}
             onDragOver={preventDragDefaults}
             onDragEnter={preventDragDefaults}

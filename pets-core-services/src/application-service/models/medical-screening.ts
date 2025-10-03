@@ -225,8 +225,6 @@ export class MedicalScreeningDbOps {
           ? new MedicalScreeningChestXray(updatedDetails as IMedicalScreeningChestXray)
           : new MedicalScreeningNoChestXray(updatedDetails as IMedicalScreeningNoChestXray);
 
-      // new MedicalScreening(updatedDetails);
-
       const dbItem = MedicalScreeningDbOps.todbItem(medicalScreening);
       const params: PutCommandInput = {
         TableName: MedicalScreeningDbOps.getTableName(),

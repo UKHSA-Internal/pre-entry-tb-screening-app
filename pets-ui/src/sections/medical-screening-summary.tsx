@@ -23,12 +23,14 @@ const MedicalScreeningReview = () => {
 
   const mapBackendToDisplay = (backendValue: string): string => {
     if (backendValue === "Child") return "Child (under 11 years)";
+    if (backendValue === "Pregnant") return "Pregnant";
     return backendValue;
   };
 
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
+      const originalReason = medicalData.reasonXrayNotRequired;
       await postMedicalDetails(applicationData.applicationId, {
         dateOfMedicalScreening:
           medicalData.completionDate.year &&
@@ -50,7 +52,7 @@ const MedicalScreeningReview = () => {
         haveMenstralPeriod: medicalData.menstrualPeriods,
         physicalExaminationNotes: medicalData.physicalExamNotes,
         isXrayRequired: medicalData.chestXrayTaken || YesOrNo.NULL,
-        reasonXrayNotRequired: medicalData.reasonXrayNotRequired || undefined,
+        reasonXrayNotRequired: originalReason,
       });
 
       dispatch(setMedicalScreeningStatus(ApplicationStatus.COMPLETE));
@@ -170,8 +172,7 @@ const MedicalScreeningReview = () => {
     },
     {
       key: "Is an X-ray required?",
-      value:
-        medicalData.chestXrayTaken !== YesOrNo.NULL ? medicalData.chestXrayTaken : "Not provided",
+      value: medicalData.chestXrayTaken,
       link: `/chest-xray-question#${attributeToComponentId.chestXrayTaken}`,
       hiddenLabel: "whether X-ray is required",
       emptyValueText: "Enter whether X-ray is required (optional)",

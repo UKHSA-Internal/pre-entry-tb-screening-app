@@ -154,3 +154,11 @@ input[type='file'].hide-text {
   color: #0b0c0c;
   font-size: 16px;
 }
+
+.govuk-radios__conditional {
+  border-left: 4px solid #b1b4b6;
+}
+
+.govuk-radios__conditional--error {
+  border-left: 4px solid #d4351c;
+}
