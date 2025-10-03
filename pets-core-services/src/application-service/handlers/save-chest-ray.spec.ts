@@ -7,12 +7,10 @@ import { seededApplications } from "../../shared/fixtures/application";
 import { logger } from "../../shared/logger";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededChestXray } from "../fixtures/chest-xray";
-import { ChestXRayDbOps } from "../models/chest-xray";
-import { YesOrNo } from "../types/enums";
+import { ChestXRay } from "../models/chest-xray";
 import { SaveChestXrayEvent, saveChestXRayHandler } from "./save-chest-ray";
 
-const newChestXrayTaken: SaveChestXrayEvent["parsedBody"] = {
-  chestXrayTaken: YesOrNo.Yes,
+const newChestXray: SaveChestXrayEvent["parsedBody"] = {
   dateXrayTaken: "2025-05-05",
   posteroAnteriorXrayFileName: "posterior-anterior.dicom",
   posteroAnteriorXray: "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/postero-anterior.dcm",
@@ -43,7 +41,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[3].applicationId },
-      parsedBody: newChestXrayTaken,
+      parsedBody: newChestXray,
     };
 
     // Act
@@ -53,7 +51,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toMatchObject({
       applicationId: seededApplications[3].applicationId,
-      ...newChestXrayTaken,
+      ...newChestXray,
       dateXrayTaken: expect.any(String),
       dateCreated: expect.any(String),
     });
@@ -80,11 +78,9 @@ describe("Test for Saving Chest X-ray into DB", () => {
     // Arrange;
     const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
     const errorMessage = "Couldn't save it";
-    const chestXrayDbOpsMock = vi
-      .spyOn(ChestXRayDbOps, "createChestXray")
-      .mockImplementation(() => {
-        throw new Error(errorMessage);
-      });
+    const chestXrayMock = vi.spyOn(ChestXRay, "createChestXray").mockImplementation(() => {
+      throw new Error(errorMessage);
+    });
     const existingChestXray = seededChestXray[0];
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
@@ -98,7 +94,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     // Assert
     expect(response.statusCode).toEqual(500);
     expect(errorLoggerMock).toHaveBeenCalledWith(Error(errorMessage), "Error saving Chest X-ray");
-    chestXrayDbOpsMock.mockReset();
+    chestXrayMock.mockReset();
   });
 
   test("Invalid Object Key for any image throws a 400 error", async () => {
@@ -106,7 +102,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[3].applicationId },
       parsedBody: {
-        ...newChestXrayTaken,
+        ...newChestXray,
         posteroAnteriorXray: "invalid-object-key",
       },
     };
@@ -124,7 +120,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[3].applicationId },
-      parsedBody: newChestXrayTaken,
+      parsedBody: newChestXray,
     };
 
     s3ClientMock.on(HeadObjectCommand).resolves({
@@ -148,7 +144,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[3].applicationId },
-      parsedBody: newChestXrayTaken,
+      parsedBody: newChestXray,
     };
 
     s3ClientMock.on(HeadObjectCommand).rejects(Error("S3 error"));
@@ -165,7 +161,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[0].applicationId },
-      parsedBody: newChestXrayTaken,
+      parsedBody: newChestXray,
     };
 
     // Act
