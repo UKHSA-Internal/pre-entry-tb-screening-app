@@ -30,7 +30,7 @@ export const saveSputumDetailsHandler = async (event: SaveSputumDetailsEvent) =>
     //  Validate Sputum  Details Request
     const parsed = SputumRequestSchema.safeParse(parsedBody);
     if (!parsed.success) {
-      logger.error("Validation failed", parsed.error.flatten());
+      logger.error({ error: parsed.error.flatten() }, "Validation failed");
       return createHttpResponse(400, {
         message: "Sputum Details Request validation failed",
       });

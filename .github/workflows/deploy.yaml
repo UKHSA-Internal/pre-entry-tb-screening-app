@@ -46,6 +46,8 @@ jobs:
     env:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
+      VITE_MSAL_CLIENT_ID: ${{ secrets.VITE_MSAL_CLIENT_ID }}
+      VITE_MSAL_TENANT_ID: ${{ secrets.VITE_MSAL_TENANT_ID }}
 
     outputs:
       config: ${{ steps.deployment-config.outputs.deploy_config }}
@@ -86,6 +88,8 @@ jobs:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
       APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+      VITE_MSAL_CLIENT_ID: ${{ secrets.VITE_MSAL_CLIENT_ID }}
+      VITE_MSAL_TENANT_ID: ${{ secrets.VITE_MSAL_TENANT_ID }}
       VITE_SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
 
     strategy:
@@ -187,7 +191,10 @@ jobs:
     env:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+      VITE_MSAL_CLIENT_ID: ${{ secrets.VITE_MSAL_CLIENT_ID }}
+      VITE_MSAL_TENANT_ID: ${{ secrets.VITE_MSAL_TENANT_ID }}
       VITE_SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
+      VITE_GA_CONFIG_ID: ${{ vars.GA_CONFIG_ID }}
 
     steps:
       - name: Checkout code

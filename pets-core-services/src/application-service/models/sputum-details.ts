@@ -261,7 +261,10 @@ export class SputumDetailsDbOps {
       });
 
       if (!completionCheck.success) {
-        logger.info("Sputum sample completion check failed", completionCheck.error.flatten());
+        logger.info(
+          { error: completionCheck.error.flatten() },
+          "Sputum sample completion check failed",
+        );
       }
 
       const isFirstInsert = !existingItemRaw || existingItemRaw.version === undefined;
@@ -305,7 +308,7 @@ export class SputumDetailsDbOps {
 
       return updatedSputumDetails;
     } catch (error) {
-      logger.error("Update failed", { error });
+      logger.error({ error }, "Update failed");
       throw error;
     }
   }
