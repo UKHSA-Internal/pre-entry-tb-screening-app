@@ -90,12 +90,17 @@ describe("Test for Sputum Decision into DB", () => {
     const response = await saveSputumDecisionHandler(event);
 
     // Assert
-    expect(errorLoggerMock).toHaveBeenCalledWith("Validation failed", {
-      fieldErrors: {
-        sputumRequired: ["Invalid enum value. Expected 'Yes' | 'No', received 'IDK'"],
+    expect(errorLoggerMock).toHaveBeenCalledWith(
+      {
+        error: {
+          fieldErrors: {
+            sputumRequired: ["Invalid enum value. Expected 'Yes' | 'No', received 'IDK'"],
+          },
+          formErrors: [],
+        },
       },
-      formErrors: [],
-    });
+      "Validation failed",
+    );
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Sputum Decision Request validation failed",

@@ -15,14 +15,16 @@ describe("Load and validate Clinics from json file", () => {
     const res = readClinicsFile(fileName);
     expect(consoleMock).toHaveBeenCalledOnce();
     expect(consoleMock).toHaveBeenCalledWith(
-      "File reading error:",
-      expect.objectContaining({
-        message: `ENOENT: no such file or directory, open '${process.cwd()}/${fileName}'`,
-        errno: -2,
-        syscall: "open",
-        code: "ENOENT",
-        path: `${process.cwd()}/${fileName}`,
-      }),
+      {
+        error: expect.objectContaining({
+          message: `ENOENT: no such file or directory, open '${process.cwd()}/${fileName}'`,
+          errno: -2,
+          syscall: "open",
+          code: "ENOENT",
+          path: `${process.cwd()}/${fileName}`,
+        }),
+      },
+      "File reading error",
     );
     expect(res).toBeUndefined();
   });

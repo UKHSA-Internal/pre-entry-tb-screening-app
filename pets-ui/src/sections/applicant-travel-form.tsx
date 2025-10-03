@@ -74,12 +74,13 @@ const ApplicantTravelForm = () => {
         <div ref={visaCategoryRef}>
           <Dropdown
             id="visa-category"
-            heading="Visa category"
+            heading="Proposed visa category"
             options={visaOptions}
             errorMessage={errors?.visaCategory?.message ?? ""}
             formValue="visaCategory"
             required="Select a visa category"
             defaultValue={travelData.visaCategory}
+            placeholder="Select visa category"
           />
         </div>
 
@@ -163,7 +164,7 @@ const ApplicantTravelForm = () => {
           />
         </div>
 
-        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Save and continue" />
+        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

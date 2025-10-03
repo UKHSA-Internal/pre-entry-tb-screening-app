@@ -90,7 +90,7 @@ describe("Getting Application Handler", () => {
         ukAddressPostcode: "B12 8QP",
         ukMobileNumber: "07001234567",
         ukEmailAddress: "JaneDoe@email.com",
-        visaCategory: "Student",
+        visaCategory: "Study",
       },
       // Defined in pets-core-services/src/application-service/fixtures/medical-screening.ts
       medicalScreening: {

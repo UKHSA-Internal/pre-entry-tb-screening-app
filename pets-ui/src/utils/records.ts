@@ -151,6 +151,29 @@ const dateEntryMustBeInTheFuture: string[] = ["passportExpiryDate"];
 
 const visaOptions = [
   {
+    value: "Work",
+    label: "Work",
+  },
+  {
+    value: "Study",
+    label: "Study",
+  },
+  {
+    value: "Family reunion",
+    label: "Family reunion",
+  },
+  {
+    value: "Other",
+    label: "Other",
+  },
+  {
+    value: "Do not know",
+    label: "Do not know",
+  },
+];
+
+const legacyVisaOptions = [
+  {
     value: "HM Armed Forces",
     label: "HM Armed Forces",
   },
@@ -280,6 +303,7 @@ export {
   dateEntryNames,
   dateValidationMessages,
   formRegex,
+  legacyVisaOptions,
   longNumericStrings,
   shortNumericStrings,
   sputumResultsValidationMessages,

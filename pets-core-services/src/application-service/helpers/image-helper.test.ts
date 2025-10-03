@@ -54,7 +54,7 @@ describe("ImageHelper", () => {
       s3ClientMock.on(ListObjectsV2Command).rejects(error);
 
       await expect(ImageHelper.getPresignedUrlforImage(bucket, key)).rejects.toThrow("S3 error");
-      expect(errorloggerMock).toHaveBeenCalledWith("Error fetching image:", error);
+      expect(errorloggerMock).toHaveBeenCalledWith({ error: error }, "Error fetching image");
     });
   });
 });

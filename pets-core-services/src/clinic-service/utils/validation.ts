@@ -88,8 +88,8 @@ export const readClinicsFile = (filePathString: string): string | void => {
     logger.info(`File data (from file): ${data.length}`);
 
     return data;
-  } catch (err) {
-    logger.error(`File reading error:`, err);
+  } catch (error) {
+    logger.error({ error }, "File reading error");
 
     return;
   }
