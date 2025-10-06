@@ -16,52 +16,41 @@ import {
 const { dynamoDBDocClient: docClient } = awsClients;
 
 export abstract class MedicalScreeningBase {
-  applicationId: string;
-  status: TaskStatus;
+  applicationId!: string;
+  status!: TaskStatus;
 
-  dateOfMedicalScreening: Date;
-  age: number;
-  symptomsOfTb: YesOrNo;
-  symptoms: TbSymptomsOptions[];
+  dateOfMedicalScreening!: Date;
+  age!: number;
+  symptomsOfTb!: YesOrNo;
+  symptoms!: TbSymptomsOptions[];
   symptomsOther?: string;
-  historyOfConditionsUnder11: HistoryOfConditionsUnder11[];
+  historyOfConditionsUnder11!: HistoryOfConditionsUnder11[];
   historyOfConditionsUnder11Details?: string;
-  historyOfPreviousTb: YesOrNo;
+  historyOfPreviousTb!: YesOrNo;
   previousTbDetails?: string;
-  contactWithPersonWithTb: YesOrNo;
+  contactWithPersonWithTb!: YesOrNo;
   contactWithTbDetails?: string;
-  pregnant: PregnancyStatus;
-  haveMenstralPeriod: MenstrualPeriods;
-  physicalExaminationNotes: string;
-  isXrayRequired: YesOrNo;
-  reasonXrayNotRequired?: ChestXRayNotTakenReason;
+  pregnant!: PregnancyStatus;
+  haveMenstralPeriod!: MenstrualPeriods;
+  physicalExaminationNotes!: string;
 
-  dateCreated: Date;
-  createdBy: string;
+  dateCreated!: Date;
+  createdBy!: string;
 
-  constructor(details: MedicalScreeningBase) {
-    this.applicationId = details.applicationId;
-    this.status = details.status;
+  constructor(details: Partial<MedicalScreeningBase>) {
+    Object.assign(this, details); // copies all matching props
+  }
 
-    this.dateOfMedicalScreening = details.dateOfMedicalScreening;
-    this.age = details.age;
-    this.symptomsOfTb = details.symptomsOfTb;
-    this.symptoms = details.symptoms;
-    this.symptomsOther = details.symptomsOther;
-    this.historyOfConditionsUnder11 = details.historyOfConditionsUnder11;
-    this.historyOfConditionsUnder11Details = details.historyOfConditionsUnder11Details;
-    this.historyOfPreviousTb = details.historyOfPreviousTb;
-    this.previousTbDetails = details.previousTbDetails;
-    this.contactWithPersonWithTb = details.contactWithPersonWithTb;
-    this.contactWithTbDetails = details.contactWithTbDetails;
-    this.pregnant = details.pregnant;
-    this.haveMenstralPeriod = details.haveMenstralPeriod;
-    this.physicalExaminationNotes = details.physicalExaminationNotes;
-    this.isXrayRequired = details.isXrayRequired;
-    this.reasonXrayNotRequired = details.reasonXrayNotRequired;
-    // Audit
-    this.dateCreated = details.dateCreated;
-    this.createdBy = details.createdBy;
+  toJson() {
+    // Copy everything from this
+    const json = { ...this } as Record<string, unknown>;
+
+    // Exclude internal fields
+    delete json.createdBy;
+    delete json.pk;
+    delete json.sk;
+
+    return json;
   }
 }
 type IMedicalScreeningChestXray = {
@@ -82,8 +71,8 @@ type IMedicalScreeningChestXray = {
   pregnant: PregnancyStatus;
   haveMenstralPeriod: MenstrualPeriods;
   physicalExaminationNotes: string;
-  isXrayRequired: YesOrNo.Yes;
-
+  isXrayRequired: YesOrNo;
+  reasonXrayNotRequired?: ChestXRayNotTakenReason;
   dateCreated: Date;
   createdBy: string;
 };
@@ -96,37 +85,16 @@ export type NewMedicalScreeningChestXray = Omit<
 };
 
 export class MedicalScreeningChestXray extends MedicalScreeningBase {
-  isXrayRequired: YesOrNo.Yes;
+  isXrayRequired!: YesOrNo.Yes;
 
   constructor(details: IMedicalScreeningChestXray) {
     super(details);
-    this.isXrayRequired = details.isXrayRequired;
-  }
-
-  toJson() {
-    return {
-      applicationId: this.applicationId,
-      status: this.status,
-      dateOfMedicalScreening: this.dateOfMedicalScreening,
-      age: this.age,
-      symptomsOfTb: this.symptomsOfTb,
-      symptoms: this.symptoms,
-      symptomsOther: this.symptomsOther,
-      historyOfConditionsUnder11: this.historyOfConditionsUnder11,
-      historyOfConditionsUnder11Details: this.historyOfConditionsUnder11Details,
-      historyOfPreviousTb: this.historyOfPreviousTb,
-      previousTbDetails: this.previousTbDetails,
-      contactWithPersonWithTb: this.contactWithPersonWithTb,
-      contactWithTbDetails: this.contactWithTbDetails,
-      pregnant: this.pregnant,
-      haveMenstralPeriod: this.haveMenstralPeriod,
-      physicalExaminationNotes: this.physicalExaminationNotes,
-      isXrayRequired: this.isXrayRequired,
-      // Audit
-      dateCreated: this.dateCreated,
-    };
+    Object.assign(this, details);
   }
 }
+type IMedicalScreeningChestXray = {
+  applicationId: string;
+  status: TaskStatus;
 
 type IMedicalScreeningNoChestXray = {
   applicationId: string;
@@ -162,41 +130,13 @@ export type NewMedicalScreeningNoChestXray = Omit<
 };
 
 export class MedicalScreeningNoChestXray extends MedicalScreeningBase {
-  isXrayRequired: YesOrNo.No;
-  reasonXrayNotRequired: ChestXRayNotTakenReason;
+  isXrayRequired!: YesOrNo.No;
+  reasonXrayNotRequired!: ChestXRayNotTakenReason;
   reasonXrayNotRequiredFurthurDetails?: string;
 
   constructor(details: IMedicalScreeningNoChestXray) {
     super(details);
-    this.isXrayRequired = details.isXrayRequired;
-    this.reasonXrayNotRequired = details.reasonXrayNotRequired;
-    this.reasonXrayNotRequiredFurthurDetails = details.reasonXrayNotRequiredFurthurDetails;
-  }
-
-  toJson() {
-    return {
-      applicationId: this.applicationId,
-      status: this.status,
-      dateOfMedicalScreening: this.dateOfMedicalScreening,
-      age: this.age,
-      symptomsOfTb: this.symptomsOfTb,
-      symptoms: this.symptoms,
-      symptomsOther: this.symptomsOther,
-      historyOfConditionsUnder11: this.historyOfConditionsUnder11,
-      historyOfConditionsUnder11Details: this.historyOfConditionsUnder11Details,
-      historyOfPreviousTb: this.historyOfPreviousTb,
-      previousTbDetails: this.previousTbDetails,
-      contactWithPersonWithTb: this.contactWithPersonWithTb,
-      contactWithTbDetails: this.contactWithTbDetails,
-      pregnant: this.pregnant,
-      haveMenstralPeriod: this.haveMenstralPeriod,
-      physicalExaminationNotes: this.physicalExaminationNotes,
-      isXrayRequired: this.isXrayRequired,
-      reasonXrayNotRequired: this.reasonXrayNotRequired,
-      reasonXrayNotRequiredFurthurDetails: this.reasonXrayNotRequiredFurthurDetails,
-      // Audit
-      dateCreated: this.dateCreated,
-    };
+    Object.assign(this, details);
   }
 }
 
