@@ -71,8 +71,8 @@ type IMedicalScreeningChestXray = {
   pregnant: PregnancyStatus;
   haveMenstralPeriod: MenstrualPeriods;
   physicalExaminationNotes: string;
-  isXrayRequired: YesOrNo;
-  reasonXrayNotRequired?: ChestXRayNotTakenReason;
+  isXrayRequired: YesOrNo.Yes;
+
   dateCreated: Date;
   createdBy: string;
 };
@@ -92,9 +92,6 @@ export class MedicalScreeningChestXray extends MedicalScreeningBase {
     Object.assign(this, details);
   }
 }
-type IMedicalScreeningChestXray = {
-  applicationId: string;
-  status: TaskStatus;
 
 type IMedicalScreeningNoChestXray = {
   applicationId: string;
