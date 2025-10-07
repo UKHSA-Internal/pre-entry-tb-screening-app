@@ -89,7 +89,9 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
         void rhfOnChange(syntheticEvent);
       } else {
         const dt = new DataTransfer();
-        files.forEach((file) => dt.items.add(file));
+        for (const file of files) {
+          dt.items.add(file);
+        }
         fileInputRef.current.files = dt.files;
 
         const syntheticEvent = {
@@ -165,7 +167,6 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
             className="govuk-body file-upload-existing-file"
             role="application"
             aria-label="File drop zone"
-            tabIndex={0}
             onDrop={handleDrop}
             onDragOver={preventDragDefaults}
             onDragEnter={preventDragDefaults}

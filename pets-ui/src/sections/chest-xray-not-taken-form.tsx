@@ -88,58 +88,56 @@ const ChestXrayNotTakenForm = () => {
     !(selectedReason === "Other" && errorsToShow.includes("reasonXrayNotRequired"));
 
   return (
-    <>
-      <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {showErrorSummary && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
-          <Heading level={1} size="l" title="Reason X-ray is not required?" />
-          <div ref={reasonXrayWasNotTakenRef}>
-            <Radio
-              id="reason-xray-not-taken"
-              isInline={RadioIsInline.FALSE}
-              answerOptions={["Child (under 11 years)", "Pregnant", "Other"]}
-              sortAnswersAlphabetically={false}
-              errorMessage={
-                selectedReason === "Other"
-                  ? ""
-                  : ((errors?.reasonXrayNotRequired?.message as string) ?? "")
-              }
-              formValue="reasonXrayNotRequired"
-              defaultValue={mapBackendToDisplay(medicalData.reasonXrayNotRequired || "")}
-              required="Select a reason why X-ray is not required"
-              divStyle={{ marginTop: 40 }}
-            />
+    <FormProvider {...methods}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {showErrorSummary && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
+        <Heading level={1} size="l" title="Reason X-ray is not required?" />
+        <div ref={reasonXrayWasNotTakenRef}>
+          <Radio
+            id="reason-xray-not-taken"
+            isInline={RadioIsInline.FALSE}
+            answerOptions={["Child (under 11 years)", "Pregnant", "Other"]}
+            sortAnswersAlphabetically={false}
+            errorMessage={
+              selectedReason === "Other"
+                ? ""
+                : ((errors?.reasonXrayNotRequired?.message as string) ?? "")
+            }
+            formValue="reasonXrayNotRequired"
+            defaultValue={mapBackendToDisplay(medicalData.reasonXrayNotRequired || "")}
+            required="Select a reason why X-ray is not required"
+            divStyle={{ marginTop: 40 }}
+          />
 
-            {selectedReason === "Other" && (
-              <div
-                className={`govuk-radios__conditional ${
-                  errors?.reasonXrayNotRequired ? "govuk-radios__conditional--error" : ""
-                }`}
-              >
-                {errors?.reasonXrayNotRequired && (
-                  <span className="govuk-error-message">
-                    <span className="govuk-visually-hidden">Error:</span>
-                    {errors.reasonXrayNotRequired.message}
-                  </span>
-                )}
-                <FreeText
-                  id="reason-xray-not-required-other-detail"
-                  label="Reason not required"
-                  errorMessage=""
-                  formValue="reasonXrayNotRequired"
-                  required="Enter the reason why X-ray is not required"
-                  patternValue={/.*/}
-                  patternError=""
-                  inputWidth={20}
-                  defaultValue=""
-                />
-              </div>
-            )}
-          </div>
-          <SubmitButton id="Continue" type={ButtonType.DEFAULT} text="Continue" />
-        </form>
-      </FormProvider>
-    </>
+          {selectedReason === "Other" && (
+            <div
+              className={`govuk-radios__conditional ${
+                errors?.reasonXrayNotRequired ? "govuk-radios__conditional--error" : ""
+              }`}
+            >
+              {errors?.reasonXrayNotRequired && (
+                <span className="govuk-error-message">
+                  <span className="govuk-visually-hidden">Error:</span>
+                  {errors.reasonXrayNotRequired.message}
+                </span>
+              )}
+              <FreeText
+                id="reason-xray-not-required-other-detail"
+                label="Reason not required"
+                errorMessage=""
+                formValue="reasonXrayNotRequired"
+                required="Enter the reason why X-ray is not required"
+                patternValue={/.*/}
+                patternError=""
+                inputWidth={20}
+                defaultValue=""
+              />
+            </div>
+          )}
+        </div>
+        <SubmitButton id="Continue" type={ButtonType.DEFAULT} text="Continue" />
+      </form>
+    </FormProvider>
   );
 };
 
