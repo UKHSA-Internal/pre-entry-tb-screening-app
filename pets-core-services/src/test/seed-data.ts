@@ -24,6 +24,7 @@ export const seedDatabase = async () => {
 
   for (const applicantDetails of seededApplicants) {
     await Applicant.createNewApplicant(applicantDetails);
+    // await Applicant.createOrUpdateApplicant(applicantDetails);
   }
 
   for (const travelInformation of seededTravelInformation) {

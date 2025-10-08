@@ -11,11 +11,11 @@ import { ApplicantSchema } from "../types/zod-schema";
 
 export type ApplicantRequestSchema = z.infer<typeof ApplicantSchema>;
 
-export type PostApplicantEvent = PetsAPIGatewayProxyEvent & {
+export type PutApplicantEvent = PetsAPIGatewayProxyEvent & {
   parsedBody?: ApplicantRequestSchema;
 };
 
-export const postApplicantHandler = async (event: PostApplicantEvent) => {
+export const putApplicantHandler = async (event: PutApplicantEvent) => {
   try {
     logger.info("Post applicant details handler triggered");
 
@@ -56,16 +56,16 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
       parsedBody.passportNumber,
     );
 
+    let applicant: Applicant;
+
     if (existingApplicants.length) {
-      logger.error("An applicant with similar information already exists");
-      return createHttpResponse(400, {
-        message: "A record with this applicant details has already been saved",
-      });
+      logger.info("The applicant exists, the data will be updated");
+    } else {
+      logger.info("The applicant does not exist, the data will be created");
     }
 
-    let applicant: Applicant;
     try {
-      applicant = await Applicant.createNewApplicant({
+      applicant = await Applicant.createOrUpdateApplicant({
         ...parsedBody,
         applicationId,
         createdBy,
@@ -77,7 +77,8 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
     }
 
     return createHttpResponse(200, {
-      ...applicant.toJson(),
+      // ...applicant.toJson(),
+      ...applicant,
     });
   } catch (err: unknown) {
     logger.error(err, "Error saving Applicant details");

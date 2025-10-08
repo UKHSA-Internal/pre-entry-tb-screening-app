@@ -4,7 +4,7 @@ import { z } from "zod";
 import { boostrapLambdaRoutes } from "../../shared/bootstrap";
 import { CountryCode } from "../../shared/country";
 import { PetsRoute } from "../../shared/types";
-import { postApplicantHandler } from "../handlers/postApplicant";
+import { putApplicantHandler } from "../handlers/putApplicant";
 import { searchApplicantHandler } from "../handlers/searchApplicant";
 import { ApplicantSchema } from "../types/zod-schema";
 
@@ -12,9 +12,9 @@ extendZodWithOpenApi(z);
 
 export const routes: PetsRoute[] = [
   {
-    method: "POST",
+    method: "PUT",
     path: "/applicant/register/{applicationId}",
-    handler: postApplicantHandler,
+    handler: putApplicantHandler,
     requestBodySchema: ApplicantSchema.openapi({ description: "Details about an Applicant" }),
     responseSchema: ApplicantSchema.extend({
       applicationId: z.string().openapi({

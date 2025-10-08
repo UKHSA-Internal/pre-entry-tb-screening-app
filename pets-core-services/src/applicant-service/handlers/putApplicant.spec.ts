@@ -5,9 +5,9 @@ import { seededApplications } from "../../shared/fixtures/application";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicants } from "../fixtures/applicants";
 import { AllowedSex } from "../types/enums";
-import { PostApplicantEvent, postApplicantHandler } from "./postApplicant";
+import { PutApplicantEvent, putApplicantHandler } from "./putApplicant";
 
-const newApplicantDetails: PostApplicantEvent["parsedBody"] = {
+const newApplicantDetails: PutApplicantEvent["parsedBody"] = {
   fullName: "John Doe",
   passportNumber: "test-passport-id",
   countryOfNationality: CountryCode.ALA,
@@ -28,14 +28,14 @@ const newApplicantDetails: PostApplicantEvent["parsedBody"] = {
 describe("Test for Posting Applicant into DB", () => {
   test("Saving a new Applicant Successfully", async () => {
     // Arrange
-    const event: PostApplicantEvent = {
+    const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[0].applicationId },
       parsedBody: newApplicantDetails,
     };
 
     // Act
-    const response = await postApplicantHandler(event);
+    const response = await putApplicantHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(200);
@@ -48,17 +48,17 @@ describe("Test for Posting Applicant into DB", () => {
 
   test("Missing application throws a 400 error", async () => {
     // Arrange
-    const parsedBody: PostApplicantEvent["parsedBody"] = {
+    const parsedBody: PutApplicantEvent["parsedBody"] = {
       ...newApplicantDetails,
     };
-    const event: PostApplicantEvent = {
+    const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: "nonexisting-application-id" },
       parsedBody,
     };
 
     // Act
-    const response = await postApplicantHandler(event);
+    const response = await putApplicantHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(400);
@@ -69,18 +69,18 @@ describe("Test for Posting Applicant into DB", () => {
 
   test("Mismatch in Clinic ID throws a 400 error", async () => {
     // Arrange
-    const parsedBody: PostApplicantEvent["parsedBody"] = {
+    const parsedBody: PutApplicantEvent["parsedBody"] = {
       ...newApplicantDetails,
     };
 
-    const event: PostApplicantEvent = {
+    const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[2].applicationId },
       parsedBody,
     };
 
     // Act
-    const response = await postApplicantHandler(event);
+    const response = await putApplicantHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(403);
@@ -92,19 +92,19 @@ describe("Test for Posting Applicant into DB", () => {
   test("Existing passport number and country throws a 400 error", async () => {
     // Arrange
     const existingApplicant = seededApplicants[0];
-    const parsedBody: PostApplicantEvent["parsedBody"] = {
+    const parsedBody: PutApplicantEvent["parsedBody"] = {
       ...newApplicantDetails,
       passportNumber: existingApplicant.passportNumber,
       countryOfIssue: existingApplicant.countryOfIssue,
     };
-    const event: PostApplicantEvent = {
+    const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[0].applicationId },
       parsedBody,
     };
 
     // Act
-    const response = await postApplicantHandler(event);
+    const response = await putApplicantHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(400);
@@ -115,19 +115,19 @@ describe("Test for Posting Applicant into DB", () => {
 
   test("Duplicate post throws a 400 error", async () => {
     // Arrange
-    const parsedBody: PostApplicantEvent["parsedBody"] = {
+    const parsedBody: PutApplicantEvent["parsedBody"] = {
       ...newApplicantDetails,
       passportNumber: "new-passport-id",
       countryOfIssue: CountryCode.FSM,
     };
-    const event: PostApplicantEvent = {
+    const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[1].applicationId }, // An Applicant has been created for this Application already
       parsedBody,
     };
 
     // Act
-    const response = await postApplicantHandler(event);
+    const response = await putApplicantHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(400);
@@ -136,12 +136,12 @@ describe("Test for Posting Applicant into DB", () => {
 
   test("Missing required Headers returns a 500 response", async () => {
     // Arrange
-    const event: PostApplicantEvent = {
+    const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
     };
 
     // Act
-    const response = await postApplicantHandler(event);
+    const response = await putApplicantHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(500);
@@ -153,13 +153,13 @@ describe("Test for Posting Applicant into DB", () => {
   test("Any error returns a 500 response", async () => {
     // Arrange;
 
-    const malformedEvent: PostApplicantEvent = {
+    const malformedEvent: PutApplicantEvent = {
       ...mockAPIGwEvent,
-      parsedBody: {} as PostApplicantEvent["parsedBody"],
+      parsedBody: {} as PutApplicantEvent["parsedBody"],
     };
 
     // Act
-    const response = await postApplicantHandler(malformedEvent);
+    const response = await putApplicantHandler(malformedEvent);
 
     // Assert
     expect(response.statusCode).toBe(500);

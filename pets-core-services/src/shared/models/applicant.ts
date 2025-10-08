@@ -4,6 +4,8 @@ import {
   PutCommandInput,
   QueryCommand,
   QueryCommandInput,
+  UpdateCommand,
+  UpdateCommandInput,
 } from "@aws-sdk/lib-dynamodb";
 
 import { AllowedSex } from "../../applicant-service/types/enums";
@@ -134,6 +136,74 @@ export class Applicant extends IApplicant {
       return applicant;
     } catch (error) {
       logger.error(error, "Error saving new applicant details");
+      throw error;
+    }
+  }
+
+  private static createUpdateExpressions(item: { [key: string]: any }) {
+    const updateExpression: string[] = [];
+    const expressionAttribute: Record<string, any> = {};
+    const expressionAttributeNames: Record<string, string> = {};
+
+    Object.entries(item).forEach(([key, value]) => {
+      const nameKey = `#${key}`;
+      const valueKey = `:${key}`;
+      updateExpression.push(`${nameKey} = ${valueKey}`);
+      expressionAttribute[valueKey] = value;
+      expressionAttributeNames[nameKey] = key;
+    });
+    return { updateExpression, expressionAttribute, expressionAttributeNames };
+  }
+
+  private static removePrimaryKey(primaryKeyName: string, item: { [key: string]: any }) {
+    const itemWithoutPrimaryKey = { ...item };
+    delete itemWithoutPrimaryKey[primaryKeyName];
+    return itemWithoutPrimaryKey;
+  }
+
+  static async createOrUpdateApplicant(
+    details: Omit<IApplicant, "passportId" | "dateCreated" | "status">,
+  ) {
+    try {
+      logger.info("Updating applicant Information to DB");
+
+      const pk = Applicant.getPk(details.applicationId);
+      const sk = Applicant.sk;
+
+      // Clean up: remove undefined fields before building update expression
+      const fieldsToUpdate = Object.entries(details).reduce(
+        (acc, [key, value]) => {
+          if (value !== undefined) acc[key] = value;
+          return acc;
+        },
+        {} as Record<string, any>,
+      );
+
+      // TODO: what's the logic behind it
+      fieldsToUpdate.status = TaskStatus.completed;
+
+      if (!fieldsToUpdate["dateCreated"]) fieldsToUpdate["dateCreated"] = new Date().toISOString();
+
+      const { updateExpression, expressionAttribute, expressionAttributeNames } =
+        this.createUpdateExpressions(fieldsToUpdate);
+
+      const params: UpdateCommandInput = {
+        TableName: Applicant.getTableName(),
+        Key: { pk, sk },
+        UpdateExpression: `SET ${updateExpression.join(", ")}`,
+        ExpressionAttributeValues: expressionAttribute,
+        ExpressionAttributeNames: expressionAttributeNames,
+        ReturnValues: "ALL_NEW", // Return updated item
+      };
+      const command = new UpdateCommand(params);
+      const response = await docClient.send(command);
+      const attrs = response.Attributes;
+
+      logger.info({ response }, "Applicant details updated successfully");
+
+      return attrs;
+    } catch (error) {
+      logger.error(error, "Error updating applicant details");
       throw error;
     }
   }
