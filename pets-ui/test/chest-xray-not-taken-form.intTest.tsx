@@ -75,14 +75,18 @@ describe("ChestXrayNotTakenPage", () => {
     expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
     expect(screen.queryByText("Select a reason why X-ray is not required")).not.toBeInTheDocument();
   });
-  it("does not render an error if 'Other' option chosen and continue clicked", async () => {
+  it("does render an error if 'Other' option chosen with empty reason and continue clicked", async () => {
     const radioButtons = screen.getAllByRole("radio");
     await user.click(radioButtons[2]);
 
     await user.click(screen.getByRole("button"));
 
-    expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
-    expect(screen.queryByText("Select a reason why X-ray is not required")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: "Error: Enter the reason why X-ray is not required" }),
+      ).toBeInTheDocument();
+    });
   });
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
     await user.click(screen.getByRole("button"));

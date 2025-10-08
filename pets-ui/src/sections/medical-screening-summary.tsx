@@ -22,9 +22,11 @@ const MedicalScreeningReview = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const mapBackendToDisplay = (backendValue: string): string => {
-    if (backendValue === "Child") return "Child (under 11 years)";
-    if (backendValue === "Pregnant") return "Pregnant";
-    return backendValue;
+    if (backendValue === "Child") {
+      return "Child (under 11 years)";
+    } else {
+      return backendValue;
+    }
   };
 
   const handleSubmit = async () => {

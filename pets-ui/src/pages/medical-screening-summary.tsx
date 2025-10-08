@@ -11,13 +11,11 @@ export default function MedicalSummaryPage() {
   const getBackLink = () => {
     if (medicalData.status === ApplicationStatus.COMPLETE) {
       return "/tracker";
-    }
-
-    if (medicalData.chestXrayTaken === YesOrNo.NO) {
+    } else if (medicalData.chestXrayTaken === YesOrNo.NO) {
       return "/chest-xray-not-taken";
+    } else {
+      return "/chest-xray-question";
     }
-
-    return "/chest-xray-question";
   };
 
   return (

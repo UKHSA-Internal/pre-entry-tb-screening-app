@@ -32,7 +32,7 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
   const [rawMonth, setRawMonth] = useState<string>(props.value?.month ?? "");
   const [rawYear, setRawYear] = useState<string>(props.value?.year ?? "");
 
-  const normalizePart = (s: string): string => {
+  const removeLeadingZeros = (s: string): string => {
     if (s === "") return "";
     const noLeading = s.replace(/^0+/, "");
     return noLeading === "" ? "0" : noLeading;
@@ -40,9 +40,9 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
 
   useEffect(() => {
     const propsValue = props.value || { day: "", month: "", year: "" };
-    const isDayEqual = normalizePart(rawDay) === (propsValue.day ?? "");
-    const isMonthEqual = normalizePart(rawMonth) === (propsValue.month ?? "");
-    const isYearEqual = normalizePart(rawYear) === (propsValue.year ?? "");
+    const isDayEqual = removeLeadingZeros(rawDay) === (propsValue.day ?? "");
+    const isMonthEqual = removeLeadingZeros(rawMonth) === (propsValue.month ?? "");
+    const isYearEqual = removeLeadingZeros(rawYear) === (propsValue.year ?? "");
 
     if (!isDayEqual) setRawDay(propsValue.day ?? "");
     if (!isMonthEqual) setRawMonth(propsValue.month ?? "");
@@ -55,7 +55,7 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
 
     if (filtered.length <= 2) {
       setRawDay(filtered);
-      const newValue = { ...props.value, day: normalizePart(filtered) };
+      const newValue = { ...props.value, day: removeLeadingZeros(filtered) };
       props.setDateValue(newValue);
     }
   };
@@ -64,7 +64,7 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
     const filtered = filterDayOrMonthRaw(e.target.value);
     if (filtered.length <= 2) {
       setRawMonth(filtered);
-      const newValue = { ...props.value, month: normalizePart(filtered) };
+      const newValue = { ...props.value, month: removeLeadingZeros(filtered) };
       props.setDateValue(newValue);
     }
   };
@@ -73,17 +73,17 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
     const filtered = filterYearRaw(e.target.value);
     if (filtered.length <= 4) {
       setRawYear(filtered);
-      const newValue = { ...props.value, year: normalizePart(filtered) };
+      const newValue = { ...props.value, year: removeLeadingZeros(filtered) };
       props.setDateValue(newValue);
     }
   };
 
   const filterDayOrMonthRaw = (raw: string): string => {
-    return raw.replace(/\D/g, "").slice(0, 2);
+    return raw.slice(0, 2);
   };
 
   const filterYearRaw = (raw: string): string => {
-    return raw.replace(/\D/g, "").slice(0, 4);
+    return raw.slice(0, 4);
   };
 
   const autocompleteBDay: Record<"day" | "month" | "year", AutocompleteI> = {
@@ -160,7 +160,6 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
               id={`${props.id}-day`}
               data-testid={`${props.id}-day`}
               type="text"
-              inputMode="numeric"
               value={rawDay}
               onChange={handleDayChange}
               maxLength={2}
@@ -178,7 +177,6 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
               id={`${props.id}-month`}
               data-testid={`${props.id}-month`}
               type="text"
-              inputMode="numeric"
               value={rawMonth}
               onChange={handleMonthChange}
               maxLength={2}
@@ -196,7 +194,6 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
               id={`${props.id}-year`}
               data-testid={`${props.id}-year`}
               type="text"
-              inputMode="numeric"
               value={rawYear}
               onChange={handleYearChange}
               maxLength={4}

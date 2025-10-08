@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import ErrorSummary from "@/components/errorSummary/errorSummary";
-import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
@@ -20,51 +19,38 @@ const ChestXrayNotTakenForm = () => {
   const medicalData = useAppSelector(selectMedicalScreening);
 
   const mapBackendToDisplay = (backendValue: string): string => {
-    if (backendValue === "Child") return "Child (under 11 years)";
-    return backendValue;
+    if (backendValue === "Child") {
+      return "Child (under 11 years)";
+    } else {
+      return backendValue;
+    }
   };
 
   const mapDisplayToBackend = (displayValue: string): string => {
-    if (displayValue === "Child (under 11 years)") return "Child";
-    return displayValue;
+    if (displayValue === "Child (under 11 years)") {
+      return "Child";
+    } else {
+      return displayValue;
+    }
   };
 
-  const [selectedReason, setSelectedReason] = useState(
-    mapBackendToDisplay(medicalData.reasonXrayNotRequired || ""),
-  );
+  type FormFields = ReduxMedicalScreeningType & { reasonXrayNotRequiredOtherTemp?: string };
 
-  const methods = useForm<ReduxMedicalScreeningType>({
+  const methods = useForm<FormFields>({
     reValidateMode: "onSubmit",
   });
   const {
     handleSubmit,
-    watch,
     formState: { errors },
   } = methods;
 
-  const watchedReason = watch("reasonXrayNotRequired");
-
-  useEffect(() => {
-    if (watchedReason) {
-      if (
-        watchedReason === "Child (under 11 years)" ||
-        watchedReason === "Pregnant" ||
-        watchedReason === "Other"
-      ) {
-        setSelectedReason(watchedReason);
-      } else if (selectedReason !== "Other") {
-        setSelectedReason("Other");
-      }
-    }
-  }, [watchedReason, selectedReason]);
-
-  const onSubmit: SubmitHandler<ReduxMedicalScreeningType> = (data) => {
+  const onSubmit: SubmitHandler<FormFields> = (data) => {
     let reasonValue = data.reasonXrayNotRequired || "";
 
     if (reasonValue === "Child (under 11 years)") {
       reasonValue = mapDisplayToBackend(reasonValue);
-    } else if (reasonValue === "Pregnant") {
-      reasonValue = "Pregnant";
+    } else if (reasonValue === "Other") {
+      reasonValue = data.reasonXrayNotRequiredOtherTemp?.trim() || "";
     }
 
     dispatch(setReasonXrayNotRequired(reasonValue));
@@ -83,14 +69,10 @@ const ChestXrayNotTakenForm = () => {
     }
   }, [location]);
 
-  const showErrorSummary =
-    errorsToShow.length > 0 &&
-    !(selectedReason === "Other" && errorsToShow.includes("reasonXrayNotRequired"));
-
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {showErrorSummary && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
+        {errorsToShow.length > 0 && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
         <Heading level={1} size="l" title="Reason X-ray is not required?" />
         <div ref={reasonXrayWasNotTakenRef}>
           <Radio
@@ -98,42 +80,19 @@ const ChestXrayNotTakenForm = () => {
             isInline={RadioIsInline.FALSE}
             answerOptions={["Child (under 11 years)", "Pregnant", "Other"]}
             sortAnswersAlphabetically={false}
-            errorMessage={
-              selectedReason === "Other"
-                ? ""
-                : ((errors?.reasonXrayNotRequired?.message as string) ?? "")
-            }
+            errorMessage={(errors?.reasonXrayNotRequired?.message as string) ?? ""}
             formValue="reasonXrayNotRequired"
             defaultValue={mapBackendToDisplay(medicalData.reasonXrayNotRequired || "")}
             required="Select a reason why X-ray is not required"
             divStyle={{ marginTop: 40 }}
+            conditionalInput={{
+              triggerValue: "Other",
+              id: "reason-xray-not-required-other-detail",
+              label: "Reason not required",
+              name: "reasonXrayNotRequiredOtherTemp",
+              required: "Enter the reason why X-ray is not required",
+            }}
           />
-
-          {selectedReason === "Other" && (
-            <div
-              className={`govuk-radios__conditional ${
-                errors?.reasonXrayNotRequired ? "govuk-radios__conditional--error" : ""
-              }`}
-            >
-              {errors?.reasonXrayNotRequired && (
-                <span className="govuk-error-message">
-                  <span className="govuk-visually-hidden">Error:</span>
-                  {errors.reasonXrayNotRequired.message}
-                </span>
-              )}
-              <FreeText
-                id="reason-xray-not-required-other-detail"
-                label="Reason not required"
-                errorMessage=""
-                formValue="reasonXrayNotRequired"
-                required="Enter the reason why X-ray is not required"
-                patternValue={/.*/}
-                patternError=""
-                inputWidth={20}
-                defaultValue=""
-              />
-            </div>
-          )}
         </div>
         <SubmitButton id="Continue" type={ButtonType.DEFAULT} text="Continue" />
       </form>
