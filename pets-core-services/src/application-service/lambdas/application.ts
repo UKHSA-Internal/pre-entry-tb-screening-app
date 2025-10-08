@@ -57,7 +57,7 @@ export const routes: PetsRoute[] = [
     }),
   },
   {
-    method: "POST",
+    method: "PUT",
     path: "/application/{applicationId}/travel-information",
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(setApplicationIdContext)
