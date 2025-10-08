@@ -9,6 +9,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import App from "./App.tsx";
 import { initializeMsal } from "./auth/auth.ts";
 import { ErrorFallback } from "./components/errorFallback/errorFallback.tsx";
+import ScrollToTop from "./components/scrollToTop/scrollToTop.tsx";
 import { ApplicantPhotoProvider } from "./context/applicantPhotoContext.tsx";
 import { setupStore } from "./redux/store.ts";
 import { logError } from "./utils/helpers.ts";
@@ -21,6 +22,7 @@ initializeMsal().then((msalInstance) => {
         <HelmetProvider>
           <StrictMode>
             <Router>
+              <ScrollToTop />
               <MsalProvider instance={msalInstance}>
                 <ApplicantPhotoProvider>
                   <App />
