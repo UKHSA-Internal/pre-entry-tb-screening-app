@@ -1,4 +1,11 @@
 export enum VisaOptions {
+  // Current visa options:
+  Work = "Work",
+  Study = "Study",
+  FamilyReunion = "Family reunion",
+  Other = "Other",
+  DoNotKnow = "Do not know",
+  // Legacy visa options:
   HMArmedForces = "HM Armed Forces",
   Visitor = "Visitor",
   Student = "Student",
