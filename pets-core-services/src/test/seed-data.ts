@@ -27,7 +27,7 @@ export const seedDatabase = async () => {
   }
 
   for (const travelInformation of seededTravelInformation) {
-    await TravelInformation.createTravelInformation(travelInformation);
+    await TravelInformation.createorUpdateTravelInformation(travelInformation);
   }
 
   for (const medicalScreening of seededMedicalScreening) {

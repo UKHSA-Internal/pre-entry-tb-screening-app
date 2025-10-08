@@ -1,4 +1,4 @@
-import { GetCommand, PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, UpdateCommand, UpdateCommandInput } from "@aws-sdk/lib-dynamodb";
 
 import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
@@ -21,6 +21,7 @@ export abstract class ITravelInformation {
   ukEmailAddress: string;
 
   dateCreated: Date;
+  dateUpdated: Date;
   createdBy: string;
 
   constructor(details: ITravelInformation) {
@@ -36,6 +37,7 @@ export abstract class ITravelInformation {
 
     // Audit
     this.dateCreated = details.dateCreated;
+    this.dateUpdated = details.dateUpdated;
     this.createdBy = details.createdBy;
   }
 }
@@ -55,38 +57,85 @@ export class TravelInformation extends ITravelInformation {
     const dbItem = {
       ...this,
       dateCreated: this.dateCreated.toISOString(),
+      dateUpdated: this.dateUpdated.toISOString(),
       pk: TravelInformation.getPk(this.applicationId),
       sk: TravelInformation.sk,
     };
     return dbItem;
   }
 
-  static async createTravelInformation(
-    details: Omit<ITravelInformation, "dateCreated" | "status">,
+  static async createorUpdateTravelInformation(
+    details: Omit<ITravelInformation, "dateCreated" | "dateUpdated" | "status">,
   ) {
     try {
       logger.info("Saving Travel Information to DB");
+      const pk = TravelInformation.getPk(details.applicationId);
+      const sk = TravelInformation.sk;
 
-      const updatedDetails: ITravelInformation = {
-        ...details,
-        dateCreated: new Date(),
-        status: TaskStatus.completed,
-      };
+      // Clean up: remove undefined fields before building update expression
+      const fieldsToUpdate = Object.entries(details).reduce(
+        (acc, [key, value]) => {
+          if (value !== undefined) acc[key] = value;
+          return acc;
+        },
+        {} as Record<string, any>,
+      );
 
-      const travelInformation = new TravelInformation(updatedDetails);
+      // Set status = "completed"
+      if (
+        fieldsToUpdate.visaCategory &&
+        fieldsToUpdate.ukMobileNumber &&
+        fieldsToUpdate.ukEmailAddress
+      ) {
+        fieldsToUpdate.status = TaskStatus.completed;
+      }
+      // Add audit fields
+      fieldsToUpdate["dateUpdated"] = new Date().toISOString();
+      if (!fieldsToUpdate["dateCreated"]) fieldsToUpdate["dateCreated"] = new Date().toISOString();
 
-      const dbItem = travelInformation.todbItem();
-      const params: PutCommandInput = {
+      // Build the UpdateExpression dynamically
+      const updateParts: string[] = [];
+      const ExpressionAttributeNames: Record<string, string> = {};
+      const ExpressionAttributeValues: Record<string, any> = {};
+
+      Object.entries(fieldsToUpdate).forEach(([key, value]) => {
+        const nameKey = `#${key}`;
+        const valueKey = `:${key}`;
+        updateParts.push(`${nameKey} = ${valueKey}`);
+        ExpressionAttributeNames[nameKey] = key;
+        ExpressionAttributeValues[valueKey] = value;
+      });
+
+      const updateExpression = "SET " + updateParts.join(", ");
+
+      const params: UpdateCommandInput = {
         TableName: TravelInformation.getTableName(),
-        Item: { ...dbItem },
-        ConditionExpression: "attribute_not_exists(pk) AND attribute_not_exists(sk)",
+        Key: { pk, sk },
+        UpdateExpression: updateExpression,
+        ExpressionAttributeNames,
+        ExpressionAttributeValues,
+        ReturnValues: "ALL_NEW", // Return updated item
       };
-      const command = new PutCommand(params);
+
+      const command = new UpdateCommand(params);
       const response = await docClient.send(command);
+      const attrs = response.Attributes!;
 
-      logger.info({ response }, "Travel Information saved successfully");
-
-      return travelInformation;
+      logger.info({ response }, "Travel Information created/updated successfully");
+      const travelInformationDetails: Omit<ITravelInformation, "createdBy"> = {
+        applicationId: attrs?.applicationId,
+        visaCategory: attrs?.visaCategory,
+        ukAddressLine1: attrs?.ukAddressLine1,
+        ukAddressLine2: attrs?.ukAddressLine2,
+        ukAddressTownOrCity: attrs?.ukAddressTownOrCity,
+        ukAddressPostcode: attrs?.ukAddressPostcode,
+        ukMobileNumber: attrs?.ukMobileNumber,
+        ukEmailAddress: attrs?.ukEmailAddress,
+        status: attrs.status as TaskStatus,
+        dateCreated: new Date(attrs.dateCreated as string),
+        dateUpdated: new Date(attrs.dateUpdated as string),
+      };
+      return travelInformationDetails;
     } catch (error) {
       logger.error(error, "Error saving travel information");
       throw error;

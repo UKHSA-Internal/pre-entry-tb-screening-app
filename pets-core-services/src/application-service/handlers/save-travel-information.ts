@@ -32,7 +32,7 @@ export const saveTravelInformationHandler = async (event: SaveTravelInformationE
     let travelInformation: TravelInformation;
     try {
       const { createdBy } = event.requestContext.authorizer;
-      travelInformation = await TravelInformation.createTravelInformation({
+      travelInformation = await TravelInformation.createorUpdateTravelInformation({
         ...parsedBody,
         createdBy,
         applicationId,

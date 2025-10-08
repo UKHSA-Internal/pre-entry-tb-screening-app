@@ -32,7 +32,8 @@ describe("Tests for Travel Information Model", () => {
     vi.setSystemTime(expectedDateTime);
 
     // Act
-    const travelInformation = await TravelInformation.createTravelInformation(newTravelInformation);
+    const travelInformation =
+      await TravelInformation.createorUpdateTravelInformation(newTravelInformation);
 
     // Assert
     expect(travelInformation).toMatchObject({
