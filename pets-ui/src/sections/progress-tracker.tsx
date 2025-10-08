@@ -71,11 +71,7 @@ const Task = (props: Readonly<TaskProps>) => {
         </div>
       )}
       {props.status == ApplicationStatus.COMPLETE && (
-        <div className="govuk-task-list__status">
-          {props.statusOverride ?? (
-            <strong className="govuk-tag govuk-tag--green">Completed</strong>
-          )}
-        </div>
+        <div className="govuk-task-list__status">{props.statusOverride ?? <>Completed</>}</div>
       )}
       {props.status == ApplicationStatus.NOT_REQUIRED && (
         <div className="govuk-task-list__status">
