@@ -4,7 +4,7 @@ import { z } from "zod";
 import { boostrapLambdaRoutes } from "../../shared/bootstrap";
 import { CountryCode } from "../../shared/country";
 import { PetsRoute } from "../../shared/types";
-import { postApplicantHandler } from "../handlers/postApplicant";
+import { postApplicantHandler, putApplicantHandler } from "../handlers/postApplicant";
 import { searchApplicantHandler } from "../handlers/searchApplicant";
 import { ApplicantSchema } from "../types/zod-schema";
 
@@ -21,6 +21,17 @@ export const routes: PetsRoute[] = [
         description: "Unique Application ID for applicant",
       }),
     }).openapi({ description: "Saved Applicant Details" }),
+  },
+  {
+    method: "PUT",
+    path: "/applicant/update/{applicationId}",
+    handler: putApplicantHandler,
+    requestBodySchema: ApplicantSchema.openapi({ description: "Details about an Applicant" }),
+    responseSchema: ApplicantSchema.extend({
+      applicationId: z.string().openapi({
+        description: "Unique Application ID for applicant",
+      }),
+    }).openapi({ description: "Update Applicant Details" }),
   },
   {
     method: "GET",
