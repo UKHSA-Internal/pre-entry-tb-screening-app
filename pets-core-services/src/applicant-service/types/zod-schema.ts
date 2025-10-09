@@ -47,3 +47,47 @@ export const ApplicantSchema = z.object({
     description: "Country of Applican't Address",
   }),
 });
+
+export const ApplicantUpdateSchema = z.object({
+  fullName: z.string().optional().openapi({
+    description: "Full name of Applicant",
+  }),
+  // It's requireq ATM
+  passportNumber: z.string().openapi({
+    description: "PassportNumber of Applicant",
+  }),
+  countryOfNationality: z.nativeEnum(CountryCode).optional().openapi({
+    description: "Applicant's nationality",
+  }),
+  // It's requireq ATM
+  countryOfIssue: z.nativeEnum(CountryCode).openapi({
+    description: "Passport Issue Country",
+  }),
+  issueDate: z.string().date().optional().openapi({
+    description: "Passport Issue Date in ISO Format",
+  }),
+  expiryDate: z.string().date().optional().openapi({
+    description: "Passport Expiry Date in ISO Format",
+  }),
+  dateOfBirth: z.string().date().optional().openapi({
+    description: "Date of Birth in ISO Format",
+  }),
+  sex: z.nativeEnum(AllowedSex).optional().openapi({
+    description: "Applicant's Sex Information",
+  }),
+  applicantHomeAddress1: z.string().openapi({
+    description: "First line of Applicant's Address",
+  }),
+  applicantHomeAddress2: z.string().optional().openapi({
+    description: "Second line of Applicant's Address",
+  }),
+  applicantHomeAddress3: z.string().optional().openapi({
+    description: "Third line of Applicant's Address",
+  }),
+  townOrCity: z.string().optional(),
+  provinceOrState: z.string().optional(),
+  postcode: z.string().optional(),
+  country: z.nativeEnum(CountryCode).optional().openapi({
+    description: "Country of Applican't Address",
+  }),
+});

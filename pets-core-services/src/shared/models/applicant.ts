@@ -4,9 +4,13 @@ import {
   PutCommandInput,
   QueryCommand,
   QueryCommandInput,
+  UpdateCommand,
+  UpdateCommandInput,
 } from "@aws-sdk/lib-dynamodb";
+import { z } from "zod";
 
 import { AllowedSex } from "../../applicant-service/types/enums";
+import { ApplicantUpdateSchema } from "../../applicant-service/types/zod-schema";
 import awsClients from "../clients/aws";
 import { assertEnvExists } from "../config";
 import { CountryCode } from "../country";
@@ -15,8 +19,13 @@ import { logger } from "../logger";
 import { TaskStatus } from "../types/enum";
 import { Application } from "./application";
 
+type AllApplicantTypes = AllowedSex | CountryCode | Date | TaskStatus | string;
+
 const { dynamoDBDocClient: docClient } = awsClients;
-export abstract class IApplicant {
+
+type ApplicantUpdateBase = z.infer<typeof ApplicantUpdateSchema>;
+
+export abstract class ApplicantBase {
   applicationId: string;
 
   passportNumber: string;
@@ -36,9 +45,13 @@ export abstract class IApplicant {
   provinceOrState: string;
   postcode: string;
   country: CountryCode;
+
   dateCreated: Date;
+  dateUpdated?: Date;
   createdBy: string;
+  updatedBy?: string;
   status: TaskStatus;
+  // reasonForUpdate?: string;
 
   static readonly getPassportId = (countryOfIssue: CountryCode, passportNumber: string) =>
     `COUNTRY#${countryOfIssue}#PASSPORT#${passportNumber}`;
@@ -46,7 +59,7 @@ export abstract class IApplicant {
   constructor(details: ApplicantConstructorProps) {
     this.passportNumber = details.passportNumber;
     this.countryOfIssue = details.countryOfIssue;
-    this.passportId = IApplicant.getPassportId(details.countryOfIssue, details.passportNumber);
+    this.passportId = ApplicantBase.getPassportId(details.countryOfIssue, details.passportNumber);
 
     this.applicationId = details.applicationId;
     this.fullName = details.fullName;
@@ -71,7 +84,7 @@ export abstract class IApplicant {
 }
 
 export type NewApplicant = Omit<
-  IApplicant,
+  ApplicantBase,
   "dateCreated" | "issueDate" | "expiryDate" | "dateOfBirth" | "passportId" | "status"
 > & {
   issueDate: Date | string;
@@ -79,9 +92,14 @@ export type NewApplicant = Omit<
   dateOfBirth: Date | string;
 };
 
-export type ApplicantConstructorProps = Omit<IApplicant, "passportId">;
+export type UpdatedApplicant = ApplicantUpdateBase & {
+  applicationId: string;
+  updatedBy: string;
+};
 
-export class Applicant extends IApplicant {
+export type ApplicantConstructorProps = Omit<ApplicantBase, "passportId">;
+
+export class Applicant extends ApplicantBase {
   static readonly getPk = (applicationId: string) => Application.getPk(applicationId);
 
   static readonly sk = "APPLICANT#DETAILS";
@@ -134,6 +152,68 @@ export class Applicant extends IApplicant {
       return applicant;
     } catch (error) {
       logger.error(error, "Error saving new applicant details");
+      throw error;
+    }
+  }
+
+  private static createUpdateExpressions(item: { [key: string]: AllApplicantTypes }) {
+    const updateExpression: string[] = [];
+    const expressionAttribute: Record<string, any> = {};
+    const expressionAttributeNames: Record<string, string> = {};
+
+    Object.entries(item).forEach(([key, value]) => {
+      const nameKey = `#${key}`;
+      const valueKey = `:${key}`;
+      updateExpression.push(`${nameKey} = ${valueKey}`);
+      expressionAttribute[valueKey] = value;
+      expressionAttributeNames[nameKey] = key;
+    });
+    return { updateExpression, expressionAttribute, expressionAttributeNames };
+  }
+
+  static async updateApplicant(details: UpdatedApplicant) {
+    try {
+      logger.info("Updating applicant Information to DB");
+
+      const pk = Applicant.getPk(details.applicationId);
+      const sk = Applicant.sk;
+
+      // Clean up: remove undefined fields before building update expression
+      const fieldsToUpdate = Object.entries(details).reduce(
+        (acc, [key, value]) => {
+          if (value !== undefined) acc[key] = value;
+          return acc;
+        },
+        {} as Record<string, AllApplicantTypes>,
+      );
+
+      if (!fieldsToUpdate["dateCreated"]) fieldsToUpdate["dateCreated"] = new Date().toISOString();
+
+      const { updateExpression, expressionAttribute, expressionAttributeNames } =
+        this.createUpdateExpressions(fieldsToUpdate);
+
+      const params: UpdateCommandInput = {
+        TableName: Applicant.getTableName(),
+        Key: { pk, sk },
+        UpdateExpression: `SET ${updateExpression.join(", ")}`,
+        ExpressionAttributeValues: expressionAttribute,
+        ExpressionAttributeNames: expressionAttributeNames,
+        ReturnValues: "ALL_NEW", // Return updated item
+      };
+      const command = new UpdateCommand(params);
+      const response = await docClient.send(command);
+      const attrs = response.Attributes;
+
+      logger.info({ response }, "Applicant details updated successfully");
+
+      if (!attrs) return {};
+
+      return {
+        ...attrs,
+        dateUpdated: new Date().toISOString(),
+      };
+    } catch (error) {
+      logger.error(error, "Error updating applicant details");
       throw error;
     }
   }
