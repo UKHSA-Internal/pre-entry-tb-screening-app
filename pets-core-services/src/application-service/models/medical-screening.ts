@@ -5,6 +5,7 @@ import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { TaskStatus } from "../../shared/types/enum";
 import {
+  ChestXRayNotTakenReason,
   HistoryOfConditionsUnder11,
   MenstrualPeriods,
   PregnancyStatus,
@@ -111,8 +112,8 @@ type IMedicalScreeningNoChestXray = {
   haveMenstralPeriod: MenstrualPeriods;
   physicalExaminationNotes: string;
   isXrayRequired: YesOrNo.No;
-  reasonXrayNotRequired: string;
-  reasonXrayNotRequiredFurthurDetails?: string;
+  reasonXrayNotRequired: ChestXRayNotTakenReason;
+  reasonXrayNotRequiredFurtherDetails?: string;
 
   dateCreated: Date;
   createdBy: string;
@@ -127,8 +128,8 @@ export type NewMedicalScreeningNoChestXray = Omit<
 
 export class MedicalScreeningNoChestXray extends MedicalScreeningBase {
   isXrayRequired!: YesOrNo.No;
-  reasonXrayNotRequired!: string;
-  reasonXrayNotRequiredFurthurDetails?: string;
+  reasonXrayNotRequired!: ChestXRayNotTakenReason;
+  reasonXrayNotRequiredFurtherDetails?: string;
 
   constructor(details: IMedicalScreeningNoChestXray) {
     super(details);

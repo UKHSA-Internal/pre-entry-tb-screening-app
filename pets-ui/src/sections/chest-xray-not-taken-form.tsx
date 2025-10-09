@@ -7,7 +7,10 @@ import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { setReasonXrayNotRequired } from "@/redux/medicalScreeningSlice";
+import {
+  setReasonXrayNotRequired,
+  setReasonXrayNotRequiredFurtherDetails,
+} from "@/redux/medicalScreeningSlice";
 import { selectMedicalScreening } from "@/redux/store";
 import { ReduxMedicalScreeningType } from "@/types";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
@@ -34,7 +37,7 @@ const ChestXrayNotTakenForm = () => {
     }
   };
 
-  type FormFields = ReduxMedicalScreeningType & { reasonXrayNotRequiredOtherTemp?: string };
+  type FormFields = ReduxMedicalScreeningType & { reasonXrayNotRequiredFurtherDetails?: string };
 
   const methods = useForm<FormFields>({
     reValidateMode: "onSubmit",
@@ -46,14 +49,16 @@ const ChestXrayNotTakenForm = () => {
 
   const onSubmit: SubmitHandler<FormFields> = (data) => {
     let reasonValue = data.reasonXrayNotRequired || "";
+    let furtherDetails = "";
 
     if (reasonValue === "Child (under 11 years)") {
       reasonValue = mapDisplayToBackend(reasonValue);
     } else if (reasonValue === "Other") {
-      reasonValue = data.reasonXrayNotRequiredOtherTemp?.trim() || "";
+      furtherDetails = data.reasonXrayNotRequiredFurtherDetails?.trim() || "";
     }
 
     dispatch(setReasonXrayNotRequired(reasonValue));
+    dispatch(setReasonXrayNotRequiredFurtherDetails(furtherDetails));
     navigate("/medical-summary");
   };
 
@@ -89,7 +94,7 @@ const ChestXrayNotTakenForm = () => {
               triggerValue: "Other",
               id: "reason-xray-not-required-other-detail",
               label: "Reason not required",
-              name: "reasonXrayNotRequiredOtherTemp",
+              name: "reasonXrayNotRequiredFurtherDetails",
               required: "Enter the reason why X-ray is not required",
             }}
           />

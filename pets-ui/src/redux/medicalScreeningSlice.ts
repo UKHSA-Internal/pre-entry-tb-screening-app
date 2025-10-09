@@ -20,6 +20,7 @@ const initialState: ReduxMedicalScreeningType = {
   physicalExamNotes: "",
   chestXrayTaken: YesOrNo.NULL,
   reasonXrayNotRequired: "",
+  reasonXrayNotRequiredFurtherDetails: "",
   completionDate: {
     year: "",
     month: "",
@@ -79,6 +80,9 @@ export const medicalScreeningSlice = createSlice({
     setReasonXrayNotRequired: (state, action: PayloadAction<string>) => {
       state.reasonXrayNotRequired = action.payload;
     },
+    setReasonXrayNotRequiredFurtherDetails: (state, action: PayloadAction<string>) => {
+      state.reasonXrayNotRequiredFurtherDetails = action.payload;
+    },
     setMedicalScreeningDetails: (state, action: PayloadAction<ReduxMedicalScreeningType>) => {
       state.age = action.payload.age;
       state.completionDate = action.payload.completionDate;
@@ -100,6 +104,8 @@ export const medicalScreeningSlice = createSlice({
       state.physicalExamNotes = action.payload.physicalExamNotes;
       state.chestXrayTaken = action.payload.chestXrayTaken || YesOrNo.NULL;
       state.reasonXrayNotRequired = action.payload.reasonXrayNotRequired || "";
+      state.reasonXrayNotRequiredFurtherDetails =
+        action.payload.reasonXrayNotRequiredFurtherDetails || "";
     },
     clearMedicalScreeningDetails: (state) => {
       state.status = ApplicationStatus.NOT_YET_STARTED;
@@ -118,6 +124,7 @@ export const medicalScreeningSlice = createSlice({
       state.physicalExamNotes = "";
       state.chestXrayTaken = YesOrNo.NULL;
       state.reasonXrayNotRequired = "";
+      state.reasonXrayNotRequiredFurtherDetails = "";
       state.completionDate = {
         year: "",
         month: "",
@@ -149,6 +156,8 @@ export const medicalScreeningSlice = createSlice({
       state.physicalExamNotes = action.payload.physicalExaminationNotes;
       state.chestXrayTaken = action.payload.isXrayRequired ?? YesOrNo.NULL;
       state.reasonXrayNotRequired = action.payload.reasonXrayNotRequired ?? "";
+      state.reasonXrayNotRequiredFurtherDetails =
+        action.payload.reasonXrayNotRequiredFurtherDetails ?? "";
       state.completionDate = action.payload.dateCreated
         ? {
             year: action.payload.dateCreated.split("-")[0],
@@ -183,6 +192,7 @@ export const {
   setPhysicalExamNotes,
   setChestXrayTaken,
   setReasonXrayNotRequired,
+  setReasonXrayNotRequiredFurtherDetails,
   clearMedicalScreeningDetails,
   setMedicalScreeningDetails,
   setMedicalScreeningDetailsFromApiResponse,

@@ -89,21 +89,4 @@ describe("Date Component", () => {
     expect(monthInput).toHaveClass("govuk-input--width-2");
     expect(yearInput).toHaveClass("govuk-input--width-4");
   });
-
-  it("applies maxLength on day/month/year inputs", () => {
-    const { container } = render(
-      <Date
-        id="passport-issue-date"
-        autocomplete={false}
-        errorMessage=""
-        value={{ year: "2000", month: "12", day: "31" }}
-        setDateValue={() => {}}
-      />,
-    );
-    const inputs = container.querySelectorAll("input.govuk-input");
-    expect(inputs).toHaveLength(3);
-    expect(inputs[0].getAttribute("maxLength")).toBe("2");
-    expect(inputs[1].getAttribute("maxLength")).toBe("2");
-    expect(inputs[2].getAttribute("maxLength")).toBe("4");
-  });
 });

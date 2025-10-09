@@ -44,6 +44,7 @@ const attributeToComponentId: { [key: string]: string } = {
   xrayResultDetail: "xray-result-detail",
   xrayMinorFindings: "xray-minor-findings",
   reasonXrayWasNotTaken: "reason-xray-not-taken",
+  reasonXrayNotRequiredFurtherDetails: "reason-xray-not-required-other-detail",
   xrayWasNotTakenFurtherDetails: "xray-not-taken-further-details",
   isIssued: "tb-clearance-issued",
   comments: "physician-comments",

@@ -32,7 +32,6 @@ const MedicalScreeningReview = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      const originalReason = medicalData.reasonXrayNotRequired;
       await postMedicalDetails(applicationData.applicationId, {
         dateOfMedicalScreening:
           medicalData.completionDate.year &&
@@ -54,7 +53,8 @@ const MedicalScreeningReview = () => {
         haveMenstralPeriod: medicalData.menstrualPeriods,
         physicalExaminationNotes: medicalData.physicalExamNotes,
         isXrayRequired: medicalData.chestXrayTaken || YesOrNo.NULL,
-        reasonXrayNotRequired: originalReason,
+        reasonXrayNotRequired: medicalData.reasonXrayNotRequired,
+        reasonXrayNotRequiredFurtherDetails: medicalData.reasonXrayNotRequiredFurtherDetails,
       });
 
       dispatch(setMedicalScreeningStatus(ApplicationStatus.COMPLETE));
@@ -187,6 +187,19 @@ const MedicalScreeningReview = () => {
             link: `/chest-xray-not-taken#${attributeToComponentId.reasonXrayWasNotTaken}`,
             hiddenLabel: "reason X-ray is not required",
             emptyValueText: "Enter reason X-ray is not required (optional)",
+          },
+        ]
+      : []),
+    ...(medicalData.chestXrayTaken === YesOrNo.NO &&
+    medicalData.reasonXrayNotRequired === "Other" &&
+    medicalData.reasonXrayNotRequiredFurtherDetails
+      ? [
+          {
+            key: "Other reason X-ray is not required",
+            value: medicalData.reasonXrayNotRequiredFurtherDetails || "Not provided",
+            link: `/chest-xray-not-taken#reason-xray-not-required-other-detail`,
+            hiddenLabel: "other reason X-ray is not required",
+            emptyValueText: "Enter other reason X-ray is not required (optional)",
           },
         ]
       : []),

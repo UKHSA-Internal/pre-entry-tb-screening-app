@@ -135,6 +135,7 @@ type ReduxMedicalScreeningType = {
   physicalExamNotes: string;
   chestXrayTaken: YesOrNo;
   reasonXrayNotRequired: string;
+  reasonXrayNotRequiredFurtherDetails?: string;
   completionDate: DateType;
 };
 
@@ -155,12 +156,14 @@ type PostedMedicalScreeningType = {
   symptomsOther: string;
   isXrayRequired: YesOrNo;
   reasonXrayNotRequired?: string;
+  reasonXrayNotRequiredFurtherDetails?: string;
 };
 
 type ReceivedMedicalScreeningType = PostedMedicalScreeningType &
   ReceivedApplicationAttributesType & {
     isXrayRequired?: YesOrNo;
     reasonXrayNotRequired?: string;
+    reasonXrayNotRequiredFurtherDetails?: string;
   };
 
 // Chest X-ray types

@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { TaskStatus } from "../../shared/types/enum";
 import {
+  ChestXRayNotTakenReason,
   HistoryOfConditionsUnder11,
   MenstrualPeriods,
   PregnancyStatus,
@@ -121,10 +122,10 @@ export const MedicalScreeningChestXRayNotRequiredRequestSchema = MedicalScreenin
   isXrayRequired: z.literal(YesOrNo.No).openapi({
     description: "Is X-ray required?",
   }),
-  reasonXrayNotRequired: z.string().openapi({
-    description: "Further details on why X-ray was not required",
+  reasonXrayNotRequired: z.nativeEnum(ChestXRayNotTakenReason).openapi({
+    description: "Reason X-ray was not required",
   }),
-  xrayNotRequiredFurtherDetails: z.string().optional().openapi({
+  reasonXrayNotRequiredFurtherDetails: z.string().optional().openapi({
     description: "Further details on why X-ray was not required",
   }),
 });

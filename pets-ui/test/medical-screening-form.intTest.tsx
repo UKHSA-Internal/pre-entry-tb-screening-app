@@ -104,6 +104,7 @@ describe("MedicalScreeningForm", () => {
       previousTb: "Yes",
       previousTbDetail: "Details of previous pulmonary TB.",
       reasonXrayNotRequired: "",
+      reasonXrayNotRequiredFurtherDetails: "",
       status: "In progress",
       tbSymptoms: "Yes",
       tbSymptomsList: ["Cough", "Night sweats"],

@@ -51,39 +51,24 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
   }, [props.value?.day, props.value?.month, props.value?.year]);
 
   const handleDayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const filtered = filterDayOrMonthRaw(e.target.value);
-
-    if (filtered.length <= 2) {
-      setRawDay(filtered);
-      const newValue = { ...props.value, day: removeLeadingZeros(filtered) };
-      props.setDateValue(newValue);
-    }
+    const value = e.target.value;
+    setRawDay(value);
+    const newValue = { ...props.value, day: removeLeadingZeros(value) };
+    props.setDateValue(newValue);
   };
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const filtered = filterDayOrMonthRaw(e.target.value);
-    if (filtered.length <= 2) {
-      setRawMonth(filtered);
-      const newValue = { ...props.value, month: removeLeadingZeros(filtered) };
-      props.setDateValue(newValue);
-    }
+    const value = e.target.value;
+    setRawMonth(value);
+    const newValue = { ...props.value, month: removeLeadingZeros(value) };
+    props.setDateValue(newValue);
   };
 
   const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const filtered = filterYearRaw(e.target.value);
-    if (filtered.length <= 4) {
-      setRawYear(filtered);
-      const newValue = { ...props.value, year: removeLeadingZeros(filtered) };
-      props.setDateValue(newValue);
-    }
-  };
-
-  const filterDayOrMonthRaw = (raw: string): string => {
-    return raw.slice(0, 2);
-  };
-
-  const filterYearRaw = (raw: string): string => {
-    return raw.slice(0, 4);
+    const value = e.target.value;
+    setRawYear(value);
+    const newValue = { ...props.value, year: removeLeadingZeros(value) };
+    props.setDateValue(newValue);
   };
 
   const autocompleteBDay: Record<"day" | "month" | "year", AutocompleteI> = {
@@ -162,7 +147,6 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
               type="text"
               value={rawDay}
               onChange={handleDayChange}
-              maxLength={2}
             />
           </div>
         </div>
@@ -179,7 +163,6 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
               type="text"
               value={rawMonth}
               onChange={handleMonthChange}
-              maxLength={2}
             />
           </div>
         </div>
@@ -196,7 +179,6 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
               type="text"
               value={rawYear}
               onChange={handleYearChange}
-              maxLength={4}
             />
           </div>
         </div>
