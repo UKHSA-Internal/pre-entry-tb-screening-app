@@ -158,4 +158,77 @@ describe("FileUpload Component", () => {
       expect(screen.queryByText("File is required")).toBeNull();
     });
   });
+
+  it("updates file input when dropping a file", async () => {
+    vi.mocked(validateFiles).mockResolvedValue(true);
+
+    let branchExecuted = false;
+
+    class MockDataTransfer {
+      files = [] as unknown as FileList;
+      items = {
+        add: () => {
+          branchExecuted = true;
+        },
+      };
+    }
+
+    const original = globalThis.DataTransfer;
+    globalThis.DataTransfer = MockDataTransfer as unknown as typeof DataTransfer;
+
+    try {
+      renderWithFormProvider(<FileUpload {...defaultProps} />);
+
+      const dropArea = screen
+        .getByTestId("test-file-upload")
+        .closest('[data-module="govuk-file-upload"]');
+      const file = new File(["content"], "test.jpg", { type: "image/jpeg" });
+      const input = screen.getByTestId("test-file-upload");
+
+      Object.defineProperty(input, "files", {
+        set: vi.fn(),
+        get: () => null,
+        configurable: true,
+      });
+
+      fireEvent.drop(dropArea!, {
+        dataTransfer: {
+          files: [file],
+        },
+      });
+
+      await waitFor(() => {
+        expect(branchExecuted).toBe(true);
+        expect(screen.getByText("test.jpg")).toBeInTheDocument();
+      });
+    } finally {
+      globalThis.DataTransfer = original;
+    }
+  });
+
+  it("should restore lastFile when user cancels file selection", async () => {
+    vi.mocked(validateFiles).mockResolvedValue(true);
+
+    renderWithFormProvider(<FileUpload {...defaultProps} />);
+
+    const input: HTMLInputElement = screen.getByTestId("test-file-upload");
+    const file = new File(["content"], "test.jpg", { type: "image/jpeg" });
+
+    await userEvent.upload(input, file);
+
+    const mockDataTransfer = {
+      files: null as unknown as FileList,
+      items: { add: vi.fn() },
+    };
+    const original = globalThis.DataTransfer;
+    globalThis.DataTransfer = vi.fn(() => mockDataTransfer) as unknown as typeof DataTransfer;
+
+    fireEvent.change(input, { target: { files: [] } });
+
+    await waitFor(() => {
+      expect(mockDataTransfer.items.add).toHaveBeenCalledWith(file);
+    });
+
+    globalThis.DataTransfer = original;
+  });
 });

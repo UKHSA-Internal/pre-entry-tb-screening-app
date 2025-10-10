@@ -134,6 +134,7 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
 
   const onInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
+    // Checks if user cancels file picker and if there is existing file that can be put back
     if (files.length === 0 && (lastFile || showExistingFileName)) {
       if (lastFile && fileInputRef.current) {
         const dt = new DataTransfer();

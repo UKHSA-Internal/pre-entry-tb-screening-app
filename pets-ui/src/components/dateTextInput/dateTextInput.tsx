@@ -187,7 +187,7 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
         <div className="govuk-body govuk-!-margin-top-2">
           <span className="govuk-!-margin-right-2">Set to:</span>
           <a
-            href="#"
+            href={`#${props.id}-today`}
             className="govuk-link govuk-!-margin-right-3"
             data-testid={`${props.id}-quickfill-today`}
             onClick={(e) => {
@@ -198,7 +198,7 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
             Today
           </a>
           <a
-            href="#"
+            href={`#${props.id}-yesterday`}
             className="govuk-link"
             data-testid={`${props.id}-quickfill-yesterday`}
             onClick={(e) => {
