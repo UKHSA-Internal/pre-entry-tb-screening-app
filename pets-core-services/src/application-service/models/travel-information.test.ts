@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
 import { VisaOptions } from "../types/enums";
-import { ITravelInformation, TravelInformation } from "./travel-information";
+import { NewTravelInformation, TravelInformationDbOps } from "./travel-information";
 
 describe("Tests for Travel Information Model", () => {
   const ddbMock = mockClient(awsClients.dynamoDBDocClient);
@@ -13,7 +13,7 @@ describe("Tests for Travel Information Model", () => {
     ddbMock.reset();
   });
 
-  const newTravelInformation: Omit<ITravelInformation, "dateCreated" | "status"> = {
+  const newTravelInformation: NewTravelInformation = {
     applicationId: "test-application-id",
     visaCategory: VisaOptions.Study,
     ukAddressLine1: "first line",
@@ -32,7 +32,8 @@ describe("Tests for Travel Information Model", () => {
     vi.setSystemTime(expectedDateTime);
 
     // Act
-    const travelInformation = await TravelInformation.createTravelInformation(newTravelInformation);
+    const travelInformation =
+      await TravelInformationDbOps.createTravelInformation(newTravelInformation);
 
     // Assert
     expect(travelInformation).toMatchObject({
@@ -67,7 +68,7 @@ describe("Tests for Travel Information Model", () => {
     });
 
     // Act
-    const travelInformation = await TravelInformation.getByApplicationId(
+    const travelInformation = await TravelInformationDbOps.getByApplicationId(
       newTravelInformation.applicationId,
     );
 

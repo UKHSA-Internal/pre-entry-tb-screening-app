@@ -4,20 +4,20 @@ import { z } from "zod";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { TravelInformation, TravelInformationDbOps } from "../models/travel-information";
-import { TravelInformationPostRequestSchema } from "../types/zod-schema";
+import { TravelInformationDbOps, TravelInformationUpdate } from "../models/travel-information";
+import { TravelInformationPutRequestSchema } from "../types/zod-schema";
 
-export type TravelInformationRequestSchema = z.infer<typeof TravelInformationPostRequestSchema>;
+export type TravelInformationRequestSchema = z.infer<typeof TravelInformationPutRequestSchema>;
 
-export type SaveTravelInformationEvent = PetsAPIGatewayProxyEvent & {
+export type UpdateTravelInformationEvent = PetsAPIGatewayProxyEvent & {
   parsedBody?: TravelInformationRequestSchema;
 };
 
-export const saveTravelInformationHandler = async (event: SaveTravelInformationEvent) => {
+export const updateTravelInformationHandler = async (event: UpdateTravelInformationEvent) => {
   try {
     const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
 
-    logger.info({ applicationId }, "Save Travel Information handler triggered");
+    logger.info({ applicationId }, "Update Travel Information handler triggered");
 
     const { parsedBody } = event;
 
@@ -29,12 +29,12 @@ export const saveTravelInformationHandler = async (event: SaveTravelInformationE
       });
     }
 
-    let travelInformation: TravelInformation;
+    let travelInformation: TravelInformationUpdate;
     try {
       const { createdBy } = event.requestContext.authorizer;
-      travelInformation = await TravelInformationDbOps.createTravelInformation({
+      travelInformation = await TravelInformationDbOps.updateTravelInformation({
         ...parsedBody,
-        createdBy,
+        updatedBy: createdBy,
         applicationId,
       });
     } catch (error) {

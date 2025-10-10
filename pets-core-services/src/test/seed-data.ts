@@ -10,7 +10,7 @@ import { MedicalScreeningDbOps } from "../application-service/models/medical-scr
 import { RadiologicalOutcome } from "../application-service/models/radiological-outcome";
 import { SputumDecision } from "../application-service/models/sputum-decision";
 import { TbCertificateDbOps } from "../application-service/models/tb-certificate";
-import { TravelInformation } from "../application-service/models/travel-information";
+import { TravelInformationDbOps } from "../application-service/models/travel-information";
 import { seededClinics } from "../clinic-service/fixtures/clinics";
 import { Clinic } from "../clinic-service/models/clinics";
 import { seededApplications } from "../shared/fixtures/application";
@@ -27,7 +27,7 @@ export const seedDatabase = async () => {
   }
 
   for (const travelInformation of seededTravelInformation) {
-    await TravelInformation.createTravelInformation(travelInformation);
+    await TravelInformationDbOps.createTravelInformation(travelInformation);
   }
 
   for (const medicalScreening of seededMedicalScreening) {
