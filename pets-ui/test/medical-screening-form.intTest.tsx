@@ -100,7 +100,7 @@ describe("MedicalScreeningForm", () => {
       menstrualPeriods: "No",
       otherSymptomsDetail: "",
       physicalExamNotes: "Details of physical examination.",
-      pregnant: "Do not know",
+      pregnant: "Don't know",
       previousTb: "Yes",
       previousTbDetail: "Details of previous pulmonary TB.",
       reasonXrayNotRequired: "",
@@ -127,8 +127,8 @@ describe("MedicalScreeningForm", () => {
       "Error: Select whether the visa applicant has any pulmonary TB symptoms",
       "Error: Select whether the visa applicant has ever had pulmonary TB",
       "Error: Select whether the visa applicant has had close contact with any person with active pulmonary TB within the past year",
-      "Error: Select whether the visa applicant is pregnant",
-      "Error: Select whether the visa applicant has menstrual periods",
+      "Error: Select whether the applicant is pregnant",
+      "Error: Select whether the applicant has menstrual periods",
     ];
 
     await waitFor(() => {
