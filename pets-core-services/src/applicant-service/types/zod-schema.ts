@@ -6,7 +6,7 @@ import { AllowedSex } from "./enums";
 
 extendZodWithOpenApi(z);
 
-export const ApplicantSchema = z.object({
+export const ApplicantRequestSchema = z.object({
   fullName: z.string().openapi({
     description: "Full name of Applicant",
   }),
@@ -48,7 +48,13 @@ export const ApplicantSchema = z.object({
   }),
 });
 
-export const ApplicantUpdateSchema = z.object({
+export const ApplicantResponseSchema = ApplicantRequestSchema.extend({
+  applicationId: z.string().openapi({
+    description: "Unique Application ID for applicant",
+  }),
+});
+
+export const ApplicantUpdateRequestSchema = z.object({
   fullName: z.string().optional().openapi({
     description: "Full name of Applicant",
   }),
@@ -89,5 +95,11 @@ export const ApplicantUpdateSchema = z.object({
   postcode: z.string().optional(),
   country: z.nativeEnum(CountryCode).optional().openapi({
     description: "Country of Applican't Address",
+  }),
+});
+
+export const ApplicantUpdateResponseSchema = ApplicantUpdateRequestSchema.extend({
+  applicationId: z.string().openapi({
+    description: "Unique Application ID for applicant",
   }),
 });

@@ -5,9 +5,14 @@ import { boostrapLambdaRoutes } from "../../shared/bootstrap";
 import { CountryCode } from "../../shared/country";
 import { PetsRoute } from "../../shared/types";
 import { postApplicantHandler } from "../handlers/postApplicant";
-import { putApplicantHandler } from "../handlers/putApplicant";
 import { searchApplicantHandler } from "../handlers/searchApplicant";
-import { ApplicantSchema, ApplicantUpdateSchema } from "../types/zod-schema";
+import { updateApplicantHandler } from "../handlers/updateApplicant";
+import {
+  ApplicantRequestSchema,
+  ApplicantResponseSchema,
+  ApplicantUpdateRequestSchema,
+  ApplicantUpdateResponseSchema,
+} from "../types/zod-schema";
 
 extendZodWithOpenApi(z);
 
@@ -16,23 +21,21 @@ export const routes: PetsRoute[] = [
     method: "POST",
     path: "/applicant/register/{applicationId}",
     handler: postApplicantHandler,
-    requestBodySchema: ApplicantSchema.openapi({ description: "Details about an Applicant" }),
-    responseSchema: ApplicantSchema.extend({
-      applicationId: z.string().openapi({
-        description: "Unique Application ID for applicant",
-      }),
-    }).openapi({ description: "Saved Applicant Details" }),
+    requestBodySchema: ApplicantRequestSchema.openapi({
+      description: "Details about an Applicant",
+    }),
+    responseSchema: ApplicantResponseSchema.openapi({ description: "Saved Applicant Details" }),
   },
   {
     method: "PUT",
     path: "/applicant/update/{applicationId}",
-    handler: putApplicantHandler,
-    requestBodySchema: ApplicantUpdateSchema.openapi({ description: "Details about an Applicant" }),
-    responseSchema: ApplicantUpdateSchema.extend({
-      applicationId: z.string().openapi({
-        description: "Unique Application ID for applicant",
-      }),
-    }).openapi({ description: "Updated Applicant Details" }),
+    handler: updateApplicantHandler,
+    requestBodySchema: ApplicantUpdateRequestSchema.openapi({
+      description: "Details about an Applicant",
+    }),
+    responseSchema: ApplicantUpdateResponseSchema.openapi({
+      description: "Updated Applicant Details",
+    }),
   },
   {
     method: "GET",
@@ -45,7 +48,7 @@ export const routes: PetsRoute[] = [
       }),
     },
     responseSchema: z.array(
-      ApplicantSchema.openapi("Applicant", {
+      ApplicantResponseSchema.openapi("Applicant", {
         description: "Details about an Applicant",
       }),
     ),

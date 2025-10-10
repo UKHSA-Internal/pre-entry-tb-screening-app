@@ -10,7 +10,7 @@ import {
 import { z } from "zod";
 
 import { AllowedSex } from "../../applicant-service/types/enums";
-import { ApplicantUpdateSchema } from "../../applicant-service/types/zod-schema";
+import { ApplicantUpdateRequestSchema } from "../../applicant-service/types/zod-schema";
 import awsClients from "../clients/aws";
 import { assertEnvExists } from "../config";
 import { CountryCode } from "../country";
@@ -23,7 +23,7 @@ type AllApplicantTypes = AllowedSex | CountryCode | Date | TaskStatus | string;
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
-type ApplicantUpdateBase = z.infer<typeof ApplicantUpdateSchema>;
+type ApplicantUpdateBase = z.infer<typeof ApplicantUpdateRequestSchema>;
 
 export abstract class ApplicantBase {
   applicationId: string;
@@ -100,200 +100,8 @@ export type UpdatedApplicant = ApplicantUpdateBase & {
 export type ApplicantConstructorProps = Omit<ApplicantBase, "passportId">;
 
 export class Applicant extends ApplicantBase {
-  static readonly getPk = (applicationId: string) => Application.getPk(applicationId);
-
-  static readonly sk = "APPLICANT#DETAILS";
-
-  static readonly getTableName = () => process.env.APPLICANT_SERVICE_DATABASE_NAME;
-
-  private constructor(details: ApplicantConstructorProps) {
+  constructor(details: ApplicantConstructorProps) {
     super(details);
-  }
-
-  private todbItem() {
-    const dbItem = {
-      ...this,
-      dateCreated: this.dateCreated.toISOString(),
-      issueDate: this.issueDate.toISOString(),
-      expiryDate: this.expiryDate.toISOString(),
-      dateOfBirth: this.dateOfBirth.toISOString(),
-      pk: Applicant.getPk(this.applicationId),
-      sk: Applicant.sk,
-    };
-    return dbItem;
-  }
-
-  static async createNewApplicant(details: NewApplicant) {
-    try {
-      logger.info("Saving new applicant Information to DB");
-
-      const updatedDetails: ApplicantConstructorProps = {
-        ...details,
-        dateCreated: new Date(),
-        status: TaskStatus.completed,
-        issueDate: new Date(details.issueDate),
-        expiryDate: new Date(details.expiryDate),
-        dateOfBirth: new Date(details.dateOfBirth),
-      };
-
-      const applicant = new Applicant(updatedDetails);
-
-      const dbItem = applicant.todbItem();
-      const params: PutCommandInput = {
-        TableName: Applicant.getTableName(),
-        Item: { ...dbItem },
-        ConditionExpression: "attribute_not_exists(pk) AND attribute_not_exists(sk)",
-      };
-      const command = new PutCommand(params);
-      const response = await docClient.send(command);
-
-      logger.info({ response }, "Applicant details saved successfully");
-
-      return applicant;
-    } catch (error) {
-      logger.error(error, "Error saving new applicant details");
-      throw error;
-    }
-  }
-
-  private static createUpdateExpressions(item: { [key: string]: AllApplicantTypes }) {
-    const updateExpression: string[] = [];
-    const expressionAttribute: Record<string, any> = {};
-    const expressionAttributeNames: Record<string, string> = {};
-
-    Object.entries(item).forEach(([key, value]) => {
-      const nameKey = `#${key}`;
-      const valueKey = `:${key}`;
-      updateExpression.push(`${nameKey} = ${valueKey}`);
-      expressionAttribute[valueKey] = value;
-      expressionAttributeNames[nameKey] = key;
-    });
-    return { updateExpression, expressionAttribute, expressionAttributeNames };
-  }
-
-  static async updateApplicant(details: UpdatedApplicant) {
-    try {
-      logger.info("Updating applicant Information to DB");
-
-      const pk = Applicant.getPk(details.applicationId);
-      const sk = Applicant.sk;
-
-      // Clean up: remove undefined fields before building update expression
-      const fieldsToUpdate = Object.entries(details).reduce(
-        (acc, [key, value]) => {
-          if (value !== undefined) acc[key] = value;
-          return acc;
-        },
-        {} as Record<string, AllApplicantTypes>,
-      );
-
-      if (!fieldsToUpdate["dateCreated"]) fieldsToUpdate["dateCreated"] = new Date().toISOString();
-
-      const { updateExpression, expressionAttribute, expressionAttributeNames } =
-        this.createUpdateExpressions(fieldsToUpdate);
-
-      const params: UpdateCommandInput = {
-        TableName: Applicant.getTableName(),
-        Key: { pk, sk },
-        UpdateExpression: `SET ${updateExpression.join(", ")}`,
-        ExpressionAttributeValues: expressionAttribute,
-        ExpressionAttributeNames: expressionAttributeNames,
-        ReturnValues: "ALL_NEW", // Return updated item
-      };
-      const command = new UpdateCommand(params);
-      const response = await docClient.send(command);
-      const attrs = response.Attributes;
-
-      logger.info({ response }, "Applicant details updated successfully");
-
-      if (!attrs) return {};
-
-      return {
-        ...attrs,
-        dateUpdated: new Date().toISOString(),
-      };
-    } catch (error) {
-      logger.error(error, "Error updating applicant details");
-      throw error;
-    }
-  }
-
-  static async getByApplicationId(applicationId: string) {
-    try {
-      logger.info("fetching applicant details");
-
-      const params = {
-        TableName: Applicant.getTableName(),
-        Key: {
-          pk: Applicant.getPk(applicationId),
-          sk: Applicant.sk,
-        },
-      };
-
-      const command = new GetCommand(params);
-      const data = await docClient.send(command);
-
-      if (!data.Item) {
-        logger.info("No applicant details found");
-        return;
-      }
-
-      logger.info("Applicant Details fetched successfully");
-
-      const dbItem = data.Item as ReturnType<Applicant["todbItem"]>;
-
-      return new Applicant({
-        ...dbItem,
-        dateCreated: new Date(dbItem.dateCreated),
-        issueDate: new Date(dbItem.issueDate),
-        expiryDate: new Date(dbItem.expiryDate),
-        dateOfBirth: new Date(dbItem.dateOfBirth),
-      });
-    } catch (error) {
-      logger.error(error, "Error retrieving applicant details");
-      throw error;
-    }
-  }
-
-  static async findByPassportId(countryOfIssue: CountryCode, passportNumber: string) {
-    try {
-      logger.info("Finding all applicant details linked to Passport ID");
-
-      const params: QueryCommandInput = {
-        TableName: Applicant.getTableName(),
-        IndexName: assertEnvExists(process.env.PASSPORT_ID_INDEX),
-        KeyConditionExpression: `passportId = :passportId`,
-        ExpressionAttributeValues: {
-          ":passportId": Applicant.getPassportId(countryOfIssue, passportNumber),
-        },
-      };
-
-      const command = new QueryCommand(params);
-      const data = await docClient.send(command);
-
-      if (!data.Items) {
-        logger.info("No applicants found");
-        return [];
-      }
-
-      logger.info({ resultCount: data.Items.length }, "Applicant details fetched successfully");
-
-      const results = data.Items as ReturnType<Applicant["todbItem"]>[];
-
-      return results.map(
-        (dbItem) =>
-          new Applicant({
-            ...dbItem,
-            dateCreated: new Date(dbItem.dateCreated),
-            issueDate: new Date(dbItem.issueDate),
-            expiryDate: new Date(dbItem.expiryDate),
-            dateOfBirth: new Date(dbItem.dateOfBirth),
-          }),
-      );
-    } catch (error) {
-      logger.error(error, "Error retrieving Applicants linked to passport id");
-      throw error;
-    }
   }
 
   toJson() {
@@ -319,5 +127,191 @@ export class Applicant extends ApplicantBase {
       dateCreated: this.dateCreated,
       status: this.status,
     };
+  }
+}
+export class ApplicantDbOps {
+  static readonly getPk = (applicationId: string) => Application.getPk(applicationId);
+  static readonly sk = "APPLICANT#DETAILS";
+  static readonly getTableName = () => process.env.APPLICANT_SERVICE_DATABASE_NAME;
+
+  static todbItem(applicant: ApplicantBase) {
+    const dbItem = {
+      ...applicant,
+      dateCreated: applicant.dateCreated.toISOString(),
+      issueDate: applicant.issueDate.toISOString(),
+      expiryDate: applicant.expiryDate.toISOString(),
+      dateOfBirth: applicant.dateOfBirth.toISOString(),
+      pk: this.getPk(applicant.applicationId),
+      sk: this.sk,
+    };
+    return dbItem;
+  }
+
+  static async createNewApplicant(details: NewApplicant) {
+    try {
+      logger.info("Saving new applicant Information to DB");
+
+      const updatedDetails: ApplicantConstructorProps = {
+        ...details,
+        dateCreated: new Date(),
+        status: TaskStatus.completed,
+        issueDate: new Date(details.issueDate),
+        expiryDate: new Date(details.expiryDate),
+        dateOfBirth: new Date(details.dateOfBirth),
+      };
+
+      const applicant = new Applicant(updatedDetails);
+
+      const dbItem = ApplicantDbOps.todbItem(applicant);
+      const params: PutCommandInput = {
+        TableName: this.getTableName(),
+        Item: { ...dbItem },
+        ConditionExpression: "attribute_not_exists(pk) AND attribute_not_exists(sk)",
+      };
+      const command = new PutCommand(params);
+      const response = await docClient.send(command);
+
+      logger.info({ response }, "Applicant details saved successfully");
+
+      return applicant;
+    } catch (error) {
+      logger.error(error, "Error saving new applicant details");
+      throw error;
+    }
+  }
+
+  private static createUpdateExpressions(item: { [key: string]: AllApplicantTypes }) {
+    const updateExpression: string[] = [];
+    const expressionAttribute: Record<string, AllApplicantTypes> = {};
+    const expressionAttributeNames: Record<string, string> = {};
+
+    Object.entries(item).forEach(([key, value]) => {
+      const nameKey = `#${key}`;
+      const valueKey = `:${key}`;
+      updateExpression.push(`${nameKey} = ${valueKey}`);
+      expressionAttribute[valueKey] = value;
+      expressionAttributeNames[nameKey] = key;
+    });
+    return { updateExpression, expressionAttribute, expressionAttributeNames };
+  }
+
+  static async updateApplicant(details: UpdatedApplicant) {
+    try {
+      logger.info("Updating applicant Information to DB");
+
+      const pk = this.getPk(details.applicationId);
+      const sk = this.sk;
+
+      // Clean up: remove undefined fields before building update expression
+      const fieldsToUpdate = Object.entries(details).reduce(
+        (acc, [key, value]) => {
+          if (value !== undefined) acc[key] = value;
+          return acc;
+        },
+        {} as Record<string, AllApplicantTypes>,
+      );
+
+      const { updateExpression, expressionAttribute, expressionAttributeNames } =
+        this.createUpdateExpressions(fieldsToUpdate);
+
+      const params: UpdateCommandInput = {
+        TableName: this.getTableName(),
+        Key: { pk, sk },
+        UpdateExpression: `SET ${updateExpression.join(", ")}`,
+        ExpressionAttributeValues: expressionAttribute,
+        ExpressionAttributeNames: expressionAttributeNames,
+        ReturnValues: "ALL_NEW", // Return updated item
+      };
+      const command = new UpdateCommand(params);
+      const response = await docClient.send(command);
+      const attrs = response.Attributes;
+
+      logger.info({ response }, "Applicant details updated successfully");
+
+      if (!attrs) return {};
+
+      return attrs;
+    } catch (error) {
+      logger.error(error, "Error updating applicant details");
+      throw error;
+    }
+  }
+
+  static async getByApplicationId(applicationId: string) {
+    try {
+      logger.info("fetching applicant details");
+
+      const params = {
+        TableName: this.getTableName(),
+        Key: {
+          pk: this.getPk(applicationId),
+          sk: this.sk,
+        },
+      };
+
+      const command = new GetCommand(params);
+      const data = await docClient.send(command);
+
+      if (!data.Item) {
+        logger.info("No applicant details found");
+        return;
+      }
+
+      logger.info("Applicant Details fetched successfully");
+
+      const dbItem = data.Item as ReturnType<(typeof ApplicantDbOps)["todbItem"]>;
+
+      return new Applicant({
+        ...dbItem,
+        dateCreated: new Date(dbItem.dateCreated),
+        issueDate: new Date(dbItem.issueDate),
+        expiryDate: new Date(dbItem.expiryDate),
+        dateOfBirth: new Date(dbItem.dateOfBirth),
+      });
+    } catch (error) {
+      logger.error(error, "Error retrieving applicant details");
+      throw error;
+    }
+  }
+
+  static async findByPassportId(countryOfIssue: CountryCode, passportNumber: string) {
+    try {
+      logger.info("Finding all applicant details linked to Passport ID");
+
+      const params: QueryCommandInput = {
+        TableName: this.getTableName(),
+        IndexName: assertEnvExists(process.env.PASSPORT_ID_INDEX),
+        KeyConditionExpression: `passportId = :passportId`,
+        ExpressionAttributeValues: {
+          ":passportId": Applicant.getPassportId(countryOfIssue, passportNumber),
+        },
+      };
+
+      const command = new QueryCommand(params);
+      const data = await docClient.send(command);
+
+      if (!data.Items) {
+        logger.info("No applicants found");
+        return [];
+      }
+
+      logger.info({ resultCount: data.Items.length }, "Applicant details fetched successfully");
+
+      const results = data.Items as ReturnType<(typeof ApplicantDbOps)["todbItem"]>[];
+
+      return results.map(
+        (dbItem) =>
+          new Applicant({
+            ...dbItem,
+            dateCreated: new Date(dbItem.dateCreated),
+            issueDate: new Date(dbItem.issueDate),
+            expiryDate: new Date(dbItem.expiryDate),
+            dateOfBirth: new Date(dbItem.dateOfBirth),
+          }),
+      );
+    } catch (error) {
+      logger.error(error, "Error retrieving Applicants linked to passport id");
+      throw error;
+    }
   }
 }
