@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 
 import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
-import { Applicant } from "../../shared/models/applicant";
+import { ApplicantDbOps } from "../../shared/models/applicant";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicants } from "../fixtures/applicants";
 import { Header, SearchApplicantEvent, searchApplicantHandler } from "./searchApplicant";
@@ -64,7 +64,7 @@ describe("Test for Getting Applicant", () => {
 
   test("Duplicate results returns a 500 response", async () => {
     // Arrange
-    await Applicant.createNewApplicant({
+    await ApplicantDbOps.createNewApplicant({
       ...seededApplicants[0],
       applicationId: "duplicate-application-id",
     });

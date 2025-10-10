@@ -14,7 +14,7 @@ import { TravelInformationDbOps } from "../application-service/models/travel-inf
 import { seededClinics } from "../clinic-service/fixtures/clinics";
 import { Clinic } from "../clinic-service/models/clinics";
 import { seededApplications } from "../shared/fixtures/application";
-import { Applicant } from "../shared/models/applicant";
+import { ApplicantDbOps } from "../shared/models/applicant";
 import { Application } from "../shared/models/application";
 
 export const seedDatabase = async () => {
@@ -23,7 +23,7 @@ export const seedDatabase = async () => {
   }
 
   for (const applicantDetails of seededApplicants) {
-    await Applicant.createNewApplicant(applicantDetails);
+    await ApplicantDbOps.createNewApplicant(applicantDetails);
   }
 
   for (const travelInformation of seededTravelInformation) {

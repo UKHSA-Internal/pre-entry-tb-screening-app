@@ -3,7 +3,7 @@ import { GlobalContextStorageProvider } from "pino-lambda";
 import { CountryCode } from "../../shared/country";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
-import { Applicant } from "../../shared/models/applicant";
+import { ApplicantDbOps } from "../../shared/models/applicant";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 
@@ -33,7 +33,7 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
       passportNumber: parsedHeaders.passportnumber.slice(-4),
     });
 
-    const applicants = await Applicant.findByPassportId(
+    const applicants = await ApplicantDbOps.findByPassportId(
       parsedHeaders.countryofissue,
       parsedHeaders.passportnumber,
     );

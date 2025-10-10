@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { AllowedSex } from "../../applicant-service/types/enums";
 import awsClients from "../clients/aws";
 import { CountryCode } from "../country";
-import { Applicant, NewApplicant } from "./applicant";
+import { ApplicantDbOps, NewApplicant } from "./applicant";
 
 const applicantDetails: NewApplicant = {
   applicationId: "test-application-id",
@@ -42,7 +42,7 @@ describe("Tests for Applicant Model", () => {
     vi.setSystemTime(expectedDateTime);
 
     // Act
-    const applicant = await Applicant.createNewApplicant(applicantDetails);
+    const applicant = await ApplicantDbOps.createNewApplicant(applicantDetails);
 
     // Assert
     expect(applicant).toMatchObject({
@@ -79,7 +79,10 @@ describe("Tests for Applicant Model", () => {
     });
 
     // Act
-    const searchResult = await Applicant.findByPassportId(CountryCode.ALA, "missing-applicant");
+    const searchResult = await ApplicantDbOps.findByPassportId(
+      CountryCode.ALA,
+      "missing-applicant",
+    );
 
     // Assert
     expect(searchResult).toHaveLength(0);
@@ -107,7 +110,7 @@ describe("Tests for Applicant Model", () => {
     });
 
     // Act
-    const searchResult = await Applicant.findByPassportId(CountryCode.ALA, "saved-applicant");
+    const searchResult = await ApplicantDbOps.findByPassportId(CountryCode.ALA, "saved-applicant");
 
     // Assert
     expect(searchResult).toHaveLength(1);
@@ -132,7 +135,7 @@ describe("Tests for Applicant Model", () => {
     });
 
     // Act
-    const applicant = await Applicant.getByApplicationId(applicantDetails.applicationId);
+    const applicant = await ApplicantDbOps.getByApplicationId(applicantDetails.applicationId);
 
     // Assert
     expect(applicant).toMatchObject({
