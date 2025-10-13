@@ -1,9 +1,10 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
+import { logger } from "../../shared/logger";
+import { ApplicantDbOps } from "../../shared/models/applicant";
 import { mockAPIGwEvent } from "../../test/mocks/events";
-import { seededApplicants } from "../fixtures/applicants";
 import { AllowedSex } from "../types/enums";
 import { PutApplicantEvent, updateApplicantHandler } from "./updateApplicant";
 
@@ -39,14 +40,10 @@ describe("Test for Updating Applicant into DB", () => {
 
     // Assert
     expect(response.statusCode).toBe(200);
-    expect(JSON.parse(response.body)).toMatchObject({
-      ...newApplicantDetails,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      dateCreated: expect.any(String),
-    });
+    expect(JSON.parse(response.body)).toMatchObject(newApplicantDetails);
   });
 
-  test("Missing application throws a 400 error", async () => {
+  test("Incorrect applicationId throws a 400 error", async () => {
     // Arrange
     const parsedBody: PutApplicantEvent["parsedBody"] = {
       ...newApplicantDetails,
@@ -67,40 +64,11 @@ describe("Test for Updating Applicant into DB", () => {
     });
   });
 
-  test("Mismatch in Clinic ID throws a 400 error", async () => {
+  test("Missing applicationId returns 400 error", async () => {
     // Arrange
-    const parsedBody: PutApplicantEvent["parsedBody"] = {
-      ...newApplicantDetails,
-    };
-
     const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[2].applicationId },
-      parsedBody,
-    };
-
-    // Act
-    const response = await updateApplicantHandler(event);
-
-    // Assert
-    expect(response.statusCode).toBe(403);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "Clinic Id mismatch",
-    });
-  });
-
-  test("Existing passport number and country throws a 400 error", async () => {
-    // Arrange
-    const existingApplicant = seededApplicants[0];
-    const parsedBody: PutApplicantEvent["parsedBody"] = {
-      ...newApplicantDetails,
-      passportNumber: existingApplicant.passportNumber,
-      countryOfIssue: existingApplicant.countryOfIssue,
-    };
-    const event: PutApplicantEvent = {
-      ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[0].applicationId },
-      parsedBody,
+      parsedBody: newApplicantDetails,
     };
 
     // Act
@@ -108,30 +76,6 @@ describe("Test for Updating Applicant into DB", () => {
 
     // Assert
     expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "A record with this applicant details has already been saved",
-    });
-  });
-
-  test("Duplicate post throws a 400 error", async () => {
-    // Arrange
-    const parsedBody: PutApplicantEvent["parsedBody"] = {
-      ...newApplicantDetails,
-      passportNumber: "new-passport-id",
-      countryOfIssue: CountryCode.FSM,
-    };
-    const event: PutApplicantEvent = {
-      ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[1].applicationId }, // An Applicant has been created for this Application already
-      parsedBody,
-    };
-
-    // Act
-    const response = await updateApplicantHandler(event);
-
-    // Assert
-    expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toMatchObject({ message: "Applicant Details already saved" });
   });
 
   test("Missing required Headers returns a 500 response", async () => {
@@ -152,9 +96,11 @@ describe("Test for Updating Applicant into DB", () => {
 
   test("Any error returns a 500 response", async () => {
     // Arrange;
-
+    const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    vi.spyOn(ApplicantDbOps, "updateApplicant").mockRejectedValue(Error("update error"));
     const malformedEvent: PutApplicantEvent = {
       ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
       parsedBody: {} as PutApplicantEvent["parsedBody"],
     };
 
@@ -162,6 +108,10 @@ describe("Test for Updating Applicant into DB", () => {
     const response = await updateApplicantHandler(malformedEvent);
 
     // Assert
+    expect(errorLoggerMock).toHaveBeenCalledWith(
+      Error("update error"),
+      "Error saving Applicant details",
+    );
     expect(response.statusCode).toBe(500);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Something went wrong",

@@ -1,10 +1,12 @@
-import { GetCommand, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import { AllowedSex } from "../../applicant-service/types/enums";
 import awsClients from "../clients/aws";
 import { CountryCode } from "../country";
+import { seededApplications } from "../fixtures/application";
+import { logger } from "../logger";
 import { ApplicantDbOps, NewApplicant } from "./applicant";
 
 const applicantDetails: NewApplicant = {
@@ -145,5 +147,28 @@ describe("Tests for Applicant Model", () => {
       expiryDate: new Date("2030-01-01"),
       dateOfBirth: new Date("2000-02-07"),
     });
+  });
+
+  test("Error handling while updating an applicant details", async () => {
+    const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    ddbMock.on(GetCommand).resolvesOnce({
+      Item: seededApplications[0],
+    });
+    ddbMock.on(UpdateCommand);
+
+    // Act / Assert
+    try {
+      await ApplicantDbOps.updateApplicant({
+        country: CountryCode.KOR,
+        applicationId: "whatever",
+        updatedBy: "me",
+      });
+    } catch (err) {
+      expect(err).toThrow(new TypeError("obj is not a function"));
+    }
+    expect(errorLoggerMock).toHaveBeenCalledWith(
+      TypeError("Cannot read properties of undefined (reading 'Attributes')"),
+      "Error updating applicant details",
+    );
   });
 });

@@ -8,7 +8,7 @@ import { ApplicantPhoto, IApplicantPhoto } from "./applicant-photo";
 
 // Mock direct dependencies
 vi.mock("../../shared/models/applicant", () => ({
-  Applicant: {
+  ApplicantDbOps: {
     getByApplicationId: vi.fn(),
   },
 }));
