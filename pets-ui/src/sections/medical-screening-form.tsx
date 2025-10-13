@@ -311,13 +311,12 @@ const MedicalScreeningForm = () => {
         <div ref={physicalExamNotesRef}>
           <TextArea
             id="physical-exam-notes"
-            label="Physical examination notes (optional)"
+            heading="Physical examination notes (optional)"
             hint="Include physical symptoms of TB observed during the examination"
             errorMessage={errors?.physicalExamNotes?.message ?? ""}
             formValue="physicalExamNotes"
             required={false}
             rows={4}
-            labelStyle={{ fontWeight: 700 }}
             defaultValue={medicalData.physicalExamNotes}
           />
         </div>
