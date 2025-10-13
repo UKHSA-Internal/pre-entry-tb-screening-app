@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import Date from "./dateTextInput";
 
@@ -88,5 +88,37 @@ describe("Date Component", () => {
     expect(dayInput).toHaveClass("govuk-input--width-2");
     expect(monthInput).toHaveClass("govuk-input--width-2");
     expect(yearInput).toHaveClass("govuk-input--width-4");
+  });
+
+  it("handles today and yesterday quickfill links", () => {
+    const mockSetDateValue = vi.fn();
+    render(
+      <Date
+        id="test-date"
+        autocomplete={false}
+        errorMessage=""
+        value={{ year: "", month: "", day: "" }}
+        setDateValue={mockSetDateValue}
+        showTodayYesterdayLinks={true}
+      />,
+    );
+
+    const today = new globalThis.Date();
+    screen.getByTestId("test-date-quickfill-today").click();
+    expect(mockSetDateValue).toHaveBeenCalledWith({
+      day: today.getDate().toString(),
+      month: (today.getMonth() + 1).toString(),
+      year: today.getFullYear().toString(),
+    });
+
+    mockSetDateValue.mockClear();
+    const yesterday = new globalThis.Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    screen.getByTestId("test-date-quickfill-yesterday").click();
+    expect(mockSetDateValue).toHaveBeenCalledWith({
+      day: yesterday.getDate().toString(),
+      month: (yesterday.getMonth() + 1).toString(),
+      year: yesterday.getFullYear().toString(),
+    });
   });
 });

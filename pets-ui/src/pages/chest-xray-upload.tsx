@@ -5,7 +5,7 @@ export default function ChestXrayUploadPage() {
   return (
     <Container
       title="Upload chest X-ray images - Complete UK pre-entry health screening - GOV.UK"
-      backLinkTo="/chest-xray-question"
+      backLinkTo="/tracker"
     >
       <ChestXrayForm />
     </Container>

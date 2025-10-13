@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ApplicationIdAndDateCreatedType } from "@/applicant";
+import { ApplicationIdAndDateCreatedType } from "@/types";
 
 const initialState: ApplicationIdAndDateCreatedType = {
   applicationId: "",

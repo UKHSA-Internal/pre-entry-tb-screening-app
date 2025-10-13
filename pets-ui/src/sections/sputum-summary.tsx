@@ -23,7 +23,7 @@ import {
 } from "@/redux/sputumSlice";
 import { selectApplication, selectSputum } from "@/redux/store";
 import { ApplicationStatus, ButtonType, PositiveOrNegative } from "@/utils/enums";
-import { formatDateType } from "@/utils/helpers";
+import { formatDateForDisplay } from "@/utils/helpers";
 
 const SputumSummary = () => {
   const sputumData = useAppSelector(selectSputum);
@@ -251,7 +251,7 @@ const SputumSummary = () => {
       hiddenLabel: string;
     } = {
       key: "Date taken",
-      value: hasCollectionData ? formatDateType(sample.collection.dateOfSample) : "No data",
+      value: hasCollectionData ? formatDateForDisplay(sample.collection.dateOfSample) : "No data",
       hiddenLabel: `date sample ${sampleNumber} was taken`,
     };
 

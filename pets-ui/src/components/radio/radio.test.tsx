@@ -166,4 +166,32 @@ describe("Radio component", () => {
     expect(radioOne).toBeChecked();
     expect(radioTwo).not.toBeChecked();
   });
+
+  it("renders exclusive answer options with divider", () => {
+    const RadioToTest = () => {
+      const methods = useForm<FormValues>();
+      return (
+        <FormProvider {...methods}>
+          <Radio
+            id="test-id"
+            isInline={RadioIsInline.FALSE}
+            answerOptions={["Answer One", "Answer Two"]}
+            exclusiveAnswerOptions={["None of the above"]}
+            sortAnswersAlphabetically={false}
+            errorMessage=""
+            formValue="testValue"
+            required="This is required."
+          />
+        </FormProvider>
+      );
+    };
+    const { container } = render(<RadioToTest />);
+
+    expect(screen.getAllByRole("radio")).toHaveLength(3);
+    expect(screen.getByText("Answer One")).toBeTruthy();
+    expect(screen.getByText("Answer Two")).toBeTruthy();
+    expect(screen.getByText("None of the above")).toBeTruthy();
+    expect(container.getElementsByClassName("govuk-radios__divider")).toHaveLength(1);
+    expect(screen.getByText("or")).toBeTruthy();
+  });
 });

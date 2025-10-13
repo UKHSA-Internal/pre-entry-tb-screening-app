@@ -5,6 +5,7 @@ import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { TaskStatus } from "../../shared/types/enum";
 import {
+  ChestXRayNotTakenReason,
   HistoryOfConditionsUnder11,
   MenstrualPeriods,
   PregnancyStatus,
@@ -14,10 +15,49 @@ import {
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
-export abstract class IMedicalScreening {
+export abstract class MedicalScreeningBase {
+  applicationId!: string;
+  status!: TaskStatus;
+
+  dateOfMedicalScreening!: Date;
+  age!: number;
+  symptomsOfTb!: YesOrNo;
+  symptoms!: TbSymptomsOptions[];
+  symptomsOther?: string;
+  historyOfConditionsUnder11!: HistoryOfConditionsUnder11[];
+  historyOfConditionsUnder11Details?: string;
+  historyOfPreviousTb!: YesOrNo;
+  previousTbDetails?: string;
+  contactWithPersonWithTb!: YesOrNo;
+  contactWithTbDetails?: string;
+  pregnant!: PregnancyStatus;
+  haveMenstralPeriod!: MenstrualPeriods;
+  physicalExaminationNotes!: string;
+
+  dateCreated!: Date;
+  createdBy!: string;
+
+  constructor(details: Partial<MedicalScreeningBase>) {
+    Object.assign(this, details); // copies all matching props
+  }
+
+  toJson() {
+    // Copy everything from this
+    const json = { ...this } as Record<string, unknown>;
+
+    // Exclude internal fields
+    delete json.createdBy;
+    delete json.pk;
+    delete json.sk;
+
+    return json;
+  }
+}
+type IMedicalScreeningChestXray = {
   applicationId: string;
   status: TaskStatus;
 
+  dateOfMedicalScreening: Date;
   age: number;
   symptomsOfTb: YesOrNo;
   symptoms: TbSymptomsOptions[];
@@ -31,69 +71,100 @@ export abstract class IMedicalScreening {
   pregnant: PregnancyStatus;
   haveMenstralPeriod: MenstrualPeriods;
   physicalExaminationNotes: string;
+  isXrayRequired: YesOrNo.Yes;
 
   dateCreated: Date;
   createdBy: string;
+};
 
-  constructor(details: IMedicalScreening) {
-    this.applicationId = details.applicationId;
-    this.status = details.status;
+export type NewMedicalScreeningChestXray = Omit<
+  IMedicalScreeningChestXray,
+  "dateCreated" | "status" | "dateOfMedicalScreening"
+> & {
+  dateOfMedicalScreening: Date | string;
+};
 
-    this.age = details.age;
-    this.symptomsOfTb = details.symptomsOfTb;
-    this.symptoms = details.symptoms;
-    this.symptomsOther = details.symptomsOther;
-    this.historyOfConditionsUnder11 = details.historyOfConditionsUnder11;
-    this.historyOfConditionsUnder11Details = details.historyOfConditionsUnder11Details;
-    this.historyOfPreviousTb = details.historyOfPreviousTb;
-    this.previousTbDetails = details.previousTbDetails;
-    this.contactWithPersonWithTb = details.contactWithPersonWithTb;
-    this.contactWithTbDetails = details.contactWithTbDetails;
-    this.pregnant = details.pregnant;
-    this.haveMenstralPeriod = details.haveMenstralPeriod;
-    this.physicalExaminationNotes = details.physicalExaminationNotes;
-    // Audit
-    this.dateCreated = details.dateCreated;
-    this.createdBy = details.createdBy;
+export class MedicalScreeningChestXray extends MedicalScreeningBase {
+  isXrayRequired!: YesOrNo.Yes;
+
+  constructor(details: IMedicalScreeningChestXray) {
+    super(details);
+    Object.assign(this, details);
   }
 }
 
-export class MedicalScreening extends IMedicalScreening {
+type IMedicalScreeningNoChestXray = {
+  applicationId: string;
+  status: TaskStatus;
+
+  dateOfMedicalScreening: Date;
+  age: number;
+  symptomsOfTb: YesOrNo;
+  symptoms: TbSymptomsOptions[];
+  symptomsOther?: string;
+  historyOfConditionsUnder11: HistoryOfConditionsUnder11[];
+  historyOfConditionsUnder11Details?: string;
+  historyOfPreviousTb: YesOrNo;
+  previousTbDetails?: string;
+  contactWithPersonWithTb: YesOrNo;
+  contactWithTbDetails?: string;
+  pregnant: PregnancyStatus;
+  haveMenstralPeriod: MenstrualPeriods;
+  physicalExaminationNotes: string;
+  isXrayRequired: YesOrNo.No;
+  reasonXrayNotRequired: ChestXRayNotTakenReason;
+  reasonXrayNotRequiredFurtherDetails?: string;
+
+  dateCreated: Date;
+  createdBy: string;
+};
+
+export type NewMedicalScreeningNoChestXray = Omit<
+  IMedicalScreeningNoChestXray,
+  "dateCreated" | "status" | "dateOfMedicalScreening"
+> & {
+  dateOfMedicalScreening: Date | string;
+};
+
+export class MedicalScreeningNoChestXray extends MedicalScreeningBase {
+  isXrayRequired!: YesOrNo.No;
+  reasonXrayNotRequired!: ChestXRayNotTakenReason;
+  reasonXrayNotRequiredFurtherDetails?: string;
+
+  constructor(details: IMedicalScreeningNoChestXray) {
+    super(details);
+    Object.assign(this, details);
+  }
+}
+
+export class MedicalScreeningDbOps {
   static readonly getPk = (applicationId: string) => Application.getPk(applicationId);
 
   static readonly sk = "APPLICATION#MEDICAL#SCREENING";
 
   static readonly getTableName = () => process.env.APPLICATION_SERVICE_DATABASE_NAME;
 
-  private constructor(details: IMedicalScreening) {
-    super(details);
-  }
-
-  private todbItem() {
-    const dbItem = {
-      ...this,
-      dateCreated: this.dateCreated.toISOString(),
-      pk: MedicalScreening.getPk(this.applicationId),
-      sk: MedicalScreening.sk,
-    };
-    return dbItem;
-  }
-
-  static async createMedicalScreening(details: Omit<IMedicalScreening, "dateCreated" | "status">) {
+  static async createMedicalScreening(
+    details: NewMedicalScreeningChestXray | NewMedicalScreeningNoChestXray,
+  ) {
     try {
       logger.info("Saving Medical Screening to DB");
 
-      const updatedDetails: IMedicalScreening = {
+      const updatedDetails = {
         ...details,
+        dateOfMedicalScreening: new Date(details.dateOfMedicalScreening),
         dateCreated: new Date(),
         status: TaskStatus.completed,
       };
 
-      const medicalScreening = new MedicalScreening(updatedDetails);
+      const medicalScreening =
+        details.isXrayRequired === YesOrNo.Yes
+          ? new MedicalScreeningChestXray(updatedDetails as IMedicalScreeningChestXray)
+          : new MedicalScreeningNoChestXray(updatedDetails as IMedicalScreeningNoChestXray);
 
-      const dbItem = medicalScreening.todbItem();
+      const dbItem = MedicalScreeningDbOps.todbItem(medicalScreening);
       const params: PutCommandInput = {
-        TableName: MedicalScreening.getTableName(),
+        TableName: MedicalScreeningDbOps.getTableName(),
         Item: { ...dbItem },
         ConditionExpression: "attribute_not_exists(pk) AND attribute_not_exists(sk)",
       };
@@ -109,15 +180,26 @@ export class MedicalScreening extends IMedicalScreening {
     }
   }
 
+  static todbItem(medicalScreening: MedicalScreeningChestXray | MedicalScreeningNoChestXray) {
+    const dbItem = {
+      ...medicalScreening,
+      dateOfMedicalScreening: medicalScreening.dateOfMedicalScreening.toISOString(),
+      dateCreated: medicalScreening.dateCreated.toISOString(),
+      pk: MedicalScreeningDbOps.getPk(medicalScreening.applicationId),
+      sk: MedicalScreeningDbOps.sk,
+    };
+    return dbItem;
+  }
+
   static async getByApplicationId(applicationId: string) {
     try {
       logger.info("fetching medical screening");
 
       const params = {
-        TableName: MedicalScreening.getTableName(),
+        TableName: MedicalScreeningDbOps.getTableName(),
         Key: {
-          pk: MedicalScreening.getPk(applicationId),
-          sk: MedicalScreening.sk,
+          pk: MedicalScreeningDbOps.getPk(applicationId),
+          sk: MedicalScreeningDbOps.sk,
         },
       };
 
@@ -131,38 +213,28 @@ export class MedicalScreening extends IMedicalScreening {
 
       logger.info("Medical Screening fetched successfully");
 
-      const dbItem = data.Item as ReturnType<MedicalScreening["todbItem"]>;
+      const medicalScreeningDbItem = data.Item as ReturnType<
+        (typeof MedicalScreeningDbOps)["todbItem"]
+      >;
 
-      const medicalScreening = new MedicalScreening({
-        ...dbItem,
-        dateCreated: new Date(dbItem.dateCreated),
-      });
-      return medicalScreening;
+      const medicalScreening =
+        medicalScreeningDbItem.isXrayRequired === YesOrNo.Yes
+          ? new MedicalScreeningChestXray({
+              ...medicalScreeningDbItem,
+              dateOfMedicalScreening: new Date(medicalScreeningDbItem.dateOfMedicalScreening),
+              dateCreated: new Date(medicalScreeningDbItem.dateCreated),
+            })
+          : new MedicalScreeningNoChestXray({
+              ...medicalScreeningDbItem,
+              dateOfMedicalScreening: new Date(medicalScreeningDbItem.dateOfMedicalScreening),
+              dateCreated: new Date(medicalScreeningDbItem.dateCreated),
+            });
+      return medicalScreeningDbItem.isXrayRequired === YesOrNo.Yes
+        ? new MedicalScreeningChestXray(medicalScreening as IMedicalScreeningChestXray)
+        : new MedicalScreeningNoChestXray(medicalScreening as IMedicalScreeningNoChestXray);
     } catch (error) {
       logger.error(error, "Error retrieving medical screening details");
       throw error;
     }
-  }
-
-  toJson() {
-    return {
-      applicationId: this.applicationId,
-      status: this.status,
-      age: this.age,
-      symptomsOfTb: this.symptomsOfTb,
-      symptoms: this.symptoms,
-      symptomsOther: this.symptomsOther,
-      historyOfConditionsUnder11: this.historyOfConditionsUnder11,
-      historyOfConditionsUnder11Details: this.historyOfConditionsUnder11Details,
-      historyOfPreviousTb: this.historyOfPreviousTb,
-      previousTbDetails: this.previousTbDetails,
-      contactWithPersonWithTb: this.contactWithPersonWithTb,
-      contactWithTbDetails: this.contactWithTbDetails,
-      pregnant: this.pregnant,
-      haveMenstralPeriod: this.haveMenstralPeriod,
-      physicalExaminationNotes: this.physicalExaminationNotes,
-      // Audit
-      dateCreated: this.dateCreated,
-    };
   }
 }

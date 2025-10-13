@@ -3,7 +3,6 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { ReduxTbCertificateType } from "@/applicant";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
@@ -17,6 +16,7 @@ import {
   setReasonNotIssued,
   setTbCertificateStatus,
 } from "@/redux/tbCertificateSlice";
+import { ReduxTbCertificateType } from "@/types";
 import { ApplicationStatus, ButtonType, RadioIsInline, TBCertNotIssuedReason } from "@/utils/enums";
 import { formRegex } from "@/utils/records";
 

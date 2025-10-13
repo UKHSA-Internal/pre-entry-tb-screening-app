@@ -2,9 +2,9 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Mock, vi } from "vitest";
 
-import { DateType, ReduxSputumSampleType, ReduxSputumType } from "@/applicant";
 import EnterSputumSampleResultsPage from "@/pages/enter-sputum-sample-results";
 import SputumResultsForm from "@/sections/sputum-results-form";
+import { DateType, ReduxSputumSampleType, ReduxSputumType } from "@/types";
 import { ApplicationStatus, PositiveOrNegative } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
@@ -76,7 +76,7 @@ describe("SputumResultsForm", () => {
       screen.getByRole("heading", { name: /Enter sputum sample results/i, level: 1 }),
     ).toBeInTheDocument();
 
-    expect(screen.getByText("05 May 2024")).toBeInTheDocument();
+    expect(screen.getByText("5 May 2024")).toBeInTheDocument();
 
     expect(screen.getAllByText("No date recorded")).toHaveLength(2);
   });

@@ -3,9 +3,10 @@ import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { ApplicantPhoto } from "../models/applicant-photo";
-import { ChestXRayDbOps } from "../models/chest-xray";
-import { MedicalScreening } from "../models/medical-screening";
+import { ChestXRay } from "../models/chest-xray";
+import { MedicalScreeningDbOps } from "../models/medical-screening";
 import { RadiologicalOutcome } from "../models/radiological-outcome";
+import { SputumDecision } from "../models/sputum-decision";
 import { SputumDetailsDbOps } from "../models/sputum-details";
 import { TbCertificateDbOps } from "../models/tb-certificate";
 import { TravelInformation } from "../models/travel-information";
@@ -26,8 +27,9 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
     const clinicId = application.clinicId;
     const applicantPhotoUrl = await ApplicantPhoto.getByApplicationId(applicationId, clinicId);
     const travelInformation = await TravelInformation.getByApplicationId(applicationId);
-    const medicalScreening = await MedicalScreening.getByApplicationId(applicationId);
-    const chestXray = await ChestXRayDbOps.getByApplicationId(applicationId);
+    const medicalScreening = await MedicalScreeningDbOps.getByApplicationId(applicationId);
+    const chestXray = await ChestXRay.getByApplicationId(applicationId);
+    const sputumDecision = await SputumDecision.getByApplicationId(applicationId);
     const sputumDetails = await SputumDetailsDbOps.getByApplicationId(applicationId);
     const tbCertificate = await TbCertificateDbOps.getByApplicationId(applicationId);
     const radiologicalOutcome = await RadiologicalOutcome.getByApplicationId(applicationId);
@@ -38,6 +40,7 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
       travelInformation: travelInformation?.toJson(),
       medicalScreening: medicalScreening?.toJson(),
       chestXray: chestXray?.toJson(),
+      sputumRequirement: sputumDecision?.toJson(),
       sputumDetails: sputumDetails?.toJson(),
       tbCertificate: tbCertificate?.toJson(),
       radiologicalOutcome: radiologicalOutcome?.toJson(),

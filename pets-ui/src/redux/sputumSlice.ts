@@ -11,7 +11,7 @@ import {
   ReduxSputumSampleType,
   ReduxSputumSmearResultType,
   ReduxSputumType,
-} from "@/applicant";
+} from "@/types";
 import { ApplicationStatus, BackendApplicationStatus, PositiveOrNegative } from "@/utils/enums";
 
 const initialState: ReduxSputumType = {

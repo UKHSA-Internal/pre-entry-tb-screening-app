@@ -24,13 +24,15 @@ function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement)
     if (Array.isArray(summaryElement.value)) {
       return (
         <div className="govuk-summary-value-column">
-          {summaryElement.value.map((value) => {
-            return (
-              <dd className="govuk-summary-list__value" key={value}>
-                {value}
-              </dd>
-            );
-          })}
+          <dd className="govuk-summary-list__value">
+            {summaryElement.value.map((value, index) => {
+              return (
+                <p className="govuk-body" key={index + "-" + value}>
+                  {value}
+                </p>
+              );
+            })}
+          </dd>
         </div>
       );
     } else {

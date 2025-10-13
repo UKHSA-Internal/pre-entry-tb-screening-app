@@ -11,10 +11,11 @@ describe("Beta Component", () => {
 
     expect(screen.getByText("BETA")).toBeInTheDocument();
 
-    expect(screen.getByText(/This is a new service – your/)).toBeInTheDocument();
-    expect(screen.getByText(/will help us to improve it/)).toBeInTheDocument();
+    expect(screen.getByText(/This is a new service. Help us improve it and/)).toBeInTheDocument();
 
-    const feedbackLink = screen.getByRole("link", { name: "feedback" });
+    const feedbackLink = screen.getByRole("link", {
+      name: "give your feedback (opens in new tab)",
+    });
     expect(feedbackLink).toBeInTheDocument();
     expect(feedbackLink).toHaveAttribute(
       "href",
