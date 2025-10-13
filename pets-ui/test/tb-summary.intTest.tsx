@@ -5,9 +5,9 @@ import { HelmetProvider } from "react-helmet-async";
 import { Mock } from "vitest";
 
 import { petsApi } from "@/api/api";
-import { ReduxTbCertificateType } from "@/applicant";
 import { ApplicantPhotoProvider } from "@/context/applicantPhotoContext";
 import TbSummaryPage from "@/pages/tb-summary";
+import { ReduxTbCertificateType } from "@/types";
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 

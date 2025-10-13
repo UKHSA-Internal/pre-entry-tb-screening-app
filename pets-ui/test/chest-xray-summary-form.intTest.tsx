@@ -5,9 +5,9 @@ import { HelmetProvider } from "react-helmet-async";
 import { Mock } from "vitest";
 
 import { petsApi } from "@/api/api";
-import { ReduxChestXrayDetailsType } from "@/applicant";
 import ChestXraySummaryPage from "@/pages/chest-xray-summary";
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { ReduxChestXrayDetailsType } from "@/types";
+import { ApplicationStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -21,142 +21,69 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 
 const applicationState = { applicationId: "abc-123", dateCreated: "" };
 
-const chestXrayTakenState: ReduxChestXrayDetailsType = {
+const chestXrayState: ReduxChestXrayDetailsType = {
   status: ApplicationStatus.NOT_YET_STARTED,
-  chestXrayTaken: YesOrNo.YES,
   posteroAnteriorXrayFileName: "PA Example FileName",
   posteroAnteriorXrayFile: "PA Example File",
   apicalLordoticXrayFileName: "AL Example FileName",
   apicalLordoticXrayFile: "AL Example File",
   lateralDecubitusXrayFileName: "LD Example FileName",
   lateralDecubitusXrayFile: "LD Example File",
-  reasonXrayWasNotTaken: "",
-  xrayWasNotTakenFurtherDetails: "",
-  xrayResult: "Chest X-ray normal",
-  xrayResultDetail: "Extra Details on Chest X-ray",
-  xrayMinorFindings: ["Single fibrous streak or band or scar", "Bony Islets"],
-  xrayAssociatedMinorFindings: [],
-  xrayActiveTbFindings: [],
-  isSputumRequired: YesOrNo.YES,
-  completionDate: { year: "", month: "", day: "" },
-};
-
-const chestXrayNotTakenState: ReduxChestXrayDetailsType = {
-  status: ApplicationStatus.NOT_YET_STARTED,
-  chestXrayTaken: YesOrNo.NO,
-  posteroAnteriorXrayFileName: "",
-  posteroAnteriorXrayFile: "",
-  apicalLordoticXrayFileName: "",
-  apicalLordoticXrayFile: "",
-  lateralDecubitusXrayFileName: "",
-  lateralDecubitusXrayFile: "",
-  reasonXrayWasNotTaken: "Pregnant",
-  xrayWasNotTakenFurtherDetails: "Further details",
-  xrayResult: "",
-  xrayResultDetail: "",
-  xrayMinorFindings: [],
-  xrayAssociatedMinorFindings: [],
-  xrayActiveTbFindings: [],
-  isSputumRequired: YesOrNo.YES,
-  completionDate: { year: "", month: "", day: "" },
+  dateXrayTaken: { year: "31", month: "12", day: "2001" },
 };
 
 describe("ChestXraySummaryPage", () => {
   const user = userEvent.setup();
   const preloadedState = {
-    chestXray: { ...chestXrayTakenState },
+    chestXray: { ...chestXrayState },
     application: { ...applicationState },
   };
-  describe("General UI Tests", () => {
-    let mock: MockAdapter;
-    beforeEach(() => {
-      mock = new MockAdapter(petsApi);
-      useNavigateMock.mockClear();
-      renderWithProviders(
-        <HelmetProvider>
-          <ChestXraySummaryPage />
-        </HelmetProvider>,
-        { preloadedState },
-      );
-    });
-    it("displays the back link", () => {
-      const link = screen.getByRole("link", { name: "Back" });
-      expect(link).toBeInTheDocument();
-      expect(link).toHaveAttribute("href", "/sputum-question");
-      expect(link).toHaveClass("govuk-back-link");
-    });
-    it("renders the page titles and descriptions ", () => {
-      expect(screen.getByText("Check chest X-ray information")).toBeInTheDocument();
-      expect(screen.getByText("Select X-ray status")).toBeInTheDocument();
-    });
-    it("when continue pressed, data is posted & user is navigated to /chest-xray-confirmation", async () => {
-      mock.onPost("/application/abc-123/chest-xray").reply(200);
-      await user.click(screen.getByRole("button"));
-      expect(mock.history[0].url).toEqual("/application/abc-123/chest-xray");
-      expect(mock.history).toHaveLength(1);
-      expect(JSON.parse(mock.history.post[0].data as string)).toMatchObject({
-        chestXrayTaken: "Yes",
-        posteroAnteriorXray: "PA Example File",
-        apicalLordoticXray: "AL Example File",
-        lateralDecubitusXray: "LD Example File",
-        xrayResult: "Chest X-ray normal",
-        xrayResultDetail: "Extra Details on Chest X-ray",
-        xrayMinorFindings: ["Single fibrous streak or band or scar", "Bony Islets"],
-        xrayAssociatedMinorFindings: [],
-        xrayActiveTbFindings: [],
-      });
-      expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-confirmation");
-    });
+  let mock: MockAdapter;
+
+  beforeEach(() => {
+    mock = new MockAdapter(petsApi);
+    useNavigateMock.mockClear();
+    renderWithProviders(
+      <HelmetProvider>
+        <ChestXraySummaryPage />
+      </HelmetProvider>,
+      { preloadedState },
+    );
   });
-  describe("Chest X-ray Taken", () => {
-    const preloadedState = {
-      chestXray: { ...chestXrayTakenState },
-      application: { ...applicationState },
-    };
-    beforeEach(() => {
-      renderWithProviders(
-        <HelmetProvider>
-          <ChestXraySummaryPage />
-        </HelmetProvider>,
-        { preloadedState },
-      );
-    });
-    it("renders the page titles and data ", () => {
-      expect(screen.getByText("Postero anterior X-ray")).toBeInTheDocument();
-      expect(screen.getByText("PA Example FileName")).toBeInTheDocument();
-      expect(screen.getByText("Apical lordotic X-ray")).toBeInTheDocument();
-      expect(screen.getByText("AL Example FileName")).toBeInTheDocument();
-      expect(screen.getByText("Lateral decubitus X-ray")).toBeInTheDocument();
-      expect(screen.getByText("LD Example FileName")).toBeInTheDocument();
-      expect(screen.getByText("Enter radiological outcome")).toBeInTheDocument();
-      expect(screen.getByText("Chest X-ray normal")).toBeInTheDocument();
-      //Array Data
-      expect(screen.getByText("Enter radiographic findings")).toBeInTheDocument();
-      expect(screen.getByText("Single fibrous streak or band or scar")).toBeInTheDocument();
-      expect(screen.getByText("Bony Islets")).toBeInTheDocument();
-    });
-    it("does not render title when provided with an empty array", () => {
-      expect(
-        screen.queryByText("Findings sometimes seen in active TB (or other conditions)"),
-      ).not.toBeInTheDocument();
-    });
+
+  it("displays the back link", () => {
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/upload-chest-xray");
+    expect(link).toHaveClass("govuk-back-link");
   });
-  describe("Chest Not X-ray Taken", () => {
-    const preloadedState = {
-      chestXray: { ...chestXrayNotTakenState },
-      application: { ...applicationState },
-    };
-    beforeEach(() => {
-      renderWithProviders(
-        <HelmetProvider>
-          <ChestXraySummaryPage />
-        </HelmetProvider>,
-        { preloadedState },
-      );
+
+  it("renders the page titles and descriptions ", () => {
+    expect(screen.getByText("Check chest X-ray images")).toBeInTheDocument();
+    expect(screen.getByText("Date of X-ray")).toBeInTheDocument();
+    expect(screen.getByText("Chest X-ray images")).toBeInTheDocument();
+  });
+
+  it("when continue pressed, data is posted & user is navigated to /chest-xray-confirmation", async () => {
+    mock.onPost("/application/abc-123/chest-xray").reply(200);
+    await user.click(screen.getByRole("button"));
+    expect(mock.history[0].url).toEqual("/application/abc-123/chest-xray");
+    expect(mock.history).toHaveLength(1);
+    expect(JSON.parse(mock.history.post[0].data as string)).toMatchObject({
+      chestXrayTaken: "Yes",
+      posteroAnteriorXray: "PA Example File",
+      apicalLordoticXray: "AL Example File",
+      lateralDecubitusXray: "LD Example File",
+      dateXrayTaken: "31-12-2001",
     });
-    it("renders the page titles and descriptions ", () => {
-      expect(screen.getByText("Enter reason X-ray not taken")).toBeInTheDocument();
-      expect(screen.getByText("Pregnant")).toBeInTheDocument();
-    });
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-confirmation");
+  });
+
+  it("renders the page titles and data", () => {
+    expect(screen.getByText("Date of X-ray")).toBeInTheDocument();
+    expect(screen.getByText("Chest X-ray images")).toBeInTheDocument();
+    expect(screen.getByText("PA Example FileName")).toBeInTheDocument();
+    expect(screen.getByText("AL Example FileName")).toBeInTheDocument();
+    expect(screen.getByText("LD Example FileName")).toBeInTheDocument();
   });
 });

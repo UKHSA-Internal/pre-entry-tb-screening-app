@@ -1,8 +1,8 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { Controller, FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { ReduxChestXrayDetailsType } from "@/applicant";
+import DateTextInput from "@/components/dateTextInput/dateTextInput";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FileUpload from "@/components/fileUpload/fileUpload";
 import Heading from "@/components/heading/heading";
@@ -11,6 +11,7 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import {
   setApicalLordoticXrayFile,
   setApicalLordoticXrayFileName,
+  setDateXrayTaken,
   setLateralDecubitusXrayFile,
   setLateralDecubitusXrayFileName,
   setPosteroAnteriorXrayFile,
@@ -18,14 +19,16 @@ import {
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectChestXray } from "@/redux/store";
+import { DateType, ReduxChestXrayDetailsType } from "@/types";
 import { ButtonType, ImageType } from "@/utils/enums";
+import { validateDate } from "@/utils/helpers";
 import uploadFile from "@/utils/uploadFile";
 
 const DicomUploadModule = (
   props: Readonly<{
     id: string;
     name: string;
-    caption?: string;
+    title: string;
     required: boolean;
     errors?: FieldErrors<ReduxChestXrayDetailsType>;
     formValue: string;
@@ -35,48 +38,18 @@ const DicomUploadModule = (
   }>,
 ) => {
   return (
-    <table className="govuk-table">
-      <caption
-        className="govuk-table__caption govuk-table__caption--m"
-        style={{ marginTop: "20px" }}
-      >
-        {props.caption}
-      </caption>
-      <thead className="govuk-table__head">
-        <tr className="govuk-table__row">
-          <th scope="col" className="govuk-table__header" style={{ width: "320px" }}>
-            Type of X-ray
-          </th>
-          <th scope="col" className="govuk-table__header">
-            File uploaded
-          </th>
-        </tr>
-      </thead>
-      <tbody className="govuk-table__body">
-        <tr className="govuk-table__row">
-          <th
-            scope="row"
-            className="govuk-table__header"
-            style={{ fontWeight: "normal", verticalAlign: "middle" }}
-          >
-            {props.name} view
-          </th>
-          <td className="govuk-table__cell">
-            <FileUpload
-              id={props.id}
-              formValue={props.formValue}
-              required={
-                props.required ? `Select a ${props.name.toLowerCase()} X-ray image file` : false
-              }
-              type={ImageType.Dicom}
-              setFileState={props.setFileState}
-              setFileName={props.setFileName}
-              existingFileName={props.existingFileName}
-            />
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div>
+      <Heading title={props.title} level={3} size="s" />
+      <FileUpload
+        id={props.id}
+        formValue={props.formValue}
+        required={props.required ? `Select a ${props.name.toLowerCase()} X-ray image file` : false}
+        type={ImageType.Dicom}
+        setFileState={props.setFileState}
+        setFileName={props.setFileName}
+        existingFileName={props.existingFileName}
+      />
+    </div>
   );
 };
 
@@ -96,16 +69,18 @@ const ChestXrayForm = () => {
   const [LDFileName, setLDFileName] = useState<string>();
 
   const methods = useForm<ReduxChestXrayDetailsType>({
+    reValidateMode: "onSubmit",
     criteriaMode: "all",
   });
   const {
+    control,
     handleSubmit,
     formState: { errors },
   } = methods;
 
   const errorsToShow = Object.keys(errors);
 
-  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = async () => {
+  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = async (chestXrayData) => {
     setIsLoading(true);
 
     if (PAFile && PAFileName) {
@@ -141,22 +116,20 @@ const ChestXrayForm = () => {
       dispatch(setLateralDecubitusXrayFileName(LDFileName));
     }
 
-    navigate("/chest-xray-findings");
+    dispatch(setDateXrayTaken(chestXrayData.dateXrayTaken));
+    navigate("/chest-xray-summary");
   };
 
-  // Required to scroll to the correct element when a change link on the summary page is clicked
   const location = useLocation();
-  const paXray = useRef<HTMLDivElement | null>(null);
-  const alXray = useRef<HTMLDivElement | null>(null);
-  const ldXray = useRef<HTMLDivElement | null>(null);
+  const dateXrayTakenRef = useRef<HTMLDivElement | null>(null);
+  const paXrayRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (location.hash) {
       const target = location.hash.substring(1);
       const refMap: { [key: string]: HTMLElement | null } = {
-        "postero-anterior-xray": paXray.current,
-        "apical-lordotic-xray": alXray.current,
-        "lateral-decubitus-xray": ldXray.current,
+        "date-xray-taken": dateXrayTakenRef.current,
+        "postero-anterior-xray": paXrayRef.current,
       };
 
       const targetRef = refMap[target];
@@ -175,12 +148,47 @@ const ChestXrayForm = () => {
             {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
             <Heading level={1} size="l" title="Upload chest X-ray images" />
 
-            <div ref={paXray}>
+            <div ref={dateXrayTakenRef}>
+              <Controller
+                name="dateXrayTaken"
+                control={control}
+                defaultValue={{
+                  day: chestXrayData.dateXrayTaken.day,
+                  month: chestXrayData.dateXrayTaken.month,
+                  year: chestXrayData.dateXrayTaken.year,
+                }}
+                rules={{
+                  validate: (value: DateType) => validateDate(value, "dateXrayTaken"),
+                }}
+                render={({ field: { value, onChange } }) => (
+                  <DateTextInput
+                    heading="When was the X-ray taken?"
+                    headingLevel={2}
+                    headingSize="m"
+                    hint="For example, 31 3 2025"
+                    value={value}
+                    setDateValue={onChange}
+                    id={"date-xray-taken"}
+                    autocomplete={false}
+                    showTodayYesterdayLinks
+                    errorMessage={errors?.dateXrayTaken?.message ?? ""}
+                  />
+                )}
+              />
+            </div>
+
+            <Heading level={2} size="m" title="Upload X-ray images" />
+            <p className="govuk-body">Upload a file</p>
+            <div className="govuk-hint">
+              File type must be DICOM. Images must be less than 50MB.
+            </div>
+
+            <div ref={paXrayRef}>
               <DicomUploadModule
                 id="postero-anterior-xray"
-                name="Postero-anterior"
+                title="Postero-anterior view"
                 formValue="posteroAnteriorXrayFileName"
-                caption="Postero-anterior X-ray"
+                name="Postero-anterior"
                 setFileState={setPAFile}
                 setFileName={setPAFileName}
                 required={true}
@@ -189,10 +197,10 @@ const ChestXrayForm = () => {
               />
             </div>
 
-            <div ref={alXray}>
+            <div>
               <DicomUploadModule
                 id="apical-lordotic-xray"
-                caption="Apical lordotic X-ray (optional)"
+                title="Apical lordotic view (optional)"
                 formValue="apicalLordoticXrayFileName"
                 name="Apical-lordotic"
                 setFileState={setALFile}
@@ -202,10 +210,10 @@ const ChestXrayForm = () => {
               />
             </div>
 
-            <div ref={ldXray}>
+            <div>
               <DicomUploadModule
                 id="lateral-decubitus-xray"
-                caption="Lateral decubitus X-ray (optional)"
+                title="Lateral decubitus view (optional)"
                 formValue="lateralDecubitusXrayFileName"
                 name="Lateral-decubitus"
                 setFileState={setLDFile}

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ReduxNavigationSliceType } from "../applicant";
+import { ReduxNavigationSliceType } from "../types";
 
 const initialState: ReduxNavigationSliceType = {
   checkSputumPreviousPage: "",

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
 import { Mock } from "vitest";
@@ -27,9 +27,8 @@ describe("ChestXrayFindings Form", () => {
   it("renders form correctly", () => {
     renderWithProviders(<ChestXrayFindingsForm />);
 
-    expect(screen.getByText("Chest X-ray normal")).toBeInTheDocument;
     expect(screen.getByText("Give further details (optional)")).toBeInTheDocument;
-    expect(screen.getByText("Radiographic findings")).toBeInTheDocument;
+    expect(screen.getByText("Enter X-ray findings")).toBeInTheDocument;
     expect(screen.getByText("Minor findings")).toBeInTheDocument;
     expect(screen.getByText("1.1 Single fibrous streak or band or scar")).toBeInTheDocument;
     expect(screen.getByText("Minor findings (occasionally associated with TB infection)"))
@@ -48,29 +47,6 @@ describe("ChestXrayFindings Form", () => {
     ).toBeInTheDocument;
   });
 
-  it("errors when X-ray result selection is missing", async () => {
-    renderWithProviders(<ChestXrayFindingsForm />);
-
-    fireEvent.click(screen.getByText("Save and continue"));
-
-    await waitFor(() => {
-      expect(screen.getAllByText("Select radiological outcome")).toHaveLength(2);
-      expect(screen.getAllByText("Select radiological outcome")[0]).toHaveAttribute(
-        "aria-label",
-        "Error: Select radiological outcome",
-      );
-    });
-  });
-
-  it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
-    renderWithProviders(<ChestXrayFindingsForm />);
-    fireEvent.click(screen.getByText("Save and continue"));
-    await waitFor(() => {
-      const errorSummaryDiv = screen.getByTestId("error-summary");
-      expect(errorSummaryDiv).toHaveFocus();
-    });
-  });
-
   it("renders page elements correctly", () => {
     renderWithProviders(
       <HelmetProvider>
@@ -80,29 +56,15 @@ describe("ChestXrayFindings Form", () => {
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/chest-xray-upload");
+    expect(link).toHaveAttribute("href", "/radiological-outcome-chest-xray-results");
     expect(link).toHaveClass("govuk-back-link");
-
-    expect(screen.getByText("Important")).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "If a visa applicant's chest X-rays indicate that they have pulmonary TB, give them a referral letter and copies of the:",
-      ),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Enter radiological outcome and findings")).toBeInTheDocument;
   });
 
   it("navigates to cxr summary when form is complete and submit button is clicked", async () => {
     const preloadedState = {
-      chestXray: {
+      radiologicalOutcome: {
         status: ApplicationStatus.NOT_YET_STARTED,
         chestXrayTaken: YesOrNo.YES,
-        posteroAnteriorXrayFileName: "pa-file-name.jpg",
-        posteroAnteriorXrayFile: "examplejpgexamplejpgexamplejpg",
-        apicalLordoticXrayFileName: "",
-        apicalLordoticXrayFile: "",
-        lateralDecubitusXrayFileName: "",
-        lateralDecubitusXrayFile: "",
         reasonXrayWasNotTaken: "",
         xrayWasNotTakenFurtherDetails: "",
         xrayResult: "",
@@ -110,7 +72,6 @@ describe("ChestXrayFindings Form", () => {
         xrayMinorFindings: [],
         xrayAssociatedMinorFindings: [],
         xrayActiveTbFindings: [],
-        isSputumRequired: YesOrNo.NULL,
         completionDate: { year: "", month: "", day: "" },
       },
     };
@@ -120,8 +81,7 @@ describe("ChestXrayFindings Form", () => {
       </HelmetProvider>,
       { preloadedState },
     );
-    await user.click(screen.getAllByTestId("xray-result")[0]);
     await user.click(screen.getByRole("button"));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/sputum-question");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/radiological-outcome-summary");
   });
 });

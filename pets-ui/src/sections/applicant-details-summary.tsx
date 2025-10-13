@@ -11,7 +11,7 @@ import { setApplicationDetails } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
 import { ApplicationStatus, ButtonType, ImageType } from "@/utils/enums";
-import { getCountryName, standardiseDayOrMonth } from "@/utils/helpers";
+import { formatDateForDisplay, getCountryName, standardiseDayOrMonth } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 import uploadFile from "@/utils/uploadFile";
 
@@ -93,7 +93,7 @@ const ApplicantReview = () => {
     },
     {
       key: "Date of birth",
-      value: `${applicantData.dateOfBirth.day}/${applicantData.dateOfBirth.month}/${applicantData.dateOfBirth.year}`,
+      value: formatDateForDisplay(applicantData.dateOfBirth),
       link: `/contact#${attributeToComponentId.dateOfBirth}`,
       hiddenLabel: "date of birth",
     },
@@ -111,13 +111,13 @@ const ApplicantReview = () => {
     },
     {
       key: "Passport issue date",
-      value: `${applicantData.passportIssueDate.day}/${applicantData.passportIssueDate.month}/${applicantData.passportIssueDate.year}`,
+      value: formatDateForDisplay(applicantData.passportIssueDate),
       link: `/contact#${attributeToComponentId.passportIssueDate}`,
       hiddenLabel: "passport issue date",
     },
     {
       key: "Passport expiry date",
-      value: `${applicantData.passportExpiryDate.day}/${applicantData.passportExpiryDate.month}/${applicantData.passportExpiryDate.year}`,
+      value: formatDateForDisplay(applicantData.passportExpiryDate),
       link: `/contact#${attributeToComponentId.passportExpiryDate}`,
       hiddenLabel: "passport expiry date",
     },

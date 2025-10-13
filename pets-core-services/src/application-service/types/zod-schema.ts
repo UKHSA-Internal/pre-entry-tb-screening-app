@@ -105,6 +105,12 @@ export const MedicalScreeningBaseSchema = z.object({
   physicalExaminationNotes: z.string().openapi({
     description: "Notes from Physical Examination",
   }),
+  isXrayRequired: z.nativeEnum(YesOrNo).openapi({
+    description: "Is X-ray required?",
+  }),
+  reasonXrayNotRequired: z.string().optional().openapi({
+    description: "Further details on why X-ray was not required",
+  }),
 });
 
 export const MedicalScreeningChestXRayRequiredRequestSchema = MedicalScreeningBaseSchema.extend({
@@ -117,9 +123,9 @@ export const MedicalScreeningChestXRayNotRequiredRequestSchema = MedicalScreenin
     description: "Is X-ray required?",
   }),
   reasonXrayNotRequired: z.nativeEnum(ChestXRayNotTakenReason).openapi({
-    description: "Further details on why X-ray was not required",
+    description: "Reason X-ray was not required",
   }),
-  xrayNotRequiredFurtherDetails: z.string().optional().openapi({
+  reasonXrayNotRequiredFurtherDetails: z.string().optional().openapi({
     description: "Further details on why X-ray was not required",
   }),
 });
@@ -233,7 +239,7 @@ export const TbCertificateResponseSchema = z.union([
 
 export const ChestXRayNotTakenRequestSchema = z.object({
   chestXrayTaken: z.literal(YesOrNo.No),
-  reasonXrayWasNotTaken: z.nativeEnum(ChestXRayNotTakenReason).openapi({
+  reasonXrayWasNotTaken: z.string().openapi({
     description: "Reason X-ray was not taken",
   }),
   xrayWasNotTakenFurtherDetails: z.string().optional().openapi({

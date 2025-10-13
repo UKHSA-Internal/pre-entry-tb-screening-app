@@ -113,7 +113,7 @@ type IMedicalScreeningNoChestXray = {
   physicalExaminationNotes: string;
   isXrayRequired: YesOrNo.No;
   reasonXrayNotRequired: ChestXRayNotTakenReason;
-  reasonXrayNotRequiredFurthurDetails?: string;
+  reasonXrayNotRequiredFurtherDetails?: string;
 
   dateCreated: Date;
   createdBy: string;
@@ -129,7 +129,7 @@ export type NewMedicalScreeningNoChestXray = Omit<
 export class MedicalScreeningNoChestXray extends MedicalScreeningBase {
   isXrayRequired!: YesOrNo.No;
   reasonXrayNotRequired!: ChestXRayNotTakenReason;
-  reasonXrayNotRequiredFurthurDetails?: string;
+  reasonXrayNotRequiredFurtherDetails?: string;
 
   constructor(details: IMedicalScreeningNoChestXray) {
     super(details);

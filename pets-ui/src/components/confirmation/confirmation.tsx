@@ -5,6 +5,7 @@ import Button from "@/components/button/button";
 import { ButtonType } from "@/utils/enums";
 
 import Heading from "../heading/heading";
+import LinkLabel from "../linkLabel/LinkLabel";
 
 export interface ConfirmationProps {
   confirmationText: string;
@@ -97,6 +98,12 @@ export default function Confirmation({
             }}
           />
         )}
+        <br />
+        <LinkLabel
+          title="Search for another visa applicant"
+          to="/applicant-search"
+          externalLink={false}
+        />
       </div>
     </div>
   );

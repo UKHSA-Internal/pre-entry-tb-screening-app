@@ -30,10 +30,13 @@ describe("MedicalScreeningForm", () => {
 
   const user = userEvent.setup();
 
-  it("when MedicalScreeningForm is filled correctly then state is updated and user is navigated to summary page", async () => {
+  it("when MedicalScreeningForm is filled correctly then state is updated and user is navigated to xray question page", async () => {
     const { store } = renderWithProviders(<MedicalScreeningForm />);
 
     const user = userEvent.setup();
+    await user.type(screen.getByTestId("medical-screening-completion-date-day"), "15");
+    await user.type(screen.getByTestId("medical-screening-completion-date-month"), "6");
+    await user.type(screen.getByTestId("medical-screening-completion-date-year"), "2025");
 
     await user.type(screen.getByTestId("age"), "99");
     await user.click(screen.getAllByTestId("tb-symptoms")[0]);
@@ -75,7 +78,6 @@ describe("MedicalScreeningForm", () => {
     expect(screen.getAllByTestId("pregnant")[0]).not.toBeChecked();
     expect(screen.getAllByTestId("pregnant")[1]).not.toBeChecked();
     expect(screen.getAllByTestId("pregnant")[2]).toBeChecked();
-    expect(screen.getAllByTestId("pregnant")[3]).not.toBeChecked();
     expect(screen.getAllByTestId("menstrual-periods")[0]).not.toBeChecked();
     expect(screen.getAllByTestId("menstrual-periods")[1]).toBeChecked();
     expect(screen.getAllByTestId("menstrual-periods")[2]).not.toBeChecked();
@@ -87,12 +89,13 @@ describe("MedicalScreeningForm", () => {
 
     expect(store.getState().medicalScreening).toEqual({
       age: "99",
+      chestXrayTaken: "",
       closeContactWithTb: "No",
       closeContactWithTbDetail: "",
       completionDate: {
-        year: "",
-        month: "",
-        day: "",
+        day: "15",
+        month: "6",
+        year: "2025",
       },
       menstrualPeriods: "No",
       otherSymptomsDetail: "",
@@ -100,27 +103,30 @@ describe("MedicalScreeningForm", () => {
       pregnant: "Don't know",
       previousTb: "Yes",
       previousTbDetail: "Details of previous pulmonary TB.",
+      reasonXrayNotRequired: "",
+      reasonXrayNotRequiredFurtherDetails: "",
       status: "In progress",
       tbSymptoms: "Yes",
       tbSymptomsList: ["Cough", "Night sweats"],
       underElevenConditions: ["Not applicable - applicant is aged 11 or over"],
       underElevenConditionsDetail: "",
     });
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/medical-summary");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-question");
   });
 
   it("state is updated from MedicalScreeningForm and then read by MedicalScreeningReview", async () => {
     renderWithProviders(<MedicalScreeningForm />);
 
-    const submitButton = screen.getByRole("button", { name: /Save and Continue/i });
+    const submitButton = screen.getByRole("button", { name: /Continue/i });
 
     await user.click(submitButton);
 
     const errorMessages = [
+      "Error: The date the medical screening took place must include a day, month and year",
       "Error: Enter applicant's age in years",
-      "Error: Select whether the applicant has any pulmonary TB symptoms",
-      "Error: Select whether the applicant has ever had pulmonary TB",
-      "Error: Select whether the applicant has had close contact with any person with active pulmonary TB within the past year",
+      "Error: Select whether the visa applicant has any pulmonary TB symptoms",
+      "Error: Select whether the visa applicant has ever had pulmonary TB",
+      "Error: Select whether the visa applicant has had close contact with any person with active pulmonary TB within the past year",
       "Error: Select whether the applicant is pregnant",
       "Error: Select whether the applicant has menstrual periods",
     ];
