@@ -232,4 +232,43 @@ describe("MedicalScreeningReview", () => {
     expect(link).toHaveAttribute("href", "/chest-xray-question");
     expect(link).toHaveClass("govuk-back-link");
   });
+
+  test("displays reason X-ray is not required when X-ray is not taken", () => {
+    const preloadedState = {
+      medicalScreening: {
+        ...medicalScreeningState,
+        chestXrayTaken: YesOrNo.NO,
+        reasonXrayNotRequired: "Child",
+      },
+      application: { ...applicationState },
+      applicant: { ...applicantState },
+      tbCertificate: { ...tbCertificateState },
+    };
+
+    renderWithProviders(<MedicalScreeningReview />, { preloadedState });
+
+    expect(screen.getByText("Reason X-ray is not required")).toBeInTheDocument();
+    expect(screen.getByText("Child (under 11 years)")).toBeInTheDocument();
+  });
+
+  test("displays other reason X-ray is not required when reason is 'Other' with further details", () => {
+    const preloadedState = {
+      medicalScreening: {
+        ...medicalScreeningState,
+        chestXrayTaken: YesOrNo.NO,
+        reasonXrayNotRequired: "Other",
+        reasonXrayNotRequiredFurtherDetails: "Test reason for not taking X-ray",
+      },
+      application: { ...applicationState },
+      applicant: { ...applicantState },
+      tbCertificate: { ...tbCertificateState },
+    };
+
+    renderWithProviders(<MedicalScreeningReview />, { preloadedState });
+
+    expect(screen.getByText("Reason X-ray is not required")).toBeInTheDocument();
+    expect(screen.getByText("Other")).toBeInTheDocument();
+    expect(screen.getByText("Other reason X-ray is not required")).toBeInTheDocument();
+    expect(screen.getByText("Test reason for not taking X-ray")).toBeInTheDocument();
+  });
 });
