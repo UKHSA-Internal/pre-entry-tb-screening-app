@@ -36,23 +36,6 @@ describe("Test for Updating Travel Information into DB", () => {
     });
   });
 
-  // test("Duplicate post throws a 400 error", async () => {
-  //   // Arrange
-  //   const existingTravelInformation = seededTravelInformation[0];
-  //   const event: UpdateTravelInformationEvent = {
-  //     ...mockAPIGwEvent,
-  //     pathParameters: { applicationId: seededApplications[1].applicationId },
-  //     parsedBody: existingTravelInformation,
-  //   };
-
-  //   // Act
-  //   const response = await updateTravelInformationHandler(event);
-
-  //   // Assert
-  //   expect(response.statusCode).toBe(400);
-  //   expect(JSON.parse(response.body)).toMatchObject({ message: "Travel Details already saved" });
-  // });
-
   test("Missing required body returns a 500 response", async () => {
     // Arrange
     const event: UpdateTravelInformationEvent = {
