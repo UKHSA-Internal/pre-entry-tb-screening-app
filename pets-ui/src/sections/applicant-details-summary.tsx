@@ -111,13 +111,13 @@ const ApplicantReview = () => {
     },
     {
       key: "Passport issue date",
-      value: `${applicantData.passportIssueDate.day}/${applicantData.passportIssueDate.month}/${applicantData.passportIssueDate.year}`,
+      value: formatDateForDisplay(applicantData.passportIssueDate),
       link: `/enter-applicant-information#${attributeToComponentId.passportIssueDate}`,
       hiddenLabel: "passport issue date",
     },
     {
       key: "Passport expiry date",
-      value: `${applicantData.passportExpiryDate.day}/${applicantData.passportExpiryDate.month}/${applicantData.passportExpiryDate.year}`,
+      value: formatDateForDisplay(applicantData.passportExpiryDate),
       link: `/enter-applicant-information#${attributeToComponentId.passportExpiryDate}`,
       hiddenLabel: "passport expiry date",
     },
