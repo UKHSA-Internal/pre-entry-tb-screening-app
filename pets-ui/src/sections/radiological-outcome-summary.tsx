@@ -50,7 +50,7 @@ const RadiologicalOutcomeSummary = () => {
       }
 
       dispatch(setRadiologicalOutcomeStatus(ApplicationStatus.COMPLETE));
-      navigate("/radiological-outcome-confirmation");
+      navigate("/radiological-outcome-confirmed");
     } catch (error) {
       console.error(error);
       navigate("/error");
@@ -61,7 +61,7 @@ const RadiologicalOutcomeSummary = () => {
     {
       key: "Chest X-ray results",
       value: radiologicalOutcomeData.xrayResult,
-      link: `/radiological-outcome-chest-xray-results#${attributeToComponentId.xrayResult}`,
+      link: `/chest-x-ray-results#${attributeToComponentId.xrayResult}`,
       hiddenLabel: "chest X-ray results",
     },
     {
@@ -74,14 +74,14 @@ const RadiologicalOutcomeSummary = () => {
         );
         return findings.length > 0 ? findings : "Not provided";
       })(),
-      link: `/radiological-outcome-findings#${attributeToComponentId.xrayMinorFindings}`,
+      link: `/enter-x-ray-findings#${attributeToComponentId.xrayMinorFindings}`,
       hiddenLabel: "X-ray findings",
       emptyValueText: "Enter X-ray findings (optional)",
     },
     {
       key: "Give further details (optional)",
       value: radiologicalOutcomeData.xrayResultDetail || "Not provided",
-      link: `/radiological-outcome-findings#${attributeToComponentId.xrayResultDetail}`,
+      link: `/enter-x-ray-findings#${attributeToComponentId.xrayResultDetail}`,
       hiddenLabel: "further details",
       emptyValueText: "Give further details (optional)",
     },
@@ -91,21 +91,21 @@ const RadiologicalOutcomeSummary = () => {
     {
       key: "Select X-ray status",
       value: medicalScreeningData.chestXrayTaken,
-      link: `/chest-xray-question#${attributeToComponentId.chestXrayTaken}`,
+      link: `/is-an-x-ray-required#${attributeToComponentId.chestXrayTaken}`,
       hiddenLabel: "chest X-ray status",
       emptyValueText: "Enter X-ray status (optional)",
     },
     {
       key: "Enter reason X-ray not taken",
       value: radiologicalOutcomeData.reasonXrayWasNotTaken,
-      link: `/chest-xray-not-taken#${attributeToComponentId.reasonXrayWasNotTaken}`,
+      link: `/reason-x-ray-not-required#${attributeToComponentId.reasonXrayWasNotTaken}`,
       hiddenLabel: "Reason why X-ray was not taken",
       emptyValueText: "Enter reason X-ray not taken (optional)",
     },
     {
       key: "Details",
       value: radiologicalOutcomeData.xrayWasNotTakenFurtherDetails,
-      link: `/chest-xray-not-taken#${attributeToComponentId.xrayWasNotTakenFurtherDetails}`,
+      link: `/reason-x-ray-not-required#${attributeToComponentId.xrayWasNotTakenFurtherDetails}`,
       hiddenLabel: "details",
       emptyValueText: "Enter details (optional)",
     },

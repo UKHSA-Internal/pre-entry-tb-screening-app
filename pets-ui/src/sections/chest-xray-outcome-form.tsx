@@ -25,7 +25,7 @@ const ChestXrayOutcomeForm = () => {
 
   const onSubmit: SubmitHandler<ReduxRadiologicalOutcomeDetailsType> = (data) => {
     dispatch(setXrayResult(data.xrayResult));
-    navigate("/radiological-outcome-findings");
+    navigate("/enter-x-ray-findings");
   };
 
   const errorsToShow = Object.keys(errors);

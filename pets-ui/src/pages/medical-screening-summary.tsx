@@ -12,9 +12,9 @@ export default function MedicalSummaryPage() {
     if (medicalData.status === ApplicationStatus.COMPLETE) {
       return "/tracker";
     } else if (medicalData.chestXrayTaken === YesOrNo.NO) {
-      return "/chest-xray-not-taken";
+      return "/reason-x-ray-not-required";
     } else {
-      return "/chest-xray-question";
+      return "/is-an-x-ray-required";
     }
   };
 

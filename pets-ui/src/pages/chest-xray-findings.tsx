@@ -5,7 +5,7 @@ export default function ChestXrayFindingsPage() {
   return (
     <Container
       title="Enter X-ray findings - Complete UK pre-entry health screening - GOV.UK"
-      backLinkTo="/radiological-outcome-chest-xray-results"
+      backLinkTo="/chest-x-ray-results"
     >
       <ChestXrayFindingsForm />
     </Container>

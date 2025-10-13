@@ -229,7 +229,7 @@ describe("MedicalScreeningReview", () => {
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/chest-xray-question");
+    expect(link).toHaveAttribute("href", "/is-an-x-ray-required");
     expect(link).toHaveClass("govuk-back-link");
   });
 

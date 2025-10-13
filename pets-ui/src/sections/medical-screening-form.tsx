@@ -54,7 +54,7 @@ const MedicalScreeningForm = () => {
   const onSubmit: SubmitHandler<ReduxMedicalScreeningType> = (medicalScreeningData) => {
     dispatch(setMedicalScreeningDetails(medicalScreeningData));
     dispatch(setMedicalScreeningStatus(ApplicationStatus.IN_PROGRESS));
-    navigate("/chest-xray-question");
+    navigate("/is-an-x-ray-required");
   };
 
   const errorsToShow = Object.keys(errors);

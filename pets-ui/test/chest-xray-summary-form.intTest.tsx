@@ -54,7 +54,7 @@ describe("ChestXraySummaryPage", () => {
   it("displays the back link", () => {
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/upload-chest-xray");
+    expect(link).toHaveAttribute("href", "/upload-chest-x-ray-images");
     expect(link).toHaveClass("govuk-back-link");
   });
 
@@ -64,7 +64,7 @@ describe("ChestXraySummaryPage", () => {
     expect(screen.getByText("Chest X-ray images")).toBeInTheDocument();
   });
 
-  it("when continue pressed, data is posted & user is navigated to /chest-xray-confirmation", async () => {
+  it("when continue pressed, data is posted & user is navigated to /chest-x-ray-images-confirmed", async () => {
     mock.onPost("/application/abc-123/chest-xray").reply(200);
     await user.click(screen.getByRole("button"));
     expect(mock.history[0].url).toEqual("/application/abc-123/chest-xray");
@@ -76,7 +76,7 @@ describe("ChestXraySummaryPage", () => {
       lateralDecubitusXray: "LD Example File",
       dateXrayTaken: "31-12-2001",
     });
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-confirmation");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-x-ray-images-confirmed");
   });
 
   it("renders the page titles and data", () => {

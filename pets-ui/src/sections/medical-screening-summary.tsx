@@ -175,7 +175,7 @@ const MedicalScreeningReview = () => {
     {
       key: "Is an X-ray required?",
       value: medicalData.chestXrayTaken,
-      link: `/chest-xray-question#${attributeToComponentId.chestXrayTaken}`,
+      link: `/is-an-x-ray-required#${attributeToComponentId.chestXrayTaken}`,
       hiddenLabel: "whether X-ray is required",
       emptyValueText: "Enter whether X-ray is required (optional)",
     },
@@ -184,7 +184,7 @@ const MedicalScreeningReview = () => {
           {
             key: "Reason X-ray is not required",
             value: mapBackendToDisplay(medicalData.reasonXrayNotRequired) || "Not provided",
-            link: `/chest-xray-not-taken#${attributeToComponentId.reasonXrayWasNotTaken}`,
+            link: `/reason-x-ray-not-required#${attributeToComponentId.reasonXrayWasNotTaken}`,
             hiddenLabel: "reason X-ray is not required",
             emptyValueText: "Enter reason X-ray is not required (optional)",
           },
@@ -197,7 +197,7 @@ const MedicalScreeningReview = () => {
           {
             key: "Other reason X-ray is not required",
             value: medicalData.reasonXrayNotRequiredFurtherDetails || "Not provided",
-            link: `/chest-xray-not-taken#reason-xray-not-required-other-detail`,
+            link: `/reason-x-ray-not-required#reason-xray-not-required-other-detail`,
             hiddenLabel: "other reason X-ray is not required",
             emptyValueText: "Enter other reason X-ray is not required (optional)",
           },

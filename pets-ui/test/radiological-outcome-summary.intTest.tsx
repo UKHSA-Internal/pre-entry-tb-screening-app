@@ -33,7 +33,7 @@ describe("RadiologicalOutcomeSummary Page", () => {
     );
 
     const link = screen.getByRole("link", { name: "Back" });
-    expect(link).toHaveAttribute("href", "/radiological-outcome-findings");
+    expect(link).toHaveAttribute("href", "/enter-x-ray-findings");
   });
 
   it("shows back link to tracker when status complete", () => {
@@ -94,7 +94,7 @@ describe("RadiologicalOutcomeSummary Section", () => {
         xrayAssociatedMinorFindings: [],
         xrayActiveTbFindings: [],
       });
-      expect(useNavigateMock).toHaveBeenLastCalledWith("/radiological-outcome-confirmation");
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/radiological-outcome-confirmed");
     });
   });
 
@@ -125,7 +125,7 @@ describe("RadiologicalOutcomeSummary Section", () => {
         reasonXrayWasNotTaken: "Pregnancy",
         xrayWasNotTakenFurtherDetails: "First trimester",
       });
-      expect(useNavigateMock).toHaveBeenLastCalledWith("/radiological-outcome-confirmation");
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/radiological-outcome-confirmed");
     });
   });
 

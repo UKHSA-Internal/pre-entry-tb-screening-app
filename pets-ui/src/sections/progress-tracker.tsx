@@ -188,8 +188,8 @@ const ProgressTracker = () => {
         <Task
           description="Upload chest X-ray images"
           status={chestXrayStatus}
-          linkWhenIncomplete="/upload-chest-xray"
-          linkWhenComplete="/chest-xray-summary"
+          linkWhenIncomplete="/upload-chest-x-ray-images"
+          linkWhenComplete="/check-chest-x-ray-images"
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,
@@ -199,8 +199,8 @@ const ProgressTracker = () => {
         <Task
           description="Radiological outcome"
           status={radiologicalOutcomeStatus}
-          linkWhenIncomplete="/radiological-outcome-chest-xray-results"
-          linkWhenComplete="/radiological-outcome-summary"
+          linkWhenIncomplete="/chest-x-ray-results"
+          linkWhenComplete="/check-chest-x-ray-results-findings"
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,
@@ -211,8 +211,8 @@ const ProgressTracker = () => {
         <Task
           description="Make a sputum decision"
           status={sputumDecisionData.status}
-          linkWhenIncomplete="/sputum-question"
-          linkWhenComplete="/sputum-decision-summary"
+          linkWhenIncomplete="/is-sputum-collection-required"
+          linkWhenComplete="/check-sputum-decision-information"
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,

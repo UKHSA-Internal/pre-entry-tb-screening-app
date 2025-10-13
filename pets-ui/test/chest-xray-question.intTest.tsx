@@ -66,11 +66,11 @@ describe("ChestXrayQuestionForm", () => {
     await user.click(screen.getByRole("button"));
     expect(useNavigateMock).toHaveBeenLastCalledWith("/check-medical-screening");
   });
-  it("when no selected and continue pressed, it navigates to /chest-xray-not-taken", async () => {
+  it("when no selected and continue pressed, it navigates to /reason-x-ray-not-required", async () => {
     const radioButtons = screen.getAllByRole("radio");
 
     await user.click(radioButtons[1]);
     await user.click(screen.getByRole("button"));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-not-taken");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/reason-x-ray-not-required");
   });
 });

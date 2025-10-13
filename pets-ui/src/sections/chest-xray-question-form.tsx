@@ -33,7 +33,7 @@ const ChestXrayQuestionForm = () => {
       dispatch(setReasonXrayNotRequired(""));
       navigate("/check-medical-screening");
     } else {
-      navigate("/chest-xray-not-taken");
+      navigate("/reason-x-ray-not-required");
     }
   };
 

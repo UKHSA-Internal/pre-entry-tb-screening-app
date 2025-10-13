@@ -329,13 +329,13 @@ test("Progress tracker page displays complete application sections correctly, li
   expect(within(medicalScreeningListItem as HTMLElement).getByText("Completed"));
 
   const chestXrayLink = screen.getByRole("link", { name: /Upload chest X-ray images/i });
-  expect(chestXrayLink).toHaveAttribute("href", "/chest-xray-summary");
+  expect(chestXrayLink).toHaveAttribute("href", "/check-chest-x-ray-images");
   const chestXrayListItem = chestXrayLink.closest("li");
   expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
   expect(within(chestXrayListItem as HTMLElement).getByText("Completed"));
 
   const radiologicalOutcomeLink = screen.getByRole("link", { name: /Radiological outcome/i });
-  expect(radiologicalOutcomeLink).toHaveAttribute("href", "/radiological-outcome-summary");
+  expect(radiologicalOutcomeLink).toHaveAttribute("href", "/check-chest-x-ray-results-findings");
   const radiologicalOutcomeListItem = radiologicalOutcomeLink.closest("li");
   expect(radiologicalOutcomeListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
