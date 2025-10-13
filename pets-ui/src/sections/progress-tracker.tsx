@@ -181,7 +181,7 @@ const ProgressTracker = () => {
         <Task
           description="Medical history and TB symptoms"
           status={medicalScreeningData.status}
-          linkWhenIncomplete="/medical-screening"
+          linkWhenIncomplete="/record-medical-history-tb-symptoms"
           linkWhenComplete="/check-medical-screening"
           prerequisiteTaskStatuses={[applicantData.status, travelData.status]}
         />

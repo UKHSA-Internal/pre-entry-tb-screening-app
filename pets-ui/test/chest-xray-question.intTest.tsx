@@ -29,7 +29,7 @@ describe("ChestXrayQuestionForm", () => {
   it("displays the back link", () => {
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/medical-screening");
+    expect(link).toHaveAttribute("href", "/record-medical-history-tb-symptoms");
     expect(link).toHaveClass("govuk-back-link");
   });
   it("renders the page titles and descriptions ", () => {

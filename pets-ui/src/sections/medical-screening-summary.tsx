@@ -69,19 +69,19 @@ const MedicalScreeningReview = () => {
     {
       key: "Date of medical screening",
       value: formatDateForDisplay(medicalData.completionDate) || "Not provided",
-      link: `/medical-screening#medical-screening-completion-date`,
+      link: `/record-medical-history-tb-symptoms#medical-screening-completion-date`,
       hiddenLabel: "date of medical screening",
     },
     {
       key: "Age",
       value: medicalData.age || "Not provided",
-      link: `/medical-screening#${attributeToComponentId.age}`,
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.age}`,
       hiddenLabel: "age",
     },
     {
       key: "Does the applicant have pulmonary TB symptoms?",
       value: medicalData.tbSymptoms || "Not provided",
-      link: `/medical-screening#${attributeToComponentId.tbSymptoms}`,
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.tbSymptoms}`,
       hiddenLabel: "whether the applicant has pulmonary TB symptoms",
     },
     {
@@ -90,13 +90,13 @@ const MedicalScreeningReview = () => {
         medicalData.tbSymptomsList.length > 0
           ? medicalData.tbSymptomsList.join(", ")
           : "Not provided",
-      link: `/medical-screening#${attributeToComponentId.tbSymptomsList}`,
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.tbSymptomsList}`,
       hiddenLabel: "Pulmonary TB symptoms",
     },
     {
       key: "Other symptoms",
       value: medicalData.otherSymptomsDetail || "Not provided",
-      link: `/medical-screening#${attributeToComponentId.otherSymptomsDetail}`,
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.otherSymptomsDetail}`,
       hiddenLabel: "other symptoms",
     },
     {
@@ -105,55 +105,55 @@ const MedicalScreeningReview = () => {
         medicalData.underElevenConditions.length > 0
           ? medicalData.underElevenConditions.join(", ")
           : "Not provided",
-      link: `/medical-screening#${attributeToComponentId.underElevenConditions}`,
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.underElevenConditions}`,
       hiddenLabel: "applicant history if under 11",
     },
     {
       key: "Additional details of applicant history if under 11",
       value: medicalData.underElevenConditionsDetail || "Not provided",
-      link: `/medical-screening#${attributeToComponentId.underElevenConditionsDetail}`,
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.underElevenConditionsDetail}`,
       hiddenLabel: "additional details of applicant history if under 11",
     },
     {
       key: "Has the applicant ever had pulmonary TB?",
       value: medicalData.previousTb || "Not provided",
-      link: `/medical-screening#${attributeToComponentId.previousTb}`,
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.previousTb}`,
       hiddenLabel: "whether the applicant has ever had pulmonary TB",
     },
     {
       key: "Detail of applicant's previous pulmonary TB",
       value: medicalData.previousTbDetail || "Not provided",
-      link: `/medical-screening#${attributeToComponentId.previousTbDetail}`,
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.previousTbDetail}`,
       hiddenLabel: "details of applicant's previous pulmonary TB",
     },
     {
       key: "Has the applicant had close contact with any person with active pulmonary TB within the past year?",
       value: medicalData.closeContactWithTb || "Not provided",
-      link: `/medical-screening#${attributeToComponentId.closeContactWithTb}`,
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.closeContactWithTb}`,
       hiddenLabel: "applicant's close contact with TB in the past year",
     },
     {
       key: "Details of applicant's close contact with any person with active pulmonary TB",
       value: medicalData.closeContactWithTbDetail || "Not provided",
-      link: `/medical-screening#${attributeToComponentId.closeContactWithTbDetail}`,
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.closeContactWithTbDetail}`,
       hiddenLabel: "details of applicant's close contact with pulmonary TB in the past year",
     },
     {
       key: "Is the applicant pregnant?",
       value: medicalData.pregnant || "Not provided",
-      link: `/medical-screening#${attributeToComponentId.pregnant}`,
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.pregnant}`,
       hiddenLabel: "pregnancy",
     },
     {
       key: "Does the applicant have menstrual periods?",
       value: medicalData.menstrualPeriods || "Not provided",
-      link: `/medical-screening#${attributeToComponentId.menstrualPeriods}`,
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.menstrualPeriods}`,
       hiddenLabel: "menstrual periods",
     },
     {
       key: "Physical examination notes",
       value: medicalData.physicalExamNotes || "Not provided",
-      link: `/medical-screening#${attributeToComponentId.physicalExamNotes}`,
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.physicalExamNotes}`,
       hiddenLabel: "physical examination notes",
     },
     {

@@ -5,7 +5,7 @@ export default function ChestXrayQuestionPage() {
   return (
     <Container
       title="Is an X-ray required? - Complete UK pre-entry health screening - GOV.UK"
-      backLinkTo="/medical-screening"
+      backLinkTo="/record-medical-history-tb-symptoms"
     >
       <ChestXrayQuestionForm />
     </Container>

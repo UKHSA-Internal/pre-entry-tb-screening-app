@@ -127,7 +127,7 @@ function App() {
         }
       />
       <Route
-        path="/medical-screening"
+        path="/record-medical-history-tb-symptoms"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
