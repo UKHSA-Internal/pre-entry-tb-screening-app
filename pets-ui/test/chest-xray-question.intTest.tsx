@@ -59,12 +59,12 @@ describe("ChestXrayQuestionForm", () => {
     expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
     expect(screen.queryByText("Select yes if X-ray is required")).not.toBeInTheDocument();
   });
-  it("when yes selected and continue pressed, it navigates to /medical-summary", async () => {
+  it("when yes selected and continue pressed, it navigates to /check-medical-screening", async () => {
     const radioButtons = screen.getAllByRole("radio");
 
     await user.click(radioButtons[0]);
     await user.click(screen.getByRole("button"));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/medical-summary");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-medical-screening");
   });
   it("when no selected and continue pressed, it navigates to /chest-xray-not-taken", async () => {
     const radioButtons = screen.getAllByRole("radio");

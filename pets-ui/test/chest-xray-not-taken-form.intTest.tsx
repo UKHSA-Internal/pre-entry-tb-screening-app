@@ -96,13 +96,13 @@ describe("ChestXrayNotTakenPage", () => {
     });
   });
 
-  it("when continue pressed, it navigates to /medical-summary", async () => {
+  it("when continue pressed, it navigates to /check-medical-screening", async () => {
     const radioButtons = screen.getAllByRole("radio");
 
     await user.click(radioButtons[0]);
     await user.click(screen.getByRole("button"));
 
     expect(useNavigateMock).toHaveBeenCalled();
-    expect(useNavigateMock).toHaveBeenCalledWith("/medical-summary");
+    expect(useNavigateMock).toHaveBeenCalledWith("/check-medical-screening");
   });
 });
