@@ -76,14 +76,12 @@ const RadiologicalOutcomeSummary = () => {
       })(),
       link: `/enter-x-ray-findings#${attributeToComponentId.xrayMinorFindings}`,
       hiddenLabel: "X-ray findings",
-      emptyValueText: "Enter X-ray findings (optional)",
     },
     {
       key: "Give further details (optional)",
       value: radiologicalOutcomeData.xrayResultDetail || "Not provided",
       link: `/enter-x-ray-findings#${attributeToComponentId.xrayResultDetail}`,
       hiddenLabel: "further details",
-      emptyValueText: "Give further details (optional)",
     },
   ];
 
@@ -93,21 +91,18 @@ const RadiologicalOutcomeSummary = () => {
       value: medicalScreeningData.chestXrayTaken,
       link: `/is-an-x-ray-required#${attributeToComponentId.chestXrayTaken}`,
       hiddenLabel: "chest X-ray status",
-      emptyValueText: "Enter X-ray status (optional)",
     },
     {
       key: "Enter reason X-ray not taken",
       value: radiologicalOutcomeData.reasonXrayWasNotTaken,
       link: `/reason-x-ray-not-required#${attributeToComponentId.reasonXrayWasNotTaken}`,
       hiddenLabel: "Reason why X-ray was not taken",
-      emptyValueText: "Enter reason X-ray not taken (optional)",
     },
     {
       key: "Details",
       value: radiologicalOutcomeData.xrayWasNotTakenFurtherDetails,
       link: `/reason-x-ray-not-required#${attributeToComponentId.xrayWasNotTakenFurtherDetails}`,
       hiddenLabel: "details",
-      emptyValueText: "Enter details (optional)",
     },
   ];
 

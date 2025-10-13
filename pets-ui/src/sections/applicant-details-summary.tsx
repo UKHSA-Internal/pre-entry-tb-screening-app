@@ -132,14 +132,12 @@ const ApplicantReview = () => {
       value: applicantData.applicantHomeAddress2,
       link: `/enter-applicant-information#${attributeToComponentId.applicantHomeAddress2}`,
       hiddenLabel: "home address line 2",
-      emptyValueText: "Enter home address line 2 (optional)",
     },
     {
       key: "Home address line 3",
       value: applicantData.applicantHomeAddress3,
       link: `/enter-applicant-information#${attributeToComponentId.applicantHomeAddress3}`,
       hiddenLabel: "home address line 3",
-      emptyValueText: "Enter home address line 3 (optional)",
     },
     {
       key: "Town or city",
@@ -164,14 +162,12 @@ const ApplicantReview = () => {
       value: applicantData.postcode,
       link: `/enter-applicant-information#${attributeToComponentId.postcode}`,
       hiddenLabel: "postcode",
-      emptyValueText: "Enter postcode (optional)",
     },
     {
       key: "Applicant Photo",
       value: applicantData.applicantPhotoFileName,
       link: "/upload-visa-applicant-photo",
       hiddenLabel: "applicant photo",
-      emptyValueText: "Upload visa applicant photo (optional)",
     },
   ];
 

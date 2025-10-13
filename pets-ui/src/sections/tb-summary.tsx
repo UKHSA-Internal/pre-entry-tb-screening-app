@@ -151,21 +151,18 @@ const TbSummary = () => {
             value: tbCertificateData.reasonNotIssued,
             link: `/why-are-you-not-issuing-certificate#${attributeToComponentId.reasonNotIssued}`,
             hiddenLabel: "Reason for not issuing certificate",
-            emptyValueText: "Enter reason for not issuing certificate",
           },
           {
             key: "Declaring Physician's name",
             value: tbCertificateData.declaringPhysicianName,
             link: `/why-are-you-not-issuing-certificate#${attributeToComponentId.declaringPhysicianName}`,
             hiddenLabel: "Declaring Physician's name",
-            emptyValueText: "Enter declaring physician name",
           },
           {
             key: "Physician's comments",
             value: tbCertificateData.comments,
             link: `/why-are-you-not-issuing-certificate#${attributeToComponentId.comments}`,
             hiddenLabel: "Physician's comments",
-            emptyValueText: "Enter physician's comments",
           },
         ];
 
@@ -265,14 +262,12 @@ const TbSummary = () => {
             value: tbCertificateData.declaringPhysicianName,
             link: `/enter-clinic-certificate-information#${attributeToComponentId.declaringPhysicianName}`,
             hiddenLabel: "Declaring physician name",
-            emptyValueText: "Enter declaring physician name",
           },
           {
             key: "Physician's comments",
             value: tbCertificateData.comments,
             link: `/enter-clinic-certificate-information#${attributeToComponentId.comments}`,
             hiddenLabel: "Physician's comments",
-            emptyValueText: "Enter physician's comments",
           },
         ]
       : [];
