@@ -14,10 +14,23 @@ import { VisaOptions } from "../types/enums";
 
 const { dynamoDBDocClient: docClient } = awsClients;
 abstract class TravelInformationBase {
-  applicationId: string;
+  applicationId!: string;
 
-  constructor(details: TravelInformationBase) {
-    this.applicationId = details.applicationId;
+  constructor(details: Partial<TravelInformationBase>) {
+    Object.assign(this, details); // copies all matching props
+  }
+
+  toJson() {
+    // Copy everything from this
+    const json = { ...this } as Record<string, unknown>;
+
+    // Exclude internal fields
+    delete json.createdBy;
+    delete json.updatedBy;
+    delete json.pk;
+    delete json.sk;
+
+    return json;
   }
 }
 export type ITravelInformation = {
@@ -80,25 +93,10 @@ export class TravelInformation extends TravelInformationBase {
     this.dateCreated = details.dateCreated;
     this.createdBy = details.createdBy;
   }
-
-  toJson() {
-    return {
-      applicationId: this.applicationId,
-      status: this.status,
-
-      visaCategory: this.visaCategory,
-      ukAddressLine1: this.ukAddressLine1,
-      ukAddressLine2: this.ukAddressLine2,
-      ukAddressTownOrCity: this.ukAddressTownOrCity,
-      ukAddressPostcode: this.ukAddressPostcode,
-      ukMobileNumber: this.ukMobileNumber,
-      ukEmailAddress: this.ukEmailAddress,
-      dateCreated: this.dateCreated,
-    };
-  }
 }
 
 export type NewTravelInformation = Omit<ITravelInformation, "dateCreated" | "status">;
+
 export class TravelInformationUpdate extends TravelInformationBase {
   status: TaskStatus;
   visaCategory?: VisaOptions;
@@ -126,23 +124,9 @@ export class TravelInformationUpdate extends TravelInformationBase {
     this.dateUpdated = details.dateUpdated;
     // this.updatedBy = details.updatedBy;
   }
-
-  toJson() {
-    return {
-      applicationId: this.applicationId,
-      status: this.status,
-
-      visaCategory: this.visaCategory,
-      ukAddressLine1: this.ukAddressLine1,
-      ukAddressLine2: this.ukAddressLine2,
-      ukAddressTownOrCity: this.ukAddressTownOrCity,
-      ukAddressPostcode: this.ukAddressPostcode,
-      ukMobileNumber: this.ukMobileNumber,
-      ukEmailAddress: this.ukEmailAddress,
-      dateUpdated: this.dateUpdated,
-    };
-  }
 }
+
+export type NewTravelInformationUpdate = Omit<ITravelInformationUpdate, "dateUpdated" | "status">;
 
 export class TravelInformationDbOps {
   static readonly getPk = (applicationId: string) => Application.getPk(applicationId);
@@ -197,7 +181,7 @@ export class TravelInformationDbOps {
     details: Omit<ITravelInformationUpdate, "dateUpdated" | "status">,
   ): Promise<TravelInformationUpdate> {
     try {
-      logger.info("Saving Travel Information to DB");
+      logger.info("Update Travel Information to DB");
       const pk = TravelInformationDbOps.getPk(details.applicationId);
       const sk = TravelInformationDbOps.sk;
 
