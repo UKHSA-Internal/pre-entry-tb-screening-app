@@ -8,11 +8,11 @@ import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 export default function TbSummaryPage() {
   const tbCertificateData = useAppSelector(selectTbCertificate);
 
-  let backLinkUrl = "/tb-certificate-declaration";
+  let backLinkUrl = "/enter-clinic-certificate-information";
   if (tbCertificateData.status === ApplicationStatus.COMPLETE) {
     backLinkUrl = "/tracker";
   } else if (tbCertificateData.isIssued === YesOrNo.NO) {
-    backLinkUrl = "/tb-certificate-not-issued";
+    backLinkUrl = "/why-are-you-not-issuing-certificate";
   }
 
   const pageTitle =
@@ -21,7 +21,10 @@ export default function TbSummaryPage() {
       : "Check certificate information";
 
   return (
-    <Container title="TB Summary" backLinkTo={backLinkUrl}>
+    <Container
+      title={pageTitle + " - Complete UK pre-entry health screening - GOV.UK"}
+      backLinkTo={backLinkUrl}
+    >
       <Heading level={1} size="l" title={pageTitle} />
       <TbSummary />
     </Container>

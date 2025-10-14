@@ -137,6 +137,12 @@ describe("Getting Application Handler", () => {
         xrayResult: "Chest X-ray normal",
         xrayResultDetail: "Result details",
       },
+      sputumRequirement: {
+        applicationId: "generated-app-id-2",
+        dateCreated: expect.any(String),
+        sputumRequired: "Yes",
+        status: "completed",
+      },
       // Defined in pets-core-services\src\application-service\fixtures\tb-certificate.ts
       tbCertificate: {
         applicationId: "generated-app-id-2",

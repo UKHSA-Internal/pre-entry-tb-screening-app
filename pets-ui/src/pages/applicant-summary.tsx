@@ -10,9 +10,11 @@ export default function ApplicantSummaryPage() {
 
   return (
     <Container
-      title="Applicant details summary"
+      title="Check applicant details - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo={
-        applicantData.status == ApplicationStatus.COMPLETE ? "/tracker" : "/applicant-photo"
+        applicantData.status == ApplicationStatus.COMPLETE
+          ? "/tracker"
+          : "/upload-visa-applicant-photo"
       }
     >
       <Heading level={1} size="l" title="Check applicant details" />

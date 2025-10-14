@@ -23,7 +23,8 @@ export interface CheckboxProps {
 }
 
 export default function Checkbox(props: Readonly<CheckboxProps>) {
-  const { register } = useFormContext();
+  const { register, watch } = useFormContext();
+  const watchedValue = watch(props.formValue) || [];
 
   const answerOptions = [...props.answerOptions];
   const exclusiveOptions = [...(props.exclusiveAnswerOptions ?? [])];
@@ -60,7 +61,7 @@ export default function Checkbox(props: Readonly<CheckboxProps>) {
                 {...register(props.formValue, {
                   required: props.required,
                 })}
-                defaultChecked={props.defaultValue?.includes(option)}
+                checked={Array.isArray(watchedValue) && watchedValue.includes(option)}
               />
               <label className="govuk-label govuk-checkboxes__label" htmlFor={optionId}>
                 {option}
@@ -84,7 +85,7 @@ export default function Checkbox(props: Readonly<CheckboxProps>) {
                     required: props.required,
                   })}
                   data-behaviour="exclusive"
-                  defaultChecked={props.defaultValue?.includes(option)}
+                  checked={Array.isArray(watchedValue) && watchedValue.includes(option)}
                 />
                 <label className="govuk-label govuk-checkboxes__label" htmlFor={optionId}>
                   {option}

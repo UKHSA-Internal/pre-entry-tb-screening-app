@@ -24,7 +24,11 @@ describe("SputumQuestionPage", () => {
   let scrollIntoViewMockFn: Mock;
 
   beforeEach(() => {
-    (useLocation as Mock).mockReturnValue({ pathname: "/sputum-question", hash: "", search: "" });
+    (useLocation as Mock).mockReturnValue({
+      pathname: "/is-sputum-collection-required",
+      hash: "",
+      search: "",
+    });
 
     originalScrollIntoViewDescriptor = Object.getOwnPropertyDescriptor(
       window.HTMLElement.prototype,
@@ -58,13 +62,13 @@ describe("SputumQuestionPage", () => {
   it("displays the back link", () => {
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/chest-xray-not-taken");
+    expect(link).toHaveAttribute("href", "/tracker");
     expect(link).toHaveClass("govuk-back-link");
   });
 
   it("renders the page titles and radio question", () => {
     expect(
-      screen.getByRole("heading", { name: "Is a sputum collection required?", level: 1 }),
+      screen.getByRole("heading", { name: "Is sputum collection required?", level: 1 }),
     ).toBeInTheDocument();
 
     const yesRadio = screen.getByRole("radio", { name: "Yes" });
@@ -111,23 +115,23 @@ describe("SputumQuestionPage", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("when 'Yes' selected and continue pressed, it navigates to /chest-xray-summary", async () => {
+  it("when 'Yes' selected and continue pressed, it navigates to /check-sputum-decision-information", async () => {
     const radioYes = screen.getByRole("radio", { name: "Yes" });
     await user.click(radioYes);
     await user.click(screen.getByRole("button", { name: "Continue" }));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-summary");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-sputum-decision-information");
   });
 
-  it("when 'No' selected and continue pressed, it navigates to /chest-xray-summary", async () => {
+  it("when 'No' selected and continue pressed, it navigates to /check-chest-x-ray-images", async () => {
     const radioNo = screen.getByRole("radio", { name: "No" });
     await user.click(radioNo);
     await user.click(screen.getByRole("button", { name: "Continue" }));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-summary");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-sputum-decision-information");
   });
 
   it("scrolls to the sputum collected radio group if location hash is #sputum-required", () => {
     (useLocation as Mock).mockReturnValue({
-      pathname: "/sputum-question",
+      pathname: "/is-sputum-collection-required",
       hash: "#sputum-required",
       search: "",
     });

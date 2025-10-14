@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 
+import { acquireTokenSilently } from "@/auth/auth";
 import {
   ApplicantSearchFormType,
   ApplicationIdAndDateCreatedType,
@@ -7,17 +8,17 @@ import {
   GenerateImageUploadUrlRequest,
   GenerateImageUploadUrlResponse,
   PostedApplicantDetailsType,
-  PostedChestXrayDetailsType,
-  PostedChestXrayNotTakenType,
+  PostedChestXrayUnionType,
   PostedMedicalScreeningType,
+  PostedRadiologicalOutcomeChestXrayNotTakenType,
+  PostedRadiologicalOutcomeDetailsType,
   PostedSputumType,
   PostedTbCertificateNotIssuedType,
   PostedTbCertificateType,
   PostedTravelDetailsType,
   ReceivedApplicantDetailsType,
   ReceivedApplicationDetailsType,
-} from "@/applicant";
-import { acquireTokenSilently } from "@/auth/auth";
+} from "@/types";
 
 export const petsApi = axios.create({
   baseURL: "/api",
@@ -95,9 +96,32 @@ export const postMedicalDetails = async (
 
 export const postChestXrayDetails = async (
   applicationId: string,
-  chestXrayDetails: PostedChestXrayDetailsType | PostedChestXrayNotTakenType,
+  chestXrayDetails: PostedChestXrayUnionType,
 ) => {
   const result = await petsApi.post(`/application/${applicationId}/chest-xray`, chestXrayDetails);
+  return { status: result.status, statusText: result.statusText };
+};
+
+export const postRadiologicalOutcomeDetails = async (
+  applicationId: string,
+  radiologicalOutcomeDetails:
+    | PostedRadiologicalOutcomeDetailsType
+    | PostedRadiologicalOutcomeChestXrayNotTakenType,
+) => {
+  const result = await petsApi.post(
+    `/application/${applicationId}/radiological-outcome`,
+    radiologicalOutcomeDetails,
+  );
+  return { status: result.status, statusText: result.statusText };
+};
+
+export const postSputumRequirement = async (
+  applicationId: string,
+  sputumRequirement: { sputumRequired: string },
+) => {
+  const result = await petsApi.post(`/application/${applicationId}/sputum-decision`, {
+    sputumRequired: sputumRequirement.sputumRequired,
+  });
   return { status: result.status, statusText: result.statusText };
 };
 

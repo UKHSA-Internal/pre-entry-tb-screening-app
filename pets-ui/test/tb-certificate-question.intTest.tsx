@@ -25,7 +25,7 @@ describe("TbCertificateQuestionPage", () => {
 
   beforeEach(() => {
     (useLocation as Mock).mockReturnValue({
-      pathname: "/tb-certificate-question",
+      pathname: "/will-you-issue-tb-clearance-certificate",
       hash: "",
       search: "",
     });
@@ -110,23 +110,23 @@ describe("TbCertificateQuestionPage", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("when 'Yes' selected and continue pressed, it navigates to /tb-certificate-declaration", async () => {
+  it("when 'Yes' selected and continue pressed, it navigates to /enter-clinic-certificate-information", async () => {
     const radioYes = screen.getByRole("radio", { name: "Yes" });
     await user.click(radioYes);
     await user.click(screen.getByRole("button", { name: "Continue" }));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-declaration");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/enter-clinic-certificate-information");
   });
 
-  it("when 'No' selected and continue pressed, it navigates to /tb-certificate-not-issued", async () => {
+  it("when 'No' selected and continue pressed, it navigates to /why-are-you-not-issuing-certificate", async () => {
     const radioNo = screen.getByRole("radio", { name: "No" });
     await user.click(radioNo);
     await user.click(screen.getByRole("button", { name: "Continue" }));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-not-issued");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/why-are-you-not-issuing-certificate");
   });
 
   it("scrolls to the TB certificate radio group if location hash is #tb-clearance-issued", () => {
     (useLocation as Mock).mockReturnValue({
-      pathname: "/tb-certificate-question",
+      pathname: "/will-you-issue-tb-clearance-certificate",
       hash: "#tb-clearance-issued",
       search: "",
     });

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ReduxApplicantDetailsType } from "@/applicant";
+import { ReduxApplicantDetailsType } from "@/types";
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 
 interface ApplicantDataHeaderProps {

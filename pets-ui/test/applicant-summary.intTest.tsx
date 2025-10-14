@@ -63,12 +63,12 @@ describe("ApplicantReview", () => {
         countryOfIssue: "FIN",
         passportIssueDate: {
           year: "1902",
-          month: "feb",
+          month: "02",
           day: "2",
         },
         passportExpiryDate: {
           year: "2053",
-          month: "march",
+          month: "03",
           day: "3",
         },
         applicantHomeAddress1: "The Bell Tower",
@@ -94,15 +94,15 @@ describe("ApplicantReview", () => {
     expect(screen.getAllByRole("term")[2]).toHaveTextContent("Country of nationality");
     expect(screen.getAllByRole("definition")[4]).toHaveTextContent("Norway");
     expect(screen.getAllByRole("term")[3]).toHaveTextContent("Date of birth");
-    expect(screen.getAllByRole("definition")[6]).toHaveTextContent("1/1/1901");
+    expect(screen.getAllByRole("definition")[6]).toHaveTextContent("1 January 1901");
     expect(screen.getAllByRole("term")[4]).toHaveTextContent("Passport number");
     expect(screen.getAllByRole("definition")[8]).toHaveTextContent("1234");
     expect(screen.getAllByRole("term")[5]).toHaveTextContent("Country of issue");
     expect(screen.getAllByRole("definition")[10]).toHaveTextContent("Finland");
     expect(screen.getAllByRole("term")[6]).toHaveTextContent("Passport issue date");
-    expect(screen.getAllByRole("definition")[12]).toHaveTextContent("2/feb/1902");
+    expect(screen.getAllByRole("definition")[12]).toHaveTextContent("2 February 1902");
     expect(screen.getAllByRole("term")[7]).toHaveTextContent("Passport expiry date");
-    expect(screen.getAllByRole("definition")[14]).toHaveTextContent("3/march/2053");
+    expect(screen.getAllByRole("definition")[14]).toHaveTextContent("3 March 2053");
     expect(screen.getAllByRole("term")[8]).toHaveTextContent("Home address line 1");
     expect(screen.getAllByRole("definition")[16]).toHaveTextContent("The Bell Tower");
     expect(screen.getAllByRole("term")[9]).toHaveTextContent("Home address line 2");
@@ -125,7 +125,7 @@ describe("ApplicantReview", () => {
     expect(mock.history[0].url).toEqual("/application");
     expect(mock.history[1].url).toEqual("/applicant/register/abc-123");
     expect(mock.history).toHaveLength(2);
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-confirmation");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/visa-applicant-details-confirmed");
   });
 
   test("user is navigated to error page when first api call is unsuccessful", async () => {
@@ -187,12 +187,12 @@ describe("ApplicantReview", () => {
         countryOfIssue: "FIN",
         passportIssueDate: {
           year: "1902",
-          month: "feb",
+          month: "02",
           day: "2",
         },
         passportExpiryDate: {
           year: "2053",
-          month: "march",
+          month: "03",
           day: "3",
         },
         applicantHomeAddress1: "The Bell Tower",
@@ -230,12 +230,12 @@ describe("ApplicantReview", () => {
         countryOfIssue: "FIN",
         passportIssueDate: {
           year: "1902",
-          month: "feb",
+          month: "02",
           day: "2",
         },
         passportExpiryDate: {
           year: "2053",
-          month: "march",
+          month: "03",
           day: "3",
         },
         applicantHomeAddress1: "The Bell Tower",
@@ -253,7 +253,7 @@ describe("ApplicantReview", () => {
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/applicant-photo");
+    expect(link).toHaveAttribute("href", "/upload-visa-applicant-photo");
     expect(link).toHaveClass("govuk-back-link");
   });
 });

@@ -3,14 +3,14 @@ import userEvent from "@testing-library/user-event";
 import { Mock, vi } from "vitest";
 
 import { postSputumDetails } from "@/api/api";
+import CheckSputumSampleInformationPage from "@/pages/check-sputum-sample-information";
+import SputumSummary from "@/sections/sputum-summary";
 import {
   DateType,
   ReduxApplicantDetailsType,
   ReduxSputumSampleType,
   ReduxSputumType,
-} from "@/applicant";
-import CheckSputumSampleInformationPage from "@/pages/check-sputum-sample-information";
-import SputumSummary from "@/sections/sputum-summary";
+} from "@/types";
 import { ApplicationStatus, PositiveOrNegative, SputumCollectionMethod } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
@@ -160,7 +160,7 @@ describe("SputumSummary", () => {
         sputum: sputumDataWithSample1,
       },
     });
-    expect(screen.getByText("15/06/2025")).toBeInTheDocument();
+    expect(screen.getByText("15 June 2025")).toBeInTheDocument();
     expect(screen.getByText(SputumCollectionMethod.COUGHED_UP)).toBeInTheDocument();
     expect(screen.getByText(PositiveOrNegative.POSITIVE)).toBeInTheDocument();
     expect(screen.getByText(PositiveOrNegative.NEGATIVE)).toBeInTheDocument();
@@ -190,7 +190,7 @@ describe("SputumSummary", () => {
     const saveButton = screen.getByText("Save and continue");
     await user.click(saveButton);
 
-    expect(useNavigateMock).toHaveBeenCalledWith("/sputum-confirmation");
+    expect(useNavigateMock).toHaveBeenCalledWith("/sputum-sample-information-confirmed");
     expect(mockPostSputumDetails).toHaveBeenCalledTimes(1);
   });
 
@@ -206,7 +206,7 @@ describe("SputumSummary", () => {
 
     await user.click(screen.getByText("Save and continue"));
     expect(mockPostSputumDetails).not.toHaveBeenCalled();
-    expect(useNavigateMock).toHaveBeenCalledWith("/sputum-confirmation");
+    expect(useNavigateMock).toHaveBeenCalledWith("/sputum-sample-information-confirmed");
   });
 
   it("should not show Change links when data has been submitted to database", () => {
@@ -238,7 +238,7 @@ describe("SputumSummary", () => {
       },
     });
 
-    expect(screen.getByText("15/06/2025")).toBeInTheDocument();
+    expect(screen.getByText("15 June 2025")).toBeInTheDocument();
     expect(screen.getByText(SputumCollectionMethod.COUGHED_UP)).toBeInTheDocument();
     expect(screen.getByText(PositiveOrNegative.POSITIVE)).toBeInTheDocument();
     expect(screen.getByText(PositiveOrNegative.NEGATIVE)).toBeInTheDocument();

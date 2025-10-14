@@ -10,12 +10,14 @@ export default function ChestXraySummaryPage() {
 
   return (
     <Container
-      title="Check chest X-ray information"
+      title="Check chest X-ray images - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo={
-        chestXrayData.status == ApplicationStatus.COMPLETE ? "/tracker" : "/sputum-question"
+        chestXrayData.status == ApplicationStatus.COMPLETE
+          ? "/tracker"
+          : "/upload-chest-x-ray-images"
       }
     >
-      <Heading level={1} size="l" title="Check chest X-ray information" />
+      <Heading level={1} size="l" title="Check chest X-ray images" />
       <ChestXraySummary />
     </Container>
   );

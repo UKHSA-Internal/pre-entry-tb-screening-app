@@ -2,23 +2,26 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { ReduxChestXrayDetailsType } from "@/applicant";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
-import { setSputumCollectionTaken } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectChestXray } from "@/redux/store";
-import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { setSputumDecisionRequired, setSputumDecisionStatus } from "@/redux/sputumDecisionSlice";
+import { selectSputumDecision } from "@/redux/store";
+import { ApplicationStatus, ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
+
+interface SputumDecisionFormData {
+  isSputumRequired: YesOrNo;
+}
 
 const SputumQuestionForm = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const navigate = useNavigate();
-  const chestXrayData = useAppSelector(selectChestXray);
+  const sputumDecisionData = useAppSelector(selectSputumDecision);
 
-  const methods = useForm<ReduxChestXrayDetailsType>({
+  const methods = useForm<SputumDecisionFormData>({
     reValidateMode: "onSubmit",
   });
   const {
@@ -26,9 +29,11 @@ const SputumQuestionForm = () => {
     formState: { errors },
   } = methods;
 
-  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = (data) => {
-    dispatch(setSputumCollectionTaken(data.isSputumRequired));
-    navigate("/chest-xray-summary");
+  const onSubmit: SubmitHandler<SputumDecisionFormData> = (data) => {
+    dispatch(setSputumDecisionRequired(data.isSputumRequired));
+    dispatch(setSputumDecisionStatus(ApplicationStatus.IN_PROGRESS));
+
+    navigate("/check-sputum-decision-information");
   };
 
   const errorsToShow = Object.keys(errors);
@@ -46,7 +51,7 @@ const SputumQuestionForm = () => {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errors?.isSputumRequired && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
-        <Heading level={1} size="l" title="Is a sputum collection required?" />{" "}
+        <Heading level={1} size="l" title="Is sputum collection required?" />{" "}
         <div ref={isSputumRequiredRef}>
           <Radio
             id="sputum-required"
@@ -55,7 +60,7 @@ const SputumQuestionForm = () => {
             sortAnswersAlphabetically={false}
             errorMessage={errors?.isSputumRequired?.message ?? ""}
             formValue="isSputumRequired"
-            defaultValue={chestXrayData.isSputumRequired}
+            defaultValue={sputumDecisionData.isSputumRequired}
             required="Select yes if sputum collection is required"
             divStyle={{ marginTop: 40 }}
           />

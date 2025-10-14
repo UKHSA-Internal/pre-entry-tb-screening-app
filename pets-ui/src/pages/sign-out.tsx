@@ -16,7 +16,7 @@ export default function SignOutPage() {
   const handleSignOut = () => {
     instance
       .logoutRedirect({
-        postLogoutRedirectUri: "/signed-out",
+        postLogoutRedirectUri: "/you-have-signed-out",
       })
       .catch((error) => {
         console.error("MSAL logout error: ", error);
@@ -29,7 +29,7 @@ export default function SignOutPage() {
 
   return (
     <Container
-      title="Sign out - Complete UK pre-entry health screening - GOV.UK"
+      title="Are you sure you want to sign out? - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo={backLinkTo}
     >
       <NotificationBanner bannerTitle="Important">
