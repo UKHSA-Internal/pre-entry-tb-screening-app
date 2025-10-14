@@ -56,7 +56,7 @@ describe("ChestXrayFindings Form", () => {
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/radiological-outcome-chest-xray-results");
+    expect(link).toHaveAttribute("href", "/chest-x-ray-results");
     expect(link).toHaveClass("govuk-back-link");
   });
 
@@ -82,6 +82,6 @@ describe("ChestXrayFindings Form", () => {
       { preloadedState },
     );
     await user.click(screen.getByRole("button"));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/radiological-outcome-summary");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-chest-x-ray-results-findings");
   });
 });

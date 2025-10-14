@@ -28,9 +28,9 @@ const TbCertificateQuestionForm = () => {
     dispatch(setIsIssued(data.isIssued));
 
     if (data.isIssued === YesOrNo.YES) {
-      navigate("/tb-certificate-declaration");
+      navigate("/enter-clinic-certificate-information");
     } else {
-      navigate("/tb-certificate-not-issued");
+      navigate("/why-are-you-not-issuing-certificate");
     }
   };
 

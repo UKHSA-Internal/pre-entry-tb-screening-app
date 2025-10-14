@@ -29,7 +29,7 @@ describe("ChestXrayQuestionForm", () => {
   it("displays the back link", () => {
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/medical-screening");
+    expect(link).toHaveAttribute("href", "/record-medical-history-tb-symptoms");
     expect(link).toHaveClass("govuk-back-link");
   });
   it("renders the page titles and descriptions ", () => {
@@ -59,18 +59,18 @@ describe("ChestXrayQuestionForm", () => {
     expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
     expect(screen.queryByText("Select yes if X-ray is required")).not.toBeInTheDocument();
   });
-  it("when yes selected and continue pressed, it navigates to /medical-summary", async () => {
+  it("when yes selected and continue pressed, it navigates to /check-medical-screening", async () => {
     const radioButtons = screen.getAllByRole("radio");
 
     await user.click(radioButtons[0]);
     await user.click(screen.getByRole("button"));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/medical-summary");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-medical-screening");
   });
-  it("when no selected and continue pressed, it navigates to /chest-xray-not-taken", async () => {
+  it("when no selected and continue pressed, it navigates to /reason-x-ray-not-required", async () => {
     const radioButtons = screen.getAllByRole("radio");
 
     await user.click(radioButtons[1]);
     await user.click(screen.getByRole("button"));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-not-taken");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/reason-x-ray-not-required");
   });
 });

@@ -43,7 +43,7 @@ const ChestXraySummary = () => {
       });
 
       dispatch(setChestXrayStatus(ApplicationStatus.COMPLETE));
-      navigate("/chest-xray-confirmation");
+      navigate("/chest-x-ray-images-confirmed");
     } catch (error) {
       console.error(error);
       navigate("/error");
@@ -54,7 +54,7 @@ const ChestXraySummary = () => {
     {
       key: "Date of X-ray",
       value: formatDateForDisplay(chestXrayData.dateXrayTaken),
-      link: `/upload-chest-xray#${attributeToComponentId.dateXrayTaken}`,
+      link: `/upload-chest-x-ray-images#${attributeToComponentId.dateXrayTaken}`,
       hiddenLabel: "date of X-ray",
     },
     {
@@ -64,7 +64,7 @@ const ChestXraySummary = () => {
         [chestXrayData.apicalLordoticXrayFileName ?? ""],
         [chestXrayData.lateralDecubitusXrayFileName ?? ""],
       ),
-      link: `/upload-chest-xray#${attributeToComponentId.posteroAnteriorXrayFileName}`,
+      link: `/upload-chest-x-ray-images#${attributeToComponentId.posteroAnteriorXrayFileName}`,
       hiddenLabel: "chest X-rays",
     },
   ];

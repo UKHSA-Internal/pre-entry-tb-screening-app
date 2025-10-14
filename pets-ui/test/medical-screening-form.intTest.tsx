@@ -111,7 +111,7 @@ describe("MedicalScreeningForm", () => {
       underElevenConditions: ["Not applicable - applicant is aged 11 or over"],
       underElevenConditionsDetail: "",
     });
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-xray-question");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/is-an-x-ray-required");
   });
 
   it("state is updated from MedicalScreeningForm and then read by MedicalScreeningReview", async () => {

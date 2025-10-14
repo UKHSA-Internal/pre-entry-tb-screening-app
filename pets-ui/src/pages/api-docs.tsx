@@ -14,7 +14,7 @@ const ApiDocs = () => {
   return (
     <>
       <Helmet>
-        <title>Api Documentation</title>
+        <title>Api Documentation - Complete UK pre-entry health screening - GOV.UK</title>
       </Helmet>
       <SwaggerUI spec={spec} onComplete={handleComplete} />
     </>

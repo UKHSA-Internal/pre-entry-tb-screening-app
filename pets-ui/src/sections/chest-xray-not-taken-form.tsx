@@ -59,7 +59,7 @@ const ChestXrayNotTakenForm = () => {
 
     dispatch(setReasonXrayNotRequired(reasonValue));
     dispatch(setReasonXrayNotRequiredFurtherDetails(furtherDetails));
-    navigate("/medical-summary");
+    navigate("/check-medical-screening");
   };
 
   const errorsToShow = Object.keys(errors);

@@ -61,7 +61,7 @@ describe("SputumDecisionSummary", () => {
     expect(postSputumRequirement).toHaveBeenCalledWith(applicationId, {
       sputumRequired: YesOrNo.NO,
     });
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/sputum-decision-confirmation");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/sputum-decision-confirmed");
   });
 
   it("shows Return to tracker button when status is COMPLETE", () => {

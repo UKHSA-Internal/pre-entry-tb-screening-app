@@ -101,7 +101,7 @@ export default function Confirmation({
         <br />
         <LinkLabel
           title="Search for another visa applicant"
-          to="/applicant-search"
+          to="/search-for-visa-applicant"
           externalLink={false}
         />
       </div>

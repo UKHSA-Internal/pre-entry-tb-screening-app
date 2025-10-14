@@ -5,7 +5,7 @@ export default function ChestXrayNotTaken() {
   return (
     <Container
       title="Reason X-ray is not required - Complete UK pre-entry health screening - GOV.UK"
-      backLinkTo="/chest-xray-question"
+      backLinkTo="/is-an-x-ray-required"
     >
       <ChestXrayNotTakenForm />
     </Container>

@@ -100,10 +100,10 @@ const ProgressTracker = () => {
     sputumData.sample2.collection.submittedToDatabase &&
     sputumData.sample3.collection.submittedToDatabase;
 
-  let sputumLink = "/sputum-collection";
+  let sputumLink = "/enter-sputum-sample-collection-information";
 
   if (sputumData.status === ApplicationStatus.COMPLETE) {
-    sputumLink = "/check-sputum-sample-information";
+    sputumLink = "/check-sputum-sample-information-results";
   } else if (allSputumSamplesSubmitted) {
     sputumLink = "/enter-sputum-sample-results";
   }
@@ -163,15 +163,15 @@ const ProgressTracker = () => {
         <Task
           description="Visa applicant details"
           status={applicantData.status}
-          linkWhenIncomplete="/contact"
-          linkWhenComplete="/applicant-summary"
+          linkWhenIncomplete="/enter-applicant-information"
+          linkWhenComplete="/check-applicant-details"
           prerequisiteTaskStatuses={[]}
         />
         <Task
           description="Travel information"
           status={travelData.status}
-          linkWhenIncomplete="/travel-details"
-          linkWhenComplete="/travel-summary"
+          linkWhenIncomplete="/travel-information"
+          linkWhenComplete="/check-travel-information"
           prerequisiteTaskStatuses={[applicantData.status]}
         />
       </ul>
@@ -181,15 +181,15 @@ const ProgressTracker = () => {
         <Task
           description="Medical history and TB symptoms"
           status={medicalScreeningData.status}
-          linkWhenIncomplete="/medical-screening"
-          linkWhenComplete="/medical-summary"
+          linkWhenIncomplete="/record-medical-history-tb-symptoms"
+          linkWhenComplete="/check-medical-screening"
           prerequisiteTaskStatuses={[applicantData.status, travelData.status]}
         />
         <Task
           description="Upload chest X-ray images"
           status={chestXrayStatus}
-          linkWhenIncomplete="/upload-chest-xray"
-          linkWhenComplete="/chest-xray-summary"
+          linkWhenIncomplete="/upload-chest-x-ray-images"
+          linkWhenComplete="/check-chest-x-ray-images"
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,
@@ -199,8 +199,8 @@ const ProgressTracker = () => {
         <Task
           description="Radiological outcome"
           status={radiologicalOutcomeStatus}
-          linkWhenIncomplete="/radiological-outcome-chest-xray-results"
-          linkWhenComplete="/radiological-outcome-summary"
+          linkWhenIncomplete="/chest-x-ray-results"
+          linkWhenComplete="/check-chest-x-ray-results-findings"
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,
@@ -211,8 +211,8 @@ const ProgressTracker = () => {
         <Task
           description="Make a sputum decision"
           status={sputumDecisionData.status}
-          linkWhenIncomplete="/sputum-question"
-          linkWhenComplete="/sputum-decision-summary"
+          linkWhenIncomplete="/is-sputum-collection-required"
+          linkWhenComplete="/check-sputum-decision-information"
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,
@@ -242,8 +242,8 @@ const ProgressTracker = () => {
         <Task
           description="TB certificate outcome"
           status={tbCertificateData.status}
-          linkWhenIncomplete="/tb-certificate-question"
-          linkWhenComplete="/tb-certificate-confirmation"
+          linkWhenIncomplete="/will-you-issue-tb-clearance-certificate"
+          linkWhenComplete="/tb-screening-complete"
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,
@@ -261,7 +261,7 @@ const ProgressTracker = () => {
       <p className="govuk-body">
         <LinkLabel
           className="govuk-link"
-          to="/applicant-search"
+          to="/search-for-visa-applicant"
           title="Search for another visa applicant"
           externalLink={false}
         />

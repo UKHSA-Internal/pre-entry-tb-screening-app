@@ -12,7 +12,9 @@ export default function SputumDecisionSummaryPage() {
     <Container
       title="Check sputum decision information - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo={
-        sputumDecisionData.status == ApplicationStatus.COMPLETE ? "/tracker" : "/sputum-question"
+        sputumDecisionData.status == ApplicationStatus.COMPLETE
+          ? "/tracker"
+          : "/is-sputum-collection-required"
       }
     >
       <Heading level={1} size="l" title="Check sputum decision information" />

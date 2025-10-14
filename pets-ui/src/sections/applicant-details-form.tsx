@@ -32,7 +32,7 @@ const ApplicantForm = () => {
   const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = (applicantData) => {
     dispatch(setApplicantDetails(applicantData));
     dispatch(setApplicantDetailsStatus(ApplicationStatus.IN_PROGRESS));
-    navigate("/applicant-photo");
+    navigate("/upload-visa-applicant-photo");
   };
 
   const errorsToShow = Object.keys(errors);

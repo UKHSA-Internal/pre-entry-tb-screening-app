@@ -230,7 +230,7 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(screen.getAllByRole("definition")[2]).toHaveTextContent("12345");
 
   const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
-  expect(applicantDetailsLink).toHaveAttribute("href", "/contact");
+  expect(applicantDetailsLink).toHaveAttribute("href", "/enter-applicant-information");
   const applicantDetailsListItem = applicantDetailsLink.closest("li");
   expect(applicantDetailsListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
@@ -271,7 +271,7 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(within(tbCertificateListItem as HTMLElement).getByText("Not yet started"));
 
   const searchLink = screen.getByRole("link", { name: /Search for another visa applicant/i });
-  expect(searchLink).toHaveAttribute("href", "/applicant-search");
+  expect(searchLink).toHaveAttribute("href", "/search-for-visa-applicant");
 });
 
 test("Progress tracker page displays complete application sections correctly, links to summary page, and displays applicant photo from context", async () => {
@@ -303,7 +303,7 @@ test("Progress tracker page displays complete application sections correctly, li
   expect(screen.getAllByRole("definition")[2]).toHaveTextContent("54321");
 
   const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
-  expect(applicantDetailsLink).toHaveAttribute("href", "/applicant-summary");
+  expect(applicantDetailsLink).toHaveAttribute("href", "/check-applicant-details");
   const applicantDetailsListItem = applicantDetailsLink.closest("li");
   expect(applicantDetailsListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
@@ -311,7 +311,7 @@ test("Progress tracker page displays complete application sections correctly, li
   expect(within(applicantDetailsListItem as HTMLElement).getByText("Completed"));
 
   const travelDetailsLink = screen.getByRole("link", { name: /Travel information/i });
-  expect(travelDetailsLink).toHaveAttribute("href", "/travel-summary");
+  expect(travelDetailsLink).toHaveAttribute("href", "/check-travel-information");
   const travelDetailsListItem = travelDetailsLink.closest("li");
   expect(travelDetailsListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
@@ -321,7 +321,7 @@ test("Progress tracker page displays complete application sections correctly, li
   const medicalScreeningLink = screen.getByRole("link", {
     name: /Medical history and TB symptoms/i,
   });
-  expect(medicalScreeningLink).toHaveAttribute("href", "/medical-summary");
+  expect(medicalScreeningLink).toHaveAttribute("href", "/check-medical-screening");
   const medicalScreeningListItem = medicalScreeningLink.closest("li");
   expect(medicalScreeningListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
@@ -329,13 +329,13 @@ test("Progress tracker page displays complete application sections correctly, li
   expect(within(medicalScreeningListItem as HTMLElement).getByText("Completed"));
 
   const chestXrayLink = screen.getByRole("link", { name: /Upload chest X-ray images/i });
-  expect(chestXrayLink).toHaveAttribute("href", "/chest-xray-summary");
+  expect(chestXrayLink).toHaveAttribute("href", "/check-chest-x-ray-images");
   const chestXrayListItem = chestXrayLink.closest("li");
   expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
   expect(within(chestXrayListItem as HTMLElement).getByText("Completed"));
 
   const radiologicalOutcomeLink = screen.getByRole("link", { name: /Radiological outcome/i });
-  expect(radiologicalOutcomeLink).toHaveAttribute("href", "/radiological-outcome-summary");
+  expect(radiologicalOutcomeLink).toHaveAttribute("href", "/check-chest-x-ray-results-findings");
   const radiologicalOutcomeListItem = radiologicalOutcomeLink.closest("li");
   expect(radiologicalOutcomeListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
@@ -343,7 +343,7 @@ test("Progress tracker page displays complete application sections correctly, li
   expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Completed"));
 
   const tbCertificateLink = screen.getByRole("link", { name: /TB certificate outcome/i });
-  expect(tbCertificateLink).toHaveAttribute("href", "/tb-certificate-confirmation");
+  expect(tbCertificateLink).toHaveAttribute("href", "/tb-screening-complete");
   const tbCertificateListItem = tbCertificateLink.closest("li");
   expect(tbCertificateListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
@@ -353,5 +353,5 @@ test("Progress tracker page displays complete application sections correctly, li
   expect(img).toBeInTheDocument();
 
   const searchLink = screen.getByRole("link", { name: /Search for another visa applicant/i });
-  expect(searchLink).toHaveAttribute("href", "/applicant-search");
+  expect(searchLink).toHaveAttribute("href", "/search-for-visa-applicant");
 });

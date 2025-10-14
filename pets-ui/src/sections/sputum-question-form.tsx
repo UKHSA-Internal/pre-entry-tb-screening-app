@@ -33,7 +33,7 @@ const SputumQuestionForm = () => {
     dispatch(setSputumDecisionRequired(data.isSputumRequired));
     dispatch(setSputumDecisionStatus(ApplicationStatus.IN_PROGRESS));
 
-    navigate("/sputum-decision-summary");
+    navigate("/check-sputum-decision-information");
   };
 
   const errorsToShow = Object.keys(errors);

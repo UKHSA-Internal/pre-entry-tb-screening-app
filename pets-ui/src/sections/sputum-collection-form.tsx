@@ -245,8 +245,8 @@ const SputumCollectionForm = () => {
     });
 
     if (submittedBy === "save-progress") {
-      dispatch(setCheckSputumPreviousPage("/sputum-collection"));
-      navigate("/check-sputum-sample-information");
+      dispatch(setCheckSputumPreviousPage("/enter-sputum-sample-collection-information"));
+      navigate("/check-sputum-sample-information-results");
     } else if (submittedBy === "save-and-continue-to-results") {
       navigate("/enter-sputum-sample-results");
     }

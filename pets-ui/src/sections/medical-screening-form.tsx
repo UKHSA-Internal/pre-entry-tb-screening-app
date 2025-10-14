@@ -54,7 +54,7 @@ const MedicalScreeningForm = () => {
   const onSubmit: SubmitHandler<ReduxMedicalScreeningType> = (medicalScreeningData) => {
     dispatch(setMedicalScreeningDetails(medicalScreeningData));
     dispatch(setMedicalScreeningStatus(ApplicationStatus.IN_PROGRESS));
-    navigate("/chest-xray-question");
+    navigate("/is-an-x-ray-required");
   };
 
   const errorsToShow = Object.keys(errors);
@@ -121,8 +121,6 @@ const MedicalScreeningForm = () => {
             render={({ field: { value, onChange } }) => (
               <DateTextInput
                 heading="When did the medical screening take place?"
-                headingLevel={2}
-                headingSize="m"
                 hint="For example, 31 6 2025"
                 value={value}
                 setDateValue={onChange}
@@ -138,7 +136,7 @@ const MedicalScreeningForm = () => {
         <div ref={ageRef} className="govuk-!-margin-top-0">
           <FreeText
             id="age"
-            label="Visa applicant's age in years"
+            heading="Visa applicant's age in years"
             errorMessage={errors?.age?.message ?? ""}
             formValue="age"
             required="Enter applicant's age in years"
@@ -146,7 +144,6 @@ const MedicalScreeningForm = () => {
             patternError="Age must be a number"
             inputWidth={3}
             suffixText="years"
-            labelStyle={{ fontWeight: 700 }}
             defaultValue={medicalData.age.toString()}
           />
         </div>
@@ -155,7 +152,6 @@ const MedicalScreeningForm = () => {
           <Radio
             id="tb-symptoms"
             heading="Does the visa applicant have any pulmonary TB symptoms?"
-            headingSize="s"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Yes", "No"]}
             sortAnswersAlphabetically={false}
@@ -170,7 +166,6 @@ const MedicalScreeningForm = () => {
           <Checkbox
             id="tb-symptoms-list"
             heading="Which symptoms does the visa applicant have?"
-            headingSize="s"
             hint="Select all that apply"
             answerOptions={[
               "Cough",
@@ -190,12 +185,11 @@ const MedicalScreeningForm = () => {
         <div ref={otherSymptomsDetailRef}>
           <TextArea
             id="other-symptoms-detail"
-            label="Give further details (optional)"
+            heading="Give further details (optional)"
             errorMessage={errors?.otherSymptomsDetail?.message ?? ""}
             formValue="otherSymptomsDetail"
             required={false}
             rows={4}
-            labelStyle={{ fontWeight: 700 }}
             defaultValue={medicalData.otherSymptomsDetail}
           />
         </div>
@@ -204,7 +198,6 @@ const MedicalScreeningForm = () => {
           <Checkbox
             id="under-eleven-conditions"
             heading="If the visa applicant is a child aged 11 or under, have they ever had:"
-            headingSize="s"
             hint="Select all that apply"
             answerOptions={[
               "Thoracic surgery",
@@ -224,12 +217,11 @@ const MedicalScreeningForm = () => {
         <div ref={underElevenConditionsDetailRef}>
           <TextArea
             id="under-eleven-conditions-detail"
-            label="Give further details (optional)"
+            heading="Give further details (optional)"
             errorMessage={errors?.underElevenConditionsDetail?.message ?? ""}
             formValue="underElevenConditionsDetail"
             required={false}
             rows={4}
-            labelStyle={{ fontWeight: 700 }}
             defaultValue={medicalData.underElevenConditionsDetail}
           />
         </div>
@@ -238,7 +230,6 @@ const MedicalScreeningForm = () => {
           <Radio
             id="previous-tb"
             heading="Has the visa applicant ever had pulmonary TB?"
-            headingSize="s"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Yes", "No"]}
             sortAnswersAlphabetically={false}
@@ -252,12 +243,11 @@ const MedicalScreeningForm = () => {
         <div ref={previousTbDetailRef}>
           <TextArea
             id="previous-tb-detail"
-            label="Give further details (optional)"
+            heading="Give further details (optional)"
             errorMessage={errors?.previousTbDetail?.message ?? ""}
             formValue="previousTbDetail"
             required={false}
             rows={4}
-            labelStyle={{ fontWeight: 700 }}
             defaultValue={medicalData.previousTbDetail}
           />
         </div>
@@ -266,7 +256,6 @@ const MedicalScreeningForm = () => {
           <Radio
             id="close-contact-with-tb"
             heading="Has the visa applicant had close contact with a person with active pulmonary TB in the past year?"
-            headingSize="s"
             hint="For example, sharing an enclosed air space such as within household, for a prolonged period of at least several days"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Yes", "No"]}
@@ -294,7 +283,7 @@ const MedicalScreeningForm = () => {
         <div ref={pregnantRef}>
           <Radio
             id="pregnant"
-            label="Is the applicant pregnant?"
+            heading="Is the applicant pregnant?"
             isInline={RadioIsInline.FALSE}
             answerOptions={["Yes", "No", "Don't know", "N/A"]}
             sortAnswersAlphabetically={false}
@@ -308,7 +297,7 @@ const MedicalScreeningForm = () => {
         <div ref={menstrualPeriodsRef}>
           <Radio
             id="menstrual-periods"
-            label="Does the applicant have menstrual periods?"
+            heading="Does the applicant have menstrual periods?"
             isInline={RadioIsInline.FALSE}
             answerOptions={["Yes", "No", "N/A"]}
             sortAnswersAlphabetically={false}
@@ -322,13 +311,12 @@ const MedicalScreeningForm = () => {
         <div ref={physicalExamNotesRef}>
           <TextArea
             id="physical-exam-notes"
-            label="Physical examination notes (optional)"
+            heading="Physical examination notes (optional)"
             hint="Include physical symptoms of TB observed during the examination"
             errorMessage={errors?.physicalExamNotes?.message ?? ""}
             formValue="physicalExamNotes"
             required={false}
             rows={4}
-            labelStyle={{ fontWeight: 700 }}
             defaultValue={medicalData.physicalExamNotes}
           />
         </div>

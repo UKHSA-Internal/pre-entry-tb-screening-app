@@ -71,7 +71,7 @@ describe("ChestXrayOutcome Form", () => {
     await user.click(screen.getByRole("button", { name: /continue/i }));
 
     await waitFor(() => {
-      expect(useNavigateMock).toHaveBeenLastCalledWith("/radiological-outcome-findings");
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/enter-x-ray-findings");
     });
   });
 });

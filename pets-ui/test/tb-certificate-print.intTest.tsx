@@ -126,7 +126,7 @@ describe("TB Certificate Print Page", () => {
 
     const backLink = screen.getByRole("link", { name: "Back" });
     expect(backLink).toBeInTheDocument();
-    expect(backLink).toHaveAttribute("href", "/tb-certificate-confirmation");
+    expect(backLink).toHaveAttribute("href", "/tb-screening-complete");
     expect(backLink).toHaveClass("govuk-back-link");
 
     const printLink = screen.getByText("Print the certificate").closest("a");

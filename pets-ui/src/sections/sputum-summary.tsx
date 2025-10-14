@@ -169,10 +169,10 @@ const SputumSummary = () => {
 
       if (allSamplesComplete) {
         dispatch(setSputumStatus(ApplicationStatus.COMPLETE));
-        navigate("/sputum-confirmation");
+        navigate("/sputum-sample-information-confirmed");
       } else {
         dispatch(setSputumStatus(ApplicationStatus.IN_PROGRESS));
-        navigate("/sputum-confirmation");
+        navigate("/sputum-sample-information-confirmed");
       }
     } catch (error) {
       console.error(error);
@@ -256,7 +256,7 @@ const SputumSummary = () => {
     };
 
     if (hasCollectionData && !sample.collection.submittedToDatabase) {
-      dateTaken.link = "/sputum-collection";
+      dateTaken.link = "/enter-sputum-sample-collection-information";
     }
     summaryData.push(dateTaken);
 
@@ -272,7 +272,7 @@ const SputumSummary = () => {
     };
 
     if (sample.collection.collectionMethod && !sample.collection.submittedToDatabase) {
-      collectionMethod.link = "/sputum-collection";
+      collectionMethod.link = "/enter-sputum-sample-collection-information";
     }
     summaryData.push(collectionMethod);
 

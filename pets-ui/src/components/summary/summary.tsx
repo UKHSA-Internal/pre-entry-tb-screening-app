@@ -7,7 +7,6 @@ export type SummaryElement = {
   value: string | Array<string> | undefined;
   link?: string;
   hiddenLabel: string;
-  emptyValueText?: string;
 };
 
 interface SummaryProps {

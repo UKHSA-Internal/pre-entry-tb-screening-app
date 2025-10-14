@@ -125,7 +125,7 @@ describe("ApplicantReview", () => {
     expect(mock.history[0].url).toEqual("/application");
     expect(mock.history[1].url).toEqual("/applicant/register/abc-123");
     expect(mock.history).toHaveLength(2);
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-confirmation");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/visa-applicant-details-confirmed");
   });
 
   test("user is navigated to error page when first api call is unsuccessful", async () => {
@@ -253,7 +253,7 @@ describe("ApplicantReview", () => {
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/applicant-photo");
+    expect(link).toHaveAttribute("href", "/upload-visa-applicant-photo");
     expect(link).toHaveClass("govuk-back-link");
   });
 });

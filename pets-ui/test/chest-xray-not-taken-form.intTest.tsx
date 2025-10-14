@@ -30,7 +30,7 @@ describe("ChestXrayNotTakenPage", () => {
   it("displays the back link", () => {
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/chest-xray-question");
+    expect(link).toHaveAttribute("href", "/is-an-x-ray-required");
     expect(link).toHaveClass("govuk-back-link");
   });
   it("renders the page titles and descriptions ", () => {
@@ -96,13 +96,13 @@ describe("ChestXrayNotTakenPage", () => {
     });
   });
 
-  it("when continue pressed, it navigates to /medical-summary", async () => {
+  it("when continue pressed, it navigates to /check-medical-screening", async () => {
     const radioButtons = screen.getAllByRole("radio");
 
     await user.click(radioButtons[0]);
     await user.click(screen.getByRole("button"));
 
     expect(useNavigateMock).toHaveBeenCalled();
-    expect(useNavigateMock).toHaveBeenCalledWith("/medical-summary");
+    expect(useNavigateMock).toHaveBeenCalledWith("/check-medical-screening");
   });
 });

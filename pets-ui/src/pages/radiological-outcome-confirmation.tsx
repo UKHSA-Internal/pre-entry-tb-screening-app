@@ -5,7 +5,7 @@ export default function RadiologicalOutcomeConfirmation() {
   return (
     <Container
       title="Radiological outcome confirmed - Complete UK pre-entry health screening - GOV.UK"
-      backLinkTo="/radiological-outcome-summary"
+      backLinkTo="/check-chest-x-ray-results-findings"
     >
       <Confirmation
         confirmationText={"Radiological outcome confirmed"}

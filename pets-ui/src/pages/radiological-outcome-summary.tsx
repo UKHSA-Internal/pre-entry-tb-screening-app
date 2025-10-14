@@ -14,7 +14,7 @@ export default function RadiologicalOutcomeSummaryPage() {
       backLinkTo={
         radiologicalOutcomeData.status == ApplicationStatus.COMPLETE
           ? "/tracker"
-          : "/radiological-outcome-findings"
+          : "/enter-x-ray-findings"
       }
     >
       <Heading level={1} size="l" title="Check chest X-ray results and findings" />

@@ -39,7 +39,7 @@ const SputumDecisionSummary = () => {
         }),
       );
 
-      navigate("/sputum-decision-confirmation");
+      navigate("/sputum-decision-confirmed");
     } catch (error) {
       console.error(error);
       navigate("/error");
@@ -52,7 +52,7 @@ const SputumDecisionSummary = () => {
     {
       key: "Sputum required",
       value: sputumDecisionData.isSputumRequired === YesOrNo.YES ? "Yes" : "No",
-      link: "/sputum-question",
+      link: "/is-sputum-collection-required",
       hiddenLabel: "sputum collection required",
     },
   ];
