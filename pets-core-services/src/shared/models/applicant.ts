@@ -19,6 +19,8 @@ import { logger } from "../logger";
 import { TaskStatus } from "../types/enum";
 import { Application } from "./application";
 
+export const UNALTERABLE_ATTRIBUTES = ["passportNumber", "countryOfIssue"];
+
 type AllApplicantTypes = AllowedSex | CountryCode | Date | TaskStatus | string;
 
 const { dynamoDBDocClient: docClient } = awsClients;
@@ -100,10 +102,6 @@ export type UpdatedApplicant = ApplicantUpdateBase & {
 export type ApplicantConstructorProps = Omit<ApplicantBase, "passportId">;
 
 export class Applicant extends ApplicantBase {
-  constructor(details: ApplicantConstructorProps) {
-    super(details);
-  }
-
   toJson() {
     return {
       applicationId: this.applicationId,
@@ -185,13 +183,13 @@ export class ApplicantDbOps {
     const expressionAttribute: Record<string, AllApplicantTypes> = {};
     const expressionAttributeNames: Record<string, string> = {};
 
-    Object.entries(item).forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(item)) {
       const nameKey = `#${key}`;
       const valueKey = `:${key}`;
       updateExpression.push(`${nameKey} = ${valueKey}`);
       expressionAttribute[valueKey] = value;
       expressionAttributeNames[nameKey] = key;
-    });
+    }
     return { updateExpression, expressionAttribute, expressionAttributeNames };
   }
 
@@ -202,6 +200,12 @@ export class ApplicantDbOps {
       const pk = this.getPk(details.applicationId);
       const sk = this.sk;
 
+      // Remove attributes that shouldn't be changed
+      for (const attr of UNALTERABLE_ATTRIBUTES) {
+        // @ts-expect-error ignore object key types
+        delete details[attr];
+      }
+
       // Clean up: remove undefined fields before building update expression
       const fieldsToUpdate = Object.entries(details).reduce(
         (acc, [key, value]) => {
@@ -210,6 +214,8 @@ export class ApplicantDbOps {
         },
         {} as Record<string, AllApplicantTypes>,
       );
+
+      fieldsToUpdate.dateUpdated = new Date().toISOString();
 
       const { updateExpression, expressionAttribute, expressionAttributeNames } =
         this.createUpdateExpressions(fieldsToUpdate);
@@ -221,6 +227,7 @@ export class ApplicantDbOps {
         ExpressionAttributeValues: expressionAttribute,
         ExpressionAttributeNames: expressionAttributeNames,
         ReturnValues: "ALL_NEW", // Return updated item
+        ConditionExpression: "attribute_exists(pk) AND attribute_exists(sk)",
       };
       const command = new UpdateCommand(params);
       const response = await docClient.send(command);

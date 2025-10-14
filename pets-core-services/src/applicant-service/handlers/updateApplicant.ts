@@ -1,3 +1,4 @@
+import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
 import { z } from "zod";
 
 import { createHttpResponse } from "../../shared/http";
@@ -46,7 +47,14 @@ export const updateApplicantHandler = async (event: PutApplicantEvent) => {
 
     return createHttpResponse(200, applicantData);
   } catch (err: unknown) {
-    logger.error(err, "Error saving Applicant details");
+    if (err instanceof ConditionalCheckFailedException) {
+      logger.error("Applicant db record not found");
+      return createHttpResponse(404, {
+        message: "Applicant doesn't exist",
+        error: "ConditionalCheckFailedException",
+      });
+    }
+    logger.error(err, "Error updating Applicant details");
     return createHttpResponse(500, { message: "Something went wrong" });
   }
 };
