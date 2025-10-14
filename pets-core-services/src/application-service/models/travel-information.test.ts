@@ -97,7 +97,13 @@ describe("Tests for Travel Information Model", () => {
       TableName: "test-application-details",
     });
   });
+  test("Updating travel information: should throw error if DynamoDB update fails", async () => {
+    ddbMock.on(UpdateCommand).resolves({});
 
+    await expect(
+      TravelInformationDbOps.updateTravelInformation(updateTravelInformation),
+    ).rejects.toThrow("Update failed");
+  });
   test("Getting travel information by application ID", async () => {
     const dateCreated = "2025-02-07";
     ddbMock.on(GetCommand).resolves({
@@ -119,5 +125,12 @@ describe("Tests for Travel Information Model", () => {
       ...newTravelInformation,
       dateCreated: new Date("2025-02-07"),
     });
+  });
+
+  test("Getting travel information by application ID: should throw error if DynamoDB fails", async () => {
+    ddbMock.on(GetCommand).rejects(new Error("DynamoDB failure"));
+    await expect(TravelInformationDbOps.getByApplicationId("test-application-id")).rejects.toThrow(
+      "DynamoDB failure",
+    );
   });
 });

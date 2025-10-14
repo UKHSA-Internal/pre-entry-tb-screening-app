@@ -232,6 +232,7 @@ export class TravelInformationDbOps {
       const command = new UpdateCommand(params);
       const response = await docClient.send(command);
       const attrs = response.Attributes!;
+      if (!attrs) throw new Error("Update failed");
 
       logger.info({ response }, "Travel Information created/updated successfully");
       const travelInformation = new TravelInformationUpdate({
@@ -243,9 +244,9 @@ export class TravelInformationDbOps {
         ukAddressPostcode: attrs?.ukAddressPostcode,
         ukMobileNumber: attrs?.ukMobileNumber,
         ukEmailAddress: attrs?.ukEmailAddress,
-        status: attrs.status as TaskStatus,
-        dateUpdated: new Date(attrs.dateUpdated as string),
-        updatedBy: attrs.updatedBy,
+        status: attrs?.status as TaskStatus,
+        dateUpdated: new Date(attrs?.dateUpdated as string),
+        updatedBy: attrs?.updatedBy,
       });
       return travelInformation;
     } catch (error) {

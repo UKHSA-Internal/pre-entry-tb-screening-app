@@ -1,4 +1,3 @@
-import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
 import { z } from "zod";
 
 import { createHttpResponse } from "../../shared/http";
@@ -29,25 +28,19 @@ export const updateTravelInformationHandler = async (event: UpdateTravelInformat
       });
     }
 
-    let travelInformation: TravelInformationUpdate;
-    try {
-      const { createdBy } = event.requestContext.authorizer;
-      travelInformation = await TravelInformationDbOps.updateTravelInformation({
+    const { createdBy } = event.requestContext.authorizer;
+    const travelInformation: TravelInformationUpdate =
+      await TravelInformationDbOps.updateTravelInformation({
         ...parsedBody,
         updatedBy: createdBy,
         applicationId,
       });
-    } catch (error) {
-      if (error instanceof ConditionalCheckFailedException)
-        return createHttpResponse(400, { message: "Travel Details already saved" });
-      throw error;
-    }
 
     return createHttpResponse(200, {
       ...travelInformation.toJson(),
     });
   } catch (err) {
-    logger.error(err, "Error saving travel information");
+    logger.error(err, "Error updating travel information");
     return createHttpResponse(500, { message: "Something went wrong" });
   }
 };
