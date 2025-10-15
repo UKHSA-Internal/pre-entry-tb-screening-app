@@ -1,5 +1,5 @@
 import Container from "@/components/container/container";
-import ApplicantTravelForm from "@/sections/applicant-travel-form";
+import ApplicantTravelAddressAndContactDetails from "@/sections/applicant-travel-uk-address";
 
 export default function TravelDetailsPage() {
   return (
@@ -7,7 +7,7 @@ export default function TravelDetailsPage() {
       title="Travel information - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo="/tracker"
     >
-      <ApplicantTravelForm />
+      <ApplicantTravelAddressAndContactDetails />
     </Container>
   );
 }

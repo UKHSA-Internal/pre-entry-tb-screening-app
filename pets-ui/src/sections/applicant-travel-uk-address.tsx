@@ -14,7 +14,7 @@ import { ReduxTravelDetailsType } from "@/types";
 import { ApplicationStatus, ButtonType } from "@/utils/enums";
 import { formRegex, visaOptions } from "@/utils/records";
 
-const ApplicantTravelForm = () => {
+const ApplicantTravelAddressAndContactDetails = () => {
   const navigate = useNavigate();
 
   const methods = useForm<ReduxTravelDetailsType>({ reValidateMode: "onSubmit" });
@@ -170,4 +170,4 @@ const ApplicantTravelForm = () => {
   );
 };
 
-export default ApplicantTravelForm;
+export default ApplicantTravelAddressAndContactDetails;

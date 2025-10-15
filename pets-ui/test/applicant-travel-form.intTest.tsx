@@ -2,8 +2,8 @@ import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Mock } from "vitest";
 
-import TravelDetailsPage from "@/pages/travel-details";
-import ApplicantTravelForm from "@/sections/applicant-travel-form";
+import TravelDetailsPage from "@/pages/travel-uk-address";
+import ApplicantTravelForm from "@/sections/applicant-travel-uk-address";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();

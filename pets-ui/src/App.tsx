@@ -43,7 +43,7 @@ import TbCertificateQuestionPage from "./pages/tb-certificate-question";
 import TbConfirmationPage from "./pages/tb-confirmation";
 import TbSummaryPage from "./pages/tb-summary";
 import TravelConfirmation from "./pages/travel-confirmation";
-import TravelDetailsPage from "./pages/travel-details";
+import TravelDetailsPage from "./pages/travel-uk-address";
 import TravelSummaryPage from "./pages/travel-summary";
 import { RedirectedRouteIfReduxEmpty } from "./utils/redirect";
 
