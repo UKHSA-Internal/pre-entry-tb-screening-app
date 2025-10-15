@@ -42,10 +42,10 @@ export const TravelInformationPostRequestSchema = z.object({
   ukAddressPostcode: z.string().optional().openapi({
     description: "Postcode of Travel Address",
   }),
-  ukMobileNumber: z.string().openapi({
+  ukMobileNumber: z.string().optional().openapi({
     description: "UK Mobile Number",
   }),
-  ukEmailAddress: z.string().openapi({
+  ukEmailAddress: z.string().optional().openapi({
     description: "UK Email Address",
   }),
 });

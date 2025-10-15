@@ -42,8 +42,8 @@ export type ITravelInformation = {
   ukAddressLine2?: string;
   ukAddressTownOrCity?: string;
   ukAddressPostcode?: string;
-  ukMobileNumber: string;
-  ukEmailAddress: string;
+  ukMobileNumber?: string;
+  ukEmailAddress?: string;
 
   dateCreated: Date;
   createdBy: string;
@@ -72,8 +72,8 @@ export class TravelInformation extends TravelInformationBase {
   ukAddressLine2?: string;
   ukAddressTownOrCity?: string;
   ukAddressPostcode?: string;
-  ukMobileNumber: string;
-  ukEmailAddress: string;
+  ukMobileNumber?: string;
+  ukEmailAddress?: string;
 
   dateCreated: Date;
   createdBy: string;
@@ -194,14 +194,6 @@ export class TravelInformationDbOps {
         {} as Record<string, any>,
       );
 
-      // // Set status = "completed"
-      // if (
-      //   fieldsToUpdate.visaCategory &&
-      //   fieldsToUpdate.ukMobileNumber &&
-      //   fieldsToUpdate.ukEmailAddress
-      // ) {
-      //   fieldsToUpdate.status = TaskStatus.completed;
-      // }
       // Add audit fields
       fieldsToUpdate["dateUpdated"] = new Date().toISOString();
 
@@ -210,14 +202,13 @@ export class TravelInformationDbOps {
       const ExpressionAttributeNames: Record<string, string> = {};
       const ExpressionAttributeValues: Record<string, any> = {};
 
-      Object.entries(fieldsToUpdate).forEach(([key, value]) => {
+      for (const [key, value] of Object.entries(fieldsToUpdate)) {
         const nameKey = `#${key}`;
         const valueKey = `:${key}`;
         updateParts.push(`${nameKey} = ${valueKey}`);
         ExpressionAttributeNames[nameKey] = key;
         ExpressionAttributeValues[valueKey] = value;
-      });
-
+      }
       const updateExpression = "SET " + updateParts.join(", ");
 
       const params: UpdateCommandInput = {
