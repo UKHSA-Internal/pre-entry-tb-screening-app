@@ -20,10 +20,10 @@ const ApplicantEmptyResult = () => {
       <StartButton
         id="create-new-applicant"
         text="Create new applicant"
-        handleClick={() => navigate("/contact")}
+        handleClick={() => navigate("/enter-applicant-information")}
       />
       <br />
-      <LinkLabel to="/applicant-search" title="Search again" externalLink={false} />
+      <LinkLabel to="/search-for-visa-applicant" title="Search again" externalLink={false} />
     </>
   );
 };

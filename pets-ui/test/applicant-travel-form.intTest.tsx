@@ -60,7 +60,7 @@ describe("ApplicantTravelForm", () => {
       ukMobileNumber: "07321900900",
       visaCategory: "Family reunion",
     });
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/travel-summary");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-travel-information");
   });
 
   it("errors when travel details are missing", async () => {

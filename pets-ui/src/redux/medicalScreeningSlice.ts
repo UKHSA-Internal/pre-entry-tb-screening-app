@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ReceivedMedicalScreeningType, ReduxMedicalScreeningType } from "@/applicant";
-import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
+import { ReceivedMedicalScreeningType, ReduxMedicalScreeningType } from "@/types";
+import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "@/utils/enums";
 
 const initialState: ReduxMedicalScreeningType = {
   status: ApplicationStatus.NOT_YET_STARTED,
@@ -18,6 +18,9 @@ const initialState: ReduxMedicalScreeningType = {
   pregnant: "",
   menstrualPeriods: "",
   physicalExamNotes: "",
+  chestXrayTaken: YesOrNo.NULL,
+  reasonXrayNotRequired: "",
+  reasonXrayNotRequiredFurtherDetails: "",
   completionDate: {
     year: "",
     month: "",
@@ -71,8 +74,18 @@ export const medicalScreeningSlice = createSlice({
     setPhysicalExamNotes: (state, action: PayloadAction<string>) => {
       state.physicalExamNotes = action.payload;
     },
+    setChestXrayTaken: (state, action: PayloadAction<YesOrNo>) => {
+      state.chestXrayTaken = action.payload;
+    },
+    setReasonXrayNotRequired: (state, action: PayloadAction<string>) => {
+      state.reasonXrayNotRequired = action.payload;
+    },
+    setReasonXrayNotRequiredFurtherDetails: (state, action: PayloadAction<string>) => {
+      state.reasonXrayNotRequiredFurtherDetails = action.payload;
+    },
     setMedicalScreeningDetails: (state, action: PayloadAction<ReduxMedicalScreeningType>) => {
       state.age = action.payload.age;
+      state.completionDate = action.payload.completionDate;
       state.tbSymptoms = action.payload.tbSymptoms;
       state.tbSymptomsList = action.payload.tbSymptomsList
         ? [...action.payload.tbSymptomsList]
@@ -89,6 +102,10 @@ export const medicalScreeningSlice = createSlice({
       state.pregnant = action.payload.pregnant;
       state.menstrualPeriods = action.payload.menstrualPeriods;
       state.physicalExamNotes = action.payload.physicalExamNotes;
+      state.chestXrayTaken = action.payload.chestXrayTaken || YesOrNo.NULL;
+      state.reasonXrayNotRequired = action.payload.reasonXrayNotRequired || "";
+      state.reasonXrayNotRequiredFurtherDetails =
+        action.payload.reasonXrayNotRequiredFurtherDetails || "";
     },
     clearMedicalScreeningDetails: (state) => {
       state.status = ApplicationStatus.NOT_YET_STARTED;
@@ -105,6 +122,9 @@ export const medicalScreeningSlice = createSlice({
       state.pregnant = "";
       state.menstrualPeriods = "";
       state.physicalExamNotes = "";
+      state.chestXrayTaken = YesOrNo.NULL;
+      state.reasonXrayNotRequired = "";
+      state.reasonXrayNotRequiredFurtherDetails = "";
       state.completionDate = {
         year: "",
         month: "",
@@ -134,6 +154,10 @@ export const medicalScreeningSlice = createSlice({
       state.pregnant = action.payload.pregnant;
       state.menstrualPeriods = action.payload.haveMenstralPeriod;
       state.physicalExamNotes = action.payload.physicalExaminationNotes;
+      state.chestXrayTaken = action.payload.isXrayRequired ?? YesOrNo.NULL;
+      state.reasonXrayNotRequired = action.payload.reasonXrayNotRequired ?? "";
+      state.reasonXrayNotRequiredFurtherDetails =
+        action.payload.reasonXrayNotRequiredFurtherDetails ?? "";
       state.completionDate = action.payload.dateCreated
         ? {
             year: action.payload.dateCreated.split("-")[0],
@@ -166,6 +190,9 @@ export const {
   setPregnant,
   setMenstrualPeriods,
   setPhysicalExamNotes,
+  setChestXrayTaken,
+  setReasonXrayNotRequired,
+  setReasonXrayNotRequiredFurtherDetails,
   clearMedicalScreeningDetails,
   setMedicalScreeningDetails,
   setMedicalScreeningDetailsFromApiResponse,

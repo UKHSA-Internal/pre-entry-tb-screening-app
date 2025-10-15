@@ -23,7 +23,7 @@ export default function TbConfirmationPage() {
     />,
     <LinkLabel
       key="search"
-      to="/applicant-search"
+      to="/search-for-visa-applicant"
       title="Search for another visa applicant"
       externalLink={false}
     />,
@@ -38,7 +38,10 @@ export default function TbConfirmationPage() {
   ];
 
   return (
-    <Container title="TB screening complete" backLinkTo="/tb-certificate-summary">
+    <Container
+      title="TB screening complete - Complete UK pre-entry health screening - GOV.UK"
+      backLinkTo="/tb-certificate-summary"
+    >
       <Confirmation
         confirmationText={
           isCertificateIssued
@@ -57,7 +60,7 @@ export default function TbConfirmationPage() {
             ? {
                 text: "View or print certificate",
                 onClick: () => {
-                  navigate("/tb-certificate-print");
+                  navigate("/tb-clearance-certificate");
                 },
               }
             : undefined

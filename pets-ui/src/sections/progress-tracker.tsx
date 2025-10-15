@@ -8,7 +8,9 @@ import {
   selectApplicant,
   selectChestXray,
   selectMedicalScreening,
+  selectRadiologicalOutcome,
   selectSputum,
+  selectSputumDecision,
   selectTbCertificate,
   selectTravel,
 } from "@/redux/store";
@@ -87,6 +89,8 @@ const ProgressTracker = () => {
   const travelData = useAppSelector(selectTravel);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const chestXrayData = useAppSelector(selectChestXray);
+  const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
+  const sputumDecisionData = useAppSelector(selectSputumDecision);
   const sputumData = useAppSelector(selectSputum);
   const tbCertificateData = useAppSelector(selectTbCertificate);
   const applicantPhotoContext = useApplicantPhoto();
@@ -96,12 +100,25 @@ const ProgressTracker = () => {
     sputumData.sample2.collection.submittedToDatabase &&
     sputumData.sample3.collection.submittedToDatabase;
 
-  let sputumLink = "/sputum-collection";
+  let sputumLink = "/enter-sputum-sample-collection-information";
 
   if (sputumData.status === ApplicationStatus.COMPLETE) {
-    sputumLink = "/check-sputum-sample-information";
+    sputumLink = "/check-sputum-sample-information-results";
   } else if (allSputumSamplesSubmitted) {
     sputumLink = "/enter-sputum-sample-results";
+  }
+
+  let sputumCollectionStatus = sputumData.status;
+  if (sputumDecisionData.isSputumRequired === YesOrNo.NO) {
+    sputumCollectionStatus = ApplicationStatus.NOT_REQUIRED;
+  }
+
+  let chestXrayStatus = chestXrayData.status;
+  let radiologicalOutcomeStatus = radiologicalOutcomeData.status;
+
+  if (medicalScreeningData.chestXrayTaken === YesOrNo.NO) {
+    chestXrayStatus = ApplicationStatus.NOT_REQUIRED;
+    radiologicalOutcomeStatus = ApplicationStatus.NOT_REQUIRED;
   }
 
   let tbCertificateStatusOverride = undefined;
@@ -146,15 +163,15 @@ const ProgressTracker = () => {
         <Task
           description="Visa applicant details"
           status={applicantData.status}
-          linkWhenIncomplete="/contact"
-          linkWhenComplete="/applicant-summary"
+          linkWhenIncomplete="/enter-applicant-information"
+          linkWhenComplete="/check-applicant-details"
           prerequisiteTaskStatuses={[]}
         />
         <Task
           description="Travel information"
           status={travelData.status}
-          linkWhenIncomplete="/travel-details"
-          linkWhenComplete="/travel-summary"
+          linkWhenIncomplete="/travel-information"
+          linkWhenComplete="/check-travel-information"
           prerequisiteTaskStatuses={[applicantData.status]}
         />
       </ul>
@@ -164,15 +181,15 @@ const ProgressTracker = () => {
         <Task
           description="Medical history and TB symptoms"
           status={medicalScreeningData.status}
-          linkWhenIncomplete="/medical-screening"
-          linkWhenComplete="/medical-summary"
+          linkWhenIncomplete="/record-medical-history-tb-symptoms"
+          linkWhenComplete="/check-medical-screening"
           prerequisiteTaskStatuses={[applicantData.status, travelData.status]}
         />
         <Task
-          description="Radiological outcome"
-          status={chestXrayData.status}
-          linkWhenIncomplete="/chest-xray-question"
-          linkWhenComplete="/chest-xray-summary"
+          description="Upload chest X-ray images"
+          status={chestXrayStatus}
+          linkWhenIncomplete="/upload-chest-x-ray-images"
+          linkWhenComplete="/check-chest-x-ray-images"
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,
@@ -180,15 +197,42 @@ const ProgressTracker = () => {
           ]}
         />
         <Task
+          description="Radiological outcome"
+          status={radiologicalOutcomeStatus}
+          linkWhenIncomplete="/chest-x-ray-results"
+          linkWhenComplete="/check-chest-x-ray-results-findings"
+          prerequisiteTaskStatuses={[
+            applicantData.status,
+            travelData.status,
+            medicalScreeningData.status,
+            chestXrayStatus,
+          ]}
+        />
+        <Task
+          description="Make a sputum decision"
+          status={sputumDecisionData.status}
+          linkWhenIncomplete="/is-sputum-collection-required"
+          linkWhenComplete="/check-sputum-decision-information"
+          prerequisiteTaskStatuses={[
+            applicantData.status,
+            travelData.status,
+            medicalScreeningData.status,
+            chestXrayStatus,
+            radiologicalOutcomeStatus,
+          ]}
+        />
+        <Task
           description="Sputum collection and results"
-          status={sputumData.status}
+          status={sputumCollectionStatus}
           linkWhenIncomplete={sputumLink}
           linkWhenComplete={sputumLink}
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,
             medicalScreeningData.status,
-            chestXrayData.status,
+            chestXrayStatus,
+            radiologicalOutcomeStatus,
+            sputumDecisionData.status,
           ]}
         />
       </ul>
@@ -198,14 +242,16 @@ const ProgressTracker = () => {
         <Task
           description="TB certificate outcome"
           status={tbCertificateData.status}
-          linkWhenIncomplete="/tb-certificate-question"
-          linkWhenComplete="/tb-certificate-confirmation"
+          linkWhenIncomplete="/will-you-issue-tb-clearance-certificate"
+          linkWhenComplete="/tb-screening-complete"
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,
             medicalScreeningData.status,
-            chestXrayData.status,
-            sputumData.status,
+            chestXrayStatus,
+            radiologicalOutcomeStatus,
+            sputumDecisionData.status,
+            sputumCollectionStatus,
           ]}
           statusOverride={tbCertificateStatusOverride}
         />
@@ -215,7 +261,7 @@ const ProgressTracker = () => {
       <p className="govuk-body">
         <LinkLabel
           className="govuk-link"
-          to="/applicant-search"
+          to="/search-for-visa-applicant"
           title="Search for another visa applicant"
           externalLink={false}
         />

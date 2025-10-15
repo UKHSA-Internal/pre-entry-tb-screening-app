@@ -9,7 +9,6 @@ import {
 } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import { DateType } from "@/applicant";
 import DateTextInput from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
@@ -24,6 +23,7 @@ import {
   setSputumStatus,
 } from "@/redux/sputumSlice";
 import { selectSputum } from "@/redux/store";
+import { DateType } from "@/types";
 import { ApplicationStatus, ButtonType, SputumCollectionMethod } from "@/utils/enums";
 import { validateDate } from "@/utils/helpers";
 import { dateValidationMessages } from "@/utils/records";
@@ -245,8 +245,8 @@ const SputumCollectionForm = () => {
     });
 
     if (submittedBy === "save-progress") {
-      dispatch(setCheckSputumPreviousPage("/sputum-collection"));
-      navigate("/check-sputum-sample-information");
+      dispatch(setCheckSputumPreviousPage("/enter-sputum-sample-collection-information"));
+      navigate("/check-sputum-sample-information-results");
     } else if (submittedBy === "save-and-continue-to-results") {
       navigate("/enter-sputum-sample-results");
     }
