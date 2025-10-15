@@ -43,8 +43,9 @@ import TbCertificateQuestionPage from "./pages/tb-certificate-question";
 import TbConfirmationPage from "./pages/tb-confirmation";
 import TbSummaryPage from "./pages/tb-summary";
 import TravelConfirmation from "./pages/travel-confirmation";
-import TravelDetailsPage from "./pages/travel-uk-address";
 import TravelSummaryPage from "./pages/travel-summary";
+import TravelAddressAndContactDetailsPage from "./pages/travel-uk-address";
+import TravelVisaCategoryPage from "./pages/travel-visa-category";
 import { RedirectedRouteIfReduxEmpty } from "./utils/redirect";
 
 function App() {
@@ -177,11 +178,21 @@ function App() {
         }
       />
       <Route
-        path="/travel-information"
+        path="/proposed-visa-category"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
-              <TravelDetailsPage />
+              <TravelVisaCategoryPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/visa-applicant-proposed-uk-address"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <TravelAddressAndContactDetailsPage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
