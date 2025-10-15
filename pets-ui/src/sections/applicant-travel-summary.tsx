@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { postTravelDetails } from "@/api/api";
 import Button from "@/components/button/button";
+import Heading from "@/components/heading/heading";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
@@ -27,6 +28,7 @@ const TravelReview = () => {
         visaCategory: travelData.visaCategory,
         ukAddressLine1: travelData.applicantUkAddress1,
         ukAddressLine2: travelData.applicantUkAddress2,
+        ukAddressLine3: travelData.applicantUkAddress3,
         ukAddressTownOrCity: travelData.townOrCity,
         ukAddressPostcode: travelData.postcode,
         ukMobileNumber: travelData.ukMobileNumber,
@@ -45,44 +47,50 @@ const TravelReview = () => {
     {
       key: "Visa category",
       value: travelData.visaCategory,
-      link: `/travel-information#${attributeToComponentId.visaCategory}`,
-      hiddenLabel: "visa category",
+      link: `/proposed-visa-category#${attributeToComponentId.visaCategory}`,
+      hiddenLabel: "visa category (optional)",
     },
     {
-      key: "UK address line 1",
+      key: "Address line 1 (optional)",
       value: travelData.applicantUkAddress1,
-      link: `/travel-information#${attributeToComponentId.applicantUkAddress1}`,
-      hiddenLabel: "UK address line 1",
+      link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.applicantUkAddress1}`,
+      hiddenLabel: "address line 1 (optional)",
     },
     {
-      key: "UK address line 2",
+      key: "Address line 2 (optional)",
       value: travelData.applicantUkAddress2,
-      link: `/travel-information#${attributeToComponentId.applicantUkAddress2}`,
-      hiddenLabel: "UK address line 2",
+      link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.applicantUkAddress2}`,
+      hiddenLabel: "address line 2 (optional)",
     },
     {
-      key: "UK town or city",
+      key: "Address line 3 (optional)",
+      value: travelData.applicantUkAddress3,
+      link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.applicantUkAddress3}`,
+      hiddenLabel: "address line 3 (optional)",
+    },
+    {
+      key: "Town or city (optional)",
       value: travelData.townOrCity,
-      link: `/travel-information#${attributeToComponentId.townOrCity}`,
-      hiddenLabel: "town or city",
+      link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.townOrCity}`,
+      hiddenLabel: "town or city (optional)",
     },
     {
-      key: "UK postcode",
+      key: "Postcode (optional)",
       value: travelData.postcode,
-      link: `/travel-information#${attributeToComponentId.postcode}`,
-      hiddenLabel: "postcode",
+      link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.postcode}`,
+      hiddenLabel: "postcode (optional)",
     },
     {
-      key: "UK mobile number",
+      key: "UK phone number (optional)",
       value: travelData.ukMobileNumber,
-      link: `/travel-information#${attributeToComponentId.ukMobileNumber}`,
-      hiddenLabel: "UK mobile number",
+      link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.ukMobileNumber}`,
+      hiddenLabel: "UK phone number (optional)",
     },
     {
-      key: "UK email address",
+      key: "UK email address (optional)",
       value: travelData.ukEmail,
-      link: `/travel-information#${attributeToComponentId.ukEmail}`,
-      hiddenLabel: "UK email address",
+      link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.ukEmail}`,
+      hiddenLabel: "UK email address (optional)",
     },
   ];
 
@@ -93,19 +101,30 @@ const TravelReview = () => {
 
       {(travelData.status == ApplicationStatus.NOT_YET_STARTED ||
         travelData.status == ApplicationStatus.IN_PROGRESS) && (
-        <Button
-          id="confirm"
-          type={ButtonType.DEFAULT}
-          text="Save and continue"
-          handleClick={handleSubmit}
-        />
+        <div>
+          <Heading
+            title="Now send the UK travel information"
+            level={2}
+            size="m"
+            style={{ marginBottom: 0 }}
+          />
+          <p className="govuk-body" style={{ marginBottom: 0 }}>
+            You will not be able to change the UK travel information after you submit this.
+          </p>
+          <Button
+            id="confirm"
+            type={ButtonType.DEFAULT}
+            text="Submit and continue"
+            handleClick={handleSubmit}
+          />
+        </div>
       )}
       {(travelData.status == ApplicationStatus.COMPLETE ||
         travelData.status == ApplicationStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
           type={ButtonType.DEFAULT}
-          text="Return to tracker"
+          text="Submit and continue"
           handleClick={() => navigate("/tracker")}
         />
       )}
