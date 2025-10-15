@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 import { postTravelDetails } from "@/api/api";
 import Button from "@/components/button/button";
-import Heading from "@/components/heading/heading";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
@@ -101,28 +100,17 @@ const TravelReview = () => {
 
       {(travelData.status == ApplicationStatus.NOT_YET_STARTED ||
         travelData.status == ApplicationStatus.IN_PROGRESS) && (
-        <div>
-          <Heading
-            title="Now send the UK travel information"
-            level={2}
-            size="m"
-            style={{ marginBottom: 0 }}
-          />
-          <p className="govuk-body" style={{ marginBottom: 0 }}>
-            You will not be able to change the UK travel information after you submit this.
-          </p>
-          <Button
-            id="confirm"
-            type={ButtonType.DEFAULT}
-            text="Submit and continue"
-            handleClick={handleSubmit}
-          />
-        </div>
+        <Button
+          id="submit"
+          type={ButtonType.DEFAULT}
+          text="Submit and continue"
+          handleClick={handleSubmit}
+        />
       )}
       {(travelData.status == ApplicationStatus.COMPLETE ||
         travelData.status == ApplicationStatus.NOT_REQUIRED) && (
         <Button
-          id="back-to-tracker"
+          id="submit"
           type={ButtonType.DEFAULT}
           text="Submit and continue"
           handleClick={() => navigate("/tracker")}
