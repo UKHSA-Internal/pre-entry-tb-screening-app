@@ -432,7 +432,7 @@ function App() {
       />
       <Route path="/accessibility-statement" element={<AccessibilityStatementPage />} />
       <Route path="/privacy-notice" element={<PrivacyNoticePage />} />
-      <Route path="/error" element={<ErrorPage />} />
+      <Route path="/sorry-there-is-problem-with-service" element={<ErrorPage />} />
     </Routes>
   );
 }

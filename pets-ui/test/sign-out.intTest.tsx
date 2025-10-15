@@ -87,10 +87,10 @@ describe("Sign out page", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/previous-page");
   });
 
-  it("redirects to /error if MSAL logout fails", async () => {
+  it("redirects to /sorry-there-is-problem-with-service if MSAL logout fails", async () => {
     mockLogoutRedirect.mockRejectedValue(new Error("MSAL logout error"));
     renderSignOut();
     await user.click(screen.getByRole("button", { name: "Sign out" }));
-    expect(mockNavigate).toHaveBeenCalledWith("/error");
+    expect(mockNavigate).toHaveBeenCalledWith("/sorry-there-is-problem-with-service");
   });
 });
