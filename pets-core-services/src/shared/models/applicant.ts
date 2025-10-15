@@ -227,7 +227,7 @@ export class ApplicantDbOps {
 
       logger.info({ response }, "Applicant details updated successfully");
 
-      if (!attrs) return {};
+      if (!attrs) throw new Error("Applicant update failed");
 
       return attrs;
     } catch (error) {

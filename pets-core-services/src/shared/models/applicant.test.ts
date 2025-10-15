@@ -225,4 +225,27 @@ describe("Tests for Applicant Model", () => {
       "Error updating applicant details",
     );
   });
+
+  test("No attributes handling while updating an applicant", async () => {
+    const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    ddbMock.on(GetCommand).resolvesOnce({
+      Item: seededApplications[0],
+    });
+    ddbMock.on(UpdateCommand).resolves({ Attributes: undefined });
+
+    // Act / Assert
+    try {
+      await ApplicantDbOps.updateApplicant({
+        country: CountryCode.KOR,
+        applicationId: "oneofthem",
+        updatedBy: "admin",
+      });
+    } catch (err) {
+      expect(err).toThrow(new TypeError("obj is not a function"));
+    }
+    expect(errorLoggerMock).toHaveBeenCalledWith(
+      Error("Applicant update failed"),
+      "Error updating applicant details",
+    );
+  });
 });
