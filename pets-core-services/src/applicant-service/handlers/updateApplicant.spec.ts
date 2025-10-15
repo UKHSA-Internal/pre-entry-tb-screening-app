@@ -11,9 +11,7 @@ import { PutApplicantEvent, updateApplicantHandler } from "./updateApplicant";
 
 const applicantDetails: PutApplicantEvent["parsedBody"] = {
   fullName: "John Doe",
-  passportNumber: "test-passport-id",
   countryOfNationality: CountryCode.ALA,
-  countryOfIssue: CountryCode.ALA,
   issueDate: "2025-01-01",
   expiryDate: "2030-01-01",
   dateOfBirth: "2000-02-07",

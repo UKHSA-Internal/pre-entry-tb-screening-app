@@ -7,12 +7,7 @@ import awsClients from "../clients/aws";
 import { CountryCode } from "../country";
 import { seededApplications } from "../fixtures/application";
 import { logger } from "../logger";
-import {
-  ApplicantDbOps,
-  NewApplicant,
-  UNALTERABLE_ATTRIBUTES,
-  UpdatedApplicant,
-} from "./applicant";
+import { ApplicantDbOps, NewApplicant, UpdatedApplicant } from "./applicant";
 
 const applicantDetails: NewApplicant = {
   applicationId: seededApplications[2].applicationId,
@@ -131,16 +126,6 @@ describe("Tests for Applicant Model", () => {
     expect(ddbMock.commandCalls(UpdateCommand)[0].firstArg.input).toMatchObject({
       ConditionExpression: "attribute_exists(pk) AND attribute_exists(sk)",
     });
-    // because of UNALTERABLE_ATTRIBUTES,
-    // countryOfIssue and passportNumber should not be present in ExpressionAttributeValues
-    for (const attr of UNALTERABLE_ATTRIBUTES) {
-      expect(
-        Object.keys(
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-          ddbMock.commandCalls(UpdateCommand)[0].firstArg.input.ExpressionAttributeValues,
-        ),
-      ).not.toContain(attr);
-    }
   });
 
   test("Search missing Applicant details should return an empty array", async () => {

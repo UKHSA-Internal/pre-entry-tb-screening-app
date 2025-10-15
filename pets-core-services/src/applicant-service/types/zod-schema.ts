@@ -58,16 +58,8 @@ export const ApplicantUpdateRequestSchema = z.object({
   fullName: z.string().optional().openapi({
     description: "Full name of Applicant",
   }),
-  // It's requireq ATM
-  passportNumber: z.string().optional().openapi({
-    description: "PassportNumber of Applicant",
-  }),
   countryOfNationality: z.nativeEnum(CountryCode).optional().openapi({
     description: "Applicant's nationality",
-  }),
-  // It's requireq ATM
-  countryOfIssue: z.nativeEnum(CountryCode).optional().openapi({
-    description: "Passport Issue Country",
   }),
   issueDate: z.string().date().optional().openapi({
     description: "Passport Issue Date in ISO Format",
@@ -107,5 +99,11 @@ export const ApplicantUpdateResponseSchema = ApplicantUpdateRequestSchema.extend
   }),
   updatedBy: z.string().optional().openapi({
     description: "First line of Applicant's Address",
+  }),
+  passportNumber: z.string().optional().openapi({
+    description: "PassportNumber of Applicant",
+  }),
+  countryOfIssue: z.nativeEnum(CountryCode).optional().openapi({
+    description: "Passport Issue Country",
   }),
 });

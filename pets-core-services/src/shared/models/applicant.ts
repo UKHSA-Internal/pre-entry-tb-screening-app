@@ -19,8 +19,6 @@ import { logger } from "../logger";
 import { TaskStatus } from "../types/enum";
 import { Application } from "./application";
 
-export const UNALTERABLE_ATTRIBUTES = ["passportNumber", "countryOfIssue"];
-
 type AllApplicantTypes = AllowedSex | CountryCode | Date | TaskStatus | string;
 
 const { dynamoDBDocClient: docClient } = awsClients;
@@ -199,12 +197,6 @@ export class ApplicantDbOps {
 
       const pk = this.getPk(details.applicationId);
       const sk = this.sk;
-
-      // Remove attributes that shouldn't be changed
-      for (const attr of UNALTERABLE_ATTRIBUTES) {
-        // @ts-expect-error ignore object key types
-        delete details[attr];
-      }
 
       // Clean up: remove undefined fields before building update expression
       const fieldsToUpdate = Object.entries(details).reduce(
