@@ -51,7 +51,6 @@ export type ITravelInformation = {
 
 export type ITravelInformationUpdate = {
   applicationId: string;
-  status: TaskStatus;
 
   visaCategory?: VisaOptions;
   ukAddressLine1?: string;
@@ -98,7 +97,6 @@ export class TravelInformation extends TravelInformationBase {
 export type NewTravelInformation = Omit<ITravelInformation, "dateCreated" | "status">;
 
 export class TravelInformationUpdate extends TravelInformationBase {
-  status: TaskStatus;
   visaCategory?: VisaOptions;
   ukAddressLine1?: string;
   ukAddressLine2?: string;
@@ -108,7 +106,7 @@ export class TravelInformationUpdate extends TravelInformationBase {
   ukEmailAddress?: string;
 
   dateUpdated: Date;
-  // updatedBy: string;
+  updatedBy: string;
   constructor(details: ITravelInformationUpdate) {
     super(details);
     this.visaCategory = details.visaCategory;
@@ -118,15 +116,14 @@ export class TravelInformationUpdate extends TravelInformationBase {
     this.ukAddressPostcode = details.ukAddressPostcode;
     this.ukMobileNumber = details.ukMobileNumber;
     this.ukEmailAddress = details.ukEmailAddress;
-    this.status = details.status;
 
     // Audit
     this.dateUpdated = details.dateUpdated;
-    // this.updatedBy = details.updatedBy;
+    this.updatedBy = details.updatedBy;
   }
 }
 
-export type NewTravelInformationUpdate = Omit<ITravelInformationUpdate, "dateUpdated" | "status">;
+export type NewTravelInformationUpdate = Omit<ITravelInformationUpdate, "dateUpdated">;
 
 export class TravelInformationDbOps {
   static readonly getPk = (applicationId: string) => Application.getPk(applicationId);
@@ -235,7 +232,6 @@ export class TravelInformationDbOps {
         ukAddressPostcode: attrs?.ukAddressPostcode,
         ukMobileNumber: attrs?.ukMobileNumber,
         ukEmailAddress: attrs?.ukEmailAddress,
-        status: attrs?.status as TaskStatus,
         dateUpdated: new Date(attrs?.dateUpdated as string),
         updatedBy: attrs?.updatedBy,
       });
