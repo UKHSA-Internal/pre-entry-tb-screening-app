@@ -8,6 +8,7 @@ const initialState: ReduxTravelDetailsType = {
   visaCategory: "",
   applicantUkAddress1: "",
   applicantUkAddress2: "",
+  applicantUkAddress3: "",
   townOrCity: "",
   postcode: "",
   ukMobileNumber: "",
