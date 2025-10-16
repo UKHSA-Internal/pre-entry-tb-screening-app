@@ -8,6 +8,7 @@ const initialState: ReduxTravelDetailsType = {
   visaCategory: "",
   applicantUkAddress1: "",
   applicantUkAddress2: "",
+  applicantUkAddress3: "",
   townOrCity: "",
   postcode: "",
   ukMobileNumber: "",
@@ -30,6 +31,9 @@ export const travelSlice = createSlice({
     setApplicantUkAddress2: (state, action: PayloadAction<string>) => {
       state.applicantUkAddress2 = action.payload;
     },
+    setApplicantUkAddress3: (state, action: PayloadAction<string>) => {
+      state.applicantUkAddress3 = action.payload;
+    },
     setTownOrCity: (state, action: PayloadAction<string>) => {
       state.townOrCity = action.payload;
     },
@@ -46,6 +50,7 @@ export const travelSlice = createSlice({
       state.visaCategory = action.payload.visaCategory;
       state.applicantUkAddress1 = action.payload.applicantUkAddress1 ?? "";
       state.applicantUkAddress2 = action.payload.applicantUkAddress2 ?? "";
+      state.applicantUkAddress3 = action.payload.applicantUkAddress3 ?? "";
       state.townOrCity = action.payload.townOrCity ?? "";
       state.postcode = action.payload.postcode ?? "";
       state.ukMobileNumber = action.payload.ukMobileNumber ?? "";
@@ -56,6 +61,7 @@ export const travelSlice = createSlice({
       state.visaCategory = "";
       state.applicantUkAddress1 = "";
       state.applicantUkAddress2 = "";
+      state.applicantUkAddress3 = "";
       state.townOrCity = "";
       state.postcode = "";
       state.ukMobileNumber = "";
@@ -83,6 +89,7 @@ export const {
   setVisaCategory,
   setApplicantUkAddress1,
   setApplicantUkAddress2,
+  setApplicantUkAddress3,
   setTownOrCity,
   setPostcode,
   setUkMobileNumber,
