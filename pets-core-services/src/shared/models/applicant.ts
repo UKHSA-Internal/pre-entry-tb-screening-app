@@ -225,11 +225,37 @@ export class ApplicantDbOps {
       const response = await docClient.send(command);
       const attrs = response.Attributes;
 
-      logger.info({ response }, "Applicant details updated successfully");
-
       if (!attrs) throw new Error("Applicant update failed");
 
-      return attrs;
+      logger.info({ response }, "Applicant details updated successfully");
+      const applicant = new Applicant({
+        applicationId: attrs?.applicationId as string,
+
+        passportNumber: attrs?.passportNumber as string,
+        countryOfIssue: attrs?.countryOfIssue as CountryCode,
+
+        fullName: attrs?.fullName as string,
+        countryOfNationality: attrs?.countryOfNationality as CountryCode,
+        issueDate: new Date(attrs?.issueDate as string),
+        expiryDate: new Date(attrs?.expiryDate as string),
+        dateOfBirth: new Date(attrs?.dateOfBirth as string),
+        sex: attrs?.sex as AllowedSex,
+        applicantHomeAddress1: attrs?.applicantHomeAddress1 as string,
+        applicantHomeAddress2: attrs?.applicantHomeAddress2 as string,
+        applicantHomeAddress3: attrs?.applicantHomeAddress3 as string,
+        townOrCity: attrs?.townOrCity as string,
+        provinceOrState: attrs?.provinceOrState as string,
+        postcode: attrs?.postcode as string,
+        country: attrs?.country as CountryCode,
+
+        dateCreated: new Date(attrs?.dateCreated as string),
+        dateUpdated: new Date(attrs?.dateUpdated as string),
+        createdBy: attrs?.createdBy as string,
+        updatedBy: attrs?.updatedBy as string,
+        status: attrs?.status as TaskStatus,
+      });
+
+      return applicant;
     } catch (error) {
       logger.error(error, "Error updating applicant details");
       throw error;
