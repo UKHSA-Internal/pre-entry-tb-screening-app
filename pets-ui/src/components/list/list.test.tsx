@@ -26,4 +26,18 @@ describe("List Component", () => {
     render(<List items={[]} />);
     expect(screen.queryByRole("listitem")).not.toBeInTheDocument();
   });
+
+  test("correctly renders links", () => {
+    const linkText = "Test link";
+    const items = [
+      <a href="https://test.com" key="test-link">
+        {linkText}
+      </a>,
+    ];
+    render(<List items={items} />);
+
+    const link = screen.getByText(linkText);
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "https://test.com");
+  });
 });
