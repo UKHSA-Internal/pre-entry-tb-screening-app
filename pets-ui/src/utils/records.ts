@@ -65,6 +65,7 @@ const attributeToComponentId: { [key: string]: string } = {
   collectionMethodSample2: "collection-method-sample-2",
   collectionMethodSample3: "collection-method-sample-3",
   dateXrayTaken: "date-xray-taken",
+  consent: "do-you-have-consent",
 };
 
 const formRegex = {
