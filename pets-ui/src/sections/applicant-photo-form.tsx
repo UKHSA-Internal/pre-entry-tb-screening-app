@@ -64,18 +64,26 @@ const ApplicantPhotoForm = () => {
             <p className="govuk-heading-m">The photo must:</p>
             <List
               items={[
-                "be a JPG, JPEG or PNG file",
-                "be less than 10MB",
-                "be the correct way up - open it on your computer to check",
-                <>
-                  meet the{" "}
-                  <LinkLabel
-                    title="rules for a passport digital photo (opens in new tab)"
-                    to="https://www.gov.uk/photos-for-passports#rules-for-digital-photos"
-                    externalLink
-                    openInNewTab
-                  />
-                </>,
+                { key: "be a JPG, JPEG or PNG file", elem: "be a JPG, JPEG or PNG file" },
+                { key: "be less than 10MB", elem: "be less than 10MB" },
+                {
+                  key: "be the correct way up - open it on your computer to check",
+                  elem: "be the correct way up - open it on your computer to check",
+                },
+                {
+                  key: "meet the rules for a passport digital photo",
+                  elem: (
+                    <>
+                      meet the{" "}
+                      <LinkLabel
+                        title="rules for a passport digital photo (opens in new tab)"
+                        to="https://www.gov.uk/photos-for-passports#rules-for-digital-photos"
+                        externalLink
+                        openInNewTab
+                      />
+                    </>
+                  ),
+                },
               ]}
             />
 

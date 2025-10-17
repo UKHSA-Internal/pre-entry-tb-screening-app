@@ -30,9 +30,14 @@ describe("List Component", () => {
   test("correctly renders links", () => {
     const linkText = "Test link";
     const items = [
-      <a href="https://test.com" key="test-link">
-        {linkText}
-      </a>,
+      {
+        key: "link1",
+        elem: (
+          <a href="https://test.com" key="test-link">
+            {linkText}
+          </a>
+        ),
+      },
     ];
     render(<List items={items} />);
 
