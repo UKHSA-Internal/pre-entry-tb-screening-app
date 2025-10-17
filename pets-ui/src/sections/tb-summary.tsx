@@ -107,42 +107,56 @@ const TbSummary = () => {
           {
             key: "Name",
             value: applicantData.fullName,
+            link: `/enter-applicant-information#${attributeToComponentId.fullName}`,
             hiddenLabel: "Name",
           },
           {
             key: "Nationality",
             value: getCountryName(applicantData.countryOfNationality),
+            link: `/enter-applicant-information#${attributeToComponentId.countryOfNationality}`,
             hiddenLabel: "Nationality",
           },
           {
             key: "Date of birth",
             value: formatDateForDisplay(applicantData.dateOfBirth),
+            link: `/enter-applicant-information#${attributeToComponentId.dateOfBirth}`,
             hiddenLabel: "Date of birth",
           },
           {
             key: "Sex",
             value: applicantData.sex,
+            link: `/enter-applicant-information#${attributeToComponentId.sex}`,
             hiddenLabel: "Sex",
           },
           {
             key: "Passport number",
             value: applicantData.passportNumber,
+            link: `/enter-applicant-information#${attributeToComponentId.passportNumber}`,
             hiddenLabel: "Passport number",
           },
           {
             key: "Passport issue date",
             value: formatDateForDisplay(applicantData.passportIssueDate),
+            link: `/enter-applicant-information#${attributeToComponentId.passportIssueDate}`,
             hiddenLabel: "Passport issue date",
           },
           {
             key: "Passport expiry date",
             value: formatDateForDisplay(applicantData.passportExpiryDate),
+            link: `/enter-applicant-information#${attributeToComponentId.passportExpiryDate}`,
             hiddenLabel: "Passport expiry date",
           },
           {
             key: "UKVI visa category",
             value: travelData.visaCategory,
+            link: `/proposed-visa-category#${attributeToComponentId.visaCategory}`,
             hiddenLabel: "UKVI visa category",
+          },
+          {
+            key: "Photo",
+            value: applicantData.applicantPhotoFileName || "Not provided",
+            link: `/upload-visa-applicant-photo`,
+            hiddenLabel: "Photo",
           },
         ]
       : [
@@ -172,26 +186,31 @@ const TbSummary = () => {
           {
             key: "Address line 1",
             value: applicantData.applicantHomeAddress1,
+            link: `/enter-applicant-information#${attributeToComponentId.applicantHomeAddress1}`,
             hiddenLabel: "Current address line 1",
           },
           {
             key: "Address line 2",
             value: applicantData.applicantHomeAddress2,
+            link: `/enter-applicant-information#${attributeToComponentId.applicantHomeAddress2}`,
             hiddenLabel: "Current address line 2",
           },
           {
             key: "Town or city",
             value: applicantData.townOrCity,
+            link: `/enter-applicant-information#${attributeToComponentId.townOrCity}`,
             hiddenLabel: "Current town or city",
           },
           {
             key: "Country",
             value: getCountryName(applicantData.country),
+            link: `/enter-applicant-information#${attributeToComponentId.country}`,
             hiddenLabel: "Current country",
           },
           {
             key: "Postcode",
             value: applicantData.postcode,
+            link: `/enter-applicant-information#${attributeToComponentId.postcode}`,
             hiddenLabel: "Current postcode",
           },
         ]
@@ -203,26 +222,31 @@ const TbSummary = () => {
           {
             key: "Address line 1",
             value: travelData.applicantUkAddress1,
+            link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.applicantUkAddress1}`,
             hiddenLabel: "UK address line 1",
           },
           {
             key: "Address line 2",
             value: travelData.applicantUkAddress2,
+            link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.applicantUkAddress2}`,
             hiddenLabel: "UK address line 2",
           },
           {
             key: "Town or city",
             value: travelData.townOrCity,
+            link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.townOrCity}`,
             hiddenLabel: "UK town or city",
           },
           {
             key: "County",
             value: travelData.applicantUkAddress3,
+            link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.applicantUkAddress3}`,
             hiddenLabel: "UK county",
           },
           {
             key: "Postcode",
             value: travelData.postcode,
+            link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.postcode}`,
             hiddenLabel: "UK postcode",
           },
         ]

@@ -11,7 +11,7 @@ import { setApplicantPhotoFileName } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
 import { ReduxApplicantDetailsType } from "@/types";
-import { ButtonType, ImageType } from "@/utils/enums";
+import { ApplicationStatus, ButtonType, ImageType } from "@/utils/enums";
 
 const ApplicantPhotoForm = () => {
   const applicantData = useAppSelector(selectApplicant);
@@ -41,7 +41,11 @@ const ApplicantPhotoForm = () => {
       setApplicantPhotoFile(applicantPhoto);
     }
 
-    navigate("/check-applicant-details");
+    const destination =
+      applicantData.status === ApplicationStatus.COMPLETE
+        ? "/tb-certificate-summary"
+        : "/check-applicant-details";
+    navigate(destination);
   };
 
   useEffect(() => {

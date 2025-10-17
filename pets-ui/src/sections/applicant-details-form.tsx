@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { putApplicantDetails } from "@/api/api";
 import DateTextInput from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
@@ -11,16 +12,18 @@ import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { setApplicantDetails, setApplicantDetailsStatus } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectApplicant } from "@/redux/store";
-import { DateType, ReduxApplicantDetailsType } from "@/types";
+import { selectApplicant, selectApplication } from "@/redux/store";
+import { DateType, PostedApplicantDetailsType, ReduxApplicantDetailsType } from "@/types";
 import { ApplicationStatus, ButtonType, RadioIsInline } from "@/utils/enums";
-import { validateDate } from "@/utils/helpers";
+import { standardiseDayOrMonth, validateDate } from "@/utils/helpers";
 import { countryList, formRegex } from "@/utils/records";
 
 const ApplicantForm = () => {
   const applicantData = useAppSelector(selectApplicant);
+  const applicationData = useAppSelector(selectApplication);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const methods = useForm<ReduxApplicantDetailsType>({ reValidateMode: "onSubmit" });
   const {
@@ -29,16 +32,58 @@ const ApplicantForm = () => {
     formState: { errors },
   } = methods;
 
-  const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = (applicantData) => {
-    dispatch(setApplicantDetails(applicantData));
-    dispatch(setApplicantDetailsStatus(ApplicationStatus.IN_PROGRESS));
-    navigate("/upload-visa-applicant-photo");
+  const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = async (formData) => {
+    const updatedFormData = {
+      ...formData,
+      applicantPhotoFileName: applicantData.applicantPhotoFileName,
+    };
+
+    dispatch(setApplicantDetails(updatedFormData));
+
+    if (applicantData.status === ApplicationStatus.COMPLETE && applicationData.applicationId) {
+      try {
+        const dateOfBirthStr = `${formData.dateOfBirth.year}-${standardiseDayOrMonth(formData.dateOfBirth.month)}-${standardiseDayOrMonth(formData.dateOfBirth.day)}`;
+        const issueDateStr = `${formData.passportIssueDate.year}-${standardiseDayOrMonth(formData.passportIssueDate.month)}-${standardiseDayOrMonth(formData.passportIssueDate.day)}`;
+        const expiryDateStr = `${formData.passportExpiryDate.year}-${standardiseDayOrMonth(formData.passportExpiryDate.month)}-${standardiseDayOrMonth(formData.passportExpiryDate.day)}`;
+
+        const updatePayload: Partial<PostedApplicantDetailsType> = {
+          fullName: formData.fullName,
+          sex: formData.sex,
+          dateOfBirth: dateOfBirthStr,
+          countryOfNationality: formData.countryOfNationality,
+          passportNumber: formData.passportNumber,
+          countryOfIssue: formData.countryOfIssue,
+          issueDate: issueDateStr,
+          expiryDate: expiryDateStr,
+          applicantHomeAddress1: formData.applicantHomeAddress1,
+          applicantHomeAddress2: formData.applicantHomeAddress2,
+          applicantHomeAddress3: formData.applicantHomeAddress3,
+          townOrCity: formData.townOrCity,
+          provinceOrState: formData.provinceOrState,
+          country: formData.country,
+          postcode: formData.postcode,
+        };
+
+        if (applicantData.applicantPhotoFileName) {
+          updatePayload.applicantPhotoFileName = applicantData.applicantPhotoFileName;
+        }
+
+        await putApplicantDetails(applicationData.applicationId, updatePayload);
+
+        navigate("/tb-certificate-summary");
+      } catch (error) {
+        console.error(error);
+        navigate("/error");
+      }
+    } else {
+      dispatch(setApplicantDetailsStatus(ApplicationStatus.IN_PROGRESS));
+      navigate("/upload-visa-applicant-photo");
+    }
   };
 
   const errorsToShow = Object.keys(errors);
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
-  const location = useLocation();
   const nameRef = useRef<HTMLDivElement | null>(null);
   const sexRef = useRef<HTMLDivElement | null>(null);
   const countryOfNationalityRef = useRef<HTMLDivElement | null>(null);

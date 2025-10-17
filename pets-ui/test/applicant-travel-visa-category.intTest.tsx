@@ -2,8 +2,10 @@ import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Mock } from "vitest";
 
+import * as api from "@/api/api";
 import TravelVisaCategoryPage from "@/pages/travel-visa-category";
 import ApplicantTravelVisaCategory from "@/sections/applicant-travel-visa-category";
+import { ApplicationStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -86,5 +88,55 @@ describe("ApplicantTravelForm", () => {
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute("href", "/tracker");
     expect(link).toHaveClass("govuk-back-link");
+  });
+
+  it("back link points to TB summary when travel status is COMPLETE", () => {
+    const completeState = {
+      travel: {
+        status: ApplicationStatus.COMPLETE,
+        visaCategory: "",
+        applicantUkAddress1: "",
+        applicantUkAddress2: "",
+        applicantUkAddress3: "",
+        townOrCity: "",
+        postcode: "",
+        ukEmail: "",
+        ukMobileNumber: "",
+      },
+    };
+    renderWithProviders(<TravelVisaCategoryPage />, { preloadedState: completeState });
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toHaveAttribute("href", "/tb-certificate-summary");
+  });
+
+  it("updates slice and navigates to TB summary when editing in COMPLETE status", async () => {
+    vi.spyOn(api, "putTravelDetails").mockResolvedValue({ status: 200, statusText: "OK" });
+    const user = userEvent.setup();
+    const completeState = {
+      application: { applicationId: "abc-123", dateCreated: "" },
+      travel: {
+        status: ApplicationStatus.COMPLETE,
+        visaCategory: "Work",
+        applicantUkAddress1: "1 Street",
+        applicantUkAddress2: "",
+        applicantUkAddress3: "",
+        townOrCity: "London",
+        postcode: "0000 111",
+        ukEmail: "test@example.co.uk",
+        ukMobileNumber: "07123456789",
+      },
+    };
+    const { store } = renderWithProviders(<ApplicantTravelVisaCategory />, {
+      preloadedState: completeState,
+    });
+
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "Family reunion" } });
+    await user.click(screen.getByRole("button"));
+
+    await waitFor(() => {
+      expect(store.getState().travel.visaCategory).toBe("Family reunion");
+      expect(store.getState().travel.status).toBe(ApplicationStatus.COMPLETE);
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-summary");
+    });
   });
 });

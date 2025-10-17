@@ -98,5 +98,219 @@ describe("TBSummaryPage", () => {
       expect(mock.history).toHaveLength(1);
       expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-screening-complete");
     });
+
+    it("shows change links to other tasks", () => {
+      const completeState = {
+        application: { applicationId: "abc-123", dateCreated: "" },
+        applicant: {
+          status: ApplicationStatus.COMPLETE,
+          fullName: "John Smith",
+          sex: "Male",
+          dateOfBirth: { year: "1970", month: "1", day: "1" },
+          countryOfNationality: "GBR",
+          passportNumber: "12345",
+          countryOfIssue: "GBR",
+          passportIssueDate: { year: "2020", month: "1", day: "1" },
+          passportExpiryDate: { year: "2030", month: "1", day: "1" },
+          applicantHomeAddress1: "1 Street",
+          applicantHomeAddress2: "",
+          applicantHomeAddress3: "",
+          townOrCity: "London",
+          provinceOrState: "Greater London",
+          country: "GBR",
+          postcode: "0000 111",
+          applicantPhotoFileName: "photo.jpg",
+        },
+        travel: {
+          status: ApplicationStatus.COMPLETE,
+          visaCategory: "Work",
+          applicantUkAddress1: "1 Street",
+          applicantUkAddress2: "",
+          applicantUkAddress3: "",
+          townOrCity: "London",
+          postcode: "0000 111",
+          ukEmail: "test@example.co.uk",
+          ukMobileNumber: "07123456789",
+        },
+        tbCertificate: {
+          ...tbState,
+          status: ApplicationStatus.IN_PROGRESS,
+        },
+      };
+      renderWithProviders(
+        <HelmetProvider>
+          <ApplicantPhotoProvider>
+            <TbSummaryPage />
+          </ApplicantPhotoProvider>
+        </HelmetProvider>,
+        { preloadedState: completeState },
+      );
+
+      const changeLinks = screen.getAllByRole("link", { name: /Change/ });
+      expect(changeLinks.length).toBeGreaterThan(0);
+    });
+
+    it("Change link for name redirects to applicant details page", () => {
+      const completeState = {
+        application: { applicationId: "abc-123", dateCreated: "" },
+        applicant: {
+          status: ApplicationStatus.COMPLETE,
+          fullName: "John Smith",
+          sex: "Male",
+          dateOfBirth: { year: "1970", month: "1", day: "1" },
+          countryOfNationality: "GBR",
+          passportNumber: "12345",
+          countryOfIssue: "GBR",
+          passportIssueDate: { year: "2020", month: "1", day: "1" },
+          passportExpiryDate: { year: "2030", month: "1", day: "1" },
+          applicantHomeAddress1: "1 Street",
+          applicantHomeAddress2: "",
+          applicantHomeAddress3: "",
+          townOrCity: "London",
+          provinceOrState: "Greater London",
+          country: "GBR",
+          postcode: "0000 111",
+          applicantPhotoFileName: "photo.jpg",
+        },
+        travel: {
+          status: ApplicationStatus.COMPLETE,
+          visaCategory: "Work",
+          applicantUkAddress1: "1 Street",
+          applicantUkAddress2: "",
+          applicantUkAddress3: "",
+          townOrCity: "London",
+          postcode: "0000 111",
+          ukEmail: "test@example.co.uk",
+          ukMobileNumber: "07123456789",
+        },
+        tbCertificate: {
+          ...tbState,
+          status: ApplicationStatus.IN_PROGRESS,
+        },
+      };
+      renderWithProviders(
+        <HelmetProvider>
+          <ApplicantPhotoProvider>
+            <TbSummaryPage />
+          </ApplicantPhotoProvider>
+        </HelmetProvider>,
+        { preloadedState: completeState },
+      );
+
+      const nameChangeLinks = screen.getAllByRole("link", { name: "Change Name" });
+      expect(nameChangeLinks[0]).toHaveAttribute("href", "/enter-applicant-information#name");
+    });
+
+    it("Change link for visa category redirects to visa category page", () => {
+      const completeState = {
+        application: { applicationId: "abc-123", dateCreated: "" },
+        applicant: {
+          status: ApplicationStatus.COMPLETE,
+          fullName: "John Smith",
+          sex: "Male",
+          dateOfBirth: { year: "1970", month: "1", day: "1" },
+          countryOfNationality: "GBR",
+          passportNumber: "12345",
+          countryOfIssue: "GBR",
+          passportIssueDate: { year: "2020", month: "1", day: "1" },
+          passportExpiryDate: { year: "2030", month: "1", day: "1" },
+          applicantHomeAddress1: "1 Street",
+          applicantHomeAddress2: "",
+          applicantHomeAddress3: "",
+          townOrCity: "London",
+          provinceOrState: "Greater London",
+          country: "GBR",
+          postcode: "0000 111",
+          applicantPhotoFileName: "photo.jpg",
+        },
+        travel: {
+          status: ApplicationStatus.COMPLETE,
+          visaCategory: "Work",
+          applicantUkAddress1: "1 Street",
+          applicantUkAddress2: "",
+          applicantUkAddress3: "",
+          townOrCity: "London",
+          postcode: "0000 111",
+          ukEmail: "test@example.co.uk",
+          ukMobileNumber: "07123456789",
+        },
+        tbCertificate: {
+          ...tbState,
+          status: ApplicationStatus.IN_PROGRESS,
+        },
+      };
+      renderWithProviders(
+        <HelmetProvider>
+          <ApplicantPhotoProvider>
+            <TbSummaryPage />
+          </ApplicantPhotoProvider>
+        </HelmetProvider>,
+        { preloadedState: completeState },
+      );
+
+      const visaCategoryChangeLinks = screen.getAllByRole("link", {
+        name: "Change UKVI visa category",
+      });
+      expect(visaCategoryChangeLinks[0]).toHaveAttribute(
+        "href",
+        "/proposed-visa-category#visa-category",
+      );
+    });
+
+    it("Change link for UK address redirects to UK address page", () => {
+      const completeState = {
+        application: { applicationId: "abc-123", dateCreated: "" },
+        applicant: {
+          status: ApplicationStatus.COMPLETE,
+          fullName: "John Smith",
+          sex: "Male",
+          dateOfBirth: { year: "1970", month: "1", day: "1" },
+          countryOfNationality: "GBR",
+          passportNumber: "12345",
+          countryOfIssue: "GBR",
+          passportIssueDate: { year: "2020", month: "1", day: "1" },
+          passportExpiryDate: { year: "2030", month: "1", day: "1" },
+          applicantHomeAddress1: "1 Street",
+          applicantHomeAddress2: "",
+          applicantHomeAddress3: "",
+          townOrCity: "London",
+          provinceOrState: "Greater London",
+          country: "GBR",
+          postcode: "0000 111",
+          applicantPhotoFileName: "photo.jpg",
+        },
+        travel: {
+          status: ApplicationStatus.COMPLETE,
+          visaCategory: "Work",
+          applicantUkAddress1: "1 Street",
+          applicantUkAddress2: "",
+          applicantUkAddress3: "",
+          townOrCity: "London",
+          postcode: "0000 111",
+          ukEmail: "test@example.co.uk",
+          ukMobileNumber: "07123456789",
+        },
+        tbCertificate: {
+          ...tbState,
+          status: ApplicationStatus.IN_PROGRESS,
+        },
+      };
+      renderWithProviders(
+        <HelmetProvider>
+          <ApplicantPhotoProvider>
+            <TbSummaryPage />
+          </ApplicantPhotoProvider>
+        </HelmetProvider>,
+        { preloadedState: completeState },
+      );
+
+      const ukAddressChangeLinks = screen.getAllByRole("link", {
+        name: "Change UK address line 1",
+      });
+      expect(ukAddressChangeLinks[0]).toHaveAttribute(
+        "href",
+        "/visa-applicant-proposed-uk-address#address-1",
+      );
+    });
   });
 });
