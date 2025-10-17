@@ -5,7 +5,7 @@ export default function ContactDetailsPage() {
   return (
     <Container
       title="Enter applicant information - Complete UK pre-entry health screening - GOV.UK"
-      backLinkTo="/no-matching-record-found"
+      backLinkTo="/do-you-have-visa-applicant-written-consent-for-tb-screening"
     >
       <ApplicantForm />
     </Container>
