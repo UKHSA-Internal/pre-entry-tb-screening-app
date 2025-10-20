@@ -13,7 +13,7 @@ export default function ConsentInstructionPage() {
     <Container title="Get written consent - Complete UK pre-entry health screening - GOV.UK">
       <NotificationBanner
         bannerTitle="Important"
-        bannerText="You need the visa applicant's consent"
+        bannerHeading="You need the visa applicant's consent"
       />
 
       <Heading level={1} size="l" title="Get written consent" />
