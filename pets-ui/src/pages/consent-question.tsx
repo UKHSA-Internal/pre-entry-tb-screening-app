@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import Container from "@/components/container/container";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
@@ -10,6 +10,7 @@ import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
 
 export default function ConsentQuestionPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const methods = useForm<{ consent: YesOrNo }>({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,

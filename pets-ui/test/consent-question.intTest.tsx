@@ -20,12 +20,24 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
 describe("ConsentQuestionPage", () => {
   const user = userEvent.setup();
 
+  let originalScrollIntoViewDescriptor: PropertyDescriptor | undefined;
+  let scrollIntoViewMockFn: Mock;
+
   beforeEach(() => {
     (useLocation as Mock).mockReturnValue({
       pathname: "/do-you-have-visa-applicant-written-consent-for-tb-screening",
       hash: "",
       search: "",
     });
+
+    originalScrollIntoViewDescriptor = Object.getOwnPropertyDescriptor(
+      window.HTMLElement.prototype,
+      "scrollIntoView",
+    );
+
+    scrollIntoViewMockFn = vi.fn();
+
+    window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMockFn;
 
     renderWithProviders(
       <HelmetProvider>
@@ -37,6 +49,14 @@ describe("ConsentQuestionPage", () => {
   afterEach(() => {
     vi.clearAllMocks();
     cleanup();
+
+    if (originalScrollIntoViewDescriptor) {
+      Object.defineProperty(
+        window.HTMLElement.prototype,
+        "scrollIntoView",
+        originalScrollIntoViewDescriptor,
+      );
+    }
   });
 
   it("displays the back link", () => {
@@ -113,6 +133,23 @@ describe("ConsentQuestionPage", () => {
     await user.click(radioNo);
     await user.click(screen.getByRole("button", { name: "Continue" }));
     expect(useNavigateMock).toHaveBeenLastCalledWith("/get-written-consent");
+  });
+
+  it("scrolls to the sputum collected radio group if location hash is #sputum-required", () => {
+    (useLocation as Mock).mockReturnValue({
+      pathname: "/do-you-have-visa-applicant-written-consent-for-tb-screening",
+      hash: "#do-you-have-consent",
+      search: "",
+    });
+
+    cleanup();
+    renderWithProviders(
+      <HelmetProvider>
+        <ConsentQuestionPage />
+      </HelmetProvider>,
+    );
+
+    expect(scrollIntoViewMockFn).toHaveBeenCalledTimes(1);
   });
 
   it("does not pre-select any radio button by default", () => {
