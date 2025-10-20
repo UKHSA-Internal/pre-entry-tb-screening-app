@@ -77,7 +77,7 @@ const ChestXraySummary = () => {
       {(chestXrayData.status == ApplicationStatus.NOT_YET_STARTED ||
         chestXrayData.status == ApplicationStatus.IN_PROGRESS) && (
         <div>
-          <Heading title="Now send your X-ray information" level={2} size="m" />
+          <Heading title="Now send the X-ray information" level={2} size="m" />
           <p className="govuk-body">
             Upload all relevant chest X-ray images before you continue. You will not be able to
             change or add images after you submit this information.

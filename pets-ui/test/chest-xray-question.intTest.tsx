@@ -40,11 +40,11 @@ describe("ChestXrayQuestionForm", () => {
 
     await waitFor(() => {
       expect(screen.getByText("There is a problem")).toBeInTheDocument();
-      expect(screen.getAllByText("Select yes if X-ray is required")[0]).toBeInTheDocument();
-      expect(screen.getAllByText("Select yes if X-ray is required")[1]).toBeInTheDocument();
-      expect(screen.getAllByText("Select yes if X-ray is required")[0]).toHaveAttribute(
+      expect(screen.getAllByText("Select yes if an X-ray is required")[0]).toBeInTheDocument();
+      expect(screen.getAllByText("Select yes if an X-ray is required")[1]).toBeInTheDocument();
+      expect(screen.getAllByText("Select yes if an X-ray is required")[0]).toHaveAttribute(
         "aria-label",
-        "Error: Select yes if X-ray is required",
+        "Error: Select yes if an X-ray is required",
       );
     });
   });
@@ -57,7 +57,7 @@ describe("ChestXrayQuestionForm", () => {
   });
   it("does not render an error if continue button not clicked with no answer provided", () => {
     expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
-    expect(screen.queryByText("Select yes if X-ray is required")).not.toBeInTheDocument();
+    expect(screen.queryByText("Select yes if an X-ray is required")).not.toBeInTheDocument();
   });
   it("when yes selected and continue pressed, it navigates to /check-medical-screening", async () => {
     const radioButtons = screen.getAllByRole("radio");
