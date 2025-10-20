@@ -183,7 +183,7 @@ const ChestXrayForm = () => {
               File type must be DICOM. Images must be less than 50MB.
             </div>
 
-            <div ref={paXrayRef}>
+            <div ref={paXrayRef} className="dicom-upload-container">
               <DicomUploadModule
                 id="postero-anterior-xray"
                 title="Postero-anterior view"
@@ -197,7 +197,7 @@ const ChestXrayForm = () => {
               />
             </div>
 
-            <div>
+            <div className="dicom-upload-container">
               <DicomUploadModule
                 id="apical-lordotic-xray"
                 title="Apical lordotic view (optional)"
@@ -210,7 +210,7 @@ const ChestXrayForm = () => {
               />
             </div>
 
-            <div>
+            <div className="dicom-upload-container">
               <DicomUploadModule
                 id="lateral-decubitus-xray"
                 title="Lateral decubitus view (optional)"
