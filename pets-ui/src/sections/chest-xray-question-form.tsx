@@ -63,7 +63,7 @@ const ChestXrayQuestionForm = () => {
             errorMessage={(errors?.chestXrayTaken?.message as string) ?? ""}
             formValue="chestXrayTaken"
             defaultValue={medicalData.chestXrayTaken || YesOrNo.NULL}
-            required="Select yes if X-ray is required"
+            required="Select yes if an X-ray is required"
             divStyle={{ marginTop: 40 }}
           />
         </div>

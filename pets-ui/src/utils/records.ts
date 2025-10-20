@@ -80,11 +80,11 @@ const formRegex = {
 
 const dateValidationMessages: Record<string, Record<string, string>> = {
   completionDate: {
-    emptyFieldError: "The date the medical screening took place must include a day, month and year",
+    emptyFieldError: "Enter the date the medical screening took place",
     invalidCharError:
       "The date the medical screening took place day, month and year must contain only numbers",
     invalidDateError: "The date the medical screening took place must be a real date",
-    dateMustBeInPastError: "The date the medical screening took place must be today or in the past",
+    dateMustBeInPastError: "The medical screening date must be today or in the past",
   },
   passportIssueDate: {
     emptyFieldError: "Passport issue date must include a day, month and year",
