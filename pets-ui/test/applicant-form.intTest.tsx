@@ -206,7 +206,10 @@ describe("ApplicantForm", () => {
     renderWithProviders(<ContactDetailsPage />);
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/no-matching-record-found");
+    expect(link).toHaveAttribute(
+      "href",
+      "/do-you-have-visa-applicant-written-consent-for-tb-screening",
+    );
     expect(link).toHaveClass("govuk-back-link");
   });
 });
