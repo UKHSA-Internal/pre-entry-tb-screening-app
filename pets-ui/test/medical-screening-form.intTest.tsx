@@ -122,7 +122,7 @@ describe("MedicalScreeningForm", () => {
     await user.click(submitButton);
 
     const errorMessages = [
-      "Error: The date the medical screening took place must include a day, month and year",
+      "Error: Enter the date the medical screening took place",
       "Error: Enter applicant's age in years",
       "Error: Select whether the visa applicant has any pulmonary TB symptoms",
       "Error: Select whether the visa applicant has ever had pulmonary TB",
