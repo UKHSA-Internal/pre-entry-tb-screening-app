@@ -7,7 +7,7 @@ export default function Spinner() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const timeout = setTimeout(() => navigate("/error"), 20000);
+    const timeout = setTimeout(() => navigate("/sorry-there-is-problem-with-service"), 20000);
     return clearTimeout(timeout);
   }, [navigate]);
 

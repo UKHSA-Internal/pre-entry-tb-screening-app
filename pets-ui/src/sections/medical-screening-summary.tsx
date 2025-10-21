@@ -61,7 +61,7 @@ const MedicalScreeningReview = () => {
       navigate("/medical-history-tb-symptoms-confirmed");
     } catch (error) {
       console.error(error);
-      navigate("/error");
+      navigate("/sorry-there-is-problem-with-service");
     }
   };
 
