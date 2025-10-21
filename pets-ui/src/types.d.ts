@@ -101,7 +101,7 @@ type ReduxTravelDetailsType = {
   townOrCity?: string;
   postcode?: string;
   ukMobileNumber?: string;
-  ukEmail: string;
+  ukEmail?: string;
 };
 
 type PostedTravelDetailsType = {
@@ -110,7 +110,7 @@ type PostedTravelDetailsType = {
   ukAddressLine3?: string;
   ukAddressTownOrCity?: string;
   ukAddressPostcode?: string;
-  ukEmailAddress: string;
+  ukEmailAddress?: string;
   ukMobileNumber?: string;
   visaCategory: string;
 };

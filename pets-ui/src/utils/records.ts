@@ -20,6 +20,7 @@ const attributeToComponentId: { [key: string]: string } = {
   visaCategory: "visa-category",
   applicantUkAddress1: "address-1",
   applicantUkAddress2: "address-2",
+  applicantUkAddress3: "address-3",
   ukMobileNumber: "mobile-number",
   ukEmail: "email",
   completionDate: "medical-screening-completion-date",

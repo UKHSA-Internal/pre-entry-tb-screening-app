@@ -79,6 +79,36 @@ describe("ChestXraySummaryPage", () => {
     expect(useNavigateMock).toHaveBeenLastCalledWith("/chest-x-ray-images-confirmed");
   });
 
+  it("when post request returns client-side error then user is navigated to /sorry-there-is-problem-with-service", async () => {
+    mock.onPost("/application/abc-123/chest-xray").reply(400);
+    await user.click(screen.getByRole("button"));
+    expect(mock.history[0].url).toEqual("/application/abc-123/chest-xray");
+    expect(mock.history).toHaveLength(1);
+    expect(JSON.parse(mock.history.post[0].data as string)).toMatchObject({
+      chestXrayTaken: "Yes",
+      posteroAnteriorXray: "PA Example File",
+      apicalLordoticXray: "AL Example File",
+      lateralDecubitusXray: "LD Example File",
+      dateXrayTaken: "31-12-2001",
+    });
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
+  });
+
+  it("when post request returns server-side error then user is navigated to /sorry-there-is-problem-with-service", async () => {
+    mock.onPost("/application/abc-123/chest-xray").reply(500);
+    await user.click(screen.getByRole("button"));
+    expect(mock.history[0].url).toEqual("/application/abc-123/chest-xray");
+    expect(mock.history).toHaveLength(1);
+    expect(JSON.parse(mock.history.post[0].data as string)).toMatchObject({
+      chestXrayTaken: "Yes",
+      posteroAnteriorXray: "PA Example File",
+      apicalLordoticXray: "AL Example File",
+      lateralDecubitusXray: "LD Example File",
+      dateXrayTaken: "31-12-2001",
+    });
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
+  });
+
   it("renders the page titles and data", () => {
     expect(screen.getByText("Date of X-ray")).toBeInTheDocument();
     expect(screen.getByText("Chest X-ray images")).toBeInTheDocument();
