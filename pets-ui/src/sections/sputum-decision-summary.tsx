@@ -42,7 +42,7 @@ const SputumDecisionSummary = () => {
       navigate("/sputum-decision-confirmed");
     } catch (error) {
       console.error(error);
-      navigate("/error");
+      navigate("/sorry-there-is-problem-with-service");
     } finally {
       setIsLoading(false);
     }

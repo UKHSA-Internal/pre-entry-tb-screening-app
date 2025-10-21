@@ -176,7 +176,7 @@ const SputumSummary = () => {
       }
     } catch (error) {
       console.error(error);
-      navigate("/error");
+      navigate("/sorry-there-is-problem-with-service");
     }
   };
 
