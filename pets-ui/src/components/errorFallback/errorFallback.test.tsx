@@ -14,17 +14,25 @@ describe("Error Summary Component", () => {
   it("renders correctly when props are specified", () => {
     renderWithProviders(<ErrorFallback />);
 
+    expect(screen.getAllByRole("link")[4]).toHaveTextContent("Back");
+
+    expect(screen.getByText("Sorry, there is a problem with the service")).toBeInTheDocument();
+    expect(screen.getByText("Try again later.")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Sorry, there is a problem with the Complete UK pre-entry health screening service",
+        "If you completed a section and viewed a confirmation page, we saved your answers.",
       ),
     ).toBeInTheDocument();
-    expect(screen.getByText("Try again now or later.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "If you did not view a confirmation page, we have not saved your answers. When the service is available, you will have to start the section again.",
+      ),
+    ).toBeInTheDocument();
 
-    const contactParagraph = screen.getAllByRole("paragraph")[2];
+    const contactParagraph = screen.getAllByRole("paragraph")[4];
     expect(contactParagraph).toHaveTextContent(
-      "Contact uktbscreeningsupport@ukhsa.gov.uk if the problem continues.",
+      "Email uktbscreeningsupport@ukhsa.gov.uk if you need support.",
     );
-    expect(screen.getAllByRole("link")[4]).toHaveTextContent("uktbscreeningsupport@ukhsa.gov.uk");
+    expect(screen.getAllByRole("link")[5]).toHaveTextContent("uktbscreeningsupport@ukhsa.gov.uk");
   });
 });
