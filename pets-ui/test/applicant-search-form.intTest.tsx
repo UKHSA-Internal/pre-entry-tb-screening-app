@@ -88,6 +88,7 @@ const emptyApplicantSlice = {
 const emptyTravelSlice = {
   applicantUkAddress1: "",
   applicantUkAddress2: "",
+  applicantUkAddress3: "",
   postcode: "",
   status: "Not yet started",
   townOrCity: "",
