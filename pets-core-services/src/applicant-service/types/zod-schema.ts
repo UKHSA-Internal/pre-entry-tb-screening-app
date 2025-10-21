@@ -100,10 +100,4 @@ export const ApplicantUpdateResponseSchema = ApplicantUpdateRequestSchema.extend
   updatedBy: z.string().optional().openapi({
     description: "First line of Applicant's Address",
   }),
-  passportNumber: z.string().optional().openapi({
-    description: "PassportNumber of Applicant",
-  }),
-  countryOfIssue: z.nativeEnum(CountryCode).optional().openapi({
-    description: "Passport Issue Country",
-  }),
 });

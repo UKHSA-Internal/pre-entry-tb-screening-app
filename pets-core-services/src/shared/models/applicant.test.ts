@@ -63,7 +63,6 @@ describe("Tests for Applicant Model", () => {
         issueDate: "2025-01-01T00:00:00.000Z",
         expiryDate: "2030-01-01T00:00:00.000Z",
         dateOfBirth: "2000-02-07T00:00:00.000Z",
-        passportId: "COUNTRY#ALA#PASSPORT#test-passport-id",
         pk: "APPLICATION#generated-app-id-3",
         sk: "APPLICANT#DETAILS",
       },
