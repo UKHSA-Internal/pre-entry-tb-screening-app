@@ -7,13 +7,13 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Select environment to test'
+        description: "Select environment to test"
         required: true
         default: "all"
         type: choice
         options: [all, qat, dev, preprod]
       browsers:
-        description: 'Select browsers to test'
+        description: "Select browsers to test"
         required: true
         default: "all"
         type: choice
@@ -127,7 +127,6 @@ jobs:
       - name: Start Local Environment
         run: |
           pnpm start & sleep 120
-
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
         continue-on-error: true
@@ -168,15 +167,15 @@ jobs:
         run: |
           # Create reports directory if it doesn't exist
           mkdir -p pets-ui/cypress/reports/mochawesome
-          
+
           echo "=== Debugging Cypress Reports ==="
           echo "Looking for standard mochawesome reports..."
           find pets-ui/cypress -name "*.json" -type f 2>/dev/null || echo "No JSON files found in cypress directory"
-          
+
           # Standard mochawesome puts files directly in reportDir
           REPORT_DIR="pets-ui/cypress/reports/mochawesome"
           MERGED_FILE="$REPORT_DIR/mochawesome.json"
-          
+
           if [ -d "$REPORT_DIR" ]; then
             echo "Found reports directory: $REPORT_DIR"
             ls -la "$REPORT_DIR" 2>/dev/null || echo "Directory empty"
@@ -268,7 +267,6 @@ jobs:
             echo "total_count=0" >> $GITHUB_OUTPUT
             echo "pending_count=0" >> $GITHUB_OUTPUT
           fi
-
       - name: Upload Mochawesome Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -285,7 +283,7 @@ jobs:
           else
             STATUS="FAIL"
           fi
-          
+
           # Create detailed result file with test counts
           cat > ${{ matrix.environment }}-${{ matrix.browser }}-result.json << EOF
           {
@@ -301,7 +299,7 @@ jobs:
             "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
           }
           EOF
-          
+
           # Keep backward compatibility
           echo "$STATUS" > ${{ matrix.environment }}-${{ matrix.browser }}-result.txt
 
@@ -319,7 +317,7 @@ jobs:
     needs: [setup-matrix, cypress-nightly]
     if: always()
     runs-on: ubuntu-latest
-    continue-on-error: true   # allow report even if tests fail
+    continue-on-error: true # allow report even if tests fail
 
     environment:
       name: github-pages
@@ -332,7 +330,6 @@ jobs:
       - name: Install required tools
         run: |
           sudo apt-get update && sudo apt-get install -y jq bc
-
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
@@ -350,23 +347,23 @@ jobs:
           echo "**Run Date**: $(date)" >> nightly-summary.md
           echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
           echo "" >> nightly-summary.md
-          
+
           ENV_MATRIX='${{ needs.setup-matrix.outputs.environments }}'
           BROWSER_MATRIX='${{ needs.setup-matrix.outputs.browsers }}'
           ENV_LIST=($(echo $ENV_MATRIX | jq -r '.[]'))
           BROWSER_LIST=($(echo $BROWSER_MATRIX | jq -r '.[]'))
-          
+
           TOTAL=0
           FAILS=0
           TOTAL_TEST_COUNT=0
           TOTAL_PASSED_COUNT=0
           TOTAL_FAILED_COUNT=0
           TOTAL_PENDING_COUNT=0
-          
+
           echo "{" > dashboard/test-results.json
           echo "  \"results\": {" >> dashboard/test-results.json
           FIRST_ENV=true
-          
+
           for env in "${ENV_LIST[@]}"; do
             echo "## Environment: $env" >> nightly-summary.md
             echo "" >> nightly-summary.md
@@ -442,7 +439,7 @@ jobs:
             echo "" >> nightly-summary.md
           done
           echo "  }" >> dashboard/test-results.json
-          
+
           # Add summary counts
           echo "" >> nightly-summary.md
           echo "## 📊 Test Summary" >> nightly-summary.md
@@ -452,7 +449,7 @@ jobs:
           echo "- **Total Failed**: $TOTAL_FAILED_COUNT" >> nightly-summary.md
           echo "- **Total Pending**: $TOTAL_PENDING_COUNT" >> nightly-summary.md
           echo "" >> nightly-summary.md
-          
+
           if [ $FAILS -eq 0 ]; then
             echo "## ✅ Overall Status: PASSED" >> nightly-summary.md
             echo "All $TOTAL combinations passed." >> nightly-summary.md
@@ -464,7 +461,7 @@ jobs:
             echo "overall_status=FAIL" >> $GITHUB_OUTPUT
             OVERALL_STATUS="FAIL"
           fi
-          
+
           echo "  ,\"overallStatus\": \"$OVERALL_STATUS\"," >> dashboard/test-results.json
           echo "  \"totalCombinations\": $TOTAL," >> dashboard/test-results.json
           echo "  \"failedCombinations\": $FAILS," >> dashboard/test-results.json
@@ -472,13 +469,13 @@ jobs:
           echo "  \"totalPassed\": $TOTAL_PASSED_COUNT," >> dashboard/test-results.json
           echo "  \"totalFailed\": $TOTAL_FAILED_COUNT," >> dashboard/test-results.json
           echo "  \"totalSkipped\": $TOTAL_PENDING_COUNT," >> dashboard/test-results.json
-          
+
           if [ $TOTAL -gt 0 ]; then
             SUCCESS_RATE=$(echo "scale=0; ($TOTAL-$FAILS)*100/$TOTAL" | bc)
           else
             SUCCESS_RATE=0
           fi
-          
+
           echo "  \"successRate\": $SUCCESS_RATE," >> dashboard/test-results.json
           echo "  \"runUrl\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"," >> dashboard/test-results.json
           echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)\"" >> dashboard/test-results.json
@@ -947,7 +944,6 @@ jobs:
           </body>
           </html>
           EOF
-
       - name: Setup Pages
         uses: actions/configure-pages@v4
 

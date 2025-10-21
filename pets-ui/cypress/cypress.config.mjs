@@ -10,6 +10,9 @@ import {
   DeleteMessageCommand,
   PurgeQueueCommand,
 } from "@aws-sdk/client-sqs";
+import fs from "fs";
+import path from "path";
+import { glob } from "glob";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -17,6 +20,21 @@ const __dirname = dirname(__filename);
 dotenv.config({
   path: resolve(__dirname, "../../configs/.env.local.secrets"), // Required only for local runs, CI environment secrets are retrieved from Actions Secrets
 });
+
+// Utility: return only spec files that have at least one runnable (non-skipped) test
+function getNonSkippedSpecs() {
+  const allSpecs = glob.sync("cypress/e2e/**/*.cy.{js,jsx,ts,tsx}");
+
+  return allSpecs.filter((spec) => {
+    const content = fs.readFileSync(path.resolve(spec), "utf-8");
+
+    // Check if file contains a runnable test/describe (not only skipped)
+    const hasRunnableIt = /\bit\((?!.*skip)/.test(content);
+    const hasRunnableDescribe = /\bdescribe\((?!.*skip)/.test(content);
+
+    return hasRunnableIt || hasRunnableDescribe;
+  });
+}
 
 // Initialize SQS client
 const createSQSClient = () => {
