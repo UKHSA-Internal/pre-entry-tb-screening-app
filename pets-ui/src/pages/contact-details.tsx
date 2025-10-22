@@ -9,7 +9,7 @@ export default function ContactDetailsPage() {
   const backLinkTo =
     applicant.status === ApplicationStatus.COMPLETE
       ? "/tb-certificate-summary"
-      : "/no-matching-record-found";
+      : "/do-you-have-visa-applicant-written-consent-for-tb-screening";
 
   return (
     <Container

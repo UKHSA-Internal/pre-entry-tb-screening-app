@@ -37,8 +37,11 @@ const ApplicantTravelAddressAndContactDetails = () => {
     formState: { errors },
   } = methods;
 
+  const dispatch = useAppDispatch();
+  const travelData = useAppSelector(selectTravel);
+
   const onSubmit: SubmitHandler<TravelAddressAndContactDetailsData> = async (
-    travelAddressAndContactDetailsData,
+  travelAddressAndContactDetailsData,
   ) => {
     dispatch(setApplicantUkAddress1(travelAddressAndContactDetailsData.applicantUkAddress1 ?? ""));
     dispatch(setApplicantUkAddress2(travelAddressAndContactDetailsData.applicantUkAddress2 ?? ""));
@@ -73,6 +76,7 @@ const ApplicantTravelAddressAndContactDetails = () => {
   const errorsToShow = Object.keys(errors);
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
+  const location = useLocation();
   const addressLine1Ref = useRef<HTMLDivElement | null>(null);
   const addressLine2Ref = useRef<HTMLDivElement | null>(null);
   const addressLine3Ref = useRef<HTMLDivElement | null>(null);

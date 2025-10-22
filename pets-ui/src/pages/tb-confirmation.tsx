@@ -55,6 +55,7 @@ export default function TbConfirmationPage() {
         whatHappensNext={true}
         postWhatHappensNextText="We've sent the certificate information to UKHSA."
         furtherInfo={furtherInfo}
+        showSearchForAnotherVisaApplicantLink={false}
         actionButton={
           isCertificateIssued
             ? {

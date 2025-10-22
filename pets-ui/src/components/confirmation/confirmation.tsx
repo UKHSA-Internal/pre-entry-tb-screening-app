@@ -18,6 +18,7 @@ export interface ConfirmationProps {
   applicationNumber?: string;
   preWhatHappensNextText?: string;
   postWhatHappensNextText?: string;
+  showSearchForAnotherVisaApplicantLink?: boolean;
   actionButton?: {
     text: string;
     onClick: () => void;
@@ -31,6 +32,7 @@ export default function Confirmation({
   preWhatHappensNextText,
   postWhatHappensNextText,
   actionButton,
+  showSearchForAnotherVisaApplicantLink = true,
   ...props
 }: Readonly<ConfirmationProps>) {
   const navigate = useNavigate();
@@ -99,11 +101,13 @@ export default function Confirmation({
           />
         )}
         <br />
-        <LinkLabel
-          title="Search for another visa applicant"
-          to="/search-for-visa-applicant"
-          externalLink={false}
-        />
+        {showSearchForAnotherVisaApplicantLink && (
+          <LinkLabel
+            title="Search for another visa applicant"
+            to="/search-for-visa-applicant"
+            externalLink={false}
+          />
+        )}
       </div>
     </div>
   );

@@ -153,7 +153,7 @@ const ApplicantSearchForm = () => {
       navigate("/tracker");
     } catch (error) {
       console.error(error);
-      navigate("/error");
+      navigate("/sorry-there-is-problem-with-service");
     }
   };
 
