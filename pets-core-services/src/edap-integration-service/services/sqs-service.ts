@@ -29,8 +29,22 @@ class SQService {
    */
   public sendDbStreamMessage(messageBody: string) {
     logger.info(`Message Body to be sent: ${messageBody}`);
+    return this.sendMessage(
+      messageBody,
+      process.env.EDAP_INTEGRATION_QUEUE_NAME as string,
+      this.getAWSAccountIdForEDAP() as string,
+    );
+  }
 
-    return this.sendMessage(messageBody, process.env.EDAP_INTEGRATION_QUEUE_NAME as string);
+  private getAWSAccountIdForEDAP() {
+    const environment = process.env.ENVIRONMENT; // e.g. "dev" | "uat" | "prod"
+    let queueOwnerAWSAccountId: string | undefined;
+    if (environment === "pre-prod" || environment === "prod") {
+      queueOwnerAWSAccountId = process.env.EDAP_AWS_ACCOUNT_ID;
+    } else {
+      queueOwnerAWSAccountId = process.env.AWS_ACCOUNT_ID;
+    }
+    return queueOwnerAWSAccountId;
   }
 
   /**
@@ -40,7 +54,11 @@ class SQService {
   public sendToDLQ(messageBody: string) {
     logger.info(`Message Body to be sent to DLQ: ${messageBody}`);
 
-    return this.sendMessage(messageBody, process.env.EDAP_INTEGRATION_DLQ_NAME as string);
+    return this.sendMessage(
+      messageBody,
+      process.env.EDAP_INTEGRATION_DLQ_NAME as string,
+      process.env.AWS_ACCOUNT_ID as string,
+    );
   }
 
   /**
@@ -52,11 +70,15 @@ class SQService {
   private async sendMessage(
     messageBody: string,
     queueName: string,
+    queueOwnerAWSAccountId: string,
     messageAttributes?: Record<string, MessageAttributeValue>,
   ) {
     // Get the queue URL for the provided queue name
     const queueUrlResult: GetQueueUrlCommandOutput = await this.sqsClient.send(
-      new GetQueueUrlCommand({ QueueName: queueName }),
+      new GetQueueUrlCommand({
+        QueueName: queueName,
+        QueueOwnerAWSAccountId: queueOwnerAWSAccountId,
+      }),
     );
     logger.info(`Queue URL result: ${JSON.stringify(queueUrlResult)}`);
 

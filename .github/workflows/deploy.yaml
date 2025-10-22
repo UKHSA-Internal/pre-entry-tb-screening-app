@@ -45,6 +45,9 @@ jobs:
     environment: ${{ inputs.environment }}
     env:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      EDAP_AWS_ACCOUNT_ID: ${{ secrets.EDAP_AWS_ACCOUNT_ID }}
+      EDAP_INTEGRATION_QUEUE_NAME: ${{ vars.EDAP_INTEGRATION_QUEUE_NAME }}
+      EDAP_INTEGRATION_DLQ_NAME: ${{ vars.EDAP_INTEGRATION_DLQ_NAME }}
       API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
       VITE_MSAL_CLIENT_ID: ${{ secrets.VITE_MSAL_CLIENT_ID }}
       VITE_MSAL_TENANT_ID: ${{ secrets.VITE_MSAL_TENANT_ID }}
@@ -86,6 +89,9 @@ jobs:
       BUILD_FOLDER: ".build"
       ZIP_FILE: "deployment_package.zip"
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      EDAP_AWS_ACCOUNT_ID: ${{ secrets.EDAP_AWS_ACCOUNT_ID }}
+      EDAP_INTEGRATION_QUEUE_NAME: ${{ vars.EDAP_INTEGRATION_QUEUE_NAME }}
+      EDAP_INTEGRATION_DLQ_NAME: ${{ vars.EDAP_INTEGRATION_DLQ_NAME }}
       API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
       APP_DOMAIN: ${{ vars.APP_DOMAIN }}
       VITE_MSAL_CLIENT_ID: ${{ secrets.VITE_MSAL_CLIENT_ID }}
