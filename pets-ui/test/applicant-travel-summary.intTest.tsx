@@ -75,7 +75,7 @@ describe("TravelReview", () => {
 
     expect(mock.history[0].url).toEqual("/application/abc-123/travel-information");
     expect(mock.history).toHaveLength(1);
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/travel-confirmation");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/travel-information-confirmed");
   });
 
   test("user is navigated to error page when api call is unsuccessful", async () => {
@@ -131,7 +131,7 @@ describe("TravelReview", () => {
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/travel-details");
+    expect(link).toHaveAttribute("href", "/travel-information");
     expect(link).toHaveClass("govuk-back-link");
   });
 });

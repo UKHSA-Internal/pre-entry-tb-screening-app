@@ -110,24 +110,59 @@ input[type='file'].hide-text {
   text-decoration: none;
   font-size: 1.25rem;
   width: fit-content;
-} 
+}
 
-.certificate-image{
-    padding-left: 4px;
-    padding-right: 4px;
+.certificate-image {
+  padding-left: 4px;
+  padding-right: 4px;
 }
 
 .footer-copyright-logo {
-    display: inline-block;
-    min-width: 125px;
-    padding-top: 10px;
-    background-position: 50% 0;
-    background-size: 125px 102px;
-    text-align: center;
-    white-space: nowrap;
+  display: inline-block;
+  min-width: 125px;
+  padding-top: 10px;
+  background-position: 50% 0;
+  background-size: 125px 102px;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .footer-meta {
-  width: 150px
+  width: 150px;
 }
 
+.file-upload-blue-bar {
+  background: #b0d9fb;
+  padding: 8px 12px;
+}
+
+.file-upload-no-file {
+  color: #004886;
+}
+
+.file-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.file-upload-hidden-input {
+  display: none;
+}
+
+.file-upload-or-drop {
+  color: #0b0c0c;
+  font-size: 16px;
+}
+
+.govuk-radios__conditional {
+  border-left: 4px solid #b1b4b6;
+}
+
+.govuk-radios__conditional--error {
+  border-left: 4px solid #d4351c;
+}
+
+.dicom-upload-container {
+  margin-bottom: -20px;
+}

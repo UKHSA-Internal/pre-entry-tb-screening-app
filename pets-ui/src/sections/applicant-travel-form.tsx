@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { ReduxTravelDetailsType } from "@/applicant";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
@@ -11,6 +10,7 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectTravel } from "@/redux/store";
 import { setTravelDetails, setTravelDetailsStatus } from "@/redux/travelSlice";
+import { ReduxTravelDetailsType } from "@/types";
 import { ApplicationStatus, ButtonType } from "@/utils/enums";
 import { formRegex, visaOptions } from "@/utils/records";
 
@@ -29,7 +29,7 @@ const ApplicantTravelForm = () => {
   const onSubmit: SubmitHandler<ReduxTravelDetailsType> = (travelData) => {
     dispatch(setTravelDetails(travelData));
     dispatch(setTravelDetailsStatus(ApplicationStatus.IN_PROGRESS));
-    navigate("/travel-summary");
+    navigate("/check-travel-information");
   };
 
   const errorsToShow = Object.keys(errors);

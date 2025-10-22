@@ -7,7 +7,7 @@ import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicantPhoto } from "../fixtures/applicant-photo";
 import { ImageHelper } from "../helpers/image-helper";
-import { YesOrNo } from "../types/enums";
+import { ChestXRay } from "../models/chest-xray";
 import { getApplicationHandler } from "./get-application";
 
 // Mock generateImageObjectkey
@@ -94,6 +94,7 @@ describe("Getting Application Handler", () => {
       },
       // Defined in pets-core-services/src/application-service/fixtures/medical-screening.ts
       medicalScreening: {
+        dateOfMedicalScreening: "2025-05-05T00:00:00.000Z",
         age: 25,
         symptomsOfTb: "Yes",
         symptoms: ["Cough", "Haemoptysis (coughing up blood)"],
@@ -107,11 +108,12 @@ describe("Getting Application Handler", () => {
         haveMenstralPeriod: "Yes",
         physicalExaminationNotes: "NA",
         applicationId: seededApplications[1].applicationId,
+        isXrayRequired: "Yes",
         dateCreated: expect.any(String),
         status: "completed",
       },
       chestXray: {
-        chestXrayTaken: "Yes",
+        dateXrayTaken: "2025-09-04T00:00:00.000Z",
         posteroAnteriorXrayFileName: "posterior-anterior.dicom",
         posteroAnteriorXray:
           "dicom/Apollo Clinic/BRB/ABC1234JANE/generated-app-id-2/postero-anterior.dcm",
@@ -121,14 +123,25 @@ describe("Getting Application Handler", () => {
         lateralDecubitusXrayFileName: "lateral-decubitus.dicom",
         lateralDecubitusXray:
           "dicom/Apollo Clinic/BRB/ABC1234JANE/generated-app-id-2/lateral-decubitus.dcm",
-        xrayResult: "Chest X-ray normal",
-        xrayActiveTbFindings: [],
-        xrayAssociatedMinorFindings: [],
-        xrayMinorFindings: [],
         applicationId: seededApplications[1].applicationId,
         dateCreated: expect.any(String),
         status: "completed",
-        isSputumRequired: YesOrNo.No,
+      },
+      radiologicalOutcome: {
+        applicationId: "generated-app-id-2",
+        dateCreated: expect.any(String),
+        status: "completed",
+        xrayActiveTbFindings: ["Active TB Findings"],
+        xrayAssociatedMinorFindings: ["Associated Minor Findings"],
+        xrayMinorFindings: ["Minor Findings"],
+        xrayResult: "Chest X-ray normal",
+        xrayResultDetail: "Result details",
+      },
+      sputumRequirement: {
+        applicationId: "generated-app-id-2",
+        dateCreated: expect.any(String),
+        sputumRequired: "Yes",
+        status: "completed",
       },
       // Defined in pets-core-services\src\application-service\fixtures\tb-certificate.ts
       tbCertificate: {
@@ -147,6 +160,26 @@ describe("Getting Application Handler", () => {
     });
   });
 
+  test("Fetch application returns error", async () => {
+    const event: PetsAPIGatewayProxyEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[1].applicationId },
+    };
+
+    // // Mock the chest xray model
+    const detailsSpy = vi
+      .spyOn(ChestXRay, "getByApplicationId")
+      .mockRejectedValue(new Error("DB failure"));
+    // Act
+    const response = await getApplicationHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(500);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Something went wrong",
+    });
+    detailsSpy.mockRestore();
+  });
   test("Verify Clinic ID", async () => {
     // Arrange
     const event: PetsAPIGatewayProxyEvent = {

@@ -13,7 +13,8 @@ import ApplicantSummaryPage from "./pages/applicant-summary";
 import CheckSputumSampleInformationPage from "./pages/check-sputum-sample-information";
 import ChestXrayConfirmation from "./pages/chest-xray-confirmation";
 import ChestXrayFindingsPage from "./pages/chest-xray-findings";
-import ChestXrayNotTaken from "./pages/chest-xray-not-taken";
+import ChestXrayNotTakenForm from "./pages/chest-xray-not-taken";
+import ChestXrayOutcomePage from "./pages/chest-xray-outcome";
 import ChestXrayQuestionPage from "./pages/chest-xray-question";
 import ChestXraySummaryPage from "./pages/chest-xray-summary";
 import ChestXrayUploadPage from "./pages/chest-xray-upload";
@@ -26,10 +27,14 @@ import MedicalConfirmation from "./pages/medical-screening-confirmation";
 import MedicalSummaryPage from "./pages/medical-screening-summary";
 import PrivacyNoticePage from "./pages/privacy-notice";
 import ProgressTrackerPage from "./pages/progress-tracker";
+import RadiologicalOutcomeConfirmation from "./pages/radiological-outcome-confirmation";
+import RadiologicalOutcomeSummaryPage from "./pages/radiological-outcome-summary";
 import SignOutPage from "./pages/sign-out";
 import SignedOutPage from "./pages/signed-out";
 import SputumCollectionPage from "./pages/sputum-collection";
 import SputumConfirmation from "./pages/sputum-confirmation";
+import SputumDecisionConfirmation from "./pages/sputum-decision-confirmation";
+import SputumDecisionSummaryPage from "./pages/sputum-decision-summary";
 import SputumQuestionPage from "./pages/sputum-question";
 import TbCertificateDeclarationPage from "./pages/tb-certificate-declaration";
 import TbCertificateNotIssuedPage from "./pages/tb-certificate-not-issued";
@@ -54,7 +59,7 @@ function App() {
         }
       />
       <Route
-        path="/applicant-search"
+        path="/search-for-visa-applicant"
         element={
           <AuthenticatedRoute>
             <ApplicantSearchPage />
@@ -72,7 +77,7 @@ function App() {
         }
       />
       <Route
-        path="/applicant-results"
+        path="/no-matching-record-found"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -82,7 +87,7 @@ function App() {
         }
       />
       <Route
-        path="/contact"
+        path="/enter-applicant-information"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -92,7 +97,7 @@ function App() {
         }
       />
       <Route
-        path="/applicant-photo"
+        path="/upload-visa-applicant-photo"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -102,7 +107,7 @@ function App() {
         }
       />
       <Route
-        path="/applicant-summary"
+        path="/check-applicant-details"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -112,7 +117,7 @@ function App() {
         }
       />
       <Route
-        path="/applicant-confirmation"
+        path="/visa-applicant-details-confirmed"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -122,7 +127,7 @@ function App() {
         }
       />
       <Route
-        path="/medical-screening"
+        path="/record-medical-history-tb-symptoms"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -132,7 +137,7 @@ function App() {
         }
       />
       <Route
-        path="/medical-summary"
+        path="/check-medical-screening"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -142,7 +147,7 @@ function App() {
         }
       />
       <Route
-        path="/medical-confirmation"
+        path="/medical-history-tb-symptoms-confirmed"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -152,47 +157,7 @@ function App() {
         }
       />
       <Route
-        path="/travel-details"
-        element={
-          <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <TravelDetailsPage />
-            </RedirectedRouteIfReduxEmpty>
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/travel-summary"
-        element={
-          <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <TravelSummaryPage />
-            </RedirectedRouteIfReduxEmpty>
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/travel-confirmation"
-        element={
-          <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <TravelConfirmation />
-            </RedirectedRouteIfReduxEmpty>
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/chest-xray-findings"
-        element={
-          <AuthenticatedRoute>
-            <RedirectedRouteIfReduxEmpty>
-              <ChestXrayFindingsPage />
-            </RedirectedRouteIfReduxEmpty>
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/chest-xray-question"
+        path="/is-an-x-ray-required"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -202,27 +167,47 @@ function App() {
         }
       />
       <Route
-        path="/chest-xray-not-taken"
+        path="/reason-x-ray-not-required"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
-              <ChestXrayNotTaken />
+              <ChestXrayNotTakenForm />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
       />
       <Route
-        path="/chest-xray-summary"
+        path="/travel-information"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
-              <ChestXraySummaryPage />
+              <TravelDetailsPage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
       />
       <Route
-        path="/chest-xray-upload"
+        path="/check-travel-information"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <TravelSummaryPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/travel-information-confirmed"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <TravelConfirmation />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/upload-chest-x-ray-images"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -232,7 +217,17 @@ function App() {
         }
       />
       <Route
-        path="/chest-xray-confirmation"
+        path="/check-chest-x-ray-images"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <ChestXraySummaryPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/chest-x-ray-images-confirmed"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -242,7 +237,47 @@ function App() {
         }
       />
       <Route
-        path="/sputum-question"
+        path="/chest-x-ray-results"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <ChestXrayOutcomePage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/enter-x-ray-findings"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <ChestXrayFindingsPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/check-chest-x-ray-results-findings"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <RadiologicalOutcomeSummaryPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/radiological-outcome-confirmed"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <RadiologicalOutcomeConfirmation />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/is-sputum-collection-required"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -252,7 +287,27 @@ function App() {
         }
       />
       <Route
-        path="/sputum-confirmation"
+        path="/check-sputum-decision-information"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <SputumDecisionSummaryPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/sputum-decision-confirmed"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <SputumDecisionConfirmation />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/sputum-sample-information-confirmed"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -262,7 +317,7 @@ function App() {
         }
       />
       <Route
-        path="/sputum-collection"
+        path="/enter-sputum-sample-collection-information"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -272,7 +327,7 @@ function App() {
         }
       />
       <Route
-        path="/check-sputum-sample-information"
+        path="/check-sputum-sample-information-results"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -292,7 +347,7 @@ function App() {
         }
       />
       <Route
-        path="/tb-certificate-question"
+        path="/will-you-issue-tb-clearance-certificate"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -302,7 +357,7 @@ function App() {
         }
       />
       <Route
-        path="/tb-certificate-declaration"
+        path="/enter-clinic-certificate-information"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -312,7 +367,7 @@ function App() {
         }
       />
       <Route
-        path="/tb-certificate-not-issued"
+        path="/why-are-you-not-issuing-certificate"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -332,7 +387,7 @@ function App() {
         }
       />
       <Route
-        path="/tb-certificate-print"
+        path="/tb-clearance-certificate"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -342,7 +397,7 @@ function App() {
         }
       />
       <Route
-        path="/tb-certificate-confirmation"
+        path="/tb-screening-complete"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -360,7 +415,7 @@ function App() {
         }
       />
       <Route
-        path="/sign-out"
+        path="/are-you-sure-you-want-to-sign-out"
         element={
           <AuthenticatedRoute>
             <SignOutPage />
@@ -368,7 +423,7 @@ function App() {
         }
       />
       <Route
-        path="/signed-out"
+        path="/you-have-signed-out"
         element={
           <UnauthenticatedRoute>
             <SignedOutPage />

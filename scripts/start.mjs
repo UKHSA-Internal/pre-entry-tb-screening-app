@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
-import { resolve } from "path";
 import concurrently from "concurrently";
 import { execSync } from "child_process";
+import { resolve } from "path";
 
 const isPowerShell =
   !!process.env.PSModulePath || process.env.ComSpec?.toLowerCase().includes("powershell.exe");
@@ -18,9 +18,22 @@ function runCommand(cmd) {
   }
 }
 
+// Export vars from .env file
 dotenv.config({
   path: resolve(process.cwd(), "configs/.env"),
 });
+
+// If it's not CI process, but on a dev's machine, then export secrets
+if (
+  !process.env.CI &&
+  !process.env.GITHUB_ACTIONS &&
+  process.env.ENVIRONMENT.toLocaleLowerCase() === "local"
+) {
+  // Export vars from .env.local.secret file
+  dotenv.config({
+    path: resolve(process.cwd(), "configs/.env.local.secrets"),
+  });
+}
 
 runCommand("git update-index --assume-unchanged pets-core-services/openapi-docs.json");
 runCommand("pnpm rimraf pets-local-infra/cdk.out");

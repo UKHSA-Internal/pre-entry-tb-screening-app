@@ -5,9 +5,9 @@ import { HelmetProvider } from "react-helmet-async";
 import { Mock } from "vitest";
 
 import { petsApi } from "@/api/api";
-import { ReduxTbCertificateType } from "@/applicant";
 import { ApplicantPhotoProvider } from "@/context/applicantPhotoContext";
 import TbSummaryPage from "@/pages/tb-summary";
+import { ReduxTbCertificateType } from "@/types";
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
@@ -58,7 +58,7 @@ describe("TBSummaryPage", () => {
     it("displays the back link", () => {
       const link = screen.getByRole("link", { name: "Back" });
       expect(link).toBeInTheDocument();
-      expect(link).toHaveAttribute("href", "/tb-certificate-declaration");
+      expect(link).toHaveAttribute("href", "/enter-clinic-certificate-information");
       expect(link).toHaveClass("govuk-back-link");
     });
     it("renders the page titles and descriptions ", () => {
@@ -90,13 +90,13 @@ describe("TBSummaryPage", () => {
       expect(screen.getByText("Certificate issue date")).toBeInTheDocument();
       expect(screen.getByText("25 March 2025")).toBeInTheDocument();
     });
-    it("when continue pressed, it navigates to /tb-certificate-confirmation", async () => {
+    it("when continue pressed, it navigates to /tb-screening-complete", async () => {
       mock.onPost("/application/abc-123/tb-certificate").reply(200);
       await user.click(screen.getByRole("button"));
 
       expect(mock.history[0].url).toEqual("/application/abc-123/tb-certificate");
       expect(mock.history).toHaveLength(1);
-      expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-confirmation");
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-screening-complete");
     });
   });
 });

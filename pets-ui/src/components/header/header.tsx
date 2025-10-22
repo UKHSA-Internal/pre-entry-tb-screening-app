@@ -41,7 +41,7 @@ export default function Header() {
           {accounts.length > 0 ? (
             <LinkLabel
               title="Sign out"
-              to="/sign-out"
+              to="/are-you-sure-you-want-to-sign-out"
               externalLink={false}
               id="sign-out"
               className="govuk-header__link govuk-header__service-name"

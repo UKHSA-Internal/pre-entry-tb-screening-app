@@ -3,8 +3,8 @@ import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
-import { ChestXRayNotTakenReason, ChestXRayResult, YesOrNo } from "../types/enums";
-import { ChestXRayDbOps, NewChestXRayNotTaken, NewChestXRayTaken } from "./chest-xray";
+import { logger } from "../../shared/logger";
+import { ChestXRay, NewChestXRay } from "./chest-xray";
 
 describe("Test for Chest X-Ray Db Ops Class", () => {
   const ddbMock = mockClient(awsClients.dynamoDBDocClient);
@@ -13,43 +13,19 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     ddbMock.reset();
   });
 
-  const newChestXrayTaken: NewChestXRayTaken = {
+  const newChestXray: NewChestXRay = {
     applicationId: "test-application-id",
     createdBy: "test-chest-xray-creator",
-    chestXrayTaken: YesOrNo.Yes,
+    dateXrayTaken: "2025-05-05",
     posteroAnteriorXrayFileName: "posterior-anterior.dicom",
     posteroAnteriorXray: "saved/bucket/path/for/posterior/anterior",
     apicalLordoticXrayFileName: "apical-lordotic.dicom",
     apicalLordoticXray: "saved/bucket/path/for/apical/lordotic",
     lateralDecubitusXrayFileName: "lateral-decubitus.dicom",
     lateralDecubitusXray: "saved/bucket/path/for/lateral/decubitus",
-    xrayResult: ChestXRayResult.NonTbAbnormal,
-    xrayResultDetail: "more details of result",
-    xrayMinorFindings: ["minor", "findings"],
-    xrayAssociatedMinorFindings: ["associated", "minor", "findings"],
-    xrayActiveTbFindings: ["active", "tb", "findings"],
-    isSputumRequired: YesOrNo.No,
   };
 
-  const newChestXrayNotTaken: NewChestXRayNotTaken = {
-    applicationId: "test-application-id",
-    createdBy: "test-chest-xray-creator",
-    chestXrayTaken: YesOrNo.No,
-    reasonXrayWasNotTaken: ChestXRayNotTakenReason.Other,
-    xrayWasNotTakenFurtherDetails: "Extra Notes",
-    isSputumRequired: YesOrNo.Yes,
-  };
-
-  test.each([
-    {
-      newChestXray: newChestXrayTaken,
-      title: "Chest X-ray taken",
-    },
-    {
-      newChestXray: newChestXrayNotTaken,
-      title: "Chest X-ray not taken",
-    },
-  ])("Creating new X-ray record for $title", async ({ newChestXray }) => {
+  test("Creating new X-ray record for Chest X-ray taken", async () => {
     // Arrange
     ddbMock.on(PutCommand);
     vi.useFakeTimers();
@@ -57,11 +33,12 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     vi.setSystemTime(expectedDateTime);
 
     // Act
-    const chestXray = await ChestXRayDbOps.createChestXray(newChestXray);
+    const chestXray = await ChestXRay.createChestXray(newChestXray);
 
     // Assert
     expect(chestXray).toMatchObject({
       ...newChestXray,
+      dateXrayTaken: new Date("2025-05-05"),
       dateCreated: new Date(expectedDateTime),
     });
 
@@ -70,6 +47,7 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
       TableName: "test-application-details",
       Item: {
         ...newChestXray,
+        dateXrayTaken: new Date("2025-05-05").toISOString(),
         pk: "APPLICATION#test-application-id",
         sk: "APPLICATION#CHEST#XRAY",
       },
@@ -81,16 +59,7 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     });
   });
 
-  test.each([
-    {
-      newChestXray: newChestXrayTaken,
-      title: "Chest X-ray taken",
-    },
-    {
-      newChestXray: newChestXrayNotTaken,
-      title: "Chest X-ray not taken",
-    },
-  ])("Getting taken X-ray by application ID", async ({ newChestXray }) => {
+  test("Getting taken X-ray by application ID", async () => {
     const dateCreated = "2025-02-07";
 
     ddbMock.on(GetCommand).resolves({
@@ -103,12 +72,23 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     });
 
     // Act
-    const chestXray = await ChestXRayDbOps.getByApplicationId(newChestXray.applicationId);
+    const chestXray = await ChestXRay.getByApplicationId(newChestXray.applicationId);
 
     // Assert
     expect(chestXray).toMatchObject({
       ...chestXray,
       dateCreated: new Date("2025-02-07"),
     });
+  });
+
+  test("Handling error while getting Chest X-ray by applicationId", async () => {
+    const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    ddbMock.on(GetCommand).rejects(Error("DB error"));
+
+    // Act / Assert
+    await expect(ChestXRay.getByApplicationId(newChestXray.applicationId)).rejects.toThrow(
+      "DB error",
+    );
+    expect(errorLoggerMock).toHaveBeenCalledWith(Error("DB error"), "Error retrieving Chest X-ray");
   });
 });

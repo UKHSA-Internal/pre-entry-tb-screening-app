@@ -7,13 +7,13 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Select environment to test'
+        description: "Select environment to test"
         required: true
         default: "all"
         type: choice
         options: [all, qat, dev, preprod]
       browsers:
-        description: 'Select browsers to test'
+        description: "Select browsers to test"
         required: true
         default: "all"
         type: choice
@@ -56,6 +56,7 @@ jobs:
           echo "environments=$ENV_ARRAY" >> $GITHUB_OUTPUT
           echo "Selected browsers: $BROWSER_ARRAY"
           echo "Selected environments: $ENV_ARRAY"
+
   cypress-nightly:
     name: Run Cypress Tests - ${{ matrix.environment }} - ${{ matrix.browser }}
     runs-on: ubuntu-latest
@@ -99,6 +100,15 @@ jobs:
 
       - name: Debug available Cypress specs
         run: ls -R pets-ui/cypress/e2e
+
+      - name: Verify Cypress reporter configuration
+        run: |
+          echo "Checking if mochawesome is configured..."
+          if grep -q "mochawesome" pets-ui/package.json; then
+            echo "mochawesome found in package.json"
+          else
+            echo "mochawesome not found - test counts may not be available"
+          fi
 
       - name: Cache Cypress binary
         id: cache-cypress-binary
@@ -149,14 +159,113 @@ jobs:
           path: pets-ui/cypress/screenshots
           retention-days: 7
 
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Merge Mochawesome Reports
         if: always()
         run: |
-          JSON_DIR=pets-ui/cypress/reports/mochawesome/.jsons
-          if ls ${JSON_DIR}/*.json 1> /dev/null 2>&1; then
-            npx mochawesome-merge ${JSON_DIR}/*.json > pets-ui/cypress/reports/mochawesome/mochawesome.json
+          # Create reports directory if it doesn't exist
+          mkdir -p pets-ui/cypress/reports/mochawesome
+
+          echo "=== Debugging Cypress Reports ==="
+          echo "Looking for standard mochawesome reports..."
+          find pets-ui/cypress -name "*.json" -type f 2>/dev/null || echo "No JSON files found in cypress directory"
+
+          # Standard mochawesome puts files directly in reportDir
+          REPORT_DIR="pets-ui/cypress/reports/mochawesome"
+          MERGED_FILE="$REPORT_DIR/mochawesome.json"
+
+          if [ -d "$REPORT_DIR" ]; then
+            echo "Found reports directory: $REPORT_DIR"
+            ls -la "$REPORT_DIR" 2>/dev/null || echo "Directory empty"
+            
+            # Look for JSON files (standard mochawesome creates files like mochawesome_timestamp.json)
+            # Exclude the final merged file
+            JSON_FILES=($(find "$REPORT_DIR" -name "*.json" -not -name "mochawesome.json" 2>/dev/null))
+            
+            if [ ${#JSON_FILES[@]} -gt 0 ]; then
+              echo "Found ${#JSON_FILES[@]} JSON report files:"
+              printf '%s\n' "${JSON_FILES[@]}"
+              
+              # Use mochawesome-merge to combine the reports
+              npx mochawesome-merge "${JSON_FILES[@]}" > "$MERGED_FILE"
+              echo "Reports merged successfully using mochawesome-merge"
+              
+              # Verify the merged file
+              if [ -f "$MERGED_FILE" ] && [ -s "$MERGED_FILE" ]; then
+                echo "Merged file created successfully at: $MERGED_FILE"
+                echo "File size: $(wc -c < "$MERGED_FILE") bytes"
+                echo "Sample of merged content:"
+                head -3 "$MERGED_FILE" | jq . 2>/dev/null || head -3 "$MERGED_FILE"
+              else
+                echo "Warning: Merged file is empty or missing"
+              fi
+            else
+              echo "No JSON report files found in $REPORT_DIR"
+              echo "Available files:"
+              find "$REPORT_DIR" -type f 2>/dev/null || echo "No files found"
+              echo "This could mean:"
+              echo "1. Tests didn't run successfully"
+              echo "2. Standard mochawesome reporter is not generating reports"
+              echo "3. Reporter configuration issue"
+              
+              # Create minimal fallback
+              echo '{"stats":{"suites":0,"tests":0,"passes":0,"pending":0,"failures":0},"results":[],"meta":{"mocha":{"version":"unknown"},"mochawesome":{"version":"unknown"}}}' > "$MERGED_FILE"
+              echo "Created minimal fallback report"
+            fi
           else
-            echo "No mochawesome JSON files found. Skipping merge."
+            echo "Reports directory not found: $REPORT_DIR"
+            echo "Available directories in cypress:"
+            find pets-ui/cypress -type d 2>/dev/null || echo "No cypress directory found"
+            
+            # Create directory and minimal fallback
+            mkdir -p "$REPORT_DIR"
+            echo '{"stats":{"suites":0,"tests":0,"passes":0,"pending":0,"failures":0},"results":[],"meta":{"mocha":{"version":"unknown"},"mochawesome":{"version":"unknown"}}}' > "$MERGED_FILE"
+            echo "Created minimal fallback report"
+          fi
+
+      - name: Upload merged mochawesome report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mochawesome-merged-${{ matrix.environment }}-${{ matrix.browser }}
+          path: pets-ui/cypress/reports/mochawesome/mochawesome.json
+
+      - name: Show merged stats
+        if: always()
+        run: |
+          MERGED_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
+          if [ -f "$MERGED_FILE" ]; then
+            echo "=== Merged Test Statistics ==="
+            jq '.stats' "$MERGED_FILE"
+          else
+            echo "⚠️ Merged mochawesome report not found at $MERGED_FILE"
+            echo "Available files in reports directory:"
+            find pets-ui/cypress/reports -type f -name "*.json" 2>/dev/null || echo "No JSON files found"
+          fi
+
+      - name: Extract test counts
+        if: always()
+        id: extract_counts
+        run: |
+          JSON_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
+          if [ -f "$JSON_FILE" ]; then
+            PASSED_COUNT=$(jq -r '.stats.passes // 0' "$JSON_FILE")
+            FAILED_COUNT=$(jq -r '.stats.failures // 0' "$JSON_FILE")
+            TOTAL_COUNT=$(jq -r '.stats.tests // 0' "$JSON_FILE")
+            PENDING_COUNT=$(jq -r '.stats.pending // 0' "$JSON_FILE")
+            echo "passed_count=$PASSED_COUNT" >> $GITHUB_OUTPUT
+            echo "failed_count=$FAILED_COUNT" >> $GITHUB_OUTPUT
+            echo "total_count=$TOTAL_COUNT" >> $GITHUB_OUTPUT
+            echo "pending_count=$PENDING_COUNT" >> $GITHUB_OUTPUT
+            echo "✅ Test counts extracted: Total=$TOTAL_COUNT, Passed=$PASSED_COUNT, Failed=$FAILED_COUNT, Pending=$PENDING_COUNT"
+          else
+            echo "⚠️ No merged mochawesome report found — using default values"
+            echo "passed_count=0" >> $GITHUB_OUTPUT
+            echo "failed_count=0" >> $GITHUB_OUTPUT
+            echo "total_count=0" >> $GITHUB_OUTPUT
+            echo "pending_count=0" >> $GITHUB_OUTPUT
           fi
       - name: Upload Mochawesome Report
         if: always()
@@ -166,27 +275,49 @@ jobs:
           path: pets-ui/cypress/reports/mochawesome/
           retention-days: 7
 
-      - name: Store env+browser result
+      - name: Store env+browser result with test counts
         if: always()
         run: |
           if [[ "${{ steps.initial_attempt.outcome }}" == "success" ]] || [[ "${{ steps.retry_attempt.outcome }}" == "success" ]]; then
-            echo "PASS" > ${{ matrix.environment }}-${{ matrix.browser }}-result.txt
+            STATUS="PASS"
           else
-            echo "FAIL" > ${{ matrix.environment }}-${{ matrix.browser }}-result.txt
+            STATUS="FAIL"
           fi
+
+          # Create detailed result file with test counts
+          cat > ${{ matrix.environment }}-${{ matrix.browser }}-result.json << EOF
+          {
+            "status": "$STATUS",
+            "environment": "${{ matrix.environment }}",
+            "browser": "${{ matrix.browser }}",
+            "testCounts": {
+              "total": ${{ steps.extract_counts.outputs.total_count }},
+              "passed": ${{ steps.extract_counts.outputs.passed_count }},
+              "failed": ${{ steps.extract_counts.outputs.failed_count }},
+              "pending": ${{ steps.extract_counts.outputs.pending_count }}
+            },
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
+          }
+          EOF
+
+          # Keep backward compatibility
+          echo "$STATUS" > ${{ matrix.environment }}-${{ matrix.browser }}-result.txt
+
       - name: Upload env+browser result
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: env-browser-result-${{ matrix.environment }}-${{ matrix.browser }}
-          path: ${{ matrix.environment }}-${{ matrix.browser }}-result.txt
+          path: |
+            ${{ matrix.environment }}-${{ matrix.browser }}-result.txt
+            ${{ matrix.environment }}-${{ matrix.browser }}-result.json
 
   generate-summary-and-deploy:
     name: Generate Summary and Deploy Dashboard
     needs: [setup-matrix, cypress-nightly]
     if: always()
     runs-on: ubuntu-latest
-    continue-on-error: true   # allow report even if tests fail
+    continue-on-error: true # allow report even if tests fail
 
     environment:
       name: github-pages
@@ -208,56 +339,117 @@ jobs:
       - name: Create dashboard directory
         run: |
           mkdir -p dashboard
-      - name: Generate test summary report
+
+      - name: Generate test summary report with counts
         id: summary
         run: |
           echo "# 🌙 Nightly Cypress Test Results" > nightly-summary.md
           echo "**Run Date**: $(date)" >> nightly-summary.md
           echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
           echo "" >> nightly-summary.md
+
           ENV_MATRIX='${{ needs.setup-matrix.outputs.environments }}'
           BROWSER_MATRIX='${{ needs.setup-matrix.outputs.browsers }}'
           ENV_LIST=($(echo $ENV_MATRIX | jq -r '.[]'))
           BROWSER_LIST=($(echo $BROWSER_MATRIX | jq -r '.[]'))
+
           TOTAL=0
           FAILS=0
+          TOTAL_TEST_COUNT=0
+          TOTAL_PASSED_COUNT=0
+          TOTAL_FAILED_COUNT=0
+          TOTAL_PENDING_COUNT=0
+
           echo "{" > dashboard/test-results.json
           echo "  \"results\": {" >> dashboard/test-results.json
           FIRST_ENV=true
+
           for env in "${ENV_LIST[@]}"; do
             echo "## Environment: $env" >> nightly-summary.md
             echo "" >> nightly-summary.md
-            echo "| Browser | Status |" >> nightly-summary.md
-            echo "|---------|--------|" >> nightly-summary.md
+            echo "| Browser | Status | Total Tests | Passed | Failed | Pending |" >> nightly-summary.md
+            echo "|---------|--------|-------------|--------|--------|---------|" >> nightly-summary.md
+            
             if [ "$FIRST_ENV" = true ]; then
               echo "    \"$env\": {" >> dashboard/test-results.json
               FIRST_ENV=false
             else
               echo "    ,\"$env\": {" >> dashboard/test-results.json
             fi
+            
             FIRST_BROWSER=true
             for browser in "${BROWSER_LIST[@]}"; do
               RESULT_FILE="all-artifacts/env-browser-result-${env}-${browser}/${env}-${browser}-result.txt"
+              RESULT_JSON_FILE="all-artifacts/env-browser-result-${env}-${browser}/${env}-${browser}-result.json"
               STATUS="UNKNOWN"
+              TEST_COUNT=0
+              PASSED_COUNT=0
+              FAILED_COUNT=0
+              PENDING_COUNT=0
+              
               if [ -f "$RESULT_FILE" ]; then
                 STATUS=$(cat "$RESULT_FILE")
               fi
-              echo "| $browser | $([ "$STATUS" = "PASS" ] && echo "✅ PASS" || echo "❌ FAIL") |" >> nightly-summary.md
+              
+              # Extract test counts from JSON if available
+              if [ -f "$RESULT_JSON_FILE" ] && command -v jq >/dev/null 2>&1; then
+                TEST_COUNT=$(jq -r '.testCounts.total // 0' "$RESULT_JSON_FILE")
+                PASSED_COUNT=$(jq -r '.testCounts.passed // 0' "$RESULT_JSON_FILE")
+                FAILED_COUNT=$(jq -r '.testCounts.failed // 0' "$RESULT_JSON_FILE")
+                PENDING_COUNT=$(jq -r '.testCounts.pending // 0' "$RESULT_JSON_FILE")
+              fi
+              
+              echo "| $browser | $([ "$STATUS" = "PASS" ] && echo "✅ PASS" || echo "❌ FAIL") | $TEST_COUNT | $PASSED_COUNT | $FAILED_COUNT | $PENDING_COUNT |" >> nightly-summary.md
+              
               if [ "$FIRST_BROWSER" = true ]; then
-                echo "      \"$browser\": \"$STATUS\"" >> dashboard/test-results.json
+                echo "      \"$browser\": {" >> dashboard/test-results.json
+                echo "        \"status\": \"$STATUS\"," >> dashboard/test-results.json
+                echo "        \"testCounts\": {" >> dashboard/test-results.json
+                echo "          \"total\": $TEST_COUNT," >> dashboard/test-results.json
+                echo "          \"passed\": $PASSED_COUNT," >> dashboard/test-results.json
+                echo "          \"failed\": $FAILED_COUNT," >> dashboard/test-results.json
+                echo "          \"pending\": $PENDING_COUNT" >> dashboard/test-results.json
+                echo "        }" >> dashboard/test-results.json
+                echo "      }" >> dashboard/test-results.json
                 FIRST_BROWSER=false
               else
-                echo "      ,\"$browser\": \"$STATUS\"" >> dashboard/test-results.json
+                echo "      ,\"$browser\": {" >> dashboard/test-results.json
+                echo "        \"status\": \"$STATUS\"," >> dashboard/test-results.json
+                echo "        \"testCounts\": {" >> dashboard/test-results.json
+                echo "          \"total\": $TEST_COUNT," >> dashboard/test-results.json
+                echo "          \"passed\": $PASSED_COUNT," >> dashboard/test-results.json
+                echo "          \"failed\": $FAILED_COUNT," >> dashboard/test-results.json
+                echo "          \"pending\": $PENDING_COUNT" >> dashboard/test-results.json
+                echo "        }" >> dashboard/test-results.json
+                echo "      }" >> dashboard/test-results.json
               fi
+              
               TOTAL=$((TOTAL+1))
               if [ "$STATUS" != "PASS" ]; then
                 FAILS=$((FAILS+1))
               fi
+              
+              # Aggregate test counts
+              TOTAL_TEST_COUNT=$((TOTAL_TEST_COUNT+TEST_COUNT))
+              TOTAL_PASSED_COUNT=$((TOTAL_PASSED_COUNT+PASSED_COUNT))
+              TOTAL_FAILED_COUNT=$((TOTAL_FAILED_COUNT+FAILED_COUNT))
+              TOTAL_PENDING_COUNT=$((TOTAL_PENDING_COUNT+PENDING_COUNT))
             done
             echo "    }" >> dashboard/test-results.json
             echo "" >> nightly-summary.md
           done
           echo "  }" >> dashboard/test-results.json
+
+          # Add summary counts
+          echo "" >> nightly-summary.md
+          echo "## 📊 Test Summary" >> nightly-summary.md
+          echo "- **Total Test Combinations**: $TOTAL" >> nightly-summary.md
+          echo "- **Total Individual Tests**: $TOTAL_TEST_COUNT" >> nightly-summary.md
+          echo "- **Total Passed**: $TOTAL_PASSED_COUNT" >> nightly-summary.md
+          echo "- **Total Failed**: $TOTAL_FAILED_COUNT" >> nightly-summary.md
+          echo "- **Total Pending**: $TOTAL_PENDING_COUNT" >> nightly-summary.md
+          echo "" >> nightly-summary.md
+
           if [ $FAILS -eq 0 ]; then
             echo "## ✅ Overall Status: PASSED" >> nightly-summary.md
             echo "All $TOTAL combinations passed." >> nightly-summary.md
@@ -265,23 +457,31 @@ jobs:
             OVERALL_STATUS="PASS"
           else
             echo "## ❌ Overall Status: FAILED" >> nightly-summary.md
-            echo "$FAILS of $TOTAL environment–browser combinations failed." >> nightly-summary.md
+            echo "$FAILS of $TOTAL environment—browser combinations failed." >> nightly-summary.md
             echo "overall_status=FAIL" >> $GITHUB_OUTPUT
             OVERALL_STATUS="FAIL"
           fi
+
           echo "  ,\"overallStatus\": \"$OVERALL_STATUS\"," >> dashboard/test-results.json
-          echo "  \"totalTests\": $TOTAL," >> dashboard/test-results.json
-          echo "  \"failedTests\": $FAILS," >> dashboard/test-results.json
+          echo "  \"totalCombinations\": $TOTAL," >> dashboard/test-results.json
+          echo "  \"failedCombinations\": $FAILS," >> dashboard/test-results.json
+          echo "  \"totalTests\": $TOTAL_TEST_COUNT," >> dashboard/test-results.json
+          echo "  \"totalPassed\": $TOTAL_PASSED_COUNT," >> dashboard/test-results.json
+          echo "  \"totalFailed\": $TOTAL_FAILED_COUNT," >> dashboard/test-results.json
+          echo "  \"totalSkipped\": $TOTAL_PENDING_COUNT," >> dashboard/test-results.json
+
           if [ $TOTAL -gt 0 ]; then
             SUCCESS_RATE=$(echo "scale=0; ($TOTAL-$FAILS)*100/$TOTAL" | bc)
           else
             SUCCESS_RATE=0
           fi
+
           echo "  \"successRate\": $SUCCESS_RATE," >> dashboard/test-results.json
           echo "  \"runUrl\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"," >> dashboard/test-results.json
           echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)\"" >> dashboard/test-results.json
           echo "}" >> dashboard/test-results.json
-      - name: Create dashboard HTML
+
+      - name: Create enhanced dashboard HTML with test counts
         run: |
           cat > dashboard/index.html << 'EOF'
           <!DOCTYPE html>
@@ -324,7 +524,7 @@ jobs:
                   
                   .metrics {
                       display: grid;
-                      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
                       gap: 20px;
                       margin: 20px 0;
                   }
@@ -344,7 +544,7 @@ jobs:
                   }
                   
                   .metric-value {
-                      font-size: 3rem;
+                      font-size: 2.5rem;
                       font-weight: bold;
                       margin-bottom: 8px;
                   }
@@ -352,7 +552,7 @@ jobs:
                   .metric-label {
                       color: #666;
                       text-transform: uppercase;
-                      font-size: 0.9rem;
+                      font-size: 0.8rem;
                       letter-spacing: 0.5px;
                   }
                   
@@ -375,39 +575,18 @@ jobs:
                       border-radius: 0 8px 8px 0;
                   }
                   
-                  .environment-header {
-                      margin-bottom: 20px;
-                  }
-                  
                   .environment-title {
                       font-size: 1.5rem;
                       font-weight: bold;
                       color: #374151;
-                      margin-bottom: 12px;
+                      margin-bottom: 20px;
                       text-transform: uppercase;
                       letter-spacing: 1px;
                   }
                   
-                  .environment-stats {
-                      display: flex;
-                      gap: 20px;
-                      flex-wrap: wrap;
-                      margin-top: 8px;
-                  }
-                  
-                  .stat-item {
-                      background: white;
-                      padding: 8px 16px;
-                      border-radius: 20px;
-                      font-size: 0.9rem;
-                      font-weight: 600;
-                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                      border: 1px solid #e5e7eb;
-                  }
-                  
                   .browser-grid {
                       display: grid;
-                      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
                       gap: 16px;
                       margin-top: 20px;
                   }
@@ -455,6 +634,8 @@ jobs:
                       font-weight: bold;
                       text-transform: uppercase;
                       letter-spacing: 0.5px;
+                      margin-bottom: 12px;
+                      display: inline-block;
                   }
                   
                   .status-badge.pass {
@@ -474,6 +655,41 @@ jobs:
                       color: #6b7280;
                       border: 2px solid #9ca3af;
                   }
+                  
+                  .test-counts {
+                      display: grid;
+                      grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+                      gap: 8px;
+                      margin-top: 12px;
+                  }
+                  
+                  .count-item {
+                      text-align: center;
+                      padding: 8px 4px;
+                      border-radius: 8px;
+                      background: #f9fafb;
+                      border: 1px solid #e5e7eb;
+                  }
+                  
+                  .count-value {
+                      display: block;
+                      font-size: 1.2rem;
+                      font-weight: bold;
+                      color: #374151;
+                  }
+                  
+                  .count-label {
+                      font-size: 0.7rem;
+                      color: #6b7280;
+                      text-transform: uppercase;
+                      letter-spacing: 0.5px;
+                      margin-top: 2px;
+                  }
+                  
+                  .count-item.total { border-left: 3px solid #3b82f6; }
+                  .count-item.passed { border-left: 3px solid #22c55e; }
+                  .count-item.failed { border-left: 3px solid #ef4444; }
+                  .count-item.pending { border-left: 3px solid #f59e0b; }
                   
                   .footer {
                       text-align: center;
@@ -529,7 +745,7 @@ jobs:
                   
                   @media (max-width: 768px) {
                       .metrics {
-                          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
                           gap: 16px;
                       }
                       
@@ -538,11 +754,15 @@ jobs:
                       }
                       
                       .metric-value {
-                          font-size: 2.5rem;
+                          font-size: 2rem;
                       }
                       
                       .header h1 {
                           font-size: 1.5rem;
+                      }
+                      
+                      .test-counts {
+                          grid-template-columns: repeat(2, 1fr);
                       }
                   }
               </style>
@@ -587,6 +807,33 @@ jobs:
                       return statusMap[status] || statusMap['UNKNOWN'];
                   }
                   
+                  function createTestCountsHTML(testCounts) {
+                      if (!testCounts || testCounts.total === 0) {
+                          return '<div class="test-counts"><div class="count-item"><span class="count-value">0</span><div class="count-label">No Tests</div></div></div>';
+                      }
+                      
+                      return `
+                          <div class="test-counts">
+                              <div class="count-item total">
+                                  <span class="count-value">${testCounts.total || 0}</span>
+                                  <div class="count-label">Total</div>
+                              </div>
+                              <div class="count-item passed">
+                                  <span class="count-value">${testCounts.passed || 0}</span>
+                                  <div class="count-label">Passed</div>
+                              </div>
+                              <div class="count-item failed">
+                                  <span class="count-value">${testCounts.failed || 0}</span>
+                                  <div class="count-label">Failed</div>
+                              </div>
+                              <div class="count-item pending">
+                                  <span class="count-value">${testCounts.pending || 0}</span>
+                                  <div class="count-label">Pending</div>
+                              </div>
+                          </div>
+                      `;
+                  }
+                  
                   function createEnvironmentSection(envName, browsers) {
                       let sectionHTML = '<div class="environment-section">';
                       sectionHTML += '<div class="environment-title">Environment: ' + envName.toUpperCase() + '</div>';
@@ -594,7 +841,9 @@ jobs:
                       
                       Object.entries(browsers).forEach(function(entry) {
                           const browser = entry[0];
-                          const status = entry[1];
+                          const browserData = entry[1];
+                          const status = browserData.status || browserData; // Handle both old and new format
+                          const testCounts = browserData.testCounts || {};
                           const statusInfo = getStatusInfo(status);
                           
                           sectionHTML += 
@@ -602,6 +851,7 @@ jobs:
                                   '<div class="browser-icon">' + getBrowserIcon(browser) + '</div>' +
                                   '<div class="browser-name">' + browser.charAt(0).toUpperCase() + browser.slice(1) + '</div>' +
                                   '<span class="status-badge ' + statusInfo.class + '">' + statusInfo.text + '</span>' +
+                                  createTestCountsHTML(testCounts) +
                               '</div>';
                       });
                       
@@ -648,11 +898,19 @@ jobs:
                                       '</div>' +
                                       '<div class="metric-card">' +
                                           '<div class="metric-value">' + (data.successRate || 0) + '%</div>' +
-                                          '<div class="metric-label">Success Rate (7D)</div>' +
+                                          '<div class="metric-label">Success Rate</div>' +
                                       '</div>' +
                                       '<div class="metric-card">' +
-                                          '<div class="metric-value">' + (data.failedTests || 0) + '</div>' +
-                                          '<div class="metric-label">Failed Tests</div>' +
+                                          '<div class="metric-value">' + (data.totalTests || 0) + '</div>' +
+                                          '<div class="metric-label">Total Tests</div>' +
+                                      '</div>' +
+                                      '<div class="metric-card">' +
+                                          '<div class="metric-value">' + (data.totalPassed || 0) + '</div>' +
+                                          '<div class="metric-label">Tests Passed</div>' +
+                                      '</div>' +
+                                      '<div class="metric-card">' +
+                                          '<div class="metric-value">' + (data.totalFailed || 0) + '</div>' +
+                                          '<div class="metric-label">Tests Failed</div>' +
                                       '</div>' +
                                       '<div class="metric-card">' +
                                           '<div class="metric-value">' + hoursAgo + '</div>' +

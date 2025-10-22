@@ -3,10 +3,16 @@ import { describe, expect, test, vi } from "vitest";
 import { seededApplications } from "../../shared/fixtures/application";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededMedicalScreening } from "../fixtures/medical-screening";
-import { MenstrualPeriods, PregnancyStatus, YesOrNo } from "../types/enums";
+import {
+  ChestXRayNotTakenReason,
+  MenstrualPeriods,
+  PregnancyStatus,
+  YesOrNo,
+} from "../types/enums";
 import { SaveMedicalScreeningEvent, saveMedicalScreeningHandler } from "./save-medical-screening";
 
 const newMedicalScreeningDetails: SaveMedicalScreeningEvent["parsedBody"] = {
+  dateOfMedicalScreening: "2025-05-06",
   age: 32,
   symptomsOfTb: YesOrNo.No,
   symptoms: [],
@@ -16,6 +22,8 @@ const newMedicalScreeningDetails: SaveMedicalScreeningEvent["parsedBody"] = {
   pregnant: PregnancyStatus.No,
   haveMenstralPeriod: MenstrualPeriods.NA,
   physicalExaminationNotes: "NA",
+  isXrayRequired: YesOrNo.No,
+  reasonXrayNotRequired: ChestXRayNotTakenReason.Other,
 };
 
 describe("Test for Saving Medical Screening into DB", () => {
@@ -35,17 +43,25 @@ describe("Test for Saving Medical Screening into DB", () => {
     expect(JSON.parse(response.body)).toMatchObject({
       applicationId: seededApplications[0].applicationId,
       ...newMedicalScreeningDetails,
+      dateOfMedicalScreening: new Date(
+        newMedicalScreeningDetails.dateOfMedicalScreening,
+      ).toISOString(),
       dateCreated: expect.any(String),
     });
   });
 
   test("Duplicate post throws a 400 error", async () => {
     // Arrange
-    const existingMedicalScreening = seededMedicalScreening[0];
+    const existingMedicalScreening = seededMedicalScreening[1];
     const event: SaveMedicalScreeningEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[1].applicationId },
-      parsedBody: existingMedicalScreening,
+      parsedBody: {
+        ...existingMedicalScreening,
+        dateOfMedicalScreening: new Date(
+          existingMedicalScreening.dateOfMedicalScreening,
+        ).toISOString(),
+      },
     };
 
     // Act

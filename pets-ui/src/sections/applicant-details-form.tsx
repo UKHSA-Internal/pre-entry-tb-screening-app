@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { DateType, ReduxApplicantDetailsType } from "@/applicant";
 import DateTextInput from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
@@ -13,6 +12,7 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import { setApplicantDetails, setApplicantDetailsStatus } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
+import { DateType, ReduxApplicantDetailsType } from "@/types";
 import { ApplicationStatus, ButtonType, RadioIsInline } from "@/utils/enums";
 import { validateDate } from "@/utils/helpers";
 import { countryList, formRegex } from "@/utils/records";
@@ -32,7 +32,7 @@ const ApplicantForm = () => {
   const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = (applicantData) => {
     dispatch(setApplicantDetails(applicantData));
     dispatch(setApplicantDetailsStatus(ApplicationStatus.IN_PROGRESS));
-    navigate("/applicant-photo");
+    navigate("/upload-visa-applicant-photo");
   };
 
   const errorsToShow = Object.keys(errors);

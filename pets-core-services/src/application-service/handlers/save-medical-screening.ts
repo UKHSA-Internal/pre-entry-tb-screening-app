@@ -4,7 +4,11 @@ import { z } from "zod";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { MedicalScreening } from "../models/medical-screening";
+import {
+  MedicalScreeningChestXray,
+  MedicalScreeningDbOps,
+  MedicalScreeningNoChestXray,
+} from "../models/medical-screening";
 import { MedicalScreeningRequestSchema } from "../types/zod-schema";
 
 export type MedicalScreeningRequestSchema = z.infer<typeof MedicalScreeningRequestSchema>;
@@ -30,9 +34,9 @@ export const saveMedicalScreeningHandler = async (event: SaveMedicalScreeningEve
     }
 
     const { createdBy } = event.requestContext.authorizer;
-    let medicalScreening: MedicalScreening;
+    let medicalScreening: MedicalScreeningChestXray | MedicalScreeningNoChestXray;
     try {
-      medicalScreening = await MedicalScreening.createMedicalScreening({
+      medicalScreening = await MedicalScreeningDbOps.createMedicalScreening({
         ...parsedBody,
         createdBy,
         applicationId,

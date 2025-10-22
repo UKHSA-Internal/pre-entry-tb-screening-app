@@ -3,7 +3,10 @@ import Container from "@/components/container/container";
 
 export default function MedicalConfirmation() {
   return (
-    <Container title="Medical screening confirmation" backLinkTo="/medical-summary">
+    <Container
+      title="Medical history and TB symptoms confirmed - Complete UK pre-entry health screening - GOV.UK"
+      backLinkTo="/check-medical-screening"
+    >
       <Confirmation
         confirmationText={"Medical history and TB symptoms confirmed"}
         furtherInfo={["You can now return to the progress tracker."]}

@@ -43,6 +43,8 @@ type ReceivedApplicationDetailsType = {
   travelInformation: ReceivedTravelDetailsType | undefined;
   medicalScreening: ReceivedMedicalScreeningType | undefined;
   chestXray: ReceivedChestXrayDetailsType | undefined;
+  radiologicalOutcome: ReceivedRadiologicalOutcomeDetailsType | undefined;
+  sputumRequirement: ReceivedSputumRequirementType | undefined;
   sputumDetails: ReceivedSputumType | undefined;
   tbCertificate: ReceivedTbCertificateType | undefined;
 };
@@ -131,10 +133,14 @@ type ReduxMedicalScreeningType = {
   pregnant: string;
   menstrualPeriods: string;
   physicalExamNotes: string;
+  chestXrayTaken: YesOrNo;
+  reasonXrayNotRequired: string;
+  reasonXrayNotRequiredFurtherDetails?: string;
   completionDate: DateType;
 };
 
 type PostedMedicalScreeningType = {
+  dateOfMedicalScreening: string;
   age: number;
   contactWithPersonWithTb: string;
   contactWithTbDetails: string;
@@ -148,56 +154,95 @@ type PostedMedicalScreeningType = {
   symptoms: string[];
   symptomsOfTb: string;
   symptomsOther: string;
+  isXrayRequired: YesOrNo;
+  reasonXrayNotRequired?: string;
+  reasonXrayNotRequiredFurtherDetails?: string;
 };
 
-type ReceivedMedicalScreeningType = PostedMedicalScreeningType & ReceivedApplicationAttributesType;
+type ReceivedMedicalScreeningType = PostedMedicalScreeningType &
+  ReceivedApplicationAttributesType & {
+    isXrayRequired?: YesOrNo;
+    reasonXrayNotRequired?: string;
+    reasonXrayNotRequiredFurtherDetails?: string;
+  };
 
 // Chest X-ray types
 type ReduxChestXrayDetailsType = {
   status: ApplicationStatus;
-  chestXrayTaken: YesOrNo;
   posteroAnteriorXrayFileName: string;
   posteroAnteriorXrayFile: string;
   apicalLordoticXrayFileName?: string;
   apicalLordoticXrayFile?: string;
   lateralDecubitusXrayFileName?: string;
   lateralDecubitusXrayFile?: string;
-  reasonXrayWasNotTaken: string;
-  xrayWasNotTakenFurtherDetails: string;
-  xrayResult: string;
-  xrayResultDetail: string;
-  xrayMinorFindings: string[];
-  xrayAssociatedMinorFindings: string[];
-  xrayActiveTbFindings: string[];
-  isSputumRequired: YesOrNo;
-  completionDate: DateType;
+  dateXrayTaken: DateType;
 };
 
 type PostedChestXrayDetailsType = {
-  chestXrayTaken: YesOrNo;
+  chestXrayTaken: YesOrNo.YES;
   posteroAnteriorXrayFileName: string;
   posteroAnteriorXray: string;
   apicalLordoticXrayFileName?: string;
   apicalLordoticXray?: string;
   lateralDecubitusXrayFileName?: string;
   lateralDecubitusXray?: string;
+  dateXrayTaken: string;
+};
+
+type ReceivedChestXrayDetailsType = PostedChestXrayDetailsType & ReceivedApplicationAttributesType;
+
+// Radiological outcome types
+type ReduxRadiologicalOutcomeDetailsType = {
+  status: ApplicationStatus;
+  reasonXrayWasNotTaken: string;
+  xrayWasNotTakenFurtherDetails: string;
   xrayResult: string;
   xrayResultDetail: string;
   xrayMinorFindings: string[];
   xrayAssociatedMinorFindings: string[];
   xrayActiveTbFindings: string[];
-  isSputumRequired: YesOrNo;
+  completionDate: DateType;
 };
 
-type ReceivedChestXrayDetailsType = PostedChestXrayDetailsType & ReceivedApplicationAttributesType;
+type PostedRadiologicalOutcomeDetailsType = {
+  xrayResult: string;
+  xrayResultDetail: string;
+  xrayMinorFindings: string[];
+  xrayAssociatedMinorFindings: string[];
+  xrayActiveTbFindings: string[];
+};
 
-type PostedChestXrayNotTakenType = {
+type ReceivedRadiologicalOutcomeDetailsType = PostedRadiologicalOutcomeDetailsType &
+  ReceivedApplicationAttributesType;
+
+type PostedRadiologicalOutcomeChestXrayNotTakenType = {
+  chestXrayTaken: YesOrNo;
   reasonXrayWasNotTaken: string;
   xrayWasNotTakenFurtherDetails: string;
-  isSputumRequired: YesOrNo;
 };
 
-type ReceivedChestXrayNotTakenType = PostedChestXrayNotTakenType &
+type ReceivedRadiologicalOutcomeNotTakenType = PostedRadiologicalOutcomeChestXrayNotTakenType &
+  ReceivedApplicationAttributesType;
+
+type PostedChestXrayNotTakenDetailsType = {
+  chestXrayTaken: YesOrNo.NO;
+  reasonXrayWasNotTaken: string;
+  xrayWasNotTakenFurtherDetails: string;
+};
+
+type PostedChestXrayUnionType = PostedChestXrayDetailsType | PostedChestXrayNotTakenDetailsType;
+
+type ReduxSputumRequirementType = {
+  status: ApplicationStatus;
+  isSputumRequired: YesOrNo;
+  completionDate?: DateType;
+};
+
+type PostedSputumRequirementType = {
+  sputumRequired: YesOrNo;
+};
+
+type ReceivedSputumRequirementType = PostedSputumRequirementType &
   ReceivedApplicationAttributesType;
 
 // Sputum types
@@ -313,17 +358,6 @@ type GenerateImageUploadUrlRequest = {
 type GenerateImageUploadUrlResponse = {
   uploadUrl: string;
   bucketPath: string;
-};
-
-// Clinic type
-type ClinicType = {
-  clinicId: string;
-  name: string;
-  country: string;
-  city: string;
-  startDate: string;
-  endDate?: string | null;
-  createdBy: string;
 };
 
 // Clinic type

@@ -62,7 +62,7 @@ describe("ApplicantPhotoForm", () => {
 
     fireEvent.click(screen.getByText("Continue"));
     await waitFor(() => {
-      expect(useNavigateMock).toHaveBeenCalledWith("/applicant-summary");
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-applicant-details");
     });
   });
 
@@ -80,7 +80,7 @@ describe("ApplicantPhotoForm", () => {
 
     await waitFor(() => {
       expect(setApplicantPhotoFile).toHaveBeenCalledWith(file);
-      expect(useNavigateMock).toHaveBeenCalledWith("/applicant-summary");
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-applicant-details");
     });
   });
 

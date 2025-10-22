@@ -1,11 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import {
-  ClinicType,
-  DateType,
-  ReceivedTbCertificateType,
-  ReduxTbCertificateType,
-} from "@/applicant";
+import { ClinicType, DateType, ReceivedTbCertificateType, ReduxTbCertificateType } from "@/types";
 import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "@/utils/enums";
 
 const initialState: ReduxTbCertificateType = {
