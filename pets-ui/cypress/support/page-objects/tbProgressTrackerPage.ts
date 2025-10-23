@@ -1,4 +1,5 @@
 // This holds all fields for the TB Progress Tracker Page
+import { BasePage } from "../BasePage";
 
 // Type safety for task statuses
 type TaskStatus =
@@ -6,21 +7,23 @@ type TaskStatus =
   | "Completed"
   | "Not required"
   | "In progress"
+  | "Certificate not issued"
   | "Certificate issued";
 
-export class TBProgressTrackerPage {
-  visit(): void {
-    cy.visit("/tracker");
+export class TBProgressTrackerPage extends BasePage {
+  constructor() {
+    super("/tracker");
   }
 
   // Verify page loaded with correct heading
-  verifyPageLoaded(): void {
+  verifyPageLoaded(): TBProgressTrackerPage {
     cy.get("h1.govuk-heading-l")
       .should("be.visible")
       .and("contain", "Complete UK pre-entry health screening");
 
     // Check summary list is present in the header
     cy.get(".progress-tracker-header .govuk-summary-list").should("be.visible");
+    return this;
   }
 
   // Verify applicant information in header section
@@ -29,16 +32,17 @@ export class TBProgressTrackerPage {
     "Date of birth"?: string;
     "Passport number"?: string;
     "TB screening"?: string;
-  }): void {
+  }): TBProgressTrackerPage {
     Object.entries(expectedValues).forEach(([key, value]) => {
       if (value !== undefined) {
         this.verifySummaryValue(key, value);
       }
     });
+    return this;
   }
 
   // Verify applicant photo is displayed
-  verifyApplicantPhotoDisplayed(): void {
+  verifyApplicantPhotoDisplayed(): TBProgressTrackerPage {
     cy.get(".progress-tracker-photo-container")
       .should("be.visible")
       .within(() => {
@@ -49,29 +53,20 @@ export class TBProgressTrackerPage {
 
         cy.get("img.progress-tracker-photo").should("have.attr", "alt", "Applicant");
       });
+    return this;
   }
 
   // Verify photo has expected attributes
-  verifyApplicantPhotoAttributes(expectedTitle?: string): void {
+  verifyApplicantPhotoAttributes(expectedTitle?: string): TBProgressTrackerPage {
     if (expectedTitle) {
       cy.get("img.progress-tracker-photo").should("have.attr", "title", expectedTitle);
     } else {
       cy.get("img.progress-tracker-photo").should("have.attr", "title").and("not.be.empty");
     }
+    return this;
   }
 
-  // Get summary value for a specific field
-  getSummaryValue(fieldKey: string): Cypress.Chainable<string> {
-    return cy
-      .contains("dt.govuk-summary-list__key", fieldKey)
-      .siblings(".govuk-summary-list__value")
-      .invoke("text");
-  }
-
-  // Verify specific summary value
-  verifySummaryValue(fieldKey: string, expectedValue: string): void {
-    this.getSummaryValue(fieldKey).should("eq", expectedValue);
-  }
+  // Note: getSummaryValue and verifySummaryValue are inherited from BasePage
 
   // Get task element by name
   getTaskElement(taskName: string): Cypress.Chainable<JQuery<HTMLElement>> {
@@ -98,27 +93,31 @@ export class TBProgressTrackerPage {
   }
 
   // Verify task status
-  verifyTaskStatus(taskName: string, expectedStatus: string): void {
+  verifyTaskStatus(taskName: string, expectedStatus: string): TBProgressTrackerPage {
     this.getTaskStatus(taskName).should("eq", expectedStatus);
+    return this;
   }
 
   // Verify task status with type safety
-  verifyTaskHasStatus(taskName: string, expectedStatus: TaskStatus): void {
+  verifyTaskHasStatus(taskName: string, expectedStatus: TaskStatus): TBProgressTrackerPage {
     this.verifyTaskStatus(taskName, expectedStatus);
+    return this;
   }
 
   // Verify TB certificate outcome has "Certificate issued" status
-  verifyTBCertificateOutcomeIssued(): void {
+  verifyTBCertificateOutcomeIssued(): TBProgressTrackerPage {
     this.verifyTaskStatus("TB certificate outcome", "Certificate issued");
+    return this;
   }
 
   // Verify TB screening status shows "Certificate issued" in header
-  verifyTBScreeningCertificateIssued(): void {
+  verifyTBScreeningCertificateIssued(): TBProgressTrackerPage {
     this.verifySummaryValue("TB screening", "Certificate issued");
+    return this;
   }
 
   // Verify complete scenario where all tasks are done and certificate is issued
-  verifyCompleteScenarioWithCertificateIssued(): void {
+  verifyCompleteScenarioWithCertificateIssued(): TBProgressTrackerPage {
     // Verify all standard tasks are completed
     this.verifyTaskStatus("Visa applicant details", "Completed");
     this.verifyTaskStatus("Travel information", "Completed");
@@ -133,10 +132,11 @@ export class TBProgressTrackerPage {
 
     // Verify TB screening status in header shows "Certificate issued"
     this.verifyTBScreeningCertificateIssued();
+    return this;
   }
 
   // Verify all tasks are clickable when screening is complete
-  verifyAllTasksClickableWhenComplete(): void {
+  verifyAllTasksClickableWhenComplete(): TBProgressTrackerPage {
     const allTasks = [
       "Visa applicant details",
       "Travel information",
@@ -151,20 +151,23 @@ export class TBProgressTrackerPage {
     allTasks.forEach((task) => {
       this.verifyTaskIsClickable(task);
     });
+    return this;
   }
 
   // Click on specific task link (only works for tasks that have links)
-  clickTaskLink(taskName: string): void {
+  clickTaskLink(taskName: string): TBProgressTrackerPage {
     cy.contains(".govuk-task-list__link", taskName).click();
+    return this;
   }
 
   // Verify task exists (whether it's a link or not)
-  verifyTaskExists(taskName: string): void {
+  verifyTaskExists(taskName: string): TBProgressTrackerPage {
     this.getTaskElement(taskName).should("exist");
+    return this;
   }
 
   //Verify all expected tasks exist
-  verifyAllTasksExist(): void {
+  verifyAllTasksExist(): TBProgressTrackerPage {
     const expectedTasks = [
       "Visa applicant details",
       "Travel information",
@@ -179,48 +182,44 @@ export class TBProgressTrackerPage {
     expectedTasks.forEach((task) => {
       this.verifyTaskExists(task);
     });
+    return this;
   }
 
   // Verify task links exist (for tasks that should be clickable)
-  verifyTaskLinksExist(): void {
+  verifyTaskLinksExist(): TBProgressTrackerPage {
     const expectedTaskLinks = ["Visa applicant details", "Travel information"];
 
     expectedTaskLinks.forEach((task) => {
       cy.contains(".govuk-task-list__link", task).should("be.visible").and("have.attr", "href");
     });
+    return this;
   }
 
   // Click search for another applicant link
-  clickSearchForAnotherApplicant(): void {
+  clickSearchForAnotherApplicant(): TBProgressTrackerPage {
     cy.contains(".govuk-link", "Search for another visa applicant").click();
+    return this;
   }
 
   // For backward compatibility
-  clickSearchAgain(): void {
+  clickSearchAgain(): TBProgressTrackerPage {
     this.clickSearchForAnotherApplicant();
+    return this;
   }
 
-  // Verify service name in header
-  verifyServiceName(): void {
-    cy.get(".govuk-header__service-name")
-      .should("be.visible")
-      .and("contain", "Complete UK pre-entry health screening");
-  }
-
-  // Check URL
-  getCurrentUrl(): Cypress.Chainable<string> {
-    return cy.url();
-  }
+  // Note: verifyServiceName and getCurrentUrl are inherited from BasePage
 
   //Check URL after clicking search for another applicant
-  checkRedirectionAfterSearchAgain(expectedUrlPath: string): void {
+  checkRedirectionAfterSearchAgain(expectedUrlPath: string): TBProgressTrackerPage {
     this.clickSearchForAnotherApplicant();
     cy.url().should("include", expectedUrlPath);
+    return this;
   }
 
   // Verify visa applicant details task is completed
-  verifyVisaApplicantDetailsCompleted(): void {
+  verifyVisaApplicantDetailsCompleted(): TBProgressTrackerPage {
     this.verifyTaskStatus("Visa applicant details", "Completed");
+    return this;
   }
 
   //Verify all elements on the page
@@ -229,12 +228,13 @@ export class TBProgressTrackerPage {
     "Date of birth"?: string;
     "Passport number"?: string;
     "TB screening"?: string;
-  }): void {
+  }): TBProgressTrackerPage {
     this.verifyPageLoaded();
     this.verifyApplicantInfo(applicantInfo);
     this.verifyApplicantPhotoDisplayed();
     this.verifyAllTasksExist();
     this.verifyServiceName();
+    return this;
   }
 
   // Verify all task statuses with correct task names
@@ -247,24 +247,26 @@ export class TBProgressTrackerPage {
     "Make a sputum decision"?: string;
     "Sputum collection and results"?: string;
     "TB certificate outcome"?: string;
-  }): void {
+  }): TBProgressTrackerPage {
     Object.entries(expectedStatuses).forEach(([taskName, status]) => {
       if (status !== undefined) {
         this.verifyTaskStatus(taskName, status);
       }
     });
+    return this;
   }
 
   // Verify task is a clickable link
-  verifyTaskIsClickable(taskName: string): void {
+  verifyTaskIsClickable(taskName: string): TBProgressTrackerPage {
     cy.get(".govuk-task-list__item")
       .contains(".govuk-task-list__link", taskName)
       .should("exist")
       .and("have.attr", "href");
+    return this;
   }
 
   // Verify task is NOT a clickable link
-  verifyTaskIsNotClickable(taskName: string): void {
+  verifyTaskIsNotClickable(taskName: string): TBProgressTrackerPage {
     this.verifyTaskExists(taskName);
 
     cy.get(".govuk-task-list__item")
@@ -274,10 +276,11 @@ export class TBProgressTrackerPage {
         cy.get("a").should("not.exist");
         cy.get("p.govuk-body").should("exist");
       });
+    return this;
   }
 
   // Verify clickable task based on sequential prerequisites
-  verifyTaskClickability(): void {
+  verifyTaskClickability(): TBProgressTrackerPage {
     // Define the sequential order of tasks
     const taskSequence = [
       "Visa applicant details", // Section 1
@@ -323,10 +326,11 @@ export class TBProgressTrackerPage {
         }
       });
     });
+    return this;
   }
 
   // Verify task actionability based on sequential flow
-  verifyTaskActionabilityByStatus(taskName: string, status: TaskStatus): void {
+  verifyTaskActionabilityByStatus(taskName: string, status: TaskStatus): TBProgressTrackerPage {
     // Define the sequential order
     const taskSequence = [
       "Visa applicant details",
@@ -344,13 +348,13 @@ export class TBProgressTrackerPage {
     // Completed, certificate issued, and in progress tasks are always clickable
     if (status === "Completed" || status === "In progress" || status === "Certificate issued") {
       this.verifyTaskIsClickable(taskName);
-      return;
+      return this;
     }
 
     // Not required tasks are never clickable
     if (status === "Not required") {
       this.verifyTaskIsNotClickable(taskName);
-      return;
+      return this;
     }
 
     // For "Not yet started" tasks, check sequential prerequisites
@@ -373,10 +377,11 @@ export class TBProgressTrackerPage {
         this.verifyTaskIsNotClickable(taskName);
       }
     }
+    return this;
   }
 
   // Check if task should be clickable based on sequential prerequisites
-  verifyTaskClickabilityByPrerequisites(taskName: string): void {
+  verifyTaskClickabilityByPrerequisites(taskName: string): TBProgressTrackerPage {
     const taskSequence = [
       "Visa applicant details",
       "Travel information",
@@ -407,6 +412,7 @@ export class TBProgressTrackerPage {
       // Task not in sequence, not clickable
       this.verifyTaskIsNotClickable(taskName);
     }
+    return this;
   }
 
   // Get all task statuses with correct task names
@@ -436,7 +442,7 @@ export class TBProgressTrackerPage {
   }
 
   // TB certificate outcome accessibility based on sequential flow
-  verifyTBCertificateOutcomeNotAccessible(): void {
+  verifyTBCertificateOutcomeNotAccessible(): TBProgressTrackerPage {
     this.verifyTaskExists("TB certificate outcome");
 
     // Check if the immediate prerequisite is completed
@@ -454,9 +460,10 @@ export class TBProgressTrackerPage {
         }
       });
     });
+    return this;
   }
 
-  verifyTBCertificateOutcomePrerequisites(): void {
+  verifyTBCertificateOutcomePrerequisites(): TBProgressTrackerPage {
     // Check if the immediate prerequisite (Sputum collection and results) is completed
     this.getTaskStatus("Sputum collection and results").then((prevStatus) => {
       this.getTaskStatus("TB certificate outcome").then((status) => {
@@ -472,54 +479,57 @@ export class TBProgressTrackerPage {
         }
       });
     });
+    return this;
   }
 
-  // Verify breadcrumb navigation
-  verifyBreadcrumbNavigation(): void {
-    cy.get(".govuk-breadcrumbs").should("exist");
-  }
+  // Note: verifyBreadcrumbNavigation is inherited from BasePage (verifyBreadcrumbs)
 
   // Verify the progress tracker header structure
-  verifyProgressTrackerHeader(): void {
+  verifyProgressTrackerHeader(): TBProgressTrackerPage {
     cy.get(".progress-tracker-header")
       .should("be.visible")
       .within(() => {
         cy.get(".progress-tracker-header-content").should("exist");
         cy.get(".govuk-summary-list").should("be.visible");
       });
+    return this;
   }
 
   // Verify TB screening status in header
-  verifyTBScreeningStatus(expectedStatus: string): void {
+  verifyTBScreeningStatus(expectedStatus: string): TBProgressTrackerPage {
     this.verifySummaryValue("TB screening", expectedStatus);
+    return this;
   }
 
   // Verify section headings exist
-  verifySectionHeadings(): void {
+  verifySectionHeadings(): TBProgressTrackerPage {
     cy.contains("h2.govuk-heading-s", "1. Visa applicant information").should("be.visible");
     cy.contains("h2.govuk-heading-s", "2. Medical screening").should("be.visible");
     cy.contains("h2.govuk-heading-s", "3. Review outcome").should("be.visible");
     cy.contains("h2.govuk-heading-s", "Start a new search").should("be.visible");
+    return this;
   }
 
   // Verify search for another applicant section
-  verifySearchForAnotherApplicantSection(): void {
+  verifySearchForAnotherApplicantSection(): TBProgressTrackerPage {
     cy.contains("h2.govuk-heading-s", "Start a new search").should("be.visible");
     cy.contains("p.govuk-body", "Search for another visa applicant").should("be.visible");
     cy.contains(".govuk-link", "Search for another visa applicant")
       .should("be.visible")
       .and("have.attr", "href", "/applicant-search");
+    return this;
   }
 
   // Verify task clickability based on actual status
-  verifyTaskClickabilityByActualStatus(taskName: string): void {
+  verifyTaskClickabilityByActualStatus(taskName: string): TBProgressTrackerPage {
     this.getTaskStatus(taskName).then((status) => {
       this.verifyTaskActionabilityByStatus(taskName, status as TaskStatus);
     });
+    return this;
   }
 
   // Verify all tasks clickability based on their current status
-  verifyAllTasksClickabilityByStatus(): void {
+  verifyAllTasksClickabilityByStatus(): TBProgressTrackerPage {
     const allTasks = [
       "Visa applicant details",
       "Travel information",
@@ -534,19 +544,21 @@ export class TBProgressTrackerPage {
     allTasks.forEach((task) => {
       this.verifyTaskClickabilityByActualStatus(task);
     });
+    return this;
   }
 
   // Verify current values
-  verifyCurrentPageStructure(): void {
+  verifyCurrentPageStructure(): TBProgressTrackerPage {
     this.verifyPageLoaded();
     this.verifyProgressTrackerHeader();
     this.verifyApplicantPhotoDisplayed();
     this.verifySectionHeadings();
     this.verifySearchForAnotherApplicantSection();
+    return this;
   }
 
   // Verify sequential task flow based on Business Logic
-  verifySequentialTaskFlow(): void {
+  verifySequentialTaskFlow(): TBProgressTrackerPage {
     const taskSequence = [
       "Visa applicant details", // Should be completed and clickable
       "Travel information", // Should be clickable if previous is completed
@@ -586,11 +598,13 @@ export class TBProgressTrackerPage {
         });
       }
     });
+    return this;
   }
 
   // Comprehensive task validation including clickability
-  verifyTasksWithClickabilityValidation(): void {
+  verifyTasksWithClickabilityValidation(): TBProgressTrackerPage {
     this.verifyAllTasksExist();
     this.verifySequentialTaskFlow();
+    return this;
   }
 }

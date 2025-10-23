@@ -19,24 +19,21 @@ interface MedicalScreeningFormData {
   previousTbDetails?: string;
   closeContactWithTb: "Yes" | "No";
   closeContactDetails?: string;
-  pregnant: "Yes" | "No" | "Do not know" | "Not applicable - the visa applicant is not female";
-  menstrualPeriods:
-    | "Yes"
-    | "No"
-    | "Do not know"
-    | "Not applicable - the visa applicant is not female";
-  physicalExamNotes: string;
+  pregnant: "Yes" | "No" | "Don't know" | "N/A";
+  menstrualPeriods: "Yes" | "No" | "N/A";
+  physicalExamNotes?: string;
 }
 
 export class MedicalScreeningPage extends BasePage {
   constructor() {
-    super("/medical-screening");
+    super("/record-medical-history-tb-symptoms");
   }
 
   // Verify Medical Screening Page
   verifyPageLoaded(): MedicalScreeningPage {
-    cy.url().should("include", "/medical-screening");
+    cy.url().should("include", "/record-medical-history-tb-symptoms");
     cy.get("h1.govuk-heading-l").should("contain", "Record medical history and TB symptoms");
+    cy.contains("h2", "When did the medical screening take place?").should("be.visible");
     return this;
   }
 
@@ -65,9 +62,15 @@ export class MedicalScreeningPage extends BasePage {
     return this;
   }
 
+  verifyScreeningDateQuickFillLinks(): MedicalScreeningPage {
+    cy.contains("a", "Today").should("be.visible");
+    cy.contains("a", "Yesterday").should("be.visible");
+    return this;
+  }
+
   // Fill in form with valid data
   fillAge(age: string): MedicalScreeningPage {
-    cy.get("#age-field").clear().type(age);
+    cy.get('[name="age"]').clear().type(age);
     return this;
   }
 
@@ -87,7 +90,7 @@ export class MedicalScreeningPage extends BasePage {
   }
 
   fillOtherSymptoms(text: string): MedicalScreeningPage {
-    cy.get("#other-symptoms-detail-field").clear().type(text);
+    cy.get('[name="otherSymptomsDetail"]').clear().type(text);
     return this;
   }
 
@@ -99,7 +102,7 @@ export class MedicalScreeningPage extends BasePage {
   }
 
   fillUnderElevenDetails(text: string): MedicalScreeningPage {
-    cy.get("#under-eleven-conditions-detail-field").clear().type(text);
+    cy.get('[name="underElevenConditionsDetail"]').clear().type(text);
     return this;
   }
 
@@ -109,7 +112,7 @@ export class MedicalScreeningPage extends BasePage {
   }
 
   fillPreviousTbDetails(text: string): MedicalScreeningPage {
-    cy.get("#previous-tb-detail-field").clear().type(text);
+    cy.get('[name="previousTbDetail"]').clear().type(text);
     return this;
   }
 
@@ -119,26 +122,22 @@ export class MedicalScreeningPage extends BasePage {
   }
 
   fillCloseContactDetails(text: string): MedicalScreeningPage {
-    cy.get("#close-contact-with-tb-detail-field").clear().type(text);
+    cy.get('[name="closeContactWithTbDetail"]').clear().type(text);
     return this;
   }
 
-  selectPregnancyStatus(
-    option: "Yes" | "No" | "Do not know" | "Not applicable - the visa applicant is not female",
-  ): MedicalScreeningPage {
+  selectPregnancyStatus(option: "Yes" | "No" | "Don't know" | "N/A"): MedicalScreeningPage {
     cy.get(`input[name="pregnant"][value="${option}"]`).check({ force: true });
     return this;
   }
 
-  selectMenstrualPeriods(
-    option: "Yes" | "No" | "Do not know" | "Not applicable - the visa applicant is not female",
-  ): MedicalScreeningPage {
+  selectMenstrualPeriods(option: "Yes" | "No" | "N/A"): MedicalScreeningPage {
     cy.get(`input[name="menstrualPeriods"][value="${option}"]`).check({ force: true });
     return this;
   }
 
   fillPhysicalExamNotes(text: string): MedicalScreeningPage {
-    cy.get("#physical-exam-notes-field").clear().type(text);
+    cy.get('[name="physicalExamNotes"]').clear().type(text);
     return this;
   }
 
@@ -187,7 +186,10 @@ export class MedicalScreeningPage extends BasePage {
 
     this.selectPregnancyStatus(data.pregnant);
     this.selectMenstrualPeriods(data.menstrualPeriods);
-    this.fillPhysicalExamNotes(data.physicalExamNotes);
+
+    if (data.physicalExamNotes) {
+      this.fillPhysicalExamNotes(data.physicalExamNotes);
+    }
 
     return this;
   }
@@ -200,7 +202,7 @@ export class MedicalScreeningPage extends BasePage {
 
   // Verify redirection to Medical Summary Page
   verifyRedirectedToSummary(): MedicalScreeningPage {
-    cy.url().should("include", "/medical-summary");
+    cy.url().should("include", "/check-medical-history-tb-symptoms");
     return this;
   }
 
@@ -334,13 +336,13 @@ export class MedicalScreeningPage extends BasePage {
     cy.get("#medical-screening-completion-date-day").should("be.visible");
     cy.get("#medical-screening-completion-date-month").should("be.visible");
     cy.get("#medical-screening-completion-date-year").should("be.visible");
-    cy.get("#age-field").should("be.visible");
+    cy.get('[name="age"]').should("be.visible");
     cy.get('input[name="tbSymptoms"]').should("exist");
     cy.get('input[name="previousTb"]').should("exist");
     cy.get('input[name="closeContactWithTb"]').should("exist");
     cy.get('input[name="pregnant"]').should("exist");
     cy.get('input[name="menstrualPeriods"]').should("exist");
-    cy.get("#physical-exam-notes-field").should("be.visible");
+    cy.get('[name="physicalExamNotes"]').should("be.visible");
     return this;
   }
 
@@ -489,11 +491,11 @@ export class MedicalScreeningPage extends BasePage {
     underElevenConditions?: string[];
     previousTb: "Yes" | "No";
     closeContactWithTb: "Yes" | "No";
-    pregnant: "Not applicable - the visa applicant is not female";
-    menstrualPeriods: "Not applicable - the visa applicant is not female";
+    pregnant: "N/A";
+    menstrualPeriods: "N/A";
     physicalExamNotes?: string;
   }): MedicalScreeningPage {
-    // Verify screening date if provided
+    // Verify screening date
     if (data.screeningDate) {
       cy.get("#medical-screening-completion-date-day").should("have.value", data.screeningDate.day);
       cy.get("#medical-screening-completion-date-month").should(
@@ -507,7 +509,7 @@ export class MedicalScreeningPage extends BasePage {
     }
 
     // Verify age field
-    cy.get("#age-field").should("have.value", data.age);
+    cy.get('[name="age"]').should("have.value", data.age);
 
     // Verify TB symptoms selection
     cy.get(`input[name="tbSymptoms"][value="${data.tbSymptoms}"]`).should("be.checked");
@@ -535,7 +537,7 @@ export class MedicalScreeningPage extends BasePage {
 
     // Verify physical exam notes if provided
     if (data.physicalExamNotes) {
-      cy.get("#physical-exam-notes-field").should("contain.value", data.physicalExamNotes);
+      cy.get('[name="physicalExamNotes"]').should("contain.value", data.physicalExamNotes);
     }
 
     return this;
@@ -564,8 +566,8 @@ export class MedicalScreeningPage extends BasePage {
     this.selectMultipleUnderElevenConditions(data.underElevenConditions);
     this.selectPreviousTb(data.previousTb);
     this.selectCloseContact(data.closeContactWithTb);
-    this.selectPregnancyStatus("Not applicable - the visa applicant is not female");
-    this.selectMenstrualPeriods("Not applicable - the visa applicant is not female");
+    this.selectPregnancyStatus("N/A");
+    this.selectMenstrualPeriods("N/A");
 
     if (data.physicalExamNotes) {
       this.fillPhysicalExamNotes(data.physicalExamNotes);
@@ -604,6 +606,7 @@ export class MedicalScreeningPage extends BasePage {
   verifyAllPageElements(): MedicalScreeningPage {
     this.verifyPageLoaded();
     this.verifyAllFieldsPresent();
+    this.verifyScreeningDateQuickFillLinks();
     this.verifyBackLink();
     this.verifyServiceName();
     return this;

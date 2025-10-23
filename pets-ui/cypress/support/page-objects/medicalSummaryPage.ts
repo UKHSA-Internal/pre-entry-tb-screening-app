@@ -3,12 +3,12 @@ import { BasePage } from "../BasePage";
 //This holds all fields of the Medical Summary Page
 export class MedicalSummaryPage extends BasePage {
   constructor() {
-    super("/medical-summary");
+    super("/check-medical-screening");
   }
 
   // Verify page loaded
   verifyPageLoaded(): MedicalSummaryPage {
-    cy.url().should("include", "/medical-summary");
+    cy.url().should("include", "/check-medical-screening");
     cy.contains("h1", "Check medical screening").should("be.visible");
     cy.get(".govuk-summary-list").should("be.visible");
     return this;
@@ -42,7 +42,7 @@ export class MedicalSummaryPage extends BasePage {
     "Date of medical screening"?: string;
     Age?: string;
     "Does the applicant have pulmonary TB symptoms?"?: string;
-    "pulmonary TB symptoms"?: string;
+    "Pulmonary TB symptoms"?: string;
     "Other symptoms"?: string;
     "Applicant history if under 11"?: string;
     "Additional details of applicant history if under 11"?: string;
@@ -53,6 +53,7 @@ export class MedicalSummaryPage extends BasePage {
     "Is the applicant pregnant?"?: string;
     "Does the applicant have menstrual periods?"?: string;
     "Physical examination notes"?: string;
+    "Is an X-ray required?"?: string;
   }): MedicalSummaryPage {
     Object.entries(expectedValues).forEach(([key, value]) => {
       if (value !== undefined) {
@@ -78,6 +79,7 @@ export class MedicalSummaryPage extends BasePage {
     pregnant?: "Yes" | "No" | "Don't know" | "N/A";
     menstrualPeriods?: "Yes" | "No" | "N/A";
     physicalExamNotes?: string;
+    xrayRequired?: "Yes" | "No";
   }): MedicalSummaryPage {
     // convert value to string
     const processValue = (value: string | string[] | undefined): string => {
@@ -94,7 +96,7 @@ export class MedicalSummaryPage extends BasePage {
 
       switch (key) {
         case "dateOfMedicalScreening":
-          this.verifySummaryValue("When did the medical screening take place?", processedValue);
+          this.verifySummaryValue("Date of medical screening", processedValue);
           break;
         case "age":
           this.verifySummaryValue("Age", processedValue);
@@ -104,7 +106,7 @@ export class MedicalSummaryPage extends BasePage {
           break;
         case "tbSymptomsList":
           if (processedValue) {
-            this.verifySummaryValue("TB symptoms", processedValue);
+            this.verifySummaryValue("Pulmonary TB symptoms", processedValue);
           }
           break;
         case "otherSymptoms":
@@ -146,6 +148,9 @@ export class MedicalSummaryPage extends BasePage {
         case "physicalExamNotes":
           this.verifySummaryValue("Physical examination notes", processedValue);
           break;
+        case "xrayRequired":
+          this.verifySummaryValue("Is an X-ray required?", processedValue);
+          break;
       }
     });
     return this;
@@ -167,13 +172,14 @@ export class MedicalSummaryPage extends BasePage {
     pregnant?: "Yes" | "No" | "Don't know" | "N/A";
     menstrualPeriods?: "Yes" | "No" | "N/A";
     physicalExamNotes?: string;
+    xrayRequired?: "Yes" | "No";
   }): MedicalSummaryPage {
     // Verify all the fields exist in the summary
     const expectedFields = [
       "Date of medical screening",
       "Age",
       "Does the applicant have pulmonary TB symptoms?",
-      "pulmonary TB symptoms",
+      "Pulmonary TB symptoms",
       "Other symptoms",
       "Applicant history if under 11",
       "Additional details of applicant history if under 11",
@@ -184,6 +190,7 @@ export class MedicalSummaryPage extends BasePage {
       "Is the applicant pregnant?",
       "Does the applicant have menstrual periods?",
       "Physical examination notes",
+      "Is an X-ray required?",
     ];
 
     // Check that all expected fields are present
@@ -248,7 +255,7 @@ export class MedicalSummaryPage extends BasePage {
       "Date of medical screening": "#medical-screening-completion-date",
       Age: "#age",
       "Does the applicant have pulmonary TB symptoms?": "#tb-symptoms",
-      "TB symptoms": "#tb-symptoms-list",
+      "Pulmonary TB symptoms": "#tb-symptoms-list",
       "Other symptoms": "#other-symptoms-detail",
       "Applicant history if under 11": "#under-eleven-conditions",
       "Additional details of applicant history if under 11": "#under-eleven-conditions-detail",
@@ -261,6 +268,7 @@ export class MedicalSummaryPage extends BasePage {
       "Is the applicant pregnant?": "#pregnant",
       "Does the applicant have menstrual periods?": "#menstrual-periods",
       "Physical examination notes": "#physical-exam-notes",
+      "Is an X-ray required?": "#chest-xray-taken",
     };
 
     Object.entries(expectedFragments).forEach(([key, fragment]) => {
@@ -273,11 +281,11 @@ export class MedicalSummaryPage extends BasePage {
     return this;
   }
 
-  // Verify back link points to medical screening
+  // Verify back link points to X-ray question page
   verifyBackLink(): MedicalSummaryPage {
     cy.get(".govuk-back-link")
       .should("be.visible")
-      .and("have.attr", "href", "/medical-screening")
+      .and("have.attr", "href", "/is-an-x-ray-required")
       .and("contain", "Back");
     return this;
   }
@@ -291,10 +299,10 @@ export class MedicalSummaryPage extends BasePage {
     return this;
   }
 
-  // Verify optional fields show "Enter" links when empty
-  verifyOptionalFields(): MedicalSummaryPage {
+  // Verify optional fields show "Not provided" when empty
+  verifyOptionalFieldsNotProvided(): MedicalSummaryPage {
     const optionalFields = [
-      "TB symptoms",
+      "Pulmonary TB symptoms",
       "Other symptoms",
       "Additional details of applicant history if under 11",
       "Detail of applicant's previous pulmonary TB",
@@ -305,9 +313,7 @@ export class MedicalSummaryPage extends BasePage {
     optionalFields.forEach((field) => {
       cy.contains("dt.govuk-summary-list__key", field)
         .siblings(".govuk-summary-list__value")
-        .find("a")
-        .should("exist")
-        .and("contain", "Enter");
+        .should("contain", "Not provided");
     });
     return this;
   }
@@ -327,7 +333,7 @@ export class MedicalSummaryPage extends BasePage {
       "Date of medical screening",
       "Age",
       "Does the applicant have pulmonary TB symptoms?",
-      "TB symptoms",
+      "Pulmonary TB symptoms",
       "Other symptoms",
       "Applicant history if under 11",
       "Additional details of applicant history if under 11",
@@ -338,6 +344,7 @@ export class MedicalSummaryPage extends BasePage {
       "Is the applicant pregnant?",
       "Does the applicant have menstrual periods?",
       "Physical examination notes",
+      "Is an X-ray required?",
     ];
 
     requiredFields.forEach((field) => {
@@ -346,12 +353,24 @@ export class MedicalSummaryPage extends BasePage {
     return this;
   }
 
+  // Verify X-ray required field is present
+  verifyXrayRequiredField(): MedicalSummaryPage {
+    cy.contains("dt.govuk-summary-list__key", "Is an X-ray required?").should("exist");
+    return this;
+  }
+
+  // Verify X-ray required value
+  verifyXrayRequiredValue(expectedValue: "Yes" | "No"): MedicalSummaryPage {
+    this.verifySummaryValue("Is an X-ray required?", expectedValue);
+    return this;
+  }
+
   // Verify current page structure
   verifyCurrentPageStructure(): MedicalSummaryPage {
     this.verifyPageLoaded();
     this.verifyAllFieldsPresent();
     this.verifyChangeLinksTargets();
-    this.verifyOptionalFields();
+    this.verifyOptionalFieldsNotProvided();
     this.verifyContinueButton();
     this.verifyBackLink();
     this.verifyServiceName();
@@ -373,15 +392,15 @@ export class MedicalSummaryPage extends BasePage {
     return this;
   }
 
-  // Helper method to verify if a field has a value or shows "Enter" link
-  verifyFieldHasValueOrEnterLink(fieldKey: string, expectedValue?: string): MedicalSummaryPage {
+  // Helper method to verify if a field has a value or shows "Not provided"
+  verifyFieldHasValueOrNotProvided(fieldKey: string, expectedValue?: string): MedicalSummaryPage {
     if (expectedValue) {
       this.verifySummaryValue(fieldKey, expectedValue);
     } else {
-      // Check if it shows an "Enter" link for optional fields
+      // Check if it shows "Not provided" for optional fields
       cy.contains("dt.govuk-summary-list__key", fieldKey)
         .siblings(".govuk-summary-list__value")
-        .should("exist");
+        .should("contain", "Not provided");
     }
     return this;
   }

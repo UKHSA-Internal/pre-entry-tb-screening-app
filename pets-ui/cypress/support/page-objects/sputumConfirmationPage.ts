@@ -1,11 +1,13 @@
 //This holds all fields of the Sputum Confirmation Page
-export class SputumConfirmationPage {
-  visit(): void {
-    cy.visit("/sputum-confirmation");
+import { BasePage } from "../BasePage";
+
+export class SputumConfirmationPage extends BasePage {
+  constructor() {
+    super("/sputum-confirmation");
   }
 
   // Verify page loaded
-  verifyPageLoaded(): void {
+  verifyPageLoaded(): SputumConfirmationPage {
     // Check if it's partial or complete confirmation
     cy.get("h1.govuk-panel__title").then(($title) => {
       const titleText = $title.text().trim();
@@ -16,22 +18,25 @@ export class SputumConfirmationPage {
       }
     });
     cy.get(".govuk-panel--confirmation").should("be.visible");
+    return this;
   }
 
   // Method specifically for partial confirmation
-  verifyPartialConfirmationPageLoaded(): void {
+  verifyPartialConfirmationPageLoaded(): SputumConfirmationPage {
     cy.contains("h1", "Partial sputum sample information confirmed").should("be.visible");
     cy.get(".govuk-panel--confirmation").should("be.visible");
+    return this;
   }
 
   // Method specifically for complete confirmation
-  verifyCompleteConfirmationPageLoaded(): void {
+  verifyCompleteConfirmationPageLoaded(): SputumConfirmationPage {
     cy.contains("h1", "All sputum sample information confirmed").should("be.visible");
     cy.get(".govuk-panel--confirmation").should("be.visible");
+    return this;
   }
 
   // Verify confirmation panel is displayed
-  verifyConfirmationPanel(): void {
+  verifyConfirmationPanel(): SputumConfirmationPage {
     cy.get(".govuk-panel--confirmation").should("be.visible");
 
     // Check for either partial or complete confirmation title
@@ -44,22 +49,25 @@ export class SputumConfirmationPage {
         );
       });
     });
+    return this;
   }
 
   // Verify partial confirmation panel specifically
-  verifyPartialConfirmationPanel(): void {
+  verifyPartialConfirmationPanel(): SputumConfirmationPage {
     cy.get(".govuk-panel--confirmation").should("be.visible");
     cy.contains("h1", "Partial sputum sample information confirmed").should("be.visible");
+    return this;
   }
 
   // Verify complete confirmation panel specifically
-  verifyCompleteConfirmationPanel(): void {
+  verifyCompleteConfirmationPanel(): SputumConfirmationPage {
     cy.get(".govuk-panel--confirmation").should("be.visible");
     cy.contains("h1", "All sputum sample information confirmed").should("be.visible");
+    return this;
   }
 
   // Updated next steps section to handle different scenarios
-  verifyNextStepsSection(): void {
+  verifyNextStepsSection(): SputumConfirmationPage {
     cy.contains("h2", "What happens next").should("be.visible");
 
     // Check for either scenario-specific text
@@ -73,35 +81,40 @@ export class SputumConfirmationPage {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       expect(hasPartialText || hasCompleteText).to.be.true;
     });
+    return this;
   }
 
   // Verify next steps for partial scenario
-  verifyPartialNextStepsSection(): void {
+  verifyPartialNextStepsSection(): SputumConfirmationPage {
     cy.contains("h2", "What happens next").should("be.visible");
     cy.contains(
       "p",
       "The panel physician should wait to confirm the remaining sputum sample results",
     ).should("be.visible");
+    return this;
   }
 
   // Verify next steps for complete scenario
-  verifyCompleteNextStepsSection(): void {
+  verifyCompleteNextStepsSection(): SputumConfirmationPage {
     cy.contains("h2", "What happens next").should("be.visible");
     cy.contains("p", "You can now return to the progress tracker").should("be.visible");
+    return this;
   }
 
   // Click the continue button
-  clickContinueButton(): void {
+  clickContinueButton(): SputumConfirmationPage {
     cy.contains("button", "Continue").should("be.visible").click();
+    return this;
   }
 
   // Verify redirection after clicking continue
-  verifyRedirectionAfterContinue(): void {
+  verifyRedirectionAfterContinue(): SputumConfirmationPage {
     cy.url().should("include", "/tracker");
+    return this;
   }
 
   // Check confirmation type and verify appropriate elements
-  verifyConfirmationTypeAndElements(): void {
+  verifyConfirmationTypeAndElements(): SputumConfirmationPage {
     cy.get("h1.govuk-panel__title").then(($title) => {
       const titleText = $title.text().trim();
 
@@ -116,26 +129,13 @@ export class SputumConfirmationPage {
 
     cy.contains("button", "Continue").should("be.visible");
     this.verifyServiceName();
-  }
-
-  // Back link verification
-  verifyBackLinkNavigation(): void {
-    cy.get(".govuk-back-link")
-      .should("be.visible")
-      .and("contain", "Back")
-      .and("have.attr", "href", "/check-sputum-sample-information");
+    return this;
   }
 
   // Verify page title
-  verifyPageTitle(): void {
+  verifyPageTitle(): SputumConfirmationPage {
     cy.title().should("include", "Complete UK pre-entry health screening");
-  }
-
-  // Verify service name in header
-  verifyServiceName(): void {
-    cy.get(".govuk-header__service-name")
-      .should("be.visible")
-      .and("contain", "Complete UK pre-entry health screening");
+    return this;
   }
 
   // Method to determine if this is partial or complete confirmation
@@ -147,11 +147,12 @@ export class SputumConfirmationPage {
   }
 
   // Enhanced verification method that adapts to scenario type
-  verifyAllConfirmationElements(): void {
+  verifyAllConfirmationElements(): SputumConfirmationPage {
     this.verifyConfirmationPanel();
     this.verifyNextStepsSection();
     cy.contains("button", "Continue").should("be.visible");
-    this.verifyBackLinkNavigation();
+    this.verifyBackLink("/check-sputum-sample-information");
     this.verifyServiceName();
+    return this;
   }
 }

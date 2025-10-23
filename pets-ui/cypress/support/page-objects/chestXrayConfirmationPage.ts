@@ -1,64 +1,52 @@
 //This holds all fields of the Chest X-ray Confirmation Page
-export class ChestXrayConfirmationPage {
-  visit(): void {
-    cy.visit("/chest-xray-confirmation");
+import { BasePage } from "../BasePage";
+
+export class ChestXrayConfirmationPage extends BasePage {
+  constructor() {
+    super("/chest-xray-confirmation");
   }
 
   // Verify page loaded
-  verifyPageLoaded(): void {
+  verifyPageLoaded(): ChestXrayConfirmationPage {
     cy.contains("h1.govuk-panel__title", "Radiological outcome confirmed").should("be.visible");
     cy.get(".govuk-panel--confirmation").should("be.visible");
+    return this;
   }
 
   // Verify confirmation panel
-  verifyConfirmationPanel(): void {
+  verifyConfirmationPanel(): ChestXrayConfirmationPage {
     cy.get(".govuk-panel--confirmation").should("be.visible");
     cy.contains("h1.govuk-panel__title", "Radiological outcome confirmed").should("be.visible");
+    return this;
   }
 
   // Verify next steps section
-  verifyNextStepsSection(): void {
+  verifyNextStepsSection(): ChestXrayConfirmationPage {
     cy.contains("h2.govuk-heading-m", "What happens next").should("be.visible");
     cy.contains("p.govuk-body", "You can now return to the progress tracker.").should("be.visible");
+    return this;
   }
 
   // Click continue button
-  clickContinueButton(): void {
+  clickContinueButton(): ChestXrayConfirmationPage {
     cy.get('button[type="submit"]').contains("Continue").should("be.visible").click();
-  }
-
-  // Verify back link navigation
-  verifyBackLinkNavigation(): void {
-    cy.get(".govuk-back-link")
-      .should("be.visible")
-      .and("contain", "Back")
-      .and("have.attr", "href", "/chest-xray-summary");
-  }
-
-  // Verify service name in header
-  verifyServiceName(): void {
-    cy.get(".govuk-header__service-name")
-      .should("be.visible")
-      .and("contain", "Complete UK pre-entry health screening");
-  }
-
-  // Get the current URL
-  getCurrentUrl(): Cypress.Chainable<string> {
-    return cy.url();
+    return this;
   }
 
   // Check URL after form submission
-  checkRedirectionAfterSubmit(expectedUrlPath: string): void {
+  checkRedirectionAfterSubmit(expectedUrlPath: string): ChestXrayConfirmationPage {
     this.clickContinueButton();
     cy.url().should("include", expectedUrlPath);
+    return this;
   }
 
   // Check all elements on the page
-  verifyAllPageElements(): void {
+  verifyAllPageElements(): ChestXrayConfirmationPage {
     this.verifyPageLoaded();
     this.verifyConfirmationPanel();
     this.verifyNextStepsSection();
-    this.verifyBackLinkNavigation();
+    this.verifyBackLink("/chest-xray-summary");
     this.verifyServiceName();
+    return this;
   }
 }

@@ -1,24 +1,28 @@
 //This holds all fields of the Sputum Sample Summary Page
-export class CheckSputumSampleInfoPage {
-  visit(): void {
-    cy.visit("/check-sputum-sample-information");
+import { BasePage } from "../BasePage";
+
+export class CheckSputumSampleInfoPage extends BasePage {
+  constructor() {
+    super("/check-sputum-sample-information");
   }
 
   // Verify page loaded
-  verifyPageLoaded(): void {
+  verifyPageLoaded(): CheckSputumSampleInfoPage {
     cy.get("h1.govuk-heading-l")
       .should("be.visible")
       .and("contain", "Check sputum sample information and results");
 
     // Check summary lists are present for all samples
     cy.get(".govuk-summary-list").should("have.length.at.least", 3);
+    return this;
   }
 
   // Verify sample headings are present
-  verifySampleHeadings(): void {
+  verifySampleHeadings(): CheckSputumSampleInfoPage {
     cy.get("h2.govuk-heading-m").should("contain", "Sputum sample 1");
     cy.get("h2.govuk-heading-m").should("contain", "Sputum sample 2");
     cy.get("h2.govuk-heading-m").should("contain", "Sputum sample 3");
+    return this;
   }
 
   // Get summary value for a specific field within a sample section
@@ -32,19 +36,26 @@ export class CheckSputumSampleInfoPage {
   }
 
   // Verify specific summary value for a sample
-  verifySampleSummaryValue(sampleNumber: number, fieldKey: string, expectedValue: string): void {
+  verifySampleSummaryValue(
+    sampleNumber: number,
+    fieldKey: string,
+    expectedValue: string,
+  ): CheckSputumSampleInfoPage {
     this.getSampleSummaryValue(sampleNumber, fieldKey).should("eq", expectedValue);
+    return this;
   }
 
   // methid to verify "No data" is displayed for empty results
-  verifySampleShowsNoData(sampleNumber: number, fieldKey: string): void {
+  verifySampleShowsNoData(sampleNumber: number, fieldKey: string): CheckSputumSampleInfoPage {
     this.verifySampleSummaryValue(sampleNumber, fieldKey, "No data");
+    return this;
   }
 
   // Verify sample shows "No data" for both result fields
-  verifySampleResultsShowNoData(sampleNumber: number): void {
+  verifySampleResultsShowNoData(sampleNumber: number): CheckSputumSampleInfoPage {
     this.verifySampleShowsNoData(sampleNumber, "Smear result");
     this.verifySampleShowsNoData(sampleNumber, "Culture result");
+    return this;
   }
 
   // Verify sample has actual result data (not "No data")
@@ -52,9 +63,10 @@ export class CheckSputumSampleInfoPage {
     sampleNumber: number,
     smearResult: string,
     cultureResult: string,
-  ): void {
+  ): CheckSputumSampleInfoPage {
     this.verifySampleSummaryValue(sampleNumber, "Smear result", smearResult);
     this.verifySampleSummaryValue(sampleNumber, "Culture result", cultureResult);
+    return this;
   }
 
   // Verify all sample information at once
@@ -77,7 +89,7 @@ export class CheckSputumSampleInfoPage {
       smearResult?: string;
       cultureResult?: string;
     };
-  }): void {
+  }): CheckSputumSampleInfoPage {
     // Verify Sample 1
     this.verifySampleSummaryValue(1, "Date taken", expectedSampleData.sample1.dateTaken);
     this.verifySampleSummaryValue(
@@ -137,6 +149,7 @@ export class CheckSputumSampleInfoPage {
     } else {
       this.verifySampleShowsNoData(3, "Culture result");
     }
+    return this;
   }
 
   // Method for mixed scenarios (some samples with data, some without)
@@ -144,7 +157,7 @@ export class CheckSputumSampleInfoPage {
     sample1?: { smearResult: string; cultureResult: string };
     sample2?: { smearResult: string; cultureResult: string };
     sample3?: { smearResult: string; cultureResult: string };
-  }): void {
+  }): CheckSputumSampleInfoPage {
     // Check sample 1
     if (samplesWithData.sample1) {
       this.verifySampleHasResultData(
@@ -177,23 +190,26 @@ export class CheckSputumSampleInfoPage {
     } else {
       this.verifySampleResultsShowNoData(3);
     }
+    return this;
   }
 
   // Verify only first sample has data
-  verifyOnlyFirstSampleHasData(smearResult: string, cultureResult: string): void {
+  verifyOnlyFirstSampleHasData(smearResult: string, cultureResult: string): CheckSputumSampleInfoPage {
     this.verifySampleHasResultData(1, smearResult, cultureResult);
     this.verifySampleResultsShowNoData(2);
     this.verifySampleResultsShowNoData(3);
+    return this;
   }
 
   // Verify first and second samples have data, third shows "No data"
   verifyFirstTwoSamplesHaveData(
     sample1: { smearResult: string; cultureResult: string },
     sample2: { smearResult: string; cultureResult: string },
-  ): void {
+  ): CheckSputumSampleInfoPage {
     this.verifySampleHasResultData(1, sample1.smearResult, sample1.cultureResult);
     this.verifySampleHasResultData(2, sample2.smearResult, sample2.cultureResult);
     this.verifySampleResultsShowNoData(3);
+    return this;
   }
 
   // Check if a specific field has a "Change" link for a sample
@@ -208,12 +224,13 @@ export class CheckSputumSampleInfoPage {
   }
 
   // Click on change link for a specific field in a sample
-  clickSampleChangeLink(sampleNumber: number, fieldKey: string): void {
+  clickSampleChangeLink(sampleNumber: number, fieldKey: string): CheckSputumSampleInfoPage {
     this.checkSampleChangeLink(sampleNumber, fieldKey).click();
+    return this;
   }
 
   // Verify change links exist for results only when data is present
-  verifyChangeLinksForResultsWithData(sampleNumber: number): void {
+  verifyChangeLinksForResultsWithData(sampleNumber: number): CheckSputumSampleInfoPage {
     // Check if smear result has data
     this.getSampleSummaryValue(sampleNumber, "Smear result").then((smearValue) => {
       if (smearValue !== "No data") {
@@ -227,16 +244,18 @@ export class CheckSputumSampleInfoPage {
         this.checkSampleChangeLink(sampleNumber, "Culture result");
       }
     });
+    return this;
   }
 
   // Verify change links exist for collection information
-  verifyChangeLinksForCollectionInfo(sampleNumber: number): void {
+  verifyChangeLinksForCollectionInfo(sampleNumber: number): CheckSputumSampleInfoPage {
     this.checkSampleChangeLink(sampleNumber, "Date taken");
     this.checkSampleChangeLink(sampleNumber, "Collection method");
+    return this;
   }
 
   // Verify all change links exist with correct URLs
-  verifyChangeLinksExist(): void {
+  verifyChangeLinksExist(): CheckSputumSampleInfoPage {
     // Sample 1 change links
     this.verifySampleChangeLinks(1, {
       "Date taken": "/sputum-collection",
@@ -260,6 +279,7 @@ export class CheckSputumSampleInfoPage {
       "Smear result": "/enter-sputum-sample-results",
       "Culture result": "/enter-sputum-sample-results",
     });
+    return this;
   }
 
   // Helper method to verify change links for a specific sample
@@ -279,7 +299,7 @@ export class CheckSputumSampleInfoPage {
   }
 
   // Verify change links work by clicking and checking URL
-  testChangeLinksNavigation(): void {
+  testChangeLinksNavigation(): CheckSputumSampleInfoPage {
     // Test collection change link (sample 1)
     this.clickSampleChangeLink(1, "Date taken");
     cy.url().should("include", "/sputum-collection");
@@ -293,6 +313,7 @@ export class CheckSputumSampleInfoPage {
         cy.go("back");
       }
     });
+    return this;
   }
 
   // Get all sample data from the summary
@@ -326,7 +347,7 @@ export class CheckSputumSampleInfoPage {
   }
 
   // Verify all required fields are present for each sample
-  verifyRequiredFieldsPresent(): void {
+  verifyRequiredFieldsPresent(): CheckSputumSampleInfoPage {
     const requiredFields = ["Date taken", "Collection method", "Smear result", "Culture result"];
 
     [1, 2, 3].forEach((sampleNum) => {
@@ -337,37 +358,14 @@ export class CheckSputumSampleInfoPage {
           .should("be.visible");
       });
     });
-  }
-
-  // Click Save and Continue button
-  clickSaveAndContinue(): void {
-    cy.get('button[type="submit"]').contains("Save and continue").should("be.visible").click();
-  }
-
-  // Verify back link navigation
-  verifyBackLinkNavigation(): void {
-    cy.get(".govuk-back-link")
-      .should("be.visible")
-      .and("contain", "Back")
-      .and("have.attr", "href", "/enter-sputum-sample-results");
-  }
-
-  // Verify service name in header
-  verifyServiceName(): void {
-    cy.get(".govuk-header__service-name")
-      .should("be.visible")
-      .and("contain", "Complete UK pre-entry health screening");
-  }
-
-  // Get the current URL
-  getCurrentUrl(): Cypress.Chainable<string> {
-    return cy.url();
+    return this;
   }
 
   // Check URL after form submission
-  checkRedirectionAfterSubmit(expectedUrlPath: string): void {
+  checkRedirectionAfterSubmit(expectedUrlPath: string): CheckSputumSampleInfoPage {
     this.clickSaveAndContinue();
     cy.url().should("include", expectedUrlPath);
+    return this;
   }
 
   // Comprehensive page verification
@@ -390,21 +388,22 @@ export class CheckSputumSampleInfoPage {
       smearResult?: string;
       cultureResult?: string;
     };
-  }): void {
+  }): CheckSputumSampleInfoPage {
     this.verifyPageLoaded();
     this.verifySampleHeadings();
     this.verifyRequiredFieldsPresent();
     this.verifyChangeLinksExist();
-    this.verifyBackLinkNavigation();
+    this.verifyBackLink("/enter-sputum-sample-results");
     this.verifyServiceName();
 
     if (expectedSampleData) {
       this.verifyAllSampleInfo(expectedSampleData);
     }
+    return this;
   }
 
   // Validate sample data format
-  validateSampleDataFormat(): void {
+  validateSampleDataFormat(): CheckSputumSampleInfoPage {
     // Verify date format (DD/MM/YYYY)
     [1, 2, 3].forEach((sampleNum) => {
       this.getSampleSummaryValue(sampleNum, "Date taken").should("match", /^\d{2}\/\d{2}\/\d{4}$/);
@@ -425,28 +424,28 @@ export class CheckSputumSampleInfoPage {
       this.getSampleSummaryValue(sampleNum, "Smear result").should("be.oneOf", validResults);
       this.getSampleSummaryValue(sampleNum, "Culture result").should("be.oneOf", validResults);
     });
+    return this;
   }
 
   // Check that Save and Continue button is enabled
-  verifySaveAndContinueButton(): void {
-    cy.get('button[type="submit"]')
-      .contains("Save and continue")
-      .should("be.visible")
-      .and("be.enabled");
+  verifySaveAndContinueButton(): CheckSputumSampleInfoPage {
+    this.verifySaveAndContinueButtonDisplayed();
+    return this;
   }
 
   // Verify sample from scenario where sample 1 is Negative for smear and is positive for culture
-  verifyScenarioFromImages(): void {
+  verifyScenarioFromImages(): CheckSputumSampleInfoPage {
     // Sample 1 should have: Negative smear, Positive culture
     this.verifySampleHasResultData(1, "Negative", "Positive");
 
     // No Data for the other fields - Samples 2 and 3 should show "No data" for results
     this.verifySampleResultsShowNoData(2);
     this.verifySampleResultsShowNoData(3);
+    return this;
   }
 
   // Verify mixed scenario where different samples have different completion states
-  verifyMixedCompletionScenario(completedSamples: number[]): void {
+  verifyMixedCompletionScenario(completedSamples: number[]): CheckSputumSampleInfoPage {
     [1, 2, 3].forEach((sampleNum) => {
       if (completedSamples.includes(sampleNum)) {
         // Sample should have actual result data
@@ -457,6 +456,7 @@ export class CheckSputumSampleInfoPage {
         this.verifySampleResultsShowNoData(sampleNum);
       }
     });
+    return this;
   }
 
   // Helper method to count how many samples have result data
@@ -479,7 +479,8 @@ export class CheckSputumSampleInfoPage {
   }
 
   // Verify at least one sample has result data (in line with the AC)
-  verifyAtLeastOneSampleHasResultData(): void {
+  verifyAtLeastOneSampleHasResultData(): CheckSputumSampleInfoPage {
     this.countSamplesWithResultData().should("be.at.least", 1);
+    return this;
   }
 }

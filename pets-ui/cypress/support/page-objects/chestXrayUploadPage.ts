@@ -2,8 +2,15 @@
 import { BasePage } from "../BasePage";
 
 export class ChestXrayUploadPage extends BasePage {
+  // Verify the date input fields contain the correct values
+  verifyDateValue(xrayDay: string, xrayMonth: string, xrayYear: string): ChestXrayUploadPage {
+    cy.get("#date-xray-taken-day").should("have.value", xrayDay);
+    cy.get("#date-xray-taken-month").should("have.value", xrayMonth);
+    cy.get("#date-xray-taken-year").should("have.value", xrayYear);
+    return this;
+  }
   constructor() {
-    super("/chest-xray-upload");
+    super("/upload-chest-x-ray-images");
   }
 
   // Verify page loaded
@@ -13,28 +20,84 @@ export class ChestXrayUploadPage extends BasePage {
     return this;
   }
 
+  // Verify date X-ray taken section is displayed
+  verifyDateXrayTakenSectionDisplayed(): ChestXrayUploadPage {
+    cy.contains("h2.govuk-heading-m", "When was the X-ray taken?").should("be.visible");
+    cy.get("#date-xray-taken").should("be.visible");
+    cy.get("#date-xray-taken-hint").should("be.visible").and("contain", "For example, 31 3 2025");
+    return this;
+  }
+
+  // Enter date X-ray was taken
+  enterDateXrayTaken(day: string, month: string, year: string): ChestXrayUploadPage {
+    cy.get("#date-xray-taken-day").clear().type(day);
+    cy.get("#date-xray-taken-month").clear().type(month);
+    cy.get("#date-xray-taken-year").clear().type(year);
+    return this;
+  }
+
+  // Click "Today" quickfill link for date
+  clickTodayQuickfill(): ChestXrayUploadPage {
+    cy.get('[data-testid="date-xray-taken-quickfill-today"]').click();
+    return this;
+  }
+
+  // Click "Yesterday" quickfill link for date
+  clickYesterdayQuickfill(): ChestXrayUploadPage {
+    cy.get('[data-testid="date-xray-taken-quickfill-yesterday"]').click();
+    return this;
+  }
+
+  // Verify date input fields are present
+  verifyDateInputFields(): ChestXrayUploadPage {
+    cy.get("#date-xray-taken-day").should("be.visible");
+    cy.get("#date-xray-taken-month").should("be.visible");
+    cy.get("#date-xray-taken-year").should("be.visible");
+    return this;
+  }
+
   // Verify X-ray upload sections are displayed
   verifyXrayUploadSectionsDisplayed(): ChestXrayUploadPage {
-    // Using caption instead of h2 based on the DAC report
-    cy.contains("caption", "Postero-anterior X-ray").should("be.visible");
-    cy.contains("caption", "Apical lordotic X-ray (optional)").should("be.visible");
-    cy.contains("caption", "Lateral decubitus X-ray (optional)").should("be.visible");
+    cy.contains("h2.govuk-heading-m", "Upload X-ray images").should("be.visible");
+    cy.contains("h3.govuk-heading-s", "Postero-anterior view").should("be.visible");
+    cy.contains("h3.govuk-heading-s", "Apical lordotic view (optional)").should("be.visible");
+    cy.contains("h3.govuk-heading-s", "Lateral decubitus view (optional)").should("be.visible");
     return this;
   }
 
-  // Verify X-ray tables are displayed
-  verifyXrayTablesDisplayed(): ChestXrayUploadPage {
-    cy.get(".govuk-table").should("have.length", 3);
-    cy.get(".govuk-table__header").contains("Type of X-ray").should("be.visible");
-    cy.get(".govuk-table__header").contains("File uploaded").should("be.visible");
+  // Verify file upload instructions
+  verifyFileUploadInstructions(): ChestXrayUploadPage {
+    cy.contains("p.govuk-body", "Upload a file").should("be.visible");
+    cy.get(".govuk-hint")
+      .contains("File type must be DICOM. Images must be less than 50MB.")
+      .should("be.visible");
     return this;
   }
 
-  // Verify specific X-ray row content
-  verifyXrayRowContent(): ChestXrayUploadPage {
-    cy.get(".govuk-table__row").contains("Postero-anterior view").should("be.visible");
-    cy.get(".govuk-table__row").contains("Apical-lordotic view").should("be.visible");
-    cy.get(".govuk-table__row").contains("Lateral-decubitus view").should("be.visible");
+  // Verify file drop zone is displayed for a specific X-ray type
+  verifyFileDropZone(xrayId: string): ChestXrayUploadPage {
+    cy.get(`#${xrayId}`).should("be.visible");
+    cy.get(`#${xrayId}`).within(() => {
+      cy.get(".file-upload-blue-bar").should("be.visible");
+      cy.contains("button.govuk-button--secondary", "Choose file").should("be.visible");
+      cy.contains(".file-upload-or-drop", "or drop file").should("be.visible");
+    });
+    return this;
+  }
+
+  // Verify all file drop zones are displayed
+  verifyAllFileDropZones(): ChestXrayUploadPage {
+    this.verifyFileDropZone("postero-anterior-xray");
+    this.verifyFileDropZone("apical-lordotic-xray");
+    this.verifyFileDropZone("lateral-decubitus-xray");
+    return this;
+  }
+
+  // Verify "No file chosen" text is displayed
+  verifyNoFileChosen(xrayId: string): ChestXrayUploadPage {
+    cy.get(`#${xrayId}`).within(() => {
+      cy.contains(".file-upload-no-file", "No file chosen").should("be.visible");
+    });
     return this;
   }
 
@@ -105,9 +168,39 @@ export class ChestXrayUploadPage extends BasePage {
     return this;
   }
 
+  // Upload mandatory X-ray with date and submit form
+  uploadMandatoryXrayWithDateAndSubmit(
+    filePath: string,
+    day: string,
+    month: string,
+    year: string,
+  ): ChestXrayUploadPage {
+    this.enterDateXrayTaken(day, month, year);
+    this.uploadPosteroAnteriorXray(filePath);
+    this.clickContinue();
+    return this;
+  }
+
   // Upload mandatory X-ray and submit form
   uploadMandatoryXrayAndSubmit(filePath: string): ChestXrayUploadPage {
     this.uploadPosteroAnteriorXray(filePath);
+    this.clickContinue();
+    return this;
+  }
+
+  // Upload all X-rays with date and submit form
+  uploadAllXraysWithDateAndSubmit(
+    posteroAnteriorPath: string,
+    apicalLordoticPath: string,
+    lateralDecubitusPath: string,
+    day: string,
+    month: string,
+    year: string,
+  ): ChestXrayUploadPage {
+    this.enterDateXrayTaken(day, month, year);
+    this.uploadPosteroAnteriorXray(posteroAnteriorPath);
+    this.uploadApicalLordoticXray(apicalLordoticPath);
+    this.uploadLateralDecubitusXray(lateralDecubitusPath);
     this.clickContinue();
     return this;
   }
@@ -138,6 +231,9 @@ export class ChestXrayUploadPage extends BasePage {
 
   // Verify file types are accepted
   verifyAcceptedFileTypes(): ChestXrayUploadPage {
+    cy.get('input[name="posteroAnteriorXrayFileName"]').should("have.attr", "accept", ".dcm");
+    cy.get('input[name="apicalLordoticXrayFileName"]').should("have.attr", "accept", ".dcm");
+    cy.get('input[name="lateralDecubitusXrayFileName"]').should("have.attr", "accept", ".dcm");
     return this;
   }
 
@@ -146,7 +242,7 @@ export class ChestXrayUploadPage extends BasePage {
     cy.get(".govuk-back-link")
       .should("be.visible")
       .and("contain", "Back")
-      .and("have.attr", "href", "/chest-xray-question");
+      .and("have.attr", "href", "/tracker");
     return this;
   }
 
@@ -158,12 +254,34 @@ export class ChestXrayUploadPage extends BasePage {
     return this;
   }
 
+  // Verify DICOM upload container structure
+  verifyDicomUploadContainers(): ChestXrayUploadPage {
+    cy.get(".dicom-upload-container").should("have.length", 3);
+    return this;
+  }
+
+  // Verify date quickfill links are present
+  verifyDateQuickfillLinks(): ChestXrayUploadPage {
+    cy.contains("Set to:").should("be.visible");
+    cy.get('[data-testid="date-xray-taken-quickfill-today"]')
+      .should("be.visible")
+      .and("contain", "Today");
+    cy.get('[data-testid="date-xray-taken-quickfill-yesterday"]')
+      .should("be.visible")
+      .and("contain", "Yesterday");
+    return this;
+  }
+
   // Check all elements on the page
   verifyAllPageElements(): ChestXrayUploadPage {
     this.verifyPageLoaded();
+    this.verifyDateXrayTakenSectionDisplayed();
+    this.verifyDateInputFields();
+    this.verifyDateQuickfillLinks();
     this.verifyXrayUploadSectionsDisplayed();
-    this.verifyXrayTablesDisplayed();
-    this.verifyXrayRowContent();
+    this.verifyFileUploadInstructions();
+    this.verifyAllFileDropZones();
+    this.verifyDicomUploadContainers();
     this.verifyBackLinkNavigation();
     this.verifyServiceName();
     return this;
