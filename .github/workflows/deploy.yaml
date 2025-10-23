@@ -46,6 +46,7 @@ jobs:
     env:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       EDAP_AWS_ACCOUNT_ID: ${{ secrets.EDAP_AWS_ACCOUNT_ID }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
       EDAP_INTEGRATION_QUEUE_NAME: ${{ vars.EDAP_INTEGRATION_QUEUE_NAME }}
       EDAP_INTEGRATION_DLQ_NAME: ${{ vars.EDAP_INTEGRATION_DLQ_NAME }}
       API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
@@ -90,6 +91,7 @@ jobs:
       ZIP_FILE: "deployment_package.zip"
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       EDAP_AWS_ACCOUNT_ID: ${{ secrets.EDAP_AWS_ACCOUNT_ID }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
       EDAP_INTEGRATION_QUEUE_NAME: ${{ vars.EDAP_INTEGRATION_QUEUE_NAME }}
       EDAP_INTEGRATION_DLQ_NAME: ${{ vars.EDAP_INTEGRATION_DLQ_NAME }}
       API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}

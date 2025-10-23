@@ -1,6 +1,4 @@
 import {
-  GetQueueUrlCommand,
-  GetQueueUrlCommandOutput,
   MessageAttributeValue,
   SendMessageCommand,
   SendMessageCommandInput,
@@ -77,16 +75,19 @@ class SQService {
     logger.info(`QueueName: ${queueName}`);
     logger.info(`QueueOwnerAWSAccountId: ${queueOwnerAWSAccountId}`);
 
-    const queueUrlResult: GetQueueUrlCommandOutput = await this.sqsClient.send(
-      new GetQueueUrlCommand({
-        QueueName: queueName,
-        QueueOwnerAWSAccountId: queueOwnerAWSAccountId,
-      }),
-    );
-    logger.info(`Queue URL result: ${JSON.stringify(queueUrlResult)}`);
+    // const queueUrlResult: GetQueueUrlCommandOutput = await this.sqsClient.send(
+    //   new GetQueueUrlCommand({
+    //     QueueName: queueName,
+    //     QueueOwnerAWSAccountId: queueOwnerAWSAccountId,
+    //   }),
+    // );
+
+    const queueUrl = `https://sqs.${process.env.AWS_REGION}.amazonaws.com/${queueOwnerAWSAccountId}/${queueName}`;
+
+    logger.info(`Queue URL result: ${queueUrl}`);
 
     const params = {
-      QueueUrl: queueUrlResult.QueueUrl,
+      QueueUrl: queueUrl,
       MessageBody: messageBody,
     };
 
