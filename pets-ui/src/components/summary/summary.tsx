@@ -14,7 +14,7 @@ interface SummaryProps {
   summaryElements: SummaryElement[];
 }
 
-function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement) {
+function summaryValue(summaryElement: SummaryElement) {
   const hasValue = Array.isArray(summaryElement.value)
     ? summaryElement.value.length > 0
     : !!summaryElement.value;
@@ -38,8 +38,7 @@ function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement)
       return <dd className="govuk-summary-list__value">{summaryElement.value}</dd>;
     }
   } else {
-    const displayValue = status === ApplicationStatus.COMPLETE ? "" : "Not provided";
-    return <dd className="govuk-summary-list__value">{displayValue}</dd>;
+    return <dd className="govuk-summary-list__value">Not provided</dd>;
   }
 }
 
@@ -50,7 +49,7 @@ export default function Summary(props: Readonly<SummaryProps>) {
         return (
           <div className="govuk-summary-list__row" key={summaryElement.key}>
             <dt className="govuk-summary-list__key">{summaryElement.key}</dt>
-            {summaryValue(props.status, summaryElement)}
+            {summaryValue(summaryElement)}
             {summaryElement.link &&
               summaryElement.link.length > 0 &&
               props.status !== ApplicationStatus.COMPLETE && (

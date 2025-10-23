@@ -9,9 +9,20 @@ describe("NotificationBanner", () => {
     expect(screen.getByRole("heading", { name: "Important Notice" })).toBeInTheDocument();
   });
 
-  test("renders the banner text when provided", () => {
-    render(<NotificationBanner bannerTitle="Important" bannerText="This is a critical update." />);
+  test("renders the banner heading and text when provided", () => {
+    render(
+      <NotificationBanner
+        bannerTitle="Important"
+        bannerHeading="This is a critical update."
+        bannerText="Do not turn off your device."
+      />,
+    );
     expect(screen.getByText("This is a critical update.")).toBeInTheDocument();
+    expect(screen.getByText("This is a critical update.")).toHaveClass(
+      "govuk-notification-banner__heading",
+    );
+    expect(screen.getByText("Do not turn off your device.")).toBeInTheDocument();
+    expect(screen.getByText("Do not turn off your device.")).toHaveClass("govuk-body");
   });
 
   test("renders a list of items when provided", () => {

@@ -168,7 +168,7 @@ describe("MedicalScreeningReview", () => {
 
     expect(mock.history[0].url).toEqual("/application/abc-123/medical-screening");
     expect(mock.history).toHaveLength(1);
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
   });
 
   test("back link points to tracker when status is complete", () => {

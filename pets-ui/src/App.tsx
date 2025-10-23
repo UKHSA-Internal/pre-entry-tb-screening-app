@@ -18,6 +18,8 @@ import ChestXrayOutcomePage from "./pages/chest-xray-outcome";
 import ChestXrayQuestionPage from "./pages/chest-xray-question";
 import ChestXraySummaryPage from "./pages/chest-xray-summary";
 import ChestXrayUploadPage from "./pages/chest-xray-upload";
+import ConsentInstructionPage from "./pages/consent-instruction";
+import ConsentQuestionPage from "./pages/consent-question";
 import ContactDetailsPage from "./pages/contact-details";
 import EnterSputumSampleResultsPage from "./pages/enter-sputum-sample-results";
 import ErrorPage from "./pages/error-page";
@@ -43,8 +45,9 @@ import TbCertificateQuestionPage from "./pages/tb-certificate-question";
 import TbConfirmationPage from "./pages/tb-confirmation";
 import TbSummaryPage from "./pages/tb-summary";
 import TravelConfirmation from "./pages/travel-confirmation";
-import TravelDetailsPage from "./pages/travel-details";
 import TravelSummaryPage from "./pages/travel-summary";
+import TravelAddressAndContactDetailsPage from "./pages/travel-uk-address";
+import TravelVisaCategoryPage from "./pages/travel-visa-category";
 import { RedirectedRouteIfReduxEmpty } from "./utils/redirect";
 
 function App() {
@@ -82,6 +85,26 @@ function App() {
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <ApplicantResultsPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/do-you-have-visa-applicant-written-consent-for-tb-screening"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <ConsentQuestionPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/get-written-consent"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <ConsentInstructionPage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
@@ -177,11 +200,21 @@ function App() {
         }
       />
       <Route
-        path="/travel-information"
+        path="/proposed-visa-category"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
-              <TravelDetailsPage />
+              <TravelVisaCategoryPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/visa-applicant-proposed-uk-address"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <TravelAddressAndContactDetailsPage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
@@ -432,7 +465,7 @@ function App() {
       />
       <Route path="/accessibility-statement" element={<AccessibilityStatementPage />} />
       <Route path="/privacy-notice" element={<PrivacyNoticePage />} />
-      <Route path="/error" element={<ErrorPage />} />
+      <Route path="/sorry-there-is-problem-with-service" element={<ErrorPage />} />
     </Routes>
   );
 }

@@ -20,6 +20,7 @@ const attributeToComponentId: { [key: string]: string } = {
   visaCategory: "visa-category",
   applicantUkAddress1: "address-1",
   applicantUkAddress2: "address-2",
+  applicantUkAddress3: "address-3",
   ukMobileNumber: "mobile-number",
   ukEmail: "email",
   completionDate: "medical-screening-completion-date",
@@ -65,6 +66,7 @@ const attributeToComponentId: { [key: string]: string } = {
   collectionMethodSample2: "collection-method-sample-2",
   collectionMethodSample3: "collection-method-sample-3",
   dateXrayTaken: "date-xray-taken",
+  consent: "do-you-have-consent",
 };
 
 const formRegex = {
@@ -80,11 +82,11 @@ const formRegex = {
 
 const dateValidationMessages: Record<string, Record<string, string>> = {
   completionDate: {
-    emptyFieldError: "The date the medical screening took place must include a day, month and year",
+    emptyFieldError: "Enter the date the medical screening took place",
     invalidCharError:
       "The date the medical screening took place day, month and year must contain only numbers",
     invalidDateError: "The date the medical screening took place must be a real date",
-    dateMustBeInPastError: "The date the medical screening took place must be today or in the past",
+    dateMustBeInPastError: "The medical screening date must be today or in the past",
   },
   passportIssueDate: {
     emptyFieldError: "Passport issue date must include a day, month and year",
