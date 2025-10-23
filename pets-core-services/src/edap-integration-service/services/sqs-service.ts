@@ -74,6 +74,9 @@ class SQService {
     messageAttributes?: Record<string, MessageAttributeValue>,
   ) {
     // Get the queue URL for the provided queue name
+    logger.info(`QueueName: ${queueName}`);
+    logger.info(`QueueOwnerAWSAccountId: ${queueOwnerAWSAccountId}`);
+
     const queueUrlResult: GetQueueUrlCommandOutput = await this.sqsClient.send(
       new GetQueueUrlCommand({
         QueueName: queueName,
