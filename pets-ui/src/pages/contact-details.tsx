@@ -1,16 +1,18 @@
+import { useLocation } from "react-router-dom";
+
 import Container from "@/components/container/container";
-import { useAppSelector } from "@/redux/hooks";
-import { selectApplicant } from "@/redux/store";
 import ApplicantForm from "@/sections/applicant-details-form";
-import { ApplicationStatus } from "@/utils/enums";
 
 export default function ContactDetailsPage() {
-  const applicant = useAppSelector(selectApplicant);
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const from = params.get("from");
   const backLinkTo =
-    applicant.status === ApplicationStatus.COMPLETE
-      ? "/tb-certificate-summary"
-      : "/do-you-have-visa-applicant-written-consent-for-tb-screening";
-
+    from === "check"
+      ? "/check-applicant-details"
+      : from === "tb"
+        ? "/tb-certificate-summary"
+        : "/do-you-have-visa-applicant-written-consent-for-tb-screening";
   return (
     <Container
       title="Enter applicant information - Complete UK pre-entry health screening - GOV.UK"

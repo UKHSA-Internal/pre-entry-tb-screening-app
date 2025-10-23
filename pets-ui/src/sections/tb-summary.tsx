@@ -107,43 +107,42 @@ const TbSummary = () => {
           {
             key: "Name",
             value: applicantData.fullName,
-            link: `/enter-applicant-information#${attributeToComponentId.fullName}`,
+            link: `/enter-applicant-information?from=tb#${attributeToComponentId.fullName}`,
             hiddenLabel: "Name",
           },
           {
             key: "Nationality",
             value: getCountryName(applicantData.countryOfNationality),
-            link: `/enter-applicant-information#${attributeToComponentId.countryOfNationality}`,
+            link: `/enter-applicant-information?from=tb#${attributeToComponentId.countryOfNationality}`,
             hiddenLabel: "Nationality",
           },
           {
             key: "Date of birth",
             value: formatDateForDisplay(applicantData.dateOfBirth),
-            link: `/enter-applicant-information#${attributeToComponentId.dateOfBirth}`,
+            link: `/enter-applicant-information?from=tb#${attributeToComponentId.dateOfBirth}`,
             hiddenLabel: "Date of birth",
           },
           {
             key: "Sex",
             value: applicantData.sex,
-            link: `/enter-applicant-information#${attributeToComponentId.sex}`,
+            link: `/enter-applicant-information?from=tb#${attributeToComponentId.sex}`,
             hiddenLabel: "Sex",
           },
           {
             key: "Passport number",
             value: applicantData.passportNumber,
-            link: `/enter-applicant-information#${attributeToComponentId.passportNumber}`,
             hiddenLabel: "Passport number",
           },
           {
             key: "Passport issue date",
             value: formatDateForDisplay(applicantData.passportIssueDate),
-            link: `/enter-applicant-information#${attributeToComponentId.passportIssueDate}`,
+            link: `/enter-applicant-information?from=tb#${attributeToComponentId.passportIssueDate}`,
             hiddenLabel: "Passport issue date",
           },
           {
             key: "Passport expiry date",
             value: formatDateForDisplay(applicantData.passportExpiryDate),
-            link: `/enter-applicant-information#${attributeToComponentId.passportExpiryDate}`,
+            link: `/enter-applicant-information?from=tb#${attributeToComponentId.passportExpiryDate}`,
             hiddenLabel: "Passport expiry date",
           },
           {
@@ -155,7 +154,7 @@ const TbSummary = () => {
           {
             key: "Photo",
             value: applicantData.applicantPhotoFileName || "Not provided",
-            link: `/upload-visa-applicant-photo`,
+            link: `/upload-visa-applicant-photo?from=tb`,
             hiddenLabel: "Photo",
           },
         ]
@@ -186,31 +185,31 @@ const TbSummary = () => {
           {
             key: "Address line 1",
             value: applicantData.applicantHomeAddress1,
-            link: `/enter-applicant-information#${attributeToComponentId.applicantHomeAddress1}`,
+            link: `/enter-applicant-information?from=tb#${attributeToComponentId.applicantHomeAddress1}`,
             hiddenLabel: "Current address line 1",
           },
           {
             key: "Address line 2",
             value: applicantData.applicantHomeAddress2,
-            link: `/enter-applicant-information#${attributeToComponentId.applicantHomeAddress2}`,
+            link: `/enter-applicant-information?from=tb#${attributeToComponentId.applicantHomeAddress2}`,
             hiddenLabel: "Current address line 2",
           },
           {
             key: "Town or city",
             value: applicantData.townOrCity,
-            link: `/enter-applicant-information#${attributeToComponentId.townOrCity}`,
+            link: `/enter-applicant-information?from=tb#${attributeToComponentId.townOrCity}`,
             hiddenLabel: "Current town or city",
           },
           {
             key: "Country",
             value: getCountryName(applicantData.country),
-            link: `/enter-applicant-information#${attributeToComponentId.country}`,
+            link: `/enter-applicant-information?from=tb#${attributeToComponentId.country}`,
             hiddenLabel: "Current country",
           },
           {
             key: "Postcode",
             value: applicantData.postcode,
-            link: `/enter-applicant-information#${attributeToComponentId.postcode}`,
+            link: `/enter-applicant-information?from=tb#${attributeToComponentId.postcode}`,
             hiddenLabel: "Current postcode",
           },
         ]

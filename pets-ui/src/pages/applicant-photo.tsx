@@ -1,3 +1,5 @@
+import { useLocation } from "react-router-dom";
+
 import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
@@ -6,10 +8,17 @@ import { ApplicationStatus } from "@/utils/enums";
 
 export default function ApplicantPhotoPage() {
   const applicant = useAppSelector(selectApplicant);
+  const location = useLocation();
+
+  const fromParam = new URLSearchParams(location.search).get("from");
   const backLinkTo =
-    applicant.status === ApplicationStatus.COMPLETE
-      ? "/tb-certificate-summary"
-      : "/enter-applicant-information";
+    fromParam === "check"
+      ? "/check-applicant-details"
+      : fromParam === "tb"
+        ? "/tb-certificate-summary"
+        : applicant.status === ApplicationStatus.COMPLETE
+          ? "/tb-certificate-summary"
+          : "/enter-applicant-information";
 
   return (
     <Container

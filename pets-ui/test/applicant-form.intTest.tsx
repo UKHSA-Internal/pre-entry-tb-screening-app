@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Mock } from "vitest";
 
@@ -299,5 +299,47 @@ describe("ApplicantForm", () => {
       expect(store.getState().applicant.status).toBe(ApplicationStatus.COMPLETE);
       expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-summary");
     });
+  });
+
+  it("hides passport number and country of issue fields when status is COMPLETE and shows static summary", () => {
+    const completeState = {
+      application: { applicationId: "abc-123", dateCreated: "" },
+      applicant: {
+        status: ApplicationStatus.COMPLETE,
+        fullName: "John Smith",
+        sex: "Male",
+        dateOfBirth: { year: "1970", month: "1", day: "1" },
+        countryOfNationality: "GBR",
+        passportNumber: "1234",
+        countryOfIssue: "GBR",
+        passportIssueDate: { year: "2020", month: "1", day: "1" },
+        passportExpiryDate: { year: "2030", month: "1", day: "1" },
+        applicantHomeAddress1: "1 Street",
+        applicantHomeAddress2: "",
+        applicantHomeAddress3: "",
+        townOrCity: "London",
+        provinceOrState: "London",
+        country: "GBR",
+        postcode: "0000 111",
+        applicantPhotoFileName: "photo.jpg",
+      },
+    };
+
+    renderWithProviders(<ApplicantForm />, { preloadedState: completeState });
+
+    expect(screen.queryByTestId("passport-number")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("combobox").length).toBe(2);
+
+    expect(screen.getByText("Passport number")).toBeInTheDocument();
+    expect(screen.getByText("1234")).toBeInTheDocument();
+    expect(screen.getByText("Country of issue")).toBeInTheDocument();
+    const countryOfIssueRow = screen
+      .getByText("Country of issue")
+      .closest(".govuk-summary-list__row") as HTMLElement;
+    expect(
+      within(countryOfIssueRow).getByText(
+        "United Kingdom of Great Britain and Northern Ireland (the)",
+      ),
+    ).toBeInTheDocument();
   });
 });

@@ -5,6 +5,7 @@ import { Mock, vi } from "vitest";
 
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import ApplicantPhotoForm from "@/sections/applicant-photo-form";
+import { ApplicationStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 import validateFiles from "@/utils/validateFiles";
 
@@ -67,6 +68,68 @@ describe("ApplicantPhotoForm", () => {
 
   it("submits form without a file and navigates", async () => {
     renderWithProviders(<ApplicantPhotoForm />);
+
+    fireEvent.click(screen.getByText("Continue"));
+    await waitFor(() => {
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-applicant-details");
+    });
+  });
+
+  it("navigates to TB summary when from=tb", async () => {
+    window.history.pushState({}, "", "/upload-visa-applicant-photo?from=tb");
+    const preloadedState = {
+      applicant: {
+        status: ApplicationStatus.COMPLETE,
+        fullName: "",
+        sex: "",
+        dateOfBirth: { year: "", month: "", day: "" },
+        countryOfNationality: "",
+        passportNumber: "",
+        countryOfIssue: "",
+        passportIssueDate: { year: "", month: "", day: "" },
+        passportExpiryDate: { year: "", month: "", day: "" },
+        applicantHomeAddress1: "",
+        applicantHomeAddress2: "",
+        applicantHomeAddress3: "",
+        townOrCity: "",
+        provinceOrState: "",
+        country: "",
+        postcode: "",
+        applicantPhotoFileName: "",
+      },
+    };
+    renderWithProviders(<ApplicantPhotoForm />, { preloadedState });
+
+    fireEvent.click(screen.getByText("Continue"));
+    await waitFor(() => {
+      expect(useNavigateMock).toHaveBeenCalledWith("/tb-certificate-summary");
+    });
+  });
+
+  it("navigates to Check applicant details when from=check", async () => {
+    window.history.pushState({}, "", "/upload-visa-applicant-photo?from=check");
+    const preloadedState = {
+      applicant: {
+        status: ApplicationStatus.COMPLETE,
+        fullName: "",
+        sex: "",
+        dateOfBirth: { year: "", month: "", day: "" },
+        countryOfNationality: "",
+        passportNumber: "",
+        countryOfIssue: "",
+        passportIssueDate: { year: "", month: "", day: "" },
+        passportExpiryDate: { year: "", month: "", day: "" },
+        applicantHomeAddress1: "",
+        applicantHomeAddress2: "",
+        applicantHomeAddress3: "",
+        townOrCity: "",
+        provinceOrState: "",
+        country: "",
+        postcode: "",
+        applicantPhotoFileName: "",
+      },
+    };
+    renderWithProviders(<ApplicantPhotoForm />, { preloadedState });
 
     fireEvent.click(screen.getByText("Continue"));
     await waitFor(() => {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FileUpload from "@/components/fileUpload/fileUpload";
@@ -19,6 +19,7 @@ const ApplicantPhotoForm = () => {
   const applicantData = useAppSelector(selectApplicant);
   const { applicantPhotoFile, setApplicantPhotoFile } = useApplicantPhoto();
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useAppDispatch();
 
   const [applicantPhoto, setApplicantPhoto] = useState<File>();
@@ -43,10 +44,20 @@ const ApplicantPhotoForm = () => {
       setApplicantPhotoFile(applicantPhoto);
     }
 
-    const destination =
-      applicantData.status === ApplicationStatus.COMPLETE
-        ? "/tb-certificate-summary"
-        : "/check-applicant-details";
+    const fromParam = new URLSearchParams(location.search).get("from");
+    let destination: string;
+
+    if (applicantData.status === ApplicationStatus.COMPLETE) {
+      destination =
+        fromParam === "tb"
+          ? "/tb-certificate-summary"
+          : fromParam === "check"
+            ? "/check-applicant-details"
+            : "/tb-certificate-summary";
+    } else {
+      destination = "/check-applicant-details";
+    }
+
     navigate(destination);
   };
 

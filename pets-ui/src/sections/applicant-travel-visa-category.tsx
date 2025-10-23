@@ -52,7 +52,6 @@ const ApplicantTravelVisaCategory = () => {
   const errorsToShow = Object.keys(errors);
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
-  const location = useLocation();
   const visaCategoryRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (location.hash) {

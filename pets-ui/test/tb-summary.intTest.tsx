@@ -223,7 +223,10 @@ describe("TBSummaryPage", () => {
       );
 
       const nameChangeLinks = screen.getAllByRole("link", { name: "Change Name" });
-      expect(nameChangeLinks[0]).toHaveAttribute("href", "/enter-applicant-information#name");
+      expect(nameChangeLinks[0]).toHaveAttribute(
+        "href",
+        "/enter-applicant-information?from=tb#name",
+      );
     });
 
     it("Change link for visa category redirects to visa category page", () => {
@@ -336,6 +339,60 @@ describe("TBSummaryPage", () => {
         "href",
         "/visa-applicant-proposed-uk-address#address-1",
       );
+    });
+  });
+
+  describe("TB Summary change link restrictions", () => {
+    it("does not show Change link for Passport number", () => {
+      const preloadedState = {
+        application: { applicationId: "abc-123", dateCreated: "" },
+        applicant: {
+          status: ApplicationStatus.COMPLETE,
+          fullName: "John Smith",
+          sex: "Male",
+          dateOfBirth: { year: "1970", month: "1", day: "1" },
+          countryOfNationality: "GBR",
+          passportNumber: "12345",
+          countryOfIssue: "GBR",
+          passportIssueDate: { year: "2020", month: "1", day: "1" },
+          passportExpiryDate: { year: "2030", month: "1", day: "1" },
+          applicantHomeAddress1: "1 Street",
+          applicantHomeAddress2: "",
+          applicantHomeAddress3: "",
+          townOrCity: "London",
+          provinceOrState: "Greater London",
+          country: "GBR",
+          postcode: "0000 111",
+          applicantPhotoFileName: "photo.jpg",
+        },
+        travel: {
+          status: ApplicationStatus.COMPLETE,
+          visaCategory: "Work",
+          applicantUkAddress1: "1 Street",
+          applicantUkAddress2: "",
+          applicantUkAddress3: "",
+          townOrCity: "London",
+          postcode: "0000 111",
+          ukEmail: "test@example.co.uk",
+          ukMobileNumber: "07123456789",
+        },
+        tbCertificate: {
+          ...tbState,
+          status: ApplicationStatus.IN_PROGRESS,
+        },
+      };
+      renderWithProviders(
+        <HelmetProvider>
+          <ApplicantPhotoProvider>
+            <TbSummaryPage />
+          </ApplicantPhotoProvider>
+        </HelmetProvider>,
+        { preloadedState },
+      );
+
+      expect(
+        screen.queryByRole("link", { name: "Change Passport number" }),
+      ).not.toBeInTheDocument();
     });
   });
 });
