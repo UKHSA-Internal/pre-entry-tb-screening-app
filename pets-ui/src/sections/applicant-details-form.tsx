@@ -67,12 +67,10 @@ const ApplicantForm = () => {
           provinceOrState: formData.provinceOrState,
           country: formData.country,
           postcode: formData.postcode,
+          ...(applicantData.applicantPhotoFileName && {
+            applicantPhotoFileName: applicantData.applicantPhotoFileName,
+          }),
         };
-
-        if (applicantData.applicantPhotoFileName) {
-          updatePayload.applicantPhotoFileName = applicantData.applicantPhotoFileName;
-        }
-
         await putApplicantDetails(applicationData.applicationId, updatePayload);
 
         const fromParam = new URLSearchParams(location.search).get("from");
@@ -151,20 +149,18 @@ const ApplicantForm = () => {
         </p>
 
         {isComplete && (
-          <>
-            <dl className="govuk-summary-list govuk-!-margin-bottom-6">
-              <div className="govuk-summary-list__row">
-                <dt className="govuk-summary-list__key">Passport number</dt>
-                <dd className="govuk-summary-list__value">{applicantData.passportNumber}</dd>
-              </div>
-              <div className="govuk-summary-list__row">
-                <dt className="govuk-summary-list__key">Country of issue</dt>
-                <dd className="govuk-summary-list__value">
-                  {getCountryName(applicantData.countryOfIssue)}
-                </dd>
-              </div>
-            </dl>
-          </>
+          <dl className="govuk-summary-list govuk-!-margin-bottom-6">
+            <div className="govuk-summary-list__row">
+              <dt className="govuk-summary-list__key">Passport number</dt>
+              <dd className="govuk-summary-list__value">{applicantData.passportNumber}</dd>
+            </div>
+            <div className="govuk-summary-list__row">
+              <dt className="govuk-summary-list__key">Country of issue</dt>
+              <dd className="govuk-summary-list__value">
+                {getCountryName(applicantData.countryOfIssue)}
+              </dd>
+            </div>
+          </dl>
         )}
 
         <Heading level={2} size="m" title="Applicant's personal details" />

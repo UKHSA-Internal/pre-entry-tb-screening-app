@@ -48,12 +48,13 @@ const ApplicantPhotoForm = () => {
     let destination: string;
 
     if (applicantData.status === ApplicationStatus.COMPLETE) {
-      destination =
-        fromParam === "tb"
-          ? "/tb-certificate-summary"
-          : fromParam === "check"
-            ? "/check-applicant-details"
-            : "/tb-certificate-summary";
+      if (fromParam === "tb") {
+        destination = "/tb-certificate-summary";
+      } else if (fromParam === "check") {
+        destination = "/check-applicant-details";
+      } else {
+        destination = "/tb-certificate-summary";
+      }
     } else {
       destination = "/check-applicant-details";
     }

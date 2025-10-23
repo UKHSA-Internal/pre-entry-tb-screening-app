@@ -11,14 +11,16 @@ export default function ApplicantPhotoPage() {
   const location = useLocation();
 
   const fromParam = new URLSearchParams(location.search).get("from");
-  const backLinkTo =
-    fromParam === "check"
-      ? "/check-applicant-details"
-      : fromParam === "tb"
-        ? "/tb-certificate-summary"
-        : applicant.status === ApplicationStatus.COMPLETE
-          ? "/tb-certificate-summary"
-          : "/enter-applicant-information";
+  let backLinkTo: string;
+  if (fromParam === "check") {
+    backLinkTo = "/check-applicant-details";
+  } else if (fromParam === "tb") {
+    backLinkTo = "/tb-certificate-summary";
+  } else if (applicant.status === ApplicationStatus.COMPLETE) {
+    backLinkTo = "/tb-certificate-summary";
+  } else {
+    backLinkTo = "/enter-applicant-information";
+  }
 
   return (
     <Container

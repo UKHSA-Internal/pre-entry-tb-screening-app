@@ -101,17 +101,17 @@ const ApplicantReview = () => {
     {
       key: "Passport number",
       value: applicantData.passportNumber,
-      link: !isComplete
-        ? `/enter-applicant-information?from=check#${attributeToComponentId.passportNumber}`
-        : undefined,
+      link: isComplete
+        ? undefined
+        : `/enter-applicant-information?from=check#${attributeToComponentId.passportNumber}`,
       hiddenLabel: "passport number",
     },
     {
       key: "Country of issue",
       value: getCountryName(applicantData.countryOfIssue),
-      link: !isComplete
-        ? `/enter-applicant-information?from=check#${attributeToComponentId.countryOfIssue}`
-        : undefined,
+      link: isComplete
+        ? undefined
+        : `/enter-applicant-information?from=check#${attributeToComponentId.countryOfIssue}`,
       hiddenLabel: "country of issue",
     },
     {

@@ -7,12 +7,14 @@ export default function ContactDetailsPage() {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const from = params.get("from");
-  const backLinkTo =
-    from === "check"
-      ? "/check-applicant-details"
-      : from === "tb"
-        ? "/tb-certificate-summary"
-        : "/do-you-have-visa-applicant-written-consent-for-tb-screening";
+  let backLinkTo: string;
+  if (from === "check") {
+    backLinkTo = "/check-applicant-details";
+  } else if (from === "tb") {
+    backLinkTo = "/tb-certificate-summary";
+  } else {
+    backLinkTo = "/do-you-have-visa-applicant-written-consent-for-tb-screening";
+  }
   return (
     <Container
       title="Enter applicant information - Complete UK pre-entry health screening - GOV.UK"
