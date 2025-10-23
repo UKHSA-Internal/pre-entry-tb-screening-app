@@ -39,7 +39,7 @@ class SQService {
   private getAWSAccountIdForEDAP() {
     const environment = process.env.ENVIRONMENT; // e.g. "dev" | "uat" | "prod"
     let queueOwnerAWSAccountId: string | undefined;
-    if (environment === "pre-prod" || environment === "prod") {
+    if (environment === "preprod" || environment === "prod") {
       queueOwnerAWSAccountId = process.env.EDAP_AWS_ACCOUNT_ID;
     } else {
       queueOwnerAWSAccountId = process.env.AWS_ACCOUNT_ID;
