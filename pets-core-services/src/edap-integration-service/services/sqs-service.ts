@@ -71,23 +71,31 @@ class SQService {
     queueOwnerAWSAccountId: string,
     messageAttributes?: Record<string, MessageAttributeValue>,
   ) {
+    // Detect FIFO automatically
+    const isFifo = queueName.endsWith(".fifo");
+
     // Get the queue URL for the provided queue name
 
     const queueUrl = `https://sqs.${process.env.AWS_REGION}.amazonaws.com/${queueOwnerAWSAccountId}/${queueName}`;
 
     logger.info(`Queue URL: ${queueUrl}`);
 
-    const params = {
+    const params: SendMessageCommandInput = {
       QueueUrl: queueUrl,
       MessageBody: messageBody,
     };
 
+    if (isFifo) {
+      // Add FIFO-specific fields
+      params.MessageGroupId = "default"; // can customize if you want different groups
+      params.MessageDeduplicationId = Date.now().toString(); // or use a UUID
+    }
     if (messageAttributes) {
       Object.assign(params, { MessageAttributes: messageAttributes });
     }
 
     // Send a message to the queue
-    await this.sqsClient.send(new SendMessageCommand(params as SendMessageCommandInput));
+    await this.sqsClient.send(new SendMessageCommand(params));
   }
 }
 
