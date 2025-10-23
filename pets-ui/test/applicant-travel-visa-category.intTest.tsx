@@ -64,10 +64,10 @@ describe("ApplicantTravelForm", () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getAllByText("Error: Select a visa category".slice(7))).toHaveLength(2);
-      expect(screen.getAllByText("Error: Select a visa category".slice(7))[0]).toHaveAttribute(
+      expect(screen.getAllByText("Error: Select visa category".slice(7))).toHaveLength(3);
+      expect(screen.getAllByText("Error: Select visa category".slice(7))[0]).toHaveAttribute(
         "aria-label",
-        "Error: Select a visa category",
+        "Error: Select visa category",
       );
     });
   });

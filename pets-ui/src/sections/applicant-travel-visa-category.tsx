@@ -76,7 +76,7 @@ const ApplicantTravelVisaCategory = () => {
             options={visaOptions}
             errorMessage={errors?.visaCategory?.message ?? ""}
             formValue="visaCategory"
-            required="Select a visa category"
+            required="Select visa category"
             defaultValue={travelData.visaCategory}
             placeholder="Select visa category"
           />
