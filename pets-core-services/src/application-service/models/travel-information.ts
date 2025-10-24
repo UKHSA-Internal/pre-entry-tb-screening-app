@@ -15,6 +15,12 @@ import { VisaOptions } from "../types/enums";
 const { dynamoDBDocClient: docClient } = awsClients;
 abstract class TravelInformationBase {
   applicationId!: string;
+  ukAddressLine1?: string;
+  ukAddressLine2?: string;
+  ukAddressTownOrCity?: string;
+  ukAddressPostcode?: string;
+  ukMobileNumber?: string;
+  ukEmailAddress?: string;
 
   constructor(details: Partial<TravelInformationBase>) {
     Object.assign(this, details); // copies all matching props
@@ -67,12 +73,6 @@ export type ITravelInformationUpdate = {
 export class TravelInformation extends TravelInformationBase {
   status: TaskStatus;
   visaCategory: VisaOptions;
-  ukAddressLine1?: string;
-  ukAddressLine2?: string;
-  ukAddressTownOrCity?: string;
-  ukAddressPostcode?: string;
-  ukMobileNumber?: string;
-  ukEmailAddress?: string;
 
   dateCreated: Date;
   createdBy: string;
@@ -80,12 +80,6 @@ export class TravelInformation extends TravelInformationBase {
   constructor(details: ITravelInformation) {
     super(details);
     this.visaCategory = details.visaCategory;
-    this.ukAddressLine1 = details.ukAddressLine1;
-    this.ukAddressLine2 = details.ukAddressLine2;
-    this.ukAddressTownOrCity = details.ukAddressTownOrCity;
-    this.ukAddressPostcode = details.ukAddressPostcode;
-    this.ukMobileNumber = details.ukMobileNumber;
-    this.ukEmailAddress = details.ukEmailAddress;
     this.status = details.status;
 
     // Audit
@@ -98,24 +92,11 @@ export type NewTravelInformation = Omit<ITravelInformation, "dateCreated" | "sta
 
 export class TravelInformationUpdate extends TravelInformationBase {
   visaCategory?: VisaOptions;
-  ukAddressLine1?: string;
-  ukAddressLine2?: string;
-  ukAddressTownOrCity?: string;
-  ukAddressPostcode?: string;
-  ukMobileNumber?: string;
-  ukEmailAddress?: string;
-
   dateUpdated: Date;
   updatedBy: string;
   constructor(details: ITravelInformationUpdate) {
     super(details);
     this.visaCategory = details.visaCategory;
-    this.ukAddressLine1 = details.ukAddressLine1;
-    this.ukAddressLine2 = details.ukAddressLine2;
-    this.ukAddressTownOrCity = details.ukAddressTownOrCity;
-    this.ukAddressPostcode = details.ukAddressPostcode;
-    this.ukMobileNumber = details.ukMobileNumber;
-    this.ukEmailAddress = details.ukEmailAddress;
 
     // Audit
     this.dateUpdated = details.dateUpdated;

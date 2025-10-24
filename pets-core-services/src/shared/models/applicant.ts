@@ -7,13 +7,8 @@ import {
   UpdateCommand,
   UpdateCommandInput,
 } from "@aws-sdk/lib-dynamodb";
-import { z } from "zod";
 
 import { AllowedSex } from "../../applicant-service/types/enums";
-import {
-  ApplicantRequestSchema,
-  ApplicantUpdateRequestSchema,
-} from "../../applicant-service/types/zod-schema";
 import awsClients from "../clients/aws";
 import { assertEnvExists } from "../config";
 import { CountryCode } from "../country";
@@ -26,14 +21,55 @@ type AllApplicantTypes = AllowedSex | CountryCode | Date | TaskStatus | string;
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
-type NewApplicantBase = z.infer<typeof ApplicantRequestSchema>;
-type ApplicantUpdateBase = z.infer<typeof ApplicantUpdateRequestSchema>;
-
 export abstract class ApplicantBase {
   applicationId!: string;
 
+  fullName!: string;
+  countryOfNationality!: CountryCode;
+  issueDate!: Date;
+  expiryDate!: Date;
+  dateOfBirth!: Date;
+  sex!: AllowedSex;
+  applicantHomeAddress1!: string;
+  applicantHomeAddress2?: string;
+  applicantHomeAddress3?: string;
+  townOrCity?: string;
+  provinceOrState!: string;
+  postcode!: string;
+  country!: CountryCode;
+
+  static readonly getPassportId = (countryOfIssue: CountryCode, passportNumber: string) =>
+    `COUNTRY#${countryOfIssue}#PASSPORT#${passportNumber}`;
+
+  constructor(details: Partial<ApplicantBase>) {
+    Object.assign(this, details); // copies all matching props
+  }
+
+  toJson() {
+    // Copy everything from this
+    const json = { ...this } as Record<string, unknown>;
+    json.issueDate = getDateWithoutTime(this.issueDate);
+    json.expiryDate = getDateWithoutTime(this.expiryDate);
+    json.dateOfBirth = getDateWithoutTime(this.dateOfBirth);
+
+    // Exclude internal fields
+    delete json.createdBy;
+    delete json.updatedBy;
+    delete json.pk;
+    delete json.sk;
+
+    return json;
+  }
+}
+
+export type IApplicant = {
+  applicationId: string;
+  status: TaskStatus;
+
   fullName: string;
   countryOfNationality: CountryCode;
+  passportNumber: string;
+  countryOfIssue: CountryCode;
   issueDate: Date;
   expiryDate: Date;
   dateOfBirth: Date;
@@ -46,35 +82,48 @@ export abstract class ApplicantBase {
   postcode: string;
   country: CountryCode;
 
-  static readonly getPassportId = (countryOfIssue: CountryCode, passportNumber: string) =>
-    `COUNTRY#${countryOfIssue}#PASSPORT#${passportNumber}`;
+  //audit
+  dateCreated: Date;
+  createdBy: string;
+};
 
-  constructor(details: ApplicantBase) {
-    this.applicationId = details.applicationId;
-    this.fullName = details.fullName;
-    this.countryOfNationality = details.countryOfNationality;
-    this.issueDate = details.issueDate;
-    this.expiryDate = details.expiryDate;
-    this.dateOfBirth = details.dateOfBirth;
-    this.sex = details.sex;
-    this.applicantHomeAddress1 = details.applicantHomeAddress1;
-    this.applicantHomeAddress2 = details.applicantHomeAddress2;
-    this.applicantHomeAddress3 = details.applicantHomeAddress3;
-    this.provinceOrState = details.provinceOrState;
-    this.townOrCity = details.townOrCity;
-    this.postcode = details.postcode;
-    this.country = details.country;
-  }
-}
-
-export type UpdatedApplicant = ApplicantUpdateBase & {
+export type IApplicantUpdate = {
   applicationId: string;
+
+  fullName?: string;
+  countryOfNationality?: CountryCode;
+  issueDate?: Date;
+  expiryDate?: Date;
+  dateOfBirth?: Date;
+  sex?: AllowedSex;
+  applicantHomeAddress1?: string;
+  applicantHomeAddress2?: string;
+  applicantHomeAddress3?: string;
+  townOrCity?: string;
+  provinceOrState?: string;
+  postcode?: string;
+  country?: CountryCode;
+
+  //audit
+  dateUpdated: Date;
   updatedBy: string;
 };
 
-export type NewApplicant = NewApplicantBase & {
-  applicationId: string;
-  createdBy: string;
+export type NewApplicant = Omit<
+  IApplicant,
+  "dateCreated" | "issueDate" | "expiryDate" | "dateOfBirth" | "status"
+> & {
+  issueDate: Date | string;
+  expiryDate: Date | string;
+  dateOfBirth: Date | string;
+};
+export type UpdatedApplicant = Omit<
+  IApplicantUpdate,
+  "dateUpdated" | "issueDate" | "expiryDate" | "dateOfBirth"
+> & {
+  issueDate?: Date | string;
+  expiryDate?: Date | string;
+  dateOfBirth?: Date | string;
 };
 
 export class Applicant extends ApplicantBase {
@@ -82,9 +131,9 @@ export class Applicant extends ApplicantBase {
   countryOfIssue: CountryCode;
   dateCreated: Date;
   createdBy: string;
-  status?: TaskStatus;
+  status: TaskStatus;
 
-  constructor(details: NewApplicant & { dateCreated: Date | string }) {
+  constructor(details: IApplicant) {
     super({
       ...details,
       issueDate: new Date(details.issueDate),
@@ -95,56 +144,18 @@ export class Applicant extends ApplicantBase {
     this.countryOfIssue = details.countryOfIssue;
     this.createdBy = details.createdBy;
     this.dateCreated = new Date(details.dateCreated);
-  }
-  toJson() {
-    return {
-      applicationId: this.applicationId,
-
-      passportNumber: this.passportNumber,
-      countryOfIssue: this.countryOfIssue,
-
-      fullName: this.fullName,
-      countryOfNationality: this.countryOfNationality,
-      issueDate: getDateWithoutTime(this.issueDate),
-      expiryDate: getDateWithoutTime(this.expiryDate),
-      dateOfBirth: getDateWithoutTime(this.dateOfBirth),
-      sex: this.sex,
-      applicantHomeAddress1: this.applicantHomeAddress1,
-      applicantHomeAddress2: this.applicantHomeAddress2,
-      applicantHomeAddress3: this.applicantHomeAddress3,
-      provinceOrState: this.provinceOrState,
-      townOrCity: this.townOrCity,
-      postcode: this.postcode,
-      country: this.country,
-    };
+    this.status = details.status;
   }
 }
-
-export type ApplicantUpdateConstructorProps = Omit<
-  ApplicantBase,
-  "passportNumber" | "countryOfIssue"
-> & { dateUpdated: Date; updatedBy: string };
 
 export class ApplicantUpdate extends ApplicantBase {
   dateUpdated: Date;
   updatedBy: string;
 
-  constructor(details: ApplicantUpdateConstructorProps) {
+  constructor(details: IApplicantUpdate) {
     super(details);
     this.dateUpdated = details.dateUpdated;
     this.updatedBy = details.updatedBy;
-  }
-
-  toJson() {
-    // Copy everything from this
-    const json = { ...this } as unknown as Record<string, AllApplicantTypes>;
-
-    return {
-      ...json,
-      issueDate: getDateWithoutTime(this.issueDate),
-      expiryDate: getDateWithoutTime(this.expiryDate),
-      dateOfBirth: getDateWithoutTime(this.dateOfBirth),
-    };
   }
 }
 
@@ -153,17 +164,7 @@ export class ApplicantDbOps {
   static readonly sk = "APPLICANT#DETAILS";
   static readonly getTableName = () => process.env.APPLICANT_SERVICE_DATABASE_NAME;
 
-  static todbItem(
-    applicant: ApplicantBase & {
-      passportNumber: string;
-      countryOfIssue: CountryCode;
-      status?: TaskStatus;
-      dateCreated: Date;
-      createdBy: string;
-      dateUpdated?: Date;
-      updatedBy?: string;
-    },
-  ) {
+  static todbItem(applicant: Applicant) {
     const dbItem = {
       ...applicant,
       dateCreated: applicant.dateCreated.toISOString(),
@@ -181,9 +182,13 @@ export class ApplicantDbOps {
     try {
       logger.info("Saving new applicant Information to DB");
 
-      const updatedDetails: NewApplicant & { dateCreated: Date | string } = {
+      const updatedDetails: IApplicant = {
         ...details,
         dateCreated: new Date(),
+        issueDate: new Date(details.issueDate),
+        expiryDate: new Date(details.expiryDate),
+        dateOfBirth: new Date(details.dateOfBirth),
+        status: TaskStatus.completed,
       };
 
       const applicant = new Applicant(updatedDetails);
@@ -221,7 +226,7 @@ export class ApplicantDbOps {
     return { updateExpression, expressionAttribute, expressionAttributeNames };
   }
 
-  static async updateApplicant(details: UpdatedApplicant) {
+  static async updateApplicant(details: UpdatedApplicant): Promise<ApplicantUpdate> {
     try {
       logger.info("Updating applicant Information to DB");
 
@@ -260,7 +265,6 @@ export class ApplicantDbOps {
       logger.info({ response }, "Applicant details updated successfully");
       const applicant = new ApplicantUpdate({
         applicationId: attrs?.applicationId as string,
-
         fullName: attrs?.fullName as string,
         countryOfNationality: attrs?.countryOfNationality as CountryCode,
         issueDate: new Date(attrs?.issueDate as string),
@@ -310,11 +314,15 @@ export class ApplicantDbOps {
 
       const dbItem = data.Item as ReturnType<(typeof ApplicantDbOps)["todbItem"]>;
 
-      return new Applicant({
+      const applicantInformation = new Applicant({
         ...dbItem,
         townOrCity: dbItem.townOrCity as string,
         dateCreated: new Date(dbItem.dateCreated),
+        issueDate: new Date(dbItem.issueDate),
+        expiryDate: new Date(dbItem.expiryDate),
+        dateOfBirth: new Date(dbItem.dateOfBirth),
       });
+      return applicantInformation;
     } catch (error) {
       logger.error(error, "Error retrieving applicant details");
       throw error;
@@ -352,6 +360,9 @@ export class ApplicantDbOps {
             ...dbItem,
             townOrCity: dbItem.townOrCity as string,
             dateCreated: new Date(dbItem.dateCreated),
+            issueDate: new Date(dbItem.issueDate),
+            expiryDate: new Date(dbItem.expiryDate),
+            dateOfBirth: new Date(dbItem.dateOfBirth),
           }),
       );
     } catch (error) {

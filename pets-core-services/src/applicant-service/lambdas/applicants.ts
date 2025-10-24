@@ -8,7 +8,7 @@ import { postApplicantHandler } from "../handlers/postApplicant";
 import { searchApplicantHandler } from "../handlers/searchApplicant";
 import { updateApplicantHandler } from "../handlers/updateApplicant";
 import {
-  ApplicantRequestSchema,
+  ApplicantRegisterRequestSchema,
   ApplicantResponseSchema,
   ApplicantUpdateRequestSchema,
   ApplicantUpdateResponseSchema,
@@ -21,7 +21,7 @@ export const routes: PetsRoute[] = [
     method: "POST",
     path: "/applicant/register/{applicationId}",
     handler: postApplicantHandler,
-    requestBodySchema: ApplicantRequestSchema.openapi({
+    requestBodySchema: ApplicantRegisterRequestSchema.openapi({
       description: "Details about an Applicant",
     }),
     responseSchema: ApplicantResponseSchema.openapi({ description: "Saved Applicant Details" }),
