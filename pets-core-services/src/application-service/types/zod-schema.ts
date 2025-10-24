@@ -80,9 +80,6 @@ export const TravelInformationPutResponseSchema = TravelInformationPutRequestSch
   dateUpdated: z.string().date().openapi({
     description: "Updated Date in UTC timezone",
   }),
-  status: z.nativeEnum(TaskStatus).openapi({
-    description: "Status of Task",
-  }),
 });
 
 export const MedicalScreeningBaseSchema = z.object({
