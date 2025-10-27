@@ -6,6 +6,7 @@ type HeadingProps = {
   size?: HeadingSize;
   style?: React.CSSProperties;
   id?: string;
+  additionalClasses?: string;
 };
 
 const headingTags: { [key: number]: React.ElementType } = {
@@ -17,9 +18,10 @@ const headingTags: { [key: number]: React.ElementType } = {
 
 const Heading = ({ level = 1, ...props }: Readonly<HeadingProps>) => {
   const Tag = headingTags[level] || "h1";
-  const variant = `govuk-heading-${props.size}`;
+  const sizeClass = `govuk-heading-${props.size}`;
+  const className = props.additionalClasses ? `${sizeClass} ${props.additionalClasses}` : sizeClass;
   return (
-    <Tag className={variant} style={props.style} id={props.id}>
+    <Tag className={className} style={props.style} id={props.id}>
       {props.title}
     </Tag>
   );
