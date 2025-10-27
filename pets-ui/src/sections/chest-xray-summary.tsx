@@ -77,10 +77,10 @@ const ChestXraySummary = () => {
       {(chestXrayData.status == ApplicationStatus.NOT_YET_STARTED ||
         chestXrayData.status == ApplicationStatus.IN_PROGRESS) && (
         <div>
-          <Heading title="Now send the X-ray information" level={2} size="m" />
+          <Heading title="Now send the chest X-ray results and findings" level={2} size="m" />
           <p className="govuk-body">
-            Upload all relevant chest X-ray images before you continue. You will not be able to
-            change or add images after you submit this information.
+            You will not be able to change the X-ray results and findings after you submit this
+            information.
           </p>
 
           <Button
