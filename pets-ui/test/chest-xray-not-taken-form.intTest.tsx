@@ -111,4 +111,22 @@ describe("ChestXrayNotTakenPage", () => {
     expect(useNavigateMock).toHaveBeenCalled();
     expect(useNavigateMock).toHaveBeenCalledWith("/check-medical-history-and-tb-symptoms");
   });
+  it("pre-fills 'Other' reason text field when the redux variable is not empty", async () => {
+    const preloadedState = {
+      medicalScreening: {
+        reasonXrayNotRequired: "Other",
+        reasonXrayNotRequiredFurtherDetails: "too old",
+      },
+    } as unknown as Record<string, unknown>;
+
+    renderWithProviders(
+      <HelmetProvider>
+        <ChestXrayNotTaken />
+      </HelmetProvider>,
+      { preloadedState },
+    );
+
+    const input = await screen.findByTestId("reason-xray-not-required-other-detail");
+    expect(input).toHaveValue("too old");
+  });
 });
