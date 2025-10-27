@@ -321,7 +321,7 @@ test("Progress tracker page displays complete application sections correctly, li
   const medicalScreeningLink = screen.getByRole("link", {
     name: /Medical history and TB symptoms/i,
   });
-  expect(medicalScreeningLink).toHaveAttribute("href", "/check-medical-screening");
+  expect(medicalScreeningLink).toHaveAttribute("href", "/check-medical-history-and-tb-symptoms");
   const medicalScreeningListItem = medicalScreeningLink.closest("li");
   expect(medicalScreeningListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
