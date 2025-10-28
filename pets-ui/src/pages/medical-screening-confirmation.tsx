@@ -5,7 +5,7 @@ export default function MedicalConfirmation() {
   return (
     <Container
       title="Medical history and TB symptoms confirmed - Complete UK pre-entry health screening - GOV.UK"
-      backLinkTo="/check-medical-screening"
+      backLinkTo="/check-medical-history-and-tb-symptoms"
     >
       <Confirmation
         confirmationText={"Medical history and TB symptoms confirmed"}

@@ -223,7 +223,9 @@ const ChestXrayForm = () => {
               />
             </div>
 
-            <SubmitButton id="continue" type={ButtonType.DEFAULT} text="Continue" />
+            <div className="dicom-upload-container">
+              <SubmitButton id="continue" type={ButtonType.DEFAULT} text="Continue" />
+            </div>
           </div>
         </form>
       </FormProvider>
