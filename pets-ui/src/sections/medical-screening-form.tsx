@@ -121,7 +121,7 @@ const MedicalScreeningForm = () => {
             render={({ field: { value, onChange } }) => (
               <DateTextInput
                 heading="When did the medical screening take place?"
-                hint="For example, 31 6 2025"
+                hint="For example, 30 6 2025"
                 value={value}
                 setDateValue={onChange}
                 id={"medical-screening-completion-date"}

@@ -9,7 +9,7 @@ export class MedicalSummaryPage extends BasePage {
   // Verify page loaded
   verifyPageLoaded(): MedicalSummaryPage {
     cy.url().should("include", "/medical-summary");
-    cy.contains("h1", "Check medical screening").should("be.visible");
+    cy.contains("h1", "Check medical history and TB symptoms").should("be.visible");
     cy.get(".govuk-summary-list").should("be.visible");
     return this;
   }

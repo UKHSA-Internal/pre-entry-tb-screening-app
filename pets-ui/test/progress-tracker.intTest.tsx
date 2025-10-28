@@ -242,33 +242,33 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(travelDetailsListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
-  expect(within(travelDetailsListItem as HTMLElement).getByText("Not yet started"));
+  expect(within(travelDetailsListItem as HTMLElement).getByText("Cannot start yet"));
 
   const medicalScreeningText = screen.getByText(/Medical history and TB symptoms/i);
   const medicalScreeningListItem = medicalScreeningText.closest("li");
   expect(medicalScreeningListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
-  expect(within(medicalScreeningListItem as HTMLElement).getByText("Not yet started"));
+  expect(within(medicalScreeningListItem as HTMLElement).getByText("Cannot start yet"));
 
   const chestXrayText = screen.getByText(/Upload chest X-ray images/i);
   const chestXrayListItem = chestXrayText.closest("li");
   expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
-  expect(within(medicalScreeningListItem as HTMLElement).getByText("Not yet started"));
+  expect(within(medicalScreeningListItem as HTMLElement).getByText("Cannot start yet"));
 
   const radiologicalOutcomeText = screen.getByText(/Radiological outcome/i);
   const radiologicalOutcomeListItem = radiologicalOutcomeText.closest("li");
   expect(radiologicalOutcomeListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
-  expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Not yet started"));
+  expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Cannot start yet"));
 
   const tbCertificateText = screen.getByText(/TB certificate outcome/i);
   const tbCertificateListItem = tbCertificateText.closest("li");
   expect(tbCertificateListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
-  expect(within(tbCertificateListItem as HTMLElement).getByText("Not yet started"));
+  expect(within(tbCertificateListItem as HTMLElement).getByText("Cannot start yet"));
 
   const searchLink = screen.getByRole("link", { name: /Search for another visa applicant/i });
   expect(searchLink).toHaveAttribute("href", "/search-for-visa-applicant");
@@ -321,7 +321,7 @@ test("Progress tracker page displays complete application sections correctly, li
   const medicalScreeningLink = screen.getByRole("link", {
     name: /Medical history and TB symptoms/i,
   });
-  expect(medicalScreeningLink).toHaveAttribute("href", "/check-medical-screening");
+  expect(medicalScreeningLink).toHaveAttribute("href", "/check-medical-history-and-tb-symptoms");
   const medicalScreeningListItem = medicalScreeningLink.closest("li");
   expect(medicalScreeningListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
