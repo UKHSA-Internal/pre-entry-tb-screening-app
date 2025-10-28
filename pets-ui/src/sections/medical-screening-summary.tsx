@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { postMedicalDetails } from "@/api/api";
 import Button from "@/components/button/button";
+import Heading from "@/components/heading/heading";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
@@ -194,12 +195,20 @@ const MedicalScreeningReview = () => {
 
       {(medicalData.status == ApplicationStatus.NOT_YET_STARTED ||
         medicalData.status == ApplicationStatus.IN_PROGRESS) && (
-        <Button
-          id="confirm"
-          type={ButtonType.DEFAULT}
-          text="Save and continue"
-          handleClick={handleSubmit}
-        />
+        <div>
+          <Heading title="Now send the medical history and TB symptoms" level={2} size="m" />
+          <p className="govuk-body">
+            You will not be able to change the medical history and TB symptoms after you submit this
+            information.
+          </p>
+
+          <Button
+            id="confirm"
+            type={ButtonType.DEFAULT}
+            text="Save and continue"
+            handleClick={handleSubmit}
+          />
+        </div>
       )}
       {(medicalData.status == ApplicationStatus.COMPLETE ||
         medicalData.status == ApplicationStatus.NOT_REQUIRED) && (

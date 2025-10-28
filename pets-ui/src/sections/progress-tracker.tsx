@@ -1,6 +1,7 @@
 import React from "react";
 
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
+import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { useAppSelector } from "@/redux/hooks";
@@ -62,9 +63,14 @@ const Task = (props: Readonly<TaskProps>) => {
             <p className="govuk-body task-description-static">{props.description}</p>
           )}
       </div>
-      {props.status == ApplicationStatus.NOT_YET_STARTED && (
+      {allPrerequisitesComplete && props.status == ApplicationStatus.NOT_YET_STARTED && (
         <div className="govuk-task-list__status">
           <strong className="govuk-tag govuk-tag--blue">Not yet started</strong>
+        </div>
+      )}
+      {!allPrerequisitesComplete && props.status == ApplicationStatus.NOT_YET_STARTED && (
+        <div className="govuk-task-list__status">
+          <strong className="govuk-tag govuk-tag--grey">Cannot start yet</strong>
         </div>
       )}
       {props.status == ApplicationStatus.IN_PROGRESS && (
@@ -158,7 +164,7 @@ const ProgressTracker = () => {
         )}
       </div>
 
-      <h2 className="govuk-heading-s">1. Visa applicant information</h2>
+      <Heading title="1. Visa applicant information" level={2} size="s" />
       <ul className="govuk-task-list">
         <Task
           description="Visa applicant details"
@@ -168,7 +174,7 @@ const ProgressTracker = () => {
           prerequisiteTaskStatuses={[]}
         />
         <Task
-          description="Travel information"
+          description="UK travel information"
           status={travelData.status}
           linkWhenIncomplete="/proposed-visa-category"
           linkWhenComplete="/check-travel-information"
@@ -176,13 +182,13 @@ const ProgressTracker = () => {
         />
       </ul>
 
-      <h2 className="govuk-heading-s">2. Medical screening</h2>
+      <Heading title="2. Medical screening" level={2} size="s" />
       <ul className="govuk-task-list">
         <Task
           description="Medical history and TB symptoms"
           status={medicalScreeningData.status}
           linkWhenIncomplete="/record-medical-history-tb-symptoms"
-          linkWhenComplete="/check-medical-screening"
+          linkWhenComplete="/check-medical-history-and-tb-symptoms"
           prerequisiteTaskStatuses={[applicantData.status, travelData.status]}
         />
         <Task
@@ -237,7 +243,7 @@ const ProgressTracker = () => {
         />
       </ul>
 
-      <h2 className="govuk-heading-s">3. Review outcome</h2>
+      <Heading title="3. Review outcome" level={2} size="s" />
       <ul className="govuk-task-list">
         <Task
           description="TB certificate outcome"
@@ -257,7 +263,12 @@ const ProgressTracker = () => {
         />
       </ul>
 
-      <h2 className="govuk-heading-s progress-tracker-start-search">Start a new search</h2>
+      <Heading
+        title="Start a new search"
+        level={2}
+        size="s"
+        additionalClasses="progress-tracker-start-search"
+      />
       <p className="govuk-body">
         <LinkLabel
           className="govuk-link"
