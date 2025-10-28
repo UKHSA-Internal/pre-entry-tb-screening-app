@@ -1,12 +1,11 @@
-import { useLocation } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 import Container from "@/components/container/container";
 import ApplicantForm from "@/sections/applicant-details-form";
 
 export default function ContactDetailsPage() {
-  const location = useLocation();
-  const params = new URLSearchParams(location.search);
-  const from = params.get("from");
+  const [searchParams] = useSearchParams();
+  const from = searchParams.get("from");
   let backLinkTo: string;
   if (from === "check") {
     backLinkTo = "/check-applicant-details";

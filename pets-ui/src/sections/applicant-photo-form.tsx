@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FileUpload from "@/components/fileUpload/fileUpload";
@@ -19,7 +19,7 @@ const ApplicantPhotoForm = () => {
   const applicantData = useAppSelector(selectApplicant);
   const { applicantPhotoFile, setApplicantPhotoFile } = useApplicantPhoto();
   const navigate = useNavigate();
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const dispatch = useAppDispatch();
 
   const [applicantPhoto, setApplicantPhoto] = useState<File>();
@@ -44,7 +44,7 @@ const ApplicantPhotoForm = () => {
       setApplicantPhotoFile(applicantPhoto);
     }
 
-    const fromParam = new URLSearchParams(location.search).get("from");
+    const fromParam = searchParams.get("from");
     let destination: string;
 
     if (applicantData.status === ApplicationStatus.COMPLETE) {

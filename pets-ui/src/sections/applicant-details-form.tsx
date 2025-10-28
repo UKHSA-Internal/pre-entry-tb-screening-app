@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import { putApplicantDetails } from "@/api/api";
 import DateTextInput from "@/components/dateTextInput/dateTextInput";
@@ -24,6 +24,7 @@ const ApplicantForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const isComplete = applicantData.status === ApplicationStatus.COMPLETE;
 
   const methods = useForm<ReduxApplicantDetailsType>({ reValidateMode: "onSubmit" });
@@ -73,7 +74,7 @@ const ApplicantForm = () => {
         };
         await putApplicantDetails(applicationData.applicationId, updatePayload);
 
-        const fromParam = new URLSearchParams(location.search).get("from");
+        const fromParam = searchParams.get("from");
         if (fromParam === "tb") {
           navigate("/tb-certificate-summary");
         } else if (fromParam === "check") {

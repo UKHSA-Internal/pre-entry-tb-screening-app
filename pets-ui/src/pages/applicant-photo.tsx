@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
@@ -8,9 +8,9 @@ import { ApplicationStatus } from "@/utils/enums";
 
 export default function ApplicantPhotoPage() {
   const applicant = useAppSelector(selectApplicant);
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
 
-  const fromParam = new URLSearchParams(location.search).get("from");
+  const fromParam = searchParams.get("from");
   let backLinkTo: string;
   if (fromParam === "check") {
     backLinkTo = "/check-applicant-details";
