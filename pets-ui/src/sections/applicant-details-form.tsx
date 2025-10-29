@@ -10,6 +10,7 @@ import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
+import Summary from "@/components/summary/summary";
 import { setApplicantDetails, setApplicantDetailsStatus } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant, selectApplication } from "@/redux/store";
@@ -150,18 +151,21 @@ const ApplicantForm = () => {
         </p>
 
         {isComplete && (
-          <dl className="govuk-summary-list govuk-!-margin-bottom-6">
-            <div className="govuk-summary-list__row">
-              <dt className="govuk-summary-list__key">Passport number</dt>
-              <dd className="govuk-summary-list__value">{applicantData.passportNumber}</dd>
-            </div>
-            <div className="govuk-summary-list__row">
-              <dt className="govuk-summary-list__key">Country of issue</dt>
-              <dd className="govuk-summary-list__value">
-                {getCountryName(applicantData.countryOfIssue)}
-              </dd>
-            </div>
-          </dl>
+          <Summary
+            status={applicantData.status}
+            summaryElements={[
+              {
+                key: "Passport number",
+                value: applicantData.passportNumber,
+                hiddenLabel: "passport number",
+              },
+              {
+                key: "Country of issue",
+                value: getCountryName(applicantData.countryOfIssue),
+                hiddenLabel: "country of issue",
+              },
+            ]}
+          />
         )}
 
         <Heading level={2} size="m" title="Applicant's personal details" />
