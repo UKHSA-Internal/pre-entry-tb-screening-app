@@ -1,4 +1,10 @@
-import { GetCommand, PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
+import {
+  GetCommand,
+  PutCommand,
+  PutCommandInput,
+  UpdateCommand,
+  UpdateCommandInput,
+} from "@aws-sdk/lib-dynamodb";
 
 import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
@@ -7,8 +13,33 @@ import { TaskStatus } from "../../shared/types/enum";
 import { VisaOptions } from "../types/enums";
 
 const { dynamoDBDocClient: docClient } = awsClients;
+abstract class TravelInformationBase {
+  applicationId!: string;
+  ukAddressLine1?: string;
+  ukAddressLine2?: string;
+  ukAddressTownOrCity?: string;
+  ukAddressPostcode?: string;
+  ukMobileNumber?: string;
+  ukEmailAddress?: string;
 
-export abstract class ITravelInformation {
+  constructor(details: Partial<TravelInformationBase>) {
+    Object.assign(this, details); // copies all matching props
+  }
+
+  toJson() {
+    // Copy everything from this
+    const json = { ...this } as Record<string, unknown>;
+
+    // Exclude internal fields
+    delete json.createdBy;
+    delete json.updatedBy;
+    delete json.pk;
+    delete json.sk;
+
+    return json;
+  }
+}
+export type ITravelInformation = {
   applicationId: string;
   status: TaskStatus;
 
@@ -17,21 +48,38 @@ export abstract class ITravelInformation {
   ukAddressLine2?: string;
   ukAddressTownOrCity?: string;
   ukAddressPostcode?: string;
-  ukMobileNumber: string;
-  ukEmailAddress: string;
+  ukMobileNumber?: string;
+  ukEmailAddress?: string;
+
+  dateCreated: Date;
+  createdBy: string;
+};
+
+export type ITravelInformationUpdate = {
+  applicationId: string;
+
+  visaCategory?: VisaOptions;
+  ukAddressLine1?: string;
+  ukAddressLine2?: string;
+  ukAddressTownOrCity?: string;
+  ukAddressPostcode?: string;
+  ukMobileNumber?: string;
+  ukEmailAddress?: string;
+
+  dateUpdated: Date;
+  updatedBy: string;
+};
+
+export class TravelInformation extends TravelInformationBase {
+  status: TaskStatus;
+  visaCategory: VisaOptions;
 
   dateCreated: Date;
   createdBy: string;
 
   constructor(details: ITravelInformation) {
-    this.applicationId = details.applicationId;
+    super(details);
     this.visaCategory = details.visaCategory;
-    this.ukAddressLine1 = details.ukAddressLine1;
-    this.ukAddressLine2 = details.ukAddressLine2;
-    this.ukAddressTownOrCity = details.ukAddressTownOrCity;
-    this.ukAddressPostcode = details.ukAddressPostcode;
-    this.ukMobileNumber = details.ukMobileNumber;
-    this.ukEmailAddress = details.ukEmailAddress;
     this.status = details.status;
 
     // Audit
@@ -40,23 +88,37 @@ export abstract class ITravelInformation {
   }
 }
 
-export class TravelInformation extends ITravelInformation {
+export type NewTravelInformation = Omit<ITravelInformation, "dateCreated" | "status">;
+
+export class TravelInformationUpdate extends TravelInformationBase {
+  visaCategory?: VisaOptions;
+  dateUpdated: Date;
+  updatedBy: string;
+  constructor(details: ITravelInformationUpdate) {
+    super(details);
+    this.visaCategory = details.visaCategory;
+
+    // Audit
+    this.dateUpdated = details.dateUpdated;
+    this.updatedBy = details.updatedBy;
+  }
+}
+
+export type NewTravelInformationUpdate = Omit<ITravelInformationUpdate, "dateUpdated">;
+
+export class TravelInformationDbOps {
   static readonly getPk = (applicationId: string) => Application.getPk(applicationId);
 
   static readonly sk = "APPLICATION#TRAVEL#INFORMATION";
 
   static readonly getTableName = () => process.env.APPLICATION_SERVICE_DATABASE_NAME;
 
-  private constructor(details: ITravelInformation) {
-    super(details);
-  }
-
-  private todbItem() {
+  static todbItem(travelInformation: TravelInformation) {
     const dbItem = {
-      ...this,
-      dateCreated: this.dateCreated.toISOString(),
-      pk: TravelInformation.getPk(this.applicationId),
-      sk: TravelInformation.sk,
+      ...travelInformation,
+      dateCreated: travelInformation.dateCreated.toISOString(),
+      pk: TravelInformationDbOps.getPk(travelInformation.applicationId),
+      sk: TravelInformationDbOps.sk,
     };
     return dbItem;
   }
@@ -75,9 +137,9 @@ export class TravelInformation extends ITravelInformation {
 
       const travelInformation = new TravelInformation(updatedDetails);
 
-      const dbItem = travelInformation.todbItem();
+      const dbItem = TravelInformationDbOps.todbItem(travelInformation);
       const params: PutCommandInput = {
-        TableName: TravelInformation.getTableName(),
+        TableName: TravelInformationDbOps.getTableName(),
         Item: { ...dbItem },
         ConditionExpression: "attribute_not_exists(pk) AND attribute_not_exists(sk)",
       };
@@ -93,15 +155,82 @@ export class TravelInformation extends ITravelInformation {
     }
   }
 
+  static async updateTravelInformation(
+    details: Omit<ITravelInformationUpdate, "dateUpdated" | "status">,
+  ): Promise<TravelInformationUpdate> {
+    try {
+      logger.info("Update Travel Information to DB");
+      const pk = TravelInformationDbOps.getPk(details.applicationId);
+      const sk = TravelInformationDbOps.sk;
+
+      // Clean up: remove undefined fields before building update expression
+      const fieldsToUpdate = Object.entries(details).reduce(
+        (acc, [key, value]) => {
+          if (value !== undefined) acc[key] = value;
+          return acc;
+        },
+        {} as Record<string, any>,
+      );
+
+      // Add audit fields
+      fieldsToUpdate["dateUpdated"] = new Date().toISOString();
+
+      // Build the UpdateExpression dynamically
+      const updateParts: string[] = [];
+      const ExpressionAttributeNames: Record<string, string> = {};
+      const ExpressionAttributeValues: Record<string, any> = {};
+
+      for (const [key, value] of Object.entries(fieldsToUpdate)) {
+        const nameKey = `#${key}`;
+        const valueKey = `:${key}`;
+        updateParts.push(`${nameKey} = ${valueKey}`);
+        ExpressionAttributeNames[nameKey] = key;
+        ExpressionAttributeValues[valueKey] = value;
+      }
+      const updateExpression = "SET " + updateParts.join(", ");
+
+      const params: UpdateCommandInput = {
+        TableName: TravelInformationDbOps.getTableName(),
+        Key: { pk, sk },
+        UpdateExpression: updateExpression,
+        ExpressionAttributeNames,
+        ExpressionAttributeValues,
+        ReturnValues: "ALL_NEW", // Return updated item
+      };
+
+      const command = new UpdateCommand(params);
+      const response = await docClient.send(command);
+      const attrs = response.Attributes!;
+      if (!attrs) throw new Error("Update failed");
+
+      logger.info({ response }, "Travel Information created/updated successfully");
+      const travelInformation = new TravelInformationUpdate({
+        applicationId: attrs?.applicationId,
+        visaCategory: attrs?.visaCategory,
+        ukAddressLine1: attrs?.ukAddressLine1,
+        ukAddressLine2: attrs?.ukAddressLine2,
+        ukAddressTownOrCity: attrs?.ukAddressTownOrCity,
+        ukAddressPostcode: attrs?.ukAddressPostcode,
+        ukMobileNumber: attrs?.ukMobileNumber,
+        ukEmailAddress: attrs?.ukEmailAddress,
+        dateUpdated: new Date(attrs?.dateUpdated as string),
+        updatedBy: attrs?.updatedBy,
+      });
+      return travelInformation;
+    } catch (error) {
+      logger.error(error, "Error updating travel information");
+      throw error;
+    }
+  }
   static async getByApplicationId(applicationId: string) {
     try {
       logger.info("fetching Travel Details");
 
       const params = {
-        TableName: TravelInformation.getTableName(),
+        TableName: TravelInformationDbOps.getTableName(),
         Key: {
-          pk: TravelInformation.getPk(applicationId),
-          sk: TravelInformation.sk,
+          pk: TravelInformationDbOps.getPk(applicationId),
+          sk: TravelInformationDbOps.sk,
         },
       };
 
@@ -116,32 +245,18 @@ export class TravelInformation extends ITravelInformation {
 
       logger.info("Travel details fetched successfully");
 
-      const dbItem = travelInfo as ReturnType<TravelInformation["todbItem"]>;
+      const travelInformationDbItem = data.Item as ReturnType<
+        (typeof TravelInformationDbOps)["todbItem"]
+      >;
 
       const travelInformation = new TravelInformation({
-        ...dbItem,
-        dateCreated: new Date(dbItem.dateCreated),
+        ...travelInformationDbItem,
+        dateCreated: new Date(travelInformationDbItem.dateCreated),
       });
       return travelInformation;
     } catch (error) {
       logger.error(error, "Error retrieving travel details");
       throw error;
     }
-  }
-
-  toJson() {
-    return {
-      applicationId: this.applicationId,
-      status: this.status,
-
-      visaCategory: this.visaCategory,
-      ukAddressLine1: this.ukAddressLine1,
-      ukAddressLine2: this.ukAddressLine2,
-      ukAddressTownOrCity: this.ukAddressTownOrCity,
-      ukAddressPostcode: this.ukAddressPostcode,
-      ukMobileNumber: this.ukMobileNumber,
-      ukEmailAddress: this.ukEmailAddress,
-      dateCreated: this.dateCreated,
-    };
   }
 }
