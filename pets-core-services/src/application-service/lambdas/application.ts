@@ -69,7 +69,7 @@ export const routes: PetsRoute[] = [
     requestBodySchema: TravelInformationPostRequestSchema.openapi({
       description: "Travel Details of an Applicant",
     }),
-    responseSchema: TravelInformationPostResponseSchema.openapi({
+    responseSchema: TravelInformationResponseSchema.openapi({
       description: "Saved Travel Information Details",
     }),
   },

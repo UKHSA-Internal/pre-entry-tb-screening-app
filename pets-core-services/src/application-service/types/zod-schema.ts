@@ -443,7 +443,7 @@ export const ApplicationSchema = z.object({
   applicantPhotoUrl: z.string().openapi({
     description: "Presigned Url for applicant Photo",
   }),
-  travelInformation: TravelInformationPostResponseSchema,
+  travelInformation: TravelInformationResponseSchema,
   medicalScreening: MedicalScreeningResponseSchema,
   chestXray: ChestXRayResponseSchema,
   radiologicalOutcome: RadiologicalOutcomeResponseSchema,

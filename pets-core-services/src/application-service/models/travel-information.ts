@@ -76,36 +76,6 @@ export class TravelInformation extends TravelInformationBase {
 
   dateCreated: Date;
   createdBy: string;
-};
-
-export type ITravelInformationUpdate = {
-  applicationId: string;
-  status: TaskStatus;
-
-  visaCategory?: VisaOptions;
-  ukAddressLine1?: string;
-  ukAddressLine2?: string;
-  ukAddressTownOrCity?: string;
-  ukAddressPostcode?: string;
-  ukMobileNumber?: string;
-  ukEmailAddress?: string;
-
-  dateUpdated: Date;
-  updatedBy: string;
-};
-
-export class TravelInformation extends TravelInformationBase {
-  status: TaskStatus;
-  visaCategory: VisaOptions;
-  ukAddressLine1?: string;
-  ukAddressLine2?: string;
-  ukAddressTownOrCity?: string;
-  ukAddressPostcode?: string;
-  ukMobileNumber: string;
-  ukEmailAddress: string;
-
-  dateCreated: Date;
-  createdBy: string;
 
   constructor(details: ITravelInformation) {
     super(details);

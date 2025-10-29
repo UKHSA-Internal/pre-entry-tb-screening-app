@@ -7,10 +7,8 @@ import {
   UpdateCommand,
   UpdateCommandInput,
 } from "@aws-sdk/lib-dynamodb";
-import { z } from "zod";
 
 import { AllowedSex } from "../../applicant-service/types/enums";
-import { ApplicantUpdateRequestSchema } from "../../applicant-service/types/zod-schema";
 import awsClients from "../clients/aws";
 import { assertEnvExists } from "../config";
 import { CountryCode } from "../country";
@@ -86,7 +84,6 @@ export type IApplicant = {
 
   //audit
   dateCreated: Date;
-  dateUpdated?: Date;
   createdBy: string;
 };
 
