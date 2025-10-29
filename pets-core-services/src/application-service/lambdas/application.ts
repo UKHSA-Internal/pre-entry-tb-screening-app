@@ -35,9 +35,9 @@ import {
   TbCertificateRequestSchema,
   TbCertificateResponseSchema,
   TravelInformationPostRequestSchema,
-  TravelInformationPostResponseSchema,
   TravelInformationPutRequestSchema,
   TravelInformationPutResponseSchema,
+  TravelInformationResponseSchema,
 } from "../types/zod-schema";
 
 extendZodWithOpenApi(z);

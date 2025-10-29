@@ -35,13 +35,7 @@ describe("Test for Getting Applicant", () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { createdBy, ...expectedJsonResponse } = existingApplicant;
 
-    expect(JSON.parse(response.body)).toMatchObject([
-      {
-        ...expectedJsonResponse,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        dateCreated: expect.any(String),
-      },
-    ]);
+    expect(JSON.parse(response.body)).toMatchObject([expectedJsonResponse]);
   });
 
   test("Fetching a non-existing Applicant returns a 404 response", async () => {

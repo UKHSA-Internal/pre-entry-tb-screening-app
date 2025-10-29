@@ -15,6 +15,12 @@ import { VisaOptions } from "../types/enums";
 const { dynamoDBDocClient: docClient } = awsClients;
 abstract class TravelInformationBase {
   applicationId!: string;
+  ukAddressLine1?: string;
+  ukAddressLine2?: string;
+  ukAddressTownOrCity?: string;
+  ukAddressPostcode?: string;
+  ukMobileNumber?: string;
+  ukEmailAddress?: string;
 
   constructor(details: Partial<TravelInformationBase>) {
     Object.assign(this, details); // copies all matching props
@@ -42,8 +48,31 @@ export type ITravelInformation = {
   ukAddressLine2?: string;
   ukAddressTownOrCity?: string;
   ukAddressPostcode?: string;
-  ukMobileNumber: string;
-  ukEmailAddress: string;
+  ukMobileNumber?: string;
+  ukEmailAddress?: string;
+
+  dateCreated: Date;
+  createdBy: string;
+};
+
+export type ITravelInformationUpdate = {
+  applicationId: string;
+
+  visaCategory?: VisaOptions;
+  ukAddressLine1?: string;
+  ukAddressLine2?: string;
+  ukAddressTownOrCity?: string;
+  ukAddressPostcode?: string;
+  ukMobileNumber?: string;
+  ukEmailAddress?: string;
+
+  dateUpdated: Date;
+  updatedBy: string;
+};
+
+export class TravelInformation extends TravelInformationBase {
+  status: TaskStatus;
+  visaCategory: VisaOptions;
 
   dateCreated: Date;
   createdBy: string;
@@ -81,12 +110,6 @@ export class TravelInformation extends TravelInformationBase {
   constructor(details: ITravelInformation) {
     super(details);
     this.visaCategory = details.visaCategory;
-    this.ukAddressLine1 = details.ukAddressLine1;
-    this.ukAddressLine2 = details.ukAddressLine2;
-    this.ukAddressTownOrCity = details.ukAddressTownOrCity;
-    this.ukAddressPostcode = details.ukAddressPostcode;
-    this.ukMobileNumber = details.ukMobileNumber;
-    this.ukEmailAddress = details.ukEmailAddress;
     this.status = details.status;
 
     // Audit
@@ -98,35 +121,20 @@ export class TravelInformation extends TravelInformationBase {
 export type NewTravelInformation = Omit<ITravelInformation, "dateCreated" | "status">;
 
 export class TravelInformationUpdate extends TravelInformationBase {
-  status: TaskStatus;
   visaCategory?: VisaOptions;
-  ukAddressLine1?: string;
-  ukAddressLine2?: string;
-  ukAddressTownOrCity?: string;
-  ukAddressPostcode?: string;
-  ukMobileNumber?: string;
-  ukEmailAddress?: string;
-
   dateUpdated: Date;
-  // updatedBy: string;
+  updatedBy: string;
   constructor(details: ITravelInformationUpdate) {
     super(details);
     this.visaCategory = details.visaCategory;
-    this.ukAddressLine1 = details.ukAddressLine1;
-    this.ukAddressLine2 = details.ukAddressLine2;
-    this.ukAddressTownOrCity = details.ukAddressTownOrCity;
-    this.ukAddressPostcode = details.ukAddressPostcode;
-    this.ukMobileNumber = details.ukMobileNumber;
-    this.ukEmailAddress = details.ukEmailAddress;
-    this.status = details.status;
 
     // Audit
     this.dateUpdated = details.dateUpdated;
-    // this.updatedBy = details.updatedBy;
+    this.updatedBy = details.updatedBy;
   }
 }
 
-export type NewTravelInformationUpdate = Omit<ITravelInformationUpdate, "dateUpdated" | "status">;
+export type NewTravelInformationUpdate = Omit<ITravelInformationUpdate, "dateUpdated">;
 
 export class TravelInformationDbOps {
   static readonly getPk = (applicationId: string) => Application.getPk(applicationId);
@@ -194,14 +202,6 @@ export class TravelInformationDbOps {
         {} as Record<string, any>,
       );
 
-      // // Set status = "completed"
-      // if (
-      //   fieldsToUpdate.visaCategory &&
-      //   fieldsToUpdate.ukMobileNumber &&
-      //   fieldsToUpdate.ukEmailAddress
-      // ) {
-      //   fieldsToUpdate.status = TaskStatus.completed;
-      // }
       // Add audit fields
       fieldsToUpdate["dateUpdated"] = new Date().toISOString();
 
@@ -210,14 +210,13 @@ export class TravelInformationDbOps {
       const ExpressionAttributeNames: Record<string, string> = {};
       const ExpressionAttributeValues: Record<string, any> = {};
 
-      Object.entries(fieldsToUpdate).forEach(([key, value]) => {
+      for (const [key, value] of Object.entries(fieldsToUpdate)) {
         const nameKey = `#${key}`;
         const valueKey = `:${key}`;
         updateParts.push(`${nameKey} = ${valueKey}`);
         ExpressionAttributeNames[nameKey] = key;
         ExpressionAttributeValues[valueKey] = value;
-      });
-
+      }
       const updateExpression = "SET " + updateParts.join(", ");
 
       const params: UpdateCommandInput = {
@@ -244,7 +243,6 @@ export class TravelInformationDbOps {
         ukAddressPostcode: attrs?.ukAddressPostcode,
         ukMobileNumber: attrs?.ukMobileNumber,
         ukEmailAddress: attrs?.ukEmailAddress,
-        status: attrs?.status as TaskStatus,
         dateUpdated: new Date(attrs?.dateUpdated as string),
         updatedBy: attrs?.updatedBy,
       });

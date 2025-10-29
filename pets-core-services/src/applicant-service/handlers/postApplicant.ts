@@ -7,9 +7,9 @@ import { logger } from "../../shared/logger";
 import { Applicant, ApplicantDbOps } from "../../shared/models/applicant";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { ApplicantRequestSchema } from "../types/zod-schema";
+import { ApplicantRegisterRequestSchema } from "../types/zod-schema";
 
-export type ApplicantRequestSchema = z.infer<typeof ApplicantRequestSchema>;
+export type ApplicantRequestSchema = z.infer<typeof ApplicantRegisterRequestSchema>;
 
 export type PostApplicantEvent = PetsAPIGatewayProxyEvent & {
   parsedBody?: ApplicantRequestSchema;
