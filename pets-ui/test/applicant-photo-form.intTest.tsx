@@ -76,7 +76,7 @@ describe("ApplicantPhotoForm", () => {
   });
 
   it("navigates to TB summary when from=tb", async () => {
-    window.history.pushState({}, "", "/upload-visa-applicant-photo?from=tb");
+    window.history.pushState({}, "", "/upload-visa-applicant-photo?from=tb-certificate-summary");
     const preloadedState = {
       applicant: {
         status: ApplicationStatus.COMPLETE,
@@ -107,7 +107,7 @@ describe("ApplicantPhotoForm", () => {
   });
 
   it("navigates to Check applicant details when from=check", async () => {
-    window.history.pushState({}, "", "/upload-visa-applicant-photo?from=check");
+    window.history.pushState({}, "", "/upload-visa-applicant-photo?from=check-applicant-details");
     const preloadedState = {
       applicant: {
         status: ApplicationStatus.COMPLETE,

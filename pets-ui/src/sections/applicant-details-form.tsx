@@ -47,7 +47,7 @@ const ApplicantForm = () => {
 
     dispatch(setApplicantDetails(updatedFormData));
 
-    if (applicantData.status === ApplicationStatus.COMPLETE && applicationData.applicationId) {
+    if (isComplete && applicationData.applicationId) {
       try {
         const dateOfBirthStr = `${formData.dateOfBirth.year}-${standardiseDayOrMonth(formData.dateOfBirth.month)}-${standardiseDayOrMonth(formData.dateOfBirth.day)}`;
         const issueDateStr = `${formData.passportIssueDate.year}-${standardiseDayOrMonth(formData.passportIssueDate.month)}-${standardiseDayOrMonth(formData.passportIssueDate.day)}`;
@@ -58,8 +58,8 @@ const ApplicantForm = () => {
           sex: formData.sex,
           dateOfBirth: dateOfBirthStr,
           countryOfNationality: formData.countryOfNationality,
-          passportNumber: isComplete ? applicantData.passportNumber : formData.passportNumber,
-          countryOfIssue: isComplete ? applicantData.countryOfIssue : formData.countryOfIssue,
+          passportNumber: applicantData.passportNumber,
+          countryOfIssue: applicantData.countryOfIssue,
           issueDate: issueDateStr,
           expiryDate: expiryDateStr,
           applicantHomeAddress1: formData.applicantHomeAddress1,
@@ -76,9 +76,9 @@ const ApplicantForm = () => {
         await putApplicantDetails(applicationData.applicationId, updatePayload);
 
         const fromParam = searchParams.get("from");
-        if (fromParam === "tb") {
+        if (fromParam === "tb-certificate-summary") {
           navigate("/tb-certificate-summary");
-        } else if (fromParam === "check") {
+        } else if (fromParam === "check-applicant-details") {
           navigate("/check-applicant-details");
         } else {
           navigate("/tb-certificate-summary");

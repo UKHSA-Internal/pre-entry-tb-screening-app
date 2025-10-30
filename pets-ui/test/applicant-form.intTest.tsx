@@ -222,7 +222,7 @@ describe("ApplicantForm", () => {
         status: ApplicationStatus.COMPLETE,
       },
     };
-    window.history.pushState({}, "", "/?from=tb");
+    window.history.pushState({}, "", "/?from=tb-certificate-summary");
     renderWithProviders(<ContactDetailsPage />, { preloadedState: completeState });
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toHaveAttribute("href", "/tb-certificate-summary");

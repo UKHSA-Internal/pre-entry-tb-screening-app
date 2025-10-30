@@ -12,9 +12,9 @@ export default function ApplicantPhotoPage() {
 
   const fromParam = searchParams.get("from");
   let backLinkTo: string;
-  if (fromParam === "check") {
+  if (fromParam === "check-applicant-details") {
     backLinkTo = "/check-applicant-details";
-  } else if (fromParam === "tb") {
+  } else if (fromParam === "tb-certificate-summary") {
     backLinkTo = "/tb-certificate-summary";
   } else if (applicant.status === ApplicationStatus.COMPLETE) {
     backLinkTo = "/tb-certificate-summary";
