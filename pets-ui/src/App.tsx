@@ -21,6 +21,7 @@ import ChestXrayUploadPage from "./pages/chest-xray-upload";
 import ConsentInstructionPage from "./pages/consent-instruction";
 import ConsentQuestionPage from "./pages/consent-question";
 import ContactDetailsPage from "./pages/contact-details";
+import CookiesPage from "./pages/cookies";
 import EnterSputumSampleResultsPage from "./pages/enter-sputum-sample-results";
 import ErrorPage from "./pages/error-page";
 import HomePage from "./pages/home-page";
@@ -464,6 +465,7 @@ function App() {
         }
       />
       <Route path="/accessibility-statement" element={<AccessibilityStatementPage />} />
+      <Route path="/cookies" element={<CookiesPage />} />
       <Route path="/privacy-notice" element={<PrivacyNoticePage />} />
       <Route path="/sorry-there-is-problem-with-service" element={<ErrorPage />} />
     </Routes>
