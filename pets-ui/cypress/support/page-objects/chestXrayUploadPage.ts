@@ -69,7 +69,7 @@ export class ChestXrayUploadPage extends BasePage {
   verifyFileUploadInstructions(): ChestXrayUploadPage {
     cy.contains("p.govuk-body", "Upload a file").should("be.visible");
     cy.get(".govuk-hint")
-      .contains("File type must be DICOM. Images must be less than 50MB.")
+      .contains("File type must be DCM. Images must be less than 50MB.")
       .should("be.visible");
     return this;
   }
@@ -256,7 +256,7 @@ export class ChestXrayUploadPage extends BasePage {
 
   // Verify DICOM upload container structure
   verifyDicomUploadContainers(): ChestXrayUploadPage {
-    cy.get(".dicom-upload-container").should("have.length", 3);
+    cy.get(".dicom-upload-container").should("have.length", 4);
     return this;
   }
 

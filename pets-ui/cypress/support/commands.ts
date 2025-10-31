@@ -86,6 +86,45 @@ Cypress.Commands.add("loginViaB2C", () => {
   cy.url({ timeout: 30000 }).should("include", "/search-for-visa-applicant");
 });
 
+Cypress.Commands.add("logoutViaB2C", () => {
+  cy.log("Starting B2C logout process");
+
+  // Click the sign-out link in the header
+  cy.get("#sign-out", { timeout: 10000 }).should("be.visible").click();
+
+  // Verify sign-out confirmation page
+  cy.url().should("include", "/are-you-sure-you-want-to-sign-out");
+  cy.contains("Are you sure you want to sign out?", { timeout: 10000 }).should("be.visible");
+
+  // Click the sign-out button to confirm
+  cy.get('button[type="submit"].govuk-button--warning')
+    .should("contain", "Sign out")
+    .click({ force: true });
+
+  // Handle Azure B2C account picker using cy.origin
+  cy.origin("https://petsb2cdev.ciamlogin.com", () => {
+    cy.log("Inside B2C account picker page");
+
+    cy.wait(2000);
+
+    // Wait for the account picker page to load
+    cy.contains("Pick an account", { timeout: 15000 }).should("be.visible");
+    cy.contains("Which account do you want to sign out of?").should("be.visible");
+
+    // Click the first account in the list - using the correct selector for the tile
+    cy.get('div.table[data-test-id], div.tile, div[data-test-id*="tile"]')
+      .first()
+      .should("be.visible")
+      .click({ force: true });
+
+    cy.log("Selected account to sign out");
+  });
+
+  // Verify redirection to applicant search page
+  cy.url({ timeout: 15000 }).should("include", "/search-for-visa-applicant");
+  cy.log("B2C logout completed successfully");
+});
+
 Cypress.Commands.add("clearAllSessions", () => {
   return Cypress.session.clearAllSavedSessions();
 });

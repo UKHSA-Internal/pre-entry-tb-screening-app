@@ -3,12 +3,12 @@ import { BasePage } from "../BasePage";
 
 export class ChestXrayConfirmationPage extends BasePage {
   constructor() {
-    super("/chest-xray-confirmation");
+    super("/chest-x-ray-images-confirmed");
   }
 
   // Verify page loaded
   verifyPageLoaded(): ChestXrayConfirmationPage {
-    cy.contains("h1.govuk-panel__title", "Radiological outcome confirmed").should("be.visible");
+    cy.contains("h1.govuk-panel__title", "Chest X-ray images confirmed").should("be.visible");
     cy.get(".govuk-panel--confirmation").should("be.visible");
     return this;
   }
@@ -16,20 +16,49 @@ export class ChestXrayConfirmationPage extends BasePage {
   // Verify confirmation panel
   verifyConfirmationPanel(): ChestXrayConfirmationPage {
     cy.get(".govuk-panel--confirmation").should("be.visible");
-    cy.contains("h1.govuk-panel__title", "Radiological outcome confirmed").should("be.visible");
+    cy.contains("h1.govuk-panel__title", "Chest X-ray images confirmed").should("be.visible");
     return this;
   }
 
   // Verify next steps section
   verifyNextStepsSection(): ChestXrayConfirmationPage {
     cy.contains("h2.govuk-heading-m", "What happens next").should("be.visible");
-    cy.contains("p.govuk-body", "You can now return to the progress tracker.").should("be.visible");
+    cy.contains("p.govuk-body", "We have sent the chest X-ray images to UKHSA.").should(
+      "be.visible",
+    );
+    cy.contains("p.govuk-body", "You can now view a summary for this visa applicant.").should(
+      "be.visible",
+    );
     return this;
   }
 
   // Click continue button
   clickContinueButton(): ChestXrayConfirmationPage {
     cy.get('button[type="submit"]').contains("Continue").should("be.visible").click();
+    return this;
+  }
+
+  // Click continue button and verify redirection to TB progress tracker
+  clickContinueAndVerifyRedirection(): ChestXrayConfirmationPage {
+    this.clickContinueButton();
+    cy.url().should("include", "/tracker");
+    return this;
+  }
+
+  // Verify search for another visa applicant link
+  verifySearchForAnotherApplicantLink(): ChestXrayConfirmationPage {
+    cy.get("a.govuk-link.govuk-link--no-visited-state")
+      .contains("Search for another visa applicant")
+      .should("be.visible")
+      .should("have.attr", "href", "/search-for-visa-applicant");
+    return this;
+  }
+
+  // Click search for another visa applicant link
+  clickSearchForAnotherApplicantLink(): ChestXrayConfirmationPage {
+    cy.get("a.govuk-link.govuk-link--no-visited-state")
+      .contains("Search for another visa applicant")
+      .click();
     return this;
   }
 
@@ -45,7 +74,7 @@ export class ChestXrayConfirmationPage extends BasePage {
     this.verifyPageLoaded();
     this.verifyConfirmationPanel();
     this.verifyNextStepsSection();
-    this.verifyBackLink("/chest-xray-summary");
+    this.verifySearchForAnotherApplicantLink();
     this.verifyServiceName();
     return this;
   }

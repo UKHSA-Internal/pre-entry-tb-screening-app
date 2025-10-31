@@ -13,7 +13,7 @@ interface TbCertificateQuestionErrors {
 
 export class TbCertificateQuestionPage extends BasePage {
   constructor() {
-    super("/tb-certificate-question");
+    super("/will-you-issue-tb-clearance-certificate");
   }
 
   verifyPageLoaded(): TbCertificateQuestionPage {

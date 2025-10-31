@@ -3,7 +3,7 @@ import { BasePage } from "../BasePage";
 
 export class SputumConfirmationPage extends BasePage {
   constructor() {
-    super("/sputum-confirmation");
+    super("/sputum-sample-information-confirmed");
   }
 
   // Verify page loaded
@@ -113,6 +113,26 @@ export class SputumConfirmationPage extends BasePage {
     return this;
   }
 
+  // Verify "Search for another visa applicant" link
+  verifySearchForAnotherApplicantLink(): SputumConfirmationPage {
+    cy.contains("a", "Search for another visa applicant")
+      .should("be.visible")
+      .and("have.attr", "href", "/search-for-visa-applicant");
+    return this;
+  }
+
+  // Click "Search for another visa applicant" link
+  clickSearchForAnotherApplicant(): SputumConfirmationPage {
+    cy.contains("a", "Search for another visa applicant").click();
+    return this;
+  }
+
+  // Verify redirection after clicking search link
+  verifyRedirectionToSearchPage(): SputumConfirmationPage {
+    cy.url().should("include", "/search-for-visa-applicant");
+    return this;
+  }
+
   // Check confirmation type and verify appropriate elements
   verifyConfirmationTypeAndElements(): SputumConfirmationPage {
     cy.get("h1.govuk-panel__title").then(($title) => {
@@ -128,6 +148,7 @@ export class SputumConfirmationPage extends BasePage {
     });
 
     cy.contains("button", "Continue").should("be.visible");
+    this.verifySearchForAnotherApplicantLink();
     this.verifyServiceName();
     return this;
   }
@@ -146,13 +167,51 @@ export class SputumConfirmationPage extends BasePage {
     });
   }
 
+  // Verify back link navigation
+  verifyBackLinkNavigation(): SputumConfirmationPage {
+    cy.get(".govuk-back-link")
+      .should("be.visible")
+      .and("contain", "Back")
+      .and("have.attr", "href", "/check-sputum-sample-information-results");
+    return this;
+  }
+
   // Enhanced verification method that adapts to scenario type
   verifyAllConfirmationElements(): SputumConfirmationPage {
     this.verifyConfirmationPanel();
     this.verifyNextStepsSection();
     cy.contains("button", "Continue").should("be.visible");
-    this.verifyBackLink("/check-sputum-sample-information");
+    this.verifySearchForAnotherApplicantLink();
+    this.verifyBackLinkNavigation();
     this.verifyServiceName();
+    return this;
+  }
+
+  // Verify continue button is enabled
+  verifyContinueButtonEnabled(): SputumConfirmationPage {
+    cy.contains("button", "Continue").should("be.visible").and("be.enabled");
+    return this;
+  }
+
+  // Complete flow test - click continue and verify redirection
+  completeFlowAndVerifyRedirection(): SputumConfirmationPage {
+    this.clickContinueButton();
+    this.verifyRedirectionAfterContinue();
+    return this;
+  }
+
+  // Alternative flow test - search for another applicant
+  testSearchApplicantFlow(): SputumConfirmationPage {
+    this.clickSearchForAnotherApplicant();
+    this.verifyRedirectionToSearchPage();
+    return this;
+  }
+
+  // Verify all interactive elements are present
+  verifyAllInteractiveElements(): SputumConfirmationPage {
+    this.verifyContinueButtonEnabled();
+    this.verifySearchForAnotherApplicantLink();
+    this.verifyBackLinkNavigation();
     return this;
   }
 }

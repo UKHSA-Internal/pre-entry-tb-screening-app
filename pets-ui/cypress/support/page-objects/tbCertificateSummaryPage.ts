@@ -1,8 +1,14 @@
-//This holds all fields for the TB Certificate Summary Page - Handles both Cert issued and not issued scenarios
-
+// This holds all fields for the TB Certificate Summary Page - Handles both Cert issued and not issued scenarios
 import { BasePage } from "../BasePage";
 
-// Types for applicant information
+// Types for certificate not issued information
+interface CertificateNotIssuedInfo {
+  "Reason for not issuing certificate"?: string;
+  "Declaring Physician's name"?: string;
+  "Physician's comments"?: string;
+}
+
+// Types for applicant information (for not issued scenario)
 interface ApplicantInfo {
   Name?: string;
   Nationality?: string;
@@ -12,26 +18,6 @@ interface ApplicantInfo {
   "Passport issue date"?: string;
   "Passport expiry date"?: string;
   "UKVI visa category"?: string;
-}
-
-// Types for address information
-interface AddressInfo {
-  "Address line 1"?: string;
-  "Address line 2"?: string;
-  "Town or city"?: string;
-  Country?: string;
-  County?: string;
-  Postcode?: string;
-}
-
-// Types for clinic and certificate information
-interface ClinicCertificateInfo {
-  "Clinic name"?: string;
-  "Certificate reference number"?: string;
-  "Certificate issue date"?: string;
-  "Certificate expiry date"?: string;
-  "Declaring physician name"?: string;
-  "Physician's comments"?: string;
 }
 
 // Types for screening information
@@ -44,23 +30,20 @@ interface ScreeningInfo {
   "Child under 11 years"?: string;
 }
 
-// Types for certificate not issued information
-interface CertificateNotIssuedInfo {
-  "Reason for not issuing certificate"?: string;
-  "Declaring Physician's name"?: string;
-  "Physician's comments"?: string;
-}
-
 export class TbCertificateSummaryPage extends BasePage {
   constructor() {
     super("/tb-certificate-summary");
   }
 
+  // Verify page loaded - works for both issued and not issued scenarios
   verifyPageLoaded(): TbCertificateSummaryPage {
     cy.url().should("include", "/tb-certificate-summary");
+    cy.get("h1.govuk-heading-l").should("be.visible");
     cy.get(".govuk-summary-list").should("be.visible");
     return this;
   }
+
+  // ============ Helper Methods for Scenario Detection ============
 
   // Helper method to check if we're in issued mode
   isIssuedMode(): Cypress.Chainable<boolean> {
@@ -89,8 +72,27 @@ export class TbCertificateSummaryPage extends BasePage {
     return this;
   }
 
-  // CONDITIONAL METHODS FOR BOTH SCENARIOS
-  // Verify applicant information section - only if in issued mode
+  // Verify certificate issued mode
+  verifyCertificateIssuedMode(): TbCertificateSummaryPage {
+    this.verifyPageHeadingForIssued();
+    return this;
+  }
+
+  // Verify certificate not issued mode
+  verifyCertificateNotIssuedMode(): TbCertificateSummaryPage {
+    this.verifyPageHeadingForNotIssued();
+    return this;
+  }
+
+  // ============ Visa Applicant Information Section ============
+
+  // Verify visa applicant information section
+  verifyVisaApplicantInfoSection(): TbCertificateSummaryPage {
+    cy.contains("h2.govuk-heading-m", "Visa applicant information").should("be.visible");
+    return this;
+  }
+
+  // Verify applicant information section (conditional for both scenarios)
   verifyApplicantInfoSection(): TbCertificateSummaryPage {
     this.isIssuedMode().then((isIssued) => {
       if (isIssued) {
@@ -100,245 +102,269 @@ export class TbCertificateSummaryPage extends BasePage {
     return this;
   }
 
-  // Verify applicant information - only if in issued mode
+  // Verify applicant information - works for both scenarios
   verifyApplicantInfo(expectedInfo: ApplicantInfo): TbCertificateSummaryPage {
-    this.isIssuedMode().then((isIssued) => {
-      if (isIssued) {
-        Object.entries(expectedInfo).forEach(([key, value]: [string, string | undefined]) => {
-          if (value !== undefined) {
-            this.verifySummaryValue(key, value);
-          }
-        });
+    Object.entries(expectedInfo).forEach(([key, value]: [string, string | undefined]) => {
+      if (value !== undefined) {
+        this.verifySummaryValue(key, value);
       }
     });
     return this;
   }
 
-  // Verify current residential address section - only if in issued mode
-  verifyCurrentAddressSection(): TbCertificateSummaryPage {
-    this.isIssuedMode().then((isIssued) => {
-      if (isIssued) {
-        cy.contains("h2", "Current residential address").should("be.visible");
-      }
-    });
+  // Verify applicant name
+  verifyApplicantName(expectedName?: string): TbCertificateSummaryPage {
+    if (expectedName) {
+      cy.contains("dt.govuk-summary-list__key", "Name")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("contain", expectedName);
+    } else {
+      cy.contains("dt.govuk-summary-list__key", "Name")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("be.visible");
+    }
     return this;
   }
 
-  // Verify current residential address - only if in issued mode
-  verifyCurrentAddress(expectedAddress: AddressInfo): TbCertificateSummaryPage {
-    this.isIssuedMode().then((isIssued) => {
-      if (isIssued) {
-        Object.entries(expectedAddress).forEach(([key, value]: [string, string | undefined]) => {
-          if (value !== undefined) {
-            this.verifySummaryValue(key, value);
-          }
-        });
-      }
-    });
+  // Verify nationality
+  verifyNationality(expectedNationality?: string): TbCertificateSummaryPage {
+    if (expectedNationality) {
+      cy.contains("dt.govuk-summary-list__key", "Nationality")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("contain", expectedNationality);
+    } else {
+      cy.contains("dt.govuk-summary-list__key", "Nationality")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("be.visible");
+    }
     return this;
   }
 
-  // Verify proposed UK address section - only if in issued mode
-  verifyProposedUkAddressSection(): TbCertificateSummaryPage {
-    this.isIssuedMode().then((isIssued) => {
-      if (isIssued) {
-        cy.contains("h2", "Proposed UK address").should("be.visible");
-      }
-    });
+  // Verify date of birth
+  verifyDateOfBirth(expectedDOB?: string): TbCertificateSummaryPage {
+    if (expectedDOB) {
+      cy.contains("dt.govuk-summary-list__key", "Date of birth")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("contain", expectedDOB);
+    } else {
+      cy.contains("dt.govuk-summary-list__key", "Date of birth")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("be.visible");
+    }
     return this;
   }
 
-  // Verify proposed UK address - only if in issued mode
-  verifyProposedUkAddress(expectedAddress: AddressInfo): TbCertificateSummaryPage {
-    this.isIssuedMode().then((isIssued) => {
-      if (isIssued) {
-        Object.entries(expectedAddress).forEach(([key, value]: [string, string | undefined]) => {
-          if (value !== undefined) {
-            this.verifySummaryValue(key, value);
-          }
-        });
-      }
-    });
+  // Verify sex
+  verifySex(expectedSex?: string): TbCertificateSummaryPage {
+    if (expectedSex) {
+      cy.contains("dt.govuk-summary-list__key", "Sex")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("contain", expectedSex);
+    } else {
+      cy.contains("dt.govuk-summary-list__key", "Sex")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("be.visible");
+    }
     return this;
   }
 
-  // Verify clinic and certificate information section - only if in issued mode
-  verifyClinicCertificateSection(): TbCertificateSummaryPage {
-    this.isIssuedMode().then((isIssued) => {
-      if (isIssued) {
-        cy.contains("h2", "Clinic and certificate information").should("be.visible");
-      }
-    });
+  // Verify passport number
+  verifyPassportNumber(expectedPassportNumber?: string): TbCertificateSummaryPage {
+    if (expectedPassportNumber) {
+      cy.contains("dt.govuk-summary-list__key", "Passport number")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("contain", expectedPassportNumber);
+    } else {
+      cy.contains("dt.govuk-summary-list__key", "Passport number")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("be.visible");
+    }
     return this;
   }
 
-  // Verify clinic and certificate information - only if in issued mode
-  verifyClinicCertificateInfo(expectedInfo: ClinicCertificateInfo): TbCertificateSummaryPage {
-    this.isIssuedMode().then((isIssued) => {
-      if (isIssued) {
-        Object.entries(expectedInfo).forEach(([key, value]: [string, string | undefined]) => {
-          if (value !== undefined) {
-            this.verifySummaryValue(key, value);
-          }
-        });
-      }
-    });
-    return this;
-  }
-
-  // Verify screening information section - only if in issued mode
-  verifyScreeningInfoSection(): TbCertificateSummaryPage {
-    this.isIssuedMode().then((isIssued) => {
-      if (isIssued) {
-        cy.contains("h2", "Screening information").should("be.visible");
-      }
-    });
-    return this;
-  }
-
-  // Verify screening information - only if in issued mode
-  verifyScreeningInfo(expectedInfo: ScreeningInfo): TbCertificateSummaryPage {
-    this.isIssuedMode().then((isIssued) => {
-      if (isIssued) {
-        Object.entries(expectedInfo).forEach(([key, value]: [string, string | undefined]) => {
-          if (value !== undefined) {
-            this.verifySummaryValue(key, value);
-          }
-        });
-      }
-    });
-    return this;
-  }
-
-  // Verify applicant photo - only if in issued mode
-  verifyApplicantPhoto(): TbCertificateSummaryPage {
-    this.isIssuedMode().then((isIssued) => {
-      if (isIssued) {
-        cy.get(".applicant-photo-summary")
-          .should("be.visible")
-          .and("have.attr", "alt", "Applicant");
-      }
-    });
-    return this;
-  }
-
-  // Verify declaration text - only if in issued mode
-  verifyDeclarationText(): TbCertificateSummaryPage {
-    this.isIssuedMode().then((isIssued) => {
-      if (isIssued) {
-        cy.contains(
-          "p",
-          "By submitting this certificate information you are confirming that, to the best of your knowledge, there is no clinical suspicious of pulmonary TB.",
-        ).should("be.visible");
-      }
-    });
-    return this;
-  }
+  // ============ Certificate NOT Issued Section ============
 
   // Verify certificate not issued summary data - only if in not issued mode
   verifyCertificateNotIssuedInfo(expectedInfo: CertificateNotIssuedInfo): TbCertificateSummaryPage {
-    this.isNotIssuedMode().then((isNotIssued) => {
-      if (isNotIssued) {
-        Object.entries(expectedInfo).forEach(([key, value]: [string, string | undefined]) => {
-          if (value !== undefined) {
-            this.verifySummaryValue(key, value);
-          }
-        });
+    Object.entries(expectedInfo).forEach(([key, value]: [string, string | undefined]) => {
+      if (value !== undefined) {
+        this.verifySummaryValue(key, value);
       }
     });
     return this;
   }
 
-  // Verify the page is in "certificate not issued" mode
-  verifyCertificateNotIssuedMode(): TbCertificateSummaryPage {
-    this.verifyPageHeadingForNotIssued();
+  // ============ Screening Information Section ============
 
-    // In Cert not issued mode, we should see the specific fields for not issuing
-    cy.contains("dt.govuk-summary-list__key", "Reason for not issuing certificate").should(
-      "be.visible",
-    );
-    cy.contains("dt.govuk-summary-list__key", "Declaring Physician's name").should("be.visible");
-
-    // Verify that issued-mode elements do NOT exist
-    cy.contains("h2", "Visa applicant information").should("not.exist");
-    cy.contains("h2", "Clinic and certificate information").should("not.exist");
-    cy.contains("h2", "Screening information").should("not.exist");
-    cy.get(".applicant-photo-summary").should("not.exist");
-
+  // Verify screening information section - works for both scenarios
+  verifyScreeningInfoSection(): TbCertificateSummaryPage {
+    cy.contains("h2.govuk-heading-m", "Screening information").should("be.visible");
     return this;
   }
 
-  // Verify the page is in "certificate issued" mode
-  verifyCertificateIssuedMode(): TbCertificateSummaryPage {
-    this.verifyPageHeadingForIssued();
-
-    // Verify that issued-mode sections exist
-    cy.contains("h2", "Visa applicant information").should("be.visible");
-    cy.contains("h2", "Clinic and certificate information").should("be.visible");
-    cy.contains("h2", "Screening information").should("be.visible");
-
-    // Verify that not-issued-mode specific elements do NOT exist
-    cy.contains("dt.govuk-summary-list__key", "Reason for not issuing certificate").should(
-      "not.exist",
-    );
-
-    return this;
+  verifyScreeningInfosection(): TbCertificateSummaryPage {
+    return this.verifyScreeningInfoSection();
   }
 
-  // Get summary value for a specific field
-  getSummaryValue(fieldKey: string): Cypress.Chainable<string> {
-    return cy
-      .contains("dt.govuk-summary-list__key", fieldKey)
-      .siblings(".govuk-summary-list__value")
-      .invoke("text")
-      .then((text) => text.trim());
-  }
-
-  // Verify specific summary value
-  verifySummaryValue(fieldKey: string, expectedValue: string): TbCertificateSummaryPage {
-    this.getSummaryValue(fieldKey).should("eq", expectedValue);
-    return this;
-  }
-
-  // Check if a specific field has a "Change" link
-  checkChangeLink(fieldKey: string): Cypress.Chainable {
-    return cy
-      .contains("dt.govuk-summary-list__key", fieldKey)
-      .siblings(".govuk-summary-list__actions")
-      .find("a")
-      .should("contain", "Change");
-  }
-
-  // Click on change link for a specific field
-  clickChangeLink(fieldKey: string): TbCertificateSummaryPage {
-    this.checkChangeLink(fieldKey).click();
-    return this;
-  }
-
-  // Verify change links exist for editable fields (for issued certificates)
-  verifyChangeLinksExist(): TbCertificateSummaryPage {
-    this.isIssuedMode().then((isIssued) => {
-      if (isIssued) {
-        const editableFields = ["Declaring physician name", "Physician's comments"];
-
-        editableFields.forEach((field) => {
-          cy.contains("dt.govuk-summary-list__key", field).then(($key) => {
-            const $row = $key.closest(".govuk-summary-list__row");
-            const $actions = $row.find("dd.govuk-summary-list__actions");
-
-            if ($actions.length > 0) {
-              cy.wrap($actions)
-                .find("a")
-                .should("contain", "Change")
-                .and("have.attr", "href")
-                .and("include", "/tb-certificate-declaration");
-            }
-          });
-        });
+  // Verify screening information - works for both scenarios
+  verifyScreeningInfo(expectedInfo: ScreeningInfo): TbCertificateSummaryPage {
+    Object.entries(expectedInfo).forEach(([key, value]: [string, string | undefined]) => {
+      if (value !== undefined) {
+        this.verifySummaryValue(key, value);
       }
     });
     return this;
   }
+
+  // Verify chest X-ray done
+  verifyChestXrayDone(expectedValue?: string): TbCertificateSummaryPage {
+    const section = cy
+      .contains("h2.govuk-heading-m", "Screening information")
+      .parent()
+      .find("dl.govuk-summary-list");
+
+    if (expectedValue) {
+      section
+        .contains("dt.govuk-summary-list__key", "Chest X-ray done")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("contain", expectedValue);
+    } else {
+      section
+        .contains("dt.govuk-summary-list__key", "Chest X-ray done")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("be.visible");
+    }
+    return this;
+  }
+
+  // Verify chest X-ray outcome
+  verifyChestXrayOutcome(expectedOutcome?: string): TbCertificateSummaryPage {
+    const section = cy
+      .contains("h2.govuk-heading-m", "Screening information")
+      .parent()
+      .find("dl.govuk-summary-list");
+
+    if (expectedOutcome) {
+      section
+        .contains("dt.govuk-summary-list__key", "Chest X-ray outcome")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("contain", expectedOutcome);
+    } else {
+      section
+        .contains("dt.govuk-summary-list__key", "Chest X-ray outcome")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("be.visible");
+    }
+    return this;
+  }
+
+  // Verify sputum collected
+  verifySputumCollected(expectedValue?: string): TbCertificateSummaryPage {
+    const section = cy
+      .contains("h2.govuk-heading-m", "Screening information")
+      .parent()
+      .find("dl.govuk-summary-list");
+
+    if (expectedValue) {
+      section
+        .contains("dt.govuk-summary-list__key", "Sputum collected")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("contain", expectedValue);
+    } else {
+      section
+        .contains("dt.govuk-summary-list__key", "Sputum collected")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("be.visible");
+    }
+    return this;
+  }
+
+  // Verify sputum outcome
+  verifySputumOutcome(expectedOutcome?: string): TbCertificateSummaryPage {
+    const section = cy
+      .contains("h2.govuk-heading-m", "Screening information")
+      .parent()
+      .find("dl.govuk-summary-list");
+
+    if (expectedOutcome) {
+      section
+        .contains("dt.govuk-summary-list__key", "Sputum outcome")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("contain", expectedOutcome);
+    } else {
+      section
+        .contains("dt.govuk-summary-list__key", "Sputum outcome")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("be.visible");
+    }
+    return this;
+  }
+
+  // Verify pregnant status
+  verifyPregnantStatus(expectedValue?: string): TbCertificateSummaryPage {
+    const section = cy
+      .contains("h2.govuk-heading-m", "Screening information")
+      .parent()
+      .find("dl.govuk-summary-list");
+
+    if (expectedValue) {
+      section
+        .contains("dt.govuk-summary-list__key", "Pregnant")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("contain", expectedValue);
+    } else {
+      section
+        .contains("dt.govuk-summary-list__key", "Pregnant")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("be.visible");
+    }
+    return this;
+  }
+
+  // Verify child under 11 years
+  verifyChildUnder11Years(expectedValue?: string): TbCertificateSummaryPage {
+    const section = cy
+      .contains("h2.govuk-heading-m", "Screening information")
+      .parent()
+      .find("dl.govuk-summary-list");
+
+    if (expectedValue) {
+      section
+        .contains("dt.govuk-summary-list__key", "Child under 11 years")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("contain", expectedValue);
+    } else {
+      section
+        .contains("dt.govuk-summary-list__key", "Child under 11 years")
+        .parent()
+        .find("dd.govuk-summary-list__value")
+        .should("be.visible");
+    }
+    return this;
+  }
+
+  // ============ Change Links ============
 
   // Verify change links for Cert not issued scenario
   verifyChangeLinksForNotIssued(): TbCertificateSummaryPage {
@@ -358,7 +384,7 @@ export class TbCertificateSummaryPage extends BasePage {
                 .find("a")
                 .should("contain", "Change")
                 .and("have.attr", "href")
-                .and("include", "/tb-certificate-not-issued");
+                .and("include", "/why-are-you-not-issuing-certificate");
             }
           });
         });
@@ -367,24 +393,34 @@ export class TbCertificateSummaryPage extends BasePage {
     return this;
   }
 
-  // Click Submit button
-  clickSubmit(): TbCertificateSummaryPage {
-    cy.get('button[type="submit"]').contains("Submit").should("be.visible").click();
-    return this;
-  }
+  // ============ Page Actions ============
 
   // Verify submit button
   verifySubmitButton(): TbCertificateSummaryPage {
-    cy.get('button[type="submit"]')
+    cy.get('button[type="submit"].govuk-button')
       .should("be.visible")
       .and("be.enabled")
       .and("contain.text", "Submit");
     return this;
   }
 
-  // Verify back link navigation - context sensitive
-  verifyBackLinkNavigation(): TbCertificateSummaryPage {
-    cy.get(".govuk-back-link").should("be.visible").and("contain", "Back");
+  // Click submit button
+  clickSubmitButton(): TbCertificateSummaryPage {
+    cy.get('button[type="submit"].govuk-button').click();
+    return this;
+  }
+
+  // Click Submit button (alias)
+  clickSubmit(): TbCertificateSummaryPage {
+    return this.clickSubmitButton();
+  }
+
+  // Verify back link
+  verifyBackLink(): TbCertificateSummaryPage {
+    cy.get("a.govuk-back-link")
+      .should("be.visible")
+      .should("have.attr", "href", "/enter-clinic-certificate-information")
+      .should("contain", "Back");
     return this;
   }
 
@@ -396,9 +432,23 @@ export class TbCertificateSummaryPage extends BasePage {
 
   // Verify back link for not issued certificate
   verifyBackLinkForNotIssued(): TbCertificateSummaryPage {
-    cy.get(".govuk-back-link").should("have.attr", "href", "/tb-certificate-not-issued");
+    cy.get(".govuk-back-link").should("have.attr", "href", "/why-are-you-not-issuing-certificate");
     return this;
   }
+
+  // Verify back link navigation - context sensitive
+  verifyBackLinkNavigation(): TbCertificateSummaryPage {
+    cy.get(".govuk-back-link").should("be.visible").and("contain", "Back");
+    return this;
+  }
+
+  // Click back link
+  clickBackLink(): TbCertificateSummaryPage {
+    cy.get("a.govuk-back-link").click();
+    return this;
+  }
+
+  // ============ Standard Page Verifications ============
 
   // Verify service name in header
   verifyServiceName(): TbCertificateSummaryPage {
@@ -408,12 +458,59 @@ export class TbCertificateSummaryPage extends BasePage {
     return this;
   }
 
-  // Submit form and verify redirection
-  submitAndVerifyRedirection(expectedUrl: string): TbCertificateSummaryPage {
-    this.clickSubmit();
-    cy.url().should("include", expectedUrl);
+  // Verify page title
+  verifyPageTitle(): TbCertificateSummaryPage {
+    cy.title().should(
+      "contain",
+      "Check certificate information - Complete UK pre-entry health screening - GOV.UK",
+    );
     return this;
   }
+
+  // Verify main content is visible
+  verifyMainContent(): TbCertificateSummaryPage {
+    cy.get("main.govuk-main-wrapper#main-content").should("be.visible");
+    return this;
+  }
+
+  // Verify grid layout
+  verifyGridLayout(): TbCertificateSummaryPage {
+    cy.get(".govuk-grid-row").should("be.visible");
+    return this;
+  }
+
+  // Verify footer links
+  verifyFooterLinks(): TbCertificateSummaryPage {
+    cy.get("footer.govuk-footer").should("be.visible");
+    cy.get('a.govuk-footer__link[href="/privacy-notice"]')
+      .should("be.visible")
+      .should("contain", "Privacy");
+    cy.get('a.govuk-footer__link[href="/accessibility-statement"]')
+      .should("be.visible")
+      .should("contain", "Accessibility statement");
+    return this;
+  }
+
+  // Verify beta banner
+  verifyBetaBanner(): TbCertificateSummaryPage {
+    cy.get(".govuk-phase-banner").should("be.visible");
+    cy.get(".govuk-tag.govuk-phase-banner__content__tag")
+      .should("be.visible")
+      .should("contain", "BETA");
+    cy.get(".govuk-phase-banner__text").should(
+      "contain",
+      "This is a new service. Help us improve it and",
+    );
+    return this;
+  }
+
+  // Verify URL
+  verifyUrl(): TbCertificateSummaryPage {
+    cy.url().should("include", "/tb-certificate-summary");
+    return this;
+  }
+
+  // ============ Comprehensive Verification Methods ============
 
   // Complete verification for Certificate NOT Issued scenario
   verifyCompleteNotIssuedPage(expectedData: CertificateNotIssuedInfo): TbCertificateSummaryPage {
@@ -424,47 +521,6 @@ export class TbCertificateSummaryPage extends BasePage {
     this.verifySubmitButton();
     this.verifyBackLinkForNotIssued();
     this.verifyServiceName();
-    return this;
-  }
-
-  // Verify complete page with all expected data (for issued certificates)
-  verifyCompleteIssuedPage(expectedData: {
-    applicantInfo?: ApplicantInfo;
-    currentAddress?: AddressInfo;
-    proposedUkAddress?: AddressInfo;
-    clinicCertificateInfo?: ClinicCertificateInfo;
-    screeningInfo?: ScreeningInfo;
-  }): TbCertificateSummaryPage {
-    this.verifyPageLoaded();
-    this.verifyCertificateIssuedMode();
-
-    if (expectedData.applicantInfo) {
-      this.verifyApplicantInfo(expectedData.applicantInfo);
-    }
-
-    if (expectedData.currentAddress) {
-      this.verifyCurrentAddress(expectedData.currentAddress);
-    }
-
-    if (expectedData.proposedUkAddress) {
-      this.verifyProposedUkAddress(expectedData.proposedUkAddress);
-    }
-
-    if (expectedData.clinicCertificateInfo) {
-      this.verifyClinicCertificateInfo(expectedData.clinicCertificateInfo);
-    }
-
-    if (expectedData.screeningInfo) {
-      this.verifyScreeningInfo(expectedData.screeningInfo);
-    }
-
-    this.verifyApplicantPhoto();
-    this.verifyDeclarationText();
-    this.verifyChangeLinksExist();
-    this.verifySubmitButton();
-    this.verifyBackLinkForIssued();
-    this.verifyServiceName();
-
     return this;
   }
 
@@ -480,9 +536,6 @@ export class TbCertificateSummaryPage extends BasePage {
       if ($body.find('h1:contains("Check certificate information")').length > 0) {
         // Certificate issued mode
         this.verifyCertificateIssuedMode();
-        this.verifyApplicantPhoto();
-        this.verifyDeclarationText();
-        this.verifyChangeLinksExist();
       } else {
         // Certificate not issued mode
         this.verifyCertificateNotIssuedMode();
@@ -493,53 +546,77 @@ export class TbCertificateSummaryPage extends BasePage {
     return this;
   }
 
-  // Helper method to get all summary data
-  getAllSummaryData(): Cypress.Chainable<{ [key: string]: string }> {
-    const summaryData: { [key: string]: string } = {};
-
-    return cy.get(".govuk-summary-list__row").then(($rows) => {
-      $rows.each((_, row) => {
-        const key = Cypress.$(row).find(".govuk-summary-list__key").text().trim();
-        const value = Cypress.$(row).find(".govuk-summary-list__value").text().trim();
-        summaryData[key] = value;
-      });
-      return summaryData;
-    });
+  // Helper method to get summary value (inherited from BasePage but including here for reference)
+  getSummaryValue(fieldKey: string): Cypress.Chainable<string> {
+    return cy
+      .contains("dt.govuk-summary-list__key", fieldKey)
+      .parent()
+      .find("dd.govuk-summary-list__value")
+      .invoke("text")
+      .then((text) => text.trim());
   }
 
-  // Verify expected summary data matches what's displayed
-  verifyAllSummaryData(expectedData: { [key: string]: string }): TbCertificateSummaryPage {
-    Object.entries(expectedData).forEach(([key, value]: [string, string]) => {
-      this.verifySummaryValue(key, value);
-    });
+  // Verify specific summary value
+  verifySummaryValue(fieldKey: string, expectedValue: string): TbCertificateSummaryPage {
+    this.getSummaryValue(fieldKey).should("eq", expectedValue);
     return this;
   }
 
-  // Test change links functionality for not issued scenario
-  testChangeLinksForNotIssued(): TbCertificateSummaryPage {
-    this.isNotIssuedMode().then((isNotIssued) => {
-      if (isNotIssued) {
-        // Test reason change link
-        this.clickChangeLink("Reason for not issuing certificate");
-        cy.url().should("include", "/tb-certificate-not-issued");
-        cy.go("back");
+  // Submit form and verify redirection
+  submitAndVerifyRedirection(expectedUrl: string): TbCertificateSummaryPage {
+    this.clickSubmit();
+    cy.url().should("include", expectedUrl);
+    return this;
+  }
 
-        // Test physician name change link
-        this.clickChangeLink("Declaring Physician's name");
-        cy.url().should("include", "/tb-certificate-not-issued");
-        cy.go("back");
+  // ============ Comprehensive Verification Methods for Certificate ISSUED Scenario ============
 
-        // Test physician comments change link (if exists)
-        cy.get("body").then(($body) => {
-          if ($body.find('dt:contains("Physician\'s comments")').length > 0) {
-            this.clickChangeLink("Physician's comments");
-            cy.url().should("include", "/tb-certificate-not-issued");
-            cy.go("back");
-          }
-        });
-      }
-    });
+  // Verify all visa applicant information fields
+  verifyAllVisaApplicantInformation(): TbCertificateSummaryPage {
+    this.verifyVisaApplicantInfoSection();
+    this.verifyApplicantName();
+    this.verifyNationality();
+    this.verifyDateOfBirth();
+    this.verifySex();
+    this.verifyPassportNumber();
+    return this;
+  }
 
+  // Verify all current residential address fields
+  verifyAllCurrentResidentialAddressFields(): TbCertificateSummaryPage {
+    cy.contains("h2.govuk-heading-m", "Current residential address").should("be.visible");
+    // Just verify the section exists - individual fields can be verified with verifySummaryValue if needed
+    return this;
+  }
+
+  // Verify all proposed UK address fields
+  verifyAllProposedUKAddressFields(): TbCertificateSummaryPage {
+    cy.contains("h2.govuk-heading-m", "Proposed UK address").should("be.visible");
+    // Just verify the section exists - individual fields can be verified with verifySummaryValue if needed
+    return this;
+  }
+
+  // Verify all clinic and certificate information fields
+  verifyAllClinicCertificateInfo(): TbCertificateSummaryPage {
+    cy.contains("h2.govuk-heading-m", "Clinic and certificate information").should("be.visible");
+    // Verify key fields exist
+    cy.contains("dt.govuk-summary-list__key", "Clinic name").should("be.visible");
+    cy.contains("dt.govuk-summary-list__key", "Certificate reference number").should("be.visible");
+    cy.contains("dt.govuk-summary-list__key", "Certificate issue date").should("be.visible");
+    cy.contains("dt.govuk-summary-list__key", "Certificate expiry date").should("be.visible");
+    cy.contains("dt.govuk-summary-list__key", "Declaring physician name").should("be.visible");
+    return this;
+  }
+
+  // Verify all screening information fields
+  verifyAllScreeningInformation(): TbCertificateSummaryPage {
+    this.verifyScreeningInfoSection();
+    this.verifyChestXrayDone();
+    this.verifyChestXrayOutcome();
+    this.verifySputumCollected();
+    this.verifySputumOutcome();
+    this.verifyPregnantStatus();
+    this.verifyChildUnder11Years();
     return this;
   }
 }

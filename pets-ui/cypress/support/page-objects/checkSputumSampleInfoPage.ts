@@ -3,7 +3,7 @@ import { BasePage } from "../BasePage";
 
 export class CheckSputumSampleInfoPage extends BasePage {
   constructor() {
-    super("/check-sputum-sample-information");
+    super("/check-sputum-sample-information-results");
   }
 
   // Verify page loaded
@@ -194,7 +194,10 @@ export class CheckSputumSampleInfoPage extends BasePage {
   }
 
   // Verify only first sample has data
-  verifyOnlyFirstSampleHasData(smearResult: string, cultureResult: string): CheckSputumSampleInfoPage {
+  verifyOnlyFirstSampleHasData(
+    smearResult: string,
+    cultureResult: string,
+  ): CheckSputumSampleInfoPage {
     this.verifySampleHasResultData(1, smearResult, cultureResult);
     this.verifySampleResultsShowNoData(2);
     this.verifySampleResultsShowNoData(3);
@@ -247,8 +250,8 @@ export class CheckSputumSampleInfoPage extends BasePage {
     return this;
   }
 
-  // Verify change links exist for collection information
-  verifyChangeLinksForCollectionInfo(sampleNumber: number): CheckSputumSampleInfoPage {
+  // Verify change links always exist for collection data (date and method)
+  verifyChangeLinksForCollectionData(sampleNumber: number): CheckSputumSampleInfoPage {
     this.checkSampleChangeLink(sampleNumber, "Date taken");
     this.checkSampleChangeLink(sampleNumber, "Collection method");
     return this;
@@ -258,24 +261,24 @@ export class CheckSputumSampleInfoPage extends BasePage {
   verifyChangeLinksExist(): CheckSputumSampleInfoPage {
     // Sample 1 change links
     this.verifySampleChangeLinks(1, {
-      "Date taken": "/sputum-collection",
-      "Collection method": "/sputum-collection",
+      "Date taken": "/enter-sputum-sample-collection-information",
+      "Collection method": "/enter-sputum-sample-collection-information",
       "Smear result": "/enter-sputum-sample-results",
       "Culture result": "/enter-sputum-sample-results",
     });
 
     // Sample 2 change links
     this.verifySampleChangeLinks(2, {
-      "Date taken": "/sputum-collection",
-      "Collection method": "/sputum-collection",
+      "Date taken": "/enter-sputum-sample-collection-information",
+      "Collection method": "/enter-sputum-sample-collection-information",
       "Smear result": "/enter-sputum-sample-results",
       "Culture result": "/enter-sputum-sample-results",
     });
 
     // Sample 3 change links
     this.verifySampleChangeLinks(3, {
-      "Date taken": "/sputum-collection",
-      "Collection method": "/sputum-collection",
+      "Date taken": "/enter-sputum-sample-collection-information",
+      "Collection method": "/enter-sputum-sample-collection-information",
       "Smear result": "/enter-sputum-sample-results",
       "Culture result": "/enter-sputum-sample-results",
     });
@@ -302,7 +305,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
   testChangeLinksNavigation(): CheckSputumSampleInfoPage {
     // Test collection change link (sample 1)
     this.clickSampleChangeLink(1, "Date taken");
-    cy.url().should("include", "/sputum-collection");
+    cy.url().should("include", "/enter-sputum-sample-collection-information");
     cy.go("back");
 
     // Test results change link (sample 1) - only if data exists
@@ -404,9 +407,12 @@ export class CheckSputumSampleInfoPage extends BasePage {
 
   // Validate sample data format
   validateSampleDataFormat(): CheckSputumSampleInfoPage {
-    // Verify date format (DD/MM/YYYY)
+    // Verify date format (DD Month YYYY)
     [1, 2, 3].forEach((sampleNum) => {
-      this.getSampleSummaryValue(sampleNum, "Date taken").should("match", /^\d{2}\/\d{2}\/\d{4}$/);
+      this.getSampleSummaryValue(sampleNum, "Date taken").should(
+        "match",
+        /^\d{1,2}\s[A-Za-z]+\s\d{4}$/,
+      );
     });
 
     // Verify collection method values
