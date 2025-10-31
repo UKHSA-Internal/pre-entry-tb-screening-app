@@ -33,6 +33,8 @@ describe("CookieBanner component", () => {
 
     expect(screen.getByRole("link")).toHaveTextContent("View cookies");
     expect(screen.getByRole("link").getAttribute("href")).toEqual("/cookie-page-placeholder-url");
+
+    expect(localStorage.getItem("cookie-consent")).toEqual(null);
   });
 
   it("renders correct message when user accepts cookies, then hides message when user clicks button", async () => {
