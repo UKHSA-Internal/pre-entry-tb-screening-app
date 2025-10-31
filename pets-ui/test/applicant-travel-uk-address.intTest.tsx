@@ -1,9 +1,11 @@
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Mock } from "vitest";
 
+import * as api from "@/api/api";
 import TravelAddressAndContactDetailsPage from "@/pages/travel-uk-address";
 import ApplicantTravelAddressAndContactDetails from "@/sections/applicant-travel-uk-address";
+import { ApplicationStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -77,5 +79,56 @@ describe("ApplicantTravelAddressAndContactDetails", () => {
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute("href", "/proposed-visa-category");
     expect(link).toHaveClass("govuk-back-link");
+  });
+
+  it("back link points to TB summary when travel status is COMPLETE", () => {
+    const completeState = {
+      travel: {
+        status: ApplicationStatus.COMPLETE,
+        visaCategory: "",
+        applicantUkAddress1: "",
+        applicantUkAddress2: "",
+        applicantUkAddress3: "",
+        townOrCity: "",
+        postcode: "",
+        ukEmail: "",
+        ukMobileNumber: "",
+      },
+    };
+    renderWithProviders(<TravelAddressAndContactDetailsPage />, { preloadedState: completeState });
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toHaveAttribute("href", "/tb-certificate-summary");
+  });
+
+  it("updates slice and navigates to TB summary when editing in COMPLETE status", async () => {
+    vi.spyOn(api, "putTravelDetails").mockResolvedValue({ status: 200, statusText: "OK" });
+    const user = userEvent.setup();
+    const completeState = {
+      application: { applicationId: "abc-123", dateCreated: "" },
+      travel: {
+        status: ApplicationStatus.COMPLETE,
+        visaCategory: "Work",
+        applicantUkAddress1: "1 Street",
+        applicantUkAddress2: "",
+        applicantUkAddress3: "",
+        townOrCity: "London",
+        postcode: "0000 111",
+        ukEmail: "test@example.co.uk",
+        ukMobileNumber: "07123456789",
+      },
+    };
+    const { store } = renderWithProviders(<ApplicantTravelAddressAndContactDetails />, {
+      preloadedState: completeState,
+    });
+
+    await user.clear(screen.getByTestId("address-1"));
+    await user.type(screen.getByTestId("address-1"), "2 Street");
+    await user.click(screen.getByRole("button"));
+
+    await waitFor(() => {
+      expect(store.getState().travel.applicantUkAddress1).toBe("2 Street");
+      expect(store.getState().travel.status).toBe(ApplicationStatus.COMPLETE);
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-summary");
+    });
   });
 });

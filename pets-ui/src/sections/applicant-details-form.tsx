@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
 import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
+import { putApplicantDetails } from "@/api/api";
 import DateTextInput from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
@@ -9,18 +10,23 @@ import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
+import Summary from "@/components/summary/summary";
 import { setApplicantDetails, setApplicantDetailsStatus } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectApplicant } from "@/redux/store";
-import { DateType, ReduxApplicantDetailsType } from "@/types";
+import { selectApplicant, selectApplication } from "@/redux/store";
+import { DateType, PostedApplicantDetailsType, ReduxApplicantDetailsType } from "@/types";
 import { ApplicationStatus, ButtonType, RadioIsInline } from "@/utils/enums";
-import { validateDate } from "@/utils/helpers";
+import { getCountryName, standardiseDayOrMonth, validateDate } from "@/utils/helpers";
 import { countryList, formRegex } from "@/utils/records";
 
 const ApplicantForm = () => {
   const applicantData = useAppSelector(selectApplicant);
+  const applicationData = useAppSelector(selectApplication);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const isComplete = applicantData.status === ApplicationStatus.COMPLETE;
 
   const methods = useForm<ReduxApplicantDetailsType>({ reValidateMode: "onSubmit" });
   const {
@@ -29,16 +35,67 @@ const ApplicantForm = () => {
     formState: { errors },
   } = methods;
 
-  const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = (applicantData) => {
-    dispatch(setApplicantDetails(applicantData));
-    dispatch(setApplicantDetailsStatus(ApplicationStatus.IN_PROGRESS));
-    navigate("/upload-visa-applicant-photo");
+  const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = async (formData) => {
+    const updatedFormData = {
+      ...formData,
+      applicantPhotoFileName: applicantData.applicantPhotoFileName,
+      ...(isComplete && {
+        passportNumber: applicantData.passportNumber,
+        countryOfIssue: applicantData.countryOfIssue,
+      }),
+    };
+
+    dispatch(setApplicantDetails(updatedFormData));
+
+    if (isComplete && applicationData.applicationId) {
+      try {
+        const dateOfBirthStr = `${formData.dateOfBirth.year}-${standardiseDayOrMonth(formData.dateOfBirth.month)}-${standardiseDayOrMonth(formData.dateOfBirth.day)}`;
+        const issueDateStr = `${formData.passportIssueDate.year}-${standardiseDayOrMonth(formData.passportIssueDate.month)}-${standardiseDayOrMonth(formData.passportIssueDate.day)}`;
+        const expiryDateStr = `${formData.passportExpiryDate.year}-${standardiseDayOrMonth(formData.passportExpiryDate.month)}-${standardiseDayOrMonth(formData.passportExpiryDate.day)}`;
+
+        const updatePayload: Partial<PostedApplicantDetailsType> = {
+          fullName: formData.fullName,
+          sex: formData.sex,
+          dateOfBirth: dateOfBirthStr,
+          countryOfNationality: formData.countryOfNationality,
+          passportNumber: applicantData.passportNumber,
+          countryOfIssue: applicantData.countryOfIssue,
+          issueDate: issueDateStr,
+          expiryDate: expiryDateStr,
+          applicantHomeAddress1: formData.applicantHomeAddress1,
+          applicantHomeAddress2: formData.applicantHomeAddress2,
+          applicantHomeAddress3: formData.applicantHomeAddress3,
+          townOrCity: formData.townOrCity,
+          provinceOrState: formData.provinceOrState,
+          country: formData.country,
+          postcode: formData.postcode,
+          ...(applicantData.applicantPhotoFileName && {
+            applicantPhotoFileName: applicantData.applicantPhotoFileName,
+          }),
+        };
+        await putApplicantDetails(applicationData.applicationId, updatePayload);
+
+        const fromParam = searchParams.get("from");
+        if (fromParam === "tb-certificate-summary") {
+          navigate("/tb-certificate-summary");
+        } else if (fromParam === "check-applicant-details") {
+          navigate("/check-applicant-details");
+        } else {
+          navigate("/tb-certificate-summary");
+        }
+      } catch (error) {
+        console.error(error);
+        navigate("/error");
+      }
+    } else {
+      dispatch(setApplicantDetailsStatus(ApplicationStatus.IN_PROGRESS));
+      navigate("/upload-visa-applicant-photo");
+    }
   };
 
   const errorsToShow = Object.keys(errors);
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
-  const location = useLocation();
   const nameRef = useRef<HTMLDivElement | null>(null);
   const sexRef = useRef<HTMLDivElement | null>(null);
   const countryOfNationalityRef = useRef<HTMLDivElement | null>(null);
@@ -92,6 +149,24 @@ const ApplicantForm = () => {
           Enter the applicant&apos;s profile information below. Select &apos;Save and continue&apos;
           to save any information added.
         </p>
+
+        {isComplete && (
+          <Summary
+            status={applicantData.status}
+            summaryElements={[
+              {
+                key: "Passport number",
+                value: applicantData.passportNumber,
+                hiddenLabel: "passport number",
+              },
+              {
+                key: "Country of issue",
+                value: getCountryName(applicantData.countryOfIssue),
+                hiddenLabel: "country of issue",
+              },
+            ]}
+          />
+        )}
 
         <Heading level={2} size="m" title="Applicant's personal details" />
         <div ref={nameRef}>
@@ -158,31 +233,35 @@ const ApplicantForm = () => {
             )}
           />
         </div>
-        <div ref={passportNumberRef}>
-          <FreeText
-            id="passport-number"
-            label="Applicant's passport number"
-            errorMessage={errors?.passportNumber?.message ?? ""}
-            formValue="passportNumber"
-            required="Enter the applicant's passport number"
-            patternValue={formRegex.lettersAndNumbers}
-            patternError="Passport number must contain only letters and numbers"
-            defaultValue={applicantData.passportNumber}
-          />
-        </div>
+        {!isComplete && (
+          <div ref={passportNumberRef}>
+            <FreeText
+              id="passport-number"
+              label="Applicant's passport number"
+              errorMessage={errors?.passportNumber?.message ?? ""}
+              formValue="passportNumber"
+              required="Enter the applicant's passport number"
+              patternValue={formRegex.lettersAndNumbers}
+              patternError="Passport number must contain only letters and numbers"
+              defaultValue={applicantData.passportNumber}
+            />
+          </div>
+        )}
 
-        <div ref={countryOfIssueRef}>
-          <Dropdown
-            id="country-of-issue"
-            label="Country of issue"
-            hint="This is usually shown on the first page of the passport, at the top. Use the English spelling or the country code."
-            options={countryList}
-            errorMessage={errors?.countryOfIssue?.message ?? ""}
-            formValue="countryOfIssue"
-            required="Select the country of issue"
-            defaultValue={applicantData.countryOfIssue}
-          />
-        </div>
+        {!isComplete && (
+          <div ref={countryOfIssueRef}>
+            <Dropdown
+              id="country-of-issue"
+              label="Country of issue"
+              hint="This is usually shown on the first page of the passport, at the top. Use the English spelling or the country code."
+              options={countryList}
+              errorMessage={errors?.countryOfIssue?.message ?? ""}
+              formValue="countryOfIssue"
+              required="Select the country of issue"
+              defaultValue={applicantData.countryOfIssue}
+            />
+          </div>
+        )}
 
         <div ref={passportIssueDateRef}>
           <Controller

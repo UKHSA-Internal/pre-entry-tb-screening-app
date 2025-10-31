@@ -72,11 +72,30 @@ export const postApplicantDetails = async (
   return { status: result.status, statusText: result.statusText };
 };
 
+export const putApplicantDetails = async (
+  applicationId: string,
+  applicantDetails: Partial<PostedApplicantDetailsType>,
+) => {
+  const result = await petsApi.put(`/applicant/update/${applicationId}`, applicantDetails);
+  return { status: result.status, statusText: result.statusText };
+};
+
 export const postTravelDetails = async (
   applicationId: string,
   travelDetails: PostedTravelDetailsType,
 ) => {
   const result = await petsApi.post(
+    `/application/${applicationId}/travel-information`,
+    travelDetails,
+  );
+  return { status: result.status, statusText: result.statusText };
+};
+
+export const putTravelDetails = async (
+  applicationId: string,
+  travelDetails: Partial<PostedTravelDetailsType>,
+) => {
+  const result = await petsApi.put(
     `/application/${applicationId}/travel-information`,
     travelDetails,
   );

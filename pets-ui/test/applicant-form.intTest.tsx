@@ -1,7 +1,8 @@
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Mock } from "vitest";
 
+import * as api from "@/api/api";
 import ContactDetailsPage from "@/pages/contact-details";
 import ApplicantForm from "@/sections/applicant-details-form";
 import { ApplicationStatus } from "@/utils/enums";
@@ -211,5 +212,135 @@ describe("ApplicantForm", () => {
       "/do-you-have-visa-applicant-written-consent-for-tb-screening",
     );
     expect(link).toHaveClass("govuk-back-link");
+  });
+
+  it("back link points to TB summary when applicant status is COMPLETE", () => {
+    const completeState = {
+      ...preloadedState,
+      applicant: {
+        ...preloadedState.applicant,
+        status: ApplicationStatus.COMPLETE,
+      },
+    };
+    window.history.pushState({}, "", "/?from=tb-certificate-summary");
+    renderWithProviders(<ContactDetailsPage />, { preloadedState: completeState });
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toHaveAttribute("href", "/tb-certificate-summary");
+  });
+
+  it("preserves applicantPhotoFileName when updating form data", async () => {
+    const stateWithPhoto = {
+      ...preloadedState,
+      applicant: {
+        ...preloadedState.applicant,
+        applicantPhotoFileName: "test-photo.jpg",
+      },
+    };
+    const { store } = renderWithProviders(<ApplicantForm />, { preloadedState: stateWithPhoto });
+
+    await user.type(screen.getByTestId("name"), "John Smith");
+    await user.click(screen.getAllByTestId("sex")[0]);
+    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "GBR" } });
+    await user.type(screen.getByTestId("birth-date-day"), "1");
+    await user.type(screen.getByTestId("birth-date-month"), "1");
+    await user.type(screen.getByTestId("birth-date-year"), "1970");
+    await user.type(screen.getByTestId("passport-number"), "ABC123");
+    fireEvent.change(screen.getAllByRole("combobox")[1], { target: { value: "GBR" } });
+    await user.type(screen.getByTestId("passport-issue-date-day"), "1");
+    await user.type(screen.getByTestId("passport-issue-date-month"), "1");
+    await user.type(screen.getByTestId("passport-issue-date-year"), "2020");
+    await user.type(screen.getByTestId("passport-expiry-date-day"), "1");
+    await user.type(screen.getByTestId("passport-expiry-date-month"), "1");
+    await user.type(screen.getByTestId("passport-expiry-date-year"), "2030");
+    await user.type(screen.getByTestId("address-1"), "1 Street");
+    await user.type(screen.getByTestId("town-or-city"), "London");
+    await user.type(screen.getByTestId("province-or-state"), "London");
+    fireEvent.change(screen.getAllByRole("combobox")[2], { target: { value: "GBR" } });
+
+    await user.click(screen.getByRole("button"));
+
+    expect(store.getState().applicant.applicantPhotoFileName).toBe("test-photo.jpg");
+  });
+
+  it("updates slice and navigates to TB summary when editing in COMPLETE status", async () => {
+    vi.spyOn(api, "putApplicantDetails").mockResolvedValue({
+      status: 200,
+      statusText: "OK",
+    });
+    const completeState = {
+      application: { applicationId: "abc-123", dateCreated: "" },
+      applicant: {
+        status: ApplicationStatus.COMPLETE,
+        fullName: "John Smith",
+        sex: "Male",
+        dateOfBirth: { year: "1970", month: "1", day: "1" },
+        countryOfNationality: "GBR",
+        passportNumber: "12345",
+        countryOfIssue: "GBR",
+        passportIssueDate: { year: "2020", month: "1", day: "1" },
+        passportExpiryDate: { year: "2030", month: "1", day: "1" },
+        applicantHomeAddress1: "1 Street",
+        applicantHomeAddress2: "",
+        applicantHomeAddress3: "",
+        townOrCity: "London",
+        provinceOrState: "London",
+        country: "GBR",
+        postcode: "0000 111",
+        applicantPhotoFileName: "photo.jpg",
+      },
+    };
+    const { store } = renderWithProviders(<ApplicantForm />, { preloadedState: completeState });
+
+    await user.clear(screen.getByTestId("name"));
+    await user.type(screen.getByTestId("name"), "Jeff Smith");
+    await user.click(screen.getByRole("button"));
+
+    await waitFor(() => {
+      expect(store.getState().applicant.fullName).toBe("Jeff Smith");
+      expect(store.getState().applicant.status).toBe(ApplicationStatus.COMPLETE);
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-summary");
+    });
+  });
+
+  it("hides passport number and country of issue fields when status is COMPLETE and shows static summary", () => {
+    const completeState = {
+      application: { applicationId: "abc-123", dateCreated: "" },
+      applicant: {
+        status: ApplicationStatus.COMPLETE,
+        fullName: "John Smith",
+        sex: "Male",
+        dateOfBirth: { year: "1970", month: "1", day: "1" },
+        countryOfNationality: "GBR",
+        passportNumber: "1234",
+        countryOfIssue: "GBR",
+        passportIssueDate: { year: "2020", month: "1", day: "1" },
+        passportExpiryDate: { year: "2030", month: "1", day: "1" },
+        applicantHomeAddress1: "1 Street",
+        applicantHomeAddress2: "",
+        applicantHomeAddress3: "",
+        townOrCity: "London",
+        provinceOrState: "London",
+        country: "GBR",
+        postcode: "0000 111",
+        applicantPhotoFileName: "photo.jpg",
+      },
+    };
+
+    renderWithProviders(<ApplicantForm />, { preloadedState: completeState });
+
+    expect(screen.queryByTestId("passport-number")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("combobox").length).toBe(2);
+
+    expect(screen.getByText("Passport number")).toBeInTheDocument();
+    expect(screen.getByText("1234")).toBeInTheDocument();
+    expect(screen.getByText("Country of issue")).toBeInTheDocument();
+    const countryOfIssueRow = screen
+      .getByText("Country of issue")
+      .closest(".govuk-summary-list__row") as HTMLElement;
+    expect(
+      within(countryOfIssueRow).getByText(
+        "United Kingdom of Great Britain and Northern Ireland (the)",
+      ),
+    ).toBeInTheDocument();
   });
 });
