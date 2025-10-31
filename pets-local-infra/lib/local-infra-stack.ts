@@ -89,6 +89,11 @@ export class LocalInfrastructureStack extends cdk.Stack {
       tableName: process.env.APPLICATION_SERVICE_DATABASE_NAME,
     });
 
+    new Table(this, "audit-service-table", {
+      ...tableProps,
+      tableName: process.env.AUDIT_SERVICE_DATABASE_NAME,
+    });
+
     new Bucket(this, "image-bucket", {
       bucketName: process.env.IMAGE_BUCKET,
       cors: [

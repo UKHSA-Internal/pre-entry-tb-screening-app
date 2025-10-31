@@ -11,6 +11,8 @@ import { RadiologicalOutcome } from "../application-service/models/radiological-
 import { SputumDecision } from "../application-service/models/sputum-decision";
 import { TbCertificateDbOps } from "../application-service/models/tb-certificate";
 import { TravelInformation } from "../application-service/models/travel-information";
+import { seededAuditData } from "../audit-service/fixtures/audit-data";
+import { AuditDbOps } from "../audit-service/models/audit-db-ops";
 import { seededClinics } from "../clinic-service/fixtures/clinics";
 import { Clinic } from "../clinic-service/models/clinics";
 import { seededApplications } from "../shared/fixtures/application";
@@ -52,6 +54,11 @@ export const seedDatabase = async () => {
 
   for (const clinic of seededClinics) {
     await Clinic.createNewClinic(clinic);
+  }
+
+  // TODO: Add corret data to seededAuditData
+  for (const record of seededAuditData) {
+    await AuditDbOps.createNewAuditFromDBRecord(record);
   }
 };
 
