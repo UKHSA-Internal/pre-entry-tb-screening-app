@@ -2,12 +2,13 @@ import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { putTravelDetails } from "@/api/api";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectTravel } from "@/redux/store";
+import { selectApplication, selectTravel } from "@/redux/store";
 import {
   setApplicantUkAddress1,
   setApplicantUkAddress2,
@@ -26,17 +27,17 @@ type TravelAddressAndContactDetailsData = Omit<ReduxTravelDetailsType, "visaCate
 
 const ApplicantTravelAddressAndContactDetails = () => {
   const navigate = useNavigate();
-
+  const location = useLocation();
+  const dispatch = useAppDispatch();
+  const travelData = useAppSelector(selectTravel);
+  const applicationData = useAppSelector(selectApplication);
   const methods = useForm<TravelAddressAndContactDetailsData>({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,
     formState: { errors },
   } = methods;
 
-  const dispatch = useAppDispatch();
-  const travelData = useAppSelector(selectTravel);
-
-  const onSubmit: SubmitHandler<TravelAddressAndContactDetailsData> = (
+  const onSubmit: SubmitHandler<TravelAddressAndContactDetailsData> = async (
     travelAddressAndContactDetailsData,
   ) => {
     dispatch(setApplicantUkAddress1(travelAddressAndContactDetailsData.applicantUkAddress1 ?? ""));
@@ -46,14 +47,32 @@ const ApplicantTravelAddressAndContactDetails = () => {
     dispatch(setPostcode(travelAddressAndContactDetailsData.postcode ?? ""));
     dispatch(setUkMobileNumber(travelAddressAndContactDetailsData.ukMobileNumber ?? ""));
     dispatch(setUkEmail(travelAddressAndContactDetailsData.ukEmail ?? ""));
-    dispatch(setTravelDetailsStatus(ApplicationStatus.IN_PROGRESS));
-    navigate("/check-travel-information");
+
+    if (travelData.status === ApplicationStatus.COMPLETE && applicationData.applicationId) {
+      try {
+        await putTravelDetails(applicationData.applicationId, {
+          ukAddressLine1: travelAddressAndContactDetailsData.applicantUkAddress1,
+          ukAddressLine2: travelAddressAndContactDetailsData.applicantUkAddress2,
+          ukAddressTownOrCity: travelAddressAndContactDetailsData.townOrCity,
+          ukAddressPostcode: travelAddressAndContactDetailsData.postcode,
+          ukMobileNumber: travelAddressAndContactDetailsData.ukMobileNumber,
+          ukEmailAddress: travelAddressAndContactDetailsData.ukEmail,
+        });
+
+        navigate("/tb-certificate-summary");
+      } catch (error) {
+        console.error(error);
+        navigate("/error");
+      }
+    } else {
+      dispatch(setTravelDetailsStatus(ApplicationStatus.IN_PROGRESS));
+      navigate("/check-travel-information");
+    }
   };
 
   const errorsToShow = Object.keys(errors);
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
-  const location = useLocation();
   const addressLine1Ref = useRef<HTMLDivElement | null>(null);
   const addressLine2Ref = useRef<HTMLDivElement | null>(null);
   const addressLine3Ref = useRef<HTMLDivElement | null>(null);

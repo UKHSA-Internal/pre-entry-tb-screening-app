@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FileUpload from "@/components/fileUpload/fileUpload";
@@ -13,12 +13,13 @@ import { setApplicantPhotoFileName } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
 import { ReduxApplicantDetailsType } from "@/types";
-import { ButtonType, ImageType } from "@/utils/enums";
+import { ApplicationStatus, ButtonType, ImageType } from "@/utils/enums";
 
 const ApplicantPhotoForm = () => {
   const applicantData = useAppSelector(selectApplicant);
   const { applicantPhotoFile, setApplicantPhotoFile } = useApplicantPhoto();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const dispatch = useAppDispatch();
 
   const [applicantPhoto, setApplicantPhoto] = useState<File>();
@@ -43,7 +44,22 @@ const ApplicantPhotoForm = () => {
       setApplicantPhotoFile(applicantPhoto);
     }
 
-    navigate("/check-applicant-details");
+    const fromParam = searchParams.get("from");
+    let destination: string;
+
+    if (applicantData.status === ApplicationStatus.COMPLETE) {
+      if (fromParam === "tb-certificate-summary") {
+        destination = "/tb-certificate-summary";
+      } else if (fromParam === "check-applicant-details") {
+        destination = "/check-applicant-details";
+      } else {
+        destination = "/tb-certificate-summary";
+      }
+    } else {
+      destination = "/check-applicant-details";
+    }
+
+    navigate(destination);
   };
 
   useEffect(() => {
