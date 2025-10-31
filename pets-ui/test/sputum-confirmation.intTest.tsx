@@ -26,8 +26,8 @@ const preloadedState = {
       collection: {
         submittedToDatabase: true,
         dateOfSample: {
-          year: "01",
-          month: "01",
+          year: "1",
+          month: "1",
           day: "2025",
         },
         collectionMethod: SputumCollectionMethod.COUGHED_UP,

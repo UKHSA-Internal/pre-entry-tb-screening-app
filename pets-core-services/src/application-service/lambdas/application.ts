@@ -13,7 +13,8 @@ import { saveRadiologicalOutcomeHandler } from "../handlers/save-radiological-ou
 import { saveSputumDecisionHandler } from "../handlers/save-sputum-decision";
 import { saveSputumDetailsHandler } from "../handlers/save-sputum-details";
 import { saveTbCertificateHandler } from "../handlers/save-tb-certificate";
-import { saveTravelInformationHandler } from "../handlers/save-travel-information";
+import { saveTravelInformationHandler as createTravelInformationHandler } from "../handlers/save-travel-information";
+import { updateTravelInformationHandler } from "../handlers/update-travel-information";
 import { setApplicationIdContext } from "../middlewares/application-logger-context";
 import { validateApplication } from "../middlewares/application-validation";
 import {
@@ -33,7 +34,9 @@ import {
   SputumResponseSchema,
   TbCertificateRequestSchema,
   TbCertificateResponseSchema,
-  TravelInformationRequestSchema,
+  TravelInformationPostRequestSchema,
+  TravelInformationPutRequestSchema,
+  TravelInformationPutResponseSchema,
   TravelInformationResponseSchema,
 } from "../types/zod-schema";
 
@@ -62,12 +65,26 @@ export const routes: PetsRoute[] = [
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(setApplicationIdContext)
       .before(validateApplication)
-      .handler(saveTravelInformationHandler),
-    requestBodySchema: TravelInformationRequestSchema.openapi({
+      .handler(createTravelInformationHandler),
+    requestBodySchema: TravelInformationPostRequestSchema.openapi({
       description: "Travel Details of an Applicant",
     }),
     responseSchema: TravelInformationResponseSchema.openapi({
       description: "Saved Travel Information Details",
+    }),
+  },
+  {
+    method: "PUT",
+    path: "/application/{applicationId}/travel-information",
+    handler: middy<PetsAPIGatewayProxyEvent>()
+      .before(setApplicationIdContext)
+      .before(validateApplication)
+      .handler(updateTravelInformationHandler),
+    requestBodySchema: TravelInformationPutRequestSchema.openapi({
+      description: "Travel Details of an Applicant",
+    }),
+    responseSchema: TravelInformationPutResponseSchema.openapi({
+      description: "Updated Travel Information Details",
     }),
   },
   {

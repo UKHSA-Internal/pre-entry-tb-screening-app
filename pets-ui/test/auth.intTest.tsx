@@ -34,7 +34,7 @@ afterEach(() => {
   msalTester.resetSpyMsal();
 });
 
-test("In authenticated state, user is taken to Applicant Search page ('/applicant-search') when accessing landing page ('/') via browser", async () => {
+test("In authenticated state, user is taken to Applicant Search page ('/search-for-visa-applicant') when accessing landing page ('/') via browser", async () => {
   await msalTester.isLogged();
 
   renderWithProvidersWithoutRouter(
@@ -56,7 +56,7 @@ test("In authenticated state, user is able to access authenticated paths", async
   await msalTester.isLogged();
 
   renderWithProvidersWithoutRouter(
-    <MemoryRouter initialEntries={["/applicant-search"]}>
+    <MemoryRouter initialEntries={["/search-for-visa-applicant"]}>
       <MsalProvider instance={msalTester.client}>
         <ApplicantPhotoProvider>
           <App />
@@ -92,7 +92,7 @@ test("In unauthenticated state, user is taken to landing page ('/') if they try 
   await msalTester.isNotLogged();
 
   renderWithProvidersWithoutRouter(
-    <MemoryRouter initialEntries={["/applicant-results"]}>
+    <MemoryRouter initialEntries={["/no-matching-record-found"]}>
       <MsalProvider instance={msalTester.client}>
         <ApplicantPhotoProvider>
           <App />

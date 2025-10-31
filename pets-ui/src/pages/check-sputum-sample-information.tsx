@@ -14,7 +14,10 @@ export default function CheckSputumSampleInformationPage() {
   }
 
   return (
-    <Container title="Check sputum sample information and results" backLinkTo={backLinkUrl}>
+    <Container
+      title="Check sputum sample information and results - Complete UK pre-entry health screening - GOV.UK"
+      backLinkTo={backLinkUrl}
+    >
       <SputumSummary />
     </Container>
   );

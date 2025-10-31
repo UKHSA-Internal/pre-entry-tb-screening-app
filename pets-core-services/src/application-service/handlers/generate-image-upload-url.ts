@@ -7,7 +7,7 @@ import awsClients from "../../shared/clients/aws";
 import { assertEnvExists, isLocal, isTest } from "../../shared/config";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
-import { Applicant } from "../../shared/models/applicant";
+import { ApplicantDbOps } from "../../shared/models/applicant";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { generateImageObjectkey } from "../helpers/upload";
 import { ImageType } from "../types/enums";
@@ -56,7 +56,7 @@ export const generateImageUploadUrlHandler = async (event: GenerateUploadEvent) 
         });
       }
     }
-    const applicant = await Applicant.getByApplicationId(applicationId);
+    const applicant = await ApplicantDbOps.getByApplicationId(applicationId);
     if (!applicant) {
       logger.error("Application does not have an applicant");
       return createHttpResponse(400, { message: "Invalid Application - No Applicant" });

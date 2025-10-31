@@ -261,7 +261,10 @@ export class SputumDetailsDbOps {
       });
 
       if (!completionCheck.success) {
-        logger.info("Sputum sample completion check failed", completionCheck.error.flatten());
+        logger.info(
+          { error: completionCheck.error.flatten() },
+          "Sputum sample completion check failed",
+        );
       }
 
       const isFirstInsert = !existingItemRaw || existingItemRaw.version === undefined;
@@ -282,9 +285,7 @@ export class SputumDetailsDbOps {
       };
       const updateCommand = new UpdateCommand(commandInput);
 
-      logger.info(updateCommand);
       const { Attributes } = await docClient.send(updateCommand);
-      logger.info(Attributes);
       if (!Attributes) throw new Error("Update failed");
 
       logger.info(`Created/Updated sputum sample details for ${applicationId}`);
@@ -305,7 +306,7 @@ export class SputumDetailsDbOps {
 
       return updatedSputumDetails;
     } catch (error) {
-      logger.error("Update failed", { error });
+      logger.error({ error }, "Update failed");
       throw error;
     }
   }

@@ -29,9 +29,9 @@ vi.mock("@azure/msal-react", () => ({
 const renderSignOut = () =>
   renderWithProvidersWithoutRouter(
     <HelmetProvider>
-      <MemoryRouter initialEntries={["/sign-out"]}>
+      <MemoryRouter initialEntries={["/are-you-sure-you-want-to-sign-out"]}>
         <Routes>
-          <Route path="/sign-out" element={<SignOutPage />} />
+          <Route path="/are-you-sure-you-want-to-sign-out" element={<SignOutPage />} />
           <Route path="/previous-page" element={<div>Previous Page</div>} />
         </Routes>
       </MemoryRouter>
@@ -70,13 +70,13 @@ describe("Sign out page", () => {
     expect(screen.getByRole("button", { name: "Go back to screening" })).toBeInTheDocument();
   });
 
-  it("calls msal logout redirect with /signed-out on confirm", async () => {
+  it("calls msal logout redirect with /you-have-signed-out on confirm", async () => {
     renderSignOut();
     const signOutBtn = screen.getByRole("button", { name: "Sign out" });
     await user.click(signOutBtn);
 
     expect(mockLogoutRedirect).toHaveBeenCalledWith({
-      postLogoutRedirectUri: "/signed-out",
+      postLogoutRedirectUri: "/you-have-signed-out",
     });
   });
 
@@ -87,10 +87,10 @@ describe("Sign out page", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/previous-page");
   });
 
-  it("redirects to /error if MSAL logout fails", async () => {
+  it("redirects to /sorry-there-is-problem-with-service if MSAL logout fails", async () => {
     mockLogoutRedirect.mockRejectedValue(new Error("MSAL logout error"));
     renderSignOut();
     await user.click(screen.getByRole("button", { name: "Sign out" }));
-    expect(mockNavigate).toHaveBeenCalledWith("/error");
+    expect(mockNavigate).toHaveBeenCalledWith("/sorry-there-is-problem-with-service");
   });
 });

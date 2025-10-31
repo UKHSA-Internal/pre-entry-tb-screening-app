@@ -3,7 +3,10 @@ import ChestXrayQuestionForm from "@/sections/chest-xray-question-form";
 
 export default function ChestXrayQuestionPage() {
   return (
-    <Container title="Select X-ray status" backLinkTo="/tracker">
+    <Container
+      title="Is an X-ray required? - Complete UK pre-entry health screening - GOV.UK"
+      backLinkTo="/record-medical-history-tb-symptoms"
+    >
       <ChestXrayQuestionForm />
     </Container>
   );

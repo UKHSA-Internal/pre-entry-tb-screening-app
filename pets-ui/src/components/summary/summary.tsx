@@ -7,7 +7,6 @@ export type SummaryElement = {
   value: string | Array<string> | undefined;
   link?: string;
   hiddenLabel: string;
-  emptyValueText?: string;
 };
 
 interface SummaryProps {
@@ -15,7 +14,7 @@ interface SummaryProps {
   summaryElements: SummaryElement[];
 }
 
-function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement) {
+function summaryValue(summaryElement: SummaryElement) {
   const hasValue = Array.isArray(summaryElement.value)
     ? summaryElement.value.length > 0
     : !!summaryElement.value;
@@ -24,21 +23,22 @@ function summaryValue(status: ApplicationStatus, summaryElement: SummaryElement)
     if (Array.isArray(summaryElement.value)) {
       return (
         <div className="govuk-summary-value-column">
-          {summaryElement.value.map((value) => {
-            return (
-              <dd className="govuk-summary-list__value" key={value}>
-                {value}
-              </dd>
-            );
-          })}
+          <dd className="govuk-summary-list__value">
+            {summaryElement.value.map((value, index) => {
+              return (
+                <p className="govuk-body" key={index + "-" + value}>
+                  {value}
+                </p>
+              );
+            })}
+          </dd>
         </div>
       );
     } else {
       return <dd className="govuk-summary-list__value">{summaryElement.value}</dd>;
     }
   } else {
-    const displayValue = status === ApplicationStatus.COMPLETE ? "" : "Not provided";
-    return <dd className="govuk-summary-list__value">{displayValue}</dd>;
+    return <dd className="govuk-summary-list__value">Not provided</dd>;
   }
 }
 
@@ -49,7 +49,7 @@ export default function Summary(props: Readonly<SummaryProps>) {
         return (
           <div className="govuk-summary-list__row" key={summaryElement.key}>
             <dt className="govuk-summary-list__key">{summaryElement.key}</dt>
-            {summaryValue(props.status, summaryElement)}
+            {summaryValue(summaryElement)}
             {summaryElement.link &&
               summaryElement.link.length > 0 &&
               props.status !== ApplicationStatus.COMPLETE && (

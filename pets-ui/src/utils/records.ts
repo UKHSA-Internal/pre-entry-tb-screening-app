@@ -20,8 +20,10 @@ const attributeToComponentId: { [key: string]: string } = {
   visaCategory: "visa-category",
   applicantUkAddress1: "address-1",
   applicantUkAddress2: "address-2",
+  applicantUkAddress3: "address-3",
   ukMobileNumber: "mobile-number",
   ukEmail: "email",
+  completionDate: "medical-screening-completion-date",
   age: "age",
   tbSymptoms: "tb-symptoms",
   tbSymptomsList: "tb-symptoms-list",
@@ -44,6 +46,8 @@ const attributeToComponentId: { [key: string]: string } = {
   xrayResultDetail: "xray-result-detail",
   xrayMinorFindings: "xray-minor-findings",
   reasonXrayWasNotTaken: "reason-xray-not-taken",
+  reasonXrayNotRequired: "reason-xray-not-taken",
+  reasonXrayNotRequiredFurtherDetails: "conditional-reason-xray-not-required-other-detail",
   xrayWasNotTakenFurtherDetails: "xray-not-taken-further-details",
   isIssued: "tb-clearance-issued",
   comments: "physician-comments",
@@ -61,6 +65,8 @@ const attributeToComponentId: { [key: string]: string } = {
   collectionMethodSample1: "collection-method-sample-1",
   collectionMethodSample2: "collection-method-sample-2",
   collectionMethodSample3: "collection-method-sample-3",
+  dateXrayTaken: "date-xray-taken",
+  consent: "do-you-have-consent",
 };
 
 const formRegex = {
@@ -75,6 +81,13 @@ const formRegex = {
 };
 
 const dateValidationMessages: Record<string, Record<string, string>> = {
+  completionDate: {
+    emptyFieldError: "Enter the date the medical screening took place",
+    invalidCharError:
+      "The date the medical screening took place day, month and year must contain only numbers",
+    invalidDateError: "The date the medical screening took place must be a real date",
+    dateMustBeInPastError: "The medical screening date must be today or in the past",
+  },
   passportIssueDate: {
     emptyFieldError: "Passport issue date must include a day, month and year",
     invalidCharError: "Passport issue day, month and year must contain only numbers",
@@ -105,6 +118,12 @@ const dateValidationMessages: Record<string, Record<string, string>> = {
     invalidDateError: "Sputum sample {sampleNumber} date must be a real date",
     dateMustBeInPastError: "Sputum sample {sampleNumber} date must be today or in the past",
   },
+  dateXrayTaken: {
+    emptyFieldError: "Enter the date the X-ray was taken",
+    invalidCharError: "The date the X-ray was taken day, month and year must contain only numbers",
+    invalidDateError: "The date the X-ray was taken must be a real date",
+    dateMustBeInPastError: "The date the X-ray was taken must be today or in the past",
+  },
 };
 
 const sputumResultsValidationMessages = {
@@ -116,22 +135,49 @@ const longNumericStrings = ["01", "02", "03", "04", "05", "06", "07", "08", "09"
 const shortNumericStrings = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
 const dateEntryNames: Record<string, string> = {
+  completionDate: "The date the medical screening took place",
   dateOfBirth: "Date of birth",
   passportIssueDate: "Passport issue date",
   passportExpiryDate: "Passport expiry date",
   tbCertificateDate: "TB clearance certificate date",
+  dateXrayTaken: "The date the X-ray was taken",
 };
 
 const dateEntryMustBeInThePast: string[] = [
+  "completionDate",
   "dateOfBirth",
   "passportIssueDate",
   "tbCertificateDate",
   "sputumSampleDate",
+  "dateXrayTaken",
 ];
 
 const dateEntryMustBeInTheFuture: string[] = ["passportExpiryDate"];
 
 const visaOptions = [
+  {
+    value: "Work",
+    label: "Work",
+  },
+  {
+    value: "Study",
+    label: "Study",
+  },
+  {
+    value: "Family reunion",
+    label: "Family reunion",
+  },
+  {
+    value: "Other",
+    label: "Other",
+  },
+  {
+    value: "Do not know",
+    label: "Do not know",
+  },
+];
+
+const legacyVisaOptions = [
   {
     value: "HM Armed Forces",
     label: "HM Armed Forces",
@@ -262,6 +308,7 @@ export {
   dateEntryNames,
   dateValidationMessages,
   formRegex,
+  legacyVisaOptions,
   longNumericStrings,
   shortNumericStrings,
   sputumResultsValidationMessages,

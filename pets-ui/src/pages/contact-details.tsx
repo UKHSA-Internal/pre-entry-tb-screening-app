@@ -3,7 +3,10 @@ import ApplicantForm from "@/sections/applicant-details-form";
 
 export default function ContactDetailsPage() {
   return (
-    <Container title="Applicant details form" backLinkTo="/applicant-results">
+    <Container
+      title="Enter applicant information - Complete UK pre-entry health screening - GOV.UK"
+      backLinkTo="/do-you-have-visa-applicant-written-consent-for-tb-screening"
+    >
       <ApplicantForm />
     </Container>
   );

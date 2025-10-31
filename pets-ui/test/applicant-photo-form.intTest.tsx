@@ -49,11 +49,19 @@ describe("ApplicantPhotoForm", () => {
     );
 
     expect(screen.getByText("Upload visa applicant photo (optional)")).toBeInTheDocument();
+    expect(screen.getByText("The photo must:")).toBeInTheDocument();
+    expect(screen.getByText("be a JPG, JPEG or PNG file")).toBeInTheDocument();
+    expect(screen.getByText("be less than 10MB")).toBeInTheDocument();
     expect(
-      screen.getByText(
-        "Select a file to upload. File type must be JPG, JPEG or PNG. Images must be less than 10MB.",
-      ),
+      screen.getByText("be the correct way up - open it on your computer to check"),
     ).toBeInTheDocument();
+    const passportRulesLink = screen.getByText(
+      "rules for a passport digital photo (opens in new tab)",
+    );
+    expect(passportRulesLink).toHaveAttribute(
+      "href",
+      "https://www.gov.uk/photos-for-passports#rules-for-digital-photos",
+    );
     expect(screen.getByText("Continue")).toBeInTheDocument();
   });
 
@@ -62,7 +70,7 @@ describe("ApplicantPhotoForm", () => {
 
     fireEvent.click(screen.getByText("Continue"));
     await waitFor(() => {
-      expect(useNavigateMock).toHaveBeenCalledWith("/applicant-summary");
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-applicant-details");
     });
   });
 
@@ -80,7 +88,7 @@ describe("ApplicantPhotoForm", () => {
 
     await waitFor(() => {
       expect(setApplicantPhotoFile).toHaveBeenCalledWith(file);
-      expect(useNavigateMock).toHaveBeenCalledWith("/applicant-summary");
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-applicant-details");
     });
   });
 

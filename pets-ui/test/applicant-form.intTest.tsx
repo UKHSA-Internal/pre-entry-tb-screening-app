@@ -160,7 +160,7 @@ describe("ApplicantForm", () => {
       postcode: "101",
       applicantPhotoFileName: "",
     });
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/applicant-photo");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/upload-visa-applicant-photo");
   });
 
   it("errors when applicant details are missing", async () => {
@@ -206,7 +206,10 @@ describe("ApplicantForm", () => {
     renderWithProviders(<ContactDetailsPage />);
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/applicant-results");
+    expect(link).toHaveAttribute(
+      "href",
+      "/do-you-have-visa-applicant-written-consent-for-tb-screening",
+    );
     expect(link).toHaveClass("govuk-back-link");
   });
 });

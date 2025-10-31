@@ -84,6 +84,8 @@ jobs:
       USER_5_PASSWORD: ${{ secrets.USER_5_PASSWORD }}
       USER_6_EMAIL: ${{ secrets.USER_6_EMAIL }}
       USER_6_PASSWORD: ${{ secrets.USER_6_PASSWORD }}
+      VITE_MSAL_CLIENT_ID: ${{ secrets.LOCAL_MSAL_CLIENT_ID }}
+      VITE_MSAL_TENANT_ID: ${{ secrets.LOCAL_MSAL_TENANT_ID }}
 
     steps:
       - name: Checkout code
@@ -121,7 +123,6 @@ jobs:
       - name: Start Local Environment
         run: |
           pnpm start & sleep 120
-
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
         continue-on-error: true
@@ -164,7 +165,6 @@ jobs:
         with:
           name: mochawesome-reportmochawesome-report-${{ matrix.browser }}
           path: pets-ui/cypress/reports/mochawesome/
-
 
   core-services-tests:
     name: Run tests for core services

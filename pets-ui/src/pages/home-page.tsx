@@ -29,7 +29,7 @@ export default function HomePage() {
   };
 
   return (
-    <Container title="UK Pre-Entry Health Screening">
+    <Container title="Complete UK pre-entry health screening - GOV.UK">
       <Heading level={1} size="l" title="Complete a UK visa applicant's TB screening" />
       <p className="govuk-body">
         This service is for authorised staff to enter TB screening information for UK visa

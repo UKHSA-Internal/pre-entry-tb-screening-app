@@ -10,10 +10,14 @@ export default function TravelSummaryPage() {
 
   return (
     <Container
-      title="Applicant travel information summary"
-      backLinkTo={travelData.status == ApplicationStatus.COMPLETE ? "/tracker" : "/travel-details"}
+      title="Check UK travel information - Complete UK pre-entry health screening - GOV.UK"
+      backLinkTo={
+        travelData.status == ApplicationStatus.COMPLETE
+          ? "/tracker"
+          : "/visa-applicant-proposed-uk-address"
+      }
     >
-      <Heading level={1} size="l" title="Check travel information" />
+      <Heading level={1} size="l" title="Check UK travel information" />
       <TravelReview />
     </Container>
   );

@@ -75,25 +75,30 @@ const medicalScreeningSlice = {
   tbSymptomsList: ["Cough", "Night sweats"],
   underElevenConditions: ["Not applicable - applicant is aged 11 or over"],
   underElevenConditionsDetail: "",
+  chestXrayTaken: YesOrNo.YES,
+  reasonXrayNotRequired: "",
   completionDate: { year: "", month: "", day: "" },
 };
 
 const chestXraySlice = {
-  chestXrayTaken: YesOrNo.NO,
   posteroAnteriorXrayFileName: "",
   posteroAnteriorXrayFile: "",
   apicalLordoticXrayFileName: "",
   apicalLordoticXrayFile: "",
   lateralDecubitusXrayFileName: "",
+  dateXrayTaken: { year: "", month: "", day: "" },
   lateralDecubitusXrayFile: "",
-  reasonXrayWasNotTaken: "Pregnant",
-  xrayWasNotTakenFurtherDetails: "Further details",
+  completionDate: { year: "", month: "", day: "" },
+};
+
+const radiologicalOutcomeSlice = {
+  reasonXrayWasNotTaken: "",
+  xrayWasNotTakenFurtherDetails: "",
   xrayResult: "",
   xrayResultDetail: "",
   xrayMinorFindings: [],
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
-  isSputumRequired: YesOrNo.NO,
   completionDate: { year: "", month: "", day: "" },
 };
 
@@ -102,7 +107,7 @@ const tbCertSlice = {
   comments: "Extra Details",
   certificateDate: {
     year: "2025",
-    month: "03",
+    month: "3",
     day: "25",
   },
   certificateNumber: "12345",
@@ -151,7 +156,13 @@ const incompleteState = {
   },
   travel: { status: ApplicationStatus.NOT_YET_STARTED, ...travelSlice },
   medicalScreening: { status: ApplicationStatus.NOT_YET_STARTED, ...medicalScreeningSlice },
-  chestXray: { status: ApplicationStatus.NOT_YET_STARTED, ...chestXraySlice },
+  chestXray: { status: ApplicationStatus.IN_PROGRESS, ...chestXraySlice },
+  radiologicalOutcome: { status: ApplicationStatus.NOT_YET_STARTED, ...radiologicalOutcomeSlice },
+  sputumDecision: {
+    status: ApplicationStatus.NOT_YET_STARTED,
+    isSputumRequired: YesOrNo.NULL,
+    completionDate: { year: "", month: "", day: "" },
+  },
   tbCertificate: { status: ApplicationStatus.NOT_YET_STARTED, ...tbCertSlice },
 };
 
@@ -189,6 +200,15 @@ const completeState = {
   travel: { status: ApplicationStatus.COMPLETE, ...travelSlice },
   medicalScreening: { status: ApplicationStatus.COMPLETE, ...medicalScreeningSlice },
   chestXray: { status: ApplicationStatus.COMPLETE, ...chestXraySlice },
+  radiologicalOutcome: {
+    status: ApplicationStatus.COMPLETE,
+    ...radiologicalOutcomeSlice,
+  },
+  sputumDecision: {
+    status: ApplicationStatus.COMPLETE,
+    isSputumRequired: YesOrNo.NO,
+    completionDate: { year: "2025", month: "01", day: "15" },
+  },
   tbCertificate: { status: ApplicationStatus.COMPLETE, ...tbCertSlice },
 };
 
@@ -210,7 +230,7 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(screen.getAllByRole("definition")[2]).toHaveTextContent("12345");
 
   const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
-  expect(applicantDetailsLink).toHaveAttribute("href", "/contact");
+  expect(applicantDetailsLink).toHaveAttribute("href", "/enter-applicant-information");
   const applicantDetailsListItem = applicantDetailsLink.closest("li");
   expect(applicantDetailsListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
@@ -222,29 +242,36 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(travelDetailsListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
-  expect(within(travelDetailsListItem as HTMLElement).getByText("Not yet started"));
+  expect(within(travelDetailsListItem as HTMLElement).getByText("Cannot start yet"));
 
   const medicalScreeningText = screen.getByText(/Medical history and TB symptoms/i);
   const medicalScreeningListItem = medicalScreeningText.closest("li");
   expect(medicalScreeningListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
-  expect(within(medicalScreeningListItem as HTMLElement).getByText("Not yet started"));
+  expect(within(medicalScreeningListItem as HTMLElement).getByText("Cannot start yet"));
 
-  const chestXrayText = screen.getByText(/Radiological outcome/i);
+  const chestXrayText = screen.getByText(/Upload chest X-ray images/i);
   const chestXrayListItem = chestXrayText.closest("li");
   expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
-  expect(within(chestXrayListItem as HTMLElement).getByText("Not yet started"));
+  expect(within(medicalScreeningListItem as HTMLElement).getByText("Cannot start yet"));
+
+  const radiologicalOutcomeText = screen.getByText(/Radiological outcome/i);
+  const radiologicalOutcomeListItem = radiologicalOutcomeText.closest("li");
+  expect(radiologicalOutcomeListItem).toHaveClass(
+    "govuk-task-list__item govuk-task-list__item--with-link",
+  );
+  expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Cannot start yet"));
 
   const tbCertificateText = screen.getByText(/TB certificate outcome/i);
   const tbCertificateListItem = tbCertificateText.closest("li");
   expect(tbCertificateListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
-  expect(within(tbCertificateListItem as HTMLElement).getByText("Not yet started"));
+  expect(within(tbCertificateListItem as HTMLElement).getByText("Cannot start yet"));
 
   const searchLink = screen.getByRole("link", { name: /Search for another visa applicant/i });
-  expect(searchLink).toHaveAttribute("href", "/applicant-search");
+  expect(searchLink).toHaveAttribute("href", "/search-for-visa-applicant");
 });
 
 test("Progress tracker page displays complete application sections correctly, links to summary page, and displays applicant photo from context", async () => {
@@ -276,7 +303,7 @@ test("Progress tracker page displays complete application sections correctly, li
   expect(screen.getAllByRole("definition")[2]).toHaveTextContent("54321");
 
   const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
-  expect(applicantDetailsLink).toHaveAttribute("href", "/applicant-summary");
+  expect(applicantDetailsLink).toHaveAttribute("href", "/check-applicant-details");
   const applicantDetailsListItem = applicantDetailsLink.closest("li");
   expect(applicantDetailsListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
@@ -284,7 +311,7 @@ test("Progress tracker page displays complete application sections correctly, li
   expect(within(applicantDetailsListItem as HTMLElement).getByText("Completed"));
 
   const travelDetailsLink = screen.getByRole("link", { name: /Travel information/i });
-  expect(travelDetailsLink).toHaveAttribute("href", "/travel-summary");
+  expect(travelDetailsLink).toHaveAttribute("href", "/check-travel-information");
   const travelDetailsListItem = travelDetailsLink.closest("li");
   expect(travelDetailsListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
@@ -294,21 +321,29 @@ test("Progress tracker page displays complete application sections correctly, li
   const medicalScreeningLink = screen.getByRole("link", {
     name: /Medical history and TB symptoms/i,
   });
-  expect(medicalScreeningLink).toHaveAttribute("href", "/medical-summary");
+  expect(medicalScreeningLink).toHaveAttribute("href", "/check-medical-history-and-tb-symptoms");
   const medicalScreeningListItem = medicalScreeningLink.closest("li");
   expect(medicalScreeningListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
   expect(within(medicalScreeningListItem as HTMLElement).getByText("Completed"));
 
-  const chestXrayLink = screen.getByRole("link", { name: /Radiological outcome/i });
-  expect(chestXrayLink).toHaveAttribute("href", "/chest-xray-summary");
+  const chestXrayLink = screen.getByRole("link", { name: /Upload chest X-ray images/i });
+  expect(chestXrayLink).toHaveAttribute("href", "/check-chest-x-ray-images");
   const chestXrayListItem = chestXrayLink.closest("li");
   expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
   expect(within(chestXrayListItem as HTMLElement).getByText("Completed"));
 
+  const radiologicalOutcomeLink = screen.getByRole("link", { name: /Radiological outcome/i });
+  expect(radiologicalOutcomeLink).toHaveAttribute("href", "/check-chest-x-ray-results-findings");
+  const radiologicalOutcomeListItem = radiologicalOutcomeLink.closest("li");
+  expect(radiologicalOutcomeListItem).toHaveClass(
+    "govuk-task-list__item govuk-task-list__item--with-link",
+  );
+  expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Completed"));
+
   const tbCertificateLink = screen.getByRole("link", { name: /TB certificate outcome/i });
-  expect(tbCertificateLink).toHaveAttribute("href", "/tb-certificate-confirmation");
+  expect(tbCertificateLink).toHaveAttribute("href", "/tb-screening-complete");
   const tbCertificateListItem = tbCertificateLink.closest("li");
   expect(tbCertificateListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
@@ -318,5 +353,5 @@ test("Progress tracker page displays complete application sections correctly, li
   expect(img).toBeInTheDocument();
 
   const searchLink = screen.getByRole("link", { name: /Search for another visa applicant/i });
-  expect(searchLink).toHaveAttribute("href", "/applicant-search");
+  expect(searchLink).toHaveAttribute("href", "/search-for-visa-applicant");
 });

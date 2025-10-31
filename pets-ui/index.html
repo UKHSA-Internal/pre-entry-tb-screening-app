@@ -7,6 +7,16 @@
     <link rel="manifest" href="/assets/manifest.json" />
     <link rel="icon" href="/assets/images/favicon.ico" />
     <link rel="stylesheet" href="/assets/sass/govuk-frontend.min.css" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=%VITE_GA_CONFIG_ID%"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "%VITE_GA_CONFIG_ID%");
+    </script>
   </head>
   <body class="govuk-template__body">
     <div id="root"></div>

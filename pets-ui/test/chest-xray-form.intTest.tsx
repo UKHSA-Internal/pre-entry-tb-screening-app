@@ -5,7 +5,7 @@ import { describe, expect, it, Mock } from "vitest";
 
 import ChestXrayUploadPage from "@/pages/chest-xray-upload";
 import ChestXrayForm from "@/sections/chest-xray-form";
-import { ApplicationStatus, ImageType, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, ImageType } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 import uploadFile from "@/utils/uploadFile";
 import validateFiles from "@/utils/validateFiles";
@@ -48,7 +48,7 @@ describe("ChestXrayUploadPage", () => {
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/chest-xray-question");
+    expect(link).toHaveAttribute("href", "/tracker");
     expect(link).toHaveClass("govuk-back-link");
   });
 });
@@ -56,44 +56,35 @@ describe("ChestXrayUploadPage", () => {
 describe("ChestXrayForm Section", () => {
   it("renders components correctly when state is empty", () => {
     renderWithProviders(<ChestXrayForm />);
-    expect(screen.getByText("Postero-anterior X-ray")).toBeInTheDocument();
-    expect(screen.getByText("Apical lordotic X-ray (optional)")).toBeInTheDocument();
-    expect(screen.getByText("Lateral decubitus X-ray (optional)")).toBeInTheDocument();
-    expect(screen.getAllByText("Type of X-ray")).toHaveLength(3);
-    expect(screen.getAllByText("File uploaded")).toHaveLength(3);
-    expect(screen.getAllByRole("group")).toHaveLength(3);
+    expect(screen.getByText("Upload chest X-ray images")).toBeInTheDocument();
+    expect(screen.getByText("When was the X-ray taken?")).toBeInTheDocument();
+    expect(screen.getByText("Upload X-ray images")).toBeInTheDocument();
+    expect(screen.getByText("Postero-anterior view")).toBeInTheDocument();
+    expect(screen.getByText("Apical lordotic view (optional)")).toBeInTheDocument();
+    expect(screen.getByText("Lateral decubitus view (optional)")).toBeInTheDocument();
   });
 
   it("renders components correctly when state is populated", () => {
     const preloadedState = {
       chestXray: {
         status: ApplicationStatus.NOT_YET_STARTED,
-        chestXrayTaken: YesOrNo.YES,
         posteroAnteriorXrayFileName: "pa-file-name.jpg",
         posteroAnteriorXrayFile: "examplejpgexamplejpgexamplejpg",
         apicalLordoticXrayFileName: "",
         apicalLordoticXrayFile: "",
         lateralDecubitusXrayFileName: "",
         lateralDecubitusXrayFile: "",
-        reasonXrayWasNotTaken: "",
-        xrayWasNotTakenFurtherDetails: "",
-        xrayResult: "normal",
-        xrayResultDetail: "",
-        xrayMinorFindings: [],
-        xrayAssociatedMinorFindings: [],
-        xrayActiveTbFindings: [],
-        isSputumRequired: YesOrNo.NULL,
-        completionDate: { year: "", month: "", day: "" },
+        dateXrayTaken: { year: "2001", month: "12", day: "31" },
       },
     };
     renderWithProviders(<ChestXrayForm />, { preloadedState });
 
-    expect(screen.getByText("Postero-anterior X-ray")).toBeInTheDocument();
-    expect(screen.getByText("Apical lordotic X-ray (optional)")).toBeInTheDocument();
-    expect(screen.getByText("Lateral decubitus X-ray (optional)")).toBeInTheDocument();
-    expect(screen.getAllByText("Type of X-ray")).toHaveLength(3);
-    expect(screen.getAllByText("File uploaded")).toHaveLength(3);
-    expect(screen.getAllByRole("group")).toHaveLength(3);
+    expect(screen.getByText("Upload chest X-ray images")).toBeInTheDocument();
+    expect(screen.getByText("When was the X-ray taken?")).toBeInTheDocument();
+    expect(screen.getByText("Upload X-ray images")).toBeInTheDocument();
+    expect(screen.getByText("Postero-anterior view")).toBeInTheDocument();
+    expect(screen.getByText("Apical lordotic view (optional)")).toBeInTheDocument();
+    expect(screen.getByText("Lateral decubitus view (optional)")).toBeInTheDocument();
     expect(screen.getByText("pa-file-name.jpg")).toBeInTheDocument();
   });
 
@@ -125,6 +116,13 @@ describe("ChestXrayForm Section", () => {
     expect(posteroAnteriorInput.files).toHaveLength(0);
     expect(apicalLordoticInput.files).toHaveLength(0);
     expect(lateralDecubitusInput.files).toHaveLength(0);
+
+    const inputDay = screen.getByTestId("date-xray-taken-day");
+    await userEvent.type(inputDay, "31");
+    const inputMonth = screen.getByTestId("date-xray-taken-month");
+    await userEvent.type(inputMonth, "12");
+    const inputYear = screen.getByTestId("date-xray-taken-year");
+    await userEvent.type(inputYear, "2001");
 
     await userEvent.upload(posteroAnteriorInput, posteroAnteriorFile);
     await userEvent.upload(apicalLordoticInput, apicalLordoticFile);
@@ -163,7 +161,22 @@ describe("ChestXrayForm Section", () => {
     });
   });
 
-  it("errors when postero anterior xray is missing", async () => {
+  it("renders correct heading & text", () => {
+    renderWithProviders(<ChestXrayForm />);
+
+    expect(screen.getByText("Upload X-ray images")).toBeInTheDocument();
+    expect(screen.getByText("Upload X-ray images")).toHaveClass("govuk-heading-m");
+    expect(screen.getByText("Upload a file")).toBeInTheDocument();
+    expect(screen.getByText("Upload a file")).toHaveClass("govuk-body");
+    expect(
+      screen.getByText("File type must be DCM. Images must be less than 50MB."),
+    ).toBeInTheDocument();
+    expect(screen.getByText("File type must be DCM. Images must be less than 50MB.")).toHaveClass(
+      "govuk-hint",
+    );
+  });
+
+  it("errors when mandatory fields are missing", async () => {
     renderWithProviders(<ChestXrayForm />);
 
     const posteroAnteriorInput: HTMLInputElement = screen.getByTestId("postero-anterior-xray");
@@ -175,6 +188,12 @@ describe("ChestXrayForm Section", () => {
     await user.click(submitButton);
     await waitFor(() => {
       expect(useNavigateMock).not.toHaveBeenCalled();
+      expect(screen.getAllByRole("listitem")).toHaveLength(2);
+      expect(screen.getAllByText("Enter the date the X-ray was taken")).toHaveLength(2);
+      expect(screen.getAllByText("Enter the date the X-ray was taken")[0]).toHaveAttribute(
+        "aria-label",
+        "Error: Enter the date the X-ray was taken",
+      );
       expect(screen.getAllByText("Select a postero-anterior X-ray image file")).toHaveLength(2);
       expect(screen.getAllByText("Select a postero-anterior X-ray image file")[0]).toHaveAttribute(
         "aria-label",

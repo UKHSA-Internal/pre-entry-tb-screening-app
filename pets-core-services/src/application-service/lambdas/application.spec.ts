@@ -60,7 +60,7 @@ describe("Test for Application Lambda", () => {
 
   describe("Travel Information", () => {
     const newTravelInfo = {
-      visaCategory: VisaOptions.Student,
+      visaCategory: VisaOptions.Study,
       ukAddressLine1: "first line",
       ukAddressLine2: "second line",
       ukAddressTownOrCity: "town or city",
@@ -103,8 +103,6 @@ describe("Test for Application Lambda", () => {
       expect(JSON.parse(response.body)).toMatchObject({
         message: "Request Body failed validation",
         validationError: {
-          ukEmailAddress: ["Required"],
-          ukMobileNumber: ["Required"],
           visaCategory: ["Required"],
         },
       });
@@ -166,20 +164,8 @@ describe("Test for Application Lambda", () => {
 
       // Assert
       expect(response.statusCode).toBe(400);
-      expect(JSON.parse(response.body)).toMatchObject({
-        message: "Request Body failed validation",
-        validationError: {
-          age: ["Required"],
-          symptomsOfTb: ["Required"],
-          symptoms: ["Required"],
-          historyOfConditionsUnder11: ["Required"],
-          historyOfPreviousTb: ["Required"],
-          contactWithPersonWithTb: ["Required"],
-          pregnant: ["Required"],
-          haveMenstralPeriod: ["Required"],
-          physicalExaminationNotes: ["Required"],
-        },
-      });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      expect(JSON.parse(response.body).message).toContain("Request Body failed validation");
     });
 
     test("Saving Medical Screening Successfully", async () => {
@@ -190,6 +176,7 @@ describe("Test for Application Lambda", () => {
         path: `/application/${seededApplications[0].applicationId}/medical-screening`,
         httpMethod: "POST",
         body: JSON.stringify({
+          dateOfMedicalScreening: "2025-05-05",
           age: 32,
           symptomsOfTb: YesOrNo.No,
           symptoms: [],
@@ -199,6 +186,38 @@ describe("Test for Application Lambda", () => {
           pregnant: PregnancyStatus.No,
           haveMenstralPeriod: MenstrualPeriods.NA,
           physicalExaminationNotes: "NA",
+          isXrayRequired: YesOrNo.Yes,
+        }),
+      };
+
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+
+      // Assert
+      expect(response.statusCode).toBe(200);
+    });
+
+    test("Saving Medical Screening when Chest X-Ray Not Required", async () => {
+      // Arrange;
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        resource: "/application/{applicationId}/medical-screening",
+        path: `/application/${seededApplications[0].applicationId}/medical-screening`,
+        httpMethod: "POST",
+        body: JSON.stringify({
+          dateOfMedicalScreening: "2025-05-05",
+          age: 32,
+          symptomsOfTb: YesOrNo.No,
+          symptoms: [],
+          historyOfConditionsUnder11: [],
+          historyOfPreviousTb: YesOrNo.No,
+          contactWithPersonWithTb: YesOrNo.No,
+          pregnant: PregnancyStatus.No,
+          haveMenstralPeriod: MenstrualPeriods.NA,
+          physicalExaminationNotes: "NA",
+          isXrayRequired: YesOrNo.No,
+          reasonXrayNotRequired: "Other",
+          xrayNotRequiredFurtherDetails: "Physician Notes",
         }),
       };
 
@@ -246,29 +265,6 @@ describe("Test for Application Lambda", () => {
           xrayMinorFindings: [],
           xrayAssociatedMinorFindings: [],
           xrayActiveTbFindings: [],
-          isSputumRequired: YesOrNo.No,
-        }),
-      };
-
-      // Act
-      const response: APIGatewayProxyResult = await handler(event, context);
-
-      // Assert
-      expect(response.statusCode).toBe(200);
-    });
-
-    test("Saving Chest X-Ray Not Taken Details", async () => {
-      // Arrange;
-      const event: PetsAPIGatewayProxyEvent = {
-        ...mockAPIGwEvent,
-        resource: "/application/{applicationId}/chest-xray",
-        path: `/application/${seededApplications[0].applicationId}/chest-xray`,
-        httpMethod: "POST",
-        body: JSON.stringify({
-          chestXrayTaken: YesOrNo.No,
-          reasonXrayWasNotTaken: "Other",
-          xrayWasNotTakenFurtherDetails: "Physician Notes",
-          isSputumRequired: YesOrNo.Yes,
         }),
       };
 

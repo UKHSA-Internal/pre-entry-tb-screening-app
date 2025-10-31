@@ -6,11 +6,11 @@ import awsClients from "../../shared/clients/aws";
 import { assertEnvExists } from "../../shared/config";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
-import { Applicant } from "../../shared/models/applicant";
+import { ApplicantDbOps } from "../../shared/models/applicant";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { generateImageObjectkey, KeyParameters } from "../helpers/upload";
-import { ChestXRayDbOps, ChestXRayNotTaken, ChestXRayTaken } from "../models/chest-xray";
-import { ImageType, YesOrNo } from "../types/enums";
+import { ChestXRay } from "../models/chest-xray";
+import { ImageType } from "../types/enums";
 import { ApplicantNotFound, InvalidObjectKey, ObjectNotFound } from "../types/errors";
 import { ChestXRayRequestSchema } from "../types/zod-schema";
 
@@ -37,17 +37,15 @@ export const saveChestXRayHandler = async (event: SaveChestXrayEvent) => {
     }
 
     const { clinicId, createdBy } = event.requestContext.authorizer;
-
-    if (parsedBody.chestXrayTaken === YesOrNo.Yes) {
-      const validationError = await validateImages(parsedBody, applicationId, clinicId);
-      if (validationError) {
-        return createHttpResponse(400, { message: validationError });
-      }
+    //validate xray images
+    const validationError = await validateImages(parsedBody, applicationId, clinicId);
+    if (validationError) {
+      return createHttpResponse(400, { message: validationError });
     }
 
-    let chestXray: ChestXRayTaken | ChestXRayNotTaken;
+    let chestXray: ChestXRay;
     try {
-      chestXray = await ChestXRayDbOps.createChestXray({
+      chestXray = await ChestXRay.createChestXray({
         ...parsedBody,
         createdBy,
         applicationId,
@@ -158,7 +156,7 @@ const validateChestXRayImages = async (
 ) => {
   logger.info({ applicationInfo }, "Validating Uploaded Chest X-Ray Images");
   const { applicationId } = applicationInfo;
-  const applicant = await Applicant.getByApplicationId(applicationId);
+  const applicant = await ApplicantDbOps.getByApplicationId(applicationId);
   if (!applicant) {
     logger.error("Application does not have an applicant");
     throw new ApplicantNotFound("Invalid Application - No Applicant");

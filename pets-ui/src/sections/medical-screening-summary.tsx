@@ -4,12 +4,14 @@ import { useNavigate } from "react-router-dom";
 
 import { postMedicalDetails } from "@/api/api";
 import Button from "@/components/button/button";
+import Heading from "@/components/heading/heading";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
 import { setMedicalScreeningStatus } from "@/redux/medicalScreeningSlice";
 import { selectApplication, selectMedicalScreening } from "@/redux/store";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
+import { formatDateForDisplay } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
 const MedicalScreeningReview = () => {
@@ -20,10 +22,24 @@ const MedicalScreeningReview = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const mapBackendToDisplay = (backendValue: string): string => {
+    if (backendValue === "Child") {
+      return "Child (under 11 years)";
+    } else {
+      return backendValue;
+    }
+  };
+
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
       await postMedicalDetails(applicationData.applicationId, {
+        dateOfMedicalScreening:
+          medicalData.completionDate.year &&
+          medicalData.completionDate.month &&
+          medicalData.completionDate.day
+            ? `${medicalData.completionDate.year}-${medicalData.completionDate.month.padStart(2, "0")}-${medicalData.completionDate.day.padStart(2, "0")}`
+            : new Date().toISOString().split("T")[0],
         age: parseInt(medicalData.age),
         symptomsOfTb: medicalData.tbSymptoms,
         symptoms: medicalData.tbSymptomsList,
@@ -37,109 +53,138 @@ const MedicalScreeningReview = () => {
         pregnant: medicalData.pregnant,
         haveMenstralPeriod: medicalData.menstrualPeriods,
         physicalExaminationNotes: medicalData.physicalExamNotes,
+        isXrayRequired: medicalData.chestXrayTaken || YesOrNo.NULL,
+        reasonXrayNotRequired: medicalData.reasonXrayNotRequired,
+        reasonXrayNotRequiredFurtherDetails: medicalData.reasonXrayNotRequiredFurtherDetails,
       });
 
       dispatch(setMedicalScreeningStatus(ApplicationStatus.COMPLETE));
-      navigate("/medical-confirmation");
+      navigate("/medical-history-tb-symptoms-confirmed");
     } catch (error) {
       console.error(error);
-      navigate("/error");
+      navigate("/sorry-there-is-problem-with-service");
     }
   };
 
   const summaryData = [
     {
+      key: "Date of medical screening",
+      value: formatDateForDisplay(medicalData.completionDate) || "Not provided",
+      link: `/record-medical-history-tb-symptoms#medical-screening-completion-date`,
+      hiddenLabel: "date of medical screening",
+    },
+    {
       key: "Age",
-      value: medicalData.age,
-      link: `/medical-screening#${attributeToComponentId.age}`,
+      value: medicalData.age || "Not provided",
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.age}`,
       hiddenLabel: "age",
     },
     {
       key: "Does the applicant have pulmonary TB symptoms?",
-      value: medicalData.tbSymptoms,
-      link: `/medical-screening#${attributeToComponentId.tbSymptoms}`,
+      value: medicalData.tbSymptoms || "Not provided",
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.tbSymptoms}`,
       hiddenLabel: "whether the applicant has pulmonary TB symptoms",
-      emptyValueText: "Enter whether the applicant has pulmonary TB symptoms (optional)",
     },
     {
-      key: "pulmonary TB symptoms",
-      value: medicalData.tbSymptomsList.join(", "),
-      link: `/medical-screening#${attributeToComponentId.tbSymptomsList}`,
-      hiddenLabel: "pulmonary TB symptoms",
-      emptyValueText: "Enter pulmonary TB symptoms (optional)",
+      key: "Pulmonary TB symptoms",
+      value:
+        medicalData.tbSymptomsList.length > 0
+          ? medicalData.tbSymptomsList.join(", ")
+          : "Not provided",
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.tbSymptomsList}`,
+      hiddenLabel: "Pulmonary TB symptoms",
     },
     {
       key: "Other symptoms",
-      value: medicalData.otherSymptomsDetail,
-      link: `/medical-screening#${attributeToComponentId.otherSymptomsDetail}`,
+      value: medicalData.otherSymptomsDetail || "Not provided",
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.otherSymptomsDetail}`,
       hiddenLabel: "other symptoms",
-      emptyValueText: "Enter other symptoms (optional)",
     },
     {
       key: "Applicant history if under 11",
-      value: medicalData.underElevenConditions.join(", "),
-      link: `/medical-screening#${attributeToComponentId.underElevenConditions}`,
+      value:
+        medicalData.underElevenConditions.length > 0
+          ? medicalData.underElevenConditions.join(", ")
+          : "Not provided",
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.underElevenConditions}`,
       hiddenLabel: "applicant history if under 11",
-      emptyValueText: "Enter applicant history if under 11 (optional)",
     },
     {
       key: "Additional details of applicant history if under 11",
-      value: medicalData.underElevenConditionsDetail,
-      link: `/medical-screening#${attributeToComponentId.underElevenConditionsDetail}`,
+      value: medicalData.underElevenConditionsDetail || "Not provided",
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.underElevenConditionsDetail}`,
       hiddenLabel: "additional details of applicant history if under 11",
-      emptyValueText: "Enter additional details of applicant history if under 11 (optional)",
     },
     {
       key: "Has the applicant ever had pulmonary TB?",
-      value: medicalData.previousTb,
-      link: `/medical-screening#${attributeToComponentId.previousTb}`,
+      value: medicalData.previousTb || "Not provided",
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.previousTb}`,
       hiddenLabel: "whether the applicant has ever had pulmonary TB",
-      emptyValueText: "Enter whether the applicant has ever had pulmonary TB (optional)",
     },
     {
       key: "Detail of applicant's previous pulmonary TB",
-      value: medicalData.previousTbDetail,
-      link: `/medical-screening#${attributeToComponentId.previousTbDetail}`,
+      value: medicalData.previousTbDetail || "Not provided",
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.previousTbDetail}`,
       hiddenLabel: "details of applicant's previous pulmonary TB",
-      emptyValueText: "Enter detail of applicant's previous pulmonary TB (optional)",
     },
     {
       key: "Has the applicant had close contact with any person with active pulmonary TB within the past year?",
-      value: medicalData.closeContactWithTb,
-      link: `/medical-screening#${attributeToComponentId.closeContactWithTb}`,
+      value: medicalData.closeContactWithTb || "Not provided",
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.closeContactWithTb}`,
       hiddenLabel: "applicant's close contact with TB in the past year",
-      emptyValueText:
-        "Enter whether the applicant has had close contact with any person with active pulmonary TB within the past year (optional)",
     },
     {
       key: "Details of applicant's close contact with any person with active pulmonary TB",
-      value: medicalData.closeContactWithTbDetail,
-      link: `/medical-screening#${attributeToComponentId.closeContactWithTbDetail}`,
+      value: medicalData.closeContactWithTbDetail || "Not provided",
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.closeContactWithTbDetail}`,
       hiddenLabel: "details of applicant's close contact with pulmonary TB in the past year",
-      emptyValueText:
-        "Enter details of applicant's close contact with any person with active pulmonary TB (optional)",
     },
     {
       key: "Is the applicant pregnant?",
-      value: medicalData.pregnant,
-      link: `/medical-screening#${attributeToComponentId.pregnant}`,
+      value: medicalData.pregnant || "Not provided",
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.pregnant}`,
       hiddenLabel: "pregnancy",
-      emptyValueText: "Enter whether the applicant is pregnant (optional)",
     },
     {
       key: "Does the applicant have menstrual periods?",
-      value: medicalData.menstrualPeriods,
-      link: `/medical-screening#${attributeToComponentId.menstrualPeriods}`,
+      value: medicalData.menstrualPeriods || "Not provided",
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.menstrualPeriods}`,
       hiddenLabel: "menstrual periods",
-      emptyValueText: "Enter whether the applicant has menstrual periods (optional)",
     },
     {
       key: "Physical examination notes",
-      value: medicalData.physicalExamNotes,
-      link: `/medical-screening#${attributeToComponentId.physicalExamNotes}`,
+      value: medicalData.physicalExamNotes || "Not provided",
+      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.physicalExamNotes}`,
       hiddenLabel: "physical examination notes",
-      emptyValueText: "Enter physical examination notes (optional)",
     },
+    {
+      key: "Is an X-ray required?",
+      value: medicalData.chestXrayTaken,
+      link: `/is-an-x-ray-required#${attributeToComponentId.chestXrayTaken}`,
+      hiddenLabel: "whether X-ray is required",
+    },
+    ...(medicalData.chestXrayTaken === YesOrNo.NO && medicalData.reasonXrayNotRequired
+      ? [
+          {
+            key: "Reason X-ray is not required",
+            value: mapBackendToDisplay(medicalData.reasonXrayNotRequired) || "Not provided",
+            link: `/reason-x-ray-not-required#${attributeToComponentId.reasonXrayWasNotTaken}`,
+            hiddenLabel: "reason X-ray is not required",
+          },
+        ]
+      : []),
+    ...(medicalData.chestXrayTaken === YesOrNo.NO &&
+    medicalData.reasonXrayNotRequired === "Other" &&
+    medicalData.reasonXrayNotRequiredFurtherDetails
+      ? [
+          {
+            key: "Other reason X-ray is not required",
+            value: medicalData.reasonXrayNotRequiredFurtherDetails || "Not provided",
+            link: `/reason-x-ray-not-required#reason-xray-not-required-other-detail`,
+            hiddenLabel: "other reason X-ray is not required",
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -150,12 +195,20 @@ const MedicalScreeningReview = () => {
 
       {(medicalData.status == ApplicationStatus.NOT_YET_STARTED ||
         medicalData.status == ApplicationStatus.IN_PROGRESS) && (
-        <Button
-          id="confirm"
-          type={ButtonType.DEFAULT}
-          text="Save and continue"
-          handleClick={handleSubmit}
-        />
+        <div>
+          <Heading title="Now send the medical history and TB symptoms" level={2} size="m" />
+          <p className="govuk-body">
+            You will not be able to change the medical history and TB symptoms after you submit this
+            information.
+          </p>
+
+          <Button
+            id="confirm"
+            type={ButtonType.DEFAULT}
+            text="Save and continue"
+            handleClick={handleSubmit}
+          />
+        </div>
       )}
       {(medicalData.status == ApplicationStatus.COMPLETE ||
         medicalData.status == ApplicationStatus.NOT_REQUIRED) && (

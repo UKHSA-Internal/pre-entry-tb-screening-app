@@ -5,16 +5,16 @@ import { seededRadiologicalOutcome } from "../application-service/fixtures/radio
 import { seededSputumDecision } from "../application-service/fixtures/sputum-decision";
 import { seededTbCertificate } from "../application-service/fixtures/tb-certificate";
 import { seededTravelInformation } from "../application-service/fixtures/travel-information";
-import { ChestXRayDbOps } from "../application-service/models/chest-xray";
-import { MedicalScreening } from "../application-service/models/medical-screening";
+import { ChestXRay } from "../application-service/models/chest-xray";
+import { MedicalScreeningDbOps } from "../application-service/models/medical-screening";
 import { RadiologicalOutcome } from "../application-service/models/radiological-outcome";
 import { SputumDecision } from "../application-service/models/sputum-decision";
 import { TbCertificateDbOps } from "../application-service/models/tb-certificate";
-import { TravelInformation } from "../application-service/models/travel-information";
+import { TravelInformationDbOps } from "../application-service/models/travel-information";
 import { seededClinics } from "../clinic-service/fixtures/clinics";
 import { Clinic } from "../clinic-service/models/clinics";
 import { seededApplications } from "../shared/fixtures/application";
-import { Applicant } from "../shared/models/applicant";
+import { ApplicantDbOps } from "../shared/models/applicant";
 import { Application } from "../shared/models/application";
 
 export const seedDatabase = async () => {
@@ -23,19 +23,19 @@ export const seedDatabase = async () => {
   }
 
   for (const applicantDetails of seededApplicants) {
-    await Applicant.createNewApplicant(applicantDetails);
+    await ApplicantDbOps.createNewApplicant(applicantDetails);
   }
 
   for (const travelInformation of seededTravelInformation) {
-    await TravelInformation.createTravelInformation(travelInformation);
+    await TravelInformationDbOps.createTravelInformation(travelInformation);
   }
 
   for (const medicalScreening of seededMedicalScreening) {
-    await MedicalScreening.createMedicalScreening(medicalScreening);
+    await MedicalScreeningDbOps.createMedicalScreening(medicalScreening);
   }
 
   for (const chestXray of seededChestXray) {
-    await ChestXRayDbOps.createChestXray(chestXray);
+    await ChestXRay.createChestXray(chestXray);
   }
 
   for (const radiologicalOutcome of seededRadiologicalOutcome) {

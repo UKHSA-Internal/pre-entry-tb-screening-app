@@ -5,9 +5,9 @@ import { HelmetProvider } from "react-helmet-async";
 import { Mock } from "vitest";
 
 import { petsApi } from "@/api/api";
-import { ReduxTbCertificateType } from "@/applicant";
 import { ApplicantPhotoProvider } from "@/context/applicantPhotoContext";
 import TbSummaryPage from "@/pages/tb-summary";
+import { ReduxTbCertificateType } from "@/types";
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
@@ -45,6 +45,7 @@ const tbState: ReduxTbCertificateType = {
 describe("TBSummaryPage", () => {
   let mock: MockAdapter;
   const user = userEvent.setup();
+
   describe("General UI Tests", () => {
     beforeEach(() => {
       renderWithProviders(
@@ -55,21 +56,25 @@ describe("TBSummaryPage", () => {
         </HelmetProvider>,
       );
     });
+
     it("displays the back link", () => {
       const link = screen.getByRole("link", { name: "Back" });
       expect(link).toBeInTheDocument();
-      expect(link).toHaveAttribute("href", "/tb-certificate-declaration");
+      expect(link).toHaveAttribute("href", "/enter-clinic-certificate-information");
       expect(link).toHaveClass("govuk-back-link");
     });
+
     it("renders the page titles and descriptions ", () => {
       expect(screen.getByText("Check certificate information")).toBeInTheDocument();
     });
   });
+
   describe("TB Summary Data & post request", () => {
     const preloadedState = {
       application: { applicationId: "abc-123", dateCreated: "" },
       tbCertificate: { ...tbState },
     };
+
     beforeEach(() => {
       renderWithProviders(
         <HelmetProvider>
@@ -82,6 +87,7 @@ describe("TBSummaryPage", () => {
       mock = new MockAdapter(petsApi);
       useNavigateMock.mockClear();
     });
+
     it("renders the page titles and data ", () => {
       expect(screen.getByText("Certificate reference number")).toBeInTheDocument();
       expect(screen.getByText("12345")).toBeInTheDocument();
@@ -90,13 +96,32 @@ describe("TBSummaryPage", () => {
       expect(screen.getByText("Certificate issue date")).toBeInTheDocument();
       expect(screen.getByText("25 March 2025")).toBeInTheDocument();
     });
-    it("when continue pressed, it navigates to /tb-certificate-confirmation", async () => {
+
+    it("when post request returns client-side error then user is navigated to /sorry-there-is-problem-with-service", async () => {
+      mock.onPost("/application/abc-123/tb-certificate").reply(400);
+      await user.click(screen.getByRole("button"));
+
+      expect(mock.history[0].url).toEqual("/application/abc-123/tb-certificate");
+      expect(mock.history).toHaveLength(1);
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
+    });
+
+    it("when post request returns server-side error then user is navigated to /sorry-there-is-problem-with-service", async () => {
+      mock.onPost("/application/abc-123/tb-certificate").reply(500);
+      await user.click(screen.getByRole("button"));
+
+      expect(mock.history[0].url).toEqual("/application/abc-123/tb-certificate");
+      expect(mock.history).toHaveLength(1);
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
+    });
+
+    it("when continue pressed, it navigates to /tb-screening-complete", async () => {
       mock.onPost("/application/abc-123/tb-certificate").reply(200);
       await user.click(screen.getByRole("button"));
 
       expect(mock.history[0].url).toEqual("/application/abc-123/tb-certificate");
       expect(mock.history).toHaveLength(1);
-      expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-confirmation");
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-screening-complete");
     });
   });
 });

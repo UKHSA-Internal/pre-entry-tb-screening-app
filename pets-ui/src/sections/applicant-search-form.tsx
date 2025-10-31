@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import { ApplicantSearchFormType } from "@/applicant";
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
@@ -25,6 +24,15 @@ import {
 } from "@/redux/medicalScreeningSlice";
 import { clearNavigationDetails } from "@/redux/navigationSlice";
 import {
+  clearRadiologicalOutcomeDetails,
+  setRadiologicalOutcomeFromApiResponse,
+} from "@/redux/radiologicalOutcomeSlice";
+import {
+  clearSputumDecision,
+  setSputumDecisionRequired,
+  setSputumDecisionStatus,
+} from "@/redux/sputumDecisionSlice";
+import {
   clearSputumDetails,
   setSputumDetailsFromApiResponse,
   setSputumStatus,
@@ -34,6 +42,7 @@ import {
   setTbCertificateFromApiResponse,
 } from "@/redux/tbCertificateSlice";
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
+import { ApplicantSearchFormType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/records";
@@ -54,7 +63,9 @@ const ApplicantSearchForm = () => {
     dispatch(clearMedicalScreeningDetails());
     dispatch(clearTravelDetails());
     dispatch(clearChestXrayDetails());
+    dispatch(clearRadiologicalOutcomeDetails());
     dispatch(clearSputumDetails());
+    dispatch(clearSputumDecision());
     dispatch(clearTbCertificateDetails());
     dispatch(setApplicantPhotoFileName(""));
     setApplicantPhotoUrl(null);
@@ -100,7 +111,7 @@ const ApplicantSearchForm = () => {
 
       const applicantRes = await getApplicants(passportDetails);
       if (applicantRes.data.length === 0) {
-        navigate("/applicant-results");
+        navigate("/no-matching-record-found");
         return;
       }
       dispatch(setApplicantDetailsFromApiResponse(applicantRes.data[0]));
@@ -119,13 +130,20 @@ const ApplicantSearchForm = () => {
       }
       if (applicationRes.data.chestXray) {
         dispatch(setChestXrayFromApiResponse(applicationRes.data.chestXray));
-        if (applicationRes.data.chestXray.isSputumRequired === YesOrNo.NO) {
+      }
+      if (applicationRes.data.radiologicalOutcome) {
+        dispatch(setRadiologicalOutcomeFromApiResponse(applicationRes.data.radiologicalOutcome));
+      }
+      if (applicationRes.data.sputumRequirement) {
+        dispatch(setSputumDecisionRequired(applicationRes.data.sputumRequirement.sputumRequired));
+        dispatch(setSputumDecisionStatus(ApplicationStatus.COMPLETE));
+        if (applicationRes.data.sputumRequirement.sputumRequired === YesOrNo.NO) {
           dispatch(setSputumStatus(ApplicationStatus.NOT_REQUIRED));
         }
       }
       if (
         applicationRes.data.sputumDetails &&
-        applicationRes.data.chestXray?.isSputumRequired !== YesOrNo.NO
+        applicationRes.data.sputumRequirement?.sputumRequired !== YesOrNo.NO
       ) {
         dispatch(setSputumDetailsFromApiResponse(applicationRes.data.sputumDetails));
       }
@@ -135,7 +153,7 @@ const ApplicantSearchForm = () => {
       navigate("/tracker");
     } catch (error) {
       console.error(error);
-      navigate("/error");
+      navigate("/sorry-there-is-problem-with-service");
     }
   };
 

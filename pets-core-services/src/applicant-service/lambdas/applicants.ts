@@ -6,7 +6,13 @@ import { CountryCode } from "../../shared/country";
 import { PetsRoute } from "../../shared/types";
 import { postApplicantHandler } from "../handlers/postApplicant";
 import { searchApplicantHandler } from "../handlers/searchApplicant";
-import { ApplicantSchema } from "../types/zod-schema";
+import { updateApplicantHandler } from "../handlers/updateApplicant";
+import {
+  ApplicantRegisterRequestSchema,
+  ApplicantResponseSchema,
+  ApplicantUpdateRequestSchema,
+  ApplicantUpdateResponseSchema,
+} from "../types/zod-schema";
 
 extendZodWithOpenApi(z);
 
@@ -15,12 +21,21 @@ export const routes: PetsRoute[] = [
     method: "POST",
     path: "/applicant/register/{applicationId}",
     handler: postApplicantHandler,
-    requestBodySchema: ApplicantSchema.openapi({ description: "Details about an Applicant" }),
-    responseSchema: ApplicantSchema.extend({
-      applicationId: z.string().openapi({
-        description: "Unique Application ID for applicant",
-      }),
-    }).openapi({ description: "Saved Applicant Details" }),
+    requestBodySchema: ApplicantRegisterRequestSchema.openapi({
+      description: "Details about an Applicant",
+    }),
+    responseSchema: ApplicantResponseSchema.openapi({ description: "Saved Applicant Details" }),
+  },
+  {
+    method: "PUT",
+    path: "/applicant/update/{applicationId}",
+    handler: updateApplicantHandler,
+    requestBodySchema: ApplicantUpdateRequestSchema.openapi({
+      description: "Details about an Applicant",
+    }),
+    responseSchema: ApplicantUpdateResponseSchema.openapi({
+      description: "Updated Applicant Details",
+    }),
   },
   {
     method: "GET",
@@ -33,7 +48,7 @@ export const routes: PetsRoute[] = [
       }),
     },
     responseSchema: z.array(
-      ApplicantSchema.openapi("Applicant", {
+      ApplicantResponseSchema.openapi("Applicant", {
         description: "Details about an Applicant",
       }),
     ),

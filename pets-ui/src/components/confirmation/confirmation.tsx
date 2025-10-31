@@ -5,6 +5,7 @@ import Button from "@/components/button/button";
 import { ButtonType } from "@/utils/enums";
 
 import Heading from "../heading/heading";
+import LinkLabel from "../linkLabel/LinkLabel";
 
 export interface ConfirmationProps {
   confirmationText: string;
@@ -17,6 +18,7 @@ export interface ConfirmationProps {
   applicationNumber?: string;
   preWhatHappensNextText?: string;
   postWhatHappensNextText?: string;
+  showSearchForAnotherVisaApplicantLink?: boolean;
   actionButton?: {
     text: string;
     onClick: () => void;
@@ -30,6 +32,7 @@ export default function Confirmation({
   preWhatHappensNextText,
   postWhatHappensNextText,
   actionButton,
+  showSearchForAnotherVisaApplicantLink = true,
   ...props
 }: Readonly<ConfirmationProps>) {
   const navigate = useNavigate();
@@ -95,6 +98,14 @@ export default function Confirmation({
             handleClick={() => {
               navigate(props.buttonLink!);
             }}
+          />
+        )}
+        <br />
+        {showSearchForAnotherVisaApplicantLink && (
+          <LinkLabel
+            title="Search for another visa applicant"
+            to="/search-for-visa-applicant"
+            externalLink={false}
           />
         )}
       </div>

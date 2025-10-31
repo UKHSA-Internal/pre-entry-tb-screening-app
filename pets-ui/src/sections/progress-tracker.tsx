@@ -1,6 +1,7 @@
 import React from "react";
 
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
+import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { useAppSelector } from "@/redux/hooks";
@@ -8,7 +9,9 @@ import {
   selectApplicant,
   selectChestXray,
   selectMedicalScreening,
+  selectRadiologicalOutcome,
   selectSputum,
+  selectSputumDecision,
   selectTbCertificate,
   selectTravel,
 } from "@/redux/store";
@@ -60,9 +63,14 @@ const Task = (props: Readonly<TaskProps>) => {
             <p className="govuk-body task-description-static">{props.description}</p>
           )}
       </div>
-      {props.status == ApplicationStatus.NOT_YET_STARTED && (
+      {allPrerequisitesComplete && props.status == ApplicationStatus.NOT_YET_STARTED && (
         <div className="govuk-task-list__status">
           <strong className="govuk-tag govuk-tag--blue">Not yet started</strong>
+        </div>
+      )}
+      {!allPrerequisitesComplete && props.status == ApplicationStatus.NOT_YET_STARTED && (
+        <div className="govuk-task-list__status">
+          <strong className="govuk-tag govuk-tag--grey">Cannot start yet</strong>
         </div>
       )}
       {props.status == ApplicationStatus.IN_PROGRESS && (
@@ -71,11 +79,7 @@ const Task = (props: Readonly<TaskProps>) => {
         </div>
       )}
       {props.status == ApplicationStatus.COMPLETE && (
-        <div className="govuk-task-list__status">
-          {props.statusOverride ?? (
-            <strong className="govuk-tag govuk-tag--green">Completed</strong>
-          )}
-        </div>
+        <div className="govuk-task-list__status">{props.statusOverride ?? <>Completed</>}</div>
       )}
       {props.status == ApplicationStatus.NOT_REQUIRED && (
         <div className="govuk-task-list__status">
@@ -91,6 +95,8 @@ const ProgressTracker = () => {
   const travelData = useAppSelector(selectTravel);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const chestXrayData = useAppSelector(selectChestXray);
+  const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
+  const sputumDecisionData = useAppSelector(selectSputumDecision);
   const sputumData = useAppSelector(selectSputum);
   const tbCertificateData = useAppSelector(selectTbCertificate);
   const applicantPhotoContext = useApplicantPhoto();
@@ -100,12 +106,25 @@ const ProgressTracker = () => {
     sputumData.sample2.collection.submittedToDatabase &&
     sputumData.sample3.collection.submittedToDatabase;
 
-  let sputumLink = "/sputum-collection";
+  let sputumLink = "/enter-sputum-sample-collection-information";
 
   if (sputumData.status === ApplicationStatus.COMPLETE) {
-    sputumLink = "/check-sputum-sample-information";
+    sputumLink = "/check-sputum-sample-information-results";
   } else if (allSputumSamplesSubmitted) {
     sputumLink = "/enter-sputum-sample-results";
+  }
+
+  let sputumCollectionStatus = sputumData.status;
+  if (sputumDecisionData.isSputumRequired === YesOrNo.NO) {
+    sputumCollectionStatus = ApplicationStatus.NOT_REQUIRED;
+  }
+
+  let chestXrayStatus = chestXrayData.status;
+  let radiologicalOutcomeStatus = radiologicalOutcomeData.status;
+
+  if (medicalScreeningData.chestXrayTaken === YesOrNo.NO) {
+    chestXrayStatus = ApplicationStatus.NOT_REQUIRED;
+    radiologicalOutcomeStatus = ApplicationStatus.NOT_REQUIRED;
   }
 
   let tbCertificateStatusOverride = undefined;
@@ -145,38 +164,38 @@ const ProgressTracker = () => {
         )}
       </div>
 
-      <h2 className="govuk-heading-s">1. Visa applicant information</h2>
+      <Heading title="1. Visa applicant information" level={2} size="s" />
       <ul className="govuk-task-list">
         <Task
           description="Visa applicant details"
           status={applicantData.status}
-          linkWhenIncomplete="/contact"
-          linkWhenComplete="/applicant-summary"
+          linkWhenIncomplete="/enter-applicant-information"
+          linkWhenComplete="/check-applicant-details"
           prerequisiteTaskStatuses={[]}
         />
         <Task
-          description="Travel information"
+          description="UK travel information"
           status={travelData.status}
-          linkWhenIncomplete="/travel-details"
-          linkWhenComplete="/travel-summary"
+          linkWhenIncomplete="/proposed-visa-category"
+          linkWhenComplete="/check-travel-information"
           prerequisiteTaskStatuses={[applicantData.status]}
         />
       </ul>
 
-      <h2 className="govuk-heading-s">2. Medical screening</h2>
+      <Heading title="2. Medical screening" level={2} size="s" />
       <ul className="govuk-task-list">
         <Task
           description="Medical history and TB symptoms"
           status={medicalScreeningData.status}
-          linkWhenIncomplete="/medical-screening"
-          linkWhenComplete="/medical-summary"
+          linkWhenIncomplete="/record-medical-history-tb-symptoms"
+          linkWhenComplete="/check-medical-history-and-tb-symptoms"
           prerequisiteTaskStatuses={[applicantData.status, travelData.status]}
         />
         <Task
-          description="Radiological outcome"
-          status={chestXrayData.status}
-          linkWhenIncomplete="/chest-xray-question"
-          linkWhenComplete="/chest-xray-summary"
+          description="Upload chest X-ray images"
+          status={chestXrayStatus}
+          linkWhenIncomplete="/upload-chest-x-ray-images"
+          linkWhenComplete="/check-chest-x-ray-images"
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,
@@ -184,42 +203,76 @@ const ProgressTracker = () => {
           ]}
         />
         <Task
+          description="Radiological outcome"
+          status={radiologicalOutcomeStatus}
+          linkWhenIncomplete="/chest-x-ray-results"
+          linkWhenComplete="/check-chest-x-ray-results-findings"
+          prerequisiteTaskStatuses={[
+            applicantData.status,
+            travelData.status,
+            medicalScreeningData.status,
+            chestXrayStatus,
+          ]}
+        />
+        <Task
+          description="Make a sputum decision"
+          status={sputumDecisionData.status}
+          linkWhenIncomplete="/is-sputum-collection-required"
+          linkWhenComplete="/check-sputum-decision-information"
+          prerequisiteTaskStatuses={[
+            applicantData.status,
+            travelData.status,
+            medicalScreeningData.status,
+            chestXrayStatus,
+            radiologicalOutcomeStatus,
+          ]}
+        />
+        <Task
           description="Sputum collection and results"
-          status={sputumData.status}
+          status={sputumCollectionStatus}
           linkWhenIncomplete={sputumLink}
           linkWhenComplete={sputumLink}
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,
             medicalScreeningData.status,
-            chestXrayData.status,
+            chestXrayStatus,
+            radiologicalOutcomeStatus,
+            sputumDecisionData.status,
           ]}
         />
       </ul>
 
-      <h2 className="govuk-heading-s">3. Review outcome</h2>
+      <Heading title="3. Review outcome" level={2} size="s" />
       <ul className="govuk-task-list">
         <Task
           description="TB certificate outcome"
           status={tbCertificateData.status}
-          linkWhenIncomplete="/tb-certificate-question"
-          linkWhenComplete="/tb-certificate-confirmation"
+          linkWhenIncomplete="/will-you-issue-tb-clearance-certificate"
+          linkWhenComplete="/tb-screening-complete"
           prerequisiteTaskStatuses={[
             applicantData.status,
             travelData.status,
             medicalScreeningData.status,
-            chestXrayData.status,
-            sputumData.status,
+            chestXrayStatus,
+            radiologicalOutcomeStatus,
+            sputumDecisionData.status,
+            sputumCollectionStatus,
           ]}
           statusOverride={tbCertificateStatusOverride}
         />
       </ul>
 
-      <h2 className="govuk-heading-s progress-tracker-start-search">Start a new search</h2>
+      <Heading
+        title="Start a new search"
+        level={2}
+        size="s"
+        additionalClasses="progress-tracker-start-search"
+      />
       <p className="govuk-body">
         <LinkLabel
           className="govuk-link"
-          to="/applicant-search"
+          to="/search-for-visa-applicant"
           title="Search for another visa applicant"
           externalLink={false}
         />

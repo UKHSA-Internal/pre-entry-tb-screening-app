@@ -65,7 +65,7 @@ describe("AccessibilityStatementPage", () => {
     const preloadedState = {
       navigation: {
         checkSputumPreviousPage: "",
-        accessibilityStatementPreviousPage: "/applicant-search",
+        accessibilityStatementPreviousPage: "/search-for-visa-applicant",
         privacyNoticePreviousPage: "",
         signOutPreviousPage: "",
       },
@@ -77,6 +77,6 @@ describe("AccessibilityStatementPage", () => {
       { preloadedState },
     );
     const backLink = screen.getByRole("link", { name: "Back" });
-    expect(backLink).toHaveAttribute("href", "/applicant-search");
+    expect(backLink).toHaveAttribute("href", "/search-for-visa-applicant");
   });
 });

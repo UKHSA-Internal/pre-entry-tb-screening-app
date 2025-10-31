@@ -2,9 +2,9 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Mock, vi } from "vitest";
 
-import { DateType, ReduxSputumSampleType, ReduxSputumType } from "@/applicant";
 import EnterSputumSampleResultsPage from "@/pages/enter-sputum-sample-results";
 import SputumResultsForm from "@/sections/sputum-results-form";
+import { DateType, ReduxSputumSampleType, ReduxSputumType } from "@/types";
 import { ApplicationStatus, PositiveOrNegative } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
@@ -76,7 +76,7 @@ describe("SputumResultsForm", () => {
       screen.getByRole("heading", { name: /Enter sputum sample results/i, level: 1 }),
     ).toBeInTheDocument();
 
-    expect(screen.getByText("05 May 2024")).toBeInTheDocument();
+    expect(screen.getByText("5 May 2024")).toBeInTheDocument();
 
     expect(screen.getAllByText("No date recorded")).toHaveLength(2);
   });
@@ -120,7 +120,7 @@ describe("SputumResultsForm", () => {
 
     await user.click(screen.getByRole("button", { name: /Save and continue/i }));
 
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-sputum-sample-information");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-sputum-sample-information-results");
 
     const state = store.getState();
     expect(state.sputum.sample1.smearResults.smearResult).toBe(PositiveOrNegative.POSITIVE);
@@ -210,7 +210,7 @@ describe("SputumResultsForm", () => {
       screen.queryByRole("link", { name: /Error: Select result of culture test/i }),
     ).not.toBeInTheDocument();
 
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-sputum-sample-information");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-sputum-sample-information-results");
   });
 
   test("ignores samples without collection dates for validation", async () => {
@@ -238,7 +238,7 @@ describe("SputumResultsForm", () => {
       screen.queryByRole("link", { name: /Error: Select result of culture test/i }),
     ).not.toBeInTheDocument();
 
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-sputum-sample-information");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-sputum-sample-information-results");
   });
 
   test("allows save when existing non-database values are present", async () => {
@@ -272,7 +272,7 @@ describe("SputumResultsForm", () => {
       screen.queryByRole("link", { name: /Error: Select result of culture test/i }),
     ).not.toBeInTheDocument();
 
-    expect(useNavigateMock).toHaveBeenCalledWith("/check-sputum-sample-information");
+    expect(useNavigateMock).toHaveBeenCalledWith("/check-sputum-sample-information-results");
   });
 
   test("shows validation errors when there are no results from database and no new entries", async () => {
@@ -479,7 +479,7 @@ describe("SputumResultsForm", () => {
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/sputum-collection");
+    expect(link).toHaveAttribute("href", "/enter-sputum-sample-collection-information");
     expect(link).toHaveClass("govuk-back-link");
   });
 });

@@ -5,7 +5,7 @@ import {
   DateType,
   ReceivedApplicantDetailsType,
   ReduxApplicantDetailsType,
-} from "@/applicant";
+} from "@/types";
 import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
 
 const initialState: ReduxApplicantDetailsType = {
