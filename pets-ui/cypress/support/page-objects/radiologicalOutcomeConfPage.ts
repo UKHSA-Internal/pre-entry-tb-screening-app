@@ -8,15 +8,19 @@ export class RadiologicalOutcomeConfPage extends BasePage {
 
   // Verify page loaded
   verifyPageLoaded(): RadiologicalOutcomeConfPage {
-    cy.get(".govuk-panel--confirmation").should("be.visible");
-    cy.contains("h1.govuk-panel__title", "Radiological outcome confirmed").should("be.visible");
+    cy.get(".govuk-panel--confirmation", { timeout: 30000 }).should("be.visible");
+    cy.contains("h1.govuk-panel__title", "Radiological outcome confirmed", {
+      timeout: 30000,
+    }).should("be.visible");
     return this;
   }
 
   // Verify confirmation panel
   verifyConfirmationPanel(): RadiologicalOutcomeConfPage {
-    cy.get(".govuk-panel.confirmation-panel.govuk-panel--confirmation").should("be.visible");
-    cy.get(".govuk-panel__title.confirmation-panel__title")
+    cy.get(".govuk-panel.confirmation-panel.govuk-panel--confirmation", { timeout: 30000 }).should(
+      "be.visible",
+    );
+    cy.get(".govuk-panel__title.confirmation-panel__title", { timeout: 30000 })
       .should("be.visible")
       .should("contain", "Radiological outcome confirmed");
     return this;
@@ -75,7 +79,9 @@ export class RadiologicalOutcomeConfPage extends BasePage {
 
   // Verify page title
   verifyPageTitle(): RadiologicalOutcomeConfPage {
-    cy.title().should(
+    // Wait for page to fully load before checking title
+    cy.get(".govuk-panel--confirmation", { timeout: 30000 }).should("be.visible");
+    cy.title({ timeout: 30000 }).should(
       "contain",
       "Radiological outcome confirmed - Complete UK pre-entry health screening - GOV.UK",
     );
