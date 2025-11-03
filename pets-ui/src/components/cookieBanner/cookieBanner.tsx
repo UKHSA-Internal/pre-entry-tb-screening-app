@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { ButtonType } from "@/utils/enums";
+import { updateGoogleAnalyticsConsent } from "@/utils/helpers";
 
 import Button from "../button/button";
 import Heading from "../heading/heading";
@@ -54,6 +55,7 @@ export default function CookieBanner() {
               handleClick={() => {
                 setCookieConsent("accepted");
                 setShowCookieMessage(true);
+                updateGoogleAnalyticsConsent(true);
               }}
             />
             <Button
@@ -63,6 +65,7 @@ export default function CookieBanner() {
               handleClick={() => {
                 setCookieConsent("rejected");
                 setShowCookieMessage(true);
+                updateGoogleAnalyticsConsent(false);
               }}
             />
             <LinkLabel

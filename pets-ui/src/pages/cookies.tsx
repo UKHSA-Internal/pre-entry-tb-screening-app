@@ -10,6 +10,7 @@ import NotificationBanner from "@/components/notificationBanner/notificationBann
 import Radio from "@/components/radio/radio";
 import Table from "@/components/table/table";
 import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
+import { updateGoogleAnalyticsConsent } from "@/utils/helpers";
 
 export default function CookiesPage() {
   const methods = useForm<{ cookieConsent: YesOrNo }>({ reValidateMode: "onSubmit" });
@@ -23,8 +24,10 @@ export default function CookiesPage() {
   const onSubmit: SubmitHandler<{ cookieConsent: YesOrNo }> = (data) => {
     if (data.cookieConsent === YesOrNo.YES) {
       setCookieConsent("accepted");
+      updateGoogleAnalyticsConsent(true);
     } else if (data.cookieConsent === YesOrNo.NO) {
       setCookieConsent("rejected");
+      updateGoogleAnalyticsConsent(false);
     }
 
     if (data.cookieConsent === YesOrNo.YES || data.cookieConsent === YesOrNo.NO) {

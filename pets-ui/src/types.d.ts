@@ -7,6 +7,12 @@ import {
 } from "./utils/enums";
 
 // Misc types
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
 type ApplicantSearchFormType = {
   passportNumber: string;
   countryOfIssue: string;
