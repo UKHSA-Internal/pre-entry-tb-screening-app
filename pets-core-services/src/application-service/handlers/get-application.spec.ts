@@ -17,7 +17,7 @@ vi.mock("../helpers/upload", () => ({
 
 // Mock getByApplicationId from Applicant model
 vi.mock("../../shared/models/applicant", () => ({
-  Applicant: {
+  ApplicantDbOps: {
     getByApplicationId: vi.fn().mockResolvedValue({
       applicationId: "test-application-id",
       fullName: "John Doe",

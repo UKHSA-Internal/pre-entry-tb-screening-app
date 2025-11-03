@@ -10,13 +10,13 @@ import { MedicalScreeningDbOps } from "../application-service/models/medical-scr
 import { RadiologicalOutcome } from "../application-service/models/radiological-outcome";
 import { SputumDecision } from "../application-service/models/sputum-decision";
 import { TbCertificateDbOps } from "../application-service/models/tb-certificate";
-import { TravelInformation } from "../application-service/models/travel-information";
+import { TravelInformationDbOps } from "../application-service/models/travel-information";
 import { seededAuditData } from "../audit-service/fixtures/audit-data";
 import { AuditDbOps } from "../audit-service/models/audit-db-ops";
 import { seededClinics } from "../clinic-service/fixtures/clinics";
 import { Clinic } from "../clinic-service/models/clinics";
 import { seededApplications } from "../shared/fixtures/application";
-import { Applicant } from "../shared/models/applicant";
+import { ApplicantDbOps } from "../shared/models/applicant";
 import { Application } from "../shared/models/application";
 
 export const seedDatabase = async () => {
@@ -25,11 +25,11 @@ export const seedDatabase = async () => {
   }
 
   for (const applicantDetails of seededApplicants) {
-    await Applicant.createNewApplicant(applicantDetails);
+    await ApplicantDbOps.createNewApplicant(applicantDetails);
   }
 
   for (const travelInformation of seededTravelInformation) {
-    await TravelInformation.createTravelInformation(travelInformation);
+    await TravelInformationDbOps.createTravelInformation(travelInformation);
   }
 
   for (const medicalScreening of seededMedicalScreening) {

@@ -88,6 +88,7 @@ const emptyApplicantSlice = {
 const emptyTravelSlice = {
   applicantUkAddress1: "",
   applicantUkAddress2: "",
+  applicantUkAddress3: "",
   postcode: "",
   status: "Not yet started",
   townOrCity: "",
@@ -490,7 +491,7 @@ describe("ApplicantSearchForm", () => {
     expect(store.getState().chestXray).toEqual(emptyChestXraySlice);
     expect(store.getState().radiologicalOutcome).toEqual(emptyRadiologicalOutcomeSlice);
 
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
   });
 
   test("store is correctly populated and user is navigated to error page when applicant search is successful & application search returns 500", async () => {
@@ -569,7 +570,7 @@ describe("ApplicantSearchForm", () => {
     expect(store.getState().chestXray).toEqual(emptyChestXraySlice);
     expect(store.getState().radiologicalOutcome).toEqual(emptyRadiologicalOutcomeSlice);
 
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
   });
 
   test("store is correctly populated when timestamps are included in api response", async () => {
@@ -840,10 +841,10 @@ describe("ApplicantSearchForm", () => {
     expect(store.getState().chestXray).toEqual(emptyChestXraySlice);
     expect(store.getState().radiologicalOutcome).toEqual(emptyRadiologicalOutcomeSlice);
 
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
   });
 
-  test("should redirect to /error when fetching applicant photo fails", async () => {
+  test("should redirect to /sorry-there-is-problem-with-service when fetching applicant photo fails", async () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const failingFetchMock = vi.fn<typeof fetch>(function _failingFetchMock(
       _input: RequestInfo | URL,
@@ -901,7 +902,7 @@ describe("ApplicantSearchForm", () => {
     await user.click(screen.getByRole("button"));
     await new Promise((resolve) => process.nextTick(resolve));
 
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
     expect(store.getState().applicant.applicantPhotoFileName).toBe("photo.jpg");
     consoleErrorSpy.mockRestore();
   });

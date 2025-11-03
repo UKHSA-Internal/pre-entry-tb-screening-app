@@ -5,6 +5,7 @@ import { Mock, vi } from "vitest";
 
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import ApplicantPhotoForm from "@/sections/applicant-photo-form";
+import { ApplicationStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 import validateFiles from "@/utils/validateFiles";
 
@@ -49,16 +50,86 @@ describe("ApplicantPhotoForm", () => {
     );
 
     expect(screen.getByText("Upload visa applicant photo (optional)")).toBeInTheDocument();
+    expect(screen.getByText("The photo must:")).toBeInTheDocument();
+    expect(screen.getByText("be a JPG, JPEG or PNG file")).toBeInTheDocument();
+    expect(screen.getByText("be less than 10MB")).toBeInTheDocument();
     expect(
-      screen.getByText(
-        "Select a file to upload. File type must be JPG, JPEG or PNG. Images must be less than 10MB.",
-      ),
+      screen.getByText("be the correct way up - open it on your computer to check"),
     ).toBeInTheDocument();
+    const passportRulesLink = screen.getByText(
+      "rules for a passport digital photo (opens in new tab)",
+    );
+    expect(passportRulesLink).toHaveAttribute(
+      "href",
+      "https://www.gov.uk/photos-for-passports#rules-for-digital-photos",
+    );
     expect(screen.getByText("Continue")).toBeInTheDocument();
   });
 
   it("submits form without a file and navigates", async () => {
     renderWithProviders(<ApplicantPhotoForm />);
+
+    fireEvent.click(screen.getByText("Continue"));
+    await waitFor(() => {
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-applicant-details");
+    });
+  });
+
+  it("navigates to TB summary when from=tb", async () => {
+    window.history.pushState({}, "", "/upload-visa-applicant-photo?from=tb-certificate-summary");
+    const preloadedState = {
+      applicant: {
+        status: ApplicationStatus.COMPLETE,
+        fullName: "",
+        sex: "",
+        dateOfBirth: { year: "", month: "", day: "" },
+        countryOfNationality: "",
+        passportNumber: "",
+        countryOfIssue: "",
+        passportIssueDate: { year: "", month: "", day: "" },
+        passportExpiryDate: { year: "", month: "", day: "" },
+        applicantHomeAddress1: "",
+        applicantHomeAddress2: "",
+        applicantHomeAddress3: "",
+        townOrCity: "",
+        provinceOrState: "",
+        country: "",
+        postcode: "",
+        applicantPhotoFileName: "",
+      },
+    };
+    renderWithProviders(<ApplicantPhotoForm />, { preloadedState });
+
+    fireEvent.click(screen.getByText("Continue"));
+    await waitFor(() => {
+      expect(useNavigateMock).toHaveBeenCalledWith("/tb-certificate-summary");
+    });
+  });
+
+  it("navigates to Check applicant details when from=check", async () => {
+    window.history.pushState({}, "", "/upload-visa-applicant-photo?from=check-applicant-details");
+    const preloadedState = {
+      applicant: {
+        status: ApplicationStatus.COMPLETE,
+        fullName: "",
+        sex: "",
+        dateOfBirth: { year: "", month: "", day: "" },
+        countryOfNationality: "",
+        passportNumber: "",
+        countryOfIssue: "",
+        passportIssueDate: { year: "", month: "", day: "" },
+        passportExpiryDate: { year: "", month: "", day: "" },
+        applicantHomeAddress1: "",
+        applicantHomeAddress2: "",
+        applicantHomeAddress3: "",
+        townOrCity: "",
+        provinceOrState: "",
+        country: "",
+        postcode: "",
+        applicantPhotoFileName: "",
+      },
+    };
+    renderWithProviders(<ApplicantPhotoForm />, { preloadedState });
 
     fireEvent.click(screen.getByText("Continue"));
     await waitFor(() => {

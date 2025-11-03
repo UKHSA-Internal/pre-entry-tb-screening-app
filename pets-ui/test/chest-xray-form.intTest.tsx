@@ -161,6 +161,21 @@ describe("ChestXrayForm Section", () => {
     });
   });
 
+  it("renders correct heading & text", () => {
+    renderWithProviders(<ChestXrayForm />);
+
+    expect(screen.getByText("Upload X-ray images")).toBeInTheDocument();
+    expect(screen.getByText("Upload X-ray images")).toHaveClass("govuk-heading-m");
+    expect(screen.getByText("Upload a file")).toBeInTheDocument();
+    expect(screen.getByText("Upload a file")).toHaveClass("govuk-body");
+    expect(
+      screen.getByText("File type must be DCM. Images must be less than 50MB."),
+    ).toBeInTheDocument();
+    expect(screen.getByText("File type must be DCM. Images must be less than 50MB.")).toHaveClass(
+      "govuk-hint",
+    );
+  });
+
   it("errors when mandatory fields are missing", async () => {
     renderWithProviders(<ChestXrayForm />);
 

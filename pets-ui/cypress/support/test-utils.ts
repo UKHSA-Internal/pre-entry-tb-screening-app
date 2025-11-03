@@ -21,40 +21,7 @@ export const errorMessages = [
   "Email must be in correct format",
 ];
 
-export const visaType = [
-  "HM Armed Forces",
-  "Visitor",
-  "Student",
-  "Short-term Student (English language)",
-  "Child student",
-  "Parent of child student",
-  "Skilled worker",
-  "Global Business Mobility routes",
-  "T2 Minister of religion",
-  "Representative of an Overseas Business",
-  "UK Ancestry",
-  "Global Talent",
-  "High Potential Individual (HPI)",
-  "High Potential Individual (HPI)",
-  "Scale-Up",
-  "Start-Up",
-  "Innovator Founder",
-  "International Sportsperson",
-  "Domestic Workers in a Private Household",
-  "Temporary Work – Youth Mobility Scheme",
-  "Temporary Work – Creative Worker",
-  "Temporary Work – Religious Worker",
-  "Temporary Work - Charity Worker",
-  "Temporary Work – International Agreement",
-  "Temporary Work – Government Authorised Exchange",
-  "Hong Kong British National (Overseas)",
-  "Adult Dependent Relative",
-  "Adult Dependent Relative",
-  "Victim of Domestic Abuse",
-  "Bereaved Partner",
-  "Gurkha and Hong Kong military unit veteran discharged before 1 July 1997",
-  "Returning Resident",
-];
+export const visaType = ["Work", "Study", "Family reunion", "Other", "Do not know"];
 
 export const urlFragment = ["#age"];
 export const passportNumber = {

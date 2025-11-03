@@ -1,22 +1,25 @@
 import { useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FileUpload from "@/components/fileUpload/fileUpload";
 import Heading from "@/components/heading/heading";
+import LinkLabel from "@/components/linkLabel/LinkLabel";
+import List from "@/components/list/list";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { setApplicantPhotoFileName } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
 import { ReduxApplicantDetailsType } from "@/types";
-import { ButtonType, ImageType } from "@/utils/enums";
+import { ApplicationStatus, ButtonType, ImageType } from "@/utils/enums";
 
 const ApplicantPhotoForm = () => {
   const applicantData = useAppSelector(selectApplicant);
   const { applicantPhotoFile, setApplicantPhotoFile } = useApplicantPhoto();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const dispatch = useAppDispatch();
 
   const [applicantPhoto, setApplicantPhoto] = useState<File>();
@@ -41,7 +44,22 @@ const ApplicantPhotoForm = () => {
       setApplicantPhotoFile(applicantPhoto);
     }
 
-    navigate("/check-applicant-details");
+    const fromParam = searchParams.get("from");
+    let destination: string;
+
+    if (applicantData.status === ApplicationStatus.COMPLETE) {
+      if (fromParam === "tb-certificate-summary") {
+        destination = "/tb-certificate-summary";
+      } else if (fromParam === "check-applicant-details") {
+        destination = "/check-applicant-details";
+      } else {
+        destination = "/tb-certificate-summary";
+      }
+    } else {
+      destination = "/check-applicant-details";
+    }
+
+    navigate(destination);
   };
 
   useEffect(() => {
@@ -59,22 +77,41 @@ const ApplicantPhotoForm = () => {
             {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
             <Heading level={1} size="l" title="Upload visa applicant photo (optional)" />
 
-            <div style={{ marginTop: 70, marginBottom: 100 }}>
-              <p className="govuk-body">
-                Select a file to upload. File type must be JPG, JPEG or PNG. Images must be less
-                than 10MB.
-              </p>
+            <p className="govuk-heading-m">The photo must:</p>
+            <List
+              items={[
+                { key: "be a JPG, JPEG or PNG file", elem: "be a JPG, JPEG or PNG file" },
+                { key: "be less than 10MB", elem: "be less than 10MB" },
+                {
+                  key: "be the correct way up - open it on your computer to check",
+                  elem: "be the correct way up - open it on your computer to check",
+                },
+                {
+                  key: "meet the rules for a passport digital photo",
+                  elem: (
+                    <>
+                      meet the{" "}
+                      <LinkLabel
+                        title="rules for a passport digital photo (opens in new tab)"
+                        to="https://www.gov.uk/photos-for-passports#rules-for-digital-photos"
+                        externalLink
+                        openInNewTab
+                      />
+                    </>
+                  ),
+                },
+              ]}
+            />
 
-              <FileUpload
-                id="applicant-photo"
-                formValue="applicantPhotoFileName"
-                required={false}
-                type={ImageType.Photo}
-                setFileState={setApplicantPhoto}
-                setFileName={setApplicantPhotoName}
-                existingFileName={applicantPhotoFile?.name ?? applicantData.applicantPhotoFileName}
-              />
-            </div>
+            <FileUpload
+              id="applicant-photo"
+              formValue="applicantPhotoFileName"
+              required={false}
+              type={ImageType.Photo}
+              setFileState={setApplicantPhoto}
+              setFileName={setApplicantPhotoName}
+              existingFileName={applicantPhotoFile?.name ?? applicantData.applicantPhotoFileName}
+            />
 
             <SubmitButton id="continue" type={ButtonType.DEFAULT} text="Continue" />
           </div>

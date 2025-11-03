@@ -6,7 +6,7 @@ import awsClients from "../../shared/clients/aws";
 import { assertEnvExists } from "../../shared/config";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
-import { Applicant } from "../../shared/models/applicant";
+import { ApplicantDbOps } from "../../shared/models/applicant";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { generateImageObjectkey, KeyParameters } from "../helpers/upload";
 import { ChestXRay } from "../models/chest-xray";
@@ -156,7 +156,7 @@ const validateChestXRayImages = async (
 ) => {
   logger.info({ applicationInfo }, "Validating Uploaded Chest X-Ray Images");
   const { applicationId } = applicationInfo;
-  const applicant = await Applicant.getByApplicationId(applicationId);
+  const applicant = await ApplicantDbOps.getByApplicationId(applicationId);
   if (!applicant) {
     logger.error("Application does not have an applicant");
     throw new ApplicantNotFound("Invalid Application - No Applicant");

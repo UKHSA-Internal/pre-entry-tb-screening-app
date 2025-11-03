@@ -129,6 +129,68 @@ describe("RadiologicalOutcomeSummary Section", () => {
     });
   });
 
+  it("when post request returns client-side error then user is navigated to /sorry-there-is-problem-with-service", async () => {
+    const preloadedState = {
+      application: { applicationId: "abc-123", dateCreated: "" },
+      medicalScreening: {
+        chestXrayTaken: YesOrNo.NO,
+      },
+      radiologicalOutcome: {
+        status: ApplicationStatus.IN_PROGRESS,
+        reasonXrayWasNotTaken: "Pregnancy",
+        xrayWasNotTakenFurtherDetails: "First trimester",
+      },
+    } as unknown as Record<string, unknown>;
+
+    mock.onPost("/application/abc-123/chest-xray").reply(400);
+
+    renderWithProviders(<RadiologicalOutcomeSummary />, { preloadedState });
+
+    await user.click(screen.getByRole("button", { name: /save and continue/i }));
+
+    await waitFor(() => {
+      expect(mock.history.post).toHaveLength(1);
+      expect(mock.history.post[0].url).toBe("/application/abc-123/chest-xray");
+      expect(JSON.parse(mock.history.post[0].data as string)).toMatchObject({
+        chestXrayTaken: "No",
+        reasonXrayWasNotTaken: "Pregnancy",
+        xrayWasNotTakenFurtherDetails: "First trimester",
+      });
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
+    });
+  });
+
+  it("when post request returns server-side error then user is navigated to /sorry-there-is-problem-with-service", async () => {
+    const preloadedState = {
+      application: { applicationId: "abc-123", dateCreated: "" },
+      medicalScreening: {
+        chestXrayTaken: YesOrNo.NO,
+      },
+      radiologicalOutcome: {
+        status: ApplicationStatus.IN_PROGRESS,
+        reasonXrayWasNotTaken: "Pregnancy",
+        xrayWasNotTakenFurtherDetails: "First trimester",
+      },
+    } as unknown as Record<string, unknown>;
+
+    mock.onPost("/application/abc-123/chest-xray").reply(500);
+
+    renderWithProviders(<RadiologicalOutcomeSummary />, { preloadedState });
+
+    await user.click(screen.getByRole("button", { name: /save and continue/i }));
+
+    await waitFor(() => {
+      expect(mock.history.post).toHaveLength(1);
+      expect(mock.history.post[0].url).toBe("/application/abc-123/chest-xray");
+      expect(JSON.parse(mock.history.post[0].data as string)).toMatchObject({
+        chestXrayTaken: "No",
+        reasonXrayWasNotTaken: "Pregnancy",
+        xrayWasNotTakenFurtherDetails: "First trimester",
+      });
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
+    });
+  });
+
   it("shows Return to tracker when status complete", () => {
     const preloadedState = {
       radiologicalOutcome: { status: ApplicationStatus.COMPLETE, chestXrayTaken: YesOrNo.YES },

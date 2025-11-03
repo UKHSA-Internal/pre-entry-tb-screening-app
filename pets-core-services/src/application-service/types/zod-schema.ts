@@ -26,8 +26,8 @@ export const CreateApplicationResponseSchema = z.object({
   }),
 });
 
-export const TravelInformationRequestSchema = z.object({
-  visaCategory: z.nativeEnum(VisaOptions).openapi({
+export const TravelInformationBaseSchema = z.object({
+  visaCategory: z.nativeEnum(VisaOptions).optional().openapi({
     description: "Visa Option",
   }),
   ukAddressLine1: z.string().optional().openapi({
@@ -42,15 +42,21 @@ export const TravelInformationRequestSchema = z.object({
   ukAddressPostcode: z.string().optional().openapi({
     description: "Postcode of Travel Address",
   }),
-  ukMobileNumber: z.string().openapi({
+  ukMobileNumber: z.string().optional().openapi({
     description: "UK Mobile Number",
   }),
-  ukEmailAddress: z.string().openapi({
+  ukEmailAddress: z.string().optional().openapi({
     description: "UK Email Address",
   }),
 });
 
-export const TravelInformationResponseSchema = TravelInformationRequestSchema.extend({
+export const TravelInformationPostRequestSchema = TravelInformationBaseSchema.extend({
+  visaCategory: z.nativeEnum(VisaOptions).openapi({
+    description: "Visa Option",
+  }),
+});
+
+export const TravelInformationResponseSchema = TravelInformationPostRequestSchema.extend({
   applicationId: z.string().openapi({
     description: "ID of application",
   }),
@@ -59,6 +65,20 @@ export const TravelInformationResponseSchema = TravelInformationRequestSchema.ex
   }),
   status: z.nativeEnum(TaskStatus).openapi({
     description: "Status of Task",
+  }),
+});
+
+export const TravelInformationPutRequestSchema = TravelInformationBaseSchema.extend({
+  visaCategory: z.nativeEnum(VisaOptions).optional().openapi({
+    description: "Visa Option",
+  }),
+});
+export const TravelInformationPutResponseSchema = TravelInformationPutRequestSchema.extend({
+  applicationId: z.string().openapi({
+    description: "ID of application",
+  }),
+  dateUpdated: z.string().date().openapi({
+    description: "Updated Date in UTC timezone",
   }),
 });
 

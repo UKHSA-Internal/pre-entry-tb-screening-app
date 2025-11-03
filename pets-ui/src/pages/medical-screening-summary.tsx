@@ -23,7 +23,7 @@ export default function MedicalSummaryPage() {
       title="Medical screening summary - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo={getBackLink()}
     >
-      <Heading level={1} size="l" title="Check medical screening" />
+      <Heading level={1} size="l" title="Check medical history and TB symptoms" />
       <MedicalScreeningReview />
     </Container>
   );

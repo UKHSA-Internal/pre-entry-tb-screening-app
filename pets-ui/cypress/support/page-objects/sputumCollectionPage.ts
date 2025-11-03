@@ -23,7 +23,7 @@ interface AllSamplesData {
 
 export class SputumCollectionPage extends BasePage {
   constructor() {
-    super("/sputum-collection");
+    super("/enter-sputum-sample-collection-information");
   }
 
   // Protected helper method for date field filling
@@ -101,7 +101,7 @@ export class SputumCollectionPage extends BasePage {
     return this;
   }
 
-  // Date filling methods with data-testid as selectors - using safe helpers
+  // Date filling methods with data-testid as selectors
   fillSample1Date(
     date: DateData | { day: string; month: string; year: string },
   ): SputumCollectionPage {
@@ -233,7 +233,6 @@ export class SputumCollectionPage extends BasePage {
         collectionMethod: samples.sample3.collectionMethod,
       },
     };
-
     return this.fillAllSamples(newFormat);
   }
 
@@ -253,14 +252,54 @@ export class SputumCollectionPage extends BasePage {
     return this.fillAllSamples(testData);
   }
 
-  // Submit methods
+  // Button interaction methods
   clickSaveAndContinueToResults(): SputumCollectionPage {
-    cy.get('button[aria-label="Save and continue to results"]').click();
+    cy.contains('button[type="submit"]', "Save and continue to results").click();
     return this;
   }
 
   clickSaveProgress(): SputumCollectionPage {
-    cy.get('button[aria-label="Save progress"]').click();
+    cy.contains('button[type="submit"].govuk-button--secondary', "Save progress").click();
+    return this;
+  }
+
+  // Legacy method for backward compatibility - defaults to save and continue
+  clickContinue(): SputumCollectionPage {
+    return this.clickSaveAndContinueToResults();
+  }
+
+  // Submit form with all samples using save and continue button
+  submitFormWithAllSamples(samples: AllSamplesData): SputumCollectionPage {
+    this.fillAllSamples(samples);
+    this.clickSaveAndContinueToResults();
+    return this;
+  }
+
+  // Submit form with all samples using save progress button
+  saveFormProgress(samples: AllSamplesData): SputumCollectionPage {
+    this.fillAllSamples(samples);
+    this.clickSaveProgress();
+    return this;
+  }
+
+  // Verify buttons are displayed
+  verifySaveAndContinueButtonDisplayed(): SputumCollectionPage {
+    cy.contains('button[type="submit"]', "Save and continue to results")
+      .should("be.visible")
+      .and("be.enabled");
+    return this;
+  }
+
+  verifySaveProgressButtonDisplayed(): SputumCollectionPage {
+    cy.contains('button[type="submit"].govuk-button--secondary', "Save progress")
+      .should("be.visible")
+      .and("be.enabled");
+    return this;
+  }
+
+  verifyBothButtonsDisplayed(): SputumCollectionPage {
+    this.verifySaveAndContinueButtonDisplayed();
+    this.verifySaveProgressButtonDisplayed();
     return this;
   }
 
@@ -378,9 +417,25 @@ export class SputumCollectionPage extends BasePage {
     return this;
   }
 
+  // Error validation methods - keeping existing methods for backward compatibility
+  verifyErrorSummaryDisplayed(): SputumCollectionPage {
+    cy.get(".govuk-error-summary").should("be.visible");
+    cy.get(".govuk-error-summary").should("have.attr", "data-module", "govuk-error-summary");
+    return this;
+  }
+
+  verifyErrorSummaryContainsText(text: string): SputumCollectionPage {
+    cy.get(".govuk-error-summary").should("contain.text", text);
+    return this;
+  }
+
+  clickErrorSummaryLink(linkText: string): SputumCollectionPage {
+    cy.get(".govuk-error-summary").contains("a", linkText).click();
+    return this;
+  }
+
   // Verify all fields are empty (for initial state)
   verifyAllFieldsEmpty(): SputumCollectionPage {
-    // Verify date fields are empty using data-testid attributes
     cy.get('[data-testid="date-sample-1-taken-day"]').should("have.value", "");
     cy.get('[data-testid="date-sample-1-taken-month"]').should("have.value", "");
     cy.get('[data-testid="date-sample-1-taken-year"]').should("have.value", "");
@@ -600,6 +655,7 @@ export class SputumCollectionPage extends BasePage {
     this.verifyPageStructure();
     this.verifyBackLinkNavigation();
     this.verifyServiceName();
+    this.verifyBothButtonsDisplayed();
     return this;
   }
 }

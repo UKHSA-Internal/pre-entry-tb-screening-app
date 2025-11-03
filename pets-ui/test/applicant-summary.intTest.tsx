@@ -137,7 +137,7 @@ describe("ApplicantReview", () => {
 
     expect(mock.history[0].url).toEqual("/application");
     expect(mock.history).toHaveLength(1);
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
   });
 
   test("user is navigated to error page when second api call is unsuccessful", async () => {
@@ -151,7 +151,7 @@ describe("ApplicantReview", () => {
     expect(mock.history[0].url).toEqual("/application");
     expect(mock.history[1].url).toEqual("/applicant/register/abc-123");
     expect(mock.history).toHaveLength(2);
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
   });
 
   test("calls uploadFile to upload applicant photo if present", async () => {
@@ -255,5 +255,71 @@ describe("ApplicantReview", () => {
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute("href", "/upload-visa-applicant-photo");
     expect(link).toHaveClass("govuk-back-link");
+  });
+
+  test("shows Change links for Passport number and Country of issue when task is IN_PROGRESS", () => {
+    const preloadedState = {
+      applicant: {
+        status: ApplicationStatus.IN_PROGRESS,
+        fullName: "Sigmund Sigmundson",
+        sex: "Male",
+        dateOfBirth: { year: "1901", month: "1", day: "1" },
+        countryOfNationality: "NOR",
+        passportNumber: "1234",
+        countryOfIssue: "FIN",
+        passportIssueDate: { year: "1902", month: "02", day: "2" },
+        passportExpiryDate: { year: "2053", month: "03", day: "3" },
+        applicantHomeAddress1: "The Bell Tower",
+        applicantHomeAddress2: "Hallgrimskirkja",
+        applicantHomeAddress3: "Hallgrimstorg 1",
+        townOrCity: "Reykjavik",
+        provinceOrState: "Reykjavik",
+        country: "ISL",
+        postcode: "101",
+        applicantPhotoFileName: "photo.jpg",
+      },
+    };
+
+    renderWithProviders(<ApplicantReview />, { preloadedState });
+
+    const passportChange = screen.getByRole("link", { name: "Change passport number" });
+    expect(passportChange).toHaveAttribute(
+      "href",
+      "/enter-applicant-information?from=check-applicant-details#passport-number",
+    );
+    const coiChange = screen.getByRole("link", { name: "Change country of issue" });
+    expect(coiChange).toHaveAttribute(
+      "href",
+      "/enter-applicant-information?from=check-applicant-details#country-of-issue",
+    );
+  });
+
+  test("hides Change links for Passport number and Country of issue when task is COMPLETE", () => {
+    const preloadedState = {
+      applicant: {
+        status: ApplicationStatus.COMPLETE,
+        fullName: "Sigmund Sigmundson",
+        sex: "Male",
+        dateOfBirth: { year: "1901", month: "1", day: "1" },
+        countryOfNationality: "NOR",
+        passportNumber: "1234",
+        countryOfIssue: "FIN",
+        passportIssueDate: { year: "1902", month: "02", day: "2" },
+        passportExpiryDate: { year: "2053", month: "03", day: "3" },
+        applicantHomeAddress1: "The Bell Tower",
+        applicantHomeAddress2: "Hallgrimskirkja",
+        applicantHomeAddress3: "Hallgrimstorg 1",
+        townOrCity: "Reykjavik",
+        provinceOrState: "Reykjavik",
+        country: "ISL",
+        postcode: "101",
+        applicantPhotoFileName: "photo.jpg",
+      },
+    };
+
+    renderWithProviders(<ApplicantReview />, { preloadedState });
+
+    expect(screen.queryByRole("link", { name: "Change passport number" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change country of issue" })).not.toBeInTheDocument();
   });
 });

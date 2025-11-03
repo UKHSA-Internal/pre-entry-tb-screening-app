@@ -4,6 +4,7 @@ import List from "../list/list";
 
 interface NotificationBannerProps {
   bannerTitle: string;
+  bannerHeading?: string;
   bannerText?: string;
   list?: string[];
   children?: ReactNode;
@@ -11,6 +12,7 @@ interface NotificationBannerProps {
 
 export default function NotificationBanner({
   bannerTitle,
+  bannerHeading,
   bannerText,
   list,
   children,
@@ -27,6 +29,7 @@ export default function NotificationBanner({
         </h2>
       </div>
       <div className="govuk-notification-banner__content">
+        {bannerHeading && <p className="govuk-notification-banner__heading">{bannerHeading}</p>}
         {(bannerText || list) && (
           <>
             {bannerText && (

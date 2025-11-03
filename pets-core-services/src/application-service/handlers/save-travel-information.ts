@@ -4,10 +4,10 @@ import { z } from "zod";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { TravelInformation } from "../models/travel-information";
-import { TravelInformationRequestSchema } from "../types/zod-schema";
+import { TravelInformation, TravelInformationDbOps } from "../models/travel-information";
+import { TravelInformationPostRequestSchema } from "../types/zod-schema";
 
-export type TravelInformationRequestSchema = z.infer<typeof TravelInformationRequestSchema>;
+export type TravelInformationRequestSchema = z.infer<typeof TravelInformationPostRequestSchema>;
 
 export type SaveTravelInformationEvent = PetsAPIGatewayProxyEvent & {
   parsedBody?: TravelInformationRequestSchema;
@@ -32,7 +32,7 @@ export const saveTravelInformationHandler = async (event: SaveTravelInformationE
     let travelInformation: TravelInformation;
     try {
       const { createdBy } = event.requestContext.authorizer;
-      travelInformation = await TravelInformation.createTravelInformation({
+      travelInformation = await TravelInformationDbOps.createTravelInformation({
         ...parsedBody,
         createdBy,
         applicationId,

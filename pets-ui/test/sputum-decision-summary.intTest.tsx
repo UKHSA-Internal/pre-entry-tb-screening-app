@@ -91,7 +91,7 @@ describe("SputumDecisionSummary", () => {
     expect(useNavigateMock).toHaveBeenLastCalledWith("/tracker");
   });
 
-  it("navigates to /error if API fails", async () => {
+  it("navigates to /sorry-there-is-problem-with-service if API fails", async () => {
     const preloadedState = {
       application: { applicationId, dateCreated: "2025-01-01" },
       sputumDecision: {
@@ -103,6 +103,6 @@ describe("SputumDecisionSummary", () => {
     (postSputumRequirement as Mock).mockRejectedValue(new Error("fail"));
     renderWithProviders(<SputumDecisionSummary />, { preloadedState });
     await user.click(screen.getByRole("button", { name: "Save and continue" }));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
   });
 });

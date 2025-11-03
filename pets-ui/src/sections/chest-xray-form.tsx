@@ -179,9 +179,7 @@ const ChestXrayForm = () => {
 
             <Heading level={2} size="m" title="Upload X-ray images" />
             <p className="govuk-body">Upload a file</p>
-            <div className="govuk-hint">
-              File type must be DICOM. Images must be less than 50MB.
-            </div>
+            <div className="govuk-hint">File type must be DCM. Images must be less than 50MB.</div>
 
             <div ref={paXrayRef} className="dicom-upload-container">
               <DicomUploadModule
@@ -223,7 +221,9 @@ const ChestXrayForm = () => {
               />
             </div>
 
-            <SubmitButton id="continue" type={ButtonType.DEFAULT} text="Continue" />
+            <div className="dicom-upload-container">
+              <SubmitButton id="continue" type={ButtonType.DEFAULT} text="Continue" />
+            </div>
           </div>
         </form>
       </FormProvider>

@@ -4,20 +4,20 @@ import { randomElement, visaType } from "../test-utils";
 
 export class TravelSummaryPage extends BasePage {
   constructor() {
-    super("/travel-summary");
+    super("/check-travel-information");
   }
 
   // Verify page loaded
   verifyPageLoaded(): TravelSummaryPage {
-    this.verifyUrlContains("/travel-summary");
-    cy.get("h1.govuk-heading-l").should("contain", "Check travel information");
+    this.verifyUrlContains("/check-travel-information");
+    cy.get("h1.govuk-heading-l").should("contain", "Check UK travel information");
     cy.get(".govuk-summary-list").should("be.visible");
     return this;
   }
 
   // Submit Form
   submitForm(): TravelSummaryPage {
-    cy.get("button[type='submit']").contains("Save and continue").click();
+    cy.get("button[type='submit']").contains("Submit and continue").click();
     return this;
   }
 
@@ -40,12 +40,13 @@ export class TravelSummaryPage extends BasePage {
   verifyFieldValueOnChangePage(fieldName: string, expectedValue: string): TravelSummaryPage {
     const fieldSelectors: Record<string, string> = {
       "Visa category": '[name="visaCategory"]',
-      "UK address line 1": '[name="applicantUkAddress1"]',
-      "UK address line 2": '[name="applicantUkAddress2"]',
-      "UK town or city": '[name="townOrCity"]',
-      "UK postcode": '[name="postcode"]',
-      "UK mobile number": '[name="ukMobileNumber"]',
-      "UK email address": '[name="ukEmail"]',
+      "Address line 1 (optional)": '[name="applicantUkAddress1"]',
+      "Address line 2 (optional)": '[name="applicantUkAddress2"]',
+      "Address line 3 (optional)": '[name="applicantUkAddress3"]',
+      "Town or city (optional)": '[name="townOrCity"]',
+      "Postcode (optional)": '[name="postcode"]',
+      "UK phone number (optional)": '[name="ukMobileNumber"]',
+      "UK email address (optional)": '[name="ukEmail"]',
     };
 
     const selector = fieldSelectors[fieldName];
@@ -108,11 +109,11 @@ export class TravelSummaryPage extends BasePage {
   ): TravelSummaryPage {
     const expectedValues = {
       "Visa category": visaTypeValue,
-      "UK address line 1": address1,
-      "UK town or city": townOrCity,
-      "UK postcode": postcode,
-      "UK mobile number": mobileNumber,
-      "UK email address": email,
+      "Address line 1 (optional)": address1,
+      "Town or city (optional)": townOrCity,
+      "Postcode (optional)": postcode,
+      "UK phone number (optional)": mobileNumber,
+      "UK email address (optional)": email,
     };
 
     Object.entries(expectedValues).forEach(([key, value]) => {
@@ -141,11 +142,11 @@ export class TravelSummaryPage extends BasePage {
     );
   }
 
-  // Verify back link points to travel details
+  // Verify back link points to visa applicant proposed uk address page
   verifyBackLink(): TravelSummaryPage {
     cy.get(".govuk-back-link")
       .should("be.visible")
-      .and("have.attr", "href", "/travel-details")
+      .and("have.attr", "href", "/visa-applicant-proposed-uk-address")
       .and("contain", "Back");
     return this;
   }
@@ -154,7 +155,7 @@ export class TravelSummaryPage extends BasePage {
   verifyServiceName(): TravelSummaryPage {
     cy.get(".govuk-header__service-name")
       .should("be.visible")
-      .and("contain", "Complete UK Pre-Entry Health Screening")
+      .and("contain", "Complete UK pre-entry health screening")
       .and("have.attr", "href", "/");
     return this;
   }
@@ -162,32 +163,32 @@ export class TravelSummaryPage extends BasePage {
   // Verify all change links have correct href values
   verifyChangeLinksTargets(): TravelSummaryPage {
     const expectedFragments = {
-      "Visa category": "#visa-category",
-      "UK address line 1": "#address-1",
-      "UK address line 2": "#address-2",
-      "UK town or city": "#town-or-city",
-      "UK postcode": "#postcode",
-      "UK mobile number": "#mobile-number",
-      "UK email address": "#email",
+      "Visa category": "/proposed-visa-category#visa-category",
+      "Address line 1 (optional)": "/visa-applicant-proposed-uk-address#address-1",
+      "Address line 2 (optional)": "/visa-applicant-proposed-uk-address#address-2",
+      "Address line 3 (optional)": "/visa-applicant-proposed-uk-address#address-3",
+      "Town or city (optional)": "/visa-applicant-proposed-uk-address#town-or-city",
+      "Postcode (optional)": "/visa-applicant-proposed-uk-address#postcode",
+      "UK phone number (optional)": "/visa-applicant-proposed-uk-address#mobile-number",
+      "UK email address (optional)": "/visa-applicant-proposed-uk-address#email",
     };
 
-    Object.entries(expectedFragments).forEach(([key, fragment]) => {
+    Object.entries(expectedFragments).forEach(([key, href]) => {
       cy.contains("dt.govuk-summary-list__key", key)
         .siblings(".govuk-summary-list__actions")
         .find("a")
-        .should("have.attr", "href")
-        .and("include", fragment);
+        .should("have.attr", "href", href);
     });
     return this;
   }
 
-  // Verify optional address field shows "Enter" link when empty
-  verifyOptionalAddressField(): TravelSummaryPage {
-    cy.contains("dt.govuk-summary-list__key", "UK address line 2")
+  // Verify optional address field shows "Not provided" when empty
+  verifyOptionalAddressFieldNotProvided(
+    fieldKey: string = "Address line 2 (optional)",
+  ): TravelSummaryPage {
+    cy.contains("dt.govuk-summary-list__key", fieldKey)
       .siblings(".govuk-summary-list__value")
-      .find("a")
-      .should("contain", "Enter UK address line 2 (optional)")
-      .and("have.attr", "href", "/travel-details#address-2");
+      .should("contain", "Not provided");
     return this;
   }
 
@@ -195,12 +196,13 @@ export class TravelSummaryPage extends BasePage {
   verifyAllFieldsPresent(): TravelSummaryPage {
     const requiredFields = [
       "Visa category",
-      "UK address line 1",
-      "UK address line 2",
-      "UK town or city",
-      "UK postcode",
-      "UK mobile number",
-      "UK email address",
+      "Address line 1 (optional)",
+      "Address line 2 (optional)",
+      "Address line 3 (optional)",
+      "Town or city (optional)",
+      "Postcode (optional)",
+      "UK phone number (optional)",
+      "UK email address (optional)",
     ];
 
     requiredFields.forEach((field) => {
@@ -246,7 +248,8 @@ export class TravelSummaryPage extends BasePage {
     this.verifyPageLoaded();
     this.verifyAllFieldsPresent();
     this.verifyChangeLinksTargets();
-    this.verifyOptionalAddressField();
+    this.verifyOptionalAddressFieldNotProvided("Address line 2 (optional)");
+    this.verifyOptionalAddressFieldNotProvided("Address line 3 (optional)");
     this.verifyBackLink();
     this.verifyServiceName();
     return this;
@@ -259,7 +262,8 @@ export class TravelSummaryPage extends BasePage {
     this.verifyVisaTypeIsValid();
     this.verifyAllFieldsPresent();
     this.verifyChangeLinksTargets();
-    this.verifyOptionalAddressField();
+    this.verifyOptionalAddressFieldNotProvided("Address line 2 (optional)");
+    this.verifyOptionalAddressFieldNotProvided("Address line 3 (optional)");
     this.verifyBackLink();
     this.verifyServiceName();
     return this;
@@ -279,15 +283,15 @@ export class TravelSummaryPage extends BasePage {
     return this;
   }
 
-  // Method to verify if a field has a value or shows "Enter" link
-  verifyFieldHasValueOrEnterLink(fieldKey: string, expectedValue?: string): TravelSummaryPage {
+  // Method to verify if a field has a value or shows "Not provided"
+  verifyFieldHasValueOrNotProvided(fieldKey: string, expectedValue?: string): TravelSummaryPage {
     if (expectedValue) {
       this.verifySummaryValue(fieldKey, expectedValue);
     } else {
-      // Check if it shows an "Enter" link for optional fields
+      // Check if it shows "Not provided" for optional fields
       cy.contains("dt.govuk-summary-list__key", fieldKey)
         .siblings(".govuk-summary-list__value")
-        .should("exist");
+        .should("contain", "Not provided");
     }
     return this;
   }
@@ -326,5 +330,41 @@ export class TravelSummaryPage extends BasePage {
       this.verifyVisaTypeIsValid();
       return cy.wrap(newVisa);
     });
+  }
+
+  // Verify submit button text
+  verifySubmitButton(): TravelSummaryPage {
+    cy.get("button[type='submit']").should("be.visible").and("contain.text", "Submit and continue");
+    return this;
+  }
+
+  // Verify visa category section
+  verifyVisaCategorySection(): TravelSummaryPage {
+    cy.contains("dt.govuk-summary-list__key", "Visa category").should("be.visible");
+    return this;
+  }
+
+  // Verify address line 3 is present
+  verifyAddressLine3Present(): TravelSummaryPage {
+    cy.contains("dt.govuk-summary-list__key", "Address line 3 (optional)").should("exist");
+    return this;
+  }
+
+  // Verify all optional fields have "(optional)" label
+  verifyOptionalFieldLabels(): TravelSummaryPage {
+    const optionalFields = [
+      "Address line 1 (optional)",
+      "Address line 2 (optional)",
+      "Address line 3 (optional)",
+      "Town or city (optional)",
+      "Postcode (optional)",
+      "UK phone number (optional)",
+      "UK email address (optional)",
+    ];
+
+    optionalFields.forEach((field) => {
+      cy.contains("dt.govuk-summary-list__key", field).should("contain", "(optional)");
+    });
+    return this;
   }
 }
