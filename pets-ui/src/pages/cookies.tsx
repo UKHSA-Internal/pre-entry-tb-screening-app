@@ -4,7 +4,9 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import Button from "@/components/button/button";
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
+import LinkLabel from "@/components/linkLabel/LinkLabel";
 import List from "@/components/list/list";
+import NotificationBanner from "@/components/notificationBanner/notificationBanner";
 import Radio from "@/components/radio/radio";
 import Table from "@/components/table/table";
 import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
@@ -14,12 +16,15 @@ export default function CookiesPage() {
   const { handleSubmit } = methods;
 
   const [cookieConsent, setCookieConsent] = useState(localStorage.getItem("cookie-consent"));
+  const [showSubmissionBanner, setShowSubmissionBanner] = useState(false);
 
   const onSubmit: SubmitHandler<{ cookieConsent: YesOrNo }> = (data) => {
     if (data.cookieConsent == YesOrNo.YES) {
       setCookieConsent("accepted");
+      setShowSubmissionBanner(true);
     } else if (data.cookieConsent == YesOrNo.NO) {
       setCookieConsent("rejected");
+      setShowSubmissionBanner(true);
     }
   };
 
@@ -33,6 +38,20 @@ export default function CookiesPage() {
     <Container title="Cookies - Complete UK pre-entry health screening - GOV.UK" backLinkTo="/">
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
+          {showSubmissionBanner && (
+            <NotificationBanner bannerTitle="Success" successBanner>
+              <p className="govuk-notification-banner__heading">
+                You&apos;ve set your cookie preferences.{" "}
+                <LinkLabel
+                  title="Go back to the page you were looking at"
+                  to=""
+                  externalLink={false}
+                  className="govuk-notification-banner__link"
+                />
+                .
+              </p>
+            </NotificationBanner>
+          )}
           <Heading level={1} size="xl" title="Cookies" />
           <p className="govuk-body">
             Cookies are small files saved on your phone, tablet or computer when you visit a

@@ -8,6 +8,7 @@ interface NotificationBannerProps {
   bannerText?: string;
   list?: string[];
   children?: ReactNode;
+  successBanner?: boolean;
 }
 
 export default function NotificationBanner({
@@ -16,10 +17,11 @@ export default function NotificationBanner({
   bannerText,
   list,
   children,
+  successBanner,
 }: Readonly<NotificationBannerProps>) {
   return (
     <section
-      className="govuk-notification-banner"
+      className={`govuk-notification-banner ${successBanner ? "govuk-notification-banner--success" : ""}`}
       aria-labelledby="govuk-notification-banner-title"
       data-module="govuk-notification-banner"
     >
