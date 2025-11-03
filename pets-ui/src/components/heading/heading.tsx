@@ -2,8 +2,8 @@ export type HeadingSize = "s" | "l" | "m" | "xl";
 
 type HeadingProps = {
   title: string;
+  size: HeadingSize;
   level?: 1 | 2 | 3 | 4;
-  size?: HeadingSize;
   style?: React.CSSProperties;
   id?: string;
   additionalClasses?: string;
