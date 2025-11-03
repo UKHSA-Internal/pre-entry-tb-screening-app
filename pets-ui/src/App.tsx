@@ -1,5 +1,6 @@
 import "./globals.scss";
 
+import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 
 import { AuthenticatedRoute, UnauthenticatedRoute } from "./auth/authRoutes";
@@ -49,9 +50,16 @@ import TravelConfirmation from "./pages/travel-confirmation";
 import TravelSummaryPage from "./pages/travel-summary";
 import TravelAddressAndContactDetailsPage from "./pages/travel-uk-address";
 import TravelVisaCategoryPage from "./pages/travel-visa-category";
+import { updateGoogleAnalyticsConsent } from "./utils/helpers";
 import { RedirectedRouteIfReduxEmpty } from "./utils/redirect";
 
 function App() {
+  useEffect(() => {
+    const cookieConsent = localStorage.getItem("cookie-consent");
+    const consentGranted = cookieConsent === "accepted";
+    updateGoogleAnalyticsConsent(consentGranted);
+  }, []);
+
   return (
     <Routes>
       <Route
