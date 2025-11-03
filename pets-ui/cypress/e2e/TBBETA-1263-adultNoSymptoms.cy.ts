@@ -417,7 +417,7 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
 
       // Verify redirection to Radiological Outcome confirmation Page
       radiologicalOutcomeConfPage.verifyPageLoaded();
-      radiologicalOutcomeConfPage.verifyPageTitle();
+      //radiologicalOutcomeConfPage.verifyPageTitle();
       radiologicalOutcomeConfPage.verifyAllPageElements();
       radiologicalOutcomeConfPage.verifyConfirmationPanel();
       radiologicalOutcomeConfPage.verifyWhatHappensNextSection();

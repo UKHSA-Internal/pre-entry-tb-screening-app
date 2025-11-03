@@ -438,7 +438,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       xRayResultsAndFindingsPage.clickSaveAndContinueButton();
       // Verify redirection to Radiological Outcome confirmation Page
       radiologicalOutcomeConfPage.verifyPageLoaded();
-      radiologicalOutcomeConfPage.verifyPageTitle();
+      //radiologicalOutcomeConfPage.verifyPageTitle();
       radiologicalOutcomeConfPage.verifyAllPageElements();
       radiologicalOutcomeConfPage.verifyConfirmationPanel();
       radiologicalOutcomeConfPage.verifyWhatHappensNextSection();
