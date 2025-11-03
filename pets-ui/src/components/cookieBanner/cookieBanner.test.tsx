@@ -32,7 +32,7 @@ describe("CookieBanner component", () => {
     expect(buttons[1]).toHaveTextContent("Reject analytics cookies");
 
     expect(screen.getByRole("link")).toHaveTextContent("View cookies");
-    expect(screen.getByRole("link").getAttribute("href")).toEqual("/cookie-page-placeholder-url");
+    expect(screen.getByRole("link").getAttribute("href")).toEqual("/cookies");
 
     expect(localStorage.getItem("cookie-consent")).toEqual(null);
   });
@@ -44,7 +44,7 @@ describe("CookieBanner component", () => {
 
     expect(screen.getByText(/You have accepted analytics cookies. You can/)).toBeInTheDocument();
     expect(screen.getByRole("link")).toHaveTextContent("change your cookie settings");
-    expect(screen.getByRole("link").getAttribute("href")).toEqual("/cookie-page-placeholder-url");
+    expect(screen.getByRole("link").getAttribute("href")).toEqual("/cookies");
     expect(screen.getByText(/at any time/)).toBeInTheDocument();
     expect(screen.getByRole("button")).toHaveTextContent("Hide cookie message");
 
@@ -70,7 +70,7 @@ describe("CookieBanner component", () => {
 
     expect(screen.getByText(/You have rejected analytics cookies. You can/)).toBeInTheDocument();
     expect(screen.getByRole("link")).toHaveTextContent("change your cookie settings");
-    expect(screen.getByRole("link").getAttribute("href")).toEqual("/cookie-page-placeholder-url");
+    expect(screen.getByRole("link").getAttribute("href")).toEqual("/cookies");
     expect(screen.getByText(/at any time/)).toBeInTheDocument();
     expect(screen.getByRole("button")).toHaveTextContent("Hide cookie message");
 

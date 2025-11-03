@@ -67,7 +67,7 @@ export default function CookieBanner() {
             />
             <LinkLabel
               title="View cookies"
-              to="/cookie-page-placeholder-url"
+              to="/cookies"
               externalLink={false}
               className="govuk-link"
             />
@@ -91,7 +91,7 @@ export default function CookieBanner() {
                   You have {cookieConsent} analytics cookies. You can{" "}
                   <LinkLabel
                     title="change your cookie settings"
-                    to="/cookie-page-placeholder-url"
+                    to="/cookies"
                     externalLink={false}
                     className="govuk-link"
                   />{" "}
