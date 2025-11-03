@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 
 import Button from "@/components/button/button";
@@ -15,16 +15,24 @@ export default function CookiesPage() {
   const methods = useForm<{ cookieConsent: YesOrNo }>({ reValidateMode: "onSubmit" });
   const { handleSubmit } = methods;
 
+  const bannerRef = useRef<HTMLDivElement | null>(null);
+
   const [cookieConsent, setCookieConsent] = useState(localStorage.getItem("cookie-consent"));
   const [showSubmissionBanner, setShowSubmissionBanner] = useState(false);
 
   const onSubmit: SubmitHandler<{ cookieConsent: YesOrNo }> = (data) => {
-    if (data.cookieConsent == YesOrNo.YES) {
+    if (data.cookieConsent === YesOrNo.YES) {
       setCookieConsent("accepted");
-      setShowSubmissionBanner(true);
-    } else if (data.cookieConsent == YesOrNo.NO) {
+    } else if (data.cookieConsent === YesOrNo.NO) {
       setCookieConsent("rejected");
+    }
+
+    if (data.cookieConsent === YesOrNo.YES || data.cookieConsent === YesOrNo.NO) {
       setShowSubmissionBanner(true);
+      setTimeout(() => {
+        bannerRef.current?.focus();
+        bannerRef.current?.scrollIntoView();
+      }, 0);
     }
   };
 
@@ -39,18 +47,20 @@ export default function CookiesPage() {
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           {showSubmissionBanner && (
-            <NotificationBanner bannerTitle="Success" successBanner>
-              <p className="govuk-notification-banner__heading">
-                You&apos;ve set your cookie preferences.{" "}
-                <LinkLabel
-                  title="Go back to the page you were looking at"
-                  to=""
-                  externalLink={false}
-                  className="govuk-notification-banner__link"
-                />
-                .
-              </p>
-            </NotificationBanner>
+            <div ref={bannerRef} tabIndex={-1}>
+              <NotificationBanner bannerTitle="Success" successBanner>
+                <p className="govuk-notification-banner__heading">
+                  You&apos;ve set your cookie preferences.{" "}
+                  <LinkLabel
+                    title="Go back to the page you were looking at"
+                    to=""
+                    externalLink={false}
+                    className="govuk-notification-banner__link"
+                  />
+                  .
+                </p>
+              </NotificationBanner>
+            </div>
           )}
           <Heading level={1} size="xl" title="Cookies" />
           <p className="govuk-body">
