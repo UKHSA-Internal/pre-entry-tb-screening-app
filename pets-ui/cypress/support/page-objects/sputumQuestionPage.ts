@@ -1,20 +1,21 @@
+// This holds all fields for the Sputum Question Page
 import { BasePage } from "../BasePage";
 
 export class SputumQuestionPage extends BasePage {
   constructor() {
-    super("/sputum-question");
+    super("/is-sputum-collection-required");
   }
 
   // Verify page loaded
   verifyPageLoaded(): SputumQuestionPage {
-    this.verifyPageHeading("Is a sputum collection required?");
+    this.verifyPageHeading("Is sputum collection required?");
     cy.get("form").should("be.visible");
     return this;
   }
 
   // Verify sputum question is displayed
   verifySputumQuestionDisplayed(): SputumQuestionPage {
-    cy.contains("h1", "Is a sputum collection required?").should("be.visible");
+    cy.contains("h1", "Is sputum collection required?").should("be.visible");
     cy.get("#sputum-required .govuk-fieldset").should("be.visible");
     cy.get(".govuk-radios--inline").should("be.visible");
     return this;
@@ -160,7 +161,7 @@ export class SputumQuestionPage extends BasePage {
     cy.get(".govuk-back-link")
       .should("be.visible")
       .and("contain", "Back")
-      .and("have.attr", "href", "/chest-xray-findings");
+      .and("have.attr", "href", "/tracker");
     return this;
   }
 

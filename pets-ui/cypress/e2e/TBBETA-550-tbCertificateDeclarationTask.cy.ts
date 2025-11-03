@@ -2,6 +2,7 @@
 import { countryList } from "../../src/utils/countryList";
 import { loginViaB2C } from "../support/commands";
 import { ApplicantConfirmationPage } from "../support/page-objects/applicantConfirmationPage";
+import { ApplicantConsentPage } from "../support/page-objects/applicantConsentPage";
 import { ApplicantPhotoUploadPage } from "../support/page-objects/applicantPhotoUploadPage";
 import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../support/page-objects/applicantSummaryPage";
@@ -16,6 +17,7 @@ import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetails
 describe("TB certificate declaration task links should NOT be clickable until all pre-requisite tasks are completed", () => {
   // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
+  const applicantConsentPage = new ApplicantConsentPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
@@ -62,6 +64,11 @@ describe("TB certificate declaration task links should NOT be clickable until al
     applicantSearchPage.verifyNoMatchingRecordMessage(20000);
     applicantSearchPage.verifyCreateNewApplicantExists();
     applicantSearchPage.clickCreateNewApplicant();
+    // Verify Applicant Consent
+    applicantConsentPage.continueWithConsent("Yes");
+
+    // Verify redirection to the contact page
+    applicantSearchPage.verifyRedirectionToCreateApplicantPage();
 
     // Verify redirection to the contact page
     applicantSearchPage.verifyRedirectionToCreateApplicantPage();
@@ -87,7 +94,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
       .submitForm();
 
     // Verify redirection to the Applicant Photo page
-    cy.url().should("include", "/applicant-photo");
+    cy.url().should("include", "/upload-visa-applicant-photo");
     applicantPhotoUploadPage.verifyPageLoaded();
 
     // Upload Applicant Photo file
@@ -107,7 +114,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
     });
 
     // Verify redirection to the Applicant Summary page
-    cy.url().should("include", "/applicant-summary");
+    cy.url().should("include", "/check-applicant-details");
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary
@@ -133,8 +140,9 @@ describe("TB certificate declaration task links should NOT be clickable until al
     // Check applicant information is displayed correctly
     tbProgressTrackerPage.verifyApplicantInfo({
       Name: "Tess Tester-Test",
-      "Date of birth": "01/03/1998",
+      "Date of birth": "1/3/1998",
       "Passport number": passportNumber,
+      "TB screening": "In progress",
     });
 
     // Verify the applicant photo is displayed
@@ -143,12 +151,6 @@ describe("TB certificate declaration task links should NOT be clickable until al
     // Verify the photo title attribute
     tbProgressTrackerPage.verifyApplicantPhotoAttributes("passportpic.jpeg");
 
-    // Verify task status information
-    tbProgressTrackerPage.verifyVisaApplicantDetailsCompleted();
-
-    /* // Verify complete all sections text
-    tbProgressTrackerPage.verifyCompleteAllSectionsText(); */
-
     // Verify all tasks exist
     tbProgressTrackerPage.verifyAllTasksExist();
 
@@ -156,31 +158,30 @@ describe("TB certificate declaration task links should NOT be clickable until al
     tbProgressTrackerPage.verifyServiceName();
 
     // Verify all task statuses
-    tbProgressTrackerPage.verifyAllTaskStatuses({
+    tbProgressTrackerPage.verifyMultipleTaskStatuses({
       "Visa applicant details": "Completed",
-      "Travel information": "Not yet started",
-      "Medical history and TB symptoms": "Not yet started",
-      "Radiological outcome": "Not yet started",
-      "Sputum collection and results": "Not yet started",
-      "TB certificate outcome": "Not yet started",
+      "UK travel information": "Not yet started",
+      "Medical history and TB symptoms": "Cannot start yet",
+      "Upload chest X-ray images": "Cannot start yet",
+      "Radiological outcome": "Cannot start yet",
+      "Make a sputum decision": "Cannot start yet",
+      "Sputum collection and results": "Cannot start yet",
+      "TB certificate outcome": "Cannot start yet",
     });
-
-    // Verify which tasks are clickable links and which are not
-    tbProgressTrackerPage.verifyTaskClickability();
 
     // Verify individual tasks - clickable ones
     tbProgressTrackerPage.verifyTaskIsClickable("Visa applicant details");
-    tbProgressTrackerPage.verifyTaskIsClickable("Travel information");
 
     // Verify individual tasks - non-clickable ones
+    tbProgressTrackerPage.verifyTaskIsClickable("UK travel information");
     tbProgressTrackerPage.verifyTaskIsNotClickable("Medical history and TB symptoms");
     tbProgressTrackerPage.verifyTaskIsNotClickable("Radiological outcome");
     tbProgressTrackerPage.verifyTaskIsNotClickable("Sputum collection and results");
     tbProgressTrackerPage.verifyTaskIsNotClickable("TB certificate outcome");
 
     // Verify we can click on the "Travel information" link
-    tbProgressTrackerPage.clickTaskLink("Travel information");
-    cy.url().should("include", "/travel-details");
+    tbProgressTrackerPage.clickTaskLink("UK travel information");
+    cy.url().should("include", "/proposed-visa-category");
 
     // Navigate back to tracker to test other clickable link
     cy.go("back");
@@ -188,7 +189,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
 
     // Verify can click on the "Visa applicant details" link
     tbProgressTrackerPage.clickTaskLink("Visa applicant details");
-    cy.url().should("include", "/applicant-summary");
+    cy.url().should("include", "/check-applicant-details");
 
     // Navigate back to tracker
     cy.go("back");

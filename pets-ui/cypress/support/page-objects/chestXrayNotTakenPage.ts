@@ -1,30 +1,34 @@
-//This holds all fields of the Chst X-ray Not Taken Page
+//This holds all fields of the Chest X-ray Not Taken Page
 
 import { BasePage } from "../BasePage";
 
 // Interface for chest X-ray not taken form data
 interface ChestXrayNotTakenFormData {
   reasonXrayWasNotTaken: "Child" | "Pregnant" | "Other";
-  xrayWasNotTakenFurtherDetails?: string;
 }
 
 export class ChestXrayNotTakenPage extends BasePage {
   constructor() {
-    super("/chest-xray-reason");
+    super("/reason-x-ray-not-required");
   }
 
   // Verify Chest X-ray Not Taken Page
   verifyPageLoaded(): ChestXrayNotTakenPage {
-    cy.url().should("include", "/chest-xray-not-taken");
-    cy.get("h1.govuk-heading-l").should("contain", "Enter reason X-ray not taken");
-    cy.contains("h2", "Reason X-ray not taken").should("be.visible");
-    cy.contains("Choose from the following options").should("be.visible");
+    cy.url().should("include", "/reason-x-ray-not-required");
+    cy.get("h1.govuk-heading-l").should("contain", "Reason X-ray is not required?");
     return this;
   }
 
   // Select reason for X-ray not taken
   selectReasonXrayNotTaken(reason: "Child" | "Pregnant" | "Other"): ChestXrayNotTakenPage {
-    cy.get(`input[name="reasonXrayWasNotTaken"][value="${reason}"]`).check({ force: true });
+    const valueMap: Record<"Child" | "Pregnant" | "Other", string> = {
+      Child: "Child (under 11 years)",
+      Pregnant: "Pregnant",
+      Other: "Other",
+    };
+    cy.get(`input[name="reasonXrayNotRequired"][value="${valueMap[reason]}"]`).check({
+      force: true,
+    });
     return this;
   }
 
@@ -34,20 +38,9 @@ export class ChestXrayNotTakenPage extends BasePage {
     return this;
   }
 
-  // Fill further details/notes
-  fillFurtherDetails(details: string): ChestXrayNotTakenPage {
-    cy.get('textarea[name="xrayWasNotTakenFurtherDetails"]').clear().type(details);
-    return this;
-  }
-
   // Fill the entire form at once
   fillCompleteForm(data: ChestXrayNotTakenFormData): ChestXrayNotTakenPage {
     this.selectReasonXrayNotTaken(data.reasonXrayWasNotTaken);
-
-    if (data.xrayWasNotTakenFurtherDetails) {
-      this.fillFurtherDetails(data.xrayWasNotTakenFurtherDetails);
-    }
-
     return this;
   }
 
@@ -66,28 +59,19 @@ export class ChestXrayNotTakenPage extends BasePage {
     return this.selectReasonXrayNotTaken("Pregnant");
   }
 
-  selectOther(details?: string): ChestXrayNotTakenPage {
+  selectOther(): ChestXrayNotTakenPage {
     this.selectReasonXrayNotTaken("Other");
-    if (details) {
-      this.fillFurtherDetails(details);
-    }
     return this;
   }
 
   // Verification methods
   verifyReasonSelected(reason: "Child" | "Pregnant" | "Other"): ChestXrayNotTakenPage {
-    cy.get(`input[name="reasonXrayWasNotTaken"][value="${reason}"]`).should("be.checked");
-    return this;
-  }
-
-  verifyFurtherDetailsValue(expectedValue: string): ChestXrayNotTakenPage {
-    cy.get('textarea[name="xrayWasNotTakenFurtherDetails"]').should("have.value", expectedValue);
-    return this;
-  }
-
-  verifyFurtherDetailsVisible(): ChestXrayNotTakenPage {
-    cy.get("#xray-not-taken-further-details").should("be.visible");
-    cy.get('textarea[name="xrayWasNotTakenFurtherDetails"]').should("be.visible");
+    const valueMap: Record<"Child" | "Pregnant" | "Other", string> = {
+      Child: "Child (under 11 years)",
+      Pregnant: "Pregnant",
+      Other: "Other",
+    };
+    cy.get(`input[name="reasonXrayNotRequired"][value="${valueMap[reason]}"]`).should("be.checked");
     return this;
   }
 
@@ -107,20 +91,12 @@ export class ChestXrayNotTakenPage extends BasePage {
     return this;
   }
 
-  validateFurtherDetailsFieldError(): ChestXrayNotTakenPage {
-    this.validateFieldError("xray-not-taken-further-details");
-    return this;
-  }
-
   // Comprehensive form validation
-  validateFormErrors(errors: { reason?: string; furtherDetails?: string }): ChestXrayNotTakenPage {
+  validateFormErrors(errors: { reason?: string }): ChestXrayNotTakenPage {
     Object.entries(errors).forEach(([field, message]) => {
       switch (field) {
         case "reason":
           this.validateFieldError("reason-xray-not-taken", message);
-          break;
-        case "furtherDetails":
-          this.validateFieldError("xray-not-taken-further-details", message);
           break;
       }
     });
@@ -149,18 +125,21 @@ export class ChestXrayNotTakenPage extends BasePage {
 
   // Verify all form fields are present
   verifyAllFieldsPresent(): ChestXrayNotTakenPage {
-    cy.get('input[name="reasonXrayWasNotTaken"]').should("exist");
-    cy.get('textarea[name="xrayWasNotTakenFurtherDetails"]').should("be.visible");
+    cy.get('input[name="reasonXrayNotRequired"]').should("exist");
     return this;
   }
 
   // Verify all reason options are present
   verifyAllReasonOptionsPresent(): ChestXrayNotTakenPage {
-    const expectedReasons = ["Child", "Pregnant", "Other"];
+    const expectedReasons = [
+      { value: "Child (under 11 years)", label: "Child (under 11 years)" },
+      { value: "Pregnant", label: "Pregnant" },
+      { value: "Other", label: "Other" },
+    ];
 
     expectedReasons.forEach((reason) => {
-      cy.get(`input[name="reasonXrayWasNotTaken"][value="${reason}"]`).should("exist");
-      cy.contains("label", reason).should("be.visible");
+      cy.get(`input[name="reasonXrayNotRequired"][value="${reason.value}"]`).should("exist");
+      cy.contains("label", reason.label).should("be.visible");
     });
 
     return this;
@@ -170,7 +149,7 @@ export class ChestXrayNotTakenPage extends BasePage {
   verifyBackLink(): ChestXrayNotTakenPage {
     cy.get(".govuk-back-link")
       .should("be.visible")
-      .and("have.attr", "href", "/chest-xray-question")
+      .and("have.attr", "href", "/is-an-x-ray-required")
       .and("contain", "Back");
     return this;
   }
@@ -186,11 +165,7 @@ export class ChestXrayNotTakenPage extends BasePage {
 
   // Verify page heading and labels
   verifyPageHeadingAndLabels(): ChestXrayNotTakenPage {
-    cy.get("h1.govuk-heading-l").should("contain", "Enter reason X-ray not taken");
-    cy.get("h2.govuk-heading-m").should("contain", "Reason X-ray not taken");
-    cy.contains("Choose from the following options").should("be.visible");
-    cy.get("#xray-not-taken-further-details h2").should("contain", "Notes");
-    cy.contains("If other, give further details").should("be.visible");
+    cy.get("h1.govuk-heading-l").should("contain", "Reason X-ray is not required?");
     return this;
   }
 
@@ -200,7 +175,6 @@ export class ChestXrayNotTakenPage extends BasePage {
     this.verifyPageHeadingAndLabels();
     this.verifyAllFieldsPresent();
     this.verifyAllReasonOptionsPresent();
-    this.verifyFurtherDetailsVisible();
     this.verifyBackLink();
     this.verifyServiceName();
     return this;
@@ -208,8 +182,6 @@ export class ChestXrayNotTakenPage extends BasePage {
 
   // Test form behaviour with conditional logic
   verifyConditionalBehavior(): ChestXrayNotTakenPage {
-    this.verifyFurtherDetailsVisible();
-
     // Test each option selection
     this.selectChild();
     this.verifyReasonSelected("Child");
@@ -226,19 +198,6 @@ export class ChestXrayNotTakenPage extends BasePage {
   // Method to validate form state after submission attempt
   validateFormStateAfterSubmission(expectedData: ChestXrayNotTakenFormData): ChestXrayNotTakenPage {
     this.verifyReasonSelected(expectedData.reasonXrayWasNotTaken);
-
-    if (expectedData.xrayWasNotTakenFurtherDetails) {
-      this.verifyFurtherDetailsValue(expectedData.xrayWasNotTakenFurtherDetails);
-    }
-
-    return this;
-  }
-
-  // Method to clear form
-  clearForm(): ChestXrayNotTakenPage {
-    // Clear the textarea
-    cy.get('textarea[name="xrayWasNotTakenFurtherDetails"]').clear();
-
     return this;
   }
 }

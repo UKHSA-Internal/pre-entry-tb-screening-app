@@ -2,22 +2,29 @@
 import { countryList } from "../../src/utils/countryList";
 import { loginViaB2C } from "../support/commands";
 import { ApplicantConfirmationPage } from "../support/page-objects/applicantConfirmationPage";
+import { ApplicantConsentPage } from "../support/page-objects/applicantConsentPage";
 import { ApplicantPhotoUploadPage } from "../support/page-objects/applicantPhotoUploadPage";
 import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../support/page-objects/applicantSummaryPage";
+import { CheckChestXrayImagesPage } from "../support/page-objects/checkChestXrayImagesPage";
 import { ChestXrayConfirmationPage } from "../support/page-objects/chestXrayConfirmationPage";
 import { ChestXrayFindingsPage } from "../support/page-objects/chestXrayFindingsPage";
 import { ChestXrayPage } from "../support/page-objects/chestXrayQuestionPage";
-import { ChestXraySummaryPage } from "../support/page-objects/chestXraySummaryPage";
+import { ChestXrayResultsPage } from "../support/page-objects/chestXrayResultsPage";
 import { ChestXrayUploadPage } from "../support/page-objects/chestXrayUploadPage";
+import { ClinicCertificateInfoPage } from "../support/page-objects/clinicCertificateInfoPage";
 import { MedicalConfirmationPage } from "../support/page-objects/medicalConfirmationPage";
 import { MedicalSummaryPage } from "../support/page-objects/medicalSummaryPage";
+import { RadiologicalOutcomeConfPage } from "../support/page-objects/radiologicalOutcomeConfPage";
+import { SputumDecisionConfirmationPage } from "../support/page-objects/sputumDecisionConfirmationPage";
+import { SputumDecisionInfoPage } from "../support/page-objects/sputumDecisionInfoPage";
 import { SputumQuestionPage } from "../support/page-objects/sputumQuestionPage";
-import { TbCertificateConfirmationPage } from "../support/page-objects/tbCertificateConfirmationPage";
-import { TbCertificateDeclarationPage } from "../support/page-objects/tbCertificateDeclarationPage";
 import { TbCertificateQuestionPage } from "../support/page-objects/tbCertificateQuestionPage";
 import { TbCertificateSummaryPage } from "../support/page-objects/tbCertificateSummaryPage";
 import { TBProgressTrackerPage } from "../support/page-objects/tbProgressTrackerPage";
+import { TbScreeningCompletePage } from "../support/page-objects/tbScreeningCompletePage";
+import { VisaCategoryPage } from "../support/page-objects/visaCategoryPage";
+import { XRayResultsAndFindingsPage } from "../support/page-objects/xRayResultsAndFindingsPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
@@ -31,6 +38,7 @@ import { TravelSummaryPage } from "./../support/page-objects/travelSummaryPage";
 
 describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", () => {
   // Page object instances
+  const applicantConsentPage = new ApplicantConsentPage();
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
@@ -42,25 +50,30 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
   const applicantConfirmationPage = new ApplicantConfirmationPage();
   const medicalSummaryPage = new MedicalSummaryPage();
   const medicalConfirmationPage = new MedicalConfirmationPage();
+  const radiologicalOutcomeConfPage = new RadiologicalOutcomeConfPage();
+  const sputumDecisionConfirmationPage = new SputumDecisionConfirmationPage();
+  const sputumDecisionInfoPage = new SputumDecisionInfoPage();
   const sputumQuestionPage = new SputumQuestionPage();
+  const checkChestXrayImagesPage = new CheckChestXrayImagesPage();
+  const chestXrayResultsPage = new ChestXrayResultsPage();
   const chestXrayPage = new ChestXrayPage();
   const chestXrayUploadPage = new ChestXrayUploadPage();
   const chestXrayFindingsPage = new ChestXrayFindingsPage();
-  const chestXraySummaryPage = new ChestXraySummaryPage();
   const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
+  const clinicCertificateInfoPage = new ClinicCertificateInfoPage();
   const tbCertificateQuestionPage = new TbCertificateQuestionPage();
   const tbCertificateSummaryPage = new TbCertificateSummaryPage();
-  const tbCertificateConfirmationPage = new TbCertificateConfirmationPage();
+  const tbScreeningCompletePage = new TbScreeningCompletePage();
   const tbProgressTrackerPage = new TBProgressTrackerPage();
-  const tbCertificateDeclarationPage = new TbCertificateDeclarationPage();
+  const visaCategoryPage = new VisaCategoryPage();
+  const xRayResultsAndFindingsPage = new XRayResultsAndFindingsPage();
 
   // Define variables to store test data
   let countryCode: string = "";
   let countryName: string = "";
   let passportNumber: string = "";
   let tbCertificateNumber: string = "";
-  let selectedVisaType: string = "";
-  let certificateIssueDate: string = "";
+  let selectedVisaCategory: string;
 
   before(() => {
     // Create test fixtures before test run
@@ -97,6 +110,9 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
     applicantSearchPage.verifyCreateNewApplicantExists();
     applicantSearchPage.clickCreateNewApplicant();
 
+    // Verify Applicant Consent
+    applicantConsentPage.continueWithConsent("Yes");
+
     // Verify redirection to Applicant search page
     applicantSearchPage.verifyRedirectionToCreateApplicantPage();
 
@@ -121,7 +137,7 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
       .submitForm();
 
     // Verify redirection to the Applicant Photo page
-    cy.url().should("include", "/applicant-photo");
+    cy.url().should("include", "/upload-visa-applicant-photo");
     applicantPhotoUploadPage.verifyPageLoaded();
 
     // Upload Applicant Photo file
@@ -136,8 +152,12 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
     // Continue to Applicant Summary page
     applicantPhotoUploadPage.clickContinue();
 
+    cy.url().then((url) => {
+      cy.log(`Current URL: ${url}`);
+    });
+
     // Verify redirection to the Applicant Summary page
-    cy.url().should("include", "/applicant-summary");
+    cy.url().should("include", "/check-applicant-details");
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary
@@ -162,31 +182,51 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
     tbProgressTrackerPage.verifyPageLoaded();
 
     // Navigate to travel information from the tracker
-    tbProgressTrackerPage.clickTaskLink("Travel information");
+    tbProgressTrackerPage.clickTaskLink("UK travel information");
+
+    // Select random category and store the selected value
+    visaCategoryPage.selectRandomVisaCategory();
+    visaCategoryPage.getSelectedVisaCategory().then((category) => {
+      selectedVisaCategory = category;
+      cy.log(`Selected random visa category: ${selectedVisaCategory}`);
+
+      // Store as alias for use throughout the test
+      cy.wrap(selectedVisaCategory).as("selectedVisa");
+    });
+
+    // Click continue to proceed to travel information page
+    visaCategoryPage.clickContinue();
 
     // Fill travel information
     travelInformationPage.verifyPageLoaded();
 
-    travelInformationPage
-      .fillCompleteFormWithRandomVisa({
-        ukAddressLine1: "456 Park Lane",
-        ukAddressLine2: "Floor 2",
-        ukTownOrCity: "Manchester",
-        ukPostcode: "M1 1AA",
-        mobileNumber: "07700900123",
-        email: "pets.tester@hotmail.com",
-      })
-      .then((randomVisa) => {
-        selectedVisaType = randomVisa;
-        cy.log(`Selected random visa type: ${selectedVisaType}`);
-        cy.wrap(selectedVisaType).as("selectedVisa");
-      });
+    travelInformationPage.fillCompleteForm({
+      ukAddressLine1: "456 Park Lane",
+      ukAddressLine2: "Floor 2",
+      ukTownOrCity: "Manchester",
+      ukPostcode: "M1 1AA",
+      mobileNumber: "07700900123",
+      email: "pets.tester@hotmail.com",
+    });
 
+    // Submit the form
     travelInformationPage.submitForm();
 
     // Review Travel Summary
     travelSummaryPage.verifyPageLoaded();
     travelSummaryPage.verifyVisaTypeIsValid();
+    // Verify details by clicking change links and checking fields
+    travelSummaryPage.clickChangeLink("Address line 1 (optional)");
+    cy.url().should("include", "/visa-applicant-proposed-uk-address");
+    cy.go("back");
+
+    travelSummaryPage.clickChangeLink("Town or city (optional)");
+    cy.url().should("include", "/visa-applicant-proposed-uk-address");
+    cy.go("back");
+
+    travelSummaryPage.clickChangeLink("UK phone number (optional)");
+    cy.url().should("include", "/visa-applicant-proposed-uk-address");
+    cy.go("back");
     travelSummaryPage.submitForm();
 
     // Travel Confirmation
@@ -198,8 +238,8 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
 
     // Medical Screening Page - Adult with TB history, no symptoms, no close contact
     medicalScreeningPage.verifyPageLoaded();
-
     medicalScreeningPage
+      .fillScreeningDate("10", "9", "2025")
       .fillAge("34") // Adult age
       .selectTbSymptoms("No") // No symptoms
       .selectPreviousTb("Yes") // Yes to TB history
@@ -211,13 +251,14 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
       )
       .submitForm();
 
-    // Store the date when medical history is recorded for later verification
-    const currentDate = new Date().toLocaleDateString("en-GB");
-    certificateIssueDate = currentDate;
-    cy.wrap(certificateIssueDate).as("medicalRecordDate");
+    // Verify redirection to X-ray Question Page
+    chestXrayPage.verifyPageLoaded();
 
-    // Verify redirection to medical summary page
-    medicalScreeningPage.verifyRedirectedToSummary();
+    // Select "Yes" for X-ray Required
+    chestXrayPage.selectXrayTakenYes();
+    chestXrayPage.submitForm();
+
+    // Verify redirection to Medical Screening Summary Page
     medicalSummaryPage.verifyPageLoaded();
 
     // Validate the prefilled form
@@ -241,12 +282,39 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
     medicalConfirmationPage.verifyNextStepsSection();
     medicalConfirmationPage.clickContinueButton();
 
-    // Navigate to chest X-ray from the tracker
-    tbProgressTrackerPage.clickTaskLink("Radiological outcome");
+    // Verify we're back on the tracker
+    cy.url().should("include", "/tracker");
+    tbProgressTrackerPage.verifyPageLoaded();
+
+    // NOW navigate to chest X-ray from the tracker
+    tbProgressTrackerPage.clickTaskLink("Upload chest X-ray images");
 
     // Verify chest X-ray page - Select YES for X-ray taken
-    chestXrayPage.verifyPageLoaded();
-    chestXrayPage.selectXrayTakenYes().clickContinue();
+    // Verify redirection to chest X-ray Images Upload page
+    chestXrayUploadPage.verifyPageLoaded();
+    chestXrayUploadPage.verifyAllPageElements();
+
+    // Verify date X-ray taken section is displayed
+    chestXrayUploadPage.verifyDateXrayTakenSectionDisplayed();
+    chestXrayUploadPage.verifyDateInputFields();
+
+    // Enter the date manually when X-ray was taken
+    const xrayDay = "20";
+    const xrayMonth = "10";
+    const xrayYear = "2025";
+    chestXrayUploadPage.enterDateXrayTaken(xrayDay, xrayMonth, xrayYear);
+
+    // Verify the date was entered correctly
+    chestXrayUploadPage.verifyDateValue(xrayDay, xrayMonth, xrayYear);
+
+    // Verify X-ray upload page and sections and upload image(s)
+    chestXrayUploadPage.verifyXrayUploadSectionsDisplayed();
+    chestXrayUploadPage.verifyFileUploadInstructions();
+    chestXrayUploadPage.verifyAllFileDropZones();
+    chestXrayUploadPage.verifyDicomUploadContainers();
+
+    // Verify accepted file types include .dcm, .jpg, .jpeg, .png
+    chestXrayUploadPage.verifyAcceptedFileTypes();
 
     // Upload chest X-ray
     chestXrayUploadPage.verifyPageLoaded();
@@ -259,139 +327,195 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
     cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
 
     chestXrayUploadPage.clickContinue();
+    cy.url().then((url) => {
+      cy.log(`Current URL: ${url}`);
+    });
+    // Verify redirection to Check Chest X-ray Images page
+    cy.url().should("include", "/check-chest-x-ray-images");
 
-    // Complete X-ray findings - For Normal chest X-ray
-    chestXrayFindingsPage.verifyPageLoaded();
-    chestXrayFindingsPage.selectXrayResultNormal().clickSaveAndContinue();
+    // Verify Check Chest X-ray Images page loaded
+    checkChestXrayImagesPage.verifyPageLoaded();
 
-    // Sputum Question - Select NO (not required for normal X-ray)
-    sputumQuestionPage.verifyPageLoaded();
-    sputumQuestionPage.selectSputumRequiredNo().clickContinue();
+    // Verify page heading
+    checkChestXrayImagesPage.verifyPageHeading();
 
-    // Verify chest X-ray summary
-    chestXraySummaryPage.verifyPageLoaded();
-    chestXraySummaryPage.verifyXraySummaryInfo({
-      "Select X-ray status": "Yes",
-      "Enter radiological outcome": "Chest X-ray normal",
+    // Verify the date of X-ray is displayed (should match what was entered earlier)
+    checkChestXrayImagesPage.verifyDateOfXray("20 October 2025");
+
+    // Get and log the date of X-ray value
+    checkChestXrayImagesPage.getDateOfXray().then((date) => {
+      cy.log(`Date of X-ray: ${date}`);
     });
 
-    // Verify sputum field shows "No"
-    chestXraySummaryPage.verifySummaryValue("Sputum required?", "No");
-    chestXraySummaryPage.clickSaveAndContinue();
+    // Verify at least one chest X-ray image is uploaded
+    checkChestXrayImagesPage.verifyAtLeastOneImageUploaded();
 
-    // Verify chest X-ray confirmation
-    chestXrayConfirmationPage.verifyPageLoaded();
-    chestXrayConfirmationPage.verifyConfirmationPanel();
-    chestXrayConfirmationPage.verifyNextStepsSection();
-    chestXrayConfirmationPage.clickContinueButton();
+    // Get and log the uploaded images
+    checkChestXrayImagesPage.getUploadedImages().then((images) => {
+      cy.log(`Uploaded images: ${images.join(", ")}`);
 
-    // Verify we're back at the progress tracker
-    cy.url().should("include", "/tracker");
-    tbProgressTrackerPage.verifyPageLoaded();
+      // Verify change links exist and have correct hrefs
+      checkChestXrayImagesPage.verifyChangeLinksExist();
 
-    // Verify task statuses - sputum should be "Not required"
-    tbProgressTrackerPage.verifyAllTaskStatuses({
-      "Visa applicant details": "Completed",
-      "Travel information": "Completed",
-      "Medical history and TB symptoms": "Completed",
-      "Radiological outcome": "Completed",
-      "Sputum collection and results": "Not required",
-      "TB certificate outcome": "Not yet started",
-    });
+      // Verify "Date of X-ray" change link
+      checkChestXrayImagesPage.verifyDateOfXrayChangeLink();
 
-    // Click on TB certificate declaration to continue
-    tbProgressTrackerPage.clickTaskLink("TB certificate outcome");
+      // Verify "Chest X-ray images" change link
+      checkChestXrayImagesPage.verifyChestXrayImagesChangeLink();
 
-    // Verify TB Certificate Question page loaded and select YES
-    tbCertificateQuestionPage.verifyPageLoaded();
-    tbCertificateQuestionPage.selectTbClearanceOption("Yes");
-    tbCertificateQuestionPage.verifyRadioSelection("Yes");
-    tbCertificateQuestionPage.clickContinue();
+      // Verify submission section heading
+      checkChestXrayImagesPage.verifySubmissionHeading();
 
-    // Verify TB Certificate Declaration page
-    tbCertificateDeclarationPage.verifyPageLoaded();
-    tbCertificateDeclarationPage.verifyAllPageElements();
-    // Capture Clinic Name for verification
-    tbCertificateDeclarationPage.getClinicName().then((capturedClinicName: string) => {
-      cy.log(`Captured clinic name: ${capturedClinicName}`);
-      tbCertificateDeclarationPage.verifyClinicInformationSummary();
-      tbCertificateDeclarationPage.verifyClinicInformationIsPresent();
-      tbCertificateDeclarationPage.verifyAllFieldsEmpty();
+      // Verify Save and Continue button
+      checkChestXrayImagesPage.verifySaveAndContinueButton();
 
-      // Fill TB Certificate Declaration details
-      const tbCertificateDeclarationData = {
-        declaringPhysicianName: "Dr. Michael Johnson",
-        physicianComments:
-          "Adult applicant with history of tuberculosis. Current chest X-ray normal. All screening requirements completed. Certificate issued with 6-month validity as no close contact with active TB.",
-      };
+      // Verify warning message about not being able to change images
+      checkChestXrayImagesPage.verifyWarningMessage();
 
-      tbCertificateDeclarationPage.fillFormWithValidData(tbCertificateDeclarationData);
-      tbCertificateDeclarationPage.verifyFormFilledWith(tbCertificateDeclarationData);
-      tbCertificateDeclarationPage.clickContinue();
+      // Click "Save and continue" button
+      checkChestXrayImagesPage.clickSaveAndContinue();
 
-      // Verify TB Certificate Summary page
-      tbCertificateSummaryPage.verifyPageLoaded();
-      tbCertificateSummaryPage.verifyAllPageElements();
+      // Verify redirection to chest X-ray Images confirmation Page
+      chestXrayConfirmationPage.verifyPageLoaded();
 
-      // Verify applicant information
-      tbCertificateSummaryPage.verifyApplicantInfoSection();
-      tbCertificateSummaryPage.verifyApplicantInfo({
+      // Verify Chest X-ray Confirmation Panel
+      chestXrayConfirmationPage.verifyConfirmationPanel();
+      // Verify next steps
+      chestXrayConfirmationPage.verifyNextStepsSection();
+
+      // Click "Continue" button and verify redirection to TB Progress Tracker
+      chestXrayConfirmationPage.clickContinueAndVerifyRedirection();
+
+      // NOW navigate to chest X-ray Results Page from the tracker
+      tbProgressTrackerPage.clickTaskLink("Radiological outcome");
+
+      // Verify redirection to Chest X-Ray Results Page
+      chestXrayResultsPage.verifyPageLoaded();
+      chestXrayResultsPage.verifyAllPageElements();
+      chestXrayResultsPage.verifyFormDisplayed();
+      chestXrayResultsPage.verifyAllRadioOptions();
+
+      // Select "Chest X-ray normal" option and continue to X-ray Findings Page
+      chestXrayResultsPage.selectChestXrayNormal();
+      chestXrayResultsPage.clickContinueAndVerifyRedirection();
+
+      // Verify redirection to "Chest X-ray Findings Page"
+      chestXrayFindingsPage
+        .verifyPageLoaded()
+        .verifyAllPageElements()
+        .verifyRadiographicFindingsSection()
+        .verifyMinorFindingsSection();
+
+      // Click "continue" button to redirect to
+      chestXrayFindingsPage.clickContinueButton();
+
+      // Verify redirection to "Check chest X-ray results and findings" Page
+      xRayResultsAndFindingsPage.verifyPageLoaded();
+
+      // Click "Save and continue" to proceed to next page
+      xRayResultsAndFindingsPage.clickSaveAndContinueButton();
+
+      // Verify redirection to Radiological Outcome confirmation Page
+      radiologicalOutcomeConfPage.verifyPageLoaded();
+      //radiologicalOutcomeConfPage.verifyPageTitle();
+      radiologicalOutcomeConfPage.verifyAllPageElements();
+      radiologicalOutcomeConfPage.verifyConfirmationPanel();
+      radiologicalOutcomeConfPage.verifyWhatHappensNextSection();
+
+      // Click "Continue" button to navigate to TB Progress Tracker
+      radiologicalOutcomeConfPage.clickContinueButton();
+
+      // NOW verify applicant info on TB Progress TRacker Page
+      tbProgressTrackerPage.verifyPageLoaded();
+      tbProgressTrackerPage.verifySectionHeadings();
+      tbProgressTrackerPage.verifyApplicantInfo({
         Name: "John Tester",
-        "Date of birth": "15 March 1990",
+        "Date of birth": "15/3/1990",
         "Passport number": passportNumber,
-        Sex: "Male",
+        "TB screening": "In progress",
+      });
+      // NOW Navigate to "Make a sputum decision" Page from the tracker
+      tbProgressTrackerPage.clickTaskLink("Make a sputum decision");
+
+      // Sputum Question - Select NO (not required for normal X-ray)
+      sputumQuestionPage.verifyPageLoaded();
+      sputumQuestionPage.selectSputumRequiredNo().clickContinue();
+
+      // Verify redirection to Sputum decision Info Page
+      sputumDecisionInfoPage.verifyPageLoaded();
+      sputumDecisionInfoPage.verifyAllPageElements();
+      sputumDecisionInfoPage.clickSaveAndContinue();
+
+      // Verify redirection to Sputum Decision Confirmation Page
+      sputumDecisionConfirmationPage
+        .verifyAllPageElements()
+        .verifyConfirmationMessageContent()
+        .clickContinueButton();
+
+      // NOW verify applicant info on TB Progress TRacker Page
+      tbProgressTrackerPage.verifyPageLoaded();
+      tbProgressTrackerPage.verifySectionHeadings();
+      tbProgressTrackerPage.verifyApplicantInfo({
+        Name: "John Tester",
+        "Date of birth": "15/3/1990",
+        "Passport number": passportNumber,
+        "TB screening": "In progress",
+      });
+      tbProgressTrackerPage.verifyMultipleTaskStatuses({
+        "Visa applicant details": "Completed",
+        "UK travel information": "Completed",
+        "Medical history and TB symptoms": "Completed",
+        "Upload chest X-ray images": "Completed",
+        "Radiological outcome": "Completed",
+        "Make a sputum decision": "Completed",
+        "Sputum collection and results": "Not required",
+        "TB certificate outcome": "Not yet started",
       });
 
-      // Verify clinic and certificate information
-      tbCertificateSummaryPage.verifyClinicCertificateSection();
-      tbCertificateSummaryPage.verifyClinicCertificateInfo({
-        "Clinic name": capturedClinicName,
-        "Declaring physician name": "Dr. Michael Johnson",
-        "Physician's comments":
+      // Verify we're still on the TB progress tracker
+      cy.url().should("include", "/tracker");
+
+      // Click on TB certificate declaration to continue
+      tbProgressTrackerPage.clickTaskLink("TB certificate outcome");
+
+      // Verify TB Certificate Question page loaded and select YES
+      tbCertificateQuestionPage.verifyPageLoaded();
+      tbCertificateQuestionPage.selectTbClearanceOption("Yes");
+      tbCertificateQuestionPage.verifyRadioSelection("Yes");
+      tbCertificateQuestionPage.clickContinue();
+      // Verify redirection to "Enter clinic and cert information" Page
+      clinicCertificateInfoPage
+        .verifyPageLoaded()
+        .verifyCertificateExpiryDateCalculation()
+        .verifyCertificateExpiryIs6MonthsFromIssueDate()
+        .saveCertificateReferenceNumber()
+        .completeForm(
+          "Dr. Michael Johnson",
           "Adult applicant with history of tuberculosis. Current chest X-ray normal. All screening requirements completed. Certificate issued with 6-month validity as no close contact with active TB.",
-      });
+        );
 
-      // Verify screening information
-      tbCertificateSummaryPage.verifyScreeningInfoSection();
-      tbCertificateSummaryPage.verifyScreeningInfo({
-        "Chest X-ray done": "Yes",
-        "Chest X-ray outcome": "Chest X-ray normal",
-        "Sputum collected": "No",
-        "Sputum outcome": "Not provided",
-        Pregnant: "No",
-        "Child under 11 years": "No",
-      });
+      // Verify redirection to TB Summary Page
+      tbCertificateSummaryPage.verifyPageLoaded();
 
-      tbCertificateSummaryPage.verifyApplicantPhoto();
-      tbCertificateSummaryPage.verifyDeclarationText();
-      tbCertificateSummaryPage.verifyChangeLinksExist();
-      tbCertificateSummaryPage.verifyServiceName();
-      tbCertificateSummaryPage.verifySubmitButton();
+      // Verify all information
+      tbCertificateSummaryPage
+        .verifyAllVisaApplicantInformation()
+        .verifyAllCurrentResidentialAddressFields()
+        .verifyAllProposedUKAddressFields()
+        .verifyAllClinicCertificateInfo()
+        .verifyAllScreeningInformation();
 
-      // Submit the certificate information
-      tbCertificateSummaryPage.clickSubmit();
+      // Click the "Submit" button to submit the application
+      tbCertificateSummaryPage.clickSubmitButton();
 
-      // Verify TB Certificate Confirmation page
-      cy.url().should("include", "/tb-certificate-confirmation");
-      tbCertificateConfirmationPage.verifyPageLoaded();
-      tbCertificateConfirmationPage.verifyConfirmationPanel();
-      tbCertificateConfirmationPage.verifyCertificateReferenceNumber();
-      tbCertificateConfirmationPage.verifyCertificateReferenceNumberFormat();
+      // Verify redirection to TB Screening Completion Page
+      tbScreeningCompletePage.verifyPageLoaded();
 
-      // Log certificate reference number for verification
-      tbCertificateConfirmationPage.getCertificateReferenceNumber().then((certRef: string) => {
-        cy.log(`Certificate Reference Number: ${certRef}`);
-        cy.wrap(certRef).should("not.be.empty");
-        cy.wrap(certRef).as("certificateReference");
-      });
+      // Verify TB Screening completion message and Cert Number
+      tbScreeningCompletePage.completeWithRefValidation();
 
-      tbCertificateConfirmationPage.verifyCompletionMessage();
-      tbCertificateConfirmationPage.verifyWhatHappensNextSection();
-      tbCertificateConfirmationPage.verifyViewPrintCertificateButton();
-      tbCertificateConfirmationPage.verifyNavigationLinks();
-      tbCertificateConfirmationPage.verifyFeedbackLink();
-      tbCertificateConfirmationPage.verifyGridLayout();
-      tbCertificateConfirmationPage.verifyServiceName();
+      // Verify all page elements with saved certificate reference validation
+      tbScreeningCompletePage.verifyAllWithSavedRef();
     });
   });
 });

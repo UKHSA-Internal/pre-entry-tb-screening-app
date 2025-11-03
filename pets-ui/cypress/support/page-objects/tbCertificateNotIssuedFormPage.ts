@@ -24,7 +24,7 @@ export class TbCertificateNotIssuedFormPage extends BasePage {
   }
 
   verifyPageLoaded(): TbCertificateNotIssuedFormPage {
-    cy.url().should("include", "/tb-certificate-not-issued");
+    cy.url().should("include", "/why-are-you-not-issuing-certificate");
     cy.get("h1").should("contain", "Why are you not issuing a certificate?");
     cy.get("form").should("be.visible");
     return this;
@@ -254,7 +254,7 @@ export class TbCertificateNotIssuedFormPage extends BasePage {
     cy.get(".govuk-back-link")
       .should("be.visible")
       .and("contain", "Back")
-      .and("have.attr", "href", "/tb-certificate-question");
+      .and("have.attr", "href", "/will-you-issue-tb-clearance-certificate");
     return this;
   }
 

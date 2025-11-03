@@ -126,7 +126,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
 
     // Fill in applicant details
     applicantDetailsPage
-      .fillFullName("John Doe")
+      .fillFullName("Freddy Tester-Doe")
       .selectSex("Male")
       .selectNationality(countryName) // Use country code for form filling
       .fillBirthDate("20", "05", "1995")
@@ -166,7 +166,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary
-    applicantSummaryPage.verifySummaryValue("Name", "John Doe");
+    applicantSummaryPage.verifySummaryValue("Name", "Freddy Tester-Doe");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
     applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
@@ -450,7 +450,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       tbProgressTrackerPage.verifyPageLoaded();
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
-        Name: "John Doe",
+        Name: "Freddy Tester-Doe",
         "Date of birth": "20/5/1995",
         "Passport number": passportNumber,
         "TB screening": "In progress",
@@ -480,7 +480,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       tbProgressTrackerPage.verifyTaskLinksExist();
       tbProgressTrackerPage.verifyServiceName();
       tbProgressTrackerPage.verifyApplicantInfo({
-        Name: "John Doe",
+        Name: "Freddy Tester-Doe",
         "Date of birth": "20/5/1995",
         "Passport number": passportNumber,
         "TB screening": "In progress",
@@ -652,10 +652,9 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
 
       // Fill TB Certificate Not Issued Form details
       const tbCertificateNotIssuedData = {
-        reasonNotIssued: "Confirmed or suspected TB" as const, // Reason for not issuing
+        reasonNotIssued: "Visa applicant has withdrawn their TB screening" as const, // Reason for not issuing
         declaringPhysicianName: "Dr. Magic Johnson",
-        physicianComments:
-          "Applicant has positive sputum results and abnormal chest X-ray findings consistent with active pulmonary tuberculosis. Certificate cannot be issued at this time.",
+        physicianComments: "Visa applicant has withdrawn their TB screening.",
       };
 
       // Fill the form with valid data (now uses label-based selection internally)
@@ -676,10 +675,9 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
 
       // Verify certificate not issued information
       tbCertificateSummaryPage.verifyCertificateNotIssuedInfo({
-        "Reason for not issuing certificate": "Confirmed or suspected TB",
+        "Reason for not issuing certificate": "Visa applicant has withdrawn their TB screening",
         "Declaring Physician's name": "Dr. Magic Johnson",
-        "Physician's comments":
-          "Applicant has positive sputum results and abnormal chest X-ray findings consistent with active pulmonary tuberculosis. Certificate cannot be issued at this time.",
+        "Physician's comments": "Visa applicant has withdrawn their TB screening.",
       });
 
       // Verify change links exist for editable fields
