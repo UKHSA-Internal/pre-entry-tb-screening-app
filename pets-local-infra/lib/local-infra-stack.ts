@@ -42,7 +42,7 @@ export class LocalInfrastructureStack extends cdk.Stack {
       functionName: process.env.EDAP_INTEGRATION_LAMBDA_NAME,
     });
 
-    new HotReloadedLambda(this, "audit-service-lambda", {
+    new HotReloadedLambda(this, "audit-lambda", {
       entry: join(__dirname, "../../pets-core-services/src/audit-service/lambdas/audit.ts"),
       functionName: process.env.AUDIT_SERVICE_LAMBDA_NAME,
     });
