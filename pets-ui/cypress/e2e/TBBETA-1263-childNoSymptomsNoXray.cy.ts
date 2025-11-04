@@ -484,6 +484,10 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
 
     // Verify all page elements with saved certificate reference validation
     tbScreeningCompletePage.verifyAllWithSavedRef();
+
     cy.log("Starting sign out process");
+    cy.logoutViaB2C();
+
+    cy.log("Test completed - user logged out successfully");
   });
 });

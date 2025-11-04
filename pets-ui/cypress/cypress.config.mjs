@@ -54,7 +54,7 @@ const getBaseUrl = () => {
     case "preprod":
       return "https://clinics.preprod.pets.ukhsa.gov.uk";
     default:
-      return "http://localhost:3000";
+      return "https://clinics.test.pets.ukhsa.gov.uk";
   }
 };
 
@@ -88,12 +88,12 @@ export default defineConfig({
       // Remove the cypress-mochawesome-reporter plugin setup
       // await setupMochawesomeReporter(on);
 
-      const currentEnv = process.env.ENVIRONMENT || process.env.TARGET_ENV || "local";
+      const currentEnv = process.env.ENVIRONMENT || process.env.TARGET_ENV || "qat";
       console.log(`Target Environment: ${currentEnv}`);
       console.log(`Base URL: ${config.baseUrl}`);
 
-      if (!process.env.CI && !process.env.GITHUB_ACTIONS && currentEnv !== "local") {
-        console.log(`Running LOCAL Cypress against ${currentEnv.toUpperCase()} environment`);
+      if (!process.env.CI && !process.env.GITHUB_ACTIONS && currentEnv !== "qat") {
+        console.log(`Running QAT Cypress against ${currentEnv.toUpperCase()} environment`);
       }
 
       const sqsClient = createSQSClient();
@@ -232,15 +232,15 @@ export default defineConfig({
     experimentalModifyObstructiveThirdPartyCode: true,
     modifyObstructiveCode: true,
     defaultCommandTimeout:
-      (process.env.CI || process.env.GITHUB_ACTIONS) && process.env.ENVIRONMENT !== "local"
+      (process.env.CI || process.env.GITHUB_ACTIONS) && process.env.ENVIRONMENT !== "qat"
         ? 10000
         : 4000,
     requestTimeout:
-      (process.env.CI || process.env.GITHUB_ACTIONS) && process.env.ENVIRONMENT !== "local"
+      (process.env.CI || process.env.GITHUB_ACTIONS) && process.env.ENVIRONMENT !== "qat"
         ? 15000
         : 5000,
     responseTimeout:
-      (process.env.CI || process.env.GITHUB_ACTIONS) && process.env.ENVIRONMENT !== "local"
+      (process.env.CI || process.env.GITHUB_ACTIONS) && process.env.ENVIRONMENT !== "qat"
         ? 60000
         : 30000,
   },
@@ -253,7 +253,7 @@ export default defineConfig({
   },
   env: {
     ...process.env,
-    CURRENT_ENVIRONMENT: process.env.ENVIRONMENT || process.env.TARGET_ENV || "local",
+    CURRENT_ENVIRONMENT: process.env.ENVIRONMENT || process.env.TARGET_ENV || "qat",
     PETS_SQS_QUEUE_URL: process.env.PETS_SQS_QUEUE_URL,
     PETS_DLQ_URL: process.env.PETS_DLQ_URL,
   },
