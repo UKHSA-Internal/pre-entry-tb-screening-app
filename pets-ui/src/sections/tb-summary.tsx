@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { postTbCerificateDetails } from "@/api/api";
 import Button from "@/components/button/button";
+import Heading from "@/components/heading/heading";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
@@ -388,6 +389,16 @@ const TbSummary = () => {
         </div>
       ) : (
         <Summary status={tbCertificateData.status} summaryElements={summaryData} />
+      )}
+
+      {tbCertificateData.isIssued === YesOrNo.NO && (
+        <div>
+          <Heading title="Now send the TB clearance outcome" level={2} size="m" />
+          <p className="govuk-body">
+            You will not be able to change the TB clearance outcome after you submit this
+            information.
+          </p>
+        </div>
       )}
 
       {(tbCertificateData.status == ApplicationStatus.NOT_YET_STARTED ||
