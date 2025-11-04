@@ -4,9 +4,9 @@ import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
-import { seededApplications } from "../../shared/fixtures/application";
+// import { seededApplications } from "../../shared/fixtures/application";
 import { logger } from "../../shared/logger";
-import { SourceType } from "../types/enums";
+// import { SourceType } from "../types/enums";
 import { AuditDbOps } from "./audit-db-ops";
 
 const DynamoDBRecordTemplate: DynamoDBRecord = {
@@ -67,19 +67,19 @@ describe("Tests for Application Model", () => {
     vi.useFakeTimers();
     const expectedDateTime = "2025-03-04";
     vi.setSystemTime(expectedDateTime);
-    const createdData = {
-      applicationId: seededApplications[1].applicationId,
-      updatedBy: "shane.park@iom.com",
-      eventType: "INSERT",
-      source: SourceType.app,
-      sourceTable: "application-details",
-      changeDetails: JSON.stringify({
-        applicationId: "generated-app-id-2",
-        clinicId: "Apollo Clinic",
-        createdBy: "appollo-clinic-user@email",
-        dateCreated: null,
-      }),
-    };
+    // const createdData = {
+    //   applicationId: seededApplications[1].applicationId,
+    //   updatedBy: "shane.park@iom.com",
+    //   eventType: "INSERT",
+    //   source: SourceType.app,
+    //   sourceTable: "application-details",
+    //   changeDetails: JSON.stringify({
+    //     applicationId: "generated-app-id-2",
+    //     clinicId: "Apollo Clinic",
+    //     createdBy: "appollo-clinic-user@email",
+    //     dateCreated: null,
+    //   }),
+    // };
     const infoLoggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
 
     // Act
