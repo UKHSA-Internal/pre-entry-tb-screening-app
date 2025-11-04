@@ -42,6 +42,11 @@ export class LocalInfrastructureStack extends cdk.Stack {
       functionName: process.env.EDAP_INTEGRATION_LAMBDA_NAME,
     });
 
+    new HotReloadedLambda(this, "audit-service-lambda", {
+      entry: join(__dirname, "../../pets-core-services/src/audit-service/lambdas/audit.ts"),
+      functionName: process.env.AUDIT_SERVICE_LAMBDA_NAME,
+    });
+
     new HotReloadedLambda(this, "authoriser-lambda", {
       entry: join(__dirname, "../../pets-core-services/src/authoriser/b2c-authoriser.ts"),
       functionName: process.env.AUTHORISER_LAMBDA_NAME,

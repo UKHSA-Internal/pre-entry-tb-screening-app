@@ -9,8 +9,6 @@ import { SourceType } from "../types/enums";
 const { dynamoDBDocClient: docClient } = awsClients;
 export type EventType = "INSERT" | "MODIFY" | "REMOVE" | undefined;
 
-// type NewAuditType = z.infer<typeof CreateAuditRequestSchema>;
-
 export abstract class AuditBase {
   applicationId: string;
   dateUpdated: Date;
@@ -64,11 +62,14 @@ export class AuditDbOps {
         // const changeDetails = unmarshall(newImage);
 
         const table = record.eventSourceARN.match(/:table\/(\w+-\w+)\//gm);
-        const source = record.eventSourceARN.match(/\?\?\?/gm);
-        const email = "where is it?";
+
+        const source = undefined; // record?.source;
+        const email = record?.dynamodb?.NewImage?.updatedBy
+          ? record?.dynamodb?.NewImage?.updatedBy
+          : record?.dynamodb?.NewImage?.createdBy;
 
         // TODO: Where to get those values from and are they mandatory fields?
-        if (!table || !source || !email) {
+        if (!table || !email) {
           logger.info("Missing data (table, source, email)");
 
           return;
@@ -77,12 +78,12 @@ export class AuditDbOps {
         const updatedDetails: Audit = {
           applicationId: newImage?.applicationId?.S as string,
           // User Email or AWS user for console updates
-          updatedBy: email,
+          updatedBy: email as string,
           eventType: record.eventName,
           // Application (App/API) - Application, API (for IOM) or Console
-          source: source ? (source[1] as SourceType) : SourceType.app,
+          source: source ? (source as SourceType) : SourceType.app,
           // applicant-details / application-details
-          sourceTable: table ? table[1] : "",
+          sourceTable: table[1],
           changeDetails: newImage ? JSON.stringify(newImage) : "",
           dateUpdated: new Date(),
         };
