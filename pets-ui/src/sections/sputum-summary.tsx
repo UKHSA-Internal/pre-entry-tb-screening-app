@@ -315,7 +315,7 @@ const SputumSummary = () => {
     <div>
       {isLoading && <Spinner />}
 
-      <Heading level={1} size="l" title="Check sputum sample information and results" />
+      <Heading level={1} size="l" title="Check sputum collection details and results" />
 
       <Heading level={2} size="m" title="Sputum sample 1" />
       <Summary status={getSampleStatus(1)} summaryElements={generateSampleSummaryData(1)} />
