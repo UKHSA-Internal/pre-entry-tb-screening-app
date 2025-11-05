@@ -72,9 +72,9 @@ const SputumDecisionSummary = () => {
             have not provided.
           </p>
           <Button
-            id="confirm-sputum-decision"
+            id="submit"
             type={ButtonType.DEFAULT}
-            text="Save and continue"
+            text="Submit and continue"
             handleClick={handleSubmit}
           />
         </div>

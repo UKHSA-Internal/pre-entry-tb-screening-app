@@ -188,7 +188,7 @@ export class BasePage {
 
   // Enhanced button methods
   clickSaveAndContinue(): BasePage {
-    cy.get('button[type="submit"]').contains("Save and continue").should("be.visible").click();
+    cy.get('button[type="submit"]').contains("Submit and continue").should("be.visible").click();
     return this;
   }
 
@@ -262,7 +262,7 @@ export class BasePage {
   }
 
   // Common submit method (kept for backward compatibility)
-  submitForm(buttonText: string = "Save and continue"): BasePage {
+  submitForm(buttonText: string = "Submit and continue"): BasePage {
     cy.contains("button", buttonText).should("be.visible").click();
     return this;
   }
@@ -627,7 +627,7 @@ export class BasePage {
 
   verifySaveAndContinueButtonDisplayed(): BasePage {
     cy.get('button[type="submit"]').should("be.visible").and("be.enabled");
-    cy.get('button[type="submit"]').should("contain.text", "Save and continue");
+    cy.get('button[type="submit"]').should("contain.text", "Submit and continue");
     return this;
   }
 
@@ -759,7 +759,7 @@ export class BasePage {
   // Form submission with redirect verification
   submitFormAndVerifyRedirect(
     expectedPath: string,
-    buttonText: string = "Save and continue",
+    buttonText: string = "Submit and continue",
   ): BasePage {
     this.submitForm(buttonText);
     this.verifyUrlContains(expectedPath);
