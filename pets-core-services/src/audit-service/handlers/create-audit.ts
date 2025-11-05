@@ -9,7 +9,6 @@ import {
 
 import { logger } from "../../shared/logger";
 import { AuditDbOps } from "../models/audit-db-ops";
-// import { AuditDbOps } from "../models/audit-db-ops";
 
 /**
  * λ function to process a DynamoDB stream of pets clinic application s into a queue for EDAP integration.
@@ -19,11 +18,13 @@ import { AuditDbOps } from "../models/audit-db-ops";
  */
 const createAuditHandler: Handler = async (
   records: DynamoDBRecord[],
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   context?: Context,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   callback?: Callback,
 ): Promise<DynamoDBBatchResponse> => {
+  logger.info(`Audit-service / context received: ${JSON.stringify(context)}`);
+  logger.info(callback);
   logger.info(`Audit-service / event received: ${JSON.stringify(records)}`);
   const batchItemFailures: DynamoDBBatchItemFailure[] = [];
 

@@ -40,8 +40,7 @@ export class Audit extends AuditBase {
 }
 
 export class AuditDbOps {
-  static readonly getPk = (applicationId: string) => `AUDIT#${applicationId}`;
-  static readonly sk = "AUDIT#DETAILS";
+  // pk nad sk values have to be created dynamically based on the record data
   static readonly getTableName = () => process.env.AUDIT_SERVICE_DATABASE_NAME;
 
   static todbItem(audit: AuditBase, pk: string, sk: string) {
@@ -56,8 +55,6 @@ export class AuditDbOps {
 
   static async createNewAuditFromDBRecord(record: DynamoDBRecord): Promise<AuditBase | undefined> {
     try {
-      logger.info("Started saving new Audit to DB");
-
       if (!record?.dynamodb?.NewImage || !record?.eventSourceARN) {
         logger.info({ record }, "There was no newImage object in the record");
 
@@ -68,9 +65,9 @@ export class AuditDbOps {
       const changeDetails = unmarshall(newImage as AttributeValue | Record<string, AttributeValue>);
       logger.info({ changeDetails }, "unmarshalled 'newImage'");
 
+      // Getting table name from eventSourceARN string
       const myRe = /:table\/(\w+-\w+)\//g;
       const table = myRe.exec(record.eventSourceARN);
-      logger.info({ table }, "table RegExMatchArray");
 
       if (!table?.length || table.length < 2) {
         logger.error(`Could not get table name from regex: ${JSON.stringify(table)}`);
@@ -79,20 +76,19 @@ export class AuditDbOps {
       }
       const tableName = table[1];
 
-      // TODO: where to get it from (record.source ???);
-      const source = undefined;
-
+      // Getting email from updatedBy or createdBy field
       const email = changeDetails?.updatedBy
         ? (changeDetails.updatedBy as string)
         : (changeDetails?.createdBy as string);
-      logger.info(`email = ${email}`);
 
-      // TODO: Where to get those values from and are they mandatory fields?
-      if (!table || !email) {
-        logger.error("Missing table name or updatedBy/createdBy email");
+      if (!email) {
+        logger.error("Missing email (updatedBy or createdBy field)");
 
         return;
       }
+
+      // TODO: where to get it from (record.source ???);
+      const source = undefined;
 
       const updatedDetails: Audit = {
         applicationId: changeDetails?.applicationId as string,
@@ -107,16 +103,15 @@ export class AuditDbOps {
         changeDetails: newImage ? JSON.stringify(newImage) : "",
         dateUpdated: new Date(),
       };
-      logger.info("Creating <Audit> object.");
+
       const newAudit = new Audit(updatedDetails);
-      logger.info({ updatedDetails }, "<Audit> object created");
       const dbItem = this.todbItem(
         newAudit,
         `AUDIT#${changeDetails.pk}`,
-        `AUDIT#${changeDetails.sk}}`,
+        `AUDIT#${changeDetails.sk}`,
       );
-      logger.info({ dbItem }, "Creted dbItem");
 
+      logger.info({ dbItem }, "Saving data to DB");
       const params: PutCommandInput = {
         TableName: this.getTableName(),
         Item: { ...dbItem },
@@ -125,7 +120,6 @@ export class AuditDbOps {
       };
       const command = new PutCommand(params);
       await docClient.send(command);
-      logger.info("dbItem saved in DB");
 
       logger.info("New audit created successfully");
 
