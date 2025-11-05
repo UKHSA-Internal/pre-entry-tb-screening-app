@@ -672,6 +672,8 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
 
       // Verify TB Certificate Summary page loaded in "not issued" scenario
       tbCertificateSummaryPage.verifyPageLoaded();
+      tbCertificateSummaryPage.verifyNotificationBannerContent();
+      tbCertificateSummaryPage.verifyNotificationBannerList();
       tbCertificateSummaryPage.verifyAllPageElements();
 
       // Verify certificate not issued information
