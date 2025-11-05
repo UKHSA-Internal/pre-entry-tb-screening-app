@@ -128,7 +128,32 @@ describe("SputumSummary", () => {
       },
     });
 
-    expect(screen.getByText("Check sputum sample information and results")).toBeInTheDocument();
+    expect(screen.getByText("Check sputum collection details and results")).toBeInTheDocument();
+  });
+  it("should render instructional text", () => {
+    renderWithProviders(<SputumSummary />, {
+      preloadedState: {
+        applicant: initialApplicantData,
+        sputum: initialSputumDataEmpty,
+      },
+    });
+
+    expect(
+      screen.getByText("Now send the sputum collection details and results"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Now send the sputum collection details and results")).toHaveClass(
+      "govuk-heading-m",
+    );
+    expect(
+      screen.getByText(
+        "You will not be able to change the collection details and results after you submit this information. However, you will be able to return and complete any information that you have not provided.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "You will not be able to change the collection details and results after you submit this information. However, you will be able to return and complete any information that you have not provided.",
+      ),
+    ).toHaveClass("govuk-body");
   });
   it("should not show Change links when there is no data", () => {
     renderWithProviders(<SputumSummary />, {
