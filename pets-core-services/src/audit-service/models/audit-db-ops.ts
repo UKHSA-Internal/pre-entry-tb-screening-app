@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import { AttributeValue } from "@aws-sdk/client-dynamodb";
 import { PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
-// import { unmarshall } from "@aws-sdk/util-dynamodb";
+import { unmarshall } from "@aws-sdk/util-dynamodb";
 import { DynamoDBRecord } from "aws-lambda";
 
 import awsClients from "../../shared/clients/aws";
@@ -59,17 +61,27 @@ export class AuditDbOps {
 
       if (record?.dynamodb?.NewImage && record?.eventSourceARN) {
         const newImage = record.dynamodb.NewImage;
-        // const changeDetails = unmarshall(newImage);
+        const changeDetails = unmarshall(
+          newImage as AttributeValue | Record<string, AttributeValue>,
+        );
 
-        const table = record.eventSourceARN.match(/:table\/(\w+-\w+)\//gm);
-        logger.info(`table = ${JSON.stringify(table)}`);
+        const myRe = /:table\/(\w+-\w+)\//g;
+        const table = myRe.exec(record.eventSourceARN);
+        logger.info({ table }, "table RegExMatchArray");
+
+        if (!table?.length || table.length < 2) {
+          return;
+        }
+
+        const tableName = table[1];
 
         const source = undefined; // record?.source;
-        const email = record?.dynamodb?.NewImage?.updatedBy
-          ? record.dynamodb.NewImage.updatedBy
-          : record?.dynamodb?.NewImage?.createdBy;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const email = changeDetails?.dynamodb?.NewImage?.updatedBy
+          ? changeDetails.dynamodb.NewImage.updatedBy
+          : changeDetails?.dynamodb?.NewImage?.createdBy;
 
-        logger.info(`email = ${email}`);
+        logger.info(`email = ${email as string}`);
 
         // TODO: Where to get those values from and are they mandatory fields?
         if (!table || !email) {
@@ -86,7 +98,8 @@ export class AuditDbOps {
           // Application (App/API) - Application, API (for IOM) or Console
           source: source ? (source as SourceType) : SourceType.app,
           // applicant-details / application-details
-          sourceTable: table[1],
+          sourceTable: tableName,
+          // TODO: should there be unmarshalled version of newImage value?
           changeDetails: newImage ? JSON.stringify(newImage) : "",
           dateUpdated: new Date(),
         };
