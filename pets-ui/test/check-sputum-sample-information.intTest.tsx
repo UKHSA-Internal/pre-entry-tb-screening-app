@@ -212,7 +212,7 @@ describe("SputumSummary", () => {
       },
     });
 
-    const saveButton = screen.getByText("Save and continue");
+    const saveButton = screen.getByText("Submit and continue");
     await user.click(saveButton);
 
     expect(useNavigateMock).toHaveBeenCalledWith("/sputum-sample-information-confirmed");
@@ -229,7 +229,7 @@ describe("SputumSummary", () => {
       },
     });
 
-    await user.click(screen.getByText("Save and continue"));
+    await user.click(screen.getByText("Submit and continue"));
     expect(mockPostSputumDetails).not.toHaveBeenCalled();
     expect(useNavigateMock).toHaveBeenCalledWith("/sputum-sample-information-confirmed");
   });

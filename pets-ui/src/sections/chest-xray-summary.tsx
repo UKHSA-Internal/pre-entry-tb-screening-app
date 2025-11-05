@@ -84,9 +84,9 @@ const ChestXraySummary = () => {
           </p>
 
           <Button
-            id="confirm"
+            id="submit"
             type={ButtonType.DEFAULT}
-            text="Save and continue"
+            text="Submit and continue"
             handleClick={handleSubmit}
           />
         </div>

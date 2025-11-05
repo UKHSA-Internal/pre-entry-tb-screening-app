@@ -403,7 +403,12 @@ const TbSummary = () => {
 
       {(tbCertificateData.status == ApplicationStatus.NOT_YET_STARTED ||
         tbCertificateData.status == ApplicationStatus.IN_PROGRESS) && (
-        <Button id="confirm" type={ButtonType.DEFAULT} text="Submit" handleClick={handleSubmit} />
+        <Button
+          id="submit"
+          type={ButtonType.DEFAULT}
+          text={tbCertificateData.isIssued === YesOrNo.YES ? "Submit" : "Submit and continue"}
+          handleClick={handleSubmit}
+        />
       )}
       {(tbCertificateData.status == ApplicationStatus.COMPLETE ||
         tbCertificateData.status == ApplicationStatus.NOT_REQUIRED) && (

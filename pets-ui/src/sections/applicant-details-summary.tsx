@@ -184,9 +184,9 @@ const ApplicantReview = () => {
       {(applicantData.status == ApplicationStatus.NOT_YET_STARTED ||
         applicantData.status == ApplicationStatus.IN_PROGRESS) && (
         <Button
-          id="confirm"
+          id="submit"
           type={ButtonType.DEFAULT}
-          text="Save and continue"
+          text="Submit and continue"
           handleClick={handleSubmit}
         />
       )}
