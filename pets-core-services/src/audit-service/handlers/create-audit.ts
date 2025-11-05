@@ -18,16 +18,16 @@ import { AuditDbOps } from "../models/audit-db-ops";
  * @param _callback - callback function
  */
 const createAuditHandler: Handler = async (
-  event: DynamoDBRecord[],
+  records: DynamoDBRecord[],
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   context?: Context,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   callback?: Callback,
 ): Promise<DynamoDBBatchResponse> => {
-  logger.info(`Audit-service / event received: ${JSON.stringify(event)}`);
+  logger.info(`Audit-service / event received: ${JSON.stringify(records)}`);
   const batchItemFailures: DynamoDBBatchItemFailure[] = [];
 
-  for (const record of event) {
+  for (const record of records) {
     logger.info(`Audit handler / processing record: ${JSON.stringify(record)}`);
 
     try {
@@ -44,7 +44,7 @@ const createAuditHandler: Handler = async (
     }
   }
 
-  return { batchItemFailures: [{ itemIdentifier: "0" }] };
+  return { batchItemFailures: batchItemFailures };
 };
 
 export { createAuditHandler };

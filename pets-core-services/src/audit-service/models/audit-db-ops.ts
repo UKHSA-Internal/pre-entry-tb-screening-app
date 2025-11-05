@@ -62,11 +62,14 @@ export class AuditDbOps {
         // const changeDetails = unmarshall(newImage);
 
         const table = record.eventSourceARN.match(/:table\/(\w+-\w+)\//gm);
+        logger.info(`table = ${JSON.stringify(table)}`);
 
         const source = undefined; // record?.source;
         const email = record?.dynamodb?.NewImage?.updatedBy
-          ? record?.dynamodb?.NewImage?.updatedBy
+          ? record.dynamodb.NewImage.updatedBy
           : record?.dynamodb?.NewImage?.createdBy;
+
+        logger.info(`email = ${email}`);
 
         // TODO: Where to get those values from and are they mandatory fields?
         if (!table || !email) {
@@ -87,8 +90,11 @@ export class AuditDbOps {
           changeDetails: newImage ? JSON.stringify(newImage) : "",
           dateUpdated: new Date(),
         };
+        logger.info("Creating <Audit> object.");
         const newAudit = new Audit(updatedDetails);
+        logger.info({ updatedDetails }, "<Audit> object created");
         const dbItem = this.todbItem(newAudit);
+        logger.info({ dbItem }, "Creted dbItem");
 
         const params: PutCommandInput = {
           TableName: this.getTableName(),
@@ -98,6 +104,7 @@ export class AuditDbOps {
         };
         const command = new PutCommand(params);
         await docClient.send(command);
+        logger.info("dbItem saved in DB");
 
         logger.info("New audit created successfully");
 
