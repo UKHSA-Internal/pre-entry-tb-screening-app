@@ -106,7 +106,7 @@ export class ApplicantSummaryPage extends BasePage {
   }
 
   confirmDetails(): ApplicantSummaryPage {
-    cy.contains("button", "Save and continue").should("be.visible").click();
+    cy.contains("button", "Submit and continue").should("be.visible").click();
     return this;
   }
 
@@ -272,7 +272,7 @@ export class ApplicantSummaryPage extends BasePage {
 
   // Verify Save and continue button exists
   verifySaveAndContinueButtonExists(): ApplicantSummaryPage {
-    cy.contains("button", "Save and continue")
+    cy.contains("button", "Submit and continue")
       .should("be.visible")
       .and("have.attr", "type", "submit")
       .and("have.attr", "data-module", "govuk-button");

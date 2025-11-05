@@ -200,13 +200,13 @@ export class XRayResultsAndFindingsPage extends BasePage {
 
   // Verify Save and continue button
   verifySaveAndContinueButton(): XRayResultsAndFindingsPage {
-    cy.get('button[type="submit"]').should("be.visible").should("contain", "Save and continue");
+    cy.get('button[type="submit"]').should("be.visible").should("contain", "Submit and continue");
     return this;
   }
 
   // Click Save and continue button
   clickSaveAndContinueButton(): XRayResultsAndFindingsPage {
-    cy.get('button[type="submit"]').contains("Save and continue").click();
+    cy.get('button[type="submit"]').contains("Submit and continue").click();
     return this;
   }
 

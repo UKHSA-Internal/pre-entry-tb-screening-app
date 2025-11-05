@@ -152,7 +152,7 @@ export class CheckChestXrayImagesPage extends BasePage {
   verifySaveAndContinueButton(): CheckChestXrayImagesPage {
     cy.get("button[type='submit']")
       .should("be.visible")
-      .and("contain", "Save and continue")
+      .and("contain", "Submit and continue")
       .and("be.enabled");
     return this;
   }
