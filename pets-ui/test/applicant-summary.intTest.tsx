@@ -137,7 +137,7 @@ describe("ApplicantReview", () => {
 
     expect(mock.history[0].url).toEqual("/application");
     expect(mock.history).toHaveLength(1);
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
   });
 
   test("user is navigated to error page when second api call is unsuccessful", async () => {
@@ -151,7 +151,7 @@ describe("ApplicantReview", () => {
     expect(mock.history[0].url).toEqual("/application");
     expect(mock.history[1].url).toEqual("/applicant/register/abc-123");
     expect(mock.history).toHaveLength(2);
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/error");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
   });
 
   test("calls uploadFile to upload applicant photo if present", async () => {

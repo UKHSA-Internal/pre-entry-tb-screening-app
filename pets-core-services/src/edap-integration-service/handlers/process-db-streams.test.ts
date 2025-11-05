@@ -49,49 +49,4 @@ describe("handler Function", () => {
       expect(sendDbStreamMessage).toHaveBeenCalledTimes(1);
     });
   });
-
-  // describe("when SQService throws error", () => {
-  //   it.skip("should throw error if code is not InvalidParameterValue", async () => {
-  //     StreamService.getClinicDataStream = vi.fn().mockReturnValue([{}]);
-  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-  //     const myError = new Error("It Broke!") as any;
-  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  //     myError.code = "SomeError";
-  //     SQService.prototype.sendDbStreamMessage = vi.fn().mockRejectedValue(myError);
-  //     StreamService.getClinicDataStream = vi.fn().mockReturnValue([{ test: "thing" }]);
-
-  //     expect.assertions(1);
-
-  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  //     const returnedInfo = await edapIntegrationHandler(
-  //       { Records: ["this is an event"] },
-  //       ctx,
-  //       () => {
-  //         return;
-  //       },
-  //     );
-  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  //     expect(returnedInfo.batchItemFailures.length).toBe(1);
-  //   });
-  //   it.skip("should not throw error if code is InvalidParameterValue", async () => {
-  //     StreamService.getClinicDataStream = vi.fn().mockReturnValue([{}]);
-  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-  //     const myError = new Error("It Broke!") as any;
-  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  //     myError.code = "InvalidParameterValue";
-  //     SQService.prototype.sendDbStreamMessage = vi.fn().mockRejectedValue(myError);
-  //     StreamService.getClinicDataStream = vi.fn().mockReturnValue([{ test: "thing" }]);
-
-  //     expect.assertions(1);
-  //     try {
-  //       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  //       const result = await edapIntegrationHandler({ Records: ["this is an event"] }, ctx, () => {
-  //         return;
-  //       });
-  //       expect(result).toBe({});
-  //     } catch (e) {
-  //       console.error(e);
-  //     }
-  //   });
-  // });
 });

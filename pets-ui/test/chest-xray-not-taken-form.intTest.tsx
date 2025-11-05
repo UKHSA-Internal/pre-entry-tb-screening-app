@@ -42,20 +42,22 @@ describe("ChestXrayNotTakenPage", () => {
     await waitFor(() => {
       expect(screen.getByText("There is a problem")).toBeInTheDocument();
       expect(
-        screen.getAllByText("Select a reason why X-ray is not required")[0],
+        screen.getAllByText("Select the reason an X-ray is not required")[0],
       ).toBeInTheDocument();
       expect(
-        screen.getAllByText("Select a reason why X-ray is not required")[1],
+        screen.getAllByText("Select the reason an X-ray is not required")[1],
       ).toBeInTheDocument();
-      expect(screen.getAllByText("Select a reason why X-ray is not required")[0]).toHaveAttribute(
+      expect(screen.getAllByText("Select the reason an X-ray is not required")[0]).toHaveAttribute(
         "aria-label",
-        "Error: Select a reason why X-ray is not required",
+        "Error: Select the reason an X-ray is not required",
       );
     });
   });
   it("does not render an error if continue button not clicked", () => {
     expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
-    expect(screen.queryByText("Select a reason why X-ray is not required")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Select the reason an X-ray is not required"),
+    ).not.toBeInTheDocument();
   });
   it("does not render an error if 'Child (under 11 years)' option chosen and continue clicked", async () => {
     const radioButtons = screen.getAllByRole("radio");
@@ -64,7 +66,9 @@ describe("ChestXrayNotTakenPage", () => {
     await user.click(screen.getByRole("button"));
 
     expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
-    expect(screen.queryByText("Select a reason why X-ray is not required")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Select the reason an X-ray is not required"),
+    ).not.toBeInTheDocument();
   });
   it("does not render an error if 'Pregnant' option chosen and continue clicked", async () => {
     const radioButtons = screen.getAllByRole("radio");
@@ -73,7 +77,9 @@ describe("ChestXrayNotTakenPage", () => {
     await user.click(screen.getByRole("button"));
 
     expect(screen.queryByText("There is a problem")).not.toBeInTheDocument();
-    expect(screen.queryByText("Select a reason why X-ray is not required")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Select the reason an X-ray is not required"),
+    ).not.toBeInTheDocument();
   });
   it("does render an error if 'Other' option chosen with empty reason and continue clicked", async () => {
     const radioButtons = screen.getAllByRole("radio");
@@ -96,13 +102,31 @@ describe("ChestXrayNotTakenPage", () => {
     });
   });
 
-  it("when continue pressed, it navigates to /check-medical-screening", async () => {
+  it("when continue pressed, it navigates to /check-medical-history-and-tb-symptoms", async () => {
     const radioButtons = screen.getAllByRole("radio");
 
     await user.click(radioButtons[0]);
     await user.click(screen.getByRole("button"));
 
     expect(useNavigateMock).toHaveBeenCalled();
-    expect(useNavigateMock).toHaveBeenCalledWith("/check-medical-screening");
+    expect(useNavigateMock).toHaveBeenCalledWith("/check-medical-history-and-tb-symptoms");
+  });
+  it("pre-fills 'Other' reason text field when the redux variable is not empty", async () => {
+    const preloadedState = {
+      medicalScreening: {
+        reasonXrayNotRequired: "Other",
+        reasonXrayNotRequiredFurtherDetails: "too old",
+      },
+    } as unknown as Record<string, unknown>;
+
+    renderWithProviders(
+      <HelmetProvider>
+        <ChestXrayNotTaken />
+      </HelmetProvider>,
+      { preloadedState },
+    );
+
+    const input = await screen.findByTestId("reason-xray-not-required-other-detail");
+    expect(input).toHaveValue("too old");
   });
 });

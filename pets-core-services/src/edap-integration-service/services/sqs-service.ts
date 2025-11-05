@@ -1,6 +1,4 @@
 import {
-  GetQueueUrlCommand,
-  GetQueueUrlCommandOutput,
   MessageAttributeValue,
   SendMessageCommand,
   SendMessageCommandInput,
@@ -29,8 +27,22 @@ class SQService {
    */
   public sendDbStreamMessage(messageBody: string) {
     logger.info(`Message Body to be sent: ${messageBody}`);
+    return this.sendMessage(
+      messageBody,
+      process.env.EDAP_INTEGRATION_QUEUE_NAME as string,
+      this.getAWSAccountIdForEDAP() as string,
+    );
+  }
 
-    return this.sendMessage(messageBody, process.env.EDAP_INTEGRATION_QUEUE_NAME as string);
+  private getAWSAccountIdForEDAP() {
+    const environment = process.env.ENVIRONMENT; // e.g. "dev" | "uat" | "prod"
+    let queueOwnerAWSAccountId: string | undefined;
+    if (environment === "preprod" || environment === "prod") {
+      queueOwnerAWSAccountId = process.env.EDAP_AWS_ACCOUNT_ID;
+    } else {
+      queueOwnerAWSAccountId = process.env.AWS_ACCOUNT_ID;
+    }
+    return queueOwnerAWSAccountId;
   }
 
   /**
@@ -40,7 +52,11 @@ class SQService {
   public sendToDLQ(messageBody: string) {
     logger.info(`Message Body to be sent to DLQ: ${messageBody}`);
 
-    return this.sendMessage(messageBody, process.env.EDAP_INTEGRATION_DLQ_NAME as string);
+    return this.sendMessage(
+      messageBody,
+      process.env.EDAP_INTEGRATION_DLQ_NAME as string,
+      process.env.AWS_ACCOUNT_ID as string,
+    );
   }
 
   /**
@@ -52,25 +68,34 @@ class SQService {
   private async sendMessage(
     messageBody: string,
     queueName: string,
+    queueOwnerAWSAccountId: string,
     messageAttributes?: Record<string, MessageAttributeValue>,
   ) {
-    // Get the queue URL for the provided queue name
-    const queueUrlResult: GetQueueUrlCommandOutput = await this.sqsClient.send(
-      new GetQueueUrlCommand({ QueueName: queueName }),
-    );
-    logger.info(`Queue URL result: ${JSON.stringify(queueUrlResult)}`);
+    // Detect FIFO automatically
+    const isFifo = queueName.endsWith(".fifo");
 
-    const params = {
-      QueueUrl: queueUrlResult.QueueUrl,
+    // Get the queue URL for the provided queue name
+
+    const queueUrl = `https://sqs.${process.env.AWS_REGION}.amazonaws.com/${queueOwnerAWSAccountId}/${queueName}`;
+
+    logger.info(`Queue URL: ${queueUrl}`);
+
+    const params: SendMessageCommandInput = {
+      QueueUrl: queueUrl,
       MessageBody: messageBody,
     };
 
+    if (isFifo) {
+      // Add FIFO-specific fields
+      params.MessageGroupId = "default"; // can customize if you want different groups
+      params.MessageDeduplicationId = Date.now().toString(); // or use a UUID
+    }
     if (messageAttributes) {
       Object.assign(params, { MessageAttributes: messageAttributes });
     }
 
     // Send a message to the queue
-    await this.sqsClient.send(new SendMessageCommand(params as SendMessageCommandInput));
+    await this.sqsClient.send(new SendMessageCommand(params));
   }
 }
 

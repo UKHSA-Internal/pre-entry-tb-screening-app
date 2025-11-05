@@ -332,7 +332,7 @@ const SputumResultsForm = () => {
       navigate("/check-sputum-sample-information-results");
     } catch (error) {
       console.error(error);
-      navigate("/error");
+      navigate("/sorry-there-is-problem-with-service");
     } finally {
       setIsLoading(false);
     }

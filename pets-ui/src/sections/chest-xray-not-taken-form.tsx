@@ -44,6 +44,7 @@ const ChestXrayNotTakenForm = () => {
   });
   const {
     handleSubmit,
+    setValue,
     formState: { errors },
   } = methods;
 
@@ -59,11 +60,27 @@ const ChestXrayNotTakenForm = () => {
 
     dispatch(setReasonXrayNotRequired(reasonValue));
     dispatch(setReasonXrayNotRequiredFurtherDetails(furtherDetails));
-    navigate("/check-medical-screening");
+    navigate("/check-medical-history-and-tb-symptoms");
   };
 
   const errorsToShow = Object.keys(errors);
   const reasonXrayWasNotTakenRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (
+      medicalData.reasonXrayNotRequired === "Other" &&
+      medicalData.reasonXrayNotRequiredFurtherDetails
+    ) {
+      setValue(
+        "reasonXrayNotRequiredFurtherDetails",
+        medicalData.reasonXrayNotRequiredFurtherDetails,
+      );
+    }
+  }, [
+    medicalData.reasonXrayNotRequired,
+    medicalData.reasonXrayNotRequiredFurtherDetails,
+    setValue,
+  ]);
 
   useEffect(() => {
     if (location.hash) {
@@ -88,7 +105,7 @@ const ChestXrayNotTakenForm = () => {
             errorMessage={(errors?.reasonXrayNotRequired?.message as string) ?? ""}
             formValue="reasonXrayNotRequired"
             defaultValue={mapBackendToDisplay(medicalData.reasonXrayNotRequired || "")}
-            required="Select a reason why X-ray is not required"
+            required="Select the reason an X-ray is not required"
             divStyle={{ marginTop: 40 }}
             conditionalInput={{
               triggerValue: "Other",
