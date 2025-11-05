@@ -329,7 +329,7 @@ const SputumResultsForm = () => {
       persistResultsToStore(formData);
 
       dispatch(setCheckSputumPreviousPage("/enter-sputum-sample-results"));
-      navigate("/check-sputum-sample-information-results");
+      navigate("/check-sputum-collection-details-results");
     } catch (error) {
       console.error(error);
       navigate("/sorry-there-is-problem-with-service");

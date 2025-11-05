@@ -246,7 +246,7 @@ const SputumCollectionForm = () => {
 
     if (submittedBy === "save-progress") {
       dispatch(setCheckSputumPreviousPage("/enter-sputum-sample-collection-information"));
-      navigate("/check-sputum-sample-information-results");
+      navigate("/check-sputum-collection-details-results");
     } else if (submittedBy === "save-and-continue-to-results") {
       navigate("/enter-sputum-sample-results");
     }
