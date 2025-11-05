@@ -5,7 +5,7 @@ import { Mock } from "vitest";
 
 import { ApplicantPhotoProvider, useApplicantPhoto } from "@/context/applicantPhotoContext";
 import ProgressTrackerPage from "@/pages/progress-tracker";
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, PositiveOrNegative, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -100,6 +100,82 @@ const radiologicalOutcomeSlice = {
   xrayAssociatedMinorFindings: [],
   xrayActiveTbFindings: [],
   completionDate: { year: "", month: "", day: "" },
+};
+
+const sputumResultsSlice = {
+  version: 1,
+  sample1: {
+    collection: {
+      submittedToDatabase: false,
+      dateOfSample: {
+        year: "",
+        month: "",
+        day: "",
+      },
+      collectionMethod: "",
+    },
+    smearResults: {
+      submittedToDatabase: false,
+      smearResult: PositiveOrNegative.NOT_YET_ENTERED,
+    },
+    cultureResults: {
+      submittedToDatabase: false,
+      cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
+    },
+    lastUpdatedDate: {
+      year: "",
+      month: "",
+      day: "",
+    },
+  },
+  sample2: {
+    collection: {
+      submittedToDatabase: false,
+      dateOfSample: {
+        year: "",
+        month: "",
+        day: "",
+      },
+      collectionMethod: "",
+    },
+    smearResults: {
+      submittedToDatabase: false,
+      smearResult: PositiveOrNegative.NOT_YET_ENTERED,
+    },
+    cultureResults: {
+      submittedToDatabase: false,
+      cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
+    },
+    lastUpdatedDate: {
+      year: "",
+      month: "",
+      day: "",
+    },
+  },
+  sample3: {
+    collection: {
+      submittedToDatabase: false,
+      dateOfSample: {
+        year: "",
+        month: "",
+        day: "",
+      },
+      collectionMethod: "",
+    },
+    smearResults: {
+      submittedToDatabase: false,
+      smearResult: PositiveOrNegative.NOT_YET_ENTERED,
+    },
+    cultureResults: {
+      submittedToDatabase: false,
+      cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
+    },
+    lastUpdatedDate: {
+      year: "",
+      month: "",
+      day: "",
+    },
+  },
 };
 
 const tbCertSlice = {
@@ -206,8 +282,12 @@ const completeState = {
   },
   sputumDecision: {
     status: ApplicationStatus.COMPLETE,
-    isSputumRequired: YesOrNo.NO,
+    isSputumRequired: YesOrNo.YES,
     completionDate: { year: "2025", month: "01", day: "15" },
+  },
+  sputum: {
+    status: ApplicationStatus.COMPLETE,
+    ...sputumResultsSlice,
   },
   tbCertificate: { status: ApplicationStatus.COMPLETE, ...tbCertSlice },
 };
@@ -262,6 +342,20 @@ test("Progress tracker page displays incomplete application sections correctly &
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
   expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Cannot start yet"));
+
+  const sputumDecisionText = screen.getByText(/Make a sputum decision/i);
+  const sputumDecisionListItem = sputumDecisionText.closest("li");
+  expect(sputumDecisionListItem).toHaveClass(
+    "govuk-task-list__item govuk-task-list__item--with-link",
+  );
+  expect(within(sputumDecisionListItem as HTMLElement).getByText("Cannot start yet"));
+
+  const sputumResultsText = screen.getByText(/Sputum collection and results/i);
+  const sputumResultsListItem = sputumResultsText.closest("li");
+  expect(sputumResultsListItem).toHaveClass(
+    "govuk-task-list__item govuk-task-list__item--with-link",
+  );
+  expect(within(sputumResultsListItem as HTMLElement).getByText("Cannot start yet"));
 
   const tbCertificateText = screen.getByText(/TB certificate outcome/i);
   const tbCertificateListItem = tbCertificateText.closest("li");
@@ -341,6 +435,22 @@ test("Progress tracker page displays complete application sections correctly, li
     "govuk-task-list__item govuk-task-list__item--with-link",
   );
   expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Completed"));
+
+  const sputumDecisionLink = screen.getByRole("link", { name: /Make a sputum decision/i });
+  expect(sputumDecisionLink).toHaveAttribute("href", "/check-sputum-decision-information");
+  const sputumDecisionListItem = sputumDecisionLink.closest("li");
+  expect(sputumDecisionListItem).toHaveClass(
+    "govuk-task-list__item govuk-task-list__item--with-link",
+  );
+  expect(within(sputumDecisionListItem as HTMLElement).getByText("Completed"));
+
+  const sputumResultsLink = screen.getByRole("link", { name: /Sputum collection and results/i });
+  expect(sputumResultsLink).toHaveAttribute("href", "/check-sputum-collection-details-results");
+  const sputumResultsListItem = sputumDecisionLink.closest("li");
+  expect(sputumResultsListItem).toHaveClass(
+    "govuk-task-list__item govuk-task-list__item--with-link",
+  );
+  expect(within(sputumResultsListItem as HTMLElement).getByText("Completed"));
 
   const tbCertificateLink = screen.getByRole("link", { name: /TB certificate outcome/i });
   expect(tbCertificateLink).toHaveAttribute("href", "/tb-screening-complete");
