@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { AttributeValue } from "@aws-sdk/client-dynamodb";
 import { PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
@@ -64,6 +63,7 @@ export class AuditDbOps {
         const changeDetails = unmarshall(
           newImage as AttributeValue | Record<string, AttributeValue>,
         );
+        logger.info({ changeDetails }, "unmarshalled 'newImage'");
 
         const myRe = /:table\/(\w+-\w+)\//g;
         const table = myRe.exec(record.eventSourceARN);
@@ -77,9 +77,7 @@ export class AuditDbOps {
 
         const source = undefined; // record?.source;
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const email = changeDetails?.dynamodb?.NewImage?.updatedBy
-          ? changeDetails.dynamodb.NewImage.updatedBy
-          : changeDetails?.dynamodb?.NewImage?.createdBy;
+        const email = changeDetails?.updatedBy ? changeDetails.updatedBy : changeDetails?.createdBy;
 
         logger.info(`email = ${email as string}`);
 
