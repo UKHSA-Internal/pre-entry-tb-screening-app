@@ -3,7 +3,7 @@ import {
   Context,
   DynamoDBBatchItemFailure,
   DynamoDBBatchResponse,
-  DynamoDBStreamEvent,
+  DynamoDBRecord,
   Handler,
 } from "aws-lambda";
 
@@ -18,16 +18,16 @@ import { AuditDbOps } from "../models/audit-db-ops";
  * @param _callback - callback function
  */
 const createAuditHandler: Handler = async (
-  event: DynamoDBStreamEvent,
+  event: DynamoDBRecord[],
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   context?: Context,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   callback?: Callback,
 ): Promise<DynamoDBBatchResponse> => {
-  logger.info({ event }, "Audit-service / event received");
+  logger.info(`Audit-service / event received: ${JSON.stringify(event)}`);
   const batchItemFailures: DynamoDBBatchItemFailure[] = [];
 
-  for (const record of event.Records) {
+  for (const record of event) {
     logger.info(`Audit handler / processing record: ${JSON.stringify(record)}`);
 
     try {
