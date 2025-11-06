@@ -1,6 +1,9 @@
+import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { Context, DynamoDBStreamEvent } from "aws-lambda";
+import { mockClient } from "aws-sdk-client-mock";
 import { afterAll, describe, expect, it, vi } from "vitest";
 
+import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
 import { seededAuditData } from "../fixtures/audit-data";
 import { handler } from "./audit";
@@ -8,9 +11,7 @@ import { handler } from "./audit";
 describe("Audit Lambda", () => {
   const ctx = "" as unknown as Context;
 
-  const sampleEvent = {
-    Records: seededAuditData,
-  } as DynamoDBStreamEvent;
+  const sampleEvent = seededAuditData as DynamoDBStreamEvent[];
 
   afterAll(() => {
     vi.restoreAllMocks();
@@ -25,11 +26,7 @@ describe("Audit Lambda", () => {
 
     // expect(infologgerMock).toHaveBeenCalledWith("???");
     expect(result).toMatchObject({
-      batchItemFailures: [
-        {
-          itemIdentifier: "0",
-        },
-      ],
+      batchItemFailures: [],
     });
 
     infologgerMock.mockRestore();
@@ -37,9 +34,29 @@ describe("Audit Lambda", () => {
 
   it("should handle error if no event", async () => {
     const errorloggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    const ddbMock = mockClient(awsClients.dynamoDBDocClient);
+    ddbMock.on(PutCommand).rejects("Err0r");
 
-    await expect(handler(sampleEvent, ctx, () => {})).rejects.toEqual(
-      new Error("Failed to create audit"),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const result = await handler(seededAuditData, ctx, () => {});
+
+    expect(result).toMatchObject({
+      batchItemFailures: [
+        {
+          itemIdentifier: "298669500002753139988920065",
+        },
+      ],
+    });
+
+    expect(errorloggerMock).toHaveBeenNthCalledWith(
+      1,
+      { error: Error("Err0r") },
+      "Creating audit failed",
+    );
+    expect(errorloggerMock).toHaveBeenNthCalledWith(
+      2,
+      { e: Error("Err0r") },
+      "Error creating audit",
     );
 
     errorloggerMock.mockRestore();
