@@ -27,6 +27,7 @@ const ApplicantForm = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const isComplete = applicantData.status === ApplicationStatus.COMPLETE;
+  const summaryStatus = isComplete ? ApplicationStatus.IN_PROGRESS : applicantData.status;
 
   const methods = useForm<ReduxApplicantDetailsType>({ reValidateMode: "onSubmit" });
   const {
@@ -37,9 +38,6 @@ const ApplicantForm = () => {
 
   const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = async (formData) => {
     const fromParam = searchParams.get("from");
-    const isEditingFromSummary =
-      (fromParam === "tb-certificate-summary" || fromParam === "check-applicant-details") &&
-      isComplete;
 
     const updatedFormData = {
       ...formData,
@@ -52,7 +50,7 @@ const ApplicantForm = () => {
 
     dispatch(setApplicantDetails(updatedFormData));
 
-    if (isEditingFromSummary && applicationData.applicationId) {
+    if (isComplete && applicationData.applicationId) {
       try {
         const dateOfBirthStr = `${formData.dateOfBirth.year}-${standardiseDayOrMonth(formData.dateOfBirth.month)}-${standardiseDayOrMonth(formData.dateOfBirth.day)}`;
         const issueDateStr = `${formData.passportIssueDate.year}-${standardiseDayOrMonth(formData.passportIssueDate.month)}-${standardiseDayOrMonth(formData.passportIssueDate.day)}`;
@@ -158,7 +156,7 @@ const ApplicantForm = () => {
 
         {isComplete && (
           <Summary
-            status={applicantData.status}
+            status={summaryStatus}
             summaryElements={[
               {
                 key: "Passport number",
