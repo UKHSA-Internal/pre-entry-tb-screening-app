@@ -42,6 +42,46 @@ const tbState: ReduxTbCertificateType = {
   },
 };
 
+const completeState = {
+  application: { applicationId: "abc-123", dateCreated: "" },
+  applicant: {
+    status: ApplicationStatus.COMPLETE,
+    fullName: "John Smith",
+    sex: "Male",
+    dateOfBirth: { year: "1970", month: "1", day: "1" },
+    countryOfNationality: "GBR",
+    passportNumber: "12345",
+    countryOfIssue: "GBR",
+    passportIssueDate: { year: "2020", month: "1", day: "1" },
+    passportExpiryDate: { year: "2030", month: "1", day: "1" },
+    applicantHomeAddress1: "1 Street",
+    applicantHomeAddress2: "",
+    applicantHomeAddress3: "",
+    townOrCity: "London",
+    provinceOrState: "Greater London",
+    country: "GBR",
+    postcode: "0000 111",
+    applicantPhotoFileName: "photo.jpg",
+  },
+  travel: {
+    status: ApplicationStatus.COMPLETE,
+    visaCategory: "Work",
+    applicantUkAddress1: "1 Street",
+    applicantUkAddress2: "",
+    applicantUkAddress3: "",
+    townOrCity: "London",
+    postcode: "0000 111",
+    ukEmail: "test@example.co.uk",
+    ukMobileNumber: "07123456789",
+  },
+  tbCertificate: {
+    ...tbState,
+    status: ApplicationStatus.IN_PROGRESS,
+  },
+};
+
+const notIssuedState = { ...completeState, tbCertificate: { ...tbState, isIssued: YesOrNo.NO } };
+
 describe("TBSummaryPage", () => {
   let mock: MockAdapter;
   const user = userEvent.setup();
@@ -66,6 +106,46 @@ describe("TBSummaryPage", () => {
 
     it("renders the page titles and descriptions ", () => {
       expect(screen.getByText("Check certificate information")).toBeInTheDocument();
+    });
+  });
+
+  describe("UI Tests for cert not issued", () => {
+    beforeEach(() => {
+      renderWithProviders(
+        <HelmetProvider>
+          <ApplicantPhotoProvider>
+            <TbSummaryPage />
+          </ApplicantPhotoProvider>
+        </HelmetProvider>,
+        { preloadedState: notIssuedState },
+      );
+    });
+
+    it("renders the notification box", () => {
+      expect(screen.getByText("Important")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "If a visa applicant's chest X-rays indicate they have pulmonary TB, the panel physician must give them a referral letter and copies of the:",
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByText("chest X-ray")).toBeInTheDocument();
+      expect(screen.getByText("radiology report")).toBeInTheDocument();
+      expect(screen.getByText("medical record form")).toBeInTheDocument();
+    });
+
+    it("renders instructional text", () => {
+      expect(screen.getByText("Now send the TB clearance outcome")).toBeInTheDocument();
+      expect(screen.getByText("Now send the TB clearance outcome")).toHaveClass("govuk-heading-m");
+      expect(
+        screen.getByText(
+          "You will not be able to change the TB clearance outcome after you submit this information.",
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "You will not be able to change the TB clearance outcome after you submit this information.",
+        ),
+      ).toHaveClass("govuk-body");
     });
   });
 
@@ -125,43 +205,6 @@ describe("TBSummaryPage", () => {
     });
 
     it("shows change links to other tasks", () => {
-      const completeState = {
-        application: { applicationId: "abc-123", dateCreated: "" },
-        applicant: {
-          status: ApplicationStatus.COMPLETE,
-          fullName: "John Smith",
-          sex: "Male",
-          dateOfBirth: { year: "1970", month: "1", day: "1" },
-          countryOfNationality: "GBR",
-          passportNumber: "12345",
-          countryOfIssue: "GBR",
-          passportIssueDate: { year: "2020", month: "1", day: "1" },
-          passportExpiryDate: { year: "2030", month: "1", day: "1" },
-          applicantHomeAddress1: "1 Street",
-          applicantHomeAddress2: "",
-          applicantHomeAddress3: "",
-          townOrCity: "London",
-          provinceOrState: "Greater London",
-          country: "GBR",
-          postcode: "0000 111",
-          applicantPhotoFileName: "photo.jpg",
-        },
-        travel: {
-          status: ApplicationStatus.COMPLETE,
-          visaCategory: "Work",
-          applicantUkAddress1: "1 Street",
-          applicantUkAddress2: "",
-          applicantUkAddress3: "",
-          townOrCity: "London",
-          postcode: "0000 111",
-          ukEmail: "test@example.co.uk",
-          ukMobileNumber: "07123456789",
-        },
-        tbCertificate: {
-          ...tbState,
-          status: ApplicationStatus.IN_PROGRESS,
-        },
-      };
       renderWithProviders(
         <HelmetProvider>
           <ApplicantPhotoProvider>
@@ -176,43 +219,6 @@ describe("TBSummaryPage", () => {
     });
 
     it("Change link for name redirects to applicant details page", () => {
-      const completeState = {
-        application: { applicationId: "abc-123", dateCreated: "" },
-        applicant: {
-          status: ApplicationStatus.COMPLETE,
-          fullName: "John Smith",
-          sex: "Male",
-          dateOfBirth: { year: "1970", month: "1", day: "1" },
-          countryOfNationality: "GBR",
-          passportNumber: "12345",
-          countryOfIssue: "GBR",
-          passportIssueDate: { year: "2020", month: "1", day: "1" },
-          passportExpiryDate: { year: "2030", month: "1", day: "1" },
-          applicantHomeAddress1: "1 Street",
-          applicantHomeAddress2: "",
-          applicantHomeAddress3: "",
-          townOrCity: "London",
-          provinceOrState: "Greater London",
-          country: "GBR",
-          postcode: "0000 111",
-          applicantPhotoFileName: "photo.jpg",
-        },
-        travel: {
-          status: ApplicationStatus.COMPLETE,
-          visaCategory: "Work",
-          applicantUkAddress1: "1 Street",
-          applicantUkAddress2: "",
-          applicantUkAddress3: "",
-          townOrCity: "London",
-          postcode: "0000 111",
-          ukEmail: "test@example.co.uk",
-          ukMobileNumber: "07123456789",
-        },
-        tbCertificate: {
-          ...tbState,
-          status: ApplicationStatus.IN_PROGRESS,
-        },
-      };
       renderWithProviders(
         <HelmetProvider>
           <ApplicantPhotoProvider>
@@ -230,43 +236,6 @@ describe("TBSummaryPage", () => {
     });
 
     it("Change link for visa category redirects to visa category page", () => {
-      const completeState = {
-        application: { applicationId: "abc-123", dateCreated: "" },
-        applicant: {
-          status: ApplicationStatus.COMPLETE,
-          fullName: "John Smith",
-          sex: "Male",
-          dateOfBirth: { year: "1970", month: "1", day: "1" },
-          countryOfNationality: "GBR",
-          passportNumber: "12345",
-          countryOfIssue: "GBR",
-          passportIssueDate: { year: "2020", month: "1", day: "1" },
-          passportExpiryDate: { year: "2030", month: "1", day: "1" },
-          applicantHomeAddress1: "1 Street",
-          applicantHomeAddress2: "",
-          applicantHomeAddress3: "",
-          townOrCity: "London",
-          provinceOrState: "Greater London",
-          country: "GBR",
-          postcode: "0000 111",
-          applicantPhotoFileName: "photo.jpg",
-        },
-        travel: {
-          status: ApplicationStatus.COMPLETE,
-          visaCategory: "Work",
-          applicantUkAddress1: "1 Street",
-          applicantUkAddress2: "",
-          applicantUkAddress3: "",
-          townOrCity: "London",
-          postcode: "0000 111",
-          ukEmail: "test@example.co.uk",
-          ukMobileNumber: "07123456789",
-        },
-        tbCertificate: {
-          ...tbState,
-          status: ApplicationStatus.IN_PROGRESS,
-        },
-      };
       renderWithProviders(
         <HelmetProvider>
           <ApplicantPhotoProvider>
@@ -286,43 +255,6 @@ describe("TBSummaryPage", () => {
     });
 
     it("Change link for UK address redirects to UK address page", () => {
-      const completeState = {
-        application: { applicationId: "abc-123", dateCreated: "" },
-        applicant: {
-          status: ApplicationStatus.COMPLETE,
-          fullName: "John Smith",
-          sex: "Male",
-          dateOfBirth: { year: "1970", month: "1", day: "1" },
-          countryOfNationality: "GBR",
-          passportNumber: "12345",
-          countryOfIssue: "GBR",
-          passportIssueDate: { year: "2020", month: "1", day: "1" },
-          passportExpiryDate: { year: "2030", month: "1", day: "1" },
-          applicantHomeAddress1: "1 Street",
-          applicantHomeAddress2: "",
-          applicantHomeAddress3: "",
-          townOrCity: "London",
-          provinceOrState: "Greater London",
-          country: "GBR",
-          postcode: "0000 111",
-          applicantPhotoFileName: "photo.jpg",
-        },
-        travel: {
-          status: ApplicationStatus.COMPLETE,
-          visaCategory: "Work",
-          applicantUkAddress1: "1 Street",
-          applicantUkAddress2: "",
-          applicantUkAddress3: "",
-          townOrCity: "London",
-          postcode: "0000 111",
-          ukEmail: "test@example.co.uk",
-          ukMobileNumber: "07123456789",
-        },
-        tbCertificate: {
-          ...tbState,
-          status: ApplicationStatus.IN_PROGRESS,
-        },
-      };
       renderWithProviders(
         <HelmetProvider>
           <ApplicantPhotoProvider>
@@ -344,50 +276,13 @@ describe("TBSummaryPage", () => {
 
   describe("TB Summary change link restrictions", () => {
     it("does not show Change link for Passport number", () => {
-      const preloadedState = {
-        application: { applicationId: "abc-123", dateCreated: "" },
-        applicant: {
-          status: ApplicationStatus.COMPLETE,
-          fullName: "John Smith",
-          sex: "Male",
-          dateOfBirth: { year: "1970", month: "1", day: "1" },
-          countryOfNationality: "GBR",
-          passportNumber: "12345",
-          countryOfIssue: "GBR",
-          passportIssueDate: { year: "2020", month: "1", day: "1" },
-          passportExpiryDate: { year: "2030", month: "1", day: "1" },
-          applicantHomeAddress1: "1 Street",
-          applicantHomeAddress2: "",
-          applicantHomeAddress3: "",
-          townOrCity: "London",
-          provinceOrState: "Greater London",
-          country: "GBR",
-          postcode: "0000 111",
-          applicantPhotoFileName: "photo.jpg",
-        },
-        travel: {
-          status: ApplicationStatus.COMPLETE,
-          visaCategory: "Work",
-          applicantUkAddress1: "1 Street",
-          applicantUkAddress2: "",
-          applicantUkAddress3: "",
-          townOrCity: "London",
-          postcode: "0000 111",
-          ukEmail: "test@example.co.uk",
-          ukMobileNumber: "07123456789",
-        },
-        tbCertificate: {
-          ...tbState,
-          status: ApplicationStatus.IN_PROGRESS,
-        },
-      };
       renderWithProviders(
         <HelmetProvider>
           <ApplicantPhotoProvider>
             <TbSummaryPage />
           </ApplicantPhotoProvider>
         </HelmetProvider>,
-        { preloadedState },
+        { preloadedState: completeState },
       );
 
       expect(

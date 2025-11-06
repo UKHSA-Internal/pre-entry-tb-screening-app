@@ -14,7 +14,7 @@ export default function CheckSputumSampleInformationPage() {
 
   return (
     <Container
-      title="Check sputum sample information and results - Complete UK pre-entry health screening - GOV.UK"
+      title="Check sputum collection details and results - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo={backLinkUrl}
     >
       <SputumSummary />

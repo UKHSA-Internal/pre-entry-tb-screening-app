@@ -31,7 +31,7 @@ describe("SputumDecisionSummary", () => {
     (postSputumRequirement as Mock).mockReset();
   });
 
-  it("renders summary and Save and continue button when status is NOT_YET_STARTED", () => {
+  it("renders summary and Submit and continue button when status is NOT_YET_STARTED", () => {
     const preloadedState = {
       application: { applicationId, dateCreated: "2025-01-01" },
       sputumDecision: {
@@ -43,10 +43,10 @@ describe("SputumDecisionSummary", () => {
     renderWithProviders(<SputumDecisionSummary />, { preloadedState });
     expect(screen.getByText("Sputum required")).toBeInTheDocument();
     expect(screen.getByText("Yes")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Save and continue" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Submit and continue" })).toBeInTheDocument();
   });
 
-  it("posts data and navigates to confirmation on Save and continue", async () => {
+  it("posts data and navigates to confirmation on Submit and continue", async () => {
     const preloadedState = {
       application: { applicationId, dateCreated: "2025-01-01" },
       sputumDecision: {
@@ -57,7 +57,7 @@ describe("SputumDecisionSummary", () => {
     };
     (postSputumRequirement as Mock).mockResolvedValue({});
     renderWithProviders(<SputumDecisionSummary />, { preloadedState });
-    await user.click(screen.getByRole("button", { name: "Save and continue" }));
+    await user.click(screen.getByRole("button", { name: "Submit and continue" }));
     expect(postSputumRequirement).toHaveBeenCalledWith(applicationId, {
       sputumRequired: YesOrNo.NO,
     });
@@ -102,7 +102,7 @@ describe("SputumDecisionSummary", () => {
     };
     (postSputumRequirement as Mock).mockRejectedValue(new Error("fail"));
     renderWithProviders(<SputumDecisionSummary />, { preloadedState });
-    await user.click(screen.getByRole("button", { name: "Save and continue" }));
+    await user.click(screen.getByRole("button", { name: "Submit and continue" }));
     expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
   });
 });
