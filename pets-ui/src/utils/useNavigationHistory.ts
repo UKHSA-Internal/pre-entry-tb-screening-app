@@ -42,7 +42,7 @@ export const useNavigationHistory = (shouldClearHistory = false) => {
     const history = getNavigationHistory();
     const currentPath = location.pathname + location.search + location.hash;
 
-    if (history.length === 0 || history[history.length - 1] !== currentPath) {
+    if (history.length === 0 || history.at(-1) !== currentPath) {
       const newHistory = [...history, currentPath];
       if (newHistory.length > MAX_HISTORY_SIZE) {
         newHistory.shift();
