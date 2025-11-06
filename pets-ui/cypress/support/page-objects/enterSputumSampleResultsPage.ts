@@ -327,7 +327,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
 
   // Button interaction
   clickSaveAndContinue(): EnterSputumSampleResultsPage {
-    cy.contains('button[type="submit"]', "Submit and continue").click();
+    cy.contains('button[type="submit"]', "Save and continue").click();
     return this;
   }
 
@@ -337,7 +337,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
 
   // Verify save and continue button
   verifySaveAndContinueButton(): EnterSputumSampleResultsPage {
-    cy.contains('button[type="submit"]', "Submit and continue")
+    cy.contains('button[type="submit"]', "Save and continue")
       .should("be.visible")
       .and("be.enabled");
     return this;
