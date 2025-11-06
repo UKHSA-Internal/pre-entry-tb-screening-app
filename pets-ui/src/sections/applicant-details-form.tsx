@@ -36,6 +36,11 @@ const ApplicantForm = () => {
   } = methods;
 
   const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = async (formData) => {
+    const fromParam = searchParams.get("from");
+    const isEditingFromSummary =
+      (fromParam === "tb-certificate-summary" || fromParam === "check-applicant-details") &&
+      isComplete;
+
     const updatedFormData = {
       ...formData,
       applicantPhotoFileName: applicantData.applicantPhotoFileName,
@@ -47,7 +52,7 @@ const ApplicantForm = () => {
 
     dispatch(setApplicantDetails(updatedFormData));
 
-    if (isComplete && applicationData.applicationId) {
+    if (isEditingFromSummary && applicationData.applicationId) {
       try {
         const dateOfBirthStr = `${formData.dateOfBirth.year}-${standardiseDayOrMonth(formData.dateOfBirth.month)}-${standardiseDayOrMonth(formData.dateOfBirth.day)}`;
         const issueDateStr = `${formData.passportIssueDate.year}-${standardiseDayOrMonth(formData.passportIssueDate.month)}-${standardiseDayOrMonth(formData.passportIssueDate.day)}`;
@@ -75,7 +80,6 @@ const ApplicantForm = () => {
         };
         await putApplicantDetails(applicationData.applicationId, updatePayload);
 
-        const fromParam = searchParams.get("from");
         if (fromParam === "tb-certificate-summary") {
           navigate("/tb-certificate-summary");
         } else if (fromParam === "check-applicant-details") {
@@ -88,7 +92,9 @@ const ApplicantForm = () => {
         navigate("/error");
       }
     } else {
-      dispatch(setApplicantDetailsStatus(ApplicationStatus.IN_PROGRESS));
+      if (!isComplete) {
+        dispatch(setApplicantDetailsStatus(ApplicationStatus.IN_PROGRESS));
+      }
       navigate("/upload-visa-applicant-photo");
     }
   };
@@ -133,7 +139,7 @@ const ApplicantForm = () => {
       };
 
       const targetRef = refMap[target];
-      if (targetRef) {
+      if (targetRef && typeof targetRef.scrollIntoView === "function") {
         targetRef.scrollIntoView();
       }
     }

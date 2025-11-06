@@ -23,6 +23,10 @@ export interface ConfirmationProps {
     text: string;
     onClick: () => void;
   };
+  secondaryButton?: {
+    text: string;
+    onClick: () => void;
+  };
 }
 
 export default function Confirmation({
@@ -32,6 +36,7 @@ export default function Confirmation({
   preWhatHappensNextText,
   postWhatHappensNextText,
   actionButton,
+  secondaryButton,
   showSearchForAnotherVisaApplicantLink = true,
   ...props
 }: Readonly<ConfirmationProps>) {
@@ -79,6 +84,17 @@ export default function Confirmation({
               type={ButtonType.DEFAULT}
               text={actionButton.text}
               handleClick={actionButton.onClick}
+            />
+          </div>
+        )}
+
+        {secondaryButton && (
+          <div className="confirmation-secondary-button">
+            <Button
+              id="secondary-button"
+              type={ButtonType.SECONDARY}
+              text={secondaryButton.text}
+              handleClick={secondaryButton.onClick}
             />
           </div>
         )}

@@ -36,16 +36,6 @@ const renderSignOut = () =>
         </Routes>
       </MemoryRouter>
     </HelmetProvider>,
-    {
-      preloadedState: {
-        navigation: {
-          signOutPreviousPage: "/previous-page",
-          checkSputumPreviousPage: "",
-          accessibilityStatementPreviousPage: "",
-          privacyNoticePreviousPage: "",
-        },
-      },
-    },
   );
 
 describe("Sign out page", () => {
@@ -81,6 +71,10 @@ describe("Sign out page", () => {
   });
 
   it("navigates back to previous page when cancel clicked", async () => {
+    sessionStorage.setItem(
+      "navigationHistory",
+      JSON.stringify(["/previous-page", "/are-you-sure-you-want-to-sign-out"]),
+    );
     renderSignOut();
     const cancelBtn = screen.getByRole("button", { name: "Go back to screening" });
     await user.click(cancelBtn);

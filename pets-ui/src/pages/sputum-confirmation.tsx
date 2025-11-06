@@ -52,10 +52,7 @@ export default function SputumConfirmation() {
   })();
 
   return (
-    <Container
-      title="Sputum sample information confirmed - Complete UK pre-entry health screening - GOV.UK"
-      backLinkTo="/check-sputum-sample-information-results"
-    >
+    <Container title="Sputum sample information confirmed - Complete UK pre-entry health screening - GOV.UK">
       <Confirmation
         confirmationText={confirmationText}
         furtherInfo={furtherInfo}

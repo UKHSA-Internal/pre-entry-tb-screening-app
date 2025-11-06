@@ -327,12 +327,6 @@ describe("SputumSummary", () => {
           },
         },
       },
-      navigation: {
-        checkSputumPreviousPage: "/prev-page",
-        accessibilityStatementPreviousPage: "",
-        privacyNoticePreviousPage: "",
-        signOutPreviousPage: "",
-      },
     };
 
     renderWithProviders(<CheckSputumSampleInformationPage />, { preloadedState });
@@ -420,19 +414,13 @@ describe("SputumSummary", () => {
           },
         },
       },
-      navigation: {
-        checkSputumPreviousPage: "/prev-page",
-        accessibilityStatementPreviousPage: "",
-        privacyNoticePreviousPage: "",
-        signOutPreviousPage: "",
-      },
     };
 
     renderWithProviders(<CheckSputumSampleInformationPage />, { preloadedState });
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/prev-page");
+    expect(link).toHaveAttribute("href", "/enter-sputum-sample-collection-information");
     expect(link).toHaveClass("govuk-back-link");
   });
 });

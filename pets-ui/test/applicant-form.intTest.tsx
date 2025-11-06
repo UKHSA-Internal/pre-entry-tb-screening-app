@@ -289,6 +289,11 @@ describe("ApplicantForm", () => {
         applicantPhotoFileName: "photo.jpg",
       },
     };
+    window.history.pushState(
+      {},
+      "",
+      "/enter-applicant-information?from=tb-certificate-summary#name",
+    );
     const { store } = renderWithProviders(<ApplicantForm />, { preloadedState: completeState });
 
     await user.clear(screen.getByTestId("name"));
