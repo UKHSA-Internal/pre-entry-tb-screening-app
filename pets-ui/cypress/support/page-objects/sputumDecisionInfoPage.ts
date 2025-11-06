@@ -99,17 +99,17 @@ export class SputumDecisionInfoPage extends BasePage {
     return this;
   }
 
-  // Verify save and continue button
+  // Verify Submit and continue button
   verifySaveAndContinueButton(): SputumDecisionInfoPage {
     cy.get('button[type="submit"].govuk-button')
       .should("be.visible")
-      .should("contain", "Save and continue");
+      .should("contain", "Submit and continue");
     return this;
   }
 
-  // Click save and continue button
+  // Click Submit and continue button
   clickSaveAndContinueButton(): SputumDecisionInfoPage {
-    cy.get('button[type="submit"].govuk-button').contains("Save and continue").click();
+    cy.get('button[type="submit"].govuk-button').contains("Submit and continue").click();
     return this;
   }
 

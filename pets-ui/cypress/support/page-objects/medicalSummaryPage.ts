@@ -228,7 +228,7 @@ export class MedicalSummaryPage extends BasePage {
 
   // Submit form to confirm details
   confirmDetails(): MedicalSummaryPage {
-    cy.get("button[type='submit']").contains("Save and continue").should("be.visible").click();
+    cy.get("button[type='submit']").contains("Submit and continue").should("be.visible").click();
     return this;
   }
 
@@ -365,7 +365,7 @@ export class MedicalSummaryPage extends BasePage {
   // Verify continue button styling
   verifyContinueButton(): MedicalSummaryPage {
     cy.get("button[type='submit']")
-      .should("contain", "Save and continue")
+      .should("contain", "Submit and continue")
       .and("have.class", "govuk-button")
       .and("have.attr", "data-module", "govuk-button")
       .and("have.attr", "style")
@@ -378,7 +378,7 @@ export class MedicalSummaryPage extends BasePage {
     cy.get("button[type='submit']")
       .should("be.visible")
       .and("be.enabled")
-      .and("contain", "Save and continue");
+      .and("contain", "Submit and continue");
     return this;
   }
 
