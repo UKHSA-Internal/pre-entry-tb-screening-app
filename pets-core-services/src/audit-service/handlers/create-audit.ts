@@ -18,13 +18,11 @@ import { AuditDbOps } from "../models/audit-db-ops";
  */
 const createAuditHandler: Handler = async (
   records: DynamoDBRecord[],
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   context?: Context,
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   callback?: Callback,
 ): Promise<DynamoDBBatchResponse> => {
-  logger.info(`Audit-service / context received: ${JSON.stringify(context)}`);
-  logger.info(callback);
   logger.info(`Audit-service / event received: ${JSON.stringify(records)}`);
   const batchItemFailures: DynamoDBBatchItemFailure[] = [];
 
@@ -40,8 +38,6 @@ const createAuditHandler: Handler = async (
     } catch (e) {
       logger.error({ e }, "Error creating audit");
       batchItemFailures.push({ itemIdentifier: record.dynamodb?.SequenceNumber ?? "" });
-
-      throw new Error("Failed to create audit");
     }
   }
 

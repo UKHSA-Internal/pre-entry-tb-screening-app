@@ -105,10 +105,11 @@ export class AuditDbOps {
       };
 
       const newAudit = new Audit(updatedDetails);
+      const sk = changeDetails.sk as string;
       const dbItem = this.todbItem(
         newAudit,
-        `AUDIT#${changeDetails.pk}`,
-        `AUDIT#${changeDetails.sk}`,
+        `AUDIT#${new Date().valueOf()}`,
+        `${changeDetails.pk}${sk.slice(sk.indexOf("#"))}`,
       );
 
       logger.info({ dbItem }, "Saving data to DB");
@@ -125,7 +126,7 @@ export class AuditDbOps {
 
       return newAudit as AuditBase;
     } catch (error) {
-      logger.error({ error }, "Error creating audit");
+      logger.error({ error }, "Creating audit failed");
       throw error;
     }
   }
