@@ -82,7 +82,7 @@ describe("RadiologicalOutcomeSummary Section", () => {
 
     renderWithProviders(<RadiologicalOutcomeSummary />, { preloadedState });
 
-    await user.click(screen.getByRole("button", { name: /save and continue/i }));
+    await user.click(screen.getByRole("button", { name: /submit and continue/i }));
 
     await waitFor(() => {
       expect(mock.history.post).toHaveLength(1);
@@ -115,7 +115,7 @@ describe("RadiologicalOutcomeSummary Section", () => {
 
     renderWithProviders(<RadiologicalOutcomeSummary />, { preloadedState });
 
-    await user.click(screen.getByRole("button", { name: /save and continue/i }));
+    await user.click(screen.getByRole("button", { name: /submit and continue/i }));
 
     await waitFor(() => {
       expect(mock.history.post).toHaveLength(1);
@@ -146,7 +146,7 @@ describe("RadiologicalOutcomeSummary Section", () => {
 
     renderWithProviders(<RadiologicalOutcomeSummary />, { preloadedState });
 
-    await user.click(screen.getByRole("button", { name: /save and continue/i }));
+    await user.click(screen.getByRole("button", { name: /submit and continue/i }));
 
     await waitFor(() => {
       expect(mock.history.post).toHaveLength(1);
@@ -177,7 +177,7 @@ describe("RadiologicalOutcomeSummary Section", () => {
 
     renderWithProviders(<RadiologicalOutcomeSummary />, { preloadedState });
 
-    await user.click(screen.getByRole("button", { name: /save and continue/i }));
+    await user.click(screen.getByRole("button", { name: /submit and continue/i }));
 
     await waitFor(() => {
       expect(mock.history.post).toHaveLength(1);
