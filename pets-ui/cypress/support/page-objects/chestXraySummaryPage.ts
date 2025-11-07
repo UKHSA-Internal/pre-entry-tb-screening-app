@@ -1,31 +1,23 @@
 //This holds all fields of the Chest X-ray Summary Page
-export class ChestXraySummaryPage {
-  visit(): void {
-    cy.visit("/chest-xray-summary");
+import { BasePage } from "../BasePage";
+
+export class ChestXraySummaryPage extends BasePage {
+  constructor() {
+    super("/chest-xray-summary");
   }
 
   // Verify page loaded
-  verifyPageLoaded(): void {
+  verifyPageLoaded(): ChestXraySummaryPage {
     cy.get("h1.govuk-heading-l")
       .should("be.visible")
       .and("contain", "Check chest X-ray information");
 
     // check summary list is present
     cy.get(".govuk-summary-list").should("be.visible");
+    return this;
   }
 
-  // Get summary value for a specific field
-  getSummaryValue(fieldKey: string): Cypress.Chainable<string> {
-    return cy
-      .contains("dt.govuk-summary-list__key", fieldKey)
-      .siblings(".govuk-summary-list__value")
-      .invoke("text");
-  }
-
-  // Verify specific summary value
-  verifySummaryValue(fieldKey: string, expectedValue: string): void {
-    this.getSummaryValue(fieldKey).should("eq", expectedValue);
-  }
+  // Note: getSummaryValue and verifySummaryValue are now inherited from BasePage
 
   //Verify X-ray summary information for both populated fields and optional fields
   verifyXraySummaryInfo(expectedValues: {
@@ -37,12 +29,13 @@ export class ChestXraySummaryPage {
     "Radiological details"?: string;
     "Enter radiographic findings"?: string;
     "Sputum required?"?: string;
-  }): void {
+  }): ChestXraySummaryPage {
     Object.entries(expectedValues).forEach(([key, expectedValue]) => {
       if (expectedValue !== undefined) {
         this.verifyField(key, expectedValue);
       }
     });
+    return this;
   }
 
   /**
@@ -51,7 +44,11 @@ export class ChestXraySummaryPage {
    * @param expectedValue Expected value if field is populated
    * @param optionalLink Whether to expect an optional link if field is not populated
    */
-  verifyField(fieldKey: string, expectedValue?: string, optionalLink: boolean = false): void {
+  verifyField(
+    fieldKey: string,
+    expectedValue?: string,
+    optionalLink: boolean = false,
+  ): ChestXraySummaryPage {
     cy.contains("dt.govuk-summary-list__key", fieldKey).then(($dt) => {
       const $value = $dt.siblings(".govuk-summary-list__value");
       const $valueColumn = $dt.siblings(".govuk-summary-value-column");
@@ -82,6 +79,7 @@ export class ChestXraySummaryPage {
         }
       }
     });
+    return this;
   }
 
   // Check if a specific field has a "Change" link
@@ -93,13 +91,10 @@ export class ChestXraySummaryPage {
       .should("contain", "Change");
   }
 
-  // Click on change link for a specific field
-  clickChangeLink(fieldKey: string): void {
-    this.checkChangeLink(fieldKey).click();
-  }
+  // Note: clickChangeLink is inherited from BasePage
 
   // Check change links exist with correct URLs
-  verifyChangeLinksExist(): void {
+  verifyChangeLinksExist(): ChestXraySummaryPage {
     // Define fields to check with different possible states
     const fields = [
       { key: "Select X-ray status", expectedHref: "/chest-xray-question#chest-xray-taken" },
@@ -142,44 +137,21 @@ export class ChestXraySummaryPage {
         }
       });
     });
-  }
-
-  // Click Save and continue
-  clickSaveAndContinue(): void {
-    cy.get('button[type="submit"]').contains("Save and continue").click();
-  }
-
-  // Verify back link navigation
-  verifyBackLinkNavigation(): void {
-    cy.get(".govuk-back-link")
-      .should("be.visible")
-      .and("contain", "Back")
-      .and("have.attr", "href", "/sputum-question");
-  }
-
-  // Verify service name in header
-  verifyServiceName(): void {
-    cy.get(".govuk-header__service-name")
-      .should("be.visible")
-      .and("contain", "Complete UK pre-entry health screening");
-  }
-
-  // Get the current URL
-  getCurrentUrl(): Cypress.Chainable<string> {
-    return cy.url();
+    return this;
   }
 
   // Check URL after form submission
-  checkRedirectionAfterSubmit(expectedUrlPath: string): void {
+  checkRedirectionAfterSubmit(expectedUrlPath: string): ChestXraySummaryPage {
     this.clickSaveAndContinue();
     cy.url().should("include", expectedUrlPath);
+    return this;
   }
 
   // Method to handle case-insensitive field matching
   getSummaryValueCaseInsensitive(fieldKey: string): Cypress.Chainable<string> {
     // First try exact match
     return cy.get("dt.govuk-summary-list__key").then(($keys) => {
-      const exactMatch = $keys.filter((index, element) => {
+      const exactMatch = $keys.filter((_index, element) => {
         return Cypress.$(element).text().trim() === fieldKey;
       });
 
@@ -192,7 +164,7 @@ export class ChestXraySummaryPage {
       }
 
       // If no exact match, try case-insensitive match
-      const caseInsensitiveMatch = $keys.filter((index, element) => {
+      const caseInsensitiveMatch = $keys.filter((_index, element) => {
         return Cypress.$(element).text().trim().toLowerCase() === fieldKey.toLowerCase();
       });
 
@@ -209,8 +181,9 @@ export class ChestXraySummaryPage {
   }
 
   // Updated verify summary value method with case-insensitive support
-  verifySummaryValueCaseInsensitive(fieldKey: string, expectedValue: string): void {
+  verifySummaryValueCaseInsensitive(fieldKey: string, expectedValue: string): ChestXraySummaryPage {
     this.getSummaryValueCaseInsensitive(fieldKey).should("eq", expectedValue);
+    return this;
   }
 
   // Method specifically for X-ray not taken scenarios
@@ -220,12 +193,13 @@ export class ChestXraySummaryPage {
     "Enter reason X-ray not taken"?: string;
     Details?: string;
     "Sputum required?"?: string;
-  }): void {
+  }): ChestXraySummaryPage {
     Object.entries(expectedValues).forEach(([key, expectedValue]) => {
       if (expectedValue !== undefined) {
         this.verifyFieldCaseInsensitive(key, expectedValue);
       }
     });
+    return this;
   }
 
   // VerifyF ield method with case-insensitive support
@@ -233,7 +207,7 @@ export class ChestXraySummaryPage {
     fieldKey: string,
     expectedValue?: string,
     optionalLink: boolean = false,
-  ): void {
+  ): ChestXraySummaryPage {
     // Try both exact case and lowercase versions
     const fieldsToTry = [fieldKey, fieldKey.toLowerCase()];
     let fieldFound = false;
@@ -278,17 +252,19 @@ export class ChestXraySummaryPage {
           throw new Error(`Field "${fieldKey}" not found in summary list`);
         }
       });
+    return this;
   }
 
   // Method to verify X-ray not taken specific fields
-  verifyXrayNotTakenFields(): void {
+  verifyXrayNotTakenFields(): ChestXraySummaryPage {
     // Verify the fields that appear when X-ray is not taken
     cy.contains("dt.govuk-summary-list__key", "Enter reason X-ray not taken").should("be.visible");
     cy.contains("dt.govuk-summary-list__key", "Details").should("be.visible");
+    return this;
   }
 
   // Change links verification for X-ray not taken scenario
-  verifyXrayNotTakenChangeLinks(): void {
+  verifyXrayNotTakenChangeLinks(): ChestXraySummaryPage {
     const fields = [
       { key: "Select x-ray status", expectedHref: "/chest-xray-question#chest-xray-taken" },
       {
@@ -314,6 +290,7 @@ export class ChestXraySummaryPage {
         }
       });
     });
+    return this;
   }
 
   // Comprehensive method for X-ray not taken scenarios
@@ -322,20 +299,21 @@ export class ChestXraySummaryPage {
     "Enter reason X-ray not taken"?: string;
     Details?: string;
     "Sputum required?"?: string;
-  }): void {
+  }): ChestXraySummaryPage {
     this.verifyPageLoaded();
     this.verifyXrayNotTakenSummaryInfo(xrayInfo);
     this.verifyXrayNotTakenFields();
     this.verifyXrayNotTakenChangeLinks();
-    this.verifyBackLinkNavigation();
+    this.verifyBackLink("/sputum-question");
     this.verifyServiceName();
+    return this;
   }
 
   // Method to handle mixed case field names
   getActualFieldKey(expectedKey: string): Cypress.Chainable<string> {
     return cy.get("dt.govuk-summary-list__key").then(($keys) => {
       let actualKey = "";
-      $keys.each((index, element) => {
+      $keys.each((_index, element) => {
         const text = Cypress.$(element).text().trim();
         if (text.toLowerCase() === expectedKey.toLowerCase()) {
           actualKey = text;
@@ -347,20 +325,22 @@ export class ChestXraySummaryPage {
   }
 
   // Verify Xray Summary Info to handle case sensitivity
-  verifyXraySummaryInfoFlexible(expectedValues: { [key: string]: string }): void {
+  verifyXraySummaryInfoFlexible(expectedValues: { [key: string]: string }): ChestXraySummaryPage {
     Object.entries(expectedValues).forEach(([key, expectedValue]) => {
       if (expectedValue !== undefined) {
         this.verifyFieldCaseInsensitive(key, expectedValue);
       }
     });
+    return this;
   }
 
   // Helper method to debug available fields
-  logAvailableFields(): void {
+  logAvailableFields(): ChestXraySummaryPage {
     cy.get("dt.govuk-summary-list__key").each(($dt) => {
       const fieldText = $dt.text().trim();
       cy.log(`Available field: "${fieldText}"`);
     });
+    return this;
   }
 
   // Check all elements on the page
@@ -373,11 +353,12 @@ export class ChestXraySummaryPage {
     "Radiological details"?: string;
     "Enter radiographic findings"?: string;
     "Sputum required?"?: string;
-  }): void {
+  }): ChestXraySummaryPage {
     this.verifyPageLoaded();
     this.verifyXraySummaryInfo(xrayInfo);
     this.verifyChangeLinksExist();
-    this.verifyBackLinkNavigation();
+    this.verifyBackLink("/sputum-question");
     this.verifyServiceName();
+    return this;
   }
 }

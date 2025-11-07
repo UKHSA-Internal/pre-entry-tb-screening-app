@@ -1,5 +1,6 @@
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
+import NotificationBanner from "@/components/notificationBanner/notificationBanner";
 import { useAppSelector } from "@/redux/hooks";
 import { selectTbCertificate } from "@/redux/store";
 import TbSummary from "@/sections/tb-summary";
@@ -25,6 +26,13 @@ export default function TbSummaryPage() {
       title={pageTitle + " - Complete UK pre-entry health screening - GOV.UK"}
       backLinkTo={backLinkUrl}
     >
+      {tbCertificateData.isIssued === YesOrNo.NO && (
+        <NotificationBanner
+          bannerTitle="Important"
+          bannerText="If a visa applicant's chest X-rays indicate they have pulmonary TB, the panel physician must give them a referral letter and copies of the:"
+          list={["chest X-ray", "radiology report", "medical record form"]}
+        />
+      )}
       <Heading level={1} size="l" title={pageTitle} />
       <TbSummary />
     </Container>

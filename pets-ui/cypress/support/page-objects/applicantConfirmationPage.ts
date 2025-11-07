@@ -3,7 +3,7 @@ import { BasePage } from "../BasePage";
 
 export class ApplicantConfirmationPage extends BasePage {
   constructor() {
-    super("/applicant-confirmation");
+    super("/visa-applicant-details-confirmed");
   }
 
   // Verify page loaded
@@ -41,7 +41,7 @@ export class ApplicantConfirmationPage extends BasePage {
   verifyBackLink(): ApplicantConfirmationPage {
     cy.get(".govuk-back-link")
       .should("be.visible")
-      .and("have.attr", "href", "/applicant-summary")
+      .and("have.attr", "href", "/visa-applicant-details-confirmed")
       .and("contain", "Back");
     return this;
   }

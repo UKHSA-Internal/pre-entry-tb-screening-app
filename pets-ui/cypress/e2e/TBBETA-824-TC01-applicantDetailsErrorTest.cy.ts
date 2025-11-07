@@ -1,10 +1,12 @@
 import { countryList } from "../../src/utils/countryList";
 import { loginViaB2C } from "../support/commands";
+import { ApplicantConsentPage } from "../support/page-objects/applicantConsentPage";
 import { ApplicantDetailsPage } from "../support/page-objects/applicantDetailsPage";
 import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
 import { getRandomPassportNumber, randomElement } from "../support/test-utils";
 
 describe("Applicant Details Form - Empty Form Error Test", () => {
+  const applicantConsentPage = new ApplicantConsentPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
   const applicantSearchPage = new ApplicantSearchPage();
   // Define variables to store test data
@@ -29,6 +31,9 @@ describe("Applicant Details Form - Empty Form Error Test", () => {
     applicantSearchPage.verifyNoMatchingRecordMessage(20000);
     applicantSearchPage.verifyCreateNewApplicantExists();
     applicantSearchPage.clickCreateNewApplicant();
+
+    // Verify Applicant Consent
+    applicantConsentPage.continueWithConsent("Yes");
 
     // Verify redirection to the contact page
     applicantSearchPage.verifyRedirectionToCreateApplicantPage();

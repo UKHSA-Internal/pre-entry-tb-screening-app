@@ -38,10 +38,7 @@ export default function TbConfirmationPage() {
   ];
 
   return (
-    <Container
-      title="TB screening complete - Complete UK pre-entry health screening - GOV.UK"
-      backLinkTo="/tb-certificate-summary"
-    >
+    <Container title="TB screening complete - Complete UK pre-entry health screening - GOV.UK">
       <Confirmation
         confirmationText={
           isCertificateIssued
@@ -63,6 +60,14 @@ export default function TbConfirmationPage() {
                 onClick: () => {
                   navigate("/tb-clearance-certificate");
                 },
+              }
+            : undefined
+        }
+        secondaryButton={
+          isCertificateIssued
+            ? {
+                text: "Check or change certificate information",
+                onClick: () => navigate("/tb-certificate-summary?from=/tb-screening-complete"),
               }
             : undefined
         }

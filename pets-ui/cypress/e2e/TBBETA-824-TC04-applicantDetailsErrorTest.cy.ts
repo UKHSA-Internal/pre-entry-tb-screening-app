@@ -1,5 +1,6 @@
 import { countryList } from "../../src/utils/countryList";
 import { loginViaB2C } from "../support/commands";
+import { ApplicantConsentPage } from "../support/page-objects/applicantConsentPage";
 import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
 import {
   createTestFixtures,
@@ -10,6 +11,7 @@ import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetails
 
 describe("Applicant Details Form - Invalid Month Format Test", () => {
   // Page object instances
+  const applicantConsentPage = new ApplicantConsentPage();
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
 
@@ -53,6 +55,8 @@ describe("Applicant Details Form - Invalid Month Format Test", () => {
     applicantSearchPage.verifyNoMatchingRecordMessage(20000);
     applicantSearchPage.verifyCreateNewApplicantExists();
     applicantSearchPage.clickCreateNewApplicant();
+    // Verify Applicant Consent
+    applicantConsentPage.continueWithConsent("Yes");
 
     // Verify redirection to the contact page
     applicantSearchPage.verifyRedirectionToCreateApplicantPage();

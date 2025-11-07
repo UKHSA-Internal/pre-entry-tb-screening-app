@@ -109,7 +109,7 @@ const ProgressTracker = () => {
   let sputumLink = "/enter-sputum-sample-collection-information";
 
   if (sputumData.status === ApplicationStatus.COMPLETE) {
-    sputumLink = "/check-sputum-sample-information-results";
+    sputumLink = "/check-sputum-collection-details-results";
   } else if (allSputumSamplesSubmitted) {
     sputumLink = "/enter-sputum-sample-results";
   }

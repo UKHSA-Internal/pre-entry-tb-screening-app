@@ -95,6 +95,121 @@ export class ApplicantSearchPage extends BasePage {
     return this;
   }
 
+  // Verify full country of issue hint text including "Use the English spelling or the country code"
+  verifyFullCountryOfIssueHintText(): this {
+    cy.get("#country-of-issue-hint")
+      .should("be.visible")
+      .and(
+        "contain.text",
+        "If you have more than one, use the nationality in the primary passport submitted by the applicant. Use the English spelling or the country code.",
+      );
+    return this;
+  }
+
+  // Verify beta banner exists
+  verifyBetaBanner(): this {
+    cy.get(".govuk-phase-banner")
+      .should("be.visible")
+      .within(() => {
+        cy.contains(".govuk-tag", "BETA").should("be.visible");
+        cy.contains("This is a new service. Help us improve it and").should("be.visible");
+        cy.contains("a", "give your feedback (opens in new tab)")
+          .should("be.visible")
+          .should("have.attr", "href")
+          .and("include", "forms.office.com");
+      });
+    return this;
+  }
+
+  // Click feedback link
+  clickFeedbackLink(): this {
+    cy.contains("a", "give your feedback (opens in new tab)").click();
+    return this;
+  }
+
+  // Verify Sign Out link exists
+  verifySignOutLinkExists(): this {
+    cy.get("#sign-out")
+      .should("be.visible")
+      .and("contain.text", "Sign out")
+      .and("have.attr", "href", "/are-you-sure-you-want-to-sign-out");
+    return this;
+  }
+
+  // Click Sign Out link
+  clickSignOut(): this {
+    cy.get("#sign-out").click();
+    return this;
+  }
+
+  // Verify footer links exist
+  verifyFooterLinks(): this {
+    cy.get(".govuk-footer").within(() => {
+      cy.contains("a", "Privacy").should("be.visible").and("have.attr", "href", "/privacy-notice");
+      cy.contains("a", "Accessibility statement")
+        .should("be.visible")
+        .and("have.attr", "href", "/accessibility-statement");
+    });
+    return this;
+  }
+
+  // Click Privacy link
+  clickPrivacyLink(): this {
+    cy.contains(".govuk-footer a", "Privacy").click();
+    return this;
+  }
+
+  // Click Accessibility Statement link
+  clickAccessibilityStatementLink(): this {
+    cy.contains(".govuk-footer a", "Accessibility statement").click();
+    return this;
+  }
+
+  // Verify GOV.UK logo exists
+  verifyGovUKLogo(): this {
+    cy.get(".govuk-header__logo")
+      .should("be.visible")
+      .find("svg")
+      .should("have.attr", "aria-label", "GOV.UK");
+    return this;
+  }
+
+  // Verify service name in header
+  verifyServiceNameInHeader(): this {
+    cy.get(".govuk-header__service-name")
+      .first()
+      .should("be.visible")
+      .and("contain.text", "Complete UK pre-entry health screening")
+      .and("have.attr", "href", "/");
+    return this;
+  }
+
+  // Verify skip to main content link
+  verifySkipLink(): this {
+    cy.get(".govuk-skip-link")
+      .should("exist")
+      .and("have.attr", "href", "#main-content")
+      .and("contain.text", "Skip to main content");
+    return this;
+  }
+
+  // Verify passport number field has correct attributes
+  verifyPassportNumberFieldAttributes(): this {
+    cy.get("#passport-number-field")
+      .should("have.attr", "type", "text")
+      .and("have.attr", "name", "passportNumber")
+      .and("have.attr", "data-testid", "passport-number");
+    return this;
+  }
+
+  // Verify country dropdown has aria-describedby for hint
+  verifyCountryDropdownAccessibility(): this {
+    cy.get("#country-of-issue-field")
+      .should("have.attr", "aria-describedby", "country-of-issue-hint")
+      .and("have.attr", "name", "countryOfIssue");
+    return this;
+  }
+
   // Search and create new if not found - new applicant
   searchAndCreateNewIfNotFound(passportNumber: string, countryCode: string): this {
     this.fillPassportNumber(passportNumber);
@@ -146,13 +261,13 @@ export class ApplicantSearchPage extends BasePage {
 
   // Verify successful redirection after search
   verifyRedirectionToDetailsPage(): this {
-    this.verifyUrlContains("/contact");
+    this.verifyUrlContains("/enter-applicant-information");
     return this;
   }
 
   // Verify redirection after clicking Create New Applicant
   verifyRedirectionToCreateApplicantPage(): this {
-    this.verifyUrlContains("/contact");
+    this.verifyUrlContains("/enter-applicant-information");
     return this;
   }
 

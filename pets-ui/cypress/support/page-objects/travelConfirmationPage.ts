@@ -3,12 +3,12 @@ import { BasePage } from "../BasePage";
 //This holds all fields on the Travel Confirmation Page
 export class TravelConfirmationPage extends BasePage {
   constructor() {
-    super("/travel-confirmation");
+    super("/travel-information-confirmed");
   }
 
   // Verify page loaded
   verifyPageLoaded(): TravelConfirmationPage {
-    cy.url().should("include", "/travel-confirmation");
+    cy.url().should("include", "/travel-information-confirmed");
     cy.get(".govuk-panel--confirmation").should("be.visible");
     cy.get(".govuk-panel__title")
       .should("be.visible")
@@ -23,7 +23,7 @@ export class TravelConfirmationPage extends BasePage {
     return this;
   }
 
-  // Submit Form - button text changed
+  // Submit Form
   submitForm(): TravelConfirmationPage {
     cy.get('button[type="submit"]').contains("Continue").should("be.visible").click();
     return this;
@@ -41,11 +41,11 @@ export class TravelConfirmationPage extends BasePage {
     return this;
   }
 
-  // Verify back link points to travel summary
+  // Verify back link points to check travel information
   verifyBackLink(): TravelConfirmationPage {
     cy.get(".govuk-back-link")
       .should("be.visible")
-      .and("have.attr", "href", "/travel-summary")
+      .and("have.attr", "href", "/check-travel-information")
       .and("contain", "Back");
     return this;
   }
@@ -74,6 +74,26 @@ export class TravelConfirmationPage extends BasePage {
     return this;
   }
 
+  // Verify search for another visa applicant link
+  verifySearchForAnotherApplicantLink(): TravelConfirmationPage {
+    cy.get('a[href="/search-for-visa-applicant"]')
+      .should("be.visible")
+      .and("contain", "Search for another visa applicant");
+    return this;
+  }
+
+  // Click search for another visa applicant link
+  clickSearchForAnotherApplicant(): TravelConfirmationPage {
+    cy.get('a[href="/search-for-visa-applicant"]').click();
+    return this;
+  }
+
+  // Verify redirection to search page
+  verifyRedirectionToSearchPage(): TravelConfirmationPage {
+    cy.url().should("include", "/search-for-visa-applicant");
+    return this;
+  }
+
   // Complete confirmation and proceed to tracker
   confirmAndProceed(): TravelConfirmationPage {
     this.verifyPageLoaded();
@@ -88,6 +108,7 @@ export class TravelConfirmationPage extends BasePage {
     this.verifyPageLoaded();
     this.verifyNextStepsText();
     this.verifyConfirmationPanel();
+    this.verifySearchForAnotherApplicantLink();
     this.verifyBackLink();
     this.verifyBreadcrumbNavigation();
     this.verifyServiceName();
@@ -98,7 +119,7 @@ export class TravelConfirmationPage extends BasePage {
   verifyCompletePageStructure(): TravelConfirmationPage {
     this.verifyConfirmationPanel();
     this.verifyNextStepsText();
-    this.verifyContinueButtonStyling();
+    this.verifySearchForAnotherApplicantLink();
     this.verifyBackLink();
     return this;
   }

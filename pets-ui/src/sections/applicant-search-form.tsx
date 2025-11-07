@@ -22,7 +22,6 @@ import {
   clearMedicalScreeningDetails,
   setMedicalScreeningDetailsFromApiResponse,
 } from "@/redux/medicalScreeningSlice";
-import { clearNavigationDetails } from "@/redux/navigationSlice";
 import {
   clearRadiologicalOutcomeDetails,
   setRadiologicalOutcomeFromApiResponse,
@@ -69,7 +68,6 @@ const ApplicantSearchForm = () => {
     dispatch(clearTbCertificateDetails());
     dispatch(setApplicantPhotoFileName(""));
     setApplicantPhotoUrl(null);
-    dispatch(clearNavigationDetails());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

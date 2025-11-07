@@ -8,7 +8,6 @@ import Heading from "@/components/heading/heading";
 import Spinner from "@/components/spinner/spinner";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { setCheckSputumPreviousPage } from "@/redux/navigationSlice";
 import {
   setSample1CultureResults,
   setSample1SmearResults,
@@ -327,9 +326,7 @@ const SputumResultsForm = () => {
     setIsLoading(true);
     try {
       persistResultsToStore(formData);
-
-      dispatch(setCheckSputumPreviousPage("/enter-sputum-sample-results"));
-      navigate("/check-sputum-sample-information-results");
+      navigate("/check-sputum-collection-details-results");
     } catch (error) {
       console.error(error);
       navigate("/sorry-there-is-problem-with-service");
