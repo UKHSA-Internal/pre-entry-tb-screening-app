@@ -11,6 +11,7 @@ declare global {
   interface Window {
     gtag?: (...args: unknown[]) => void;
   }
+  var gtag: ((...args: any[]) => void) | undefined;
 }
 
 type ApplicantSearchFormType = {

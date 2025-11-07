@@ -242,8 +242,8 @@ const isChildUnder11 = (medicalScreeningData: ReduxMedicalScreeningType) => {
 };
 
 const updateGoogleAnalyticsConsent = (consentGranted: boolean) => {
-  if (typeof window.gtag === "function") {
-    window.gtag("consent", "update", {
+  if (typeof globalThis.gtag === "function") {
+    globalThis.gtag("consent", "update", {
       ad_storage: consentGranted ? "granted" : "denied",
       analytics_storage: consentGranted ? "granted" : "denied",
       functionality_storage: consentGranted ? "granted" : "denied",

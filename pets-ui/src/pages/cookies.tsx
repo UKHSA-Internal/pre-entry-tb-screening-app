@@ -23,6 +23,13 @@ export default function CookiesPage() {
   const [cookieConsent, setCookieConsent] = useState(localStorage.getItem("cookie-consent"));
   const [showSubmissionBanner, setShowSubmissionBanner] = useState(false);
 
+  let cookieRadioValue = undefined;
+  if (cookieConsent == "accepted") {
+    cookieRadioValue = "Yes";
+  } else if (cookieConsent == "rejeted") {
+    cookieRadioValue = "No";
+  }
+
   const backLinkTo = "/";
 
   const onSubmit: SubmitHandler<{ cookieConsent: YesOrNo }> = (data) => {
@@ -145,9 +152,7 @@ export default function CookiesPage() {
             headingSize="m"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Yes", "No"]}
-            defaultValue={
-              cookieConsent == "accepted" ? "Yes" : cookieConsent == "rejected" ? "No" : undefined
-            }
+            defaultValue={cookieRadioValue}
             sortAnswersAlphabetically={false}
             errorMessage=""
             formValue="cookieConsent"
