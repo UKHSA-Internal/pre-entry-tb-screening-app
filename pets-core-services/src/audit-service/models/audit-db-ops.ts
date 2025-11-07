@@ -35,7 +35,6 @@ export type NewAudit = Omit<AuditBase, "dateUpdated"> & { dateUpdated: Date | st
 export class Audit extends AuditBase {
   constructor(details: NewAudit) {
     super({ ...details, dateUpdated: new Date(details.dateUpdated) });
-    // this.dateUpdated = new Date(details.dateUpdated);
   }
 }
 
@@ -119,7 +118,9 @@ export class AuditDbOps {
         // Check to ensure the pk is truly a unique value
         ConditionExpression: "attribute_not_exists(pk) AND attribute_not_exists(sk)",
       };
+      logger.info(`the params for DB PutCommand: ${JSON.stringify(params)}`);
       const command = new PutCommand(params);
+      logger.info({ command }, "db PutCommand created");
       await docClient.send(command);
 
       logger.info("New audit created successfully");

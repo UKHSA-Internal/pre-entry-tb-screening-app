@@ -56,7 +56,6 @@ export const seedDatabase = async () => {
     await Clinic.createNewClinic(clinic);
   }
 
-  // TODO: Add corret data to seededAuditData
   for (const record of seededAuditData) {
     await AuditDbOps.createNewAuditFromDBRecord(record);
   }
