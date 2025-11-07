@@ -33,10 +33,7 @@ describe("Applicant Confirmation page", () => {
     expect(useNavigateMock).toHaveBeenCalledWith("/tracker");
   });
 
-  test("Back link points to applicant summary page", () => {
-    const link = screen.getByRole("link", { name: "Back" });
-    expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/check-applicant-details");
-    expect(link).toHaveClass("govuk-back-link");
+  test("does not render back link on confirmation page", () => {
+    expect(screen.queryByRole("link", { name: "Back" })).not.toBeInTheDocument();
   });
 });

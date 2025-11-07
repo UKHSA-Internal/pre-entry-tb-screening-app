@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { postTbCerificateDetails } from "@/api/api";
 import Button from "@/components/button/button";
@@ -48,8 +48,14 @@ const TbSummary = () => {
   const applicantPhotoContext = useApplicantPhoto();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const isFromConfirmation = searchParams.get("from") === "/tb-screening-complete";
+  const summaryStatus = isFromConfirmation
+    ? ApplicationStatus.IN_PROGRESS
+    : tbCertificateData.status;
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -340,19 +346,19 @@ const TbSummary = () => {
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h2 className="govuk-heading-m">Visa applicant information</h2>
-            <Summary status={tbCertificateData.status} summaryElements={summaryData} />
+            <Summary status={summaryStatus} summaryElements={summaryData} />
 
             {currentAddressData.length > 0 && (
               <>
                 <h2 className="govuk-heading-m">Current residential address</h2>
-                <Summary status={tbCertificateData.status} summaryElements={currentAddressData} />
+                <Summary status={summaryStatus} summaryElements={currentAddressData} />
               </>
             )}
 
             {ukAddressData.length > 0 && (
               <>
                 <h2 className="govuk-heading-m">Proposed UK address</h2>
-                <Summary status={tbCertificateData.status} summaryElements={ukAddressData} />
+                <Summary status={summaryStatus} summaryElements={ukAddressData} />
               </>
             )}
 
@@ -360,7 +366,7 @@ const TbSummary = () => {
               <>
                 <h2 className="govuk-heading-m">Clinic and certificate information</h2>
                 <div className="certificate-reference-nowrap">
-                  <Summary status={tbCertificateData.status} summaryElements={certificateData} />
+                  <Summary status={summaryStatus} summaryElements={certificateData} />
                 </div>
               </>
             )}
@@ -368,7 +374,7 @@ const TbSummary = () => {
             {screeningData.length > 0 && (
               <>
                 <h2 className="govuk-heading-m">Screening information</h2>
-                <Summary status={tbCertificateData.status} summaryElements={screeningData} />
+                <Summary status={summaryStatus} summaryElements={screeningData} />
               </>
             )}
             <p className="govuk-body">
@@ -388,7 +394,7 @@ const TbSummary = () => {
           )}
         </div>
       ) : (
-        <Summary status={tbCertificateData.status} summaryElements={summaryData} />
+        <Summary status={summaryStatus} summaryElements={summaryData} />
       )}
 
       {tbCertificateData.isIssued === YesOrNo.NO && (

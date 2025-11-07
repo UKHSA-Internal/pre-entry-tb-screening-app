@@ -4,7 +4,7 @@ import ProgressTracker from "@/sections/progress-tracker";
 
 export default function ProgressTrackerPage() {
   return (
-    <Container title="Complete UK pre-entry health screening - GOV.UK">
+    <Container title="Complete UK pre-entry health screening - GOV.UK" shouldClearHistory={true}>
       <Heading level={1} size="l" title="Complete UK pre-entry health screening" />
       <ProgressTracker />
     </Container>

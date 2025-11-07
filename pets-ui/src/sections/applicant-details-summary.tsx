@@ -26,6 +26,7 @@ const ApplicantReview = () => {
 
   const { applicantPhotoFile } = useApplicantPhoto();
   const isComplete = applicantData.status === ApplicationStatus.COMPLETE;
+  const summaryStatus = isComplete ? ApplicationStatus.IN_PROGRESS : applicantData.status;
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -179,7 +180,7 @@ const ApplicantReview = () => {
   return (
     <div>
       {isLoading && <Spinner />}
-      <Summary status={ApplicationStatus.IN_PROGRESS} summaryElements={summaryData} />
+      <Summary status={summaryStatus} summaryElements={summaryData} />
 
       {(applicantData.status == ApplicationStatus.NOT_YET_STARTED ||
         applicantData.status == ApplicationStatus.IN_PROGRESS) && (

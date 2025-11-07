@@ -2,6 +2,8 @@ import { ReactNode, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 
+import { useNavigationHistory } from "@/utils/useNavigationHistory";
+
 import BackLink from "../backLink/backLink";
 import Breadcrumb, { IBreadcrumbItem } from "../breadcrumb/breadcrumb";
 import Footer from "../footer/footer";
@@ -15,6 +17,7 @@ interface ContainerProps {
   backLinkTo?: string;
   children: ReactNode;
   feedbackUrl?: string;
+  shouldClearHistory?: boolean;
 }
 
 const Container = ({
@@ -22,7 +25,9 @@ const Container = ({
   children,
   breadcrumbItems = [],
   backLinkTo = "",
+  shouldClearHistory = false,
 }: Readonly<ContainerProps>) => {
+  useNavigationHistory(shouldClearHistory);
   const pageStart = useRef<HTMLDivElement | null>(null);
   const mainContent = useRef<HTMLDivElement | null>(null);
   const location = useLocation();
@@ -48,7 +53,7 @@ const Container = ({
       <div className="govuk-width-container">
         <PhaseBanner />
         {breadcrumbItems && <Breadcrumb items={breadcrumbItems} />}
-        {backLinkTo && <BackLink href={backLinkTo} />}
+        {backLinkTo && <BackLink fallbackUrl={backLinkTo} />}
         <main
           className="govuk-main-wrapper"
           id="main-content"

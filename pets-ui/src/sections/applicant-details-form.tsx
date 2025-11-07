@@ -27,6 +27,7 @@ const ApplicantForm = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const isComplete = applicantData.status === ApplicationStatus.COMPLETE;
+  const summaryStatus = isComplete ? ApplicationStatus.IN_PROGRESS : applicantData.status;
 
   const methods = useForm<ReduxApplicantDetailsType>({ reValidateMode: "onSubmit" });
   const {
@@ -36,6 +37,8 @@ const ApplicantForm = () => {
   } = methods;
 
   const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = async (formData) => {
+    const fromParam = searchParams.get("from");
+
     const updatedFormData = {
       ...formData,
       applicantPhotoFileName: applicantData.applicantPhotoFileName,
@@ -75,7 +78,6 @@ const ApplicantForm = () => {
         };
         await putApplicantDetails(applicationData.applicationId, updatePayload);
 
-        const fromParam = searchParams.get("from");
         if (fromParam === "tb-certificate-summary") {
           navigate("/tb-certificate-summary");
         } else if (fromParam === "check-applicant-details") {
@@ -88,7 +90,9 @@ const ApplicantForm = () => {
         navigate("/error");
       }
     } else {
-      dispatch(setApplicantDetailsStatus(ApplicationStatus.IN_PROGRESS));
+      if (!isComplete) {
+        dispatch(setApplicantDetailsStatus(ApplicationStatus.IN_PROGRESS));
+      }
       navigate("/upload-visa-applicant-photo");
     }
   };
@@ -133,7 +137,7 @@ const ApplicantForm = () => {
       };
 
       const targetRef = refMap[target];
-      if (targetRef) {
+      if (targetRef && typeof targetRef.scrollIntoView === "function") {
         targetRef.scrollIntoView();
       }
     }
@@ -152,7 +156,7 @@ const ApplicantForm = () => {
 
         {isComplete && (
           <Summary
-            status={applicantData.status}
+            status={summaryStatus}
             summaryElements={[
               {
                 key: "Passport number",
