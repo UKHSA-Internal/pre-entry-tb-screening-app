@@ -3,6 +3,7 @@ import { countryList } from "../../../src/utils/countryList";
 import { loginViaB2C } from "../../support/commands";
 import { ApplicantConfirmationPage } from "../../support/page-objects/applicantConfirmationPage";
 import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
+import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
 import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPhotoUploadPage";
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
@@ -15,6 +16,7 @@ import { ChestXrayResultsPage } from "../../support/page-objects/chestXrayResult
 import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
 import { EnterSputumSampleResultsPage } from "../../support/page-objects/enterSputumSampleResultsPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
+import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
 import { RadiologicalOutcomeConfPage } from "../../support/page-objects/radiologicalOutcomeConfPage";
 import { SputumCollectionPage } from "../../support/page-objects/sputumCollectionPage";
@@ -27,6 +29,9 @@ import { TbCertificateQuestionPage } from "../../support/page-objects/tbCertific
 import { TbCertificateSummaryPage } from "../../support/page-objects/tbCertificateSummaryPage";
 import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
 import { TbScreeningCompletePage } from "../../support/page-objects/tbScreeningCompletePage";
+import { TravelConfirmationPage } from "../../support/page-objects/travelConfirmationPage";
+import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
+import { TravelSummaryPage } from "../../support/page-objects/travelSummaryPage";
 import { VisaCategoryPage } from "../../support/page-objects/visaCategoryPage";
 import { XRayResultsAndFindingsPage } from "../../support/page-objects/xRayResultsAndFindingsPage";
 import {
@@ -34,11 +39,6 @@ import {
   getRandomPassportNumber,
   randomElement,
 } from "../../support/test-helpers";
-import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
-import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
-import { TravelConfirmationPage } from "../../support/page-objects/travelConfirmationPage";
-import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
-import { TravelSummaryPage } from "../../support/page-objects/travelSummaryPage";
 
 describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () => {
   // Page object instances
