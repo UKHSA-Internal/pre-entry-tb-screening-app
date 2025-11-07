@@ -1,38 +1,34 @@
 // Empty Form Submission Test on Sputum Page
-import { countryList } from "../../src/utils/countryList";
-import { loginViaB2C } from "../support/commands";
-import { ApplicantConfirmationPage } from "../support/page-objects/applicantConfirmationPage";
-import { ApplicantConsentPage } from "../support/page-objects/applicantConsentPage";
-import { ApplicantDetailsPage } from "../support/page-objects/applicantDetailsPage";
-import { ApplicantPhotoUploadPage } from "../support/page-objects/applicantPhotoUploadPage";
-import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
-import { ApplicantSummaryPage } from "../support/page-objects/applicantSummaryPage";
-import { CheckChestXrayImagesPage } from "../support/page-objects/checkChestXrayImagesPage";
-import { ChestXrayConfirmationPage } from "../support/page-objects/chestXrayConfirmationPage";
-import { ChestXrayFindingsPage } from "../support/page-objects/chestXrayFindingsPage";
-import { ChestXrayPage } from "../support/page-objects/chestXrayQuestionPage";
-import { ChestXrayResultsPage } from "../support/page-objects/chestXrayResultsPage";
-import { ChestXrayUploadPage } from "../support/page-objects/chestXrayUploadPage";
-import { EnterSputumSampleResultsPage } from "../support/page-objects/enterSputumSampleResultsPage";
-import { MedicalConfirmationPage } from "../support/page-objects/medicalConfirmationPage";
-import { MedicalScreeningPage } from "../support/page-objects/medicalScreeningPage";
-import { MedicalSummaryPage } from "../support/page-objects/medicalSummaryPage";
-import { RadiologicalOutcomeConfPage } from "../support/page-objects/radiologicalOutcomeConfPage";
-import { SputumCollectionPage } from "../support/page-objects/sputumCollectionPage";
-import { SputumDecisionConfirmationPage } from "../support/page-objects/sputumDecisionConfirmationPage";
-import { SputumDecisionInfoPage } from "../support/page-objects/sputumDecisionInfoPage";
-import { SputumQuestionPage } from "../support/page-objects/sputumQuestionPage";
-import { TBProgressTrackerPage } from "../support/page-objects/tbProgressTrackerPage";
-import { TravelConfirmationPage } from "../support/page-objects/travelConfirmationPage";
-import { TravelInformationPage } from "../support/page-objects/travelInformationPage";
-import { TravelSummaryPage } from "../support/page-objects/travelSummaryPage";
-import { VisaCategoryPage } from "../support/page-objects/visaCategoryPage";
-import { XRayResultsAndFindingsPage } from "../support/page-objects/xRayResultsAndFindingsPage";
+import { countryList } from "../../../src/utils/countryList";
+import { loginViaB2C } from "../../support/commands";
+import { ApplicantConfirmationPage } from "../../support/page-objects/applicantConfirmationPage";
+import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
+import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
+import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPhotoUploadPage";
+import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
+import { CheckChestXrayImagesPage } from "../../support/page-objects/checkChestXrayImagesPage";
+import { ChestXrayConfirmationPage } from "../../support/page-objects/chestXrayConfirmationPage";
+import { ChestXrayFindingsPage } from "../../support/page-objects/chestXrayFindingsPage";
+import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
+import { ChestXrayResultsPage } from "../../support/page-objects/chestXrayResultsPage";
+import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
+import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
+import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
+import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { RadiologicalOutcomeConfPage } from "../../support/page-objects/radiologicalOutcomeConfPage";
+import { SputumQuestionPage } from "../../support/page-objects/sputumQuestionPage";
+import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
+import { TravelConfirmationPage } from "../../support/page-objects/travelConfirmationPage";
+import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
+import { TravelSummaryPage } from "../../support/page-objects/travelSummaryPage";
+import { VisaCategoryPage } from "../../support/page-objects/visaCategoryPage";
+import { XRayResultsAndFindingsPage } from "../../support/page-objects/xRayResultsAndFindingsPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
   randomElement,
-} from "../support/test-helpers";
+} from "../../support/test-helpers";
 
 describe("Empty Form Submission Test On Sputum Collection Page", () => {
   // Page object instances
@@ -50,17 +46,12 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
   const medicalConfirmationPage = new MedicalConfirmationPage();
   const radiologicalOutcomeConfPage = new RadiologicalOutcomeConfPage();
   const sputumQuestionPage = new SputumQuestionPage();
-  const sputumCollectionPage = new SputumCollectionPage();
-  const sputumDecisionConfirmationPage = new SputumDecisionConfirmationPage();
-  const sputumDecisionInfoPage = new SputumDecisionInfoPage();
   const checkChestXrayImagesPage = new CheckChestXrayImagesPage();
   const chestXrayResultsPage = new ChestXrayResultsPage();
   const chestXrayPage = new ChestXrayPage();
   const chestXrayUploadPage = new ChestXrayUploadPage();
   const chestXrayFindingsPage = new ChestXrayFindingsPage();
-  //const chestXraySummaryPage = new ChestXraySummaryPage();
   const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
-  const enterSputumSampleResultsPage = new EnterSputumSampleResultsPage();
   const tbProgressTrackerPage = new TBProgressTrackerPage();
   const visaCategoryPage = new VisaCategoryPage();
   const xRayResultsAndFindingsPage = new XRayResultsAndFindingsPage();
@@ -333,15 +324,11 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
       // Verify redirection to chest X-ray Images confirmation Page
       chestXrayConfirmationPage.verifyPageLoaded();
 
-      // Verify X-ray findings page
-      //chestXrayFindingsPage.verifyPageLoaded();
-
       // Verify Chest X-ray Confirmation Panel
       chestXrayConfirmationPage.verifyConfirmationPanel();
       // Verify next steps
       chestXrayConfirmationPage.verifyNextStepsSection();
-      // Click "Continue" button
-      //chestXrayConfirmationPage.clickContinueButton();
+
       // Click "Continue" button and verify redirection to TB Progress Tracker
       chestXrayConfirmationPage.clickContinueAndVerifyRedirection();
 
@@ -397,100 +384,15 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
       // NOW Navigate to "Make a sputum decision" Page from the tracker
       tbProgressTrackerPage.clickTaskLink("Make a sputum decision");
       sputumQuestionPage.verifyPageLoaded();
-      sputumQuestionPage.selectSputumRequiredYes().clickContinue();
 
-      // Verify redirection to Sputum decision Info Page
-      sputumDecisionInfoPage.verifyPageLoaded();
-      sputumDecisionInfoPage.verifyAllPageElements();
-      sputumDecisionInfoPage.clickSaveAndContinue();
+      // Continue without selecting sputum option
+      sputumQuestionPage.clickContinue();
 
-      // Verify redirection to Sputum Decision Confirmation Page
-      sputumDecisionConfirmationPage
-        .verifyAllPageElements()
-        .verifyConfirmationMessageContent()
-        .clickContinueButton();
-
-      // NOW verify applicant info on TB Progress TRacker Page
-      tbProgressTrackerPage.verifyPageLoaded();
-      tbProgressTrackerPage.verifySectionHeadings();
-      tbProgressTrackerPage.verifyApplicantInfo({
-        Name: "Jane Smith",
-        "Date of birth": "25/3/2000",
-        "Passport number": passportNumber,
-        "TB screening": "In progress",
-      });
-
-      // Navigate to sputum collection
-      tbProgressTrackerPage.clickTaskLink("Sputum collection and results");
-      sputumCollectionPage.verifyPageLoaded();
-      sputumCollectionPage.verifySectionHeaders();
-      sputumCollectionPage.verifyPageStructure();
-      sputumCollectionPage.verifyAllFieldsEmpty();
-
-      // Verify all fields are initially empty
-      cy.get('[data-testid="date-sample-1-taken-day"]').should("have.value", "");
-      cy.get('[data-testid="date-sample-1-taken-month"]').should("have.value", "");
-      cy.get('[data-testid="date-sample-1-taken-year"]').should("have.value", "");
-
-      // Check that collection method exists
-      cy.get('[name="collectionMethodSample1"]').should("exist");
-
-      cy.get('[data-testid="date-sample-2-taken-day"]').should("have.value", "");
-      cy.get('[data-testid="date-sample-2-taken-month"]').should("have.value", "");
-      cy.get('[data-testid="date-sample-2-taken-year"]').should("have.value", "");
-
-      // Check that collection method exists
-      cy.get('[name="collectionMethodSample2"]').should("exist");
-
-      cy.get('[data-testid="date-sample-3-taken-day"]').should("have.value", "");
-      cy.get('[data-testid="date-sample-3-taken-month"]').should("have.value", "");
-      cy.get('[data-testid="date-sample-3-taken-year"]').should("have.value", "");
-      // Check that collection method exists
-      cy.get('[name="collectionMethodSample3"]').should("exist");
-
-      /// Fill sputum collection data for all three samples
-      const sputumData = {
-        sample1: {
-          date: { day: "10", month: "03", year: "2025" },
-          collectionMethod: "Coughed up",
-        },
-        sample2: {
-          date: { day: "11", month: "03", year: "2025" },
-          collectionMethod: "Induced",
-        },
-        sample3: {
-          date: { day: "12", month: "03", year: "2025" },
-          collectionMethod: "Coughed up",
-        },
-      };
-
-      // Fill all samples using the new method
-      sputumCollectionPage.fillAllSamples(sputumData);
-
-      // Verify the form is filled correctly
-      sputumCollectionPage.verifyFormFilledWith(sputumData);
-
-      // Save and continue to results
-      sputumCollectionPage.clickSaveAndContinueToResults();
-      // Verify redirection to Enter Sputum Sample Results page
-      cy.url().should("include", "/enter-sputum-sample-results");
-
-      // Verify Enter Sputum Sample Results page loaded
-      enterSputumSampleResultsPage.verifyPageLoaded();
-      enterSputumSampleResultsPage.verifyAllPageElements();
-
-      // Submit form with no sample results selected
-      // Verify all fields are empty on navigating to the sample results page
-      enterSputumSampleResultsPage.verifyFormValidationEmpty();
-
-      // Submit form without filling any results
-      enterSputumSampleResultsPage.clickSaveAndContinue();
-
-      // Verify error validation for empty form
-      enterSputumSampleResultsPage.verifyFormValidationForEmptyForm();
-
-      // Verify error summary is visible with correct message
-      enterSputumSampleResultsPage.validateErrorSummaryVisible();
+      // Verify error is displayed
+      sputumQuestionPage.verifyProblemHeading();
+      sputumQuestionPage.verifyErrorSummaryDisplayed();
+      sputumQuestionPage.verifyErrorSummaryMessage();
+      sputumQuestionPage.verifyFieldErrorMessage();
     });
   });
 });

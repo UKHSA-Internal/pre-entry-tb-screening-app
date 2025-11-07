@@ -1,15 +1,15 @@
-import { countryList } from "../../src/utils/countryList";
-import { loginViaB2C } from "../support/commands";
-import { ApplicantConsentPage } from "../support/page-objects/applicantConsentPage";
-import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
+import { countryList } from "../../../src/utils/countryList";
+import { loginViaB2C } from "../../support/commands";
+import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
+import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
   randomElement,
-} from "../support/test-helpers";
-import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetailsPage";
+} from "../../support/test-helpers";
+import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
 
-describe("Applicant Details Form - Expired Passport Test", () => {
+describe("PETS Application End-to-End Tests with Sputum Collection", () => {
   // Page object instances
   const applicantConsentPage = new ApplicantConsentPage();
   const applicantSearchPage = new ApplicantSearchPage();
@@ -44,7 +44,7 @@ describe("Applicant Details Form - Expired Passport Test", () => {
     cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
   });
 
-  it("should display error when passport expiry date is in the past", () => {
+  it("should display error when passport issue date is after expiry date", () => {
     // Search for applicant with passport number
     applicantSearchPage
       .fillPassportNumber(passportNumber)
@@ -67,25 +67,32 @@ describe("Applicant Details Form - Expired Passport Test", () => {
 
     // Fill in applicant details
     applicantDetailsPage
-      .fillFullName("Jane Smith")
-      .selectSex("Female")
+      .fillFullName("Jon Tester")
+      .selectSex("Male")
       .selectNationality(countryName) // Use country code for form filling
-      .fillBirthDate("15", "03", "1985")
-      .fillPassportIssueDate("10", "05", "2015")
-      .fillPassportExpiryDate("10", "05", "2020")
-      .fillAddressLine1("123 High Street")
-      .fillAddressLine2("Apartment 4B")
-      .fillAddressLine3("Downtown")
-      .fillTownOrCity("St. Marten")
-      .fillProvinceOrState("Holestown")
-      .selectAddressCountry(countryName) // Use country code for form filling
-      .fillPostcode("94109")
-      .submitForm();
+      .fillBirthDate("15", "09", "1990");
 
-    // Validate error displayed for EXPIRED passport
-    applicantDetailsPage.validateErrorContainsText("Passport expiry date must be in the future");
+    // Set issue date after expiry date
+    const currentYear = new Date().getFullYear();
+    applicantDetailsPage.fillPassportIssueDate("30", "08", (currentYear + 2).toString());
+    applicantDetailsPage.fillPassportExpiryDate("30", "08", (currentYear + 1).toString());
+
+    // Fill address fields
+    applicantDetailsPage.fillAddressLine1("789 Test Road");
+    applicantDetailsPage.fillTownOrCity("Sydney");
+    applicantDetailsPage.fillProvinceOrState("Greater London");
+    applicantDetailsPage.selectAddressCountry(countryName);
+    applicantDetailsPage.fillPostcode("2000");
+
+    // Submit the form
+    applicantDetailsPage.submitForm();
+
+    // Validate error specific to INVALID DATE
+    applicantDetailsPage.validateErrorContainsText(
+      "Passport issue date must be today or in the past",
+    );
     applicantDetailsPage.validateFormErrors({
-      passportExpiryDate: "Passport expiry date must be in the future",
+      passportIssueDate: "Passport issue date must be today or in the past",
     });
   });
 });
