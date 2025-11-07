@@ -7,16 +7,13 @@ import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import List from "@/components/list/list";
 import StartButton from "@/components/startButton/startButton";
-import { useAppDispatch } from "@/redux/hooks";
-import { clearNavigationDetails } from "@/redux/navigationSlice";
+import { clearNavigationHistory } from "@/utils/useNavigationHistory";
 
 export default function HomePage() {
   const { instance } = useMsal();
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(clearNavigationDetails());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    clearNavigationHistory();
   }, []);
 
   const initializeSignIn = () => {

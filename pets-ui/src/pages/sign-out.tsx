@@ -5,12 +5,12 @@ import Button from "@/components/button/button";
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import NotificationBanner from "@/components/notificationBanner/notificationBanner";
-import { useAppSelector } from "@/redux/hooks";
-import { selectNavigation } from "@/redux/store";
 import { ButtonType } from "@/utils/enums";
+import { useNavigationHistory } from "@/utils/useNavigationHistory";
 
 export default function SignOutPage() {
   const navigate = useNavigate();
+  const { goBack } = useNavigationHistory();
   const { instance } = useMsal();
 
   const handleSignOut = () => {
@@ -24,8 +24,7 @@ export default function SignOutPage() {
       });
   };
 
-  const navigation = useAppSelector(selectNavigation);
-  const backLinkTo = navigation.signOutPreviousPage ?? "/";
+  const backLinkTo = "/";
 
   return (
     <Container
@@ -48,7 +47,7 @@ export default function SignOutPage() {
             id="sign-out-cancel"
             type={ButtonType.SECONDARY}
             text="Go back to screening"
-            handleClick={() => navigate(backLinkTo)}
+            handleClick={() => goBack(backLinkTo)}
           />
         </div>
       </NotificationBanner>
