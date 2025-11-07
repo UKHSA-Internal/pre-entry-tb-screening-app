@@ -5,6 +5,7 @@ import { DynamoDBRecord } from "aws-lambda";
 
 import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
+import { getConsoleEvent } from "../helpers/audit-helpers";
 import { SourceType } from "../types/enums";
 
 const { dynamoDBDocClient: docClient } = awsClients;
@@ -87,7 +88,8 @@ export class AuditDbOps {
       }
 
       // TODO: where to get it from (record.source ???);
-      const source = undefined;
+      const source = await getConsoleEvent(record);
+      logger.info(source, "Returned event source");
 
       const updatedDetails: Audit = {
         applicationId: changeDetails?.applicationId as string,
@@ -118,9 +120,7 @@ export class AuditDbOps {
         // Check to ensure the pk is truly a unique value
         ConditionExpression: "attribute_not_exists(pk) AND attribute_not_exists(sk)",
       };
-      logger.info(`the params for DB PutCommand: ${JSON.stringify(params)}`);
       const command = new PutCommand(params);
-      logger.info({ command }, "db PutCommand created");
       await docClient.send(command);
 
       logger.info("New audit created successfully");

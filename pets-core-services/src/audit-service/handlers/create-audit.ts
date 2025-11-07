@@ -36,7 +36,7 @@ const createAuditHandler: Handler = async (
         logger.error("Audit was not created");
       }
     } catch (e) {
-      logger.error({ e }, "Error creating audit");
+      logger.error({ e }, "Could not create audit");
       batchItemFailures.push({ itemIdentifier: record.dynamodb?.SequenceNumber ?? "" });
     }
   }
