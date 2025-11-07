@@ -1,8 +1,8 @@
 import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
 import { describe, expect, it } from "vitest";
 
-import { selectNavigation } from "@/redux/store";
 import { renderWithProviders } from "@/utils/test-utils";
 
 import AccessibilityStatementPage from "../src/pages/accessibility-statement";
@@ -50,33 +50,38 @@ describe("AccessibilityStatementPage", () => {
   });
 
   it("uses the default '/' as back link when no previous page is stored", () => {
-    const { store } = renderWithProviders(
+    renderWithProviders(
       <HelmetProvider>
         <AccessibilityStatementPage />
       </HelmetProvider>,
     );
     const backLink = screen.getByRole("link", { name: "Back" });
     expect(backLink).toHaveAttribute("href", "/");
-    const nav = selectNavigation(store.getState());
-    expect(nav.accessibilityStatementPreviousPage).toBe("");
   });
 
-  it("uses stored previous page for the back link when set", () => {
-    const preloadedState = {
-      navigation: {
-        checkSputumPreviousPage: "",
-        accessibilityStatementPreviousPage: "/search-for-visa-applicant",
-        privacyNoticePreviousPage: "",
-        signOutPreviousPage: "",
-      },
-    };
+  it("uses '/' as fallback back link", () => {
     renderWithProviders(
       <HelmetProvider>
         <AccessibilityStatementPage />
       </HelmetProvider>,
-      { preloadedState },
     );
     const backLink = screen.getByRole("link", { name: "Back" });
-    expect(backLink).toHaveAttribute("href", "/search-for-visa-applicant");
+    expect(backLink).toHaveAttribute("href", "/");
+  });
+
+  it("navigates back to stored previous page when Back is clicked", async () => {
+    sessionStorage.setItem(
+      "navigationHistory",
+      JSON.stringify(["/search-for-visa-applicant", "/accessibility-statement"]),
+    );
+    window.history.pushState({}, "", "/accessibility-statement");
+    const user = userEvent.setup();
+    renderWithProviders(
+      <HelmetProvider>
+        <AccessibilityStatementPage />
+      </HelmetProvider>,
+    );
+    await user.click(screen.getByRole("link", { name: "Back" }));
+    expect(window.location.pathname).toBe("/search-for-visa-applicant");
   });
 });

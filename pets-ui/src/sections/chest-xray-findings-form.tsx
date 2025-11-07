@@ -80,12 +80,7 @@ const ChestXrayFindingsForm = () => {
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
         <div id="radiographic-findings" className="govuk-form-group">
-          <Heading
-            level={1}
-            size="l"
-            style={{ marginBottom: -10, marginTop: 40 }}
-            title="Enter X-ray findings"
-          />
+          <Heading level={1} size="l" title="Enter X-ray findings" />
 
           <div ref={xrayMinorFindings}>
             <Checkbox

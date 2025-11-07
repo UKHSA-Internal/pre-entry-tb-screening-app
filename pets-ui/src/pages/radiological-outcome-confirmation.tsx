@@ -3,10 +3,7 @@ import Container from "@/components/container/container";
 
 export default function RadiologicalOutcomeConfirmation() {
   return (
-    <Container
-      title="Radiological outcome confirmed - Complete UK pre-entry health screening - GOV.UK"
-      backLinkTo="/check-chest-x-ray-results-findings"
-    >
+    <Container title="Radiological outcome confirmed - Complete UK pre-entry health screening - GOV.UK">
       <Confirmation
         confirmationText={"Radiological outcome confirmed"}
         furtherInfo={[
