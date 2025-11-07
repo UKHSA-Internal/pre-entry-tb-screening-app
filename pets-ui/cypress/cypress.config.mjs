@@ -65,8 +65,8 @@ const getBaseUrl = () => {
       case "local":
         return "http://localhost:3000"; // local dev
       default:
-        console.warn(`Unknown environment: ${environment}, using localhost`);
-        return "http://localhost:3000";
+        console.warn(`Unknown environment: ${environment}, using test`);
+        return "https://clinics.test.pets.ukhsa.gov.uk";
     }
   }
 
