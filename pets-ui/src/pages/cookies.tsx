@@ -11,8 +11,10 @@ import Radio from "@/components/radio/radio";
 import Table from "@/components/table/table";
 import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
 import { updateGoogleAnalyticsConsent } from "@/utils/helpers";
+import { useNavigationHistory } from "@/utils/useNavigationHistory";
 
 export default function CookiesPage() {
+  const { goBack } = useNavigationHistory();
   const methods = useForm<{ cookieConsent: YesOrNo }>({ reValidateMode: "onSubmit" });
   const { handleSubmit } = methods;
 
@@ -20,6 +22,8 @@ export default function CookiesPage() {
 
   const [cookieConsent, setCookieConsent] = useState(localStorage.getItem("cookie-consent"));
   const [showSubmissionBanner, setShowSubmissionBanner] = useState(false);
+
+  const backLinkTo = "/";
 
   const onSubmit: SubmitHandler<{ cookieConsent: YesOrNo }> = (data) => {
     if (data.cookieConsent === YesOrNo.YES) {
@@ -46,7 +50,10 @@ export default function CookiesPage() {
   }, [cookieConsent]);
 
   return (
-    <Container title="Cookies - Complete UK pre-entry health screening - GOV.UK" backLinkTo="/">
+    <Container
+      title="Cookies - Complete UK pre-entry health screening - GOV.UK"
+      backLinkTo={backLinkTo}
+    >
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           {showSubmissionBanner && (
@@ -56,9 +63,10 @@ export default function CookiesPage() {
                   You&apos;ve set your cookie preferences.{" "}
                   <LinkLabel
                     title="Go back to the page you were looking at"
-                    to=""
+                    to={backLinkTo}
                     externalLink={false}
                     className="govuk-notification-banner__link"
+                    onClick={() => goBack(backLinkTo)}
                   />
                   .
                 </p>
