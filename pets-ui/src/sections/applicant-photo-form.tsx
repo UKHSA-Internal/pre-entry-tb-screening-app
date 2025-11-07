@@ -53,7 +53,7 @@ const ApplicantPhotoForm = () => {
       } else if (fromParam === "check-applicant-details") {
         destination = "/check-applicant-details";
       } else {
-        destination = "/tb-certificate-summary";
+        destination = "/check-applicant-details";
       }
     } else {
       destination = "/check-applicant-details";
