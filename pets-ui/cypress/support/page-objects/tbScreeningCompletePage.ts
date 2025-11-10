@@ -245,21 +245,6 @@ export class TbScreeningCompletePage extends BasePage {
     return this;
   }
 
-  // Verify back link
-  verifyBackLink(): TbScreeningCompletePage {
-    cy.get("a.govuk-back-link")
-      .should("be.visible")
-      .should("have.attr", "href", "/tb-certificate-summary")
-      .should("contain", "Back");
-    return this;
-  }
-
-  // Click back link
-  clickBackLink(): TbScreeningCompletePage {
-    cy.get("a.govuk-back-link").click();
-    return this;
-  }
-
   // Verify page title
   verifyPageTitle(): TbScreeningCompletePage {
     cy.title().should(
@@ -357,7 +342,6 @@ export class TbScreeningCompletePage extends BasePage {
     this.verifyAllPanelElements();
     this.verifyAllContent();
     this.verifyAllActions();
-    this.verifyBackLink();
     this.verifyBetaBanner();
     this.verifyServiceName();
     this.verifyFooterLinks();
@@ -371,7 +355,6 @@ export class TbScreeningCompletePage extends BasePage {
     this.verifySavedCertRef(aliasName);
     this.verifyAllContent();
     this.verifyAllActions();
-    this.verifyBackLink();
     this.verifyBetaBanner();
     this.verifyServiceName();
     this.verifyFooterLinks();
@@ -438,7 +421,6 @@ export class TbScreeningCompletePage extends BasePage {
     this.verifySummaryLink();
     this.verifySearchLink();
     this.verifyFeedbackLink();
-    this.verifyBackLink();
     this.verifyBetaBanner();
     this.verifyServiceName();
     this.verifyFooterLinks();
@@ -457,7 +439,6 @@ export class TbScreeningCompletePage extends BasePage {
     this.verifySummaryLink();
     this.verifySearchLink();
     this.verifyFeedbackLink();
-    this.verifyBackLink();
     this.verifyBetaBanner();
     this.verifyServiceName();
     this.verifyFooterLinks();
