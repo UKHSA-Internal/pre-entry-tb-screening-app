@@ -6,6 +6,7 @@ import { useNavigationHistory } from "@/utils/useNavigationHistory";
 
 import BackLink from "../backLink/backLink";
 import Breadcrumb, { IBreadcrumbItem } from "../breadcrumb/breadcrumb";
+import CookieBanner from "../cookieBanner/cookieBanner";
 import Footer from "../footer/footer";
 import Header from "../header/header";
 import PhaseBanner from "../phaseBanner/phaseBanner";
@@ -48,6 +49,7 @@ const Container = ({
       <Helmet>
         <title>{title}</title>
       </Helmet>
+      <CookieBanner />
       <SkipLink />
       <Header />
       <div className="govuk-width-container">
