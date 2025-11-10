@@ -241,6 +241,17 @@ const isChildUnder11 = (medicalScreeningData: ReduxMedicalScreeningType) => {
   return parsedAge < 11 ? "Yes" : "No";
 };
 
+const updateGoogleAnalyticsConsent = (consentGranted: boolean) => {
+  if (typeof globalThis.gtag === "function") {
+    globalThis.gtag("consent", "update", {
+      ad_storage: consentGranted ? "granted" : "denied",
+      analytics_storage: consentGranted ? "granted" : "denied",
+      functionality_storage: consentGranted ? "granted" : "denied",
+      personalization_storage: consentGranted ? "granted" : "denied",
+    });
+  }
+};
+
 export {
   calculateCertificateExpiryDate,
   calculateCertificateIssueDate,
@@ -258,5 +269,6 @@ export {
   spreadArrayIfNotEmpty,
   standardiseDayOrMonth,
   toArray,
+  updateGoogleAnalyticsConsent,
   validateDate,
 };

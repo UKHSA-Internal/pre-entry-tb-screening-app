@@ -19,7 +19,14 @@ vi.mock(`react-router`, async (): Promise<unknown> => {
   };
 });
 
-beforeEach(() => useNavigateMock.mockClear());
+beforeEach(() => {
+  useNavigateMock.mockClear();
+  localStorage.setItem("cookie-consent", "rejected");
+});
+
+afterEach(() => {
+  localStorage.clear();
+});
 
 const user = userEvent.setup();
 
