@@ -21,10 +21,9 @@ export default function CookieBanner() {
     return null;
   } else if (!cookieConsent) {
     return (
-      <div
+      <section
         className="govuk-cookie-banner"
         data-nosnippet
-        role="region"
         aria-label="Cookies on Complete UK pre-entry health screening"
       >
         <div className="govuk-cookie-banner__message govuk-width-container">
@@ -76,15 +75,14 @@ export default function CookieBanner() {
             />
           </div>
         </div>
-      </div>
+      </section>
     );
   } else {
     return (
-      <div
+      <section
         className="govuk-cookie-banner"
         data-nosnippet
-        role="region"
-        aria-label="Cookies on [name of service]"
+        aria-label="Cookies on Complete UK pre-entry health screening"
       >
         <div className="govuk-cookie-banner__message govuk-width-container">
           <div className="govuk-grid-row">
@@ -114,7 +112,7 @@ export default function CookieBanner() {
             />
           </div>
         </div>
-      </div>
+      </section>
     );
   }
 }
