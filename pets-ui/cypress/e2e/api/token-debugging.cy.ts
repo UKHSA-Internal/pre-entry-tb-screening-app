@@ -18,7 +18,10 @@ describe("API: Token Request Debugging", () => {
   it("should show detailed token request information", () => {
     cy.log("=== Token Request Configuration ===");
 
-    const endpoint = Cypress.env("AUTH_TOKEN_ENDPOINT") as string;
+    const endpoint =
+      (Cypress.env("AUTH_TOKEN_ENDPOINT") as string) ||
+      "https://clinics.test.pets.ukhsa.gov.uk/api";
+
     const clientId = Cypress.env("AZURE_B2C_CLIENT_ID") as string;
     const scope = Cypress.env("AZURE_B2C_SCOPE") as string;
     const username = Cypress.env("TEST_USER_EMAIL") as string;
@@ -85,7 +88,9 @@ describe("API: Token Request Debugging", () => {
   it("should try alternative token request format", () => {
     cy.log("=== Trying Alternative Configuration ===");
 
-    const endpoint = Cypress.env("AUTH_TOKEN_ENDPOINT") as string;
+    const endpoint =
+      (Cypress.env("AUTH_TOKEN_ENDPOINT") as string) ||
+      "https://clinics.test.pets.ukhsa.gov.uk/api";
     const clientId = Cypress.env("AZURE_B2C_CLIENT_ID") as string;
     const username = Cypress.env("TEST_USER_EMAIL") as string;
     const password = Cypress.env("TEST_USER_PASSWORD") as string;
@@ -132,7 +137,9 @@ describe("API: Token Request Debugging", () => {
   it("should try without scope parameter", () => {
     cy.log("=== Trying Without Scope ===");
 
-    const endpoint = Cypress.env("AUTH_TOKEN_ENDPOINT") as string;
+    const endpoint =
+      (Cypress.env("AUTH_TOKEN_ENDPOINT") as string) ||
+      "https://clinics.test.pets.ukhsa.gov.uk/api";
     const clientId = Cypress.env("AZURE_B2C_CLIENT_ID") as string;
     const username = Cypress.env("TEST_USER_EMAIL") as string;
     const password = Cypress.env("TEST_USER_PASSWORD") as string;
