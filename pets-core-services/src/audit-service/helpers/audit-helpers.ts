@@ -16,6 +16,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
 
   // Extract just the table name from ARN
   const tableName = tableArn ? tableArn.split("/")[1] : undefined;
+  logger.info(`tableName: ${tableName}, approxTime: ${approxTime}`);
 
   if (!tableName || !approxTime) return;
 
@@ -35,6 +36,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
     MaxResults: 10,
   };
 
+  logger.info("Sending LookupEventCommand");
   const result = await client.send(new LookupEventsCommand(params as LookupEventsCommandInput));
 
   logger.info({ result }, "CloudTrail lookup result");
