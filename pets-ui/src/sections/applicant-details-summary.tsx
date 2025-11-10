@@ -196,7 +196,7 @@ const ApplicantReview = () => {
         <Button
           id="back-to-tracker"
           type={ButtonType.DEFAULT}
-          text="Return to tracker"
+          text="Submit and continue"
           handleClick={() => navigate("/tracker")}
         />
       )}
