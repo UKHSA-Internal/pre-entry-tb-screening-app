@@ -36,13 +36,13 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
     MaxResults: 10,
   };
 
-  logger.info("Sending LookupEventCommand");
-  const result = await client.send(new LookupEventsCommand(params as LookupEventsCommandInput));
+  try {
+    logger.info("Sending LookupEventCommand");
+    const result = await client.send(new LookupEventsCommand(params as LookupEventsCommandInput));
 
-  logger.info({ result }, "CloudTrail lookup result");
+    logger.info({ result }, "CloudTrail lookup result");
 
-  const consoleEvents = result.Events?.filter((evt) => {
-    try {
+    const consoleEvents = result.Events?.filter((evt) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const details = evt?.CloudTrailEvent ? JSON.parse(evt.CloudTrailEvent) : undefined;
 
@@ -57,19 +57,19 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         details.requestParameters?.tableName === tableName
       );
-    } catch (err) {
-      logger.error({ err }, "CloudTrail lookup failed");
-      return;
-    }
-  });
+    });
 
-  if (consoleEvents && consoleEvents.length > 0) {
-    // @ts-expect-error it can't be undefined
-    logger.info(`Update to ${tableName} came from AWS Console:`, consoleEvents[0]);
-    return SourceType.app;
-  } else {
-    // @ts-expect-error it can't be undefined
-    logger.info(`Update to ${tableName} likely came from SDK/API.`, consoleEvents[0]);
-    return SourceType.api;
+    if (consoleEvents && consoleEvents.length > 0) {
+      // @ts-expect-error it can't be undefined
+      logger.info(`Update to ${tableName} came from AWS Console:`, consoleEvents[0]);
+      return SourceType.app;
+    } else {
+      // @ts-expect-error it can't be undefined
+      logger.info(`Update to ${tableName} likely came from SDK/API.`, consoleEvents[0]);
+      return SourceType.api;
+    }
+  } catch (err) {
+    logger.error({ err }, "CloudTrail lookup failed");
+    return;
   }
 };
