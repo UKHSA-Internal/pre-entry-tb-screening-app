@@ -34,6 +34,12 @@ import {
 } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
+const notIssuedLink = (isLocked: boolean, anchor: string): string | undefined =>
+  isLocked ? undefined : `/why-are-you-not-issuing-certificate#${anchor}`;
+
+const clinicInfoLink = (isLocked: boolean, anchor: string): string | undefined =>
+  isLocked ? undefined : `/enter-clinic-certificate-information#${anchor}`;
+
 const TbSummary = () => {
   const applicationData = useAppSelector(selectApplication);
   const applicantData = useAppSelector(selectApplicant);
@@ -58,6 +64,7 @@ const TbSummary = () => {
     : tbCertificateData.status;
 
   const isCertificateIssued = tbCertificateData.status === ApplicationStatus.COMPLETE;
+  const isIssued = tbCertificateData.isIssued === YesOrNo.YES;
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -110,251 +117,236 @@ const TbSummary = () => {
     }
   };
 
-  const summaryData =
-    tbCertificateData.isIssued === YesOrNo.YES
-      ? [
-          {
-            key: "Name",
-            value: applicantData.fullName,
-            link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.fullName}`,
-            hiddenLabel: "Name",
-          },
-          {
-            key: "Nationality",
-            value: getCountryName(applicantData.countryOfNationality),
-            link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.countryOfNationality}`,
-            hiddenLabel: "Nationality",
-          },
-          {
-            key: "Date of birth",
-            value: formatDateForDisplay(applicantData.dateOfBirth),
-            link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.dateOfBirth}`,
-            hiddenLabel: "Date of birth",
-          },
-          {
-            key: "Sex",
-            value: applicantData.sex,
-            link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.sex}`,
-            hiddenLabel: "Sex",
-          },
-          {
-            key: "Passport number",
-            value: applicantData.passportNumber,
-            hiddenLabel: "Passport number",
-          },
-          {
-            key: "Passport issue date",
-            value: formatDateForDisplay(applicantData.passportIssueDate),
-            link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.passportIssueDate}`,
-            hiddenLabel: "Passport issue date",
-          },
-          {
-            key: "Passport expiry date",
-            value: formatDateForDisplay(applicantData.passportExpiryDate),
-            link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.passportExpiryDate}`,
-            hiddenLabel: "Passport expiry date",
-          },
-          {
-            key: "UKVI visa category",
-            value: travelData.visaCategory,
-            link: `/proposed-visa-category#${attributeToComponentId.visaCategory}`,
-            hiddenLabel: "UKVI visa category",
-          },
-          {
-            key: "Photo",
-            value: applicantData.applicantPhotoFileName || "Not provided",
-            link: `/upload-visa-applicant-photo?from=tb-certificate-summary`,
-            hiddenLabel: "Photo",
-          },
-        ]
-      : [
-          {
-            key: "Reason for not issuing certificate",
-            value: tbCertificateData.reasonNotIssued,
-            link: isCertificateIssued
-              ? undefined
-              : `/why-are-you-not-issuing-certificate#${attributeToComponentId.reasonNotIssued}`,
-            hiddenLabel: "Reason for not issuing certificate",
-          },
-          {
-            key: "Declaring Physician's name",
-            value: tbCertificateData.declaringPhysicianName,
-            link: isCertificateIssued
-              ? undefined
-              : `/why-are-you-not-issuing-certificate#${attributeToComponentId.declaringPhysicianName}`,
-            hiddenLabel: "Declaring Physician's name",
-          },
-          {
-            key: "Physician's comments",
-            value: tbCertificateData.comments,
-            link: isCertificateIssued
-              ? undefined
-              : `/why-are-you-not-issuing-certificate#${attributeToComponentId.comments}`,
-            hiddenLabel: "Physician's comments",
-          },
-        ];
+  const summaryData = isIssued
+    ? [
+        {
+          key: "Name",
+          value: applicantData.fullName,
+          link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.fullName}`,
+          hiddenLabel: "Name",
+        },
+        {
+          key: "Nationality",
+          value: getCountryName(applicantData.countryOfNationality),
+          link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.countryOfNationality}`,
+          hiddenLabel: "Nationality",
+        },
+        {
+          key: "Date of birth",
+          value: formatDateForDisplay(applicantData.dateOfBirth),
+          link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.dateOfBirth}`,
+          hiddenLabel: "Date of birth",
+        },
+        {
+          key: "Sex",
+          value: applicantData.sex,
+          link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.sex}`,
+          hiddenLabel: "Sex",
+        },
+        {
+          key: "Passport number",
+          value: applicantData.passportNumber,
+          hiddenLabel: "Passport number",
+        },
+        {
+          key: "Passport issue date",
+          value: formatDateForDisplay(applicantData.passportIssueDate),
+          link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.passportIssueDate}`,
+          hiddenLabel: "Passport issue date",
+        },
+        {
+          key: "Passport expiry date",
+          value: formatDateForDisplay(applicantData.passportExpiryDate),
+          link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.passportExpiryDate}`,
+          hiddenLabel: "Passport expiry date",
+        },
+        {
+          key: "UKVI visa category",
+          value: travelData.visaCategory,
+          link: `/proposed-visa-category#${attributeToComponentId.visaCategory}`,
+          hiddenLabel: "UKVI visa category",
+        },
+        {
+          key: "Photo",
+          value: applicantData.applicantPhotoFileName || "Not provided",
+          link: `/upload-visa-applicant-photo?from=tb-certificate-summary`,
+          hiddenLabel: "Photo",
+        },
+      ]
+    : [
+        {
+          key: "Reason for not issuing certificate",
+          value: tbCertificateData.reasonNotIssued,
+          link: notIssuedLink(isCertificateIssued, attributeToComponentId.reasonNotIssued),
+          hiddenLabel: "Reason for not issuing certificate",
+        },
+        {
+          key: "Declaring Physician's name",
+          value: tbCertificateData.declaringPhysicianName,
+          link: notIssuedLink(isCertificateIssued, attributeToComponentId.declaringPhysicianName),
+          hiddenLabel: "Declaring Physician's name",
+        },
+        {
+          key: "Physician's comments",
+          value: tbCertificateData.comments,
+          link: notIssuedLink(isCertificateIssued, attributeToComponentId.comments),
+          hiddenLabel: "Physician's comments",
+        },
+      ];
 
-  const currentAddressData =
-    tbCertificateData.isIssued === YesOrNo.YES
-      ? [
-          {
-            key: "Address line 1",
-            value: applicantData.applicantHomeAddress1,
-            link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.applicantHomeAddress1}`,
-            hiddenLabel: "Current address line 1",
-          },
-          {
-            key: "Address line 2",
-            value: applicantData.applicantHomeAddress2,
-            link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.applicantHomeAddress2}`,
-            hiddenLabel: "Current address line 2",
-          },
-          {
-            key: "Town or city",
-            value: applicantData.townOrCity,
-            link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.townOrCity}`,
-            hiddenLabel: "Current town or city",
-          },
-          {
-            key: "Country",
-            value: getCountryName(applicantData.country),
-            link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.country}`,
-            hiddenLabel: "Current country",
-          },
-          {
-            key: "Postcode",
-            value: applicantData.postcode,
-            link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.postcode}`,
-            hiddenLabel: "Current postcode",
-          },
-        ]
-      : [];
+  const currentAddressData = isIssued
+    ? [
+        {
+          key: "Address line 1",
+          value: applicantData.applicantHomeAddress1,
+          link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.applicantHomeAddress1}`,
+          hiddenLabel: "Current address line 1",
+        },
+        {
+          key: "Address line 2",
+          value: applicantData.applicantHomeAddress2,
+          link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.applicantHomeAddress2}`,
+          hiddenLabel: "Current address line 2",
+        },
+        {
+          key: "Town or city",
+          value: applicantData.townOrCity,
+          link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.townOrCity}`,
+          hiddenLabel: "Current town or city",
+        },
+        {
+          key: "Country",
+          value: getCountryName(applicantData.country),
+          link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.country}`,
+          hiddenLabel: "Current country",
+        },
+        {
+          key: "Postcode",
+          value: applicantData.postcode,
+          link: `/enter-applicant-information?from=tb-certificate-summary#${attributeToComponentId.postcode}`,
+          hiddenLabel: "Current postcode",
+        },
+      ]
+    : [];
 
-  const ukAddressData =
-    tbCertificateData.isIssued === YesOrNo.YES
-      ? [
-          {
-            key: "Address line 1",
-            value: travelData.applicantUkAddress1,
-            link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.applicantUkAddress1}`,
-            hiddenLabel: "UK address line 1",
-          },
-          {
-            key: "Address line 2",
-            value: travelData.applicantUkAddress2,
-            link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.applicantUkAddress2}`,
-            hiddenLabel: "UK address line 2",
-          },
-          {
-            key: "Town or city",
-            value: travelData.townOrCity,
-            link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.townOrCity}`,
-            hiddenLabel: "UK town or city",
-          },
-          {
-            key: "County",
-            value: travelData.applicantUkAddress3,
-            link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.applicantUkAddress3}`,
-            hiddenLabel: "UK county",
-          },
-          {
-            key: "Postcode",
-            value: travelData.postcode,
-            link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.postcode}`,
-            hiddenLabel: "UK postcode",
-          },
-        ]
-      : [];
+  const ukAddressData = isIssued
+    ? [
+        {
+          key: "Address line 1",
+          value: travelData.applicantUkAddress1,
+          link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.applicantUkAddress1}`,
+          hiddenLabel: "UK address line 1",
+        },
+        {
+          key: "Address line 2",
+          value: travelData.applicantUkAddress2,
+          link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.applicantUkAddress2}`,
+          hiddenLabel: "UK address line 2",
+        },
+        {
+          key: "Town or city",
+          value: travelData.townOrCity,
+          link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.townOrCity}`,
+          hiddenLabel: "UK town or city",
+        },
+        {
+          key: "County",
+          value: travelData.applicantUkAddress3,
+          link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.applicantUkAddress3}`,
+          hiddenLabel: "UK county",
+        },
+        {
+          key: "Postcode",
+          value: travelData.postcode,
+          link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.postcode}`,
+          hiddenLabel: "UK postcode",
+        },
+      ]
+    : [];
 
-  const certificateData =
-    tbCertificateData.isIssued === YesOrNo.YES
-      ? [
-          {
-            key: "Clinic name",
-            value: clinic.name,
-            hiddenLabel: "Clinic name",
-          },
-          {
-            key: "Certificate reference number",
-            value: tbCertificateData.certificateNumber,
-            hiddenLabel: "Certificate reference number",
-          },
-          {
-            key: "Certificate issue date",
-            value: formatDateForDisplay(tbCertificateData.certificateDate),
-            hiddenLabel: "Certificate issue date",
-          },
-          {
-            key: "Certificate expiry date",
-            value: (() => {
-              const expiryDate = calculateCertificateExpiryDate(
-                tbCertificateData.certificateDate,
-                medicalScreeningData.closeContactWithTb === "Yes",
-              );
-              return formatDateForDisplay(expiryDate);
-            })(),
-            hiddenLabel: "Certificate expiry date",
-          },
-          {
-            key: "Declaring physician name",
-            value: tbCertificateData.declaringPhysicianName,
-            link: isCertificateIssued
-              ? undefined
-              : `/enter-clinic-certificate-information#${attributeToComponentId.declaringPhysicianName}`,
-            hiddenLabel: "Declaring physician name",
-          },
-          {
-            key: "Physician's comments",
-            value: tbCertificateData.comments,
-            link: isCertificateIssued
-              ? undefined
-              : `/enter-clinic-certificate-information#${attributeToComponentId.comments}`,
-            hiddenLabel: "Physician's comments",
-          },
-        ]
-      : [];
+  const certificateData = isIssued
+    ? [
+        {
+          key: "Clinic name",
+          value: clinic.name,
+          hiddenLabel: "Clinic name",
+        },
+        {
+          key: "Certificate reference number",
+          value: tbCertificateData.certificateNumber,
+          hiddenLabel: "Certificate reference number",
+        },
+        {
+          key: "Certificate issue date",
+          value: formatDateForDisplay(tbCertificateData.certificateDate),
+          hiddenLabel: "Certificate issue date",
+        },
+        {
+          key: "Certificate expiry date",
+          value: (() => {
+            const expiryDate = calculateCertificateExpiryDate(
+              tbCertificateData.certificateDate,
+              medicalScreeningData.closeContactWithTb === "Yes",
+            );
+            return formatDateForDisplay(expiryDate);
+          })(),
+          hiddenLabel: "Certificate expiry date",
+        },
+        {
+          key: "Declaring physician name",
+          value: tbCertificateData.declaringPhysicianName,
+          link: clinicInfoLink(isCertificateIssued, attributeToComponentId.declaringPhysicianName),
+          hiddenLabel: "Declaring physician name",
+        },
+        {
+          key: "Physician's comments",
+          value: tbCertificateData.comments,
+          link: clinicInfoLink(isCertificateIssued, attributeToComponentId.comments),
+          hiddenLabel: "Physician's comments",
+        },
+      ]
+    : [];
 
-  const screeningData =
-    tbCertificateData.isIssued === YesOrNo.YES
-      ? [
-          {
-            key: "Chest X-ray done",
-            value: medicalScreeningData.chestXrayTaken,
-            hiddenLabel: "Chest X-ray done",
-          },
-          {
-            key: "Chest X-ray outcome",
-            value: radiologicalOutcomeData.xrayResult,
-            hiddenLabel: "Chest X-ray outcome",
-          },
-          {
-            key: "Sputum collected",
-            value: sputumRequirementData.isSputumRequired,
-            hiddenLabel: "Sputum collected",
-          },
-          {
-            key: "Sputum outcome",
-            value: calculateSputumOutcome(sputumRequirementData, sputumData),
-            hiddenLabel: "Sputum outcome",
-          },
-          {
-            key: "Pregnant",
-            value: medicalScreeningData.pregnant,
-            hiddenLabel: "Pregnant",
-          },
-          {
-            key: "Child under 11 years",
-            value: isChildUnder11(medicalScreeningData),
-            hiddenLabel: "Child under 11 years",
-          },
-        ]
-      : [];
+  const screeningData = isIssued
+    ? [
+        {
+          key: "Chest X-ray done",
+          value: medicalScreeningData.chestXrayTaken,
+          hiddenLabel: "Chest X-ray done",
+        },
+        {
+          key: "Chest X-ray outcome",
+          value: radiologicalOutcomeData.xrayResult,
+          hiddenLabel: "Chest X-ray outcome",
+        },
+        {
+          key: "Sputum collected",
+          value: sputumRequirementData.isSputumRequired,
+          hiddenLabel: "Sputum collected",
+        },
+        {
+          key: "Sputum outcome",
+          value: calculateSputumOutcome(sputumRequirementData, sputumData),
+          hiddenLabel: "Sputum outcome",
+        },
+        {
+          key: "Pregnant",
+          value: medicalScreeningData.pregnant,
+          hiddenLabel: "Pregnant",
+        },
+        {
+          key: "Child under 11 years",
+          value: isChildUnder11(medicalScreeningData),
+          hiddenLabel: "Child under 11 years",
+        },
+      ]
+    : [];
 
   return (
     <div>
       {isLoading && <Spinner />}
 
-      {tbCertificateData.isIssued === YesOrNo.YES ? (
+      {isIssued ? (
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h2 className="govuk-heading-m">Visa applicant information</h2>
@@ -409,7 +401,7 @@ const TbSummary = () => {
         <Summary status={summaryStatus} summaryElements={summaryData} />
       )}
 
-      {tbCertificateData.isIssued === YesOrNo.NO && (
+      {!isIssued && (
         <div>
           <Heading title="Now send the TB clearance outcome" level={2} size="m" />
           <p className="govuk-body">
