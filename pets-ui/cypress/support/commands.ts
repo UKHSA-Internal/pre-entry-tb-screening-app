@@ -1,11 +1,32 @@
 import { testCredentials } from "./test-data";
 
 export function loginViaB2C() {}
+export function logoutViaB2C() {}
+export function acceptCookies() {}
 
+// Cookie Banner Command
+Cypress.Commands.add("acceptCookies", (accept: boolean = true) => {
+  cy.log(`Checking for cookie banner - ${accept ? "accepting" : "rejecting"}`);
+
+  cy.get("body").then(($body) => {
+    if ($body.find(".govuk-cookie-banner").length > 0) {
+      const buttonText = accept ? "Accept analytics cookies" : "Reject analytics cookies";
+      cy.get("button.govuk-button").contains(buttonText).click({ force: true });
+      cy.log(`${buttonText} - done`);
+    } else {
+      cy.log("No cookie banner present");
+    }
+  });
+});
+
+// Login Command
 Cypress.Commands.add("loginViaB2C", () => {
   cy.log("Starting B2C authentication");
 
   cy.visit("/");
+
+  // Handle cookie banner
+  cy.acceptCookies();
 
   cy.get("button#sign-in").click({ force: true });
 
@@ -86,6 +107,7 @@ Cypress.Commands.add("loginViaB2C", () => {
   cy.url({ timeout: 30000 }).should("include", "/search-for-visa-applicant");
 });
 
+// Logout Command
 Cypress.Commands.add("logoutViaB2C", () => {
   cy.log("Starting B2C logout process");
 
@@ -139,6 +161,7 @@ Cypress.Commands.add("logoutViaB2C", () => {
   cy.log("B2C logout completed successfully");
 });
 
+// Clear All Sessions Command
 Cypress.Commands.add("clearAllSessions", () => {
   return Cypress.session.clearAllSavedSessions();
 });

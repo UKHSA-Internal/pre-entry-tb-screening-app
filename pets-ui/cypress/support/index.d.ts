@@ -4,6 +4,7 @@ declare namespace Cypress {
     logoutViaB2C(): Chainable<void>;
     setupApplicationForm(): Chainable<void>;
     clearAllSessions(): Promise<void>;
+    acceptCookies(accept?: boolean): Chainable<void>;
   }
   interface Env {
     // API Testing

@@ -79,6 +79,7 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
   beforeEach(() => {
     loginViaB2C();
     applicantSearchPage.visit();
+    cy.acceptCookies();
     applicantSearchPage.verifyPageLoaded();
     // Generate random country and passport number
     const randomCountry = randomElement(countryList);

@@ -91,6 +91,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
   beforeEach(() => {
     loginViaB2C();
     applicantSearchPage.visit();
+    cy.acceptCookies();
     applicantSearchPage.verifyPageLoaded();
     // Generate random country and passport number
     const randomCountry = randomElement(countryList);
