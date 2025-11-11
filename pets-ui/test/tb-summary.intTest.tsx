@@ -20,6 +20,14 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
   };
 });
 
+beforeEach(() => {
+  localStorage.setItem("cookie-consent", "rejected");
+});
+
+afterEach(() => {
+  localStorage.clear();
+});
+
 const tbState: ReduxTbCertificateType = {
   status: ApplicationStatus.NOT_YET_STARTED,
   isIssued: YesOrNo.YES,

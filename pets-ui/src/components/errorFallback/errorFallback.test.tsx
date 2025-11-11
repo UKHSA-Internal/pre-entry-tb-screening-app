@@ -10,6 +10,14 @@ vi.mock("react-helmet-async", () => ({
   HelmetProvider: () => <>{}</>,
 }));
 
+beforeEach(() => {
+  localStorage.setItem("cookie-consent", "rejected");
+});
+
+afterEach(() => {
+  localStorage.clear();
+});
+
 describe("Error Summary Component", () => {
   it("renders correctly when props are specified", () => {
     renderWithProviders(<ErrorFallback />);
