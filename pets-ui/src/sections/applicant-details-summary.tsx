@@ -10,7 +10,7 @@ import { setApplicantDetailsStatus } from "@/redux/applicantSlice";
 import { setApplicationDetails } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
-import { ApplicationStatus, ButtonType, ImageType } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, ImageType } from "@/utils/enums";
 import { formatDateForDisplay, getCountryName, standardiseDayOrMonth } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 import uploadFile from "@/utils/uploadFile";
@@ -186,7 +186,7 @@ const ApplicantReview = () => {
         applicantData.status == ApplicationStatus.IN_PROGRESS) && (
         <Button
           id="submit"
-          type={ButtonType.DEFAULT}
+          class={ButtonClass.DEFAULT}
           text="Submit and continue"
           handleClick={handleSubmit}
         />
@@ -195,7 +195,7 @@ const ApplicantReview = () => {
         applicantData.status == ApplicationStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
-          type={ButtonType.DEFAULT}
+          class={ButtonClass.DEFAULT}
           text="Submit and continue"
           handleClick={() => navigate("/tracker")}
         />

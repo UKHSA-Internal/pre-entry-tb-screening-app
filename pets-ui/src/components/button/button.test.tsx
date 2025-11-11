@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { ButtonType } from "@/utils/enums";
+import { ButtonClass } from "@/utils/enums";
 
 import Button from "./button";
 
@@ -13,7 +13,7 @@ describe("Button component", () => {
       <Button
         id="test-id"
         text="test-text-default"
-        type={ButtonType.DEFAULT}
+        class={ButtonClass.DEFAULT}
         handleClick={handleClick}
       />,
     );
@@ -23,7 +23,7 @@ describe("Button component", () => {
       <Button
         id="test-id"
         text="test-text-default"
-        type={ButtonType.DEFAULT}
+        class={ButtonClass.DEFAULT}
         handleClick={handleClick}
       />,
     );
@@ -37,7 +37,7 @@ describe("Button component", () => {
       <Button
         id="test-id"
         text="test-text-secondary"
-        type={ButtonType.SECONDARY}
+        class={ButtonClass.SECONDARY}
         handleClick={handleClick}
       />,
     );
@@ -47,7 +47,7 @@ describe("Button component", () => {
       <Button
         id="test-id"
         text="test-text-secondary"
-        type={ButtonType.SECONDARY}
+        class={ButtonClass.SECONDARY}
         handleClick={handleClick}
       />,
     );
@@ -61,7 +61,7 @@ describe("Button component", () => {
       <Button
         id="test-id"
         text="test-text-warning"
-        type={ButtonType.WARNING}
+        class={ButtonClass.WARNING}
         handleClick={handleClick}
       />,
     );
@@ -71,7 +71,7 @@ describe("Button component", () => {
       <Button
         id="test-id"
         text="test-text-warning"
-        type={ButtonType.WARNING}
+        class={ButtonClass.WARNING}
         handleClick={handleClick}
       />,
     );
@@ -85,7 +85,7 @@ describe("Button component", () => {
       <Button
         id="test-id"
         text="test-text-default"
-        type={ButtonType.DEFAULT}
+        class={ButtonClass.DEFAULT}
         handleClick={handleClick}
       />,
     );

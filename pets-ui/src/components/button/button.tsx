@@ -1,10 +1,10 @@
 import { MouseEventHandler } from "react";
 
-import { ButtonType } from "@/utils/enums";
+import { ButtonClass } from "@/utils/enums";
 
 export interface ButtonProps {
   id: string;
-  type: ButtonType;
+  class: ButtonClass;
   text: string;
   handleClick?: MouseEventHandler<HTMLButtonElement>;
 }
@@ -13,7 +13,7 @@ export default function Button(props: Readonly<ButtonProps>) {
   return (
     <button
       type="submit"
-      className={props.type}
+      className={props.class}
       data-module="govuk-button"
       onClick={props.handleClick}
       style={{ marginTop: 30 }}

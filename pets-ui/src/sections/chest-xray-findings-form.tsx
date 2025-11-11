@@ -16,7 +16,7 @@ import {
 } from "@/redux/radiologicalOutcomeSlice";
 import { selectRadiologicalOutcome } from "@/redux/store";
 import { ReduxRadiologicalOutcomeDetailsType } from "@/types";
-import { ButtonType } from "@/utils/enums";
+import { ButtonClass } from "@/utils/enums";
 
 const ChestXrayFindingsForm = () => {
   const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
@@ -167,7 +167,7 @@ const ChestXrayFindingsForm = () => {
           />
         </div>
 
-        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Continue" />
+        <SubmitButton id="save-and-continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );
