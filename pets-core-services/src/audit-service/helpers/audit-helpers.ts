@@ -8,7 +8,8 @@ import { DynamoDBRecord } from "aws-lambda";
 import { logger } from "../../shared/logger";
 import { SourceType } from "../types/enums";
 
-const client = new CloudTrailClient({ region: "eu-west-2" });
+// const client = new CloudTrailClient({ region: "eu-west-2" });
+const client = new CloudTrailClient({ region: "us-east-1" });
 
 export const getConsoleEvent = async (record: DynamoDBRecord) => {
   const tableArn = record.eventSourceARN;
