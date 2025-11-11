@@ -4,18 +4,55 @@ export function loginViaB2C() {}
 export function logoutViaB2C() {}
 export function acceptCookies() {}
 
-// Cookie Banner Command
+// Cookie Banner Command - FIXED to handle confirmation message
 Cypress.Commands.add("acceptCookies", (accept: boolean = true) => {
-  cy.log(`Checking for cookie banner - ${accept ? "accepting" : "rejecting"}`);
+  cy.log(`Handling cookie banner - ${accept ? "accepting" : "rejecting"}`);
 
-  cy.get("body").then(($body) => {
-    if ($body.find(".govuk-cookie-banner").length > 0) {
-      const buttonText = accept ? "Accept analytics cookies" : "Reject analytics cookies";
-      cy.get("button.govuk-button").contains(buttonText).click({ force: true });
-      cy.log(`${buttonText} - done`);
-    } else {
+  cy.get("body", { timeout: 2000 }).then(($body) => {
+    const cookieBanner = $body.find(".govuk-cookie-banner");
+
+    if (cookieBanner.length === 0) {
       cy.log("No cookie banner present");
+      return;
     }
+
+    // Check if action buttons are present (initial banner)
+    if ($body.find(".govuk-cookie-banner .govuk-button-group button").length > 0) {
+      const buttonText = accept ? "Accept analytics cookies" : "Reject analytics cookies";
+
+      cy.log(`Clicking: ${buttonText}`);
+      cy.get(".govuk-cookie-banner .govuk-button-group button")
+        .contains(buttonText)
+        .click({ force: true });
+
+      cy.wait(500);
+
+      // Store preference in localStorage
+      cy.window().then((win) => {
+        const consentValue = accept ? "accepted" : "rejected";
+        const cookieSettings = {
+          analytics: accept,
+          essential: true,
+        };
+
+        win.localStorage.setItem("cookies-policy", JSON.stringify(cookieSettings));
+        win.localStorage.setItem("cookieConsent", consentValue);
+        win.localStorage.setItem("cookie-consent", consentValue);
+
+        cy.log(`Cookie preference stored: ${consentValue}`);
+      });
+    }
+
+    // Handle confirmation message or hide button (don't fail if not present)
+    cy.get("body").then(($newBody) => {
+      if ($newBody.find('button:contains("Hide cookie message")').length > 0) {
+        cy.log("Hiding cookie confirmation message");
+        cy.contains("button", "Hide cookie message").click({ force: true });
+        cy.wait(300); // Brief wait for animation
+      }
+    });
+
+    cy.log("Cookie banner handled successfully");
   });
 });
 
@@ -25,7 +62,7 @@ Cypress.Commands.add("loginViaB2C", () => {
 
   cy.visit("/");
 
-  // Handle cookie banner
+  // Handle cookie banner if present
   cy.acceptCookies();
 
   cy.get("button#sign-in").click({ force: true });

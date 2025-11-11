@@ -92,8 +92,12 @@ export class ApplicantDetailsPage extends BasePage {
   }
 
   // Form Submission
-  submitForm(): ApplicantDetailsPage {
-    cy.get('button[type="submit"]').should("be.visible").click();
+  submitForm(buttonText: string = "Save and continue"): ApplicantDetailsPage {
+    // Target the form submit button, excluding cookie banner
+    cy.get('main button[type="submit"], form button[type="submit"]')
+      .contains(buttonText)
+      .should("be.visible")
+      .click();
     return this;
   }
 

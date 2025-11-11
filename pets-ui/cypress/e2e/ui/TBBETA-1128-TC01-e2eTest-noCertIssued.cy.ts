@@ -90,8 +90,8 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
   beforeEach(() => {
     loginViaB2C();
     applicantSearchPage.visit();
-    cy.acceptCookies();
     applicantSearchPage.verifyPageLoaded();
+    cy.acceptCookies();
     // Generate random country and passport number
     const randomCountry = randomElement(countryList);
     countryCode = randomCountry?.value; // For form filling (e.g., "BRB")
