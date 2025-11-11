@@ -57,6 +57,8 @@ const TbSummary = () => {
     ? ApplicationStatus.IN_PROGRESS
     : tbCertificateData.status;
 
+  const isCertificateIssued = tbCertificateData.status === ApplicationStatus.COMPLETE;
+
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
@@ -169,19 +171,25 @@ const TbSummary = () => {
           {
             key: "Reason for not issuing certificate",
             value: tbCertificateData.reasonNotIssued,
-            link: `/why-are-you-not-issuing-certificate#${attributeToComponentId.reasonNotIssued}`,
+            link: isCertificateIssued
+              ? undefined
+              : `/why-are-you-not-issuing-certificate#${attributeToComponentId.reasonNotIssued}`,
             hiddenLabel: "Reason for not issuing certificate",
           },
           {
             key: "Declaring Physician's name",
             value: tbCertificateData.declaringPhysicianName,
-            link: `/why-are-you-not-issuing-certificate#${attributeToComponentId.declaringPhysicianName}`,
+            link: isCertificateIssued
+              ? undefined
+              : `/why-are-you-not-issuing-certificate#${attributeToComponentId.declaringPhysicianName}`,
             hiddenLabel: "Declaring Physician's name",
           },
           {
             key: "Physician's comments",
             value: tbCertificateData.comments,
-            link: `/why-are-you-not-issuing-certificate#${attributeToComponentId.comments}`,
+            link: isCertificateIssued
+              ? undefined
+              : `/why-are-you-not-issuing-certificate#${attributeToComponentId.comments}`,
             hiddenLabel: "Physician's comments",
           },
         ];
@@ -290,13 +298,17 @@ const TbSummary = () => {
           {
             key: "Declaring physician name",
             value: tbCertificateData.declaringPhysicianName,
-            link: `/enter-clinic-certificate-information#${attributeToComponentId.declaringPhysicianName}`,
+            link: isCertificateIssued
+              ? undefined
+              : `/enter-clinic-certificate-information#${attributeToComponentId.declaringPhysicianName}`,
             hiddenLabel: "Declaring physician name",
           },
           {
             key: "Physician's comments",
             value: tbCertificateData.comments,
-            link: `/enter-clinic-certificate-information#${attributeToComponentId.comments}`,
+            link: isCertificateIssued
+              ? undefined
+              : `/enter-clinic-certificate-information#${attributeToComponentId.comments}`,
             hiddenLabel: "Physician's comments",
           },
         ]
