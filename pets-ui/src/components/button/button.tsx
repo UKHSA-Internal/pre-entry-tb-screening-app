@@ -1,18 +1,19 @@
 import { MouseEventHandler } from "react";
 
-import { ButtonClass } from "@/utils/enums";
+import { ButtonClass, ButtonType } from "@/utils/enums";
 
 export interface ButtonProps {
   id: string;
   class: ButtonClass;
   text: string;
+  type?: ButtonType;
   handleClick?: MouseEventHandler<HTMLButtonElement>;
 }
 
 export default function Button(props: Readonly<ButtonProps>) {
   return (
     <button
-      type="submit"
+      type={props.type ?? "submit"}
       className={props.class}
       data-module="govuk-button"
       onClick={props.handleClick}

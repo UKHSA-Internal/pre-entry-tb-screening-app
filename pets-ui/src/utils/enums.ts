@@ -4,6 +4,12 @@ export enum ButtonClass {
   WARNING = "govuk-button govuk-button--warning",
 }
 
+export enum ButtonType {
+  SUBMIT = "submit",
+  RESET = "reset",
+  BUTTON = "button",
+}
+
 export enum RadioIsInline {
   TRUE = "govuk-radios govuk-radios--inline",
   FALSE = "govuk-radios",
