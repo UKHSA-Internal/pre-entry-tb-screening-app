@@ -1,3 +1,4 @@
+import { CloudTrailClient } from "@aws-sdk/client-cloudtrail";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { LambdaClient } from "@aws-sdk/client-lambda";
 import { S3Client } from "@aws-sdk/client-s3";
@@ -10,6 +11,7 @@ class AWSClients {
   private _s3Client?: S3Client;
   private _lambdaClient?: LambdaClient;
   private _sqsClient?: SQSClient;
+  private _cloudTrailClient?: CloudTrailClient;
 
   static getInstance(): AWSClients {
     if (!AWSClients.instance) {
@@ -40,6 +42,12 @@ class AWSClients {
     this._sqsClient = this._sqsClient ?? new SQSClient({ region: "eu-west-2" });
 
     return this._sqsClient;
+  }
+
+  get cloudTrailClient(): CloudTrailClient {
+    this._cloudTrailClient ??= new CloudTrailClient({ region: "eu-west-2" });
+
+    return this._cloudTrailClient;
   }
 }
 

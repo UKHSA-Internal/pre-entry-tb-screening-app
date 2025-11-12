@@ -1,14 +1,11 @@
-import {
-  CloudTrailClient,
-  LookupEventsCommand,
-  LookupEventsCommandInput,
-} from "@aws-sdk/client-cloudtrail";
+import { LookupEventsCommand, LookupEventsCommandInput } from "@aws-sdk/client-cloudtrail";
 import { DynamoDBRecord } from "aws-lambda";
 
+import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
 import { SourceType } from "../types/enums";
 
-const client = new CloudTrailClient({ region: "eu-west-2" });
+const { cloudTrailClient: client } = awsClients;
 
 export const getConsoleEvent = async (record: DynamoDBRecord) => {
   const tableArn = record.eventSourceARN;
