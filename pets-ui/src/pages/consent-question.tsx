@@ -7,6 +7,7 @@ import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
 
 export default function ConsentQuestionPage() {
   const navigate = useNavigate();
@@ -26,8 +27,16 @@ export default function ConsentQuestionPage() {
   };
 
   const errorsToShow = Object.keys(errors);
-  const consentRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent(
+        "Do you have the visa applicant's written consent for TB screening?",
+        errorsToShow,
+      );
+    }
+  }, [errorsToShow]);
 
+  const consentRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (location.hash) {
       const target = location.hash.substring(1);

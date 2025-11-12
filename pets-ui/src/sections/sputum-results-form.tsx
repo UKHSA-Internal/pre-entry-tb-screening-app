@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
@@ -18,7 +18,7 @@ import {
 } from "@/redux/sputumSlice";
 import { selectSputum } from "@/redux/store";
 import { ButtonType, PositiveOrNegative } from "@/utils/enums";
-import { formatDateForDisplay } from "@/utils/helpers";
+import { formatDateForDisplay, sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
 import { sputumResultsValidationMessages } from "@/utils/records";
 
 interface SputumResultsFormType {
@@ -233,6 +233,11 @@ const SputumResultsForm = () => {
   };
 
   const errorsToShow = Object.keys(errors);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Enter sputum sample results", errorsToShow);
+    }
+  }, [errorsToShow]);
 
   const resultOptions = [
     { label: "Negative", value: PositiveOrNegative.NEGATIVE },

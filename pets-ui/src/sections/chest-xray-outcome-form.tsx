@@ -11,6 +11,7 @@ import { setXrayResult } from "@/redux/radiologicalOutcomeSlice";
 import { selectRadiologicalOutcome } from "@/redux/store";
 import { ReduxRadiologicalOutcomeDetailsType } from "@/types";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
 
 const ChestXrayOutcomeForm = () => {
   const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
@@ -29,6 +30,11 @@ const ChestXrayOutcomeForm = () => {
   };
 
   const errorsToShow = Object.keys(errors);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Chest X-ray results", errorsToShow);
+    }
+  }, [errorsToShow]);
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
   const location = useLocation();

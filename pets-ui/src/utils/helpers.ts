@@ -269,6 +269,13 @@ const sendGoogleAnalyticsJourneyEvent = (
   });
 };
 
+const sendGoogleAnalyticsFormErrorEvent = (pageTitle: string, errorList: string[]) => {
+  sendGoogleAnalyticsEvent("form_validation_error", {
+    page: pageTitle,
+    validation_failures: errorList,
+  });
+};
+
 const setGoogleAnalyticsParams = (paramName: string, params?: unknown) => {
   if (typeof globalThis.gtag === "function") {
     globalThis.gtag("set", paramName, params);
@@ -290,6 +297,7 @@ export {
   logError,
   missingFieldsMessage,
   sendGoogleAnalyticsEvent,
+  sendGoogleAnalyticsFormErrorEvent,
   sendGoogleAnalyticsJourneyEvent,
   setGoogleAnalyticsParams,
   spreadArrayIfNotEmpty,

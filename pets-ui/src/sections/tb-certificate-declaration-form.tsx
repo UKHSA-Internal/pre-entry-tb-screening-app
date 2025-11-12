@@ -29,6 +29,7 @@ import {
   calculateCertificateExpiryDate,
   calculateCertificateIssueDate,
   formatDateForDisplay,
+  sendGoogleAnalyticsFormErrorEvent,
 } from "@/utils/helpers";
 import { formRegex } from "@/utils/records";
 
@@ -77,6 +78,11 @@ const TbCertificateDeclarationForm = () => {
   };
 
   const errorsToShow = Object.keys(errors);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Enter clinic and certificate information", errorsToShow);
+    }
+  }, [errorsToShow]);
 
   const location = useLocation();
   const certificateIssueDate = useRef<HTMLDivElement | null>(null);

@@ -21,7 +21,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectChestXray } from "@/redux/store";
 import { DateType, ReduxChestXrayDetailsType } from "@/types";
 import { ButtonType, ImageType } from "@/utils/enums";
-import { validateDate } from "@/utils/helpers";
+import { sendGoogleAnalyticsFormErrorEvent, validateDate } from "@/utils/helpers";
 import uploadFile from "@/utils/uploadFile";
 
 const DicomUploadModule = (
@@ -79,6 +79,11 @@ const ChestXrayForm = () => {
   } = methods;
 
   const errorsToShow = Object.keys(errors);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Upload chest X-ray images", errorsToShow);
+    }
+  }, [errorsToShow]);
 
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = async (chestXrayData) => {
     setIsLoading(true);

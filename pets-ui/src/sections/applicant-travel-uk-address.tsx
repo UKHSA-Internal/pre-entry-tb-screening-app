@@ -21,6 +21,7 @@ import {
 } from "@/redux/travelSlice";
 import { ReduxTravelDetailsType } from "@/types";
 import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
 import { formRegex } from "@/utils/records";
 
 type TravelAddressAndContactDetailsData = Omit<ReduxTravelDetailsType, "visaCategory">;
@@ -71,6 +72,11 @@ const ApplicantTravelAddressAndContactDetails = () => {
   };
 
   const errorsToShow = Object.keys(errors);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Visa applicant's proposed UK address", errorsToShow);
+    }
+  }, [errorsToShow]);
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
   const addressLine1Ref = useRef<HTMLDivElement | null>(null);

@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setSputumDecisionRequired, setSputumDecisionStatus } from "@/redux/sputumDecisionSlice";
 import { selectSputumDecision } from "@/redux/store";
 import { ApplicationStatus, ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
 
 interface SputumDecisionFormData {
   isSputumRequired: YesOrNo;
@@ -37,6 +38,12 @@ const SputumQuestionForm = () => {
   };
 
   const errorsToShow = Object.keys(errors);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Is sputum collection required?", errorsToShow);
+    }
+  }, [errorsToShow]);
+
   const isSputumRequiredRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (location.hash) {

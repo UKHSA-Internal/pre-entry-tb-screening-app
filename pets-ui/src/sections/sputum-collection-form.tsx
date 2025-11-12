@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   Control,
   Controller,
@@ -24,7 +24,7 @@ import {
 import { selectSputum } from "@/redux/store";
 import { DateType } from "@/types";
 import { ApplicationStatus, ButtonType, SputumCollectionMethod } from "@/utils/enums";
-import { validateDate } from "@/utils/helpers";
+import { sendGoogleAnalyticsFormErrorEvent, validateDate } from "@/utils/helpers";
 import { dateValidationMessages } from "@/utils/records";
 
 interface SputumCollectionFormFields {
@@ -251,6 +251,11 @@ const SputumCollectionForm = () => {
   };
 
   const errorsToShow = Object.keys(errors);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Enter sputum sample collection information", errorsToShow);
+    }
+  }, [errorsToShow]);
 
   return (
     <FormProvider {...methods}>

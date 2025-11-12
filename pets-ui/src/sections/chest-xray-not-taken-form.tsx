@@ -14,6 +14,7 @@ import {
 import { selectMedicalScreening } from "@/redux/store";
 import { ReduxMedicalScreeningType } from "@/types";
 import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
 
 const ChestXrayNotTakenForm = () => {
   const dispatch = useAppDispatch();
@@ -64,7 +65,11 @@ const ChestXrayNotTakenForm = () => {
   };
 
   const errorsToShow = Object.keys(errors);
-  const reasonXrayWasNotTakenRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Reason X-ray is not required", errorsToShow);
+    }
+  }, [errorsToShow]);
 
   useEffect(() => {
     if (
@@ -82,6 +87,7 @@ const ChestXrayNotTakenForm = () => {
     setValue,
   ]);
 
+  const reasonXrayWasNotTakenRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (location.hash) {
       const target = location.hash.substring(1);
