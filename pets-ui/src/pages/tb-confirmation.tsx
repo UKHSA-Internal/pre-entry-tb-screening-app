@@ -1,15 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Confirmation from "@/components/confirmation/confirmation";
 import Container from "@/components/container/container";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import { useAppSelector } from "@/redux/hooks";
-import { selectTbCertificate } from "@/redux/store";
+import { selectApplication, selectTbCertificate } from "@/redux/store";
 import { YesOrNo } from "@/utils/enums";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
 
 export default function TbConfirmationPage() {
   const navigate = useNavigate();
+  const applicationData = useAppSelector(selectApplication);
   const tbCertificateData = useAppSelector(selectTbCertificate);
 
   const isCertificateIssued = tbCertificateData.isIssued === YesOrNo.YES;
@@ -36,6 +38,15 @@ export default function TbConfirmationPage() {
       (takes 30 seconds)
     </React.Fragment>,
   ];
+
+  useEffect(() => {
+    sendGoogleAnalyticsJourneyEvent(
+      "TB clearance complete",
+      applicationData.applicationId,
+      "TB certificate outcome",
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Container title="TB screening complete - Complete UK pre-entry health screening - GOV.UK">

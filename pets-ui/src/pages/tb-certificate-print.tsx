@@ -14,6 +14,7 @@ import {
   selectTbCertificate,
   selectTravel,
 } from "@/redux/store";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
 
 export default function TbCertificatePrintPage() {
   const certificateRef = useRef<HTMLDivElement>(null);
@@ -63,6 +64,15 @@ export default function TbCertificatePrintPage() {
       });
     }
   };
+
+  useEffect(() => {
+    sendGoogleAnalyticsJourneyEvent(
+      "TB clearance certificate",
+      applicationData.applicationId,
+      "TB certificate outcome",
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Container
