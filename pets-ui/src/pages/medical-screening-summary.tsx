@@ -1,11 +1,15 @@
+import { useEffect } from "react";
+
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import { useAppSelector } from "@/redux/hooks";
-import { selectMedicalScreening } from "@/redux/store";
+import { selectApplication, selectMedicalScreening } from "@/redux/store";
 import MedicalScreeningReview from "@/sections/medical-screening-summary";
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
 
 export default function MedicalSummaryPage() {
+  const applicationData = useAppSelector(selectApplication);
   const medicalData = useAppSelector(selectMedicalScreening);
 
   const getBackLink = () => {
@@ -17,6 +21,15 @@ export default function MedicalSummaryPage() {
       return "/is-an-x-ray-required";
     }
   };
+
+  useEffect(() => {
+    sendGoogleAnalyticsJourneyEvent(
+      "Medical screening summary",
+      applicationData.applicationId,
+      "Medical history and TB symptoms",
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Container
