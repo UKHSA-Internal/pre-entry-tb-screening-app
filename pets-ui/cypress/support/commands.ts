@@ -4,7 +4,7 @@ export function loginViaB2C() {}
 export function logoutViaB2C() {}
 export function acceptCookies() {}
 
-// Cookie Banner Command - FIXED to handle confirmation message
+// Cookie Banner Command - To handle confirmation message
 Cypress.Commands.add("acceptCookies", (accept: boolean = true) => {
   cy.log(`Handling cookie banner - ${accept ? "accepting" : "rejecting"}`);
 

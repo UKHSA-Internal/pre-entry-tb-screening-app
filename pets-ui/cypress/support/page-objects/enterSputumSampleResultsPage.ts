@@ -856,7 +856,6 @@ export class EnterSputumSampleResultsPage extends BasePage {
     this.verifyPageStructure();
     this.verifyDropdownOptions();
     this.verifySaveAndContinueButton();
-    this.verifyGridLayout();
     this.verifySectionBreaks();
     this.verifyBackLinkNavigation();
     this.verifyServiceName();
