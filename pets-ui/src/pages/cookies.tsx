@@ -1,3 +1,4 @@
+import { useMsal } from "@azure/msal-react";
 import { useEffect, useRef, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 
@@ -10,11 +11,13 @@ import NotificationBanner from "@/components/notificationBanner/notificationBann
 import Radio from "@/components/radio/radio";
 import Table from "@/components/table/table";
 import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
-import { updateGoogleAnalyticsConsent } from "@/utils/helpers";
+import { setGoogleAnalyticsParams, updateGoogleAnalyticsConsent } from "@/utils/helpers";
 import { useNavigationHistory } from "@/utils/useNavigationHistory";
+import { getUserProperties } from "@/utils/userProperies";
 
 export default function CookiesPage() {
   const { goBack } = useNavigationHistory();
+  const { accounts } = useMsal();
   const methods = useForm<{ cookieConsent: YesOrNo }>({ reValidateMode: "onSubmit" });
   const { handleSubmit } = methods;
 
@@ -32,10 +35,18 @@ export default function CookiesPage() {
 
   const backLinkTo = "/";
 
-  const onSubmit: SubmitHandler<{ cookieConsent: YesOrNo }> = (data) => {
+  const onSubmit: SubmitHandler<{ cookieConsent: YesOrNo }> = async (data) => {
     if (data.cookieConsent === YesOrNo.YES) {
       setCookieConsent("accepted");
       updateGoogleAnalyticsConsent(true);
+
+      if (accounts.length > 0) {
+        const userProperties = await getUserProperties();
+        setGoogleAnalyticsParams("user_properties", {
+          user_role: userProperties.jobTitle,
+          clinic_id: userProperties.clinicId,
+        });
+      }
     } else if (data.cookieConsent === YesOrNo.NO) {
       setCookieConsent("rejected");
       updateGoogleAnalyticsConsent(false);
