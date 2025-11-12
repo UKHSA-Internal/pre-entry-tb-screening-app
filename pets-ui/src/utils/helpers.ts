@@ -258,6 +258,17 @@ const sendGoogleAnalyticsEvent = (eventName: string, eventParams?: unknown) => {
   }
 };
 
+const sendGoogleAnalyticsJourneyEvent = (
+  pageTitle: string,
+  journeyId: string,
+  journeyType: string,
+) => {
+  sendGoogleAnalyticsEvent(pageTitle, {
+    journey_id: journeyId,
+    journey_type: journeyType,
+  });
+};
+
 const setGoogleAnalyticsParams = (paramName: string, params?: unknown) => {
   if (typeof globalThis.gtag === "function") {
     globalThis.gtag("set", paramName, params);
@@ -279,6 +290,7 @@ export {
   logError,
   missingFieldsMessage,
   sendGoogleAnalyticsEvent,
+  sendGoogleAnalyticsJourneyEvent,
   setGoogleAnalyticsParams,
   spreadArrayIfNotEmpty,
   standardiseDayOrMonth,
