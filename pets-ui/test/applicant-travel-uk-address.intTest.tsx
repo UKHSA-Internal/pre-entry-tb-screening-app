@@ -27,6 +27,10 @@ describe("ApplicantTravelAddressAndContactDetails", () => {
     useNavigateMock.mockClear();
   });
 
+  afterEach(() => {
+    window.history.pushState({}, "", "/");
+  });
+
   const user = userEvent.setup();
 
   it("when form is filled correctly then state is updated and user is navigated to summary page", async () => {
@@ -100,6 +104,17 @@ describe("ApplicantTravelAddressAndContactDetails", () => {
     expect(link).toHaveAttribute("href", "/tb-certificate-summary");
   });
 
+  it("back link points to travel summary page", () => {
+    window.history.pushState(
+      {},
+      "",
+      "/visa-applicant-proposed-uk-address?from=/check-travel-information",
+    );
+    renderWithProviders(<TravelAddressAndContactDetailsPage />);
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toHaveAttribute("href", "/check-travel-information");
+  });
+
   it("updates slice and navigates to TB summary when editing in COMPLETE status", async () => {
     vi.spyOn(api, "putTravelDetails").mockResolvedValue({ status: 200, statusText: "OK" });
     const user = userEvent.setup();
@@ -129,6 +144,41 @@ describe("ApplicantTravelAddressAndContactDetails", () => {
       expect(store.getState().travel.applicantUkAddress1).toBe("2 Street");
       expect(store.getState().travel.status).toBe(ApplicationStatus.COMPLETE);
       expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-summary");
+    });
+  });
+
+  it("navigates back to travel summary page when editing", async () => {
+    vi.spyOn(api, "putTravelDetails").mockResolvedValue({ status: 200, statusText: "OK" });
+    window.history.pushState(
+      {},
+      "",
+      "/visa-applicant-proposed-uk-address?from=/check-travel-information",
+    );
+    const user = userEvent.setup();
+    const completeState = {
+      application: { applicationId: "abc-123", dateCreated: "" },
+      travel: {
+        status: ApplicationStatus.COMPLETE,
+        visaCategory: "Work",
+        applicantUkAddress1: "1 Street",
+        applicantUkAddress2: "",
+        applicantUkAddress3: "",
+        townOrCity: "London",
+        postcode: "0000 111",
+        ukEmail: "test@test.com",
+        ukMobileNumber: "07123456789",
+      },
+    };
+    renderWithProviders(<ApplicantTravelAddressAndContactDetails />, {
+      preloadedState: completeState,
+    });
+
+    await user.clear(screen.getByTestId("address-1"));
+    await user.type(screen.getByTestId("address-1"), "2 Street");
+    await user.click(screen.getByRole("button"));
+
+    await waitFor(() => {
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/check-travel-information");
     });
   });
 });
