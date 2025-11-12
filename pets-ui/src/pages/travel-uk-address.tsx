@@ -1,15 +1,28 @@
+import { useEffect } from "react";
+
 import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
-import { selectTravel } from "@/redux/store";
+import { selectApplication, selectTravel } from "@/redux/store";
 import ApplicantTravelAddressAndContactDetails from "@/sections/applicant-travel-uk-address";
 import { ApplicationStatus } from "@/utils/enums";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
 
 export default function TravelAddressAndContactDetailsPage() {
-  const travel = useAppSelector(selectTravel);
+  const applicationData = useAppSelector(selectApplication);
+  const travelData = useAppSelector(selectTravel);
   const backLinkTo =
-    travel.status === ApplicationStatus.COMPLETE
+    travelData.status === ApplicationStatus.COMPLETE
       ? "/tb-certificate-summary"
       : "/proposed-visa-category";
+
+  useEffect(() => {
+    sendGoogleAnalyticsJourneyEvent(
+      "Visa applicant's proposed UK address",
+      applicationData.applicationId,
+      "Travel Information",
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Container
