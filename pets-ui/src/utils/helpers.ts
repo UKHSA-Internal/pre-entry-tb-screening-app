@@ -252,6 +252,18 @@ const updateGoogleAnalyticsConsent = (consentGranted: boolean) => {
   }
 };
 
+const sendGoogleAnalyticsEvent = (eventName: string, eventParams?: unknown) => {
+  if (typeof globalThis.gtag === "function") {
+    globalThis.gtag("event", eventName, eventParams);
+  }
+};
+
+const setGoogleAnalyticsParams = (paramName: string, params?: unknown) => {
+  if (typeof globalThis.gtag === "function") {
+    globalThis.gtag("set", paramName, params);
+  }
+};
+
 export {
   calculateCertificateExpiryDate,
   calculateCertificateIssueDate,
@@ -266,6 +278,8 @@ export {
   isValidDate,
   logError,
   missingFieldsMessage,
+  sendGoogleAnalyticsEvent,
+  setGoogleAnalyticsParams,
   spreadArrayIfNotEmpty,
   standardiseDayOrMonth,
   toArray,
