@@ -10,12 +10,14 @@ export default function TravelVisaCategoryPage() {
   const travel = useAppSelector(selectTravel);
   const [searchParams] = useSearchParams();
   const fromParam = searchParams.get("from");
-  const backLinkTo =
-    fromParam === "/check-travel-information"
-      ? "/check-travel-information"
-      : travel.status === ApplicationStatus.COMPLETE
-        ? "/tb-certificate-summary"
-        : "/tracker";
+  let backLinkTo: string;
+  if (fromParam === "/check-travel-information") {
+    backLinkTo = "/check-travel-information";
+  } else if (travel.status === ApplicationStatus.COMPLETE) {
+    backLinkTo = "/tb-certificate-summary";
+  } else {
+    backLinkTo = "/tracker";
+  }
 
   return (
     <Container
