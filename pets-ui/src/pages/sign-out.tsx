@@ -6,6 +6,7 @@ import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import NotificationBanner from "@/components/notificationBanner/notificationBanner";
 import { ButtonType } from "@/utils/enums";
+import { setGoogleAnalyticsParams } from "@/utils/helpers";
 import { useNavigationHistory } from "@/utils/useNavigationHistory";
 
 export default function SignOutPage() {
@@ -14,6 +15,10 @@ export default function SignOutPage() {
   const { instance } = useMsal();
 
   const handleSignOut = () => {
+    setGoogleAnalyticsParams("user_properties", {
+      user_role: undefined,
+      clinic_id: undefined,
+    });
     instance
       .logoutRedirect({
         postLogoutRedirectUri: "/you-have-signed-out",
