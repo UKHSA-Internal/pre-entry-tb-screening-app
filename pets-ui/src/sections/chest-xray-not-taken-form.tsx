@@ -95,7 +95,7 @@ const ChestXrayNotTakenForm = () => {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {errorsToShow.length > 0 && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
-        <Heading level={1} size="l" title="Reason X-ray is not required?" />
+        <Heading level={1} size="l" title="Reason X-ray is not required" />
         <div ref={reasonXrayWasNotTakenRef}>
           <Radio
             id="reason-xray-not-taken"
