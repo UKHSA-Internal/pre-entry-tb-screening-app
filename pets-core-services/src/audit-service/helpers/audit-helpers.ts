@@ -48,7 +48,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
       const details = evt?.CloudTrailEvent ? JSON.parse(evt.CloudTrailEvent) : undefined;
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (!details || !details?.userAgent || !details?.requestParameters?.table) return;
+      if (!details?.userAgent || !details?.requestParameters?.table) return;
 
       logger.info(details, "CloudTrail parsing event");
 

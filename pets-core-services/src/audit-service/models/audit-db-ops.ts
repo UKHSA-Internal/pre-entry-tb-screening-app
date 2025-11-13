@@ -87,7 +87,6 @@ export class AuditDbOps {
         return;
       }
 
-      // TODO: where to get it from (record.source ???);
       const source = await getConsoleEvent(record);
       logger.info(source, "Returned event source");
 
@@ -100,7 +99,6 @@ export class AuditDbOps {
         source: source ? (source as SourceType) : SourceType.app,
         // applicant-details / application-details
         sourceTable: tableName,
-        // TODO: should unmarshalled version of newImage be used here?
         changeDetails: newImage ? JSON.stringify(newImage) : "",
         dateUpdated: new Date(),
       };
