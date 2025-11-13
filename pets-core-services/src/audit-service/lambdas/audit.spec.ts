@@ -49,14 +49,14 @@ describe("Audit Lambda", () => {
     });
 
     expect(errorloggerMock).toHaveBeenNthCalledWith(
-      1,
+      2,
       { error: Error("Err0r") },
       "Creating audit failed",
     );
     expect(errorloggerMock).toHaveBeenNthCalledWith(
-      2,
+      3,
       { e: Error("Err0r") },
-      "Error creating audit",
+      "Could not create audit",
     );
 
     errorloggerMock.mockRestore();

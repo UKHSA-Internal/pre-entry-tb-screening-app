@@ -15,7 +15,11 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   const tableName = tableArn ? tableArn.split("/")[1] : undefined;
   logger.info(`tableName: ${tableName}, approxTime: ${approxTime}`);
 
-  if (!tableName || !approxTime) return;
+  if (!tableName || !approxTime) {
+    logger.error("Record is missing tableName or ApproximateCreationDateTime");
+
+    return;
+  }
 
   // Look up CloudTrail events around that time
   const startTime = new Date(approxTime * 1000 - 60 * 1000); // 1 min before
