@@ -134,7 +134,14 @@ export class TbScreeningCompletePage extends BasePage {
     });
     return this;
   }
-
+  // Click "Return to tracker" link from TB Cert Summary Page
+  clickReturnToTracker(): TbScreeningCompletePage {
+    cy.get('button[type="submit"].govuk-button')
+      .should("be.visible")
+      .and("contains.text", "Return to tracker")
+      .click();
+    return this;
+  }
   // Get certificate reference number value
   getCertRef(): Cypress.Chainable<string> {
     return cy
@@ -142,7 +149,6 @@ export class TbScreeningCompletePage extends BasePage {
       .invoke("text")
       .then((text) => text.trim());
   }
-
   // Save certificate reference number for later use
   saveCertRef(aliasName: string = "certificateRefNumber"): TbScreeningCompletePage {
     cy.get("strong.confirmation-panel__reference-number")
@@ -196,6 +202,15 @@ export class TbScreeningCompletePage extends BasePage {
   // Click "View or print certificate" button
   clickViewCertButton(): TbScreeningCompletePage {
     cy.get(".confirmation-action-button").find('button[type="submit"].govuk-button').click();
+    return this;
+  }
+  // Click "Check or change certificate information" button
+  clickCheckChangeButton(): TbScreeningCompletePage {
+    cy.get(".confirmation-secondary-button")
+      .find('button[type="submit"]')
+      .should("be.visible")
+      .should("contain", "Check or change certificate information")
+      .click();
     return this;
   }
 

@@ -245,8 +245,8 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
       .selectChildTbHistory("None of these") // None of these for child TB history
       .selectPreviousTb("No") // No TB history
       .selectCloseContact("No") // No close contact
-      .selectPregnancyStatus("N/A") // N/A for child
-      .selectMenstrualPeriods("N/A") // N/A for child
+      .selectPregnancyStatus("No") // No for child
+      .selectMenstrualPeriods("No") // No for child
       .fillPhysicalExamNotes(
         "Child applicant aged 6 years. No TB symptoms or history. No close contact with TB. Physical examination normal for age.",
       )
@@ -273,8 +273,8 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",
-      pregnant: "N/A",
-      menstrualPeriods: "N/A",
+      pregnant: "No",
+      menstrualPeriods: "No",
       physicalExamNotes:
         "Child applicant aged 6 years. No TB symptoms or history. No close contact with TB. Physical examination normal for age.",
       xrayRequired: "No",

@@ -487,7 +487,6 @@ export class TbCertificateSummaryPage extends BasePage {
     cy.get('button[type="submit"].govuk-button').click();
     return this;
   }
-
   // Click Submit button (alias)
   clickSubmit(): TbCertificateSummaryPage {
     return this.clickSubmitButton();

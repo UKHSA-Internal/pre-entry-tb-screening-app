@@ -245,7 +245,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
       .selectPreviousTb("No") // No TB history
       .selectCloseContact("Yes") // Yes close contact
       .selectPregnancyStatus("Yes") // Yes Pregnant
-      .selectMenstrualPeriods("N/A") // N/A due to pregnancy
+      .selectMenstrualPeriods("No") // No due to pregnancy
       .fillPhysicalExamNotes(
         "Pregnant adult female with TB symptoms. Reports close contact with active TB case. Requires comprehensive screening.",
       )
@@ -273,7 +273,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
       previousTb: "No",
       closeContactWithTb: "Yes",
       pregnant: "Yes",
-      menstrualPeriods: "N/A",
+      menstrualPeriods: "No",
       physicalExamNotes:
         "Pregnant adult female with TB symptoms. Reports close contact with active TB case. Requires comprehensive screening.",
       xrayRequired: "No",

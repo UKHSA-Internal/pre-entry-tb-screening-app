@@ -109,6 +109,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
 
   it("should complete the full application process with sputum collection", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName) // Use country code for form filling
