@@ -1,13 +1,13 @@
-import { countryList } from "../../src/utils/countryList";
-import { loginViaB2C } from "../support/commands";
-import { ApplicantConsentPage } from "../support/page-objects/applicantConsentPage";
-import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
+import { countryList } from "../../../src/utils/countryList";
+import { loginViaB2C } from "../../support/commands";
+import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
+import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
+import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
   randomElement,
-} from "../support/test-helpers";
-import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetailsPage";
+} from "../../support/test-helpers";
 
 describe("PETS Application End-to-End Tests with Sputum Collection", () => {
   // Page object instances

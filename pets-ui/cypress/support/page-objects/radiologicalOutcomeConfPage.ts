@@ -62,15 +62,6 @@ export class RadiologicalOutcomeConfPage extends BasePage {
     return this;
   }
 
-  // Verify back link to check chest X-ray results findings
-  verifyBackLinkToCheckChestXrayResultsFindings(): RadiologicalOutcomeConfPage {
-    cy.get("a.govuk-back-link")
-      .should("be.visible")
-      .should("have.attr", "href", "/check-chest-x-ray-results-findings")
-      .should("contain", "Back");
-    return this;
-  }
-
   // Click back link
   clickBackLink(): RadiologicalOutcomeConfPage {
     cy.get("a.govuk-back-link").click();
@@ -135,7 +126,6 @@ export class RadiologicalOutcomeConfPage extends BasePage {
     this.verifyWhatHappensNextSection();
     this.verifyContinueButton();
     this.verifySearchForAnotherVisaApplicantLink();
-    this.verifyBackLinkToCheckChestXrayResultsFindings();
     this.verifyBetaBanner();
     this.verifyServiceName();
     this.verifyFooterLinks();

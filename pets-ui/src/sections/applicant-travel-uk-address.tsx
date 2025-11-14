@@ -20,7 +20,7 @@ import {
   setUkMobileNumber,
 } from "@/redux/travelSlice";
 import { ReduxTravelDetailsType } from "@/types";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass } from "@/utils/enums";
 import { formRegex } from "@/utils/records";
 
 type TravelAddressAndContactDetailsData = Omit<ReduxTravelDetailsType, "visaCategory">;
@@ -206,7 +206,7 @@ const ApplicantTravelAddressAndContactDetails = () => {
           />
         </div>
 
-        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Continue" />
+        <SubmitButton id="save-and-continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

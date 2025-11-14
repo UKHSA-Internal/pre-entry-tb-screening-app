@@ -22,7 +22,7 @@ import {
   setSputumVersion,
 } from "@/redux/sputumSlice";
 import { selectApplication, selectSputum } from "@/redux/store";
-import { ApplicationStatus, ButtonType, PositiveOrNegative } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, PositiveOrNegative } from "@/utils/enums";
 import { formatDateForDisplay } from "@/utils/helpers";
 
 const SputumSummary = () => {
@@ -338,7 +338,7 @@ const SputumSummary = () => {
           sputumData.status === ApplicationStatus.IN_PROGRESS) && (
           <Button
             id="submit"
-            type={ButtonType.DEFAULT}
+            class={ButtonClass.DEFAULT}
             text="Submit and continue"
             handleClick={handleSubmit}
           />
@@ -347,7 +347,7 @@ const SputumSummary = () => {
           sputumData.status === ApplicationStatus.NOT_REQUIRED) && (
           <Button
             id="back-to-tracker"
-            type={ButtonType.DEFAULT}
+            class={ButtonClass.DEFAULT}
             text="Return to tracker"
             handleClick={() => navigate("/tracker")}
           />

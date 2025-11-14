@@ -1,38 +1,38 @@
 //PETS Scenario: Pregnant Adult - Yes Symptoms, No History, Yes Contact, No X-ray uploaded, Yes Sputum Required - TB Certificate Issued (3 months)
-import { countryList } from "../../src/utils/countryList";
-import { loginViaB2C } from "../support/commands";
-import { ApplicantConfirmationPage } from "../support/page-objects/applicantConfirmationPage";
-import { ApplicantConsentPage } from "../support/page-objects/applicantConsentPage";
-import { ApplicantPhotoUploadPage } from "../support/page-objects/applicantPhotoUploadPage";
-import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
-import { ApplicantSummaryPage } from "../support/page-objects/applicantSummaryPage";
-import { CheckSputumSampleInfoPage } from "../support/page-objects/checkSputumSampleInfoPage";
-import { ChestXrayNotTakenPage } from "../support/page-objects/chestXrayNotTakenPage";
-import { ChestXrayPage } from "../support/page-objects/chestXrayQuestionPage";
-import { ClinicCertificateInfoPage } from "../support/page-objects/clinicCertificateInfoPage";
-import { EnterSputumSampleResultsPage } from "../support/page-objects/enterSputumSampleResultsPage";
-import { MedicalConfirmationPage } from "../support/page-objects/medicalConfirmationPage";
-import { MedicalSummaryPage } from "../support/page-objects/medicalSummaryPage";
-import { SputumCollectionPage } from "../support/page-objects/sputumCollectionPage";
-import { SputumConfirmationPage } from "../support/page-objects/sputumConfirmationPage";
-import { SputumDecisionConfirmationPage } from "../support/page-objects/sputumDecisionConfirmationPage";
-import { SputumDecisionInfoPage } from "../support/page-objects/sputumDecisionInfoPage";
-import { SputumQuestionPage } from "../support/page-objects/sputumQuestionPage";
-import { TbCertificateQuestionPage } from "../support/page-objects/tbCertificateQuestionPage";
-import { TbCertificateSummaryPage } from "../support/page-objects/tbCertificateSummaryPage";
-import { TBProgressTrackerPage } from "../support/page-objects/tbProgressTrackerPage";
-import { TbScreeningCompletePage } from "../support/page-objects/tbScreeningCompletePage";
-import { VisaCategoryPage } from "../support/page-objects/visaCategoryPage";
+import { countryList } from "../../../src/utils/countryList";
+import { loginViaB2C } from "../../support/commands";
+import { ApplicantConfirmationPage } from "../../support/page-objects/applicantConfirmationPage";
+import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
+import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
+import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPhotoUploadPage";
+import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
+import { CheckSputumSampleInfoPage } from "../../support/page-objects/checkSputumSampleInfoPage";
+import { ChestXrayNotTakenPage } from "../../support/page-objects/chestXrayNotTakenPage";
+import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
+import { ClinicCertificateInfoPage } from "../../support/page-objects/clinicCertificateInfoPage";
+import { EnterSputumSampleResultsPage } from "../../support/page-objects/enterSputumSampleResultsPage";
+import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
+import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
+import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { SputumCollectionPage } from "../../support/page-objects/sputumCollectionPage";
+import { SputumConfirmationPage } from "../../support/page-objects/sputumConfirmationPage";
+import { SputumDecisionConfirmationPage } from "../../support/page-objects/sputumDecisionConfirmationPage";
+import { SputumDecisionInfoPage } from "../../support/page-objects/sputumDecisionInfoPage";
+import { SputumQuestionPage } from "../../support/page-objects/sputumQuestionPage";
+import { TbCertificateQuestionPage } from "../../support/page-objects/tbCertificateQuestionPage";
+import { TbCertificateSummaryPage } from "../../support/page-objects/tbCertificateSummaryPage";
+import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
+import { TbScreeningCompletePage } from "../../support/page-objects/tbScreeningCompletePage";
+import { TravelConfirmationPage } from "../../support/page-objects/travelConfirmationPage";
+import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
+import { TravelSummaryPage } from "../../support/page-objects/travelSummaryPage";
+import { VisaCategoryPage } from "../../support/page-objects/visaCategoryPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
   randomElement,
-} from "../support/test-helpers";
-import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetailsPage";
-import { MedicalScreeningPage } from "./../support/page-objects/medicalScreeningPage";
-import { TravelConfirmationPage } from "./../support/page-objects/travelConfirmationPage";
-import { TravelInformationPage } from "./../support/page-objects/travelInformationPage";
-import { TravelSummaryPage } from "./../support/page-objects/travelSummaryPage";
+} from "../../support/test-helpers";
 
 describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Required, Certificate Issued (3 months)", () => {
   // Page object instances
@@ -245,7 +245,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
       .selectPreviousTb("No") // No TB history
       .selectCloseContact("Yes") // Yes close contact
       .selectPregnancyStatus("Yes") // Yes Pregnant
-      .selectMenstrualPeriods("N/A") // N/A due to pregnancy
+      .selectMenstrualPeriods("No") // No due to pregnancy
       .fillPhysicalExamNotes(
         "Pregnant adult female with TB symptoms. Reports close contact with active TB case. Requires comprehensive screening.",
       )
@@ -273,7 +273,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
       previousTb: "No",
       closeContactWithTb: "Yes",
       pregnant: "Yes",
-      menstrualPeriods: "N/A",
+      menstrualPeriods: "No",
       physicalExamNotes:
         "Pregnant adult female with TB symptoms. Reports close contact with active TB case. Requires comprehensive screening.",
       xrayRequired: "No",

@@ -9,7 +9,7 @@ import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTravel } from "@/redux/store";
 import { setTravelDetailsStatus } from "@/redux/travelSlice";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass } from "@/utils/enums";
 import { attributeToComponentId } from "@/utils/records";
 
 const TravelReview = () => {
@@ -107,7 +107,7 @@ const TravelReview = () => {
         travelData.status == ApplicationStatus.IN_PROGRESS) && (
         <Button
           id="submit"
-          type={ButtonType.DEFAULT}
+          class={ButtonClass.DEFAULT}
           text="Submit and continue"
           handleClick={handleSubmit}
         />
@@ -116,7 +116,7 @@ const TravelReview = () => {
         travelData.status == ApplicationStatus.NOT_REQUIRED) && (
         <Button
           id="submit"
-          type={ButtonType.DEFAULT}
+          class={ButtonClass.DEFAULT}
           text="Submit and continue"
           handleClick={() => navigate("/tracker")}
         />
