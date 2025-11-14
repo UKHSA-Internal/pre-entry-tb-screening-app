@@ -62,7 +62,7 @@ const ApplicantTravelAddressAndContactDetails = () => {
         navigate("/tb-certificate-summary");
       } catch (error) {
         console.error(error);
-        navigate("/error");
+        navigate("/sorry-there-is-problem-with-service");
       }
     } else {
       dispatch(setTravelDetailsStatus(ApplicationStatus.IN_PROGRESS));
