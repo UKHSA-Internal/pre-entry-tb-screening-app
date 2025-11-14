@@ -10,7 +10,7 @@ import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
 import { setMedicalScreeningStatus } from "@/redux/medicalScreeningSlice";
 import { selectApplication, selectMedicalScreening } from "@/redux/store";
-import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
 import { formatDateForDisplay } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
@@ -206,7 +206,7 @@ const MedicalScreeningReview = () => {
 
           <Button
             id="submit"
-            type={ButtonType.DEFAULT}
+            class={ButtonClass.DEFAULT}
             text="Submit and continue"
             handleClick={handleSubmit}
           />
@@ -216,7 +216,7 @@ const MedicalScreeningReview = () => {
         medicalData.status == ApplicationStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
-          type={ButtonType.DEFAULT}
+          class={ButtonClass.DEFAULT}
           text="Return to tracker"
           handleClick={() => navigate("/tracker")}
         />

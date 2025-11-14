@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import { putTravelDetails } from "@/api/api";
 import Dropdown from "@/components/dropdown/dropdown";
@@ -9,7 +9,7 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTravel } from "@/redux/store";
 import { setTravelDetailsStatus, setVisaCategory } from "@/redux/travelSlice";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass } from "@/utils/enums";
 import { visaOptions } from "@/utils/records";
 
 interface TravelVisaCategoryData {
@@ -19,6 +19,8 @@ interface TravelVisaCategoryData {
 const ApplicantTravelVisaCategory = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const fromParam = searchParams.get("from");
   const dispatch = useAppDispatch();
   const travelData = useAppSelector(selectTravel);
   const applicationData = useAppSelector(selectApplication);
@@ -38,7 +40,11 @@ const ApplicantTravelVisaCategory = () => {
           visaCategory: visaCategoryData.visaCategory,
         });
 
-        navigate("/tb-certificate-summary");
+        if (fromParam === "/check-travel-information") {
+          navigate("/check-travel-information");
+        } else {
+          navigate("/tb-certificate-summary");
+        }
       } catch (error) {
         console.error(error);
         navigate("/sorry-there-is-problem-with-service");
@@ -82,7 +88,7 @@ const ApplicantTravelVisaCategory = () => {
           />
         </div>
 
-        <SubmitButton id="continue" type={ButtonType.DEFAULT} text="Continue" />
+        <SubmitButton id="continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

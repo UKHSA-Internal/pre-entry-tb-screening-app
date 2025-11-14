@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import Button from "@/components/button/button";
-import { ButtonType } from "@/utils/enums";
+import { ButtonClass } from "@/utils/enums";
 
 import Heading from "../heading/heading";
 import LinkLabel from "../linkLabel/LinkLabel";
@@ -81,7 +81,7 @@ export default function Confirmation({
           <div className="confirmation-action-button">
             <Button
               id="action-button"
-              type={ButtonType.DEFAULT}
+              class={ButtonClass.DEFAULT}
               text={actionButton.text}
               handleClick={actionButton.onClick}
             />
@@ -92,7 +92,7 @@ export default function Confirmation({
           <div className="confirmation-secondary-button">
             <Button
               id="secondary-button"
-              type={ButtonType.SECONDARY}
+              class={ButtonClass.SECONDARY}
               text={secondaryButton.text}
               handleClick={secondaryButton.onClick}
             />
@@ -109,7 +109,7 @@ export default function Confirmation({
         {props.buttonText && props.buttonLink && (
           <Button
             id="continue"
-            type={ButtonType.DEFAULT}
+            class={ButtonClass.DEFAULT}
             text={props.buttonText}
             handleClick={() => {
               navigate(props.buttonLink!);

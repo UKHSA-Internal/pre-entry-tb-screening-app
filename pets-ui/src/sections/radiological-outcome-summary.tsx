@@ -15,7 +15,7 @@ import {
   selectRadiologicalOutcome,
 } from "@/redux/store";
 import { PostedRadiologicalOutcomeDetailsType } from "@/types";
-import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
 import { spreadArrayIfNotEmpty } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
@@ -132,7 +132,7 @@ const RadiologicalOutcomeSummary = () => {
 
           <Button
             id="submit"
-            type={ButtonType.DEFAULT}
+            class={ButtonClass.DEFAULT}
             text="Submit and continue"
             handleClick={handleSubmit}
           />
@@ -142,7 +142,7 @@ const RadiologicalOutcomeSummary = () => {
         radiologicalOutcomeData.status == ApplicationStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
-          type={ButtonType.DEFAULT}
+          class={ButtonClass.DEFAULT}
           text="Return to tracker"
           handleClick={() => navigate("/tracker")}
         />

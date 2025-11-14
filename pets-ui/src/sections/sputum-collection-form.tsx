@@ -23,7 +23,7 @@ import {
 } from "@/redux/sputumSlice";
 import { selectSputum } from "@/redux/store";
 import { DateType } from "@/types";
-import { ApplicationStatus, ButtonType, SputumCollectionMethod } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, SputumCollectionMethod } from "@/utils/enums";
 import { validateDate } from "@/utils/helpers";
 import { dateValidationMessages } from "@/utils/records";
 
@@ -316,7 +316,7 @@ const SputumCollectionForm = () => {
           >
             <SubmitButton
               id="save-and-continue-to-results"
-              type={ButtonType.DEFAULT}
+              class={ButtonClass.DEFAULT}
               text="Save and continue to results"
             />
           </button>
@@ -326,7 +326,7 @@ const SputumCollectionForm = () => {
             aria-label="Save progress"
             style={{ border: "none", background: "none", padding: 0, cursor: "pointer" }}
           >
-            <SubmitButton id="save-progress" type={ButtonType.SECONDARY} text="Save progress" />
+            <SubmitButton id="save-progress" class={ButtonClass.SECONDARY} text="Save progress" />
           </button>
         </div>
       </form>

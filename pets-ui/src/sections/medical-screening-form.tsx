@@ -326,7 +326,7 @@ const MedicalScreeningForm = () => {
           />
         </div>
 
-        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Continue" />
+        <SubmitButton id="save-and-continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

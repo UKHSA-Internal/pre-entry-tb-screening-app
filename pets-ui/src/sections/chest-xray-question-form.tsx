@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setChestXrayTaken, setReasonXrayNotRequired } from "@/redux/medicalScreeningSlice";
 import { selectMedicalScreening } from "@/redux/store";
 import { ReduxMedicalScreeningType } from "@/types";
-import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
+import { ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
 const ChestXrayQuestionForm = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
@@ -67,7 +67,7 @@ const ChestXrayQuestionForm = () => {
             divStyle={{ marginTop: 40 }}
           />
         </div>
-        <SubmitButton id="Continue" type={ButtonType.DEFAULT} text="Continue" />
+        <SubmitButton id="Continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

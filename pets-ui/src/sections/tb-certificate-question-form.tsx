@@ -10,7 +10,7 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setIsIssued } from "@/redux/tbCertificateSlice";
 import { ReduxTbCertificateType } from "@/types";
-import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
+import { ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
 
 const TbCertificateQuestionForm = () => {
   const dispatch = useAppDispatch();
@@ -64,7 +64,7 @@ const TbCertificateQuestionForm = () => {
             divStyle={{ marginTop: 40 }}
           />
         </div>
-        <SubmitButton id="Continue" type={ButtonType.DEFAULT} text="Continue" />
+        <SubmitButton id="Continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

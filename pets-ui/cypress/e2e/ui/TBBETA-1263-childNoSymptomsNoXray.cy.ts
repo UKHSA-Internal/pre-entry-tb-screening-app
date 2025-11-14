@@ -1,40 +1,40 @@
-//PETS Scenario: Pregnant Adult - Yes Symptoms, No History, Yes Contact, No X-ray uploaded, Yes Sputum Required - TB Certificate Issued (3 months)
-import { countryList } from "../../src/utils/countryList";
-import { loginViaB2C } from "../support/commands";
-import { ApplicantConfirmationPage } from "../support/page-objects/applicantConfirmationPage";
-import { ApplicantConsentPage } from "../support/page-objects/applicantConsentPage";
-import { ApplicantPhotoUploadPage } from "../support/page-objects/applicantPhotoUploadPage";
-import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
-import { ApplicantSummaryPage } from "../support/page-objects/applicantSummaryPage";
-import { CheckSputumSampleInfoPage } from "../support/page-objects/checkSputumSampleInfoPage";
-import { ChestXrayNotTakenPage } from "../support/page-objects/chestXrayNotTakenPage";
-import { ChestXrayPage } from "../support/page-objects/chestXrayQuestionPage";
-import { ClinicCertificateInfoPage } from "../support/page-objects/clinicCertificateInfoPage";
-import { EnterSputumSampleResultsPage } from "../support/page-objects/enterSputumSampleResultsPage";
-import { MedicalConfirmationPage } from "../support/page-objects/medicalConfirmationPage";
-import { MedicalSummaryPage } from "../support/page-objects/medicalSummaryPage";
-import { SputumCollectionPage } from "../support/page-objects/sputumCollectionPage";
-import { SputumConfirmationPage } from "../support/page-objects/sputumConfirmationPage";
-import { SputumDecisionConfirmationPage } from "../support/page-objects/sputumDecisionConfirmationPage";
-import { SputumDecisionInfoPage } from "../support/page-objects/sputumDecisionInfoPage";
-import { SputumQuestionPage } from "../support/page-objects/sputumQuestionPage";
-import { TbCertificateQuestionPage } from "../support/page-objects/tbCertificateQuestionPage";
-import { TbCertificateSummaryPage } from "../support/page-objects/tbCertificateSummaryPage";
-import { TBProgressTrackerPage } from "../support/page-objects/tbProgressTrackerPage";
-import { TbScreeningCompletePage } from "../support/page-objects/tbScreeningCompletePage";
-import { VisaCategoryPage } from "../support/page-objects/visaCategoryPage";
+//PETS Scenario: Child - No Symptoms, No History, No Contact, No X-ray uploaded, Yes Sputum Required - TB Certificate Issued (6 months)
+import { countryList } from "../../../src/utils/countryList";
+import { loginViaB2C } from "../../support/commands";
+import { ApplicantConfirmationPage } from "../../support/page-objects/applicantConfirmationPage";
+import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
+import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
+import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPhotoUploadPage";
+import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
+import { CheckSputumSampleInfoPage } from "../../support/page-objects/checkSputumSampleInfoPage";
+import { ChestXrayNotTakenPage } from "../../support/page-objects/chestXrayNotTakenPage";
+import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
+import { ClinicCertificateInfoPage } from "../../support/page-objects/clinicCertificateInfoPage";
+import { EnterSputumSampleResultsPage } from "../../support/page-objects/enterSputumSampleResultsPage";
+import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
+import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
+import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { SputumCollectionPage } from "../../support/page-objects/sputumCollectionPage";
+import { SputumConfirmationPage } from "../../support/page-objects/sputumConfirmationPage";
+import { SputumDecisionConfirmationPage } from "../../support/page-objects/sputumDecisionConfirmationPage";
+import { SputumDecisionInfoPage } from "../../support/page-objects/sputumDecisionInfoPage";
+import { SputumQuestionPage } from "../../support/page-objects/sputumQuestionPage";
+import { TbCertificateQuestionPage } from "../../support/page-objects/tbCertificateQuestionPage";
+import { TbCertificateSummaryPage } from "../../support/page-objects/tbCertificateSummaryPage";
+import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
+import { TbScreeningCompletePage } from "../../support/page-objects/tbScreeningCompletePage";
+import { TravelConfirmationPage } from "../../support/page-objects/travelConfirmationPage";
+import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
+import { TravelSummaryPage } from "../../support/page-objects/travelSummaryPage";
+import { VisaCategoryPage } from "../../support/page-objects/visaCategoryPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
   randomElement,
-} from "../support/test-helpers";
-import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetailsPage";
-import { MedicalScreeningPage } from "./../support/page-objects/medicalScreeningPage";
-import { TravelConfirmationPage } from "./../support/page-objects/travelConfirmationPage";
-import { TravelInformationPage } from "./../support/page-objects/travelInformationPage";
-import { TravelSummaryPage } from "./../support/page-objects/travelSummaryPage";
+} from "../../support/test-helpers";
 
-describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Required, Certificate Issued (3 months)", () => {
+describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Certificate Issued (6 months)", () => {
   // Page object instances
   const applicantConsentPage = new ApplicantConsentPage();
   const applicantSearchPage = new ApplicantSearchPage();
@@ -94,7 +94,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
   });
 
-  it("Pregnant Adult - Yes Symptoms, No History, Yes Contact, No X-ray uploaded, Yes Sputum Required - TB Certificate Issued (3 months)", () => {
+  it("should complete the full application process for child with no symptoms, no X-ray, sputum required, and issue certificate with 6 month expiry", () => {
     // Search for applicant with passport number
     applicantSearchPage
       .fillPassportNumber(passportNumber)
@@ -112,19 +112,19 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     // Verify redirection to applicant search page
     applicantSearchPage.verifyRedirectionToCreateApplicantPage();
 
-    // Fill Applicant Details
+    // Fill Applicant Details for Child
     applicantDetailsPage.verifyPageLoaded();
 
-    // Fill in applicant details for pregnant adult female
+    // Fill in applicant details for child (born in 2018, so under 11)
     applicantDetailsPage
-      .fillFullName("Amina Johnson")
+      .fillFullName("Nana Quist")
       .selectSex("Female")
       .selectNationality(countryName)
-      .fillBirthDate("22", "08", "1992")
-      .fillPassportIssueDate("15", "03", "2019")
-      .fillPassportExpiryDate("15", "03", "2029")
-      .fillAddressLine1("Flat 2-3")
-      .fillAddressLine2("789 Queen Street")
+      .fillBirthDate("10", "11", "2018")
+      .fillPassportIssueDate("20", "03", "2019")
+      .fillPassportExpiryDate("20", "03", "2029")
+      .fillAddressLine1("456 Children's Avenue")
+      .fillAddressLine2("Block C")
       .fillAddressLine3("Airport Residential Area")
       .fillTownOrCity("Accra")
       .fillProvinceOrState("Greater Accra")
@@ -138,7 +138,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
 
     // Upload Applicant Photo file
     applicantPhotoUploadPage
-      .uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg")
+      .uploadApplicantPhotoFile("cypress/fixtures/child-passport-photo.jpg")
       .verifyUploadSuccess();
 
     //Checking no errors appear
@@ -156,7 +156,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary
-    applicantSummaryPage.verifySummaryValue("Name", "Amina Johnson");
+    applicantSummaryPage.verifySummaryValue("Name", "Nana Quist");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
     applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
@@ -235,19 +235,20 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     // Navigate to medical screening from the tracker
     tbProgressTrackerPage.clickTaskLink("Medical history and TB symptoms");
 
-    // Medical Screening Page - Pregnant yes symptoms, no TB history, yesclose contact
+    // Medical Screening Page - Child with no symptoms, no TB history, no close contact
     medicalScreeningPage.verifyPageLoaded();
 
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("31")
-      .selectTbSymptoms("Yes") // Yes symptoms
+      .fillAge("6") // Child age (under 11)
+      .selectTbSymptoms("No") // No symptoms
+      .selectChildTbHistory("None of these") // None of these for child TB history
       .selectPreviousTb("No") // No TB history
-      .selectCloseContact("Yes") // Yes close contact
-      .selectPregnancyStatus("Yes") // Yes Pregnant
-      .selectMenstrualPeriods("N/A") // N/A due to pregnancy
+      .selectCloseContact("No") // No close contact
+      .selectPregnancyStatus("No") // No for child
+      .selectMenstrualPeriods("No") // No for child
       .fillPhysicalExamNotes(
-        "Pregnant adult female with TB symptoms. Reports close contact with active TB case. Requires comprehensive screening.",
+        "Child applicant aged 6 years. No TB symptoms or history. No close contact with TB. Physical examination normal for age.",
       )
       .submitForm();
 
@@ -259,25 +260,25 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     chestXrayPage.submitForm();
 
     // Verify redirection to X-ray reason Page
-    chestXrayNotTakenPage.selectReasonXrayNotTaken("Pregnant");
+    chestXrayNotTakenPage.selectReasonXrayNotTaken("Child");
     chestXrayNotTakenPage.submitForm();
 
     // Verify redirection to medical summary
     medicalSummaryPage.verifyPageLoaded();
 
-    // Validate the prefilled form
+    // Validate the prefilled form for child
     medicalSummaryPage.fullyValidateSummary({
       dateOfMedicalScreening: "10 September 2025",
-      age: "31",
-      tbSymptoms: "Yes",
+      age: "6",
+      tbSymptoms: "No",
       previousTb: "No",
-      closeContactWithTb: "Yes",
-      pregnant: "Yes",
-      menstrualPeriods: "N/A",
+      closeContactWithTb: "No",
+      pregnant: "No",
+      menstrualPeriods: "No",
       physicalExamNotes:
-        "Pregnant adult female with TB symptoms. Reports close contact with active TB case. Requires comprehensive screening.",
+        "Child applicant aged 6 years. No TB symptoms or history. No close contact with TB. Physical examination normal for age.",
       xrayRequired: "No",
-      reasonXrayNotRequired: "Pregnant",
+      reasonXrayNotRequired: "Child (under 11 years)",
     });
 
     // Confirm medical details
@@ -296,8 +297,8 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     // Verify TB Screening Progress Tracker page
     tbProgressTrackerPage.verifySectionHeadings();
     tbProgressTrackerPage.verifyApplicantInfo({
-      Name: "Amina Johnson",
-      "Date of birth": "22/8/1992",
+      Name: "Nana Quist",
+      "Date of birth": "10/11/2018",
       "Passport number": passportNumber,
       "TB screening": "In progress",
     });
@@ -335,8 +336,8 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     tbProgressTrackerPage.verifyPageLoaded();
     tbProgressTrackerPage.verifySectionHeadings();
     tbProgressTrackerPage.verifyApplicantInfo({
-      Name: "Amina Johnson",
-      "Date of birth": "22/8/1992",
+      Name: "Nana Quist",
+      "Date of birth": "10/11/2018",
       "Passport number": passportNumber,
       "TB screening": "In progress",
     });
@@ -379,7 +380,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     enterSputumSampleResultsPage.verifyPageLoaded();
     enterSputumSampleResultsPage.verifyAllPageElements();
 
-    // Fill sputum sample results with all negative results
+    // Fill sputum sample results as negative
     enterSputumSampleResultsPage.fillWithAllNegativeResults();
 
     // Verify the form is filled correctly
@@ -453,11 +454,12 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     // Verify redirection to "Enter clinic and cert information" Page
     clinicCertificateInfoPage
       .verifyPageLoaded()
-      .verifyCertificateExpiryDateCalculation3Months()
+      .verifyCertificateExpiryDateCalculation()
+      .verifyCertificateExpiryIs6MonthsFromIssueDate()
       .saveCertificateReferenceNumber()
       .completeForm(
-        "Dr. Emily Watson",
-        "Pregnant adult female with TB symptoms and close contact history. All sputum samples negative. Certificate issued with 3-month validity due to close contact with active TB.",
+        "Dr. Rebecca Thompson",
+        "Child applicant aged 6 years. No TB symptoms, history, or close contact. All sputum samples negative. Certificate issued with 6-month validity as no close contact with active TB.",
       );
 
     // Verify redirection to TB Summary Page
@@ -482,5 +484,10 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
 
     // Verify all page elements with saved certificate reference validation
     tbScreeningCompletePage.verifyAllWithSavedRef();
+
+    cy.log("Starting sign out process");
+    cy.logoutViaB2C();
+
+    cy.log("Test completed - user logged out successfully");
   });
 });

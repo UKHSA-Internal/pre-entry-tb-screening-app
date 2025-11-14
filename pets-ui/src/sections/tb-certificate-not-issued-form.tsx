@@ -17,7 +17,12 @@ import {
   setTbCertificateStatus,
 } from "@/redux/tbCertificateSlice";
 import { ReduxTbCertificateType } from "@/types";
-import { ApplicationStatus, ButtonType, RadioIsInline, TBCertNotIssuedReason } from "@/utils/enums";
+import {
+  ApplicationStatus,
+  ButtonClass,
+  RadioIsInline,
+  TBCertNotIssuedReason,
+} from "@/utils/enums";
 import { formRegex } from "@/utils/records";
 
 const TbCertificateNotIssuedForm = () => {
@@ -111,7 +116,7 @@ const TbCertificateNotIssuedForm = () => {
           />
         </div>
 
-        <SubmitButton id="Continue" type={ButtonType.DEFAULT} text="Continue" />
+        <SubmitButton id="Continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );
