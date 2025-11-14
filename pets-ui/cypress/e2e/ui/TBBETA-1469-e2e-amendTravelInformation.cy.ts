@@ -29,7 +29,7 @@ import {
   randomElement,
 } from "../../support/test-helpers";
 
-describe("PETS Application - Amend Travel Information for Completed Submission", () => {
+describe("PETS Application - Amend Travel Information for Partially Completed Submission", () => {
   // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
@@ -85,7 +85,7 @@ describe("PETS Application - Amend Travel Information for Completed Submission",
     cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
   });
 
-  it("should amend travel information for completed submission with TB certificate issued", () => {
+  it("should amend travel information for Partially completed submission", () => {
     // Search for applicant with passport number
     cy.acceptCookies();
     applicantSearchPage
@@ -476,13 +476,21 @@ describe("PETS Application - Amend Travel Information for Completed Submission",
     cy.log("Verify we're back on TB Certificate Summary Page");
 
     // Verify we're back on the TB Progress Tracker Page
-    cy.url().should("include", "/tracker");
-    tbProgressTrackerPage.verifyPageLoaded();
+    cy.url().should("include", "/check-travel-information");
+    travelSummaryPage.verifyPageLoaded();
+
+    // Verify that the amended data is now shown in the summary
+    travelSummaryPage.verifySummaryValue("Address line 1 (optional)", "123 Baker Street");
+    travelSummaryPage.verifySummaryValue("Address line 2 (optional)", "Apartment 221B");
+    travelSummaryPage.verifySummaryValue("Town or city (optional)", "Birmingham");
+    travelSummaryPage.verifySummaryValue("Postcode (optional)", "B1 1AA");
+    // Submit the amended form
+    travelSummaryPage.submitForm();
     tbProgressTrackerPage.verifyApplicantInfo({
       Name: "John Smith",
       "Date of birth": "20/6/1995",
       "Passport number": passportNumber,
-      "TB screening": "Certificate issued",
+      "TB screening": "In progress",
     });
     tbProgressTrackerPage.verifyMultipleTaskStatuses({
       "Visa applicant details": "Completed",
