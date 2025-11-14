@@ -22,7 +22,7 @@ describe("Error Summary Component", () => {
   it("renders correctly when props are specified", () => {
     renderWithProviders(<ErrorFallback />);
 
-    expect(screen.getAllByRole("link")[4]).toHaveTextContent("Back");
+    expect(screen.getAllByRole("link")[3]).toHaveTextContent("Back");
 
     expect(screen.getByText("Sorry, there is a problem with the service")).toBeInTheDocument();
     expect(screen.getByText("Try again later.")).toBeInTheDocument();
@@ -41,6 +41,6 @@ describe("Error Summary Component", () => {
     expect(contactParagraph).toHaveTextContent(
       "Email uktbscreeningsupport@ukhsa.gov.uk if you need support.",
     );
-    expect(screen.getAllByRole("link")[5]).toHaveTextContent("uktbscreeningsupport@ukhsa.gov.uk");
+    expect(screen.getAllByRole("link")[4]).toHaveTextContent("uktbscreeningsupport@ukhsa.gov.uk");
   });
 });
