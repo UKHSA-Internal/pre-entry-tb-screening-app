@@ -1,7 +1,13 @@
-export enum ButtonType {
+export enum ButtonClass {
   DEFAULT = "govuk-button",
   SECONDARY = "govuk-button govuk-button--secondary",
   WARNING = "govuk-button govuk-button--warning",
+}
+
+export enum ButtonType {
+  SUBMIT = "submit",
+  RESET = "reset",
+  BUTTON = "button",
 }
 
 export enum RadioIsInline {

@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useFormContext, useFormState } from "react-hook-form";
 
 import Button from "@/components/button/button";
-import { ButtonType, ImageType } from "@/utils/enums";
+import { ButtonClass, ImageType } from "@/utils/enums";
 import validateFiles from "@/utils/validateFiles";
 
 export interface FileUploadProps {
@@ -182,7 +182,7 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
             <div className="file-upload-row">
               <Button
                 id={`choose-file-${props.id}`}
-                type={ButtonType.SECONDARY}
+                class={ButtonClass.SECONDARY}
                 text="Choose file"
                 handleClick={(e) => {
                   e.preventDefault();

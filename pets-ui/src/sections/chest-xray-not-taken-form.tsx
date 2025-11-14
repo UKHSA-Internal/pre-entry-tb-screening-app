@@ -13,7 +13,7 @@ import {
 } from "@/redux/medicalScreeningSlice";
 import { selectMedicalScreening } from "@/redux/store";
 import { ReduxMedicalScreeningType } from "@/types";
-import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { ButtonClass, RadioIsInline } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
 
 const ChestXrayNotTakenForm = () => {
@@ -122,7 +122,7 @@ const ChestXrayNotTakenForm = () => {
             }}
           />
         </div>
-        <SubmitButton id="Continue" type={ButtonType.DEFAULT} text="Continue" />
+        <SubmitButton id="Continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

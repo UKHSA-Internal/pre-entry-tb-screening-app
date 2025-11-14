@@ -10,7 +10,7 @@ import List from "@/components/list/list";
 import NotificationBanner from "@/components/notificationBanner/notificationBanner";
 import Radio from "@/components/radio/radio";
 import Table from "@/components/table/table";
-import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
+import { ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
 import { setGoogleAnalyticsParams, updateGoogleAnalyticsConsent } from "@/utils/helpers";
 import { useNavigationHistory } from "@/utils/useNavigationHistory";
 import { getUserProperties } from "@/utils/userProperies";
@@ -169,7 +169,11 @@ export default function CookiesPage() {
             formValue="cookieConsent"
             required={false}
           />
-          <Button id="save-cookie-settings" type={ButtonType.DEFAULT} text="Save cookie settings" />
+          <Button
+            id="save-cookie-settings"
+            class={ButtonClass.DEFAULT}
+            text="Save cookie settings"
+          />
         </form>
       </FormProvider>
     </Container>

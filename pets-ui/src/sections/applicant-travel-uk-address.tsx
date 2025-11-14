@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import { putTravelDetails } from "@/api/api";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
@@ -20,7 +20,7 @@ import {
   setUkMobileNumber,
 } from "@/redux/travelSlice";
 import { ReduxTravelDetailsType } from "@/types";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
 import { formRegex } from "@/utils/records";
 
@@ -29,6 +29,8 @@ type TravelAddressAndContactDetailsData = Omit<ReduxTravelDetailsType, "visaCate
 const ApplicantTravelAddressAndContactDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const fromParam = searchParams.get("from");
   const dispatch = useAppDispatch();
   const travelData = useAppSelector(selectTravel);
   const applicationData = useAppSelector(selectApplication);
@@ -59,8 +61,11 @@ const ApplicantTravelAddressAndContactDetails = () => {
           ukMobileNumber: travelAddressAndContactDetailsData.ukMobileNumber,
           ukEmailAddress: travelAddressAndContactDetailsData.ukEmail,
         });
-
-        navigate("/tb-certificate-summary");
+        if (fromParam === "/check-travel-information") {
+          navigate("/check-travel-information");
+        } else {
+          navigate("/tb-certificate-summary");
+        }
       } catch (error) {
         console.error(error);
         navigate("/error");
@@ -207,7 +212,7 @@ const ApplicantTravelAddressAndContactDetails = () => {
           />
         </div>
 
-        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Continue" />
+        <SubmitButton id="save-and-continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

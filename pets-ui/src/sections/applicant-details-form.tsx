@@ -15,7 +15,7 @@ import { setApplicantDetails, setApplicantDetailsStatus } from "@/redux/applican
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant, selectApplication } from "@/redux/store";
 import { DateType, PostedApplicantDetailsType, ReduxApplicantDetailsType } from "@/types";
-import { ApplicationStatus, ButtonType, RadioIsInline } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
 import {
   getCountryName,
   sendGoogleAnalyticsFormErrorEvent,
@@ -419,7 +419,7 @@ const ApplicantForm = () => {
           />
         </div>
 
-        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Save and continue" />
+        <SubmitButton id="save-and-continue" class={ButtonClass.DEFAULT} text="Save and continue" />
       </form>
     </FormProvider>
   );

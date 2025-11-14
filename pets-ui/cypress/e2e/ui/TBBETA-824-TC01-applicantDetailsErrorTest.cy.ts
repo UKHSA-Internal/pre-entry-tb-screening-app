@@ -1,9 +1,9 @@
-import { countryList } from "../../src/utils/countryList";
-import { loginViaB2C } from "../support/commands";
-import { ApplicantConsentPage } from "../support/page-objects/applicantConsentPage";
-import { ApplicantDetailsPage } from "../support/page-objects/applicantDetailsPage";
-import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
-import { getRandomPassportNumber, randomElement } from "../support/test-utils";
+import { countryList } from "../../../src/utils/countryList";
+import { loginViaB2C } from "../../support/commands";
+import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
+import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
+import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { getRandomPassportNumber, randomElement } from "../../support/test-utils";
 
 describe("Applicant Details Form - Empty Form Error Test", () => {
   const applicantConsentPage = new ApplicantConsentPage();

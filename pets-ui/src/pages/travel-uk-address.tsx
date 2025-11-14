@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
@@ -8,12 +9,17 @@ import { ApplicationStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
 
 export default function TravelAddressAndContactDetailsPage() {
-  const applicationData = useAppSelector(selectApplication);
-  const travelData = useAppSelector(selectTravel);
-  const backLinkTo =
-    travelData.status === ApplicationStatus.COMPLETE
-      ? "/tb-certificate-summary"
-      : "/proposed-visa-category";
+  const travel = useAppSelector(selectTravel);
+  const [searchParams] = useSearchParams();
+  const fromParam = searchParams.get("from");
+  let backLinkTo: string;
+  if (fromParam === "/check-travel-information") {
+    backLinkTo = "/check-travel-information";
+  } else if (travel.status === ApplicationStatus.COMPLETE) {
+    backLinkTo = "/tb-certificate-summary";
+  } else {
+    backLinkTo = "/proposed-visa-category";
+  }
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(

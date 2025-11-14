@@ -24,7 +24,7 @@ import {
   setTbCertificateStatus,
 } from "@/redux/tbCertificateSlice";
 import { ReduxTbCertificateType } from "@/types";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass } from "@/utils/enums";
 import {
   calculateCertificateExpiryDate,
   calculateCertificateIssueDate,
@@ -165,7 +165,7 @@ const TbCertificateDeclarationForm = () => {
           />
         </div>
 
-        <SubmitButton id="continue" type={ButtonType.DEFAULT} text="Continue" />
+        <SubmitButton id="continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

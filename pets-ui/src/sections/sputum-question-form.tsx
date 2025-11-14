@@ -9,7 +9,7 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setSputumDecisionRequired, setSputumDecisionStatus } from "@/redux/sputumDecisionSlice";
 import { selectSputumDecision } from "@/redux/store";
-import { ApplicationStatus, ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
 
 interface SputumDecisionFormData {
@@ -72,7 +72,7 @@ const SputumQuestionForm = () => {
             divStyle={{ marginTop: 40 }}
           />
         </div>
-        <SubmitButton id="Continue" type={ButtonType.DEFAULT} text="Continue" />
+        <SubmitButton id="Continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

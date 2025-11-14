@@ -1,7 +1,7 @@
 import { useMsal } from "@azure/msal-react";
 import { useEffect, useState } from "react";
 
-import { ButtonType } from "@/utils/enums";
+import { ButtonClass } from "@/utils/enums";
 import { setGoogleAnalyticsParams, updateGoogleAnalyticsConsent } from "@/utils/helpers";
 import { getUserProperties } from "@/utils/userProperies";
 
@@ -73,7 +73,8 @@ export default function CookieBanner() {
             <Button
               id="reject-analytics-cookies"
               text="Reject analytics cookies"
-              type={ButtonType.DEFAULT}
+              class={ButtonClass.DEFAULT}
+              type={ButtonType.BUTTON}
               handleClick={() => {
                 setCookieConsent("rejected");
                 setShowCookieMessage(true);
@@ -118,7 +119,8 @@ export default function CookieBanner() {
             <Button
               id="hide-cookie-message"
               text="Hide cookie message"
-              type={ButtonType.DEFAULT}
+              class={ButtonClass.DEFAULT}
+              type={ButtonType.BUTTON}
               handleClick={() => {
                 setShowCookieMessage(false);
               }}

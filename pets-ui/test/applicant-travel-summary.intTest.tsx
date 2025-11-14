@@ -139,4 +139,40 @@ describe("TravelReview", () => {
     expect(link).toHaveAttribute("href", "/visa-applicant-proposed-uk-address");
     expect(link).toHaveClass("govuk-back-link");
   });
+
+  test("shows change links with from query when task is COMPLETE", () => {
+    const completeState = {
+      travel: {
+        status: ApplicationStatus.COMPLETE,
+        visaCategory: "Work",
+        applicantUkAddress1: "1 Street",
+        applicantUkAddress2: "",
+        applicantUkAddress3: "",
+        townOrCity: "London",
+        postcode: "0000 111",
+        ukMobileNumber: "07123456789",
+        ukEmail: "test@test.com",
+      },
+      application: { applicationId: "abc-123", dateCreated: "" },
+    };
+
+    renderWithProviders(<TravelReview />, { preloadedState: completeState });
+
+    const changeLinks = screen.getAllByRole("link", { name: /Change/i });
+    expect(changeLinks.length).toBeGreaterThan(0);
+
+    expect(changeLinks[0]).toHaveAttribute(
+      "href",
+      expect.stringContaining(
+        "/proposed-visa-category?from=/check-travel-information#visa-category",
+      ),
+    );
+
+    const anyAddressChangeLinkHasFrom = changeLinks.some((a) =>
+      (a.getAttribute("href") || "").includes(
+        "/visa-applicant-proposed-uk-address?from=/check-travel-information#",
+      ),
+    );
+    expect(anyAddressChangeLinkHasFrom).toBe(true);
+  });
 });

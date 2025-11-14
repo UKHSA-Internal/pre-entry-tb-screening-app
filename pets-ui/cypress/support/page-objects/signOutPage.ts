@@ -74,7 +74,7 @@ export class SignOutPage extends BasePage {
     cy.get(".govuk-back-link")
       .should("be.visible")
       .should("have.attr", "href")
-      .and("contain", "Back");
+      .should("contain", "Back");
     return this;
   }
 
@@ -211,44 +211,16 @@ export class SignOutPage extends BasePage {
     return this;
   }
 
-  //================== SIGN OUT FLOW ================================
-
-  // Handle the complete Azure B2C sign out flow using cy.origin
-  handleAzureB2CSignOutWithOrigin(): void {
-    cy.origin("https://petsb2cdev.ciamlogin.com", () => {
-      cy.log("Inside B2C account picker page");
-
-      cy.wait(2000);
-
-      // Wait for the account picker page to load
-      cy.contains("Pick an account", { timeout: 15000 }).should("be.visible");
-      cy.contains("Which account do you want to sign out of?").should("be.visible");
-
-      // Click the first account in the list using multiple selector strategies
-      cy.get(
-        'div[role="button"], button[data-test-id*="account"], .account-tile, div[class*="account"]',
-      )
-        .filter(":visible")
-        .first()
-        .should("be.visible")
-        .click({ force: true });
-
-      cy.log("Selected account to sign out");
-    });
-
-    // Wait for redirect after account selection
-    cy.url({ timeout: 15000 }).should("not.include", "ciamlogin.com");
-  }
-
   // Action methods for different user journeys
   confirmSignOut(): SignOutPage {
     this.clickSignOutButton();
+    // Add verification for post-sign-out state if needed
     return this;
   }
 
   cancelSignOut(): SignOutPage {
     this.clickGoBackButton();
-    // Verify navigation back to screening
+    // Verify navigation back to screening (could be tracker or other page)
     cy.url().should("not.include", "/are-you-sure-you-want-to-sign-out");
     return this;
   }
@@ -264,39 +236,5 @@ export class SignOutPage extends BasePage {
     cy.get('button[type="submit"].govuk-button--warning').should("not.be.disabled");
     cy.get('button[type="submit"].govuk-button--secondary').should("not.be.disabled");
     return this;
-  }
-
-  // Navigate to sign out page from header link (helper method for tests)
-  static navigateToSignOutPageFromHeader(): void {
-    cy.get("#sign-out").should("be.visible").click();
-  }
-
-  // Complete sign out flow including Azure B2C account picker and verify final redirect
-  completeFullSignOutFlow(): void {
-    // Step 1: Verify sign out confirmation page
-    this.verifyPageLoaded();
-    this.verifyAllPageElements();
-
-    // Step 2: Click sign out button
-    this.clickSignOutButton();
-
-    // Step 3: Handle Azure B2C account picker using cy.origin
-    this.handleAzureB2CSignOutWithOrigin();
-
-    // Step 4: Verify final redirection to applicant search page
-    cy.url().should("include", "/search-for-visa-applicant", { timeout: 15000 });
-    cy.log("Sign out completed successfully - redirected to Applicant Search page");
-  }
-
-  // Simplified complete sign out (without intermediate verifications)
-  completeSignOutFlow(): void {
-    this.clickSignOutButton();
-    this.handleAzureB2CSignOutWithOrigin();
-    cy.url().should("include", "/search-for-visa-applicant", { timeout: 15000 });
-  }
-
-  // Use the Cypress custom command for logout (recommended approach)
-  static completeSignOutUsingCommand(): void {
-    cy.logoutViaB2C();
   }
 }

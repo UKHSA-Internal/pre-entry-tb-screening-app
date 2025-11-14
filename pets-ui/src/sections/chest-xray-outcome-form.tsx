@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setXrayResult } from "@/redux/radiologicalOutcomeSlice";
 import { selectRadiologicalOutcome } from "@/redux/store";
 import { ReduxRadiologicalOutcomeDetailsType } from "@/types";
-import { ButtonType, RadioIsInline } from "@/utils/enums";
+import { ButtonClass, RadioIsInline } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
 
 const ChestXrayOutcomeForm = () => {
@@ -72,7 +72,7 @@ const ChestXrayOutcomeForm = () => {
           />
         </div>
 
-        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Continue" />
+        <SubmitButton id="save-and-continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

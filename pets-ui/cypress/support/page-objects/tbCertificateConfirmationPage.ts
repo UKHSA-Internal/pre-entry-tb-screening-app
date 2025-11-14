@@ -354,7 +354,6 @@ export class TbCertificateConfirmationPage extends BasePage {
 
     return this;
   }
-
   // Method to test the print functionality within iframe
   testPrintFunctionalityInIframe(): TbCertificateConfirmationPage {
     // After iframe is loaded, test the print link

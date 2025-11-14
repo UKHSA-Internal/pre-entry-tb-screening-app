@@ -1,48 +1,48 @@
-//PETS Private Beta E2E Test with TB Certificate Not Issued
-import { countryList } from "../../src/utils/countryList";
-import { loginViaB2C } from "../support/commands";
-import { ApplicantConfirmationPage } from "../support/page-objects/applicantConfirmationPage";
-import { ApplicantConsentPage } from "../support/page-objects/applicantConsentPage";
-import { ApplicantPhotoUploadPage } from "../support/page-objects/applicantPhotoUploadPage";
-import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
-import { ApplicantSummaryPage } from "../support/page-objects/applicantSummaryPage";
-import { CheckChestXrayImagesPage } from "../support/page-objects/checkChestXrayImagesPage";
-import { ChestXrayConfirmationPage } from "../support/page-objects/chestXrayConfirmationPage";
-import { ChestXrayFindingsPage } from "../support/page-objects/chestXrayFindingsPage";
-import { ChestXrayPage } from "../support/page-objects/chestXrayQuestionPage";
-import { ChestXrayResultsPage } from "../support/page-objects/chestXrayResultsPage";
-import { ChestXrayUploadPage } from "../support/page-objects/chestXrayUploadPage";
-import { MedicalConfirmationPage } from "../support/page-objects/medicalConfirmationPage";
-import { MedicalSummaryPage } from "../support/page-objects/medicalSummaryPage";
-import { RadiologicalOutcomeConfPage } from "../support/page-objects/radiologicalOutcomeConfPage";
-import { SputumDecisionConfirmationPage } from "../support/page-objects/sputumDecisionConfirmationPage";
-import { SputumDecisionInfoPage } from "../support/page-objects/sputumDecisionInfoPage";
-import { SputumQuestionPage } from "../support/page-objects/sputumQuestionPage";
-import { TbCertificateNotIssuedFormPage } from "../support/page-objects/tbCertificateNotIssuedFormPage";
-import { TbCertificateQuestionPage } from "../support/page-objects/tbCertificateQuestionPage";
-import { TbCertificateSummaryPage } from "../support/page-objects/tbCertificateSummaryPage";
-import { TBProgressTrackerPage } from "../support/page-objects/tbProgressTrackerPage";
-import { TbScreeningCompletePage } from "../support/page-objects/tbScreeningCompletePage";
-import { VisaCategoryPage } from "../support/page-objects/visaCategoryPage";
-import { XRayResultsAndFindingsPage } from "../support/page-objects/xRayResultsAndFindingsPage";
+// Scenario: Adult - No Symptoms, Yes History, No Contact, X-ray uploaded, No TB Finding, No Sputum required - TB Certificate Issued
+import { countryList } from "../../../src/utils/countryList";
+import { loginViaB2C } from "../../support/commands";
+import { ApplicantConfirmationPage } from "../../support/page-objects/applicantConfirmationPage";
+import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
+import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
+import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPhotoUploadPage";
+import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
+import { CheckChestXrayImagesPage } from "../../support/page-objects/checkChestXrayImagesPage";
+import { ChestXrayConfirmationPage } from "../../support/page-objects/chestXrayConfirmationPage";
+import { ChestXrayFindingsPage } from "../../support/page-objects/chestXrayFindingsPage";
+import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
+import { ChestXrayResultsPage } from "../../support/page-objects/chestXrayResultsPage";
+import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
+import { ClinicCertificateInfoPage } from "../../support/page-objects/clinicCertificateInfoPage";
+import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
+import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
+import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { RadiologicalOutcomeConfPage } from "../../support/page-objects/radiologicalOutcomeConfPage";
+import { SputumDecisionConfirmationPage } from "../../support/page-objects/sputumDecisionConfirmationPage";
+import { SputumDecisionInfoPage } from "../../support/page-objects/sputumDecisionInfoPage";
+import { SputumQuestionPage } from "../../support/page-objects/sputumQuestionPage";
+import { TbCertificateQuestionPage } from "../../support/page-objects/tbCertificateQuestionPage";
+import { TbCertificateSummaryPage } from "../../support/page-objects/tbCertificateSummaryPage";
+import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
+import { TbScreeningCompletePage } from "../../support/page-objects/tbScreeningCompletePage";
+import { TravelConfirmationPage } from "../../support/page-objects/travelConfirmationPage";
+import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
+import { TravelSummaryPage } from "../../support/page-objects/travelSummaryPage";
+import { VisaCategoryPage } from "../../support/page-objects/visaCategoryPage";
+import { XRayResultsAndFindingsPage } from "../../support/page-objects/xRayResultsAndFindingsPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
   randomElement,
-} from "../support/test-helpers";
-import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetailsPage";
-import { MedicalScreeningPage } from "./../support/page-objects/medicalScreeningPage";
-import { TravelConfirmationPage } from "./../support/page-objects/travelConfirmationPage";
-import { TravelInformationPage } from "./../support/page-objects/travelInformationPage";
-import { TravelSummaryPage } from "./../support/page-objects/travelSummaryPage";
+} from "../../support/test-helpers";
 
-describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () => {
+describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", () => {
   // Page object instances
+  const applicantConsentPage = new ApplicantConsentPage();
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
-  const applicantConsentPage = new ApplicantConsentPage();
   const travelInformationPage = new TravelInformationPage();
   const travelSummaryPage = new TravelSummaryPage();
   const travelConfirmationPage = new TravelConfirmationPage();
@@ -51,20 +51,20 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
   const medicalSummaryPage = new MedicalSummaryPage();
   const medicalConfirmationPage = new MedicalConfirmationPage();
   const radiologicalOutcomeConfPage = new RadiologicalOutcomeConfPage();
-  const sputumQuestionPage = new SputumQuestionPage();
   const sputumDecisionConfirmationPage = new SputumDecisionConfirmationPage();
   const sputumDecisionInfoPage = new SputumDecisionInfoPage();
+  const sputumQuestionPage = new SputumQuestionPage();
   const checkChestXrayImagesPage = new CheckChestXrayImagesPage();
+  const chestXrayResultsPage = new ChestXrayResultsPage();
   const chestXrayPage = new ChestXrayPage();
   const chestXrayUploadPage = new ChestXrayUploadPage();
   const chestXrayFindingsPage = new ChestXrayFindingsPage();
   const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
-  const chestXrayResultsPage = new ChestXrayResultsPage();
-  const tbCertificateNotIssuedFormPage = new TbCertificateNotIssuedFormPage();
+  const clinicCertificateInfoPage = new ClinicCertificateInfoPage();
   const tbCertificateQuestionPage = new TbCertificateQuestionPage();
   const tbCertificateSummaryPage = new TbCertificateSummaryPage();
-  const tbProgressTrackerPage = new TBProgressTrackerPage();
   const tbScreeningCompletePage = new TbScreeningCompletePage();
+  const tbProgressTrackerPage = new TBProgressTrackerPage();
   const visaCategoryPage = new VisaCategoryPage();
   const xRayResultsAndFindingsPage = new XRayResultsAndFindingsPage();
 
@@ -72,6 +72,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
   let countryCode: string = "";
   let countryName: string = "";
   let passportNumber: string = "";
+  let tbCertificateNumber: string = "";
   let selectedVisaCategory: string;
 
   before(() => {
@@ -88,13 +89,16 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     countryCode = randomCountry?.value; // For form filling (e.g., "BRB")
     countryName = randomCountry?.label; // For validation (e.g., "Barbados")
     passportNumber = getRandomPassportNumber();
+    tbCertificateNumber = "TB" + Math.floor(10000000 + Math.random() * 90000000);
 
     // Log what we're using for debugging
     cy.log(`Using passport number: ${passportNumber}`);
     cy.log(`Using country code: ${countryCode}`);
     cy.log(`Using country name: ${countryName}`);
+    cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
   });
-  it("should complete the full application process with TB certificate not issued due to testing postponed", () => {
+
+  it("should complete the full application process for adult with TB history and issue certificate with 6 month expiry", () => {
     // Search for applicant with passport number
     applicantSearchPage
       .fillPassportNumber(passportNumber)
@@ -109,34 +113,42 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     // Verify Applicant Consent
     applicantConsentPage.continueWithConsent("Yes");
 
-    // Verify redirection to the contact page
+    // Verify redirection to Applicant search page
     applicantSearchPage.verifyRedirectionToCreateApplicantPage();
 
-    // Fill basic applicant details
+    // Verify redirection to applicant details page
     applicantDetailsPage.verifyPageLoaded();
+
+    // Fill in applicant details for adult
     applicantDetailsPage
-      .fillFullName("Jane Tester-Doe")
-      .selectSex("Female")
+      .fillFullName("John Tester")
+      .selectSex("Male")
       .selectNationality(countryName)
-      .fillBirthDate("12", "11", "1990")
-      .fillPassportIssueDate("20", "01", "2020")
-      .fillPassportExpiryDate("20", "01", "2030")
-      .fillAddressLine1("456 Oak Tree Avenue")
-      .fillTownOrCity("St. Peters")
-      .fillProvinceOrState("Dreamland")
+      .fillBirthDate("15", "03", "1990")
+      .fillPassportIssueDate("10", "05", "2018")
+      .fillPassportExpiryDate("10", "05", "2028")
+      .fillAddressLine1("123 High Street")
+      .fillAddressLine2("Apartment 4B")
+      .fillAddressLine3("Downtown")
+      .fillTownOrCity("Testing City")
+      .fillProvinceOrState("Greater Testers")
       .selectAddressCountry(countryName)
-      .fillPostcode("62409")
+      .fillPostcode("AL12345")
       .submitForm();
 
-    // Upload photo and complete applicant summary
+    // Verify redirection to the Applicant Photo page
+    cy.url().should("include", "/upload-visa-applicant-photo");
     applicantPhotoUploadPage.verifyPageLoaded();
+
+    // Upload Applicant Photo file
     applicantPhotoUploadPage
       .uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg")
       .verifyUploadSuccess();
 
-    //Checking no errors appear
+    // Checking no errors appear
     cy.get(".govuk-error-message").should("not.exist");
     cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
+
     // Continue to Applicant Summary page
     applicantPhotoUploadPage.clickContinue();
 
@@ -144,19 +156,32 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       cy.log(`Current URL: ${url}`);
     });
 
+    // Verify redirection to the Applicant Summary page
+    cy.url().should("include", "/check-applicant-details");
     applicantSummaryPage.verifyPageLoaded();
-    applicantSummaryPage.verifySummaryValue("Name", "Jane Tester-Doe");
+
+    // Verify some of the submitted data appears correctly in the summary
+    applicantSummaryPage.verifySummaryValue("Name", "John Tester");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
     applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
     applicantSummaryPage.verifySummaryValue("Country", countryName);
+
+    // Confirm above details to proceed to next page
     applicantSummaryPage.confirmDetails();
 
+    // Verify applicant confirmation page
     applicantConfirmationPage.verifyPageLoaded();
+    applicantConfirmationPage.verifyNextStepsText();
+
+    // Click continue - this goes to tracker
     applicantConfirmationPage.clickContinue();
 
-    // Complete travel information
+    // Verify we're on the tracker
+    cy.url().should("include", "/tracker");
     tbProgressTrackerPage.verifyPageLoaded();
+
+    // Navigate to travel information from the tracker
     tbProgressTrackerPage.clickTaskLink("UK travel information");
 
     // Select random category and store the selected value
@@ -172,21 +197,22 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     // Click continue to proceed to travel information page
     visaCategoryPage.clickContinue();
 
-    // NOW verify the travel information page
+    // Fill travel information
     travelInformationPage.verifyPageLoaded();
+
     travelInformationPage.fillCompleteForm({
-      ukAddressLine1: "789 City Road",
-      ukAddressLine2: "Flat 5",
-      ukTownOrCity: "Edinburgh",
-      ukPostcode: "EH1 1AA",
-      mobileNumber: "07700900789",
-      email: "pets.tester3@hotmail.com",
+      ukAddressLine1: "456 Park Lane",
+      ukAddressLine2: "Floor 2",
+      ukTownOrCity: "Manchester",
+      ukPostcode: "M1 1AA",
+      mobileNumber: "07700900123",
+      email: "pets.tester@hotmail.com",
     });
 
     // Submit the form
     travelInformationPage.submitForm();
 
-    // Review Travel Summary with random visa type
+    // Review Travel Summary
     travelSummaryPage.verifyPageLoaded();
     travelSummaryPage.verifyVisaTypeIsValid();
     // Verify details by clicking change links and checking fields
@@ -201,30 +227,27 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     travelSummaryPage.clickChangeLink("UK phone number (optional)");
     cy.url().should("include", "/visa-applicant-proposed-uk-address");
     cy.go("back");
-
-    // Submit the summary page
     travelSummaryPage.submitForm();
+
     // Travel Confirmation
     travelConfirmationPage.verifyPageLoaded();
     travelConfirmationPage.clickContinue();
 
-    // Verify we're back on the tracker
-    cy.url().should("include", "/tracker");
-    tbProgressTrackerPage.verifyPageLoaded();
-
-    // NOW navigate to medical screening from the tracker
+    // Navigate to medical screening from the tracker
     tbProgressTrackerPage.clickTaskLink("Medical history and TB symptoms");
+
+    // Medical Screening Page - Adult with TB history, no symptoms, no close contact
     medicalScreeningPage.verifyPageLoaded();
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("34")
-      .selectTbSymptoms("No")
-      .selectPreviousTb("No")
-      .selectCloseContact("No")
-      .selectPregnancyStatus("No")
-      .selectMenstrualPeriods("No")
+      .fillAge("34") // Adult age
+      .selectTbSymptoms("No") // No symptoms
+      .selectPreviousTb("Yes") // Yes to TB history
+      .selectCloseContact("No") // No close contact
+      .selectPregnancyStatus("No") // Not pregnant
+      .selectMenstrualPeriods("No") // No menstrual periods (male)
       .fillPhysicalExamNotes(
-        "Patient appears healthy but unable to complete full screening today due to scheduling conflicts.",
+        "Adult male with history of tuberculosis. No current symptoms. Physical examination normal.",
       )
       .submitForm();
 
@@ -237,21 +260,23 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
 
     // Verify redirection to Medical Screening Summary Page
     medicalSummaryPage.verifyPageLoaded();
+
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
       age: "34",
       tbSymptoms: "No",
-      previousTb: "No",
+      previousTb: "Yes",
       closeContactWithTb: "No",
       pregnant: "No",
       menstrualPeriods: "No",
       physicalExamNotes:
-        "Patient appears healthy but unable to complete full screening today due to scheduling conflicts.",
+        "Adult male with history of tuberculosis. No current symptoms. Physical examination normal.",
     });
+
     // Confirm medical details
     medicalSummaryPage.confirmDetails();
 
-    // Verify medical confirmation page and continue to TB Progress Tracker
+    // Verify medical confirmation page and continue to chest X-ray
     medicalConfirmationPage.verifyPageLoaded();
     medicalConfirmationPage.verifyConfirmationPanel();
     medicalConfirmationPage.verifyNextStepsSection();
@@ -259,8 +284,12 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
 
     // Verify we're back on the tracker
     cy.url().should("include", "/tracker");
+    tbProgressTrackerPage.verifyPageLoaded();
+
+    // NOW navigate to chest X-ray from the tracker
     tbProgressTrackerPage.clickTaskLink("Upload chest X-ray images");
 
+    // Verify chest X-ray page - Select YES for X-ray taken
     // Verify redirection to chest X-ray Images Upload page
     chestXrayUploadPage.verifyPageLoaded();
     chestXrayUploadPage.verifyAllPageElements();
@@ -287,22 +316,20 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     // Verify accepted file types include .dcm, .jpg, .jpeg, .png
     chestXrayUploadPage.verifyAcceptedFileTypes();
 
-    // Upload Chest X-ray file
+    // Upload chest X-ray
+    chestXrayUploadPage.verifyPageLoaded();
     chestXrayUploadPage
       .uploadPosteroAnteriorXray("cypress/fixtures/test-chest-xray.dcm")
       .verifyUploadSuccess();
 
-    // Checking no errors appear
+    //Checking no errors appear
     cy.get(".govuk-error-message").should("not.exist");
     cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
 
-    // Continue to X-ray findings page
     chestXrayUploadPage.clickContinue();
-
     cy.url().then((url) => {
       cy.log(`Current URL: ${url}`);
     });
-
     // Verify redirection to Check Chest X-ray Images page
     cy.url().should("include", "/check-chest-x-ray-images");
 
@@ -402,15 +429,15 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       tbProgressTrackerPage.verifyPageLoaded();
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
-        Name: "Jane Tester-Doe",
-        "Date of birth": "12/11/1990",
+        Name: "John Tester",
+        "Date of birth": "15/3/1990",
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
       // NOW Navigate to "Make a sputum decision" Page from the tracker
       tbProgressTrackerPage.clickTaskLink("Make a sputum decision");
 
-      // Skip sputum collection for this scenario
+      // Sputum Question - Select NO (not required for normal X-ray)
       sputumQuestionPage.verifyPageLoaded();
       sputumQuestionPage.selectSputumRequiredNo().clickContinue();
 
@@ -429,8 +456,8 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       tbProgressTrackerPage.verifyPageLoaded();
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
-        Name: "Jane Tester-Doe",
-        "Date of birth": "12/11/1990",
+        Name: "John Tester",
+        "Date of birth": "15/3/1990",
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
@@ -444,107 +471,51 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
         "Sputum collection and results": "Not required",
         "TB certificate outcome": "Not yet started",
       });
-      // NOW Click "TB certificate outcome" Page from the tracker
+
+      // Verify we're still on the TB progress tracker
+      cy.url().should("include", "/tracker");
+
+      // Click on TB certificate declaration to continue
       tbProgressTrackerPage.clickTaskLink("TB certificate outcome");
 
-      // Verify TB Certificate Question page loaded
+      // Verify TB Certificate Question page loaded and select YES
       tbCertificateQuestionPage.verifyPageLoaded();
-
-      // Select "No" for TB clearance certificate issuance (certificate NOT issued)
-      tbCertificateQuestionPage.selectTbClearanceOption("No");
-
-      // Verify "No" is selected
-      tbCertificateQuestionPage.verifyRadioSelection("No");
-
-      // Submit the form and continue to TB Certificate Not Issued Form page
+      tbCertificateQuestionPage.selectTbClearanceOption("Yes");
+      tbCertificateQuestionPage.verifyRadioSelection("Yes");
       tbCertificateQuestionPage.clickContinue();
+      // Verify redirection to "Enter clinic and cert information" Page
+      clinicCertificateInfoPage
+        .verifyPageLoaded()
+        .verifyCertificateExpiryDateCalculation()
+        .verifyCertificateExpiryIs6MonthsFromIssueDate()
+        .saveCertificateReferenceNumber()
+        .completeForm(
+          "Dr. Michael Johnson",
+          "Adult applicant with history of tuberculosis. Current chest X-ray normal. All screening requirements completed. Certificate issued with 6-month validity as no close contact with active TB.",
+        );
 
-      // Verify redirection to TB Certificate Not Issued Form page
-      cy.url().should("include", "/why-are-you-not-issuing-certificate");
-      // Verify TB Certificate Not Issued Form page is loaded
-      tbCertificateNotIssuedFormPage.verifyPageLoaded();
-      tbCertificateNotIssuedFormPage.verifyAllPageElements();
-      tbCertificateNotIssuedFormPage.verifyAllFieldsEmpty();
-
-      // Fill TB Certificate Not Issued Form details
-      const tbCertificateNotIssuedData = {
-        reasonNotIssued: "Testing postponed" as const, // Reason for not issuing
-        declaringPhysicianName: "Dr. Sarah Jones",
-        physicianComments:
-          "Due to scheduling conflicts and patient availability, additional testing required for complete TB screening could not be completed today.",
-      };
-
-      // Fill the form with valid data (now uses label-based selection internally)
-      tbCertificateNotIssuedFormPage.fillFormWithValidData(tbCertificateNotIssuedData);
-
-      // Verify the form is filled correctly
-      tbCertificateNotIssuedFormPage.verifyFormFilledWith(tbCertificateNotIssuedData);
-
-      // Submit the form and continue
-      tbCertificateNotIssuedFormPage.clickContinue();
-
-      // Verify redirection to TB Certificate Summary page (not issued scenario)
-      cy.url().should("include", "/tb-certificate-summary");
-
-      // Verify TB Certificate Summary page loaded in "not issued" scenario
+      // Verify redirection to TB Summary Page
       tbCertificateSummaryPage.verifyPageLoaded();
-      tbCertificateSummaryPage.verifyAllPageElements();
 
-      // Verify certificate not issued information
-      tbCertificateSummaryPage.verifyCertificateNotIssuedInfo({
-        "Reason for not issuing certificate": "Testing postponed",
-        "Declaring Physician's name": "Dr. Sarah Jones",
-        "Physician's comments":
-          "Due to scheduling conflicts and patient availability, additional testing required for complete TB screening could not be completed today.",
-      });
+      // Verify all information
+      tbCertificateSummaryPage
+        .verifyAllVisaApplicantInformation()
+        .verifyAllCurrentResidentialAddressFields()
+        .verifyAllProposedUKAddressFields()
+        .verifyAllClinicCertificateInfo()
+        .verifyAllScreeningInformation();
 
-      // Verify change links exist for editable fields
-      tbCertificateSummaryPage.verifyChangeLinksForNotIssued();
-
-      // Test the change links functionality
-      tbCertificateSummaryPage.verifyChangeLinksForNotIssued();
-
-      // Verify back link navigation for not issued scenario
-      tbCertificateSummaryPage.verifyBackLinkForNotIssued();
-
-      // Verify service name in header
-      tbCertificateSummaryPage.verifyServiceName();
-
-      // Verify submit button
-      tbCertificateSummaryPage.verifySubmitButton();
-
-      // Submit the certificate information
-      tbCertificateSummaryPage.clickSubmit();
+      // Click the "Submit" button to submit the application
+      tbCertificateSummaryPage.clickSubmitButton();
 
       // Verify redirection to TB Screening Completion Page
       tbScreeningCompletePage.verifyPageLoaded();
 
-      // Verify all page elements for NOT ISSUED scenario (no certificate reference to validate)
-      tbScreeningCompletePage.verifyAllPageElementsForNotIssued();
+      // Verify TB Screening completion message and Cert Number
+      tbScreeningCompletePage.completeWithRefValidation();
 
-      // Click "View a summary for this visa applicant" link to go to tracker
-      tbScreeningCompletePage.clickSummaryLink();
-
-      // Verify we're on the tracker page
-      tbProgressTrackerPage.verifyPageLoaded();
-
-      // Verify overall TB screening status is now "Certificate not issued"
-      tbProgressTrackerPage.verifyTBScreeningStatus("Certificate not issued");
-
-      // Verify all task statuses in final state
-      tbProgressTrackerPage.verifyMultipleTaskStatuses({
-        "Visa applicant details": "Completed",
-        "UK travel information": "Completed",
-        "Medical history and TB symptoms": "Completed",
-        "Upload chest X-ray images": "Completed",
-        "Radiological outcome": "Completed",
-        "Make a sputum decision": "Completed",
-        "Sputum collection and results": "Not required",
-        "TB certificate outcome": "Certificate not issued",
-      });
-
-      // Log test completion
-      cy.log("TB Certificate Not Issued E2E Test completed successfully");
+      // Verify all page elements with saved certificate reference validation
+      tbScreeningCompletePage.verifyAllWithSavedRef();
     });
   });
 });

@@ -17,7 +17,7 @@ import {
   setSample3SmearResults,
 } from "@/redux/sputumSlice";
 import { selectSputum } from "@/redux/store";
-import { ButtonType, PositiveOrNegative } from "@/utils/enums";
+import { ButtonClass, PositiveOrNegative } from "@/utils/enums";
 import { formatDateForDisplay, sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
 import { sputumResultsValidationMessages } from "@/utils/records";
 
@@ -518,7 +518,11 @@ const SputumResultsForm = () => {
             className="govuk-section-break govuk-section-break--m govuk-section-break--visible"
             style={hrLastStyle}
           />
-          <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Save and continue" />
+          <SubmitButton
+            id="save-and-continue"
+            class={ButtonClass.DEFAULT}
+            text="Save and continue"
+          />
         </form>
       </FormProvider>
     </div>

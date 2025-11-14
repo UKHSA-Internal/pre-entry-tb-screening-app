@@ -4,7 +4,7 @@ import Button from "@/components/button/button";
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import NotificationBanner from "@/components/notificationBanner/notificationBanner";
-import { ButtonType } from "@/utils/enums";
+import { ButtonClass } from "@/utils/enums";
 
 export default function ConsentInstructionPage() {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ export default function ConsentInstructionPage() {
 
       <Button
         id="search-again"
-        type={ButtonType.DEFAULT}
+        class={ButtonClass.DEFAULT}
         text="Search again"
         handleClick={() => navigate("/search-for-visa-applicant")}
       />
