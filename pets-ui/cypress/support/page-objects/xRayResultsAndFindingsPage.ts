@@ -37,6 +37,15 @@ export class XRayResultsAndFindingsPage extends BasePage {
       });
     return this;
   }
+  // Verify submission section
+  verifySubmissionSection(): XRayResultsAndFindingsPage {
+    cy.contains("h2", "Now send the chest X-ray results and findings").should("be.visible");
+    cy.contains(
+      "p",
+      "You will not be able to change the X-ray results and findings after you submit this information.",
+    ).should("be.visible");
+    return this;
+  }
 
   // Verify Chest X-ray results value
   verifyXrayResultsValue(expectedValue: string): XRayResultsAndFindingsPage {

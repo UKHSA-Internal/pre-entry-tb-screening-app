@@ -17,7 +17,7 @@ import {
 } from "@/redux/medicalScreeningSlice";
 import { selectMedicalScreening } from "@/redux/store";
 import { DateType, ReduxMedicalScreeningType } from "@/types";
-import { ApplicationStatus, ButtonType, RadioIsInline } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
 import { validateDate } from "@/utils/helpers";
 import { formRegex } from "@/utils/records";
 
@@ -325,7 +325,7 @@ const MedicalScreeningForm = () => {
           />
         </div>
 
-        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Continue" />
+        <SubmitButton id="save-and-continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

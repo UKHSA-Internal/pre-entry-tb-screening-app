@@ -5,7 +5,7 @@ import Button from "@/components/button/button";
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import NotificationBanner from "@/components/notificationBanner/notificationBanner";
-import { ButtonType } from "@/utils/enums";
+import { ButtonClass } from "@/utils/enums";
 import { useNavigationHistory } from "@/utils/useNavigationHistory";
 
 export default function SignOutPage() {
@@ -39,13 +39,13 @@ export default function SignOutPage() {
         <div className="govuk-button-group">
           <Button
             id="sign-out-confirm"
-            type={ButtonType.WARNING}
+            class={ButtonClass.WARNING}
             text="Sign out"
             handleClick={handleSignOut}
           />
           <Button
             id="sign-out-cancel"
-            type={ButtonType.SECONDARY}
+            class={ButtonClass.SECONDARY}
             text="Go back to screening"
             handleClick={() => goBack(backLinkTo)}
           />

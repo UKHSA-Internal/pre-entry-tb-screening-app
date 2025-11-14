@@ -15,9 +15,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 dotenv.config({
-  path: resolve(__dirname, "../../configs/.env.local.secrets"), // Required only for local runs, CI environment secrets are retrieved from Actions Secrets
+  path: resolve(__dirname, "../../configs/.env.local.secrets"),
 });
-
+// Commenting to help with cutover and handover of scripts for maintenance
 // Initialize SQS client
 const createSQSClient = () => {
   return new SQSClient({
@@ -33,29 +33,82 @@ const createSQSClient = () => {
 
 // Function to get base URL based on environment
 const getBaseUrl = () => {
-  // Prefer explicit environment variables set by CI workflow
+  // Explicit CYPRESS_BASE_URL (Will's way - removing the explicit env set by CI workflow)
   if (process.env.CYPRESS_BASE_URL) {
+    console.log(`Using CYPRESS_BASE_URL: ${process.env.CYPRESS_BASE_URL}`);
     return process.env.CYPRESS_BASE_URL;
   }
+
+  // ENV_URL (for branch deployments - implement as 2nd priority)
   if (process.env.ENV_URL) {
+    console.log(`Using ENV_URL: ${process.env.ENV_URL}`);
     return process.env.ENV_URL;
   }
   if (process.env.APP_DOMAIN) {
+    console.log(`Using APP_DOMAIN: ${process.env.APP_DOMAIN}`);
     return process.env.APP_DOMAIN;
   }
 
+  // Environment-based URLs
   const environment = process.env.ENVIRONMENT || process.env.TARGET_ENV;
 
-  switch (environment) {
-    case "qat":
-      return "https://clinics.test.pets.ukhsa.gov.uk";
-    case "dev":
-      return "https://clinics.dev.pets.ukhsa.gov.uk";
-    case "preprod":
-      return "https://clinics.preprod.pets.ukhsa.gov.uk";
-    default:
-      return "http://localhost:3000";
+  if (environment) {
+    console.log(`Using ENVIRONMENT: ${environment}`);
+    switch (environment.toLowerCase()) {
+      case "qat":
+      case "test":
+        return "https://clinics.test.pets.ukhsa.gov.uk";
+      case "dev":
+        return "https://clinics.dev.pets.ukhsa.gov.uk";
+      case "preprod":
+        return "https://clinics.preprod.pets.ukhsa.gov.uk";
+      case "local":
+        return "http://localhost:3000"; // local dev
+      default:
+        console.warn(`Unknown environment: ${environment}, using test`);
+        return "https://clinics.test.pets.ukhsa.gov.uk";
+    }
   }
+
+  // Default to localhost for local dev & test
+  console.log("No environment specified, defaulting to localhost");
+  return "http://localhost:3000";
+};
+
+// Function to determine if running in CI
+const isCI = () => {
+  return !!(process.env.CI || process.env.GITHUB_ACTIONS);
+};
+
+// Function to get environment-specific configuration
+const getEnvironmentConfig = () => {
+  const currentEnv = (process.env.ENVIRONMENT || process.env.TARGET_ENV || "local").toLowerCase();
+
+  // Different timeouts for different environments
+  const timeouts = {
+    local: {
+      defaultCommandTimeout: 4000,
+      requestTimeout: 5000,
+      responseTimeout: 30000,
+    },
+    qat: {
+      defaultCommandTimeout: 10000,
+      requestTimeout: 15000,
+      responseTimeout: 60000,
+    },
+    dev: {
+      defaultCommandTimeout: 10000,
+      requestTimeout: 15000,
+      responseTimeout: 60000,
+    },
+    preprod: {
+      defaultCommandTimeout: 10000,
+      requestTimeout: 15000,
+      responseTimeout: 60000,
+    },
+  };
+
+  return timeouts[currentEnv] || timeouts.local;
 };
 
 export default defineConfig({
@@ -69,32 +122,33 @@ export default defineConfig({
   },
   video: true,
   videosFolder:
-    (process.env.CI || process.env.GITHUB_ACTIONS) && process.env.ENVIRONMENT
+    isCI() && process.env.ENVIRONMENT
       ? `cypress/videos/${process.env.ENVIRONMENT}`
       : "cypress/videos",
   screenshotOnRunFailure: true,
   screenshotsFolder:
-    (process.env.CI || process.env.GITHUB_ACTIONS) && process.env.ENVIRONMENT
+    isCI() && process.env.ENVIRONMENT
       ? `cypress/screenshots/${process.env.ENVIRONMENT}`
       : "cypress/screenshots",
   e2e: {
     baseUrl: getBaseUrl(),
     supportFile: "cypress/support/e2e.ts",
-    // Static glob string for specPattern, as required by Cypress
     specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
     experimentalStudio: true,
-    retries: 2, // <-- Enable built-in test retries (change number if needed)
+    retries: isCI() ? 2 : 0, // Only retry in CI,
     setupNodeEvents: async (on, config) => {
-      // Remove the cypress-mochawesome-reporter plugin setup
-      // await setupMochawesomeReporter(on);
+      const currentEnv = (
+        process.env.ENVIRONMENT ||
+        process.env.TARGET_ENV ||
+        "local"
+      ).toLowerCase();
 
-      const currentEnv = process.env.ENVIRONMENT || process.env.TARGET_ENV || "local";
-      console.log(`Target Environment: ${currentEnv}`);
+      console.log("=== Cypress Configuration ===");
+      console.log(`Environment: ${currentEnv}`);
       console.log(`Base URL: ${config.baseUrl}`);
-
-      if (!process.env.CI && !process.env.GITHUB_ACTIONS && currentEnv !== "local") {
-        console.log(`Running LOCAL Cypress against ${currentEnv.toUpperCase()} environment`);
-      }
+      console.log(`Running in CI: ${isCI()}`);
+      console.log(`Retries: ${config.retries}`);
+      console.log("============================");
 
       const sqsClient = createSQSClient();
 
@@ -231,18 +285,7 @@ export default defineConfig({
     },
     experimentalModifyObstructiveThirdPartyCode: true,
     modifyObstructiveCode: true,
-    defaultCommandTimeout:
-      (process.env.CI || process.env.GITHUB_ACTIONS) && process.env.ENVIRONMENT !== "local"
-        ? 10000
-        : 4000,
-    requestTimeout:
-      (process.env.CI || process.env.GITHUB_ACTIONS) && process.env.ENVIRONMENT !== "local"
-        ? 15000
-        : 5000,
-    responseTimeout:
-      (process.env.CI || process.env.GITHUB_ACTIONS) && process.env.ENVIRONMENT !== "local"
-        ? 60000
-        : 30000,
+    ...getEnvironmentConfig(), // Apply environment-specific timeouts
   },
   component: {
     supportFile: false,
@@ -256,5 +299,12 @@ export default defineConfig({
     CURRENT_ENVIRONMENT: process.env.ENVIRONMENT || process.env.TARGET_ENV || "local",
     PETS_SQS_QUEUE_URL: process.env.PETS_SQS_QUEUE_URL,
     PETS_DLQ_URL: process.env.PETS_DLQ_URL,
+    // API-specific env vars for the new API tests
+    API_BASE_URL: process.env.API_BASE_URL || `${getBaseUrl()}/api`,
+    AUTH_TOKEN_ENDPOINT: process.env.AUTH_TOKEN_ENDPOINT,
+    AZURE_B2C_CLIENT_ID: process.env.AZURE_B2C_CLIENT_ID,
+    AZURE_B2C_SCOPE: process.env.AZURE_B2C_SCOPE,
+    TEST_USER_EMAIL: process.env.TEST_USER_EMAIL,
+    TEST_USER_PASSWORD: process.env.TEST_USER_PASSWORD,
   },
 });
