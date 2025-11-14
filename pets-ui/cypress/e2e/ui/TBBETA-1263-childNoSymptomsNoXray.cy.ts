@@ -273,8 +273,8 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",
-      pregnant: "N/A",
-      menstrualPeriods: "N/A",
+      pregnant: "No",
+      menstrualPeriods: "No",
       physicalExamNotes:
         "Child applicant aged 6 years. No TB symptoms or history. No close contact with TB. Physical examination normal for age.",
       xrayRequired: "No",
