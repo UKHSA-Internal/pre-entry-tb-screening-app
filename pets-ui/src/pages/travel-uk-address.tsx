@@ -1,3 +1,5 @@
+import { useSearchParams } from "react-router-dom";
+
 import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
 import { selectTravel } from "@/redux/store";
@@ -6,10 +8,16 @@ import { ApplicationStatus } from "@/utils/enums";
 
 export default function TravelAddressAndContactDetailsPage() {
   const travel = useAppSelector(selectTravel);
-  const backLinkTo =
-    travel.status === ApplicationStatus.COMPLETE
-      ? "/tb-certificate-summary"
-      : "/proposed-visa-category";
+  const [searchParams] = useSearchParams();
+  const fromParam = searchParams.get("from");
+  let backLinkTo: string;
+  if (fromParam === "/check-travel-information") {
+    backLinkTo = "/check-travel-information";
+  } else if (travel.status === ApplicationStatus.COMPLETE) {
+    backLinkTo = "/tb-certificate-summary";
+  } else {
+    backLinkTo = "/proposed-visa-category";
+  }
 
   return (
     <Container
