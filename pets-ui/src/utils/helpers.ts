@@ -252,7 +252,37 @@ const updateGoogleAnalyticsConsent = (consentGranted: boolean) => {
   }
 };
 
+const calculateApplicantAge = (dateOfBirth: DateType) => {
+  const { day, month, year } = dateOfBirth;
+  if (!day || !month || !year || day == "" || month == "" || year == "") {
+    return "Error in calculateApplicantAge: dateOfBirth object is missing fields";
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let ageYears = today.getFullYear() - parseInt(dateOfBirth.year);
+  let ageMonths = today.getMonth() - (parseInt(dateOfBirth.month) - 1);
+  let ageDays = today.getDate() - parseInt(dateOfBirth.day);
+
+  if (ageDays < 0) {
+    ageMonths -= 1;
+    const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+    ageDays += prevMonth;
+  }
+  if (ageMonths < 0) {
+    ageYears -= 1;
+    ageMonths += 12;
+  }
+
+  if (ageYears < 0 || (ageYears == 0 && ageMonths < 0)) {
+    return "Error in calculateApplicantAge: dateOfBirth is in the future";
+  } else {
+    return { years: ageYears, months: ageMonths };
+  }
+};
+
 export {
+  calculateApplicantAge,
   calculateCertificateExpiryDate,
   calculateCertificateIssueDate,
   calculateSputumOutcome,
