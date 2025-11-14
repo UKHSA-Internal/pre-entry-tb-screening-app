@@ -9,7 +9,7 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTravel } from "@/redux/store";
 import { setTravelDetailsStatus, setVisaCategory } from "@/redux/travelSlice";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass } from "@/utils/enums";
 import { visaOptions } from "@/utils/records";
 
 interface TravelVisaCategoryData {
@@ -82,7 +82,7 @@ const ApplicantTravelVisaCategory = () => {
           />
         </div>
 
-        <SubmitButton id="continue" type={ButtonType.DEFAULT} text="Continue" />
+        <SubmitButton id="continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

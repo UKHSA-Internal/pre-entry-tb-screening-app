@@ -1,15 +1,15 @@
-import { countryList } from "../../src/utils/countryList";
-import { loginViaB2C } from "../support/commands";
-import { ApplicantConsentPage } from "../support/page-objects/applicantConsentPage";
-import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
+import { countryList } from "../../../src/utils/countryList";
+import { loginViaB2C } from "../../support/commands";
+import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
+import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
+import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
   randomElement,
-} from "../support/test-helpers";
-import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetailsPage";
+} from "../../support/test-helpers";
 
-describe("Applicant Details Form - Expired Passport Test", () => {
+describe("Applicant Details Form - Invalid Month Format Test", () => {
   // Page object instances
   const applicantConsentPage = new ApplicantConsentPage();
   const applicantSearchPage = new ApplicantSearchPage();
@@ -44,7 +44,7 @@ describe("Applicant Details Form - Expired Passport Test", () => {
     cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
   });
 
-  it("should display error when passport expiry date is in the past", () => {
+  it("should display error when invalid month name is entered in birth date", () => {
     // Search for applicant with passport number
     applicantSearchPage
       .fillPassportNumber(passportNumber)
@@ -55,7 +55,6 @@ describe("Applicant Details Form - Expired Passport Test", () => {
     applicantSearchPage.verifyNoMatchingRecordMessage(20000);
     applicantSearchPage.verifyCreateNewApplicantExists();
     applicantSearchPage.clickCreateNewApplicant();
-
     // Verify Applicant Consent
     applicantConsentPage.continueWithConsent("Yes");
 
@@ -70,9 +69,9 @@ describe("Applicant Details Form - Expired Passport Test", () => {
       .fillFullName("Jane Smith")
       .selectSex("Female")
       .selectNationality(countryName) // Use country code for form filling
-      .fillBirthDate("15", "03", "1985")
+      .fillBirthDate("15", "JAZ", "1985")
       .fillPassportIssueDate("10", "05", "2015")
-      .fillPassportExpiryDate("10", "05", "2020")
+      .fillPassportExpiryDate("10", "05", "2035")
       .fillAddressLine1("123 High Street")
       .fillAddressLine2("Apartment 4B")
       .fillAddressLine3("Downtown")
@@ -82,10 +81,12 @@ describe("Applicant Details Form - Expired Passport Test", () => {
       .fillPostcode("94109")
       .submitForm();
 
-    // Validate error displayed for EXPIRED passport
-    applicantDetailsPage.validateErrorContainsText("Passport expiry date must be in the future");
+    // Validate error for invalid date format is displayed
+    applicantDetailsPage.validateErrorContainsText(
+      "Date of birth day, month and year must contain only numbers",
+    );
     applicantDetailsPage.validateFormErrors({
-      passportExpiryDate: "Passport expiry date must be in the future",
+      birthDate: "Date of birth day, month and year must contain only numbers",
     });
   });
 });

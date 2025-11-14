@@ -6,7 +6,7 @@ import Container from "@/components/container/container";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
-import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
+import { ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
 
 export default function ConsentQuestionPage() {
   const navigate = useNavigate();
@@ -62,7 +62,7 @@ export default function ConsentQuestionPage() {
             />
           </div>
 
-          <SubmitButton id="continue" type={ButtonType.DEFAULT} text="Continue" />
+          <SubmitButton id="continue" class={ButtonClass.DEFAULT} text="Continue" />
         </form>
       </FormProvider>
     </Container>

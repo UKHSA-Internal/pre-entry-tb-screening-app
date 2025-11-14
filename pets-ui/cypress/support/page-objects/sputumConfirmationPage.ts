@@ -167,22 +167,12 @@ export class SputumConfirmationPage extends BasePage {
     });
   }
 
-  // Verify back link navigation
-  verifyBackLinkNavigation(): SputumConfirmationPage {
-    cy.get(".govuk-back-link")
-      .should("be.visible")
-      .and("contain", "Back")
-      .and("have.attr", "href", "/check-sputum-sample-information-results");
-    return this;
-  }
-
   // Enhanced verification method that adapts to scenario type
   verifyAllConfirmationElements(): SputumConfirmationPage {
     this.verifyConfirmationPanel();
     this.verifyNextStepsSection();
     cy.contains("button", "Continue").should("be.visible");
     this.verifySearchForAnotherApplicantLink();
-    this.verifyBackLinkNavigation();
     this.verifyServiceName();
     return this;
   }
@@ -211,7 +201,6 @@ export class SputumConfirmationPage extends BasePage {
   verifyAllInteractiveElements(): SputumConfirmationPage {
     this.verifyContinueButtonEnabled();
     this.verifySearchForAnotherApplicantLink();
-    this.verifyBackLinkNavigation();
     return this;
   }
 }

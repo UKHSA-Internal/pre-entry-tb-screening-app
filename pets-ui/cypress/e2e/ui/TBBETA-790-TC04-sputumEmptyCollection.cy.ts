@@ -1,39 +1,39 @@
-// Data Field Error Test on Sputum Page
-import { countryList } from "../../src/utils/countryList";
-import { loginViaB2C } from "../support/commands";
-import { ApplicantConfirmationPage } from "../support/page-objects/applicantConfirmationPage";
-import { ApplicantConsentPage } from "../support/page-objects/applicantConsentPage";
-import { ApplicantPhotoUploadPage } from "../support/page-objects/applicantPhotoUploadPage";
-import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
-import { ApplicantSummaryPage } from "../support/page-objects/applicantSummaryPage";
-import { CheckChestXrayImagesPage } from "../support/page-objects/checkChestXrayImagesPage";
-import { ChestXrayConfirmationPage } from "../support/page-objects/chestXrayConfirmationPage";
-import { ChestXrayFindingsPage } from "../support/page-objects/chestXrayFindingsPage";
-import { ChestXrayPage } from "../support/page-objects/chestXrayQuestionPage";
-import { ChestXrayResultsPage } from "../support/page-objects/chestXrayResultsPage";
-import { ChestXrayUploadPage } from "../support/page-objects/chestXrayUploadPage";
-import { MedicalConfirmationPage } from "../support/page-objects/medicalConfirmationPage";
-import { MedicalSummaryPage } from "../support/page-objects/medicalSummaryPage";
-import { RadiologicalOutcomeConfPage } from "../support/page-objects/radiologicalOutcomeConfPage";
-import { SputumCollectionPage } from "../support/page-objects/sputumCollectionPage";
-import { SputumDecisionConfirmationPage } from "../support/page-objects/sputumDecisionConfirmationPage";
-import { SputumDecisionInfoPage } from "../support/page-objects/sputumDecisionInfoPage";
-import { SputumQuestionPage } from "../support/page-objects/sputumQuestionPage";
-import { TBProgressTrackerPage } from "../support/page-objects/tbProgressTrackerPage";
-import { VisaCategoryPage } from "../support/page-objects/visaCategoryPage";
-import { XRayResultsAndFindingsPage } from "../support/page-objects/xRayResultsAndFindingsPage";
+// Empty Collection Method Test on Sputum Page
+import { countryList } from "../../../src/utils/countryList";
+import { loginViaB2C } from "../../support/commands";
+import { ApplicantConfirmationPage } from "../../support/page-objects/applicantConfirmationPage";
+import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
+import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
+import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPhotoUploadPage";
+import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
+import { CheckChestXrayImagesPage } from "../../support/page-objects/checkChestXrayImagesPage";
+import { ChestXrayConfirmationPage } from "../../support/page-objects/chestXrayConfirmationPage";
+import { ChestXrayFindingsPage } from "../../support/page-objects/chestXrayFindingsPage";
+import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
+import { ChestXrayResultsPage } from "../../support/page-objects/chestXrayResultsPage";
+import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
+import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
+import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
+import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { RadiologicalOutcomeConfPage } from "../../support/page-objects/radiologicalOutcomeConfPage";
+import { SputumCollectionPage } from "../../support/page-objects/sputumCollectionPage";
+import { SputumDecisionConfirmationPage } from "../../support/page-objects/sputumDecisionConfirmationPage";
+import { SputumDecisionInfoPage } from "../../support/page-objects/sputumDecisionInfoPage";
+import { SputumQuestionPage } from "../../support/page-objects/sputumQuestionPage";
+import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
+import { TravelConfirmationPage } from "../../support/page-objects/travelConfirmationPage";
+import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
+import { TravelSummaryPage } from "../../support/page-objects/travelSummaryPage";
+import { VisaCategoryPage } from "../../support/page-objects/visaCategoryPage";
+import { XRayResultsAndFindingsPage } from "../../support/page-objects/xRayResultsAndFindingsPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
   randomElement,
-} from "../support/test-helpers";
-import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetailsPage";
-import { MedicalScreeningPage } from "./../support/page-objects/medicalScreeningPage";
-import { TravelConfirmationPage } from "./../support/page-objects/travelConfirmationPage";
-import { TravelInformationPage } from "./../support/page-objects/travelInformationPage";
-import { TravelSummaryPage } from "./../support/page-objects/travelSummaryPage";
+} from "../../support/test-helpers";
 
-describe("Date Field Error Test On Sputum Collection Page", () => {
+describe("Empty Collection Method Test On Sputum Collection Page", () => {
   // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
@@ -92,7 +92,7 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
     cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
   });
 
-  it("should display error messages for missing date in date fields", () => {
+  it("should display error messages for missing collection methods with valid dates", () => {
     // Search for applicant with passport number
     applicantSearchPage
       .fillPassportNumber(passportNumber)
@@ -115,19 +115,19 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
 
     // Fill in applicant details
     applicantDetailsPage
-      .fillFullName("Jane Smith")
+      .fillFullName("Jane Sputum-Collection")
       .selectSex("Female")
-      .selectNationality(countryName) // Use country code for form filling
-      .fillBirthDate("15", "03", "2000")
-      .fillPassportIssueDate("10", "05", "2018")
-      .fillPassportExpiryDate("10", "05", "2028")
-      .fillAddressLine1("123 High Street")
-      .fillAddressLine2("Apartment 4B")
-      .fillAddressLine3("Downtown")
-      .fillTownOrCity("St. Marten")
-      .fillProvinceOrState("Holestown")
-      .selectAddressCountry(countryName) // Use country code for form filling
-      .fillPostcode("94109")
+      .selectNationality(countryName)
+      .fillBirthDate("20", "08", "1985")
+      .fillPassportIssueDate("15", "01", "2019")
+      .fillPassportExpiryDate("15", "01", "2029")
+      .fillAddressLine1("789 Method Street")
+      .fillAddressLine2("Unit 5")
+      .fillAddressLine3("Collection Area")
+      .fillTownOrCity("Test Town")
+      .fillProvinceOrState("Test Province")
+      .selectAddressCountry(countryName)
+      .fillPostcode("54321")
       .submitForm();
 
     // Verify redirection to the Applicant Photo page
@@ -155,7 +155,7 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary
-    applicantSummaryPage.verifySummaryValue("Name", "Jane Smith");
+    applicantSummaryPage.verifySummaryValue("Name", "Jane Sputum-Collection");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
     applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
@@ -194,12 +194,12 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
     // NOW verify the travel information page
     travelInformationPage.verifyPageLoaded();
 
-    /// Fill travel information (NO visa type parameter needed)
+    /// Fill travel information
     travelInformationPage.fillCompleteForm({
-      ukAddressLine1: "456 Park Lane",
-      ukAddressLine2: "Floor 2",
-      ukTownOrCity: "Manchester",
-      ukPostcode: "M1 1AA",
+      ukAddressLine1: "Flat 23",
+      ukAddressLine2: "321 Collections Avenue",
+      ukTownOrCity: "Liverpool",
+      ukPostcode: "L1 2AB",
       mobileNumber: "07700900123",
       email: "pets.tester@hotmail.com",
     });
@@ -245,13 +245,13 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
 
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("25")
+      .fillAge("38")
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
       .selectPregnancyStatus("No")
       .selectMenstrualPeriods("No")
-      .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.")
+      .fillPhysicalExamNotes("Applicant shows no signs of active TB symptoms.")
       .submitForm();
 
     // Verify redirection to X-ray Question Page
@@ -266,13 +266,13 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
 
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "25",
+      age: "38",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",
       pregnant: "No",
       menstrualPeriods: "No",
-      physicalExamNotes: "No abnormalities detected. Patient appears healthy.",
+      physicalExamNotes: "Applicant shows no signs of active TB symptoms.",
     });
 
     // Confirm medical details
@@ -301,7 +301,7 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
 
     // Enter the date manually when X-ray was taken
     const xrayDay = "20";
-    const xrayMonth = "10";
+    const xrayMonth = "09";
     const xrayYear = "2025";
     chestXrayUploadPage.enterDateXrayTaken(xrayDay, xrayMonth, xrayYear);
 
@@ -343,7 +343,7 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
     checkChestXrayImagesPage.verifyPageHeading();
 
     // Verify the date of X-ray is displayed (should match what was entered earlier)
-    checkChestXrayImagesPage.verifyDateOfXray("20 October 2025");
+    checkChestXrayImagesPage.verifyDateOfXray("20 September 2025");
 
     // Get and log the date of X-ray value
     checkChestXrayImagesPage.getDateOfXray().then((date) => {
@@ -432,8 +432,8 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
       tbProgressTrackerPage.verifyPageLoaded();
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
-        Name: "Jane Smith",
-        "Date of birth": "15/3/2000",
+        Name: "Jane Sputum-Collection",
+        "Date of birth": "20/8/1985",
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
@@ -460,8 +460,8 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
       tbProgressTrackerPage.verifyPageLoaded();
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
-        Name: "Jane Smith",
-        "Date of birth": "15/3/2000",
+        Name: "Jane Sputum-Collection",
+        "Date of birth": "20/8/1985",
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
@@ -472,53 +472,53 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
       sputumCollectionPage.verifyPageLoaded();
       sputumCollectionPage.verifySectionHeaders();
       sputumCollectionPage.verifyPageStructure();
-      // Fill sputum collection data for all three samples
-      const invalidSputumDate = {
+
+      // Fill sputum collection data with valid dates but missing collection methods
+      const validDatesNoMethods = {
         sample1: {
-          date: { day: "", month: "06", year: "2025" },
-          collectionMethod: "Coughed up",
+          date: { day: "10", month: "06", year: "2024" },
+          collectionMethod: "", // Empty collection method
         },
         sample2: {
-          date: { day: "11", month: "07", year: "" },
-          collectionMethod: "Induced",
+          date: { day: "12", month: "06", year: "2024" },
+          collectionMethod: "", // Empty collection method
         },
         sample3: {
-          date: { day: "12", month: "", year: "2025" },
-          collectionMethod: "Coughed up",
+          date: { day: "14", month: "06", year: "2024" },
+          collectionMethod: "", // Empty collection method
         },
       };
 
-      // Fill all samples using invalid data
-      sputumCollectionPage.fillAllSamples(invalidSputumDate);
+      // Fill dates only (collection methods remain empty)
+      sputumCollectionPage.fillSample1Date(validDatesNoMethods.sample1.date);
+      sputumCollectionPage.fillSample2Date(validDatesNoMethods.sample2.date);
+      sputumCollectionPage.fillSample3Date(validDatesNoMethods.sample3.date);
 
-      // Verify the form is filled correctly
-      sputumCollectionPage.verifyFormFilledWith(invalidSputumDate);
+      // Verify dates are filled correctly
+      cy.get('[data-testid="date-sample-1-taken-day"]').should("have.value", "10");
+      cy.get('[data-testid="date-sample-1-taken-month"]').should("have.value", "06");
+      cy.get('[data-testid="date-sample-1-taken-year"]').should("have.value", "2024");
 
-      // Save and continue to results
+      // Attempt to save and continue without selecting collection methods
       sputumCollectionPage.clickSaveAndContinueToResults();
 
       // Verify error summary is displayed
       sputumCollectionPage.validateErrorSummaryVisible();
-      // Verify specific error messages for invalid dates
-      sputumCollectionPage.validateErrorSummaryContains([
-        "Sputum sample 1 date must include a day, month and year",
-        "Sputum sample 2 date must include a day, month and year",
-        "Sputum sample 3 date must include a day, month and year",
-      ]);
-      // Verify individual field errors
-      sputumCollectionPage.validateSample1DateError(
-        "Sputum sample 1 date must include a day, month and year",
-      );
-      sputumCollectionPage.validateSample2DateError(
-        "Sputum sample 2 date must include a day, month and year",
-      );
-      sputumCollectionPage.validateSample3DateError(
-        "Sputum sample 3 date must include a day, month and year",
-      );
 
-      // Verify error styling is applied
-      sputumCollectionPage.verifyDateFieldErrorStates();
-      sputumCollectionPage.verifyNoCollectionMethodErrors();
+      // Verify specific error messages for missing collection methods
+      sputumCollectionPage.validateErrorSummaryContains([
+        "Enter Sputum sample 1 collection method",
+        "Enter Sputum sample 2 collection method",
+        "Enter Sputum sample 3 collection method",
+      ]);
+
+      // Verify individual field errors for collection methods
+      sputumCollectionPage.validateSample1CollectionMethodError();
+      sputumCollectionPage.validateSample2CollectionMethodError();
+      sputumCollectionPage.validateSample3CollectionMethodError();
+
+      // Verify we remain on the sputum collection page
+      cy.url().should("include", "/enter-sputum-sample-collection-information");
     });
   });
 });

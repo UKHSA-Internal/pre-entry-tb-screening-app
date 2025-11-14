@@ -43,7 +43,7 @@ import {
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
 import { ApplicantSearchFormType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
-import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
 import { countryList, formRegex } from "@/utils/records";
 
 import { getApplicants, getApplication } from "../api/api";
@@ -187,7 +187,7 @@ const ApplicantSearchForm = () => {
             required="Select the country of issue"
           />
 
-          <SubmitButton id="search" type={ButtonType.DEFAULT} text="Search" />
+          <SubmitButton id="search" class={ButtonClass.DEFAULT} text="Search" />
         </form>
       </FormProvider>
     </div>
