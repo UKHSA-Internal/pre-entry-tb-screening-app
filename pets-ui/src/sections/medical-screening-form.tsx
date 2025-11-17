@@ -17,7 +17,7 @@ import {
 } from "@/redux/medicalScreeningSlice";
 import { selectApplicant, selectMedicalScreening } from "@/redux/store";
 import { DateType, ReduxMedicalScreeningType } from "@/types";
-import { ApplicationStatus, ButtonType, RadioIsInline } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
 import { calculateApplicantAge, validateDate } from "@/utils/helpers";
 
 const MedicalScreeningForm = () => {
