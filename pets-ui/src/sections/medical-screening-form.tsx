@@ -31,9 +31,9 @@ const MedicalScreeningForm = () => {
     ageToDisplay = "Unknown";
   } else if (applicantAge.years > 0) {
     applicantAgeInYears = applicantAge.years;
-    ageToDisplay = `${applicantAge.years} year${applicantAge.years != 1 ? "s" : ""} old`;
+    ageToDisplay = `${applicantAge.years} year${applicantAge.years == 1 ? "" : "s"} old`;
   } else {
-    ageToDisplay = `${applicantAge.months} month${applicantAge.months != 1 ? "s" : ""} old`;
+    ageToDisplay = `${applicantAge.months} month${applicantAge.months == 1 ? "" : "s"} old`;
   }
 
   const medicalData = useAppSelector(selectMedicalScreening);

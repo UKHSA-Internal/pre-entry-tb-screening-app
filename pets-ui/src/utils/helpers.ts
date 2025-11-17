@@ -260,14 +260,12 @@ const calculateApplicantAge = (dateOfBirth: DateType) => {
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  let ageYears = today.getFullYear() - parseInt(dateOfBirth.year);
-  let ageMonths = today.getMonth() - (parseInt(dateOfBirth.month) - 1);
-  let ageDays = today.getDate() - parseInt(dateOfBirth.day);
+  let ageYears = today.getFullYear() - Number.parseInt(dateOfBirth.year);
+  let ageMonths = today.getMonth() - (Number.parseInt(dateOfBirth.month) - 1);
+  const ageDays = today.getDate() - Number.parseInt(dateOfBirth.day);
 
   if (ageDays < 0) {
     ageMonths -= 1;
-    const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
-    ageDays += prevMonth;
   }
   if (ageMonths < 0) {
     ageYears -= 1;
