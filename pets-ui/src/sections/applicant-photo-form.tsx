@@ -13,7 +13,7 @@ import { setApplicantPhotoFileName } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
 import { ReduxApplicantDetailsType } from "@/types";
-import { ApplicationStatus, ButtonType, ImageType } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, ImageType } from "@/utils/enums";
 
 const ApplicantPhotoForm = () => {
   const applicantData = useAppSelector(selectApplicant);
@@ -113,7 +113,7 @@ const ApplicantPhotoForm = () => {
               existingFileName={applicantPhotoFile?.name ?? applicantData.applicantPhotoFileName}
             />
 
-            <SubmitButton id="continue" type={ButtonType.DEFAULT} text="Continue" />
+            <SubmitButton id="continue" class={ButtonClass.DEFAULT} text="Continue" />
           </div>
         </form>
       </FormProvider>

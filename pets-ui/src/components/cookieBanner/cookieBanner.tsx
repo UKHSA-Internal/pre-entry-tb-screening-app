@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { ButtonType } from "@/utils/enums";
+import { ButtonClass, ButtonType } from "@/utils/enums";
 import { updateGoogleAnalyticsConsent } from "@/utils/helpers";
 
 import Button from "../button/button";
@@ -50,7 +50,8 @@ export default function CookieBanner() {
             <Button
               id="accept-analytics-cookies"
               text="Accept analytics cookies"
-              type={ButtonType.DEFAULT}
+              class={ButtonClass.DEFAULT}
+              type={ButtonType.BUTTON}
               handleClick={() => {
                 setCookieConsent("accepted");
                 setShowCookieMessage(true);
@@ -60,7 +61,8 @@ export default function CookieBanner() {
             <Button
               id="reject-analytics-cookies"
               text="Reject analytics cookies"
-              type={ButtonType.DEFAULT}
+              class={ButtonClass.DEFAULT}
+              type={ButtonType.BUTTON}
               handleClick={() => {
                 setCookieConsent("rejected");
                 setShowCookieMessage(true);
@@ -105,7 +107,8 @@ export default function CookieBanner() {
             <Button
               id="hide-cookie-message"
               text="Hide cookie message"
-              type={ButtonType.DEFAULT}
+              class={ButtonClass.DEFAULT}
+              type={ButtonType.BUTTON}
               handleClick={() => {
                 setShowCookieMessage(false);
               }}

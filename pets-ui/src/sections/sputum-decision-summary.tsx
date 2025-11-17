@@ -13,7 +13,7 @@ import {
   setSputumDecisionStatus,
 } from "@/redux/sputumDecisionSlice";
 import { selectApplication, selectSputumDecision } from "@/redux/store";
-import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
 
 const SputumDecisionSummary = () => {
   const sputumDecisionData = useAppSelector(selectSputumDecision);
@@ -73,7 +73,7 @@ const SputumDecisionSummary = () => {
           </p>
           <Button
             id="submit"
-            type={ButtonType.DEFAULT}
+            class={ButtonClass.DEFAULT}
             text="Submit and continue"
             handleClick={handleSubmit}
           />
@@ -83,7 +83,7 @@ const SputumDecisionSummary = () => {
       {sputumDecisionData.status == ApplicationStatus.COMPLETE && (
         <Button
           id="back-to-tracker"
-          type={ButtonType.DEFAULT}
+          class={ButtonClass.DEFAULT}
           text="Return to tracker"
           handleClick={() => navigate("/tracker")}
         />

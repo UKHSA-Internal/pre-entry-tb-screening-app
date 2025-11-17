@@ -12,6 +12,11 @@ on:
         default: "all"
         type: choice
         options: [all, qat, dev, preprod]
+      branch:                          
+        description: "Branch to run tests against"
+        required: false
+        default: "develop"
+        type: string
       browsers:
         description: 'Select browsers to test'
         required: true
@@ -85,6 +90,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref_name }}
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -138,7 +145,9 @@ jobs:
           browser: ${{ matrix.browser }}
           config-file: cypress/cypress.config.mjs
         env:
-          CYPRESS_TEST_ENVIRONMENT: ${{ matrix.environment }}
+          ENVIRONMENT: ${{ matrix.environment }}
+          CYPRESS_TEST_ENVIRONMENT: ${{ matrix.environment }} #Keeping for backward compatibility
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Retry if failed
         if: steps.initial_attempt.outcome != 'success'
@@ -150,7 +159,9 @@ jobs:
           browser: ${{ matrix.browser }}
           config-file: cypress/cypress.config.mjs
         env:
+          ENVIRONMENT: ${{ matrix.environment }}
           CYPRESS_TEST_ENVIRONMENT: ${{ matrix.environment }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Failed Tests Screenshots
         if: failure()

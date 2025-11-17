@@ -84,6 +84,58 @@ export class TbCertificateSummaryPage extends BasePage {
     return this;
   }
 
+  // ============ Notification Banner Section ============
+
+  // Verify notification banner is visible
+  verifyNotificationBanner(): TbCertificateSummaryPage {
+    cy.get("section.govuk-notification-banner")
+      .should("be.visible")
+      .and("have.attr", "aria-labelledby", "govuk-notification-banner-title");
+    return this;
+  }
+
+  // Verify notification banner title
+  verifyNotificationBannerTitle(expectedTitle: string = "Important"): TbCertificateSummaryPage {
+    cy.get(".govuk-notification-banner__header")
+      .find("h2#govuk-notification-banner-title.govuk-notification-banner__title")
+      .should("contain.text", expectedTitle);
+    return this;
+  }
+
+  // Verify notification banner content about pulmonary TB referral
+  verifyNotificationBannerContent(): TbCertificateSummaryPage {
+    cy.get(".govuk-notification-banner__content")
+      .should("be.visible")
+      .find("p.govuk-body")
+      .should(
+        "contain.text",
+        "If a visa applicant's chest X-rays indicate they have pulmonary TB, the panel physician must give them a referral letter and copies of the:",
+      );
+    return this;
+  }
+
+  // Verify notification banner list items
+  verifyNotificationBannerList(): TbCertificateSummaryPage {
+    cy.get(".govuk-notification-banner__content")
+      .find("ul.govuk-body li")
+      .should("have.length", 3)
+      .then(($items) => {
+        expect($items.eq(0).text().trim()).to.equal("chest X-ray");
+        expect($items.eq(1).text().trim()).to.equal("radiology report");
+        expect($items.eq(2).text().trim()).to.equal("medical record form");
+      });
+    return this;
+  }
+
+  // Comprehensive verification of notification banner
+  verifyCompleteNotificationBanner(): TbCertificateSummaryPage {
+    this.verifyNotificationBanner();
+    this.verifyNotificationBannerTitle();
+    this.verifyNotificationBannerContent();
+    this.verifyNotificationBannerList();
+    return this;
+  }
+
   // ============ Visa Applicant Information Section ============
 
   // Verify visa applicant information section
@@ -393,6 +445,32 @@ export class TbCertificateSummaryPage extends BasePage {
     return this;
   }
 
+  // ============ Submission Section (Certificate Not Issued) ============
+
+  // Verify "Now send the TB clearance outcome" heading
+  verifySendOutcomeHeading(): TbCertificateSummaryPage {
+    cy.contains("h2.govuk-heading-m", "Now send the TB clearance outcome").should("be.visible");
+    return this;
+  }
+
+  // Verify warning text about not being able to change after submission
+  verifySubmissionWarningText(): TbCertificateSummaryPage {
+    cy.get("p.govuk-body")
+      .contains(
+        "You will not be able to change the TB clearance outcome after you submit this information.",
+      )
+      .should("be.visible");
+    return this;
+  }
+
+  // Comprehensive verification of submission section
+  verifyCompleteSubmissionSection(): TbCertificateSummaryPage {
+    this.verifySendOutcomeHeading();
+    this.verifySubmissionWarningText();
+    this.verifySubmitButton();
+    return this;
+  }
+
   // ============ Page Actions ============
 
   // Verify submit button
@@ -409,7 +487,6 @@ export class TbCertificateSummaryPage extends BasePage {
     cy.get('button[type="submit"].govuk-button').click();
     return this;
   }
-
   // Click Submit button (alias)
   clickSubmit(): TbCertificateSummaryPage {
     return this.clickSubmitButton();
@@ -516,9 +593,10 @@ export class TbCertificateSummaryPage extends BasePage {
   verifyCompleteNotIssuedPage(expectedData: CertificateNotIssuedInfo): TbCertificateSummaryPage {
     this.verifyPageLoaded();
     this.verifyCertificateNotIssuedMode();
+    this.verifyCompleteNotificationBanner();
     this.verifyCertificateNotIssuedInfo(expectedData);
     this.verifyChangeLinksForNotIssued();
-    this.verifySubmitButton();
+    this.verifyCompleteSubmissionSection();
     this.verifyBackLinkForNotIssued();
     this.verifyServiceName();
     return this;
