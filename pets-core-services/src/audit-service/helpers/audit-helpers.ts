@@ -1,4 +1,8 @@
-import { LookupEventsCommand, LookupEventsCommandInput } from "@aws-sdk/client-cloudtrail";
+import {
+  LookupEventsCommand,
+  LookupEventsCommandInput,
+  LookupEventsCommandOutput,
+} from "@aws-sdk/client-cloudtrail";
 import { DynamoDBRecord } from "aws-lambda";
 
 import awsClients from "../../shared/clients/aws";
@@ -39,7 +43,9 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
 
   try {
     logger.info("Sending LookupEventCommand");
-    const result = await client.send(new LookupEventsCommand(params as LookupEventsCommandInput));
+    const result: LookupEventsCommandOutput = await client.send(
+      new LookupEventsCommand(params as LookupEventsCommandInput),
+    );
 
     logger.info({ result }, "CloudTrail lookup result");
 
@@ -63,11 +69,11 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
     if (consoleEvents && consoleEvents.length > 0) {
       // @ts-expect-error it can't be undefined
       logger.info(`Update to ${tableName} came from AWS Console:`, consoleEvents[0]);
-      return SourceType.app;
+      return SourceType.console;
     } else {
       // @ts-expect-error it can't be undefined
       logger.info(`Update to ${tableName} likely came from SDK/API.`, consoleEvents[0]);
-      return SourceType.api;
+      return SourceType.app;
     }
   } catch (err) {
     logger.error({ err }, "CloudTrail lookup failed");

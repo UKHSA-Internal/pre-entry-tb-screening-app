@@ -31,7 +31,7 @@ describe("Test helper functions", () => {
     const response = await getConsoleEvent(record);
 
     // Assert
-    expect(response).toBe("App");
+    expect(response).toBe("Console");
   });
 
   test("getConsoleEvent function returns 'API'", async () => {
@@ -42,7 +42,7 @@ describe("Test helper functions", () => {
     const response = await getConsoleEvent(record);
 
     // Assert
-    expect(response).toBe("API");
+    expect(response).toBe("App");
   });
 
   test("getConsoleEvent function response for missing data in 'record'", async () => {
