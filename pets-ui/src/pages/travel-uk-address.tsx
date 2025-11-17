@@ -9,13 +9,14 @@ import { ApplicationStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
 
 export default function TravelAddressAndContactDetailsPage() {
-  const travel = useAppSelector(selectTravel);
+  const applicationData = useAppSelector(selectApplication);
+  const travelData = useAppSelector(selectTravel);
   const [searchParams] = useSearchParams();
   const fromParam = searchParams.get("from");
   let backLinkTo: string;
   if (fromParam === "/check-travel-information") {
     backLinkTo = "/check-travel-information";
-  } else if (travel.status === ApplicationStatus.COMPLETE) {
+  } else if (travelData.status === ApplicationStatus.COMPLETE) {
     backLinkTo = "/tb-certificate-summary";
   } else {
     backLinkTo = "/proposed-visa-category";

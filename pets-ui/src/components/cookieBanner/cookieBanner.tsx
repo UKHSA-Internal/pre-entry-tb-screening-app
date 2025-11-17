@@ -67,14 +67,13 @@ export default function CookieBanner() {
             <Button
               id="accept-analytics-cookies"
               text="Accept analytics cookies"
-              type={ButtonType.DEFAULT}
+              class={ButtonClass.DEFAULT}
               handleClick={handleAcceptCookies}
             />
             <Button
               id="reject-analytics-cookies"
               text="Reject analytics cookies"
               class={ButtonClass.DEFAULT}
-              type={ButtonType.BUTTON}
               handleClick={() => {
                 setCookieConsent("rejected");
                 setShowCookieMessage(true);
@@ -120,7 +119,6 @@ export default function CookieBanner() {
               id="hide-cookie-message"
               text="Hide cookie message"
               class={ButtonClass.DEFAULT}
-              type={ButtonType.BUTTON}
               handleClick={() => {
                 setShowCookieMessage(false);
               }}
