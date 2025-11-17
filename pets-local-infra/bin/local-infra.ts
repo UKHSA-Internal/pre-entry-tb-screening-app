@@ -6,7 +6,7 @@ import { LocalInfrastructureStack } from "../lib/local-infra-stack";
 const app = new cdk.App();
 new LocalInfrastructureStack(app, "LocalInfrastructureStack", {
   env: {
-    region: "eu-west-2",
+    region: process.env.AWS_REGION,
     account: process.env.AWS_ACCOUNT_ID,
   },
 });

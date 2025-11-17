@@ -14,6 +14,7 @@ import { SwaggerConfig } from "./types";
 extendZodWithOpenApi(z);
 
 const awsAccountId = assertEnvExists(process.env.AWS_ACCOUNT_ID);
+const awsRegion = assertEnvExists(process.env.AWS_REGION);
 
 const methodMap: Record<Exclude<Method, "ANY">, Exclude<Lowercase<Method>, "any">> = {
   GET: "get",
@@ -112,7 +113,7 @@ export const writeApiDocumentation = (configs: SwaggerConfig[]): any => {
     "x-amazon-apigateway-authorizer": {
       type: "request",
       identitySource: `method.request.header.${authorizerIdentity}`,
-      authorizerUri: `arn:aws:apigateway:eu-west-2:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-2:${awsAccountId}:function:${assertEnvExists(process.env.AUTHORISER_LAMBDA_NAME)}/invocations`,
+      authorizerUri: `arn:aws:apigateway:${awsRegion}::lambda:path/2015-03-31/functions/arn:aws:lambda:${awsRegion}:${awsAccountId}:function:${assertEnvExists(process.env.AUTHORISER_LAMBDA_NAME)}/invocations`,
       authorizerCredentials: `arn:aws:iam::${awsAccountId}:role/api_gateway_auth_invocation_api-gateway-authoriser`,
       authorizerResultTtlInSeconds: 0,
       requestTemplates: {

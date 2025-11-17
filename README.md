@@ -32,13 +32,19 @@ This is currently available on [confluence](https://confluence.collab.test-and-t
  ┣ 📂src       # Source Code
  ┣ 📂test      # Integration Tests
 
- 📦pets-core-services             # Core Services for the Backend
+ 📦pets-core-services/src           # Core Services for the Backend
  ┣ 📂applicant-service            # Everything pertaining to Applicant
     ┣ 📂lambdas                   # Lambda code for Applicant service lambda
  ┣ 📂application-service          # Everything Application-related
     ┣ 📂lambdas                   # Lambda code for Application service lambda
  ┣ 📂clinic-service               # Everything Clinic-related
     ┣ 📂lambdas                   # Lambda code for Clinic service lambda
+ ┣ dicom-service                  # Everything dicom-related
+    ┣ 📂lambdas                   # Lambda code for dicom service to check for malware
+ ┣ EDAP-integration-service       # Everything related to EDAP integration
+    ┣ 📂lambdas                   # Lambda code for EDAP integration service lambda
+ ┣ AUDIT--service                 # Everything related to Audit
+    ┣ 📂lambdas                   # Lambda code for Audit service lambda
  ┣ 📂lambda-authoriser            # Authentication Service
     ┣ 📂lambdas                   # Lambda code for Authoriser lambda
 
@@ -80,23 +86,24 @@ Additional configs specific to a core service are defined in their directory
 
 - Pnpm
 
-   ```sh
-   npm install -g pnpm@9.15.4
-   ```
+  ```sh
+  npm install -g pnpm@9.15.4
+  ```
 
 - Docker
 
   - Check if Docker is installed.
 
-   ```sh
-      docker -v
-   ```
+  ```sh
+     docker -v
+  ```
 
-   If Docker is installed, this command will return the installed Docker Engine version. If it is already installed, you can skip the next steps.
+  If Docker is installed, this command will return the installed Docker Engine version. If it is already installed, you can skip the next steps.
 
   - Install Docker via Docker Desktop using the installation [guide](https://docs.docker.com/engine/install/). Please note this is blocked on Accenture laptops.
 
   - Alternatively, install Rancher Desktop.
+
     - Download from [homepage](https://rancherdesktop.io/) and install.
     - Verify docker installation
 
@@ -169,7 +176,7 @@ Skip this section if you are not running E2E tests on your machine. As a prerequ
 2. Select Administrator Access Keys for **pre-entry-tb-screening-nl-develop** account.
 
 3. Copy the commands under option to Set AWS environment Variables. Be sure to check the OS tab is set correctly beforehand.
-![Halo Creds Page](<./docs/halo_creds.png>)
+   ![Halo Creds Page](./docs/halo_creds.png)
 
 4. Open a new shell and run the commands.
 
@@ -192,10 +199,10 @@ User story and bug tickets should follow this [template](https://ukhsa.atlassian
 ### Picking up Tickets
 
 - When starting work on a new ticket, open a new branch using the following naming convention: `feature/{ticket-number}-{concise-description}`.
-   For example: `feature/TBBETA-123-setup-auth`.
+  For example: `feature/TBBETA-123-setup-auth`.
 
 - Commits should be done regularly and commit messages should be meaningful. Commit messages should follow this convention - `{ticket-number}: {commit_message}`.
-   For example: `TBBETA-123: Added unit tests`
+  For example: `TBBETA-123: Added unit tests`
 
 - Ensure your commit email is your ukhsa email. Check this SO [thread](https://stackoverflow.com/a/51682403) on how to change that.
 
@@ -295,4 +302,3 @@ Kindly check `pets-core-services/src/applicant-service/fixtures/applicants.ts` f
 [Middy-url]: https://middy.js.org/
 [cypress.com]: https://img.shields.io/badge/Cypress-20232A?style=for-the-badge&logo=cypress
 [Cypress-url]: https://docs.cypress.io/app/get-started/why-cypress
-
