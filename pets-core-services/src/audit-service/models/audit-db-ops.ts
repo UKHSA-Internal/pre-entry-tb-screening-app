@@ -107,7 +107,7 @@ export class AuditDbOps {
       const sk = changeDetails.sk as string;
       const dbItem = this.todbItem(
         newAudit,
-        `AUDIT#${new Date().valueOf()}`,
+        `AUDIT#${Date.now()}`,
         `${changeDetails.pk}${sk.slice(sk.indexOf("#"))}`,
       );
 
