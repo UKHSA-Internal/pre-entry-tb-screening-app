@@ -29,7 +29,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   // Look up CloudTrail events around that time
   // const startTime = new Date(approxTime * 1000 - 60 * 1000); // 1 min before
   // const endTime = new Date(approxTime * 1000 + 60 * 1000); // 1 min after
-  const startTime = new Date(Date.now() - 2 * 60 * 60 * 1000); // last 2h
+  const startTime = new Date(Date.now() - 10 * 60 * 1000); // last 2h
   const endTime = new Date();
   const ITEM_EVENTS = ["PutItem", "DeleteItem"];
   const events: Event[] = [];
@@ -44,7 +44,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
     ],
     StartTime: startTime,
     EndTime: endTime,
-    MaxResults: 50,
+    MaxResults: 10,
     NextToken: nextToken,
   };
 
