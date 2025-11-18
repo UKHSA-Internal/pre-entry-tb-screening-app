@@ -8,7 +8,6 @@ export class LandingPage extends BasePage {
   }
 
   // Verify the landing page has loaded correctly
-
   verifyPageLoaded(): LandingPage {
     cy.url().should("eq", Cypress.config().baseUrl + "/");
     this.verifyPageHeading("Complete a UK visa applicant's TB screening");
@@ -16,7 +15,6 @@ export class LandingPage extends BasePage {
     return this;
   }
   // Verify all essential page elements are present
-
   verifyAllPageElements(): LandingPage {
     this.verifyPageHeading("Complete a UK visa applicant's TB screening");
     this.verifyPageDescription();
@@ -29,7 +27,6 @@ export class LandingPage extends BasePage {
   }
 
   // Verify the main page description
-
   verifyPageDescription(): LandingPage {
     cy.contains(
       "p.govuk-body",
@@ -39,7 +36,6 @@ export class LandingPage extends BasePage {
   }
 
   // Verify "Before you start" section
-
   verifyBeforeYouStartSection(): LandingPage {
     cy.contains("h2.govuk-heading-m", "Before you start").should("be.visible");
 
@@ -53,7 +49,6 @@ export class LandingPage extends BasePage {
   }
 
   // Verify "To complete the screening" section
-
   verifyToCompleteScreeningSection(): LandingPage {
     cy.contains("h2.govuk-heading-m", "To complete the screening").should("be.visible");
 
@@ -67,7 +62,6 @@ export class LandingPage extends BasePage {
   }
 
   // Verify the phase banner (BETA)
-
   verifyPhaseBanner(): LandingPage {
     cy.get(".govuk-phase-banner").should("be.visible");
     cy.get(".govuk-tag.govuk-phase-banner__content__tag").should("contain", "BETA");
@@ -85,7 +79,6 @@ export class LandingPage extends BasePage {
   }
 
   // Verify footer elements
-
   verifyFooterElements(): LandingPage {
     cy.get(".govuk-footer").should("be.visible");
 
@@ -104,7 +97,6 @@ export class LandingPage extends BasePage {
   }
 
   // Verify technical instructions link
-
   verifyTechnicalInstructionsLink(): LandingPage {
     cy.contains("a", "UK tuberculosis technical instructions")
       .should("be.visible")
@@ -118,7 +110,6 @@ export class LandingPage extends BasePage {
   }
 
   // Verify sign in button is visible and has correct styling
-
   verifySignInButtonVisible(): LandingPage {
     cy.get("#sign-in")
       .should("be.visible")
@@ -129,14 +120,12 @@ export class LandingPage extends BasePage {
   }
 
   // Verify sign in button has the start icon
-
   verifySignInButtonStartIcon(): LandingPage {
     cy.get("#sign-in").find("svg.govuk-button__start-icon").should("exist").and("be.visible");
     return this;
   }
 
   // Click the sign in button
-
   clickSignIn(): LandingPage {
     cy.log("Clicking Sign In button");
     cy.get("#sign-in").should("be.visible").click({ force: true });
@@ -152,7 +141,6 @@ export class LandingPage extends BasePage {
   }
 
   // Complete the sign-in process (assumes B2C login command is available)
-
   signInToService(): LandingPage {
     cy.log("Initiating sign-in flow from landing page");
     this.clickSignIn();
@@ -161,7 +149,6 @@ export class LandingPage extends BasePage {
   }
 
   // Verify redirection after successful sign-in
-
   verifySuccessfulSignIn(): LandingPage {
     cy.url({ timeout: 30000 }).should("include", "/search-for-visa-applicant");
     cy.log("Successfully signed in and redirected");
@@ -169,7 +156,6 @@ export class LandingPage extends BasePage {
   }
 
   // Click on Privacy link in footer
-
   clickPrivacyLink(): LandingPage {
     cy.contains(".govuk-footer__link", "Privacy").click();
     return this;
@@ -221,13 +207,6 @@ export class LandingPage extends BasePage {
 
   getHeadingText(level: "h1" | "h2" | "h3"): Cypress.Chainable<string> {
     return cy.get(level).first().invoke("text");
-  }
-
-  // Verify breadcrumb navigation is empty (landing page typically has no breadcrumbs)
-
-  verifyNoBreadcrumbs(): LandingPage {
-    cy.get(".govuk-breadcrumbs").find("li").should("have.length", 0);
-    return this;
   }
 
   // Verify main content area
