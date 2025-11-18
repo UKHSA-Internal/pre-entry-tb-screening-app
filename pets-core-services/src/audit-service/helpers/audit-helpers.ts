@@ -1,4 +1,5 @@
 import {
+  Event,
   LookupEventsCommand,
   LookupEventsCommandInput,
   LookupEventsCommandOutput,
@@ -26,8 +27,12 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   }
 
   // Look up CloudTrail events around that time
-  const startTime = new Date(approxTime * 1000 - 60 * 1000); // 1 min before
+  // const startTime = new Date(approxTime * 1000 - 60 * 1000); // 1 min before
+  const startTime = new Date(Date.now() - 24 * 60 * 60 * 1000); // last 24h    const endTime = new Date();
   const endTime = new Date(approxTime * 1000 + 60 * 1000); // 1 min after
+  const ITEM_EVENTS = ["PutItem", "DeleteItem"];
+  const events: Event[] = [];
+  let nextToken: string | undefined = undefined;
 
   const params = {
     LookupAttributes: [
@@ -38,18 +43,25 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
     ],
     StartTime: startTime,
     EndTime: endTime,
-    MaxResults: 10,
+    MaxResults: 50,
+    NextToken: nextToken,
   };
 
   try {
     logger.info("Sending LookupEventCommand");
-    const result: LookupEventsCommandOutput = await client.send(
-      new LookupEventsCommand(params as LookupEventsCommandInput),
-    );
+    do {
+      const result: LookupEventsCommandOutput = await client.send(
+        new LookupEventsCommand(params as LookupEventsCommandInput),
+      );
+      const filtered =
+        result.Events?.filter((e) => e.EventName && ITEM_EVENTS.includes(e.EventName)) || [];
+      events.push(...filtered);
+      nextToken = result.NextToken;
+    } while (nextToken);
 
-    logger.info({ result }, "CloudTrail lookup result");
+    logger.info(`CloudTrail lookup result: ${events.length}`);
 
-    const consoleEvents = result.Events?.filter((evt) => {
+    const consoleEvents = events.filter((evt: Event) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const details = evt?.CloudTrailEvent ? JSON.parse(evt.CloudTrailEvent) : undefined;
 

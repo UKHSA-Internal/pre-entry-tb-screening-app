@@ -111,7 +111,6 @@ export class AuditDbOps {
         `${changeDetails.pk}${sk.slice(sk.indexOf("#"))}`,
       );
 
-      logger.info({ dbItem }, "Saving data to DB");
       const params: PutCommandInput = {
         TableName: this.getTableName(),
         Item: { ...dbItem },
@@ -119,8 +118,9 @@ export class AuditDbOps {
         ConditionExpression: "attribute_not_exists(pk) AND attribute_not_exists(sk)",
       };
       const command = new PutCommand(params);
-      await docClient.send(command);
 
+      logger.info({ dbItem }, "Saving data to DB");
+      await docClient.send(command);
       logger.info("New audit created successfully");
 
       return newAudit as AuditBase;
