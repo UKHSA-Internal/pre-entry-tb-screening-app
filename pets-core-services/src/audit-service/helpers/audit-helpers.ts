@@ -3,6 +3,7 @@ import {
   LookupEventsCommand,
   LookupEventsCommandInput,
   LookupEventsCommandOutput,
+  ThrottlingException,
 } from "@aws-sdk/client-cloudtrail";
 import { DynamoDBRecord } from "aws-lambda";
 
@@ -29,17 +30,22 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   // Look up CloudTrail events around that time
   // const startTime = new Date(approxTime * 1000 - 60 * 1000); // 1 min before
   // const endTime = new Date(approxTime * 1000 + 60 * 1000); // 1 min after
-  const startTime = new Date(Date.now() - 10 * 60 * 1000); // last 2h
+  const startTime = new Date(Date.now() - 2 * 60 * 1000); // last 2h
   const endTime = new Date();
   const ITEM_EVENTS = ["PutItem", "DeleteItem"];
   const events: Event[] = [];
   let nextToken: string | undefined = undefined;
+  let queryNumber = 0;
 
   const params = {
     LookupAttributes: [
       {
         AttributeKey: "EventSource",
         AttributeValue: "dynamodb.amazonaws.com",
+      },
+      {
+        AttributeKey: "EventName",
+        AttributeValue: "DescribeStream",
       },
     ],
     StartTime: startTime,
@@ -48,48 +54,53 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
     NextToken: nextToken,
   };
 
-  try {
-    logger.info("Sending LookupEventCommand");
-    do {
+  logger.info("Sending LookupEventCommand");
+  do {
+    try {
       const result: LookupEventsCommandOutput = await client.send(
         new LookupEventsCommand(params as LookupEventsCommandInput),
       );
+      queryNumber += 1;
       const filtered =
         result.Events?.filter((e) => e.EventName && ITEM_EVENTS.includes(e.EventName)) || [];
       events.push(...filtered);
       nextToken = result.NextToken;
-    } while (nextToken);
-
-    logger.info(`CloudTrail lookup result: ${events.length}`);
-
-    const consoleEvents = events.filter((evt: Event) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const details = evt?.CloudTrailEvent ? JSON.parse(evt.CloudTrailEvent) : undefined;
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (!details?.userAgent || !details?.requestParameters?.table) return;
-
-      logger.info(details, "CloudTrail parsing event");
-
-      return (
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        details.userAgent === "console.amazonaws.com" &&
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        details.requestParameters?.tableName === tableName
-      );
-    });
-
-    if (consoleEvents && consoleEvents.length > 0) {
-      // @ts-expect-error it can't be undefined
-      logger.info(`Update to ${tableName} came from AWS Console:`, consoleEvents[0]);
-      return SourceType.console;
-    } else {
-      // @ts-expect-error it can't be undefined
-      logger.info(`Update to ${tableName} likely came from SDK/API.`, consoleEvents[0]);
-      return SourceType.app;
+    } catch (err) {
+      logger.error({ err }, "CloudTrail lookup failed");
+      if (err instanceof ThrottlingException) {
+        logger.error(`Queried ${queryNumber} times, received ${events.length}`);
+      }
+      nextToken = undefined;
+      // return;
     }
-  } catch (err) {
-    logger.error({ err }, "CloudTrail lookup failed");
-    return;
+  } while (nextToken);
+
+  logger.info({ events }, "CloudTrail lookup result");
+
+  const consoleEvents = events.filter((evt: Event) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const details = evt?.CloudTrailEvent ? JSON.parse(evt.CloudTrailEvent) : undefined;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (!details?.userAgent || !details?.requestParameters?.table) return;
+
+    logger.info(details, "CloudTrail parsing event");
+
+    return (
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      details.userAgent === "console.amazonaws.com" &&
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      details.requestParameters?.tableName === tableName
+    );
+  });
+
+  if (consoleEvents && consoleEvents.length > 0) {
+    // @ts-expect-error it can't be undefined
+    logger.info(`Update to ${tableName} came from AWS Console:`, consoleEvents[0]);
+    return SourceType.console;
+  } else {
+    // @ts-expect-error it can't be undefined
+    logger.info(`Update to ${tableName} likely came from SDK/API.`, consoleEvents[0]);
+    return SourceType.app;
   }
 };
