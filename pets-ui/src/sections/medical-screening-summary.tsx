@@ -9,12 +9,15 @@ import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
 import { setMedicalScreeningStatus } from "@/redux/medicalScreeningSlice";
-import { selectApplication, selectMedicalScreening } from "@/redux/store";
+import { selectApplicant, selectApplication, selectMedicalScreening } from "@/redux/store";
 import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
-import { formatDateForDisplay } from "@/utils/helpers";
+import { calculateApplicantAge, formatDateForDisplay } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
 const MedicalScreeningReview = () => {
+  const applicantData = useAppSelector(selectApplicant);
+  const applicantAge = calculateApplicantAge(applicantData.dateOfBirth);
+
   const applicationData = useAppSelector(selectApplication);
   const medicalData = useAppSelector(selectMedicalScreening);
   const dispatch = useDispatch();
@@ -69,7 +72,7 @@ const MedicalScreeningReview = () => {
   const summaryData = [
     {
       key: "Age",
-      value: medicalData.age || "Not provided",
+      value: applicantAge.ageToDisplay,
       hiddenLabel: "age",
     },
     {
