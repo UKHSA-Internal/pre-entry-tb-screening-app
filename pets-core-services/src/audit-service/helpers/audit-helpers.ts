@@ -45,7 +45,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
       },
       {
         AttributeKey: "EventName",
-        AttributeValue: "DescribeStream",
+        AttributeValue: "PutItem",
       },
     ],
     StartTime: startTime,
