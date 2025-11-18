@@ -14,22 +14,23 @@ const { cloudTrailClient: client } = awsClients;
 
 export const getConsoleEvent = async (record: DynamoDBRecord) => {
   const tableArn = record.eventSourceARN;
-  const approxTime = record?.dynamodb?.ApproximateCreationDateTime;
+  // const approxTime = record?.dynamodb?.ApproximateCreationDateTime;
 
   // Extract just the table name from ARN
   const tableName = tableArn ? tableArn.split("/")[1] : undefined;
-  logger.info(`tableName: ${tableName}, approxTime: ${approxTime}`);
+  logger.info(`tableName: ${tableName}`);
 
-  if (!tableName || !approxTime) {
-    logger.error("Record is missing tableName or ApproximateCreationDateTime");
+  if (!tableName) {
+    logger.error("Record is missing tableName");
 
     return;
   }
 
   // Look up CloudTrail events around that time
   // const startTime = new Date(approxTime * 1000 - 60 * 1000); // 1 min before
-  const startTime = new Date(Date.now() - 24 * 60 * 60 * 1000); // last 24h    const endTime = new Date();
-  const endTime = new Date(approxTime * 1000 + 60 * 1000); // 1 min after
+  // const endTime = new Date(approxTime * 1000 + 60 * 1000); // 1 min after
+  const startTime = new Date(Date.now() - 2 * 60 * 60 * 1000); // last 2h
+  const endTime = new Date();
   const ITEM_EVENTS = ["PutItem", "DeleteItem"];
   const events: Event[] = [];
   let nextToken: string | undefined = undefined;
