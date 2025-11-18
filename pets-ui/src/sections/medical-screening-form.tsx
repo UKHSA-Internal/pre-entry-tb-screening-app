@@ -25,16 +25,6 @@ const MedicalScreeningForm = () => {
 
   const applicantData = useAppSelector(selectApplicant);
   const applicantAge = calculateApplicantAge(applicantData.dateOfBirth);
-  let applicantAgeInYears = 0;
-  let ageToDisplay = "";
-  if (typeof applicantAge == "string") {
-    ageToDisplay = "Unknown";
-  } else if (applicantAge.years > 0) {
-    applicantAgeInYears = applicantAge.years;
-    ageToDisplay = `${applicantAge.years} year${applicantAge.years == 1 ? "" : "s"} old`;
-  } else {
-    ageToDisplay = `${applicantAge.months} month${applicantAge.months == 1 ? "" : "s"} old`;
-  }
 
   const medicalData = useAppSelector(selectMedicalScreening);
   const methods = useForm<ReduxMedicalScreeningType>({
@@ -65,7 +55,10 @@ const MedicalScreeningForm = () => {
 
   const onSubmit: SubmitHandler<ReduxMedicalScreeningType> = (medicalScreeningData) => {
     dispatch(
-      setMedicalScreeningDetails({ ...medicalScreeningData, age: applicantAgeInYears.toString() }),
+      setMedicalScreeningDetails({
+        ...medicalScreeningData,
+        age: applicantAge.ageInYears.toString(),
+      }),
     );
     dispatch(setMedicalScreeningStatus(ApplicationStatus.IN_PROGRESS));
     navigate("/is-an-x-ray-required");
@@ -120,7 +113,9 @@ const MedicalScreeningForm = () => {
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
         <Heading level={1} size="l" title="Record medical history and TB symptoms" />
-        <SummaryList keyValuePairList={[{ key: "Visa applicant's age", value: ageToDisplay }]} />
+        <SummaryList
+          keyValuePairList={[{ key: "Visa applicant's age", value: applicantAge.ageToDisplay }]}
+        />
 
         <div className="govuk-!-margin-bottom-2">
           <Controller

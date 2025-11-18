@@ -255,7 +255,11 @@ const updateGoogleAnalyticsConsent = (consentGranted: boolean) => {
 const calculateApplicantAge = (dateOfBirth: DateType) => {
   const { day, month, year } = dateOfBirth;
   if (!day || !month || !year || day == "" || month == "" || year == "") {
-    return "Error in calculateApplicantAge: dateOfBirth object is missing fields";
+    return {
+      ageInYears: "Unknown",
+      ageToDisplay: "Unknown",
+      errorMessage: "Error in calculateApplicantAge: dateOfBirth object is missing fields",
+    };
   }
 
   const today = new Date();
@@ -273,9 +277,23 @@ const calculateApplicantAge = (dateOfBirth: DateType) => {
   }
 
   if (ageYears < 0 || (ageYears == 0 && ageMonths < 0)) {
-    return "Error in calculateApplicantAge: dateOfBirth is in the future";
+    return {
+      ageInYears: "Unknown",
+      ageToDisplay: "Unknown",
+      errorMessage: "Error in calculateApplicantAge: dateOfBirth is in the future",
+    };
+  } else if (ageYears > 0) {
+    return {
+      ageInYears: ageYears,
+      ageToDisplay: `${ageYears} year${ageYears == 1 ? "" : "s"} old`,
+      errorMessage: null,
+    };
   } else {
-    return { years: ageYears, months: ageMonths };
+    return {
+      ageInYears: ageYears,
+      ageToDisplay: `${ageMonths} month${ageMonths == 1 ? "" : "s"} old`,
+      errorMessage: null,
+    };
   }
 };
 
