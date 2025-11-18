@@ -99,15 +99,19 @@ describe("MedicalScreeningReview", () => {
     mock = new MockAdapter(petsApi);
     useNavigateMock.mockClear();
   });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
 
   test("state is displayed correctly & user is navigated to confirmation page when medical details are posted successfully", async () => {
+    vi.setSystemTime("2030-01-31T00:00:00Z");
     renderWithProviders(<MedicalScreeningReview />, { preloadedState });
     const user = userEvent.setup();
 
     mock.onPost("/application/abc-123/medical-screening").reply(200);
 
     expect(screen.getAllByRole("term")[0]).toHaveTextContent("Age");
-    expect(screen.getAllByRole("definition")[0]).toHaveTextContent("99");
+    expect(screen.getAllByRole("definition")[0]).toHaveTextContent("50");
     expect(screen.getAllByRole("term")[1]).toHaveTextContent("Date of medical screening");
     expect(screen.getAllByRole("definition")[1]).toHaveTextContent("31 May 2025");
     expect(screen.getAllByRole("term")[2]).toHaveTextContent(
