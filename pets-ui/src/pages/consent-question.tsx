@@ -6,10 +6,16 @@ import Container from "@/components/container/container";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
+import { useAppSelector } from "@/redux/hooks";
+import { selectApplication } from "@/redux/store";
 import { ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
-import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
+import {
+  sendGoogleAnalyticsFormErrorEvent,
+  sendGoogleAnalyticsJourneyEvent,
+} from "@/utils/helpers";
 
 export default function ConsentQuestionPage() {
+  const applicationData = useAppSelector(selectApplication);
   const navigate = useNavigate();
   const location = useLocation();
   const methods = useForm<{ consent: YesOrNo }>({ reValidateMode: "onSubmit" });
@@ -17,6 +23,15 @@ export default function ConsentQuestionPage() {
     handleSubmit,
     formState: { errors },
   } = methods;
+
+  useEffect(() => {
+    sendGoogleAnalyticsJourneyEvent(
+      "Do you have the visa applicant's written consent for TB screening?",
+      applicationData.applicationId,
+      "Visa Applicant Details",
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onSubmit: SubmitHandler<{ consent: YesOrNo }> = (data) => {
     if (data.consent == YesOrNo.YES) {
