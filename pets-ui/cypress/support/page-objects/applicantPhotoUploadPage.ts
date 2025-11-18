@@ -290,7 +290,7 @@ export class ApplicantPhotoUploadPage extends BasePage {
 
   // Verify service name in header
   verifyServiceNameInHeader(): ApplicantPhotoUploadPage {
-    cy.get(".govuk-header__service-name")
+    cy.get(".govuk-service-navigation__service-name")
       .first()
       .should("be.visible")
       .and("contain.text", "Complete UK pre-entry health screening")

@@ -216,7 +216,7 @@ export class TbClearanceCertificatePage extends BasePage {
 
   // Verify service name in header
   verifyServiceName(): TbClearanceCertificatePage {
-    cy.get(".govuk-header__service-name")
+    cy.get(".govuk-service-navigation__service-name")
       .should("be.visible")
       .and("contain", "Complete UK pre-entry health screening");
     return this;
