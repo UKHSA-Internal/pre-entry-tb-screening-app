@@ -61,6 +61,21 @@ export default function Header() {
           ) : null}
         </div>
       </div>
+      <section
+        aria-label="Service information"
+        className="govuk-service-navigation"
+        data-module="govuk-service-navigation"
+      >
+        <div className="govuk-width-container">
+          <div className="govuk-service-navigation__container">
+            <span className="govuk-service-navigation__service-name">
+              <a href="#" className="govuk-service-navigation__link">
+                Complete UK pre-entry health screening
+              </a>
+            </span>
+          </div>
+        </div>
+      </section>
     </header>
   );
 }
