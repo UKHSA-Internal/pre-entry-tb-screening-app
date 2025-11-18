@@ -69,7 +69,7 @@ export default function Header() {
         <div className="govuk-width-container">
           <div className="govuk-service-navigation__container">
             <span className="govuk-service-navigation__service-name">
-              <a href="#" className="govuk-service-navigation__link">
+              <a href="/" className="govuk-service-navigation__link">
                 Complete UK pre-entry health screening
               </a>
             </span>
