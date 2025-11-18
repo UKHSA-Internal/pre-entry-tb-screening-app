@@ -36,6 +36,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   const events: Event[] = [];
   let nextToken: string | undefined = undefined;
   let queryNumber = 0;
+  const eventNames = new Set();
 
   const params = {
     LookupAttributes: [
@@ -61,8 +62,16 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
         new LookupEventsCommand(params as LookupEventsCommandInput),
       );
       queryNumber += 1;
-      const filtered =
-        result.Events?.filter((e) => e.EventName && ITEM_EVENTS.includes(e.EventName)) || [];
+      const filtered = [];
+      // result.Events?.filter((e) => e.EventName && ITEM_EVENTS.includes(e.EventName)) || [];
+      if (!result.Events) {
+        logger.info("No 'Events'");
+        return;
+      }
+      for (const e of result.Events) {
+        eventNames.add(e.EventName);
+        if (e.EventName && ITEM_EVENTS.includes(e.EventName)) filtered.push(e);
+      }
       events.push(...filtered);
       nextToken = result.NextToken;
     } catch (err) {
@@ -75,6 +84,8 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
     }
   } while (nextToken);
 
+  logger.info(`Queried ${queryNumber} times`);
+  logger.info({ eventNames }, "EventNames");
   logger.info({ events }, "CloudTrail lookup result");
 
   const consoleEvents = events.filter((evt: Event) => {
