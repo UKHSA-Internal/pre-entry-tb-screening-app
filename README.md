@@ -39,6 +39,8 @@ This is currently available on [confluence](https://confluence.collab.test-and-t
     ┣ 📂lambdas                   # Lambda code for Application service lambda
  ┣ 📂clinic-service               # Everything Clinic-related
     ┣ 📂lambdas                   # Lambda code for Clinic service lambda
+ ┣ 📂EDAP-integration-service      # Everything EDAP-related
+    ┣ 📂lambdas                   # Lambda code for EDAP integration service lambda
  ┣ 📂lambda-authoriser            # Authentication Service
     ┣ 📂lambdas                   # Lambda code for Authoriser lambda
 
