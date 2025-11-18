@@ -30,7 +30,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   // Look up CloudTrail events around that time
   // const startTime = new Date(approxTime * 1000 - 60 * 1000); // 1 min before
   // const endTime = new Date(approxTime * 1000 + 60 * 1000); // 1 min after
-  const startTime = new Date(Date.now() - 5 * 60 * 1000); // last 2h
+  const startTime = new Date(Date.now() - 3 * 60 * 1000);
   const endTime = new Date();
   const ITEM_EVENTS = ["PutItem", "DeleteItem"];
   const events: Event[] = [];
@@ -44,10 +44,10 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
         AttributeKey: "EventSource",
         AttributeValue: "dynamodb.amazonaws.com",
       },
-      {
-        AttributeKey: "EventName",
-        AttributeValue: "PutItem",
-      },
+      // {
+      //   AttributeKey: "EventName",
+      //   AttributeValue: "PutItem",
+      // },
     ],
     StartTime: startTime,
     EndTime: endTime,
@@ -85,7 +85,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   } while (nextToken);
 
   logger.info(`Queried ${queryNumber} times`);
-  logger.info(Array(...eventNames), "EventNames");
+  logger.info(eventNames, "EventNames");
   logger.info({ events }, "CloudTrail lookup result");
 
   const consoleEvents = events.filter((evt: Event) => {
