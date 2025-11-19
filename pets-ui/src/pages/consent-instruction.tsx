@@ -5,22 +5,14 @@ import Button from "@/components/button/button";
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import NotificationBanner from "@/components/notificationBanner/notificationBanner";
-import { useAppSelector } from "@/redux/hooks";
-import { selectApplication } from "@/redux/store";
 import { ButtonClass } from "@/utils/enums";
 import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
 
 export default function ConsentInstructionPage() {
-  const applicationData = useAppSelector(selectApplication);
   const navigate = useNavigate();
 
   useEffect(() => {
-    sendGoogleAnalyticsJourneyEvent(
-      "Get written consent",
-      applicationData.applicationId,
-      "Visa Applicant Details",
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    sendGoogleAnalyticsJourneyEvent("Get written consent", "UNK", "Visa Applicant Details");
   }, []);
 
   return (
