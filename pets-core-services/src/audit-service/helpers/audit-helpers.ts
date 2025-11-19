@@ -39,6 +39,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   let nextToken: string | undefined = undefined;
   let queryNumber = 0;
   const eventNames: (string | undefined)[] = [];
+  const id = record.eventID;
 
   const params = {
     LookupAttributes: [
@@ -48,7 +49,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
       // },
       {
         AttributeKey: "EventId",
-        AttributeValue: record.eventID,
+        AttributeValue: `${id?.slice(0, 8)}-${id?.slice(8, 12)}-${id?.slice(12, 16)}-${id?.slice(16, 20)}-${id?.slice(20)}`,
       },
     ],
     // StartTime: startTime,
