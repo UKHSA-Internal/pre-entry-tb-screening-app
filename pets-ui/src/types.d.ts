@@ -7,6 +7,13 @@ import {
 } from "./utils/enums";
 
 // Misc types
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+  }
+  var gtag: ((...args: unknown[]) => void) | undefined;
+}
+
 type ApplicantSearchFormType = {
   passportNumber: string;
   countryOfIssue: string;
@@ -22,13 +29,6 @@ type ReceivedApplicationAttributesType = {
   applicationId: string;
   dateCreated: string;
   status: BackendApplicationStatus;
-};
-
-type ReduxNavigationSliceType = {
-  checkSputumPreviousPage: string;
-  accessibilityStatementPreviousPage: string;
-  privacyNoticePreviousPage: string;
-  signOutPreviousPage: string;
 };
 
 // Application types

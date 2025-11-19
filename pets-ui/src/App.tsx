@@ -1,5 +1,6 @@
 import "./globals.scss";
 
+import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 
 import { AuthenticatedRoute, UnauthenticatedRoute } from "./auth/authRoutes";
@@ -21,6 +22,7 @@ import ChestXrayUploadPage from "./pages/chest-xray-upload";
 import ConsentInstructionPage from "./pages/consent-instruction";
 import ConsentQuestionPage from "./pages/consent-question";
 import ContactDetailsPage from "./pages/contact-details";
+import CookiesPage from "./pages/cookies";
 import EnterSputumSampleResultsPage from "./pages/enter-sputum-sample-results";
 import ErrorPage from "./pages/error-page";
 import HomePage from "./pages/home-page";
@@ -48,9 +50,16 @@ import TravelConfirmation from "./pages/travel-confirmation";
 import TravelSummaryPage from "./pages/travel-summary";
 import TravelAddressAndContactDetailsPage from "./pages/travel-uk-address";
 import TravelVisaCategoryPage from "./pages/travel-visa-category";
+import { updateGoogleAnalyticsConsent } from "./utils/helpers";
 import { RedirectedRouteIfReduxEmpty } from "./utils/redirect";
 
 function App() {
+  useEffect(() => {
+    const cookieConsent = localStorage.getItem("cookie-consent");
+    const consentGranted = cookieConsent === "accepted";
+    updateGoogleAnalyticsConsent(consentGranted);
+  }, []);
+
   return (
     <Routes>
       <Route
@@ -360,7 +369,7 @@ function App() {
         }
       />
       <Route
-        path="/check-sputum-sample-information-results"
+        path="/check-sputum-collection-details-results"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -464,6 +473,7 @@ function App() {
         }
       />
       <Route path="/accessibility-statement" element={<AccessibilityStatementPage />} />
+      <Route path="/cookies" element={<CookiesPage />} />
       <Route path="/privacy-notice" element={<PrivacyNoticePage />} />
       <Route path="/sorry-there-is-problem-with-service" element={<ErrorPage />} />
     </Routes>

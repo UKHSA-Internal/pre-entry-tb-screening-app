@@ -4,7 +4,7 @@ import { BasePage } from "../BasePage";
 
 export class ApplicantPhotoUploadPage extends BasePage {
   constructor() {
-    super("/applicant-photo");
+    super("/upload-visa-applicant-photo");
   }
 
   // Verify page loaded
@@ -21,6 +21,15 @@ export class ApplicantPhotoUploadPage extends BasePage {
         "contain",
         "Select a file to upload. File type must be JPG, JPEG or PNG. Images must be less than 10MB.",
       );
+    return this;
+  }
+
+  // Verify file upload instructions text
+  verifyFileUploadInstructions(): ApplicantPhotoUploadPage {
+    cy.contains(
+      "p.govuk-body",
+      "Select a file to upload. File type must be JPG, JPEG or PNG. Images must be less than 10MB.",
+    ).should("be.visible");
     return this;
   }
 
@@ -42,11 +51,92 @@ export class ApplicantPhotoUploadPage extends BasePage {
     return this;
   }
 
+  // Verify "No file chosen" text is displayed
+  verifyNoFileChosenText(): ApplicantPhotoUploadPage {
+    cy.contains(".file-upload-no-file", "No file chosen").should("be.visible");
+    return this;
+  }
+
+  // Verify "Choose file" button exists
+  verifyChooseFileButtonExists(): ApplicantPhotoUploadPage {
+    cy.contains("button.govuk-button--secondary", "Choose file")
+      .should("be.visible")
+      .and("have.attr", "type", "submit");
+    return this;
+  }
+
+  // Click "Choose file" button
+  clickChooseFileButton(): ApplicantPhotoUploadPage {
+    cy.contains("button.govuk-button--secondary", "Choose file").click();
+    return this;
+  }
+
+  // Verify "or drop file" text is displayed
+  verifyDropFileText(): ApplicantPhotoUploadPage {
+    cy.contains(".file-upload-or-drop", "or drop file").should("be.visible");
+    return this;
+  }
+
+  // Verify file upload drop zone exists
+  verifyFileUploadDropZone(): ApplicantPhotoUploadPage {
+    cy.get('[role="application"][aria-label="File drop zone"]')
+      .should("be.visible")
+      .and("have.attr", "data-module", "govuk-file-upload");
+    return this;
+  }
+
+  // Verify file upload blue bar exists
+  verifyFileUploadBlueBar(): ApplicantPhotoUploadPage {
+    cy.get(".file-upload-blue-bar").should("be.visible");
+    return this;
+  }
+
+  // Verify file input has correct attributes
+  verifyFileInputAttributes(): ApplicantPhotoUploadPage {
+    cy.get("#upload-visa-applicant-photo")
+      .should("have.attr", "type", "file")
+      .and("have.attr", "name", "applicantPhotoFileName")
+      .and("have.attr", "data-testid", "applicant-photo");
+    return this;
+  }
+
+  // Verify visually hidden label for accessibility
+  verifyVisuallyHiddenLabel(): ApplicantPhotoUploadPage {
+    cy.get("label.govuk-visually-hidden[for='applicant-photo']")
+      .should("exist")
+      .and("contain.text", "applicant-photo file upload");
+    return this;
+  }
+
+  // Verify back link exists and points to correct page
+  verifyBackLink(): ApplicantPhotoUploadPage {
+    cy.get(".govuk-back-link")
+      .should("be.visible")
+      .and("contain", "Back")
+      .and("have.attr", "href", "/enter-applicant-information");
+    return this;
+  }
+
+  // Click back link
+  clickBackLink(): ApplicantPhotoUploadPage {
+    cy.get(".govuk-back-link").click();
+    return this;
+  }
+
   // Click continue button
   clickContinue(): ApplicantPhotoUploadPage {
     cy.get("button[type='submit']").contains("Continue").should("be.visible").and("be.enabled");
     cy.wait(1000);
     cy.get("button[type='submit']").contains("Continue").click({ force: true });
+    return this;
+  }
+
+  // Verify continue button exists
+  verifyContinueButtonExists(): ApplicantPhotoUploadPage {
+    cy.get("button[type='submit']")
+      .contains("Continue")
+      .should("be.visible")
+      .and("have.attr", "data-module", "govuk-button");
     return this;
   }
 
@@ -120,6 +210,12 @@ export class ApplicantPhotoUploadPage extends BasePage {
     return this;
   }
 
+  // Verify file size limit is mentioned
+  verifyFileSizeLimit(): ApplicantPhotoUploadPage {
+    cy.get(".govuk-body").should("contain", "less than 10MB");
+    return this;
+  }
+
   // Verify error state is cleared after valid upload
   verifyErrorStateCleared(): ApplicantPhotoUploadPage {
     cy.get(".govuk-error-summary").should("not.exist");
@@ -143,6 +239,101 @@ export class ApplicantPhotoUploadPage extends BasePage {
     this.verifyPageLoaded();
     this.verifyApplicantPhotoUploadSectionDisplayed();
     this.verifyAcceptedFileTypes();
+    return this;
+  }
+
+  // Verify beta banner exists
+  verifyBetaBanner(): ApplicantPhotoUploadPage {
+    cy.get(".govuk-phase-banner")
+      .should("be.visible")
+      .within(() => {
+        cy.contains(".govuk-tag", "BETA").should("be.visible");
+        cy.contains("This is a new service. Help us improve it and").should("be.visible");
+      });
+    return this;
+  }
+
+  // Verify Sign Out link exists
+  verifySignOutLinkExists(): ApplicantPhotoUploadPage {
+    cy.get("#sign-out")
+      .should("be.visible")
+      .and("contain.text", "Sign out")
+      .and("have.attr", "href", "/are-you-sure-you-want-to-sign-out");
+    return this;
+  }
+
+  // Click Sign Out link
+  clickSignOut(): ApplicantPhotoUploadPage {
+    cy.get("#sign-out").click();
+    return this;
+  }
+
+  // Verify footer links exist
+  verifyFooterLinks(): ApplicantPhotoUploadPage {
+    cy.get(".govuk-footer").within(() => {
+      cy.contains("a", "Privacy").should("be.visible").and("have.attr", "href", "/privacy-notice");
+      cy.contains("a", "Accessibility statement")
+        .should("be.visible")
+        .and("have.attr", "href", "/accessibility-statement");
+    });
+    return this;
+  }
+
+  // Verify GOV.UK logo exists
+  verifyGovUKLogo(): ApplicantPhotoUploadPage {
+    cy.get(".govuk-header__logo")
+      .should("be.visible")
+      .find("svg")
+      .should("have.attr", "aria-label", "GOV.UK");
+    return this;
+  }
+
+  // Verify service name in header
+  verifyServiceNameInHeader(): ApplicantPhotoUploadPage {
+    cy.get(".govuk-header__service-name")
+      .first()
+      .should("be.visible")
+      .and("contain.text", "Complete UK pre-entry health screening")
+      .and("have.attr", "href", "/");
+    return this;
+  }
+
+  // Verify skip to main content link
+  verifySkipLink(): ApplicantPhotoUploadPage {
+    cy.get(".govuk-skip-link")
+      .should("exist")
+      .and("have.attr", "href", "#main-content")
+      .and("contain.text", "Skip to main content");
+    return this;
+  }
+
+  // Verify the file upload component structure
+  verifyFileUploadComponentStructure(): ApplicantPhotoUploadPage {
+    cy.get("#applicant-photo.govuk-form-group").within(() => {
+      cy.get("fieldset.govuk-fieldset").should("exist");
+      cy.get(".file-upload-existing-file").should("exist");
+      cy.get(".file-upload-blue-bar").should("exist");
+      cy.get(".file-upload-row").should("exist");
+    });
+    return this;
+  }
+
+  // Verify complete page structure
+  verifyCompletePageStructure(): ApplicantPhotoUploadPage {
+    this.verifyPageLoaded();
+    this.verifyBackLink();
+    this.verifyFileUploadInstructions();
+    this.verifyFileUploadComponentStructure();
+    this.verifyNoFileChosenText();
+    this.verifyChooseFileButtonExists();
+    this.verifyDropFileText();
+    this.verifyContinueButtonExists();
+    return this;
+  }
+
+  // Verify page URL
+  verifyPageUrl(): ApplicantPhotoUploadPage {
+    cy.url().should("include", "/upload-visa-applicant-photo");
     return this;
   }
 }

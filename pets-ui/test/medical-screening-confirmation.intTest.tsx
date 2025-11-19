@@ -18,6 +18,14 @@ vi.mock("react-helmet-async", () => ({
   HelmetProvider: () => <>{}</>,
 }));
 
+beforeEach(() => {
+  localStorage.setItem("cookie-consent", "rejected");
+});
+
+afterEach(() => {
+  localStorage.clear();
+});
+
 test("Medical screening confirmation page renders correctly & redirects on button click", async () => {
   renderWithProviders(<MedicalConfirmation />);
 

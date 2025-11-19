@@ -1,5 +1,5 @@
 import { logger } from "../../shared/logger";
-import { Applicant } from "../../shared/models/applicant";
+import { ApplicantDbOps } from "../../shared/models/applicant";
 import { getImageBucket, ImageHelper } from "../helpers/image-helper";
 import { generateImageObjectkey } from "../helpers/upload";
 import { ImageType } from "../types/enums";
@@ -15,7 +15,7 @@ export class ApplicantPhoto extends IApplicantPhoto {
   static async getByApplicationId(applicationId: string, clinicId: string) {
     try {
       logger.info("Fetching presigned photo Url");
-      const applicant = await Applicant.getByApplicationId(applicationId);
+      const applicant = await ApplicantDbOps.getByApplicationId(applicationId);
       if (!applicant) {
         logger.error("Application does not have an applicant");
         return;

@@ -4,12 +4,12 @@ import { z } from "zod";
 
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
-import { Applicant } from "../../shared/models/applicant";
+import { Applicant, ApplicantDbOps } from "../../shared/models/applicant";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { ApplicantSchema } from "../types/zod-schema";
+import { ApplicantRegisterRequestSchema } from "../types/zod-schema";
 
-export type ApplicantRequestSchema = z.infer<typeof ApplicantSchema>;
+export type ApplicantRequestSchema = z.infer<typeof ApplicantRegisterRequestSchema>;
 
 export type PostApplicantEvent = PetsAPIGatewayProxyEvent & {
   parsedBody?: ApplicantRequestSchema;
@@ -51,7 +51,7 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
       return createHttpResponse(403, { message: "Clinic Id mismatch" });
     }
 
-    const existingApplicants = await Applicant.findByPassportId(
+    const existingApplicants = await ApplicantDbOps.findByPassportId(
       parsedBody.countryOfIssue,
       parsedBody.passportNumber,
     );
@@ -65,7 +65,7 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
 
     let applicant: Applicant;
     try {
-      applicant = await Applicant.createNewApplicant({
+      applicant = await ApplicantDbOps.createNewApplicant({
         ...parsedBody,
         applicationId,
         createdBy,

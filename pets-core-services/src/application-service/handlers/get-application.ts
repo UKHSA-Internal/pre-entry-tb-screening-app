@@ -9,7 +9,7 @@ import { RadiologicalOutcome } from "../models/radiological-outcome";
 import { SputumDecision } from "../models/sputum-decision";
 import { SputumDetailsDbOps } from "../models/sputum-details";
 import { TbCertificateDbOps } from "../models/tb-certificate";
-import { TravelInformation } from "../models/travel-information";
+import { TravelInformationDbOps } from "../models/travel-information";
 
 export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => {
   try {
@@ -26,7 +26,7 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
     }
     const clinicId = application.clinicId;
     const applicantPhotoUrl = await ApplicantPhoto.getByApplicationId(applicationId, clinicId);
-    const travelInformation = await TravelInformation.getByApplicationId(applicationId);
+    const travelInformation = await TravelInformationDbOps.getByApplicationId(applicationId);
     const medicalScreening = await MedicalScreeningDbOps.getByApplicationId(applicationId);
     const chestXray = await ChestXRay.getByApplicationId(applicationId);
     const sputumDecision = await SputumDecision.getByApplicationId(applicationId);

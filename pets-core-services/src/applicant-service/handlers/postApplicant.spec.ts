@@ -39,11 +39,7 @@ describe("Test for Posting Applicant into DB", () => {
 
     // Assert
     expect(response.statusCode).toBe(200);
-    expect(JSON.parse(response.body)).toMatchObject({
-      ...newApplicantDetails,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      dateCreated: expect.any(String),
-    });
+    expect(JSON.parse(response.body)).toMatchObject(newApplicantDetails);
   });
 
   test("Missing application throws a 400 error", async () => {

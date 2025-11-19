@@ -1,1482 +1,1998 @@
 name: Nightly Cypress Tests
 
 on:
-  schedule:
-    # Runs at 1 AM UTC every weekday (Monday to Friday)
-    - cron: "0 1 * * 1-5"
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: "Select environment to test"
-        required: true
-        default: "all"
-        type: choice
-        options: [all, qat, dev, preprod]
-      browsers:
-        description: "Select browsers to test"
-        required: true
-        default: "all"
-        type: choice
-        options: [all, chrome, firefox, edge]
+    schedule:
+        # Runs at 1 AM UTC every weekday (Monday to Friday)
+        - cron: "0 1 * * 1-5"
+    workflow_dispatch:
+        inputs:
+            environment:
+                description: "Select environment to test"
+                required: true
+                default: "all"
+                type: choice
+                options: [all, qat, dev, preprod]
+            browsers:
+                description: "Select browsers to test"
+                required: true
+                default: "all"
+                type: choice
+                options: [all, chrome, firefox, edge]
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+    contents: read
+    pages: write
+    id-token: write
 
 jobs:
-  setup-matrix:
-    name: Setup Test Matrix
-    runs-on: ubuntu-latest
-    outputs:
-      browsers: ${{ steps.matrix.outputs.browsers }}
-      environments: ${{ steps.matrix.outputs.environments }}
-    steps:
-      - name: Setup test matrix
-        id: matrix
-        run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            BROWSER_SELECTION="${{ github.event.inputs.browsers }}"
-            ENV_SELECTION="${{ github.event.inputs.environment }}"
-          else
-            BROWSER_SELECTION="all"
-            ENV_SELECTION="all"
-          fi
-          if [[ "$BROWSER_SELECTION" == "all" ]]; then
-            BROWSER_ARRAY='["chrome", "firefox", "edge"]'
-          else
-            BROWSER_ARRAY='["'$BROWSER_SELECTION'"]'
-          fi
-          echo "browsers=$BROWSER_ARRAY" >> $GITHUB_OUTPUT
-          if [[ "$ENV_SELECTION" == "all" ]]; then
-            ENV_ARRAY='["qat", "dev", "preprod"]'
-          else
-            ENV_ARRAY='["'$ENV_SELECTION'"]'
-          fi
-          echo "environments=$ENV_ARRAY" >> $GITHUB_OUTPUT
-          echo "Selected browsers: $BROWSER_ARRAY"
-          echo "Selected environments: $ENV_ARRAY"
+    setup-matrix:
+        name: Setup Test Matrix
+        runs-on: ubuntu-latest
+        outputs:
+            browsers: ${{ steps.matrix.outputs.browsers }}
+            environments: ${{ steps.matrix.outputs.environments }}
+        steps:
+            - name: Setup test matrix
+              id: matrix
+              run: |
+                  if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+                    BROWSER_SELECTION="${{ github.event.inputs.browsers }}"
+                    ENV_SELECTION="${{ github.event.inputs.environment }}"
+                  else
+                    BROWSER_SELECTION="all"
+                    ENV_SELECTION="all"
+                  fi
+                  if [[ "$BROWSER_SELECTION" == "all" ]]; then
+                    BROWSER_ARRAY='["chrome", "firefox", "edge"]'
+                  else
+                    BROWSER_ARRAY='["'$BROWSER_SELECTION'"]'
+                  fi
+                  echo "browsers=$BROWSER_ARRAY" >> $GITHUB_OUTPUT
+                  if [[ "$ENV_SELECTION" == "all" ]]; then
+                    ENV_ARRAY='["qat", "dev", "preprod"]'
+                  else
+                    ENV_ARRAY='["'$ENV_SELECTION'"]'
+                  fi
+                  echo "environments=$ENV_ARRAY" >> $GITHUB_OUTPUT
+                  echo "Selected browsers: $BROWSER_ARRAY"
+                  echo "Selected environments: $ENV_ARRAY"
 
-  cypress-nightly:
-    name: Run Cypress Tests - ${{ matrix.environment }} - ${{ matrix.browser }}
-    runs-on: ubuntu-latest
-    needs: setup-matrix
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: ${{ fromJson(needs.setup-matrix.outputs.browsers) }}
-        environment: ${{ fromJson(needs.setup-matrix.outputs.environments) }}
+    cypress-nightly:
+        name: Run Cypress Tests - ${{ matrix.environment }} - ${{ matrix.browser }}
+        runs-on: ubuntu-latest
+        needs: setup-matrix
+        strategy:
+            fail-fast: false
+            matrix:
+                browser: ${{ fromJson(needs.setup-matrix.outputs.browsers) }}
+                environment: ${{ fromJson(needs.setup-matrix.outputs.environments) }}
 
-    env:
-      USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
-      USER_1_PASSWORD: ${{ secrets.USER_1_PASSWORD }}
-      USER_2_EMAIL: ${{ secrets.USER_2_EMAIL }}
-      USER_2_PASSWORD: ${{ secrets.USER_2_PASSWORD }}
-      USER_3_EMAIL: ${{ secrets.USER_3_EMAIL }}
-      USER_3_PASSWORD: ${{ secrets.USER_3_PASSWORD }}
-      USER_4_EMAIL: ${{ secrets.USER_4_EMAIL }}
-      USER_4_PASSWORD: ${{ secrets.USER_4_PASSWORD }}
-      USER_5_EMAIL: ${{ secrets.USER_5_EMAIL }}
-      USER_5_PASSWORD: ${{ secrets.USER_5_PASSWORD }}
-      USER_6_EMAIL: ${{ secrets.USER_6_EMAIL }}
-      USER_6_PASSWORD: ${{ secrets.USER_6_PASSWORD }}
-      TEST_ENVIRONMENT: ${{ matrix.environment }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm i
-
-      - name: Debug available Cypress specs
-        run: ls -R pets-ui/cypress/e2e
-
-      - name: Verify Cypress reporter configuration
-        run: |
-          echo "Checking if mochawesome is configured..."
-          if grep -q "mochawesome" pets-ui/package.json; then
-            echo "mochawesome found in package.json"
-          else
-            echo "mochawesome not found - test counts may not be available"
-          fi
-
-      - name: Cache Cypress binary
-        id: cache-cypress-binary
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/Cypress
-          key: cypress-binary-nightly-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
-
-      - name: Install Cypress Binary
-        if: steps.cache-cypress-binary.outputs.cache-hit != 'true'
-        run: |
-          pnpm exec cypress install --force
-          pnpm exec cypress verify
-        working-directory: pets-ui
-
-      - name: Start Local Environment
-        run: |
-          pnpm start & sleep 120
-      - name: Cypress run tests
-        uses: cypress-io/github-action@v6
-        continue-on-error: true
-        id: initial_attempt
-        with:
-          install: false
-          working-directory: pets-ui
-          browser: ${{ matrix.browser }}
-          config-file: cypress/cypress.config.mjs
         env:
-          CYPRESS_TEST_ENVIRONMENT: ${{ matrix.environment }}
+            USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
+            USER_1_PASSWORD: ${{ secrets.USER_1_PASSWORD }}
+            USER_2_EMAIL: ${{ secrets.USER_2_EMAIL }}
+            USER_2_PASSWORD: ${{ secrets.USER_2_PASSWORD }}
+            USER_3_EMAIL: ${{ secrets.USER_3_EMAIL }}
+            USER_3_PASSWORD: ${{ secrets.USER_3_PASSWORD }}
+            USER_4_EMAIL: ${{ secrets.USER_4_EMAIL }}
+            USER_4_PASSWORD: ${{ secrets.USER_4_PASSWORD }}
+            USER_5_EMAIL: ${{ secrets.USER_5_EMAIL }}
+            USER_5_PASSWORD: ${{ secrets.USER_5_PASSWORD }}
+            USER_6_EMAIL: ${{ secrets.USER_6_EMAIL }}
+            USER_6_PASSWORD: ${{ secrets.USER_6_PASSWORD }}
+            TEST_ENVIRONMENT: ${{ matrix.environment }}
 
-      - name: Retry if failed
-        if: steps.initial_attempt.outcome != 'success'
-        uses: cypress-io/github-action@v6
-        id: retry_attempt
-        with:
-          install: false
-          working-directory: pets-ui
-          browser: ${{ matrix.browser }}
-          config-file: cypress/cypress.config.mjs
-        env:
-          CYPRESS_TEST_ENVIRONMENT: ${{ matrix.environment }}
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-      - name: Upload Failed Tests Screenshots
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: nightly-failed-screenshots-${{ matrix.environment }}-${{ matrix.browser }}
-          path: pets-ui/cypress/screenshots
-          retention-days: 7
+            - name: Install pnpm
+              uses: pnpm/action-setup@v4
 
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18.x
+                  cache: "pnpm"
 
-      - name: Merge Mochawesome Reports
-        if: always()
-        run: |
-          # Create reports directory if it doesn't exist
-          mkdir -p pets-ui/cypress/reports/mochawesome
+            - name: Install dependencies
+              run: pnpm i
 
-          echo "=== Debugging Cypress Reports ==="
-          echo "Looking for standard mochawesome reports..."
-          find pets-ui/cypress -name "*.json" -type f 2>/dev/null || echo "No JSON files found in cypress directory"
+            - name: Debug available Cypress specs
+              run: ls -R pets-ui/cypress/e2e
 
-          # Standard mochawesome puts files directly in reportDir
-          REPORT_DIR="pets-ui/cypress/reports/mochawesome"
-          MERGED_FILE="$REPORT_DIR/mochawesome.json"
+            - name: Verify Cypress reporter configuration
+              run: |
+                  echo "Checking if mochawesome is configured..."
+                  if grep -q "mochawesome" pets-ui/package.json; then
+                    echo "mochawesome found in package.json"
+                  else
+                    echo "mochawesome not found - test counts may not be available"
+                  fi
 
-          if [ -d "$REPORT_DIR" ]; then
-            echo "Found reports directory: $REPORT_DIR"
-            ls -la "$REPORT_DIR" 2>/dev/null || echo "Directory empty"
-            
-            # Look for JSON files (standard mochawesome creates files like mochawesome_timestamp.json)
-            # Exclude the final merged file
-            JSON_FILES=($(find "$REPORT_DIR" -name "*.json" -not -name "mochawesome.json" 2>/dev/null))
-            
-            if [ ${#JSON_FILES[@]} -gt 0 ]; then
-              echo "Found ${#JSON_FILES[@]} JSON report files:"
-              printf '%s\n' "${JSON_FILES[@]}"
-              
-              # Use mochawesome-merge to combine the reports
-              npx mochawesome-merge "${JSON_FILES[@]}" > "$MERGED_FILE"
-              echo "Reports merged successfully using mochawesome-merge"
-              
-              # Verify the merged file
-              if [ -f "$MERGED_FILE" ] && [ -s "$MERGED_FILE" ]; then
-                echo "Merged file created successfully at: $MERGED_FILE"
-                echo "File size: $(wc -c < "$MERGED_FILE") bytes"
-                echo "Sample of merged content:"
-                head -3 "$MERGED_FILE" | jq . 2>/dev/null || head -3 "$MERGED_FILE"
-              else
-                echo "Warning: Merged file is empty or missing"
-              fi
-            else
-              echo "No JSON report files found in $REPORT_DIR"
-              echo "Available files:"
-              find "$REPORT_DIR" -type f 2>/dev/null || echo "No files found"
-              echo "This could mean:"
-              echo "1. Tests didn't run successfully"
-              echo "2. Standard mochawesome reporter is not generating reports"
-              echo "3. Reporter configuration issue"
-              
-              # Create minimal fallback
-              echo '{"stats":{"suites":0,"tests":0,"passes":0,"pending":0,"failures":0},"results":[],"meta":{"mocha":{"version":"unknown"},"mochawesome":{"version":"unknown"}}}' > "$MERGED_FILE"
-              echo "Created minimal fallback report"
-            fi
-          else
-            echo "Reports directory not found: $REPORT_DIR"
-            echo "Available directories in cypress:"
-            find pets-ui/cypress -type d 2>/dev/null || echo "No cypress directory found"
-            
-            # Create directory and minimal fallback
-            mkdir -p "$REPORT_DIR"
-            echo '{"stats":{"suites":0,"tests":0,"passes":0,"pending":0,"failures":0},"results":[],"meta":{"mocha":{"version":"unknown"},"mochawesome":{"version":"unknown"}}}' > "$MERGED_FILE"
-            echo "Created minimal fallback report"
-          fi
+            - name: Cache Cypress binary
+              id: cache-cypress-binary
+              uses: actions/cache@v4
+              with:
+                  path: ~/.cache/Cypress
+                  key: cypress-binary-nightly-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
 
-      - name: Upload merged mochawesome report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: mochawesome-merged-${{ matrix.environment }}-${{ matrix.browser }}
-          path: pets-ui/cypress/reports/mochawesome/mochawesome.json
+            - name: Install Cypress Binary
+              if: steps.cache-cypress-binary.outputs.cache-hit != 'true'
+              run: |
+                  pnpm exec cypress install --force
+                  pnpm exec cypress verify
+              working-directory: pets-ui
 
-      - name: Show merged stats
-        if: always()
-        run: |
-          MERGED_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
-          if [ -f "$MERGED_FILE" ]; then
-            echo "=== Merged Test Statistics ==="
-            jq '.stats' "$MERGED_FILE"
-          else
-            echo "⚠️ Merged mochawesome report not found at $MERGED_FILE"
-            echo "Available files in reports directory:"
-            find pets-ui/cypress/reports -type f -name "*.json" 2>/dev/null || echo "No JSON files found"
-          fi
+            - name: Start Local Environment
+              run: |
+                  pnpm start & sleep 120
+            - name: Cypress run tests
+              uses: cypress-io/github-action@v6
+              continue-on-error: true
+              id: initial_attempt
+              with:
+                  install: false
+                  working-directory: pets-ui
+                  browser: ${{ matrix.browser }}
+                  config-file: cypress/cypress.config.mjs
+              env:
+                  CYPRESS_TEST_ENVIRONMENT: ${{ matrix.environment }}
 
-      - name: Extract test counts
-        if: always()
-        id: extract_counts
-        run: |
-          JSON_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
-          if [ -f "$JSON_FILE" ]; then
-            PASSED_COUNT=$(jq -r '.stats.passes // 0' "$JSON_FILE")
-            FAILED_COUNT=$(jq -r '.stats.failures // 0' "$JSON_FILE")
-            TOTAL_COUNT=$(jq -r '.stats.tests // 0' "$JSON_FILE")
-            PENDING_COUNT=$(jq -r '.stats.pending // 0' "$JSON_FILE")
-            echo "passed_count=$PASSED_COUNT" >> $GITHUB_OUTPUT
-            echo "failed_count=$FAILED_COUNT" >> $GITHUB_OUTPUT
-            echo "total_count=$TOTAL_COUNT" >> $GITHUB_OUTPUT
-            echo "pending_count=$PENDING_COUNT" >> $GITHUB_OUTPUT
-            echo "✅ Test counts extracted: Total=$TOTAL_COUNT, Passed=$PASSED_COUNT, Failed=$FAILED_COUNT, Pending=$PENDING_COUNT"
-          else
-            echo "⚠️ No merged mochawesome report found — using default values"
-            echo "passed_count=0" >> $GITHUB_OUTPUT
-            echo "failed_count=0" >> $GITHUB_OUTPUT
-            echo "total_count=0" >> $GITHUB_OUTPUT
-            echo "pending_count=0" >> $GITHUB_OUTPUT
-          fi
+            - name: Retry if failed
+              if: steps.initial_attempt.outcome != 'success'
+              uses: cypress-io/github-action@v6
+              id: retry_attempt
+              with:
+                  install: false
+                  working-directory: pets-ui
+                  browser: ${{ matrix.browser }}
+                  config-file: cypress/cypress.config.mjs
+              env:
+                  CYPRESS_TEST_ENVIRONMENT: ${{ matrix.environment }}
 
-      - name: Upload merged mochawesome report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: mochawesome-merged-${{ matrix.environment }}-${{ matrix.browser }}
-          path: pets-ui/cypress/reports/mochawesome/mochawesome.json
+            - name: Upload Failed Tests Screenshots
+              if: failure()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: nightly-failed-screenshots-${{ matrix.environment }}-${{ matrix.browser }}
+                  path: pets-ui/cypress/screenshots
+                  retention-days: 7
 
-      - name: Show merged stats
-        if: always()
-        run: |
-          MERGED_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
-          if [ -f "$MERGED_FILE" ]; then
-            echo "=== Merged Test Statistics ==="
-            jq '.stats' "$MERGED_FILE"
-          else
-            echo "⚠️ Merged mochawesome report not found at $MERGED_FILE"
-            echo "Available files in reports directory:"
-            find pets-ui/cypress/reports -type f -name "*.json" 2>/dev/null || echo "No JSON files found"
-          fi
+            - name: Install jq
+              run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Extract test counts
-        if: always()
-        id: extract_counts
-        run: |
-          JSON_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
-          if [ -f "$JSON_FILE" ]; then
-            PASSED_COUNT=$(jq -r '.stats.passes // 0' "$JSON_FILE")
-            FAILED_COUNT=$(jq -r '.stats.failures // 0' "$JSON_FILE")
-            TOTAL_COUNT=$(jq -r '.stats.tests // 0' "$JSON_FILE")
-            PENDING_COUNT=$(jq -r '.stats.pending // 0' "$JSON_FILE")
-            echo "passed_count=$PASSED_COUNT" >> $GITHUB_OUTPUT
-            echo "failed_count=$FAILED_COUNT" >> $GITHUB_OUTPUT
-            echo "total_count=$TOTAL_COUNT" >> $GITHUB_OUTPUT
-            echo "pending_count=$PENDING_COUNT" >> $GITHUB_OUTPUT
-            echo "✅ Test counts extracted: Total=$TOTAL_COUNT, Passed=$PASSED_COUNT, Failed=$FAILED_COUNT, Pending=$PENDING_COUNT"
-          else
-            echo "⚠️ No merged mochawesome report found — using default values"
-            echo "passed_count=0" >> $GITHUB_OUTPUT
-            echo "failed_count=0" >> $GITHUB_OUTPUT
-            echo "total_count=0" >> $GITHUB_OUTPUT
-            echo "pending_count=0" >> $GITHUB_OUTPUT
-          fi
-      - name: Upload Mochawesome Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: nightly-mochawesome-report-${{ matrix.environment }}-${{ matrix.browser }}
-          path: pets-ui/cypress/reports/mochawesome/
-          retention-days: 7
+            - name: Merge Mochawesome Reports
+              if: always()
+              run: |
+                  # Create reports directory if it doesn't exist
+                  mkdir -p pets-ui/cypress/reports/mochawesome
 
-      - name: Store env+browser result with test counts
-        if: always()
-        run: |
-          if [[ "${{ steps.initial_attempt.outcome }}" == "success" ]] || [[ "${{ steps.retry_attempt.outcome }}" == "success" ]]; then
-            STATUS="PASS"
-          else
-            STATUS="FAIL"
-          fi
+                  echo "=== Debugging Cypress Reports ==="
+                  echo "Looking for standard mochawesome reports..."
+                  find pets-ui/cypress -name "*.json" -type f 2>/dev/null || echo "No JSON files found in cypress directory"
 
-          # Create detailed result file with test counts
-          cat > ${{ matrix.environment }}-${{ matrix.browser }}-result.json << EOF
-          {
-            "status": "$STATUS",
-            "environment": "${{ matrix.environment }}",
-            "browser": "${{ matrix.browser }}",
-            "testCounts": {
-              "total": ${{ steps.extract_counts.outputs.total_count }},
-              "passed": ${{ steps.extract_counts.outputs.passed_count }},
-              "failed": ${{ steps.extract_counts.outputs.failed_count }},
-              "pending": ${{ steps.extract_counts.outputs.pending_count }}
-            },
-            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
-          }
-          EOF
+                  # Standard mochawesome puts files directly in reportDir
+                  REPORT_DIR="pets-ui/cypress/reports/mochawesome"
+                  MERGED_FILE="$REPORT_DIR/mochawesome.json"
 
-          # Keep backward compatibility
-          echo "$STATUS" > ${{ matrix.environment }}-${{ matrix.browser }}-result.txt
-
-      - name: Upload env+browser result
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: env-browser-result-${{ matrix.environment }}-${{ matrix.browser }}
-          path: |
-            ${{ matrix.environment }}-${{ matrix.browser }}-result.txt
-            ${{ matrix.environment }}-${{ matrix.browser }}-result.json
-
-  generate-summary-and-deploy:
-    name: Generate Summary and Deploy Dashboard
-    needs: [setup-matrix, cypress-nightly]
-    if: always()
-    runs-on: ubuntu-latest
-    continue-on-error: true # allow report even if tests fail
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install required tools
-        run: |
-          sudo apt-get update && sudo apt-get install -y jq bc
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: all-artifacts
-          pattern: "*"
-
-      - name: Create dashboard directory
-        run: |
-          mkdir -p dashboard
-
-      - name: Generate test summary report with counts
-        id: summary
-        run: |
-          echo "# 🌙 Nightly Cypress Test Results" > nightly-summary.md
-          echo "**Run Date**: $(date)" >> nightly-summary.md
-          echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
-          echo "" >> nightly-summary.md
-          ENV_MATRIX='${{ needs.setup-matrix.outputs.environments }}'
-          BROWSER_MATRIX='${{ needs.setup-matrix.outputs.browsers }}'
-          ENV_LIST=($(echo $ENV_MATRIX | jq -r '.[]'))
-          BROWSER_LIST=($(echo $BROWSER_MATRIX | jq -r '.[]'))
-          TOTAL=0
-          FAILS=0
-          TOTAL_TEST_COUNT=0
-          TOTAL_PASSED_COUNT=0
-          TOTAL_FAILED_COUNT=0
-          TOTAL_PENDING_COUNT=0
-
-          echo "{" > dashboard/test-results.json
-          echo "  \"results\": {" >> dashboard/test-results.json
-          FIRST_ENV=true
-
-          for env in "${ENV_LIST[@]}"; do
-            echo "## Environment: $env" >> nightly-summary.md
-            echo "" >> nightly-summary.md
-            echo "| Browser | Status | Total Tests | Passed | Failed | Pending |" >> nightly-summary.md
-            echo "|---------|--------|-------------|--------|--------|---------|" >> nightly-summary.md
-            
-            if [ "$FIRST_ENV" = true ]; then
-              echo "    \"$env\": {" >> dashboard/test-results.json
-              FIRST_ENV=false
-            else
-              echo "    ,\"$env\": {" >> dashboard/test-results.json
-            fi
-            
-            FIRST_BROWSER=true
-            for browser in "${BROWSER_LIST[@]}"; do
-              RESULT_FILE="all-artifacts/env-browser-result-${env}-${browser}/${env}-${browser}-result.txt"
-              RESULT_JSON_FILE="all-artifacts/env-browser-result-${env}-${browser}/${env}-${browser}-result.json"
-              STATUS="UNKNOWN"
-              TEST_COUNT=0
-              PASSED_COUNT=0
-              FAILED_COUNT=0
-              PENDING_COUNT=0
-              
-              if [ -f "$RESULT_FILE" ]; then
-                STATUS=$(cat "$RESULT_FILE")
-              fi
-              
-              # Extract test counts from JSON if available
-              if [ -f "$RESULT_JSON_FILE" ] && command -v jq >/dev/null 2>&1; then
-                TEST_COUNT=$(jq -r '.testCounts.total // 0' "$RESULT_JSON_FILE")
-                PASSED_COUNT=$(jq -r '.testCounts.passed // 0' "$RESULT_JSON_FILE")
-                FAILED_COUNT=$(jq -r '.testCounts.failed // 0' "$RESULT_JSON_FILE")
-                PENDING_COUNT=$(jq -r '.testCounts.pending // 0' "$RESULT_JSON_FILE")
-              fi
-              
-              echo "| $browser | $([ "$STATUS" = "PASS" ] && echo "✅ PASS" || echo "❌ FAIL") | $TEST_COUNT | $PASSED_COUNT | $FAILED_COUNT | $PENDING_COUNT |" >> nightly-summary.md
-              
-              if [ "$FIRST_BROWSER" = true ]; then
-                echo "      \"$browser\": {" >> dashboard/test-results.json
-                echo "        \"status\": \"$STATUS\"," >> dashboard/test-results.json
-                echo "        \"testCounts\": {" >> dashboard/test-results.json
-                echo "          \"total\": $TEST_COUNT," >> dashboard/test-results.json
-                echo "          \"passed\": $PASSED_COUNT," >> dashboard/test-results.json
-                echo "          \"failed\": $FAILED_COUNT," >> dashboard/test-results.json
-                echo "          \"pending\": $PENDING_COUNT" >> dashboard/test-results.json
-                echo "        }" >> dashboard/test-results.json
-                echo "      }" >> dashboard/test-results.json
-                FIRST_BROWSER=false
-              else
-                echo "      ,\"$browser\": {" >> dashboard/test-results.json
-                echo "        \"status\": \"$STATUS\"," >> dashboard/test-results.json
-                echo "        \"testCounts\": {" >> dashboard/test-results.json
-                echo "          \"total\": $TEST_COUNT," >> dashboard/test-results.json
-                echo "          \"passed\": $PASSED_COUNT," >> dashboard/test-results.json
-                echo "          \"failed\": $FAILED_COUNT," >> dashboard/test-results.json
-                echo "          \"pending\": $PENDING_COUNT" >> dashboard/test-results.json
-                echo "        }" >> dashboard/test-results.json
-                echo "      }" >> dashboard/test-results.json
-              fi
-              
-              TOTAL=$((TOTAL+1))
-              if [ "$STATUS" != "PASS" ]; then
-                FAILS=$((FAILS+1))
-              fi
-              
-              # Aggregate test counts
-              TOTAL_TEST_COUNT=$((TOTAL_TEST_COUNT+TEST_COUNT))
-              TOTAL_PASSED_COUNT=$((TOTAL_PASSED_COUNT+PASSED_COUNT))
-              TOTAL_FAILED_COUNT=$((TOTAL_FAILED_COUNT+FAILED_COUNT))
-              TOTAL_PENDING_COUNT=$((TOTAL_PENDING_COUNT+PENDING_COUNT))
-            done
-            echo "    }" >> dashboard/test-results.json
-            echo "" >> nightly-summary.md
-          done
-          echo "  }" >> dashboard/test-results.json
-
-          # Add summary counts
-          echo "" >> nightly-summary.md
-          echo "## 📊 Test Summary" >> nightly-summary.md
-          echo "- **Total Test Combinations**: $TOTAL" >> nightly-summary.md
-          echo "- **Total Individual Tests**: $TOTAL_TEST_COUNT" >> nightly-summary.md
-          echo "- **Total Passed**: $TOTAL_PASSED_COUNT" >> nightly-summary.md
-          echo "- **Total Failed**: $TOTAL_FAILED_COUNT" >> nightly-summary.md
-          echo "- **Total Pending**: $TOTAL_PENDING_COUNT" >> nightly-summary.md
-          echo "" >> nightly-summary.md
-
-          if [ $FAILS -eq 0 ]; then
-            echo "## ✅ Overall Status: PASSED" >> nightly-summary.md
-            echo "All $TOTAL combinations passed." >> nightly-summary.md
-            echo "overall_status=PASS" >> $GITHUB_OUTPUT
-            OVERALL_STATUS="PASS"
-          else
-            echo "## ❌ Overall Status: FAILED" >> nightly-summary.md
-            echo "$FAILS of $TOTAL environment—browser combinations failed." >> nightly-summary.md
-            echo "overall_status=FAIL" >> $GITHUB_OUTPUT
-            OVERALL_STATUS="FAIL"
-          fi
-          echo "  ,\"overallStatus\": \"$OVERALL_STATUS\"," >> dashboard/test-results.json
-          echo "  \"totalCombinations\": $TOTAL," >> dashboard/test-results.json
-          echo "  \"failedCombinations\": $FAILS," >> dashboard/test-results.json
-          echo "  \"totalTests\": $TOTAL_TEST_COUNT," >> dashboard/test-results.json
-          echo "  \"totalPassed\": $TOTAL_PASSED_COUNT," >> dashboard/test-results.json
-          echo "  \"totalFailed\": $TOTAL_FAILED_COUNT," >> dashboard/test-results.json
-          echo "  \"totalSkipped\": $TOTAL_PENDING_COUNT," >> dashboard/test-results.json
-          if [ $TOTAL -gt 0 ]; then
-            SUCCESS_RATE=$(echo "scale=0; ($TOTAL-$FAILS)*100/$TOTAL" | bc)
-          else
-            SUCCESS_RATE=0
-          fi
-
-          echo "  \"successRate\": $SUCCESS_RATE," >> dashboard/test-results.json
-          echo "  \"runUrl\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"," >> dashboard/test-results.json
-          echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)\"" >> dashboard/test-results.json
-          echo "}" >> dashboard/test-results.json
-
-      - name: Create enhanced dashboard HTML with test counts
-        run: |
-          cat > dashboard/index.html << 'EOF'
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>🌙 Pre-Entry TB Screening - Nightly Tests</title>
-              <style>
-                  body {
-                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                      margin: 0;
-                      padding: 0;
-                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                      min-height: 100vh;
-                  }
-                  
-                  .header {
-                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                      color: white;
-                      padding: 20px;
-                      text-align: center;
-                  }
-                  
-                  .header h1 {
-                      margin: 0;
-                      font-size: 2rem;
-                  }
-                  
-                  .subtitle {
-                      margin: 5px 0 0 0;
-                      opacity: 0.9;
-                  }
-                  
-                  .container {
-                      max-width: 1200px;
-                      margin: 0 auto;
-                      padding: 20px;
-                  }
-                  
-                  .metrics {
-                      display: grid;
-                      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                      gap: 20px;
-                      margin: 20px 0;
-                  }
-                  
-                  .metric-card {
-                      background: white;
-                      border-radius: 12px;
-                      padding: 24px;
-                      text-align: center;
-                      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                      transition: transform 0.2s ease, box-shadow 0.2s ease;
-                  }
-                  
-                  .metric-card:hover {
-                      transform: translateY(-2px);
-                      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-                  }
-                  
-                  .metric-value {
-                      font-size: 2.5rem;
-                      font-weight: bold;
-                      margin-bottom: 8px;
-                  }
-                  
-                  .metric-label {
-                      color: #666;
-                      text-transform: uppercase;
-                      font-size: 0.8rem;
-                      letter-spacing: 0.5px;
-                  }
-                  
-                  .status-pass { color: #22c55e; }
-                  .status-fail { color: #ef4444; }
-                  
-                  .browser-results {
-                      background: white;
-                      border-radius: 12px;
-                      padding: 24px;
-                      margin: 20px 0;
-                      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                  }
-                  
-                  .environment-section {
-                      margin: 30px 0;
-                      padding: 20px;
-                      border-left: 4px solid #667eea;
-                      background: #f8fafc;
-                      border-radius: 0 8px 8px 0;
-                  }
-                  
-                  .environment-title {
-                      font-size: 1.5rem;
-                      font-weight: bold;
-                      color: #374151;
-                      margin-bottom: 20px;
-                      text-transform: uppercase;
-                      letter-spacing: 1px;
-                  }
-                  
-                  .browser-grid {
-                      display: grid;
-                      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-                      gap: 16px;
-                      margin-top: 20px;
-                  }
-                  
-                  .browser-card {
-                      background: white;
-                      border-radius: 12px;
-                      padding: 24px;
-                      text-align: center;
-                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                      transition: all 0.2s ease;
-                      border: 2px solid transparent;
-                  }
-                  
-                  .browser-card:hover {
-                      transform: translateY(-4px);
-                      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-                  }
-                  
-                  .browser-card.status-pass-card {
-                      border-color: #22c55e;
-                  }
-                  
-                  .browser-card.status-fail-card {
-                      border-color: #ef4444;
-                  }
-                  
-                  .browser-icon {
-                      font-size: 3rem;
-                      margin-bottom: 12px;
-                      display: block;
-                  }
-                  
-                  .browser-name {
-                      font-size: 1.25rem;
-                      font-weight: bold;
-                      margin-bottom: 12px;
-                      color: #374151;
-                  }
-                  
-                  .status-badge {
-                      padding: 8px 16px;
-                      border-radius: 20px;
-                      font-size: 0.9rem;
-                      font-weight: bold;
-                      text-transform: uppercase;
-                      letter-spacing: 0.5px;
-                      margin-bottom: 12px;
-                      display: inline-block;
-                  }
-                  
-                  .status-badge.pass {
-                      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-                      color: #166534;
-                      border: 2px solid #22c55e;
-                  }
-                  
-                  .status-badge.fail {
-                      background: linear-gradient(135deg, #fef2f2, #fecaca);
-                      color: #dc2626;
-                      border: 2px solid #ef4444;
-                  }
-                  
-                  .status-badge.unknown {
-                      background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-                      color: #6b7280;
-                      border: 2px solid #9ca3af;
-                  }
-                  
-                  .test-counts {
-                      display: grid;
-                      grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-                      gap: 8px;
-                      margin-top: 12px;
-                  }
-                  
-                  .count-item {
-                      text-align: center;
-                      padding: 8px 4px;
-                      border-radius: 8px;
-                      background: #f9fafb;
-                      border: 1px solid #e5e7eb;
-                  }
-                  
-                  .count-value {
-                      display: block;
-                      font-size: 1.2rem;
-                      font-weight: bold;
-                      color: #374151;
-                  }
-                  
-                  .count-label {
-                      font-size: 0.7rem;
-                      color: #6b7280;
-                      text-transform: uppercase;
-                      letter-spacing: 0.5px;
-                      margin-top: 2px;
-                  }
-                  
-                  .count-item.total { border-left: 3px solid #3b82f6; }
-                  .count-item.passed { border-left: 3px solid #22c55e; }
-                  .count-item.failed { border-left: 3px solid #ef4444; }
-                  .count-item.pending { border-left: 3px solid #f59e0b; }
-                  
-                  .footer {
-                      text-align: center;
-                      margin-top: 40px;
-                      padding: 20px;
-                  }
-                  
-                  .link {
-                      display: inline-block;
-                      background: white;
-                      color: #667eea;
-                      text-decoration: none;
-                      font-weight: 600;
-                      padding: 12px 24px;
-                      border-radius: 8px;
-                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                      transition: all 0.2s ease;
-                  }
-                  
-                  .link:hover {
-                      background: #667eea;
-                      color: white;
-                      transform: translateY(-2px);
-                      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                  }
-                  
-                  .last-updated {
-                      color: white;
-                      margin-top: 16px;
-                      opacity: 0.9;
-                  }
-                  
-                  .loading {
-                      text-align: center;
-                      padding: 40px;
-                      color: white;
-                  }
-                  
-                  .spinner {
-                      border: 4px solid rgba(255, 255, 255, 0.3);
-                      border-radius: 50%;
-                      border-top: 4px solid white;
-                      width: 40px;
-                      height: 40px;
-                      animation: spin 1s linear infinite;
-                      margin: 0 auto 20px;
-                  }
-                  
-                  @keyframes spin {
-                      0% { transform: rotate(0deg); }
-                      100% { transform: rotate(360deg); }
-                  }
-                  
-                  @media (max-width: 768px) {
-                      .metrics {
-                          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-                          gap: 16px;
-                      }
+                  if [ -d "$REPORT_DIR" ]; then
+                    echo "Found reports directory: $REPORT_DIR"
+                    ls -la "$REPORT_DIR" 2>/dev/null || echo "Directory empty"
+                    
+                    # Look for JSON files (standard mochawesome creates files like mochawesome_timestamp.json)
+                    # Exclude the final merged file
+                    JSON_FILES=($(find "$REPORT_DIR" -name "*.json" -not -name "mochawesome.json" 2>/dev/null))
+                    
+                    if [ ${#JSON_FILES[@]} -gt 0 ]; then
+                      echo "Found ${#JSON_FILES[@]} JSON report files:"
+                      printf '%s\n' "${JSON_FILES[@]}"
                       
-                      .browser-grid {
-                          grid-template-columns: 1fr;
-                      }
+                      # Use mochawesome-merge to combine the reports
+                      npx mochawesome-merge "${JSON_FILES[@]}" > "$MERGED_FILE"
+                      echo "Reports merged successfully using mochawesome-merge"
                       
-                      .metric-value {
-                          font-size: 2rem;
-                      }
+                      # Verify the merged file
+                      if [ -f "$MERGED_FILE" ] && [ -s "$MERGED_FILE" ]; then
+                        echo "Merged file created successfully at: $MERGED_FILE"
+                        echo "File size: $(wc -c < "$MERGED_FILE") bytes"
+                        echo "Sample of merged content:"
+                        head -3 "$MERGED_FILE" | jq . 2>/dev/null || head -3 "$MERGED_FILE"
+                      else
+                        echo "Warning: Merged file is empty or missing"
+                      fi
+                    else
+                      echo "No JSON report files found in $REPORT_DIR"
+                      echo "Available files:"
+                      find "$REPORT_DIR" -type f 2>/dev/null || echo "No files found"
+                      echo "This could mean:"
+                      echo "1. Tests didn't run successfully"
+                      echo "2. Standard mochawesome reporter is not generating reports"
+                      echo "3. Reporter configuration issue"
                       
-                      .header h1 {
-                          font-size: 1.5rem;
-                      }
+                      # Create minimal fallback
+                      echo '{"stats":{"suites":0,"tests":0,"passes":0,"pending":0,"failures":0},"results":[],"meta":{"mocha":{"version":"unknown"},"mochawesome":{"version":"unknown"}}}' > "$MERGED_FILE"
+                      echo "Created minimal fallback report"
+                    fi
+                  else
+                    echo "Reports directory not found: $REPORT_DIR"
+                    echo "Available directories in cypress:"
+                    find pets-ui/cypress -type d 2>/dev/null || echo "No cypress directory found"
+                    
+                    # Create directory and minimal fallback
+                    mkdir -p "$REPORT_DIR"
+                    echo '{"stats":{"suites":0,"tests":0,"passes":0,"pending":0,"failures":0},"results":[],"meta":{"mocha":{"version":"unknown"},"mochawesome":{"version":"unknown"}}}' > "$MERGED_FILE"
+                    echo "Created minimal fallback report"
+                  fi
+
+            - name: Upload merged mochawesome report
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: mochawesome-merged-${{ matrix.environment }}-${{ matrix.browser }}
+                  path: pets-ui/cypress/reports/mochawesome/mochawesome.json
+
+            - name: Show merged stats
+              if: always()
+              run: |
+                  MERGED_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
+                  if [ -f "$MERGED_FILE" ]; then
+                    echo "=== Merged Test Statistics ==="
+                    jq '.stats' "$MERGED_FILE"
+                  else
+                    echo "⚠️ Merged mochawesome report not found at $MERGED_FILE"
+                    echo "Available files in reports directory:"
+                    find pets-ui/cypress/reports -type f -name "*.json" 2>/dev/null || echo "No JSON files found"
+                  fi
+
+            - name: Extract test counts
+              if: always()
+              id: extract_counts
+              run: |
+                  JSON_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
+                  if [ -f "$JSON_FILE" ]; then
+                    PASSED_COUNT=$(jq -r '.stats.passes // 0' "$JSON_FILE")
+                    FAILED_COUNT=$(jq -r '.stats.failures // 0' "$JSON_FILE")
+                    TOTAL_COUNT=$(jq -r '.stats.tests // 0' "$JSON_FILE")
+                    PENDING_COUNT=$(jq -r '.stats.pending // 0' "$JSON_FILE")
+                    echo "passed_count=$PASSED_COUNT" >> $GITHUB_OUTPUT
+                    echo "failed_count=$FAILED_COUNT" >> $GITHUB_OUTPUT
+                    echo "total_count=$TOTAL_COUNT" >> $GITHUB_OUTPUT
+                    echo "pending_count=$PENDING_COUNT" >> $GITHUB_OUTPUT
+                    echo "✅ Test counts extracted: Total=$TOTAL_COUNT, Passed=$PASSED_COUNT, Failed=$FAILED_COUNT, Pending=$PENDING_COUNT"
+                  else
+                    echo "⚠️ No merged mochawesome report found — using default values"
+                    echo "passed_count=0" >> $GITHUB_OUTPUT
+                    echo "failed_count=0" >> $GITHUB_OUTPUT
+                    echo "total_count=0" >> $GITHUB_OUTPUT
+                    echo "pending_count=0" >> $GITHUB_OUTPUT
+                  fi
+
+            - name: Upload merged mochawesome report
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: mochawesome-merged-${{ matrix.environment }}-${{ matrix.browser }}
+                  path: pets-ui/cypress/reports/mochawesome/mochawesome.json
+
+            - name: Show merged stats
+              if: always()
+              run: |
+                  MERGED_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
+                  if [ -f "$MERGED_FILE" ]; then
+                    echo "=== Merged Test Statistics ==="
+                    jq '.stats' "$MERGED_FILE"
+                  else
+                    echo "⚠️ Merged mochawesome report not found at $MERGED_FILE"
+                    echo "Available files in reports directory:"
+                    find pets-ui/cypress/reports -type f -name "*.json" 2>/dev/null || echo "No JSON files found"
+                  fi
+
+            - name: Extract test counts
+              if: always()
+              id: extract_counts
+              run: |
+                  JSON_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
+                  if [ -f "$JSON_FILE" ]; then
+                    PASSED_COUNT=$(jq -r '.stats.passes // 0' "$JSON_FILE")
+                    FAILED_COUNT=$(jq -r '.stats.failures // 0' "$JSON_FILE")
+                    TOTAL_COUNT=$(jq -r '.stats.tests // 0' "$JSON_FILE")
+                    PENDING_COUNT=$(jq -r '.stats.pending // 0' "$JSON_FILE")
+                    echo "passed_count=$PASSED_COUNT" >> $GITHUB_OUTPUT
+                    echo "failed_count=$FAILED_COUNT" >> $GITHUB_OUTPUT
+                    echo "total_count=$TOTAL_COUNT" >> $GITHUB_OUTPUT
+                    echo "pending_count=$PENDING_COUNT" >> $GITHUB_OUTPUT
+                    echo "✅ Test counts extracted: Total=$TOTAL_COUNT, Passed=$PASSED_COUNT, Failed=$FAILED_COUNT, Pending=$PENDING_COUNT"
+                  else
+                    echo "⚠️ No merged mochawesome report found — using default values"
+                    echo "passed_count=0" >> $GITHUB_OUTPUT
+                    echo "failed_count=0" >> $GITHUB_OUTPUT
+                    echo "total_count=0" >> $GITHUB_OUTPUT
+                    echo "pending_count=0" >> $GITHUB_OUTPUT
+                  fi
+
+            - name: Upload merged mochawesome report
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: mochawesome-merged-${{ matrix.environment }}-${{ matrix.browser }}
+                  path: pets-ui/cypress/reports/mochawesome/mochawesome.json
+
+            - name: Show merged stats
+              if: always()
+              run: |
+                  MERGED_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
+                  if [ -f "$MERGED_FILE" ]; then
+                    echo "=== Merged Test Statistics ==="
+                    jq '.stats' "$MERGED_FILE"
+                  else
+                    echo "⚠️ Merged mochawesome report not found at $MERGED_FILE"
+                    echo "Available files in reports directory:"
+                    find pets-ui/cypress/reports -type f -name "*.json" 2>/dev/null || echo "No JSON files found"
+                  fi
+
+            - name: Extract test counts
+              if: always()
+              id: extract_counts
+              run: |
+                  JSON_FILE="pets-ui/cypress/reports/mochawesome/mochawesome.json"
+                  if [ -f "$JSON_FILE" ]; then
+                    PASSED_COUNT=$(jq -r '.stats.passes // 0' "$JSON_FILE")
+                    FAILED_COUNT=$(jq -r '.stats.failures // 0' "$JSON_FILE")
+                    TOTAL_COUNT=$(jq -r '.stats.tests // 0' "$JSON_FILE")
+                    PENDING_COUNT=$(jq -r '.stats.pending // 0' "$JSON_FILE")
+                    echo "passed_count=$PASSED_COUNT" >> $GITHUB_OUTPUT
+                    echo "failed_count=$FAILED_COUNT" >> $GITHUB_OUTPUT
+                    echo "total_count=$TOTAL_COUNT" >> $GITHUB_OUTPUT
+                    echo "pending_count=$PENDING_COUNT" >> $GITHUB_OUTPUT
+                    echo "✅ Test counts extracted: Total=$TOTAL_COUNT, Passed=$PASSED_COUNT, Failed=$FAILED_COUNT, Pending=$PENDING_COUNT"
+                  else
+                    echo "⚠️ No merged mochawesome report found — using default values"
+                    echo "passed_count=0" >> $GITHUB_OUTPUT
+                    echo "failed_count=0" >> $GITHUB_OUTPUT
+                    echo "total_count=0" >> $GITHUB_OUTPUT
+                    echo "pending_count=0" >> $GITHUB_OUTPUT
+                  fi
+            - name: Upload Mochawesome Report
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: nightly-mochawesome-report-${{ matrix.environment }}-${{ matrix.browser }}
+                  path: pets-ui/cypress/reports/mochawesome/
+                  retention-days: 7
+
+            - name: Store env+browser result with test counts
+              if: always()
+              run: |
+                  if [[ "${{ steps.initial_attempt.outcome }}" == "success" ]] || [[ "${{ steps.retry_attempt.outcome }}" == "success" ]]; then
+                    STATUS="PASS"
+                  else
+                    STATUS="FAIL"
+                  fi
+
+                  # Create detailed result file with test counts
+                  cat > ${{ matrix.environment }}-${{ matrix.browser }}-result.json << EOF
+                  {
+                    "status": "$STATUS",
+                    "environment": "${{ matrix.environment }}",
+                    "browser": "${{ matrix.browser }}",
+                    "testCounts": {
+                      "total": ${{ steps.extract_counts.outputs.total_count }},
+                      "passed": ${{ steps.extract_counts.outputs.passed_count }},
+                      "failed": ${{ steps.extract_counts.outputs.failed_count }},
+                      "pending": ${{ steps.extract_counts.outputs.pending_count }}
+                    },
+                    "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
+                  }
+                  EOF
+
+                  # Keep backward compatibility
+                  echo "$STATUS" > ${{ matrix.environment }}-${{ matrix.browser }}-result.txt
+
+            - name: Upload env+browser result
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: env-browser-result-${{ matrix.environment }}-${{ matrix.browser }}
+                  path: |
+                      ${{ matrix.environment }}-${{ matrix.browser }}-result.txt
+                      ${{ matrix.environment }}-${{ matrix.browser }}-result.json
+
+    generate-summary-and-deploy:
+        name: Generate Summary and Deploy Dashboard
+        needs: [setup-matrix, cypress-nightly]
+        if: always()
+        runs-on: ubuntu-latest
+        continue-on-error: true # allow report even if tests fail
+
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Install required tools
+              run: |
+                  sudo apt-get update && sudo apt-get install -y jq bc
+            - name: Download all artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  path: all-artifacts
+                  pattern: "*"
+
+            - name: Create dashboard directory
+              run: |
+                  mkdir -p dashboard
+
+            - name: Generate test summary report with counts
+              id: summary
+              run: |
+                  echo "# 🌙 Nightly Cypress Test Results" > nightly-summary.md
+                  echo "**Run Date**: $(date)" >> nightly-summary.md
+                  echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
+                  echo "" >> nightly-summary.md
+
+                  ENV_MATRIX='${{ needs.setup-matrix.outputs.environments }}'
+                  BROWSER_MATRIX='${{ needs.setup-matrix.outputs.browsers }}'
+                  ENV_LIST=($(echo $ENV_MATRIX | jq -r '.[]'))
+                  BROWSER_LIST=($(echo $BROWSER_MATRIX | jq -r '.[]'))
+
+                  TOTAL=0
+                  FAILS=0
+                  TOTAL_TEST_COUNT=0
+                  TOTAL_PASSED_COUNT=0
+                  TOTAL_FAILED_COUNT=0
+                  TOTAL_PENDING_COUNT=0
+
+                  echo "{" > dashboard/test-results.json
+                  echo "  \"results\": {" >> dashboard/test-results.json
+                  FIRST_ENV=true
+
+                  for env in "${ENV_LIST[@]}"; do
+                    echo "## Environment: $env" >> nightly-summary.md
+                    echo "" >> nightly-summary.md
+                    echo "| Browser | Status | Total Tests | Passed | Failed | Pending |" >> nightly-summary.md
+                    echo "|---------|--------|-------------|--------|--------|---------|" >> nightly-summary.md
+                    
+                    if [ "$FIRST_ENV" = true ]; then
+                      echo "    \"$env\": {" >> dashboard/test-results.json
+                      FIRST_ENV=false
+                    else
+                      echo "    ,\"$env\": {" >> dashboard/test-results.json
+                    fi
+                    
+                    FIRST_BROWSER=true
+                    for browser in "${BROWSER_LIST[@]}"; do
+                      RESULT_FILE="all-artifacts/env-browser-result-${env}-${browser}/${env}-${browser}-result.txt"
+                      RESULT_JSON_FILE="all-artifacts/env-browser-result-${env}-${browser}/${env}-${browser}-result.json"
+                      STATUS="UNKNOWN"
+                      TEST_COUNT=0
+                      PASSED_COUNT=0
+                      FAILED_COUNT=0
+                      PENDING_COUNT=0
                       
-                      .test-counts {
-                          grid-template-columns: repeat(2, 1fr);
-                      }
-                  }
-              </style>
-          </head>
-          <body>
-              <div class="header">
-                  <h1>🌙 Pre-Entry TB Screening - Nightly Tests</h1>
-                  <p class="subtitle">Last 24 Hours | Auto-refreshes every 5 minutes</p>
-              </div>
-              
-              <div class="container">
-                  <div id="loading" class="loading">
-                      <div class="spinner"></div>
-                      <h2>Loading test results...</h2>
-                  </div>
-                  
-                  <div id="dashboard" style="display: none;">
-                      <!-- Content will be populated by JavaScript -->
-                  </div>
-              </div>
-              <script>
-                  function getBrowserIcon(browser) {
-                      const icons = {
-                          'chrome': '🌐',
-                          'firefox': '🔥', 
-                          'edge': '⚡',
-                          'safari': '🧭'
-                      };
-                      return icons[browser.toLowerCase()] || '🌐';
-                  }
-                  
-                  function formatTimestamp(timestamp) {
-                      return new Date(timestamp).toLocaleString();
-                  }
-                  
-                  function getStatusInfo(status) {
-                      const statusMap = {
-                          'PASS': { class: 'pass', text: '✅ PASS', cardClass: 'status-pass-card' },
-                          'FAIL': { class: 'fail', text: '❌ FAIL', cardClass: 'status-fail-card' },
-                          'UNKNOWN': { class: 'unknown', text: '⚪ UNKNOWN', cardClass: 'status-unknown-card' }
-                      };
-                      return statusMap[status] || statusMap['UNKNOWN'];
-                  }
-                  
-                  function createTestCountsHTML(testCounts) {
-                      if (!testCounts || testCounts.total === 0) {
-                          return '<div class="test-counts"><div class="count-item"><span class="count-value">0</span><div class="count-label">No Tests</div></div></div>';
-                      }
+                      if [ -f "$RESULT_FILE" ]; then
+                        STATUS=$(cat "$RESULT_FILE")
+                      fi
                       
-                      return `
-                          <div class="test-counts">
-                              <div class="count-item total">
-                                  <span class="count-value">${testCounts.total || 0}</span>
-                                  <div class="count-label">Total</div>
-                              </div>
-                              <div class="count-item passed">
-                                  <span class="count-value">${testCounts.passed || 0}</span>
-                                  <div class="count-label">Passed</div>
-                              </div>
-                              <div class="count-item failed">
-                                  <span class="count-value">${testCounts.failed || 0}</span>
-                                  <div class="count-label">Failed</div>
-                              </div>
-                              <div class="count-item pending">
-                                  <span class="count-value">${testCounts.pending || 0}</span>
-                                  <div class="count-label">Pending</div>
-                              </div>
-                          </div>
-                      `;
-                  }
-                  
-                  function createEnvironmentSection(envName, browsers) {
-                      let sectionHTML = '<div class="environment-section">';
-                      sectionHTML += '<div class="environment-title">Environment: ' + envName.toUpperCase() + '</div>';
-                      sectionHTML += '<div class="browser-grid">';
+                      # Extract test counts from JSON if available
+                      if [ -f "$RESULT_JSON_FILE" ] && command -v jq >/dev/null 2>&1; then
+                        TEST_COUNT=$(jq -r '.testCounts.total // 0' "$RESULT_JSON_FILE")
+                        PASSED_COUNT=$(jq -r '.testCounts.passed // 0' "$RESULT_JSON_FILE")
+                        FAILED_COUNT=$(jq -r '.testCounts.failed // 0' "$RESULT_JSON_FILE")
+                        PENDING_COUNT=$(jq -r '.testCounts.pending // 0' "$RESULT_JSON_FILE")
+                      fi
                       
-                      Object.entries(browsers).forEach(function(entry) {
-                          const browser = entry[0];
-                          const browserData = entry[1];
-                          const status = browserData.status || browserData; // Handle both old and new format
-                          const testCounts = browserData.testCounts || {};
-                          const statusInfo = getStatusInfo(status);
+                      echo "| $browser | $([ "$STATUS" = "PASS" ] && echo "✅ PASS" || echo "❌ FAIL") | $TEST_COUNT | $PASSED_COUNT | $FAILED_COUNT | $PENDING_COUNT |" >> nightly-summary.md
+                      
+                      if [ "$FIRST_BROWSER" = true ]; then
+                        echo "      \"$browser\": {" >> dashboard/test-results.json
+                        echo "        \"status\": \"$STATUS\"," >> dashboard/test-results.json
+                        echo "        \"testCounts\": {" >> dashboard/test-results.json
+                        echo "          \"total\": $TEST_COUNT," >> dashboard/test-results.json
+                        echo "          \"passed\": $PASSED_COUNT," >> dashboard/test-results.json
+                        echo "          \"failed\": $FAILED_COUNT," >> dashboard/test-results.json
+                        echo "          \"pending\": $PENDING_COUNT" >> dashboard/test-results.json
+                        echo "        }" >> dashboard/test-results.json
+                        echo "      }" >> dashboard/test-results.json
+                        FIRST_BROWSER=false
+                      else
+                        echo "      ,\"$browser\": {" >> dashboard/test-results.json
+                        echo "        \"status\": \"$STATUS\"," >> dashboard/test-results.json
+                        echo "        \"testCounts\": {" >> dashboard/test-results.json
+                        echo "          \"total\": $TEST_COUNT," >> dashboard/test-results.json
+                        echo "          \"passed\": $PASSED_COUNT," >> dashboard/test-results.json
+                        echo "          \"failed\": $FAILED_COUNT," >> dashboard/test-results.json
+                        echo "          \"pending\": $PENDING_COUNT" >> dashboard/test-results.json
+                        echo "        }" >> dashboard/test-results.json
+                        echo "      }" >> dashboard/test-results.json
+                      fi
+                      
+                      TOTAL=$((TOTAL+1))
+                      if [ "$STATUS" != "PASS" ]; then
+                        FAILS=$((FAILS+1))
+                      fi
+                      
+                      # Aggregate test counts
+                      TOTAL_TEST_COUNT=$((TOTAL_TEST_COUNT+TEST_COUNT))
+                      TOTAL_PASSED_COUNT=$((TOTAL_PASSED_COUNT+PASSED_COUNT))
+                      TOTAL_FAILED_COUNT=$((TOTAL_FAILED_COUNT+FAILED_COUNT))
+                      TOTAL_PENDING_COUNT=$((TOTAL_PENDING_COUNT+PENDING_COUNT))
+                    done
+                    echo "    }" >> dashboard/test-results.json
+                    echo "" >> nightly-summary.md
+                  done
+                  echo "  }" >> dashboard/test-results.json
+
+                  # Add summary counts
+                  echo "" >> nightly-summary.md
+                  echo "## 📊 Test Summary" >> nightly-summary.md
+                  echo "- **Total Test Combinations**: $TOTAL" >> nightly-summary.md
+                  echo "- **Total Individual Tests**: $TOTAL_TEST_COUNT" >> nightly-summary.md
+                  echo "- **Total Passed**: $TOTAL_PASSED_COUNT" >> nightly-summary.md
+                  echo "- **Total Failed**: $TOTAL_FAILED_COUNT" >> nightly-summary.md
+                  echo "- **Total Pending**: $TOTAL_PENDING_COUNT" >> nightly-summary.md
+                  echo "" >> nightly-summary.md
+
+                  if [ $FAILS -eq 0 ]; then
+                    echo "## ✅ Overall Status: PASSED" >> nightly-summary.md
+                    echo "All $TOTAL combinations passed." >> nightly-summary.md
+                    echo "overall_status=PASS" >> $GITHUB_OUTPUT
+                    OVERALL_STATUS="PASS"
+                  else
+                    echo "## ❌ Overall Status: FAILED" >> nightly-summary.md
+                    echo "$FAILS of $TOTAL environment—browser combinations failed." >> nightly-summary.md
+                    echo "overall_status=FAIL" >> $GITHUB_OUTPUT
+                    OVERALL_STATUS="FAIL"
+                  fi
+
+                  echo "  ,\"overallStatus\": \"$OVERALL_STATUS\"," >> dashboard/test-results.json
+                  echo "  \"totalCombinations\": $TOTAL," >> dashboard/test-results.json
+                  echo "  \"failedCombinations\": $FAILS," >> dashboard/test-results.json
+                  echo "  \"totalTests\": $TOTAL_TEST_COUNT," >> dashboard/test-results.json
+                  echo "  \"totalPassed\": $TOTAL_PASSED_COUNT," >> dashboard/test-results.json
+                  echo "  \"totalFailed\": $TOTAL_FAILED_COUNT," >> dashboard/test-results.json
+                  echo "  \"totalSkipped\": $TOTAL_PENDING_COUNT," >> dashboard/test-results.json
+
+                  if [ $TOTAL -gt 0 ]; then
+                    SUCCESS_RATE=$(echo "scale=0; ($TOTAL-$FAILS)*100/$TOTAL" | bc)
+                  else
+                    SUCCESS_RATE=0
+                  fi
+
+                  echo "  \"successRate\": $SUCCESS_RATE," >> dashboard/test-results.json
+                  echo "  \"runUrl\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"," >> dashboard/test-results.json
+                  echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)\"" >> dashboard/test-results.json
+                  echo "}" >> dashboard/test-results.json
+
+            - name: Create enhanced dashboard HTML with test counts
+              run: |
+                  cat > dashboard/index.html << 'EOF'
+                  <!DOCTYPE html>
+                  <html lang="en">
+                  <head>
+                      <meta charset="UTF-8">
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                      <title>🌙 Pre-Entry TB Screening - Nightly Tests</title>
+                      <style>
+                          body {
+                              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                              margin: 0;
+                              padding: 0;
+                              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                              min-height: 100vh;
+                          }
                           
-                          sectionHTML += 
-                              '<div class="browser-card ' + statusInfo.cardClass + '">' +
-                                  '<div class="browser-icon">' + getBrowserIcon(browser) + '</div>' +
-                                  '<div class="browser-name">' + browser.charAt(0).toUpperCase() + browser.slice(1) + '</div>' +
-                                  '<span class="status-badge ' + statusInfo.class + '">' + statusInfo.text + '</span>' +
-                                  createTestCountsHTML(testCounts) +
-                              '</div>';
-                      });
-                      
-                      sectionHTML += '</div></div>';
-                      return sectionHTML;
-                  }
-                  
-                  function createBrowserResults(results) {
-                      if (!results) {
-                          return '<div class="browser-results"><p>No test results available</p></div>';
-                      }
-                      
-                      let resultsHTML = '<div class="browser-results"><h2>Test Results by Environment</h2>';
-                      
-                      Object.entries(results).forEach(function(entry) {
-                          const envName = entry[0];
-                          const browsers = entry[1];
-                          resultsHTML += createEnvironmentSection(envName, browsers);
-                      });
-                      
-                      resultsHTML += '</div>';
-                      return resultsHTML;
-                  }
-                  
-                  function loadDashboard() {
-                      fetch('./test-results.json')
-                          .then(function(response) { return response.json(); })
-                          .then(function(data) {
-                              const dashboard = document.getElementById('dashboard');
-                              const loading = document.getElementById('loading');
-                              
-                              // Calculate hours ago
-                              const now = new Date();
-                              const testTime = new Date(data.timestamp);
-                              const hoursAgo = Math.floor((now - testTime) / (1000 * 60 * 60));
-                              
-                              dashboard.innerHTML = 
-                                  '<div class="metrics">' +
-                                      '<div class="metric-card">' +
-                                          '<div class="metric-value ' + (data.overallStatus === 'PASS' ? 'status-pass' : 'status-fail') + '">' +
-                                              data.overallStatus +
-                                          '</div>' +
-                                          '<div class="metric-label">Current Status</div>' +
-                                      '</div>' +
-                                      '<div class="metric-card">' +
-                                          '<div class="metric-value">' + (data.successRate || 0) + '%</div>' +
-                                          '<div class="metric-label">Success Rate</div>' +
-                                      '</div>' +
-                                      '<div class="metric-card">' +
-                                          '<div class="metric-value">' + (data.totalTests || 0) + '</div>' +
-                                          '<div class="metric-label">Total Tests</div>' +
-                                      '</div>' +
-                                      '<div class="metric-card">' +
-                                          '<div class="metric-value">' + (data.totalPassed || 0) + '</div>' +
-                                          '<div class="metric-label">Tests Passed</div>' +
-                                      '</div>' +
-                                      '<div class="metric-card">' +
-                                          '<div class="metric-value">' + (data.totalFailed || 0) + '</div>' +
-                                          '<div class="metric-label">Tests Failed</div>' +
-                                      '</div>' +
-                                      '<div class="metric-card">' +
-                                          '<div class="metric-value">' + hoursAgo + '</div>' +
-                                          '<div class="metric-label">Hours Ago</div>' +
-                                      '</div>' +
-                                  '</div>' +
-                                  createBrowserResults(data.results) +
-                                  '<div class="footer">' +
-                                      '<a href="' + data.runUrl + '" target="_blank" class="link">📊 View Detailed Reports</a>' +
-                                      '<p class="last-updated">Updated: ' + formatTimestamp(data.timestamp) + '</p>' +
-                                  '</div>';
-                              
-                              loading.style.display = 'none';
-                              dashboard.style.display = 'block';
-                          })
-                          .catch(function(error) {
-                              console.error('Error loading test results:', error);
-                              document.getElementById('loading').innerHTML = 
-                                  '<div class="spinner"></div>' +
-                                  '<h2>Error loading test results</h2>' +
-                                  '<p>Please check console for details</p>';
-                          });
-                  }
-                  
-                  // Load dashboard on page load
-                  loadDashboard();
-                  
-                  // Auto-refresh every 5 minutes
-                  setInterval(loadDashboard, 5 * 60 * 1000);
-              </script>
-          </body>
-          </html>
-          EOF
-
-          echo "  \"successRate\": $SUCCESS_RATE," >> dashboard/test-results.json
-          echo "  \"runUrl\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"," >> dashboard/test-results.json
-          echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)\"" >> dashboard/test-results.json
-          echo "}" >> dashboard/test-results.json
-
-      - name: Create enhanced dashboard HTML with test counts
-        run: |
-          cat > dashboard/index.html << 'EOF'
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>🌙 Pre-Entry TB Screening - Nightly Tests</title>
-              <style>
-                  body {
-                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                      margin: 0;
-                      padding: 0;
-                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                      min-height: 100vh;
-                  }
-                  
-                  .header {
-                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                      color: white;
-                      padding: 20px;
-                      text-align: center;
-                  }
-                  
-                  .header h1 {
-                      margin: 0;
-                      font-size: 2rem;
-                  }
-                  
-                  .subtitle {
-                      margin: 5px 0 0 0;
-                      opacity: 0.9;
-                  }
-                  
-                  .container {
-                      max-width: 1200px;
-                      margin: 0 auto;
-                      padding: 20px;
-                  }
-                  
-                  .metrics {
-                      display: grid;
-                      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                      gap: 20px;
-                      margin: 20px 0;
-                  }
-                  
-                  .metric-card {
-                      background: white;
-                      border-radius: 12px;
-                      padding: 24px;
-                      text-align: center;
-                      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                      transition: transform 0.2s ease, box-shadow 0.2s ease;
-                  }
-                  
-                  .metric-card:hover {
-                      transform: translateY(-2px);
-                      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-                  }
-                  
-                  .metric-value {
-                      font-size: 2.5rem;
-                      font-weight: bold;
-                      margin-bottom: 8px;
-                  }
-                  
-                  .metric-label {
-                      color: #666;
-                      text-transform: uppercase;
-                      font-size: 0.8rem;
-                      letter-spacing: 0.5px;
-                  }
-                  
-                  .status-pass { color: #22c55e; }
-                  .status-fail { color: #ef4444; }
-                  
-                  .browser-results {
-                      background: white;
-                      border-radius: 12px;
-                      padding: 24px;
-                      margin: 20px 0;
-                      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                  }
-                  
-                  .environment-section {
-                      margin: 30px 0;
-                      padding: 20px;
-                      border-left: 4px solid #667eea;
-                      background: #f8fafc;
-                      border-radius: 0 8px 8px 0;
-                  }
-                  
-                  .environment-title {
-                      font-size: 1.5rem;
-                      font-weight: bold;
-                      color: #374151;
-                      margin-bottom: 20px;
-                      text-transform: uppercase;
-                      letter-spacing: 1px;
-                  }
-                  
-                  .browser-grid {
-                      display: grid;
-                      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-                      gap: 16px;
-                      margin-top: 20px;
-                  }
-                  
-                  .browser-card {
-                      background: white;
-                      border-radius: 12px;
-                      padding: 24px;
-                      text-align: center;
-                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                      transition: all 0.2s ease;
-                      border: 2px solid transparent;
-                  }
-                  
-                  .browser-card:hover {
-                      transform: translateY(-4px);
-                      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-                  }
-                  
-                  .browser-card.status-pass-card {
-                      border-color: #22c55e;
-                  }
-                  
-                  .browser-card.status-fail-card {
-                      border-color: #ef4444;
-                  }
-                  
-                  .browser-icon {
-                      font-size: 3rem;
-                      margin-bottom: 12px;
-                      display: block;
-                  }
-                  
-                  .browser-name {
-                      font-size: 1.25rem;
-                      font-weight: bold;
-                      margin-bottom: 12px;
-                      color: #374151;
-                  }
-                  
-                  .status-badge {
-                      padding: 8px 16px;
-                      border-radius: 20px;
-                      font-size: 0.9rem;
-                      font-weight: bold;
-                      text-transform: uppercase;
-                      letter-spacing: 0.5px;
-                      margin-bottom: 12px;
-                      display: inline-block;
-                  }
-                  
-                  .status-badge.pass {
-                      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-                      color: #166534;
-                      border: 2px solid #22c55e;
-                  }
-                  
-                  .status-badge.fail {
-                      background: linear-gradient(135deg, #fef2f2, #fecaca);
-                      color: #dc2626;
-                      border: 2px solid #ef4444;
-                  }
-                  
-                  .status-badge.unknown {
-                      background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-                      color: #6b7280;
-                      border: 2px solid #9ca3af;
-                  }
-                  
-                  .test-counts {
-                      display: grid;
-                      grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-                      gap: 8px;
-                      margin-top: 12px;
-                  }
-                  
-                  .count-item {
-                      text-align: center;
-                      padding: 8px 4px;
-                      border-radius: 8px;
-                      background: #f9fafb;
-                      border: 1px solid #e5e7eb;
-                  }
-                  
-                  .count-value {
-                      display: block;
-                      font-size: 1.2rem;
-                      font-weight: bold;
-                      color: #374151;
-                  }
-                  
-                  .count-label {
-                      font-size: 0.7rem;
-                      color: #6b7280;
-                      text-transform: uppercase;
-                      letter-spacing: 0.5px;
-                      margin-top: 2px;
-                  }
-                  
-                  .count-item.total { border-left: 3px solid #3b82f6; }
-                  .count-item.passed { border-left: 3px solid #22c55e; }
-                  .count-item.failed { border-left: 3px solid #ef4444; }
-                  .count-item.pending { border-left: 3px solid #f59e0b; }
-                  
-                  .footer {
-                      text-align: center;
-                      margin-top: 40px;
-                      padding: 20px;
-                  }
-                  
-                  .link {
-                      display: inline-block;
-                      background: white;
-                      color: #667eea;
-                      text-decoration: none;
-                      font-weight: 600;
-                      padding: 12px 24px;
-                      border-radius: 8px;
-                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                      transition: all 0.2s ease;
-                  }
-                  
-                  .link:hover {
-                      background: #667eea;
-                      color: white;
-                      transform: translateY(-2px);
-                      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                  }
-                  
-                  .last-updated {
-                      color: white;
-                      margin-top: 16px;
-                      opacity: 0.9;
-                  }
-                  
-                  .loading {
-                      text-align: center;
-                      padding: 40px;
-                      color: white;
-                  }
-                  
-                  .spinner {
-                      border: 4px solid rgba(255, 255, 255, 0.3);
-                      border-radius: 50%;
-                      border-top: 4px solid white;
-                      width: 40px;
-                      height: 40px;
-                      animation: spin 1s linear infinite;
-                      margin: 0 auto 20px;
-                  }
-                  
-                  @keyframes spin {
-                      0% { transform: rotate(0deg); }
-                      100% { transform: rotate(360deg); }
-                  }
-                  
-                  @media (max-width: 768px) {
-                      .metrics {
-                          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-                          gap: 16px;
-                      }
-                      
-                      .browser-grid {
-                          grid-template-columns: 1fr;
-                      }
-                      
-                      .metric-value {
-                          font-size: 2rem;
-                      }
-                      
-                      .header h1 {
-                          font-size: 1.5rem;
-                      }
-                      
-                      .test-counts {
-                          grid-template-columns: repeat(2, 1fr);
-                      }
-                  }
-              </style>
-          </head>
-          <body>
-              <div class="header">
-                  <h1>🌙 Pre-Entry TB Screening - Nightly Tests</h1>
-                  <p class="subtitle">Last 24 Hours | Auto-refreshes every 5 minutes</p>
-              </div>
-              
-              <div class="container">
-                  <div id="loading" class="loading">
-                      <div class="spinner"></div>
-                      <h2>Loading test results...</h2>
-                  </div>
-                  
-                  <div id="dashboard" style="display: none;">
-                      <!-- Content will be populated by JavaScript -->
-                  </div>
-              </div>
-              <script>
-                  function getBrowserIcon(browser) {
-                      const icons = {
-                          'chrome': '🌐',
-                          'firefox': '🔥', 
-                          'edge': '⚡',
-                          'safari': '🧭'
-                      };
-                      return icons[browser.toLowerCase()] || '🌐';
-                  }
-                  
-                  function formatTimestamp(timestamp) {
-                      return new Date(timestamp).toLocaleString();
-                  }
-                  
-                  function getStatusInfo(status) {
-                      const statusMap = {
-                          'PASS': { class: 'pass', text: '✅ PASS', cardClass: 'status-pass-card' },
-                          'FAIL': { class: 'fail', text: '❌ FAIL', cardClass: 'status-fail-card' },
-                          'UNKNOWN': { class: 'unknown', text: '⚪ UNKNOWN', cardClass: 'status-unknown-card' }
-                      };
-                      return statusMap[status] || statusMap['UNKNOWN'];
-                  }
-                  
-                  function createTestCountsHTML(testCounts) {
-                      if (!testCounts || testCounts.total === 0) {
-                          return '<div class="test-counts"><div class="count-item"><span class="count-value">0</span><div class="count-label">No Tests</div></div></div>';
-                      }
-                      
-                      return `
-                          <div class="test-counts">
-                              <div class="count-item total">
-                                  <span class="count-value">${testCounts.total || 0}</span>
-                                  <div class="count-label">Total</div>
-                              </div>
-                              <div class="count-item passed">
-                                  <span class="count-value">${testCounts.passed || 0}</span>
-                                  <div class="count-label">Passed</div>
-                              </div>
-                              <div class="count-item failed">
-                                  <span class="count-value">${testCounts.failed || 0}</span>
-                                  <div class="count-label">Failed</div>
-                              </div>
-                              <div class="count-item pending">
-                                  <span class="count-value">${testCounts.pending || 0}</span>
-                                  <div class="count-label">Pending</div>
-                              </div>
-                          </div>
-                      `;
-                  }
-                  
-                  function createEnvironmentSection(envName, browsers) {
-                      let sectionHTML = '<div class="environment-section">';
-                      sectionHTML += '<div class="environment-title">Environment: ' + envName.toUpperCase() + '</div>';
-                      sectionHTML += '<div class="browser-grid">';
-                      
-                      Object.entries(browsers).forEach(function(entry) {
-                          const browser = entry[0];
-                          const browserData = entry[1];
-                          const status = browserData.status || browserData; // Handle both old and new format
-                          const testCounts = browserData.testCounts || {};
-                          const statusInfo = getStatusInfo(status);
+                          .header {
+                              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                              color: white;
+                              padding: 20px;
+                              text-align: center;
+                          }
                           
-                          sectionHTML += 
-                              '<div class="browser-card ' + statusInfo.cardClass + '">' +
-                                  '<div class="browser-icon">' + getBrowserIcon(browser) + '</div>' +
-                                  '<div class="browser-name">' + browser.charAt(0).toUpperCase() + browser.slice(1) + '</div>' +
-                                  '<span class="status-badge ' + statusInfo.class + '">' + statusInfo.text + '</span>' +
-                                  createTestCountsHTML(testCounts) +
-                              '</div>';
-                      });
-                      
-                      sectionHTML += '</div></div>';
-                      return sectionHTML;
-                  }
-                  
-                  function createBrowserResults(results) {
-                      if (!results) {
-                          return '<div class="browser-results"><p>No test results available</p></div>';
-                      }
-                      
-                      let resultsHTML = '<div class="browser-results"><h2>Test Results by Environment</h2>';
-                      
-                      Object.entries(results).forEach(function(entry) {
-                          const envName = entry[0];
-                          const browsers = entry[1];
-                          resultsHTML += createEnvironmentSection(envName, browsers);
-                      });
-                      
-                      resultsHTML += '</div>';
-                      return resultsHTML;
-                  }
-                  
-                  function loadDashboard() {
-                      fetch('./test-results.json')
-                          .then(function(response) { return response.json(); })
-                          .then(function(data) {
-                              const dashboard = document.getElementById('dashboard');
-                              const loading = document.getElementById('loading');
+                          .header h1 {
+                              margin: 0;
+                              font-size: 2rem;
+                          }
+                          
+                          .subtitle {
+                              margin: 5px 0 0 0;
+                              opacity: 0.9;
+                          }
+                          
+                          .container {
+                              max-width: 1200px;
+                              margin: 0 auto;
+                              padding: 20px;
+                          }
+                          
+                          .metrics {
+                              display: grid;
+                              grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                              gap: 20px;
+                              margin: 20px 0;
+                          }
+                          
+                          .metric-card {
+                              background: white;
+                              border-radius: 12px;
+                              padding: 24px;
+                              text-align: center;
+                              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                              transition: transform 0.2s ease, box-shadow 0.2s ease;
+                          }
+                          
+                          .metric-card:hover {
+                              transform: translateY(-2px);
+                              box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+                          }
+                          
+                          .metric-value {
+                              font-size: 2.5rem;
+                              font-weight: bold;
+                              margin-bottom: 8px;
+                          }
+                          
+                          .metric-label {
+                              color: #666;
+                              text-transform: uppercase;
+                              font-size: 0.8rem;
+                              letter-spacing: 0.5px;
+                          }
+                          
+                          .status-pass { color: #22c55e; }
+                          .status-fail { color: #ef4444; }
+                          
+                          .browser-results {
+                              background: white;
+                              border-radius: 12px;
+                              padding: 24px;
+                              margin: 20px 0;
+                              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                          }
+                          
+                          .environment-section {
+                              margin: 30px 0;
+                              padding: 20px;
+                              border-left: 4px solid #667eea;
+                              background: #f8fafc;
+                              border-radius: 0 8px 8px 0;
+                          }
+                          
+                          .environment-title {
+                              font-size: 1.5rem;
+                              font-weight: bold;
+                              color: #374151;
+                              margin-bottom: 20px;
+                              text-transform: uppercase;
+                              letter-spacing: 1px;
+                          }
+                          
+                          .browser-grid {
+                              display: grid;
+                              grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                              gap: 16px;
+                              margin-top: 20px;
+                          }
+                          
+                          .browser-card {
+                              background: white;
+                              border-radius: 12px;
+                              padding: 24px;
+                              text-align: center;
+                              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                              transition: all 0.2s ease;
+                              border: 2px solid transparent;
+                          }
+                          
+                          .browser-card:hover {
+                              transform: translateY(-4px);
+                              box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+                          }
+                          
+                          .browser-card.status-pass-card {
+                              border-color: #22c55e;
+                          }
+                          
+                          .browser-card.status-fail-card {
+                              border-color: #ef4444;
+                          }
+                          
+                          .browser-icon {
+                              font-size: 3rem;
+                              margin-bottom: 12px;
+                              display: block;
+                          }
+                          
+                          .browser-name {
+                              font-size: 1.25rem;
+                              font-weight: bold;
+                              margin-bottom: 12px;
+                              color: #374151;
+                          }
+                          
+                          .status-badge {
+                              padding: 8px 16px;
+                              border-radius: 20px;
+                              font-size: 0.9rem;
+                              font-weight: bold;
+                              text-transform: uppercase;
+                              letter-spacing: 0.5px;
+                              margin-bottom: 12px;
+                              display: inline-block;
+                          }
+                          
+                          .status-badge.pass {
+                              background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+                              color: #166534;
+                              border: 2px solid #22c55e;
+                          }
+                          
+                          .status-badge.fail {
+                              background: linear-gradient(135deg, #fef2f2, #fecaca);
+                              color: #dc2626;
+                              border: 2px solid #ef4444;
+                          }
+                          
+                          .status-badge.unknown {
+                              background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+                              color: #6b7280;
+                              border: 2px solid #9ca3af;
+                          }
+                          
+                          .test-counts {
+                              display: grid;
+                              grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+                              gap: 8px;
+                              margin-top: 12px;
+                          }
+                          
+                          .count-item {
+                              text-align: center;
+                              padding: 8px 4px;
+                              border-radius: 8px;
+                              background: #f9fafb;
+                              border: 1px solid #e5e7eb;
+                          }
+                          
+                          .count-value {
+                              display: block;
+                              font-size: 1.2rem;
+                              font-weight: bold;
+                              color: #374151;
+                          }
+                          
+                          .count-label {
+                              font-size: 0.7rem;
+                              color: #6b7280;
+                              text-transform: uppercase;
+                              letter-spacing: 0.5px;
+                              margin-top: 2px;
+                          }
+                          
+                          .count-item.total { border-left: 3px solid #3b82f6; }
+                          .count-item.passed { border-left: 3px solid #22c55e; }
+                          .count-item.failed { border-left: 3px solid #ef4444; }
+                          .count-item.pending { border-left: 3px solid #f59e0b; }
+                          
+                          .footer {
+                              text-align: center;
+                              margin-top: 40px;
+                              padding: 20px;
+                          }
+                          
+                          .link {
+                              display: inline-block;
+                              background: white;
+                              color: #667eea;
+                              text-decoration: none;
+                              font-weight: 600;
+                              padding: 12px 24px;
+                              border-radius: 8px;
+                              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                              transition: all 0.2s ease;
+                          }
+                          
+                          .link:hover {
+                              background: #667eea;
+                              color: white;
+                              transform: translateY(-2px);
+                              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                          }
+                          
+                          .last-updated {
+                              color: white;
+                              margin-top: 16px;
+                              opacity: 0.9;
+                          }
+                          
+                          .loading {
+                              text-align: center;
+                              padding: 40px;
+                              color: white;
+                          }
+                          
+                          .spinner {
+                              border: 4px solid rgba(255, 255, 255, 0.3);
+                              border-radius: 50%;
+                              border-top: 4px solid white;
+                              width: 40px;
+                              height: 40px;
+                              animation: spin 1s linear infinite;
+                              margin: 0 auto 20px;
+                          }
+                          
+                          @keyframes spin {
+                              0% { transform: rotate(0deg); }
+                              100% { transform: rotate(360deg); }
+                          }
+                          
+                          @media (max-width: 768px) {
+                              .metrics {
+                                  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                                  gap: 16px;
+                              }
                               
-                              // Calculate hours ago
-                              const now = new Date();
-                              const testTime = new Date(data.timestamp);
-                              const hoursAgo = Math.floor((now - testTime) / (1000 * 60 * 60));
+                              .browser-grid {
+                                  grid-template-columns: 1fr;
+                              }
                               
-                              dashboard.innerHTML = 
-                                  '<div class="metrics">' +
-                                      '<div class="metric-card">' +
-                                          '<div class="metric-value ' + (data.overallStatus === 'PASS' ? 'status-pass' : 'status-fail') + '">' +
-                                              data.overallStatus +
+                              .metric-value {
+                                  font-size: 2rem;
+                              }
+                              
+                              .header h1 {
+                                  font-size: 1.5rem;
+                              }
+                              
+                              .test-counts {
+                                  grid-template-columns: repeat(2, 1fr);
+                              }
+                          }
+                      </style>
+                  </head>
+                  <body>
+                      <div class="header">
+                          <h1>🌙 Pre-Entry TB Screening - Nightly Tests</h1>
+                          <p class="subtitle">Last 24 Hours | Auto-refreshes every 5 minutes</p>
+                      </div>
+                      
+                      <div class="container">
+                          <div id="loading" class="loading">
+                              <div class="spinner"></div>
+                              <h2>Loading test results...</h2>
+                          </div>
+                          
+                          <div id="dashboard" style="display: none;">
+                              <!-- Content will be populated by JavaScript -->
+                          </div>
+                      </div>
+                      <script>
+                          function getBrowserIcon(browser) {
+                              const icons = {
+                                  'chrome': '🌐',
+                                  'firefox': '🔥', 
+                                  'edge': '⚡',
+                                  'safari': '🧭'
+                              };
+                              return icons[browser.toLowerCase()] || '🌐';
+                          }
+                          
+                          function formatTimestamp(timestamp) {
+                              return new Date(timestamp).toLocaleString();
+                          }
+                          
+                          function getStatusInfo(status) {
+                              const statusMap = {
+                                  'PASS': { class: 'pass', text: '✅ PASS', cardClass: 'status-pass-card' },
+                                  'FAIL': { class: 'fail', text: '❌ FAIL', cardClass: 'status-fail-card' },
+                                  'UNKNOWN': { class: 'unknown', text: '⚪ UNKNOWN', cardClass: 'status-unknown-card' }
+                              };
+                              return statusMap[status] || statusMap['UNKNOWN'];
+                          }
+                          
+                          function createTestCountsHTML(testCounts) {
+                              if (!testCounts || testCounts.total === 0) {
+                                  return '<div class="test-counts"><div class="count-item"><span class="count-value">0</span><div class="count-label">No Tests</div></div></div>';
+                              }
+                              
+                              return `
+                                  <div class="test-counts">
+                                      <div class="count-item total">
+                                          <span class="count-value">${testCounts.total || 0}</span>
+                                          <div class="count-label">Total</div>
+                                      </div>
+                                      <div class="count-item passed">
+                                          <span class="count-value">${testCounts.passed || 0}</span>
+                                          <div class="count-label">Passed</div>
+                                      </div>
+                                      <div class="count-item failed">
+                                          <span class="count-value">${testCounts.failed || 0}</span>
+                                          <div class="count-label">Failed</div>
+                                      </div>
+                                      <div class="count-item pending">
+                                          <span class="count-value">${testCounts.pending || 0}</span>
+                                          <div class="count-label">Pending</div>
+                                      </div>
+                                  </div>
+                              `;
+                          }
+                          
+                          function createEnvironmentSection(envName, browsers) {
+                              let sectionHTML = '<div class="environment-section">';
+                              sectionHTML += '<div class="environment-title">Environment: ' + envName.toUpperCase() + '</div>';
+                              sectionHTML += '<div class="browser-grid">';
+                              
+                              Object.entries(browsers).forEach(function(entry) {
+                                  const browser = entry[0];
+                                  const browserData = entry[1];
+                                  const status = browserData.status || browserData; // Handle both old and new format
+                                  const testCounts = browserData.testCounts || {};
+                                  const statusInfo = getStatusInfo(status);
+                                  
+                                  sectionHTML += 
+                                      '<div class="browser-card ' + statusInfo.cardClass + '">' +
+                                          '<div class="browser-icon">' + getBrowserIcon(browser) + '</div>' +
+                                          '<div class="browser-name">' + browser.charAt(0).toUpperCase() + browser.slice(1) + '</div>' +
+                                          '<span class="status-badge ' + statusInfo.class + '">' + statusInfo.text + '</span>' +
+                                          createTestCountsHTML(testCounts) +
+                                      '</div>';
+                              });
+                              
+                              sectionHTML += '</div></div>';
+                              return sectionHTML;
+                          }
+                          
+                          function createBrowserResults(results) {
+                              if (!results) {
+                                  return '<div class="browser-results"><p>No test results available</p></div>';
+                              }
+                              
+                              let resultsHTML = '<div class="browser-results"><h2>Test Results by Environment</h2>';
+                              
+                              Object.entries(results).forEach(function(entry) {
+                                  const envName = entry[0];
+                                  const browsers = entry[1];
+                                  resultsHTML += createEnvironmentSection(envName, browsers);
+                              });
+                              
+                              resultsHTML += '</div>';
+                              return resultsHTML;
+                          }
+                          
+                          function loadDashboard() {
+                              fetch('./test-results.json')
+                                  .then(function(response) { return response.json(); })
+                                  .then(function(data) {
+                                      const dashboard = document.getElementById('dashboard');
+                                      const loading = document.getElementById('loading');
+                                      
+                                      // Calculate hours ago
+                                      const now = new Date();
+                                      const testTime = new Date(data.timestamp);
+                                      const hoursAgo = Math.floor((now - testTime) / (1000 * 60 * 60));
+                                      
+                                      dashboard.innerHTML = 
+                                          '<div class="metrics">' +
+                                              '<div class="metric-card">' +
+                                                  '<div class="metric-value ' + (data.overallStatus === 'PASS' ? 'status-pass' : 'status-fail') + '">' +
+                                                      data.overallStatus +
+                                                  '</div>' +
+                                                  '<div class="metric-label">Current Status</div>' +
+                                              '</div>' +
+                                              '<div class="metric-card">' +
+                                                  '<div class="metric-value">' + (data.successRate || 0) + '%</div>' +
+                                                  '<div class="metric-label">Success Rate</div>' +
+                                              '</div>' +
+                                              '<div class="metric-card">' +
+                                                  '<div class="metric-value">' + (data.totalTests || 0) + '</div>' +
+                                                  '<div class="metric-label">Total Tests</div>' +
+                                              '</div>' +
+                                              '<div class="metric-card">' +
+                                                  '<div class="metric-value">' + (data.totalPassed || 0) + '</div>' +
+                                                  '<div class="metric-label">Tests Passed</div>' +
+                                              '</div>' +
+                                              '<div class="metric-card">' +
+                                                  '<div class="metric-value">' + (data.totalFailed || 0) + '</div>' +
+                                                  '<div class="metric-label">Tests Failed</div>' +
+                                              '</div>' +
+                                              '<div class="metric-card">' +
+                                                  '<div class="metric-value">' + hoursAgo + '</div>' +
+                                                  '<div class="metric-label">Hours Ago</div>' +
+                                              '</div>' +
                                           '</div>' +
-                                          '<div class="metric-label">Current Status</div>' +
-                                      '</div>' +
-                                      '<div class="metric-card">' +
-                                          '<div class="metric-value">' + (data.successRate || 0) + '%</div>' +
-                                          '<div class="metric-label">Success Rate</div>' +
-                                      '</div>' +
-                                      '<div class="metric-card">' +
-                                          '<div class="metric-value">' + (data.totalTests || 0) + '</div>' +
-                                          '<div class="metric-label">Total Tests</div>' +
-                                      '</div>' +
-                                      '<div class="metric-card">' +
-                                          '<div class="metric-value">' + (data.totalPassed || 0) + '</div>' +
-                                          '<div class="metric-label">Tests Passed</div>' +
-                                      '</div>' +
-                                      '<div class="metric-card">' +
-                                          '<div class="metric-value">' + (data.totalFailed || 0) + '</div>' +
-                                          '<div class="metric-label">Tests Failed</div>' +
-                                      '</div>' +
-                                      '<div class="metric-card">' +
-                                          '<div class="metric-value">' + hoursAgo + '</div>' +
-                                          '<div class="metric-label">Hours Ago</div>' +
-                                      '</div>' +
-                                  '</div>' +
-                                  createBrowserResults(data.results) +
-                                  '<div class="footer">' +
-                                      '<a href="' + data.runUrl + '" target="_blank" class="link">📊 View Detailed Reports</a>' +
-                                      '<p class="last-updated">Updated: ' + formatTimestamp(data.timestamp) + '</p>' +
-                                  '</div>';
+                                          createBrowserResults(data.results) +
+                                          '<div class="footer">' +
+                                              '<a href="' + data.runUrl + '" target="_blank" class="link">📊 View Detailed Reports</a>' +
+                                              '<p class="last-updated">Updated: ' + formatTimestamp(data.timestamp) + '</p>' +
+                                          '</div>';
+                                      
+                                      loading.style.display = 'none';
+                                      dashboard.style.display = 'block';
+                                  })
+                                  .catch(function(error) {
+                                      console.error('Error loading test results:', error);
+                                      document.getElementById('loading').innerHTML = 
+                                          '<div class="spinner"></div>' +
+                                          '<h2>Error loading test results</h2>' +
+                                          '<p>Please check console for details</p>';
+                                  });
+                          }
+                          
+                          // Load dashboard on page load
+                          loadDashboard();
+                          
+                          // Auto-refresh every 5 minutes
+                          setInterval(loadDashboard, 5 * 60 * 1000);
+                      </script>
+                  </body>
+                  </html>
+                  EOF
+
+                  echo "  \"successRate\": $SUCCESS_RATE," >> dashboard/test-results.json
+                  echo "  \"runUrl\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"," >> dashboard/test-results.json
+                  echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)\"" >> dashboard/test-results.json
+                  echo "}" >> dashboard/test-results.json
+
+            - name: Create enhanced dashboard HTML with test counts
+              run: |
+                  cat > dashboard/index.html << 'EOF'
+                  <!DOCTYPE html>
+                  <html lang="en">
+                  <head>
+                      <meta charset="UTF-8">
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                      <title>🌙 Pre-Entry TB Screening - Nightly Tests</title>
+                      <style>
+                          body {
+                              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                              margin: 0;
+                              padding: 0;
+                              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                              min-height: 100vh;
+                          }
+                          
+                          .header {
+                              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                              color: white;
+                              padding: 20px;
+                              text-align: center;
+                          }
+                          
+                          .header h1 {
+                              margin: 0;
+                              font-size: 2rem;
+                          }
+                          
+                          .subtitle {
+                              margin: 5px 0 0 0;
+                              opacity: 0.9;
+                          }
+                          
+                          .container {
+                              max-width: 1200px;
+                              margin: 0 auto;
+                              padding: 20px;
+                          }
+                          
+                          .metrics {
+                              display: grid;
+                              grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                              gap: 20px;
+                              margin: 20px 0;
+                          }
+                          
+                          .metric-card {
+                              background: white;
+                              border-radius: 12px;
+                              padding: 24px;
+                              text-align: center;
+                              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                              transition: transform 0.2s ease, box-shadow 0.2s ease;
+                          }
+                          
+                          .metric-card:hover {
+                              transform: translateY(-2px);
+                              box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+                          }
+                          
+                          .metric-value {
+                              font-size: 2.5rem;
+                              font-weight: bold;
+                              margin-bottom: 8px;
+                          }
+                          
+                          .metric-label {
+                              color: #666;
+                              text-transform: uppercase;
+                              font-size: 0.8rem;
+                              letter-spacing: 0.5px;
+                          }
+                          
+                          .status-pass { color: #22c55e; }
+                          .status-fail { color: #ef4444; }
+                          
+                          .browser-results {
+                              background: white;
+                              border-radius: 12px;
+                              padding: 24px;
+                              margin: 20px 0;
+                              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                          }
+                          
+                          .environment-section {
+                              margin: 30px 0;
+                              padding: 20px;
+                              border-left: 4px solid #667eea;
+                              background: #f8fafc;
+                              border-radius: 0 8px 8px 0;
+                          }
+                          
+                          .environment-title {
+                              font-size: 1.5rem;
+                              font-weight: bold;
+                              color: #374151;
+                              margin-bottom: 20px;
+                              text-transform: uppercase;
+                              letter-spacing: 1px;
+                          }
+                          
+                          .browser-grid {
+                              display: grid;
+                              grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                              gap: 16px;
+                              margin-top: 20px;
+                          }
+                          
+                          .browser-card {
+                              background: white;
+                              border-radius: 12px;
+                              padding: 24px;
+                              text-align: center;
+                              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                              transition: all 0.2s ease;
+                              border: 2px solid transparent;
+                          }
+                          
+                          .browser-card:hover {
+                              transform: translateY(-4px);
+                              box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+                          }
+                          
+                          .browser-card.status-pass-card {
+                              border-color: #22c55e;
+                          }
+                          
+                          .browser-card.status-fail-card {
+                              border-color: #ef4444;
+                          }
+                          
+                          .browser-icon {
+                              font-size: 3rem;
+                              margin-bottom: 12px;
+                              display: block;
+                          }
+                          
+                          .browser-name {
+                              font-size: 1.25rem;
+                              font-weight: bold;
+                              margin-bottom: 12px;
+                              color: #374151;
+                          }
+                          
+                          .status-badge {
+                              padding: 8px 16px;
+                              border-radius: 20px;
+                              font-size: 0.9rem;
+                              font-weight: bold;
+                              text-transform: uppercase;
+                              letter-spacing: 0.5px;
+                              margin-bottom: 12px;
+                              display: inline-block;
+                          }
+                          
+                          .status-badge.pass {
+                              background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+                              color: #166534;
+                              border: 2px solid #22c55e;
+                          }
+                          
+                          .status-badge.fail {
+                              background: linear-gradient(135deg, #fef2f2, #fecaca);
+                              color: #dc2626;
+                              border: 2px solid #ef4444;
+                          }
+                          
+                          .status-badge.unknown {
+                              background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+                              color: #6b7280;
+                              border: 2px solid #9ca3af;
+                          }
+                          
+                          .test-counts {
+                              display: grid;
+                              grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+                              gap: 8px;
+                              margin-top: 12px;
+                          }
+                          
+                          .count-item {
+                              text-align: center;
+                              padding: 8px 4px;
+                              border-radius: 8px;
+                              background: #f9fafb;
+                              border: 1px solid #e5e7eb;
+                          }
+                          
+                          .count-value {
+                              display: block;
+                              font-size: 1.2rem;
+                              font-weight: bold;
+                              color: #374151;
+                          }
+                          
+                          .count-label {
+                              font-size: 0.7rem;
+                              color: #6b7280;
+                              text-transform: uppercase;
+                              letter-spacing: 0.5px;
+                              margin-top: 2px;
+                          }
+                          
+                          .count-item.total { border-left: 3px solid #3b82f6; }
+                          .count-item.passed { border-left: 3px solid #22c55e; }
+                          .count-item.failed { border-left: 3px solid #ef4444; }
+                          .count-item.pending { border-left: 3px solid #f59e0b; }
+                          
+                          .footer {
+                              text-align: center;
+                              margin-top: 40px;
+                              padding: 20px;
+                          }
+                          
+                          .link {
+                              display: inline-block;
+                              background: white;
+                              color: #667eea;
+                              text-decoration: none;
+                              font-weight: 600;
+                              padding: 12px 24px;
+                              border-radius: 8px;
+                              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                              transition: all 0.2s ease;
+                          }
+                          
+                          .link:hover {
+                              background: #667eea;
+                              color: white;
+                              transform: translateY(-2px);
+                              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                          }
+                          
+                          .last-updated {
+                              color: white;
+                              margin-top: 16px;
+                              opacity: 0.9;
+                          }
+                          
+                          .loading {
+                              text-align: center;
+                              padding: 40px;
+                              color: white;
+                          }
+                          
+                          .spinner {
+                              border: 4px solid rgba(255, 255, 255, 0.3);
+                              border-radius: 50%;
+                              border-top: 4px solid white;
+                              width: 40px;
+                              height: 40px;
+                              animation: spin 1s linear infinite;
+                              margin: 0 auto 20px;
+                          }
+                          
+                          @keyframes spin {
+                              0% { transform: rotate(0deg); }
+                              100% { transform: rotate(360deg); }
+                          }
+                          
+                          @media (max-width: 768px) {
+                              .metrics {
+                                  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                                  gap: 16px;
+                              }
                               
-                              loading.style.display = 'none';
-                              dashboard.style.display = 'block';
-                          })
-                          .catch(function(error) {
-                              console.error('Error loading test results:', error);
-                              document.getElementById('loading').innerHTML = 
-                                  '<div class="spinner"></div>' +
-                                  '<h2>Error loading test results</h2>' +
-                                  '<p>Please check console for details</p>';
-                          });
-                  }
-                  
-                  // Load dashboard on page load
-                  loadDashboard();
-                  
-                  // Auto-refresh every 5 minutes
-                  setInterval(loadDashboard, 5 * 60 * 1000);
-              </script>
-          </body>
-          </html>
-          EOF
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
+                              .browser-grid {
+                                  grid-template-columns: 1fr;
+                              }
+                              
+                              .metric-value {
+                                  font-size: 2rem;
+                              }
+                              
+                              .header h1 {
+                                  font-size: 1.5rem;
+                              }
+                              
+                              .test-counts {
+                                  grid-template-columns: repeat(2, 1fr);
+                              }
+                          }
+                      </style>
+                  </head>
+                  <body>
+                      <div class="header">
+                          <h1>🌙 Pre-Entry TB Screening - Nightly Tests</h1>
+                          <p class="subtitle">Last 24 Hours | Auto-refreshes every 5 minutes</p>
+                      </div>
+                      
+                      <div class="container">
+                          <div id="loading" class="loading">
+                              <div class="spinner"></div>
+                              <h2>Loading test results...</h2>
+                          </div>
+                          
+                          <div id="dashboard" style="display: none;">
+                              <!-- Content will be populated by JavaScript -->
+                          </div>
+                      </div>
+                      <script>
+                          function getBrowserIcon(browser) {
+                              const icons = {
+                                  'chrome': '🌐',
+                                  'firefox': '🔥', 
+                                  'edge': '⚡',
+                                  'safari': '🧭'
+                              };
+                              return icons[browser.toLowerCase()] || '🌐';
+                          }
+                          
+                          function formatTimestamp(timestamp) {
+                              return new Date(timestamp).toLocaleString();
+                          }
+                          
+                          function getStatusInfo(status) {
+                              const statusMap = {
+                                  'PASS': { class: 'pass', text: '✅ PASS', cardClass: 'status-pass-card' },
+                                  'FAIL': { class: 'fail', text: '❌ FAIL', cardClass: 'status-fail-card' },
+                                  'UNKNOWN': { class: 'unknown', text: '⚪ UNKNOWN', cardClass: 'status-unknown-card' }
+                              };
+                              return statusMap[status] || statusMap['UNKNOWN'];
+                          }
+                          
+                          function createTestCountsHTML(testCounts) {
+                              if (!testCounts || testCounts.total === 0) {
+                                  return '<div class="test-counts"><div class="count-item"><span class="count-value">0</span><div class="count-label">No Tests</div></div></div>';
+                              }
+                              
+                              return `
+                                  <div class="test-counts">
+                                      <div class="count-item total">
+                                          <span class="count-value">${testCounts.total || 0}</span>
+                                          <div class="count-label">Total</div>
+                                      </div>
+                                      <div class="count-item passed">
+                                          <span class="count-value">${testCounts.passed || 0}</span>
+                                          <div class="count-label">Passed</div>
+                                      </div>
+                                      <div class="count-item failed">
+                                          <span class="count-value">${testCounts.failed || 0}</span>
+                                          <div class="count-label">Failed</div>
+                                      </div>
+                                      <div class="count-item pending">
+                                          <span class="count-value">${testCounts.pending || 0}</span>
+                                          <div class="count-label">Pending</div>
+                                      </div>
+                                  </div>
+                              `;
+                          }
+                          
+                          function createEnvironmentSection(envName, browsers) {
+                              let sectionHTML = '<div class="environment-section">';
+                              sectionHTML += '<div class="environment-title">Environment: ' + envName.toUpperCase() + '</div>';
+                              sectionHTML += '<div class="browser-grid">';
+                              
+                              Object.entries(browsers).forEach(function(entry) {
+                                  const browser = entry[0];
+                                  const browserData = entry[1];
+                                  const status = browserData.status || browserData; // Handle both old and new format
+                                  const testCounts = browserData.testCounts || {};
+                                  const statusInfo = getStatusInfo(status);
+                                  
+                                  sectionHTML += 
+                                      '<div class="browser-card ' + statusInfo.cardClass + '">' +
+                                          '<div class="browser-icon">' + getBrowserIcon(browser) + '</div>' +
+                                          '<div class="browser-name">' + browser.charAt(0).toUpperCase() + browser.slice(1) + '</div>' +
+                                          '<span class="status-badge ' + statusInfo.class + '">' + statusInfo.text + '</span>' +
+                                          createTestCountsHTML(testCounts) +
+                                      '</div>';
+                              });
+                              
+                              sectionHTML += '</div></div>';
+                              return sectionHTML;
+                          }
+                          
+                          function createBrowserResults(results) {
+                              if (!results) {
+                                  return '<div class="browser-results"><p>No test results available</p></div>';
+                              }
+                              
+                              let resultsHTML = '<div class="browser-results"><h2>Test Results by Environment</h2>';
+                              
+                              Object.entries(results).forEach(function(entry) {
+                                  const envName = entry[0];
+                                  const browsers = entry[1];
+                                  resultsHTML += createEnvironmentSection(envName, browsers);
+                              });
+                              
+                              resultsHTML += '</div>';
+                              return resultsHTML;
+                          }
+                          
+                          function loadDashboard() {
+                              fetch('./test-results.json')
+                                  .then(function(response) { return response.json(); })
+                                  .then(function(data) {
+                                      const dashboard = document.getElementById('dashboard');
+                                      const loading = document.getElementById('loading');
+                                      
+                                      // Calculate hours ago
+                                      const now = new Date();
+                                      const testTime = new Date(data.timestamp);
+                                      const hoursAgo = Math.floor((now - testTime) / (1000 * 60 * 60));
+                                      
+                                      dashboard.innerHTML = 
+                                          '<div class="metrics">' +
+                                              '<div class="metric-card">' +
+                                                  '<div class="metric-value ' + (data.overallStatus === 'PASS' ? 'status-pass' : 'status-fail') + '">' +
+                                                      data.overallStatus +
+                                                  '</div>' +
+                                                  '<div class="metric-label">Current Status</div>' +
+                                              '</div>' +
+                                              '<div class="metric-card">' +
+                                                  '<div class="metric-value">' + (data.successRate || 0) + '%</div>' +
+                                                  '<div class="metric-label">Success Rate</div>' +
+                                              '</div>' +
+                                              '<div class="metric-card">' +
+                                                  '<div class="metric-value">' + (data.totalTests || 0) + '</div>' +
+                                                  '<div class="metric-label">Total Tests</div>' +
+                                              '</div>' +
+                                              '<div class="metric-card">' +
+                                                  '<div class="metric-value">' + (data.totalPassed || 0) + '</div>' +
+                                                  '<div class="metric-label">Tests Passed</div>' +
+                                              '</div>' +
+                                              '<div class="metric-card">' +
+                                                  '<div class="metric-value">' + (data.totalFailed || 0) + '</div>' +
+                                                  '<div class="metric-label">Tests Failed</div>' +
+                                              '</div>' +
+                                              '<div class="metric-card">' +
+                                                  '<div class="metric-value">' + hoursAgo + '</div>' +
+                                                  '<div class="metric-label">Hours Ago</div>' +
+                                              '</div>' +
+                                          '</div>' +
+                                          createBrowserResults(data.results) +
+                                          '<div class="footer">' +
+                                              '<a href="' + data.runUrl + '" target="_blank" class="link">📊 View Detailed Reports</a>' +
+                                              '<p class="last-updated">Updated: ' + formatTimestamp(data.timestamp) + '</p>' +
+                                          '</div>';
+                                      
+                                      loading.style.display = 'none';
+                                      dashboard.style.display = 'block';
+                                  })
+                                  .catch(function(error) {
+                                      console.error('Error loading test results:', error);
+                                      document.getElementById('loading').innerHTML = 
+                                          '<div class="spinner"></div>' +
+                                          '<h2>Error loading test results</h2>' +
+                                          '<p>Please check console for details</p>';
+                                  });
+                          }
+                          
+                          // Load dashboard on page load
+                          loadDashboard();
+                          
+                          // Auto-refresh every 5 minutes
+                          setInterval(loadDashboard, 5 * 60 * 1000);
+                      </script>
+                  </body>
+                  </html>
+                  EOF
 
-      - name: Upload to GitHub Pages
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: "./dashboard"
+                  echo "  \"successRate\": $SUCCESS_RATE," >> dashboard/test-results.json
+                  echo "  \"runUrl\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"," >> dashboard/test-results.json
+                  echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)\"" >> dashboard/test-results.json
+                  echo "}" >> dashboard/test-results.json
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+            - name: Create enhanced dashboard HTML with test counts
+              run: |
+                  cat > dashboard/index.html << 'EOF'
+                  <!DOCTYPE html>
+                  <html lang="en">
+                  <head>
+                      <meta charset="UTF-8">
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                      <title>🌙 Pre-Entry TB Screening - Nightly Tests</title>
+                      <style>
+                          body {
+                              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                              margin: 0;
+                              padding: 0;
+                              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                              min-height: 100vh;
+                          }
+                          
+                          .header {
+                              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                              color: white;
+                              padding: 20px;
+                              text-align: center;
+                          }
+                          
+                          .header h1 {
+                              margin: 0;
+                              font-size: 2rem;
+                          }
+                          
+                          .subtitle {
+                              margin: 5px 0 0 0;
+                              opacity: 0.9;
+                          }
+                          
+                          .container {
+                              max-width: 1200px;
+                              margin: 0 auto;
+                              padding: 20px;
+                          }
+                          
+                          .metrics {
+                              display: grid;
+                              grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                              gap: 20px;
+                              margin: 20px 0;
+                          }
+                          
+                          .metric-card {
+                              background: white;
+                              border-radius: 12px;
+                              padding: 24px;
+                              text-align: center;
+                              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                              transition: transform 0.2s ease, box-shadow 0.2s ease;
+                          }
+                          
+                          .metric-card:hover {
+                              transform: translateY(-2px);
+                              box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+                          }
+                          
+                          .metric-value {
+                              font-size: 2.5rem;
+                              font-weight: bold;
+                              margin-bottom: 8px;
+                          }
+                          
+                          .metric-label {
+                              color: #666;
+                              text-transform: uppercase;
+                              font-size: 0.8rem;
+                              letter-spacing: 0.5px;
+                          }
+                          
+                          .status-pass { color: #22c55e; }
+                          .status-fail { color: #ef4444; }
+                          
+                          .browser-results {
+                              background: white;
+                              border-radius: 12px;
+                              padding: 24px;
+                              margin: 20px 0;
+                              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                          }
+                          
+                          .environment-section {
+                              margin: 30px 0;
+                              padding: 20px;
+                              border-left: 4px solid #667eea;
+                              background: #f8fafc;
+                              border-radius: 0 8px 8px 0;
+                          }
+                          
+                          .environment-title {
+                              font-size: 1.5rem;
+                              font-weight: bold;
+                              color: #374151;
+                              margin-bottom: 20px;
+                              text-transform: uppercase;
+                              letter-spacing: 1px;
+                          }
+                          
+                          .browser-grid {
+                              display: grid;
+                              grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                              gap: 16px;
+                              margin-top: 20px;
+                          }
+                          
+                          .browser-card {
+                              background: white;
+                              border-radius: 12px;
+                              padding: 24px;
+                              text-align: center;
+                              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                              transition: all 0.2s ease;
+                              border: 2px solid transparent;
+                          }
+                          
+                          .browser-card:hover {
+                              transform: translateY(-4px);
+                              box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+                          }
+                          
+                          .browser-card.status-pass-card {
+                              border-color: #22c55e;
+                          }
+                          
+                          .browser-card.status-fail-card {
+                              border-color: #ef4444;
+                          }
+                          
+                          .browser-icon {
+                              font-size: 3rem;
+                              margin-bottom: 12px;
+                              display: block;
+                          }
+                          
+                          .browser-name {
+                              font-size: 1.25rem;
+                              font-weight: bold;
+                              margin-bottom: 12px;
+                              color: #374151;
+                          }
+                          
+                          .status-badge {
+                              padding: 8px 16px;
+                              border-radius: 20px;
+                              font-size: 0.9rem;
+                              font-weight: bold;
+                              text-transform: uppercase;
+                              letter-spacing: 0.5px;
+                              margin-bottom: 12px;
+                              display: inline-block;
+                          }
+                          
+                          .status-badge.pass {
+                              background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+                              color: #166534;
+                              border: 2px solid #22c55e;
+                          }
+                          
+                          .status-badge.fail {
+                              background: linear-gradient(135deg, #fef2f2, #fecaca);
+                              color: #dc2626;
+                              border: 2px solid #ef4444;
+                          }
+                          
+                          .status-badge.unknown {
+                              background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+                              color: #6b7280;
+                              border: 2px solid #9ca3af;
+                          }
+                          
+                          .test-counts {
+                              display: grid;
+                              grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+                              gap: 8px;
+                              margin-top: 12px;
+                          }
+                          
+                          .count-item {
+                              text-align: center;
+                              padding: 8px 4px;
+                              border-radius: 8px;
+                              background: #f9fafb;
+                              border: 1px solid #e5e7eb;
+                          }
+                          
+                          .count-value {
+                              display: block;
+                              font-size: 1.2rem;
+                              font-weight: bold;
+                              color: #374151;
+                          }
+                          
+                          .count-label {
+                              font-size: 0.7rem;
+                              color: #6b7280;
+                              text-transform: uppercase;
+                              letter-spacing: 0.5px;
+                              margin-top: 2px;
+                          }
+                          
+                          .count-item.total { border-left: 3px solid #3b82f6; }
+                          .count-item.passed { border-left: 3px solid #22c55e; }
+                          .count-item.failed { border-left: 3px solid #ef4444; }
+                          .count-item.pending { border-left: 3px solid #f59e0b; }
+                          
+                          .footer {
+                              text-align: center;
+                              margin-top: 40px;
+                              padding: 20px;
+                          }
+                          
+                          .link {
+                              display: inline-block;
+                              background: white;
+                              color: #667eea;
+                              text-decoration: none;
+                              font-weight: 600;
+                              padding: 12px 24px;
+                              border-radius: 8px;
+                              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                              transition: all 0.2s ease;
+                          }
+                          
+                          .link:hover {
+                              background: #667eea;
+                              color: white;
+                              transform: translateY(-2px);
+                              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                          }
+                          
+                          .last-updated {
+                              color: white;
+                              margin-top: 16px;
+                              opacity: 0.9;
+                          }
+                          
+                          .loading {
+                              text-align: center;
+                              padding: 40px;
+                              color: white;
+                          }
+                          
+                          .spinner {
+                              border: 4px solid rgba(255, 255, 255, 0.3);
+                              border-radius: 50%;
+                              border-top: 4px solid white;
+                              width: 40px;
+                              height: 40px;
+                              animation: spin 1s linear infinite;
+                              margin: 0 auto 20px;
+                          }
+                          
+                          @keyframes spin {
+                              0% { transform: rotate(0deg); }
+                              100% { transform: rotate(360deg); }
+                          }
+                          
+                          @media (max-width: 768px) {
+                              .metrics {
+                                  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                                  gap: 16px;
+                              }
+                              
+                              .browser-grid {
+                                  grid-template-columns: 1fr;
+                              }
+                              
+                              .metric-value {
+                                  font-size: 2rem;
+                              }
+                              
+                              .header h1 {
+                                  font-size: 1.5rem;
+                              }
+                              
+                              .test-counts {
+                                  grid-template-columns: repeat(2, 1fr);
+                              }
+                          }
+                      </style>
+                  </head>
+                  <body>
+                      <div class="header">
+                          <h1>🌙 Pre-Entry TB Screening - Nightly Tests</h1>
+                          <p class="subtitle">Last 24 Hours | Auto-refreshes every 5 minutes</p>
+                      </div>
+                      
+                      <div class="container">
+                          <div id="loading" class="loading">
+                              <div class="spinner"></div>
+                              <h2>Loading test results...</h2>
+                          </div>
+                          
+                          <div id="dashboard" style="display: none;">
+                              <!-- Content will be populated by JavaScript -->
+                          </div>
+                      </div>
+                      <script>
+                          function getBrowserIcon(browser) {
+                              const icons = {
+                                  'chrome': '🌐',
+                                  'firefox': '🔥', 
+                                  'edge': '⚡',
+                                  'safari': '🧭'
+                              };
+                              return icons[browser.toLowerCase()] || '🌐';
+                          }
+                          
+                          function formatTimestamp(timestamp) {
+                              return new Date(timestamp).toLocaleString();
+                          }
+                          
+                          function getStatusInfo(status) {
+                              const statusMap = {
+                                  'PASS': { class: 'pass', text: '✅ PASS', cardClass: 'status-pass-card' },
+                                  'FAIL': { class: 'fail', text: '❌ FAIL', cardClass: 'status-fail-card' },
+                                  'UNKNOWN': { class: 'unknown', text: '⚪ UNKNOWN', cardClass: 'status-unknown-card' }
+                              };
+                              return statusMap[status] || statusMap['UNKNOWN'];
+                          }
+                          
+                          function createTestCountsHTML(testCounts) {
+                              if (!testCounts || testCounts.total === 0) {
+                                  return '<div class="test-counts"><div class="count-item"><span class="count-value">0</span><div class="count-label">No Tests</div></div></div>';
+                              }
+                              
+                              return `
+                                  <div class="test-counts">
+                                      <div class="count-item total">
+                                          <span class="count-value">${testCounts.total || 0}</span>
+                                          <div class="count-label">Total</div>
+                                      </div>
+                                      <div class="count-item passed">
+                                          <span class="count-value">${testCounts.passed || 0}</span>
+                                          <div class="count-label">Passed</div>
+                                      </div>
+                                      <div class="count-item failed">
+                                          <span class="count-value">${testCounts.failed || 0}</span>
+                                          <div class="count-label">Failed</div>
+                                      </div>
+                                      <div class="count-item pending">
+                                          <span class="count-value">${testCounts.pending || 0}</span>
+                                          <div class="count-label">Pending</div>
+                                      </div>
+                                  </div>
+                              `;
+                          }
+                          
+                          function createEnvironmentSection(envName, browsers) {
+                              let sectionHTML = '<div class="environment-section">';
+                              sectionHTML += '<div class="environment-title">Environment: ' + envName.toUpperCase() + '</div>';
+                              sectionHTML += '<div class="browser-grid">';
+                              
+                              Object.entries(browsers).forEach(function(entry) {
+                                  const browser = entry[0];
+                                  const browserData = entry[1];
+                                  const status = browserData.status || browserData; // Handle both old and new format
+                                  const testCounts = browserData.testCounts || {};
+                                  const statusInfo = getStatusInfo(status);
+                                  
+                                  sectionHTML += 
+                                      '<div class="browser-card ' + statusInfo.cardClass + '">' +
+                                          '<div class="browser-icon">' + getBrowserIcon(browser) + '</div>' +
+                                          '<div class="browser-name">' + browser.charAt(0).toUpperCase() + browser.slice(1) + '</div>' +
+                                          '<span class="status-badge ' + statusInfo.class + '">' + statusInfo.text + '</span>' +
+                                          createTestCountsHTML(testCounts) +
+                                      '</div>';
+                              });
+                              
+                              sectionHTML += '</div></div>';
+                              return sectionHTML;
+                          }
+                          
+                          function createBrowserResults(results) {
+                              if (!results) {
+                                  return '<div class="browser-results"><p>No test results available</p></div>';
+                              }
+                              
+                              let resultsHTML = '<div class="browser-results"><h2>Test Results by Environment</h2>';
+                              
+                              Object.entries(results).forEach(function(entry) {
+                                  const envName = entry[0];
+                                  const browsers = entry[1];
+                                  resultsHTML += createEnvironmentSection(envName, browsers);
+                              });
+                              
+                              resultsHTML += '</div>';
+                              return resultsHTML;
+                          }
+                          
+                          function loadDashboard() {
+                              fetch('./test-results.json')
+                                  .then(function(response) { return response.json(); })
+                                  .then(function(data) {
+                                      const dashboard = document.getElementById('dashboard');
+                                      const loading = document.getElementById('loading');
+                                      
+                                      // Calculate hours ago
+                                      const now = new Date();
+                                      const testTime = new Date(data.timestamp);
+                                      const hoursAgo = Math.floor((now - testTime) / (1000 * 60 * 60));
+                                      
+                                      dashboard.innerHTML = 
+                                          '<div class="metrics">' +
+                                              '<div class="metric-card">' +
+                                                  '<div class="metric-value ' + (data.overallStatus === 'PASS' ? 'status-pass' : 'status-fail') + '">' +
+                                                      data.overallStatus +
+                                                  '</div>' +
+                                                  '<div class="metric-label">Current Status</div>' +
+                                              '</div>' +
+                                              '<div class="metric-card">' +
+                                                  '<div class="metric-value">' + (data.successRate || 0) + '%</div>' +
+                                                  '<div class="metric-label">Success Rate</div>' +
+                                              '</div>' +
+                                              '<div class="metric-card">' +
+                                                  '<div class="metric-value">' + (data.totalTests || 0) + '</div>' +
+                                                  '<div class="metric-label">Total Tests</div>' +
+                                              '</div>' +
+                                              '<div class="metric-card">' +
+                                                  '<div class="metric-value">' + (data.totalPassed || 0) + '</div>' +
+                                                  '<div class="metric-label">Tests Passed</div>' +
+                                              '</div>' +
+                                              '<div class="metric-card">' +
+                                                  '<div class="metric-value">' + (data.totalFailed || 0) + '</div>' +
+                                                  '<div class="metric-label">Tests Failed</div>' +
+                                              '</div>' +
+                                              '<div class="metric-card">' +
+                                                  '<div class="metric-value">' + hoursAgo + '</div>' +
+                                                  '<div class="metric-label">Hours Ago</div>' +
+                                              '</div>' +
+                                          '</div>' +
+                                          createBrowserResults(data.results) +
+                                          '<div class="footer">' +
+                                              '<a href="' + data.runUrl + '" target="_blank" class="link">📊 View Detailed Reports</a>' +
+                                              '<p class="last-updated">Updated: ' + formatTimestamp(data.timestamp) + '</p>' +
+                                          '</div>';
+                                      
+                                      loading.style.display = 'none';
+                                      dashboard.style.display = 'block';
+                                  })
+                                  .catch(function(error) {
+                                      console.error('Error loading test results:', error);
+                                      document.getElementById('loading').innerHTML = 
+                                          '<div class="spinner"></div>' +
+                                          '<h2>Error loading test results</h2>' +
+                                          '<p>Please check console for details</p>';
+                                  });
+                          }
+                          
+                          // Load dashboard on page load
+                          loadDashboard();
+                          
+                          // Auto-refresh every 5 minutes
+                          setInterval(loadDashboard, 5 * 60 * 1000);
+                      </script>
+                  </body>
+                  </html>
+                  EOF
+            - name: Setup Pages
+              uses: actions/configure-pages@v4
 
-      - name: Upload summary report
-        uses: actions/upload-artifact@v4
-        with:
-          name: nightly-summary-report
-          path: nightly-summary.md
-          retention-days: 7
+            - name: Upload to GitHub Pages
+              uses: actions/upload-pages-artifact@v3
+              with:
+                  path: "./dashboard"
 
-      - name: Set workflow conclusion
-        if: always()
-        run: |
-          echo "🔗 Dashboard URL: ${{ steps.deployment.outputs.page_url }}"
-          if [[ "${{ steps.summary.outputs.overall_status }}" == "PASS" ]]; then
-            echo "::notice::✅ All nightly tests passed! Dashboard updated at ${{ steps.deployment.outputs.page_url }}"
-          else
-            echo "::warning::⚠️ Some tests failed. Dashboard still updated at ${{ steps.deployment.outputs.page_url }}"
-          fi
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v4
+
+            - name: Upload summary report
+              uses: actions/upload-artifact@v4
+              with:
+                  name: nightly-summary-report
+                  path: nightly-summary.md
+                  retention-days: 7
+
+            - name: Set workflow conclusion
+              if: always()
+              run: |
+                  echo "🔗 Dashboard URL: ${{ steps.deployment.outputs.page_url }}"
+                  if [[ "${{ steps.summary.outputs.overall_status }}" == "PASS" ]]; then
+                    echo "::notice::✅ All nightly tests passed! Dashboard updated at ${{ steps.deployment.outputs.page_url }}"
+                  else
+                    echo "::warning::⚠️ Some tests failed. Dashboard still updated at ${{ steps.deployment.outputs.page_url }}"
+                  fi

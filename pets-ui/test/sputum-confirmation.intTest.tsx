@@ -19,6 +19,14 @@ vi.mock("react-helmet-async", () => ({
   HelmetProvider: () => <>{}</>,
 }));
 
+beforeEach(() => {
+  localStorage.setItem("cookie-consent", "rejected");
+});
+
+afterEach(() => {
+  localStorage.clear();
+});
+
 const preloadedState = {
   sputum: {
     status: ApplicationStatus.NOT_YET_STARTED,

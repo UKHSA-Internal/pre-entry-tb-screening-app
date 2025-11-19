@@ -19,6 +19,14 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
   };
 });
 
+beforeEach(() => {
+  localStorage.setItem("cookie-consent", "rejected");
+});
+
+afterEach(() => {
+  localStorage.clear();
+});
+
 const applicationState = { applicationId: "abc-123", dateCreated: "" };
 
 const chestXrayState: ReduxChestXrayDetailsType = {

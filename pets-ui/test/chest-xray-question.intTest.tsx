@@ -15,6 +15,14 @@ vi.mock(`react-router-dom`, async (): Promise<unknown> => {
   };
 });
 
+beforeEach(() => {
+  localStorage.setItem("cookie-consent", "rejected");
+});
+
+afterEach(() => {
+  localStorage.clear();
+});
+
 describe("ChestXrayQuestionForm", () => {
   beforeEach(() => {
     renderWithProviders(

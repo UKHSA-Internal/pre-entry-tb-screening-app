@@ -59,14 +59,15 @@ export enum HistoryOfConditionsUnder11 {
 export enum PregnancyStatus {
   Yes = "Yes",
   No = "No",
-  DontKnow = "Don't know",
-  NA = "N/A",
+  DontKnow = "Do not know",
+  NA = "Not applicable (the visa applicant is not female)",
 }
 
 export enum MenstrualPeriods {
   Yes = "Yes",
   No = "No",
-  NA = "N/A",
+  DontKnow = "Do not know",
+  NA = "Not applicable (the visa applicant is not female)",
 }
 
 export enum YesOrNo {

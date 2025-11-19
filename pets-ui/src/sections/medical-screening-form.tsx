@@ -283,13 +283,15 @@ const MedicalScreeningForm = () => {
         <div ref={pregnantRef}>
           <Radio
             id="pregnant"
-            heading="Is the applicant pregnant?"
+            heading="Is the visa applicant pregnant?"
+            headingSize="s"
             isInline={RadioIsInline.FALSE}
-            answerOptions={["Yes", "No", "Don't know", "N/A"]}
+            answerOptions={["Yes", "No", "Do not know"]}
+            exclusiveAnswerOptions={["Not applicable (the visa applicant is not female)"]}
             sortAnswersAlphabetically={false}
             errorMessage={errors?.pregnant?.message ?? ""}
             formValue="pregnant"
-            required="Select whether the applicant is pregnant"
+            required="Select whether the visa applicant is pregnant"
             defaultValue={medicalData.pregnant}
           />
         </div>
@@ -297,13 +299,15 @@ const MedicalScreeningForm = () => {
         <div ref={menstrualPeriodsRef}>
           <Radio
             id="menstrual-periods"
-            heading="Does the applicant have menstrual periods?"
+            heading="Does the visa applicant have menstrual periods?"
+            headingSize="s"
             isInline={RadioIsInline.FALSE}
-            answerOptions={["Yes", "No", "N/A"]}
+            answerOptions={["Yes", "No", "Do not know"]}
+            exclusiveAnswerOptions={["Not applicable (the visa applicant is not female)"]}
             sortAnswersAlphabetically={false}
             errorMessage={errors?.menstrualPeriods?.message ?? ""}
             formValue="menstrualPeriods"
-            required="Select whether the applicant has menstrual periods"
+            required="Select whether the visa applicant has menstrual periods"
             defaultValue={medicalData.menstrualPeriods}
           />
         </div>

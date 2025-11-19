@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 
 import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
-import { Applicant } from "../../shared/models/applicant";
+import { ApplicantDbOps } from "../../shared/models/applicant";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicants } from "../fixtures/applicants";
 import { Header, SearchApplicantEvent, searchApplicantHandler } from "./searchApplicant";
@@ -35,13 +35,7 @@ describe("Test for Getting Applicant", () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { createdBy, ...expectedJsonResponse } = existingApplicant;
 
-    expect(JSON.parse(response.body)).toMatchObject([
-      {
-        ...expectedJsonResponse,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        dateCreated: expect.any(String),
-      },
-    ]);
+    expect(JSON.parse(response.body)).toMatchObject([expectedJsonResponse]);
   });
 
   test("Fetching a non-existing Applicant returns a 404 response", async () => {
@@ -64,7 +58,7 @@ describe("Test for Getting Applicant", () => {
 
   test("Duplicate results returns a 500 response", async () => {
     // Arrange
-    await Applicant.createNewApplicant({
+    await ApplicantDbOps.createNewApplicant({
       ...seededApplicants[0],
       applicationId: "duplicate-application-id",
     });

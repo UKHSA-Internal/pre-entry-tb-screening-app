@@ -285,9 +285,7 @@ export class SputumDetailsDbOps {
       };
       const updateCommand = new UpdateCommand(commandInput);
 
-      logger.info(updateCommand);
       const { Attributes } = await docClient.send(updateCommand);
-      logger.info(Attributes);
       if (!Attributes) throw new Error("Update failed");
 
       logger.info(`Created/Updated sputum sample details for ${applicationId}`);

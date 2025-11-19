@@ -299,7 +299,6 @@ export function navigateToMedicalScreeningPage() {
   // Complete the travel information section
   travelInformationPage.verifyPageLoaded();
   travelInformationPage.fillCompleteForm({
-    visaType: applicantData.visaType,
     ukAddressLine1: applicantData.ukAddressLine1,
     ukAddressLine2: applicantData.ukAddressLine2,
     ukTownOrCity: applicantData.ukTownOrCity,
@@ -414,7 +413,6 @@ export function navigateToSputumQuestionPage() {
 
   // Complete the X-ray findings page
   chestXrayFindingsPage.verifyPageLoaded();
-  chestXrayFindingsPage.selectXrayResultNormal();
   chestXrayFindingsPage.selectMinorFindings(["1.1 Single fibrous streak or band or scar"]);
   chestXrayFindingsPage.clickSaveAndContinue();
 
@@ -837,48 +835,15 @@ export function generateExpectedSputumSampleData() {
 export function verifyStandardTaskStatuses() {
   const tbProgressTrackerPage = new TBProgressTrackerPage();
 
-  tbProgressTrackerPage.verifyAllTaskStatuses({
+  tbProgressTrackerPage.verifyMultipleTaskStatuses({
     "Visa applicant details": "Completed",
-    "Travel information": "Completed",
+    "UK travel information": "Completed",
     "Medical history and TB symptoms": "Completed",
     "Radiological outcome": "Completed",
     "Sputum collection and results": "Not yet started",
     "TB certificate outcome": "Not yet started",
   });
 }
-
-/**
- * Helper function to verify completed task statuses on progress tracker
- */
-export function verifyAllCompletedTaskStatuses() {
-  const tbProgressTrackerPage = new TBProgressTrackerPage();
-
-  tbProgressTrackerPage.verifyAllTaskStatuses({
-    "Visa applicant details": "Completed",
-    "Travel information": "Completed",
-    "Medical history and TB symptoms": "Completed",
-    "Radiological outcome": "Completed",
-    "Sputum collection and results": "Completed",
-    "TB certificate outcome": "Not yet started",
-  });
-}
-
-/**
- * Helper function to verify task statuses with completed sputum
- */
-export function verifyTaskStatusesWithCompletedSputum() {
-  const tbProgressTrackerPage = new TBProgressTrackerPage();
-
-  tbProgressTrackerPage.verifyAllTaskStatuses({
-    "Visa applicant details": "Completed",
-    "Travel information": "Completed",
-    "Medical history and TB symptoms": "Completed",
-    "Radiological outcome": "Completed",
-    "Sputum collection and results": "Completed",
-    "TB certificate outcome": "Not yet started",
-  });
-}
-
 /**
  * Backward compatibility - redirects to new method names
  */

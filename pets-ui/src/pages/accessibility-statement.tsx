@@ -2,12 +2,9 @@ import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import List from "@/components/list/list";
-import { useAppSelector } from "@/redux/hooks";
-import { selectNavigation } from "@/redux/store";
 
 export default function AccessibilityStatementPage() {
-  const navigation = useAppSelector(selectNavigation);
-  const backLinkTo = navigation.accessibilityStatementPreviousPage || "/";
+  const backLinkTo = "/";
   return (
     <Container
       title="Accessibility statement - Complete UK pre-entry health screening - GOV.UK"

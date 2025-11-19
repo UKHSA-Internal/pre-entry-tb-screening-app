@@ -1,6 +1,5 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { setupServer } from "msw/node";
 import { Mock } from "vitest";
 
 import ChestXrayConfirmation from "@/pages/chest-xray-confirmation";
@@ -20,17 +19,13 @@ vi.mock("react-helmet-async", () => ({
   HelmetProvider: () => <>{}</>,
 }));
 
-export const handlers = [];
-const server = setupServer(...handlers);
+beforeEach(() => {
+  localStorage.setItem("cookie-consent", "rejected");
+});
 
-// Enable API mocking before tests.
-beforeAll(() => server.listen());
-
-// Reset any runtime request handlers we may add during the tests.
-afterEach(() => server.resetHandlers());
-
-// Disable API mocking after the tests are done.
-afterAll(() => server.close());
+afterEach(() => {
+  localStorage.clear();
+});
 
 test("Chest X-ray Information confirmation page renders correctly & redirects on button click", async () => {
   renderWithProviders(<ChestXrayConfirmation />);
