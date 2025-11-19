@@ -32,13 +32,13 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   // const endTime = new Date(approxTime * 1000 + 20 * 1000); // 1 min after
   // const startTime = new Date(Date.now() - 3 * 60 * 1000);
   // const endTime = new Date();
-  const startTime = new Date(Date.now() - 2 * 60 * 1000); // 1 min before
+  // const startTime = new Date(Date.now() - 2 * 60 * 1000); // 1 min before
   // const endTime = new Date();
   const ITEM_EVENTS = ["PutItem", "DeleteItem"];
   const events: Event[] = [];
   let nextToken: string | undefined = undefined;
   let queryNumber = 0;
-  const eventNames = new Set();
+  const eventNames: (string | undefined)[] = [];
 
   const params = {
     LookupAttributes: [
@@ -51,9 +51,9 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
       //   AttributeValue: "PutItem",
       // },
     ],
-    StartTime: startTime,
+    // StartTime: startTime,
     // EndTime: endTime,
-    MaxResults: 10,
+    // MaxResults: 10,
     NextToken: nextToken,
   };
 
@@ -71,12 +71,16 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
         // return;
       } else {
         for (const e of result.Events) {
-          eventNames.add(e.EventName);
+          if (!eventNames.includes(e.EventName)) eventNames.push(e.EventName);
           if (e.EventName && ITEM_EVENTS.includes(e.EventName)) events.push(e);
         }
       }
-      // events.push(...filtered);
-      nextToken = result.NextToken;
+      // don't go over 6 requests
+      if (queryNumber >= 6) {
+        nextToken = undefined;
+      } else {
+        nextToken = result.NextToken;
+      }
     } catch (err) {
       logger.error({ err }, "CloudTrail lookup failed");
       if (err instanceof ThrottlingException) {
@@ -88,7 +92,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   } while (nextToken);
 
   logger.info(`Queried ${queryNumber} times`);
-  logger.info({ eventNames }, "EventNames");
+  logger.info({ ...eventNames }, "EventNames");
   logger.info({ events }, "CloudTrail lookup result");
 
   const consoleEvents = events.filter((evt: Event) => {
