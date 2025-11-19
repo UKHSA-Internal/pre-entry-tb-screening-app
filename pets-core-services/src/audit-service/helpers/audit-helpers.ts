@@ -47,8 +47,8 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
       //   AttributeValue: "dynamodb.amazonaws.com",
       // },
       {
-        AttributeKey: "EventName",
-        AttributeValue: "PutItem",
+        AttributeKey: "EventId",
+        AttributeValue: record.eventID,
       },
     ],
     // StartTime: startTime,
@@ -73,7 +73,8 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
         for (const e of result.Events) {
           if (!eventNames.includes(e.EventName)) eventNames.push(e.EventName);
           // if (e.EventName && ITEM_EVENTS.includes(e.EventName)) events.push(e);
-          events.push(e);
+          // const CTEvent = e.CloudTrailEvent ? JSON.parse(e.CloudTrailEvent) : undefined;
+          // if (CTEvent && CTEvent.eventID === record.eventID) events.push(e);
         }
       }
       // don't go over 6 requests
@@ -92,7 +93,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
     }
   } while (nextToken);
 
-  logger.info(`Queried ${queryNumber} times`);
+  logger.info(`Queried ${queryNumber} times, received ${events.length}`);
   logger.info({ ...eventNames }, "EventNames");
   logger.info({ events }, "CloudTrail lookup result");
 
