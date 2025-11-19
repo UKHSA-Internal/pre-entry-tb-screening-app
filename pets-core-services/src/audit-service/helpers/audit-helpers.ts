@@ -34,7 +34,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   // const endTime = new Date();
   // const startTime = new Date(Date.now() - 2 * 60 * 1000); // 1 min before
   // const endTime = new Date();
-  const ITEM_EVENTS = ["PutItem", "DeleteItem"];
+  // const ITEM_EVENTS = ["PutItem", "DeleteItem"];
   const events: Event[] = [];
   let nextToken: string | undefined = undefined;
   let queryNumber = 0;
@@ -46,10 +46,10 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
         AttributeKey: "EventSource",
         AttributeValue: "dynamodb.amazonaws.com",
       },
-      // {
-      //   AttributeKey: "EventName",
-      //   AttributeValue: "PutItem",
-      // },
+      {
+        AttributeKey: "EventName",
+        AttributeValue: "PutItem",
+      },
     ],
     // StartTime: startTime,
     // EndTime: endTime,
@@ -72,7 +72,8 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
       } else {
         for (const e of result.Events) {
           if (!eventNames.includes(e.EventName)) eventNames.push(e.EventName);
-          if (e.EventName && ITEM_EVENTS.includes(e.EventName)) events.push(e);
+          // if (e.EventName && ITEM_EVENTS.includes(e.EventName)) events.push(e);
+          events.push(e);
         }
       }
       // don't go over 6 requests
