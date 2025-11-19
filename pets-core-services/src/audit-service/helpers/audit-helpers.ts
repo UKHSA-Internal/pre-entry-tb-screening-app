@@ -32,7 +32,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   // const endTime = new Date(approxTime * 1000 + 20 * 1000); // 1 min after
   // const startTime = new Date(Date.now() - 3 * 60 * 1000);
   // const endTime = new Date();
-  const startTime = new Date(Date.now() - 2 * 60 * 1000); // 2 min before
+  // const startTime = new Date(Date.now() - 2 * 60 * 1000); // 2 min before
   // const endTime = new Date();
   // const ITEM_EVENTS = ["PutItem", "DeleteItem"];
   const events: Event[] = [];
@@ -43,17 +43,17 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   // const id = record.eventID;
 
   const params = {
-    // LookupAttributes: [
-    //   // {
-    //   //   AttributeKey: "EventSource",
-    //   //   AttributeValue: "dynamodb.amazonaws.com",
-    //   // },
-    //   {
-    //     AttributeKey: "EventId",
-    //     AttributeValue: `${id?.slice(0, 8)}-${id?.slice(8, 12)}-${id?.slice(12, 16)}-${id?.slice(16, 20)}-${id?.slice(20)}`,
-    //   },
-    // ],
-    StartTime: startTime,
+    LookupAttributes: [
+      // {
+      //   AttributeKey: "EventSource",
+      //   AttributeValue: "dynamodb.amazonaws.com",
+      // },
+      {
+        AttributeKey: "EventName",
+        AttributeValue: "PutItem",
+      },
+    ],
+    // StartTime: startTime,
     // EndTime: endTime,
     // MaxResults: 10,
     NextToken: nextToken,
@@ -80,7 +80,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
           // if (CTEvent && CTEvent.eventID === record.eventID) events.push(e);
         }
       }
-      // don't go over 6 requests
+      // don't go over 6 requests for now
       if (queryNumber >= 6) {
         nextToken = undefined;
       } else {
@@ -89,7 +89,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
     } catch (err) {
       logger.error({ err }, "CloudTrail lookup failed");
       if (err instanceof ThrottlingException) {
-        logger.error(`Queried ${queryNumber} times, received ${events.length}`);
+        logger.error(`ERR / Queried ${queryNumber} times, received ${events.length}`);
       }
       nextToken = undefined;
       // return;
