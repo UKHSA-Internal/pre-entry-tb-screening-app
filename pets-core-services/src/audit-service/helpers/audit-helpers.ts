@@ -32,7 +32,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   // const endTime = new Date(approxTime * 1000 + 20 * 1000); // 1 min after
   // const startTime = new Date(Date.now() - 3 * 60 * 1000);
   // const endTime = new Date();
-  const startTime = new Date(Date.now() - 10 * 60 * 1000); // 10 min before
+  const startTime = new Date(Date.now() - 1 * 60 * 60 * 1000); // 1h before
   // const endTime = new Date();
   // const ITEM_EVENTS = ["PutItem", "DeleteItem"];
   const events: Event[] = [];
