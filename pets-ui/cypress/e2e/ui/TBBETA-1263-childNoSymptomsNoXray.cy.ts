@@ -80,6 +80,7 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     loginViaB2C();
     applicantSearchPage.visit();
     applicantSearchPage.verifyPageLoaded();
+    cy.acceptCookies();
     // Generate random country and passport number
     const randomCountry = randomElement(countryList);
     countryCode = randomCountry?.value; // For form filling (e.g., "BRB")
@@ -96,6 +97,7 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
 
   it("should complete the full application process for child with no symptoms, no X-ray, sputum required, and issue certificate with 6 month expiry", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName)
