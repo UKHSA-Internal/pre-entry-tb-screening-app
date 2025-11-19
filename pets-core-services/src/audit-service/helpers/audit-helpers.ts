@@ -29,9 +29,11 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
 
   // Look up CloudTrail events around that time
   // const startTime = new Date(approxTime * 1000 - 60 * 1000); // 1 min before
-  // const endTime = new Date(approxTime * 1000 + 60 * 1000); // 1 min after
-  const startTime = new Date(Date.now() - 3 * 60 * 1000);
-  const endTime = new Date();
+  // const endTime = new Date(approxTime * 1000 + 20 * 1000); // 1 min after
+  // const startTime = new Date(Date.now() - 3 * 60 * 1000);
+  // const endTime = new Date();
+  const startTime = new Date(Date.now() - 60 * 1000); // 1 min before
+  const endTime = new Date(Date.now() + 20 * 1000); // 20 sec after
   const ITEM_EVENTS = ["PutItem", "DeleteItem"];
   const events: Event[] = [];
   let nextToken: string | undefined = undefined;
@@ -51,7 +53,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
     ],
     StartTime: startTime,
     EndTime: endTime,
-    MaxResults: 10,
+    MaxResults: 15,
     NextToken: nextToken,
   };
 
@@ -62,7 +64,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
         new LookupEventsCommand(params as LookupEventsCommandInput),
       );
       queryNumber += 1;
-      const filtered = [];
+      // const filtered = [];
       // result.Events?.filter((e) => e.EventName && ITEM_EVENTS.includes(e.EventName)) || [];
       if (!result.Events || result.Events?.length < 1) {
         logger.info("No 'Events'");
@@ -70,9 +72,9 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
       }
       for (const e of result.Events) {
         eventNames.add(e.EventName);
-        if (e.EventName && ITEM_EVENTS.includes(e.EventName)) filtered.push(e);
+        if (e.EventName && ITEM_EVENTS.includes(e.EventName)) events.push(e);
       }
-      events.push(...filtered);
+      // events.push(...filtered);
       nextToken = result.NextToken;
     } catch (err) {
       logger.error({ err }, "CloudTrail lookup failed");
@@ -85,7 +87,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   } while (nextToken);
 
   logger.info(`Queried ${queryNumber} times`);
-  logger.info(eventNames, "EventNames");
+  logger.info({ eventNames }, "EventNames");
   logger.info({ events }, "CloudTrail lookup result");
 
   const consoleEvents = events.filter((evt: Event) => {
