@@ -32,15 +32,6 @@ import {
   setSputumDecisionStatus,
 } from "@/redux/sputumDecisionSlice";
 import {
-  clearRadiologicalOutcomeDetails,
-  setRadiologicalOutcomeFromApiResponse,
-} from "@/redux/radiologicalOutcomeSlice";
-import {
-  clearSputumDecision,
-  setSputumDecisionRequired,
-  setSputumDecisionStatus,
-} from "@/redux/sputumDecisionSlice";
-import {
   clearSputumDetails,
   setSputumDetailsFromApiResponse,
   setSputumStatus,
