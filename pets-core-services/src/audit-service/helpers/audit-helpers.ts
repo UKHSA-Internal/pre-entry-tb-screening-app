@@ -32,27 +32,28 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   // const endTime = new Date(approxTime * 1000 + 20 * 1000); // 1 min after
   // const startTime = new Date(Date.now() - 3 * 60 * 1000);
   // const endTime = new Date();
-  // const startTime = new Date(Date.now() - 2 * 60 * 1000); // 1 min before
+  const startTime = new Date(Date.now() - 2 * 60 * 1000); // 2 min before
   // const endTime = new Date();
   // const ITEM_EVENTS = ["PutItem", "DeleteItem"];
   const events: Event[] = [];
   let nextToken: string | undefined = undefined;
   let queryNumber = 0;
   const eventNames: (string | undefined)[] = [];
-  const id = record.eventID;
+  const eventSources: (string | undefined)[] = [];
+  // const id = record.eventID;
 
   const params = {
-    LookupAttributes: [
-      // {
-      //   AttributeKey: "EventSource",
-      //   AttributeValue: "dynamodb.amazonaws.com",
-      // },
-      {
-        AttributeKey: "EventId",
-        AttributeValue: `${id?.slice(0, 8)}-${id?.slice(8, 12)}-${id?.slice(12, 16)}-${id?.slice(16, 20)}-${id?.slice(20)}`,
-      },
-    ],
-    // StartTime: startTime,
+    // LookupAttributes: [
+    //   // {
+    //   //   AttributeKey: "EventSource",
+    //   //   AttributeValue: "dynamodb.amazonaws.com",
+    //   // },
+    //   {
+    //     AttributeKey: "EventId",
+    //     AttributeValue: `${id?.slice(0, 8)}-${id?.slice(8, 12)}-${id?.slice(12, 16)}-${id?.slice(16, 20)}-${id?.slice(20)}`,
+    //   },
+    // ],
+    StartTime: startTime,
     // EndTime: endTime,
     // MaxResults: 10,
     NextToken: nextToken,
@@ -73,6 +74,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
       } else {
         for (const e of result.Events) {
           if (!eventNames.includes(e.EventName)) eventNames.push(e.EventName);
+          if (!eventSources.includes(e.EventSource)) eventSources.push(e.EventSource);
           // if (e.EventName && ITEM_EVENTS.includes(e.EventName)) events.push(e);
           // const CTEvent = e.CloudTrailEvent ? JSON.parse(e.CloudTrailEvent) : undefined;
           // if (CTEvent && CTEvent.eventID === record.eventID) events.push(e);
@@ -96,6 +98,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
 
   logger.info(`Queried ${queryNumber} times, received ${events.length}`);
   logger.info({ ...eventNames }, "EventNames");
+  logger.info({ ...eventSources }, "EventSources");
   logger.info({ events }, "CloudTrail lookup result");
 
   const consoleEvents = events.filter((evt: Event) => {
