@@ -42,10 +42,10 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
 
   const params = {
     LookupAttributes: [
-      {
-        AttributeKey: "EventSource",
-        AttributeValue: "dynamodb.amazonaws.com",
-      },
+      // {
+      //   AttributeKey: "EventSource",
+      //   AttributeValue: "dynamodb.amazonaws.com",
+      // },
       {
         AttributeKey: "EventName",
         AttributeValue: "PutItem",
