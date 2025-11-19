@@ -601,7 +601,6 @@ export class MedicalScreeningPage extends BasePage {
 
     return this;
   }
-
   // Comprehensive page verification
   verifyAllPageElements(): MedicalScreeningPage {
     this.verifyPageLoaded();

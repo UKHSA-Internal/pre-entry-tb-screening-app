@@ -343,6 +343,194 @@ export class ChestXraySummaryPage extends BasePage {
     return this;
   }
 
+  // Method to handle case-insensitive field matching
+  getSummaryValueCaseInsensitive(fieldKey: string): Cypress.Chainable<string> {
+    // First try exact match
+    return cy.get("dt.govuk-summary-list__key").then(($keys) => {
+      const exactMatch = $keys.filter((index, element) => {
+        return Cypress.$(element).text().trim() === fieldKey;
+      });
+
+      if (exactMatch.length > 0) {
+        return cy
+          .wrap(exactMatch.first())
+          .siblings(".govuk-summary-list__value")
+          .invoke("text")
+          .then((text) => text.trim());
+      }
+
+      // If no exact match, try case-insensitive match
+      const caseInsensitiveMatch = $keys.filter((index, element) => {
+        return Cypress.$(element).text().trim().toLowerCase() === fieldKey.toLowerCase();
+      });
+
+      if (caseInsensitiveMatch.length > 0) {
+        return cy
+          .wrap(caseInsensitiveMatch.first())
+          .siblings(".govuk-summary-list__value")
+          .invoke("text")
+          .then((text) => text.trim());
+      }
+
+      throw new Error(`Field "${fieldKey}" not found in summary list`);
+    });
+  }
+
+  // Updated verify summary value method with case-insensitive support
+  verifySummaryValueCaseInsensitive(fieldKey: string, expectedValue: string): void {
+    this.getSummaryValueCaseInsensitive(fieldKey).should("eq", expectedValue);
+  }
+
+  // Method specifically for X-ray not taken scenarios
+  verifyXrayNotTakenSummaryInfo(expectedValues: {
+    "Select X-ray status"?: string;
+    "Select x-ray status"?: string;
+    "Enter reason X-ray not taken"?: string;
+    Details?: string;
+    "Sputum required?"?: string;
+  }): void {
+    Object.entries(expectedValues).forEach(([key, expectedValue]) => {
+      if (expectedValue !== undefined) {
+        this.verifyFieldCaseInsensitive(key, expectedValue);
+      }
+    });
+  }
+
+  // VerifyF ield method with case-insensitive support
+  verifyFieldCaseInsensitive(
+    fieldKey: string,
+    expectedValue?: string,
+    optionalLink: boolean = false,
+  ): void {
+    // Try both exact case and lowercase versions
+    const fieldsToTry = [fieldKey, fieldKey.toLowerCase()];
+    let fieldFound = false;
+
+    cy.get("dt.govuk-summary-list__key")
+      .each(($dt) => {
+        const actualFieldText = $dt.text().trim();
+
+        if (
+          fieldsToTry.some(
+            (field) =>
+              actualFieldText === field || actualFieldText.toLowerCase() === field.toLowerCase(),
+          )
+        ) {
+          fieldFound = true;
+          const $value = $dt.siblings(".govuk-summary-list__value");
+          const $valueColumn = $dt.siblings(".govuk-summary-value-column");
+          const $actualValue = $value.length > 0 ? $value : $valueColumn;
+
+          if ($actualValue.find("a").length > 0) {
+            if (optionalLink) {
+              cy.wrap($actualValue).find("a").should("contain", fieldKey);
+            } else if (expectedValue) {
+              throw new Error(
+                `Expected field "${fieldKey}" to have value "${expectedValue}" but found optional link instead`,
+              );
+            }
+          } else {
+            if (expectedValue) {
+              cy.wrap($actualValue)
+                .invoke("text")
+                .then((text) => {
+                  expect(text.trim()).to.eq(expectedValue);
+                });
+            }
+          }
+          return false; // Break out of each loop
+        }
+      })
+      .then(() => {
+        if (!fieldFound) {
+          throw new Error(`Field "${fieldKey}" not found in summary list`);
+        }
+      });
+  }
+
+  // Method to verify X-ray not taken specific fields
+  verifyXrayNotTakenFields(): void {
+    // Verify the fields that appear when X-ray is not taken
+    cy.contains("dt.govuk-summary-list__key", "Enter reason X-ray not taken").should("be.visible");
+    cy.contains("dt.govuk-summary-list__key", "Details").should("be.visible");
+  }
+
+  // Change links verification for X-ray not taken scenario
+  verifyXrayNotTakenChangeLinks(): void {
+    const fields = [
+      { key: "Select x-ray status", expectedHref: "/chest-xray-question#chest-xray-taken" },
+      {
+        key: "Enter reason X-ray not taken",
+        expectedHref: "/chest-xray-not-taken#reason-xray-not-taken",
+      },
+      { key: "Details", expectedHref: "/chest-xray-not-taken#xray-not-taken-further-details" },
+      { key: "Sputum required?", expectedHref: "/sputum-question" },
+    ];
+
+    fields.forEach((field) => {
+      cy.get("dt.govuk-summary-list__key").each(($dt) => {
+        const fieldText = $dt.text().trim();
+        if (fieldText.toLowerCase() === field.key.toLowerCase() || fieldText === field.key) {
+          const $actions = $dt.siblings(".govuk-summary-list__actions");
+          if ($actions.length > 0) {
+            cy.wrap($actions)
+              .find("a")
+              .should("contain", "Change")
+              .and("have.attr", "href", field.expectedHref);
+          }
+          return false; // Break out of each loop
+        }
+      });
+    });
+  }
+
+  // Comprehensive method for X-ray not taken scenarios
+  verifyXrayNotTakenPageElements(xrayInfo: {
+    "Select X-ray status"?: string;
+    "Enter reason X-ray not taken"?: string;
+    Details?: string;
+    "Sputum required?"?: string;
+  }): void {
+    this.verifyPageLoaded();
+    this.verifyXrayNotTakenSummaryInfo(xrayInfo);
+    this.verifyXrayNotTakenFields();
+    this.verifyXrayNotTakenChangeLinks();
+    this.verifyBackLinkNavigation();
+    this.verifyServiceName();
+  }
+
+  // Method to handle mixed case field names
+  getActualFieldKey(expectedKey: string): Cypress.Chainable<string> {
+    return cy.get("dt.govuk-summary-list__key").then(($keys) => {
+      let actualKey = "";
+      $keys.each((index, element) => {
+        const text = Cypress.$(element).text().trim();
+        if (text.toLowerCase() === expectedKey.toLowerCase()) {
+          actualKey = text;
+          return false; // Break the loop
+        }
+      });
+      return actualKey || expectedKey;
+    });
+  }
+
+  // Verify Xray Summary Info to handle case sensitivity
+  verifyXraySummaryInfoFlexible(expectedValues: { [key: string]: string }): void {
+    Object.entries(expectedValues).forEach(([key, expectedValue]) => {
+      if (expectedValue !== undefined) {
+        this.verifyFieldCaseInsensitive(key, expectedValue);
+      }
+    });
+  }
+
+  // Helper method to debug available fields
+  logAvailableFields(): void {
+    cy.get("dt.govuk-summary-list__key").each(($dt) => {
+      const fieldText = $dt.text().trim();
+      cy.log(`Available field: "${fieldText}"`);
+    });
+  }
+
   // Check all elements on the page
   verifyAllPageElements(xrayInfo: {
     "Select X-ray status"?: string;
