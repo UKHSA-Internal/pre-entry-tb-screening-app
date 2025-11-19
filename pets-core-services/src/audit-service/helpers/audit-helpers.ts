@@ -32,8 +32,8 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   // const endTime = new Date(approxTime * 1000 + 20 * 1000); // 1 min after
   // const startTime = new Date(Date.now() - 3 * 60 * 1000);
   // const endTime = new Date();
-  const startTime = new Date(Date.now() - 60 * 1000); // 1 min before
-  const endTime = new Date(Date.now() + 20 * 1000); // 20 sec after
+  const startTime = new Date(Date.now() - 1 * 60 * 1000); // 1 min before
+  const endTime = new Date(Date.now() + 1 * 60 * 1000); // 1 min after
   const ITEM_EVENTS = ["PutItem", "DeleteItem"];
   const events: Event[] = [];
   let nextToken: string | undefined = undefined;
@@ -53,7 +53,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
     ],
     StartTime: startTime,
     EndTime: endTime,
-    MaxResults: 15,
+    MaxResults: 10,
     NextToken: nextToken,
   };
 
@@ -67,12 +67,13 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
       // const filtered = [];
       // result.Events?.filter((e) => e.EventName && ITEM_EVENTS.includes(e.EventName)) || [];
       if (!result.Events || result.Events?.length < 1) {
-        logger.info("No 'Events'");
-        return;
-      }
-      for (const e of result.Events) {
-        eventNames.add(e.EventName);
-        if (e.EventName && ITEM_EVENTS.includes(e.EventName)) events.push(e);
+        logger.info({ result }, "No 'Events'");
+        // return;
+      } else {
+        for (const e of result.Events) {
+          eventNames.add(e.EventName);
+          if (e.EventName && ITEM_EVENTS.includes(e.EventName)) events.push(e);
+        }
       }
       // events.push(...filtered);
       nextToken = result.NextToken;
