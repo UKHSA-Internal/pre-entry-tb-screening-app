@@ -86,7 +86,6 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
       // } else {
       //   nextToken = result.NextToken;
       // }
-      nextToken = result.NextToken;
     } catch (err) {
       logger.error({ err }, "CloudTrail lookup failed");
       if (err instanceof ThrottlingException) {
