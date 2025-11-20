@@ -252,4 +252,46 @@ describe("ApplicantPhotoForm", () => {
       expect(useNavigateMock).toHaveBeenCalledWith("/check-applicant-details");
     });
   });
+
+  it("navigates to error page when upload fails and application status is COMPLETE", async () => {
+    vi.mocked(validateFiles).mockResolvedValue(true);
+    vi.mocked(uploadFile).mockRejectedValue(new Error("Upload failed"));
+
+    const preloadedState = {
+      applicant: {
+        status: ApplicationStatus.COMPLETE,
+        fullName: "",
+        sex: "",
+        dateOfBirth: { year: "", month: "", day: "" },
+        countryOfNationality: "",
+        passportNumber: "",
+        countryOfIssue: "",
+        passportIssueDate: { year: "", month: "", day: "" },
+        passportExpiryDate: { year: "", month: "", day: "" },
+        applicantHomeAddress1: "",
+        applicantHomeAddress2: "",
+        applicantHomeAddress3: "",
+        townOrCity: "",
+        provinceOrState: "",
+        country: "",
+        postcode: "",
+        applicantPhotoFileName: "",
+      },
+      application: { applicationId: "abc-123", dateCreated: "" },
+    };
+
+    renderWithProviders(<ApplicantPhotoForm />, { preloadedState });
+
+    const file = new File(["dummy content"], "photo.jpg", { type: "image/jpeg" });
+    const input: HTMLInputElement = screen.getByTestId("applicant-photo");
+
+    await userEvent.upload(input, file);
+    const continueButton = screen.getByRole("button", { name: /Continue/i });
+    await user.click(continueButton);
+
+    await waitFor(() => {
+      expect(uploadFile).toHaveBeenCalled();
+      expect(useNavigateMock).toHaveBeenCalledWith("/sorry-there-is-problem-with-service");
+    });
+  });
 });
