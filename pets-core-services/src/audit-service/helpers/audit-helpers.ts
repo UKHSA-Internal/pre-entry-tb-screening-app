@@ -32,7 +32,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   // const endTime = new Date(approxTime * 1000 + 20 * 1000); // 1 min after
   // const startTime = new Date(Date.now() - 3 * 60 * 1000);
   // const endTime = new Date();
-  const startTime = new Date(Date.now() - 1 * 60 * 60 * 1000); // 1h before
+  const startTime = new Date(Date.now() - 6 * 60 * 60 * 1000); // 1h before
   // const endTime = new Date();
   // const ITEM_EVENTS = ["PutItem", "DeleteItem"];
   const events: Event[] = [];
@@ -77,15 +77,16 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
           if (!eventSources.includes(e.EventSource)) eventSources.push(e.EventSource);
           // if (e.EventName && ITEM_EVENTS.includes(e.EventName)) events.push(e);
           // const CTEvent = e.CloudTrailEvent ? JSON.parse(e.CloudTrailEvent) : undefined;
-          // if (CTEvent && CTEvent.eventID === record.eventID) events.push(e);
+          events.push(e);
         }
       }
-      // don't go over 6 requests for now
-      if (queryNumber >= 6) {
-        nextToken = undefined;
-      } else {
-        nextToken = result.NextToken;
-      }
+      // // don't go over 6 requests for now
+      // if (queryNumber >= 6) {
+      //   nextToken = undefined;
+      // } else {
+      //   nextToken = result.NextToken;
+      // }
+      nextToken = result.NextToken;
     } catch (err) {
       logger.error({ err }, "CloudTrail lookup failed");
       if (err instanceof ThrottlingException) {
