@@ -1,12 +1,7 @@
 import {
-  Event,
-  LookupEventsCommand,
-  LookupEventsCommandInput,
-  LookupEventsCommandOutput,
   PutEventSelectorsCommand,
   PutEventSelectorsCommandInput,
   PutEventSelectorsCommandOutput,
-  ThrottlingException,
 } from "@aws-sdk/client-cloudtrail";
 import { DynamoDBRecord } from "aws-lambda";
 
