@@ -5,8 +5,9 @@ import { Mock, vi } from "vitest";
 
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import ApplicantPhotoForm from "@/sections/applicant-photo-form";
-import { ApplicationStatus } from "@/utils/enums";
+import { ApplicationStatus, ImageType } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
+import uploadFile from "@/utils/uploadFile";
 import validateFiles from "@/utils/validateFiles";
 
 vi.mock("@/context/applicantPhotoContext", () => ({
@@ -14,6 +15,10 @@ vi.mock("@/context/applicantPhotoContext", () => ({
 }));
 
 vi.mock("@/utils/validateFiles", () => ({
+  default: vi.fn(),
+}));
+
+vi.mock("@/utils/uploadFile", () => ({
   default: vi.fn(),
 }));
 
@@ -198,6 +203,53 @@ describe("ApplicantPhotoForm", () => {
       expect(
         screen.queryByText("The selected file must be a JPG, JPEG or PNG"),
       ).not.toBeInTheDocument();
+    });
+  });
+
+  it("uploads file and continues when editing completed application", async () => {
+    vi.mocked(validateFiles).mockResolvedValue(true);
+    vi.mocked(uploadFile).mockResolvedValue("success");
+
+    const preloadedState = {
+      applicant: {
+        status: ApplicationStatus.COMPLETE,
+        fullName: "",
+        sex: "",
+        dateOfBirth: { year: "", month: "", day: "" },
+        countryOfNationality: "",
+        passportNumber: "",
+        countryOfIssue: "",
+        passportIssueDate: { year: "", month: "", day: "" },
+        passportExpiryDate: { year: "", month: "", day: "" },
+        applicantHomeAddress1: "",
+        applicantHomeAddress2: "",
+        applicantHomeAddress3: "",
+        townOrCity: "",
+        provinceOrState: "",
+        country: "",
+        postcode: "",
+        applicantPhotoFileName: "",
+      },
+      application: { applicationId: "abc-123", dateCreated: "" },
+    };
+
+    renderWithProviders(<ApplicantPhotoForm />, { preloadedState });
+
+    const file = new File(["dummy content"], "photo.jpg", { type: "image/jpeg" });
+    const input: HTMLInputElement = screen.getByTestId("applicant-photo");
+
+    await userEvent.upload(input, file);
+    const continueButton = screen.getByRole("button", { name: /Continue/i });
+    await user.click(continueButton);
+
+    await waitFor(() => {
+      expect(uploadFile).toHaveBeenCalledWith(
+        file,
+        "applicant-photo.jpg",
+        "abc-123",
+        ImageType.Photo,
+      );
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-applicant-details");
     });
   });
 });
