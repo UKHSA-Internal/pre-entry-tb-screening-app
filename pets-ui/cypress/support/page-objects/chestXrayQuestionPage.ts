@@ -117,7 +117,7 @@ export class ChestXrayPage extends BasePage {
 
   // Verify service name in header
   verifyServiceName(): ChestXrayPage {
-    cy.get(".govuk-header__service-name")
+    cy.get(".govuk-service-navigation__service-name")
       .should("be.visible")
       .and("contain", "Complete UK pre-entry health screening");
     return this;
