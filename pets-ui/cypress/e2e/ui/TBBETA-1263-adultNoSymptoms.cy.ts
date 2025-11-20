@@ -264,6 +264,7 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
 
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
+      age: "35 years old",
       tbSymptoms: "No",
       previousTb: "Yes",
       closeContactWithTb: "No",

@@ -240,6 +240,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     medicalSummaryPage.verifyPageLoaded();
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
+      age: "35 years old",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",

@@ -266,6 +266,7 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
 
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
+      age: "31 years old",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",

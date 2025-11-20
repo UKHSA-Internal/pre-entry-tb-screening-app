@@ -269,6 +269,7 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
 
     // Validate the prefilled form for child
     medicalSummaryPage.fullyValidateSummary({
+      age: "7 years old",
       dateOfMedicalScreening: "10 September 2025",
       tbSymptoms: "No",
       previousTb: "No",

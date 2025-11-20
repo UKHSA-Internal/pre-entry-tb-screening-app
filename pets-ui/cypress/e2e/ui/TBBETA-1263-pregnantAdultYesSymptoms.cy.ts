@@ -268,6 +268,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
 
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
+      age: "33 years old",
       dateOfMedicalScreening: "10 September 2025",
       tbSymptoms: "Yes",
       previousTb: "No",
