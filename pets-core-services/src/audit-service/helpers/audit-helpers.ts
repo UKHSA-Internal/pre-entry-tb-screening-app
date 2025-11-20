@@ -26,7 +26,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   }
 
   const params: PutEventSelectorsCommandInput = {
-    TrailName: "pets-euw-cloudtrail-managementevents",
+    TrailName: "arn:aws:cloudtrail:eu-west-2:108782068086:trail/halo-pets-nl2-avm-cloudtrail-main",
     EventSelectors: [
       {
         ReadWriteType: "All",
