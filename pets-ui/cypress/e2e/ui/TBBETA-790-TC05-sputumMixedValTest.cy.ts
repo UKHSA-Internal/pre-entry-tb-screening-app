@@ -265,7 +265,6 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
 
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "35",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",

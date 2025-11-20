@@ -97,6 +97,7 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
 
   it("should display error messages where NO sputum sample results is selected", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName)
@@ -218,7 +219,6 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
 
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "25",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",

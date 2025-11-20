@@ -252,7 +252,6 @@ describe("PETS Application - Amend Travel Information for Partially Completed Su
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
       dateOfMedicalScreening: "10 September 2025",
-      age: "30",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",

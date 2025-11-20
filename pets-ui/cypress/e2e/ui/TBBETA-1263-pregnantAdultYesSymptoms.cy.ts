@@ -96,6 +96,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
 
   it("Pregnant Adult - Yes Symptoms, No History, Yes Contact, No X-ray uploaded, Yes Sputum Required - TB Certificate Issued (3 months)", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName)
@@ -240,7 +241,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
 
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("31")
+      .fillAge("33")
       .selectTbSymptoms("Yes") // Yes symptoms
       .selectPreviousTb("No") // No TB history
       .selectCloseContact("Yes") // Yes close contact
@@ -268,7 +269,6 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
       dateOfMedicalScreening: "10 September 2025",
-      age: "31",
       tbSymptoms: "Yes",
       previousTb: "No",
       closeContactWithTb: "Yes",

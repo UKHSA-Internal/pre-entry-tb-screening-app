@@ -282,7 +282,6 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
 
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "25",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",

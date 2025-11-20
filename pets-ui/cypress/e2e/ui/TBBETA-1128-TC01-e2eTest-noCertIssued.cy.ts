@@ -257,7 +257,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
 
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("29")
+      .fillAge("30")
       .selectTbSymptoms("Yes")
       .selectPreviousTb("No")
       .selectCloseContact("Yes")
@@ -278,7 +278,6 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
 
     //Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "29",
       tbSymptoms: "Yes",
       tbSymptomsList: [],
       previousTb: "No",

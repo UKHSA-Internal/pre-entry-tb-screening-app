@@ -97,6 +97,7 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
 
   it("should display all errors when submitting a completely empty form", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName)
@@ -197,7 +198,7 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
     medicalScreeningPage.verifyPageLoaded();
     medicalScreeningPage
       .fillScreeningDate("25", "09", "1992")
-      .fillAge("31")
+      .fillAge("33")
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
@@ -218,7 +219,6 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
 
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "31",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",

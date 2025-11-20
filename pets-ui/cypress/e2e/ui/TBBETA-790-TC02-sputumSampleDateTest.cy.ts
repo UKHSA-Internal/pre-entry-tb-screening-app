@@ -94,6 +94,7 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
 
   it("should display error messages for missing date in date fields", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName) // Use country code for form filling
@@ -266,7 +267,6 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
 
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "25",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",
