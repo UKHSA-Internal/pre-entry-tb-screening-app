@@ -242,7 +242,7 @@ const isChildUnder11 = (medicalScreeningData: ReduxMedicalScreeningType) => {
 };
 
 const updateGoogleAnalyticsConsent = (consentGranted: boolean) => {
-  if (typeof globalThis.gtag === "function") {
+  if (globalThis.gaInitialized && typeof globalThis.gtag === "function") {
     globalThis.gtag("consent", "update", {
       ad_storage: consentGranted ? "granted" : "denied",
       analytics_storage: consentGranted ? "granted" : "denied",
@@ -257,7 +257,7 @@ const sendGoogleAnalyticsJourneyEvent = (
   journeyId: string,
   journeyType: string,
 ) => {
-  if (typeof globalThis.gtag === "function") {
+  if (globalThis.gaInitialized && typeof globalThis.gtag === "function") {
     globalThis.gtag("event", pageTitle, {
       journey_id: journeyId,
       journey_type: journeyType,
@@ -266,7 +266,7 @@ const sendGoogleAnalyticsJourneyEvent = (
 };
 
 const sendGoogleAnalyticsFormErrorEvent = (pageTitle: string, errorList: string[]) => {
-  if (typeof globalThis.gtag === "function") {
+  if (globalThis.gaInitialized && typeof globalThis.gtag === "function") {
     globalThis.gtag("form_validation_error", {
       page: pageTitle,
       validation_failures: errorList,
@@ -275,7 +275,7 @@ const sendGoogleAnalyticsFormErrorEvent = (pageTitle: string, errorList: string[
 };
 
 const setGoogleAnalyticsParams = (paramName: string, params?: unknown) => {
-  if (typeof globalThis.gtag === "function") {
+  if (globalThis.gaInitialized && typeof globalThis.gtag === "function") {
     globalThis.gtag("set", paramName, params);
   }
 };
