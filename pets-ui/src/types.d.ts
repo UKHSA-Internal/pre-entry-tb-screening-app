@@ -9,10 +9,8 @@ import {
 // Misc types
 declare global {
   interface Window {
-    gaInitialized?: boolean;
     gtag?: (...args: unknown[]) => void;
   }
-  var gaInitialized: boolean | undefined;
   var gtag: ((...args: unknown[]) => void) | undefined;
 }
 

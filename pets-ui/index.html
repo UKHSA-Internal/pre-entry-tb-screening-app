@@ -14,7 +14,6 @@
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=%VITE_GA_CONFIG_ID%"></script>
     <script>
-      window.gaInitialized = false;
       globalThis.dataLayer = globalThis.dataLayer || [];
       function gtag() {dataLayer.push(arguments);}
 
@@ -26,9 +25,7 @@
         security_storage: "granted"
       });
       gtag("js", new Date());
-      gtag("config", "%VITE_GA_CONFIG_ID%", {
-        on_ready: () => window.gaInitialized = true
-      });
+      gtag("config", "%VITE_GA_CONFIG_ID%");
     </script>
   </head>
   <body class="govuk-template__body">
