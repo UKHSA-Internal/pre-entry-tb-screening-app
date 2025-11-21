@@ -94,6 +94,7 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
 
   it("should display multiple validation errors for mixed invalid data scenarios", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName) // Use country code for form filling
@@ -244,7 +245,7 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
 
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("35")
+      .fillAge("36")
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
@@ -265,7 +266,7 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
 
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "35",
+      age: "36 years old",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",

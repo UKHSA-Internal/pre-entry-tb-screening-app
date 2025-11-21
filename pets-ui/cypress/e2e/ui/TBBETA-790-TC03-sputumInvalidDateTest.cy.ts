@@ -94,6 +94,7 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
 
   it("should display error messages for invalid dates (day 32, month 13, future year)", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName) // Use country code for form filling
@@ -245,7 +246,7 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
 
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("30")
+      .fillAge("35")
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
@@ -266,7 +267,7 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
 
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "30",
+      age: "35 years old",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",

@@ -96,6 +96,7 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
 
   it("should complete the full application process for child with no symptoms, no X-ray, sputum required, and issue certificate with 6 month expiry", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName)
@@ -240,7 +241,7 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
 
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("6") // Child age (under 11)
+      .fillAge("7") // Child age (under 11)
       .selectTbSymptoms("No") // No symptoms
       .selectChildTbHistory("None of these") // None of these for child TB history
       .selectPreviousTb("No") // No TB history
@@ -268,8 +269,8 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
 
     // Validate the prefilled form for child
     medicalSummaryPage.fullyValidateSummary({
+      age: "7 years old",
       dateOfMedicalScreening: "10 September 2025",
-      age: "6",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",
