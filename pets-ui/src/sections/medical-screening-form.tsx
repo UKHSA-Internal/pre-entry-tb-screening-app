@@ -20,7 +20,6 @@ import { DateType, ReduxMedicalScreeningType } from "@/types";
 import { ApplicationStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { calculateApplicantAge, validateDate } from "@/utils/helpers";
-import { formRegex } from "@/utils/records";
 
 const MedicalScreeningForm = () => {
   const navigate = useNavigate();
