@@ -39,9 +39,9 @@ export class LandingPage extends BasePage {
   verifyBeforeYouStartSection(): LandingPage {
     cy.contains("h2.govuk-heading-m", "Before you start").should("be.visible");
 
-    cy.contains(
-      "You must have the visa applicant's written consent to carry out TB screening",
-    ).should("be.visible");
+    cy.contains("You must have the visa applicant's written consent for TB screening").should(
+      "be.visible",
+    );
 
     cy.contains("The visa applicant must have a valid passport").should("be.visible");
 

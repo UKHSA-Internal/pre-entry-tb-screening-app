@@ -5,24 +5,26 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Checkbox from "@/components/checkbox/checkbox";
 import DateTextInput from "@/components/dateTextInput/dateTextInput";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
-import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
+import SummaryList from "@/components/summaryList/summaryList";
 import TextArea from "@/components/textArea/textArea";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   setMedicalScreeningDetails,
   setMedicalScreeningStatus,
 } from "@/redux/medicalScreeningSlice";
-import { selectMedicalScreening } from "@/redux/store";
+import { selectApplicant, selectMedicalScreening } from "@/redux/store";
 import { DateType, ReduxMedicalScreeningType } from "@/types";
 import { ApplicationStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
-import { validateDate } from "@/utils/helpers";
-import { formRegex } from "@/utils/records";
+import { calculateApplicantAge, validateDate } from "@/utils/helpers";
 
 const MedicalScreeningForm = () => {
   const navigate = useNavigate();
+
+  const applicantData = useAppSelector(selectApplicant);
+  const applicantAge = calculateApplicantAge(applicantData.dateOfBirth);
 
   const medicalData = useAppSelector(selectMedicalScreening);
   const methods = useForm<ReduxMedicalScreeningType>({
@@ -52,7 +54,12 @@ const MedicalScreeningForm = () => {
   const dispatch = useAppDispatch();
 
   const onSubmit: SubmitHandler<ReduxMedicalScreeningType> = (medicalScreeningData) => {
-    dispatch(setMedicalScreeningDetails(medicalScreeningData));
+    dispatch(
+      setMedicalScreeningDetails({
+        ...medicalScreeningData,
+        age: applicantAge.ageInYears.toString(),
+      }),
+    );
     dispatch(setMedicalScreeningStatus(ApplicationStatus.IN_PROGRESS));
     navigate("/is-an-x-ray-required");
   };
@@ -106,6 +113,10 @@ const MedicalScreeningForm = () => {
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
         <Heading level={1} size="l" title="Record medical history and TB symptoms" />
+        <SummaryList
+          keyValuePairList={[{ key: "Visa applicant's age", value: applicantAge.ageToDisplay }]}
+        />
+
         <div className="govuk-!-margin-bottom-2">
           <Controller
             name="completionDate"
@@ -130,21 +141,6 @@ const MedicalScreeningForm = () => {
                 errorMessage={methods.formState.errors?.completionDate?.message ?? ""}
               />
             )}
-          />
-        </div>
-
-        <div ref={ageRef} className="govuk-!-margin-top-0">
-          <FreeText
-            id="age"
-            heading="Visa applicant's age in years"
-            errorMessage={errors?.age?.message ?? ""}
-            formValue="age"
-            required="Enter applicant's age in years"
-            patternValue={formRegex.numbersOnly}
-            patternError="Age must be a number"
-            inputWidth={3}
-            suffixText="years"
-            defaultValue={medicalData.age.toString()}
           />
         </div>
 

@@ -33,8 +33,8 @@ export default function HomePage() {
       </p>
       <Heading level={2} size="m" title="Before you start" />
       <p className="govuk-body">
-        You must have the visa applicant&apos;s written consent to carry out TB screening (or the
-        consent of their parent or legal guardian).
+        You must have the visa applicant&apos;s written consent for TB screening (or the consent of
+        their parent or legal guardian).
       </p>
       <p className="govuk-body">
         The visa applicant must have a valid passport. You will need the passport number and country
