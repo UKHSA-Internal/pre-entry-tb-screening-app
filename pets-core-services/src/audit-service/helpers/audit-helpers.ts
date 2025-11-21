@@ -27,7 +27,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   }
 
   // Look up CloudTrail events around that time
-  const startTime = new Date(Date.now() - 10 * 60 * 1000); // 1min before
+  const startTime = new Date(Date.now() - 30 * 60 * 1000); // 30min before
   // const endTime = new Date();
   // const ITEM_EVENTS = ["PutItem", "DeleteItem"];
   const events: Event[] = [];
@@ -46,10 +46,10 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
         AttributeKey: "EventSource",
         AttributeValue: "dynamodb.amazonaws.com",
       },
-      {
-        AttributeKey: "EventType",
-        AttributeValue: "AWS::DynamoDB::Table",
-      },
+      // {
+      //   AttributeKey: "EventType",
+      //   AttributeValue: "AWS::DynamoDB::Table",
+      // },
     ],
     StartTime: startTime,
     // EndTime: endTime,
