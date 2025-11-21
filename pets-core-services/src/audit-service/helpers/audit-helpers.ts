@@ -27,7 +27,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   }
 
   // Look up CloudTrail events around that time
-  const startTime = new Date(Date.now() - 6 * 60 * 60 * 1000); // 6h before
+  const startTime = new Date(Date.now() - 10 * 60 * 1000); // 1min before
   // const endTime = new Date();
   // const ITEM_EVENTS = ["PutItem", "DeleteItem"];
   const events: Event[] = [];
@@ -39,8 +39,16 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   const params = {
     LookupAttributes: [
       {
+        AttributeKey: "EventName",
+        AttributeValue: "DescribeTable",
+      },
+      {
         AttributeKey: "EventSource",
         AttributeValue: "dynamodb.amazonaws.com",
+      },
+      {
+        AttributeKey: "EventType",
+        AttributeValue: "AWS::DynamoDB::Table",
       },
     ],
     StartTime: startTime,
@@ -63,21 +71,8 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
         for (const e of result.Events) {
           if (!eventNames.includes(e.EventName)) eventNames.push(e.EventName);
           if (!eventSources.includes(e.EventSource)) eventSources.push(e.EventSource);
-          // if (e.EventName && ITEM_EVENTS.includes(e.EventName)) events.push(e);
-          const CTEvent: Record<string, any> = e.CloudTrailEvent
-            ? JSON.parse(e.CloudTrailEvent)
-            : undefined;
-          if (
-            CTEvent &&
-            CTEvent?.userIdentity &&
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            CTEvent.userIdentity?.sessionContext &&
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            CTEvent.userIdentity.sessionContext?.sessionIssuer &&
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            CTEvent.userIdentity.sessionContext.sessionIssuer?.userName === "audit-lambda"
-          )
-            events.push(e);
+
+          events.push(e);
         }
       }
       nextToken = result.NextToken;
@@ -89,7 +84,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
       nextToken = undefined;
       // return;
     }
-  } while (nextToken || queryNumber <= 1);
+  } while (nextToken);
 
   logger.info(`Queried ${queryNumber} times, received ${events.length}`);
   logger.info({ ...eventNames }, "EventNames");
