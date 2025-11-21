@@ -1,3 +1,5 @@
+// GENERAL TEST UTILITIES
+
 export const randomElement = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
 
 export const errorMessages = [
@@ -73,6 +75,7 @@ export const passportNumber = {
     "HH678901235",
   ],
 };
+
 export function getRandomPassportNumber(): string {
   const passportArray = passportNumber.passportNumber;
   const randomIndex = Math.floor(Math.random() * passportArray.length);

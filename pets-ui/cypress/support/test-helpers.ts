@@ -858,3 +858,262 @@ export function navigateToTbCertificatePageViaTracker() {
 export function navigateToTbCertificatePageViaTrackerWithSputum() {
   return navigateToTbCertificateDeclarationPageViaTrackerWithSputum();
 }
+// AGE CALCULATIONS
+
+/**
+ * Calculate age based on date of birth
+ * @param day - Day of birth (1-31)
+ * @param month - Month of birth (1-12)
+ * @param year - Year of birth (e.g., 2000)
+ * @returns Age as a number
+ */
+export function calculateAge(
+  day: number | string,
+  month: number | string,
+  year: number | string,
+): number {
+  const birthDate = new Date(Number(year), Number(month) - 1, Number(day));
+  const today = new Date();
+
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+
+  // If birthday hasn't occurred this year yet, subtract 1
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+
+  return age;
+}
+
+/**
+ * Calculate age and return formatted string for validation
+ * @param day - Day of birth (1-31)
+ * @param month - Month of birth (1-12)
+ * @param year - Year of birth (e.g., 2000)
+ * @returns Formatted age string (e.g., "25 years old")
+ */
+export function calculateAgeString(
+  day: number | string,
+  month: number | string,
+  year: number | string,
+): string {
+  const age = calculateAge(day, month, year);
+  return `${age} years old`;
+}
+
+/**
+ * Calculate date of birth needed to achieve a specific age
+ * @param desiredAge - The age you want the applicant to be
+ * @returns Object with day, month, year for a person of that age
+ */
+export function calculateDobForAge(desiredAge: number): {
+  day: string;
+  month: string;
+  year: string;
+} {
+  const today = new Date();
+  const year = today.getFullYear() - desiredAge;
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  return { day, month, year: String(year) };
+}
+
+/**
+ * Calculate DOB for a child that will always be under 11 years old
+ * Perfect for child-specific test scenarios
+ * @param targetAge - Optional specific age (0-10). If not provided, defaults to 7 years old
+ * @returns Object with day, month, year for a child under 11
+ */
+export function calculateDobForChildUnder11(targetAge?: number): {
+  day: string;
+  month: string;
+  year: string;
+} {
+  // Validate target age if provided
+  if (targetAge !== undefined) {
+    if (targetAge < 0 || targetAge >= 11) {
+      throw new Error("targetAge must be between 0 and 10 for a child under 11");
+    }
+  }
+
+  // Use provided age or default to 7 years old for good test coverage
+  const ageToUse = targetAge ?? 7;
+  return calculateDobForAge(ageToUse);
+}
+
+/**
+ * Calculate a random DOB for a child that will always be under 11
+ * Useful for varied test data
+ * @returns Object with day, month, year for a random child under 11 (age 0-10)
+ */
+export function calculateDobForRandomChildUnder11(): { day: string; month: string; year: string } {
+  const randomAge = Math.floor(Math.random() * 11); // 0-10 inclusive
+  return calculateDobForAge(randomAge);
+}
+
+/**
+ * Verify that a date of birth represents a child under 11 years old
+ * @param day - Day of birth
+ * @param month - Month of birth
+ * @param year - Year of birth
+ * @returns true if applicant is under 11 years old
+ */
+export function isChildUnder11(
+  day: number | string,
+  month: number | string,
+  year: number | string,
+): boolean {
+  const age = calculateAge(day, month, year);
+  return age < 11;
+}
+
+/**
+ * Verify that a date of birth represents a child (0-10 years old)
+ * Alias for isChildUnder11 for semantic clarity
+ * @param day - Day of birth
+ * @param month - Month of birth
+ * @param year - Year of birth
+ * @returns true if the person is a child under 11
+ */
+export function isChild(
+  day: number | string,
+  month: number | string,
+  year: number | string,
+): boolean {
+  return isChildUnder11(day, month, year);
+}
+
+/**
+ * Verify that a date of birth represents an adult (11+ years old)
+ * @param day - Day of birth
+ * @param month - Month of birth
+ * @param year - Year of birth
+ * @returns true if the person is 11 or older
+ */
+export function isAdult(
+  day: number | string,
+  month: number | string,
+  year: number | string,
+): boolean {
+  const age = calculateAge(day, month, year);
+  return age >= 11;
+}
+
+/**
+ * Get age category for an applicant
+ * @param day - Day of birth
+ * @param month - Month of birth
+ * @param year - Year of birth
+ * @returns One of: "infant" (0-5), "child" (6-10), "teen" (11-17), "adult" (18+)
+ */
+export function getAgeCategory(
+  day: number | string,
+  month: number | string,
+  year: number | string,
+): "infant" | "child" | "teen" | "adult" {
+  const age = calculateAge(day, month, year);
+
+  if (age < 6) return "infant";
+  if (age < 11) return "child";
+  if (age < 18) return "teen";
+  return "adult";
+}
+
+/**
+ * Get today's date formatted as day, month, year for form filling
+ * @returns Object with day, month, year properties
+ */
+export function getTodayDate(): { day: string; month: string; year: string } {
+  const today = new Date();
+  return {
+    day: String(today.getDate()).padStart(2, "0"),
+    month: String(today.getMonth() + 1).padStart(2, "0"),
+    year: String(today.getFullYear()),
+  };
+}
+
+/**
+ * Get yesterday's date formatted for form filling
+ * @returns Object with day, month, year properties
+ */
+export function getYesterdayDate(): { day: string; month: string; year: string } {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  return {
+    day: String(yesterday.getDate()).padStart(2, "0"),
+    month: String(yesterday.getMonth() + 1).padStart(2, "0"),
+    year: String(yesterday.getFullYear()),
+  };
+}
+
+/**
+ * Get date from N days ago
+ * @param daysAgo - Number of days in the past
+ * @returns Object with day, month, year properties
+ */
+export function getDateDaysAgo(daysAgo: number): { day: string; month: string; year: string } {
+  const date = new Date();
+  date.setDate(date.getDate() - daysAgo);
+  return {
+    day: String(date.getDate()).padStart(2, "0"),
+    month: String(date.getMonth() + 1).padStart(2, "0"),
+    year: String(date.getFullYear()),
+  };
+}
+
+/**
+ * Format date string for display (e.g., "25 March 2025")
+ * @param day - Day (1-31)
+ * @param month - Month (1-12)
+ * @param year - Year
+ * @returns Formatted date string
+ */
+export function formatDateForDisplay(
+  day: string | number,
+  month: string | number,
+  year: string | number,
+): string {
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const monthIndex = Number(month) - 1;
+  return `${day} ${monthNames[monthIndex]} ${year}`;
+}
+
+/**
+ * Parse date string in format "DD/MM/YYYY" and return components
+ * @param dateString - Date in format "DD/MM/YYYY"
+ * @returns Object with day, month, year properties
+ */
+export function parseDateString(dateString: string): { day: string; month: string; year: string } {
+  const [day, month, year] = dateString.split("/");
+  return { day, month, year };
+}
+
+/**
+ * Check if a date of birth is valid
+ * @param day - Day of birth
+ * @param month - Month of birth
+ * @param year - Year of birth
+ * @returns true if date is valid
+ */
+export function isValidDate(
+  day: number | string,
+  month: number | string,
+  year: number | string,
+): boolean {
+  const date = new Date(Number(year), Number(month) - 1, Number(day));
+  return date instanceof Date && !isNaN(date.getTime());
+}

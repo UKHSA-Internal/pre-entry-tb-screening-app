@@ -96,6 +96,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
   });
   it("should complete the full application process with TB certificate not issued due to testing postponed", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName)
@@ -217,7 +218,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     medicalScreeningPage.verifyPageLoaded();
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("34")
+      .fillAge("35")
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
@@ -239,7 +240,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     medicalSummaryPage.verifyPageLoaded();
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "34",
+      age: "35 years old",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",

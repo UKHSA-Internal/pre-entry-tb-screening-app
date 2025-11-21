@@ -280,7 +280,7 @@ describe("PETS Application End-to-End Tests with Minor Findings", () => {
 
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "25",
+      age: "25 years old",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",

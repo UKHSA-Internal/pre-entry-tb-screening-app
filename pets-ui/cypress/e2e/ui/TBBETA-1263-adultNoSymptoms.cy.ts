@@ -100,6 +100,7 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
 
   it("should complete the full application process for adult with TB history and issue certificate with 6 month expiry", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName)
@@ -240,7 +241,7 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
     medicalScreeningPage.verifyPageLoaded();
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("34") // Adult age
+      .fillAge("35") // Adult age
       .selectTbSymptoms("No") // No symptoms
       .selectPreviousTb("Yes") // Yes to TB history
       .selectCloseContact("No") // No close contact
@@ -263,7 +264,7 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
 
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "34",
+      age: "35 years old",
       tbSymptoms: "No",
       previousTb: "Yes",
       closeContactWithTb: "No",
