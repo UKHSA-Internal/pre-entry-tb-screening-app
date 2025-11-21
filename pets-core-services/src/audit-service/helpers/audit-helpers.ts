@@ -1,7 +1,9 @@
 import {
-  PutEventSelectorsCommand,
-  PutEventSelectorsCommandInput,
-  PutEventSelectorsCommandOutput,
+  Event,
+  LookupEventsCommand,
+  LookupEventsCommandInput,
+  LookupEventsCommandOutput,
+  ThrottlingException,
 } from "@aws-sdk/client-cloudtrail";
 import { DynamoDBRecord } from "aws-lambda";
 
@@ -13,7 +15,6 @@ const { cloudTrailClient: client } = awsClients;
 
 export const getConsoleEvent = async (record: DynamoDBRecord) => {
   const tableArn = record.eventSourceARN;
-  // const approxTime = record?.dynamodb?.ApproximateCreationDateTime;
 
   // Extract just the table name from ARN
   const tableName = tableArn ? tableArn.split("/")[1] : undefined;
@@ -25,46 +26,100 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
     return;
   }
 
-  const params: PutEventSelectorsCommandInput = {
-    TrailName: "pets-euw-cloudtrail-managementevents",
-    EventSelectors: [
+  // Look up CloudTrail events around that time
+  const startTime = new Date(Date.now() - 6 * 60 * 60 * 1000); // 6h before
+  // const endTime = new Date();
+  // const ITEM_EVENTS = ["PutItem", "DeleteItem"];
+  const events: Event[] = [];
+  let nextToken: string | undefined = undefined;
+  let queryNumber = 0;
+  const eventNames: (string | undefined)[] = [];
+  const eventSources: (string | undefined)[] = [];
+
+  const params = {
+    LookupAttributes: [
       {
-        ReadWriteType: "ReadOnly",
-        // IncludeManagementEvents: true,
-        DataResources: [
-          {
-            Type: "AWS::DynamoDB::Table",
-            Values: [
-              "arn:aws:dynamodb:eu-west-2:108782068086:table/applicant-details",
-              "arn:aws:dynamodb:eu-west-2:108782068086:table/application-details",
-            ],
-          },
-        ],
-        // ExcludeManagementEventSources: ["STRING_VALUE"],
+        AttributeKey: "EventSource",
+        AttributeValue: "dynamodb.amazonaws.com",
       },
     ],
-    AdvancedEventSelectors: [
-      {
-        Name: "Log all PutItam db events",
-        FieldSelectors: [
-          { Field: "eventCategory", Equals: ["Data"] },
-          { Field: "eventName", Equals: ["PutItem", "DeleteItem"] },
-          { Field: "resources.type", Equals: ["AWS::DynamoDB::Table"] },
-          {
-            Field: "resources.ARN",
-            StartsWith: [
-              "arn:aws:dynamodb:eu-west-2:108782068086:table/applicant-details",
-              "arn:aws:dynamodb:eu-west-2:108782068086:table/application-details",
-            ],
-          },
-        ],
-      },
-    ],
+    StartTime: startTime,
+    // EndTime: endTime,
+    // MaxResults: 50,
+    NextToken: nextToken,
   };
-  const command = new PutEventSelectorsCommand(params);
-  const results: PutEventSelectorsCommandOutput = await client.send(command);
 
-  logger.info({ results }, "Results:");
+  logger.info("Sending LookupEventCommand");
+  do {
+    try {
+      const result: LookupEventsCommandOutput = await client.send(
+        new LookupEventsCommand(params as LookupEventsCommandInput),
+      );
+      queryNumber += 1;
+      if (!result.Events || result.Events?.length < 1) {
+        logger.info({ result }, "No 'Events'");
+        // return;
+      } else {
+        for (const e of result.Events) {
+          if (!eventNames.includes(e.EventName)) eventNames.push(e.EventName);
+          if (!eventSources.includes(e.EventSource)) eventSources.push(e.EventSource);
+          // if (e.EventName && ITEM_EVENTS.includes(e.EventName)) events.push(e);
+          const CTEvent: Record<string, any> = e.CloudTrailEvent
+            ? JSON.parse(e.CloudTrailEvent)
+            : undefined;
+          if (
+            CTEvent &&
+            CTEvent?.userIdentity &&
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            CTEvent.userIdentity?.sessionContext &&
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            CTEvent.userIdentity.sessionContext?.sessionIssuer &&
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            CTEvent.userIdentity.sessionContext.sessionIssuer?.userName === "audit-lambda"
+          )
+            events.push(e);
+        }
+      }
+      nextToken = result.NextToken;
+    } catch (err) {
+      logger.error({ err }, "CloudTrail lookup failed");
+      if (err instanceof ThrottlingException) {
+        logger.error(`ERR / Queried ${queryNumber} times, received ${events.length}`);
+      }
+      nextToken = undefined;
+      // return;
+    }
+  } while (nextToken || queryNumber <= 1);
 
-  return SourceType.app;
+  logger.info(`Queried ${queryNumber} times, received ${events.length}`);
+  logger.info({ ...eventNames }, "EventNames");
+  logger.info({ ...eventSources }, "EventSources");
+  logger.info({ events }, "CloudTrail lookup result");
+
+  const consoleEvents = events.filter((evt) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const details = evt?.CloudTrailEvent ? JSON.parse(evt.CloudTrailEvent) : undefined;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (!details?.userAgent || !details?.requestParameters?.table) return;
+
+    logger.info(details, "CloudTrail parsing event");
+
+    return (
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      details.userAgent === "console.amazonaws.com" &&
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      details.requestParameters?.tableName === tableName
+    );
+  });
+
+  if (consoleEvents && consoleEvents.length > 0) {
+    // @ts-expect-error it can't be undefined
+    logger.info(`Update to ${tableName} came from AWS Console:`, consoleEvents[0]);
+    return SourceType.console;
+  } else {
+    // @ts-expect-error it can't be undefined
+    logger.info(`Update to ${tableName} likely came from SDK/API.`, consoleEvents[0]);
+    return SourceType.app;
+  }
 };
