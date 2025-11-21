@@ -88,7 +88,7 @@ const ApplicantForm = () => {
         }
       } catch (error) {
         console.error(error);
-        navigate("/error");
+        navigate("/sorry-there-is-problem-with-service");
       }
     } else {
       if (!isComplete) {
