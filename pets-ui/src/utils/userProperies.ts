@@ -33,7 +33,7 @@ export const getUserProperties = async () => {
   try {
     jobTitle = await getJobTitle();
   } catch {
-    console.error("Failed to retrieve Clinic ID when setting GA user_properties");
+    console.error("Failed to retrieve Job Title when setting GA user_properties");
   }
   try {
     clinicId = await getClinicId();
