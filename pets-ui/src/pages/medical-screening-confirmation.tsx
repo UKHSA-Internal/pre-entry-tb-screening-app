@@ -11,7 +11,7 @@ export default function MedicalConfirmation() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Medical history and TB symptoms confirmed",
+      "medical_history_and_tb_symptoms_confirmed",
       applicationData.applicationId,
       "Medical history and TB symptoms",
     );

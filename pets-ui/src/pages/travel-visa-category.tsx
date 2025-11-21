@@ -12,7 +12,7 @@ export default function TravelVisaCategoryPage() {
   const applicationData = useAppSelector(selectApplication);
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Proposed visa category",
+      "proposed_visa_category",
       applicationData.applicationId,
       "Travel Information",
     );

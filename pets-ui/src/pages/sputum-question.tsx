@@ -11,7 +11,7 @@ export default function SputumQuestionPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Is sputum collection required?",
+      "is_sputum_collection_required",
       applicationData.applicationId,
       "Make a sputum decision",
     );

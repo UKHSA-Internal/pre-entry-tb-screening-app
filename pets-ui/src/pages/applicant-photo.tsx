@@ -25,7 +25,7 @@ export default function ApplicantPhotoPage() {
   }
 
   useEffect(() => {
-    sendGoogleAnalyticsJourneyEvent("Upload visa applicant photo", "UNK", "Visa Applicant Details");
+    sendGoogleAnalyticsJourneyEvent("upload_visa_applicant_photo", "UNK", "Visa Applicant Details");
   }, []);
 
   return (

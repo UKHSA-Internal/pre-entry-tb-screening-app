@@ -11,7 +11,7 @@ export default function ChestXrayQuestionPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Is an X-ray required?",
+      "is_an_xray_required",
       applicationData.applicationId,
       "Medical history and TB symptoms",
     );

@@ -11,7 +11,7 @@ export default function TravelConfirmation() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Travel information confirmed",
+      "travel_information_confirmed",
       applicationData.applicationId,
       "Travel Information",
     );

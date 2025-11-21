@@ -41,7 +41,7 @@ export default function TbConfirmationPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "TB clearance complete",
+      "tb_clearance_complete",
       applicationData.applicationId,
       "TB certificate outcome",
     );

@@ -11,7 +11,7 @@ export default function RadiologicalOutcomeConfirmation() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Radiological outcome confirmed",
+      "radiological_outcome_confirmed",
       applicationData.applicationId,
       "Radiological outcome",
     );

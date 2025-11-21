@@ -11,7 +11,7 @@ export default function MedicalScreeningPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Record medical history and TB symptoms",
+      "record_medical_history_and_tb_symptoms",
       applicationData.applicationId,
       "Medical history and TB symptoms",
     );

@@ -57,7 +57,7 @@ export default function SputumConfirmation() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Sputum sample information confirmed",
+      "sputum_sample_information_confirmed",
       applicationData.applicationId,
       "Sputum collection and results",
     );

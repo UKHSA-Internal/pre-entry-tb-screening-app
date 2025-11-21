@@ -18,7 +18,7 @@ export default function ContactDetailsPage() {
   }
 
   useEffect(() => {
-    sendGoogleAnalyticsJourneyEvent("Enter applicant information", "UNK", "Visa Applicant Details");
+    sendGoogleAnalyticsJourneyEvent("enter_applicant_information", "UNK", "Visa Applicant Details");
   }, []);
 
   return (

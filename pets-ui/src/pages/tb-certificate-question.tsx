@@ -11,7 +11,7 @@ export default function TbCertificateQuestionPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Will you issue a TB clearance certificate?",
+      "will_you_issue_a_tb_clearance_certificate",
       applicationData.applicationId,
       "TB certificate outcome",
     );

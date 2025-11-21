@@ -24,7 +24,7 @@ export default function TravelAddressAndContactDetailsPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Visa applicant's proposed UK address",
+      "visa_applicants_proposed_uk_address",
       applicationData.applicationId,
       "Travel Information",
     );

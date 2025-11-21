@@ -11,7 +11,7 @@ export default function TbCertificateNotIssuedPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Why are you not issuing a certificate?",
+      "why_are_you_not_issuing_a_certificate",
       applicationData.applicationId,
       "TB certificate outcome",
     );

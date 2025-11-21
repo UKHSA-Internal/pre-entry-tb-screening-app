@@ -14,7 +14,7 @@ export default function RadiologicalOutcomeSummaryPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Check chest X-ray results and findings",
+      "check_chest_xray_results_and_findings",
       applicationData.applicationId,
       "Radiological outcome",
     );

@@ -18,7 +18,7 @@ export default function CheckSputumSampleInformationPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Check sputum collection details and results",
+      "check_sputum_collection_details_and_results",
       applicationData.applicationId,
       "Sputum collection and results",
     );

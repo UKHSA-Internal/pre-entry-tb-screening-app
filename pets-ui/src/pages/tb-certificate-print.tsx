@@ -67,7 +67,7 @@ export default function TbCertificatePrintPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "TB clearance certificate",
+      "tb_clearance_certificate",
       applicationData.applicationId,
       "TB certificate outcome",
     );

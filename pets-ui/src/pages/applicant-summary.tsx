@@ -12,7 +12,7 @@ export default function ApplicantSummaryPage() {
   const applicantData = useAppSelector(selectApplicant);
 
   useEffect(() => {
-    sendGoogleAnalyticsJourneyEvent("Check applicant details", "UNK", "Visa Applicant Details");
+    sendGoogleAnalyticsJourneyEvent("check_applicant_details", "UNK", "Visa Applicant Details");
   }, []);
 
   return (

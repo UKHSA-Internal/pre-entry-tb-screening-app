@@ -11,7 +11,7 @@ export default function ApplicantConfirmation() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Visa applicant details confirmed",
+      "visa_applicant_details_confirmed",
       applicationData.applicationId,
       "Visa Applicant Details",
     );

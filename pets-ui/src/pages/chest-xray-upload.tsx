@@ -11,7 +11,7 @@ export default function ChestXrayUploadPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Upload chest X-ray images",
+      "upload_chest_xray_images",
       applicationData.applicationId,
       "Upload chest X-ray images",
     );

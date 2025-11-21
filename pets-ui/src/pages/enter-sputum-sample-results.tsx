@@ -17,7 +17,7 @@ export default function EnterSputumSampleResultsPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Enter sputum sample results",
+      "enter_sputum_sample_results",
       applicationData.applicationId,
       "Sputum collection and results",
     );

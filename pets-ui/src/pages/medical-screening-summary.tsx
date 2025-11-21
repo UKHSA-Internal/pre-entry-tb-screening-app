@@ -24,7 +24,7 @@ export default function MedicalSummaryPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Medical screening summary",
+      "medical_screening_summary",
       applicationData.applicationId,
       "Medical history and TB symptoms",
     );

@@ -23,7 +23,7 @@ export default function ConsentQuestionPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Do you have the visa applicant's written consent for TB screening?",
+      "do_you_have_the_visa_applicants_written_consent_for_tb_screening",
       "UNK",
       "Visa Applicant Details",
     );

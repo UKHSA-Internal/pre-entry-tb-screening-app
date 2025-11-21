@@ -11,7 +11,7 @@ export default function TbCertificateDeclarationPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Enter clinic and certificate information",
+      "enter_clinic_and_certificate_information",
       applicationData.applicationId,
       "TB certificate outcome",
     );

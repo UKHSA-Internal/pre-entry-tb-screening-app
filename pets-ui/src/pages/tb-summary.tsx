@@ -27,7 +27,7 @@ export default function TbSummaryPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      pageTitle,
+      pageTitle.toLowerCase().replace(" ", "_"),
       applicationData.applicationId,
       "TB certificate outcome",
     );

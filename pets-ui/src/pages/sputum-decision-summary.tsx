@@ -14,7 +14,7 @@ export default function SputumDecisionSummaryPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Check sputum decision information",
+      "check_sputum_decision_information",
       applicationData.applicationId,
       "Make a sputum decision",
     );

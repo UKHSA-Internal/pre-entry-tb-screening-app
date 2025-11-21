@@ -12,7 +12,7 @@ export default function ConsentInstructionPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    sendGoogleAnalyticsJourneyEvent("Get written consent", "UNK", "Visa Applicant Details");
+    sendGoogleAnalyticsJourneyEvent("get_written_consent", "UNK", "Visa Applicant Details");
   }, []);
 
   return (

@@ -14,7 +14,7 @@ export default function TravelSummaryPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "Check UK travel information",
+      "check_uk_travel_information",
       applicationData.applicationId,
       "Travel Information",
     );

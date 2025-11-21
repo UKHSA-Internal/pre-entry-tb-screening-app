@@ -6,7 +6,7 @@ import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
 
 export default function ApplicantResultsPage() {
   useEffect(() => {
-    sendGoogleAnalyticsJourneyEvent("No matching record found", "UNK", "Visa Applicant Details");
+    sendGoogleAnalyticsJourneyEvent("no_matching_record_found", "UNK", "Visa Applicant Details");
   }, []);
 
   return (
