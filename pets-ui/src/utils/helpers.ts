@@ -252,28 +252,26 @@ const updateGoogleAnalyticsConsent = (consentGranted: boolean) => {
   }
 };
 
-const sendGoogleAnalyticsEvent = (eventName: string, eventParams?: unknown) => {
-  if (typeof globalThis.gtag === "function") {
-    globalThis.gtag("event", eventName, eventParams);
-  }
-};
-
 const sendGoogleAnalyticsJourneyEvent = (
   pageTitle: string,
   journeyId: string,
   journeyType: string,
 ) => {
-  sendGoogleAnalyticsEvent(pageTitle, {
-    journey_id: journeyId,
-    journey_type: journeyType,
-  });
+  if (typeof globalThis.gtag === "function") {
+    globalThis.gtag("event", pageTitle, {
+      journey_id: journeyId,
+      journey_type: journeyType,
+    });
+  }
 };
 
 const sendGoogleAnalyticsFormErrorEvent = (pageTitle: string, errorList: string[]) => {
-  sendGoogleAnalyticsEvent("form_validation_error", {
-    page: pageTitle,
-    validation_failures: errorList,
-  });
+  if (typeof globalThis.gtag === "function") {
+    globalThis.gtag("form_validation_error", {
+      page: pageTitle,
+      validation_failures: errorList,
+    });
+  }
 };
 
 const setGoogleAnalyticsParams = (paramName: string, params?: unknown) => {
@@ -296,7 +294,6 @@ export {
   isValidDate,
   logError,
   missingFieldsMessage,
-  sendGoogleAnalyticsEvent,
   sendGoogleAnalyticsFormErrorEvent,
   sendGoogleAnalyticsJourneyEvent,
   setGoogleAnalyticsParams,
