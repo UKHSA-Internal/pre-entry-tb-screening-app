@@ -5,7 +5,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectSputum } from "@/redux/store";
 import SputumSummary from "@/sections/sputum-summary";
 import { ApplicationStatus } from "@/utils/enums";
-import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function CheckSputumSampleInformationPage() {
   const applicationData = useAppSelector(selectApplication);

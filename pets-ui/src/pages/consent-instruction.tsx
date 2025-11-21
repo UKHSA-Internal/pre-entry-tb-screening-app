@@ -6,7 +6,7 @@ import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import NotificationBanner from "@/components/notificationBanner/notificationBanner";
 import { ButtonClass } from "@/utils/enums";
-import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function ConsentInstructionPage() {
   const navigate = useNavigate();

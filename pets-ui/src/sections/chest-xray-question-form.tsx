@@ -11,7 +11,7 @@ import { setChestXrayTaken, setReasonXrayNotRequired } from "@/redux/medicalScre
 import { selectMedicalScreening } from "@/redux/store";
 import { ReduxMedicalScreeningType } from "@/types";
 import { ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
-import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 const ChestXrayQuestionForm = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();

@@ -25,11 +25,11 @@ import {
 } from "@/redux/tbCertificateSlice";
 import { ReduxTbCertificateType } from "@/types";
 import { ApplicationStatus, ButtonClass } from "@/utils/enums";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import {
   calculateCertificateExpiryDate,
   calculateCertificateIssueDate,
   formatDateForDisplay,
-  sendGoogleAnalyticsFormErrorEvent,
 } from "@/utils/helpers";
 import { formRegex } from "@/utils/records";
 

@@ -7,7 +7,7 @@ import LinkLabel from "@/components/linkLabel/LinkLabel";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTbCertificate } from "@/redux/store";
 import { YesOrNo } from "@/utils/enums";
-import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function TbConfirmationPage() {
   const navigate = useNavigate();

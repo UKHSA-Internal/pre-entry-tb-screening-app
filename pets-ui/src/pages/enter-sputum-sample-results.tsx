@@ -4,7 +4,7 @@ import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectSputum } from "@/redux/store";
 import SputumResultsForm from "@/sections/sputum-results-form";
-import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function EnterSputumSampleResultsPage() {
   const applicationData = useAppSelector(selectApplication);

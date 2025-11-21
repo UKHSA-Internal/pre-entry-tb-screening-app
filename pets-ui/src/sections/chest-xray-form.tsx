@@ -21,7 +21,8 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectChestXray } from "@/redux/store";
 import { DateType, ReduxChestXrayDetailsType } from "@/types";
 import { ButtonClass, ImageType } from "@/utils/enums";
-import { sendGoogleAnalyticsFormErrorEvent, validateDate } from "@/utils/helpers";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
+import { validateDate } from "@/utils/helpers";
 import uploadFile from "@/utils/uploadFile";
 
 const DicomUploadModule = (

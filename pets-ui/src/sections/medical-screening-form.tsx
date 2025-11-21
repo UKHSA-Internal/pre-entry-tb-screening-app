@@ -18,7 +18,8 @@ import {
 import { selectMedicalScreening } from "@/redux/store";
 import { DateType, ReduxMedicalScreeningType } from "@/types";
 import { ApplicationStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
-import { sendGoogleAnalyticsFormErrorEvent, validateDate } from "@/utils/helpers";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
+import { validateDate } from "@/utils/helpers";
 import { formRegex } from "@/utils/records";
 
 const MedicalScreeningForm = () => {

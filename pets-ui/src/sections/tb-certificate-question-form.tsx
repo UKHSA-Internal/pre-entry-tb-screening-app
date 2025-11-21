@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setIsIssued } from "@/redux/tbCertificateSlice";
 import { ReduxTbCertificateType } from "@/types";
 import { ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
-import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 
 const TbCertificateQuestionForm = () => {
   const dispatch = useAppDispatch();

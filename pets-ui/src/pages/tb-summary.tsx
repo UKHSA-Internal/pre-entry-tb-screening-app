@@ -7,7 +7,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTbCertificate } from "@/redux/store";
 import TbSummary from "@/sections/tb-summary";
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
-import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function TbSummaryPage() {
   const applicationData = useAppSelector(selectApplication);

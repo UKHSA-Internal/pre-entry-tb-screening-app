@@ -23,7 +23,7 @@ import {
   RadioIsInline,
   TBCertNotIssuedReason,
 } from "@/utils/enums";
-import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { formRegex } from "@/utils/records";
 
 const TbCertificateNotIssuedForm = () => {

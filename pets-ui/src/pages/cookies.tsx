@@ -11,7 +11,10 @@ import NotificationBanner from "@/components/notificationBanner/notificationBann
 import Radio from "@/components/radio/radio";
 import Table from "@/components/table/table";
 import { ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
-import { setGoogleAnalyticsParams, updateGoogleAnalyticsConsent } from "@/utils/helpers";
+import {
+  setGoogleAnalyticsParams,
+  updateGoogleAnalyticsConsent,
+} from "@/utils/google-analytics-utils";
 import { useNavigationHistory } from "@/utils/useNavigationHistory";
 import { getUserProperties } from "@/utils/userProperies";
 

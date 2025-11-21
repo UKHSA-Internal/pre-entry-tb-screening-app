@@ -6,7 +6,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTravel } from "@/redux/store";
 import TravelReview from "@/sections/applicant-travel-summary";
 import { ApplicationStatus } from "@/utils/enums";
-import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function TravelSummaryPage() {
   const applicationData = useAppSelector(selectApplication);

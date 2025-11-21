@@ -6,7 +6,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectRadiologicalOutcome } from "@/redux/store";
 import RadiologicalOutcomeSummary from "@/sections/radiological-outcome-summary";
 import { ApplicationStatus } from "@/utils/enums";
-import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function RadiologicalOutcomeSummaryPage() {
   const applicationData = useAppSelector(selectApplication);

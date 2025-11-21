@@ -6,7 +6,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
 import ApplicantPhotoForm from "@/sections/applicant-photo-form";
 import { ApplicationStatus } from "@/utils/enums";
-import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function ApplicantPhotoPage() {
   const applicant = useAppSelector(selectApplicant);

@@ -6,7 +6,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
 import ApplicantReview from "@/sections/applicant-details-summary";
 import { ApplicationStatus } from "@/utils/enums";
-import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function ApplicantSummaryPage() {
   const applicantData = useAppSelector(selectApplicant);

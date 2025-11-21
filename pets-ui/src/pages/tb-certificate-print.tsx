@@ -14,7 +14,7 @@ import {
   selectTbCertificate,
   selectTravel,
 } from "@/redux/store";
-import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function TbCertificatePrintPage() {
   const certificateRef = useRef<HTMLDivElement>(null);

@@ -18,7 +18,8 @@ import {
 } from "@/redux/sputumSlice";
 import { selectSputum } from "@/redux/store";
 import { ButtonClass, PositiveOrNegative } from "@/utils/enums";
-import { formatDateForDisplay, sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
+import { formatDateForDisplay } from "@/utils/helpers";
 import { sputumResultsValidationMessages } from "@/utils/records";
 
 interface SputumResultsFormType {

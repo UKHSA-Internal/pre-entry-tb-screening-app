@@ -6,7 +6,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectChestXray } from "@/redux/store";
 import ChestXraySummary from "@/sections/chest-xray-summary";
 import { ApplicationStatus } from "@/utils/enums";
-import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function ChestXraySummaryPage() {
   const applicationData = useAppSelector(selectApplication);

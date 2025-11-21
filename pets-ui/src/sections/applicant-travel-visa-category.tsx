@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTravel } from "@/redux/store";
 import { setTravelDetailsStatus, setVisaCategory } from "@/redux/travelSlice";
 import { ApplicationStatus, ButtonClass } from "@/utils/enums";
-import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { visaOptions } from "@/utils/records";
 
 interface TravelVisaCategoryData {

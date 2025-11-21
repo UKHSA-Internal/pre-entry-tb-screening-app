@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setSputumDecisionRequired, setSputumDecisionStatus } from "@/redux/sputumDecisionSlice";
 import { selectSputumDecision } from "@/redux/store";
 import { ApplicationStatus, ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
-import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 
 interface SputumDecisionFormData {
   isSputumRequired: YesOrNo;

@@ -6,7 +6,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectMedicalScreening } from "@/redux/store";
 import MedicalScreeningReview from "@/sections/medical-screening-summary";
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
-import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function MedicalSummaryPage() {
   const applicationData = useAppSelector(selectApplication);

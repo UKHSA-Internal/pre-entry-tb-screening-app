@@ -4,7 +4,7 @@ import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication } from "@/redux/store";
 import MedicalScreeningForm from "@/sections/medical-screening-form";
-import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function MedicalScreeningPage() {
   const applicationData = useAppSelector(selectApplication);

@@ -10,7 +10,7 @@ import { ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
 import {
   sendGoogleAnalyticsFormErrorEvent,
   sendGoogleAnalyticsJourneyEvent,
-} from "@/utils/helpers";
+} from "@/utils/google-analytics-utils";
 
 export default function ConsentQuestionPage() {
   const navigate = useNavigate();

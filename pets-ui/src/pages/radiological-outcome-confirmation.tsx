@@ -4,7 +4,7 @@ import Confirmation from "@/components/confirmation/confirmation";
 import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication } from "@/redux/store";
-import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function RadiologicalOutcomeConfirmation() {
   const applicationData = useAppSelector(selectApplication);

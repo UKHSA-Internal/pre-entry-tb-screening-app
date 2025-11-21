@@ -21,7 +21,7 @@ import {
 } from "@/redux/travelSlice";
 import { ReduxTravelDetailsType } from "@/types";
 import { ApplicationStatus, ButtonClass } from "@/utils/enums";
-import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { formRegex } from "@/utils/records";
 
 type TravelAddressAndContactDetailsData = Omit<ReduxTravelDetailsType, "visaCategory">;

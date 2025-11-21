@@ -24,7 +24,8 @@ import {
 import { selectSputum } from "@/redux/store";
 import { DateType } from "@/types";
 import { ApplicationStatus, ButtonClass, SputumCollectionMethod } from "@/utils/enums";
-import { sendGoogleAnalyticsFormErrorEvent, validateDate } from "@/utils/helpers";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
+import { validateDate } from "@/utils/helpers";
 import { dateValidationMessages } from "@/utils/records";
 
 interface SputumCollectionFormFields {

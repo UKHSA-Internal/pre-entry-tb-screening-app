@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 
 import Container from "@/components/container/container";
 import ApplicantForm from "@/sections/applicant-details-form";
-import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function ContactDetailsPage() {
   const [searchParams] = useSearchParams();

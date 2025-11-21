@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 import Container from "@/components/container/container";
 import ApplicantEmptyResult from "@/sections/applicant-no-results";
-import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function ApplicantResultsPage() {
   useEffect(() => {

@@ -4,7 +4,7 @@ import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication } from "@/redux/store";
 import ChestXrayNotTakenForm from "@/sections/chest-xray-not-taken-form";
-import { sendGoogleAnalyticsJourneyEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function ChestXrayNotTaken() {
   const applicationData = useAppSelector(selectApplication);

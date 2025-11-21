@@ -2,7 +2,10 @@ import { useMsal } from "@azure/msal-react";
 import { useEffect, useState } from "react";
 
 import { ButtonClass } from "@/utils/enums";
-import { setGoogleAnalyticsParams, updateGoogleAnalyticsConsent } from "@/utils/helpers";
+import {
+  setGoogleAnalyticsParams,
+  updateGoogleAnalyticsConsent,
+} from "@/utils/google-analytics-utils";
 import { getUserProperties } from "@/utils/userProperies";
 
 import Button from "../button/button";

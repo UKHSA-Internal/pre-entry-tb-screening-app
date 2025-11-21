@@ -17,7 +17,7 @@ import {
 import { selectRadiologicalOutcome } from "@/redux/store";
 import { ReduxRadiologicalOutcomeDetailsType } from "@/types";
 import { ButtonClass } from "@/utils/enums";
-import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/helpers";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 
 const ChestXrayFindingsForm = () => {
   const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
