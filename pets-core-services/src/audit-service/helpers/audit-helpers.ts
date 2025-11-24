@@ -41,28 +41,29 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
     //   },
     // ],
     FieldSelectors: [
-      {
-        Field: "eventCategory",
-        Equals: ["Data"],
-      },
+      // {
+      //   Field: "eventCategory",
+      //   Equals: "Data",
+      // },
       {
         Field: "eventName",
-        Equals: ["PutItem", "UpdateItem", "DeleteItem"],
+        EndsWith: "Item",
       },
       {
         Field: "eventSource",
-        Equals: ["dynamodb.amazonaws.com"],
+        Equals: "dynamodb.amazonaws.com",
       },
       {
         Field: "resources.type",
-        Equals: ["AWS::DynamoDB::Table"],
+        Equals: "AWS::DynamoDB::Table",
       },
       {
         Field: "resources.ARN",
-        Equals: [
-          "arn:aws:dynamodb:REGION:ACCOUNT_ID:table/applicant-details",
-          "arn:aws:dynamodb:REGION:ACCOUNT_ID:table/application-details",
-        ],
+        Equals: "arn:aws:dynamodb:REGION:ACCOUNT_ID:table/applicant-details",
+      },
+      {
+        Field: "resources.ARN",
+        Equals: "arn:aws:dynamodb:REGION:ACCOUNT_ID:table/application-details",
       },
     ],
     NextToken: nextToken,
@@ -81,12 +82,12 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
       }
       nextToken = result.NextToken;
     } catch (err) {
-      logger.error({ err }, "CloudTrail lookup failed");
       if (err instanceof ThrottlingException) {
-        logger.error(`ERR / Received ${events.length}`);
+        logger.info(`ThrottlingException, received ${events.length}`);
+      } else {
+        logger.error({ err }, "CloudTrail lookup failed");
       }
       nextToken = undefined;
-      // return;
     }
   } while (nextToken && events.length < 350);
 
