@@ -113,7 +113,7 @@ export const writeApiDocumentation = (configs: SwaggerConfig[]): any => {
     "x-amazon-apigateway-authorizer": {
       type: "request",
       identitySource: `method.request.header.${authorizerIdentity}`,
-      authorizerUri: `arn:aws:apigateway:${awsRegion}::lambda:path/2015-03-31/functions/arn:aws:lambda:${awsRegion}:${awsAccountId}:function:${assertEnvExists(process.env.AUTHORISER_LAMBDA_NAME)}/invocations`,
+      authorizerUri: `arn:aws:apigateway:${awsRegion}:lambda:path/2015-03-31/functions/arn:aws:lambda:${awsRegion}:${awsAccountId}:function:${assertEnvExists(process.env.AUTHORISER_LAMBDA_NAME)}/invocations`,
       authorizerCredentials: `arn:aws:iam::${awsAccountId}:role/api_gateway_auth_invocation_api-gateway-authoriser`,
       authorizerResultTtlInSeconds: 0,
       requestTemplates: {
