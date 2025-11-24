@@ -56,8 +56,8 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
       {
         Field: "resources.ARN",
         Equals: [
-          "arn:aws:dynamodb:REGION:ACCOUNT_ID:table/<table1Name>>",
-          "arn:aws:dynamodb:REGION:ACCOUNT_ID:table/<<table2Name>>",
+          "arn:aws:dynamodb:REGION:ACCOUNT_ID:table/applicant-details",
+          "arn:aws:dynamodb:REGION:ACCOUNT_ID:table/application-details",
         ],
       },
     ],
@@ -84,9 +84,13 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
       nextToken = undefined;
       // return;
     }
-  } while (nextToken);
+  } while (nextToken && events.length < 350);
 
-  logger.info({ events }, "CloudTrail lookup result");
+  if (events.length > 0) {
+    logger.info({ ...events[0] }, "CloudTrail lookup result");
+  } else {
+    logger.info("No events");
+  }
 
   const consoleEvents = events.filter((evt) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
