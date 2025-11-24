@@ -23,6 +23,7 @@ import {
   RadioIsInline,
   TBCertNotIssuedReason,
 } from "@/utils/enums";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { formRegex } from "@/utils/records";
 
 const TbCertificateNotIssuedForm = () => {
@@ -46,6 +47,12 @@ const TbCertificateNotIssuedForm = () => {
   };
 
   const errorsToShow = Object.keys(errors);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Why are you not issuing a certificate?", errorsToShow);
+    }
+  }, [errorsToShow]);
+
   const reasonNotIssuedRef = useRef<HTMLDivElement | null>(null);
   const declaringPhysicianNameRef = useRef<HTMLDivElement | null>(null);
   const commentsRef = useRef<HTMLDivElement | null>(null);

@@ -14,6 +14,7 @@ import {
 import { selectMedicalScreening } from "@/redux/store";
 import { ReduxMedicalScreeningType } from "@/types";
 import { ButtonClass, RadioIsInline } from "@/utils/enums";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 
 const ChestXrayNotTakenForm = () => {
   const dispatch = useAppDispatch();
@@ -64,7 +65,11 @@ const ChestXrayNotTakenForm = () => {
   };
 
   const errorsToShow = Object.keys(errors);
-  const reasonXrayWasNotTakenRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Reason X-ray is not required", errorsToShow);
+    }
+  }, [errorsToShow]);
 
   useEffect(() => {
     if (
@@ -82,6 +87,7 @@ const ChestXrayNotTakenForm = () => {
     setValue,
   ]);
 
+  const reasonXrayWasNotTakenRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (location.hash) {
       const target = location.hash.substring(1);
@@ -95,7 +101,7 @@ const ChestXrayNotTakenForm = () => {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {errorsToShow.length > 0 && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
-        <Heading level={1} size="l" title="Reason X-ray is not required?" />
+        <Heading level={1} size="l" title="Reason X-ray is not required" />
         <div ref={reasonXrayWasNotTakenRef}>
           <Radio
             id="reason-xray-not-taken"
