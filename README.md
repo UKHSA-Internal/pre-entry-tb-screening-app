@@ -32,7 +32,7 @@ This is currently available on [confluence](https://confluence.collab.test-and-t
  ┣ 📂src       # Source Code
  ┣ 📂test      # Integration Tests
 
- 📦pets-core-services/src           # Core Services for the Backend
+ 📦pets-core-services/src         # Core Services for the Backend
  ┣ 📂applicant-service            # Everything pertaining to Applicant
     ┣ 📂lambdas                   # Lambda code for Applicant service lambda
  ┣ 📂application-service          # Everything Application-related
@@ -43,7 +43,7 @@ This is currently available on [confluence](https://confluence.collab.test-and-t
     ┣ 📂lambdas                   # Lambda code for dicom service to check for malware
  ┣ EDAP-integration-service       # Everything related to EDAP integration
     ┣ 📂lambdas                   # Lambda code for EDAP integration service lambda
- ┣ AUDIT--service                 # Everything related to Audit
+ ┣ Audit-service                  # Everything related to Audit
     ┣ 📂lambdas                   # Lambda code for Audit service lambda
  ┣ 📂lambda-authoriser            # Authentication Service
     ┣ 📂lambdas                   # Lambda code for Authoriser lambda
