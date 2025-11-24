@@ -25,6 +25,7 @@ export default function TbSummaryPage() {
     <Container
       title={pageTitle + " - Complete UK pre-entry health screening - GOV.UK"}
       backLinkTo={backLinkUrl}
+      useTwoThirdsColumn={false}
     >
       {tbCertificateData.isIssued === YesOrNo.NO && (
         <NotificationBanner
