@@ -30,21 +30,21 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   let nextToken: string | undefined = undefined;
 
   const params = {
-    // LookupAttributes: [
-    //   {
-    //     AttributeKey: "EventName",
-    //     AttributeValue: "DescribeTable",
-    //   },
-    //   {
-    //     AttributeKey: "EventSource",
-    //     AttributeValue: "dynamodb.amazonaws.com",
-    //   },
-    // ],
-    FieldSelectors: [
+    LookupAttributes: [
       // {
-      //   Field: "eventCategory",
-      //   Equals: "Data",
+      //   AttributeKey: "EventName",
+      //   AttributeValue: "DescribeTable",
       // },
+      {
+        AttributeKey: "EventSource",
+        AttributeValue: "dynamodb.amazonaws.com",
+      },
+    ],
+    FieldSelectors: [
+      {
+        Field: "eventCategory",
+        Equals: "Data",
+      },
       {
         Field: "eventName",
         EndsWith: "Item",
