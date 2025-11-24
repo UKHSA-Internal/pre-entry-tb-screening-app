@@ -55,6 +55,7 @@ const ApplicantTravelAddressAndContactDetails = () => {
         await putTravelDetails(applicationData.applicationId, {
           ukAddressLine1: travelAddressAndContactDetailsData.applicantUkAddress1,
           ukAddressLine2: travelAddressAndContactDetailsData.applicantUkAddress2,
+          ukAddressLine3: travelAddressAndContactDetailsData.applicantUkAddress3,
           ukAddressTownOrCity: travelAddressAndContactDetailsData.townOrCity,
           ukAddressPostcode: travelAddressAndContactDetailsData.postcode,
           ukMobileNumber: travelAddressAndContactDetailsData.ukMobileNumber,
