@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTravel } from "@/redux/store";
 import { setTravelDetailsStatus, setVisaCategory } from "@/redux/travelSlice";
 import { ApplicationStatus, ButtonClass } from "@/utils/enums";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { visaOptions } from "@/utils/records";
 
 interface TravelVisaCategoryData {
@@ -56,6 +57,11 @@ const ApplicantTravelVisaCategory = () => {
   };
 
   const errorsToShow = Object.keys(errors);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Proposed visa category", errorsToShow);
+    }
+  }, [errorsToShow]);
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
   const visaCategoryRef = useRef<HTMLDivElement | null>(null);

@@ -1,7 +1,12 @@
+import { useMsal } from "@azure/msal-react";
 import { useEffect, useState } from "react";
 
-import { ButtonClass, ButtonType } from "@/utils/enums";
-import { updateGoogleAnalyticsConsent } from "@/utils/helpers";
+import { ButtonClass } from "@/utils/enums";
+import {
+  setGoogleAnalyticsParams,
+  updateGoogleAnalyticsConsent,
+} from "@/utils/google-analytics-utils";
+import { getUserProperties } from "@/utils/userProperties";
 
 import Button from "../button/button";
 import Heading from "../heading/heading";
@@ -10,12 +15,27 @@ import LinkLabel from "../linkLabel/LinkLabel";
 export default function CookieBanner() {
   const [cookieConsent, setCookieConsent] = useState(localStorage.getItem("cookie-consent"));
   const [showCookieMessage, setShowCookieMessage] = useState(false);
+  const { accounts } = useMsal();
 
   useEffect(() => {
     if (cookieConsent) {
       localStorage.setItem("cookie-consent", cookieConsent);
     }
   }, [cookieConsent]);
+
+  const handleAcceptCookies = async () => {
+    setCookieConsent("accepted");
+    setShowCookieMessage(true);
+    updateGoogleAnalyticsConsent(true);
+
+    if (accounts.length > 0) {
+      const userProperties = await getUserProperties();
+      setGoogleAnalyticsParams("user_properties", {
+        user_role: userProperties.jobTitle,
+        clinic_id: userProperties.clinicId,
+      });
+    }
+  };
 
   if (cookieConsent && !showCookieMessage) {
     return null;
@@ -51,18 +71,12 @@ export default function CookieBanner() {
               id="accept-analytics-cookies"
               text="Accept analytics cookies"
               class={ButtonClass.DEFAULT}
-              type={ButtonType.BUTTON}
-              handleClick={() => {
-                setCookieConsent("accepted");
-                setShowCookieMessage(true);
-                updateGoogleAnalyticsConsent(true);
-              }}
+              handleClick={handleAcceptCookies}
             />
             <Button
               id="reject-analytics-cookies"
               text="Reject analytics cookies"
               class={ButtonClass.DEFAULT}
-              type={ButtonType.BUTTON}
               handleClick={() => {
                 setCookieConsent("rejected");
                 setShowCookieMessage(true);
@@ -108,7 +122,6 @@ export default function CookieBanner() {
               id="hide-cookie-message"
               text="Hide cookie message"
               class={ButtonClass.DEFAULT}
-              type={ButtonType.BUTTON}
               handleClick={() => {
                 setShowCookieMessage(false);
               }}
