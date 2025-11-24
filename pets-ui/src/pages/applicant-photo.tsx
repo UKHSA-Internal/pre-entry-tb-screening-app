@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import Container from "@/components/container/container";
@@ -5,6 +6,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
 import ApplicantPhotoForm from "@/sections/applicant-photo-form";
 import { ApplicationStatus } from "@/utils/enums";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function ApplicantPhotoPage() {
   const applicant = useAppSelector(selectApplicant);
@@ -21,6 +23,10 @@ export default function ApplicantPhotoPage() {
   } else {
     backLinkTo = "/enter-applicant-information";
   }
+
+  useEffect(() => {
+    sendGoogleAnalyticsJourneyEvent("upload_visa_applicant_photo", "UNK", "Visa Applicant Details");
+  }, []);
 
   return (
     <Container

@@ -1,12 +1,25 @@
+import { useEffect } from "react";
+
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import { useAppSelector } from "@/redux/hooks";
-import { selectSputumDecision } from "@/redux/store";
+import { selectApplication, selectSputumDecision } from "@/redux/store";
 import SputumDecisionSummary from "@/sections/sputum-decision-summary";
 import { ApplicationStatus } from "@/utils/enums";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function SputumDecisionSummaryPage() {
+  const applicationData = useAppSelector(selectApplication);
   const sputumDecisionData = useAppSelector(selectSputumDecision);
+
+  useEffect(() => {
+    sendGoogleAnalyticsJourneyEvent(
+      "check_sputum_decision_information",
+      applicationData.applicationId,
+      "Make a sputum decision",
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Container
