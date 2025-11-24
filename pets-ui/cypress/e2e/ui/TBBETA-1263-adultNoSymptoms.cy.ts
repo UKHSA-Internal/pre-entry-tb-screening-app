@@ -1,40 +1,40 @@
 // Scenario: Adult - No Symptoms, Yes History, No Contact, X-ray uploaded, No TB Finding, No Sputum required - TB Certificate Issued
-import { countryList } from "../../src/utils/countryList";
-import { loginViaB2C } from "../support/commands";
-import { ApplicantConfirmationPage } from "../support/page-objects/applicantConfirmationPage";
-import { ApplicantConsentPage } from "../support/page-objects/applicantConsentPage";
-import { ApplicantPhotoUploadPage } from "../support/page-objects/applicantPhotoUploadPage";
-import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
-import { ApplicantSummaryPage } from "../support/page-objects/applicantSummaryPage";
-import { CheckChestXrayImagesPage } from "../support/page-objects/checkChestXrayImagesPage";
-import { ChestXrayConfirmationPage } from "../support/page-objects/chestXrayConfirmationPage";
-import { ChestXrayFindingsPage } from "../support/page-objects/chestXrayFindingsPage";
-import { ChestXrayPage } from "../support/page-objects/chestXrayQuestionPage";
-import { ChestXrayResultsPage } from "../support/page-objects/chestXrayResultsPage";
-import { ChestXrayUploadPage } from "../support/page-objects/chestXrayUploadPage";
-import { ClinicCertificateInfoPage } from "../support/page-objects/clinicCertificateInfoPage";
-import { MedicalConfirmationPage } from "../support/page-objects/medicalConfirmationPage";
-import { MedicalSummaryPage } from "../support/page-objects/medicalSummaryPage";
-import { RadiologicalOutcomeConfPage } from "../support/page-objects/radiologicalOutcomeConfPage";
-import { SputumDecisionConfirmationPage } from "../support/page-objects/sputumDecisionConfirmationPage";
-import { SputumDecisionInfoPage } from "../support/page-objects/sputumDecisionInfoPage";
-import { SputumQuestionPage } from "../support/page-objects/sputumQuestionPage";
-import { TbCertificateQuestionPage } from "../support/page-objects/tbCertificateQuestionPage";
-import { TbCertificateSummaryPage } from "../support/page-objects/tbCertificateSummaryPage";
-import { TBProgressTrackerPage } from "../support/page-objects/tbProgressTrackerPage";
-import { TbScreeningCompletePage } from "../support/page-objects/tbScreeningCompletePage";
-import { VisaCategoryPage } from "../support/page-objects/visaCategoryPage";
-import { XRayResultsAndFindingsPage } from "../support/page-objects/xRayResultsAndFindingsPage";
+import { countryList } from "../../../src/utils/countryList";
+import { loginViaB2C } from "../../support/commands";
+import { ApplicantConfirmationPage } from "../../support/page-objects/applicantConfirmationPage";
+import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
+import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
+import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPhotoUploadPage";
+import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
+import { CheckChestXrayImagesPage } from "../../support/page-objects/checkChestXrayImagesPage";
+import { ChestXrayConfirmationPage } from "../../support/page-objects/chestXrayConfirmationPage";
+import { ChestXrayFindingsPage } from "../../support/page-objects/chestXrayFindingsPage";
+import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
+import { ChestXrayResultsPage } from "../../support/page-objects/chestXrayResultsPage";
+import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
+import { ClinicCertificateInfoPage } from "../../support/page-objects/clinicCertificateInfoPage";
+import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
+import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
+import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { RadiologicalOutcomeConfPage } from "../../support/page-objects/radiologicalOutcomeConfPage";
+import { SputumDecisionConfirmationPage } from "../../support/page-objects/sputumDecisionConfirmationPage";
+import { SputumDecisionInfoPage } from "../../support/page-objects/sputumDecisionInfoPage";
+import { SputumQuestionPage } from "../../support/page-objects/sputumQuestionPage";
+import { TbCertificateQuestionPage } from "../../support/page-objects/tbCertificateQuestionPage";
+import { TbCertificateSummaryPage } from "../../support/page-objects/tbCertificateSummaryPage";
+import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
+import { TbScreeningCompletePage } from "../../support/page-objects/tbScreeningCompletePage";
+import { TravelConfirmationPage } from "../../support/page-objects/travelConfirmationPage";
+import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
+import { TravelSummaryPage } from "../../support/page-objects/travelSummaryPage";
+import { VisaCategoryPage } from "../../support/page-objects/visaCategoryPage";
+import { XRayResultsAndFindingsPage } from "../../support/page-objects/xRayResultsAndFindingsPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
   randomElement,
-} from "../support/test-helpers";
-import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetailsPage";
-import { MedicalScreeningPage } from "./../support/page-objects/medicalScreeningPage";
-import { TravelConfirmationPage } from "./../support/page-objects/travelConfirmationPage";
-import { TravelInformationPage } from "./../support/page-objects/travelInformationPage";
-import { TravelSummaryPage } from "./../support/page-objects/travelSummaryPage";
+} from "../../support/test-helpers";
 
 describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", () => {
   // Page object instances
@@ -100,6 +100,7 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
 
   it("should complete the full application process for adult with TB history and issue certificate with 6 month expiry", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName)
@@ -240,7 +241,7 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
     medicalScreeningPage.verifyPageLoaded();
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("34") // Adult age
+      .fillAge("35") // Adult age
       .selectTbSymptoms("No") // No symptoms
       .selectPreviousTb("Yes") // Yes to TB history
       .selectCloseContact("No") // No close contact
@@ -263,7 +264,7 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
 
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "34",
+      age: "35 years old",
       tbSymptoms: "No",
       previousTb: "Yes",
       closeContactWithTb: "No",

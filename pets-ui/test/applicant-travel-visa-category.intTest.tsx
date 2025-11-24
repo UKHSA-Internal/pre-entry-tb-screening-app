@@ -27,6 +27,10 @@ describe("ApplicantTravelForm", () => {
     useNavigateMock.mockClear();
   });
 
+  afterEach(() => {
+    window.history.pushState({}, "", "/");
+  });
+
   const user = userEvent.setup();
 
   it("when ApplicantTravelForm is filled correctly then state is updated and user is navigated to summary page", async () => {
@@ -109,6 +113,13 @@ describe("ApplicantTravelForm", () => {
     expect(link).toHaveAttribute("href", "/tb-certificate-summary");
   });
 
+  it("back link points to travel summary page", () => {
+    window.history.pushState({}, "", "/proposed-visa-category?from=/check-travel-information");
+    renderWithProviders(<TravelVisaCategoryPage />);
+    const link = screen.getByRole("link", { name: "Back" });
+    expect(link).toHaveAttribute("href", "/check-travel-information");
+  });
+
   it("updates slice and navigates to TB summary when editing in COMPLETE status", async () => {
     vi.spyOn(api, "putTravelDetails").mockResolvedValue({ status: 200, statusText: "OK" });
     const user = userEvent.setup();
@@ -137,6 +148,33 @@ describe("ApplicantTravelForm", () => {
       expect(store.getState().travel.visaCategory).toBe("Family reunion");
       expect(store.getState().travel.status).toBe(ApplicationStatus.COMPLETE);
       expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-summary");
+    });
+  });
+
+  it("navigates back to travel summary page when editing", async () => {
+    vi.spyOn(api, "putTravelDetails").mockResolvedValue({ status: 200, statusText: "OK" });
+    window.history.pushState({}, "", "/proposed-visa-category?from=/check-travel-information");
+    const completeState = {
+      application: { applicationId: "abc-123", dateCreated: "" },
+      travel: {
+        status: ApplicationStatus.COMPLETE,
+        visaCategory: "Work",
+        applicantUkAddress1: "1 Street",
+        applicantUkAddress2: "",
+        applicantUkAddress3: "",
+        townOrCity: "London",
+        postcode: "0000 111",
+        ukEmail: "test@test.com",
+        ukMobileNumber: "07123456789",
+      },
+    };
+    renderWithProviders(<ApplicantTravelVisaCategory />, { preloadedState: completeState });
+
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "Family reunion" } });
+    await user.click(screen.getByRole("button"));
+
+    await waitFor(() => {
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/check-travel-information");
     });
   });
 });

@@ -19,8 +19,12 @@ interface MedicalScreeningFormData {
   previousTbDetails?: string;
   closeContactWithTb: "Yes" | "No";
   closeContactDetails?: string;
-  pregnant: "Yes" | "No" | "Don't know" | "N/A";
-  menstrualPeriods: "Yes" | "No" | "N/A";
+  pregnant: "Yes" | "No" | "Do not know" | "Not applicable (the visa applicant is not female)";
+  menstrualPeriods:
+    | "Yes"
+    | "No"
+    | "Do not know"
+    | "Not applicable (the visa applicant is not female)";
   physicalExamNotes?: string;
 }
 
@@ -68,9 +72,10 @@ export class MedicalScreeningPage extends BasePage {
     return this;
   }
 
-  // Fill in form with valid data
+  // Verify auto-populated age is visible
   fillAge(age: string): MedicalScreeningPage {
-    cy.get('[name="age"]').clear().type(age);
+    // Verify auto-populated age is visible
+    cy.contains(`${age} years old`).should("be.visible");
     return this;
   }
 
@@ -126,12 +131,16 @@ export class MedicalScreeningPage extends BasePage {
     return this;
   }
 
-  selectPregnancyStatus(option: "Yes" | "No" | "Don't know" | "N/A"): MedicalScreeningPage {
+  selectPregnancyStatus(
+    option: "Yes" | "No" | "Do not know" | "Not applicable (the visa applicant is not female)",
+  ): MedicalScreeningPage {
     cy.get(`input[name="pregnant"][value="${option}"]`).check({ force: true });
     return this;
   }
 
-  selectMenstrualPeriods(option: "Yes" | "No" | "N/A"): MedicalScreeningPage {
+  selectMenstrualPeriods(
+    option: "Yes" | "No" | "Do not know" | "Not applicable (the visa applicant is not female)",
+  ): MedicalScreeningPage {
     cy.get(`input[name="menstrualPeriods"][value="${option}"]`).check({ force: true });
     return this;
   }
@@ -357,7 +366,7 @@ export class MedicalScreeningPage extends BasePage {
 
   // Verify service name
   verifyServiceName(): MedicalScreeningPage {
-    cy.get(".govuk-header__service-name")
+    cy.get(".govuk-service-navigation__service-name")
       .should("be.visible")
       .and("contain", "Complete UK pre-entry health screening")
       .and("have.attr", "href", "/");
@@ -566,8 +575,8 @@ export class MedicalScreeningPage extends BasePage {
     this.selectMultipleUnderElevenConditions(data.underElevenConditions);
     this.selectPreviousTb(data.previousTb);
     this.selectCloseContact(data.closeContactWithTb);
-    this.selectPregnancyStatus("N/A");
-    this.selectMenstrualPeriods("N/A");
+    this.selectPregnancyStatus("Not applicable (the visa applicant is not female)");
+    this.selectMenstrualPeriods("Not applicable (the visa applicant is not female)");
 
     if (data.physicalExamNotes) {
       this.fillPhysicalExamNotes(data.physicalExamNotes);

@@ -1,16 +1,16 @@
-//This holds all fields of the Sputum Sample Summary Page
+//This holds all fields of the Check Sputum Collection Details and Results Page
 import { BasePage } from "../BasePage";
 
 export class CheckSputumSampleInfoPage extends BasePage {
   constructor() {
-    super("/check-sputum-sample-information-results");
+    super("/check-sputum-collection-details-results");
   }
 
   // Verify page loaded
   verifyPageLoaded(): CheckSputumSampleInfoPage {
     cy.get("h1.govuk-heading-l")
       .should("be.visible")
-      .and("contain", "Check sputum sample information and results");
+      .and("contain", "Check sputum collection details and results");
 
     // Check summary lists are present for all samples
     cy.get(".govuk-summary-list").should("have.length.at.least", 3);
@@ -22,6 +22,24 @@ export class CheckSputumSampleInfoPage extends BasePage {
     cy.get("h2.govuk-heading-m").should("contain", "Sputum sample 1");
     cy.get("h2.govuk-heading-m").should("contain", "Sputum sample 2");
     cy.get("h2.govuk-heading-m").should("contain", "Sputum sample 3");
+    return this;
+  }
+
+  // Verify submission heading is present
+  verifySubmissionHeading(): CheckSputumSampleInfoPage {
+    cy.get("h2.govuk-heading-m").should(
+      "contain",
+      "Now send the sputum collection details and results",
+    );
+    return this;
+  }
+
+  // Verify warning message about submission
+  verifySubmissionWarningText(): CheckSputumSampleInfoPage {
+    cy.get("p.govuk-body").should(
+      "contain",
+      "You will not be able to change the collection details and results after you submit this information. However, you will be able to return and complete any information that you have not provided.",
+    );
     return this;
   }
 
@@ -233,27 +251,20 @@ export class CheckSputumSampleInfoPage extends BasePage {
   }
 
   // Verify change links exist for results only when data is present
-  verifyChangeLinksForResultsWithData(sampleNumber: number): CheckSputumSampleInfoPage {
-    // Check if smear result has data
-    this.getSampleSummaryValue(sampleNumber, "Smear result").then((smearValue) => {
-      if (smearValue !== "No data") {
-        this.checkSampleChangeLink(sampleNumber, "Smear result");
-      }
-    });
-
-    // Check if culture result has data
-    this.getSampleSummaryValue(sampleNumber, "Culture result").then((cultureValue) => {
-      if (cultureValue !== "No data") {
-        this.checkSampleChangeLink(sampleNumber, "Culture result");
-      }
-    });
-    return this;
-  }
-
-  // Verify change links always exist for collection data (date and method)
-  verifyChangeLinksForCollectionData(sampleNumber: number): CheckSputumSampleInfoPage {
-    this.checkSampleChangeLink(sampleNumber, "Date taken");
-    this.checkSampleChangeLink(sampleNumber, "Collection method");
+  verifyResultChangeLinksForDataState(
+    sampleNumber: number,
+    hasData: boolean,
+  ): CheckSputumSampleInfoPage {
+    if (hasData) {
+      this.checkSampleChangeLink(sampleNumber, "Smear result");
+      this.checkSampleChangeLink(sampleNumber, "Culture result");
+    } else {
+      // When no data, change links should still be present for all fields
+      this.checkSampleChangeLink(sampleNumber, "Date taken");
+      this.checkSampleChangeLink(sampleNumber, "Collection method");
+      this.checkSampleChangeLink(sampleNumber, "Smear result");
+      this.checkSampleChangeLink(sampleNumber, "Culture result");
+    }
     return this;
   }
 
@@ -394,6 +405,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
   }): CheckSputumSampleInfoPage {
     this.verifyPageLoaded();
     this.verifySampleHeadings();
+    this.verifySubmissionHeading();
     this.verifyRequiredFieldsPresent();
     this.verifyChangeLinksExist();
     this.verifyBackLink("/enter-sputum-sample-results");
@@ -439,8 +451,8 @@ export class CheckSputumSampleInfoPage extends BasePage {
     return this;
   }
 
-  // Verify sample from scenario where sample 1 is Negative for smear and is positive for culture
-  verifyScenarioFromImages(): CheckSputumSampleInfoPage {
+  // Verify scenario where sample 1 has negative smear and positive culture, other samples show no data
+  verifySample1MixedScenario(): CheckSputumSampleInfoPage {
     // Sample 1 should have: Negative smear, Positive culture
     this.verifySampleHasResultData(1, "Negative", "Positive");
 

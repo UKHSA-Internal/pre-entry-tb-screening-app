@@ -15,21 +15,21 @@ export class ApplicantPhotoUploadPage extends BasePage {
 
   // Verify Applicant upload section is displayed
   verifyApplicantPhotoUploadSectionDisplayed(): ApplicantPhotoUploadPage {
-    cy.get(".govuk-body")
-      .should("be.visible")
-      .and(
-        "contain",
-        "Select a file to upload. File type must be JPG, JPEG or PNG. Images must be less than 10MB.",
-      );
+    cy.get(".govuk-heading-m").should("be.visible").and("contain", "The photo must:");
     return this;
   }
 
   // Verify file upload instructions text
   verifyFileUploadInstructions(): ApplicantPhotoUploadPage {
-    cy.contains(
-      "p.govuk-body",
-      "Select a file to upload. File type must be JPG, JPEG or PNG. Images must be less than 10MB.",
-    ).should("be.visible");
+    cy.get(".govuk-heading-m").contains("The photo must:").should("be.visible");
+    cy.get(".govuk-body ul").within(() => {
+      cy.contains("li", "be a JPG, JPEG or PNG file").should("be.visible");
+      cy.contains("li", "be less than 10MB").should("be.visible");
+      cy.contains("li", "be the correct way up - open it on your computer to check").should(
+        "be.visible",
+      );
+      cy.contains("li", "meet the").should("be.visible");
+    });
     return this;
   }
 
@@ -93,7 +93,7 @@ export class ApplicantPhotoUploadPage extends BasePage {
 
   // Verify file input has correct attributes
   verifyFileInputAttributes(): ApplicantPhotoUploadPage {
-    cy.get("#upload-visa-applicant-photo")
+    cy.get("#applicant-photo")
       .should("have.attr", "type", "file")
       .and("have.attr", "name", "applicantPhotoFileName")
       .and("have.attr", "data-testid", "applicant-photo");
@@ -206,13 +206,13 @@ export class ApplicantPhotoUploadPage extends BasePage {
 
   // Verify accepted file types are mentioned in instructions
   verifyAcceptedFileTypes(): ApplicantPhotoUploadPage {
-    cy.get(".govuk-body").should("contain", "JPG, JPEG or PNG");
+    cy.get(".govuk-body ul").should("contain", "JPG, JPEG or PNG");
     return this;
   }
 
   // Verify file size limit is mentioned
   verifyFileSizeLimit(): ApplicantPhotoUploadPage {
-    cy.get(".govuk-body").should("contain", "less than 10MB");
+    cy.get(".govuk-body ul").should("contain", "less than 10MB");
     return this;
   }
 
@@ -272,6 +272,7 @@ export class ApplicantPhotoUploadPage extends BasePage {
   verifyFooterLinks(): ApplicantPhotoUploadPage {
     cy.get(".govuk-footer").within(() => {
       cy.contains("a", "Privacy").should("be.visible").and("have.attr", "href", "/privacy-notice");
+      cy.contains("a", "Cookies").should("be.visible").and("have.attr", "href", "/cookies");
       cy.contains("a", "Accessibility statement")
         .should("be.visible")
         .and("have.attr", "href", "/accessibility-statement");
@@ -290,8 +291,7 @@ export class ApplicantPhotoUploadPage extends BasePage {
 
   // Verify service name in header
   verifyServiceNameInHeader(): ApplicantPhotoUploadPage {
-    cy.get(".govuk-header__service-name")
-      .first()
+    cy.get(".govuk-service-navigation__service-name a")
       .should("be.visible")
       .and("contain.text", "Complete UK pre-entry health screening")
       .and("have.attr", "href", "/");
@@ -334,6 +334,48 @@ export class ApplicantPhotoUploadPage extends BasePage {
   // Verify page URL
   verifyPageUrl(): ApplicantPhotoUploadPage {
     cy.url().should("include", "/upload-visa-applicant-photo");
+    return this;
+  }
+
+  // Verify passport photo rules link exists
+  verifyPassportPhotoRulesLink(): ApplicantPhotoUploadPage {
+    cy.get(".govuk-body ul li a")
+      .should("be.visible")
+      .and("contain", "rules for a passport digital photo")
+      .and("have.attr", "href", "https://www.gov.uk/photos-for-passports#rules-for-digital-photos")
+      .and("have.attr", "target", "_blank")
+      .and("have.attr", "rel", "noopener noreferrer");
+    return this;
+  }
+
+  // Verify "More information" section exists
+  verifyMoreInformationSection(): ApplicantPhotoUploadPage {
+    cy.get(".govuk-footer").within(() => {
+      cy.contains("h2", "More information").should("be.visible");
+      cy.contains("a", "UK tuberculosis technical instructions")
+        .should("be.visible")
+        .and(
+          "have.attr",
+          "href",
+          "https://www.gov.uk/government/publications/uk-tuberculosis-technical-instructions",
+        )
+        .and("have.attr", "target", "_blank");
+    });
+    return this;
+  }
+
+  // Verify UK Health Security Agency footer text
+  verifyUKHSAFooter(): ApplicantPhotoUploadPage {
+    cy.get(".govuk-footer").within(() => {
+      cy.contains("Built by").should("be.visible");
+      cy.contains("a", "UK Health Security Agency")
+        .should("be.visible")
+        .and(
+          "have.attr",
+          "href",
+          "https://www.gov.uk/government/organisations/uk-health-security-agency",
+        );
+    });
     return this;
   }
 }

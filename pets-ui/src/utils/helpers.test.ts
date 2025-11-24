@@ -1,4 +1,5 @@
 import {
+  calculateApplicantAge,
   formatDateType,
   isDateInTheFuture,
   isDateInThePast,
@@ -316,5 +317,99 @@ describe("logError", () => {
     logError(error, info);
 
     expect(consoleMock).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("calculateApplicantAge function", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("should throw an error if the dob input is incomplete", () => {
+    vi.setSystemTime("2000-12-31T00:00:00Z");
+    const output = {
+      ageInYears: "Unknown",
+      ageToDisplay: "Unknown",
+      errorMessage: "Error in calculateApplicantAge: dateOfBirth object is missing fields",
+    };
+    const testCases = [
+      {
+        dob: { day: "", month: "01", year: "2000" },
+      },
+      {
+        dob: { day: "01", month: "", year: "2000" },
+      },
+      {
+        dob: { day: "01", month: "01", year: "" },
+      },
+    ];
+    testCases.forEach(({ dob }) => {
+      expect(calculateApplicantAge(dob)).toEqual(output);
+    });
+  });
+  it("should throw an error if the dob is after today", () => {
+    vi.setSystemTime("2000-12-31T00:00:00Z");
+    const output = {
+      ageInYears: "Unknown",
+      ageToDisplay: "Unknown",
+      errorMessage: "Error in calculateApplicantAge: dateOfBirth is in the future",
+    };
+    const testCases = [
+      {
+        dob: { day: "01", month: "01", year: "2001" },
+      },
+      {
+        dob: { day: "31", month: "12", year: "2001" },
+      },
+      {
+        dob: { day: "01", month: "01", year: "2100" },
+      },
+    ];
+    testCases.forEach(({ dob }) => {
+      expect(calculateApplicantAge(dob)).toEqual(output);
+    });
+  });
+  it("should correctly calculate applicant's age in years and months", () => {
+    const testCases = [
+      {
+        today: "2100-01-01T00:00:00Z",
+        dob: { day: "01", month: "01", year: "2000" },
+        output: { ageInYears: 100, ageToDisplay: "100 years old", errorMessage: null },
+      },
+      {
+        today: "2100-01-01T00:00:00Z",
+        dob: { day: "02", month: "01", year: "2000" },
+        output: { ageInYears: 99, ageToDisplay: "99 years old", errorMessage: null },
+      },
+      {
+        today: "2100-01-01T00:00:00Z",
+        dob: { day: "01", month: "01", year: "2100" },
+        output: { ageInYears: 0, ageToDisplay: "0 months old", errorMessage: null },
+      },
+      {
+        today: "2100-01-02T00:00:00Z",
+        dob: { day: "01", month: "01", year: "2100" },
+        output: { ageInYears: 0, ageToDisplay: "0 months old", errorMessage: null },
+      },
+      {
+        today: "2100-01-31T00:00:00Z",
+        dob: { day: "01", month: "01", year: "2100" },
+        output: { ageInYears: 0, ageToDisplay: "0 months old", errorMessage: null },
+      },
+      {
+        today: "2100-02-01T00:00:00Z",
+        dob: { day: "01", month: "01", year: "2100" },
+        output: { ageInYears: 0, ageToDisplay: "1 month old", errorMessage: null },
+      },
+      {
+        today: "2100-02-02T00:00:00Z",
+        dob: { day: "01", month: "01", year: "2100" },
+        output: { ageInYears: 0, ageToDisplay: "1 month old", errorMessage: null },
+      },
+    ];
+    testCases.forEach(({ today, dob, output }) => {
+      vi.setSystemTime(today);
+      expect(calculateApplicantAge(dob)).toEqual(output);
+    });
   });
 });

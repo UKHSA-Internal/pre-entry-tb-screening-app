@@ -23,7 +23,9 @@ const ApplicantEmptyResult = () => {
         handleClick={() => navigate("/do-you-have-visa-applicant-written-consent-for-tb-screening")}
       />
       <br />
-      <LinkLabel to="/search-for-visa-applicant" title="Search again" externalLink={false} />
+      <p className="govuk-body">
+        <LinkLabel to="/search-for-visa-applicant" title="Search again" externalLink={false} />
+      </p>
     </>
   );
 };
