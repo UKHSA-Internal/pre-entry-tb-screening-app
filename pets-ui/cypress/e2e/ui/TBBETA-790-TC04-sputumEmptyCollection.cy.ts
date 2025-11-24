@@ -94,6 +94,7 @@ describe("Empty Collection Method Test On Sputum Collection Page", () => {
 
   it("should display error messages for missing collection methods with valid dates", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName) // Use country code for form filling
@@ -245,7 +246,7 @@ describe("Empty Collection Method Test On Sputum Collection Page", () => {
 
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("38")
+      .fillAge("40")
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
@@ -266,7 +267,7 @@ describe("Empty Collection Method Test On Sputum Collection Page", () => {
 
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "38",
+      age: "40 years old",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",

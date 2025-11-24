@@ -9,12 +9,15 @@ import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
 import { setMedicalScreeningStatus } from "@/redux/medicalScreeningSlice";
-import { selectApplication, selectMedicalScreening } from "@/redux/store";
+import { selectApplicant, selectApplication, selectMedicalScreening } from "@/redux/store";
 import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
-import { formatDateForDisplay } from "@/utils/helpers";
+import { calculateApplicantAge, formatDateForDisplay } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
 const MedicalScreeningReview = () => {
+  const applicantData = useAppSelector(selectApplicant);
+  const applicantAge = calculateApplicantAge(applicantData.dateOfBirth);
+
   const applicationData = useAppSelector(selectApplication);
   const medicalData = useAppSelector(selectMedicalScreening);
   const dispatch = useDispatch();
@@ -68,100 +71,102 @@ const MedicalScreeningReview = () => {
 
   const summaryData = [
     {
+      key: "Age",
+      value: applicantAge.ageToDisplay,
+      hiddenLabel: "age",
+    },
+    {
       key: "Date of medical screening",
       value: formatDateForDisplay(medicalData.completionDate) || "Not provided",
       link: `/record-medical-history-tb-symptoms#medical-screening-completion-date`,
       hiddenLabel: "date of medical screening",
     },
+
     {
-      key: "Age",
-      value: medicalData.age || "Not provided",
-      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.age}`,
-      hiddenLabel: "age",
-    },
-    {
-      key: "Does the applicant have pulmonary TB symptoms?",
+      key: "Does the visa applicant have pulmonary TB symptoms?",
       value: medicalData.tbSymptoms || "Not provided",
       link: `/record-medical-history-tb-symptoms#${attributeToComponentId.tbSymptoms}`,
-      hiddenLabel: "whether the applicant has pulmonary TB symptoms",
+      hiddenLabel: "whether the visa applicant has pulmonary TB symptoms",
     },
     {
-      key: "Pulmonary TB symptoms",
+      key: "If yes, which pulmonary TB symptoms",
       value:
         medicalData.tbSymptomsList.length > 0
           ? medicalData.tbSymptomsList.join(", ")
           : "Not provided",
       link: `/record-medical-history-tb-symptoms#${attributeToComponentId.tbSymptomsList}`,
-      hiddenLabel: "Pulmonary TB symptoms",
+      hiddenLabel: "pulmonary TB symptoms",
     },
     {
-      key: "Other symptoms",
+      key: "Give further details (optional)",
       value: medicalData.otherSymptomsDetail || "Not provided",
       link: `/record-medical-history-tb-symptoms#${attributeToComponentId.otherSymptomsDetail}`,
-      hiddenLabel: "other symptoms",
+      hiddenLabel: "further details of pulmonary TB symptoms (optional)",
     },
     {
-      key: "Applicant history if under 11",
+      key: "Medical history for under 11",
       value:
         medicalData.underElevenConditions.length > 0
           ? medicalData.underElevenConditions.join(", ")
           : "Not provided",
       link: `/record-medical-history-tb-symptoms#${attributeToComponentId.underElevenConditions}`,
-      hiddenLabel: "applicant history if under 11",
+      hiddenLabel: "medical history for under 11",
     },
     {
-      key: "Additional details of applicant history if under 11",
+      key: "Give further details (optional)",
       value: medicalData.underElevenConditionsDetail || "Not provided",
       link: `/record-medical-history-tb-symptoms#${attributeToComponentId.underElevenConditionsDetail}`,
-      hiddenLabel: "additional details of applicant history if under 11",
+      hiddenLabel: "further details of medical history for under 11 (optional)",
     },
     {
-      key: "Has the applicant ever had pulmonary TB?",
+      key: "Has the visa applicant had pulmonary TB?",
       value: medicalData.previousTb || "Not provided",
       link: `/record-medical-history-tb-symptoms#${attributeToComponentId.previousTb}`,
-      hiddenLabel: "whether the applicant has ever had pulmonary TB",
+      hiddenLabel: "whether the visa applicant has had pulmonary TB",
     },
     {
-      key: "Detail of applicant's previous pulmonary TB",
+      key: "If yes, give details (optional)",
       value: medicalData.previousTbDetail || "Not provided",
       link: `/record-medical-history-tb-symptoms#${attributeToComponentId.previousTbDetail}`,
-      hiddenLabel: "details of applicant's previous pulmonary TB",
+      hiddenLabel: "details of visa applicant's previous pulmonary TB",
     },
     {
-      key: "Has the applicant had close contact with any person with active pulmonary TB within the past year?",
+      key: "Has the visa applicant had close contact with a person with active pulmonary TB in the past year?",
       value: medicalData.closeContactWithTb || "Not provided",
       link: `/record-medical-history-tb-symptoms#${attributeToComponentId.closeContactWithTb}`,
-      hiddenLabel: "applicant's close contact with TB in the past year",
+      hiddenLabel:
+        "whether the visa applicant has had close contact with active pulmonary TB in the past year",
     },
     {
-      key: "Details of applicant's close contact with any person with active pulmonary TB",
+      key: "If yes, give details",
       value: medicalData.closeContactWithTbDetail || "Not provided",
       link: `/record-medical-history-tb-symptoms#${attributeToComponentId.closeContactWithTbDetail}`,
-      hiddenLabel: "details of applicant's close contact with pulmonary TB in the past year",
+      hiddenLabel:
+        "details of visa applicant's close contact with a person with pulmonary TB in the past year",
     },
     {
-      key: "Is the applicant pregnant?",
+      key: "Is the visa applicant pregnant?",
       value: medicalData.pregnant || "Not provided",
       link: `/record-medical-history-tb-symptoms#${attributeToComponentId.pregnant}`,
-      hiddenLabel: "pregnancy",
+      hiddenLabel: "whether the visa applicant is pregnant",
     },
     {
-      key: "Does the applicant have menstrual periods?",
+      key: "Does the visa applicant have menstrual periods?",
       value: medicalData.menstrualPeriods || "Not provided",
       link: `/record-medical-history-tb-symptoms#${attributeToComponentId.menstrualPeriods}`,
-      hiddenLabel: "menstrual periods",
+      hiddenLabel: "whether the visa applicant has menstrual periods",
     },
     {
-      key: "Physical examination notes",
+      key: "Physical examination notes (optional)",
       value: medicalData.physicalExamNotes || "Not provided",
       link: `/record-medical-history-tb-symptoms#${attributeToComponentId.physicalExamNotes}`,
-      hiddenLabel: "physical examination notes",
+      hiddenLabel: "physical examination notes (optional)",
     },
     {
       key: "Is an X-ray required?",
       value: medicalData.chestXrayTaken,
       link: `/is-an-x-ray-required#${attributeToComponentId.chestXrayTaken}`,
-      hiddenLabel: "whether X-ray is required",
+      hiddenLabel: "whether an X-ray is required",
     },
     ...(medicalData.chestXrayTaken === YesOrNo.NO && medicalData.reasonXrayNotRequired
       ? [

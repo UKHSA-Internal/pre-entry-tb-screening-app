@@ -72,9 +72,10 @@ export class MedicalScreeningPage extends BasePage {
     return this;
   }
 
-  // Fill in form with valid data
+  // Verify auto-populated age is visible
   fillAge(age: string): MedicalScreeningPage {
-    cy.get('[name="age"]').clear().type(age);
+    // Verify auto-populated age is visible
+    cy.contains(`${age} years old`).should("be.visible");
     return this;
   }
 
