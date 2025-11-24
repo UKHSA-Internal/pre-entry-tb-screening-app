@@ -26,18 +26,21 @@ const methodMap: Record<Exclude<Method, "ANY">, Exclude<Lowercase<Method>, "any"
   HEAD: "head",
 };
 
-const extractPathParams = (path: string) => {
+export const extractPathParams = (path: string): Record<string, z.ZodString> | undefined => {
   const matches = path.match(/{(.*?)}/g);
   if (!matches) return;
 
-  return matches.reduce((acc, param) => {
-    const name = param.replace(/[{}]/g, ""); // Remove curly braces
-    Object.assign(acc, { [name]: z.string() });
-    return acc;
-  }, {});
+  return matches.reduce(
+    (acc, param) => {
+      const name = param.replace(/[{}]/g, ""); // Remove curly braces
+      Object.assign(acc, { [name]: z.string() });
+      return acc;
+    },
+    {} as Record<string, z.ZodString>,
+  );
 };
 
-const registerSwaggerConfig = (
+export const registerSwaggerConfig = (
   registry: OpenAPIRegistry,
   config: SwaggerConfig,
   authorizer: { name: string },
