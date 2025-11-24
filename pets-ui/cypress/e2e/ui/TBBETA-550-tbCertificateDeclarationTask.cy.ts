@@ -55,6 +55,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
 
   it("should prevent access to TB certificate declaration task", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName)

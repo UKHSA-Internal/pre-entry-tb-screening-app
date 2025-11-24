@@ -38,7 +38,6 @@ describe("MedicalScreeningForm", () => {
     await user.type(screen.getByTestId("medical-screening-completion-date-month"), "6");
     await user.type(screen.getByTestId("medical-screening-completion-date-year"), "2025");
 
-    await user.type(screen.getByTestId("age"), "99");
     await user.click(screen.getAllByTestId("tb-symptoms")[0]);
     await user.click(screen.getAllByTestId("tb-symptoms-list")[0]);
     await user.click(screen.getAllByTestId("tb-symptoms-list")[1]);
@@ -50,7 +49,6 @@ describe("MedicalScreeningForm", () => {
     await user.click(screen.getAllByTestId("menstrual-periods")[1]);
     await user.type(screen.getByTestId("physical-exam-notes"), "Details of physical examination.");
 
-    expect(screen.getByTestId("age")).toHaveValue("99");
     expect(screen.getAllByTestId("tb-symptoms")[0]).toBeChecked();
     expect(screen.getAllByTestId("tb-symptoms")[1]).not.toBeChecked();
     expect(screen.getAllByTestId("tb-symptoms-list")[0]).toBeChecked();
@@ -88,7 +86,7 @@ describe("MedicalScreeningForm", () => {
     await user.click(screen.getByRole("button"));
 
     expect(store.getState().medicalScreening).toEqual({
-      age: "99",
+      age: "Unknown",
       chestXrayTaken: "",
       closeContactWithTb: "No",
       closeContactWithTbDetail: "",
@@ -123,7 +121,6 @@ describe("MedicalScreeningForm", () => {
 
     const errorMessages = [
       "Error: Enter the date the medical screening took place",
-      "Error: Enter applicant's age in years",
       "Error: Select whether the visa applicant has any pulmonary TB symptoms",
       "Error: Select whether the visa applicant has ever had pulmonary TB",
       "Error: Select whether the visa applicant has had close contact with any person with active pulmonary TB within the past year",

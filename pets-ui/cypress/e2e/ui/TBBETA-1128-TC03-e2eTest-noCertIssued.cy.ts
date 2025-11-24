@@ -105,6 +105,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
 
   it("should complete the full application process with TB certificate not issued due to confirmed TB", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName) // Use country code for form filling
@@ -256,7 +257,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
 
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("29")
+      .fillAge("30")
       .selectTbSymptoms("Yes")
       .selectPreviousTb("No")
       .selectCloseContact("Yes")
@@ -277,7 +278,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
 
     //Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "29",
+      age: "30 years old",
       tbSymptoms: "Yes",
       tbSymptomsList: [],
       previousTb: "No",
