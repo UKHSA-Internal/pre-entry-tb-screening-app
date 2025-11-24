@@ -26,34 +26,41 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
     return;
   }
 
-  // Look up CloudTrail events around that time
-  const startTime = new Date(Date.now() - 30 * 60 * 1000); // 30min before
-  // const endTime = new Date();
-  // const ITEM_EVENTS = ["PutItem", "DeleteItem"];
   const events: Event[] = [];
   let nextToken: string | undefined = undefined;
-  let queryNumber = 0;
-  const eventNames: (string | undefined)[] = [];
-  const eventSources: (string | undefined)[] = [];
 
   const params = {
-    LookupAttributes: [
+    // LookupAttributes: [
+    //   {
+    //     AttributeKey: "EventName",
+    //     AttributeValue: "DescribeTable",
+    //   },
+    //   {
+    //     AttributeKey: "EventSource",
+    //     AttributeValue: "dynamodb.amazonaws.com",
+    //   },
+    // ],
+    FieldSelectors: [
       {
-        AttributeKey: "EventName",
-        AttributeValue: "DescribeTable",
+        Field: "eventCategory",
+        Equals: ["Data"],
       },
       {
-        AttributeKey: "EventSource",
-        AttributeValue: "dynamodb.amazonaws.com",
+        Field: "resources.type",
+        Equals: ["AWS::DynamoDB::Table"],
       },
-      // {
-      //   AttributeKey: "EventType",
-      //   AttributeValue: "AWS::DynamoDB::Table",
-      // },
+      {
+        Field: "eventName",
+        Equals: ["PutItem", "UpdateItem", "DeleteItem"],
+      },
+      {
+        Field: "resources.ARN",
+        Equals: [
+          "arn:aws:dynamodb:REGION:ACCOUNT_ID:table/<table1Name>>",
+          "arn:aws:dynamodb:REGION:ACCOUNT_ID:table/<<table2Name>>",
+        ],
+      },
     ],
-    StartTime: startTime,
-    // EndTime: endTime,
-    // MaxResults: 50,
     NextToken: nextToken,
   };
 
@@ -63,32 +70,22 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
       const result: LookupEventsCommandOutput = await client.send(
         new LookupEventsCommand(params as LookupEventsCommandInput),
       );
-      queryNumber += 1;
       if (!result.Events || result.Events?.length < 1) {
         logger.info({ result }, "No 'Events'");
-        // return;
       } else {
-        for (const e of result.Events) {
-          if (!eventNames.includes(e.EventName)) eventNames.push(e.EventName);
-          if (!eventSources.includes(e.EventSource)) eventSources.push(e.EventSource);
-
-          events.push(e);
-        }
+        events.push(...result.Events);
       }
       nextToken = result.NextToken;
     } catch (err) {
       logger.error({ err }, "CloudTrail lookup failed");
       if (err instanceof ThrottlingException) {
-        logger.error(`ERR / Queried ${queryNumber} times, received ${events.length}`);
+        logger.error(`ERR / Received ${events.length}`);
       }
       nextToken = undefined;
       // return;
     }
   } while (nextToken);
 
-  logger.info(`Queried ${queryNumber} times, received ${events.length}`);
-  logger.info({ ...eventNames }, "EventNames");
-  logger.info({ ...eventSources }, "EventSources");
   logger.info({ events }, "CloudTrail lookup result");
 
   const consoleEvents = events.filter((evt) => {
