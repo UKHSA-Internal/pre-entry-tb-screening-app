@@ -50,7 +50,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
         Equals: ["PutItem", "UpdateItem", "DeleteItem"],
       },
       {
-        Field: "EventSource",
+        Field: "eventSource",
         Equals: ["dynamodb.amazonaws.com"],
       },
       {
@@ -95,6 +95,36 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   } else {
     logger.info("No events");
   }
+
+  // Checking some data
+  const eventCategories: string[] = [];
+  const eventNames: string[] = [];
+  const eventSources: string[] = [];
+
+  for (const e of events) {
+    const cteventStr: string = e.CloudTrailEvent as string;
+    if (!cteventStr) {
+      continue;
+    } else {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const ctevent: Record<string, unknown> = JSON.parse(cteventStr);
+        if (!eventCategories.includes(ctevent.eventCategory as string))
+          eventCategories.push(ctevent?.eventCategory as string);
+        if (!eventNames.includes(ctevent.eventName as string))
+          eventNames.push(ctevent?.eventName as string);
+        if (!eventSources.includes(ctevent.eventSource as string))
+          eventSources.push(ctevent?.eventSource as string);
+      } catch (e) {
+        logger.error(e, "Error while parsing CloudTrailEvent");
+        continue;
+      }
+    }
+  }
+
+  logger.info({ ...eventCategories }, "EventCategories ");
+  logger.info({ ...eventNames }, "EventNames ");
+  logger.info({ ...eventSources }, "EventSources ");
 
   const consoleEvents = events.filter((evt) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
