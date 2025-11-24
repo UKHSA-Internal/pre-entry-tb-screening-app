@@ -46,12 +46,16 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
         Equals: ["Data"],
       },
       {
-        Field: "resources.type",
-        Equals: ["AWS::DynamoDB::Table"],
-      },
-      {
         Field: "eventName",
         Equals: ["PutItem", "UpdateItem", "DeleteItem"],
+      },
+      {
+        Field: "EventSource",
+        Equals: ["dynamodb.amazonaws.com"],
+      },
+      {
+        Field: "resources.type",
+        Equals: ["AWS::DynamoDB::Table"],
       },
       {
         Field: "resources.ARN",
