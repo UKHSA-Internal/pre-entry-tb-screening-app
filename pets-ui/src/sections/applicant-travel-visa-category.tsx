@@ -79,6 +79,7 @@ const ApplicantTravelVisaCategory = () => {
             heading="Proposed visa category"
             headingLevel={1}
             headingSize="l"
+            headingStyle={{ marginBottom: 30 }}
             options={visaOptions}
             errorMessage={errors?.visaCategory?.message ?? ""}
             formValue="visaCategory"
