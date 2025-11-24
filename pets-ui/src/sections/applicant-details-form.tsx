@@ -16,6 +16,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant, selectApplication } from "@/redux/store";
 import { DateType, PostedApplicantDetailsType, ReduxApplicantDetailsType } from "@/types";
 import { ApplicationStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { getCountryName, standardiseDayOrMonth, validateDate } from "@/utils/helpers";
 import { countryList, formRegex } from "@/utils/records";
 
@@ -98,6 +99,11 @@ const ApplicantForm = () => {
   };
 
   const errorsToShow = Object.keys(errors);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Enter applicant information", errorsToShow);
+    }
+  }, [errorsToShow]);
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
   const nameRef = useRef<HTMLDivElement | null>(null);

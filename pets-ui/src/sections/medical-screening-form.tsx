@@ -18,6 +18,7 @@ import {
 import { selectApplicant, selectMedicalScreening } from "@/redux/store";
 import { DateType, ReduxMedicalScreeningType } from "@/types";
 import { ApplicationStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { calculateApplicantAge, validateDate } from "@/utils/helpers";
 
 const MedicalScreeningForm = () => {
@@ -65,6 +66,11 @@ const MedicalScreeningForm = () => {
   };
 
   const errorsToShow = Object.keys(errors);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Record medical history and TB symptoms", errorsToShow);
+    }
+  }, [errorsToShow]);
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
   const location = useLocation();
