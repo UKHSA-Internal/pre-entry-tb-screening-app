@@ -5,7 +5,6 @@ import { useLocation } from "react-router-dom";
 import { useNavigationHistory } from "@/utils/useNavigationHistory";
 
 import BackLink from "../backLink/backLink";
-import Breadcrumb, { IBreadcrumbItem } from "../breadcrumb/breadcrumb";
 import CookieBanner from "../cookieBanner/cookieBanner";
 import Footer from "../footer/footer";
 import Header from "../header/header";
@@ -14,19 +13,19 @@ import SkipLink from "../skipLink/skipLink";
 
 interface ContainerProps {
   title: string;
-  breadcrumbItems?: IBreadcrumbItem[];
   backLinkTo?: string;
   children: ReactNode;
   feedbackUrl?: string;
   shouldClearHistory?: boolean;
+  useTwoThirdsColumn?: boolean;
 }
 
 const Container = ({
   title,
   children,
-  breadcrumbItems = [],
   backLinkTo = "",
   shouldClearHistory = false,
+  useTwoThirdsColumn = true,
 }: Readonly<ContainerProps>) => {
   useNavigationHistory(shouldClearHistory);
   const pageStart = useRef<HTMLDivElement | null>(null);
@@ -54,7 +53,6 @@ const Container = ({
       <Header />
       <div className="govuk-width-container">
         <PhaseBanner />
-        {breadcrumbItems && <Breadcrumb items={breadcrumbItems} />}
         {backLinkTo && <BackLink fallbackUrl={backLinkTo} />}
         <main
           className="govuk-main-wrapper"
@@ -63,7 +61,13 @@ const Container = ({
           ref={mainContent}
           tabIndex={-1}
         >
-          {children}
+          {useTwoThirdsColumn ? (
+            <div className="govuk-grid-row">
+              <div className="govuk-grid-column-two-thirds">{children}</div>
+            </div>
+          ) : (
+            children
+          )}
         </main>
       </div>
       <Footer />

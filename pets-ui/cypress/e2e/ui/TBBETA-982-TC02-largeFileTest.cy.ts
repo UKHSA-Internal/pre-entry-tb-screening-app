@@ -89,22 +89,22 @@ describe("Applicant Details Form - Invalid File Type Test", () => {
 
     // Verify file type
     applicantPhotoUploadPage.verifyFileTypeValidation(
-      "cypress/fixtures/invalid-file.docx",
-      "The selected file must be a JPG, JPEG or PNG",
+      "cypress/fixtures/large-file.jpg",
+      "The selected file must be smaller than 10MB",
     );
     // Upload INVALID FILE and click continue manually
     applicantPhotoUploadPage
-      .uploadApplicantPhotoFile("cypress/fixtures/invalid-file.docx")
+      .uploadApplicantPhotoFile("cypress/fixtures/large-file.jpg")
       .clickContinue();
 
     // Error validation
     cy.get(".govuk-error-summary").should("be.visible").and("contain", "There is a problem");
     cy.get(".govuk-error-message")
       .should("be.visible")
-      .and("contain", "The selected file must be a JPG, JPEG or PNG");
+      .and("contain", "The selected file must be smaller than 10MB");
     cy.get(".govuk-error-summary__list").should(
       "contain",
-      "The selected file must be a JPG, JPEG or PNG",
+      "The selected file must be smaller than 10MB",
     );
     cy.get(".govuk-form-group--error").should("exist");
   });

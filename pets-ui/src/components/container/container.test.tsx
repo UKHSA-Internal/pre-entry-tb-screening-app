@@ -7,11 +7,6 @@ import { renderWithProviders } from "@/utils/test-utils";
 
 import Container from "../container/container";
 
-const mockBreadcrumb = [
-  { text: "Home", href: "/" },
-  { text: "Applicants", href: "/applicants" },
-];
-
 const user = userEvent.setup();
 
 describe("Container Component", () => {
@@ -37,27 +32,6 @@ describe("Container Component", () => {
     expect(screen.getByRole("contentinfo")).toBeInTheDocument(); // Footer
     expect(screen.getByRole("main")).toBeInTheDocument(); // Main content
     expect(screen.getByText("Test Content")).toBeInTheDocument();
-  });
-
-  test("renders breadcrumbs when provided", () => {
-    renderWithProviders(
-      <HelmetProvider>
-        <Container title="With Breadcrumbs" breadcrumbItems={mockBreadcrumb}>
-          Test Content
-        </Container>
-      </HelmetProvider>,
-    );
-    expect(screen.getByText("Home")).toBeInTheDocument();
-    expect(screen.getByText("Applicants")).toBeInTheDocument();
-  });
-
-  test("renders without breadcrumbs if none are provided", () => {
-    renderWithProviders(
-      <HelmetProvider>
-        <Container title="No Breadcrumbs">Test Content</Container>
-      </HelmetProvider>,
-    );
-    expect(screen.queryByText("Home")).not.toBeInTheDocument();
   });
 
   test("renders back link when provided", () => {
