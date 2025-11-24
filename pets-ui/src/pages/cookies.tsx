@@ -16,7 +16,7 @@ import {
   updateGoogleAnalyticsConsent,
 } from "@/utils/google-analytics-utils";
 import { useNavigationHistory } from "@/utils/useNavigationHistory";
-import { getUserProperties } from "@/utils/userProperies";
+import { getUserProperties } from "@/utils/userProperties";
 
 export default function CookiesPage() {
   const { goBack } = useNavigationHistory();

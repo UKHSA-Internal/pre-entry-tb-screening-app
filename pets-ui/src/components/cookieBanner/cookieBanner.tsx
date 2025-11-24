@@ -6,7 +6,7 @@ import {
   setGoogleAnalyticsParams,
   updateGoogleAnalyticsConsent,
 } from "@/utils/google-analytics-utils";
-import { getUserProperties } from "@/utils/userProperies";
+import { getUserProperties } from "@/utils/userProperties";
 
 import Button from "../button/button";
 import Heading from "../heading/heading";

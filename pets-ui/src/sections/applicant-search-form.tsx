@@ -46,7 +46,7 @@ import { fetchClinic } from "@/utils/clinic";
 import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
 import { setGoogleAnalyticsParams } from "@/utils/google-analytics-utils";
 import { countryList, formRegex } from "@/utils/records";
-import { getUserProperties } from "@/utils/userProperies";
+import { getUserProperties } from "@/utils/userProperties";
 
 import { getApplicants, getApplication } from "../api/api";
 
