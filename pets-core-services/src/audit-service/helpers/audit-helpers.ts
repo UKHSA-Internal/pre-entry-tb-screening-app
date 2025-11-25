@@ -40,92 +40,71 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
         AttributeValue: "dynamodb.amazonaws.com",
       },
     ],
-    FieldSelectors: [
-      {
-        Field: "eventCategory",
-        Equals: "Data",
-      },
-      {
-        Field: "eventName",
-        EndsWith: "Item",
-      },
-      {
-        Field: "eventSource",
-        Equals: "dynamodb.amazonaws.com",
-      },
-      {
-        Field: "resources.type",
-        Equals: "AWS::DynamoDB::Table",
-      },
-      {
-        Field: "resources.ARN",
-        Equals: "arn:aws:dynamodb:REGION:ACCOUNT_ID:table/applicant-details",
-      },
-      {
-        Field: "resources.ARN",
-        Equals: "arn:aws:dynamodb:REGION:ACCOUNT_ID:table/application-details",
-      },
-    ],
     NextToken: nextToken,
   };
 
   logger.info("Sending LookupEventCommand");
-  do {
-    try {
-      const result: LookupEventsCommandOutput = await client.send(
-        new LookupEventsCommand(params as LookupEventsCommandInput),
-      );
-      if (!result.Events || result.Events?.length < 1) {
-        logger.info({ result }, "No 'Events'");
-      } else {
-        events.push(...result.Events);
-      }
-      nextToken = result.NextToken;
-    } catch (err) {
-      if (err instanceof ThrottlingException) {
-        logger.info(`ThrottlingException, received ${events.length}`);
-      } else {
-        logger.error({ err }, "CloudTrail lookup failed");
-      }
-      nextToken = undefined;
+  // do {
+  try {
+    const result: LookupEventsCommandOutput = await client.send(
+      new LookupEventsCommand(params as LookupEventsCommandInput),
+    );
+    if (!result.Events || result.Events?.length < 1) {
+      logger.info({ result }, "No 'Events'");
+    } else {
+      events.push(...result.Events);
     }
-  } while (nextToken && events.length < 350);
+    // nextToken = result.NextToken;
+    logger.info(nextToken);
+  } catch (err) {
+    if (err instanceof ThrottlingException) {
+      logger.info(`ThrottlingException, received ${events.length}`);
+    } else {
+      logger.error({ err }, "CloudTrail lookup failed");
+    }
+    nextToken = undefined;
+  }
+  // } while (nextToken && events.length < 350);
 
   if (events.length > 0) {
-    logger.info({ ...events[0] }, "CloudTrail lookup result");
+    logger.info({ ...events[0] }, `CloudTrail lookup result (1 of ${events.length})`);
+
+    // Logging some data
+    const eventCategories: string[] = [];
+    const eventNames: string[] = [];
+    const eventSources: string[] = [];
+    const userAgents: string[] = [];
+
+    for (const e of events) {
+      const cteventStr: string = e.CloudTrailEvent as string;
+      if (!cteventStr) {
+        continue;
+      } else {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          const ctevent: Record<string, unknown> = JSON.parse(cteventStr);
+          if (!eventCategories.includes(ctevent.eventCategory as string))
+            eventCategories.push(ctevent?.eventCategory as string);
+          if (!eventNames.includes(ctevent.eventName as string))
+            eventNames.push(ctevent?.eventName as string);
+          if (!eventSources.includes(ctevent.eventSource as string))
+            eventSources.push(ctevent?.eventSource as string);
+          if (!userAgents.includes(ctevent.userAgent as string))
+            userAgents.push(ctevent?.userAgent as string);
+        } catch (e) {
+          logger.error(e, "Error while parsing CloudTrailEvent string to JSON");
+          continue;
+        }
+      }
+    } // Logging some data
+
+    logger.info({ ...eventCategories }, "EventCategories ");
+    logger.info({ ...eventNames }, "EventNames ");
+    logger.info({ ...eventSources }, "EventSources ");
+    logger.info({ ...userAgents }, "UserAgents ");
   } else {
     logger.info("No events");
   }
-
-  // Checking some data
-  const eventCategories: string[] = [];
-  const eventNames: string[] = [];
-  const eventSources: string[] = [];
-
-  for (const e of events) {
-    const cteventStr: string = e.CloudTrailEvent as string;
-    if (!cteventStr) {
-      continue;
-    } else {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const ctevent: Record<string, unknown> = JSON.parse(cteventStr);
-        if (!eventCategories.includes(ctevent.eventCategory as string))
-          eventCategories.push(ctevent?.eventCategory as string);
-        if (!eventNames.includes(ctevent.eventName as string))
-          eventNames.push(ctevent?.eventName as string);
-        if (!eventSources.includes(ctevent.eventSource as string))
-          eventSources.push(ctevent?.eventSource as string);
-      } catch (e) {
-        logger.error(e, "Error while parsing CloudTrailEvent");
-        continue;
-      }
-    }
-  }
-
-  logger.info({ ...eventCategories }, "EventCategories ");
-  logger.info({ ...eventNames }, "EventNames ");
-  logger.info({ ...eventSources }, "EventSources ");
 
   const consoleEvents = events.filter((evt) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
