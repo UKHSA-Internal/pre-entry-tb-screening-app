@@ -32,6 +32,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   const userAgents: string[] = [];
   const usernames: string[] = [];
   const events: Event[] = [];
+  let resultReceived = 0;
   let nextToken: string | undefined = undefined;
 
   const params = {
@@ -57,6 +58,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
       if (!result.Events || result.Events?.length < 1) {
         logger.info({ result }, "No 'Events'");
       } else {
+        resultReceived += result.Events.length;
         for (const e of events) {
           if (!usernames.includes(e.Username as string)) usernames.push(e.Username as string);
           const cteventStr: string = e.CloudTrailEvent as string;
@@ -96,8 +98,10 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
     }
   } while (nextToken && events.length < 300);
 
+  logger.info(`All results fetched: ${resultReceived}`);
+
   if (events.length > 0) {
-    logger.info({ ...events[0] }, `CloudTrail lookup result (1 of ${events.length})`);
+    logger.info({ ...events[0] }, `CloudTrail filtered result (1 of ${events.length})`);
     logger.info({ ...eventCategories }, "EventCategories ");
     logger.info({ ...eventNames }, "EventNames ");
     logger.info({ ...eventSources }, "EventSources ");
