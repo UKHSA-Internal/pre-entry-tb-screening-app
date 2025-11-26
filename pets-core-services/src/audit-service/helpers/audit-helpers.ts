@@ -99,9 +99,9 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
               if (!userAgents.includes(ctevent.userAgent as string))
                 userAgents.push(ctevent?.userAgent as string);
               // @ts-expect-error ignore
-              if (!userIdentities.includes(ctevent?.userIdentities?.arn as string))
+              if (!userIdentities.includes(ctevent?.userIdentity?.arn as string))
                 // @ts-expect-error ignore
-                userIdentities.push(ctevent?.userIdentities?.arn as string);
+                userIdentities.push(ctevent?.userIdentity?.arn as string);
               if (!reqParams.includes(ctevent.requestParameters as string))
                 reqParams.push(ctevent?.requestParameters as string);
             } catch (e) {
