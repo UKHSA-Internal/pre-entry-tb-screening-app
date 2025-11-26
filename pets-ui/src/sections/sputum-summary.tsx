@@ -250,7 +250,7 @@ const SputumSummary = () => {
       link?: string;
       hiddenLabel: string;
     } = {
-      key: "Date taken",
+      key: "Date collected",
       value: hasCollectionData ? formatDateForDisplay(sample.collection.dateOfSample) : "No data",
       hiddenLabel: `date sample ${sampleNumber} was taken`,
     };

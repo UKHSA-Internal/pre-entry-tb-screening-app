@@ -70,7 +70,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
 
   // Page verification
   verifyPageLoaded(): EnterSputumSampleResultsPage {
-    super.verifyPageHeading("Enter sputum sample results");
+    super.verifyPageHeading("Sputum results");
     this.verifyFormVisible();
     return this;
   }
@@ -84,9 +84,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
   // Verify page structure and headers
   verifyPageStructure(): EnterSputumSampleResultsPage {
     // Verify main heading
-    cy.get("h1.govuk-heading-l")
-      .should("be.visible")
-      .and("contain.text", "Enter sputum sample results");
+    cy.get("h1.govuk-heading-l").should("be.visible").and("contain.text", "Sputum results");
 
     // Verify table headers
     cy.contains("strong", "Sample").should("be.visible");
@@ -327,7 +325,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
 
   // Button interaction
   clickSaveAndContinue(): EnterSputumSampleResultsPage {
-    cy.contains('button[type="submit"]', "Save and continue").click();
+    cy.contains('button[type="submit"]', "Continue").click();
     return this;
   }
 
@@ -337,9 +335,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
 
   // Verify save and continue button
   verifySaveAndContinueButton(): EnterSputumSampleResultsPage {
-    cy.contains('button[type="submit"]', "Save and continue")
-      .should("be.visible")
-      .and("be.enabled");
+    cy.contains('button[type="submit"]', "Continue").should("be.visible").and("be.enabled");
     return this;
   }
 

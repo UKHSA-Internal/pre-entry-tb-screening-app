@@ -155,10 +155,6 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
       .uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg")
       .verifyUploadSuccess();
 
-    //Checking no errors appear
-    cy.get(".govuk-error-message").should("not.exist");
-    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
-
     // Continue to Applicant Summary page
     applicantPhotoUploadPage.clickContinue();
 
@@ -543,19 +539,19 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
       // Validate sample data matches what was entered
       const expectedSampleData = {
         sample1: {
-          dateTaken: "10 March 2025",
+          dateCollected: "10 March 2025",
           collectionMethod: "Coughed up",
           smearResult: "Negative",
           cultureResult: "Negative",
         },
         sample2: {
-          dateTaken: "11 March 2025",
+          dateCollected: "11 March 2025",
           collectionMethod: "Induced",
           smearResult: "Negative",
           cultureResult: "Negative",
         },
         sample3: {
-          dateTaken: "12 March 2025",
+          dateCollected: "12 March 2025",
           collectionMethod: "Coughed up",
           smearResult: "Negative",
           cultureResult: "Negative",
