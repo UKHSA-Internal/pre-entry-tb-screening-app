@@ -1,5 +1,6 @@
 import {
   Event,
+  EventCategory,
   LookupEventsCommand,
   LookupEventsCommandInput,
   LookupEventsCommandOutput,
@@ -36,10 +37,19 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   let nextToken: string | undefined = undefined;
 
   const params = {
+    EventCategory: "insight'",
     LookupAttributes: [
       {
         AttributeKey: "EventName",
-        AttributeValue: "DescribeTable",
+        AttributeValue: "PutItem",
+      },
+      {
+        AttributeKey: "EventName",
+        AttributeValue: "UpdateItem",
+      },
+      {
+        AttributeKey: "EventName",
+        AttributeValue: "DeleteItem",
       },
       {
         AttributeKey: "EventSource",
@@ -60,8 +70,10 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
       } else {
         resultReceived += result.Events.length;
         for (const e of events) {
+          // Add unique Usernames for logging
           if (!usernames.includes(e.Username as string)) usernames.push(e.Username as string);
           const cteventStr: string = e.CloudTrailEvent as string;
+
           if (!cteventStr) {
             continue;
           } else {
@@ -71,6 +83,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
               // Adding 'result' to events
               if (ctevent.eventCategory === "Data") events.push(...result.Events);
 
+              // Getting values for logging
               if (!eventCategories.includes(ctevent.eventCategory as string))
                 eventCategories.push(ctevent?.eventCategory as string);
               if (!eventNames.includes(ctevent.eventName as string))
@@ -87,7 +100,6 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
         }
       }
       nextToken = result.NextToken;
-      logger.info(nextToken);
     } catch (err) {
       if (err instanceof ThrottlingException) {
         logger.info(`ThrottlingException, received ${events.length}`);
