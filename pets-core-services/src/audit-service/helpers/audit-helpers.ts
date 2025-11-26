@@ -1,17 +1,18 @@
 import {
-  Event,
+  CloudTrailClient,
+  // Event,
   LookupEventsCommand,
   LookupEventsCommandInput,
   LookupEventsCommandOutput,
-  ThrottlingException,
+  // ThrottlingException,
 } from "@aws-sdk/client-cloudtrail";
 import { DynamoDBRecord } from "aws-lambda";
 
-import awsClients from "../../shared/clients/aws";
+// import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
 import { SourceType } from "../types/enums";
 
-const { cloudTrailClient: client } = awsClients;
+// const { cloudTrailClient: client } = awsClients;
 
 export const getConsoleEvent = async (record: DynamoDBRecord) => {
   const tableArn = record.eventSourceARN;
@@ -26,129 +27,227 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
     return;
   }
 
-  const eventCategories: string[] = [];
-  const eventNames: string[] = [];
-  const eventSources: string[] = [];
-  const userAgents: string[] = [];
-  const usernames: string[] = [];
-  const events: Event[] = [];
-  let resultReceived = 0;
-  let nextToken: string | undefined = undefined;
+  // const eventCategories: string[] = [];
+  // const eventNames: string[] = [];
+  // const eventSources: string[] = [];
+  // const userAgents: string[] = [];
+  // const usernames: string[] = [];
+  // const events: Event[] = [];
+  // const upAttributes: [
+  //     {
+  //       AttributeKey: "EventName",
+  //       AttributeValue: "DescribeTable",
+  //     },
+  //     // {
+  //     //   AttributeKey: "EventName",
+  //     //   AttributeValue: "PutItem",
+  //     // },
+  //     // {
+  //     //   AttributeKey: "EventName",
+  //     //   AttributeValue: "UpdateItem",
+  //     // },
+  //     // {
+  //     //   AttributeKey: "EventName",
+  //     //   AttributeValue: "DeleteItem",
+  //     // },
+  //     // {
+  //     //   AttributeKey: "EventSource",
+  //     //   AttributeValue: "dynamodb.amazonaws.com",
+  //     // },
+  //   ],
+  //   NextToken: nextToken,
+  // };resultReceived = 0;
+  // const nextToken: string | undefined = undefined;
 
-  const params = {
-    EventCategory: "insight",
-    LookupAttributes: [
-      {
-        AttributeKey: "EventName",
-        AttributeValue: "DescribeTable",
-      },
-      // {
-      //   AttributeKey: "EventName",
-      //   AttributeValue: "PutItem",
-      // },
-      // {
-      //   AttributeKey: "EventName",
-      //   AttributeValue: "UpdateItem",
-      // },
-      // {
-      //   AttributeKey: "EventName",
-      //   AttributeValue: "DeleteItem",
-      // },
-      // {
-      //   AttributeKey: "EventSource",
-      //   AttributeValue: "dynamodb.amazonaws.com",
-      // },
-    ],
-    NextToken: nextToken,
-  };
+  // const params = {
+  //   EventCategory: "insight",
+  //   LookupAttributes: [
+  //     {
+  //       AttributeKey: "EventName",
+  //       AttributeValue: "DescribeTable",
+  //     },
+  //     // {
+  //     //   AttributeKey: "EventName",
+  //     //   AttributeValue: "PutItem",
+  //     // },
+  //     // {
+  //     //   AttributeKey: "EventName",
+  //     //   AttributeValue: "UpdateItem",
+  //     // },
+  //     // {
+  //     //   AttributeKey: "EventName",
+  //     //   AttributeValue: "DeleteItem",
+  //     // },
+  //     // {
+  //     //   AttributeKey: "EventSource",
+  //     //   AttributeValue: "dynamodb.amazonaws.com",
+  //     // },
+  //   ],
+  //   NextToken: nextToken,
+  // };
 
   logger.info("Sending LookupEventCommand");
-  do {
-    try {
-      const result: LookupEventsCommandOutput = await client.send(
-        new LookupEventsCommand(params as LookupEventsCommandInput),
-      );
-      if (!result.Events || result.Events?.length < 1) {
-        logger.info({ result }, "No 'Events'");
-      } else {
-        resultReceived += result.Events.length;
-        for (const e of events) {
-          // Add unique Usernames for logging
-          if (!usernames.includes(e.Username as string)) usernames.push(e.Username as string);
-          const cteventStr: string = e.CloudTrailEvent as string;
+  // do {
+  //   try {
+  //     const result: LookupEventsCommandOutput = await client.send(
+  //       new LookupEventsCommand(params as LookupEventsCommandInput),
+  //     );
+  //     if (!result.Events || result.Events?.length < 1) {
+  //       logger.info({ result }, "No 'Events'");
+  //     } else {
+  //       resultReceived += result.Events.length;
+  //       for (const e of events) {
+  //         // Add unique Usernames for logging
+  //         if (!usernames.includes(e.Username as string)) usernames.push(e.Username as string);
+  //         const cteventStr: string = e.CloudTrailEvent as string;
 
-          if (!cteventStr) {
-            continue;
-          } else {
-            try {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-              const ctevent: Record<string, unknown> = JSON.parse(cteventStr);
-              // Adding 'result' to events
-              if (ctevent.eventCategory === "Data") events.push(...result.Events);
+  //         if (!cteventStr) {
+  //           continue;
+  //         } else {
+  //           try {
+  //             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  //             const ctevent: Record<string, unknown> = JSON.parse(cteventStr);
+  //             // Adding 'result' to events
+  //             // if (ctevent.eventCategory === "Data") events.push(...result.Events);
+  //             events.push(...result.Events);
 
-              // Getting values for logging
-              if (!eventCategories.includes(ctevent.eventCategory as string))
-                eventCategories.push(ctevent?.eventCategory as string);
-              if (!eventNames.includes(ctevent.eventName as string))
-                eventNames.push(ctevent?.eventName as string);
-              if (!eventSources.includes(ctevent.eventSource as string))
-                eventSources.push(ctevent?.eventSource as string);
-              if (!userAgents.includes(ctevent.userAgent as string))
-                userAgents.push(ctevent?.userAgent as string);
-            } catch (e) {
-              logger.error(e, "Error while parsing CloudTrailEvent string to JSON");
-              continue;
-            }
-          }
-        }
-      }
-      nextToken = result.NextToken;
-    } catch (err) {
-      if (err instanceof ThrottlingException) {
-        logger.info(`ThrottlingException, received ${events.length}`);
-      } else {
-        logger.error({ err }, "CloudTrail lookup failed");
-      }
-      nextToken = undefined;
-    }
-  } while (nextToken && events.length < 300);
+  //             // Getting values for logging
+  //             if (!eventCategories.includes(ctevent.eventCategory as string))
+  //               eventCategories.push(ctevent?.eventCategory as string);
+  //             if (!eventNames.includes(ctevent.eventName as string))
+  //               eventNames.push(ctevent?.eventName as string);
+  //             if (!eventSources.includes(ctevent.eventSource as string))
+  //               eventSources.push(ctevent?.eventSource as string);
+  //             if (!userAgents.includes(ctevent.userAgent as string))
+  //               userAgents.push(ctevent?.userAgent as string);
+  //           } catch (e) {
+  //             logger.error(e, "Error while parsing CloudTrailEvent string to JSON");
+  //             continue;
+  //           }
+  //         }
+  //       }
+  //     }
+  //     nextToken = result.NextToken;
+  //   } catch (err) {
+  //     if (err instanceof ThrottlingException) {
+  //       logger.info(`ThrottlingException, received ${events.length}`);
+  //     } else {
+  //       logger.error({ err }, "CloudTrail lookup failed");
+  //     }
+  //     nextToken = undefined;
+  //   }
+  // } while (nextToken && events.length < 300);
 
-  logger.info(`All results fetched: ${resultReceived}`);
+  const approxTime = record?.dynamodb?.ApproximateCreationDateTime
+    ? new Date(record?.dynamodb?.ApproximateCreationDateTime).toISOString()
+    : new Date(Date.now() - 5 * 60 * 1000).toISOString();
+  const results = await safeLookupDynamoChanges("eu-west-2", approxTime);
+  logger.info({ results }, "safeLookupDynamoChanges results");
 
-  if (events.length > 0) {
-    logger.info({ ...events[0] }, `CloudTrail filtered result (1 of ${events.length})`);
-    logger.info({ ...eventCategories }, "EventCategories ");
-    logger.info({ ...eventNames }, "EventNames ");
-    logger.info({ ...eventSources }, "EventSources ");
-    logger.info({ ...userAgents }, "UserAgents ");
-  } else {
-    logger.info("No events");
-  }
+  logger.info(`All results fetched: ${results.length}`);
 
-  const consoleEvents = events.filter((evt) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const details = evt?.CloudTrailEvent ? JSON.parse(evt.CloudTrailEvent) : undefined;
+  // if (events.length > 0) {
+  //   logger.info({ ...events[0] }, `CloudTrail filtered result (1 of ${events.length})`);
+  //   logger.info({ ...eventCategories }, "EventCategories ");
+  //   logger.info({ ...eventNames }, "EventNames ");
+  //   logger.info({ ...eventSources }, "EventSources ");
+  //   logger.info({ ...userAgents }, "UserAgents ");
+  // } else {
+  //   logger.info("No events");
+  // }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (!details?.userAgent || !details?.requestParameters?.table) return;
+  // const consoleEvents = events.filter((evt) => {
+  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  //   const details = evt?.CloudTrailEvent ? JSON.parse(evt.CloudTrailEvent) : undefined;
 
-    logger.info(details, "CloudTrail parsing event");
+  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  //   if (!details?.userAgent || !details?.requestParameters?.table) return;
 
-    return (
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      details.userAgent === "console.amazonaws.com" &&
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      details.requestParameters?.tableName === tableName
-    );
+  //   logger.info(details, "CloudTrail parsing event");
+
+  //   return (
+  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  //     details.userAgent === "console.amazonaws.com" &&
+  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  //     details.requestParameters?.tableName === tableName
+  //   );
+  // });
+
+  // if (consoleEvents && consoleEvents.length > 0) {
+  //   // @ts-expect-error it can't be undefined
+  //   logger.info(`Update to ${tableName} came from AWS Console:`, consoleEvents[0]);
+  //   return SourceType.console;
+  // } else {
+  //   // @ts-expect-error it can't be undefined
+  //   logger.info(`Update to ${tableName} likely came from SDK/API.`, consoleEvents[0]);
+  //   return SourceType.app;
+  // }
+  return SourceType.app;
+};
+
+export async function safeLookupDynamoChanges(
+  region: string,
+  lastTimestamp: string,
+  userIdentity?: string,
+) {
+  const client = new CloudTrailClient({
+    region,
+    maxAttempts: 5,
   });
 
-  if (consoleEvents && consoleEvents.length > 0) {
-    // @ts-expect-error it can't be undefined
-    logger.info(`Update to ${tableName} came from AWS Console:`, consoleEvents[0]);
-    return SourceType.console;
-  } else {
-    // @ts-expect-error it can't be undefined
-    logger.info(`Update to ${tableName} likely came from SDK/API.`, consoleEvents[0]);
-    return SourceType.app;
-  }
-};
+  const input: LookupEventsCommandInput = {
+    StartTime: new Date(lastTimestamp),
+    EndTime: new Date(),
+    LookupAttributes: [
+      {
+        AttributeKey: "EventSource",
+        AttributeValue: "dynamodb.amazonaws.com",
+      },
+    ],
+    MaxResults: 50,
+  };
+
+  const result: any[] = [];
+  let nextToken: string | undefined = undefined;
+
+  do {
+    const res: LookupEventsCommandOutput = await client.send(
+      new LookupEventsCommand({
+        ...input,
+        NextToken: nextToken,
+      }),
+    );
+
+    for (const evt of res.Events ?? []) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const details = JSON.parse(evt.CloudTrailEvent || "{}");
+
+      const isDynamoWrite = ["PutItem", "UpdateItem", "DeleteItem", "BatchWriteItem"].includes(
+        evt.EventName!,
+      );
+
+      if (!isDynamoWrite) continue;
+
+      if (userIdentity) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (!((details?.userIdentity?.arn as string) || "").includes(userIdentity)) continue;
+      }
+
+      result.push({
+        eventName: evt.EventName,
+        eventTime: evt.EventTime,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        tableName: details?.requestParameters?.tableName,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        user: details?.userIdentity?.arn,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        request: details?.requestParameters,
+      });
+    }
+
+    nextToken = res.NextToken;
+  } while (nextToken);
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return result;
+}
