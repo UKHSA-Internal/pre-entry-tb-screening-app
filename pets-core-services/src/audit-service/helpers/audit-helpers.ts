@@ -85,26 +85,32 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
           if (!cteventStr) {
             continue;
           } else {
+            let ctevent: Record<string, unknown> = {};
             try {
               // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-              const ctevent: Record<string, unknown> = JSON.parse(cteventStr);
-              // Adding 'result' to events
-              // if (ctevent.eventCategory === "Data") events.push(...result.Events);
+              ctevent = JSON.parse(cteventStr);
+            } catch (e) {
+              logger.error(e, "Error while parsing CloudTrailEvent string to JSON");
+              continue;
+            }
+            // Adding 'result' to events
+            // if (ctevent.eventCategory === "Data") events.push(...result.Events);
 
-              // Getting values for logging
-              if (!eventCategories.includes(ctevent.eventCategory as string))
-                eventCategories.push(ctevent?.eventCategory as string);
-              if (!eventNames.includes(ctevent.eventName as string))
-                eventNames.push(ctevent?.eventName as string);
-              if (!eventSources.includes(ctevent.eventSource as string))
-                eventSources.push(ctevent?.eventSource as string);
-              if (!userAgents.includes(ctevent.userAgent as string))
-                userAgents.push(ctevent?.userAgent as string);
+            // Getting values for logging
+            if (!eventCategories.includes(ctevent.eventCategory as string))
+              eventCategories.push(ctevent?.eventCategory as string);
+            if (!eventNames.includes(ctevent.eventName as string))
+              eventNames.push(ctevent?.eventName as string);
+            if (!eventSources.includes(ctevent.eventSource as string))
+              eventSources.push(ctevent?.eventSource as string);
+            if (!userAgents.includes(ctevent.userAgent as string))
+              userAgents.push(ctevent?.userAgent as string);
+            // @ts-expect-error ignore
+            if (!userIdentities.includes(ctevent?.userIdentity?.arn as string))
               // @ts-expect-error ignore
-              if (!userIdentities.includes(ctevent?.userIdentity?.arn as string))
-                // @ts-expect-error ignore
-                userIdentities.push(ctevent?.userIdentity?.arn as string);
+              userIdentities.push(ctevent?.userIdentity?.arn as string);
 
+            try {
               if (ctevent?.requestParameters) {
                 // @ts-expect-error ignore
                 for (const [key, value] of ctevent.requestParameters) {
@@ -115,9 +121,9 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
                 if (!reqParams.includes(ctevent.requestParameters as string))
                   reqParams.push(ctevent?.requestParameters as string);
               }
-            } catch (e) {
-              logger.error(e, "Error while parsing CloudTrailEvent string to JSON");
-              continue;
+            } catch (error) {
+              logger.error({ ctevent }, "requestParameters could not be processed");
+              throw error;
             }
           }
         }
