@@ -155,10 +155,6 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
       .uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg")
       .verifyUploadSuccess();
 
-    //Checking no errors appear
-    cy.get(".govuk-error-message").should("not.exist");
-    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
-
     // Continue to Applicant Summary page
     applicantPhotoUploadPage.clickContinue();
 

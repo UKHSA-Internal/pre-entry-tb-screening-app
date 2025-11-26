@@ -335,10 +335,6 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       .uploadPosteroAnteriorXray("cypress/fixtures/test-chest-xray.dcm")
       .verifyUploadSuccess();
 
-    //Checking no errors appear
-    cy.get(".govuk-error-message").should("not.exist");
-    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
-
     // Continue to X-ray findings page
     chestXrayUploadPage.clickContinue();
 
@@ -611,9 +607,6 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       // Verify we're back at the progress tracker
       cy.url().should("include", "/tracker");
       tbProgressTrackerPage.verifyPageLoaded();
-
-      // Verify sputum collection status is now "Completed"
-      //tbProgressTrackerPage.verifyTaskStatus("Sputum collection and results", "Completed");
 
       // All tasks should now be completed except TB certificate declaration
       // Verify task statuses

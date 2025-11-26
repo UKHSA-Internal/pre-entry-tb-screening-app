@@ -428,9 +428,6 @@ describe("PETS Application - Amend Travel Information for Partially Completed Su
     cy.url().should("include", "/check-travel-information");
     travelSummaryPage.verifyPageLoaded();
 
-    // Verify Change Links exist for all field
-    //travelSummaryPage.verifyChangeLinksTargets();
-
     // Verify initial data with correct field labels
     travelSummaryPage.verifySummaryValue("Address line 1 (optional)", "789 Oxford Street");
     travelSummaryPage.verifySummaryValue("Address line 2 (optional)", "Flat 5B");

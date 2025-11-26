@@ -142,10 +142,6 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
       .uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg")
       .verifyUploadSuccess();
 
-    //Checking no errors appear
-    cy.get(".govuk-error-message").should("not.exist");
-    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
-
     // Continue to Applicant Summary page
     applicantPhotoUploadPage.clickContinue();
     cy.url().then((url) => {

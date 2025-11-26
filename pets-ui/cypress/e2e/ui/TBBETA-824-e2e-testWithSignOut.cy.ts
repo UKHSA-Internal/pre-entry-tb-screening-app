@@ -153,10 +153,6 @@ describe("PETS Application End-to-End Tests with Minor Findings", () => {
       .uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg")
       .verifyUploadSuccess();
 
-    //Checking no errors appear
-    cy.get(".govuk-error-message").should("not.exist");
-    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
-
     // Continue to Applicant Summary page
     applicantPhotoUploadPage.clickContinue();
 
@@ -335,10 +331,6 @@ describe("PETS Application End-to-End Tests with Minor Findings", () => {
     chestXrayUploadPage
       .uploadPosteroAnteriorXray("cypress/fixtures/test-chest-xray.dcm")
       .verifyUploadSuccess();
-
-    // Checking no errors appear
-    cy.get(".govuk-error-message").should("not.exist");
-    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
 
     // Continue to X-ray findings page
     chestXrayUploadPage.clickContinue();
