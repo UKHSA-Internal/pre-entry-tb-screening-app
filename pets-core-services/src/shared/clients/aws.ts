@@ -45,7 +45,7 @@ class AWSClients {
   }
 
   get cloudTrailClient(): CloudTrailClient {
-    this._cloudTrailClient ??= new CloudTrailClient({ region: "eu-west-2" });
+    this._cloudTrailClient ??= new CloudTrailClient({ region: "eu-west-2", maxAttempts: 5 });
 
     return this._cloudTrailClient;
   }

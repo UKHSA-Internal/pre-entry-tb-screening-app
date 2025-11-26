@@ -38,7 +38,6 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   let nextToken: string | undefined = undefined;
 
   const params = {
-    EventCategory: "insight",
     LookupAttributes: [
       {
         AttributeKey: "EventName",
