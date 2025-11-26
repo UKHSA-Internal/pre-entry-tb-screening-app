@@ -515,7 +515,11 @@ export class CheckSputumSampleInfoPage extends BasePage {
 
   // Click submit button
   clickSubmitButton(): CheckSputumSampleInfoPage {
-    cy.get("button[type='submit']").click();
+    cy.get("button[type='submit']")
+      .contains("Save and continue")
+      .filter(":visible")
+      .first()
+      .click();
     return this;
   }
 }

@@ -108,6 +108,7 @@ describe("PETS Application End-to-End Tests with Minor Findings", () => {
 
   it("should complete the full application process with Minor Findings", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName) // Use country code for form filling
