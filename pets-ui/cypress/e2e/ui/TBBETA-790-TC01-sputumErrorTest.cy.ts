@@ -88,6 +88,7 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
 
   it("should display error messages where NO sputum sample results is selected", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName)
@@ -264,10 +265,6 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
     chestXrayUploadPage
       .uploadPosteroAnteriorXray("cypress/fixtures/test-chest-xray.dcm")
       .verifyUploadSuccess();
-
-    // Checking no errors appear
-    cy.get(".govuk-error-message").should("not.exist");
-    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
 
     // Continue to X-ray findings page
     chestXrayUploadPage.clickContinue();

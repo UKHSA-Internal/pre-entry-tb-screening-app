@@ -243,7 +243,12 @@ export class MedicalSummaryPage extends BasePage {
 
   // Submit form to confirm details
   confirmDetails(): MedicalSummaryPage {
-    cy.get("button[type='submit']").contains("Submit and continue").should("be.visible").click();
+    cy.get("button[type='submit']")
+      .contains("Submit and continue")
+      .filter(":visible")
+      .first()
+      .should("be.visible")
+      .click();
     return this;
   }
 

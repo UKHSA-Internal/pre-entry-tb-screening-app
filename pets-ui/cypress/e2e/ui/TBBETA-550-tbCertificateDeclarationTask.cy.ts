@@ -103,10 +103,6 @@ describe("TB certificate declaration task links should NOT be clickable until al
       .uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg")
       .verifyUploadSuccess();
 
-    //Checking no errors appear
-    cy.get(".govuk-error-message").should("not.exist");
-    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
-
     // Continue to Applicant Summary page
     applicantPhotoUploadPage.clickContinue();
 

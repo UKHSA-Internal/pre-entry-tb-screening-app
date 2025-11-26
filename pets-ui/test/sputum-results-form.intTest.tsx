@@ -72,9 +72,7 @@ describe("SputumResultsForm", () => {
       preloadedState: buildPreloadedState(defaultSputumState),
     });
 
-    expect(
-      screen.getByRole("heading", { name: /Enter sputum sample results/i, level: 1 }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Sputum results/i, level: 1 })).toBeInTheDocument();
 
     expect(screen.getByText("5 May 2024")).toBeInTheDocument();
 
@@ -118,7 +116,7 @@ describe("SputumResultsForm", () => {
     await user.selectOptions(selects[0], PositiveOrNegative.POSITIVE);
     await user.selectOptions(selects[1], PositiveOrNegative.NEGATIVE);
 
-    await user.click(screen.getByRole("button", { name: /Save and continue/i }));
+    await user.click(screen.getByRole("button", { name: /Continue/i }));
 
     expect(useNavigateMock).toHaveBeenLastCalledWith("/check-sputum-collection-details-results");
 
@@ -134,7 +132,7 @@ describe("SputumResultsForm", () => {
 
     const user = userEvent.setup();
 
-    await user.click(screen.getByRole("button", { name: /Save and continue/i }));
+    await user.click(screen.getByRole("button", { name: /Continue/i }));
 
     expect(
       screen.getByRole("link", { name: /Error: Select result of smear test/i }),
@@ -156,7 +154,7 @@ describe("SputumResultsForm", () => {
     const selects = screen.getAllByRole("combobox");
     await user.selectOptions(selects[0], PositiveOrNegative.POSITIVE);
 
-    await user.click(screen.getByRole("button", { name: /Save and continue/i }));
+    await user.click(screen.getByRole("button", { name: /Continue/i }));
 
     expect(
       screen.queryByRole("link", { name: /Error: Select result of smear test/i }),
@@ -178,7 +176,7 @@ describe("SputumResultsForm", () => {
     const selects = screen.getAllByRole("combobox");
     await user.selectOptions(selects[1], PositiveOrNegative.POSITIVE);
 
-    await user.click(screen.getByRole("button", { name: /Save and continue/i }));
+    await user.click(screen.getByRole("button", { name: /Continue/i }));
 
     expect(
       screen.queryByRole("link", { name: /Error: Select result of smear test/i }),
@@ -201,7 +199,7 @@ describe("SputumResultsForm", () => {
     await user.selectOptions(selects[0], PositiveOrNegative.POSITIVE);
     await user.selectOptions(selects[1], PositiveOrNegative.NEGATIVE);
 
-    await user.click(screen.getByRole("button", { name: /Save and continue/i }));
+    await user.click(screen.getByRole("button", { name: /Continue/i }));
 
     expect(
       screen.queryByRole("link", { name: /Error: Select result of smear test/i }),
@@ -229,7 +227,7 @@ describe("SputumResultsForm", () => {
     const selects = screen.getAllByRole("combobox");
     await user.selectOptions(selects[0], PositiveOrNegative.POSITIVE);
 
-    await user.click(screen.getByRole("button", { name: /Save and continue/i }));
+    await user.click(screen.getByRole("button", { name: /Continue/i }));
 
     expect(
       screen.queryByRole("link", { name: /Error: Select result of smear test/i }),
@@ -263,7 +261,7 @@ describe("SputumResultsForm", () => {
 
     const user = userEvent.setup();
 
-    await user.click(screen.getByRole("button", { name: /Save and continue/i }));
+    await user.click(screen.getByRole("button", { name: /Continue/i }));
 
     expect(
       screen.queryByRole("link", { name: /Error: Select result of smear test/i }),
@@ -297,7 +295,7 @@ describe("SputumResultsForm", () => {
 
     const user = userEvent.setup();
 
-    await user.click(screen.getByRole("button", { name: /Save and continue/i }));
+    await user.click(screen.getByRole("button", { name: /Continue/i }));
 
     expect(
       screen.getByRole("link", { name: /Error: Select result of smear test/i }),
