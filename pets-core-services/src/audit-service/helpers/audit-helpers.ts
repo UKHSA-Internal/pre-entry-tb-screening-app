@@ -1,6 +1,5 @@
 import {
   Event,
-  EventCategory,
   LookupEventsCommand,
   LookupEventsCommandInput,
   LookupEventsCommandOutput,
