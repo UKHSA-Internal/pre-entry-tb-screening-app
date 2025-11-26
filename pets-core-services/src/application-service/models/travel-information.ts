@@ -17,6 +17,7 @@ abstract class TravelInformationBase {
   applicationId!: string;
   ukAddressLine1?: string;
   ukAddressLine2?: string;
+  ukAddressLine3?: string;
   ukAddressTownOrCity?: string;
   ukAddressPostcode?: string;
   ukMobileNumber?: string;
@@ -46,6 +47,7 @@ export type ITravelInformation = {
   visaCategory: VisaOptions;
   ukAddressLine1?: string;
   ukAddressLine2?: string;
+  ukAddressLine3?: string;
   ukAddressTownOrCity?: string;
   ukAddressPostcode?: string;
   ukMobileNumber?: string;
@@ -61,6 +63,7 @@ export type ITravelInformationUpdate = {
   visaCategory?: VisaOptions;
   ukAddressLine1?: string;
   ukAddressLine2?: string;
+  ukAddressLine3?: string;
   ukAddressTownOrCity?: string;
   ukAddressPostcode?: string;
   ukMobileNumber?: string;
@@ -209,6 +212,7 @@ export class TravelInformationDbOps {
         visaCategory: attrs?.visaCategory,
         ukAddressLine1: attrs?.ukAddressLine1,
         ukAddressLine2: attrs?.ukAddressLine2,
+        ukAddressLine3: attrs?.ukAddressLine3,
         ukAddressTownOrCity: attrs?.ukAddressTownOrCity,
         ukAddressPostcode: attrs?.ukAddressPostcode,
         ukMobileNumber: attrs?.ukMobileNumber,

@@ -44,7 +44,9 @@ import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/tra
 import { ApplicantSearchFormType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { setGoogleAnalyticsParams } from "@/utils/google-analytics-utils";
 import { countryList, formRegex } from "@/utils/records";
+import { getUserProperties } from "@/utils/userProperties";
 
 import { getApplicants, getApplication } from "../api/api";
 
@@ -69,6 +71,17 @@ const ApplicantSearchForm = () => {
     dispatch(setApplicantPhotoFileName(""));
     setApplicantPhotoUrl(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const setUserProperties = async () => {
+      const userProperties = await getUserProperties();
+      setGoogleAnalyticsParams("user_properties", {
+        user_role: userProperties.jobTitle,
+        clinic_id: userProperties.clinicId,
+      });
+    };
+    void setUserProperties();
   }, []);
 
   const {

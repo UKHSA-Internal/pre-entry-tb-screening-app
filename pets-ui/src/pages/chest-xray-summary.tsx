@@ -1,12 +1,25 @@
+import { useEffect } from "react";
+
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import { useAppSelector } from "@/redux/hooks";
-import { selectChestXray } from "@/redux/store";
+import { selectApplication, selectChestXray } from "@/redux/store";
 import ChestXraySummary from "@/sections/chest-xray-summary";
 import { ApplicationStatus } from "@/utils/enums";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function ChestXraySummaryPage() {
+  const applicationData = useAppSelector(selectApplication);
   const chestXrayData = useAppSelector(selectChestXray);
+
+  useEffect(() => {
+    sendGoogleAnalyticsJourneyEvent(
+      "check_chest_xray_images",
+      applicationData.applicationId,
+      "Upload chest X-ray images",
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Container
