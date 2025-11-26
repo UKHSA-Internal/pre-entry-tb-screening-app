@@ -42,7 +42,12 @@ export class GetWrittenConsentPage extends BasePage {
 
   // Click search again button
   clickSearchAgain(): GetWrittenConsentPage {
-    cy.get("button[type='submit']").contains("Search again").should("be.visible").click();
+    cy.get("button[type='submit']")
+      .contains("Search again")
+      .filter(":visible")
+      .first()
+      .should("be.visible")
+      .click();
     return this;
   }
 

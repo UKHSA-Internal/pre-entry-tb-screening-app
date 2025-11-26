@@ -17,7 +17,11 @@ export class TravelSummaryPage extends BasePage {
 
   // Submit Form
   submitForm(): TravelSummaryPage {
-    cy.get("button[type='submit']").contains("Submit and continue").click();
+    cy.get("button[type='submit']")
+      .contains("Submit and continue")
+      .filter(":visible")
+      .first()
+      .click();
     return this;
   }
 
