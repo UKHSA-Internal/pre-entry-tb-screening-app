@@ -40,20 +40,24 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
     LookupAttributes: [
       {
         AttributeKey: "EventName",
-        AttributeValue: "PutItem",
+        AttributeValue: "DescribeTable",
       },
-      {
-        AttributeKey: "EventName",
-        AttributeValue: "UpdateItem",
-      },
-      {
-        AttributeKey: "EventName",
-        AttributeValue: "DeleteItem",
-      },
-      {
-        AttributeKey: "EventSource",
-        AttributeValue: "dynamodb.amazonaws.com",
-      },
+      // {
+      //   AttributeKey: "EventName",
+      //   AttributeValue: "PutItem",
+      // },
+      // {
+      //   AttributeKey: "EventName",
+      //   AttributeValue: "UpdateItem",
+      // },
+      // {
+      //   AttributeKey: "EventName",
+      //   AttributeValue: "DeleteItem",
+      // },
+      // {
+      //   AttributeKey: "EventSource",
+      //   AttributeValue: "dynamodb.amazonaws.com",
+      // },
     ],
     NextToken: nextToken,
   };
