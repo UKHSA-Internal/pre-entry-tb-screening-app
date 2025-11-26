@@ -73,6 +73,8 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
         logger.info({ result }, "No 'Events'");
       } else {
         resultReceived += result.Events.length;
+        events.push(...result.Events);
+
         for (const e of events) {
           // Add unique Usernames for logging
           if (!usernames.includes(e.Username as string)) usernames.push(e.Username as string);
@@ -86,7 +88,6 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
               const ctevent: Record<string, unknown> = JSON.parse(cteventStr);
               // Adding 'result' to events
               // if (ctevent.eventCategory === "Data") events.push(...result.Events);
-              events.push(...result.Events);
 
               // Getting values for logging
               if (!eventCategories.includes(ctevent.eventCategory as string))
