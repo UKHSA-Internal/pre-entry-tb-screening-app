@@ -53,12 +53,11 @@ export default function SputumConfirmation() {
       ];
     } else if (allDatesComplete && hasAnyResults) {
       return ["The panel physician should wait to confirm the remaining sputum sample results"];
-    } else {
-      return [
-        "We have sent sputum collection details and results to UKHSA.",
-        "You can now view a summary for this visa applicant.",
-      ];
     }
+    return [
+      "We have sent sputum collection details and results to UKHSA.",
+      "You can now view a summary for this visa applicant.",
+    ];
   })();
 
   useEffect(() => {
