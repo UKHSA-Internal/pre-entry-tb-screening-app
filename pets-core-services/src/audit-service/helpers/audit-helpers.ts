@@ -34,6 +34,8 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   const events: Event[] = [];
   const userIdentities: string[] = [];
   const reqParams: string[] = [];
+  const reqParamKeys: string[] = [];
+  const tableNames: string[] = [];
   let resultReceived = 0;
   let nextToken: string | undefined = undefined;
 
@@ -102,8 +104,17 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
               if (!userIdentities.includes(ctevent?.userIdentity?.arn as string))
                 // @ts-expect-error ignore
                 userIdentities.push(ctevent?.userIdentity?.arn as string);
-              if (!reqParams.includes(ctevent.requestParameters as string))
-                reqParams.push(ctevent?.requestParameters as string);
+
+              if (ctevent?.requestParameters) {
+                // @ts-expect-error ignore
+                for (const [key, value] of ctevent.requestParameters) {
+                  if (!reqParamKeys.includes(key as string)) reqParamKeys.push(key as string);
+                  if (key === "tableName" && !tableNames.includes(value as string))
+                    tableNames.push(value as string);
+                }
+                if (!reqParams.includes(ctevent.requestParameters as string))
+                  reqParams.push(ctevent?.requestParameters as string);
+              }
             } catch (e) {
               logger.error(e, "Error while parsing CloudTrailEvent string to JSON");
               continue;
