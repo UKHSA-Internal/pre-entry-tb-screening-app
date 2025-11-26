@@ -89,7 +89,7 @@ export const MedicalScreeningBaseSchema = z.object({
   dateOfMedicalScreening: z.string().date().openapi({
     description: "Date of medical screening in ISO format",
   }),
-  age: z.number().min(1).openapi({
+  age: z.number().openapi({
     description: "Applicant's age",
   }),
   symptomsOfTb: z.nativeEnum(YesOrNo).openapi({
