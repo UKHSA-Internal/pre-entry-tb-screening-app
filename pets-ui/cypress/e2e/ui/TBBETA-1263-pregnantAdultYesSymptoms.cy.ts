@@ -397,19 +397,19 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     // Validate sample data matches what was entered
     const expectedSampleData = {
       sample1: {
-        dateTaken: "18 September 2025",
+        dateCollected: "18 September 2025",
         collectionMethod: "Coughed up",
         smearResult: "Negative",
         cultureResult: "Negative",
       },
       sample2: {
-        dateTaken: "19 September 2025",
+        dateCollected: "19 September 2025",
         collectionMethod: "Induced",
         smearResult: "Negative",
         cultureResult: "Negative",
       },
       sample3: {
-        dateTaken: "20 September 2025",
+        dateCollected: "20 September 2025",
         collectionMethod: "Coughed up",
         smearResult: "Negative",
         cultureResult: "Negative",

@@ -564,19 +564,19 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       // Validate sample data matches what was entered (with positive results)
       const expectedSampleData = {
         sample1: {
-          dateTaken: "15 March 2025",
+          dateCollected: "15 March 2025",
           collectionMethod: "Coughed up",
           smearResult: "Positive",
           cultureResult: "Positive",
         },
         sample2: {
-          dateTaken: "16 March 2025",
+          dateCollected: "16 March 2025",
           collectionMethod: "Induced",
           smearResult: "Positive",
           cultureResult: "Positive",
         },
         sample3: {
-          dateTaken: "17 March 2025",
+          dateCollected: "17 March 2025",
           collectionMethod: "Coughed up",
           smearResult: "Positive",
           cultureResult: "Positive",
