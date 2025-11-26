@@ -25,7 +25,12 @@ describe("Applicant Confirmation page", () => {
 
   test("Page renders with correct text", () => {
     expect(screen.getByText("Visa applicant details confirmed")).toBeInTheDocument();
-    expect(screen.getByText("You can now return to the progress tracker.")).toBeInTheDocument();
+    expect(
+      screen.getByText("We have sent the visa applicant details to UKHSA."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("You can now view a summary for this visa applicant."),
+    ).toBeInTheDocument();
   });
 
   test("Continue button redirects user to '/tracker' page", () => {

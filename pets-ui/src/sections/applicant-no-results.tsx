@@ -12,14 +12,15 @@ const ApplicantEmptyResult = () => {
 
   return (
     <>
-      <Heading level={1} size="l" title="No matching record found" />
+      <Heading level={1} size="l" title="No visa applicant found" />
       <p className="govuk-body">
-        No matches for passport number {applicantSearchData.passportNumber}
+        You can now create a new record for the visa applicant with passport number{" "}
+        {applicantSearchData.passportNumber}
       </p>
       <br />
       <StartButton
-        id="create-new-applicant"
-        text="Create new applicant"
+        id="continue"
+        text="Continue"
         handleClick={() => navigate("/do-you-have-visa-applicant-written-consent-for-tb-screening")}
       />
       <br />

@@ -120,7 +120,7 @@ test("Sputum confirmation page renders correctly when sputum task is completed &
   renderWithProviders(<SputumConfirmation />, { preloadedState });
 
   const user = userEvent.setup();
-  expect(screen.getByText("All sputum sample information confirmed")).toBeTruthy();
+  expect(screen.getByText("Sputum collection and results confirmed")).toBeTruthy();
   await user.click(screen.getAllByRole("button")[0]);
   expect(useNavigateMock).toHaveBeenLastCalledWith("/tracker");
 });
