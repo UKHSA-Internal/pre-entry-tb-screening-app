@@ -33,7 +33,7 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
   const usernames: string[] = [];
   const events: Event[] = [];
   const userIdentities: string[] = [];
-  const reqParams: string[] = [];
+  // const reqParams: string[] = [];
   const reqParamKeys: string[] = [];
   const tableNames: string[] = [];
   let resultReceived = 0;
@@ -112,14 +112,13 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
 
             try {
               if (ctevent?.requestParameters) {
-                // @ts-expect-error ignore
-                for (const [key, value] of ctevent.requestParameters) {
-                  if (!reqParamKeys.includes(key as string)) reqParamKeys.push(key as string);
+                for (const [key, value] of Object.entries(ctevent.requestParameters)) {
+                  if (!reqParamKeys.includes(key)) reqParamKeys.push(key);
                   if (key === "tableName" && !tableNames.includes(value as string))
                     tableNames.push(value as string);
                 }
-                if (!reqParams.includes(ctevent.requestParameters as string))
-                  reqParams.push(ctevent?.requestParameters as string);
+                // if (!reqParams.includes(ctevent.requestParameters as string))
+                //   reqParams.push(ctevent?.requestParameters as string);
               }
             } catch (error) {
               logger.error({ ctevent }, "requestParameters could not be processed");
@@ -149,7 +148,8 @@ export const getConsoleEvent = async (record: DynamoDBRecord) => {
     logger.info({ ...userAgents }, "UserAgents ");
 
     logger.info({ ...userIdentities }, "userIdentities ");
-    logger.info({ ...reqParams }, "requestParameters ");
+    logger.info({ ...reqParamKeys }, "requestParameters Keys ");
+    logger.info({ ...tableNames }, "userIdentities ");
   } else {
     logger.info("No events");
   }
