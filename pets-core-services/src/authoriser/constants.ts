@@ -34,7 +34,7 @@ export const policyMapping: Record<Roles, string[]> = {
     `arn:aws:execute-api:${AWS_REGION}:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/PUT/application/*`,
   ],
   [Roles.ImagingWrite]: [
-    `arn:aws:execute-api:${AWS_REGION}:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/POST/application/*`, // TBBETA-506: Change this when 506 is picked
+    `arn:aws:execute-api:${AWS_REGION}:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/POST/application/*`,
   ],
   [Roles.ClinicsRead]: [
     `arn:aws:execute-api:${AWS_REGION}:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/GET/clinics`,
