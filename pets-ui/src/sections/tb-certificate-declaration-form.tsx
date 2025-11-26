@@ -80,7 +80,7 @@ const TbCertificateDeclarationForm = () => {
   const errorsToShow = Object.keys(errors);
   useEffect(() => {
     if (errorsToShow.length > 0) {
-      sendGoogleAnalyticsFormErrorEvent("Enter clinic and certificate information", errorsToShow);
+      sendGoogleAnalyticsFormErrorEvent("Clinic and certificate information", errorsToShow);
     }
   }, [errorsToShow]);
 
@@ -112,7 +112,7 @@ const TbCertificateDeclarationForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
 
-        <Heading level={1} size="l" title="Enter clinic and certificate information" />
+        <Heading level={1} size="l" title="Clinic and certificate information" />
 
         <Summary
           status={tbCertificateData.status}
@@ -144,7 +144,8 @@ const TbCertificateDeclarationForm = () => {
           <FreeText
             id="declaring-physician-name"
             errorMessage={errors?.declaringPhysicianName?.message ?? ""}
-            label="Declaring Physician's name"
+            heading="Declaring Physician's name"
+            headingSize="s"
             formValue="declaringPhysicianName"
             patternValue={formRegex.fullName}
             patternError="Declaring physician's name must contain only letters, spaces, hyphens and apostrophes"
@@ -161,7 +162,9 @@ const TbCertificateDeclarationForm = () => {
             formValue="comments"
             rows={5}
             defaultValue={tbCertificateData.comments}
-            label="Physician's notes (optional)"
+            heading="Physician's notes (optional)"
+            headingSize="s"
+            hint="For example, include your name if you are completing the information for the declaring physician"
           />
         </div>
 

@@ -92,7 +92,7 @@ const ChestXrayFindingsForm = () => {
             <Checkbox
               id="xray-minor-findings"
               answerOptions={[
-                "1.1 Single fibrous streak or band or scar",
+                "1.1 Single fibrous streak, band or scar",
                 "1.2 Bony islets",
                 "2.1 Pleural capping with a smooth inferior border (less than 1cm thick at all points)",
                 "2.2 Unilateral or bilateral costophrenic angle blunding (below the horizontal)",
@@ -136,14 +136,14 @@ const ChestXrayFindingsForm = () => {
             <Checkbox
               id="xray-active-tb-findings"
               answerOptions={[
-                "4.0 Notable apical pleural capping (rough or ragged inferior border an/or equal or greater than 1cm thick at any point)",
-                "4.1 Apical fibronodular or fibrocalcific lesions or apical microcalcifications",
+                "4.0 Notable apical pleural capping (rough or ragged inferior border, or equal to or greater than 1cm thick at any point)",
+                "4.1 Apical fibronodular, fibrocalcific lesions or apical microcalcifications",
                 "4.2 Single or multiple pulmonary nodules or micronodules (noncalcified or poorly defined)",
                 "4.3 Isolated hilar or mediastinal mass or lymphadenopathy (noncalcified)",
-                "4.4 Single or multiple pulmonary nodules / masses equal or greater than 1cm",
-                "4.5 Non calcified pleural fibrosis or effusion",
-                "4.6 Interstitial fibrosis or parenchymal lung disease and or acute pulmonary disease",
-                "4.7 Any cavitating lesion or 'fluffy' or 'soft' lesions felt likely to represent active TB",
+                "4.4 Single or multiple pulmonary nodules, or masses equal to or greater than 1cm",
+                "4.5 Non-calcified pleural fibrosis or effusion",
+                "4.6 Interstitial fibrosis, parenchymal lung disease or acute pulmonary disease",
+                "4.7 Any cavitating lesion or ‘fluffy’ or ‘soft’ lesions felt likely to represent active TB",
               ]}
               heading="Findings sometimes seen in active TB (or other conditions)"
               headingLevel={2}
