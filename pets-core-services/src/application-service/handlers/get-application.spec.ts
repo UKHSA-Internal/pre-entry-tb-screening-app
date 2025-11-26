@@ -86,6 +86,7 @@ describe("Getting Application Handler", () => {
         dateCreated: expect.any(String),
         ukAddressLine1: "182 Willow Crescent",
         ukAddressLine2: "Northfield",
+        ukAddressLine3: "North Birmingham",
         ukAddressTownOrCity: "Birmingham",
         ukAddressPostcode: "B12 8QP",
         ukMobileNumber: "07001234567",

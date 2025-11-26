@@ -1,7 +1,23 @@
+import { useEffect } from "react";
+
 import Confirmation from "@/components/confirmation/confirmation";
 import Container from "@/components/container/container";
+import { useAppSelector } from "@/redux/hooks";
+import { selectApplication } from "@/redux/store";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function ChestXrayConfirmation() {
+  const applicationData = useAppSelector(selectApplication);
+
+  useEffect(() => {
+    sendGoogleAnalyticsJourneyEvent(
+      "chest_xray_images_confirmed",
+      applicationData.applicationId,
+      "Upload chest X-ray images",
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Container title="Chest X-ray images confirmed - Complete UK pre-entry health screening - GOV.UK">
       <Confirmation

@@ -42,7 +42,7 @@ describe("ChestXrayNotTakenPage", () => {
     expect(link).toHaveClass("govuk-back-link");
   });
   it("renders the page titles and descriptions ", () => {
-    expect(screen.getByText("Reason X-ray is not required?")).toBeInTheDocument();
+    expect(screen.getByText("Reason X-ray is not required")).toBeInTheDocument();
   });
   it("renders an error when continue button pressed but required radio question not answered", async () => {
     await user.click(screen.getByRole("button"));

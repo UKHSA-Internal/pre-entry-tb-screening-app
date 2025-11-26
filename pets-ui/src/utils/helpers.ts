@@ -241,17 +241,6 @@ const isChildUnder11 = (medicalScreeningData: ReduxMedicalScreeningType) => {
   return parsedAge < 11 ? "Yes" : "No";
 };
 
-const updateGoogleAnalyticsConsent = (consentGranted: boolean) => {
-  if (typeof globalThis.gtag === "function") {
-    globalThis.gtag("consent", "update", {
-      ad_storage: consentGranted ? "granted" : "denied",
-      analytics_storage: consentGranted ? "granted" : "denied",
-      functionality_storage: consentGranted ? "granted" : "denied",
-      personalization_storage: consentGranted ? "granted" : "denied",
-    });
-  }
-};
-
 const calculateApplicantAge = (dateOfBirth: DateType) => {
   const { day, month, year } = dateOfBirth;
   if (!day || !month || !year || day == "" || month == "" || year == "") {
@@ -315,6 +304,5 @@ export {
   spreadArrayIfNotEmpty,
   standardiseDayOrMonth,
   toArray,
-  updateGoogleAnalyticsConsent,
   validateDate,
 };
