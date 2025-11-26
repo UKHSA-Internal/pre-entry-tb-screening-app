@@ -1,10 +1,26 @@
+import { useEffect } from "react";
+
 import Container from "@/components/container/container";
+import { useAppSelector } from "@/redux/hooks";
+import { selectApplication } from "@/redux/store";
 import MedicalScreeningForm from "@/sections/medical-screening-form";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function MedicalScreeningPage() {
+  const applicationData = useAppSelector(selectApplication);
+
+  useEffect(() => {
+    sendGoogleAnalyticsJourneyEvent(
+      "record_medical_history_and_tb_symptoms",
+      applicationData.applicationId,
+      "Medical history and TB symptoms",
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Container
-      title="Medical screening - Complete UK pre-entry health screening - GOV.UK"
+      title="Record medical history and TB symptoms - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo="/tracker"
     >
       <MedicalScreeningForm />
