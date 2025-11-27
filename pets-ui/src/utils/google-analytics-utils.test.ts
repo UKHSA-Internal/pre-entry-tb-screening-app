@@ -70,7 +70,7 @@ describe("Google Analytics utilities", () => {
     it("sends a form validation error event", () => {
       sendGoogleAnalyticsFormErrorEvent("applicant_details", ["name", "dateOfBirth"]);
 
-      expect(gtagMock).toHaveBeenCalledWith("form_validation_error", {
+      expect(gtagMock).toHaveBeenCalledWith("event", "form_validation_error", {
         page: "applicant_details",
         validation_failures: ["name", "dateOfBirth"],
       });
