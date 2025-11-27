@@ -78,7 +78,7 @@ describe("Tests for Application Model", () => {
       },
       TableName: "test-audit-details",
     });
-    expect(infoLoggerMock).toHaveBeenNthCalledWith(4, "New audit created successfully");
+    expect(infoLoggerMock).toHaveBeenNthCalledWith(5, "New audit created successfully");
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(ddbMock.commandCalls(PutCommand)[0].firstArg.input).toMatchObject({
@@ -133,7 +133,7 @@ describe("Tests for Application Model", () => {
 
   test("Creating new no email", async () => {
     // Arrange
-    const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+    const infoLoggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
     ddbMock.on(PutCommand);
     vi.useFakeTimers();
     const expectedDateTime = "2025-03-04";
@@ -149,6 +149,6 @@ describe("Tests for Application Model", () => {
     });
 
     // Assert
-    expect(errorLoggerMock).toHaveBeenCalledWith("Missing email (updatedBy or createdBy field)");
+    expect(infoLoggerMock).toHaveBeenCalledWith("Missing email (updatedBy or createdBy field)");
   });
 });
