@@ -41,20 +41,11 @@ describe("Audit Lambda", () => {
     const result = await handler(seededAuditData, ctx, () => {});
 
     expect(result).toMatchObject({
-      batchItemFailures: [
-        {
-          itemIdentifier: "298669500002753139988920065",
-        },
-      ],
+      batchItemFailures: [],
     });
 
     expect(errorloggerMock).toHaveBeenNthCalledWith(
       2,
-      { error: Error("Err0r") },
-      "Creating audit failed",
-    );
-    expect(errorloggerMock).toHaveBeenNthCalledWith(
-      3,
       { e: Error("Err0r") },
       "Could not create audit",
     );

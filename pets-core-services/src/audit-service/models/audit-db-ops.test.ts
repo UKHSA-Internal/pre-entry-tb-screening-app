@@ -5,8 +5,6 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
-import { getConsoleEvent } from "../helpers/audit-helpers";
-import { SourceType } from "../types/enums";
 import { AuditDbOps } from "./audit-db-ops";
 
 const DynamoDBJSONNewImageData: StreamRecord = {
@@ -57,7 +55,6 @@ describe("Tests for Application Model", () => {
     vi.setSystemTime(expectedDateTime);
     const infoLoggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
     vi.mock("../helpers/audit-helpers");
-    vi.mocked(getConsoleEvent).mockResolvedValue(SourceType.console);
 
     // Act
     await AuditDbOps.createNewAuditFromDBRecord(DynamoDBRecordTemplate);
@@ -75,7 +72,7 @@ describe("Tests for Application Model", () => {
         eventType: "INSERT",
         pk: "AUDIT#1741046400000",
         sk: "APPLICATION#568b49e2-cbdf-47df-81ad-fecaa2b5b3b2#TRAVEL#INFORMATION",
-        source: "Console",
+        source: "App",
         sourceTable: "application-details",
         updatedBy: "clinic-one-user@email",
       },

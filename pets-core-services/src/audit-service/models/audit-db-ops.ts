@@ -5,7 +5,6 @@ import { DynamoDBRecord } from "aws-lambda";
 
 import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
-import { getConsoleEvent } from "../helpers/audit-helpers";
 import { SourceType } from "../types/enums";
 
 const { dynamoDBDocClient: docClient } = awsClients;
@@ -87,8 +86,13 @@ export class AuditDbOps {
         return;
       }
 
-      const source = await getConsoleEvent(record);
-      logger.info(source, "Returned event source");
+      let source = SourceType.app;
+
+      // Figure out the right string related to API source
+      if (changeDetails?.source && changeDetails.source === "api") {
+        source = SourceType.api;
+      }
+      logger.info(`Returned event source: ${source}`);
 
       const updatedDetails: Audit = {
         applicationId: changeDetails?.applicationId as string,
