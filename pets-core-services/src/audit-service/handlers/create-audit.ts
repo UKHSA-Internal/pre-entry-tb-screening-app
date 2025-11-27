@@ -23,12 +23,10 @@ const createAuditHandler: Handler = async (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   callback?: Callback,
 ): Promise<DynamoDBBatchResponse> => {
-  logger.info(`Audit-service / event received: ${JSON.stringify(records)}`);
+  logger.info(`Audit handler / events received: ${records.length}`);
   const batchItemFailures: DynamoDBBatchItemFailure[] = [];
 
   for (const record of records) {
-    logger.info(`Audit handler / processing record: ${JSON.stringify(record)}`);
-
     try {
       const result = await AuditDbOps.createNewAuditFromDBRecord(record);
 

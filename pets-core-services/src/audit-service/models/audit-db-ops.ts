@@ -53,6 +53,8 @@ export class AuditDbOps {
   }
 
   static async createNewAuditFromDBRecord(record: DynamoDBRecord): Promise<AuditBase | undefined> {
+    logger.info(`Processing record: ${JSON.stringify(record)}`);
+
     try {
       if (!record?.dynamodb?.NewImage || !record?.eventSourceARN) {
         logger.info({ record }, "There was no newImage object in the record");
@@ -80,11 +82,7 @@ export class AuditDbOps {
         ? (changeDetails.updatedBy as string)
         : (changeDetails?.createdBy as string);
 
-      if (!email) {
-        logger.error("Missing email (updatedBy or createdBy field)");
-
-        return;
-      }
+      if (!email) logger.info("Missing email (updatedBy or createdBy field)");
 
       let source = SourceType.app;
 
@@ -97,7 +95,7 @@ export class AuditDbOps {
       const updatedDetails: Audit = {
         applicationId: changeDetails?.applicationId as string,
         // User Email or AWS user for console updates
-        updatedBy: email,
+        updatedBy: email ?? "",
         eventType: record.eventName,
         // Application (App/API) - Application, API (for IOM) or Console
         source: source ? (source as SourceType) : SourceType.app,
