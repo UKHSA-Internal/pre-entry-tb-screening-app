@@ -9,7 +9,7 @@ export const mainEvent: DynamoDBStreamEvent = {
       eventName: "INSERT",
       eventVersion: "1.1",
       eventSource: "aws:dynamodb",
-      awsRegion: "eu-west-2",
+      awsRegion: process.env.AWS_REGION,
       dynamodb: {
         ApproximateCreationDateTime: 1550751349,
         Keys: {

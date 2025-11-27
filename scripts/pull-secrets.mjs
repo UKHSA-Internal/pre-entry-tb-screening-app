@@ -14,7 +14,7 @@ assert(process.env.AWS_SECRET_ACCESS_KEY, AWS_CREDS_ERROR_MSG);
 assert(process.env.AWS_SESSION_TOKEN, AWS_CREDS_ERROR_MSG);
 
 const SECRET_NAME = "local-dev-secret";
-const client = new SecretsManagerClient({ region: "eu-west-2" });
+const client = new SecretsManagerClient({ region: process.env.AWS_REGION });
 
 const ENV_FILE = join(__dirname, "../configs/.env.local.secrets");
 
