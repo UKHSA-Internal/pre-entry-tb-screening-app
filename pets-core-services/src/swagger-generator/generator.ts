@@ -14,6 +14,7 @@ import { SwaggerConfig } from "./types";
 extendZodWithOpenApi(z);
 
 const awsAccountId = assertEnvExists(process.env.AWS_ACCOUNT_ID);
+const awsRegion = assertEnvExists(process.env.AWS_REGION);
 
 const methodMap: Record<Exclude<Method, "ANY">, Exclude<Lowercase<Method>, "any">> = {
   GET: "get",
@@ -25,18 +26,21 @@ const methodMap: Record<Exclude<Method, "ANY">, Exclude<Lowercase<Method>, "any"
   HEAD: "head",
 };
 
-const extractPathParams = (path: string) => {
+export const extractPathParams = (path: string): Record<string, z.ZodString> | undefined => {
   const matches = path.match(/{(.*?)}/g);
   if (!matches) return;
 
-  return matches.reduce((acc, param) => {
-    const name = param.replace(/[{}]/g, ""); // Remove curly braces
-    Object.assign(acc, { [name]: z.string() });
-    return acc;
-  }, {});
+  return matches.reduce(
+    (acc, param) => {
+      const name = param.replace(/[{}]/g, ""); // Remove curly braces
+      Object.assign(acc, { [name]: z.string() });
+      return acc;
+    },
+    {} as Record<string, z.ZodString>,
+  );
 };
 
-const registerSwaggerConfig = (
+export const registerSwaggerConfig = (
   registry: OpenAPIRegistry,
   config: SwaggerConfig,
   authorizer: { name: string },
@@ -112,7 +116,7 @@ export const writeApiDocumentation = (configs: SwaggerConfig[]): any => {
     "x-amazon-apigateway-authorizer": {
       type: "request",
       identitySource: `method.request.header.${authorizerIdentity}`,
-      authorizerUri: `arn:aws:apigateway:eu-west-2:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-2:${awsAccountId}:function:${assertEnvExists(process.env.AUTHORISER_LAMBDA_NAME)}/invocations`,
+      authorizerUri: `arn:aws:apigateway:${awsRegion}:lambda:path/2015-03-31/functions/arn:aws:lambda:${awsRegion}:${awsAccountId}:function:${assertEnvExists(process.env.AUTHORISER_LAMBDA_NAME)}/invocations`,
       authorizerCredentials: `arn:aws:iam::${awsAccountId}:role/api_gateway_auth_invocation_api-gateway-authoriser`,
       authorizerResultTtlInSeconds: 0,
       requestTemplates: {

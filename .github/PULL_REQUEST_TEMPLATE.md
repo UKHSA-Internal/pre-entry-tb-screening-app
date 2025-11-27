@@ -20,6 +20,6 @@
 - [ ] Title of this PR includes jira ticket number or release version
 - [ ] Code compiles and runs correctly
 - [ ] All tests pass
-- [ ] Test coverage is >80%
+- [ ] Test coverage is >90%
 - [ ] Documentation updated if applicable
 - [ ] Accessibility requirements satisfied if applicable

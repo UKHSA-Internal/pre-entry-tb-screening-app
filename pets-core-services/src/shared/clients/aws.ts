@@ -21,23 +21,23 @@ class AWSClients {
   get dynamoDBDocClient(): DynamoDBDocumentClient {
     if (this._dynamoDBDocClient) return this._dynamoDBDocClient;
 
-    const client = new DynamoDBClient({ region: "eu-west-2" });
+    const client = new DynamoDBClient({ region: process.env.AWS_REGION });
     this._dynamoDBDocClient = DynamoDBDocumentClient.from(client);
     return this._dynamoDBDocClient;
   }
 
   get lambdaClient(): LambdaClient {
-    this._lambdaClient ??= new LambdaClient({ region: "eu-west-2" });
+    this._lambdaClient ??= new LambdaClient({ region: process.env.AWS_REGION });
     return this._lambdaClient;
   }
 
   get s3Client(): S3Client {
-    this._s3Client ??= new S3Client({ region: "eu-west-2" });
+    this._s3Client ??= new S3Client({ region: process.env.AWS_REGION });
     return this._s3Client;
   }
 
   get sqsClient(): SQSClient {
-    this._sqsClient = this._sqsClient ?? new SQSClient({ region: "eu-west-2" });
+    this._sqsClient = this._sqsClient ?? new SQSClient({ region: process.env.AWS_REGION });
 
     return this._sqsClient;
   }
