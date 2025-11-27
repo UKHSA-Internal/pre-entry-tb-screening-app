@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`writeApiDocumentation > should generate API documentation and write to a file 1`] = `
+exports[`writeApiDocumentation > generates OpenAPI docs and writes to file 1`] = `
 {
   "components": {
     "parameters": {},
@@ -13,7 +13,7 @@ exports[`writeApiDocumentation > should generate API documentation and write to 
         "x-amazon-apigateway-authorizer": {
           "authorizerCredentials": "arn:aws:iam::000000000000:role/api_gateway_auth_invocation_api-gateway-authoriser",
           "authorizerResultTtlInSeconds": 0,
-          "authorizerUri": "arn:aws:apigateway:eu-west-2:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-2:000000000000:function:test-lambda-name/invocations",
+          "authorizerUri": "arn:aws:apigateway:eu-west-2:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-2:000000000000:function:authLambda/invocations",
           "identitySource": "method.request.header.Authorization",
           "requestTemplates": {
             "application/json": "{ "authorization": "$input.params('Authorization')", "staticValue": "HelloWorld", "stage": "$context.stage", "requestTime": "$context.requestTime", "requestId": "$context.requestId" }",
@@ -25,144 +25,23 @@ exports[`writeApiDocumentation > should generate API documentation and write to 
     },
   },
   "info": {
-    "title": "aw-pets-euw-TEST_LOCAL-apigateway-coreservices",
+    "title": "aw-pets-euw-dev-apigateway-coreservices",
     "version": "1.0.0",
   },
   "openapi": "3.0.0",
   "paths": {
-    "/posts/{postId}": {
-      "post": {
-        "description": "Create post",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "postId",
-            "required": true,
-            "schema": {
-              "type": "string",
-            },
-          },
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "content": {
-                    "type": "string",
-                  },
-                  "title": {
-                    "type": "string",
-                  },
-                },
-                "required": [
-                  "title",
-                  "content",
-                ],
-                "type": "object",
-              },
-            },
-          },
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "postId": {
-                      "type": "string",
-                    },
-                  },
-                  "required": [
-                    "postId",
-                  ],
-                  "type": "object",
-                },
-              },
-            },
-            "description": "200 response",
-          },
-          "400": {
-            "description": "400 response",
-          },
-          "401": {
-            "description": "401 response",
-          },
-          "403": {
-            "description": "403 response",
-          },
-          "404": {
-            "description": "404 response",
-          },
-          "500": {
-            "description": "500 response",
-          },
-        },
-        "security": [
-          {
-            "authorizer": [],
-          },
-        ],
-        "summary": "New post",
-        "tags": [
-          "Posts",
-        ],
-        "x-amazon-apigateway-integration": {
-          "httpMethod": "POST",
-          "passthroughBehavior": "when_no_match",
-          "type": "aws_proxy",
-          "uri": "arn:aws:lambda:region:123456789012:function:post",
-        },
-      },
-    },
-    "/users/{userId}": {
+    "/items": {
       "get": {
-        "description": "Get user details",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "userId",
-            "required": true,
-            "schema": {
-              "type": "string",
-            },
-          },
-          {
-            "in": "query",
-            "name": "search",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-          {
-            "in": "header",
-            "name": "Authorization",
-            "required": true,
-            "schema": {
-              "type": "string",
-            },
-          },
-        ],
+        "description": "Items",
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                    },
-                    "name": {
-                      "type": "string",
-                    },
+                  "items": {
+                    "type": "string",
                   },
-                  "required": [
-                    "id",
-                    "name",
-                  ],
-                  "type": "object",
+                  "type": "array",
                 },
               },
             },
@@ -189,15 +68,15 @@ exports[`writeApiDocumentation > should generate API documentation and write to 
             "authorizer": [],
           },
         ],
-        "summary": "Fetch user",
+        "summary": "Get items",
         "tags": [
-          "Users",
+          "tag",
         ],
         "x-amazon-apigateway-integration": {
           "httpMethod": "POST",
           "passthroughBehavior": "when_no_match",
           "type": "aws_proxy",
-          "uri": "arn:aws:lambda:region:123456789012:function:user",
+          "uri": "arn:aws:lambda:eu-west-2:123:function:test",
         },
       },
     },
