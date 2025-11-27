@@ -71,12 +71,6 @@ const MedicalScreeningReview = () => {
 
   const summaryData = [
     {
-      key: "Date of medical screening",
-      value: formatDateForDisplay(medicalData.completionDate) || "Not provided",
-      link: `/record-medical-history-tb-symptoms#medical-screening-completion-date`,
-      hiddenLabel: "date of medical screening",
-    },
-    {
       key: "Age",
       value: applicantAge.ageToDisplay,
       hiddenLabel: "age",
