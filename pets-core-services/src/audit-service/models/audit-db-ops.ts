@@ -63,6 +63,7 @@ export class AuditDbOps {
       }
 
       const newImage = record.dynamodb.NewImage;
+      const oldImage = record.dynamodb?.OldImage;
       const changeDetails = unmarshall(newImage as AttributeValue | Record<string, AttributeValue>);
       logger.info({ changeDetails }, "unmarshalled 'newImage'");
 
@@ -101,7 +102,9 @@ export class AuditDbOps {
         source: source ? (source as SourceType) : SourceType.app,
         // applicant-details / application-details
         sourceTable: tableName,
-        changeDetails: newImage ? JSON.stringify(newImage) : "",
+        changeDetails: oldImage
+          ? JSON.stringify({ NewImage: newImage, OldImage: oldImage })
+          : JSON.stringify({ NewImage: newImage }),
         dateUpdated: new Date(),
       };
 
