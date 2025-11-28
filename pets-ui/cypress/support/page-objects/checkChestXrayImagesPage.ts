@@ -151,15 +151,22 @@ export class CheckChestXrayImagesPage extends BasePage {
   // Verify "Save and continue" button exists
   verifySaveAndContinueButton(): CheckChestXrayImagesPage {
     cy.get("button[type='submit']")
+      .contains("Submit and continue")
+      .filter(":visible")
+      .first()
       .should("be.visible")
-      .and("contain", "Submit and continue")
       .and("be.enabled");
     return this;
   }
 
   // Click "Save and continue" button
   clickSaveAndContinue(): CheckChestXrayImagesPage {
-    cy.get("button[type='submit']").should("be.visible").and("be.enabled").click();
+    cy.get("button[type='submit']")
+      .contains("Submit and continue")
+      .filter(":visible")
+      .first()
+      .should("be.enabled")
+      .click();
     return this;
   }
 

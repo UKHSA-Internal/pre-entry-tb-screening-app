@@ -36,6 +36,9 @@ export const TravelInformationBaseSchema = z.object({
   ukAddressLine2: z.string().optional().openapi({
     description: "Second line of Travel Address",
   }),
+  ukAddressLine3: z.string().optional().openapi({
+    description: "Third line of Travel Address",
+  }),
   ukAddressTownOrCity: z.string().optional().openapi({
     description: "Town or City of Travel Address",
   }),

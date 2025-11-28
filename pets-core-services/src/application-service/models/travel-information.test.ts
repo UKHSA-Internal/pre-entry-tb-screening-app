@@ -21,6 +21,8 @@ describe("Tests for Travel Information Model", () => {
     applicationId: "test-application-id",
     visaCategory: VisaOptions.Study,
     ukAddressLine1: "first line",
+    ukAddressLine2: "second line",
+    ukAddressLine3: "third line",
     ukAddressTownOrCity: "uk address town",
     ukAddressPostcode: "uk address postcode",
     ukMobileNumber: "uk mobile number",

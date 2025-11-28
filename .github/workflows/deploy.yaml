@@ -108,7 +108,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: "eu-west-2"
+          aws-region: ${{ vars.AWS_REGION}}
           role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_DEPLOY_ROLE_NAME }}"
 
       - name: Checkout code
@@ -152,6 +152,7 @@ jobs:
     env:
       SPEC_FILE: swagger.json
       APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
       VITE_SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
@@ -180,7 +181,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: "eu-west-2"
+          aws-region: ${{ vars.AWS_REGION}}
           role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_DEPLOY_ROLE_NAME }}"
 
       - name: Deploy Spec to API Gateway
@@ -199,6 +200,7 @@ jobs:
     env:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
       VITE_MSAL_CLIENT_ID: ${{ secrets.VITE_MSAL_CLIENT_ID }}
       VITE_MSAL_TENANT_ID: ${{ secrets.VITE_MSAL_TENANT_ID }}
       VITE_SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
@@ -224,7 +226,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: "eu-west-2"
+          aws-region: ${{ vars.AWS_REGION}}
           role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_DEPLOY_ROLE_NAME }}"
 
       - name: Generate Swagger spec
@@ -251,7 +253,7 @@ jobs:
         browser: [chrome, edge]
     env:
       APP_DOMAIN: ${{ vars.APP_DOMAIN }}
-
+      AWS_REGION: ${{ vars.AWS_REGION }}
       USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
       USER_1_PASSWORD: ${{ secrets.USER_1_PASSWORD }}
 
@@ -457,7 +459,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: "eu-west-2"
+          aws-region: ${{ vars.AWS_REGION}}
           role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_DEPLOY_ROLE_NAME }}"
 
       - name: Checkout
