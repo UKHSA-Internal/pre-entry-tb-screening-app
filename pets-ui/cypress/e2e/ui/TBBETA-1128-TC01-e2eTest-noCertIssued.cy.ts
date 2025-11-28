@@ -151,10 +151,6 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       .uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg")
       .verifyUploadSuccess();
 
-    //Checking no errors appear
-    cy.get(".govuk-error-message").should("not.exist");
-    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
-
     // Continue to Applicant Summary page
     applicantPhotoUploadPage.clickContinue();
 
@@ -334,10 +330,6 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     chestXrayUploadPage
       .uploadPosteroAnteriorXray("cypress/fixtures/test-chest-xray.dcm")
       .verifyUploadSuccess();
-
-    //Checking no errors appear
-    cy.get(".govuk-error-message").should("not.exist");
-    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
 
     // Continue to X-ray findings page
     chestXrayUploadPage.clickContinue();
@@ -564,19 +556,19 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       // Validate sample data matches what was entered (with positive results)
       const expectedSampleData = {
         sample1: {
-          dateTaken: "15 March 2025",
+          dateCollected: "15 March 2025",
           collectionMethod: "Coughed up",
           smearResult: "Positive",
           cultureResult: "Positive",
         },
         sample2: {
-          dateTaken: "16 March 2025",
+          dateCollected: "16 March 2025",
           collectionMethod: "Induced",
           smearResult: "Positive",
           cultureResult: "Positive",
         },
         sample3: {
-          dateTaken: "17 March 2025",
+          dateCollected: "17 March 2025",
           collectionMethod: "Coughed up",
           smearResult: "Positive",
           cultureResult: "Positive",
@@ -611,9 +603,6 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       // Verify we're back at the progress tracker
       cy.url().should("include", "/tracker");
       tbProgressTrackerPage.verifyPageLoaded();
-
-      // Verify sputum collection status is now "Completed"
-      //tbProgressTrackerPage.verifyTaskStatus("Sputum collection and results", "Completed");
 
       // All tasks should now be completed except TB certificate declaration
       // Verify task statuses

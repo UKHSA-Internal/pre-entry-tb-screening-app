@@ -125,9 +125,13 @@ export class ApplicantPhotoUploadPage extends BasePage {
 
   // Click continue button
   clickContinue(): ApplicantPhotoUploadPage {
-    cy.get("button[type='submit']").contains("Continue").should("be.visible").and("be.enabled");
-    cy.wait(1000);
-    cy.get("button[type='submit']").contains("Continue").click({ force: true });
+    // Filter for visible buttons only and ensure there's exactly one
+    cy.get("button[type='submit']")
+      .contains("Continue")
+      .filter(":visible")
+      .should("have.length", 1)
+      .should("be.enabled")
+      .click();
     return this;
   }
 
@@ -135,6 +139,8 @@ export class ApplicantPhotoUploadPage extends BasePage {
   verifyContinueButtonExists(): ApplicantPhotoUploadPage {
     cy.get("button[type='submit']")
       .contains("Continue")
+      .filter(":visible")
+      .first()
       .should("be.visible")
       .and("have.attr", "data-module", "govuk-button");
     return this;
@@ -142,7 +148,12 @@ export class ApplicantPhotoUploadPage extends BasePage {
 
   // Verify upload success for photo
   verifyUploadSuccess(): ApplicantPhotoUploadPage {
-    cy.get("button[type='submit']").contains("Continue").should("be.visible").and("be.enabled");
+    cy.get("button[type='submit']")
+      .contains("Continue")
+      .filter(":visible")
+      .first()
+      .should("be.visible")
+      .and("be.enabled");
     cy.get(".govuk-error-message").should("not.exist");
     cy.get(".govuk-error-summary").should("not.exist");
     return this;
