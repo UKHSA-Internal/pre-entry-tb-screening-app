@@ -274,9 +274,20 @@ export class BasePage {
     return this;
   }
 
-  verifyNextStepsSection(): BasePage {
+  verifyNextStepsSection(expectedText?: string): BasePage {
     cy.contains("h2", "What happens next").should("be.visible");
-    cy.contains("p", "You can now return to the progress tracker.").should("be.visible");
+
+    if (expectedText) {
+      cy.contains("p.govuk-body", expectedText).should("be.visible");
+    } else {
+      cy.get("p.govuk-body")
+        .invoke("text")
+        .should(
+          "match",
+          /You can now (view a summary for this visa applicant|return to the progress tracker)/,
+        );
+    }
+
     return this;
   }
 
