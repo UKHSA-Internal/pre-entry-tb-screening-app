@@ -152,6 +152,7 @@ jobs:
     env:
       SPEC_FILE: swagger.json
       APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
       VITE_SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
@@ -199,6 +200,7 @@ jobs:
     env:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
       VITE_MSAL_CLIENT_ID: ${{ secrets.VITE_MSAL_CLIENT_ID }}
       VITE_MSAL_TENANT_ID: ${{ secrets.VITE_MSAL_TENANT_ID }}
       VITE_SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
@@ -251,7 +253,7 @@ jobs:
         browser: [chrome, edge]
     env:
       APP_DOMAIN: ${{ vars.APP_DOMAIN }}
-
+      AWS_REGION: ${{ vars.AWS_REGION }}
       USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
       USER_1_PASSWORD: ${{ secrets.USER_1_PASSWORD }}
 
