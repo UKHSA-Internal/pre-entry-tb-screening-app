@@ -261,7 +261,7 @@ Kindly check `pets-core-services/src/applicant-service/fixtures/applicants.ts` f
 
 ## Deployment
 
-- Before proceeding, ensure you have access to the AWS environment. Kindly check this [guide](.docs/aws-access.md) on raising the request.
+- Before proceeding, ensure you have access to the AWS environment. Kindly check this [guide](./docs/aws-access.md) on raising the request.
 
 - Navigate to the [actions](https://github.com/UKHSA-Internal/pre-entry-tb-screening-app/actions) page.
 
