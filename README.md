@@ -22,7 +22,7 @@ An electronic data capture system designed to address inconsistencies and fraud 
 
 ### Architecture
 
-This is currently available [here](.docs/architecture.png).
+This is currently available [here](.docs/architecture.pdf).
 
 ### Monorepo Organization
 
@@ -190,7 +190,7 @@ Skip this section if you are not running E2E tests on your machine. As a prerequ
 
 ## Development Processes
 
-All captured [here](./docs/dev-process.png)
+All captured [here](./docs/dev-process.pdf)
 
 ### Ticket Creation
 
