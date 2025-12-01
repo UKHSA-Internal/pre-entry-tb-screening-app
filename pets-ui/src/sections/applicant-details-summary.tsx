@@ -76,10 +76,16 @@ const ApplicantReview = () => {
 
   const summaryData = [
     {
-      key: "Name",
+      key: "Full name",
       value: applicantData.fullName,
       link: `/enter-applicant-information?from=check-applicant-details#${attributeToComponentId.fullName}`,
-      hiddenLabel: "name",
+      hiddenLabel: "full name",
+    },
+    {
+      key: "Date of birth",
+      value: formatDateForDisplay(applicantData.dateOfBirth),
+      link: `/enter-applicant-information?from=check-applicant-details#${attributeToComponentId.dateOfBirth}`,
+      hiddenLabel: "date of birth",
     },
     {
       key: "Sex",
@@ -88,16 +94,10 @@ const ApplicantReview = () => {
       hiddenLabel: "sex",
     },
     {
-      key: "Country of nationality",
+      key: "Nationality",
       value: getCountryName(applicantData.countryOfNationality),
       link: `/enter-applicant-information?from=check-applicant-details#${attributeToComponentId.countryOfNationality}`,
-      hiddenLabel: "country of nationality",
-    },
-    {
-      key: "Date of birth",
-      value: formatDateForDisplay(applicantData.dateOfBirth),
-      link: `/enter-applicant-information?from=check-applicant-details#${attributeToComponentId.dateOfBirth}`,
-      hiddenLabel: "date of birth",
+      hiddenLabel: "Nationality",
     },
     {
       key: "Passport number",
@@ -134,13 +134,13 @@ const ApplicantReview = () => {
       hiddenLabel: "home address line 1",
     },
     {
-      key: "Home address line 2",
+      key: "Home address line 2 (optional)",
       value: applicantData.applicantHomeAddress2,
       link: `/enter-applicant-information?from=check-applicant-details#${attributeToComponentId.applicantHomeAddress2}`,
       hiddenLabel: "home address line 2",
     },
     {
-      key: "Home address line 3",
+      key: "Home address line 3 (optional)",
       value: applicantData.applicantHomeAddress3,
       link: `/enter-applicant-information?from=check-applicant-details#${attributeToComponentId.applicantHomeAddress3}`,
       hiddenLabel: "home address line 3",
@@ -170,10 +170,10 @@ const ApplicantReview = () => {
       hiddenLabel: "postcode",
     },
     {
-      key: "Applicant Photo",
+      key: "Photo",
       value: applicantData.applicantPhotoFileName,
       link: "/upload-visa-applicant-photo?from=check-applicant-details",
-      hiddenLabel: "applicant photo",
+      hiddenLabel: "photo",
     },
   ];
 

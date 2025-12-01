@@ -87,14 +87,14 @@ describe("ApplicantReview", () => {
     mock.onPost("/application").reply(200, { applicationId: "abc-123" });
     mock.onPost("/applicant/register/abc-123").reply(200);
 
-    expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
+    expect(screen.getAllByRole("term")[0]).toHaveTextContent("Full name");
     expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Sigmund Sigmundson");
-    expect(screen.getAllByRole("term")[1]).toHaveTextContent("Sex");
-    expect(screen.getAllByRole("definition")[2]).toHaveTextContent("Male");
-    expect(screen.getAllByRole("term")[2]).toHaveTextContent("Country of nationality");
-    expect(screen.getAllByRole("definition")[4]).toHaveTextContent("Norway");
-    expect(screen.getAllByRole("term")[3]).toHaveTextContent("Date of birth");
-    expect(screen.getAllByRole("definition")[6]).toHaveTextContent("1 January 1901");
+    expect(screen.getAllByRole("term")[1]).toHaveTextContent("Date of birth");
+    expect(screen.getAllByRole("definition")[2]).toHaveTextContent("1 January 1901");
+    expect(screen.getAllByRole("term")[2]).toHaveTextContent("Sex");
+    expect(screen.getAllByRole("definition")[4]).toHaveTextContent("Male");
+    expect(screen.getAllByRole("term")[3]).toHaveTextContent("Nationality");
+    expect(screen.getAllByRole("definition")[6]).toHaveTextContent("Norway");
     expect(screen.getAllByRole("term")[4]).toHaveTextContent("Passport number");
     expect(screen.getAllByRole("definition")[8]).toHaveTextContent("1234");
     expect(screen.getAllByRole("term")[5]).toHaveTextContent("Country of issue");
@@ -105,9 +105,9 @@ describe("ApplicantReview", () => {
     expect(screen.getAllByRole("definition")[14]).toHaveTextContent("3 March 2053");
     expect(screen.getAllByRole("term")[8]).toHaveTextContent("Home address line 1");
     expect(screen.getAllByRole("definition")[16]).toHaveTextContent("The Bell Tower");
-    expect(screen.getAllByRole("term")[9]).toHaveTextContent("Home address line 2");
+    expect(screen.getAllByRole("term")[9]).toHaveTextContent("Home address line 2 (optional)");
     expect(screen.getAllByRole("definition")[18]).toHaveTextContent("Hallgrimskirkja");
-    expect(screen.getAllByRole("term")[10]).toHaveTextContent("Home address line 3");
+    expect(screen.getAllByRole("term")[10]).toHaveTextContent("Home address line 3 (optional)");
     expect(screen.getAllByRole("definition")[20]).toHaveTextContent("Hallgrimstorg 1");
     expect(screen.getAllByRole("term")[11]).toHaveTextContent("Town or city");
     expect(screen.getAllByRole("definition")[22]).toHaveTextContent("Reykjavik");
@@ -117,7 +117,7 @@ describe("ApplicantReview", () => {
     expect(screen.getAllByRole("definition")[26]).toHaveTextContent("Iceland");
     expect(screen.getAllByRole("term")[14]).toHaveTextContent("Postcode");
     expect(screen.getAllByRole("definition")[28]).toHaveTextContent("101");
-    expect(screen.getAllByRole("term")[15]).toHaveTextContent("Applicant Photo");
+    expect(screen.getAllByRole("term")[15]).toHaveTextContent("Photo");
     expect(screen.getAllByRole("definition")[30]).toHaveTextContent("photo.jpg");
 
     await user.click(screen.getByRole("button"));
