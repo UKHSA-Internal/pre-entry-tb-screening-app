@@ -2,7 +2,7 @@
 
 ## Overview
 
-An electronic data capture system designed to address inconsistencies and fraud issues in the current [Tuberculosis](https://confluence.collab.test-and-trace.nhs.uk/pages/viewpage.action?pageId=357697034) screening process. For a deepdive into the process, check out the [UK Tuberculosis Technical Instructions](https://assets.publishing.service.gov.uk/media/5cd18ae5e5274a34ee7f0275/UK_tuberculosis_technical_instructions_version_7.pdf).
+An electronic data capture system designed to address inconsistencies and fraud issues in the current [Tuberculosis](./docs/tuberculosis.png) screening process. For a deepdive into the process, check out the [UK Tuberculosis Technical Instructions](https://assets.publishing.service.gov.uk/media/5cd18ae5e5274a34ee7f0275/UK_tuberculosis_technical_instructions_version_7.pdf).
 
 ### Built With
 
@@ -22,7 +22,7 @@ An electronic data capture system designed to address inconsistencies and fraud 
 
 ### Architecture
 
-This is currently available on [confluence](https://confluence.collab.test-and-trace.nhs.uk/display/TPT/High+Level+Technical+Architecture).
+This is currently available [here](.docs/architecture.pdf).
 
 ### Monorepo Organization
 
@@ -190,11 +190,11 @@ Skip this section if you are not running E2E tests on your machine. As a prerequ
 
 ## Development Processes
 
-All captured [here](https://confluence.collab.test-and-trace.nhs.uk/pages/viewpage.action?pageId=374193469)
+All captured [here](./docs/dev-process.pdf)
 
 ### Ticket Creation
 
-User story and bug tickets should follow this [template](https://ukhsa.atlassian.net/browse/TBBETA-405).
+User story and bug tickets should follow this [template](./docs/user-story-template.md).
 
 ### Picking up Tickets
 
@@ -261,7 +261,7 @@ Kindly check `pets-core-services/src/applicant-service/fixtures/applicants.ts` f
 
 ## Deployment
 
-- Before proceeding, ensure you have access to the AWS environment. Kindly check this [guide](https://confluence.collab.test-and-trace.nhs.uk/display/TPT/Request+Access+to+AWS+Environments?src=contextnavpagetreemode) on raising the request.
+- Before proceeding, ensure you have access to the AWS environment. Kindly check this [guide](./docs/aws-access.md) on raising the request.
 
 - Navigate to the [actions](https://github.com/UKHSA-Internal/pre-entry-tb-screening-app/actions) page.
 
