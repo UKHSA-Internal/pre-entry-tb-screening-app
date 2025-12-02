@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router";
 
+import Button from "@/components/button/button";
 import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
-import StartButton from "@/components/startButton/startButton";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
+import { ButtonClass } from "@/utils/enums";
 
 const ApplicantEmptyResult = () => {
   const applicantSearchData = useAppSelector(selectApplicant);
@@ -18,10 +19,11 @@ const ApplicantEmptyResult = () => {
         {applicantSearchData.passportNumber}
       </p>
       <br />
-      <StartButton
+      <Button
         id="continue"
         text="Continue"
         handleClick={() => navigate("/do-you-have-visa-applicant-written-consent-for-tb-screening")}
+        class={ButtonClass.DEFAULT}
       />
       <br />
       <p className="govuk-body">
