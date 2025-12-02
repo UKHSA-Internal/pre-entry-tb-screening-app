@@ -13,6 +13,12 @@
     <link rel="stylesheet" href="/assets/sass/govuk-frontend.min.css" />
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=%VITE_GA_CONFIG_ID%"></script>
+    <!--
+    If the below script is updated then a new hash will need to be added to the CSP.
+    To generate this run the following script in a linux/wsl terminal:
+    echo -n '<script contents>' | openssl dgst -sha256 -binary | openssl base64
+    NB: replace <script contents> with the contents of the <script> tag below. *All characters including newlines and spaces must be included.*
+    -->
     <script>
       globalThis.dataLayer = globalThis.dataLayer || [];
       function gtag() {dataLayer.push(arguments);}
