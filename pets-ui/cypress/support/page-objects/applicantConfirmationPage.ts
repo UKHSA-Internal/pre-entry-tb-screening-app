@@ -9,18 +9,18 @@ export class ApplicantConfirmationPage extends BasePage {
   // Verify page loaded
   verifyPageLoaded(): ApplicantConfirmationPage {
     // Wait for all the api calls to complete - intermittently slow have added a wait
-    cy.wait(10000);
-    cy.get(".govuk-panel--confirmation").should("be.visible");
-    cy.get(".govuk-panel__title")
+    cy.get(".govuk-panel--confirmation", { timeout: 10000 }).should("be.visible");
+    cy.get(".govuk-panel__title", { timeout: 10000 })
       .should("be.visible")
       .and("contain", "Visa applicant details confirmed");
+
     return this;
   }
 
   // Verify what happens next text
   verifyNextStepsText(): ApplicantConfirmationPage {
     cy.contains("h2", "What happens next").should("be.visible");
-    cy.contains("p", "You can now return to the progress tracker.").should("be.visible");
+    cy.contains("p", "You can now view a summary for this visa applicant.").should("be.visible");
     return this;
   }
 

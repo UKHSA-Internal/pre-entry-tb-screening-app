@@ -25,7 +25,9 @@ export class GetWrittenConsentPage extends BasePage {
 
   // Verify page heading
   verifyPageHeading(): GetWrittenConsentPage {
-    cy.get("h1.govuk-heading-l").should("be.visible").and("contain", "Get written consent");
+    cy.get("h1.govuk-heading-l")
+      .should("be.visible")
+      .and("contain", "Do you have the visa applicant's written consent for TB screening?");
     return this;
   }
 
@@ -42,7 +44,12 @@ export class GetWrittenConsentPage extends BasePage {
 
   // Click search again button
   clickSearchAgain(): GetWrittenConsentPage {
-    cy.get("button[type='submit']").contains("Search again").should("be.visible").click();
+    cy.get("button[type='submit']")
+      .contains("Search again")
+      .filter(":visible")
+      .first()
+      .should("be.visible")
+      .click();
     return this;
   }
 

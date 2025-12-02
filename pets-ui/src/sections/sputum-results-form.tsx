@@ -57,7 +57,7 @@ const SputumResultsForm = () => {
   };
 
   const headingStyle: React.CSSProperties = {
-    marginBottom: "70px",
+    marginBottom: "30px",
   };
 
   const tableHeadersStyle: React.CSSProperties = {
@@ -356,7 +356,7 @@ const SputumResultsForm = () => {
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)} style={formStyle}>
           {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}{" "}
-          <Heading level={1} size="l" title="Enter sputum sample results" style={headingStyle} />
+          <Heading level={1} size="l" title="Sputum results" style={headingStyle} />
           <div className="govuk-grid-row govuk-body" style={tableHeadersStyle}>
             <div className="govuk-grid-column-one-third">
               <strong>Sample</strong>
@@ -519,11 +519,7 @@ const SputumResultsForm = () => {
             className="govuk-section-break govuk-section-break--m govuk-section-break--visible"
             style={hrLastStyle}
           />
-          <SubmitButton
-            id="save-and-continue"
-            class={ButtonClass.DEFAULT}
-            text="Save and continue"
-          />
+          <SubmitButton id="save-and-continue" class={ButtonClass.DEFAULT} text="Continue" />
         </form>
       </FormProvider>
     </div>

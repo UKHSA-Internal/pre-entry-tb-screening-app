@@ -10,7 +10,7 @@ export class MedicalConfirmationPage extends BasePage {
   // Verify page loaded
   verifyPageLoaded(): MedicalConfirmationPage {
     cy.url().should("include", "/medical-history-tb-symptoms-confirmed");
-    cy.contains("h1", "Medical history and TB symptoms confirmed").should("be.visible");
+    cy.contains("h1", "TB symptoms and medical history confirmed").should("be.visible");
     cy.get(".govuk-panel--confirmation").should("be.visible");
     return this;
   }
@@ -18,14 +18,14 @@ export class MedicalConfirmationPage extends BasePage {
   // Verify confirmation panel is displayed
   verifyConfirmationPanel(): MedicalConfirmationPage {
     cy.get(".govuk-panel--confirmation").should("be.visible");
-    cy.contains("h1", "Medical history and TB symptoms confirmed").should("be.visible");
+    cy.contains("h1", "TB symptoms and medical history confirmed").should("be.visible");
     return this;
   }
 
   // Verify the "What happens next" section
   verifyNextStepsSection(): MedicalConfirmationPage {
     cy.contains("h2", "What happens next").should("be.visible");
-    cy.contains("p", "You can now return to the progress tracker.").should("be.visible");
+    cy.contains("p", "You can now view a summary for this visa applicant.").should("be.visible");
     return this;
   }
 
