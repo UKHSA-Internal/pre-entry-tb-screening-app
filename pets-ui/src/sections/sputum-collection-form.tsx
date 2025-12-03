@@ -60,45 +60,45 @@ const SputumCollectionForm = () => {
       `collectionMethodSample${sampleNumber}` as keyof SputumCollectionFormFields;
 
     return (
-      <div className="govuk-grid-row" style={{ display: "flex", alignItems: "flex-end" }}>
-        <div className="govuk-grid-column-one-half">
-          <Controller
-            name={dateFieldName}
-            control={control}
-            rules={{}}
-            render={({ field: { value, onChange } }) => (
-              <DateTextInput
-                hint="For example, 31 3 2024"
-                value={
-                  typeof value === "object" && value !== null
-                    ? value
-                    : { day: "", month: "", year: "" }
-                }
-                setDateValue={onChange}
-                id={`date-sample-${sampleNumber}-taken`}
-                autocomplete={false}
-                errorMessage={
-                  (errors as Record<string, { message?: string }>)?.[dateFieldName]?.message ?? ""
-                }
-              />
-            )}
-          />
-        </div>
-        <div className="govuk-grid-column-one-half">
-          <div>
-            <Dropdown
-              id={`collection-method-sample-${sampleNumber}`}
-              label=""
-              options={collectionMethodOptions}
-              formValue={methodFieldName}
-              errorMessage={
-                (errors as Record<string, { message?: string }>)?.[methodFieldName]?.message ?? ""
+      <div>
+        <Controller
+          name={dateFieldName}
+          control={control}
+          rules={{}}
+          render={({ field: { value, onChange } }) => (
+            <DateTextInput
+              heading="Date collected"
+              headingSize="s"
+              headingLevel={3}
+              hint="For example, 31 3 2024"
+              value={
+                typeof value === "object" && value !== null
+                  ? value
+                  : { day: "", month: "", year: "" }
               }
-              required=""
-              placeholder="Select"
+              setDateValue={onChange}
+              id={`date-sample-${sampleNumber}-taken`}
+              autocomplete={false}
+              errorMessage={
+                (errors as Record<string, { message?: string }>)?.[dateFieldName]?.message ?? ""
+              }
             />
-          </div>
-        </div>
+          )}
+        />
+        <Dropdown
+          id={`collection-method-sample-${sampleNumber}`}
+          heading="Collection method"
+          headingSize="s"
+          headingLevel={3}
+          options={collectionMethodOptions}
+          formValue={methodFieldName}
+          errorMessage={
+            (errors as Record<string, { message?: string }>)?.[methodFieldName]?.message ?? ""
+          }
+          required=""
+          placeholder="Select"
+          selectStyle={{ width: "10rem" }}
+        />
       </div>
     );
   };
@@ -263,7 +263,7 @@ const SputumCollectionForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
-        <Heading level={1} size="l" title="Enter sputum sample collection information" />
+        <Heading level={1} size="l" title="Sputum collection details" />
 
         <Heading
           level={2}
@@ -271,14 +271,6 @@ const SputumCollectionForm = () => {
           title="Sputum sample 1"
           style={{ marginTop: 40, marginBottom: 20 }}
         />
-        <div className="govuk-grid-row">
-          <div className="govuk-grid-column-one-half">
-            <Heading level={3} size="s" title="Date sample 1 was taken on" />
-          </div>
-          <div className="govuk-grid-column-one-half">
-            <Heading level={3} size="s" title="Collection method" />
-          </div>
-        </div>
         {renderSampleEditableForm(1, control, errors)}
 
         <hr
@@ -287,14 +279,6 @@ const SputumCollectionForm = () => {
         />
 
         <Heading level={2} size="m" title="Sputum sample 2" style={{ marginBottom: 20 }} />
-        <div className="govuk-grid-row">
-          <div className="govuk-grid-column-one-half">
-            <Heading level={3} size="s" title="Date sample 2 was taken on" />
-          </div>
-          <div className="govuk-grid-column-one-half">
-            <Heading level={3} size="s" title="Collection method" />
-          </div>
-        </div>
         {renderSampleEditableForm(2, control, errors)}
 
         <hr
@@ -303,37 +287,27 @@ const SputumCollectionForm = () => {
         />
 
         <Heading level={2} size="m" title="Sputum sample 3" style={{ marginBottom: 20 }} />
-        <div className="govuk-grid-row">
-          <div className="govuk-grid-column-one-half">
-            <Heading level={3} size="s" title="Date sample 3 was taken on" />
-          </div>
-          <div className="govuk-grid-column-one-half">
-            <Heading level={3} size="s" title="Collection method" />
-          </div>
-        </div>
         {renderSampleEditableForm(3, control, errors)}
 
+        <p className="govuk-body" style={{ marginTop: 30 }}>
+          If you have any sputum results, select &apos;Save and enter results&apos;.
+          <br />
+          If you do not have any results, select &apos;Save progress&apos; to return later.
+        </p>
+
         <div style={{ marginTop: 40, display: "flex", gap: "20px" }}>
-          <button
-            type="button"
-            onMouseDown={() => (lastClickedButtonId.current = "save-and-continue-to-results")}
-            aria-label="Save and continue to results"
-            style={{ border: "none", background: "none", padding: 0, cursor: "pointer" }}
-          >
-            <SubmitButton
-              id="save-and-continue-to-results"
-              class={ButtonClass.DEFAULT}
-              text="Save and continue to results"
-            />
-          </button>
-          <button
-            type="button"
-            onMouseDown={() => (lastClickedButtonId.current = "save-progress")}
-            aria-label="Save progress"
-            style={{ border: "none", background: "none", padding: 0, cursor: "pointer" }}
-          >
-            <SubmitButton id="save-progress" class={ButtonClass.SECONDARY} text="Save progress" />
-          </button>
+          <SubmitButton
+            id="save-and-continue-to-results"
+            class={ButtonClass.DEFAULT}
+            text="Save and enter results"
+            handleClick={() => (lastClickedButtonId.current = "save-and-continue-to-results")}
+          />
+          <SubmitButton
+            id="save-progress"
+            class={ButtonClass.SECONDARY}
+            text="Save progress"
+            handleClick={() => (lastClickedButtonId.current = "save-progress")}
+          />
         </div>
       </form>
     </FormProvider>

@@ -92,7 +92,12 @@ export class VisaCategoryPage extends BasePage {
 
   // Click continue button
   clickContinue(): VisaCategoryPage {
-    cy.get("button[type='submit']").contains("Continue").should("be.visible").click();
+    cy.get("button[type='submit']")
+      .contains("Continue")
+      .filter(":visible")
+      .first()
+      .should("be.visible")
+      .click();
     return this;
   }
 

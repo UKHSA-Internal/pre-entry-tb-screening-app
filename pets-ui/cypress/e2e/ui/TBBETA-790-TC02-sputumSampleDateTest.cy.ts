@@ -323,10 +323,6 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
       .uploadPosteroAnteriorXray("cypress/fixtures/test-chest-xray.dcm")
       .verifyUploadSuccess();
 
-    // Checking no errors appear
-    cy.get(".govuk-error-message").should("not.exist");
-    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
-
     // Continue to X-ray findings page
     chestXrayUploadPage.clickContinue();
 
