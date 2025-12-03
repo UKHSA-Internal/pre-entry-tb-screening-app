@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import { putTravelDetails } from "@/api/api";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
@@ -20,7 +20,8 @@ import {
   setUkMobileNumber,
 } from "@/redux/travelSlice";
 import { ReduxTravelDetailsType } from "@/types";
-import { ApplicationStatus, ButtonType } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass } from "@/utils/enums";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { formRegex } from "@/utils/records";
 
 type TravelAddressAndContactDetailsData = Omit<ReduxTravelDetailsType, "visaCategory">;
@@ -28,6 +29,8 @@ type TravelAddressAndContactDetailsData = Omit<ReduxTravelDetailsType, "visaCate
 const ApplicantTravelAddressAndContactDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const fromParam = searchParams.get("from");
   const dispatch = useAppDispatch();
   const travelData = useAppSelector(selectTravel);
   const applicationData = useAppSelector(selectApplication);
@@ -53,16 +56,20 @@ const ApplicantTravelAddressAndContactDetails = () => {
         await putTravelDetails(applicationData.applicationId, {
           ukAddressLine1: travelAddressAndContactDetailsData.applicantUkAddress1,
           ukAddressLine2: travelAddressAndContactDetailsData.applicantUkAddress2,
+          ukAddressLine3: travelAddressAndContactDetailsData.applicantUkAddress3,
           ukAddressTownOrCity: travelAddressAndContactDetailsData.townOrCity,
           ukAddressPostcode: travelAddressAndContactDetailsData.postcode,
           ukMobileNumber: travelAddressAndContactDetailsData.ukMobileNumber,
           ukEmailAddress: travelAddressAndContactDetailsData.ukEmail,
         });
-
-        navigate("/tb-certificate-summary");
+        if (fromParam === "/check-travel-information") {
+          navigate("/check-travel-information");
+        } else {
+          navigate("/tb-certificate-summary");
+        }
       } catch (error) {
         console.error(error);
-        navigate("/error");
+        navigate("/sorry-there-is-problem-with-service");
       }
     } else {
       dispatch(setTravelDetailsStatus(ApplicationStatus.IN_PROGRESS));
@@ -71,6 +78,11 @@ const ApplicantTravelAddressAndContactDetails = () => {
   };
 
   const errorsToShow = Object.keys(errors);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Visa applicant's proposed UK address", errorsToShow);
+    }
+  }, [errorsToShow]);
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
   const addressLine1Ref = useRef<HTMLDivElement | null>(null);
@@ -201,7 +213,7 @@ const ApplicantTravelAddressAndContactDetails = () => {
           />
         </div>
 
-        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Continue" />
+        <SubmitButton id="save-and-continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

@@ -1,46 +1,39 @@
-//Pets Private Beta E2E Test with Sputum Collection
-import { countryList } from "../../src/utils/countryList";
-import { loginViaB2C } from "../support/commands";
-import { ApplicantConfirmationPage } from "../support/page-objects/applicantConfirmationPage";
-import { ApplicantConsentPage } from "../support/page-objects/applicantConsentPage";
-import { ApplicantPhotoUploadPage } from "../support/page-objects/applicantPhotoUploadPage";
-import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
-import { ApplicantSummaryPage } from "../support/page-objects/applicantSummaryPage";
-import { CheckChestXrayImagesPage } from "../support/page-objects/checkChestXrayImagesPage";
-import { CheckSputumSampleInfoPage } from "../support/page-objects/checkSputumSampleInfoPage";
-import { ChestXrayConfirmationPage } from "../support/page-objects/chestXrayConfirmationPage";
-import { ChestXrayFindingsPage } from "../support/page-objects/chestXrayFindingsPage";
-import { ChestXrayPage } from "../support/page-objects/chestXrayQuestionPage";
-import { ChestXrayResultsPage } from "../support/page-objects/chestXrayResultsPage";
-import { ChestXrayUploadPage } from "../support/page-objects/chestXrayUploadPage";
-import { ClinicCertificateInfoPage } from "../support/page-objects/clinicCertificateInfoPage";
-import { EnterSputumSampleResultsPage } from "../support/page-objects/enterSputumSampleResultsPage";
-import { MedicalConfirmationPage } from "../support/page-objects/medicalConfirmationPage";
-import { MedicalSummaryPage } from "../support/page-objects/medicalSummaryPage";
-import { RadiologicalOutcomeConfPage } from "../support/page-objects/radiologicalOutcomeConfPage";
-import { SputumCollectionPage } from "../support/page-objects/sputumCollectionPage";
-import { SputumConfirmationPage } from "../support/page-objects/sputumConfirmationPage";
-import { SputumDecisionConfirmationPage } from "../support/page-objects/sputumDecisionConfirmationPage";
-import { SputumDecisionInfoPage } from "../support/page-objects/sputumDecisionInfoPage";
-import { SputumQuestionPage } from "../support/page-objects/sputumQuestionPage";
-import { TbCertificateQuestionPage } from "../support/page-objects/tbCertificateQuestionPage";
-import { TbCertificateSummaryPage } from "../support/page-objects/tbCertificateSummaryPage";
-import { TBProgressTrackerPage } from "../support/page-objects/tbProgressTrackerPage";
-import { TbScreeningCompletePage } from "../support/page-objects/tbScreeningCompletePage";
-import { VisaCategoryPage } from "../support/page-objects/visaCategoryPage";
-import { XRayResultsAndFindingsPage } from "../support/page-objects/xRayResultsAndFindingsPage";
+// Invalid Date Test on Sputum Page
+import { countryList } from "../../../src/utils/countryList";
+import { loginViaB2C } from "../../support/commands";
+import { ApplicantConfirmationPage } from "../../support/page-objects/applicantConfirmationPage";
+import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
+import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
+import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPhotoUploadPage";
+import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
+import { CheckChestXrayImagesPage } from "../../support/page-objects/checkChestXrayImagesPage";
+import { ChestXrayConfirmationPage } from "../../support/page-objects/chestXrayConfirmationPage";
+import { ChestXrayFindingsPage } from "../../support/page-objects/chestXrayFindingsPage";
+import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
+import { ChestXrayResultsPage } from "../../support/page-objects/chestXrayResultsPage";
+import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
+import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
+import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
+import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { RadiologicalOutcomeConfPage } from "../../support/page-objects/radiologicalOutcomeConfPage";
+import { SputumCollectionPage } from "../../support/page-objects/sputumCollectionPage";
+import { SputumDecisionConfirmationPage } from "../../support/page-objects/sputumDecisionConfirmationPage";
+import { SputumDecisionInfoPage } from "../../support/page-objects/sputumDecisionInfoPage";
+import { SputumQuestionPage } from "../../support/page-objects/sputumQuestionPage";
+import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
+import { TravelConfirmationPage } from "../../support/page-objects/travelConfirmationPage";
+import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
+import { TravelSummaryPage } from "../../support/page-objects/travelSummaryPage";
+import { VisaCategoryPage } from "../../support/page-objects/visaCategoryPage";
+import { XRayResultsAndFindingsPage } from "../../support/page-objects/xRayResultsAndFindingsPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
   randomElement,
-} from "../support/test-helpers";
-import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetailsPage";
-import { MedicalScreeningPage } from "./../support/page-objects/medicalScreeningPage";
-import { TravelConfirmationPage } from "./../support/page-objects/travelConfirmationPage";
-import { TravelInformationPage } from "./../support/page-objects/travelInformationPage";
-import { TravelSummaryPage } from "./../support/page-objects/travelSummaryPage";
+} from "../../support/test-helpers";
 
-describe("PETS Application End-to-End Tests with Sputum Collection", () => {
+describe("Date Field Error Test On Sputum Collection Page", () => {
   // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
@@ -57,22 +50,15 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
   const radiologicalOutcomeConfPage = new RadiologicalOutcomeConfPage();
   const sputumQuestionPage = new SputumQuestionPage();
   const sputumCollectionPage = new SputumCollectionPage();
-  const sputumConfirmationPage = new SputumConfirmationPage();
   const sputumDecisionConfirmationPage = new SputumDecisionConfirmationPage();
   const sputumDecisionInfoPage = new SputumDecisionInfoPage();
   const checkChestXrayImagesPage = new CheckChestXrayImagesPage();
-  const checkSputumSampleInfoPage = new CheckSputumSampleInfoPage();
-  const enterSputumSampleResultsPage = new EnterSputumSampleResultsPage();
   const chestXrayPage = new ChestXrayPage();
   const chestXrayUploadPage = new ChestXrayUploadPage();
   const chestXrayFindingsPage = new ChestXrayFindingsPage();
-  const clinicCertificateInfoPage = new ClinicCertificateInfoPage();
   const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
   const chestXrayResultsPage = new ChestXrayResultsPage();
-  const tbCertificateQuestionPage = new TbCertificateQuestionPage();
-  const tbCertificateSummaryPage = new TbCertificateSummaryPage();
   const tbProgressTrackerPage = new TBProgressTrackerPage();
-  const tbScreeningCompletePage = new TbScreeningCompletePage();
   const visaCategoryPage = new VisaCategoryPage();
   const xRayResultsAndFindingsPage = new XRayResultsAndFindingsPage();
 
@@ -106,8 +92,9 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
   });
 
-  it("should complete the full application process with sputum collection", () => {
+  it("should display error messages for invalid dates (day 32, month 13, future year)", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName) // Use country code for form filling
@@ -129,19 +116,19 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
 
     // Fill in applicant details
     applicantDetailsPage
-      .fillFullName("Jane Smith")
-      .selectSex("Female")
-      .selectNationality(countryName) // Use country code for form filling
-      .fillBirthDate("15", "03", "2000")
+      .fillFullName("John Invalid - Tests")
+      .selectSex("Male")
+      .selectNationality(countryName)
+      .fillBirthDate("15", "03", "1990")
       .fillPassportIssueDate("10", "05", "2018")
       .fillPassportExpiryDate("10", "05", "2028")
-      .fillAddressLine1("123 High Street")
-      .fillAddressLine2("Apartment 4B")
-      .fillAddressLine3("Downtown")
-      .fillTownOrCity("London")
-      .fillProvinceOrState("Greater London")
-      .selectAddressCountry(countryName) // Use country code for form filling
-      .fillPostcode("SW1A 1AA")
+      .fillAddressLine1("123 Test Street")
+      .fillAddressLine2("Test Area")
+      .fillAddressLine3("Test District")
+      .fillTownOrCity("Test City")
+      .fillProvinceOrState("Test State")
+      .selectAddressCountry(countryName)
+      .fillPostcode("12345")
       .submitForm();
 
     // Verify redirection to the Applicant Photo page
@@ -169,7 +156,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary
-    applicantSummaryPage.verifySummaryValue("Name", "Jane Smith");
+    applicantSummaryPage.verifySummaryValue("Name", "John Invalid - Tests");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
     applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
@@ -208,7 +195,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     // NOW verify the travel information page
     travelInformationPage.verifyPageLoaded();
 
-    /// Fill travel information (NO visa type parameter needed)
+    /// Fill travel information
     travelInformationPage.fillCompleteForm({
       ukAddressLine1: "456 Park Lane",
       ukAddressLine2: "Floor 2",
@@ -259,7 +246,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
 
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("25")
+      .fillAge("35")
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
@@ -280,7 +267,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
 
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "25",
+      age: "35 years old",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",
@@ -446,8 +433,8 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
       tbProgressTrackerPage.verifyPageLoaded();
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
-        Name: "Jane Smith",
-        "Date of birth": "15/3/2000",
+        Name: "John Invalid - Tests",
+        "Date of birth": "15/3/1990",
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
@@ -474,8 +461,8 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
       tbProgressTrackerPage.verifyPageLoaded();
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
-        Name: "Jane Smith",
-        "Date of birth": "15/3/2000",
+        Name: "John Invalid - Tests",
+        "Date of birth": "15/3/1990",
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
@@ -487,168 +474,54 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
       sputumCollectionPage.verifySectionHeaders();
       sputumCollectionPage.verifyPageStructure();
 
-      // Fill sputum collection data for all three samples
-      const sputumData = {
+      // Fill sputum collection data with invalid dates
+      const invalidSputumData = {
         sample1: {
-          date: { day: "10", month: "03", year: "2025" },
+          date: { day: "32", month: "06", year: "2024" },
           collectionMethod: "Coughed up",
         },
         sample2: {
-          date: { day: "11", month: "03", year: "2025" },
+          date: { day: "15", month: "13", year: "2024" },
           collectionMethod: "Induced",
         },
         sample3: {
-          date: { day: "12", month: "03", year: "2025" },
-          collectionMethod: "Coughed up",
+          date: { day: "20", month: "08", year: "2030" },
+          collectionMethod: "Gastric lavage",
         },
       };
 
-      // Fill all samples
-      sputumCollectionPage.fillAllSamples(sputumData);
+      // Fill all samples with invalid data
+      sputumCollectionPage.fillAllSamples(invalidSputumData);
 
-      // Verify the form is filled correctly
-      sputumCollectionPage.verifyFormFilledWith(sputumData);
+      // Verify the form is filled with invalid data
+      sputumCollectionPage.verifyFormFilledWith(invalidSputumData);
 
-      // Save and continue to results
+      // Attempt to save and continue
       sputumCollectionPage.clickSaveAndContinueToResults();
 
-      // Verify redirection to Enter Sputum Sample Results page
-      cy.url().should("include", "/enter-sputum-sample-results");
+      // Verify error summary is displayed
+      sputumCollectionPage.validateErrorSummaryVisible();
 
-      // Verify Enter Sputum Sample Results page loaded
-      enterSputumSampleResultsPage.verifyPageLoaded();
-      enterSputumSampleResultsPage.verifyAllPageElements();
+      // Verify specific error messages for invalid dates
+      sputumCollectionPage.validateErrorSummaryContains([
+        "Sputum sample 1 date must be a real date",
+        "Sputum sample 2 date must be a real date",
+        "Sputum sample 3 date must be today or in the past",
+      ]);
 
-      // Fill sputum sample results
-      enterSputumSampleResultsPage.fillWithAllNegativeResults();
+      // Verify individual field errors
+      sputumCollectionPage.validateSample1DateError("Sputum sample 1 date must be a real date");
+      sputumCollectionPage.validateSample2DateError("Sputum sample 2 date must be a real date");
+      sputumCollectionPage.validateSample3DateError(
+        "Sputum sample 3 date must be today or in the past",
+      );
 
-      // Verify the form is filled correctly
-      const testResultsData =
-        EnterSputumSampleResultsPage.getTestSampleResultsData().allNegativeResults;
-      enterSputumSampleResultsPage.verifyFormFilledWith(testResultsData);
+      // Verify error styling is applied
+      sputumCollectionPage.verifyDateFieldErrorStates();
+      sputumCollectionPage.verifyNoCollectionMethodErrors();
 
-      // Save and continue
-      enterSputumSampleResultsPage.clickSaveAndContinue();
-      // Verify page loads correctly
-      checkSputumSampleInfoPage.verifyPageLoaded();
-
-      // Verify all sample headings are present
-      checkSputumSampleInfoPage.verifySampleHeadings();
-
-      // Verify all required fields are present for each sample
-      checkSputumSampleInfoPage.verifyRequiredFieldsPresent();
-
-      // Validate sample data matches what was entered
-      const expectedSampleData = {
-        sample1: {
-          dateTaken: "10 March 2025",
-          collectionMethod: "Coughed up",
-          smearResult: "Negative",
-          cultureResult: "Negative",
-        },
-        sample2: {
-          dateTaken: "11 March 2025",
-          collectionMethod: "Induced",
-          smearResult: "Negative",
-          cultureResult: "Negative",
-        },
-        sample3: {
-          dateTaken: "12 March 2025",
-          collectionMethod: "Coughed up",
-          smearResult: "Negative",
-          cultureResult: "Negative",
-        },
-      };
-
-      // Verify all sample information matches expected data
-      checkSputumSampleInfoPage.verifyAllSampleInfo(expectedSampleData);
-
-      // Verify change links are present and point to correct pages
-      checkSputumSampleInfoPage.verifyChangeLinksExist();
-
-      // Verify service name in header
-      checkSputumSampleInfoPage.verifyServiceName();
-
-      // Submit the summary and continue to next step
-      checkSputumSampleInfoPage.clickSaveAndContinue();
-
-      // Verify Sputum confirmation page
-      sputumConfirmationPage.verifyPageLoaded();
-      sputumConfirmationPage.verifyConfirmationPanel();
-      sputumConfirmationPage.verifyNextStepsSection();
-      sputumConfirmationPage.verifyServiceName();
-      sputumConfirmationPage.clickContinueButton();
-
-      // Verify redirection to TB Screening Progress Tracker page
-      cy.url().should("include", "/tracker");
-
-      // Verify TB Screening Progress Tracker page
-      tbProgressTrackerPage.verifySectionHeadings();
-      tbProgressTrackerPage.verifyApplicantInfo({
-        Name: "Jane Smith",
-        "Date of birth": "15/3/2000",
-        "Passport number": passportNumber,
-        "TB screening": "In progress",
-      });
-      tbProgressTrackerPage.verifyMultipleTaskStatuses({
-        "Visa applicant details": "Completed",
-        "UK travel information": "Completed",
-        "Medical history and TB symptoms": "Completed",
-        "Upload chest X-ray images": "Completed",
-        "Radiological outcome": "Completed",
-        "Make a sputum decision": "Completed",
-        "Sputum collection and results": "Completed",
-        "TB certificate outcome": "Not yet started",
-      });
-
-      // NOW Click "TB certificate outcome" Page from the tracker
-      tbProgressTrackerPage.clickTaskLink("TB certificate outcome");
-
-      // Verify TB Certificate Question page loaded
-      tbCertificateQuestionPage.verifyPageLoaded();
-
-      // Select "Yes" for TB clearance certificate issuance
-      tbCertificateQuestionPage.selectTbClearanceOption("Yes");
-
-      // Verify "Yes" is selected
-      tbCertificateQuestionPage.verifyRadioSelection("Yes");
-
-      // Submit the form and continue to TB Certificate Declaration page
-      tbCertificateQuestionPage.clickContinue();
-
-      // Verify redirection to "Enter clinic and cert information" Page
-      clinicCertificateInfoPage
-        .verifyPageLoaded()
-        .verifyCertificateExpiryDateCalculation()
-        .verifyCertificateExpiryIs6MonthsFromIssueDate()
-        .saveCertificateReferenceNumber()
-        .completeForm(
-          "Dr. Amanda Johnson",
-          "Applicant Cleared for travel. All tests negative. Certificate issued in line with UKVI guidelines",
-        );
-
-      // Verify redirection to TB Summary Page
-      tbCertificateSummaryPage.verifyPageLoaded();
-
-      // Verify all information
-      tbCertificateSummaryPage
-        .verifyAllVisaApplicantInformation()
-        .verifyAllCurrentResidentialAddressFields()
-        .verifyAllProposedUKAddressFields()
-        .verifyAllClinicCertificateInfo()
-        .verifyAllScreeningInformation();
-
-      // Click the "Submit" button to submit the application
-      tbCertificateSummaryPage.clickSubmitButton();
-
-      // Verify redirection to TB Screening Completion Page
-      tbScreeningCompletePage.verifyPageLoaded();
-
-      // Verify TB Screening completion message and Cert Number
-      tbScreeningCompletePage.completeWithRefValidation();
-
-      // Verify all page elements with saved certificate reference validation
-      tbScreeningCompletePage.verifyAllWithSavedRef();
+      // Verify we remain on the sputum collection page
+      cy.url().should("include", "/enter-sputum-sample-collection-information");
     });
   });
 });

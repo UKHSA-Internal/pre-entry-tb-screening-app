@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import Button from "@/components/button/button";
-import { ButtonType } from "@/utils/enums";
+import { ButtonClass } from "@/utils/enums";
 
 import Heading from "../heading/heading";
 import LinkLabel from "../linkLabel/LinkLabel";
@@ -43,88 +43,86 @@ export default function Confirmation({
   const navigate = useNavigate();
 
   return (
-    <div className="govuk-grid-row">
-      <div className="govuk-grid-column-two-thirds">
-        <div
-          className={`govuk-panel confirmation-panel ${
-            isSuccess
-              ? "govuk-panel--confirmation"
-              : "govuk-panel--warning confirmation-panel--warning"
-          }`}
-        >
-          <h1 className="govuk-panel__title confirmation-panel__title">
-            {props.confirmationText.split("\n").map((line, index) => (
-              <React.Fragment key={line}>
-                {line}
-                {index < props.confirmationText.split("\n").length - 1 && <br />}
-              </React.Fragment>
-            ))}
-          </h1>
-          {showApplicationNumber && props.applicationNumber && (
-            <div className="govuk-panel__body confirmation-panel__body">
-              Certificate reference number
-              <br />
-              <strong className="confirmation-panel__reference-number">
-                {props.applicationNumber}
-              </strong>
-            </div>
-          )}
-        </div>
-
-        {preWhatHappensNextText && <p className="govuk-body">{preWhatHappensNextText}</p>}
-
-        {whatHappensNext === true && <Heading level={2} size="m" title="What happens next" />}
-
-        {postWhatHappensNextText && <p className="govuk-body">{postWhatHappensNextText}</p>}
-
-        {actionButton && (
-          <div className="confirmation-action-button">
-            <Button
-              id="action-button"
-              type={ButtonType.DEFAULT}
-              text={actionButton.text}
-              handleClick={actionButton.onClick}
-            />
+    <div>
+      <div
+        className={`govuk-panel confirmation-panel ${
+          isSuccess
+            ? "govuk-panel--confirmation"
+            : "govuk-panel--warning confirmation-panel--warning"
+        }`}
+      >
+        <h1 className="govuk-panel__title confirmation-panel__title">
+          {props.confirmationText.split("\n").map((line, index) => (
+            <React.Fragment key={line}>
+              {line}
+              {index < props.confirmationText.split("\n").length - 1 && <br />}
+            </React.Fragment>
+          ))}
+        </h1>
+        {showApplicationNumber && props.applicationNumber && (
+          <div className="govuk-panel__body confirmation-panel__body">
+            Certificate reference number
+            <br />
+            <strong className="confirmation-panel__reference-number">
+              {props.applicationNumber}
+            </strong>
           </div>
-        )}
-
-        {secondaryButton && (
-          <div className="confirmation-secondary-button">
-            <Button
-              id="secondary-button"
-              type={ButtonType.SECONDARY}
-              text={secondaryButton.text}
-              handleClick={secondaryButton.onClick}
-            />
-          </div>
-        )}
-
-        {props.furtherInfo.map((info, i) => {
-          return (
-            <p className="govuk-body" key={"info" + i}>
-              {info}
-            </p>
-          );
-        })}
-        {props.buttonText && props.buttonLink && (
-          <Button
-            id="continue"
-            type={ButtonType.DEFAULT}
-            text={props.buttonText}
-            handleClick={() => {
-              navigate(props.buttonLink!);
-            }}
-          />
-        )}
-        <br />
-        {showSearchForAnotherVisaApplicantLink && (
-          <LinkLabel
-            title="Search for another visa applicant"
-            to="/search-for-visa-applicant"
-            externalLink={false}
-          />
         )}
       </div>
+
+      {preWhatHappensNextText && <p className="govuk-body">{preWhatHappensNextText}</p>}
+
+      {whatHappensNext === true && <Heading level={2} size="m" title="What happens next" />}
+
+      {postWhatHappensNextText && <p className="govuk-body">{postWhatHappensNextText}</p>}
+
+      {actionButton && (
+        <div className="confirmation-action-button">
+          <Button
+            id="action-button"
+            class={ButtonClass.DEFAULT}
+            text={actionButton.text}
+            handleClick={actionButton.onClick}
+          />
+        </div>
+      )}
+
+      {secondaryButton && (
+        <div className="confirmation-secondary-button">
+          <Button
+            id="secondary-button"
+            class={ButtonClass.SECONDARY}
+            text={secondaryButton.text}
+            handleClick={secondaryButton.onClick}
+          />
+        </div>
+      )}
+
+      {props.furtherInfo.map((info, i) => {
+        return (
+          <p className="govuk-body" key={"info" + i}>
+            {info}
+          </p>
+        );
+      })}
+      {props.buttonText && props.buttonLink && (
+        <Button
+          id="continue"
+          class={ButtonClass.DEFAULT}
+          text={props.buttonText}
+          handleClick={() => {
+            navigate(props.buttonLink!);
+          }}
+        />
+      )}
+      <br />
+      {showSearchForAnotherVisaApplicantLink && (
+        <LinkLabel
+          title="Search for another visa applicant"
+          to="/search-for-visa-applicant"
+          externalLink={false}
+        />
+      )}
     </div>
   );
 }

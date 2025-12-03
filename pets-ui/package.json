@@ -18,7 +18,14 @@
     "cypress:open:preprod": "cross-env ENVIRONMENT=preprod cypress open -C cypress/cypress.config.mjs",
     "cypress:run:qat": "cross-env ENVIRONMENT=qat cypress run -C cypress/cypress.config.mjs",
     "cypress:run:dev": "cross-env ENVIRONMENT=dev cypress run -C cypress/cypress.config.mjs",
-    "cypress:run:preprod": "cross-env ENVIRONMENT=preprod cypress run -C cypress/cypress.config.mjs"
+    "cypress:run:preprod": "cross-env ENVIRONMENT=preprod cypress run -C cypress/cypress.config.mjs",
+    "cypress:run:api": "cypress run -C cypress/cypress.config.mjs --spec 'cypress/e2e/api/**/*.cy.ts'",
+    "cypress:run:api:qat": "cross-env ENVIRONMENT=qat cypress run -C cypress/cypress.config.mjs --spec 'cypress/e2e/api/**/*.cy.ts'",
+    "cypress:run:api:dev": "cross-env ENVIRONMENT=dev cypress run -C cypress/cypress.config.mjs --spec 'cypress/e2e/api/**/*.cy.ts'",
+    "cypress:run:api:preprod": "cross-env ENVIRONMENT=preprod cypress run -C cypress/cypress.config.mjs --spec 'cypress/e2e/api/**/*.cy.ts'",
+    "cypress:open:api": "cypress open -C cypress/cypress.config.mjs --config specPattern='cypress/e2e/api/**/*.cy.ts'",
+    "cypress:open:api:qat": "cross-env ENVIRONMENT=qat cypress open -C cypress/cypress.config.mjs --config specPattern='cypress/e2e/api/**/*.cy.ts'",
+    "cypress:open:api:dev": "cross-env ENVIRONMENT=dev cypress open -C cypress/cypress.config.mjs --config specPattern='cypress/e2e/api/**/*.cy.ts'"
   },
   "dependencies": {
     "@aws-sdk/client-sqs": "^3.864.0",
@@ -30,7 +37,7 @@
     "axios": "^1.12.2",
     "dicom-parser": "^1.8.21",
     "glob": "^11.0.3",
-    "govuk-frontend": "^5.7.1",
+    "govuk-frontend": "^5.13.0",
     "msal-react-tester": "^0.3.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

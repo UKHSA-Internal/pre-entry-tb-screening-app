@@ -22,7 +22,7 @@ import {
   selectTravel,
 } from "@/redux/store";
 import { setTbCertificateStatus } from "@/redux/tbCertificateSlice";
-import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
 import {
   calculateCertificateExpiryDate,
   calculateCertificateIssueDate,
@@ -415,7 +415,7 @@ const TbSummary = () => {
         tbCertificateData.status == ApplicationStatus.IN_PROGRESS) && (
         <Button
           id="submit"
-          type={ButtonType.DEFAULT}
+          class={ButtonClass.DEFAULT}
           text={tbCertificateData.isIssued === YesOrNo.YES ? "Submit" : "Submit and continue"}
           handleClick={handleSubmit}
         />
@@ -424,7 +424,7 @@ const TbSummary = () => {
         tbCertificateData.status == ApplicationStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
-          type={ButtonType.DEFAULT}
+          class={ButtonClass.DEFAULT}
           text="Return to tracker"
           handleClick={() => navigate("/tracker")}
         />

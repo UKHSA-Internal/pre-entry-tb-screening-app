@@ -17,7 +17,13 @@ import {
   setTbCertificateStatus,
 } from "@/redux/tbCertificateSlice";
 import { ReduxTbCertificateType } from "@/types";
-import { ApplicationStatus, ButtonType, RadioIsInline, TBCertNotIssuedReason } from "@/utils/enums";
+import {
+  ApplicationStatus,
+  ButtonClass,
+  RadioIsInline,
+  TBCertNotIssuedReason,
+} from "@/utils/enums";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { formRegex } from "@/utils/records";
 
 const TbCertificateNotIssuedForm = () => {
@@ -41,6 +47,12 @@ const TbCertificateNotIssuedForm = () => {
   };
 
   const errorsToShow = Object.keys(errors);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Why are you not issuing a certificate?", errorsToShow);
+    }
+  }, [errorsToShow]);
+
   const reasonNotIssuedRef = useRef<HTMLDivElement | null>(null);
   const declaringPhysicianNameRef = useRef<HTMLDivElement | null>(null);
   const commentsRef = useRef<HTMLDivElement | null>(null);
@@ -111,7 +123,7 @@ const TbCertificateNotIssuedForm = () => {
           />
         </div>
 
-        <SubmitButton id="Continue" type={ButtonType.DEFAULT} text="Continue" />
+        <SubmitButton id="Continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

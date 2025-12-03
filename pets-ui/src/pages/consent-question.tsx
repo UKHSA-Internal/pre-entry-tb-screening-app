@@ -6,7 +6,11 @@ import Container from "@/components/container/container";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
-import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
+import { ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
+import {
+  sendGoogleAnalyticsFormErrorEvent,
+  sendGoogleAnalyticsJourneyEvent,
+} from "@/utils/google-analytics-utils";
 
 export default function ConsentQuestionPage() {
   const navigate = useNavigate();
@@ -17,6 +21,14 @@ export default function ConsentQuestionPage() {
     formState: { errors },
   } = methods;
 
+  useEffect(() => {
+    sendGoogleAnalyticsJourneyEvent(
+      "do_you_have_the_visa_applicants_written_consent_for_tb_screening",
+      "UNK",
+      "Visa Applicant Details",
+    );
+  }, []);
+
   const onSubmit: SubmitHandler<{ consent: YesOrNo }> = (data) => {
     if (data.consent == YesOrNo.YES) {
       navigate("/enter-applicant-information");
@@ -26,8 +38,16 @@ export default function ConsentQuestionPage() {
   };
 
   const errorsToShow = Object.keys(errors);
-  const consentRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent(
+        "Do you have the visa applicant's written consent for TB screening?",
+        errorsToShow,
+      );
+    }
+  }, [errorsToShow]);
 
+  const consentRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (location.hash) {
       const target = location.hash.substring(1);
@@ -62,7 +82,7 @@ export default function ConsentQuestionPage() {
             />
           </div>
 
-          <SubmitButton id="continue" type={ButtonType.DEFAULT} text="Continue" />
+          <SubmitButton id="continue" class={ButtonClass.DEFAULT} text="Continue" />
         </form>
       </FormProvider>
     </Container>

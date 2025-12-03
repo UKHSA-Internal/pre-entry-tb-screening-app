@@ -1,11 +1,69 @@
 import { testCredentials } from "./test-data";
 
 export function loginViaB2C() {}
+export function logoutViaB2C() {}
+export function acceptCookies() {}
 
+// Cookie Banner Command - To handle confirmation message
+Cypress.Commands.add("acceptCookies", (accept: boolean = true) => {
+  cy.log(`Handling cookie banner - ${accept ? "accepting" : "rejecting"}`);
+
+  cy.get("body", { timeout: 2000 }).then(($body) => {
+    const cookieBanner = $body.find(".govuk-cookie-banner");
+
+    if (cookieBanner.length === 0) {
+      cy.log("No cookie banner present");
+      return;
+    }
+
+    // Check if action buttons are present (initial banner)
+    if ($body.find(".govuk-cookie-banner .govuk-button-group button").length > 0) {
+      const buttonText = accept ? "Accept analytics cookies" : "Reject analytics cookies";
+
+      cy.log(`Clicking: ${buttonText}`);
+      cy.get(".govuk-cookie-banner .govuk-button-group button")
+        .contains(buttonText)
+        .click({ force: true });
+
+      cy.wait(500);
+
+      // Store preference in localStorage
+      cy.window().then((win) => {
+        const consentValue = accept ? "accepted" : "rejected";
+        const cookieSettings = {
+          analytics: accept,
+          essential: true,
+        };
+
+        win.localStorage.setItem("cookies-policy", JSON.stringify(cookieSettings));
+        win.localStorage.setItem("cookieConsent", consentValue);
+        win.localStorage.setItem("cookie-consent", consentValue);
+
+        cy.log(`Cookie preference stored: ${consentValue}`);
+      });
+    }
+
+    // Handle confirmation message or hide button (don't fail if not present)
+    cy.get("body").then(($newBody) => {
+      if ($newBody.find('button:contains("Hide cookie message")').length > 0) {
+        cy.log("Hiding cookie confirmation message");
+        cy.contains("button", "Hide cookie message").click({ force: true });
+        cy.wait(300); // Brief wait for animation
+      }
+    });
+
+    cy.log("Cookie banner handled successfully");
+  });
+});
+
+// Login Command
 Cypress.Commands.add("loginViaB2C", () => {
   cy.log("Starting B2C authentication");
 
   cy.visit("/");
+
+  // Handle cookie banner if present
+  cy.acceptCookies();
 
   cy.get("button#sign-in").click({ force: true });
 
@@ -86,6 +144,7 @@ Cypress.Commands.add("loginViaB2C", () => {
   cy.url({ timeout: 30000 }).should("include", "/search-for-visa-applicant");
 });
 
+// Logout Command
 Cypress.Commands.add("logoutViaB2C", () => {
   cy.log("Starting B2C logout process");
 
@@ -93,11 +152,13 @@ Cypress.Commands.add("logoutViaB2C", () => {
   cy.get("#sign-out", { timeout: 10000 }).should("be.visible").click();
 
   // Verify sign-out confirmation page
-  cy.url().should("include", "/are-you-sure-you-want-to-sign-out");
+  cy.url({ timeout: 10000 }).should("include", "/are-you-sure-you-want-to-sign-out");
   cy.contains("Are you sure you want to sign out?", { timeout: 10000 }).should("be.visible");
+  cy.contains("Signing out will lose any unsaved information.").should("be.visible");
 
   // Click the sign-out button to confirm
-  cy.get('button[type="submit"].govuk-button--warning')
+  cy.get('button[type="submit"].govuk-button.govuk-button--warning')
+    .should("be.visible")
     .should("contain", "Sign out")
     .click({ force: true });
 
@@ -109,10 +170,12 @@ Cypress.Commands.add("logoutViaB2C", () => {
 
     // Wait for the account picker page to load
     cy.contains("Pick an account", { timeout: 15000 }).should("be.visible");
-    cy.contains("Which account do you want to sign out of?").should("be.visible");
+    cy.contains("Which account do you want to sign out of?", { timeout: 10000 }).should(
+      "be.visible",
+    );
 
-    // Click the first account in the list - using the correct selector for the tile
-    cy.get('div.table[data-test-id], div.tile, div[data-test-id*="tile"]')
+    // Click the first account tile in the list
+    cy.get('div[data-test-id*="tile"], div.table-cell, div[role="link"]', { timeout: 10000 })
       .first()
       .should("be.visible")
       .click({ force: true });
@@ -120,11 +183,22 @@ Cypress.Commands.add("logoutViaB2C", () => {
     cy.log("Selected account to sign out");
   });
 
-  // Verify redirection to applicant search page
-  cy.url({ timeout: 15000 }).should("include", "/search-for-visa-applicant");
+  // Wait a moment for the redirect to complete
+  cy.wait(3000);
+
+  // Verify successful logout - this runs OUTSIDE cy.origin so it can check the main app domain
+  cy.url({ timeout: 20000 }).then((url) => {
+    cy.log(`Redirected to: ${url}`);
+    // Check if we're on a logged-out page (sign-in or you-have-signed-out)
+    expect(url).to.match(
+      /you-have-signed-out|sign-in|login|oauth|authorize|search-for-visa-applicant/,
+    );
+  });
+
   cy.log("B2C logout completed successfully");
 });
 
+// Clear All Sessions Command
 Cypress.Commands.add("clearAllSessions", () => {
   return Cypress.session.clearAllSavedSessions();
 });

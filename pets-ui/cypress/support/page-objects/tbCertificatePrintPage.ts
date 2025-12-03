@@ -78,7 +78,7 @@ export class TbCertificatePrintPage extends BasePage {
 
   // Verify service name in header
   verifyServiceName(): TbCertificatePrintPage {
-    cy.get(".govuk-header__service-name")
+    cy.get(".govuk-service-navigation__service-name")
       .should("be.visible")
       .and("contain", "Complete UK pre-entry health screening");
     return this;
@@ -94,11 +94,6 @@ export class TbCertificatePrintPage extends BasePage {
 
   // Verify print functionality (simulated)
   verifyPrintFunctionality(): TbCertificatePrintPage {
-    // In a real test environment, you might want to:
-    // 1. Mock the print dialog
-    // 2. Verify print CSS is loaded
-    // 3. Check that the certificate is properly formatted for printing
-
     // For now, we verify the print trigger elements are present
     this.verifyPrintCertificateLink();
     this.verifyCertificateIframeDisplayed();
@@ -160,7 +155,7 @@ export class TbCertificatePrintPage extends BasePage {
 
   // Method for handling potential print dialog (browser-dependent)
   handlePrintDialog(): TbCertificatePrintPage {
-    // In real implementation, you might need to handle browser print dialog
+    // In real implementation, might need to handle browser print dialog
     // This is highly browser-dependent and may require special handling
     // For now, we just verify the print trigger works
 

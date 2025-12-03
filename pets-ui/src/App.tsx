@@ -50,7 +50,7 @@ import TravelConfirmation from "./pages/travel-confirmation";
 import TravelSummaryPage from "./pages/travel-summary";
 import TravelAddressAndContactDetailsPage from "./pages/travel-uk-address";
 import TravelVisaCategoryPage from "./pages/travel-visa-category";
-import { updateGoogleAnalyticsConsent } from "./utils/helpers";
+import { updateGoogleAnalyticsConsent } from "./utils/google-analytics-utils";
 import { RedirectedRouteIfReduxEmpty } from "./utils/redirect";
 
 function App() {

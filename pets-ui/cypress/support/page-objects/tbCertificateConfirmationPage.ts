@@ -138,7 +138,7 @@ export class TbCertificateConfirmationPage extends BasePage {
 
   // Verify service name in header
   verifyServiceName(): TbCertificateConfirmationPage {
-    cy.get(".govuk-header__service-name")
+    cy.get(".govuk-service-navigation__service-name")
       .should("be.visible")
       .and("contain", "Complete UK pre-entry health screening");
     return this;
@@ -354,7 +354,6 @@ export class TbCertificateConfirmationPage extends BasePage {
 
     return this;
   }
-
   // Method to test the print functionality within iframe
   testPrintFunctionalityInIframe(): TbCertificateConfirmationPage {
     // After iframe is loaded, test the print link

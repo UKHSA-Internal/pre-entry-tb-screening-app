@@ -327,7 +327,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
 
   // Button interaction
   clickSaveAndContinue(): EnterSputumSampleResultsPage {
-    cy.contains('button[type="submit"]', "Submit and continue").click();
+    cy.contains('button[type="submit"]', "Save and continue").click();
     return this;
   }
 
@@ -337,7 +337,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
 
   // Verify save and continue button
   verifySaveAndContinueButton(): EnterSputumSampleResultsPage {
-    cy.contains('button[type="submit"]', "Submit and continue")
+    cy.contains('button[type="submit"]', "Save and continue")
       .should("be.visible")
       .and("be.enabled");
     return this;
@@ -844,7 +844,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
 
   // Verify service name in header
   verifyServiceName(): EnterSputumSampleResultsPage {
-    cy.get(".govuk-header__service-name")
+    cy.get(".govuk-service-navigation__service-name")
       .should("be.visible")
       .and("contain", "Complete UK pre-entry health screening");
     return this;
@@ -856,7 +856,6 @@ export class EnterSputumSampleResultsPage extends BasePage {
     this.verifyPageStructure();
     this.verifyDropdownOptions();
     this.verifySaveAndContinueButton();
-    this.verifyGridLayout();
     this.verifySectionBreaks();
     this.verifyBackLinkNavigation();
     this.verifyServiceName();

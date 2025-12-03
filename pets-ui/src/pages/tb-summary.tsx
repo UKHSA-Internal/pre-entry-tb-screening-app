@@ -1,12 +1,16 @@
+import { useEffect } from "react";
+
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import NotificationBanner from "@/components/notificationBanner/notificationBanner";
 import { useAppSelector } from "@/redux/hooks";
-import { selectTbCertificate } from "@/redux/store";
+import { selectApplication, selectTbCertificate } from "@/redux/store";
 import TbSummary from "@/sections/tb-summary";
 import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function TbSummaryPage() {
+  const applicationData = useAppSelector(selectApplication);
   const tbCertificateData = useAppSelector(selectTbCertificate);
 
   let backLinkUrl = "/enter-clinic-certificate-information";
@@ -21,10 +25,20 @@ export default function TbSummaryPage() {
       ? "Check TB clearance outcome"
       : "Check certificate information";
 
+  useEffect(() => {
+    sendGoogleAnalyticsJourneyEvent(
+      pageTitle.toLowerCase().replace(" ", "_"),
+      applicationData.applicationId,
+      "TB certificate outcome",
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Container
       title={pageTitle + " - Complete UK pre-entry health screening - GOV.UK"}
       backLinkTo={backLinkUrl}
+      useTwoThirdsColumn={false}
     >
       {tbCertificateData.isIssued === YesOrNo.NO && (
         <NotificationBanner

@@ -43,8 +43,10 @@ import {
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
 import { ApplicantSearchFormType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
-import { ApplicationStatus, ButtonType, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { setGoogleAnalyticsParams } from "@/utils/google-analytics-utils";
 import { countryList, formRegex } from "@/utils/records";
+import { getUserProperties } from "@/utils/userProperties";
 
 import { getApplicants, getApplication } from "../api/api";
 
@@ -69,6 +71,17 @@ const ApplicantSearchForm = () => {
     dispatch(setApplicantPhotoFileName(""));
     setApplicantPhotoUrl(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const setUserProperties = async () => {
+      const userProperties = await getUserProperties();
+      setGoogleAnalyticsParams("user_properties", {
+        user_role: userProperties.jobTitle,
+        clinic_id: userProperties.clinicId,
+      });
+    };
+    void setUserProperties();
   }, []);
 
   const {
@@ -187,7 +200,7 @@ const ApplicantSearchForm = () => {
             required="Select the country of issue"
           />
 
-          <SubmitButton id="search" type={ButtonType.DEFAULT} text="Search" />
+          <SubmitButton id="search" class={ButtonClass.DEFAULT} text="Search" />
         </form>
       </FormProvider>
     </div>

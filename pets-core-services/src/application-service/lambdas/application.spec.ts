@@ -63,6 +63,7 @@ describe("Test for Application Lambda", () => {
       visaCategory: VisaOptions.Study,
       ukAddressLine1: "first line",
       ukAddressLine2: "second line",
+      ukAddressLine3: "third line",
       ukAddressTownOrCity: "town or city",
       ukAddressPostcode: "uk address postcode",
       ukMobileNumber: "uk mobile number",

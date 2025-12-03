@@ -1,39 +1,39 @@
-// Mixed Validation Error Test on Sputum Page
-import { countryList } from "../../src/utils/countryList";
-import { loginViaB2C } from "../support/commands";
-import { ApplicantConfirmationPage } from "../support/page-objects/applicantConfirmationPage";
-import { ApplicantConsentPage } from "../support/page-objects/applicantConsentPage";
-import { ApplicantPhotoUploadPage } from "../support/page-objects/applicantPhotoUploadPage";
-import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
-import { ApplicantSummaryPage } from "../support/page-objects/applicantSummaryPage";
-import { CheckChestXrayImagesPage } from "../support/page-objects/checkChestXrayImagesPage";
-import { ChestXrayConfirmationPage } from "../support/page-objects/chestXrayConfirmationPage";
-import { ChestXrayFindingsPage } from "../support/page-objects/chestXrayFindingsPage";
-import { ChestXrayPage } from "../support/page-objects/chestXrayQuestionPage";
-import { ChestXrayResultsPage } from "../support/page-objects/chestXrayResultsPage";
-import { ChestXrayUploadPage } from "../support/page-objects/chestXrayUploadPage";
-import { MedicalConfirmationPage } from "../support/page-objects/medicalConfirmationPage";
-import { MedicalSummaryPage } from "../support/page-objects/medicalSummaryPage";
-import { RadiologicalOutcomeConfPage } from "../support/page-objects/radiologicalOutcomeConfPage";
-import { SputumCollectionPage } from "../support/page-objects/sputumCollectionPage";
-import { SputumDecisionConfirmationPage } from "../support/page-objects/sputumDecisionConfirmationPage";
-import { SputumDecisionInfoPage } from "../support/page-objects/sputumDecisionInfoPage";
-import { SputumQuestionPage } from "../support/page-objects/sputumQuestionPage";
-import { TBProgressTrackerPage } from "../support/page-objects/tbProgressTrackerPage";
-import { VisaCategoryPage } from "../support/page-objects/visaCategoryPage";
-import { XRayResultsAndFindingsPage } from "../support/page-objects/xRayResultsAndFindingsPage";
+// Empty Form Submission Test on Sputum Page
+import { countryList } from "../../../src/utils/countryList";
+import { loginViaB2C } from "../../support/commands";
+import { ApplicantConfirmationPage } from "../../support/page-objects/applicantConfirmationPage";
+import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
+import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
+import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPhotoUploadPage";
+import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
+import { CheckChestXrayImagesPage } from "../../support/page-objects/checkChestXrayImagesPage";
+import { ChestXrayConfirmationPage } from "../../support/page-objects/chestXrayConfirmationPage";
+import { ChestXrayFindingsPage } from "../../support/page-objects/chestXrayFindingsPage";
+import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
+import { ChestXrayResultsPage } from "../../support/page-objects/chestXrayResultsPage";
+import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
+import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
+import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
+import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { RadiologicalOutcomeConfPage } from "../../support/page-objects/radiologicalOutcomeConfPage";
+import { SputumCollectionPage } from "../../support/page-objects/sputumCollectionPage";
+import { SputumDecisionConfirmationPage } from "../../support/page-objects/sputumDecisionConfirmationPage";
+import { SputumDecisionInfoPage } from "../../support/page-objects/sputumDecisionInfoPage";
+import { SputumQuestionPage } from "../../support/page-objects/sputumQuestionPage";
+import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
+import { TravelConfirmationPage } from "../../support/page-objects/travelConfirmationPage";
+import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
+import { TravelSummaryPage } from "../../support/page-objects/travelSummaryPage";
+import { VisaCategoryPage } from "../../support/page-objects/visaCategoryPage";
+import { XRayResultsAndFindingsPage } from "../../support/page-objects/xRayResultsAndFindingsPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
   randomElement,
-} from "../support/test-helpers";
-import { ApplicantDetailsPage } from "./../support/page-objects/applicantDetailsPage";
-import { MedicalScreeningPage } from "./../support/page-objects/medicalScreeningPage";
-import { TravelConfirmationPage } from "./../support/page-objects/travelConfirmationPage";
-import { TravelInformationPage } from "./../support/page-objects/travelInformationPage";
-import { TravelSummaryPage } from "./../support/page-objects/travelSummaryPage";
+} from "../../support/test-helpers";
 
-describe("Mixed Validation Error Test On Sputum Collection Page", () => {
+describe("Empty Form Submission Test On Sputum Collection Page", () => {
   // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
@@ -92,8 +92,9 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
     cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
   });
 
-  it("should display multiple validation errors for mixed invalid data scenarios", () => {
+  it("should display all errors when submitting a completely empty form", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName) // Use country code for form filling
@@ -115,20 +116,21 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
 
     // Fill in applicant details
     applicantDetailsPage
-      .fillFullName("Emily Mixed-Tester")
+      .fillFullName("Emma Tester - O'Empty")
       .selectSex("Female")
       .selectNationality(countryName)
-      .fillBirthDate("05", "12", "1988")
-      .fillPassportIssueDate("20", "03", "2020")
-      .fillPassportExpiryDate("20", "03", "2030")
-      .fillAddressLine1("555 Mixed Street")
-      .fillAddressLine2("Validation Block")
-      .fillAddressLine3("Error District")
-      .fillTownOrCity("Test City")
-      .fillProvinceOrState("Test State")
+      .fillBirthDate("25", "09", "1992")
+      .fillPassportIssueDate("01", "06", "2021")
+      .fillPassportExpiryDate("01", "06", "2031")
+      .fillAddressLine1("100 Empty Street")
+      .fillAddressLine2("Blank Building")
+      .fillAddressLine3("Void Village")
+      .fillTownOrCity("Empty Town")
+      .fillProvinceOrState("Empty State")
       .selectAddressCountry(countryName)
-      .fillPostcode("MX123")
+      .fillPostcode("EM123")
       .submitForm();
+
     // Verify redirection to the Applicant Photo page
     cy.url().should("include", "/upload-visa-applicant-photo");
     applicantPhotoUploadPage.verifyPageLoaded();
@@ -154,7 +156,7 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary
-    applicantSummaryPage.verifySummaryValue("Name", "Emily Mixed-Tester");
+    applicantSummaryPage.verifySummaryValue("Name", "Emma Tester - O'Empty");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
     applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
@@ -196,7 +198,7 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
     /// Fill travel information
     travelInformationPage.fillCompleteForm({
       ukAddressLine1: "Flat 23",
-      ukAddressLine2: "321 Mixed Test Avenue",
+      ukAddressLine2: "321 Empty Fields Street",
       ukTownOrCity: "Liverpool",
       ukPostcode: "L1 2AB",
       mobileNumber: "07700900123",
@@ -244,13 +246,13 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
 
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("35")
+      .fillAge("33")
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
       .selectPregnancyStatus("No")
       .selectMenstrualPeriods("No")
-      .fillPhysicalExamNotes("Applicant shows no signs of active TB symptoms.")
+      .fillPhysicalExamNotes("Doctor Prescribed Empty form test examination completed")
       .submitForm();
 
     // Verify redirection to X-ray Question Page
@@ -265,13 +267,13 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
 
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "35",
+      age: "33 years old",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",
       pregnant: "No",
       menstrualPeriods: "No",
-      physicalExamNotes: "Applicant shows no signs of active TB symptoms.",
+      physicalExamNotes: "Doctor Prescribed Empty form test examination completed",
     });
 
     // Confirm medical details
@@ -431,8 +433,8 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
       tbProgressTrackerPage.verifyPageLoaded();
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
-        Name: "Emily Mixed-Tester",
-        "Date of birth": "5/12/1988",
+        Name: "Emma Tester - O'Empty",
+        "Date of birth": "25/9/1992",
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
@@ -459,8 +461,8 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
       tbProgressTrackerPage.verifyPageLoaded();
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
-        Name: "Emily Mixed-Tester",
-        "Date of birth": "5/12/1988",
+        Name: "Emma Tester - O'Empty",
+        "Date of birth": "25/9/1992",
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
@@ -473,86 +475,87 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
       sputumCollectionPage.verifyPageStructure();
       sputumCollectionPage.verifyAllFieldsEmpty();
 
-      // Fill sputum collection data with mixed validation errors:
-      // Sample 1: Missing day, has collection method
-      // Sample 2: Invalid month, missing collection method
-      // Sample 3: Complete but future date
-      const mixedErrorData = {
-        sample1: {
-          date: { day: "", month: "06", year: "2024" },
-          collectionMethod: "Coughed up",
-        },
-        sample2: {
-          date: { day: "15", month: "15", year: "2024" },
-          collectionMethod: "",
-        },
-        sample3: {
-          date: { day: "20", month: "12", year: "2026" },
-          collectionMethod: "Induced",
-        },
-      };
-
-      // Fill sample 1 - missing day, has collection method
-      sputumCollectionPage.fillSample1Date(mixedErrorData.sample1.date);
-      sputumCollectionPage.selectSample1CollectionMethod(mixedErrorData.sample1.collectionMethod);
-
-      // Fill sample 2 - invalid month, no collection method
-      sputumCollectionPage.fillSample2Date(mixedErrorData.sample2.date);
-
-      // Fill sample 3 - future date, has collection method
-      sputumCollectionPage.fillSample3Date(mixedErrorData.sample3.date);
-      sputumCollectionPage.selectSample3CollectionMethod(mixedErrorData.sample3.collectionMethod);
-
-      // Verify the form is filled with mixed data
+      // Verify all fields are initially empty
       cy.get('[data-testid="date-sample-1-taken-day"]').should("have.value", "");
-      cy.get('[data-testid="date-sample-1-taken-month"]').should("have.value", "06");
-      cy.get('[data-testid="date-sample-1-taken-year"]').should("have.value", "2024");
-      cy.get('[name="collectionMethodSample1"]').should("have.value", "Coughed up");
+      cy.get('[data-testid="date-sample-1-taken-month"]').should("have.value", "");
+      cy.get('[data-testid="date-sample-1-taken-year"]').should("have.value", "");
 
-      cy.get('[data-testid="date-sample-2-taken-day"]').should("have.value", "15");
-      cy.get('[data-testid="date-sample-2-taken-month"]').should("have.value", "15");
-      cy.get('[data-testid="date-sample-2-taken-year"]').should("have.value", "2024");
-      //cy.get('[name="collectionMethodSample2"]').should("have.value", "");
+      // Check that collection method exists
+      cy.get('[name="collectionMethodSample1"]').should("exist");
 
-      cy.get('[data-testid="date-sample-3-taken-day"]').should("have.value", "20");
-      cy.get('[data-testid="date-sample-3-taken-month"]').should("have.value", "12");
-      cy.get('[data-testid="date-sample-3-taken-year"]').should("have.value", "2026");
-      cy.get('[name="collectionMethodSample3"]').should("have.value", "Induced");
+      cy.get('[data-testid="date-sample-2-taken-day"]').should("have.value", "");
+      cy.get('[data-testid="date-sample-2-taken-month"]').should("have.value", "");
+      cy.get('[data-testid="date-sample-2-taken-year"]').should("have.value", "");
 
-      // Attempt to save and continue
+      // Check that collection method exists
+      cy.get('[name="collectionMethodSample2"]').should("exist");
+
+      cy.get('[data-testid="date-sample-3-taken-day"]').should("have.value", "");
+      cy.get('[data-testid="date-sample-3-taken-month"]').should("have.value", "");
+      cy.get('[data-testid="date-sample-3-taken-year"]').should("have.value", "");
+      // Check that collection method exists
+      cy.get('[name="collectionMethodSample3"]').should("exist");
+
+      // Attempt to submit the completely empty form
       sputumCollectionPage.clickSaveAndContinueToResults();
 
       // Verify error summary is displayed
       sputumCollectionPage.validateErrorSummaryVisible();
 
-      // Verify multiple error messages are shown
+      // Verify all required field errors are shown
+      sputumCollectionPage.validateAllRequiredFieldErrors();
+
+      // Verify specific error messages for all samples
       sputumCollectionPage.validateErrorSummaryContains([
-        "Sputum sample 1 date must include a day, month and year",
-        "Sputum sample 2 date must be a real date",
+        "Enter the date sample 1 was taken on",
+        "Enter Sputum sample 1 collection method",
+        "Enter the date sample 2 was taken on",
         "Enter Sputum sample 2 collection method",
-        "Sputum sample 3 date must be today or in the past",
+        "Enter the date sample 3 was taken on",
+        "Enter Sputum sample 3 collection method",
       ]);
 
-      // Verify individual field errors
-      sputumCollectionPage.validateSample1DateError(
-        "Sputum sample 1 date must include a day, month and year",
-      );
-      sputumCollectionPage.validateSample2DateError("Sputum sample 2 date must be a real date");
+      // Verify individual field errors for all samples
+      sputumCollectionPage.validateSample1DateError();
+      sputumCollectionPage.validateSample1CollectionMethodError();
+      sputumCollectionPage.validateSample2DateError();
       sputumCollectionPage.validateSample2CollectionMethodError();
-      sputumCollectionPage.validateSample3DateError(
-        "Sputum sample 3 date must be today or in the past",
-      );
+      sputumCollectionPage.validateSample3DateError();
+      sputumCollectionPage.validateSample3CollectionMethodError();
 
-      // Verify comprehensive error state
+      // Verify comprehensive error validation
       sputumCollectionPage.validateFormErrors({
-        sample1Date: "Sputum sample 1 date must include a day, month and year",
-        sample2Date: "Sputum sample 2 date must be a real date",
+        sample1Date: "Enter the date sample 1 was taken on",
+        sample1CollectionMethod: "Enter Sputum sample 1 collection method",
+        sample2Date: "Enter the date sample 2 was taken on",
         sample2CollectionMethod: "Enter Sputum sample 2 collection method",
-        sample3Date: "Sputum sample 3 date must be today or in the past",
+        sample3Date: "Enter the date sample 3 was taken on",
+        sample3CollectionMethod: "Enter Sputum sample 3 collection method",
       });
+
+      // Verify error styling is applied to all fields
+      sputumCollectionPage.verifyFieldErrorStates();
+
+      // Verify that error summary links work correctly
+      cy.get('.govuk-error-summary__list a[href="#date-sample-1-taken"]').should("exist").click();
+      cy.get('[data-testid="date-sample-1-taken-day"]').should("be.focused");
+
+      cy.get('.govuk-error-summary__list a[href="#date-sample-2-taken"]').should("exist").click();
+      cy.get('[data-testid="date-sample-2-taken-day"]').should("be.focused");
+
+      cy.get('.govuk-error-summary__list a[href="#date-sample-3-taken"]').should("exist").click();
+      cy.get('[data-testid="date-sample-3-taken-day"]').should("be.focused");
 
       // Verify we remain on the sputum collection page
       cy.url().should("include", "/enter-sputum-sample-collection-information");
+
+      // Verify that all form fields still have the correct error styling
+      cy.get("#date-sample-1-taken").should("have.class", "govuk-form-group--error");
+      cy.get("#date-sample-2-taken").should("have.class", "govuk-form-group--error");
+      cy.get("#date-sample-3-taken").should("have.class", "govuk-form-group--error");
+      cy.get("#collection-method-sample-1").should("have.class", "govuk-form-group--error");
+      cy.get("#collection-method-sample-2").should("have.class", "govuk-form-group--error");
+      cy.get("#collection-method-sample-3").should("have.class", "govuk-form-group--error");
     });
   });
 });

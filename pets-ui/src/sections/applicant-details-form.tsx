@@ -15,7 +15,8 @@ import { setApplicantDetails, setApplicantDetailsStatus } from "@/redux/applican
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant, selectApplication } from "@/redux/store";
 import { DateType, PostedApplicantDetailsType, ReduxApplicantDetailsType } from "@/types";
-import { ApplicationStatus, ButtonType, RadioIsInline } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { getCountryName, standardiseDayOrMonth, validateDate } from "@/utils/helpers";
 import { countryList, formRegex } from "@/utils/records";
 
@@ -87,7 +88,7 @@ const ApplicantForm = () => {
         }
       } catch (error) {
         console.error(error);
-        navigate("/error");
+        navigate("/sorry-there-is-problem-with-service");
       }
     } else {
       if (!isComplete) {
@@ -98,6 +99,11 @@ const ApplicantForm = () => {
   };
 
   const errorsToShow = Object.keys(errors);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Enter applicant information", errorsToShow);
+    }
+  }, [errorsToShow]);
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
   const nameRef = useRef<HTMLDivElement | null>(null);
@@ -409,7 +415,7 @@ const ApplicantForm = () => {
           />
         </div>
 
-        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Save and continue" />
+        <SubmitButton id="save-and-continue" class={ButtonClass.DEFAULT} text="Save and continue" />
       </form>
     </FormProvider>
   );

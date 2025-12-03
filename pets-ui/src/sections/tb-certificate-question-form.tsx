@@ -10,7 +10,8 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setIsIssued } from "@/redux/tbCertificateSlice";
 import { ReduxTbCertificateType } from "@/types";
-import { ButtonType, RadioIsInline, YesOrNo } from "@/utils/enums";
+import { ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 
 const TbCertificateQuestionForm = () => {
   const dispatch = useAppDispatch();
@@ -35,8 +36,13 @@ const TbCertificateQuestionForm = () => {
   };
 
   const errorsToShow = Object.keys(errors);
-  const isIssuedRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Will you issue a TB clearance certificate?", errorsToShow);
+    }
+  }, [errorsToShow]);
 
+  const isIssuedRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (location.hash) {
       const target = location.hash.substring(1);
@@ -64,7 +70,7 @@ const TbCertificateQuestionForm = () => {
             divStyle={{ marginTop: 40 }}
           />
         </div>
-        <SubmitButton id="Continue" type={ButtonType.DEFAULT} text="Continue" />
+        <SubmitButton id="Continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

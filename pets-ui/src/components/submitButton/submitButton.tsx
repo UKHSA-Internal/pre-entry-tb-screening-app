@@ -1,12 +1,12 @@
 import Button from "@/components/button/button";
-import { ButtonType } from "@/utils/enums";
+import { ButtonClass } from "@/utils/enums";
 
 export interface SubmitButtonProps {
   id: string;
-  type: ButtonType;
+  class: ButtonClass;
   text: string;
 }
 
 export default function SubmitButton(props: Readonly<SubmitButtonProps>) {
-  return <Button id={props.id} type={props.type} text={props.text} />;
+  return <Button id={props.id} class={props.class} text={props.text} />;
 }

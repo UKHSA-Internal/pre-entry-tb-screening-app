@@ -1,13 +1,19 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Button from "@/components/button/button";
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import NotificationBanner from "@/components/notificationBanner/notificationBanner";
-import { ButtonType } from "@/utils/enums";
+import { ButtonClass } from "@/utils/enums";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function ConsentInstructionPage() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    sendGoogleAnalyticsJourneyEvent("get_written_consent", "UNK", "Visa Applicant Details");
+  }, []);
 
   return (
     <Container title="Get written consent - Complete UK pre-entry health screening - GOV.UK">
@@ -24,7 +30,7 @@ export default function ConsentInstructionPage() {
 
       <Button
         id="search-again"
-        type={ButtonType.DEFAULT}
+        class={ButtonClass.DEFAULT}
         text="Search again"
         handleClick={() => navigate("/search-for-visa-applicant")}
       />

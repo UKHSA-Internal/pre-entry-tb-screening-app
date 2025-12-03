@@ -20,7 +20,8 @@ import {
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectChestXray } from "@/redux/store";
 import { DateType, ReduxChestXrayDetailsType } from "@/types";
-import { ButtonType, ImageType } from "@/utils/enums";
+import { ButtonClass, ImageType } from "@/utils/enums";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { validateDate } from "@/utils/helpers";
 import uploadFile from "@/utils/uploadFile";
 
@@ -79,6 +80,11 @@ const ChestXrayForm = () => {
   } = methods;
 
   const errorsToShow = Object.keys(errors);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Upload chest X-ray images", errorsToShow);
+    }
+  }, [errorsToShow]);
 
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = async (chestXrayData) => {
     setIsLoading(true);
@@ -222,7 +228,7 @@ const ChestXrayForm = () => {
             </div>
 
             <div className="dicom-upload-container">
-              <SubmitButton id="continue" type={ButtonType.DEFAULT} text="Continue" />
+              <SubmitButton id="continue" class={ButtonClass.DEFAULT} text="Continue" />
             </div>
           </div>
         </form>

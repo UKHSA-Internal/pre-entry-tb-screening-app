@@ -16,7 +16,8 @@ import {
 } from "@/redux/radiologicalOutcomeSlice";
 import { selectRadiologicalOutcome } from "@/redux/store";
 import { ReduxRadiologicalOutcomeDetailsType } from "@/types";
-import { ButtonType } from "@/utils/enums";
+import { ButtonClass } from "@/utils/enums";
+import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 
 const ChestXrayFindingsForm = () => {
   const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
@@ -50,6 +51,11 @@ const ChestXrayFindingsForm = () => {
   };
 
   const errorsToShow = Object.keys(errors);
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Enter X-ray findings", errorsToShow);
+    }
+  }, [errorsToShow]);
 
   const location = useLocation();
   const xrayResultDetail = useRef<HTMLDivElement | null>(null);
@@ -167,7 +173,7 @@ const ChestXrayFindingsForm = () => {
           />
         </div>
 
-        <SubmitButton id="save-and-continue" type={ButtonType.DEFAULT} text="Continue" />
+        <SubmitButton id="save-and-continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

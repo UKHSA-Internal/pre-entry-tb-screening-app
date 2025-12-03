@@ -241,18 +241,53 @@ const isChildUnder11 = (medicalScreeningData: ReduxMedicalScreeningType) => {
   return parsedAge < 11 ? "Yes" : "No";
 };
 
-const updateGoogleAnalyticsConsent = (consentGranted: boolean) => {
-  if (typeof globalThis.gtag === "function") {
-    globalThis.gtag("consent", "update", {
-      ad_storage: consentGranted ? "granted" : "denied",
-      analytics_storage: consentGranted ? "granted" : "denied",
-      functionality_storage: consentGranted ? "granted" : "denied",
-      personalization_storage: consentGranted ? "granted" : "denied",
-    });
+const calculateApplicantAge = (dateOfBirth: DateType) => {
+  const { day, month, year } = dateOfBirth;
+  if (!day || !month || !year || day == "" || month == "" || year == "") {
+    return {
+      ageInYears: "Unknown",
+      ageToDisplay: "Unknown",
+      errorMessage: "Error in calculateApplicantAge: dateOfBirth object is missing fields",
+    };
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let ageYears = today.getFullYear() - Number.parseInt(dateOfBirth.year);
+  let ageMonths = today.getMonth() - (Number.parseInt(dateOfBirth.month) - 1);
+  const ageDays = today.getDate() - Number.parseInt(dateOfBirth.day);
+
+  if (ageDays < 0) {
+    ageMonths -= 1;
+  }
+  if (ageMonths < 0) {
+    ageYears -= 1;
+    ageMonths += 12;
+  }
+
+  if (ageYears < 0 || (ageYears == 0 && ageMonths < 0)) {
+    return {
+      ageInYears: "Unknown",
+      ageToDisplay: "Unknown",
+      errorMessage: "Error in calculateApplicantAge: dateOfBirth is in the future",
+    };
+  } else if (ageYears > 0) {
+    return {
+      ageInYears: ageYears,
+      ageToDisplay: `${ageYears} year${ageYears == 1 ? "" : "s"} old`,
+      errorMessage: null,
+    };
+  } else {
+    return {
+      ageInYears: ageYears,
+      ageToDisplay: `${ageMonths} month${ageMonths == 1 ? "" : "s"} old`,
+      errorMessage: null,
+    };
   }
 };
 
 export {
+  calculateApplicantAge,
   calculateCertificateExpiryDate,
   calculateCertificateIssueDate,
   calculateSputumOutcome,
@@ -269,6 +304,5 @@ export {
   spreadArrayIfNotEmpty,
   standardiseDayOrMonth,
   toArray,
-  updateGoogleAnalyticsConsent,
   validateDate,
 };

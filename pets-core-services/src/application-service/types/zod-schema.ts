@@ -36,6 +36,9 @@ export const TravelInformationBaseSchema = z.object({
   ukAddressLine2: z.string().optional().openapi({
     description: "Second line of Travel Address",
   }),
+  ukAddressLine3: z.string().optional().openapi({
+    description: "Third line of Travel Address",
+  }),
   ukAddressTownOrCity: z.string().optional().openapi({
     description: "Town or City of Travel Address",
   }),
@@ -86,7 +89,7 @@ export const MedicalScreeningBaseSchema = z.object({
   dateOfMedicalScreening: z.string().date().openapi({
     description: "Date of medical screening in ISO format",
   }),
-  age: z.number().min(1).openapi({
+  age: z.number().openapi({
     description: "Applicant's age",
   }),
   symptomsOfTb: z.nativeEnum(YesOrNo).openapi({

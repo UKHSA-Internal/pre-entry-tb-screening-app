@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { loginRequest } from "@/auth/auth";
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
-import LinkLabel from "@/components/linkLabel/LinkLabel";
 import List from "@/components/list/list";
 import StartButton from "@/components/startButton/startButton";
 import { clearNavigationHistory } from "@/utils/useNavigationHistory";
@@ -29,34 +28,30 @@ export default function HomePage() {
     <Container title="Complete UK pre-entry health screening - GOV.UK">
       <Heading level={1} size="l" title="Complete a UK visa applicant's TB screening" />
       <p className="govuk-body">
-        This service is for authorised staff to enter TB screening information for UK visa
-        applicants. For advice and guidance on the process, visa applicants should visit{" "}
-        <LinkLabel
-          to="https://www.gov.uk/tb-test-visa"
-          title="Tuberculosis tests for visa applicants: Check if you need a TB test for your visa
-          application"
-          externalLink
-        />
-        .
+        Authorised staff can use this service to view, enter and update tuberculosis (TB) screening
+        information for UK visa applicants.
       </p>
-      <p className="govuk-body">Use this service to:</p>
+      <Heading level={2} size="m" title="Before you start" />
+      <p className="govuk-body">
+        You must have the visa applicant&apos;s written consent for TB screening (or the consent of
+        their parent or legal guardian).
+      </p>
+      <p className="govuk-body">
+        The visa applicant must have a valid passport. You will need the passport number and country
+        of issue.
+      </p>
+      <Heading level={2} size="m" title="To complete the screening" />
+      <p className="govuk-body">You will need the visa applicant&apos;s:</p>
       <List
         items={[
-          "enter the applicant details",
-          "enter their travel information",
-          "complete the TB medical screening",
-          "upload and view X-ray images",
-          "search for screening information for an existing UK visa applicant",
-          "check on a TB screening applicant's progress",
+          "medical history, for example symptoms of pulmonary TB",
+          "X-ray images or sputum sample results",
         ]}
       />
-      <p className="govuk-body">Applicants need a:</p>
-      <List items={["valid passport", "UK address", "UK visa type"]} />
-      <p className="govuk-body">
-        If you&apos;re a clinician you can also sign in to resume a medical screening case.
-      </p>
-      <p className="govuk-body">Use the username and password you were assigned to sign in.</p>
       <StartButton id="sign-in" text="Sign in" handleClick={initializeSignIn} />
+      <p className="govuk-body">
+        Use the username you set up when you were given access to the service.
+      </p>
     </Container>
   );
 }

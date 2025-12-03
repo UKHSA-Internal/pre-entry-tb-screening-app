@@ -1,10 +1,14 @@
+import { useEffect } from "react";
+
 import Confirmation from "@/components/confirmation/confirmation";
 import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
-import { selectSputum } from "@/redux/store";
+import { selectApplication, selectSputum } from "@/redux/store";
 import { ApplicationStatus, PositiveOrNegative } from "@/utils/enums";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function SputumConfirmation() {
+  const applicationData = useAppSelector(selectApplication);
   const sputumData = useAppSelector(selectSputum);
 
   const samples = [sputumData.sample1, sputumData.sample2, sputumData.sample3];
@@ -50,6 +54,15 @@ export default function SputumConfirmation() {
       return ["You can now return to the progress tracker."];
     }
   })();
+
+  useEffect(() => {
+    sendGoogleAnalyticsJourneyEvent(
+      "sputum_sample_information_confirmed",
+      applicationData.applicationId,
+      "Sputum collection and results",
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Container title="Sputum sample information confirmed - Complete UK pre-entry health screening - GOV.UK">

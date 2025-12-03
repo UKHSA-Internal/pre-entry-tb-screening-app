@@ -174,7 +174,7 @@ export class TravelInformationPage extends BasePage {
 
   // Verify service name in header
   verifyServiceName(): TravelInformationPage {
-    cy.get(".govuk-header__service-name")
+    cy.get(".govuk-service-navigation__service-name")
       .should("be.visible")
       .and("contain", "Complete UK pre-entry health screening")
       .and("have.attr", "href", "/");
