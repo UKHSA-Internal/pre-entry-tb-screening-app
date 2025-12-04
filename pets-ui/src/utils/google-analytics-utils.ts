@@ -24,7 +24,7 @@ const sendGoogleAnalyticsJourneyEvent = (
 
 const sendGoogleAnalyticsFormErrorEvent = (pageTitle: string, errorList: string[]) => {
   if (typeof globalThis.gtag === "function") {
-    globalThis.gtag("form_validation_error", {
+    globalThis.gtag("event", "form_validation_error", {
       page: pageTitle,
       validation_failures: errorList,
     });
