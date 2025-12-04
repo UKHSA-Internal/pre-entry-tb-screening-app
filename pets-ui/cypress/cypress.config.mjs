@@ -10,6 +10,9 @@ import {
   DeleteMessageCommand,
   PurgeQueueCommand,
 } from "@aws-sdk/client-sqs";
+import fs from "fs";
+import path from "path";
+import { glob } from "glob";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -133,6 +136,7 @@ export default defineConfig({
   e2e: {
     baseUrl: getBaseUrl(),
     supportFile: "cypress/support/e2e.ts",
+    // Static glob string for specPattern, as required by Cypress
     specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
     experimentalStudio: true,
     retries: isCI() ? 2 : 0, // Only retry in CI,

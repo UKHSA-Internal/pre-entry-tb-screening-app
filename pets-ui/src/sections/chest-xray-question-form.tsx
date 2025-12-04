@@ -46,6 +46,7 @@ const ChestXrayQuestionForm = () => {
   }, [errorsToShow]);
 
   const chestXrayTakenRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     if (location.hash) {
       const target = location.hash.substring(1);
