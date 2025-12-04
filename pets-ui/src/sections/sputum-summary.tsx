@@ -288,7 +288,7 @@ const SputumSummary = () => {
     };
 
     if (hasSmearResult && !sample.smearResults.submittedToDatabase) {
-      smearResult.link = "/enter-sputum-sample-results";
+      smearResult.link = "/sputum-results";
     }
     summaryData.push(smearResult);
 
@@ -304,7 +304,7 @@ const SputumSummary = () => {
     };
 
     if (hasCultureResult && !sample.cultureResults.submittedToDatabase) {
-      cultureResult.link = "/enter-sputum-sample-results";
+      cultureResult.link = "/sputum-results";
     }
     summaryData.push(cultureResult);
 
