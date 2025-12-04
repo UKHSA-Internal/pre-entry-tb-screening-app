@@ -112,7 +112,11 @@ describe("ApplicantPhotoForm", () => {
   });
 
   it("navigates to Check applicant details when from=check", async () => {
-    window.history.pushState({}, "", "/upload-visa-applicant-photo?from=check-applicant-details");
+    window.history.pushState(
+      {},
+      "",
+      "/upload-visa-applicant-photo?from=check-visa-applicant-details",
+    );
     const preloadedState = {
       applicant: {
         status: ApplicationStatus.COMPLETE,

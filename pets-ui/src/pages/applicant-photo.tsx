@@ -14,7 +14,7 @@ export default function ApplicantPhotoPage() {
 
   const fromParam = searchParams.get("from");
   let backLinkTo: string;
-  if (fromParam === "check-applicant-details") {
+  if (fromParam === "check-visa-applicant-details") {
     backLinkTo = "/check-visa-applicant-details";
   } else if (fromParam === "tb-certificate-summary") {
     backLinkTo = "/tb-certificate-summary";

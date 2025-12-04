@@ -72,7 +72,7 @@ const ApplicantPhotoForm = () => {
     if (applicantData.status === ApplicationStatus.COMPLETE) {
       if (fromParam === "tb-certificate-summary") {
         destination = "/tb-certificate-summary";
-      } else if (fromParam === "check-applicant-details") {
+      } else if (fromParam === "check-visa-applicant-details") {
         destination = "/check-visa-applicant-details";
       } else {
         destination = "/check-visa-applicant-details";
