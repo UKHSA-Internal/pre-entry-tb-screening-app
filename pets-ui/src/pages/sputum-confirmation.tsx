@@ -46,12 +46,7 @@ export default function SputumConfirmation() {
       : "Partial sputum sample information confirmed";
 
   const furtherInfo = (() => {
-    if (allResultsComplete) {
-      return [
-        "We have sent sputum collection details and results to UKHSA.",
-        "You can now view a summary for this visa applicant.",
-      ];
-    } else if (allDatesComplete && hasAnyResults) {
+    if (allDatesComplete && hasAnyResults && !allResultsComplete) {
       return ["The panel physician should wait to confirm the remaining sputum sample results"];
     }
     return [
