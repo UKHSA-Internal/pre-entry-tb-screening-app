@@ -62,7 +62,7 @@ export class AuditDbOps {
         return;
       }
 
-      const newImage = record.dynamodb.NewImage;
+      const newImage = record.dynamodb?.NewImage;
       const oldImage = record.dynamodb?.OldImage;
       const changeDetails = unmarshall(newImage as AttributeValue | Record<string, AttributeValue>);
       logger.info({ changeDetails }, "unmarshalled 'newImage'");

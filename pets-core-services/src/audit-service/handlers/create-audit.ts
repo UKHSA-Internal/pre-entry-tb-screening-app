@@ -11,7 +11,7 @@ import { logger } from "../../shared/logger";
 import { AuditDbOps } from "../models/audit-db-ops";
 
 /**
- * λ function to process a DynamoDB stream of pets clinic application s into a queue for EDAP integration.
+ * λ function to process a DynamoDB stream.
  * @param event - DynamoDB Stream event
  * @param _context - λ Context
  * @param _callback - callback function
