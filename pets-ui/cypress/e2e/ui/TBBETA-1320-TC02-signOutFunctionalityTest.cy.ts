@@ -1,7 +1,7 @@
 // Sign Out Functionality Test
-import { loginViaB2C } from "../support/commands";
-import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
-import { SignOutPage } from "../support/page-objects/signOutPage";
+import { loginViaB2C } from "../../support/commands";
+import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { SignOutPage } from "../../support/page-objects/signOutPage";
 
 describe("Sign Out Functionality Tests", () => {
   // Page object instances
