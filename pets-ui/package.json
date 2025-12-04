@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
+    
     "cypress:open": "cypress open -C cypress/cypress.config.mjs",
     "cypress:run": "cypress run -C cypress/cypress.config.mjs",
     "cypress:open:qat": "cross-env ENVIRONMENT=qat cypress open -C cypress/cypress.config.mjs",
@@ -25,7 +26,22 @@
     "cypress:run:api:preprod": "cross-env ENVIRONMENT=preprod cypress run -C cypress/cypress.config.mjs --spec 'cypress/e2e/api/**/*.cy.ts'",
     "cypress:open:api": "cypress open -C cypress/cypress.config.mjs --config specPattern='cypress/e2e/api/**/*.cy.ts'",
     "cypress:open:api:qat": "cross-env ENVIRONMENT=qat cypress open -C cypress/cypress.config.mjs --config specPattern='cypress/e2e/api/**/*.cy.ts'",
-    "cypress:open:api:dev": "cross-env ENVIRONMENT=dev cypress open -C cypress/cypress.config.mjs --config specPattern='cypress/e2e/api/**/*.cy.ts'"
+    "cypress:open:api:dev": "cross-env ENVIRONMENT=dev cypress open -C cypress/cypress.config.mjs --config specPattern='cypress/e2e/api/**/*.cy.ts'",
+    
+    "cypress:cloud": "cypress run -C cypress/cypress.config.mjs --record",
+    "cypress:cloud:chrome": "cypress run -C cypress/cypress.config.mjs --record --browser chrome",
+    "cypress:cloud:firefox": "cypress run -C cypress/cypress.config.mjs --record --browser firefox",
+    "cypress:cloud:edge": "cypress run -C cypress/cypress.config.mjs --record --browser edge",
+    "cypress:cloud:qat": "cross-env ENVIRONMENT=qat cypress run -C cypress/cypress.config.mjs --record --tag qat",
+    "cypress:cloud:dev": "cross-env ENVIRONMENT=dev cypress run -C cypress/cypress.config.mjs --record --tag dev",
+    "cypress:cloud:preprod": "cross-env ENVIRONMENT=preprod cypress run -C cypress/cypress.config.mjs --record --tag preprod",
+    "cypress:cloud:qat:chrome": "cross-env ENVIRONMENT=qat cypress run -C cypress/cypress.config.mjs --record --browser chrome --tag qat",
+    "cypress:cloud:dev:chrome": "cross-env ENVIRONMENT=dev cypress run -C cypress/cypress.config.mjs --record --browser chrome --tag dev",
+    "cypress:cloud:preprod:chrome": "cross-env ENVIRONMENT=preprod cypress run -C cypress/cypress.config.mjs --record --browser chrome --tag preprod",
+    "cypress:cloud:api": "cypress run -C cypress/cypress.config.mjs --record --spec 'cypress/e2e/api/**/*.cy.ts' --tag api",
+    "cypress:cloud:api:qat": "cross-env ENVIRONMENT=qat cypress run -C cypress/cypress.config.mjs --record --spec 'cypress/e2e/api/**/*.cy.ts' --tag api,qat",
+    "cypress:cloud:api:dev": "cross-env ENVIRONMENT=dev cypress run -C cypress/cypress.config.mjs --record --spec 'cypress/e2e/api/**/*.cy.ts' --tag api,dev",
+    "cypress:cloud:api:preprod": "cross-env ENVIRONMENT=preprod cypress run -C cypress/cypress.config.mjs --record --spec 'cypress/e2e/api/**/*.cy.ts' --tag api,preprod"
   },
   "dependencies": {
     "@aws-sdk/client-sqs": "^3.864.0",
