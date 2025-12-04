@@ -113,10 +113,10 @@ describe("ApplicantReview", () => {
     expect(screen.getAllByRole("definition")[22]).toHaveTextContent("Reykjavik");
     expect(screen.getAllByRole("term")[12]).toHaveTextContent("Province or state");
     expect(screen.getAllByRole("definition")[24]).toHaveTextContent("Reykjavik");
-    expect(screen.getAllByRole("term")[13]).toHaveTextContent("Country");
-    expect(screen.getAllByRole("definition")[26]).toHaveTextContent("Iceland");
-    expect(screen.getAllByRole("term")[14]).toHaveTextContent("Postcode");
-    expect(screen.getAllByRole("definition")[28]).toHaveTextContent("101");
+    expect(screen.getAllByRole("term")[13]).toHaveTextContent("Postcode");
+    expect(screen.getAllByRole("definition")[26]).toHaveTextContent("101");
+    expect(screen.getAllByRole("term")[14]).toHaveTextContent("Country");
+    expect(screen.getAllByRole("definition")[28]).toHaveTextContent("Iceland");
     expect(screen.getAllByRole("term")[15]).toHaveTextContent("Photo");
     expect(screen.getAllByRole("definition")[30]).toHaveTextContent("photo.jpg");
 
