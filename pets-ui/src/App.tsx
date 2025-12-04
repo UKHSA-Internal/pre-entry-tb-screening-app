@@ -119,7 +119,7 @@ function App() {
         }
       />
       <Route
-        path="/enter-visa-applicant-personal-information"
+        path="/visa-applicant-passport-information"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>

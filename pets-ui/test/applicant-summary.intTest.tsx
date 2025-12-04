@@ -285,12 +285,12 @@ describe("ApplicantReview", () => {
     const passportChange = screen.getByRole("link", { name: "Change passport number" });
     expect(passportChange).toHaveAttribute(
       "href",
-      "/enter-visa-applicant-personal-information?from=check-applicant-details#passport-number",
+      "/visa-applicant-passport-information?from=check-applicant-details#passport-number",
     );
     const coiChange = screen.getByRole("link", { name: "Change country of issue" });
     expect(coiChange).toHaveAttribute(
       "href",
-      "/enter-visa-applicant-personal-information?from=check-applicant-details#country-of-issue",
+      "/visa-applicant-passport-information?from=check-applicant-details#country-of-issue",
     );
   });
 

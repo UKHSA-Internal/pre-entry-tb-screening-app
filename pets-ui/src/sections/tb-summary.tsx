@@ -122,25 +122,25 @@ const TbSummary = () => {
         {
           key: "Name",
           value: applicantData.fullName,
-          link: `/enter-visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.fullName}`,
+          link: `/visa-applicant-passport-information?from=tb-certificate-summary#${attributeToComponentId.fullName}`,
           hiddenLabel: "Name",
         },
         {
           key: "Nationality",
           value: getCountryName(applicantData.countryOfNationality),
-          link: `/enter-visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.countryOfNationality}`,
+          link: `/visa-applicant-passport-information?from=tb-certificate-summary#${attributeToComponentId.countryOfNationality}`,
           hiddenLabel: "Nationality",
         },
         {
           key: "Date of birth",
           value: formatDateForDisplay(applicantData.dateOfBirth),
-          link: `/enter-visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.dateOfBirth}`,
+          link: `/visa-applicant-passport-information?from=tb-certificate-summary#${attributeToComponentId.dateOfBirth}`,
           hiddenLabel: "Date of birth",
         },
         {
           key: "Sex",
           value: applicantData.sex,
-          link: `/enter-visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.sex}`,
+          link: `/visa-applicant-passport-information?from=tb-certificate-summary#${attributeToComponentId.sex}`,
           hiddenLabel: "Sex",
         },
         {
@@ -151,13 +151,13 @@ const TbSummary = () => {
         {
           key: "Passport issue date",
           value: formatDateForDisplay(applicantData.passportIssueDate),
-          link: `/enter-visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.passportIssueDate}`,
+          link: `/visa-applicant-passport-information?from=tb-certificate-summary#${attributeToComponentId.passportIssueDate}`,
           hiddenLabel: "Passport issue date",
         },
         {
           key: "Passport expiry date",
           value: formatDateForDisplay(applicantData.passportExpiryDate),
-          link: `/enter-visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.passportExpiryDate}`,
+          link: `/visa-applicant-passport-information?from=tb-certificate-summary#${attributeToComponentId.passportExpiryDate}`,
           hiddenLabel: "Passport expiry date",
         },
         {
@@ -199,31 +199,31 @@ const TbSummary = () => {
         {
           key: "Address line 1",
           value: applicantData.applicantHomeAddress1,
-          link: `/enter-visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.applicantHomeAddress1}`,
+          link: `/visa-applicant-passport-information?from=tb-certificate-summary#${attributeToComponentId.applicantHomeAddress1}`,
           hiddenLabel: "Current address line 1",
         },
         {
           key: "Address line 2",
           value: applicantData.applicantHomeAddress2,
-          link: `/enter-visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.applicantHomeAddress2}`,
+          link: `/visa-applicant-passport-information?from=tb-certificate-summary#${attributeToComponentId.applicantHomeAddress2}`,
           hiddenLabel: "Current address line 2",
         },
         {
           key: "Town or city",
           value: applicantData.townOrCity,
-          link: `/enter-visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.townOrCity}`,
+          link: `/visa-applicant-passport-information?from=tb-certificate-summary#${attributeToComponentId.townOrCity}`,
           hiddenLabel: "Current town or city",
         },
         {
           key: "Country",
           value: getCountryName(applicantData.country),
-          link: `/enter-visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.country}`,
+          link: `/visa-applicant-passport-information?from=tb-certificate-summary#${attributeToComponentId.country}`,
           hiddenLabel: "Current country",
         },
         {
           key: "Postcode",
           value: applicantData.postcode,
-          link: `/enter-visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.postcode}`,
+          link: `/visa-applicant-passport-information?from=tb-certificate-summary#${attributeToComponentId.postcode}`,
           hiddenLabel: "Current postcode",
         },
       ]

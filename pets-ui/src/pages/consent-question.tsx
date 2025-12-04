@@ -31,7 +31,7 @@ export default function ConsentQuestionPage() {
 
   const onSubmit: SubmitHandler<{ consent: YesOrNo }> = (data) => {
     if (data.consent == YesOrNo.YES) {
-      navigate("/enter-visa-applicant-personal-information");
+      navigate("/visa-applicant-passport-information");
     } else {
       navigate("/get-written-consent");
     }

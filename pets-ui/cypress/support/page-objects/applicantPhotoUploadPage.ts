@@ -108,7 +108,7 @@ export class ApplicantPhotoUploadPage extends BasePage {
     cy.get(".govuk-back-link")
       .should("be.visible")
       .and("contain", "Back")
-      .and("have.attr", "href", "/enter-visa-applicant-personal-information");
+      .and("have.attr", "href", "/visa-applicant-passport-information");
     return this;
   }
 
