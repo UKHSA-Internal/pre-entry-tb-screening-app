@@ -3,6 +3,7 @@ import { testCredentials } from "./test-data";
 export function loginViaB2C() {}
 export function logoutViaB2C() {}
 export function acceptCookies() {}
+export function cancelSignOut() {}
 
 // Cookie Banner Command - To handle confirmation message
 Cypress.Commands.add("acceptCookies", (accept: boolean = true) => {
@@ -201,4 +202,28 @@ Cypress.Commands.add("logoutViaB2C", () => {
 // Clear All Sessions Command
 Cypress.Commands.add("clearAllSessions", () => {
   return Cypress.session.clearAllSavedSessions();
+});
+
+// Cancel Sign Out Command - handles clicking "Go back to screening" on sign out confirmation
+Cypress.Commands.add("cancelSignOut", () => {
+  cy.log("Starting cancel sign out process");
+
+  // Click the sign-out link in the header
+  cy.get("#sign-out", { timeout: 10000 }).should("be.visible").click();
+
+  // Verify sign-out confirmation page
+  cy.url({ timeout: 10000 }).should("include", "/are-you-sure-you-want-to-sign-out");
+  cy.contains("Are you sure you want to sign out?", { timeout: 10000 }).should("be.visible");
+  cy.contains("Signing out will lose any unsaved information.").should("be.visible");
+
+  // Click "Go back to screening" button to cancel logout
+  cy.get('button[type="submit"].govuk-button.govuk-button--secondary')
+    .should("be.visible")
+    .should("contain", "Go back to screening")
+    .click({ force: true });
+
+  // Verify we're redirected back to the tracker/screening page
+  cy.url({ timeout: 10000 }).should("not.include", "/are-you-sure-you-want-to-sign-out");
+
+  cy.log("Cancel sign out completed - returned to screening");
 });
