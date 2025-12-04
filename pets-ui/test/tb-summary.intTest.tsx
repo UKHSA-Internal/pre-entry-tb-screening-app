@@ -239,7 +239,7 @@ describe("TBSummaryPage", () => {
       const nameChangeLinks = screen.getAllByRole("link", { name: "Change Name" });
       expect(nameChangeLinks[0]).toHaveAttribute(
         "href",
-        "/enter-applicant-information?from=tb-certificate-summary#name",
+        "/enter-visa-applicant-personal-information?from=tb-certificate-summary#name",
       );
     });
 

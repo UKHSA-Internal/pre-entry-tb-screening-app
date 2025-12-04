@@ -261,13 +261,13 @@ export class ApplicantSearchPage extends BasePage {
 
   // Verify successful redirection after search
   verifyRedirectionToDetailsPage(): this {
-    this.verifyUrlContains("/enter-applicant-information");
+    this.verifyUrlContains("/enter-visa-applicant-personal-information");
     return this;
   }
 
   // Verify redirection after clicking Create New Applicant
   verifyRedirectionToCreateApplicantPage(): this {
-    this.verifyUrlContains("/enter-applicant-information");
+    this.verifyUrlContains("/enter-visa-applicant-personal-information");
     return this;
   }
 

@@ -169,7 +169,7 @@ const ProgressTracker = () => {
         <Task
           description="Visa applicant details"
           status={applicantData.status}
-          linkWhenIncomplete="/enter-applicant-information"
+          linkWhenIncomplete="/enter-visa-applicant-personal-information"
           linkWhenComplete="/check-applicant-details"
           prerequisiteTaskStatuses={[]}
         />

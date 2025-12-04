@@ -28,13 +28,13 @@ interface ApplicantDetailsFormData {
 
 export class ApplicantDetailsPage extends BasePage {
   constructor() {
-    super("/enter-applicant-information");
+    super("/enter-visa-applicant-personal-information");
   }
 
   // PAGE VERIFICATION
 
   verifyPageLoaded(): ApplicantDetailsPage {
-    cy.url().should("include", "/enter-applicant-information");
+    cy.url().should("include", "/enter-visa-applicant-personal-information");
     cy.get("h1.govuk-heading-l").should("contain", "Visa applicant passport information");
     cy.contains("h2", "Full name").should("be.visible");
     return this;
@@ -488,7 +488,7 @@ export class ApplicantDetailsPage extends BasePage {
   }
 
   verifyRedirectedToNextPage(): ApplicantDetailsPage {
-    cy.url().should("not.include", "/enter-applicant-information");
+    cy.url().should("not.include", "/enter-visa-applicant-personal-information");
     return this;
   }
 

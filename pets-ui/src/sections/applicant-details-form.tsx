@@ -178,7 +178,7 @@ const ApplicantForm = () => {
           <FreeText
             id="name"
             heading="Full name"
-            headingSize="s"
+            headingSize="m"
             hint="As shown on passport"
             errorMessage={errors?.fullName?.message ?? ""}
             formValue="fullName"
@@ -194,7 +194,7 @@ const ApplicantForm = () => {
             id="sex"
             heading="Sex"
             hint="Select the visa applicant's sex"
-            headingSize="s"
+            headingSize="m"
             isInline={RadioIsInline.FALSE}
             answerOptions={["Female", "Male", "Other"]}
             sortAnswersAlphabetically={false}
@@ -209,7 +209,7 @@ const ApplicantForm = () => {
           <Dropdown
             id="country-of-nationality"
             heading="Country of nationality"
-            headingSize="s"
+            headingSize="m"
             options={countryList}
             placeholder="Select country"
             errorMessage={errors?.countryOfNationality?.message ?? ""}
@@ -235,7 +235,7 @@ const ApplicantForm = () => {
               <DateTextInput
                 heading="Date of birth"
                 hint="For example, 26 4 2002"
-                headingSize="s"
+                headingSize="m"
                 value={value}
                 setDateValue={onChange}
                 id={"birth-date"}
@@ -250,7 +250,7 @@ const ApplicantForm = () => {
             <FreeText
               id="passport-number"
               heading="Visa applicant's passport number"
-              headingSize="s"
+              headingSize="m"
               hint="For example, 1208297A"
               errorMessage={errors?.passportNumber?.message ?? ""}
               formValue="passportNumber"
@@ -267,9 +267,9 @@ const ApplicantForm = () => {
             <Dropdown
               id="country-of-issue"
               heading="Country of issue"
-              headingSize="s"
+              headingSize="m"
               placeholder="Select country"
-              hint="As shown on, at the top of the first page"
+              hint="As shown on passport, at the top of the first page"
               options={countryList}
               errorMessage={errors?.countryOfIssue?.message ?? ""}
               formValue="countryOfIssue"
@@ -294,7 +294,7 @@ const ApplicantForm = () => {
             render={({ field: { value, onChange } }) => (
               <DateTextInput
                 heading="Issue date"
-                headingSize="s"
+                headingSize="m"
                 hint="For example, 31 3 2019"
                 value={value}
                 setDateValue={onChange}
@@ -321,7 +321,7 @@ const ApplicantForm = () => {
             render={({ field: { value, onChange } }) => (
               <DateTextInput
                 heading="Expiry date"
-                headingSize="s"
+                headingSize="m"
                 hint="For example, 31 3 2019"
                 value={value}
                 setDateValue={onChange}

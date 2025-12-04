@@ -292,7 +292,7 @@ describe("ApplicantForm", () => {
     window.history.pushState(
       {},
       "",
-      "/enter-applicant-information?from=tb-certificate-summary#name",
+      "/enter-visa-applicant-personal-information?from=tb-certificate-summary#name",
     );
     const { store } = renderWithProviders(<ApplicantForm />, { preloadedState: completeState });
 
