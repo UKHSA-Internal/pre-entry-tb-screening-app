@@ -142,7 +142,7 @@ describe("PETS Application - Amend Travel Information for Partially Completed Su
     applicantPhotoUploadPage.clickContinue();
 
     // Verify redirection to the Applicant Summary page
-    cy.url().should("include", "/check-applicant-details");
+    cy.url().should("include", "/check-visa-applicant-details");
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary

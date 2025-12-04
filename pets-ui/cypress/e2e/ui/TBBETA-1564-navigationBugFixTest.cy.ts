@@ -154,7 +154,7 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
     });
 
     // Verify redirection to the Applicant Summary page
-    cy.url().should("include", "/check-applicant-details");
+    cy.url().should("include", "/check-visa-applicant-details");
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary

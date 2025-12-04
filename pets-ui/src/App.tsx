@@ -139,7 +139,7 @@ function App() {
         }
       />
       <Route
-        path="/check-applicant-details"
+        path="/check-visa-applicant-details"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>

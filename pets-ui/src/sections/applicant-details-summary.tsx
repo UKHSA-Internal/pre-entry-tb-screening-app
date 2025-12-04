@@ -158,16 +158,16 @@ const ApplicantReview = () => {
       hiddenLabel: "home province or state",
     },
     {
-      key: "Country",
-      value: getCountryName(applicantData.country),
-      link: `/enter-applicant-information?from=check-applicant-details#${attributeToComponentId.country}`,
-      hiddenLabel: "country",
-    },
-    {
       key: "Postcode",
       value: applicantData.postcode,
       link: `/enter-applicant-information?from=check-applicant-details#${attributeToComponentId.postcode}`,
       hiddenLabel: "postcode",
+    },
+    {
+      key: "Country",
+      value: getCountryName(applicantData.country),
+      link: `/enter-applicant-information?from=check-applicant-details#${attributeToComponentId.country}`,
+      hiddenLabel: "country",
     },
     {
       key: "Photo",

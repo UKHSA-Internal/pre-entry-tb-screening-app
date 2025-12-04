@@ -3,7 +3,7 @@ import { BasePage } from "../BasePage";
 
 export class ApplicantSummaryPage extends BasePage {
   constructor() {
-    super("/check-applicant-details");
+    super("/check-visa-applicant-details");
   }
 
   // Verify page loaded
@@ -420,7 +420,7 @@ export class ApplicantSummaryPage extends BasePage {
 
   // Verify page URL
   verifyPageUrl(): ApplicantSummaryPage {
-    cy.url().should("include", "/check-applicant-details");
+    cy.url().should("include", "/check-visa-applicant-details");
     return this;
   }
 

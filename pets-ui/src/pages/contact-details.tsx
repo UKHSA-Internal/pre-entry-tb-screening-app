@@ -10,7 +10,7 @@ export default function ContactDetailsPage() {
   const from = searchParams.get("from");
   let backLinkTo: string;
   if (from === "check-applicant-details") {
-    backLinkTo = "/check-applicant-details";
+    backLinkTo = "/check-visa-applicant-details";
   } else if (from === "tb-certificate-summary") {
     backLinkTo = "/tb-certificate-summary";
   } else {

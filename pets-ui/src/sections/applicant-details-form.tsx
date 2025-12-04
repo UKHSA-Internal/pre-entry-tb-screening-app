@@ -82,7 +82,7 @@ const ApplicantForm = () => {
         if (fromParam === "tb-certificate-summary") {
           navigate("/tb-certificate-summary");
         } else if (fromParam === "check-applicant-details") {
-          navigate("/check-applicant-details");
+          navigate("/check-visa-applicant-details");
         } else {
           navigate("/tb-certificate-summary");
         }

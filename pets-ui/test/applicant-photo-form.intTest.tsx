@@ -76,7 +76,7 @@ describe("ApplicantPhotoForm", () => {
 
     fireEvent.click(screen.getByText("Continue"));
     await waitFor(() => {
-      expect(useNavigateMock).toHaveBeenCalledWith("/check-applicant-details");
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-visa-applicant-details");
     });
   });
 
@@ -138,7 +138,7 @@ describe("ApplicantPhotoForm", () => {
 
     fireEvent.click(screen.getByText("Continue"));
     await waitFor(() => {
-      expect(useNavigateMock).toHaveBeenCalledWith("/check-applicant-details");
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-visa-applicant-details");
     });
   });
 
@@ -156,7 +156,7 @@ describe("ApplicantPhotoForm", () => {
 
     await waitFor(() => {
       expect(setApplicantPhotoFile).toHaveBeenCalledWith(file);
-      expect(useNavigateMock).toHaveBeenCalledWith("/check-applicant-details");
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-visa-applicant-details");
     });
   });
 
@@ -249,7 +249,7 @@ describe("ApplicantPhotoForm", () => {
         "abc-123",
         ImageType.Photo,
       );
-      expect(useNavigateMock).toHaveBeenCalledWith("/check-applicant-details");
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-visa-applicant-details");
     });
   });
 
