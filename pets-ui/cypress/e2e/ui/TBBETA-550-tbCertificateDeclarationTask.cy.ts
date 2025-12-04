@@ -115,10 +115,10 @@ describe("TB certificate declaration task links should NOT be clickable until al
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary
-    applicantSummaryPage.verifySummaryValue("Name", "Tess Tester-Test");
+    applicantSummaryPage.verifySummaryValue("Full name", "Tess Tester-Test");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName); // Use country name for validation
-    applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
+    applicantSummaryPage.verifySummaryValue("Nationality", countryName);
     applicantSummaryPage.verifySummaryValue("Country", countryName);
 
     //confirm above details to proceed to next page

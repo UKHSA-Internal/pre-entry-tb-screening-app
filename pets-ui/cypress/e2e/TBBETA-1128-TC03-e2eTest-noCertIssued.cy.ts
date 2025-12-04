@@ -166,10 +166,10 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary
-    applicantSummaryPage.verifySummaryValue("Name", "Freddy Tester-Doe");
+    applicantSummaryPage.verifySummaryValue("Full name", "Freddy Tester-Doe");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
-    applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
+    applicantSummaryPage.verifySummaryValue("Nationality", countryName);
     applicantSummaryPage.verifySummaryValue("Country", countryName);
 
     // Confirm above details to proceed to next page
@@ -563,19 +563,19 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       // Validate sample data matches what was entered (with positive results)
       const expectedSampleData = {
         sample1: {
-          dateTaken: "15 March 2025",
+          dateCollected: "15 March 2025",
           collectionMethod: "Coughed up",
           smearResult: "Positive",
           cultureResult: "Positive",
         },
         sample2: {
-          dateTaken: "16 March 2025",
+          dateCollected: "16 March 2025",
           collectionMethod: "Induced",
           smearResult: "Positive",
           cultureResult: "Positive",
         },
         sample3: {
-          dateTaken: "17 March 2025",
+          dateCollected: "17 March 2025",
           collectionMethod: "Coughed up",
           smearResult: "Positive",
           cultureResult: "Positive",

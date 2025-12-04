@@ -156,10 +156,10 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary
-    applicantSummaryPage.verifySummaryValue("Name", "Nana Quist");
+    applicantSummaryPage.verifySummaryValue("Full name", "Nana Quist");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
-    applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
+    applicantSummaryPage.verifySummaryValue("Nationality", countryName);
     applicantSummaryPage.verifySummaryValue("Country", countryName);
 
     // Confirm above details to proceed to next page
@@ -245,8 +245,8 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
       .selectChildTbHistory("None of these") // None of these for child TB history
       .selectPreviousTb("No") // No TB history
       .selectCloseContact("No") // No close contact
-      .selectPregnancyStatus("N/A") // N/A for child
-      .selectMenstrualPeriods("N/A") // N/A for child
+      .selectPregnancyStatus("No") // No for child
+      .selectMenstrualPeriods("No") // No for child
       .fillPhysicalExamNotes(
         "Child applicant aged 6 years. No TB symptoms or history. No close contact with TB. Physical examination normal for age.",
       )
@@ -273,8 +273,8 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",
-      pregnant: "N/A",
-      menstrualPeriods: "N/A",
+      pregnant: "No",
+      menstrualPeriods: "No",
       physicalExamNotes:
         "Child applicant aged 6 years. No TB symptoms or history. No close contact with TB. Physical examination normal for age.",
       xrayRequired: "No",
@@ -397,19 +397,19 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     // Validate sample data matches what was entered
     const expectedSampleData = {
       sample1: {
-        dateTaken: "18 September 2025",
+        dateCollected: "18 September 2025",
         collectionMethod: "Coughed up",
         smearResult: "Negative",
         cultureResult: "Negative",
       },
       sample2: {
-        dateTaken: "19 September 2025",
+        dateCollected: "19 September 2025",
         collectionMethod: "Induced",
         smearResult: "Negative",
         cultureResult: "Negative",
       },
       sample3: {
-        dateTaken: "20 September 2025",
+        dateCollected: "20 September 2025",
         collectionMethod: "Coughed up",
         smearResult: "Negative",
         cultureResult: "Negative",

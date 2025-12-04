@@ -156,10 +156,10 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary
-    applicantSummaryPage.verifySummaryValue("Name", "Amina Johnson");
+    applicantSummaryPage.verifySummaryValue("Full name", "Amina Johnson");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
-    applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
+    applicantSummaryPage.verifySummaryValue("Nationality", countryName);
     applicantSummaryPage.verifySummaryValue("Country", countryName);
 
     // Confirm above details to proceed to next page
@@ -245,7 +245,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
       .selectPreviousTb("No") // No TB history
       .selectCloseContact("Yes") // Yes close contact
       .selectPregnancyStatus("Yes") // Yes Pregnant
-      .selectMenstrualPeriods("N/A") // N/A due to pregnancy
+      .selectMenstrualPeriods("No") // No due to pregnancy
       .fillPhysicalExamNotes(
         "Pregnant adult female with TB symptoms. Reports close contact with active TB case. Requires comprehensive screening.",
       )
@@ -396,19 +396,19 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     // Validate sample data matches what was entered
     const expectedSampleData = {
       sample1: {
-        dateTaken: "18 September 2025",
+        dateCollected: "18 September 2025",
         collectionMethod: "Coughed up",
         smearResult: "Negative",
         cultureResult: "Negative",
       },
       sample2: {
-        dateTaken: "19 September 2025",
+        dateCollected: "19 September 2025",
         collectionMethod: "Induced",
         smearResult: "Negative",
         cultureResult: "Negative",
       },
       sample3: {
-        dateTaken: "20 September 2025",
+        dateCollected: "20 September 2025",
         collectionMethod: "Coughed up",
         smearResult: "Negative",
         cultureResult: "Negative",

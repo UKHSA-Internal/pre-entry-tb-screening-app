@@ -146,10 +146,10 @@ describe("PETS Application - Amend Travel Information for Partially Completed Su
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary
-    applicantSummaryPage.verifySummaryValue("Name", "John Smith");
+    applicantSummaryPage.verifySummaryValue("Full name", "John Smith");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
-    applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
+    applicantSummaryPage.verifySummaryValue("Nationality", countryName);
 
     // Submit the summary and continue to next step
     applicantSummaryPage.confirmDetails();
