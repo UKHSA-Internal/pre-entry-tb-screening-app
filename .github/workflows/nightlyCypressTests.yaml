@@ -25,9 +25,9 @@ on:
         options: [all, chrome, firefox, edge]
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+    contents: read
+    pages: write
+    id-token: write
 
 jobs:
   setup-matrix:
@@ -93,20 +93,29 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || github.ref_name }}
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
+            - name: Create dashboard directory
+              run: |
+                  mkdir -p dashboard
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
-          cache: "pnpm"
+            - name: Generate test summary report with counts
+              id: summary
+              run: |
+                  echo "# 🌙 Nightly Cypress Test Results" > nightly-summary.md
+                  echo "**Run Date**: $(date)" >> nightly-summary.md
+                  echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
+                  echo "" >> nightly-summary.md
 
-      - name: Install dependencies
-        run: pnpm i
+                  ENV_MATRIX='${{ needs.setup-matrix.outputs.environments }}'
+                  BROWSER_MATRIX='${{ needs.setup-matrix.outputs.browsers }}'
+                  ENV_LIST=($(echo $ENV_MATRIX | jq -r '.[]'))
+                  BROWSER_LIST=($(echo $BROWSER_MATRIX | jq -r '.[]'))
 
-      - name: Debug available Cypress specs
-        run: ls -R pets-ui/cypress/e2e
+                  TOTAL=0
+                  FAILS=0
+                  TOTAL_TEST_COUNT=0
+                  TOTAL_PASSED_COUNT=0
+                  TOTAL_FAILED_COUNT=0
+                  TOTAL_PENDING_COUNT=0
 
       - name: Verify Cypress reporter configuration
         run: |
@@ -124,12 +133,81 @@ jobs:
           path: ~/.cache/Cypress
           key: cypress-binary-nightly-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
 
-      - name: Install Cypress Binary
-        if: steps.cache-cypress-binary.outputs.cache-hit != 'true'
-        run: |
-          pnpm exec cypress install --force
-          pnpm exec cypress verify
-        working-directory: pets-ui
+                  for env in "${ENV_LIST[@]}"; do
+                    echo "## Environment: $env" >> nightly-summary.md
+                    echo "" >> nightly-summary.md
+                    echo "| Browser | Status | Total Tests | Passed | Failed | Pending |" >> nightly-summary.md
+                    echo "|---------|--------|-------------|--------|--------|---------|" >> nightly-summary.md
+                    
+                    if [ "$FIRST_ENV" = true ]; then
+                      echo "    \"$env\": {" >> dashboard/test-results.json
+                      FIRST_ENV=false
+                    else
+                      echo "    ,\"$env\": {" >> dashboard/test-results.json
+                    fi
+                    
+                    FIRST_BROWSER=true
+                    for browser in "${BROWSER_LIST[@]}"; do
+                      RESULT_FILE="all-artifacts/env-browser-result-${env}-${browser}/${env}-${browser}-result.txt"
+                      RESULT_JSON_FILE="all-artifacts/env-browser-result-${env}-${browser}/${env}-${browser}-result.json"
+                      STATUS="UNKNOWN"
+                      TEST_COUNT=0
+                      PASSED_COUNT=0
+                      FAILED_COUNT=0
+                      PENDING_COUNT=0
+                      
+                      if [ -f "$RESULT_FILE" ]; then
+                        STATUS=$(cat "$RESULT_FILE")
+                      fi
+                      
+                      # Extract test counts from JSON if available
+                      if [ -f "$RESULT_JSON_FILE" ] && command -v jq >/dev/null 2>&1; then
+                        TEST_COUNT=$(jq -r '.testCounts.total // 0' "$RESULT_JSON_FILE")
+                        PASSED_COUNT=$(jq -r '.testCounts.passed // 0' "$RESULT_JSON_FILE")
+                        FAILED_COUNT=$(jq -r '.testCounts.failed // 0' "$RESULT_JSON_FILE")
+                        PENDING_COUNT=$(jq -r '.testCounts.pending // 0' "$RESULT_JSON_FILE")
+                      fi
+                      
+                      echo "| $browser | $([ "$STATUS" = "PASS" ] && echo "✅ PASS" || echo "❌ FAIL") | $TEST_COUNT | $PASSED_COUNT | $FAILED_COUNT | $PENDING_COUNT |" >> nightly-summary.md
+                      
+                      if [ "$FIRST_BROWSER" = true ]; then
+                        echo "      \"$browser\": {" >> dashboard/test-results.json
+                        echo "        \"status\": \"$STATUS\"," >> dashboard/test-results.json
+                        echo "        \"testCounts\": {" >> dashboard/test-results.json
+                        echo "          \"total\": $TEST_COUNT," >> dashboard/test-results.json
+                        echo "          \"passed\": $PASSED_COUNT," >> dashboard/test-results.json
+                        echo "          \"failed\": $FAILED_COUNT," >> dashboard/test-results.json
+                        echo "          \"pending\": $PENDING_COUNT" >> dashboard/test-results.json
+                        echo "        }" >> dashboard/test-results.json
+                        echo "      }" >> dashboard/test-results.json
+                        FIRST_BROWSER=false
+                      else
+                        echo "      ,\"$browser\": {" >> dashboard/test-results.json
+                        echo "        \"status\": \"$STATUS\"," >> dashboard/test-results.json
+                        echo "        \"testCounts\": {" >> dashboard/test-results.json
+                        echo "          \"total\": $TEST_COUNT," >> dashboard/test-results.json
+                        echo "          \"passed\": $PASSED_COUNT," >> dashboard/test-results.json
+                        echo "          \"failed\": $FAILED_COUNT," >> dashboard/test-results.json
+                        echo "          \"pending\": $PENDING_COUNT" >> dashboard/test-results.json
+                        echo "        }" >> dashboard/test-results.json
+                        echo "      }" >> dashboard/test-results.json
+                      fi
+                      
+                      TOTAL=$((TOTAL+1))
+                      if [ "$STATUS" != "PASS" ]; then
+                        FAILS=$((FAILS+1))
+                      fi
+                      
+                      # Aggregate test counts
+                      TOTAL_TEST_COUNT=$((TOTAL_TEST_COUNT+TEST_COUNT))
+                      TOTAL_PASSED_COUNT=$((TOTAL_PASSED_COUNT+PASSED_COUNT))
+                      TOTAL_FAILED_COUNT=$((TOTAL_FAILED_COUNT+FAILED_COUNT))
+                      TOTAL_PENDING_COUNT=$((TOTAL_PENDING_COUNT+PENDING_COUNT))
+                    done
+                    echo "    }" >> dashboard/test-results.json
+                    echo "" >> nightly-summary.md
+                  done
+                  echo "  }" >> dashboard/test-results.json
 
       - name: Start Local Environment
         run: |
@@ -336,9 +414,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v4
 
       - name: Install required tools
         run: |
