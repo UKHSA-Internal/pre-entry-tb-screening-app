@@ -4,12 +4,12 @@ import { BasePage } from "../BasePage";
 
 export class MedicalConfirmationPage extends BasePage {
   constructor() {
-    super("/medical-history-tb-symptoms-confirmed");
+    super("/tb-symptoms-medical-history-confirmed");
   }
 
   // Verify page loaded
   verifyPageLoaded(): MedicalConfirmationPage {
-    cy.url().should("include", "/medical-history-tb-symptoms-confirmed");
+    cy.url().should("include", "/tb-symptoms-medical-history-confirmed");
     cy.contains("h1", "TB symptoms and medical history confirmed").should("be.visible");
     cy.get(".govuk-panel--confirmation").should("be.visible");
     return this;
