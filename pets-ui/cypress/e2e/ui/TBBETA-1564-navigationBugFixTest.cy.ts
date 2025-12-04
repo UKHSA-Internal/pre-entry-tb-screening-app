@@ -525,7 +525,7 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
       sputumCollectionPage.clickSaveAndContinueToResults();
 
       // Verify redirection to Enter Sputum Sample Results page
-      cy.url().should("include", "/enter-sputum-sample-results");
+      cy.url().should("include", "/sputum-results");
 
       // Verify Enter Sputum Sample Results page loaded
       enterSputumSampleResultsPage.verifyPageLoaded();

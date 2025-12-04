@@ -271,24 +271,24 @@ export class CheckSputumSampleInfoPage extends BasePage {
     this.verifySampleChangeLinks(1, {
       "Date collected": "/enter-sputum-sample-collection-information",
       "Collection method": "/enter-sputum-sample-collection-information",
-      "Smear result": "/enter-sputum-sample-results",
-      "Culture result": "/enter-sputum-sample-results",
+      "Smear result": "/sputum-results",
+      "Culture result": "/sputum-results",
     });
 
     // Sample 2 change links
     this.verifySampleChangeLinks(2, {
       "Date collected": "/enter-sputum-sample-collection-information",
       "Collection method": "/enter-sputum-sample-collection-information",
-      "Smear result": "/enter-sputum-sample-results",
-      "Culture result": "/enter-sputum-sample-results",
+      "Smear result": "/sputum-results",
+      "Culture result": "/sputum-results",
     });
 
     // Sample 3 change links
     this.verifySampleChangeLinks(3, {
       "Date collected": "/enter-sputum-sample-collection-information",
       "Collection method": "/enter-sputum-sample-collection-information",
-      "Smear result": "/enter-sputum-sample-results",
-      "Culture result": "/enter-sputum-sample-results",
+      "Smear result": "/sputum-results",
+      "Culture result": "/sputum-results",
     });
     return this;
   }
@@ -320,7 +320,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
     this.getSampleSummaryValue(1, "Smear result").then((smearValue) => {
       if (smearValue !== "No data") {
         this.clickSampleChangeLink(1, "Smear result");
-        cy.url().should("include", "/enter-sputum-sample-results");
+        cy.url().should("include", "/sputum-results");
         cy.go("back");
       }
     });

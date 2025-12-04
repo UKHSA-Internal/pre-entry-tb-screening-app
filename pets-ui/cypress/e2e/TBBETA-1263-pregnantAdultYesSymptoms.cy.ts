@@ -373,7 +373,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     sputumCollectionPage.clickSaveAndContinueToResults();
 
     // Verify redirection to Enter Sputum Sample Results page
-    cy.url().should("include", "/enter-sputum-sample-results");
+    cy.url().should("include", "/sputum-results");
 
     // Enter sputum sample results page
     enterSputumSampleResultsPage.verifyPageLoaded();
