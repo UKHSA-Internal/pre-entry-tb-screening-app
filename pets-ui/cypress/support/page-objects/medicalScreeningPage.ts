@@ -73,7 +73,7 @@ export class MedicalScreeningPage extends BasePage {
   }
 
   // Verify auto-populated age is visible
-  fillAge(age: string): MedicalScreeningPage {
+  verifyAge(age: string): MedicalScreeningPage {
     // Verify auto-populated age is visible
     cy.contains(`${age} years old`).should("be.visible");
     return this;
@@ -160,7 +160,7 @@ export class MedicalScreeningPage extends BasePage {
       );
     }
 
-    this.fillAge(data.age);
+    this.verifyAge(data.age);
     this.selectTbSymptoms(data.tbSymptoms);
 
     if (data.tbSymptoms === "Yes" && data.tbSymptomsList && data.tbSymptomsList.length > 0) {
@@ -570,7 +570,7 @@ export class MedicalScreeningPage extends BasePage {
       );
     }
 
-    this.fillAge(data.age);
+    this.verifyAge(data.age);
     this.selectTbSymptoms(data.tbSymptoms);
     this.selectMultipleUnderElevenConditions(data.underElevenConditions);
     this.selectPreviousTb(data.previousTb);

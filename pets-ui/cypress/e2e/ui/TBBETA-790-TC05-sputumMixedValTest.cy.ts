@@ -245,7 +245,7 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
 
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("36")
+      .verifyAge("37")
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
@@ -266,7 +266,7 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
 
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "36 years old",
+      age: "37 years old",
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",
