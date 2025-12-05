@@ -256,7 +256,7 @@ describe("PETS Application End-to-End Tests with Minor Findings", () => {
 
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("25")
+      .verifyAge("25")
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")

@@ -340,7 +340,7 @@ export function navigateToChestXrayPage() {
   // Complete the medical screening
   medicalScreeningPage.verifyPageLoaded();
   medicalScreeningPage
-    .fillAge(applicantData.age)
+    .verifyAge(applicantData.age)
     .selectTbSymptoms("No")
     .selectPreviousTb("No")
     .selectCloseContact("No")

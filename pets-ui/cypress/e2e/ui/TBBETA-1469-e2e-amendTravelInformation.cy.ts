@@ -231,7 +231,7 @@ describe("PETS Application - Amend Travel Information for Partially Completed Su
     // Fill medical screening
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("30")
+      .verifyAge("30")
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")

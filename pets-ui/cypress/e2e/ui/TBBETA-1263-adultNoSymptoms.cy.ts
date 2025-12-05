@@ -237,7 +237,7 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
     medicalScreeningPage.verifyPageLoaded();
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("35") // Adult age
+      .verifyAge("35") // Adult age
       .selectTbSymptoms("No") // No symptoms
       .selectPreviousTb("Yes") // Yes to TB history
       .selectCloseContact("No") // No close contact

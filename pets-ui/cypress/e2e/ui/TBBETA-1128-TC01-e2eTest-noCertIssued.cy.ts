@@ -253,7 +253,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
 
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("30")
+      .verifyAge("30")
       .selectTbSymptoms("Yes")
       .selectPreviousTb("No")
       .selectCloseContact("Yes")

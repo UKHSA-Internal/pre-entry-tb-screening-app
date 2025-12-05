@@ -198,7 +198,7 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
     medicalScreeningPage.verifyPageLoaded();
     medicalScreeningPage
       .fillScreeningDate("25", "09", "1992")
-      .fillAge("33")
+      .verifyAge("33")
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")

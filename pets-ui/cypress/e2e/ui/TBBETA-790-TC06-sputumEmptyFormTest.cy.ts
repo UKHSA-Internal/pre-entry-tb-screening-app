@@ -246,7 +246,7 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
 
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("33")
+      .verifyAge("33")
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")

@@ -237,7 +237,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
 
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("33")
+      .verifyAge("33")
       .selectTbSymptoms("Yes") // Yes symptoms
       .selectPreviousTb("No") // No TB history
       .selectCloseContact("Yes") // Yes close contact

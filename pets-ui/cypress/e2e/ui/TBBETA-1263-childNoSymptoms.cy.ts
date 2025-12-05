@@ -241,7 +241,7 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
 
     medicalScreeningPage
       .fillScreeningDate("10", "9", "2025")
-      .fillAge("7") // Child age (under 11)
+      .verifyAge("7") // Child age (under 11)
       .selectTbSymptoms("No") // No symptoms
       .selectChildTbHistory("None of these") // None of these for child TB history
       .selectPreviousTb("No") // No TB history
