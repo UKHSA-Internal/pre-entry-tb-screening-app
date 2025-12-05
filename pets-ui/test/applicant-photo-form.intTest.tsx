@@ -4,6 +4,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { Mock, vi } from "vitest";
 
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
+import ApplicantPhotoPage from "@/pages/applicant-photo";
 import ApplicantPhotoForm from "@/sections/applicant-photo-form";
 import { ApplicationStatus, ImageType } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
@@ -76,7 +77,7 @@ describe("ApplicantPhotoForm", () => {
 
     fireEvent.click(screen.getByText("Continue"));
     await waitFor(() => {
-      expect(useNavigateMock).toHaveBeenCalledWith("/check-applicant-details");
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-visa-applicant-details");
     });
   });
 
@@ -112,7 +113,11 @@ describe("ApplicantPhotoForm", () => {
   });
 
   it("navigates to Check applicant details when from=check", async () => {
-    window.history.pushState({}, "", "/upload-visa-applicant-photo?from=check-applicant-details");
+    window.history.pushState(
+      {},
+      "",
+      "/upload-visa-applicant-photo?from=check-visa-applicant-details",
+    );
     const preloadedState = {
       applicant: {
         status: ApplicationStatus.COMPLETE,
@@ -138,7 +143,7 @@ describe("ApplicantPhotoForm", () => {
 
     fireEvent.click(screen.getByText("Continue"));
     await waitFor(() => {
-      expect(useNavigateMock).toHaveBeenCalledWith("/check-applicant-details");
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-visa-applicant-details");
     });
   });
 
@@ -156,7 +161,7 @@ describe("ApplicantPhotoForm", () => {
 
     await waitFor(() => {
       expect(setApplicantPhotoFile).toHaveBeenCalledWith(file);
-      expect(useNavigateMock).toHaveBeenCalledWith("/check-applicant-details");
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-visa-applicant-details");
     });
   });
 
@@ -249,7 +254,7 @@ describe("ApplicantPhotoForm", () => {
         "abc-123",
         ImageType.Photo,
       );
-      expect(useNavigateMock).toHaveBeenCalledWith("/check-applicant-details");
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-visa-applicant-details");
     });
   });
 
@@ -293,5 +298,24 @@ describe("ApplicantPhotoForm", () => {
       expect(uploadFile).toHaveBeenCalled();
       expect(useNavigateMock).toHaveBeenCalledWith("/sorry-there-is-problem-with-service");
     });
+  });
+
+  it("back link points to applicant details summary when from=check-visa-applicant-details", () => {
+    window.history.pushState(
+      {},
+      "",
+      "/upload-visa-applicant-photo?from=check-visa-applicant-details",
+    );
+
+    renderWithProviders(
+      <HelmetProvider>
+        <ApplicantPhotoPage />
+      </HelmetProvider>,
+    );
+
+    const backLink = screen.getByRole("link", { name: "Back" });
+    expect(backLink).toBeInTheDocument();
+    expect(backLink).toHaveAttribute("href", "/check-visa-applicant-details");
+    expect(backLink).toHaveClass("govuk-back-link");
   });
 });

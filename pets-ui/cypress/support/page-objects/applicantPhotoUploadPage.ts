@@ -21,15 +21,10 @@ export class ApplicantPhotoUploadPage extends BasePage {
 
   // Verify file upload instructions text
   verifyFileUploadInstructions(): ApplicantPhotoUploadPage {
-    cy.get(".govuk-heading-m").contains("The photo must:").should("be.visible");
-    cy.get(".govuk-body ul").within(() => {
-      cy.contains("li", "be a JPG, JPEG or PNG file").should("be.visible");
-      cy.contains("li", "be less than 10MB").should("be.visible");
-      cy.contains("li", "be the correct way up - open it on your computer to check").should(
-        "be.visible",
-      );
-      cy.contains("li", "meet the").should("be.visible");
-    });
+    cy.contains(
+      "p.govuk-body",
+      "Select a file to upload. File type must be JPG, JPEG or PNG. Images must be less than 10MB.",
+    ).should("be.visible");
     return this;
   }
 
@@ -223,7 +218,7 @@ export class ApplicantPhotoUploadPage extends BasePage {
 
   // Verify file size limit is mentioned
   verifyFileSizeLimit(): ApplicantPhotoUploadPage {
-    cy.get(".govuk-body ul").should("contain", "less than 10MB");
+    cy.get(".govuk-body").should("contain", "less than 10MB");
     return this;
   }
 
