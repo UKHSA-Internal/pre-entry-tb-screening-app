@@ -76,35 +76,35 @@ const ApplicantReview = () => {
 
   const summaryData = [
     {
-      key: "Name",
+      key: "Full name",
       value: applicantData.fullName,
-      link: `/visa-applicant-passport-information?from=check-applicant-details#${attributeToComponentId.fullName}`,
-      hiddenLabel: "name",
-    },
-    {
-      key: "Sex",
-      value: applicantData.sex,
-      link: `/visa-applicant-passport-information?from=check-applicant-details#${attributeToComponentId.sex}`,
-      hiddenLabel: "sex",
-    },
-    {
-      key: "Country of nationality",
-      value: getCountryName(applicantData.countryOfNationality),
-      link: `/visa-applicant-passport-information?from=check-applicant-details#${attributeToComponentId.countryOfNationality}`,
-      hiddenLabel: "country of nationality",
+      link: `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.fullName}`,
+      hiddenLabel: "full name",
     },
     {
       key: "Date of birth",
       value: formatDateForDisplay(applicantData.dateOfBirth),
-      link: `/visa-applicant-passport-information?from=check-applicant-details#${attributeToComponentId.dateOfBirth}`,
+      link: `/enter-applicant-information?from=check-visa-applicant-details#${attributeToComponentId.dateOfBirth}`,
       hiddenLabel: "date of birth",
+    },
+    {
+      key: "Sex",
+      value: applicantData.sex,
+      link: `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.sex}`,
+      hiddenLabel: "sex",
+    },
+    {
+      key: "Nationality",
+      value: getCountryName(applicantData.countryOfNationality),
+      link: `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.countryOfNationality}`,
+      hiddenLabel: "country of nationality",
     },
     {
       key: "Passport number",
       value: applicantData.passportNumber,
       link: isComplete
         ? undefined
-        : `/visa-applicant-passport-information?from=check-applicant-details#${attributeToComponentId.passportNumber}`,
+        : `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.passportNumber}`,
       hiddenLabel: "passport number",
     },
     {
@@ -112,68 +112,68 @@ const ApplicantReview = () => {
       value: getCountryName(applicantData.countryOfIssue),
       link: isComplete
         ? undefined
-        : `/visa-applicant-passport-information?from=check-applicant-details#${attributeToComponentId.countryOfIssue}`,
+        : `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.countryOfIssue}`,
       hiddenLabel: "country of issue",
     },
     {
       key: "Passport issue date",
       value: formatDateForDisplay(applicantData.passportIssueDate),
-      link: `/visa-applicant-passport-information?from=check-applicant-details#${attributeToComponentId.passportIssueDate}`,
+      link: `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.passportIssueDate}`,
       hiddenLabel: "passport issue date",
     },
     {
       key: "Passport expiry date",
       value: formatDateForDisplay(applicantData.passportExpiryDate),
-      link: `/visa-applicant-passport-information?from=check-applicant-details#${attributeToComponentId.passportExpiryDate}`,
+      link: `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.passportExpiryDate}`,
       hiddenLabel: "passport expiry date",
     },
     {
       key: "Home address line 1",
       value: applicantData.applicantHomeAddress1,
-      link: `/visa-applicant-passport-information?from=check-applicant-details#${attributeToComponentId.applicantHomeAddress1}`,
+      link: `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.applicantHomeAddress1}`,
       hiddenLabel: "home address line 1",
     },
     {
-      key: "Home address line 2",
+      key: "Home address line 2 (optional)",
       value: applicantData.applicantHomeAddress2,
-      link: `/visa-applicant-passport-information?from=check-applicant-details#${attributeToComponentId.applicantHomeAddress2}`,
+      link: `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.applicantHomeAddress2}`,
       hiddenLabel: "home address line 2",
     },
     {
-      key: "Home address line 3",
+      key: "Home address line 3 (optional)",
       value: applicantData.applicantHomeAddress3,
-      link: `/visa-applicant-passport-information?from=check-applicant-details#${attributeToComponentId.applicantHomeAddress3}`,
+      link: `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.applicantHomeAddress3}`,
       hiddenLabel: "home address line 3",
     },
     {
       key: "Town or city",
       value: applicantData.townOrCity,
-      link: `/visa-applicant-passport-information?from=check-applicant-details#${attributeToComponentId.townOrCity}`,
+      link: `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.townOrCity}`,
       hiddenLabel: "home town or city",
     },
     {
       key: "Province or state",
       value: applicantData.provinceOrState,
-      link: `/visa-applicant-passport-information?from=check-applicant-details#${attributeToComponentId.provinceOrState}`,
+      link: `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.provinceOrState}`,
       hiddenLabel: "home province or state",
-    },
-    {
-      key: "Country",
-      value: getCountryName(applicantData.country),
-      link: `/visa-applicant-passport-information?from=check-applicant-details#${attributeToComponentId.country}`,
-      hiddenLabel: "country",
     },
     {
       key: "Postcode",
       value: applicantData.postcode,
-      link: `/visa-applicant-passport-information?from=check-applicant-details#${attributeToComponentId.postcode}`,
+      link: `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.postcode}`,
       hiddenLabel: "postcode",
     },
     {
-      key: "Applicant Photo",
+      key: "Country",
+      value: getCountryName(applicantData.country),
+      link: `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.country}`,
+      hiddenLabel: "country",
+    },
+    {
+      key: "Photo",
       value: applicantData.applicantPhotoFileName,
-      link: "/upload-visa-applicant-photo?from=check-applicant-details",
-      hiddenLabel: "applicant photo",
+      link: "/upload-visa-applicant-photo?from=check-visa-applicant-details",
+      hiddenLabel: "photo",
     },
   ];
 
