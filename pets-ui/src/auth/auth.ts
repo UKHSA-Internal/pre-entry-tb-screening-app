@@ -2,6 +2,7 @@ import {
   AuthenticationResult,
   EventMessage,
   EventType,
+  InteractionRequiredAuthError,
   PublicClientApplication,
   RedirectRequest,
   SilentRequest,
@@ -10,6 +11,9 @@ import {
 const CLIENT_ID = import.meta.env.VITE_MSAL_CLIENT_ID as string;
 const TENANT_ID = import.meta.env.VITE_MSAL_TENANT_ID as string;
 const AUTH_ENDPOINT_URI = import.meta.env.VITE_AUTH_ENDPOINT_URI as string;
+// time (in milliseconds) to Access Token expire time.
+// It defines how many msecs before token expiration time the token should be refreshed (now by re-login)
+const MIN_TO_EXPIRE = 5 * 1000; // secs * 1000
 
 if (!CLIENT_ID || !TENANT_ID) {
   throw new Error("Missing environment variables for MSAL configuration");
@@ -62,22 +66,54 @@ export const initializeMsal = async () => {
   return msalInstance;
 };
 
-export const acquireTokenSilently = async (): Promise<AuthenticationResult | null> => {
-  const accounts = msalInstance.getAllAccounts();
+export const acquireTokenSilently = async (): Promise<AuthenticationResult | null | void> => {
+  const account = msalInstance.getActiveAccount();
 
-  if (accounts.length === 0) {
-    throw new Error("No accounts found");
+  if (!account) {
+    throw new Error(
+      "No active account! Verify a user has been signed in and setActiveAccount has been called.",
+    );
   }
 
   const accessTokenRequest: SilentRequest = {
     scopes: loginRequest.scopes,
-    account: accounts[0],
+    account: account,
   };
 
-  const accessToken: AuthenticationResult =
-    await msalInstance.acquireTokenSilent(accessTokenRequest);
+  try {
+    const accessToken: AuthenticationResult =
+      await msalInstance.acquireTokenSilent(accessTokenRequest);
 
-  return accessToken;
+    const expiresOn = accessToken.expiresOn;
+    if (expiresOn && expiresOn.getTime() - Date.now() <= MIN_TO_EXPIRE) {
+      const expiredms = expiresOn.getTime() - Date.now();
+      console.info(`Calling 'loginRedirect' as token's expired or expires in (ms): ${expiredms}`);
+
+      return msalInstance.loginRedirect(accessTokenRequest).catch((error: object) => {
+        console.error({ error }, "LoginRedirect failed with the error");
+      });
+    } else {
+      if (expiresOn) {
+        console.info(
+          `Token 'expiresOn' = ${expiresOn.toISOString()} / in ${expiresOn.getTime() - Date.now()} ms`,
+        );
+      } else {
+        console.info("Token 'expiresOn' is 'null'");
+      }
+    }
+
+    return accessToken;
+  } catch (e) {
+    if (e instanceof InteractionRequiredAuthError) {
+      console.info("Haldling exception caused by InteractionRequiredAuthError");
+
+      return msalInstance.loginRedirect(accessTokenRequest).catch((error: object) => {
+        console.error({ error }, "LoginRedirect failed with the error");
+      });
+    } else {
+      console.error({ e }, "Exception caused while acquiring a token");
+    }
+  }
 };
 
 export const swaggerAuth = async (swagger: any) => {
