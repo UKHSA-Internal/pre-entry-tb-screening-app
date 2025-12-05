@@ -149,14 +149,14 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     });
 
     // Verify redirection to the Applicant Summary page
-    cy.url().should("include", "/check-applicant-details");
+    cy.url().should("include", "/check-visa-applicant-details");
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary
-    applicantSummaryPage.verifySummaryValue("Name", "Amina Johnson");
+    applicantSummaryPage.verifySummaryValue("Full name", "Amina Johnson");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
-    applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
+    applicantSummaryPage.verifySummaryValue("Nationality", countryName);
     applicantSummaryPage.verifySummaryValue("Country", countryName);
 
     // Confirm above details to proceed to next page
