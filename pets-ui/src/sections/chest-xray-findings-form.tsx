@@ -116,8 +116,8 @@ const ChestXrayFindingsForm = () => {
               answerOptions={[
                 "3.1 Solitary granuloma (less than 1cm and of any lobe) with an unremarkable hilum",
                 "3.2 Solitary granuloma (less than 1cm and of any lobe) with calcified or enlarged hilar lymph nodes",
-                "3.3 Single or multiple calcified pulmonary nodules or micronodulese with distinct borders",
-                "3.4 Calcified pleural lesion",
+                "3.3 Single or multiple calcified pulmonary nodules or micronodules with distinct borders",
+                "3.4 Calcified pleural lesions",
                 "3.5 Costophrenic angle blunting (either side above the horizontal)",
               ]}
               heading="Minor findings (occasionally associated with TB infection)"

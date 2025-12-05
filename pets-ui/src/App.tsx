@@ -399,7 +399,7 @@ function App() {
         }
       />
       <Route
-        path="/enter-clinic-certificate-information"
+        path="/clinic-certificate-information"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>

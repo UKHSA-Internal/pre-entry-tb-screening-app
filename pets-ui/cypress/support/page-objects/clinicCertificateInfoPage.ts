@@ -3,7 +3,7 @@ import { BasePage } from "../BasePage";
 
 export class ClinicCertificateInfoPage extends BasePage {
   constructor() {
-    super("/enter-clinic-certificate-information");
+    super("/clinic-certificate-information");
   }
 
   // Verify page loaded
@@ -427,7 +427,7 @@ export class ClinicCertificateInfoPage extends BasePage {
 
   // Verify URL
   verifyUrl(): ClinicCertificateInfoPage {
-    cy.url().should("include", "/enter-clinic-certificate-information");
+    cy.url().should("include", "/clinic-certificate-information");
     return this;
   }
 

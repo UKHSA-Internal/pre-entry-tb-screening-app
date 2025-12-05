@@ -145,7 +145,7 @@ const TbCertificateDeclarationForm = () => {
             id="declaring-physician-name"
             errorMessage={errors?.declaringPhysicianName?.message ?? ""}
             heading="Declaring Physician's name"
-            headingSize="s"
+            headingSize="m"
             formValue="declaringPhysicianName"
             patternValue={formRegex.fullName}
             patternError="Declaring physician's name must contain only letters, spaces, hyphens and apostrophes"
@@ -163,7 +163,7 @@ const TbCertificateDeclarationForm = () => {
             rows={5}
             defaultValue={tbCertificateData.comments}
             heading="Physician's notes (optional)"
-            headingSize="s"
+            headingSize="m"
             hint="For example, include your name if you are completing the information for the declaring physician"
           />
         </div>
