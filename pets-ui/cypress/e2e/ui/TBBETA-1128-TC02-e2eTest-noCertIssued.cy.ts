@@ -146,10 +146,10 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     });
 
     applicantSummaryPage.verifyPageLoaded();
-    applicantSummaryPage.verifySummaryValue("Name", "Jane Tester-Doe");
+    applicantSummaryPage.verifySummaryValue("Full name", "Jane Tester-Doe");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
-    applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
+    applicantSummaryPage.verifySummaryValue("Nationality", countryName);
     applicantSummaryPage.verifySummaryValue("Country", countryName);
     applicantSummaryPage.confirmDetails();
 
@@ -387,7 +387,6 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
 
       // Verify redirection to Radiological Outcome confirmation Page
       radiologicalOutcomeConfPage.verifyPageLoaded();
-      //radiologicalOutcomeConfPage.verifyPageTitle();
       radiologicalOutcomeConfPage.verifyAllPageElements();
       radiologicalOutcomeConfPage.verifyConfirmationPanel();
       radiologicalOutcomeConfPage.verifyWhatHappensNextSection();
