@@ -123,7 +123,7 @@ const ChestXrayForm = () => {
     }
 
     dispatch(setDateXrayTaken(chestXrayData.dateXrayTaken));
-    navigate("/check-chest-x-ray-images");
+    void navigate("/check-chest-x-ray-images");
   };
 
   const location = useLocation();

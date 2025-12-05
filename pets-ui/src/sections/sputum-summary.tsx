@@ -169,14 +169,14 @@ const SputumSummary = () => {
 
       if (allSamplesComplete) {
         dispatch(setSputumStatus(ApplicationStatus.COMPLETE));
-        navigate("/sputum-sample-information-confirmed");
+        void navigate("/sputum-sample-information-confirmed");
       } else {
         dispatch(setSputumStatus(ApplicationStatus.IN_PROGRESS));
-        navigate("/sputum-sample-information-confirmed");
+        void navigate("/sputum-sample-information-confirmed");
       }
     } catch (error) {
       console.error(error);
-      navigate("/sorry-there-is-problem-with-service");
+      void navigate("/sorry-there-is-problem-with-service");
     }
   };
 

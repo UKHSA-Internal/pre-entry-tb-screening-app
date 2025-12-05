@@ -43,10 +43,10 @@ const ChestXraySummary = () => {
       });
 
       dispatch(setChestXrayStatus(ApplicationStatus.COMPLETE));
-      navigate("/chest-x-ray-images-confirmed");
+      void navigate("/chest-x-ray-images-confirmed");
     } catch (error) {
       console.error(error);
-      navigate("/sorry-there-is-problem-with-service");
+      void navigate("/sorry-there-is-problem-with-service");
     }
   };
 

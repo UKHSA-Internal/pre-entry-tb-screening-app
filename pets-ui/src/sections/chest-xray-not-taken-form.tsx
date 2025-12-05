@@ -61,7 +61,7 @@ const ChestXrayNotTakenForm = () => {
 
     dispatch(setReasonXrayNotRequired(reasonValue));
     dispatch(setReasonXrayNotRequiredFurtherDetails(furtherDetails));
-    navigate("/check-medical-history-and-tb-symptoms");
+    void navigate("/check-medical-history-and-tb-symptoms");
   };
 
   const errorsToShow = Object.keys(errors);

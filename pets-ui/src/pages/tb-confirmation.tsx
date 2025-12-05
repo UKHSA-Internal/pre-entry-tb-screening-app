@@ -69,7 +69,7 @@ export default function TbConfirmationPage() {
             ? {
                 text: "View or print certificate",
                 onClick: () => {
-                  navigate("/tb-clearance-certificate");
+                  void navigate("/tb-clearance-certificate");
                 },
               }
             : undefined

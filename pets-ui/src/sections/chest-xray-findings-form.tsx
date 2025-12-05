@@ -47,7 +47,7 @@ const ChestXrayFindingsForm = () => {
       setXrayAssociatedMinorFindings(formRadiologicalOutcomeData.xrayAssociatedMinorFindings),
     );
     dispatch(setXrayActiveTbFindings(formRadiologicalOutcomeData.xrayActiveTbFindings));
-    navigate("/check-chest-x-ray-results-findings");
+    void navigate("/check-chest-x-ray-results-findings");
   };
 
   const errorsToShow = Object.keys(errors);

@@ -63,17 +63,17 @@ const ApplicantTravelAddressAndContactDetails = () => {
           ukEmailAddress: travelAddressAndContactDetailsData.ukEmail,
         });
         if (fromParam === "/check-travel-information") {
-          navigate("/check-travel-information");
+          void navigate("/check-travel-information");
         } else {
-          navigate("/tb-certificate-summary");
+          void navigate("/tb-certificate-summary");
         }
       } catch (error) {
         console.error(error);
-        navigate("/sorry-there-is-problem-with-service");
+        void navigate("/sorry-there-is-problem-with-service");
       }
     } else {
       dispatch(setTravelDetailsStatus(ApplicationStatus.IN_PROGRESS));
-      navigate("/check-travel-information");
+      void navigate("/check-travel-information");
     }
   };
 

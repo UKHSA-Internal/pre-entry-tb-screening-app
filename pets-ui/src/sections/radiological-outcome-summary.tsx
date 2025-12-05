@@ -51,10 +51,10 @@ const RadiologicalOutcomeSummary = () => {
       }
 
       dispatch(setRadiologicalOutcomeStatus(ApplicationStatus.COMPLETE));
-      navigate("/radiological-outcome-confirmed");
+      void navigate("/radiological-outcome-confirmed");
     } catch (error) {
       console.error(error);
-      navigate("/sorry-there-is-problem-with-service");
+      void navigate("/sorry-there-is-problem-with-service");
     }
   };
 

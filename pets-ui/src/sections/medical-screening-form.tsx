@@ -62,7 +62,7 @@ const MedicalScreeningForm = () => {
       }),
     );
     dispatch(setMedicalScreeningStatus(ApplicationStatus.IN_PROGRESS));
-    navigate("/is-an-x-ray-required");
+    void navigate("/is-an-x-ray-required");
   };
 
   const errorsToShow = Object.keys(errors);

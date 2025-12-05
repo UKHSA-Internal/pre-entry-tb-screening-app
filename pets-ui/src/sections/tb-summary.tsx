@@ -110,10 +110,10 @@ const TbSummary = () => {
       }
 
       dispatch(setTbCertificateStatus(ApplicationStatus.COMPLETE));
-      navigate("/tb-screening-complete");
+      void navigate("/tb-screening-complete");
     } catch (error) {
       console.error(error);
-      navigate("/sorry-there-is-problem-with-service");
+      void navigate("/sorry-there-is-problem-with-service");
     }
   };
 

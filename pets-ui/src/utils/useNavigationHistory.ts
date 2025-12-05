@@ -61,12 +61,12 @@ export const useNavigationHistory = (shouldClearHistory = false) => {
         const previousPath = history[currentIndex - 1];
         const newHistory = history.slice(0, currentIndex);
         setNavigationHistory(newHistory);
-        navigate(previousPath);
+        void navigate(previousPath);
         return;
       }
     }
 
-    navigate(fallbackUrl);
+    void navigate(fallbackUrl);
   };
 
   return { goBack };

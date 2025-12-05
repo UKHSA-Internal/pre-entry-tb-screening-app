@@ -74,7 +74,7 @@ const TbCertificateDeclarationForm = () => {
     dispatch(setCertificateNumber(applicationData.applicationId));
     dispatch(setDeclaringPhysicianName(data.declaringPhysicianName));
     dispatch(setTbCertificateStatus(ApplicationStatus.IN_PROGRESS));
-    navigate("/tb-certificate-summary");
+    void navigate("/tb-certificate-summary");
   };
 
   const errorsToShow = Object.keys(errors);

@@ -111,7 +111,7 @@ export default function Confirmation({
           class={ButtonClass.DEFAULT}
           text={props.buttonText}
           handleClick={() => {
-            navigate(props.buttonLink!);
+            void navigate(props.buttonLink!);
           }}
         />
       )}
