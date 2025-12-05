@@ -1,7 +1,7 @@
 // Sign Out Functionality Test
-import { loginViaB2C } from "../support/commands";
-import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
-import { SignOutPage } from "../support/page-objects/signOutPage";
+import { loginViaB2C } from "../../support/commands";
+import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { SignOutPage } from "../../support/page-objects/signOutPage";
 
 describe("Sign Out Functionality Tests", () => {
   // Page object instances
@@ -16,6 +16,7 @@ describe("Sign Out Functionality Tests", () => {
 
   it("should successfully sign out from the application", () => {
     // Verify we're on the applicant search page
+    cy.acceptCookies();
     applicantSearchPage.verifyPageLoaded();
     applicantSearchPage.verifyPageHeader();
 
@@ -33,8 +34,5 @@ describe("Sign Out Functionality Tests", () => {
 
     // Click the sign out button to confirm sign out
     signOutPage.clickSignOutButton();
-
-    // Verify sign out was successful (redirect to login or home page)
-    //cy.url().should("not.include", "/sign-out");
   });
 });

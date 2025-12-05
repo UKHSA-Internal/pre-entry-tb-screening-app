@@ -111,14 +111,14 @@ describe("TB certificate declaration task links should NOT be clickable until al
     });
 
     // Verify redirection to the Applicant Summary page
-    cy.url().should("include", "/check-applicant-details");
+    cy.url().should("include", "/check-visa-applicant-details");
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary
-    applicantSummaryPage.verifySummaryValue("Name", "Tess Tester-Test");
+    applicantSummaryPage.verifySummaryValue("Full name", "Tess Tester-Test");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName); // Use country name for validation
-    applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
+    applicantSummaryPage.verifySummaryValue("Nationality", countryName);
     applicantSummaryPage.verifySummaryValue("Country", countryName);
 
     //confirm above details to proceed to next page
@@ -186,7 +186,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
 
     // Verify can click on the "Visa applicant details" link
     tbProgressTrackerPage.clickTaskLink("Visa applicant details");
-    cy.url().should("include", "/check-applicant-details");
+    cy.url().should("include", "/check-visa-applicant-details");
 
     // Navigate back to tracker
     cy.go("back");
