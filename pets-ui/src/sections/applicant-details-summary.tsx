@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { createNewApplication, postApplicantDetails } from "@/api/api";
 import Button from "@/components/button/button";

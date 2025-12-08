@@ -1,5 +1,5 @@
 import { useMsal } from "@azure/msal-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import Button from "@/components/button/button";
 import Container from "@/components/container/container";

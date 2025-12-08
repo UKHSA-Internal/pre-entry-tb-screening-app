@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 
 import Checkbox from "@/components/checkbox/checkbox";
 import DateTextInput from "@/components/dateTextInput/dateTextInput";
