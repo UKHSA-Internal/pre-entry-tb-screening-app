@@ -25,7 +25,7 @@ export default function SignOutPage() {
       })
       .catch((error) => {
         console.error("MSAL logout error: ", error);
-        void navigate("/sorry-there-is-problem-with-service");
+        navigate("/sorry-there-is-problem-with-service");
       });
   };
 

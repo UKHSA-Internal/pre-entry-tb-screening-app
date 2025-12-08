@@ -32,9 +32,9 @@ const ChestXrayQuestionForm = () => {
 
     if (xrayTakenValue === YesOrNo.YES) {
       dispatch(setReasonXrayNotRequired(""));
-      void navigate("/check-medical-history-and-tb-symptoms");
+      navigate("/check-medical-history-and-tb-symptoms");
     } else {
-      void navigate("/reason-x-ray-not-required");
+      navigate("/reason-x-ray-not-required");
     }
   };
 

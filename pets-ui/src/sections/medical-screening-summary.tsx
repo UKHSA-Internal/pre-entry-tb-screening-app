@@ -62,10 +62,10 @@ const MedicalScreeningReview = () => {
       });
 
       dispatch(setMedicalScreeningStatus(ApplicationStatus.COMPLETE));
-      void navigate("/medical-history-tb-symptoms-confirmed");
+      navigate("/medical-history-tb-symptoms-confirmed");
     } catch (error) {
       console.error(error);
-      void navigate("/sorry-there-is-problem-with-service");
+      navigate("/sorry-there-is-problem-with-service");
     }
   };
 

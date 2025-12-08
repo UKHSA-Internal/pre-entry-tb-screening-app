@@ -59,7 +59,7 @@ const ApplicantPhotoForm = () => {
           );
         } catch (error) {
           console.error(error);
-          void navigate("/sorry-there-is-problem-with-service");
+          navigate("/sorry-there-is-problem-with-service");
           return;
         }
         setIsLoading(false);
@@ -81,7 +81,7 @@ const ApplicantPhotoForm = () => {
       destination = "/check-applicant-details";
     }
 
-    void navigate(destination);
+    navigate(destination);
   };
 
   useEffect(() => {

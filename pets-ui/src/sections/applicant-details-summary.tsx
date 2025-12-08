@@ -67,10 +67,10 @@ const ApplicantReview = () => {
       }
 
       dispatch(setApplicantDetailsStatus(ApplicationStatus.COMPLETE));
-      void navigate("/visa-applicant-details-confirmed");
+      navigate("/visa-applicant-details-confirmed");
     } catch (error) {
       console.error(error);
-      void navigate("/sorry-there-is-problem-with-service");
+      navigate("/sorry-there-is-problem-with-service");
     }
   };
 

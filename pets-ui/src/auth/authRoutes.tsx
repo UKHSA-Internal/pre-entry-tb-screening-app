@@ -14,7 +14,7 @@ export const AuthenticatedRoute = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (inProgress === InteractionStatus.None && accounts.length === 0) {
-      void navigate("/", { replace: true });
+      navigate("/", { replace: true });
     }
   }, [accounts, inProgress, instance, navigate, children]);
 

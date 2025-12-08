@@ -31,9 +31,9 @@ export default function ConsentQuestionPage() {
 
   const onSubmit: SubmitHandler<{ consent: YesOrNo }> = (data) => {
     if (data.consent == YesOrNo.YES) {
-      void navigate("/enter-applicant-information");
+      navigate("/enter-applicant-information");
     } else {
-      void navigate("/get-written-consent");
+      navigate("/get-written-consent");
     }
   };
 

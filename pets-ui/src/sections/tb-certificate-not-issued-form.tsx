@@ -43,7 +43,7 @@ const TbCertificateNotIssuedForm = () => {
     dispatch(setDeclaringPhysicianName(data.declaringPhysicianName));
     dispatch(setComments(data.comments));
     dispatch(setTbCertificateStatus(ApplicationStatus.IN_PROGRESS));
-    void navigate("/tb-certificate-summary");
+    navigate("/tb-certificate-summary");
   };
 
   const errorsToShow = Object.keys(errors);

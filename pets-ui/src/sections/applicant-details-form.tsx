@@ -80,21 +80,21 @@ const ApplicantForm = () => {
         await putApplicantDetails(applicationData.applicationId, updatePayload);
 
         if (fromParam === "tb-certificate-summary") {
-          void navigate("/tb-certificate-summary");
+          navigate("/tb-certificate-summary");
         } else if (fromParam === "check-applicant-details") {
-          void navigate("/check-applicant-details");
+          navigate("/check-applicant-details");
         } else {
-          void navigate("/tb-certificate-summary");
+          navigate("/tb-certificate-summary");
         }
       } catch (error) {
         console.error(error);
-        void navigate("/sorry-there-is-problem-with-service");
+        navigate("/sorry-there-is-problem-with-service");
       }
     } else {
       if (!isComplete) {
         dispatch(setApplicantDetailsStatus(ApplicationStatus.IN_PROGRESS));
       }
-      void navigate("/upload-visa-applicant-photo");
+      navigate("/upload-visa-applicant-photo");
     }
   };
 

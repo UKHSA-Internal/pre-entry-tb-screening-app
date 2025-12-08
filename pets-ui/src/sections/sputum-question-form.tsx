@@ -34,7 +34,7 @@ const SputumQuestionForm = () => {
     dispatch(setSputumDecisionRequired(data.isSputumRequired));
     dispatch(setSputumDecisionStatus(ApplicationStatus.IN_PROGRESS));
 
-    void navigate("/check-sputum-decision-information");
+    navigate("/check-sputum-decision-information");
   };
 
   const errorsToShow = Object.keys(errors);

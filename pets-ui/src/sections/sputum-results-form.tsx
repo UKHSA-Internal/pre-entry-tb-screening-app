@@ -332,10 +332,10 @@ const SputumResultsForm = () => {
     setIsLoading(true);
     try {
       persistResultsToStore(formData);
-      void navigate("/check-sputum-collection-details-results");
+      navigate("/check-sputum-collection-details-results");
     } catch (error) {
       console.error(error);
-      void navigate("/sorry-there-is-problem-with-service");
+      navigate("/sorry-there-is-problem-with-service");
     } finally {
       setIsLoading(false);
     }

@@ -42,17 +42,17 @@ const ApplicantTravelVisaCategory = () => {
         });
 
         if (fromParam === "/check-travel-information") {
-          void navigate("/check-travel-information");
+          navigate("/check-travel-information");
         } else {
-          void navigate("/tb-certificate-summary");
+          navigate("/tb-certificate-summary");
         }
       } catch (error) {
         console.error(error);
-        void navigate("/sorry-there-is-problem-with-service");
+        navigate("/sorry-there-is-problem-with-service");
       }
     } else {
       dispatch(setTravelDetailsStatus(ApplicationStatus.IN_PROGRESS));
-      void navigate("/visa-applicant-proposed-uk-address");
+      navigate("/visa-applicant-proposed-uk-address");
     }
   };
 

@@ -39,10 +39,10 @@ const SputumDecisionSummary = () => {
         }),
       );
 
-      void navigate("/sputum-decision-confirmed");
+      navigate("/sputum-decision-confirmed");
     } catch (error) {
       console.error(error);
-      void navigate("/sorry-there-is-problem-with-service");
+      navigate("/sorry-there-is-problem-with-service");
     } finally {
       setIsLoading(false);
     }

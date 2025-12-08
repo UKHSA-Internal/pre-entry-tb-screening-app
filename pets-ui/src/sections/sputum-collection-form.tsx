@@ -245,9 +245,9 @@ const SputumCollectionForm = () => {
     });
 
     if (submittedBy === "save-progress") {
-      void navigate("/check-sputum-collection-details-results");
+      navigate("/check-sputum-collection-details-results");
     } else if (submittedBy === "save-and-continue-to-results") {
-      void navigate("/enter-sputum-sample-results");
+      navigate("/enter-sputum-sample-results");
     }
   };
 

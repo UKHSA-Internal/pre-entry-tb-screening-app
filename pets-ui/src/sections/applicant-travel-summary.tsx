@@ -40,10 +40,10 @@ const TravelReview = () => {
       });
 
       dispatch(setTravelDetailsStatus(ApplicationStatus.COMPLETE));
-      void navigate("/travel-information-confirmed");
+      navigate("/travel-information-confirmed");
     } catch (error) {
       console.error(error);
-      void navigate("/sorry-there-is-problem-with-service");
+      navigate("/sorry-there-is-problem-with-service");
     }
   };
 

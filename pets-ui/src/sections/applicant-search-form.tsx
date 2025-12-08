@@ -122,7 +122,7 @@ const ApplicantSearchForm = () => {
 
       const applicantRes = await getApplicants(passportDetails);
       if (applicantRes.data.length === 0) {
-        void navigate("/no-matching-record-found");
+        navigate("/no-matching-record-found");
         return;
       }
       dispatch(setApplicantDetailsFromApiResponse(applicantRes.data[0]));
@@ -161,10 +161,10 @@ const ApplicantSearchForm = () => {
       if (applicationRes.data.tbCertificate) {
         dispatch(setTbCertificateFromApiResponse(applicationRes.data.tbCertificate));
       }
-      void navigate("/tracker");
+      navigate("/tracker");
     } catch (error) {
       console.error(error);
-      void navigate("/sorry-there-is-problem-with-service");
+      navigate("/sorry-there-is-problem-with-service");
     }
   };
 
