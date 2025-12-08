@@ -38,7 +38,7 @@ test("In authenticated state, user is taken to Applicant Search page ('/search-f
   await msalTester.isLogged();
 
   renderWithProvidersWithoutRouter(
-    <MemoryRouter initialEntries={["/search-for-visa-applicant", "/"]}>
+    <MemoryRouter initialEntries={["/"]}>
       <MsalProvider instance={msalTester.client}>
         <ApplicantPhotoProvider>
           <App />
@@ -49,7 +49,7 @@ test("In authenticated state, user is taken to Applicant Search page ('/search-f
 
   await msalTester.waitForRedirect();
 
-  expect(screen.getByText("Search for a visa applicant")).toBeVisible();
+  expect(await screen.findByText("Search for a visa applicant")).toBeVisible();
 });
 
 test("In authenticated state, user is able to access authenticated paths", async () => {
