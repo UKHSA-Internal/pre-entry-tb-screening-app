@@ -38,7 +38,7 @@ test("In authenticated state, user is taken to Applicant Search page ('/search-f
   await msalTester.isLogged();
 
   renderWithProvidersWithoutRouter(
-    <MemoryRouter initialEntries={["/"]}>
+    <MemoryRouter initialEntries={["/search-for-visa-applicant", "/"]}>
       <MsalProvider instance={msalTester.client}>
         <ApplicantPhotoProvider>
           <App />
