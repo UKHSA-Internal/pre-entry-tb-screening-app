@@ -1,14 +1,13 @@
 import { render, RenderOptions } from "@testing-library/react";
 import React, { PropsWithChildren } from "react";
-import { Provider as ReduxProvider } from "react-redux";
-import { createMemoryRouter, RouterProvider } from "react-router";
+import { Provider } from "react-redux";
+import { BrowserRouter as Router } from "react-router";
 
 import { AppStore, RootState, setupStore } from "@/redux/store";
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
   preloadedState?: Partial<RootState>;
   store?: AppStore;
-  initialEntries?: string[];
 }
 
 export function renderWithProviders(
@@ -16,23 +15,20 @@ export function renderWithProviders(
   {
     preloadedState = {},
     store = setupStore(preloadedState),
-    initialEntries = ["/"],
     ...renderOptions
   }: ExtendedRenderOptions = {},
 ) {
-  const router = createMemoryRouter(
-    [
-      {
-        path: initialEntries[initialEntries.length - 1],
-        element: <ReduxProvider store={store}>{ui}</ReduxProvider>,
-      },
-    ],
-    { initialEntries },
-  );
+  function Wrapper({ children }: PropsWithChildren<object>): React.JSX.Element {
+    return (
+      <Router>
+        <Provider store={store}>{children}</Provider>;
+      </Router>
+    );
+  }
 
   return {
     store,
-    ...render(<RouterProvider router={router} />, renderOptions),
+    ...render(ui, { wrapper: Wrapper, ...renderOptions }),
   };
 }
 
@@ -45,7 +41,7 @@ export function renderWithProvidersWithoutRouter(
   }: ExtendedRenderOptions = {},
 ) {
   function Wrapper({ children }: PropsWithChildren<object>): React.JSX.Element {
-    return <ReduxProvider store={store}>{children}</ReduxProvider>;
+    return <Provider store={store}>{children}</Provider>;
   }
 
   return {
