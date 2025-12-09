@@ -1,7 +1,7 @@
 // Sign Out Functionality Test
-import { loginViaB2C } from "../support/commands";
-import { ApplicantSearchPage } from "../support/page-objects/applicantSearchPage";
-import { SignOutPage } from "../support/page-objects/signOutPage";
+import { loginViaB2C } from "../../support/commands";
+import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { SignOutPage } from "../../support/page-objects/signOutPage";
 
 describe("Sign Out Functionality Tests", () => {
   // Page object instances
@@ -15,6 +15,7 @@ describe("Sign Out Functionality Tests", () => {
   });
 
   it("should successfully sign out from the application", () => {
+    cy.acceptCookies();
     // Verify we're on the applicant search page
     applicantSearchPage.verifyPageLoaded();
     applicantSearchPage.verifyPageHeader();
@@ -35,6 +36,6 @@ describe("Sign Out Functionality Tests", () => {
     signOutPage.clickGoBackButton();
 
     // Verify redirect to applicant search page
-    cy.url().should("include", "/applicant-search");
+    cy.url().should("include", "/search-for-visa-applicant");
   });
 });
