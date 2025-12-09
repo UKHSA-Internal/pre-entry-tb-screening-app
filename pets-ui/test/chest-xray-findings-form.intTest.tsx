@@ -37,7 +37,7 @@ describe("ChestXrayFindings Form", () => {
     expect(screen.getByText("Give further details (optional)")).toBeInTheDocument;
     expect(screen.getByText("Enter X-ray findings")).toBeInTheDocument;
     expect(screen.getByText("Minor findings")).toBeInTheDocument;
-    expect(screen.getByText("1.1 Single fibrous streak or band or scar")).toBeInTheDocument;
+    expect(screen.getByText("1.1 Single fibrous streak, band or scar")).toBeInTheDocument;
     expect(screen.getByText("Minor findings (occasionally associated with TB infection)"))
       .toBeInTheDocument;
     expect(
@@ -49,7 +49,7 @@ describe("ChestXrayFindings Form", () => {
       .toBeInTheDocument;
     expect(
       screen.getByText(
-        "4.0 Notable apical pleural capping (rough or ragged inferior border an/or equal or greater than 1cm thick at any point)",
+        "4.0 Notable apical pleural capping (rough or ragged inferior border, or equal to or greater than 1cm thick at any point)",
       ),
     ).toBeInTheDocument;
   });

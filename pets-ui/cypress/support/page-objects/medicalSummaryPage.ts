@@ -6,6 +6,27 @@ export class MedicalSummaryPage extends BasePage {
     super("/check-medical-history-and-tb-symptoms");
   }
 
+  // Format age string correctly for months or years
+  formatAgeString(age: number, unit: "months" | "years"): string {
+    if (unit === "months") {
+      return age === 1 ? `${age} month old` : `${age} months old`;
+    } else {
+      return age === 1 ? `${age} year old` : `${age} years old`;
+    }
+  }
+
+  // Verify age with automatic format detection
+  verifyAge(age: number, unit: "months" | "years"): MedicalSummaryPage {
+    const ageText = this.formatAgeString(age, unit);
+    this.verifySummaryValue("Age", ageText);
+    return this;
+  }
+
+  // Verify age with string (flexible input)
+  verifyAgeString(ageText: string): MedicalSummaryPage {
+    this.verifySummaryValue("Age", ageText);
+    return this;
+  }
   // Verify page loaded
   verifyPageLoaded(): MedicalSummaryPage {
     cy.url().should("include", "/check-medical-history-and-tb-symptoms");
@@ -32,7 +53,23 @@ export class MedicalSummaryPage extends BasePage {
     this.getSummaryValue(fieldKey).should("eq", expectedValue);
     return this;
   }
-
+  // ✅ UPDATED: Verify summary data with proper age handling
+  verifySummaryData(data: {
+    "Previous TB diagnosis or treatment"?: string;
+    "TB symptoms in past 3 months"?: string;
+    "Close contact with active TB"?: string;
+    Age?: string | { value: number; unit: "months" | "years" };
+  }): MedicalSummaryPage {
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "Age" && typeof value === "object" && value !== null) {
+        const ageData = value as { value: number; unit: "months" | "years" };
+        this.verifyAge(ageData.value, ageData.unit);
+      } else if (typeof value === "string") {
+        this.verifySummaryValue(key, value);
+      }
+    });
+    return this;
+  }
   // Click change link for a specific field - FIXED SELECTOR
   clickChangeLink(fieldKey: string): MedicalSummaryPage {
     cy.get(".govuk-summary-list__key")
@@ -293,7 +330,7 @@ export class MedicalSummaryPage extends BasePage {
     return this;
   }
 
-  // Verify Change link targets point to correct anchors - FIXED SELECTOR
+  // Verify Change link targets point to correct anchors
   verifyChangeLinksTargets(): MedicalSummaryPage {
     const expectedFragments: Record<string, string> = {
       "Date of medical screening": "#medical-screening-completion-date",

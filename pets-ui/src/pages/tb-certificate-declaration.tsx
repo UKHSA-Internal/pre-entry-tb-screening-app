@@ -20,7 +20,7 @@ export default function TbCertificateDeclarationPage() {
 
   return (
     <Container
-      title="Enter clinic and certificate information - Complete UK pre-entry health screening - GOV.UK"
+      title="Clinic and certificate information - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo="/will-you-issue-tb-clearance-certificate"
     >
       <TbCertificateDeclarationForm />

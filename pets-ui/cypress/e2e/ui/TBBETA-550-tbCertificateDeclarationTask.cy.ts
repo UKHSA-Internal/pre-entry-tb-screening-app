@@ -1,6 +1,7 @@
 //JIRA STory TBBETA-550 - Prevent access to TB certificate declaration tasks
 import { countryList } from "../../../src/utils/countryList";
 import { loginViaB2C } from "../../support/commands";
+import { DateUtils } from "../../support/DateUtils";
 import { ApplicantConfirmationPage } from "../../support/page-objects/applicantConfirmationPage";
 import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
 import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
@@ -30,9 +31,44 @@ describe("TB certificate declaration task links should NOT be clickable until al
   let passportNumber: string;
   let tbCertificateNumber: string;
 
+  // Dynamic date variables
+  let adultAge: number;
+  let adultDOB: { day: string; month: string; year: string };
+  let adultDOBFormatted: string;
+  let passportIssueDate: { day: string; month: string; year: string };
+  let passportExpiryDate: { day: string; month: string; year: string };
+
   before(() => {
     // Create test fixtures before test run
     createTestFixtures();
+
+    // Generate dynamic dates for adult applicant (27 years old)
+    adultAge = 27;
+    adultDOB = DateUtils.getAdultDOBComponents(adultAge);
+    // Format with leading zeros, then normalize for UI comparison
+    adultDOBFormatted = DateUtils.normalizeDateForComparison(
+      DateUtils.formatDateDDMMYYYY(DateUtils.getAdultDateOfBirth(adultAge)),
+    );
+
+    // Generate passport dates (issued 2 years ago, expires in 8 years)
+    const passportIssue = DateUtils.getDateInPast(2);
+    const passportExpiry = DateUtils.getPassportExpiryDate(passportIssue, false);
+    passportIssueDate = DateUtils.getDateComponents(passportIssue);
+    passportExpiryDate = DateUtils.getDateComponents(passportExpiry);
+
+    // Log generated dates for debugging
+    cy.log(`Adult Age: ${adultAge}`);
+    cy.log(`Adult DOB: ${adultDOB.day}/${adultDOB.month}/${adultDOB.year}`);
+    cy.log(`DOB Formatted: ${adultDOBFormatted}`);
+    cy.log(
+      `Calculated Age: ${DateUtils.calculateAge(DateUtils.getAdultDateOfBirth(adultAge))} years`,
+    );
+    cy.log(
+      `Passport Issue: ${passportIssueDate.day}/${passportIssueDate.month}/${passportIssueDate.year}`,
+    );
+    cy.log(
+      `Passport Expiry: ${passportExpiryDate.day}/${passportExpiryDate.month}/${passportExpiryDate.year}`,
+    );
   });
 
   beforeEach(() => {
@@ -82,16 +118,20 @@ describe("TB certificate declaration task links should NOT be clickable until al
       .fillFullName("Tess Tester-Test")
       .selectSex("Female")
       .selectNationality(countryName) // Use country code for form filling
-      .fillBirthDate("01", "03", "1998")
-      .fillPassportIssueDate("10", "05", "2020")
-      .fillPassportExpiryDate("10", "05", "2030")
+      .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
+      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillPassportExpiryDate(
+        passportExpiryDate.day,
+        passportExpiryDate.month,
+        passportExpiryDate.year,
+      )
       .fillAddressLine1("123 Vanilla Avenue")
       .fillAddressLine2("Apartment 4B")
       .fillAddressLine3("Downtown")
-      .fillTownOrCity("London")
+      .fillTownOrCity("St Marten")
       .fillProvinceOrState("Testershire")
       .selectAddressCountry(countryName) // Use country code for form filling
-      .fillPostcode("SW1A 1AA")
+      .fillPostcode("84109")
       .submitForm();
 
     // Verify redirection to the Applicant Photo page
@@ -137,7 +177,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
     // Check applicant information is displayed correctly
     tbProgressTrackerPage.verifyApplicantInfo({
       Name: "Tess Tester-Test",
-      "Date of birth": "1/3/1998",
+      "Date of birth": adultDOBFormatted,
       "Passport number": passportNumber,
       "TB screening": "In progress",
     });
