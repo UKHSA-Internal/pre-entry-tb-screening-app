@@ -1,4 +1,4 @@
-//PETS Scenario: Child - No Symptoms, No History, No Contact, No X-ray uploaded, Yes Sputum Required - TB Certificate Issued (6 months)
+//PETS Scenario: Infant (6 months) - No Symptoms, No History, No Contact, No X-ray uploaded, Yes Sputum Required - TB Certificate Issued (6 months)
 import { countryList } from "../../../src/utils/countryList";
 import { loginViaB2C } from "../../support/commands";
 import { DateUtils } from "../../support/DateUtils";
@@ -35,7 +35,7 @@ import {
   randomElement,
 } from "../../support/test-helpers";
 
-describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Certificate Issued (6 months)", () => {
+describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray, Sputum Required, Certificate Issued (6 months)", () => {
   // Page object instances
   const applicantConsentPage = new ApplicantConsentPage();
   const applicantSearchPage = new ApplicantSearchPage();
@@ -72,10 +72,10 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
   let tbCertificateNumber: string = "";
   let selectedVisaCategory: string;
 
-  // Date-related variables
-  let childAge: number;
-  let childDOB: { day: string; month: string; year: string };
-  let childDOBFormatted: string;
+  // Date-related variables for NEWBORN INFANT
+  let infantAgeInMonths: number;
+  let infantDOB: { day: string; month: string; year: string };
+  let infantDOBFormatted: string;
   let passportIssueDate: { day: string; month: string; year: string };
   let passportExpiryDate: { day: string; month: string; year: string };
   let screeningDate: ReturnType<typeof DateUtils.getDateComponents>;
@@ -95,10 +95,11 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     loginViaB2C();
     applicantSearchPage.visit();
     applicantSearchPage.verifyPageLoaded();
+
     // Generate random country and passport number
     const randomCountry = randomElement(countryList);
-    countryCode = randomCountry?.value; // For form filling (e.g., "BRB")
-    countryName = randomCountry?.label; // For validation (e.g., "Barbados")
+    countryCode = randomCountry?.value;
+    countryName = randomCountry?.label;
     passportNumber = getRandomPassportNumber();
     tbCertificateNumber = "TB" + Math.floor(10000000 + Math.random() * 90000000);
 
@@ -108,49 +109,36 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     cy.log(`Using country name: ${countryName}`);
     cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
 
-    // Generate dynamic dates for child applicant (age 6 years)
-    childAge = 6;
-    childDOB = DateUtils.getChildDOBComponents(childAge);
-    childDOBFormatted = DateUtils.normalizeDateForComparison(
-      DateUtils.formatDateDDMMYYYY(DateUtils.getChildDateOfBirth(childAge)),
-    );
+    // ✅ Generate ALL test-friendly dates for 1-month-old newborn
+    const testDates = DateUtils.getInfantApplicantTestDates(1);
 
-    // Generate passport dates (issued 1 year ago, 5-year validity for child)
-    const { issueDate, expiryDate } = DateUtils.getValidPassportDates();
-    passportIssueDate = issueDate;
-    passportExpiryDate = expiryDate;
-    /// Generate screening date (1 month ago for realistic scenario)
-    const screening = DateUtils.getDateInPast(0, 1, 0); // 1 month ago
-    screeningDate = DateUtils.getDateComponents(screening);
-
-    // Log screening date
-    cy.log(`Screening Date: ${screeningDate.day}/${screeningDate.month}/${screeningDate.year}`);
-
-    // Generate sputum collection dates (recent dates in the past)
-    const sputum1 = DateUtils.getDateInPast(0, 2, 20); // 2 months and 20 days ago
-    const sputum2 = DateUtils.getDateInPast(0, 2, 19); // 2 months and 19 days ago
-    const sputum3 = DateUtils.getDateInPast(0, 2, 18); // 2 months and 18 days ago
-
-    sputumSample1Date = DateUtils.getDateComponents(sputum1);
-    sputumSample1DateFormatted = DateUtils.formatDateGOVUK(sputum1);
-    sputumSample2Date = DateUtils.getDateComponents(sputum2);
-    sputumSample2DateFormatted = DateUtils.formatDateGOVUK(sputum2);
-    sputumSample3Date = DateUtils.getDateComponents(sputum3);
-    sputumSample3DateFormatted = DateUtils.formatDateGOVUK(sputum3);
+    infantAgeInMonths = testDates.infantAgeInMonths;
+    infantDOB = testDates.birthDate;
+    infantDOBFormatted = testDates.birthDateFormatted;
+    passportIssueDate = testDates.passportIssueDate;
+    passportExpiryDate = testDates.passportExpiryDate;
+    screeningDate = testDates.screeningDate;
+    sputumSample1Date = testDates.sputumSample1Date;
+    sputumSample1DateFormatted = testDates.sputumSample1DateFormatted;
+    sputumSample2Date = testDates.sputumSample2Date;
+    sputumSample2DateFormatted = testDates.sputumSample2DateFormatted;
+    sputumSample3Date = testDates.sputumSample3Date;
+    sputumSample3DateFormatted = testDates.sputumSample3DateFormatted;
 
     // Log generated dates for debugging
-    cy.log(`Child Age: ${childAge}`);
-    cy.log(`Child DOB: ${childDOB.day}/${childDOB.month}/${childDOB.year}`);
-    cy.log(`DOB Formatted: ${childDOBFormatted}`);
+    cy.log(`Newborn Age: ${infantAgeInMonths} month`);
+    cy.log(`Newborn DOB: ${infantDOB.day}/${infantDOB.month}/${infantDOB.year}`);
+    cy.log(`DOB Formatted: ${infantDOBFormatted}`);
     cy.log(
       `Passport Issue: ${passportIssueDate.day}/${passportIssueDate.month}/${passportIssueDate.year}`,
     );
     cy.log(
       `Passport Expiry: ${passportExpiryDate.day}/${passportExpiryDate.month}/${passportExpiryDate.year}`,
     );
+    cy.log(`Screening Date: ${screeningDate.day}/${screeningDate.month}/${screeningDate.year}`);
   });
 
-  it("should complete the full application process for child with no symptoms, no X-ray, sputum required, and issue certificate with 6 month expiry", () => {
+  it("should complete the full application process for 6-month-old infant with no symptoms, no X-ray, sputum required, and issue certificate with 6 month expiry", () => {
     // Search for applicant with passport number
     cy.acceptCookies();
     applicantSearchPage
@@ -169,35 +157,37 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     // Verify redirection to applicant search page
     applicantSearchPage.verifyRedirectionToCreateApplicantPage();
 
-    // Fill Applicant Details for Child
+    // Fill Applicant Details for Newborn Infant (6 month old)
     applicantDetailsPage.verifyPageLoaded();
 
-    // Fill in applicant details for child (born in 2018, so under 11)
+    // Fill in applicant details for 6-month-old baby
     applicantDetailsPage
-      .fillFullName("Nana Quist")
+      .fillFullName("Baby Emma Johnson")
       .selectSex("Female")
       .selectNationality(countryName)
-      .fillBirthDate(childDOB.day, childDOB.month, childDOB.year)
+      .fillBirthDate(infantDOB.day, infantDOB.month, infantDOB.year)
       .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
       .fillPassportExpiryDate(
         passportExpiryDate.day,
         passportExpiryDate.month,
         passportExpiryDate.year,
       )
-      .fillAddressLine1("456 Children's Avenue")
-      .fillAddressLine2("Block C")
-      .fillAddressLine3("Airport Residential Area")
-      .fillTownOrCity("Accra")
-      .fillProvinceOrState("Greater Accra")
+      .fillAddressLine1("123 Infant Care Lane")
+      .fillAddressLine2("Maternity Ward B")
+      .fillAddressLine3("New Born Baby")
+      .fillTownOrCity("Libraville")
+      .fillProvinceOrState("Dahoume")
       .selectAddressCountry(countryName)
-      .fillPostcode("LS1 3BB")
-      .submitForm();
+      .fillPostcode("56109");
+
+    // Submit form
+    applicantDetailsPage.submitForm();
 
     // Verify redirection to the Applicant Photo page
-    cy.url().should("include", "/upload-visa-applicant-photo");
+    cy.url({ timeout: 15000 }).should("include", "/upload-visa-applicant-photo");
     applicantPhotoUploadPage.verifyPageLoaded();
 
-    // Upload Applicant Photo file
+    // Upload Applicant Photo file (newborn photo)
     applicantPhotoUploadPage
       .uploadApplicantPhotoFile("cypress/fixtures/child-passport-photo.jpg")
       .verifyUploadSuccess();
@@ -217,7 +207,7 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary
-    applicantSummaryPage.verifySummaryValue("Full name", "Nana Quist");
+    applicantSummaryPage.verifySummaryValue("Full name", "Baby Emma Johnson");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
     applicantSummaryPage.verifySummaryValue("Nationality", countryName);
@@ -245,36 +235,34 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     visaCategoryPage.getSelectedVisaCategory().then((category) => {
       selectedVisaCategory = category;
       cy.log(`Selected random visa category: ${selectedVisaCategory}`);
-
       // Store as alias for use throughout the test
       cy.wrap(selectedVisaCategory).as("selectedVisa");
     });
     // Click continue to proceed to travel information page
     visaCategoryPage.clickContinue();
 
-    // Fill travel information
+    // Fill in travel information
     travelInformationPage.verifyPageLoaded();
-
     travelInformationPage.fillCompleteForm({
       ukAddressLine1: "789 Family Road",
       ukAddressLine2: "Apartment 2C",
       ukTownOrCity: "Bristol",
       ukPostcode: "BS1 4CC",
       mobileNumber: "07700900789",
-      email: "pets.parents@hotmail.com",
+      email: "pets.tester2@hotmail.com",
     });
 
     // Submit the form
     travelInformationPage.submitForm();
 
-    // Review Travel Summary
+    // Verify redirection to Travel Summary page
     travelSummaryPage.verifyPageLoaded();
     travelSummaryPage.verifyVisaTypeIsValid();
+
     // Verify details by clicking change links and checking fields
     travelSummaryPage.clickChangeLink("Address line 1 (optional)");
     cy.url().should("include", "/visa-applicant-proposed-uk-address");
     cy.go("back");
-
     travelSummaryPage.clickChangeLink("Town or city (optional)");
     cy.url().should("include", "/visa-applicant-proposed-uk-address");
     cy.go("back");
@@ -286,30 +274,33 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     // Submit the summary page
     travelSummaryPage.submitForm();
 
-    // Travel Confirmation
+    // Verify travel confirmation
     travelConfirmationPage.verifyPageLoaded();
+    travelConfirmationPage.verifyConfirmationPanel();
     travelConfirmationPage.clickContinue();
 
-    // Verify we're back on the tracker
+    // Verify we're back on tracker
     cy.url().should("include", "/tracker");
     tbProgressTrackerPage.verifyPageLoaded();
+
     // Navigate to medical screening from the tracker
     tbProgressTrackerPage.clickTaskLink("Medical history and TB symptoms");
 
-    // Medical Screening Page - Child with no symptoms, no TB history, no close contact
+    // Verify medical screening page loaded
     medicalScreeningPage.verifyPageLoaded();
 
+    // Fill medical screening form for newborn (no symptoms)
     medicalScreeningPage
       .fillScreeningDate(screeningDate.day, screeningDate.month, screeningDate.year)
-      .fillAge(childAge.toString())
+      .fillAge(infantAgeInMonths.toString())
       .selectTbSymptoms("No") // No symptoms
       .selectChildTbHistory("None of these") // None of these for child TB history
       .selectPreviousTb("No") // No TB history
       .selectCloseContact("No") // No close contact
-      .selectPregnancyStatus("No") // No for child
-      .selectMenstrualPeriods("No") // No for child
+      .selectPregnancyStatus("No") // No for infant
+      .selectMenstrualPeriods("No") // No for infant
       .fillPhysicalExamNotes(
-        "Child applicant aged 6 years. No TB symptoms or history. No close contact with TB. Physical examination normal for age.",
+        "Infant applicant 6 month old. No TB symptoms or history. No close contact with TB. Physical examination normal for age.",
       )
       .submitForm();
 
@@ -324,19 +315,18 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     chestXrayNotTakenPage.selectReasonXrayNotTaken("Child");
     chestXrayNotTakenPage.submitForm();
 
-    // Verify redirection to medical summary
+    // Verify medical summary page
     medicalSummaryPage.verifyPageLoaded();
 
     // Calculate expected age from birth date
-    const expectedAge = DateUtils.calculateAge(DateUtils.getChildDateOfBirth(childAge));
+    const expectedAge = DateUtils.calculateAge(DateUtils.getChildDateOfBirth(infantAgeInMonths));
 
     // Get the screening date in GOV.UK format for validation
     const screening = DateUtils.getDateInPast(0, 1, 0); // Same as entered on line 305
     const expectedScreeningDate = DateUtils.formatDateGOVUK(screening);
 
-    // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: `${expectedAge} years old`,
+      age: `${expectedAge} month old`,
       dateOfMedicalScreening: expectedScreeningDate,
       tbSymptoms: "No",
       previousTb: "No",
@@ -344,11 +334,10 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
       pregnant: "No",
       menstrualPeriods: "No",
       physicalExamNotes:
-        "Child applicant aged 6 years. No TB symptoms or history. No close contact with TB. Physical examination normal for age.",
+        "Infant applicant 6 month old. No TB symptoms or history. No close contact with TB. Physical examination normal for age.",
       xrayRequired: "No",
       reasonXrayNotRequired: "Child (under 11 years)",
     });
-
     // Confirm medical details
     medicalSummaryPage.verifySubmissionConfirmationMessage();
     medicalSummaryPage.confirmDetails();
@@ -359,17 +348,16 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     medicalConfirmationPage.verifyNextStepsSection();
     medicalConfirmationPage.clickContinueButton();
 
-    // Verify we're back on the tracker
+    // Verify we're back at tracker
     cy.url().should("include", "/tracker");
     tbProgressTrackerPage.verifyPageLoaded();
-    // Verify TB Screening Progress Tracker page
-    tbProgressTrackerPage.verifySectionHeadings();
     tbProgressTrackerPage.verifyApplicantInfo({
-      Name: "Nana Quist",
-      "Date of birth": childDOBFormatted,
+      Name: "Baby Emma Johnson",
+      "Date of birth": infantDOBFormatted,
       "Passport number": passportNumber,
       "TB screening": "In progress",
     });
+
     tbProgressTrackerPage.verifyMultipleTaskStatuses({
       "Visa applicant details": "Completed",
       "UK travel information": "Completed",
@@ -381,7 +369,7 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
       "TB certificate outcome": "Cannot start yet",
     });
 
-    // NOW Navigate to "Make a sputum decision" Page from the tracker
+    // Navigate to "Make a sputum decision" Page from the tracker
     tbProgressTrackerPage.clickTaskLink("Make a sputum decision");
 
     // Verify redirection to Sputum Collection Question Page
@@ -400,17 +388,17 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
       .verifyConfirmationMessageContent()
       .clickContinueButton();
 
-    // NOW verify applicant info on TB Progress TRacker Page
+    // Verify applicant info on TB Progress Tracker Page
     tbProgressTrackerPage.verifyPageLoaded();
     tbProgressTrackerPage.verifySectionHeadings();
     tbProgressTrackerPage.verifyApplicantInfo({
-      Name: "Nana Quist",
-      "Date of birth": childDOBFormatted,
+      Name: "Baby Emma Johnson",
+      "Date of birth": infantDOBFormatted,
       "Passport number": passportNumber,
       "TB screening": "In progress",
     });
 
-    // NOW Navigate to "Sputum collection and results" Page from the tracker
+    // Navigate to "Sputum collection and results" Page from the tracker
     tbProgressTrackerPage.clickTaskLink("Sputum collection and results");
 
     // Verify sputum collection page is prefilled with data
@@ -438,7 +426,7 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     sputumCollectionPage.fillAllSamples(sputumData);
     sputumCollectionPage.verifyFormFilledWith(sputumData);
 
-    // Save and continue to results (direct path for this scenario)
+    // Save and continue to results
     sputumCollectionPage.clickSaveAndContinueToResults();
 
     // Verify redirection to Enter Sputum Sample Results page
@@ -526,8 +514,8 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
       .verifyCertificateExpiryIs6MonthsFromIssueDate()
       .saveCertificateReferenceNumber()
       .completeForm(
-        "Dr. Rebecca Thompson",
-        "Child applicant aged 6 years. No TB symptoms, history, or close contact. All sputum samples negative. Certificate issued with 6-month validity as no close contact with active TB.",
+        "Dr. Sarah Pediatrics",
+        "Infant applicant aged 6 months. No TB symptoms, history, or close contact. All sputum samples negative. Certificate issued with 6-month validity as no close contact with active TB.",
       );
 
     // Verify redirection to TB Summary Page

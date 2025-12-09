@@ -1,6 +1,7 @@
 //PETS Scenario: Pregnant Adult - Yes Symptoms, No History, Yes Contact, No X-ray uploaded, Yes Sputum Required - TB Certificate Issued (3 months)
 import { countryList } from "../../../src/utils/countryList";
 import { loginViaB2C } from "../../support/commands";
+import { DateUtils } from "../../support/DateUtils";
 import { ApplicantConfirmationPage } from "../../support/page-objects/applicantConfirmationPage";
 import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
 import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
@@ -71,9 +72,83 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
   let tbCertificateNumber: string = "";
   let selectedVisaCategory: string;
 
+  // Dynamic date variables
+  let adultAge: number;
+  let adultDOB: ReturnType<typeof DateUtils.getDOBComponentsForAge>;
+  let adultDOBFormatted: string;
+  let passportIssueDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let passportExpiryDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let screeningDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let xrayDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let sputumSample1Date: ReturnType<typeof DateUtils.getDateComponents>;
+  let sputumSample2Date: ReturnType<typeof DateUtils.getDateComponents>;
+  let sputumSample3Date: ReturnType<typeof DateUtils.getDateComponents>;
+  let sputumSample1Formatted: string;
+  let sputumSample2Formatted: string;
+  let sputumSample3Formatted: string;
+
   before(() => {
     // Create test fixtures before test run
     createTestFixtures();
+    // Generate dynamic dates for adult applicant (33 years old)
+    adultAge = 33;
+    adultDOB = DateUtils.getAdultDOBComponents(adultAge);
+    // Format with leading zeros, then normalize for UI comparison
+    adultDOBFormatted = DateUtils.normalizeDateForComparison(
+      DateUtils.formatDateDDMMYYYY(DateUtils.getAdultDateOfBirth(adultAge)),
+    );
+
+    // Generate passport dates (issued 2 years ago, expires in 8 years)
+    const passportIssue = DateUtils.getDateInPast(2);
+    const passportExpiry = DateUtils.getPassportExpiryDate(passportIssue, false);
+    passportIssueDate = DateUtils.getDateComponents(passportIssue);
+    passportExpiryDate = DateUtils.getDateComponents(passportExpiry);
+
+    // Generate screening date (1 month ago for realistic scenario)
+    const screening = DateUtils.getDateInPast(0, 1, 0); // 1 month ago
+    screeningDate = DateUtils.getDateComponents(screening);
+
+    // Generate X-ray date (2 weeks ago, after screening)
+    const xray = DateUtils.getDateInPast(0, 0, 14); // 2 weeks ago
+    xrayDate = DateUtils.getDateComponents(xray);
+
+    // Generate sputum collection dates (2-3 months ago for realistic scenario)
+    const sample1 = DateUtils.getDateInPast(0, 3, 0); // 3 months ago
+    const sample2 = DateUtils.getDateInPast(0, 3, -1); // 1 day after sample 1
+    const sample3 = DateUtils.getDateInPast(0, 3, -2); // 1 day after sample 2
+
+    sputumSample1Date = DateUtils.getDateComponents(sample1);
+    sputumSample2Date = DateUtils.getDateComponents(sample2);
+    sputumSample3Date = DateUtils.getDateComponents(sample3);
+
+    sputumSample1Formatted = DateUtils.formatDateGOVUK(sample1);
+    sputumSample2Formatted = DateUtils.formatDateGOVUK(sample2);
+    sputumSample3Formatted = DateUtils.formatDateGOVUK(sample3);
+
+    // Log generated dates for debugging
+    cy.log(`Adult Age: ${adultAge}`);
+    cy.log(`Adult DOB: ${adultDOB.day}/${adultDOB.month}/${adultDOB.year}`);
+    cy.log(`DOB Formatted: ${adultDOBFormatted}`);
+    cy.log(
+      `Calculated Age: ${DateUtils.calculateAge(DateUtils.getAdultDateOfBirth(adultAge))} years`,
+    );
+    cy.log(
+      `Passport Issue: ${passportIssueDate.day}/${passportIssueDate.month}/${passportIssueDate.year}`,
+    );
+    cy.log(
+      `Passport Expiry: ${passportExpiryDate.day}/${passportExpiryDate.month}/${passportExpiryDate.year}`,
+    );
+    cy.log(`Screening Date: ${screeningDate.day}/${screeningDate.month}/${screeningDate.year}`);
+    cy.log(`X-ray Date: ${xrayDate.day}/${xrayDate.month}/${xrayDate.year}`);
+    cy.log(
+      `Sputum Sample 1: ${sputumSample1Date.day}/${sputumSample1Date.month}/${sputumSample1Date.year}`,
+    );
+    cy.log(
+      `Sputum Sample 2: ${sputumSample2Date.day}/${sputumSample2Date.month}/${sputumSample2Date.year}`,
+    );
+    cy.log(
+      `Sputum Sample 3: ${sputumSample3Date.day}/${sputumSample3Date.month}/${sputumSample3Date.year}`,
+    );
   });
 
   beforeEach(() => {
@@ -121,9 +196,13 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
       .fillFullName("Amina Johnson")
       .selectSex("Female")
       .selectNationality(countryName)
-      .fillBirthDate("22", "08", "1992")
-      .fillPassportIssueDate("15", "03", "2019")
-      .fillPassportExpiryDate("15", "03", "2029")
+      .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
+      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillPassportExpiryDate(
+        passportExpiryDate.day,
+        passportExpiryDate.month,
+        passportExpiryDate.year,
+      )
       .fillAddressLine1("Flat 2-3")
       .fillAddressLine2("789 Queen Street")
       .fillAddressLine3("Airport Residential Area")
@@ -235,9 +314,10 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     // Medical Screening Page - Pregnant yes symptoms, no TB history, yesclose contact
     medicalScreeningPage.verifyPageLoaded();
 
+    // Fill medical Screening form
     medicalScreeningPage
-      .fillScreeningDate("10", "9", "2025")
-      .fillAge("33")
+      .fillScreeningDate(screeningDate.day, screeningDate.month, screeningDate.year)
+      .fillAge(adultAge.toString())
       .selectTbSymptoms("Yes") // Yes symptoms
       .selectPreviousTb("No") // No TB history
       .selectCloseContact("Yes") // Yes close contact
@@ -262,10 +342,16 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     // Verify redirection to medical summary
     medicalSummaryPage.verifyPageLoaded();
 
+    // Get the screening date in GOV.UK format for validation
+    const screening = DateUtils.getDateInPast(0, 1, 0); // Same as entered on line 305
+    const expectedScreeningDate = DateUtils.formatDateGOVUK(screening);
+    // Calculate expected age from birth date
+    const expectedAge = DateUtils.calculateAge(DateUtils.getAdultDateOfBirth(adultAge));
+
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "33 years old",
-      dateOfMedicalScreening: "10 September 2025",
+      age: `${expectedAge} years old`,
+      dateOfMedicalScreening: expectedScreeningDate,
       tbSymptoms: "Yes",
       previousTb: "No",
       closeContactWithTb: "Yes",
@@ -294,7 +380,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     tbProgressTrackerPage.verifySectionHeadings();
     tbProgressTrackerPage.verifyApplicantInfo({
       Name: "Amina Johnson",
-      "Date of birth": "22/8/1992",
+      "Date of birth": adultDOBFormatted,
       "Passport number": passportNumber,
       "TB screening": "In progress",
     });
@@ -333,7 +419,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     tbProgressTrackerPage.verifySectionHeadings();
     tbProgressTrackerPage.verifyApplicantInfo({
       Name: "Amina Johnson",
-      "Date of birth": "22/8/1992",
+      "Date of birth": adultDOBFormatted,
       "Passport number": passportNumber,
       "TB screening": "In progress",
     });
@@ -350,15 +436,27 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     // Fill sputum collection data for all three samples
     const sputumData = {
       sample1: {
-        date: { day: "18", month: "09", year: "2025" },
+        date: {
+          day: sputumSample1Date.day,
+          month: sputumSample1Date.month,
+          year: sputumSample1Date.year,
+        },
         collectionMethod: "Coughed up",
       },
       sample2: {
-        date: { day: "19", month: "09", year: "2025" },
+        date: {
+          day: sputumSample2Date.day,
+          month: sputumSample2Date.month,
+          year: sputumSample2Date.year,
+        },
         collectionMethod: "Induced",
       },
       sample3: {
-        date: { day: "20", month: "09", year: "2025" },
+        date: {
+          day: sputumSample3Date.day,
+          month: sputumSample3Date.month,
+          year: sputumSample3Date.year,
+        },
         collectionMethod: "Coughed up",
       },
     };
@@ -393,19 +491,19 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     // Validate sample data matches what was entered
     const expectedSampleData = {
       sample1: {
-        dateCollected: "18 September 2025",
+        dateCollected: sputumSample1Formatted,
         collectionMethod: "Coughed up",
         smearResult: "Negative",
         cultureResult: "Negative",
       },
       sample2: {
-        dateCollected: "19 September 2025",
+        dateCollected: sputumSample2Formatted,
         collectionMethod: "Induced",
         smearResult: "Negative",
         cultureResult: "Negative",
       },
       sample3: {
-        dateCollected: "20 September 2025",
+        dateCollected: sputumSample3Formatted,
         collectionMethod: "Coughed up",
         smearResult: "Negative",
         cultureResult: "Negative",

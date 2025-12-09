@@ -1,6 +1,7 @@
 // Empty Form Submission Test on Sputum Page
 import { countryList } from "../../../src/utils/countryList";
 import { loginViaB2C } from "../../support/commands";
+import { DateUtils } from "../../support/DateUtils";
 import { ApplicantConfirmationPage } from "../../support/page-objects/applicantConfirmationPage";
 import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
 import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
@@ -58,7 +59,6 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
   const chestXrayPage = new ChestXrayPage();
   const chestXrayUploadPage = new ChestXrayUploadPage();
   const chestXrayFindingsPage = new ChestXrayFindingsPage();
-  //const chestXraySummaryPage = new ChestXraySummaryPage();
   const chestXrayConfirmationPage = new ChestXrayConfirmationPage();
   const enterSputumSampleResultsPage = new EnterSputumSampleResultsPage();
   const tbProgressTrackerPage = new TBProgressTrackerPage();
@@ -72,9 +72,54 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
   let tbCertificateNumber: string = "";
   let selectedVisaCategory: string;
 
+  // Dynamic date variables
+  let adultAge: number;
+  let adultDOB: ReturnType<typeof DateUtils.getDOBComponentsForAge>;
+  let adultDOBFormatted: string;
+  let passportIssueDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let passportExpiryDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let screeningDate!: ReturnType<typeof DateUtils.getDateComponents>;
+  let xrayDate!: ReturnType<typeof DateUtils.getDateComponents>;
+  let sputumSample1Date: ReturnType<typeof DateUtils.getDateComponents>;
+  let sputumSample2Date: ReturnType<typeof DateUtils.getDateComponents>;
+  let sputumSample3Date: ReturnType<typeof DateUtils.getDateComponents>;
+
   before(() => {
     // Create test fixtures before test run
     createTestFixtures();
+
+    // Generate dynamic dates for adult applicant (25 years old)
+    adultAge = 25;
+    adultDOB = DateUtils.getAdultDOBComponents(adultAge);
+    // Format with leading zeros, then normalize for UI comparison
+    adultDOBFormatted = DateUtils.normalizeDateForComparison(
+      DateUtils.formatDateDDMMYYYY(DateUtils.getAdultDateOfBirth(adultAge)),
+    );
+
+    // Generate passport dates (issued 2 years ago, expires in 8 years)
+    const passportIssue = DateUtils.getDateInPast(2);
+    const passportExpiry = DateUtils.getPassportExpiryDate(passportIssue, false);
+    passportIssueDate = DateUtils.getDateComponents(passportIssue);
+    passportExpiryDate = DateUtils.getDateComponents(passportExpiry);
+
+    // Generate screening date (1 month ago for realistic scenario)
+    const screening = DateUtils.getDateInPast(0, 1, 0);
+    screeningDate = DateUtils.getDateComponents(screening);
+
+    // Generate X-ray date (2 weeks ago, after screening)
+    const xray = DateUtils.getDateInPast(0, 0, 14);
+    xrayDate = DateUtils.getDateComponents(xray);
+
+    // Generate sputum collection dates (3 months ago for realistic scenario)
+    const sputumSample1 = DateUtils.getDateInPast(0, 3, 0); // 3 months ago
+    const sputumSample2 = new Date(sputumSample1);
+    sputumSample2.setDate(sputumSample2.getDate() + 1); // Next day
+    const sputumSample3 = new Date(sputumSample2);
+    sputumSample3.setDate(sputumSample3.getDate() + 1); // Next day
+
+    sputumSample1Date = DateUtils.getDateComponents(sputumSample1);
+    sputumSample2Date = DateUtils.getDateComponents(sputumSample2);
+    sputumSample3Date = DateUtils.getDateComponents(sputumSample3);
   });
 
   beforeEach(() => {
@@ -116,9 +161,13 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
       .fillFullName("Jane Smith")
       .selectSex("Female")
       .selectNationality(countryName)
-      .fillBirthDate("25", "03", "2000")
-      .fillPassportIssueDate("10", "06", "2021")
-      .fillPassportExpiryDate("01", "06", "2031")
+      .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
+      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillPassportExpiryDate(
+        passportExpiryDate.day,
+        passportExpiryDate.month,
+        passportExpiryDate.year,
+      )
       .fillAddressLine1("100 Palm Street")
       .fillAddressLine2("Blank Building")
       .fillAddressLine3("Void Village")
@@ -197,8 +246,8 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
     tbProgressTrackerPage.clickTaskLink("Medical history and TB symptoms");
     medicalScreeningPage.verifyPageLoaded();
     medicalScreeningPage
-      .fillScreeningDate("25", "03", "2000")
-      .fillAge("25")
+      .fillScreeningDate(screeningDate.day, screeningDate.month, screeningDate.year)
+      .fillAge(adultAge.toString())
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
@@ -217,9 +266,12 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
     // Verify redirection to Medical Screening Summary Page
     medicalSummaryPage.verifyPageLoaded();
 
-    // Validate the prefilled form
+    // Calculate expected age from birth date
+    const expectedAge = DateUtils.calculateAge(DateUtils.getAdultDateOfBirth(adultAge));
+
+    // Validate the prefilled form with calculated age
     medicalSummaryPage.fullyValidateSummary({
-      age: "25 years old",
+      age: `${expectedAge} years old`,
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",
@@ -252,14 +304,11 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
     chestXrayUploadPage.verifyDateXrayTakenSectionDisplayed();
     chestXrayUploadPage.verifyDateInputFields();
 
-    // Enter the date manually when X-ray was taken
-    const xrayDay = "20";
-    const xrayMonth = "10";
-    const xrayYear = "2025";
-    chestXrayUploadPage.enterDateXrayTaken(xrayDay, xrayMonth, xrayYear);
+    // Enter the date manually when X-ray was taken (using dynamic date)
+    chestXrayUploadPage.enterDateXrayTaken(xrayDate.day, xrayDate.month, xrayDate.year);
 
     // Verify the date was entered correctly
-    chestXrayUploadPage.verifyDateValue(xrayDay, xrayMonth, xrayYear);
+    chestXrayUploadPage.verifyDateValue(xrayDate.day, xrayDate.month, xrayDate.year);
 
     // Verify X-ray upload page and sections and upload image(s)
     chestXrayUploadPage.verifyXrayUploadSectionsDisplayed();
@@ -291,14 +340,16 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
     // Verify page heading
     checkChestXrayImagesPage.verifyPageHeading();
 
-    // Verify the date of X-ray is displayed (should match what was entered earlier)
-    checkChestXrayImagesPage.verifyDateOfXray("20 October 2025");
-
     // Get and log the date of X-ray value
     checkChestXrayImagesPage.getDateOfXray().then((date) => {
       cy.log(`Date of X-ray: ${date}`);
     });
-
+    // Verify the date of X-ray is displayed (should match what was entered earlier)
+    checkChestXrayImagesPage.verifyDateOfXrayComponents(
+      xrayDate.day,
+      xrayDate.month,
+      xrayDate.year,
+    );
     // Verify at least one chest X-ray image is uploaded
     checkChestXrayImagesPage.verifyAtLeastOneImageUploaded();
 
@@ -330,15 +381,11 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
       // Verify redirection to chest X-ray Images confirmation Page
       chestXrayConfirmationPage.verifyPageLoaded();
 
-      // Verify X-ray findings page
-      //chestXrayFindingsPage.verifyPageLoaded();
-
       // Verify Chest X-ray Confirmation Panel
       chestXrayConfirmationPage.verifyConfirmationPanel();
       // Verify next steps
       chestXrayConfirmationPage.verifyNextStepsSection();
-      // Click "Continue" button
-      //chestXrayConfirmationPage.clickContinueButton();
+
       // Click "Continue" button and verify redirection to TB Progress Tracker
       chestXrayConfirmationPage.clickContinueAndVerifyRedirection();
 
@@ -373,7 +420,6 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
 
       // Verify redirection to Radiological Outcome confirmation Page
       radiologicalOutcomeConfPage.verifyPageLoaded();
-      //radiologicalOutcomeConfPage.verifyPageTitle();
       radiologicalOutcomeConfPage.verifyAllPageElements();
       radiologicalOutcomeConfPage.verifyConfirmationPanel();
       radiologicalOutcomeConfPage.verifyWhatHappensNextSection();
@@ -386,7 +432,7 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
         Name: "Jane Smith",
-        "Date of birth": "25/3/2000",
+        "Date of birth": adultDOBFormatted,
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
@@ -412,7 +458,7 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
         Name: "Jane Smith",
-        "Date of birth": "25/3/2000",
+        "Date of birth": adultDOBFormatted,
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
@@ -442,21 +488,34 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
       cy.get('[data-testid="date-sample-3-taken-day"]').should("have.value", "");
       cy.get('[data-testid="date-sample-3-taken-month"]').should("have.value", "");
       cy.get('[data-testid="date-sample-3-taken-year"]').should("have.value", "");
+
       // Check that collection method exists
       cy.get('[name="collectionMethodSample3"]').should("exist");
 
       /// Fill sputum collection data for all three samples
       const sputumData = {
         sample1: {
-          date: { day: "10", month: "03", year: "2025" },
+          date: {
+            day: sputumSample1Date.day,
+            month: sputumSample1Date.month,
+            year: sputumSample1Date.year,
+          },
           collectionMethod: "Coughed up",
         },
         sample2: {
-          date: { day: "11", month: "03", year: "2025" },
+          date: {
+            day: sputumSample2Date.day,
+            month: sputumSample2Date.month,
+            year: sputumSample2Date.year,
+          },
           collectionMethod: "Induced",
         },
         sample3: {
-          date: { day: "12", month: "03", year: "2025" },
+          date: {
+            day: sputumSample3Date.day,
+            month: sputumSample3Date.month,
+            year: sputumSample3Date.year,
+          },
           collectionMethod: "Coughed up",
         },
       };

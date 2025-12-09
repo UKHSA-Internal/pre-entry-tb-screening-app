@@ -10,7 +10,7 @@ export class ClinicCertificateInfoPage extends BasePage {
   verifyPageLoaded(): ClinicCertificateInfoPage {
     cy.get("h1.govuk-heading-l")
       .should("be.visible")
-      .should("contain", "Enter clinic and certificate information");
+      .should("contain", "Clinic and certificate information");
     return this;
   }
 
@@ -237,10 +237,10 @@ export class ClinicCertificateInfoPage extends BasePage {
   // Verify declaring physician's name field
   verifyDeclaringPhysicianNameField(): ClinicCertificateInfoPage {
     cy.get("#declaring-physician-name.govuk-form-group").should("be.visible");
-    cy.get("label[for='declaring-physician-name-field']")
+    cy.get("#declaring-physician-name-field")
       .should("be.visible")
       .should("contain", "Declaring Physician's name");
-    cy.get("#declaring-physician-name-field")
+    cy.get('input[name="declaringPhysicianName"]')
       .should("be.visible")
       .should("have.attr", "data-testid", "declaring-physician-name");
     return this;
@@ -248,17 +248,17 @@ export class ClinicCertificateInfoPage extends BasePage {
 
   // Enter declaring physician's name
   enterDeclaringPhysicianName(name: string): ClinicCertificateInfoPage {
-    cy.get("#declaring-physician-name-field").clear().type(name);
+    cy.get('input[name="declaringPhysicianName"]').clear().type(name);
     return this;
   }
 
   // Verify physician's notes field
   verifyPhysicianNotesField(): ClinicCertificateInfoPage {
     cy.get("#physician-comments.govuk-form-group").should("be.visible");
-    cy.get("label[for='physician-comments-field']")
+    cy.get("#physician-comments-field")
       .should("be.visible")
       .should("contain", "Physician's notes (optional)");
-    cy.get("#physician-comments-field")
+    cy.get('textarea[name="comments"]')
       .should("be.visible")
       .should("have.attr", "data-testid", "physician-comments");
     return this;
@@ -266,7 +266,7 @@ export class ClinicCertificateInfoPage extends BasePage {
 
   // Enter physician's notes
   enterPhysicianNotes(notes: string): ClinicCertificateInfoPage {
-    cy.get("#physician-comments-field").clear().type(notes);
+    cy.get('textarea[name="comments"]').clear().type(notes);
     return this;
   }
 
