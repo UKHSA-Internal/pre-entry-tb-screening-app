@@ -37,6 +37,11 @@ const config: DeploymentConfig[] = [
     s3Bucket: process.env.EDAP_INTEGRATION_LAMBDA_BUCKET,
     path: join(__dirname, "./src/edap-integration-service/lambdas/edap-integration.ts"),
   },
+  {
+    lambdaName: process.env.AUDIT_SERVICE_LAMBDA_NAME,
+    s3Bucket: process.env.AUDIT_SERVICE_LAMBDA_BUCKET,
+    path: join(__dirname, "./src/audit-service/lambdas/audit.ts"),
+  },
 ];
 
 // eslint-disable-next-line no-console
