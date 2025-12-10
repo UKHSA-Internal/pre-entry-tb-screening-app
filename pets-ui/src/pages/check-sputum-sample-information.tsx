@@ -11,7 +11,7 @@ export default function CheckSputumSampleInformationPage() {
   const applicationData = useAppSelector(selectApplication);
   const sputumData = useAppSelector(selectSputum);
 
-  let backLinkUrl = "/enter-sputum-sample-collection-information";
+  let backLinkUrl = "/sputum-collection-details";
   if (sputumData.status === ApplicationStatus.COMPLETE) {
     backLinkUrl = "/tracker";
   }

@@ -593,7 +593,7 @@ describe("Empty Collection Method Test On Sputum Collection Page", () => {
       sputumCollectionPage.validateSample3CollectionMethodError();
 
       // Verify we remain on the sputum collection page
-      cy.url().should("include", "/enter-sputum-sample-collection-information");
+      cy.url().should("include", "/sputum-collection-details");
     });
   });
 });
