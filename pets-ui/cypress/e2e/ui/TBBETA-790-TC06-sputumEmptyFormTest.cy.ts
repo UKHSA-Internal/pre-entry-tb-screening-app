@@ -620,7 +620,7 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
       cy.get('[data-testid="date-sample-3-taken-day"]').should("be.focused");
 
       // Verify we remain on the sputum collection page
-      cy.url().should("include", "/enter-sputum-sample-collection-information");
+      cy.url().should("include", "/sputum-collection-details");
 
       // Verify that all form fields still have the correct error styling
       cy.get("#date-sample-1-taken").should("have.class", "govuk-form-group--error");

@@ -625,7 +625,7 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
       });
 
       // Verify we remain on the sputum collection page
-      cy.url().should("include", "/enter-sputum-sample-collection-information");
+      cy.url().should("include", "/sputum-collection-details");
     });
   });
 });
