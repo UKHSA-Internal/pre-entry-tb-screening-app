@@ -2,7 +2,7 @@ import { MsalProvider } from "@azure/msal-react";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MsalReactTester, MsalReactTesterPlugin } from "msal-react-tester";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 import { expect, test, vi } from "vitest";
 
 import { ApplicantPhotoProvider } from "@/context/applicantPhotoContext";
@@ -49,7 +49,7 @@ test("In authenticated state, user is taken to Applicant Search page ('/search-f
 
   await msalTester.waitForRedirect();
 
-  expect(screen.getByText("Search for a visa applicant")).toBeVisible();
+  expect(await screen.findByText("Search for a visa applicant")).toBeVisible();
 });
 
 test("In authenticated state, user is able to access authenticated paths", async () => {
@@ -67,7 +67,7 @@ test("In authenticated state, user is able to access authenticated paths", async
 
   await msalTester.waitForRedirect();
 
-  expect(screen.getByText("Search for a visa applicant")).toBeVisible();
+  expect(await screen.findByText("Search for a visa applicant")).toBeVisible();
 });
 
 test("In unauthenticated state, user is taken to landing page ('/') when accessing landing page via browser", async () => {
@@ -85,7 +85,7 @@ test("In unauthenticated state, user is taken to landing page ('/') when accessi
 
   await msalTester.waitForRedirect();
 
-  expect(screen.getByRole("button", { name: /Sign In/i })).toBeInTheDocument();
+  expect(await screen.findByRole("button", { name: /Sign In/i })).toBeInTheDocument();
 });
 
 test("In unauthenticated state, user is taken to landing page ('/') if they try to access an authenticated path", async () => {
@@ -103,7 +103,7 @@ test("In unauthenticated state, user is taken to landing page ('/') if they try 
 
   await msalTester.waitForRedirect();
 
-  expect(screen.getByRole("button", { name: /Sign In/i })).toBeInTheDocument();
+  expect(await screen.findByRole("button", { name: /Sign In/i })).toBeInTheDocument();
 });
 
 test("In unauthenticated state, user is taken to redirect to B2C page if they click sign-in on landing page", async () => {
