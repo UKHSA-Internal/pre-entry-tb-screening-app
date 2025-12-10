@@ -287,7 +287,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
     this.verifySampleChangeLinks(3, {
       "Date collected": "/sputum-collection-details",
       "Collection method": "/sputum-collection-details",
-      "Smear result": "/sputum-resultss",
+      "Smear result": "/sputum-results",
       "Culture result": "/sputum-results",
     });
     return this;
