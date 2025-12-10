@@ -591,7 +591,7 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
       sputumCollectionPage.verifyNoCollectionMethodErrors();
 
       // Verify we remain on the sputum collection page
-      cy.url().should("include", "/enter-sputum-sample-collection-information");
+      cy.url().should("include", "/sputum-collection-details");
     });
   });
 });

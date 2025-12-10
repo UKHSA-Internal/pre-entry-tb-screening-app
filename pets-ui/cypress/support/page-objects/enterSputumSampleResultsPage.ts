@@ -834,7 +834,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
     cy.get(".govuk-back-link")
       .should("be.visible")
       .and("contain", "Back")
-      .and("have.attr", "href", "/enter-sputum-sample-collection-information");
+      .and("have.attr", "href", "/sputum-collection-details");
     return this;
   }
 

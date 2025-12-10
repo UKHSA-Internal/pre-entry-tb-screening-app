@@ -269,25 +269,25 @@ export class CheckSputumSampleInfoPage extends BasePage {
   verifyChangeLinksExist(): CheckSputumSampleInfoPage {
     // Sample 1 change links
     this.verifySampleChangeLinks(1, {
-      "Date collected": "/enter-sputum-sample-collection-information",
-      "Collection method": "/enter-sputum-sample-collection-information",
+      "Date collected": "/sputum-collection-details",
+      "Collection method": "/sputum-collection-details",
       "Smear result": "/sputum-results",
       "Culture result": "/sputum-results",
     });
 
     // Sample 2 change links
     this.verifySampleChangeLinks(2, {
-      "Date collected": "/enter-sputum-sample-collection-information",
-      "Collection method": "/enter-sputum-sample-collection-information",
+      "Date collected": "/sputum-collection-details",
+      "Collection method": "/sputum-collection-details",
       "Smear result": "/sputum-results",
       "Culture result": "/sputum-results",
     });
 
     // Sample 3 change links
     this.verifySampleChangeLinks(3, {
-      "Date collected": "/enter-sputum-sample-collection-information",
-      "Collection method": "/enter-sputum-sample-collection-information",
-      "Smear result": "/sputum-results",
+      "Date collected": "/sputum-collection-details",
+      "Collection method": "/sputum-collection-details",
+      "Smear result": "/sputum-resultss",
       "Culture result": "/sputum-results",
     });
     return this;
@@ -313,7 +313,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
   testChangeLinksNavigation(): CheckSputumSampleInfoPage {
     // Test collection change link (sample 1)
     this.clickSampleChangeLink(1, "Date collected");
-    cy.url().should("include", "/enter-sputum-sample-collection-information");
+    cy.url().should("include", "/sputum-collection-details");
     cy.go("back");
 
     // Test results change link (sample 1) - only if data exists
@@ -410,7 +410,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
     this.verifySubmissionHeading();
     this.verifyRequiredFieldsPresent();
     this.verifyChangeLinksExist();
-    this.verifyBackLink("/enter-sputum-sample-collection-information");
+    this.verifyBackLink("/sputum-collection-details");
     this.verifyServiceName();
 
     if (expectedSampleData) {

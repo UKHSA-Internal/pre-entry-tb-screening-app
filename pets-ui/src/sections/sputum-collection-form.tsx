@@ -254,7 +254,7 @@ const SputumCollectionForm = () => {
   const errorsToShow = Object.keys(errors);
   useEffect(() => {
     if (errorsToShow.length > 0) {
-      sendGoogleAnalyticsFormErrorEvent("Enter sputum sample collection information", errorsToShow);
+      sendGoogleAnalyticsFormErrorEvent("Sputum collection details", errorsToShow);
     }
   }, [errorsToShow]);
 

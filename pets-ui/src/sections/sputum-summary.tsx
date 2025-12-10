@@ -256,7 +256,7 @@ const SputumSummary = () => {
     };
 
     if (hasCollectionData && !sample.collection.submittedToDatabase) {
-      dateTaken.link = "/enter-sputum-sample-collection-information";
+      dateTaken.link = "/sputum-collection-details";
     }
     summaryData.push(dateTaken);
 
@@ -272,7 +272,7 @@ const SputumSummary = () => {
     };
 
     if (sample.collection.collectionMethod && !sample.collection.submittedToDatabase) {
-      collectionMethod.link = "/enter-sputum-sample-collection-information";
+      collectionMethod.link = "/sputum-collection-details";
     }
     summaryData.push(collectionMethod);
 
