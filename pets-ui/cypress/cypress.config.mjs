@@ -124,6 +124,7 @@ export default defineConfig({
     timestamp: "mmddyyyy_HHMMss",
   },
   video: true,
+  videoCompression: 32, // Compress videos for Cypress Cloud
   videosFolder:
     isCI() && process.env.ENVIRONMENT
       ? `cypress/videos/${process.env.ENVIRONMENT}`
@@ -139,7 +140,10 @@ export default defineConfig({
     // Static glob string for specPattern, as required by Cypress
     specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
     experimentalStudio: true,
-    retries: isCI() ? 2 : 0, // Only retry in CI,
+    retries: {
+      runMode: 2, // Retry 2 times in CI/Cloud
+      openMode: 0, // Don't retry in local development
+    },
     setupNodeEvents: async (on, config) => {
       const currentEnv = (
         process.env.ENVIRONMENT ||
@@ -151,7 +155,8 @@ export default defineConfig({
       console.log(`Environment: ${currentEnv}`);
       console.log(`Base URL: ${config.baseUrl}`);
       console.log(`Running in CI: ${isCI()}`);
-      console.log(`Retries: ${config.retries}`);
+      console.log(`Retries: ${JSON.stringify(config.retries)}`);
+      console.log(`Project ID: ${config.projectId || "Not set"}`);
       console.log("============================");
 
       const sqsClient = createSQSClient();

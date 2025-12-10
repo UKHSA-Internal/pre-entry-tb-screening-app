@@ -20,7 +20,7 @@ export default function SputumCollectionPage() {
 
   return (
     <Container
-      title="Enter sputum sample collection information - Complete UK pre-entry health screening - GOV.UK"
+      title="Sputum collection details - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo="/tracker"
     >
       <SputumCollectionForm />

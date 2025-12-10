@@ -50,7 +50,8 @@ export class CheckSputumSampleInfoPage extends BasePage {
       .next(".govuk-summary-list")
       .find(`dt.govuk-summary-list__key:contains("${fieldKey}")`)
       .siblings(".govuk-summary-list__value")
-      .invoke("text");
+      .invoke("text")
+      .then((text) => text.trim());
   }
 
   // Verify specific summary value for a sample
@@ -90,26 +91,26 @@ export class CheckSputumSampleInfoPage extends BasePage {
   // Verify all sample information at once
   verifyAllSampleInfo(expectedSampleData: {
     sample1: {
-      dateTaken: string;
+      dateCollected: string;
       collectionMethod: string;
       smearResult?: string;
       cultureResult?: string;
     };
     sample2: {
-      dateTaken: string;
+      dateCollected: string;
       collectionMethod: string;
       smearResult?: string;
       cultureResult?: string;
     };
     sample3: {
-      dateTaken: string;
+      dateCollected: string;
       collectionMethod: string;
       smearResult?: string;
       cultureResult?: string;
     };
   }): CheckSputumSampleInfoPage {
     // Verify Sample 1
-    this.verifySampleSummaryValue(1, "Date taken", expectedSampleData.sample1.dateTaken);
+    this.verifySampleSummaryValue(1, "Date collected", expectedSampleData.sample1.dateCollected);
     this.verifySampleSummaryValue(
       1,
       "Collection method",
@@ -129,7 +130,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
     }
 
     // Verify Sample 2
-    this.verifySampleSummaryValue(2, "Date taken", expectedSampleData.sample2.dateTaken);
+    this.verifySampleSummaryValue(2, "Date collected", expectedSampleData.sample2.dateCollected);
     this.verifySampleSummaryValue(
       2,
       "Collection method",
@@ -149,7 +150,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
     }
 
     // Verify Sample 3
-    this.verifySampleSummaryValue(3, "Date taken", expectedSampleData.sample3.dateTaken);
+    this.verifySampleSummaryValue(3, "Date collected", expectedSampleData.sample3.dateCollected);
     this.verifySampleSummaryValue(
       3,
       "Collection method",
@@ -234,64 +235,60 @@ export class CheckSputumSampleInfoPage extends BasePage {
   }
 
   // Check if a specific field has a "Change" link for a sample
-  checkSampleChangeLink(sampleNumber: number, fieldKey: string): Cypress.Chainable {
-    return cy
-      .contains("h2", `Sputum sample ${sampleNumber}`)
+  clickSampleChangeLink(sampleNumber: number, fieldKey: string): CheckSputumSampleInfoPage {
+    cy.contains("h2", `Sputum sample ${sampleNumber}`)
       .next(".govuk-summary-list")
       .find(`dt.govuk-summary-list__key:contains("${fieldKey}")`)
       .siblings(".govuk-summary-list__actions")
       .find("a")
-      .should("contain", "Change");
-  }
-
-  // Click on change link for a specific field in a sample
-  clickSampleChangeLink(sampleNumber: number, fieldKey: string): CheckSputumSampleInfoPage {
-    this.checkSampleChangeLink(sampleNumber, fieldKey).click();
+      .click();
     return this;
   }
 
-  // Verify change links exist for results only when data is present
-  verifyResultChangeLinksForDataState(
-    sampleNumber: number,
-    hasData: boolean,
+  // Verify all three samples show "No data" for results
+  verifyAllSamplesShowNoData(): CheckSputumSampleInfoPage {
+    this.verifySampleResultsShowNoData(1);
+    this.verifySampleResultsShowNoData(2);
+    this.verifySampleResultsShowNoData(3);
+    return this;
+  }
+
+  // Verify all three samples have result data
+  verifyAllSamplesHaveData(
+    sample1: { smearResult: string; cultureResult: string },
+    sample2: { smearResult: string; cultureResult: string },
+    sample3: { smearResult: string; cultureResult: string },
   ): CheckSputumSampleInfoPage {
-    if (hasData) {
-      this.checkSampleChangeLink(sampleNumber, "Smear result");
-      this.checkSampleChangeLink(sampleNumber, "Culture result");
-    } else {
-      // When no data, change links should still be present for all fields
-      this.checkSampleChangeLink(sampleNumber, "Date taken");
-      this.checkSampleChangeLink(sampleNumber, "Collection method");
-      this.checkSampleChangeLink(sampleNumber, "Smear result");
-      this.checkSampleChangeLink(sampleNumber, "Culture result");
-    }
+    this.verifySampleHasResultData(1, sample1.smearResult, sample1.cultureResult);
+    this.verifySampleHasResultData(2, sample2.smearResult, sample2.cultureResult);
+    this.verifySampleHasResultData(3, sample3.smearResult, sample3.cultureResult);
     return this;
   }
 
-  // Verify all change links exist with correct URLs
+  // Verify that change links exist for all samples
   verifyChangeLinksExist(): CheckSputumSampleInfoPage {
     // Sample 1 change links
     this.verifySampleChangeLinks(1, {
-      "Date taken": "/enter-sputum-sample-collection-information",
-      "Collection method": "/enter-sputum-sample-collection-information",
-      "Smear result": "/enter-sputum-sample-results",
-      "Culture result": "/enter-sputum-sample-results",
+      "Date collected": "/sputum-collection-details",
+      "Collection method": "/sputum-collection-details",
+      "Smear result": "/sputum-results",
+      "Culture result": "/sputum-results",
     });
 
     // Sample 2 change links
     this.verifySampleChangeLinks(2, {
-      "Date taken": "/enter-sputum-sample-collection-information",
-      "Collection method": "/enter-sputum-sample-collection-information",
-      "Smear result": "/enter-sputum-sample-results",
-      "Culture result": "/enter-sputum-sample-results",
+      "Date collected": "/sputum-collection-details",
+      "Collection method": "/sputum-collection-details",
+      "Smear result": "/sputum-results",
+      "Culture result": "/sputum-results",
     });
 
     // Sample 3 change links
     this.verifySampleChangeLinks(3, {
-      "Date taken": "/enter-sputum-sample-collection-information",
-      "Collection method": "/enter-sputum-sample-collection-information",
-      "Smear result": "/enter-sputum-sample-results",
-      "Culture result": "/enter-sputum-sample-results",
+      "Date collected": "/sputum-collection-details",
+      "Collection method": "/sputum-collection-details",
+      "Smear result": "/sputum-results",
+      "Culture result": "/sputum-results",
     });
     return this;
   }
@@ -315,15 +312,15 @@ export class CheckSputumSampleInfoPage extends BasePage {
   // Verify change links work by clicking and checking URL
   testChangeLinksNavigation(): CheckSputumSampleInfoPage {
     // Test collection change link (sample 1)
-    this.clickSampleChangeLink(1, "Date taken");
-    cy.url().should("include", "/enter-sputum-sample-collection-information");
+    this.clickSampleChangeLink(1, "Date collected");
+    cy.url().should("include", "/sputum-collection-details");
     cy.go("back");
 
     // Test results change link (sample 1) - only if data exists
     this.getSampleSummaryValue(1, "Smear result").then((smearValue) => {
       if (smearValue !== "No data") {
         this.clickSampleChangeLink(1, "Smear result");
-        cy.url().should("include", "/enter-sputum-sample-results");
+        cy.url().should("include", "/sputum-results");
         cy.go("back");
       }
     });
@@ -362,7 +359,12 @@ export class CheckSputumSampleInfoPage extends BasePage {
 
   // Verify all required fields are present for each sample
   verifyRequiredFieldsPresent(): CheckSputumSampleInfoPage {
-    const requiredFields = ["Date taken", "Collection method", "Smear result", "Culture result"];
+    const requiredFields = [
+      "Date collected",
+      "Collection method",
+      "Smear result",
+      "Culture result",
+    ];
 
     [1, 2, 3].forEach((sampleNum) => {
       requiredFields.forEach((field) => {
@@ -385,19 +387,19 @@ export class CheckSputumSampleInfoPage extends BasePage {
   // Comprehensive page verification
   verifyAllPageElements(expectedSampleData?: {
     sample1: {
-      dateTaken: string;
+      dateCollected: string;
       collectionMethod: string;
       smearResult?: string;
       cultureResult?: string;
     };
     sample2: {
-      dateTaken: string;
+      dateCollected: string;
       collectionMethod: string;
       smearResult?: string;
       cultureResult?: string;
     };
     sample3: {
-      dateTaken: string;
+      dateCollected: string;
       collectionMethod: string;
       smearResult?: string;
       cultureResult?: string;
@@ -408,7 +410,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
     this.verifySubmissionHeading();
     this.verifyRequiredFieldsPresent();
     this.verifyChangeLinksExist();
-    this.verifyBackLink("/enter-sputum-sample-results");
+    this.verifyBackLink("/sputum-collection-details");
     this.verifyServiceName();
 
     if (expectedSampleData) {
@@ -421,7 +423,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
   validateSampleDataFormat(): CheckSputumSampleInfoPage {
     // Verify date format (DD Month YYYY)
     [1, 2, 3].forEach((sampleNum) => {
-      this.getSampleSummaryValue(sampleNum, "Date taken").should(
+      this.getSampleSummaryValue(sampleNum, "Date collected").should(
         "match",
         /^\d{1,2}\s[A-Za-z]+\s\d{4}$/,
       );
@@ -499,6 +501,25 @@ export class CheckSputumSampleInfoPage extends BasePage {
   // Verify at least one sample has result data (in line with the AC)
   verifyAtLeastOneSampleHasResultData(): CheckSputumSampleInfoPage {
     this.countSamplesWithResultData().should("be.at.least", 1);
+    return this;
+  }
+
+  // Verify submit button is present and enabled
+  verifySubmitButton(): CheckSputumSampleInfoPage {
+    cy.get("button[type='submit']")
+      .should("be.visible")
+      .and("contain", "Submit and continue")
+      .and("not.be.disabled");
+    return this;
+  }
+
+  // Click submit button
+  clickSubmitButton(): CheckSputumSampleInfoPage {
+    cy.get("button[type='submit']")
+      .contains("Save and continue")
+      .filter(":visible")
+      .first()
+      .click();
     return this;
   }
 }

@@ -17,6 +17,7 @@ export abstract class IRadiologicalOutcome {
   xrayAssociatedMinorFindings: string[];
   xrayActiveTbFindings: string[];
   dateCreated: Date;
+  createdBy?: string;
 
   constructor(details: IRadiologicalOutcome) {
     this.applicationId = details.applicationId;
@@ -29,6 +30,7 @@ export abstract class IRadiologicalOutcome {
     this.xrayActiveTbFindings = details.xrayActiveTbFindings;
     // Audit
     this.dateCreated = details.dateCreated;
+    this.createdBy = details.createdBy;
   }
 }
 
