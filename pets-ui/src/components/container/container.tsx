@@ -4,8 +4,6 @@ import { useLocation } from "react-router";
 
 import { useNavigationHistory } from "@/utils/useNavigationHistory";
 
-import { useNavigationHistory } from "@/utils/useNavigationHistory";
-
 import BackLink from "../backLink/backLink";
 import CookieBanner from "../cookieBanner/cookieBanner";
 import Footer from "../footer/footer";
