@@ -529,7 +529,7 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
       // Save and continue to results
       sputumCollectionPage.clickSaveAndContinueToResults();
       // Verify redirection to Enter Sputum Sample Results page
-      cy.url().should("include", "/enter-sputum-sample-results");
+      cy.url().should("include", "/sputum-results");
 
       // Verify Enter Sputum Sample Results page loaded
       enterSputumSampleResultsPage.verifyPageLoaded();

@@ -602,7 +602,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
       sputumCollectionPage.clickSaveAndContinueToResults();
 
       // Verify redirection to Enter Sputum Sample Results page
-      cy.url().should("include", "/enter-sputum-sample-results");
+      cy.url().should("include", "/sputum-results");
 
       // Verify Enter Sputum Sample Results page loaded
       enterSputumSampleResultsPage.verifyPageLoaded();

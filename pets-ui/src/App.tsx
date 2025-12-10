@@ -379,7 +379,7 @@ function App() {
         }
       />
       <Route
-        path="/enter-sputum-sample-results"
+        path="/sputum-results"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>

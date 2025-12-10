@@ -19,7 +19,7 @@ export interface AllSampleResultsData {
 
 export class EnterSputumSampleResultsPage extends BasePage {
   constructor() {
-    super("/enter-sputum-sample-results");
+    super("/sputum-results");
   }
 
   // Static test data for results
