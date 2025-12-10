@@ -27,9 +27,7 @@ export default function EnterSputumSampleResultsPage() {
   return (
     <Container
       title="Sputum results - Complete UK pre-entry health screening - GOV.UK"
-      backLinkTo={
-        allSputumSamplesSubmitted ? "/tracker" : "/sputum-collection-details"
-      }
+      backLinkTo={allSputumSamplesSubmitted ? "/tracker" : "/sputum-collection-details"}
     >
       <SputumResultsForm />
     </Container>
