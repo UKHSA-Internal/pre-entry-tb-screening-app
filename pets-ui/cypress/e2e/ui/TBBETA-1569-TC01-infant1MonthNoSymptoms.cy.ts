@@ -430,7 +430,7 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     sputumCollectionPage.clickSaveAndContinueToResults();
 
     // Verify redirection to Enter Sputum Sample Results page
-    cy.url().should("include", "/enter-sputum-sample-results");
+    cy.url().should("include", "/sputum-results");
 
     // Enter sputum sample results page
     enterSputumSampleResultsPage.verifyPageLoaded();

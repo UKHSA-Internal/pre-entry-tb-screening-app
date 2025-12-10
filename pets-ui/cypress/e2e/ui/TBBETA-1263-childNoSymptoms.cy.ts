@@ -442,7 +442,7 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     sputumCollectionPage.clickSaveAndContinueToResults();
 
     // Verify redirection to Enter Sputum Sample Results page
-    cy.url().should("include", "/enter-sputum-sample-results");
+    cy.url().should("include", "/sputum-results");
 
     // Enter sputum sample results page
     enterSputumSampleResultsPage.verifyPageLoaded();
