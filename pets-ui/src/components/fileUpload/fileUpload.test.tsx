@@ -221,7 +221,9 @@ describe("FileUpload Component", () => {
       items: { add: vi.fn() },
     };
     const original = globalThis.DataTransfer;
-    globalThis.DataTransfer = vi.fn(() => mockDataTransfer) as unknown as typeof DataTransfer;
+    globalThis.DataTransfer = vi.fn(function () {
+      return mockDataTransfer;
+    }) as unknown as typeof DataTransfer;
 
     fireEvent.change(input, { target: { files: [] } });
 
