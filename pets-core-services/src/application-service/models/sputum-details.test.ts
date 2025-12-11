@@ -198,7 +198,7 @@ describe("Tests for SputumDetails model", () => {
         },
       },
       UpdateExpression:
-        "SET sputumSamples.#s_sample1 = :v_sample1, version = :newVersion, dateUpdated = :dateUpdated, #status = :status",
+        "SET sputumSamples.#s_sample1 = :v_sample1, version = :newVersion, dateUpdated = :dateUpdated, applicationId = :applicationId, #status = :status",
     });
   });
 
