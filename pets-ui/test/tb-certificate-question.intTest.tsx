@@ -110,11 +110,11 @@ describe("TbCertificateQuestionPage", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("when 'Yes' selected and continue pressed, it navigates to /enter-clinic-certificate-information", async () => {
+  it("when 'Yes' selected and continue pressed, it navigates to /clinic-certificate-information", async () => {
     const radioYes = screen.getByRole("radio", { name: "Yes" });
     await user.click(radioYes);
     await user.click(screen.getByRole("button", { name: "Continue" }));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/enter-clinic-certificate-information");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/clinic-certificate-information");
   });
 
   it("when 'No' selected and continue pressed, it navigates to /why-are-you-not-issuing-certificate", async () => {

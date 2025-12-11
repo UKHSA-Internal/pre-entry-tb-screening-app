@@ -15,6 +15,7 @@ export abstract class ISputumDecision {
   sputumRequired: YesOrNo;
 
   dateCreated: Date;
+  createdBy?: string;
 
   constructor(details: ISputumDecision) {
     this.applicationId = details.applicationId;
@@ -23,6 +24,7 @@ export abstract class ISputumDecision {
     this.sputumRequired = details.sputumRequired;
     // Audit
     this.dateCreated = details.dateCreated;
+    this.createdBy = details.createdBy;
   }
 }
 

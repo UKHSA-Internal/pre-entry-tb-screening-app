@@ -1,5 +1,6 @@
 //This holds all fields of the Check Chest X-ray Images Page
 import { BasePage } from "../BasePage";
+import { DateUtils } from "../DateUtils";
 
 export class CheckChestXrayImagesPage extends BasePage {
   constructor() {
@@ -93,7 +94,16 @@ export class CheckChestXrayImagesPage extends BasePage {
       .and("have.attr", "href", "/upload-chest-x-ray-images#date-xray-taken");
     return this;
   }
+  verifyDateOfXrayComponents(day: string, month: string, year: string): CheckChestXrayImagesPage {
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    const formattedDate = DateUtils.formatDateGOVUK(date);
 
+    cy.contains("dt.govuk-summary-list__key", "Date of X-ray")
+      .siblings(".govuk-summary-list__value")
+      .should("contain", formattedDate);
+
+    return this;
+  }
   // Verify "Chest X-ray images" change link exists and points to correct URL
   verifyChestXrayImagesChangeLink(): CheckChestXrayImagesPage {
     cy.contains("dt.govuk-summary-list__key", "Chest X-ray images")
