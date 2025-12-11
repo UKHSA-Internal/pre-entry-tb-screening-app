@@ -38,7 +38,7 @@ const notIssuedLink = (isLocked: boolean, anchor: string): string | undefined =>
   isLocked ? undefined : `/why-are-you-not-issuing-certificate#${anchor}`;
 
 const clinicInfoLink = (isLocked: boolean, anchor: string): string | undefined =>
-  isLocked ? undefined : `/enter-clinic-certificate-information#${anchor}`;
+  isLocked ? undefined : `/clinic-certificate-information#${anchor}`;
 
 const TbSummary = () => {
   const applicationData = useAppSelector(selectApplication);

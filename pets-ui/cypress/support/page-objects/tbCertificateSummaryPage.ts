@@ -496,7 +496,7 @@ export class TbCertificateSummaryPage extends BasePage {
   verifyBackLink(): TbCertificateSummaryPage {
     cy.get("a.govuk-back-link")
       .should("be.visible")
-      .should("have.attr", "href", "/enter-clinic-certificate-information")
+      .should("have.attr", "href", "/clinic-certificate-information")
       .should("contain", "Back");
     return this;
   }

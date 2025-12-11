@@ -108,7 +108,7 @@ describe("TBSummaryPage", () => {
     it("displays the back link", () => {
       const link = screen.getByRole("link", { name: "Back" });
       expect(link).toBeInTheDocument();
-      expect(link).toHaveAttribute("href", "/enter-clinic-certificate-information");
+      expect(link).toHaveAttribute("href", "/clinic-certificate-information");
       expect(link).toHaveClass("govuk-back-link");
     });
 
