@@ -16,12 +16,12 @@ To install dependencies, run `pnpm i`.
 
 | Command      | Description |
 | ----------- | ----------- |
-| `pnpm run dev`        | Starts the UI in development mode,       |
-| `pnpm run build`      | Create a build in `/dist`        |
-| `pnpm run preview`    | Preview a build created locally        |
-| `pnpm run test`       | Run unit tests        |
-| `pnpm run cypress`    | Opens the Cypress UI        |
-| `npx cypress run`     | Run cypress E2E tests in the terminal        |
+| `pnpm run dev`          | Starts the UI in development mode,       |
+| `pnpm run build`        | Create a build in `/dist`        |
+| `pnpm run preview`      | Preview a build created locally        |
+| `pnpm run test`         | Run unit tests        |
+| `pnpm run cypress:open` | Opens the Cypress UI        |
+| `pnpm run cypress:run`  | Run cypress E2E tests in the terminal        |
 
 ## Cypress End to End Tests
 

@@ -115,9 +115,6 @@ const getEnvironmentConfig = () => {
 };
 
 export default defineConfig({
-  // ⭐ CYPRESS CLOUD CONFIGURATION ⭐
-  projectId: "wtpwvy", // ← Cypress Cloud pets-ui project ID
-
   reporter: "mochawesome",
   reporterOptions: {
     reportDir: "cypress/reports/mochawesome",

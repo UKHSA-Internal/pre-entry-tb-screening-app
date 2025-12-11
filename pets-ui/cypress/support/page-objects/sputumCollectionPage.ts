@@ -23,7 +23,7 @@ interface AllSamplesData {
 
 export class SputumCollectionPage extends BasePage {
   constructor() {
-    super("/enter-sputum-sample-collection-information");
+    super("/sputum-collection-details");
   }
 
   // Protected helper method for date field filling

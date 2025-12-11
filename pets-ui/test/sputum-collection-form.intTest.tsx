@@ -377,7 +377,7 @@ describe("SputumCollectionForm", () => {
     });
   });
 
-  test("updates store and navigates to '/enter-sputum-sample-results' on 'Save and continue to results' with all samples valid", async () => {
+  test("updates store and navigates to '/sputum-results' on 'Save and continue to results' with all samples valid", async () => {
     const { store } = renderWithProviders(<SputumCollectionForm />, {
       preloadedState: preloadedStateWithEmptySputum,
     });
@@ -435,7 +435,7 @@ describe("SputumCollectionForm", () => {
       expect(sputumState.sample2.collection.submittedToDatabase).toBe(false);
       expect(sputumState.sample3.collection.submittedToDatabase).toBe(false);
       expect(sputumState.version).toBe(1);
-      expect(useNavigateMock).toHaveBeenCalledWith("/enter-sputum-sample-results");
+      expect(useNavigateMock).toHaveBeenCalledWith("/sputum-results");
     });
   });
 
@@ -472,7 +472,7 @@ describe("SputumCollectionForm", () => {
 
       const sputumState = store.getState().sputum;
       expect(sputumState.version).toBe(2);
-      expect(useNavigateMock).toHaveBeenCalledWith("/enter-sputum-sample-results");
+      expect(useNavigateMock).toHaveBeenCalledWith("/sputum-results");
     });
   });
 

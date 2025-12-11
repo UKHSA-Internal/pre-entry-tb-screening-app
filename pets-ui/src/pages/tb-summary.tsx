@@ -13,7 +13,7 @@ export default function TbSummaryPage() {
   const applicationData = useAppSelector(selectApplication);
   const tbCertificateData = useAppSelector(selectTbCertificate);
 
-  let backLinkUrl = "/enter-clinic-certificate-information";
+  let backLinkUrl = "/clinic-certificate-information";
   if (tbCertificateData.status === ApplicationStatus.COMPLETE) {
     backLinkUrl = "/tracker";
   } else if (tbCertificateData.isIssued === YesOrNo.NO) {
