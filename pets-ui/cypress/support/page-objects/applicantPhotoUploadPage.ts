@@ -141,15 +141,6 @@ export class ApplicantPhotoUploadPage extends BasePage {
     return this;
   }
 
-  // Verify continue button exists
-  verifyContinueButtonExists(): ApplicantPhotoUploadPage {
-    cy.get("button[type='submit']")
-      .contains("Continue")
-      .should("be.visible")
-      .and("have.attr", "data-module", "govuk-button");
-    return this;
-  }
-
   // Verify upload success for photo
   verifyUploadSuccess(): ApplicantPhotoUploadPage {
     cy.get("button[type='submit']")
