@@ -190,7 +190,9 @@ export const buildUpdateExpressionsForSputumDetails = (
   }
 
   updateExpressions.push(
-    ...["version = :newVersion", "dateUpdated = :dateUpdated", "applicationId = :applicationId"],
+    "version = :newVersion",
+    "dateUpdated = :dateUpdated",
+    "applicationId = :applicationId",
   );
 
   if (isFirstInsert) {
