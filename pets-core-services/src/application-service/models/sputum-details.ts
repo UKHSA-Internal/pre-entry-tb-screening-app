@@ -170,6 +170,7 @@ export const buildUpdateExpressionsForSputumDetails = (
   const expressionAttributeValues: Record<string, any> = {
     ":dateUpdated": new Date().toISOString(),
     ":newVersion": currentVersion + 1,
+    ":applicationId": details.applicationId,
   };
   let updateExpressions: string[] = [];
   mergedSamples = cleanDeep(mergedSamples, { emptyStrings: false });
@@ -190,6 +191,8 @@ export const buildUpdateExpressionsForSputumDetails = (
 
   updateExpressions.push("version = :newVersion");
   updateExpressions.push("dateUpdated = :dateUpdated");
+  updateExpressions.push("applicationId = :applicationId");
+
   if (isFirstInsert) {
     expressionAttributeValues[":createdBy"] = details.createdBy;
     updateExpressions.push("createdBy = :createdBy");
