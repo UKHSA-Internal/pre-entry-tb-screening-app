@@ -189,9 +189,9 @@ export const buildUpdateExpressionsForSputumDetails = (
     Object.assign(expressionAttributeValues, values);
   }
 
-  updateExpressions.push("version = :newVersion");
-  updateExpressions.push("dateUpdated = :dateUpdated");
-  updateExpressions.push("applicationId = :applicationId");
+  updateExpressions.push(
+    ...["version = :newVersion", "dateUpdated = :dateUpdated", "applicationId = :applicationId"],
+  );
 
   if (isFirstInsert) {
     expressionAttributeValues[":createdBy"] = details.createdBy;
