@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 let navigateMock: ReturnType<typeof vi.fn>;
 let currentLocation = { pathname: "/page", search: "", hash: "" };
 
-vi.mock("react-router-dom", () => ({
+vi.mock("react-router", () => ({
   useLocation: () => currentLocation,
   useNavigate: () => navigateMock,
 }));
