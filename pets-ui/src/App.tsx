@@ -1,7 +1,7 @@
 import "./globals.scss";
 
 import { useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router";
 
 import { AuthenticatedRoute, UnauthenticatedRoute } from "./auth/authRoutes";
 import AccessibilityStatementPage from "./pages/accessibility-statement";
