@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
+    
     "cypress:open": "cypress open -C cypress/cypress.config.mjs",
     "cypress:run": "cypress run -C cypress/cypress.config.mjs",
     "cypress:open:qat": "cross-env ENVIRONMENT=qat cypress open -C cypress/cypress.config.mjs",

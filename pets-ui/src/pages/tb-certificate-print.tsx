@@ -91,6 +91,7 @@ export default function TbCertificatePrintPage() {
             >
               <img
                 src="/assets/images/printer.svg"
+                aria-label="Print icon"
                 alt="Print Certificate"
                 className="govuk-!-margin-right-2"
                 height="32"

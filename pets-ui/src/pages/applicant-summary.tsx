@@ -24,7 +24,7 @@ export default function ApplicantSummaryPage() {
           : "/upload-visa-applicant-photo"
       }
     >
-      <Heading level={1} size="l" title="Check applicant details" />
+      <Heading level={1} size="l" title="Check visa applicant details" />
       <ApplicantReview />
     </Container>
   );

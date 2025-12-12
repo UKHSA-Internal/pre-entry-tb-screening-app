@@ -23,7 +23,7 @@ interface AllSamplesData {
 
 export class SputumCollectionPage extends BasePage {
   constructor() {
-    super("/enter-sputum-sample-collection-information");
+    super("/sputum-collection-details");
   }
 
   // Protected helper method for date field filling
@@ -96,7 +96,7 @@ export class SputumCollectionPage extends BasePage {
 
   // Page verification
   verifyPageLoaded(): SputumCollectionPage {
-    super.verifyPageHeading("Enter sputum sample collection information");
+    super.verifyPageHeading("Sputum collection details");
     cy.get("form").should("be.visible");
     return this;
   }
@@ -254,7 +254,7 @@ export class SputumCollectionPage extends BasePage {
 
   // Button interaction methods
   clickSaveAndContinueToResults(): SputumCollectionPage {
-    cy.contains('button[type="submit"]', "Save and continue to results").click();
+    cy.contains('button[type="submit"]', "Save and enter results").click();
     return this;
   }
 
@@ -284,7 +284,7 @@ export class SputumCollectionPage extends BasePage {
 
   // Verify buttons are displayed
   verifySaveAndContinueButtonDisplayed(): SputumCollectionPage {
-    cy.contains('button[type="submit"]', "Save and continue to results")
+    cy.contains('button[type="submit"]', "Save and enter results")
       .should("be.visible")
       .and("be.enabled");
     return this;
@@ -522,9 +522,9 @@ export class SputumCollectionPage extends BasePage {
     cy.contains("h2", "Sputum sample 3").should("be.visible");
 
     // Verify column headers for each sample
-    cy.contains("h3", "Date sample 1 was taken on").should("be.visible");
-    cy.contains("h3", "Date sample 2 was taken on").should("be.visible");
-    cy.contains("h3", "Date sample 3 was taken on").should("be.visible");
+    // Note: "Date collected" appears 3 times (once per sample)
+    // Due care needed as this method may fail in the future - making note to make this robust
+    cy.contains("h3", "Date collected").should("be.visible");
     cy.contains("h3", "Collection method").should("be.visible");
 
     return this;

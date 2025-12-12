@@ -22,12 +22,17 @@ describe("TB Certificate Declaration Page", () => {
   test("renders form correctly", () => {
     renderWithProviders(<TbCertificateDeclarationForm />);
 
-    expect(screen.getByText("Enter clinic and certificate information")).toBeInTheDocument();
+    expect(screen.getByText("Clinic and certificate information")).toBeInTheDocument();
     expect(screen.getByText("Clinic name")).toBeInTheDocument();
     expect(screen.getByText("Certificate reference number")).toBeInTheDocument();
     expect(screen.getByText("Certificate issue date")).toBeInTheDocument();
     expect(screen.getByText("Certificate issue expiry")).toBeInTheDocument();
     expect(screen.getByText("Declaring Physician's name")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "For example, include your name if you are completing the information for the declaring physician",
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByText("Physician's notes (optional)")).toBeInTheDocument();
   });
 
@@ -87,6 +92,6 @@ describe("TB Certificate Declaration Page", () => {
     expect(link).toHaveAttribute("href", "/will-you-issue-tb-clearance-certificate");
     expect(link).toHaveClass("govuk-back-link");
 
-    expect(screen.getByText("Enter clinic and certificate information")).toBeInTheDocument();
+    expect(screen.getByText("Clinic and certificate information")).toBeInTheDocument();
   });
 });

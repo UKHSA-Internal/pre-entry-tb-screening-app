@@ -19,6 +19,7 @@ export const saveSputumDecisionHandler = async (event: SaveSputumDecisionEvent) 
     logger.info({ applicationId }, "Save Sputum Decision handler triggered");
 
     const { parsedBody } = event;
+    const { createdBy } = event.requestContext.authorizer;
 
     if (!parsedBody) {
       logger.error("Event missing parsed body");
@@ -40,6 +41,7 @@ export const saveSputumDecisionHandler = async (event: SaveSputumDecisionEvent) 
     try {
       sputumDecision = await SputumDecision.createSputumDecision({
         ...parsed.data,
+        createdBy,
         applicationId,
       });
     } catch (error: unknown) {

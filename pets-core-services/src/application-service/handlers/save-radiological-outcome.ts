@@ -20,6 +20,7 @@ export const saveRadiologicalOutcomeHandler = async (event: SaveRadiologicalOutc
     logger.info({ applicationId }, "Save Radiological Outcome handler triggered");
 
     const { parsedBody } = event;
+    const { createdBy } = event.requestContext.authorizer;
 
     if (!parsedBody) {
       logger.error("Event missing parsed body");
@@ -33,6 +34,7 @@ export const saveRadiologicalOutcomeHandler = async (event: SaveRadiologicalOutc
     try {
       radiologicalOutcome = await RadiologicalOutcome.createRadiologicalOutcome({
         ...parsedBody,
+        createdBy,
         applicationId,
       });
     } catch (error) {
