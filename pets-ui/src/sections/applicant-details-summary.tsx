@@ -183,7 +183,6 @@ const ApplicantReview = () => {
     <div>
       {isLoading && <Spinner />}
       <Summary status={summaryStatus} summaryElements={summaryData} />
-      <Summary status={summaryStatus} summaryElements={summaryData} />
 
       {(applicantData.status == ApplicationStatus.NOT_YET_STARTED ||
         applicantData.status == ApplicationStatus.IN_PROGRESS) && (

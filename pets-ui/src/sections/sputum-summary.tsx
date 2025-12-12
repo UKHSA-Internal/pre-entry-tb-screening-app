@@ -319,7 +319,6 @@ const SputumSummary = () => {
       {isLoading && <Spinner />}
 
       <Heading level={1} size="l" title="Check sputum collection details and results" />
-      <Heading level={1} size="l" title="Check sputum collection details and results" />
 
       <Heading level={2} size="m" title="Sputum sample 1" />
       <Summary status={getSampleStatus(1)} summaryElements={generateSampleSummaryData(1)} />
@@ -329,13 +328,6 @@ const SputumSummary = () => {
 
       <Heading level={2} size="m" title="Sputum sample 3" />
       <Summary status={getSampleStatus(3)} summaryElements={generateSampleSummaryData(3)} />
-
-      <Heading title="Now send the sputum collection details and results" level={2} size="m" />
-      <p className="govuk-body">
-        You will not be able to change the collection details and results after you submit this
-        information. However, you will be able to return and complete any information that you have
-        not provided.
-      </p>
 
       <Heading title="Now send the sputum collection details and results" level={2} size="m" />
       <p className="govuk-body">
