@@ -14,7 +14,7 @@ beforeAll(() => {
     shell = "powershell.exe";
   }
   execSync("docker compose up -d --wait", { stdio: "inherit", shell });
-});
+}, 300000);
 
 beforeEach(async () => {
   process.env.APPLICANT_SERVICE_DATABASE_NAME = `test_applicant_table_${crypto.randomUUID()}`;
