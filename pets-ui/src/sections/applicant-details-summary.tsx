@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { useNavigate } from "react-router";
 
 import { createNewApplication, postApplicantDetails } from "@/api/api";
 import Button from "@/components/button/button";
@@ -11,8 +10,6 @@ import { setApplicantDetailsStatus } from "@/redux/applicantSlice";
 import { setApplicationDetails } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
-import { ApplicationStatus, ButtonClass, ImageType } from "@/utils/enums";
-import { formatDateForDisplay, getCountryName, standardiseDayOrMonth } from "@/utils/helpers";
 import { ApplicationStatus, ButtonClass, ImageType } from "@/utils/enums";
 import { formatDateForDisplay, getCountryName, standardiseDayOrMonth } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
@@ -28,8 +25,6 @@ const ApplicantReview = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { applicantPhotoFile } = useApplicantPhoto();
-  const isComplete = applicantData.status === ApplicationStatus.COMPLETE;
-  const summaryStatus = isComplete ? ApplicationStatus.IN_PROGRESS : applicantData.status;
   const isComplete = applicantData.status === ApplicationStatus.COMPLETE;
   const summaryStatus = isComplete ? ApplicationStatus.IN_PROGRESS : applicantData.status;
 
@@ -196,9 +191,6 @@ const ApplicantReview = () => {
           id="submit"
           class={ButtonClass.DEFAULT}
           text="Submit and continue"
-          id="submit"
-          class={ButtonClass.DEFAULT}
-          text="Submit and continue"
           handleClick={handleSubmit}
         />
       )}
@@ -206,8 +198,6 @@ const ApplicantReview = () => {
         applicantData.status == ApplicationStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
-          class={ButtonClass.DEFAULT}
-          text="Submit and continue"
           class={ButtonClass.DEFAULT}
           text="Submit and continue"
           handleClick={() => navigate("/tracker")}

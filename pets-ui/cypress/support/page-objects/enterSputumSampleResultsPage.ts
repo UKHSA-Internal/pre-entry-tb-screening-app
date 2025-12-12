@@ -191,14 +191,6 @@ export class EnterSputumSampleResultsPage extends BasePage {
     this.selectSample3CultureResult("Negative");
     return this;
   }
-  // Fill remaining samples (2 and 3) with negative results, leaving sample 1 unchanged
-  fillRemainingSamplesWithNegativeResults(): EnterSputumSampleResultsPage {
-    this.selectSample2SmearResult("Negative");
-    this.selectSample2CultureResult("Negative");
-    this.selectSample3SmearResult("Negative");
-    this.selectSample3CultureResult("Negative");
-    return this;
-  }
   //Methods for partial data scenarios
   fillWithOnlyFirstSampleResults(): EnterSputumSampleResultsPage {
     const testData = EnterSputumSampleResultsPage.getTestSampleResultsData().onlyFirstSampleResults;
@@ -293,27 +285,6 @@ export class EnterSputumSampleResultsPage extends BasePage {
 
   // Verify all sample results match expected data
   verifyAllSampleResults(expectedData: AllSampleResultsData): EnterSputumSampleResultsPage {
-  // Verify complete sample results
-  verifySample1Results(sampleData: SampleResultData): EnterSputumSampleResultsPage {
-    this.verifySample1SmearResult(sampleData.smearResult);
-    this.verifySample1CultureResult(sampleData.cultureResult);
-    return this;
-  }
-
-  verifySample2Results(sampleData: SampleResultData): EnterSputumSampleResultsPage {
-    this.verifySample2SmearResult(sampleData.smearResult);
-    this.verifySample2CultureResult(sampleData.cultureResult);
-    return this;
-  }
-
-  verifySample3Results(sampleData: SampleResultData): EnterSputumSampleResultsPage {
-    this.verifySample3SmearResult(sampleData.smearResult);
-    this.verifySample3CultureResult(sampleData.cultureResult);
-    return this;
-  }
-
-  // Verify all sample results match expected data
-  verifyAllSampleResults(expectedData: AllSampleResultsData): EnterSputumSampleResultsPage {
     if (expectedData.sample1) {
       this.verifySample1Results(expectedData.sample1);
       this.verifySample1Results(expectedData.sample1);
@@ -335,10 +306,6 @@ export class EnterSputumSampleResultsPage extends BasePage {
   verifyFormFilledWith(expectedData: AllSampleResultsData): EnterSputumSampleResultsPage {
     return this.verifyAllSampleResults(expectedData);
   }
-  // Verify form is filled with expected data (alias for verifyAllSampleResults)
-  verifyFormFilledWith(expectedData: AllSampleResultsData): EnterSputumSampleResultsPage {
-    return this.verifyAllSampleResults(expectedData);
-  }
 
   // Verify all dropdowns show default "Select" option
   verifyAllFieldsEmpty(): EnterSputumSampleResultsPage {
@@ -351,11 +318,6 @@ export class EnterSputumSampleResultsPage extends BasePage {
     return this;
   }
 
-  // Verify sample dates are displayed
-  verifySampleDatesDisplayed(): EnterSputumSampleResultsPage {
-    cy.contains("10 October 2025").should("be.visible");
-    cy.contains("12 October 2025").should("be.visible");
-    cy.contains("15 October 2025").should("be.visible");
   // Verify sample dates are displayed
   verifySampleDatesDisplayed(): EnterSputumSampleResultsPage {
     cy.contains("10 October 2025").should("be.visible");
@@ -385,29 +347,6 @@ export class EnterSputumSampleResultsPage extends BasePage {
   submitFormWithResults(results: AllSampleResultsData): EnterSputumSampleResultsPage {
     this.fillAllSampleResults(results);
     this.clickSaveAndContinue();
-    return this;
-  }
-
-  // Error validation methods
-  validateErrorSummaryVisible(): EnterSputumSampleResultsPage {
-    cy.get(".govuk-error-summary").should("be.visible");
-    cy.get(".govuk-error-summary").should("have.attr", "data-module", "govuk-error-summary");
-    return this;
-  }
-
-  validateErrorSummaryContainsText(text: string): EnterSputumSampleResultsPage {
-    cy.get(".govuk-error-summary").should("contain.text", text);
-    return this;
-  }
-
-  validateProblemHeading(): EnterSputumSampleResultsPage {
-    cy.contains("There is a problem").should("be.visible");
-    return this;
-  }
-
-  // Click error summary link
-  clickErrorSummaryLink(linkText: string): EnterSputumSampleResultsPage {
-    cy.get(".govuk-error-summary").contains("a", linkText).click();
     return this;
   }
 
@@ -494,7 +433,6 @@ export class EnterSputumSampleResultsPage extends BasePage {
     return this;
   }
 
-
   // Validate error for no samples entered at all
   validateNoSamplesEnteredError(): EnterSputumSampleResultsPage {
     this.validateErrorSummaryVisible();
@@ -505,7 +443,6 @@ export class EnterSputumSampleResultsPage extends BasePage {
 
     return this;
   }
-
 
   // Validate error for no samples entered at all
   validateNoSamplesEnteredErrorDetailed(): EnterSputumSampleResultsPage {
@@ -665,140 +602,6 @@ export class EnterSputumSampleResultsPage extends BasePage {
   }
 
   // Validate errors in line with Business Rules - at least 1 sputum sample must be entered
-  // Verify field error states
-  validateSample1SmearResultErrorState(): EnterSputumSampleResultsPage {
-    cy.get("#sample1-smear-result").should("have.class", "govuk-form-group--error");
-    return this;
-  }
-
-  validateSample1CultureResultErrorState(): EnterSputumSampleResultsPage {
-    cy.get("#sample1-culture-result").should("have.class", "govuk-form-group--error");
-    return this;
-  }
-
-  validateSample2SmearResultErrorState(): EnterSputumSampleResultsPage {
-    cy.get("#sample2-smear-result").should("have.class", "govuk-form-group--error");
-    return this;
-  }
-
-  validateSample2CultureResultErrorState(): EnterSputumSampleResultsPage {
-    cy.get("#sample2-culture-result").should("have.class", "govuk-form-group--error");
-    return this;
-  }
-
-  validateSample3SmearResultErrorState(): EnterSputumSampleResultsPage {
-    cy.get("#sample3-smear-result").should("have.class", "govuk-form-group--error");
-    return this;
-  }
-
-  validateSample3CultureResultErrorState(): EnterSputumSampleResultsPage {
-    cy.get("#sample3-culture-result").should("have.class", "govuk-form-group--error");
-    return this;
-  }
-
-  // Validate specific sample errors
-  validateSample1ErrorStates(): EnterSputumSampleResultsPage {
-    this.validateSample1SmearResultErrorState();
-    this.validateSample1CultureResultErrorState();
-    return this;
-  }
-
-  validateSample2ErrorStates(): EnterSputumSampleResultsPage {
-    this.validateSample2SmearResultErrorState();
-    this.validateSample2CultureResultErrorState();
-    return this;
-  }
-
-  validateSample3ErrorStates(): EnterSputumSampleResultsPage {
-    this.validateSample3SmearResultErrorState();
-    this.validateSample3CultureResultErrorState();
-    return this;
-  }
-
-  // Validate all field error states
-  validateAllFieldErrorStates(): EnterSputumSampleResultsPage {
-    this.validateSample1ErrorStates();
-    this.validateSample2ErrorStates();
-    this.validateSample3ErrorStates();
-    return this;
-  }
-
-  // Validate no errors present
-  validateNoSample1Errors(): EnterSputumSampleResultsPage {
-    cy.get("#sample1-smear-result").should("not.have.class", "govuk-form-group--error");
-    cy.get("#sample1-culture-result").should("not.have.class", "govuk-form-group--error");
-    return this;
-  }
-
-  validateNoSample2Errors(): EnterSputumSampleResultsPage {
-    cy.get("#sample2-smear-result").should("not.have.class", "govuk-form-group--error");
-    cy.get("#sample2-culture-result").should("not.have.class", "govuk-form-group--error");
-    return this;
-  }
-
-  validateNoSample3Errors(): EnterSputumSampleResultsPage {
-    cy.get("#sample3-smear-result").should("not.have.class", "govuk-form-group--error");
-    cy.get("#sample3-culture-result").should("not.have.class", "govuk-form-group--error");
-    return this;
-  }
-
-  // Verify form is empty (all dropdowns on default "Select")
-  verifyFormIsEmpty(): EnterSputumSampleResultsPage {
-    cy.get('select[name="sample1SmearResult"]').should("have.value", "");
-    cy.get('select[name="sample1CultureResult"]').should("have.value", "");
-    cy.get('select[name="sample2SmearResult"]').should("have.value", "");
-    cy.get('select[name="sample2CultureResult"]').should("have.value", "");
-    cy.get('select[name="sample3SmearResult"]').should("have.value", "");
-    cy.get('select[name="sample3CultureResult"]').should("have.value", "");
-    return this;
-  }
-
-  // Clear all selections
-  clearAllSelections(): EnterSputumSampleResultsPage {
-    cy.get('select[name="sample1SmearResult"]').select("");
-    cy.get('select[name="sample1CultureResult"]').select("");
-    cy.get('select[name="sample2SmearResult"]').select("");
-    cy.get('select[name="sample2CultureResult"]').select("");
-    cy.get('select[name="sample3SmearResult"]').select("");
-    cy.get('select[name="sample3CultureResult"]').select("");
-    return this;
-  }
-
-  // Verify all dropdowns are visible and enabled
-  verifyAllDropdownsEnabled(): EnterSputumSampleResultsPage {
-    cy.get('select[name="sample1SmearResult"]').should("be.visible").and("be.enabled");
-    cy.get('select[name="sample1CultureResult"]').should("be.visible").and("be.enabled");
-    cy.get('select[name="sample2SmearResult"]').should("be.visible").and("be.enabled");
-    cy.get('select[name="sample2CultureResult"]').should("be.visible").and("be.enabled");
-    cy.get('select[name="sample3SmearResult"]').should("be.visible").and("be.enabled");
-    cy.get('select[name="sample3CultureResult"]').should("be.visible").and("be.enabled");
-    return this;
-  }
-
-  // Verify dropdown options are correct
-  verifyDropdownOptions(): EnterSputumSampleResultsPage {
-    const expectedOptions = this.getResultOptions();
-
-    // Verify sample 1 smear result options
-    cy.get('select[name="sample1SmearResult"]').within(() => {
-      cy.get("option").should("have.length", expectedOptions.length + 1); // +1 for "Select" option
-      expectedOptions.forEach((option) => {
-        cy.contains("option", option).should("exist");
-      });
-    });
-
-    // Verify sample 1 culture result options
-    cy.get('select[name="sample1CultureResult"]').within(() => {
-      cy.get("option").should("have.length", expectedOptions.length + 1);
-      expectedOptions.forEach((option) => {
-        cy.contains("option", option).should("exist");
-      });
-    });
-
-    return this;
-  }
-
-  // Validate errors in line with Business Rules - at least 1 sputum sample must be entered
   validateMinimumRequiredFieldErrors(): EnterSputumSampleResultsPage {
     const expectedErrors = ["Select result of smear test", "Select result of culture test"];
     return this.validateErrorSummaryContains(expectedErrors);
@@ -811,21 +614,6 @@ export class EnterSputumSampleResultsPage extends BasePage {
       `Select result of culture test ${sampleNumber}`,
     ];
     return this.validateErrorSummaryContains(expectedErrors);
-  }
-
-  // Verify form validation when submitted empty
-  verifyFormValidationEmpty(): EnterSputumSampleResultsPage {
-    // Submit form without filling
-    this.clickSaveAndContinue();
-
-    // Verify error summary is displayed
-    this.validateErrorSummaryVisible();
-    this.validateProblemHeading();
-
-    // Verify minimum required field error is shown
-    this.validateMinimumRequiredFieldErrors();
-
-    return this;
   }
 
   // Verify form validation when submitted empty
@@ -1056,7 +844,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
 
   // Verify service name in header
   verifyServiceName(): EnterSputumSampleResultsPage {
-    cy.get(".govuk-service-navigation__service-name")
+    cy.get(".govuk-service-navigation__service-name");
     cy.get(".govuk-service-navigation__service-name")
       .should("be.visible")
       .and("contain", "Complete UK pre-entry health screening");

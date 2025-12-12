@@ -32,13 +32,10 @@ export class ChestXrayFindingsPage extends BasePage {
   // Verify minor findings section
   verifyMinorFindingsSection(): ChestXrayFindingsPage {
     cy.contains("h2.govuk-heading-m", "Minor findings").should("be.visible");
-    cy.contains("h2.govuk-heading-m", "Minor findings").should("be.visible");
     cy.get("#xray-minor-findings.govuk-form-group").should("be.visible");
-    cy.get("#xray-minor-findings-hint").should("contain", "Select all that apply");
     cy.get("#xray-minor-findings-hint").should("contain", "Select all that apply");
     cy.get('input[name="xrayMinorFindings"]').should("have.length", 5);
 
-    // Verify all minor findings options exist and are visible
     // Verify all minor findings options exist and are visible
     const minorFindingsOptions = [
       "1.1 Single fibrous streak, band or scar",
@@ -48,11 +45,6 @@ export class ChestXrayFindingsPage extends BasePage {
       "2.3 Calcified nodule(s) in the hilum or mediastinum with no pulmonary granulomas",
     ];
 
-    minorFindingsOptions.forEach((option, index) => {
-      cy.get(`#xray-minor-findings-option-${index}`).should("exist");
-      cy.get(`label[for="xray-minor-findings-option-${index}"]`)
-        .should("be.visible")
-        .should("contain", option);
     minorFindingsOptions.forEach((option, index) => {
       cy.get(`#xray-minor-findings-option-${index}`).should("exist");
       cy.get(`label[for="xray-minor-findings-option-${index}"]`)
@@ -90,34 +82,16 @@ export class ChestXrayFindingsPage extends BasePage {
     return this;
   }
 
-  // Select minor finding by index (0-4)
-  selectMinorFindingByIndex(index: number): ChestXrayFindingsPage {
-    cy.get(`label[for="xray-minor-findings-option-${index}"]`).click();
-    return this;
-  }
-
-  // Verify minor finding is checked
-  verifyMinorFindingChecked(index: number): ChestXrayFindingsPage {
-    cy.get(`#xray-minor-findings-option-${index}`).should("be.checked");
-    return this;
-  }
-
   // Verify minor findings associated with TB section
   verifyAssociatedMinorFindingsSection(): ChestXrayFindingsPage {
     cy.contains(
       "h2.govuk-heading-m",
       "Minor findings (occasionally associated with TB infection)",
     ).should("be.visible");
-    cy.contains(
-      "h2.govuk-heading-m",
-      "Minor findings (occasionally associated with TB infection)",
-    ).should("be.visible");
     cy.get("#xray-associated-minor-findings.govuk-form-group").should("be.visible");
-    cy.get("#xray-associated-minor-findings-hint").should("contain", "Select all that apply");
     cy.get("#xray-associated-minor-findings-hint").should("contain", "Select all that apply");
     cy.get('input[name="xrayAssociatedMinorFindings"]').should("have.length", 5);
 
-    // Verify all associated minor findings options exist and are visible
     // Verify all associated minor findings options exist and are visible
     const associatedFindingsOptions = [
       "3.1 Solitary granuloma (less than 1cm and of any lobe) with an unremarkable hilum",
@@ -127,11 +101,6 @@ export class ChestXrayFindingsPage extends BasePage {
       "3.5 Costophrenic angle blunting (either side above the horizontal)",
     ];
 
-    associatedFindingsOptions.forEach((option, index) => {
-      cy.get(`#xray-associated-minor-findings-option-${index}`).should("exist");
-      cy.get(`label[for="xray-associated-minor-findings-option-${index}"]`)
-        .should("be.visible")
-        .should("contain", option);
     associatedFindingsOptions.forEach((option, index) => {
       cy.get(`#xray-associated-minor-findings-option-${index}`).should("exist");
       cy.get(`label[for="xray-associated-minor-findings-option-${index}"]`)
@@ -154,18 +123,6 @@ export class ChestXrayFindingsPage extends BasePage {
         cy.get(`label[for="${id}"]`).click();
       });
     });
-    return this;
-  }
-
-  // Select associated minor finding by index (0-4)
-  selectAssociatedMinorFindingByIndex(index: number): ChestXrayFindingsPage {
-    cy.get(`label[for="xray-associated-minor-findings-option-${index}"]`).click();
-    return this;
-  }
-
-  // Verify associated minor finding is checked
-  verifyAssociatedMinorFindingChecked(index: number): ChestXrayFindingsPage {
-    cy.get(`#xray-associated-minor-findings-option-${index}`).should("be.checked");
     return this;
   }
 
@@ -279,79 +236,15 @@ export class ChestXrayFindingsPage extends BasePage {
   // Click continue button
   clickContinueButton(): ChestXrayFindingsPage {
     cy.get('button[type="submit"]').contains("Continue").should("be.visible").click();
-  // Select active TB finding by index (0-7)
-  selectActiveTbFindingByIndex(index: number): ChestXrayFindingsPage {
-    cy.get(`label[for="xray-active-tb-findings-option-${index}"]`).click();
-    return this;
-  }
-
-  // Verify active TB finding is checked
-  verifyActiveTbFindingChecked(index: number): ChestXrayFindingsPage {
-    cy.get(`#xray-active-tb-findings-option-${index}`).should("be.checked");
-    return this;
-  }
-
-  // Verify details section
-  verifyDetailsSection(): ChestXrayFindingsPage {
-    cy.contains("h2.govuk-heading-m", "Give further details (optional)").should("be.visible");
-    cy.get("#xray-result-detail.govuk-form-group").should("be.visible");
-    cy.get('textarea[name="xrayResultDetail"]').should("be.visible");
-    cy.get("#xray-result-detail-hint").should(
-      "contain",
-      "Add details if X-ray results are abnormal",
-    );
-    return this;
-  }
-
-  // Enter result details
-  enterXrayResultDetails(details: string): ChestXrayFindingsPage {
-    cy.get('textarea[name="xrayResultDetail"]').clear().type(details);
-    return this;
-  }
-
-  // Verify X-ray result details value
-  verifyXrayResultDetailsValue(expectedDetails: string): ChestXrayFindingsPage {
-    cy.get('textarea[name="xrayResultDetail"]').should("have.value", expectedDetails);
-    return this;
-  }
-
-  // Clear X-ray result details
-  clearXrayResultDetails(): ChestXrayFindingsPage {
-    cy.get('textarea[name="xrayResultDetail"]').clear();
-    return this;
-  }
-
-  // Click continue button
-  clickContinueButton(): ChestXrayFindingsPage {
-    cy.get('button[type="submit"]').contains("Continue").should("be.visible").click();
     return this;
   }
 
   // Verify back link to chest X-ray results
   verifyBackLinkToChestXrayResults(): ChestXrayFindingsPage {
-    cy.get("a.govuk-back-link")
-  // Verify back link to chest X-ray results
-  verifyBackLinkToChestXrayResults(): ChestXrayFindingsPage {
-    cy.get("a.govuk-back-link")
-      .should("be.visible")
-      .should("have.attr", "href", "/chest-x-ray-results")
-      .should("contain", "Back");
-      .should("have.attr", "href", "/chest-x-ray-results")
-      .should("contain", "Back");
+    cy.get("a.govuk-back-link");
     return this;
   }
 
-  // Click back link
-  clickBackLink(): ChestXrayFindingsPage {
-    cy.get("a.govuk-back-link").click();
-    return this;
-  }
-
-  // Verify fieldset structure
-  verifyFieldsetStructure(): ChestXrayFindingsPage {
-    cy.get("#xray-minor-findings fieldset.govuk-fieldset").should("be.visible");
-    cy.get("#xray-associated-minor-findings fieldset.govuk-fieldset").should("be.visible");
-    cy.get("#xray-active-tb-findings fieldset.govuk-check").should("be.visible");
   // Click back link
   clickBackLink(): ChestXrayFindingsPage {
     cy.get("a.govuk-back-link").click();
@@ -371,16 +264,10 @@ export class ChestXrayFindingsPage extends BasePage {
     cy.get('input[name="xrayMinorFindings"]:checked').should("not.exist");
     cy.get('input[name="xrayAssociatedMinorFindings"]:checked').should("not.exist");
     cy.get('input[name="xrayActiveTbFindings"]:checked').should("not.exist");
-  // Verify all checkboxes are unchecked (initial state)
-  verifyAllCheckboxesUnchecked(): ChestXrayFindingsPage {
-    cy.get('input[name="xrayMinorFindings"]:checked').should("not.exist");
-    cy.get('input[name="xrayAssociatedMinorFindings"]:checked').should("not.exist");
-    cy.get('input[name="xrayActiveTbFindings"]:checked').should("not.exist");
+    // Verify all checkboxes are unchecked (initial state)
     return this;
   }
 
-  // Verify form data matches expected data
-  verifyFormData(expectedData: XrayFindingsData): ChestXrayFindingsPage {
   // Verify form data matches expected data
   verifyFormData(expectedData: XrayFindingsData): ChestXrayFindingsPage {
     if (expectedData.xrayResultDetail) {
@@ -431,11 +318,6 @@ export class ChestXrayFindingsPage extends BasePage {
     if (minorFindings && minorFindings.length > 0) {
       this.selectMinorFindings(minorFindings);
     }
-  // Complete form with minor findings only
-  completeFormWithMinorFindings(minorFindings: string[], details?: string): ChestXrayFindingsPage {
-    if (minorFindings && minorFindings.length > 0) {
-      this.selectMinorFindings(minorFindings);
-    }
 
     if (details) {
       this.enterXrayResultDetails(details);
@@ -446,9 +328,6 @@ export class ChestXrayFindingsPage extends BasePage {
     return this;
   }
 
-  // Complete form with associated minor findings
-  completeFormWithAssociatedMinorFindings(
-    associatedFindings: string[],
   // Complete form with associated minor findings
   completeFormWithAssociatedMinorFindings(
     associatedFindings: string[],
@@ -465,15 +344,6 @@ export class ChestXrayFindingsPage extends BasePage {
       this.enterXrayResultDetails(details);
     }
 
-    this.clickContinueButton();
-    return this;
-  }
-
-  // Complete form with active TB findings
-  completeFormWithActiveTbFindings(
-    activeTbFindings: string[],
-    details?: string,
-  ): ChestXrayFindingsPage {
     this.clickContinueButton();
     return this;
   }
@@ -515,45 +385,9 @@ export class ChestXrayFindingsPage extends BasePage {
     }
 
     this.clickContinueButton();
-  // Complete form with all types of findings
-  completeFormWithAllFindings(data: XrayFindingsData): ChestXrayFindingsPage {
-    if (data.minorFindings && data.minorFindings.length > 0) {
-      this.selectMinorFindings(data.minorFindings);
-    }
-
-    if (data.associatedMinorFindings && data.associatedMinorFindings.length > 0) {
-      this.selectAssociatedMinorFindings(data.associatedMinorFindings);
-    }
-
-    if (data.activeTbFindings && data.activeTbFindings.length > 0) {
-      this.selectActiveTbFindings(data.activeTbFindings);
-    }
-
-    if (data.xrayResultDetail) {
-      this.enterXrayResultDetails(data.xrayResultDetail);
-    }
-
-    this.clickContinueButton();
     return this;
   }
 
-  // Uncheck all checkboxes
-  uncheckAllCheckboxes(): ChestXrayFindingsPage {
-    // For GOV.UK checkboxes, we need to click the labels to uncheck
-    cy.get('input[name="xrayMinorFindings"]:checked').each(($input) => {
-      const id = $input.attr("id");
-      cy.get(`label[for="${id}"]`).click();
-    });
-
-    cy.get('input[name="xrayAssociatedMinorFindings"]:checked').each(($input) => {
-      const id = $input.attr("id");
-      cy.get(`label[for="${id}"]`).click();
-    });
-
-    cy.get('input[name="xrayActiveTbFindings"]:checked').each(($input) => {
-      const id = $input.attr("id");
-      cy.get(`label[for="${id}"]`).click();
-    });
   // Uncheck all checkboxes
   uncheckAllCheckboxes(): ChestXrayFindingsPage {
     // For GOV.UK checkboxes, we need to click the labels to uncheck

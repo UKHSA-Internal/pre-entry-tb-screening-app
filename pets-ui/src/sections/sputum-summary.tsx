@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { useNavigate } from "react-router";
 
 import { postSputumDetails } from "@/api/api";
 import Button from "@/components/button/button";
@@ -23,8 +22,6 @@ import {
   setSputumVersion,
 } from "@/redux/sputumSlice";
 import { selectApplication, selectSputum } from "@/redux/store";
-import { ApplicationStatus, ButtonClass, PositiveOrNegative } from "@/utils/enums";
-import { formatDateForDisplay } from "@/utils/helpers";
 import { ApplicationStatus, ButtonClass, PositiveOrNegative } from "@/utils/enums";
 import { formatDateForDisplay } from "@/utils/helpers";
 
@@ -354,9 +351,6 @@ const SputumSummary = () => {
             id="submit"
             class={ButtonClass.DEFAULT}
             text="Submit and continue"
-            id="submit"
-            class={ButtonClass.DEFAULT}
-            text="Submit and continue"
             handleClick={handleSubmit}
           />
         )}
@@ -364,7 +358,6 @@ const SputumSummary = () => {
           sputumData.status === ApplicationStatus.NOT_REQUIRED) && (
           <Button
             id="back-to-tracker"
-            class={ButtonClass.DEFAULT}
             class={ButtonClass.DEFAULT}
             text="Return to tracker"
             handleClick={() => navigate("/tracker")}
