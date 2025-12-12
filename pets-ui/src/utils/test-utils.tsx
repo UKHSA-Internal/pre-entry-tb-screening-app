@@ -1,7 +1,7 @@
 import { render, RenderOptions } from "@testing-library/react";
 import React, { PropsWithChildren } from "react";
 import { Provider } from "react-redux";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router";
 
 import { AppStore, RootState, setupStore } from "@/redux/store";
 

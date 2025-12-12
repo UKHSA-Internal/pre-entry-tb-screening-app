@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 
 const HISTORY_KEY = "navigationHistory";
 const MAX_HISTORY_SIZE = 50;

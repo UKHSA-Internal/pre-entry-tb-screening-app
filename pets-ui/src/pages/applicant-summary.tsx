@@ -17,7 +17,7 @@ export default function ApplicantSummaryPage() {
 
   return (
     <Container
-      title="Check visa applicant details - Complete UK pre-entry health screening - GOV.UK"
+      title="Check applicant details - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo={
         applicantData.status == ApplicationStatus.COMPLETE
           ? "/tracker"
