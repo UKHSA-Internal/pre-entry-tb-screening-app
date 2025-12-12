@@ -13,7 +13,7 @@ beforeAll(() => {
   if (isPowerShell) {
     shell = "powershell.exe";
   }
-  execSync("docker compose up -d", { stdio: "inherit", shell });
+  execSync("docker compose up -d --wait", { stdio: "inherit", shell });
 });
 
 beforeEach(async () => {
