@@ -11,9 +11,12 @@ export class ApplicantSummaryPage extends BasePage {
     cy.contains("h1", "Check visa applicant details").should("be.visible");
     cy.get(".govuk-summary-list").should("be.visible");
     return this;
+    return this;
   }
 
+
   // Verify all fields are present on the page
+  verifyAllFieldsPresent(): ApplicantSummaryPage {
   verifyAllFieldsPresent(): ApplicantSummaryPage {
     const requiredFields = [
       "Full name",
@@ -38,7 +41,9 @@ export class ApplicantSummaryPage extends BasePage {
       cy.contains("dt.govuk-summary-list__key", field).should("exist");
     });
     return this;
+    return this;
   }
+
 
   getSummaryValue(fieldKey: string): Cypress.Chainable<string> {
     return cy
@@ -49,16 +54,20 @@ export class ApplicantSummaryPage extends BasePage {
 
   // Verify specific summary value
   verifySummaryValue(fieldKey: string, expectedValue: string): ApplicantSummaryPage {
+  verifySummaryValue(fieldKey: string, expectedValue: string): ApplicantSummaryPage {
     this.getSummaryValue(fieldKey).should("eq", expectedValue);
+    return this;
     return this;
   }
 
   // Click change link for a specific field
   clickChangeLink(fieldKey: string): ApplicantSummaryPage {
+  clickChangeLink(fieldKey: string): ApplicantSummaryPage {
     cy.contains("dt.govuk-summary-list__key", fieldKey)
       .siblings(".govuk-summary-list__actions")
       .find("a")
       .click();
+    return this;
     return this;
   }
 
@@ -87,8 +96,28 @@ export class ApplicantSummaryPage extends BasePage {
       }
     });
     return this;
+    return this;
   }
 
+  // Verify "Not provided" text for optional fields
+  verifyNotProvidedText(fieldKey: string): ApplicantSummaryPage {
+    cy.contains("dt.govuk-summary-list__key", fieldKey)
+      .siblings(".govuk-summary-list__value")
+      .should("contain.text", "Not provided");
+    return this;
+  }
+
+  // Verify multiple fields show "Not provided"
+  verifyMultipleNotProvidedFields(fieldKeys: string[]): ApplicantSummaryPage {
+    fieldKeys.forEach((fieldKey) => {
+      this.verifyNotProvidedText(fieldKey);
+    });
+    return this;
+  }
+
+  confirmDetails(): ApplicantSummaryPage {
+    cy.contains("button", "Submit and continue").should("be.visible").click();
+    return this;
   // Verify "Not provided" text for optional fields
   verifyNotProvidedText(fieldKey: string): ApplicantSummaryPage {
     cy.contains("dt.govuk-summary-list__key", fieldKey)
@@ -121,6 +150,9 @@ export class ApplicantSummaryPage extends BasePage {
   verifyRedirectionAfterConfirm(): ApplicantSummaryPage {
     cy.url().should("include", "/visa-applicant-details-confirmed");
     return this;
+  verifyRedirectionAfterConfirm(): ApplicantSummaryPage {
+    cy.url().should("include", "/visa-applicant-details-confirmed");
+    return this;
   }
 
   // Count total number of summary list items
@@ -130,11 +162,14 @@ export class ApplicantSummaryPage extends BasePage {
 
   // Verify breadcrumb navigation
   verifyBreadcrumbNavigation(): ApplicantSummaryPage {
+  verifyBreadcrumbNavigation(): ApplicantSummaryPage {
     cy.get(".govuk-breadcrumbs").should("exist");
+    return this;
     return this;
   }
 
   // Verify all change links work
+  verifyChangeLinksTargets(): ApplicantSummaryPage {
   verifyChangeLinksTargets(): ApplicantSummaryPage {
     const expectedFragments = {
       "Full name": "#name",
@@ -208,10 +243,18 @@ export class ApplicantSummaryPage extends BasePage {
 
   // Verify back link points to correct page
   verifyBackLink(): ApplicantSummaryPage {
+  verifyBackLink(): ApplicantSummaryPage {
     cy.get(".govuk-back-link")
       .should("be.visible")
       .and("have.attr", "href", "/tracker")
       .and("contain", "Back");
+    return this;
+  }
+
+  // Click back link
+  clickBackLink(): ApplicantSummaryPage {
+    cy.get(".govuk-back-link").click();
+    return this;
     return this;
   }
 
@@ -228,6 +271,7 @@ export class ApplicantSummaryPage extends BasePage {
       .should("be.visible")
       .and("contain", "Complete UK pre-entry health screening")
       .and("have.attr", "href", "/");
+    return this;
     return this;
   }
 
@@ -246,8 +290,10 @@ export class ApplicantSummaryPage extends BasePage {
       }
     });
     return this;
+    return this;
   }
 
+  // Get change link URL for a specific field
   // Get change link URL for a specific field
   getChangeLinkUrl(fieldKey: string): Cypress.Chainable<string> {
     return cy
@@ -257,6 +303,8 @@ export class ApplicantSummaryPage extends BasePage {
       .invoke("attr", "href");
   }
 
+  // Verify applicant photo filename is displayed
+  verifyApplicantPhotoDisplayed(expectedFilename?: string): ApplicantSummaryPage {
   // Verify applicant photo filename is displayed
   verifyApplicantPhotoDisplayed(expectedFilename?: string): ApplicantSummaryPage {
     if (expectedFilename) {

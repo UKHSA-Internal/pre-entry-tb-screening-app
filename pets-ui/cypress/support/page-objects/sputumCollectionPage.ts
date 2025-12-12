@@ -102,6 +102,7 @@ export class SputumCollectionPage extends BasePage {
   }
 
   // Date filling methods with data-testid as selectors
+  // Date filling methods with data-testid as selectors
   fillSample1Date(
     date: DateData | { day: string; month: string; year: string },
   ): SputumCollectionPage {
@@ -252,6 +253,7 @@ export class SputumCollectionPage extends BasePage {
     return this.fillAllSamples(testData);
   }
 
+  // Button interaction methods
   // Button interaction methods
   clickSaveAndContinueToResults(): SputumCollectionPage {
     cy.contains('button[type="submit"]', "Save and enter results").click();
@@ -414,6 +416,23 @@ export class SputumCollectionPage extends BasePage {
   validateErrorSummaryVisible(): SputumCollectionPage {
     cy.get('[data-testid="error-summary"]').should("be.visible");
     cy.get(".govuk-error-summary__title").should("contain.text", "There is a problem");
+    return this;
+  }
+
+  // Error validation methods - keeping existing methods for backward compatibility
+  verifyErrorSummaryDisplayed(): SputumCollectionPage {
+    cy.get(".govuk-error-summary").should("be.visible");
+    cy.get(".govuk-error-summary").should("have.attr", "data-module", "govuk-error-summary");
+    return this;
+  }
+
+  verifyErrorSummaryContainsText(text: string): SputumCollectionPage {
+    cy.get(".govuk-error-summary").should("contain.text", text);
+    return this;
+  }
+
+  clickErrorSummaryLink(linkText: string): SputumCollectionPage {
+    cy.get(".govuk-error-summary").contains("a", linkText).click();
     return this;
   }
 
@@ -604,6 +623,7 @@ export class SputumCollectionPage extends BasePage {
 
   // Verify service name in header
   verifyServiceName(): SputumCollectionPage {
+    cy.get(".govuk-service-navigation__service-name");
     cy.get(".govuk-service-navigation__service-name")
       .should("be.visible")
       .and("contain", "Complete UK pre-entry health screening");
@@ -655,6 +675,7 @@ export class SputumCollectionPage extends BasePage {
     this.verifyPageStructure();
     this.verifyBackLinkNavigation();
     this.verifyServiceName();
+    this.verifyBothButtonsDisplayed();
     this.verifyBothButtonsDisplayed();
     return this;
   }

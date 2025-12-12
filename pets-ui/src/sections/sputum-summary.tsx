@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 
 import { postSputumDetails } from "@/api/api";
 import Button from "@/components/button/button";
@@ -22,6 +23,8 @@ import {
   setSputumVersion,
 } from "@/redux/sputumSlice";
 import { selectApplication, selectSputum } from "@/redux/store";
+import { ApplicationStatus, ButtonClass, PositiveOrNegative } from "@/utils/enums";
+import { formatDateForDisplay } from "@/utils/helpers";
 import { ApplicationStatus, ButtonClass, PositiveOrNegative } from "@/utils/enums";
 import { formatDateForDisplay } from "@/utils/helpers";
 
@@ -170,12 +173,15 @@ const SputumSummary = () => {
       if (allSamplesComplete) {
         dispatch(setSputumStatus(ApplicationStatus.COMPLETE));
         navigate("/sputum-sample-information-confirmed");
+        navigate("/sputum-sample-information-confirmed");
       } else {
         dispatch(setSputumStatus(ApplicationStatus.IN_PROGRESS));
+        navigate("/sputum-sample-information-confirmed");
         navigate("/sputum-sample-information-confirmed");
       }
     } catch (error) {
       console.error(error);
+      navigate("/sorry-there-is-problem-with-service");
       navigate("/sorry-there-is-problem-with-service");
     }
   };
@@ -316,6 +322,7 @@ const SputumSummary = () => {
       {isLoading && <Spinner />}
 
       <Heading level={1} size="l" title="Check sputum collection details and results" />
+      <Heading level={1} size="l" title="Check sputum collection details and results" />
 
       <Heading level={2} size="m" title="Sputum sample 1" />
       <Summary status={getSampleStatus(1)} summaryElements={generateSampleSummaryData(1)} />
@@ -333,10 +340,20 @@ const SputumSummary = () => {
         not provided.
       </p>
 
+      <Heading title="Now send the sputum collection details and results" level={2} size="m" />
+      <p className="govuk-body">
+        You will not be able to change the collection details and results after you submit this
+        information. However, you will be able to return and complete any information that you have
+        not provided.
+      </p>
+
       <div style={{ marginTop: 40 }}>
         {(sputumData.status === ApplicationStatus.NOT_YET_STARTED ||
           sputumData.status === ApplicationStatus.IN_PROGRESS) && (
           <Button
+            id="submit"
+            class={ButtonClass.DEFAULT}
+            text="Submit and continue"
             id="submit"
             class={ButtonClass.DEFAULT}
             text="Submit and continue"
@@ -347,6 +364,7 @@ const SputumSummary = () => {
           sputumData.status === ApplicationStatus.NOT_REQUIRED) && (
           <Button
             id="back-to-tracker"
+            class={ButtonClass.DEFAULT}
             class={ButtonClass.DEFAULT}
             text="Return to tracker"
             handleClick={() => navigate("/tracker")}

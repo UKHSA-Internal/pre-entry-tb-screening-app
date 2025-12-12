@@ -4,24 +4,53 @@ import { BasePage } from "../BasePage";
 export class CheckSputumSampleInfoPage extends BasePage {
   constructor() {
     super("/check-sputum-collection-details-results");
+//This holds all fields of the Check Sputum Collection Details and Results Page
+import { BasePage } from "../BasePage";
+
+export class CheckSputumSampleInfoPage extends BasePage {
+  constructor() {
+    super("/check-sputum-collection-details-results");
   }
 
   // Verify page loaded
   verifyPageLoaded(): CheckSputumSampleInfoPage {
+  verifyPageLoaded(): CheckSputumSampleInfoPage {
     cy.get("h1.govuk-heading-l")
       .should("be.visible")
+      .and("contain", "Check sputum collection details and results");
       .and("contain", "Check sputum collection details and results");
 
     // Check summary lists are present for all samples
     cy.get(".govuk-summary-list").should("have.length.at.least", 3);
     return this;
+    return this;
   }
 
   // Verify sample headings are present
   verifySampleHeadings(): CheckSputumSampleInfoPage {
+  verifySampleHeadings(): CheckSputumSampleInfoPage {
     cy.get("h2.govuk-heading-m").should("contain", "Sputum sample 1");
     cy.get("h2.govuk-heading-m").should("contain", "Sputum sample 2");
     cy.get("h2.govuk-heading-m").should("contain", "Sputum sample 3");
+    return this;
+  }
+
+  // Verify submission heading is present
+  verifySubmissionHeading(): CheckSputumSampleInfoPage {
+    cy.get("h2.govuk-heading-m").should(
+      "contain",
+      "Now send the sputum collection details and results",
+    );
+    return this;
+  }
+
+  // Verify warning message about submission
+  verifySubmissionWarningText(): CheckSputumSampleInfoPage {
+    cy.get("p.govuk-body").should(
+      "contain",
+      "You will not be able to change the collection details and results after you submit this information. However, you will be able to return and complete any information that you have not provided.",
+    );
+    return this;
     return this;
   }
 
@@ -60,20 +89,30 @@ export class CheckSputumSampleInfoPage extends BasePage {
     fieldKey: string,
     expectedValue: string,
   ): CheckSputumSampleInfoPage {
+  verifySampleSummaryValue(
+    sampleNumber: number,
+    fieldKey: string,
+    expectedValue: string,
+  ): CheckSputumSampleInfoPage {
     this.getSampleSummaryValue(sampleNumber, fieldKey).should("eq", expectedValue);
+    return this;
     return this;
   }
 
   // methid to verify "No data" is displayed for empty results
   verifySampleShowsNoData(sampleNumber: number, fieldKey: string): CheckSputumSampleInfoPage {
+  verifySampleShowsNoData(sampleNumber: number, fieldKey: string): CheckSputumSampleInfoPage {
     this.verifySampleSummaryValue(sampleNumber, fieldKey, "No data");
+    return this;
     return this;
   }
 
   // Verify sample shows "No data" for both result fields
   verifySampleResultsShowNoData(sampleNumber: number): CheckSputumSampleInfoPage {
+  verifySampleResultsShowNoData(sampleNumber: number): CheckSputumSampleInfoPage {
     this.verifySampleShowsNoData(sampleNumber, "Smear result");
     this.verifySampleShowsNoData(sampleNumber, "Culture result");
+    return this;
     return this;
   }
 
@@ -83,8 +122,10 @@ export class CheckSputumSampleInfoPage extends BasePage {
     smearResult: string,
     cultureResult: string,
   ): CheckSputumSampleInfoPage {
+  ): CheckSputumSampleInfoPage {
     this.verifySampleSummaryValue(sampleNumber, "Smear result", smearResult);
     this.verifySampleSummaryValue(sampleNumber, "Culture result", cultureResult);
+    return this;
     return this;
   }
 
@@ -108,6 +149,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
       smearResult?: string;
       cultureResult?: string;
     };
+  }): CheckSputumSampleInfoPage {
   }): CheckSputumSampleInfoPage {
     // Verify Sample 1
     this.verifySampleSummaryValue(1, "Date collected", expectedSampleData.sample1.dateCollected);
@@ -169,6 +211,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
       this.verifySampleShowsNoData(3, "Culture result");
     }
     return this;
+    return this;
   }
 
   // Method for mixed scenarios (some samples with data, some without)
@@ -176,6 +219,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
     sample1?: { smearResult: string; cultureResult: string };
     sample2?: { smearResult: string; cultureResult: string };
     sample3?: { smearResult: string; cultureResult: string };
+  }): CheckSputumSampleInfoPage {
   }): CheckSputumSampleInfoPage {
     // Check sample 1
     if (samplesWithData.sample1) {
@@ -210,9 +254,14 @@ export class CheckSputumSampleInfoPage extends BasePage {
       this.verifySampleResultsShowNoData(3);
     }
     return this;
+    return this;
   }
 
   // Verify only first sample has data
+  verifyOnlyFirstSampleHasData(
+    smearResult: string,
+    cultureResult: string,
+  ): CheckSputumSampleInfoPage {
   verifyOnlyFirstSampleHasData(
     smearResult: string,
     cultureResult: string,
@@ -221,6 +270,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
     this.verifySampleResultsShowNoData(2);
     this.verifySampleResultsShowNoData(3);
     return this;
+    return this;
   }
 
   // Verify first and second samples have data, third shows "No data"
@@ -228,9 +278,11 @@ export class CheckSputumSampleInfoPage extends BasePage {
     sample1: { smearResult: string; cultureResult: string },
     sample2: { smearResult: string; cultureResult: string },
   ): CheckSputumSampleInfoPage {
+  ): CheckSputumSampleInfoPage {
     this.verifySampleHasResultData(1, sample1.smearResult, sample1.cultureResult);
     this.verifySampleHasResultData(2, sample2.smearResult, sample2.cultureResult);
     this.verifySampleResultsShowNoData(3);
+    return this;
     return this;
   }
 
@@ -291,6 +343,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
       "Culture result": "/sputum-results",
     });
     return this;
+    return this;
   }
 
   // Helper method to verify change links for a specific sample
@@ -311,6 +364,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
 
   // Verify change links work by clicking and checking URL
   testChangeLinksNavigation(): CheckSputumSampleInfoPage {
+  testChangeLinksNavigation(): CheckSputumSampleInfoPage {
     // Test collection change link (sample 1)
     this.clickSampleChangeLink(1, "Date collected");
     cy.url().should("include", "/sputum-collection-details");
@@ -324,6 +378,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
         cy.go("back");
       }
     });
+    return this;
     return this;
   }
 
@@ -375,12 +430,15 @@ export class CheckSputumSampleInfoPage extends BasePage {
       });
     });
     return this;
+    return this;
   }
 
   // Check URL after form submission
   checkRedirectionAfterSubmit(expectedUrlPath: string): CheckSputumSampleInfoPage {
+  checkRedirectionAfterSubmit(expectedUrlPath: string): CheckSputumSampleInfoPage {
     this.clickSaveAndContinue();
     cy.url().should("include", expectedUrlPath);
+    return this;
     return this;
   }
 
@@ -405,8 +463,10 @@ export class CheckSputumSampleInfoPage extends BasePage {
       cultureResult?: string;
     };
   }): CheckSputumSampleInfoPage {
+  }): CheckSputumSampleInfoPage {
     this.verifyPageLoaded();
     this.verifySampleHeadings();
+    this.verifySubmissionHeading();
     this.verifySubmissionHeading();
     this.verifyRequiredFieldsPresent();
     this.verifyChangeLinksExist();
@@ -417,9 +477,12 @@ export class CheckSputumSampleInfoPage extends BasePage {
       this.verifyAllSampleInfo(expectedSampleData);
     }
     return this;
+    return this;
   }
 
   // Validate sample data format
+  validateSampleDataFormat(): CheckSputumSampleInfoPage {
+    // Verify date format (DD Month YYYY)
   validateSampleDataFormat(): CheckSputumSampleInfoPage {
     // Verify date format (DD Month YYYY)
     [1, 2, 3].forEach((sampleNum) => {
@@ -445,14 +508,20 @@ export class CheckSputumSampleInfoPage extends BasePage {
       this.getSampleSummaryValue(sampleNum, "Culture result").should("be.oneOf", validResults);
     });
     return this;
+    return this;
   }
 
   // Check that Save and Continue button is enabled
   verifySaveAndContinueButton(): CheckSputumSampleInfoPage {
     this.verifySaveAndContinueButtonDisplayed();
     return this;
+  verifySaveAndContinueButton(): CheckSputumSampleInfoPage {
+    this.verifySaveAndContinueButtonDisplayed();
+    return this;
   }
 
+  // Verify scenario where sample 1 has negative smear and positive culture, other samples show no data
+  verifySample1MixedScenario(): CheckSputumSampleInfoPage {
   // Verify scenario where sample 1 has negative smear and positive culture, other samples show no data
   verifySample1MixedScenario(): CheckSputumSampleInfoPage {
     // Sample 1 should have: Negative smear, Positive culture
@@ -462,9 +531,11 @@ export class CheckSputumSampleInfoPage extends BasePage {
     this.verifySampleResultsShowNoData(2);
     this.verifySampleResultsShowNoData(3);
     return this;
+    return this;
   }
 
   // Verify mixed scenario where different samples have different completion states
+  verifyMixedCompletionScenario(completedSamples: number[]): CheckSputumSampleInfoPage {
   verifyMixedCompletionScenario(completedSamples: number[]): CheckSputumSampleInfoPage {
     [1, 2, 3].forEach((sampleNum) => {
       if (completedSamples.includes(sampleNum)) {
@@ -476,6 +547,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
         this.verifySampleResultsShowNoData(sampleNum);
       }
     });
+    return this;
     return this;
   }
 
@@ -499,6 +571,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
   }
 
   // Verify at least one sample has result data (in line with the AC)
+  verifyAtLeastOneSampleHasResultData(): CheckSputumSampleInfoPage {
   verifyAtLeastOneSampleHasResultData(): CheckSputumSampleInfoPage {
     this.countSamplesWithResultData().should("be.at.least", 1);
     return this;

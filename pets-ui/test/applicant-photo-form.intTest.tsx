@@ -7,7 +7,9 @@ import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import ApplicantPhotoPage from "@/pages/applicant-photo";
 import ApplicantPhotoForm from "@/sections/applicant-photo-form";
 import { ApplicationStatus, ImageType } from "@/utils/enums";
+import { ApplicationStatus, ImageType } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
+import uploadFile from "@/utils/uploadFile";
 import uploadFile from "@/utils/uploadFile";
 import validateFiles from "@/utils/validateFiles";
 
@@ -23,7 +25,13 @@ vi.mock("@/utils/uploadFile", () => ({
   default: vi.fn(),
 }));
 
+vi.mock("@/utils/uploadFile", () => ({
+  default: vi.fn(),
+}));
+
 const useNavigateMock: Mock = vi.fn();
+vi.mock(`react-router`, async (): Promise<unknown> => {
+  const actual: Record<string, unknown> = await vi.importActual(`react-router`);
 vi.mock(`react-router`, async (): Promise<unknown> => {
   const actual: Record<string, unknown> = await vi.importActual(`react-router`);
   return {
@@ -59,9 +67,20 @@ describe("ApplicantPhotoForm", () => {
     expect(screen.getByText("The photo must:")).toBeInTheDocument();
     expect(screen.getByText("be a JPG, JPEG or PNG file")).toBeInTheDocument();
     expect(screen.getByText("be less than 10MB")).toBeInTheDocument();
+    expect(screen.getByText("The photo must:")).toBeInTheDocument();
+    expect(screen.getByText("be a JPG, JPEG or PNG file")).toBeInTheDocument();
+    expect(screen.getByText("be less than 10MB")).toBeInTheDocument();
     expect(
       screen.getByText("be the correct way up - open it on your computer to check"),
+      screen.getByText("be the correct way up - open it on your computer to check"),
     ).toBeInTheDocument();
+    const passportRulesLink = screen.getByText(
+      "rules for a passport digital photo (opens in new tab)",
+    );
+    expect(passportRulesLink).toHaveAttribute(
+      "href",
+      "https://www.gov.uk/photos-for-passports#rules-for-digital-photos",
+    );
     const passportRulesLink = screen.getByText(
       "rules for a passport digital photo (opens in new tab)",
     );

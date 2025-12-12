@@ -1,4 +1,5 @@
 //This holds all fields of the Medical Summary Page
+//This holds all fields of the Medical Summary Page
 import { BasePage } from "../BasePage";
 
 export class MedicalSummaryPage extends BasePage {
@@ -31,6 +32,8 @@ export class MedicalSummaryPage extends BasePage {
   verifyPageLoaded(): MedicalSummaryPage {
     cy.url().should("include", "/check-medical-history-and-tb-symptoms");
     cy.contains("h1", "Check medical history and TB symptoms").should("be.visible");
+    cy.url().should("include", "/check-medical-history-and-tb-symptoms");
+    cy.contains("h1", "Check medical history and TB symptoms").should("be.visible");
     cy.get(".govuk-summary-list").should("be.visible");
     return this;
   }
@@ -38,6 +41,14 @@ export class MedicalSummaryPage extends BasePage {
   // Get summary value for a specific field
   getSummaryValue(fieldKey: string): Cypress.Chainable<string> {
     return cy
+      .get(".govuk-summary-list__key")
+      .filter((_index, element) => {
+        return element.textContent?.trim() === fieldKey;
+      })
+      .parent()
+      .find(".govuk-summary-list__value")
+      .invoke("text")
+      .then((text) => text.trim());
       .get(".govuk-summary-list__key")
       .filter((_index, element) => {
         return element.textContent?.trim() === fieldKey;
@@ -78,6 +89,12 @@ export class MedicalSummaryPage extends BasePage {
       })
       .parent()
       .find(".govuk-summary-list__actions a")
+    cy.get(".govuk-summary-list__key")
+      .filter((_index, element) => {
+        return element.textContent?.trim() === fieldKey;
+      })
+      .parent()
+      .find(".govuk-summary-list__actions a")
       .click();
     return this;
   }
@@ -85,7 +102,10 @@ export class MedicalSummaryPage extends BasePage {
   // Verify all summary values
   verifyAllSummaryValues(expectedValues: {
     "Date of medical screening"?: string;
+    "Date of medical screening"?: string;
     Age?: string;
+    "Does the visa applicant have pulmonary TB symptoms?"?: string;
+    "Pulmonary TB symptoms"?: string;
     "Does the visa applicant have pulmonary TB symptoms?"?: string;
     "Pulmonary TB symptoms"?: string;
     "Other symptoms"?: string;
@@ -95,9 +115,15 @@ export class MedicalSummaryPage extends BasePage {
     "Detail of applicant's previous pulmonary TB"?: string;
     "Has the applicant had close contact with any person with active pulmonary TB within the past year?"?: string;
     "Details of applicant's close contact with any person with active pulmonary TB"?: string;
+    "Has the applicant ever had pulmonary TB?"?: string;
+    "Detail of applicant's previous pulmonary TB"?: string;
+    "Has the applicant had close contact with any person with active pulmonary TB within the past year?"?: string;
+    "Details of applicant's close contact with any person with active pulmonary TB"?: string;
     "Is the applicant pregnant?"?: string;
     "Does the applicant have menstrual periods?"?: string;
     "Physical examination notes"?: string;
+    "Is an X-ray required?"?: string;
+    "Reason X-ray is not required"?: string;
     "Is an X-ray required?"?: string;
     "Reason X-ray is not required"?: string;
   }): MedicalSummaryPage {
@@ -112,6 +138,7 @@ export class MedicalSummaryPage extends BasePage {
   // Validate that summary matches the entered medical screening data
   validateSummaryMatchesEnteredData(enteredData: {
     dateOfMedicalScreening?: string;
+    dateOfMedicalScreening?: string;
     age?: string;
     tbSymptoms?: "Yes" | "No";
     tbSymptomsList?: string[];
@@ -125,6 +152,8 @@ export class MedicalSummaryPage extends BasePage {
     pregnant?: "Yes" | "No" | "Don't know" | "N/A";
     menstrualPeriods?: "Yes" | "No" | "N/A";
     physicalExamNotes?: string;
+    xrayRequired?: "Yes" | "No";
+    reasonXrayNotRequired?: "Child (under 11 years)" | "Pregnant" | "Other";
     xrayRequired?: "Yes" | "No";
     reasonXrayNotRequired?: "Child (under 11 years)" | "Pregnant" | "Other";
   }): MedicalSummaryPage {
@@ -145,6 +174,9 @@ export class MedicalSummaryPage extends BasePage {
         case "dateOfMedicalScreening":
           this.verifySummaryValue("Date of medical screening", processedValue);
           break;
+        case "dateOfMedicalScreening":
+          this.verifySummaryValue("Date of medical screening", processedValue);
+          break;
         case "age":
           this.verifySummaryValue("Age", processedValue);
           break;
@@ -153,9 +185,14 @@ export class MedicalSummaryPage extends BasePage {
             "Does the visa applicant have pulmonary TB symptoms?",
             processedValue,
           );
+          this.verifySummaryValue(
+            "Does the visa applicant have pulmonary TB symptoms?",
+            processedValue,
+          );
           break;
         case "tbSymptomsList":
           if (processedValue) {
+            this.verifySummaryValue("Pulmonary TB symptoms", processedValue);
             this.verifySummaryValue("Pulmonary TB symptoms", processedValue);
           }
           break;
@@ -173,12 +210,15 @@ export class MedicalSummaryPage extends BasePage {
           break;
         case "previousTb":
           this.verifySummaryValue("Has the visa applicant had pulmonary TB?", processedValue);
+          this.verifySummaryValue("Has the visa applicant had pulmonary TB?", processedValue);
           break;
         case "previousTbDetail":
+          this.verifySummaryValue("Detail of applicant's previous pulmonary TB", processedValue);
           this.verifySummaryValue("Detail of applicant's previous pulmonary TB", processedValue);
           break;
         case "closeContactWithTb":
           this.verifySummaryValue(
+            "Has the visa applicant had close contact with a person with active pulmonary TB in the past year?",
             "Has the visa applicant had close contact with a person with active pulmonary TB in the past year?",
             processedValue,
           );
@@ -186,10 +226,12 @@ export class MedicalSummaryPage extends BasePage {
         case "closeContactWithTbDetail":
           this.verifySummaryValue(
             "Details of applicant's close contact with any person with active pulmonary TB",
+            "Details of applicant's close contact with any person with active pulmonary TB",
             processedValue,
           );
           break;
         case "pregnant":
+          this.verifySummaryValue("Is the visa applicant pregnant?", processedValue);
           this.verifySummaryValue("Is the visa applicant pregnant?", processedValue);
           break;
         case "menstrualPeriods":
@@ -197,8 +239,19 @@ export class MedicalSummaryPage extends BasePage {
             "Does the visa applicant have menstrual periods?",
             processedValue,
           );
+          this.verifySummaryValue(
+            "Does the visa applicant have menstrual periods?",
+            processedValue,
+          );
           break;
         case "physicalExamNotes":
+          this.verifySummaryValue("Physical examination notes (optional)", processedValue);
+          break;
+        case "xrayRequired":
+          this.verifySummaryValue("Is an X-ray required?", processedValue);
+          break;
+        case "reasonXrayNotRequired":
+          this.verifySummaryValue("Reason X-ray is not required", processedValue);
           this.verifySummaryValue("Physical examination notes (optional)", processedValue);
           break;
         case "xrayRequired":
@@ -215,6 +268,7 @@ export class MedicalSummaryPage extends BasePage {
   // Validation method to check all entered fields
   fullyValidateSummary(enteredData: {
     dateOfMedicalScreening?: string;
+    dateOfMedicalScreening?: string;
     age?: string;
     tbSymptoms?: "Yes" | "No";
     tbSymptomsList?: string[];
@@ -230,11 +284,27 @@ export class MedicalSummaryPage extends BasePage {
     physicalExamNotes?: string;
     xrayRequired?: "Yes" | "No";
     reasonXrayNotRequired?: "Child (under 11 years)" | "Pregnant" | "Other";
+    xrayRequired?: "Yes" | "No";
+    reasonXrayNotRequired?: "Child (under 11 years)" | "Pregnant" | "Other";
   }): MedicalSummaryPage {
     // Verify all the fields exist in the summary
     const expectedFields = [
       "Date of medical screening",
+      "Date of medical screening",
       "Age",
+      "Does the visa applicant have pulmonary TB symptoms?",
+      "If yes, which pulmonary TB symptoms",
+      "Give further details (optional)",
+      "Medical history for under 11",
+      "Give further details (optional)",
+      "Has the visa applicant had pulmonary TB?",
+      "If yes, give details (optional)",
+      "Has the visa applicant had close contact with a person with active pulmonary TB in the past year?",
+      "If yes, give details",
+      "Is the visa applicant pregnant?",
+      "Does the visa applicant have menstrual periods?",
+      "Physical examination notes (optional)",
+      "Is an X-ray required?",
       "Does the visa applicant have pulmonary TB symptoms?",
       "If yes, which pulmonary TB symptoms",
       "Give further details (optional)",
@@ -253,6 +323,8 @@ export class MedicalSummaryPage extends BasePage {
     // Check that all expected fields are present
     expectedFields.forEach((field) => {
       this.isFieldPresent(field).should(
+        "eq",
+        true,
         "eq",
         true,
         `Field "${field}" should be present in the summary`,
@@ -307,9 +379,20 @@ export class MedicalSummaryPage extends BasePage {
     ).should("be.visible");
     return this;
   }
+  // Verify submission confirmation message
+  verifySubmissionConfirmationMessage(): MedicalSummaryPage {
+    cy.contains(
+      "p",
+      "You will not be able to change the medical history and TB symptoms after you submit this information.",
+    ).should("be.visible");
+    return this;
+  }
 
   // Verify redirection after confirmation
+  // Verify redirection after confirmation
   verifyRedirectionAfterConfirm(): MedicalSummaryPage {
+    // This should be overridden with the actual expected URL
+    cy.url().should("not.include", "/check-medical-history-and-tb-symptoms");
     // This should be overridden with the actual expected URL
     cy.url().should("not.include", "/check-medical-history-and-tb-symptoms");
     return this;
@@ -322,10 +405,18 @@ export class MedicalSummaryPage extends BasePage {
       const isPresent = keys.includes(fieldKey);
       return isPresent;
     });
+  // Check if a specific field is present - FIXED
+  isFieldPresent(fieldKey: string): Cypress.Chainable<boolean> {
+    return cy.get(".govuk-summary-list__key").then(($keys) => {
+      const keys = Array.from($keys).map((el) => el.textContent?.trim());
+      const isPresent = keys.includes(fieldKey);
+      return isPresent;
+    });
   }
 
   // Verify breadcrumb navigation
   verifyBreadcrumbNavigation(): MedicalSummaryPage {
+    cy.get(".govuk-breadcrumbs").should("be.visible");
     cy.get(".govuk-breadcrumbs").should("be.visible");
     return this;
   }
@@ -334,7 +425,11 @@ export class MedicalSummaryPage extends BasePage {
   verifyChangeLinksTargets(): MedicalSummaryPage {
     const expectedFragments: Record<string, string> = {
       "Date of medical screening": "#medical-screening-completion-date",
+    const expectedFragments: Record<string, string> = {
+      "Date of medical screening": "#medical-screening-completion-date",
       Age: "#age",
+      "Does the applicant have pulmonary TB symptoms?": "#tb-symptoms",
+      "Pulmonary TB symptoms": "#tb-symptoms-list",
       "Does the applicant have pulmonary TB symptoms?": "#tb-symptoms",
       "Pulmonary TB symptoms": "#tb-symptoms-list",
       "Other symptoms": "#other-symptoms-detail",
@@ -343,7 +438,11 @@ export class MedicalSummaryPage extends BasePage {
       "Has the applicant ever had pulmonary TB?": "#previous-tb",
       "Detail of applicant's previous pulmonary TB": "#previous-tb-detail",
       "Has the applicant had close contact with any person with active pulmonary TB within the past year?":
+      "Has the applicant ever had pulmonary TB?": "#previous-tb",
+      "Detail of applicant's previous pulmonary TB": "#previous-tb-detail",
+      "Has the applicant had close contact with any person with active pulmonary TB within the past year?":
         "#close-contact-with-tb",
+      "Details of applicant's close contact with any person with active pulmonary TB":
       "Details of applicant's close contact with any person with active pulmonary TB":
         "#close-contact-with-tb-detail",
       "Is the applicant pregnant?": "#pregnant",
@@ -351,9 +450,17 @@ export class MedicalSummaryPage extends BasePage {
       "Physical examination notes": "#physical-exam-notes",
       "Is an X-ray required?": "#chest-xray-taken",
       "Reason X-ray is not required": "#reason-xray-not-taken",
+      "Is an X-ray required?": "#chest-xray-taken",
+      "Reason X-ray is not required": "#reason-xray-not-taken",
     };
 
     Object.entries(expectedFragments).forEach(([key, fragment]) => {
+      cy.get(".govuk-summary-list__key")
+        .filter((_index, element) => {
+          return element.textContent?.trim() === key;
+        })
+        .parent()
+        .find(".govuk-summary-list__actions a")
       cy.get(".govuk-summary-list__key")
         .filter((_index, element) => {
           return element.textContent?.trim() === key;
@@ -388,8 +495,31 @@ export class MedicalSummaryPage extends BasePage {
 
   // Verify back link points to correct page (dynamic based on scenario)
   verifyBackLink(expectedHref: string = "/reason-x-ray-not-required"): MedicalSummaryPage {
+  // Verify all Change links are visible
+  verifyAllChangeLinksVisible(): MedicalSummaryPage {
+    cy.get(".govuk-summary-list__actions").each(($action) => {
+      cy.wrap($action)
+        .find("a.govuk-link")
+        .should("be.visible")
+        .and("contain", "Change")
+        .and("have.class", "govuk-link--no-visited-state");
+    });
+    return this;
+  }
+
+  // Verify visually hidden text in Change links
+  verifyChangeLinksVisuallyHiddenText(): MedicalSummaryPage {
+    cy.get(".govuk-summary-list__actions a").each(($link) => {
+      cy.wrap($link).find(".govuk-visually-hidden").should("exist");
+    });
+    return this;
+  }
+
+  // Verify back link points to correct page (dynamic based on scenario)
+  verifyBackLink(expectedHref: string = "/reason-x-ray-not-required"): MedicalSummaryPage {
     cy.get(".govuk-back-link")
       .should("be.visible")
+      .and("have.attr", "href", expectedHref)
       .and("have.attr", "href", expectedHref)
       .and("contain", "Back");
     return this;
@@ -406,16 +536,28 @@ export class MedicalSummaryPage extends BasePage {
 
   // Verify optional fields show "Not provided" when empty - FIXED SELECTOR
   verifyOptionalFieldsNotProvided(): MedicalSummaryPage {
+  // Verify optional fields show "Not provided" when empty - FIXED SELECTOR
+  verifyOptionalFieldsNotProvided(): MedicalSummaryPage {
     const optionalFields = [
+      "Pulmonary TB symptoms",
       "Pulmonary TB symptoms",
       "Other symptoms",
       "Additional details of applicant history if under 11",
+      "Detail of applicant's previous pulmonary TB",
+      "Details of applicant's close contact with any person with active pulmonary TB",
       "Detail of applicant's previous pulmonary TB",
       "Details of applicant's close contact with any person with active pulmonary TB",
       "Physical examination notes",
     ];
 
     optionalFields.forEach((field) => {
+      cy.get(".govuk-summary-list__key")
+        .filter((_index, element) => {
+          return element.textContent?.trim() === field;
+        })
+        .parent()
+        .find(".govuk-summary-list__value")
+        .should("contain", "Not provided");
       cy.get(".govuk-summary-list__key")
         .filter((_index, element) => {
           return element.textContent?.trim() === field;
@@ -431,7 +573,20 @@ export class MedicalSummaryPage extends BasePage {
   verifyContinueButton(): MedicalSummaryPage {
     cy.get("button[type='submit']")
       .should("contain", "Submit and continue")
+      .should("contain", "Submit and continue")
       .and("have.class", "govuk-button")
+      .and("have.attr", "data-module", "govuk-button")
+      .and("have.attr", "style")
+      .and("include", "margin-top");
+    return this;
+  }
+
+  // Verify continue button is visible and enabled
+  verifyContinueButtonState(): MedicalSummaryPage {
+    cy.get("button[type='submit']")
+      .should("be.visible")
+      .and("be.enabled")
+      .and("contain", "Submit and continue");
       .and("have.attr", "data-module", "govuk-button")
       .and("have.attr", "style")
       .and("include", "margin-top");
@@ -448,10 +603,14 @@ export class MedicalSummaryPage extends BasePage {
   }
 
   // Verify all fields are present on the page (base fields) - FIXED SELECTOR
+  // Verify all fields are present on the page (base fields) - FIXED SELECTOR
   verifyAllFieldsPresent(): MedicalSummaryPage {
     const requiredFields = [
       "Date of medical screening",
+      "Date of medical screening",
       "Age",
+      "Does the applicant have pulmonary TB symptoms?",
+      "Pulmonary TB symptoms",
       "Does the applicant have pulmonary TB symptoms?",
       "Pulmonary TB symptoms",
       "Other symptoms",
@@ -461,9 +620,14 @@ export class MedicalSummaryPage extends BasePage {
       "Detail of applicant's previous pulmonary TB",
       "Has the applicant had close contact with any person with active pulmonary TB within the past year?",
       "Details of applicant's close contact with any person with active pulmonary TB",
+      "Has the applicant ever had pulmonary TB?",
+      "Detail of applicant's previous pulmonary TB",
+      "Has the applicant had close contact with any person with active pulmonary TB within the past year?",
+      "Details of applicant's close contact with any person with active pulmonary TB",
       "Is the applicant pregnant?",
       "Does the applicant have menstrual periods?",
       "Physical examination notes",
+      "Is an X-ray required?",
       "Is an X-ray required?",
     ];
 
@@ -473,7 +637,79 @@ export class MedicalSummaryPage extends BasePage {
           return element.textContent?.trim() === field;
         })
         .should("exist");
+      cy.get(".govuk-summary-list__key")
+        .filter((_index, element) => {
+          return element.textContent?.trim() === field;
+        })
+        .should("exist");
     });
+    return this;
+  }
+
+  // Verify X-ray required field is present - FIXED SELECTOR
+  verifyXrayRequiredField(): MedicalSummaryPage {
+    cy.get(".govuk-summary-list__key")
+      .filter((_index, element) => {
+        return element.textContent?.trim() === "Is an X-ray required?";
+      })
+      .should("exist");
+    return this;
+  }
+
+  // Verify X-ray required value
+  verifyXrayRequiredValue(expectedValue: "Yes" | "No"): MedicalSummaryPage {
+    this.verifySummaryValue("Is an X-ray required?", expectedValue);
+    return this;
+  }
+
+  // Verify "Reason X-ray is not required" field is present - FIXED SELECTOR
+  verifyReasonXrayNotRequiredField(): MedicalSummaryPage {
+    cy.get(".govuk-summary-list__key")
+      .filter((_index, element) => {
+        return element.textContent?.trim() === "Reason X-ray is not required";
+      })
+      .should("exist");
+    return this;
+  }
+
+  // Verify "Reason X-ray is not required" value
+  verifyReasonXrayNotRequiredValue(
+    expectedValue: "Child (under 11 years)" | "Pregnant" | "Other",
+  ): MedicalSummaryPage {
+    this.verifySummaryValue("Reason X-ray is not required", expectedValue);
+    return this;
+  }
+
+  // Verify "Reason X-ray is not required" field is NOT present (when X-ray is required) - FIXED SELECTOR
+  verifyReasonXrayNotRequiredFieldNotPresent(): MedicalSummaryPage {
+    cy.get(".govuk-summary-list__key")
+      .filter((_index, element) => {
+        return element.textContent?.trim() === "Reason X-ray is not required";
+      })
+      .should("not.exist");
+    return this;
+  }
+
+  // Click change link for "Reason X-ray is not required"
+  clickChangeReasonXrayNotRequired(): MedicalSummaryPage {
+    this.clickChangeLink("Reason X-ray is not required");
+    return this;
+  }
+
+  // Verify scenario: X-ray NOT required (child, pregnant, or other)
+  verifyXrayNotRequiredScenario(
+    reason: "Child (under 11 years)" | "Pregnant" | "Other",
+  ): MedicalSummaryPage {
+    this.verifyXrayRequiredValue("No");
+    this.verifyReasonXrayNotRequiredField();
+    this.verifyReasonXrayNotRequiredValue(reason);
+    return this;
+  }
+
+  // Verify scenario: X-ray IS required
+  verifyXrayRequiredScenario(): MedicalSummaryPage {
+    this.verifyXrayRequiredValue("Yes");
+    this.verifyReasonXrayNotRequiredFieldNotPresent();
     return this;
   }
 
@@ -552,6 +788,9 @@ export class MedicalSummaryPage extends BasePage {
     this.verifyAllChangeLinksVisible();
     this.verifyOptionalFieldsNotProvided();
     this.verifySubmissionSection();
+    this.verifyAllChangeLinksVisible();
+    this.verifyOptionalFieldsNotProvided();
+    this.verifySubmissionSection();
     this.verifyContinueButton();
     this.verifyServiceName();
     return this;
@@ -574,6 +813,8 @@ export class MedicalSummaryPage extends BasePage {
 
   // Helper method to verify if a field has a value or shows "Not provided"
   verifyFieldHasValueOrNotProvided(fieldKey: string, expectedValue?: string): MedicalSummaryPage {
+  // Helper method to verify if a field has a value or shows "Not provided"
+  verifyFieldHasValueOrNotProvided(fieldKey: string, expectedValue?: string): MedicalSummaryPage {
     if (expectedValue) {
       this.verifySummaryValue(fieldKey, expectedValue);
     } else {
@@ -585,7 +826,77 @@ export class MedicalSummaryPage extends BasePage {
         .parent()
         .find(".govuk-summary-list__value")
         .should("contain", "Not provided");
+      // Check if it shows "Not provided" for optional fields
+      cy.get(".govuk-summary-list__key")
+        .filter((_index, element) => {
+          return element.textContent?.trim() === fieldKey;
+        })
+        .parent()
+        .find(".govuk-summary-list__value")
+        .should("contain", "Not provided");
     }
+    return this;
+  }
+
+  // Verify GOV.UK footer is present
+  verifyFooter(): MedicalSummaryPage {
+    cy.get(".govuk-footer").should("be.visible");
+    return this;
+  }
+
+  // Verify footer links
+  verifyFooterLinks(): MedicalSummaryPage {
+    cy.get(".govuk-footer__link").contains("Privacy").should("be.visible");
+    cy.get(".govuk-footer__link").contains("Accessibility statement").should("be.visible");
+    return this;
+  }
+
+  // Verify phase banner
+  verifyPhaseBanner(): MedicalSummaryPage {
+    cy.get(".govuk-phase-banner").should("be.visible");
+    cy.get(".govuk-tag").contains("BETA").should("be.visible");
+    cy.get(".govuk-phase-banner__text").should("contain", "This is a new service");
+    return this;
+  }
+
+  // Verify sign out link in header
+  verifySignOutLink(): MedicalSummaryPage {
+    cy.get("#sign-out")
+      .should("be.visible")
+      .and("contain", "Sign out")
+      .and("have.attr", "href", "/are-you-sure-you-want-to-sign-out");
+    return this;
+  }
+
+  // Verify GOV.UK header logo
+  verifyGovUKLogo(): MedicalSummaryPage {
+    cy.get(".govuk-header__logo").should("be.visible");
+    cy.get(".govuk-header__logotype").should("exist");
+    return this;
+  }
+
+  // Verify skip link
+  verifySkipLink(): MedicalSummaryPage {
+    cy.get(".govuk-skip-link")
+      .should("exist")
+      .and("have.attr", "href", "#main-content")
+      .and("contain", "Skip to main content");
+    return this;
+  }
+
+  // Comprehensive page validation including all GOV.UK components
+  verifyCompletePageStructure(): MedicalSummaryPage {
+    this.verifySkipLink();
+    this.verifyGovUKLogo();
+    this.verifyServiceName();
+    this.verifySignOutLink();
+    this.verifyPhaseBanner();
+    this.verifyPageLoaded();
+    this.verifyAllFieldsPresent();
+    this.verifySubmissionSection();
+    this.verifyContinueButton();
+    this.verifyFooter();
+    this.verifyFooterLinks();
     return this;
   }
 
