@@ -60,13 +60,13 @@ describe("Header Styling and Functionality - Logged Out State", () => {
     cy.url().should("include", "/privacy");
 
     // Navigate back and verify Cookies link
-    cy.go("back");
+    cy.visit("/");
     cy.contains(".govuk-footer__link", "Cookies").should("have.attr", "href").and("not.be.empty");
     cy.contains(".govuk-footer__link", "Cookies").click();
     cy.url().should("include", "/cookies");
 
     // Navigate back and verify Accessibility statement link
-    cy.go("back");
+    cy.visit("/");
     cy.contains(".govuk-footer__link", "Accessibility statement")
       .should("have.attr", "href")
       .and("not.be.empty");
