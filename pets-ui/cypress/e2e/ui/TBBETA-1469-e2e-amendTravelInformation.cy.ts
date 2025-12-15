@@ -366,14 +366,6 @@ describe("PETS Application - Amend Travel Information for Partially Completed Su
     chestXrayUploadPage.verifyDateXrayTakenSectionDisplayed();
     chestXrayUploadPage.verifyDateInputFields();
 
-    // Enter the date manually when X-ray was taken
-    const xrayDay = "20";
-    const xrayMonth = "10";
-    const xrayYear = "2025";
-    chestXrayUploadPage.enterDateXrayTaken(xrayDay, xrayMonth, xrayYear);
-
-    // Verify the date was entered correctly
-    chestXrayUploadPage.verifyDateValue(xrayDay, xrayMonth, xrayYear);
     // Verify the date was entered correctly
     chestXrayUploadPage.enterDateXrayTaken(xrayDate.day, xrayDate.month, xrayDate.year);
 
