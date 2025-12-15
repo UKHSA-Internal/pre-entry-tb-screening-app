@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import Confirmation from "@/components/confirmation/confirmation";
 import Container from "@/components/container/container";

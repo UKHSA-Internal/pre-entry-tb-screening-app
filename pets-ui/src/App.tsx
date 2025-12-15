@@ -1,7 +1,7 @@
 import "./globals.scss";
 
 import { useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router";
 
 import { AuthenticatedRoute, UnauthenticatedRoute } from "./auth/authRoutes";
 import AccessibilityStatementPage from "./pages/accessibility-statement";
@@ -359,7 +359,7 @@ function App() {
         }
       />
       <Route
-        path="/enter-sputum-sample-collection-information"
+        path="/sputum-collection-details"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -379,7 +379,7 @@ function App() {
         }
       />
       <Route
-        path="/enter-sputum-sample-results"
+        path="/sputum-results"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -399,7 +399,7 @@ function App() {
         }
       />
       <Route
-        path="/enter-clinic-certificate-information"
+        path="/clinic-certificate-information"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>

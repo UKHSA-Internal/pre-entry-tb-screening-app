@@ -15,8 +15,8 @@ import { ApplicationStatus, PositiveOrNegative, SputumCollectionMethod } from "@
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
-vi.mock(`react-router-dom`, async (): Promise<unknown> => {
-  const actual: Record<string, unknown> = await vi.importActual(`react-router-dom`);
+vi.mock(`react-router`, async (): Promise<unknown> => {
+  const actual: Record<string, unknown> = await vi.importActual(`react-router`);
   return {
     ...actual,
     useNavigate: (): Mock => useNavigateMock,
@@ -445,7 +445,7 @@ describe("SputumSummary", () => {
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/enter-sputum-sample-collection-information");
+    expect(link).toHaveAttribute("href", "/sputum-collection-details");
     expect(link).toHaveClass("govuk-back-link");
   });
 });

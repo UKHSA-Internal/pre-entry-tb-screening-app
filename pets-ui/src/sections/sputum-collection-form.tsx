@@ -7,7 +7,7 @@ import {
   SubmitHandler,
   useForm,
 } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import DateTextInput from "@/components/dateTextInput/dateTextInput";
 import Dropdown from "@/components/dropdown/dropdown";
@@ -247,14 +247,14 @@ const SputumCollectionForm = () => {
     if (submittedBy === "save-progress") {
       navigate("/check-sputum-collection-details-results");
     } else if (submittedBy === "save-and-continue-to-results") {
-      navigate("/enter-sputum-sample-results");
+      navigate("/sputum-results");
     }
   };
 
   const errorsToShow = Object.keys(errors);
   useEffect(() => {
     if (errorsToShow.length > 0) {
-      sendGoogleAnalyticsFormErrorEvent("Enter sputum sample collection information", errorsToShow);
+      sendGoogleAnalyticsFormErrorEvent("Sputum collection details", errorsToShow);
     }
   }, [errorsToShow]);
 

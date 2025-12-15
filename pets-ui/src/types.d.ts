@@ -1,3 +1,5 @@
+import "react-router";
+
 import {
   ApplicationStatus,
   BackendApplicationStatus,
@@ -12,6 +14,12 @@ declare global {
     gtag?: (...args: unknown[]) => void;
   }
   var gtag: ((...args: unknown[]) => void) | undefined;
+}
+
+declare module "react-router" {
+  export interface NavigateFunction {
+    (...args: Parameters<NavigateFunction>): void;
+  }
 }
 
 type ApplicantSearchFormType = {

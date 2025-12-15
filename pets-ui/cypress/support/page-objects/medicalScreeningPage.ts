@@ -73,9 +73,25 @@ export class MedicalScreeningPage extends BasePage {
   }
 
   // Verify auto-populated age is visible
-  fillAge(age: string): MedicalScreeningPage {
-    // Verify auto-populated age is visible
-    cy.contains(`${age} years old`).should("be.visible");
+  fillAge(age: string | number, unit?: "months" | "years"): MedicalScreeningPage {
+    let ageText: string;
+
+    if (typeof age === "string") {
+      // If age is already a formatted string, use it as-is
+      ageText = age;
+    } else if (unit) {
+      // If age is a number with a unit, format it
+      const unitText =
+        unit === "months" ? (age === 1 ? "month" : "months") : age === 1 ? "year" : "years";
+      ageText = `${age} ${unitText} old`;
+    } else {
+      // Default to years if no unit provided (backward compatible)
+      const unitText = age === 1 ? "year" : "years";
+      ageText = `${age} ${unitText} old`;
+    }
+
+    cy.log(`Verifying age displays as: ${ageText}`);
+    cy.contains(ageText).should("be.visible");
     return this;
   }
 

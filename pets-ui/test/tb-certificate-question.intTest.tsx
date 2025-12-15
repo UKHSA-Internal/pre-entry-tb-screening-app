@@ -1,15 +1,15 @@
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest";
 
 import TbCertificateQuestionPage from "@/pages/tb-certificate-question";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
-vi.mock(`react-router-dom`, async (): Promise<unknown> => {
-  const actual: Record<string, unknown> = await vi.importActual(`react-router-dom`);
+vi.mock(`react-router`, async (): Promise<unknown> => {
+  const actual: Record<string, unknown> = await vi.importActual(`react-router`);
   return {
     ...actual,
     useNavigate: (): Mock => useNavigateMock,
@@ -110,11 +110,11 @@ describe("TbCertificateQuestionPage", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("when 'Yes' selected and continue pressed, it navigates to /enter-clinic-certificate-information", async () => {
+  it("when 'Yes' selected and continue pressed, it navigates to /clinic-certificate-information", async () => {
     const radioYes = screen.getByRole("radio", { name: "Yes" });
     await user.click(radioYes);
     await user.click(screen.getByRole("button", { name: "Continue" }));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/enter-clinic-certificate-information");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/clinic-certificate-information");
   });
 
   it("when 'No' selected and continue pressed, it navigates to /why-are-you-not-issuing-certificate", async () => {
