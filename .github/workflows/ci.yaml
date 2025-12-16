@@ -133,8 +133,10 @@ jobs:
               echo "Localstack healthcheck failed after 2 minutes"
               exit 1
             fi
+            echo "Waiting for healthcheck to pass"
             sleep 5
           done
+          echo "Healthcheck passed"
           sleep 20
 
       - name: Cypress run tests
@@ -215,8 +217,10 @@ jobs:
               echo "Localstack healthcheck failed after 2 minutes"
               exit 1
             fi
+            echo "Waiting for healthcheck to pass"
             sleep 5
           done
+          echo "Healthcheck passed"
           sleep 20
 
       - name: Run tests
