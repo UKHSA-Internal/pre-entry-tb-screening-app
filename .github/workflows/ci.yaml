@@ -125,6 +125,18 @@ jobs:
         run: |
           pnpm start & sleep 120
 
+      - name: Wait for Localstack healthcheck
+        run: |
+          until curl -fsS http://localhost:4566/_localstack/health | grep '"running"'; do
+            COUNT=$((COUNT + 1))
+            if [ "$COUNT" -ge 24 ]; then
+              echo "Localstack healthcheck failed after 2 minutes"
+              exit 1
+            fi
+            sleep 5
+          done
+          sleep 20
+
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
         continue-on-error: true
@@ -191,8 +203,21 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
-      - name: Pull docker dependencies
-        run: docker compose pull localstack
+      - name: Start Local Environment
+        run: |
+          pnpm start & sleep 120
+
+      - name: Wait for Localstack healthcheck
+        run: |
+          until curl -fsS http://localhost:4566/_localstack/health | grep '"running"'; do
+            COUNT=$((COUNT + 1))
+            if [ "$COUNT" -ge 24 ]; then
+              echo "Localstack healthcheck failed after 2 minutes"
+              exit 1
+            fi
+            sleep 5
+          done
+          sleep 20
 
       - name: Run tests
         run: pnpm test-coverage
