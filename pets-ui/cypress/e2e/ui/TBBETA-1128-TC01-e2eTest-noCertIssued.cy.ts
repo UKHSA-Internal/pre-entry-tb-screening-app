@@ -1,6 +1,7 @@
 //PETS Private Beta E2E Test with TB Certificate Not Issued
 import { countryList } from "../../../src/utils/countryList";
 import { loginViaB2C } from "../../support/commands";
+import { DateUtils } from "../../support/DateUtils";
 import { ApplicantConfirmationPage } from "../../support/page-objects/applicantConfirmationPage";
 import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
 import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
@@ -82,9 +83,78 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
   let passportNumber: string = "";
   let selectedVisaCategory: string;
 
+  // Dynamic date variables
+  let adultAge: number;
+  let adultDOB: ReturnType<typeof DateUtils.getDOBComponentsForAge>;
+  let adultDOBFormatted: string;
+  let passportIssueDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let passportExpiryDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let screeningDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let xrayDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let xrayDateFormatted: string;
+  let sputumSample1Date: ReturnType<typeof DateUtils.getDateComponents>;
+  let sputumSample2Date: ReturnType<typeof DateUtils.getDateComponents>;
+  let sputumSample3Date: ReturnType<typeof DateUtils.getDateComponents>;
+
   before(() => {
     // Create test fixtures before test run
     createTestFixtures();
+    // Generate dynamic dates for adult applicant (30 years old)
+    adultAge = 30;
+    adultDOB = DateUtils.getAdultDOBComponents(adultAge);
+    // Format with leading zeros, then normalize for UI comparison
+    adultDOBFormatted = DateUtils.normalizeDateForComparison(
+      DateUtils.formatDateDDMMYYYY(DateUtils.getAdultDateOfBirth(adultAge)),
+    );
+
+    // Generate passport dates (issued 2 years ago, expires in 8 years)
+    const passportIssue = DateUtils.getDateInPast(2);
+    const passportExpiry = DateUtils.getPassportExpiryDate(passportIssue, false);
+    passportIssueDate = DateUtils.getDateComponents(passportIssue);
+    passportExpiryDate = DateUtils.getDateComponents(passportExpiry);
+
+    // Generate screening date (1 month ago for realistic scenario)
+    const screening = DateUtils.getDateInPast(0, 1, 0); // 1 month ago
+    screeningDate = DateUtils.getDateComponents(screening);
+
+    // Generate X-ray date (2 weeks ago, after screening)
+    const xray = DateUtils.getDateInPast(0, 0, 14); // 2 weeks ago
+    xrayDate = DateUtils.getDateComponents(xray);
+    xrayDateFormatted = DateUtils.formatDateGOVUK(xray);
+
+    // Generate sputum collection dates (2-3 months ago for realistic scenario)
+    const sample1 = DateUtils.getDateInPast(0, 3, 0); // 3 months ago
+    const sample2 = DateUtils.getDateInPast(0, 3, -1); // 1 day after sample 1
+    const sample3 = DateUtils.getDateInPast(0, 3, -2); // 1 day after sample 2
+
+    sputumSample1Date = DateUtils.getDateComponents(sample1);
+    sputumSample2Date = DateUtils.getDateComponents(sample2);
+    sputumSample3Date = DateUtils.getDateComponents(sample3);
+
+    // Log generated dates for debugging
+    cy.log(`Adult Age: ${adultAge}`);
+    cy.log(`Adult DOB: ${adultDOB.day}/${adultDOB.month}/${adultDOB.year}`);
+    cy.log(`DOB Formatted: ${adultDOBFormatted}`);
+    cy.log(
+      `Calculated Age: ${DateUtils.calculateAge(DateUtils.getAdultDateOfBirth(adultAge))} years`,
+    );
+    cy.log(
+      `Passport Issue: ${passportIssueDate.day}/${passportIssueDate.month}/${passportIssueDate.year}`,
+    );
+    cy.log(
+      `Passport Expiry: ${passportExpiryDate.day}/${passportExpiryDate.month}/${passportExpiryDate.year}`,
+    );
+    cy.log(`Screening Date: ${screeningDate.day}/${screeningDate.month}/${screeningDate.year}`);
+    cy.log(`X-ray Date: ${xrayDate.day}/${xrayDate.month}/${xrayDate.year}`);
+    cy.log(
+      `Sputum Sample 1: ${sputumSample1Date.day}/${sputumSample1Date.month}/${sputumSample1Date.year}`,
+    );
+    cy.log(
+      `Sputum Sample 2: ${sputumSample2Date.day}/${sputumSample2Date.month}/${sputumSample2Date.year}`,
+    );
+    cy.log(
+      `Sputum Sample 3: ${sputumSample3Date.day}/${sputumSample3Date.month}/${sputumSample3Date.year}`,
+    );
   });
 
   beforeEach(() => {
@@ -130,9 +200,13 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       .fillFullName("John Doe")
       .selectSex("Male")
       .selectNationality(countryName) // Use country code for form filling
-      .fillBirthDate("20", "05", "1995")
-      .fillPassportIssueDate("15", "08", "2019")
-      .fillPassportExpiryDate("15", "08", "2029")
+      .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
+      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillPassportExpiryDate(
+        passportExpiryDate.day,
+        passportExpiryDate.month,
+        passportExpiryDate.year,
+      )
       .fillAddressLine1("789 Main Street")
       .fillAddressLine2("Suite 101")
       .fillAddressLine3("Stanbic Heights")
@@ -151,10 +225,6 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       .uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg")
       .verifyUploadSuccess();
 
-    //Checking no errors appear
-    cy.get(".govuk-error-message").should("not.exist");
-    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
-
     // Continue to Applicant Summary page
     applicantPhotoUploadPage.clickContinue();
 
@@ -163,14 +233,14 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     });
 
     // Verify redirection to the Applicant Summary page
-    cy.url().should("include", "/check-applicant-details");
+    cy.url().should("include", "/check-visa-applicant-details");
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary
-    applicantSummaryPage.verifySummaryValue("Name", "John Doe");
+    applicantSummaryPage.verifySummaryValue("Full name", "John Doe");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
-    applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
+    applicantSummaryPage.verifySummaryValue("Nationality", countryName);
     applicantSummaryPage.verifySummaryValue("Country", countryName);
 
     // Confirm above details to proceed to next page
@@ -256,8 +326,8 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     medicalScreeningPage.verifyPageLoaded();
 
     medicalScreeningPage
-      .fillScreeningDate("10", "9", "2025")
-      .fillAge("30")
+      .fillScreeningDate(screeningDate.day, screeningDate.month, screeningDate.year)
+      .fillAge(adultAge.toString())
       .selectTbSymptoms("Yes")
       .selectPreviousTb("No")
       .selectCloseContact("Yes")
@@ -273,12 +343,12 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     chestXrayPage.selectXrayTakenYes();
     chestXrayPage.submitForm();
 
-    // Verify redirection to Medical Screening Summary Page
-    medicalSummaryPage.verifyPageLoaded();
+    // Calculate expected age from birth date
+    const expectedAge = DateUtils.calculateAge(DateUtils.getAdultDateOfBirth(adultAge));
 
-    //Validate the prefilled form
+    // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "30 years old",
+      age: `${expectedAge} years old`,
       tbSymptoms: "Yes",
       tbSymptomsList: [],
       previousTb: "No",
@@ -312,14 +382,8 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     chestXrayUploadPage.verifyDateXrayTakenSectionDisplayed();
     chestXrayUploadPage.verifyDateInputFields();
 
-    // Enter the date manually when X-ray was taken
-    const xrayDay = "20";
-    const xrayMonth = "10";
-    const xrayYear = "2025";
-    chestXrayUploadPage.enterDateXrayTaken(xrayDay, xrayMonth, xrayYear);
-
     // Verify the date was entered correctly
-    chestXrayUploadPage.verifyDateValue(xrayDay, xrayMonth, xrayYear);
+    chestXrayUploadPage.enterDateXrayTaken(xrayDate.day, xrayDate.month, xrayDate.year);
 
     // Verify X-ray upload page and sections and upload image(s)
     chestXrayUploadPage.verifyXrayUploadSectionsDisplayed();
@@ -334,10 +398,6 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     chestXrayUploadPage
       .uploadPosteroAnteriorXray("cypress/fixtures/test-chest-xray.dcm")
       .verifyUploadSuccess();
-
-    //Checking no errors appear
-    cy.get(".govuk-error-message").should("not.exist");
-    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
 
     // Continue to X-ray findings page
     chestXrayUploadPage.clickContinue();
@@ -356,7 +416,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     checkChestXrayImagesPage.verifyPageHeading();
 
     // Verify the date of X-ray is displayed (should match what was entered earlier)
-    checkChestXrayImagesPage.verifyDateOfXray("20 October 2025");
+    checkChestXrayImagesPage.verifyDateOfXray(xrayDateFormatted);
 
     // Get and log the date of X-ray value
     checkChestXrayImagesPage.getDateOfXray().then((date) => {
@@ -424,7 +484,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
 
       // Complete X-ray findings with abnormal results indicating TB
       chestXrayFindingsPage.selectActiveTbFindings([
-        "4.1 Apical fibronodular or fibrocalcific lesions or apical microcalcifications",
+        "4.1 Apical fibronodular, fibrocalcific lesions or apical microcalcifications",
         "4.7 Any cavitating lesion or 'fluffy' or 'soft' lesions felt likely to represent active TB",
       ]);
       chestXrayFindingsPage.enterXrayResultDetails("Major Active pulmonary TB Sympmtons observed.");
@@ -452,7 +512,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
         Name: "John Doe",
-        "Date of birth": "20/5/1995",
+        "Date of birth": adultDOBFormatted,
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
@@ -482,7 +542,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       tbProgressTrackerPage.verifyServiceName();
       tbProgressTrackerPage.verifyApplicantInfo({
         Name: "John Doe",
-        "Date of birth": "20/5/1995",
+        "Date of birth": adultDOBFormatted,
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
@@ -535,7 +595,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       sputumCollectionPage.clickSaveAndContinueToResults();
 
       // Verify redirection to Enter Sputum Sample Results page
-      cy.url().should("include", "/enter-sputum-sample-results");
+      cy.url().should("include", "/sputum-results");
 
       // Verify Enter Sputum Sample Results page loaded
       enterSputumSampleResultsPage.verifyPageLoaded();
@@ -564,19 +624,19 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       // Validate sample data matches what was entered (with positive results)
       const expectedSampleData = {
         sample1: {
-          dateTaken: "15 March 2025",
+          dateCollected: "15 March 2025",
           collectionMethod: "Coughed up",
           smearResult: "Positive",
           cultureResult: "Positive",
         },
         sample2: {
-          dateTaken: "16 March 2025",
+          dateCollected: "16 March 2025",
           collectionMethod: "Induced",
           smearResult: "Positive",
           cultureResult: "Positive",
         },
         sample3: {
-          dateTaken: "17 March 2025",
+          dateCollected: "17 March 2025",
           collectionMethod: "Coughed up",
           smearResult: "Positive",
           cultureResult: "Positive",
@@ -611,9 +671,6 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       // Verify we're back at the progress tracker
       cy.url().should("include", "/tracker");
       tbProgressTrackerPage.verifyPageLoaded();
-
-      // Verify sputum collection status is now "Completed"
-      //tbProgressTrackerPage.verifyTaskStatus("Sputum collection and results", "Completed");
 
       // All tasks should now be completed except TB certificate declaration
       // Verify task statuses

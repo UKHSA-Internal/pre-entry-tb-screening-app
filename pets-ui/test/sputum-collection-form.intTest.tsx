@@ -183,7 +183,7 @@ describe("SputumCollectionForm", () => {
     });
 
     expect(
-      screen.getByRole("heading", { name: "Enter sputum sample collection information", level: 1 }),
+      screen.getByRole("heading", { name: "Sputum collection details", level: 1 }),
     ).toBeInTheDocument();
 
     expect(
@@ -198,9 +198,7 @@ describe("SputumCollectionForm", () => {
     expect(screen.getAllByRole("combobox")[0]).toHaveValue("");
 
     expect(screen.getByText("Save progress", { selector: "button" })).toBeInTheDocument();
-    expect(
-      screen.getByText("Save and continue to results", { selector: "button" }),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Save and enter results", { selector: "button" })).toBeInTheDocument();
   });
 
   test("renders the form with pre-filled values from Redux store", () => {
@@ -243,7 +241,7 @@ describe("SputumCollectionForm", () => {
       preloadedState: preloadedStateWithEmptySputum,
     });
 
-    await user.click(screen.getByText("Save and continue to results", { selector: "button" }));
+    await user.click(screen.getByText("Save and enter results", { selector: "button" }));
 
     expect(screen.getByTestId("error-summary")).toBeInTheDocument();
     expect(screen.getAllByText("Enter the date sample 1 was taken on")).toHaveLength(2);
@@ -265,7 +263,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.selectOptions(screen.getAllByRole("combobox")[0], "Coughed up");
 
-    await user.click(screen.getByText("Save and continue to results", { selector: "button" }));
+    await user.click(screen.getByText("Save and enter results", { selector: "button" }));
 
     await waitFor(() => {
       expect(screen.getByTestId("error-summary")).toBeInTheDocument();
@@ -294,7 +292,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.selectOptions(screen.getAllByRole("combobox")[0], "Coughed up");
 
-    await user.click(screen.getByText("Save and continue to results", { selector: "button" }));
+    await user.click(screen.getByText("Save and enter results", { selector: "button" }));
 
     expect(screen.getByTestId("error-summary")).toBeInTheDocument();
   });
@@ -379,7 +377,7 @@ describe("SputumCollectionForm", () => {
     });
   });
 
-  test("updates store and navigates to '/enter-sputum-sample-results' on 'Save and continue to results' with all samples valid", async () => {
+  test("updates store and navigates to '/sputum-results' on 'Save and continue to results' with all samples valid", async () => {
     const { store } = renderWithProviders(<SputumCollectionForm />, {
       preloadedState: preloadedStateWithEmptySputum,
     });
@@ -426,7 +424,7 @@ describe("SputumCollectionForm", () => {
     );
     await user.selectOptions(screen.getAllByRole("combobox")[2], "Gastric lavage");
 
-    await user.click(screen.getByText("Save and continue to results", { selector: "button" }));
+    await user.click(screen.getByText("Save and enter results", { selector: "button" }));
 
     await waitFor(() => {
       expect(mockPostSputumDetails).not.toHaveBeenCalled();
@@ -437,7 +435,7 @@ describe("SputumCollectionForm", () => {
       expect(sputumState.sample2.collection.submittedToDatabase).toBe(false);
       expect(sputumState.sample3.collection.submittedToDatabase).toBe(false);
       expect(sputumState.version).toBe(1);
-      expect(useNavigateMock).toHaveBeenCalledWith("/enter-sputum-sample-results");
+      expect(useNavigateMock).toHaveBeenCalledWith("/sputum-results");
     });
   });
 
@@ -467,14 +465,14 @@ describe("SputumCollectionForm", () => {
     );
     await user.selectOptions(screen.getAllByRole("combobox")[2], "Not known");
 
-    await user.click(screen.getByText("Save and continue to results", { selector: "button" }));
+    await user.click(screen.getByText("Save and enter results", { selector: "button" }));
 
     await waitFor(() => {
       expect(mockPostSputumDetails).not.toHaveBeenCalled();
 
       const sputumState = store.getState().sputum;
       expect(sputumState.version).toBe(2);
-      expect(useNavigateMock).toHaveBeenCalledWith("/enter-sputum-sample-results");
+      expect(useNavigateMock).toHaveBeenCalledWith("/sputum-results");
     });
   });
 
@@ -663,15 +661,7 @@ describe("SputumCollectionForm", () => {
     expect(screen.getByRole("heading", { name: "Sputum sample 2", level: 2 })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Sputum sample 3", level: 2 })).toBeInTheDocument();
 
-    expect(
-      screen.getAllByRole("heading", { name: "Date sample 1 was taken on", level: 3 }),
-    ).toHaveLength(1);
-    expect(
-      screen.getAllByRole("heading", { name: "Date sample 2 was taken on", level: 3 }),
-    ).toHaveLength(1);
-    expect(
-      screen.getAllByRole("heading", { name: "Date sample 3 was taken on", level: 3 }),
-    ).toHaveLength(1);
+    expect(screen.getAllByRole("heading", { name: "Date collected", level: 3 })).toHaveLength(3);
     expect(screen.getAllByRole("heading", { name: "Collection method", level: 3 })).toHaveLength(3);
   });
 

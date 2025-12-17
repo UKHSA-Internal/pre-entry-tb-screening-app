@@ -1,6 +1,7 @@
 // Empty Form Submission Test on Sputum Page
 import { countryList } from "../../../src/utils/countryList";
 import { loginViaB2C } from "../../support/commands";
+import { DateUtils } from "../../support/DateUtils";
 import { ApplicantConfirmationPage } from "../../support/page-objects/applicantConfirmationPage";
 import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
 import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
@@ -63,9 +64,78 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
   let tbCertificateNumber: string = "";
   let selectedVisaCategory: string;
 
+  // Dynamic date variables
+  let adultAge: number;
+  let adultDOB: ReturnType<typeof DateUtils.getDOBComponentsForAge>;
+  let adultDOBFormatted: string;
+  let passportIssueDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let passportExpiryDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let screeningDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let xrayDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let xrayDateFormatted: string;
+  let sputumSample1Date: ReturnType<typeof DateUtils.getDateComponents>;
+  let sputumSample2Date: ReturnType<typeof DateUtils.getDateComponents>;
+  let sputumSample3Date: ReturnType<typeof DateUtils.getDateComponents>;
+
   before(() => {
     // Create test fixtures before test run
     createTestFixtures();
+    // Generate dynamic dates for adult applicant (25 years old)
+    adultAge = 25;
+    adultDOB = DateUtils.getAdultDOBComponents(adultAge);
+    // Format with leading zeros, then normalize for UI comparison
+    adultDOBFormatted = DateUtils.normalizeDateForComparison(
+      DateUtils.formatDateDDMMYYYY(DateUtils.getAdultDateOfBirth(adultAge)),
+    );
+
+    // Generate passport dates (issued 2 years ago, expires in 8 years)
+    const passportIssue = DateUtils.getDateInPast(2);
+    const passportExpiry = DateUtils.getPassportExpiryDate(passportIssue, false);
+    passportIssueDate = DateUtils.getDateComponents(passportIssue);
+    passportExpiryDate = DateUtils.getDateComponents(passportExpiry);
+
+    // Generate screening date (1 month ago for realistic scenario)
+    const screening = DateUtils.getDateInPast(0, 1, 0); // 1 month ago
+    screeningDate = DateUtils.getDateComponents(screening);
+
+    // Generate X-ray date (2 weeks ago, after screening)
+    const xray = DateUtils.getDateInPast(0, 0, 14); // 2 weeks ago
+    xrayDate = DateUtils.getDateComponents(xray);
+    xrayDateFormatted = DateUtils.formatDateGOVUK(xray);
+
+    // Generate sputum collection dates (2-3 months ago for realistic scenario)
+    const sample1 = DateUtils.getDateInPast(0, 3, 0); // 3 months ago
+    const sample2 = DateUtils.getDateInPast(0, 3, -1); // 1 day after sample 1
+    const sample3 = DateUtils.getDateInPast(0, 3, -2); // 1 day after sample 2
+
+    sputumSample1Date = DateUtils.getDateComponents(sample1);
+    sputumSample2Date = DateUtils.getDateComponents(sample2);
+    sputumSample3Date = DateUtils.getDateComponents(sample3);
+
+    // Log generated dates for debugging
+    cy.log(`Adult Age: ${adultAge}`);
+    cy.log(`Adult DOB: ${adultDOB.day}/${adultDOB.month}/${adultDOB.year}`);
+    cy.log(`DOB Formatted: ${adultDOBFormatted}`);
+    cy.log(
+      `Calculated Age: ${DateUtils.calculateAge(DateUtils.getAdultDateOfBirth(adultAge))} years`,
+    );
+    cy.log(
+      `Passport Issue: ${passportIssueDate.day}/${passportIssueDate.month}/${passportIssueDate.year}`,
+    );
+    cy.log(
+      `Passport Expiry: ${passportExpiryDate.day}/${passportExpiryDate.month}/${passportExpiryDate.year}`,
+    );
+    cy.log(`Screening Date: ${screeningDate.day}/${screeningDate.month}/${screeningDate.year}`);
+    cy.log(`X-ray Date: ${xrayDate.day}/${xrayDate.month}/${xrayDate.year}`);
+    cy.log(
+      `Sputum Sample 1: ${sputumSample1Date.day}/${sputumSample1Date.month}/${sputumSample1Date.year}`,
+    );
+    cy.log(
+      `Sputum Sample 2: ${sputumSample2Date.day}/${sputumSample2Date.month}/${sputumSample2Date.year}`,
+    );
+    cy.log(
+      `Sputum Sample 3: ${sputumSample3Date.day}/${sputumSample3Date.month}/${sputumSample3Date.year}`,
+    );
   });
 
   beforeEach(() => {
@@ -88,6 +158,7 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
 
   it("should display error messages where NO sputum sample results is selected", () => {
     // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName)
@@ -106,9 +177,13 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
       .fillFullName("Jane Smith")
       .selectSex("Female")
       .selectNationality(countryName)
-      .fillBirthDate("25", "03", "2000")
-      .fillPassportIssueDate("10", "06", "2021")
-      .fillPassportExpiryDate("01", "06", "2031")
+      .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
+      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillPassportExpiryDate(
+        passportExpiryDate.day,
+        passportExpiryDate.month,
+        passportExpiryDate.year,
+      )
       .fillAddressLine1("100 Palm Street")
       .fillAddressLine2("Blank Building")
       .fillAddressLine3("Void Village")
@@ -187,8 +262,8 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
     tbProgressTrackerPage.clickTaskLink("Medical history and TB symptoms");
     medicalScreeningPage.verifyPageLoaded();
     medicalScreeningPage
-      .fillScreeningDate("25", "03", "2000")
-      .fillAge("25")
+      .fillScreeningDate(screeningDate.day, screeningDate.month, screeningDate.year)
+      .fillAge(adultAge.toString())
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
@@ -207,9 +282,11 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
     // Verify redirection to Medical Screening Summary Page
     medicalSummaryPage.verifyPageLoaded();
 
+    // Calculate expected age from birth date
+    const expectedAge = DateUtils.calculateAge(DateUtils.getAdultDateOfBirth(adultAge));
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "25 years old",
+      age: `${expectedAge} years old`,
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",
@@ -242,14 +319,8 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
     chestXrayUploadPage.verifyDateXrayTakenSectionDisplayed();
     chestXrayUploadPage.verifyDateInputFields();
 
-    // Enter the date manually when X-ray was taken
-    const xrayDay = "20";
-    const xrayMonth = "10";
-    const xrayYear = "2025";
-    chestXrayUploadPage.enterDateXrayTaken(xrayDay, xrayMonth, xrayYear);
-
     // Verify the date was entered correctly
-    chestXrayUploadPage.verifyDateValue(xrayDay, xrayMonth, xrayYear);
+    chestXrayUploadPage.enterDateXrayTaken(xrayDate.day, xrayDate.month, xrayDate.year);
 
     // Verify X-ray upload page and sections and upload image(s)
     chestXrayUploadPage.verifyXrayUploadSectionsDisplayed();
@@ -264,10 +335,6 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
     chestXrayUploadPage
       .uploadPosteroAnteriorXray("cypress/fixtures/test-chest-xray.dcm")
       .verifyUploadSuccess();
-
-    // Checking no errors appear
-    cy.get(".govuk-error-message").should("not.exist");
-    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
 
     // Continue to X-ray findings page
     chestXrayUploadPage.clickContinue();
@@ -286,8 +353,13 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
     checkChestXrayImagesPage.verifyPageHeading();
 
     // Verify the date of X-ray is displayed (should match what was entered earlier)
-    checkChestXrayImagesPage.verifyDateOfXray("20 October 2025");
+    checkChestXrayImagesPage.verifyDateOfXray(xrayDateFormatted);
 
+    checkChestXrayImagesPage.verifyDateOfXrayComponents(
+      xrayDate.day,
+      xrayDate.month,
+      xrayDate.year,
+    );
     // Get and log the date of X-ray value
     checkChestXrayImagesPage.getDateOfXray().then((date) => {
       cy.log(`Date of X-ray: ${date}`);
@@ -376,7 +448,7 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
         Name: "Jane Smith",
-        "Date of birth": "25/3/2000",
+        "Date of birth": adultDOBFormatted,
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });

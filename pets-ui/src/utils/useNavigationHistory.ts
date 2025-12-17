@@ -36,6 +36,7 @@ export const useNavigationHistory = (shouldClearHistory = false) => {
   useEffect(() => {
     if (shouldClearHistory) {
       clearNavigationHistory();
+      setNavigationHistory([location.pathname]);
       return;
     }
 

@@ -3,12 +3,12 @@ import { BasePage } from "../BasePage";
 
 export class ApplicantSummaryPage extends BasePage {
   constructor() {
-    super("/check-applicant-details");
+    super("/check-visa-applicant-details");
   }
 
   // Verify page loaded
   verifyPageLoaded(): ApplicantSummaryPage {
-    cy.contains("h1", "Check applicant details").should("be.visible");
+    cy.contains("h1", "Check visa applicant details").should("be.visible");
     cy.get(".govuk-summary-list").should("be.visible");
     return this;
   }
@@ -16,22 +16,22 @@ export class ApplicantSummaryPage extends BasePage {
   // Verify all fields are present on the page
   verifyAllFieldsPresent(): ApplicantSummaryPage {
     const requiredFields = [
-      "Name",
+      "Full name",
       "Sex",
-      "Country of nationality",
+      "Nationality",
       "Date of birth",
       "Passport number",
       "Country of issue",
       "Passport issue date",
       "Passport expiry date",
       "Home address line 1",
-      "Home address line 2",
-      "Home address line 3",
+      "Home address line 2 (optional)",
+      "Home address line 3 (optional)",
       "Town or city",
       "Province or state",
       "Country",
       "Postcode",
-      "Applicant Photo",
+      "Photo",
     ];
 
     requiredFields.forEach((field) => {
@@ -64,22 +64,22 @@ export class ApplicantSummaryPage extends BasePage {
 
   // Verify all summary values
   verifyAllSummaryValues(expectedValues: {
-    Name?: string;
+    "Full name"?: string;
     Sex?: string;
-    "Country of nationality"?: string;
+    Nationality?: string;
     "Date of birth"?: string;
     "Passport number"?: string;
     "Country of issue"?: string;
     "Passport issue date"?: string;
     "Passport expiry date"?: string;
     "Home address line 1"?: string;
-    "Home address line 2"?: string;
-    "Home address line 3"?: string;
+    "Home address line 2 (optional)"?: string;
+    "Home address line 3 (optional)"?: string;
     "Town or city"?: string;
     "Province or state"?: string;
     Country?: string;
     Postcode?: string;
-    "Applicant Photo"?: string;
+    Photo?: string;
   }): ApplicantSummaryPage {
     Object.entries(expectedValues).forEach(([key, value]) => {
       if (value !== undefined) {
@@ -137,22 +137,20 @@ export class ApplicantSummaryPage extends BasePage {
   // Verify all change links work
   verifyChangeLinksTargets(): ApplicantSummaryPage {
     const expectedFragments = {
-      Name: "#name",
+      "Full name": "#name",
       Sex: "#sex",
-      "Country of nationality": "#country-of-nationality",
+      Nationality: "#country-of-nationality",
       "Date of birth": "#birth-date",
-      "Passport number": "#passport-number",
-      "Country of issue": "#country-of-issue",
       "Passport issue date": "#passport-issue-date",
       "Passport expiry date": "#passport-expiry-date",
       "Home address line 1": "#address-1",
-      "Home address line 2": "#address-2",
-      "Home address line 3": "#address-3",
+      "Home address line 2 (optional)": "#address-2",
+      "Home address line 3 (optional)": "#address-3",
       "Town or city": "#town-or-city",
       "Province or state": "#province-or-state",
       Country: "#address-country",
       Postcode: "#postcode",
-      "Applicant Photo": "/upload-visa-applicant-photo",
+      Photo: "/upload-visa-applicant-photo",
     };
 
     Object.entries(expectedFragments).forEach(([key, fragment]) => {
@@ -194,19 +192,17 @@ export class ApplicantSummaryPage extends BasePage {
     return this;
   }
 
-  // Verify optional address fields show "Enter" links when empty
+  // Verify optional address fields show "Not provided" text when empty
   verifyOptionalAddressFields(): ApplicantSummaryPage {
-    // Check if address line 2 shows "Enter" link when empty
-    cy.contains("dt.govuk-summary-list__key", "Home address line 2")
+    // Check if address line 2 shows "Not provided" when empty
+    cy.contains("dt.govuk-summary-list__key", "Home address line 2 (optional)")
       .siblings(".govuk-summary-list__value")
-      .find("a")
-      .should("contain", "Enter home address line 2 (optional)");
+      .should("contain.text", "Not provided");
 
-    // Check if address line 3 shows "Enter" link when empty
-    cy.contains("dt.govuk-summary-list__key", "Home address line 3")
+    // Check if address line 3 shows "Not provided" when empty
+    cy.contains("dt.govuk-summary-list__key", "Home address line 3 (optional)")
       .siblings(".govuk-summary-list__value")
-      .find("a")
-      .should("contain", "Enter home address line 3 (optional)");
+      .should("contain.text", "Not provided");
     return this;
   }
 
@@ -214,7 +210,7 @@ export class ApplicantSummaryPage extends BasePage {
   verifyBackLink(): ApplicantSummaryPage {
     cy.get(".govuk-back-link")
       .should("be.visible")
-      .and("have.attr", "href", "/upload-visa-applicant-photo")
+      .and("have.attr", "href", "/tracker")
       .and("contain", "Back");
     return this;
   }
@@ -228,22 +224,24 @@ export class ApplicantSummaryPage extends BasePage {
   // Verify service name in header
   verifyServiceName(): ApplicantSummaryPage {
     cy.get(".govuk-service-navigation__service-name")
-      .first()
+      .find("a")
       .should("be.visible")
       .and("contain", "Complete UK pre-entry health screening")
       .and("have.attr", "href", "/");
     return this;
   }
 
-  // Verify that optional fields can be empty or have "Enter" links
+  // Verify that optional fields can be empty and show "Not provided"
   verifyOptionalFieldsHandling(): ApplicantSummaryPage {
-    // Verify address line 2 and 3 can show "Enter" links (Where no data has been entered in those fields)
+    // Verify address line 2 and 3 show "Not provided" when no data has been entered
     cy.get(".govuk-summary-list__row").each(($row) => {
       const key = $row.find(".govuk-summary-list__key").text();
       const value = $row.find(".govuk-summary-list__value");
 
-      if (key.includes("Home address line 2") || key.includes("Home address line 3")) {
-        // These fields might contain "Enter" links when empty
+      if (
+        key.includes("Home address line 2 (optional)") ||
+        key.includes("Home address line 3 (optional)")
+      ) {
         cy.wrap(value).should("exist");
       }
     });
@@ -262,16 +260,16 @@ export class ApplicantSummaryPage extends BasePage {
   // Verify applicant photo filename is displayed
   verifyApplicantPhotoDisplayed(expectedFilename?: string): ApplicantSummaryPage {
     if (expectedFilename) {
-      this.verifySummaryValue("Applicant Photo", expectedFilename);
+      this.verifySummaryValue("Photo", expectedFilename);
     } else {
       // Just verify the field exists
-      cy.contains("dt.govuk-summary-list__key", "Applicant Photo").should("exist");
+      cy.contains("dt.govuk-summary-list__key", "Photo").should("exist");
     }
     return this;
   }
 
-  // Verify Save and continue button exists
-  verifySaveAndContinueButtonExists(): ApplicantSummaryPage {
+  // Verify Submit and continue button exists
+  verifySubmitAndContinueButtonExists(): ApplicantSummaryPage {
     cy.contains("button", "Submit and continue")
       .should("be.visible")
       .and("have.attr", "type", "submit")
@@ -309,6 +307,7 @@ export class ApplicantSummaryPage extends BasePage {
   verifyFooterLinks(): ApplicantSummaryPage {
     cy.get(".govuk-footer").within(() => {
       cy.contains("a", "Privacy").should("be.visible").and("have.attr", "href", "/privacy-notice");
+      cy.contains("a", "Cookies").should("be.visible").and("have.attr", "href", "/cookies");
       cy.contains("a", "Accessibility statement")
         .should("be.visible")
         .and("have.attr", "href", "/accessibility-statement");
@@ -357,10 +356,44 @@ export class ApplicantSummaryPage extends BasePage {
     return this;
   }
 
-  // Verify all summary rows have change links
-  verifyAllRowsHaveChangeLinks(): ApplicantSummaryPage {
-    cy.get(".govuk-summary-list__row").each(($row) => {
-      cy.wrap($row).find(".govuk-summary-list__actions a").should("exist").and("contain", "Change");
+  // Verify fields with change links (Passport number and Country of issue don't have change links)
+  verifyFieldsWithChangeLinks(): ApplicantSummaryPage {
+    const fieldsWithChangeLinks = [
+      "Full name",
+      "Date of birth",
+      "Sex",
+      "Nationality",
+      "Passport issue date",
+      "Passport expiry date",
+      "Home address line 1",
+      "Home address line 2 (optional)",
+      "Home address line 3 (optional)",
+      "Town or city",
+      "Province or state",
+      "Country",
+      "Postcode",
+      "Photo",
+    ];
+
+    fieldsWithChangeLinks.forEach((field) => {
+      cy.contains("dt.govuk-summary-list__key", field)
+        .parent()
+        .find(".govuk-summary-list__actions a")
+        .should("exist")
+        .and("contain", "Change");
+    });
+    return this;
+  }
+
+  // Verify fields without change links
+  verifyFieldsWithoutChangeLinks(): ApplicantSummaryPage {
+    const fieldsWithoutChangeLinks = ["Passport number", "Country of issue"];
+
+    fieldsWithoutChangeLinks.forEach((field) => {
+      cy.contains("dt.govuk-summary-list__key", field)
+        .parent()
+        .find(".govuk-summary-list__actions")
+        .should("not.exist");
     });
     return this;
   }
@@ -372,7 +405,6 @@ export class ApplicantSummaryPage extends BasePage {
       .within(() => {
         cy.get(".govuk-summary-list__key").should("exist");
         cy.get(".govuk-summary-list__value").should("exist");
-        cy.get(".govuk-summary-list__actions").should("exist");
       });
     return this;
   }
@@ -382,13 +414,13 @@ export class ApplicantSummaryPage extends BasePage {
     this.verifyPageLoaded();
     this.verifyBackLink();
     this.verifySummaryListStructure();
-    this.verifySaveAndContinueButtonExists();
+    this.verifySubmitAndContinueButtonExists();
     return this;
   }
 
   // Verify page URL
   verifyPageUrl(): ApplicantSummaryPage {
-    cy.url().should("include", "/check-applicant-details");
+    cy.url().should("include", "/check-visa-applicant-details");
     return this;
   }
 
@@ -409,7 +441,7 @@ export class ApplicantSummaryPage extends BasePage {
 
   // Verify personal details section
   verifyPersonalDetailsSection(): ApplicantSummaryPage {
-    const personalFields = ["Name", "Sex", "Country of nationality", "Date of birth"];
+    const personalFields = ["Full name", "Sex", "Nationality", "Date of birth"];
 
     personalFields.forEach((field) => {
       cy.contains("dt.govuk-summary-list__key", field).should("be.visible");
@@ -421,8 +453,8 @@ export class ApplicantSummaryPage extends BasePage {
   verifyAddressDetailsSection(): ApplicantSummaryPage {
     const addressFields = [
       "Home address line 1",
-      "Home address line 2",
-      "Home address line 3",
+      "Home address line 2 (optional)",
+      "Home address line 3 (optional)",
       "Town or city",
       "Province or state",
       "Country",
@@ -440,7 +472,7 @@ export class ApplicantSummaryPage extends BasePage {
     this.verifyPersonalDetailsSection();
     this.verifyPassportDetailsSection();
     this.verifyAddressDetailsSection();
-    cy.contains("dt.govuk-summary-list__key", "Applicant Photo").should("be.visible");
+    cy.contains("dt.govuk-summary-list__key", "Photo").should("be.visible");
     return this;
   }
 }

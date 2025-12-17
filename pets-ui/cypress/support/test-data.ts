@@ -1,4 +1,13 @@
-import assert from "assert";
+const stringAssert = (value: unknown): string => {
+  if (!value) {
+    throw new Error("Value is required");
+  }
+  if (typeof value !== "string") {
+    throw new Error("Value must be a string");
+  }
+  return value;
+};
+
 export const testData = {
   fullName: "John Doe",
   sex: "male",
@@ -16,12 +25,6 @@ export const testData = {
     province: "Saskatchewan",
     postcode: "S4R 0M6",
   },
-};
-
-const stringAssert = (value: unknown) => {
-  assert(value);
-  assert(typeof value === "string");
-  return value;
 };
 
 export const testCredentials: Array<{ email: string; password: string }> = [

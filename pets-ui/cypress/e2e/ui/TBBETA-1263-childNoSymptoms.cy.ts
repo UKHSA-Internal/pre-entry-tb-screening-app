@@ -1,6 +1,7 @@
 //PETS Scenario: Child - No Symptoms, No History, No Contact, No X-ray uploaded, Yes Sputum Required - TB Certificate Issued (6 months)
 import { countryList } from "../../../src/utils/countryList";
 import { loginViaB2C } from "../../support/commands";
+import { DateUtils } from "../../support/DateUtils";
 import { ApplicantConfirmationPage } from "../../support/page-objects/applicantConfirmationPage";
 import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
 import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
@@ -71,6 +72,20 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
   let tbCertificateNumber: string = "";
   let selectedVisaCategory: string;
 
+  // Date-related variables
+  let childAge: number;
+  let childDOB: { day: string; month: string; year: string };
+  let childDOBFormatted: string;
+  let passportIssueDate: { day: string; month: string; year: string };
+  let passportExpiryDate: { day: string; month: string; year: string };
+  let screeningDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let sputumSample1Date: { day: string; month: string; year: string };
+  let sputumSample1DateFormatted: string;
+  let sputumSample2Date: { day: string; month: string; year: string };
+  let sputumSample2DateFormatted: string;
+  let sputumSample3Date: { day: string; month: string; year: string };
+  let sputumSample3DateFormatted: string;
+
   before(() => {
     // Create test fixtures before test run
     createTestFixtures();
@@ -92,6 +107,47 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     cy.log(`Using country code: ${countryCode}`);
     cy.log(`Using country name: ${countryName}`);
     cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
+
+    // Generate dynamic dates for child applicant (age 6 years)
+    childAge = 6;
+    childDOB = DateUtils.getChildDOBComponents(childAge);
+    childDOBFormatted = DateUtils.normalizeDateForComparison(
+      DateUtils.formatDateDDMMYYYY(DateUtils.getChildDateOfBirth(childAge)),
+    );
+
+    // Generate passport dates (issued 1 year ago, 5-year validity for child)
+    const { issueDate, expiryDate } = DateUtils.getValidPassportDates();
+    passportIssueDate = issueDate;
+    passportExpiryDate = expiryDate;
+    /// Generate screening date (1 month ago for realistic scenario)
+    const screening = DateUtils.getDateInPast(0, 1, 0); // 1 month ago
+    screeningDate = DateUtils.getDateComponents(screening);
+
+    // Log screening date
+    cy.log(`Screening Date: ${screeningDate.day}/${screeningDate.month}/${screeningDate.year}`);
+
+    // Generate sputum collection dates (recent dates in the past)
+    const sputum1 = DateUtils.getDateInPast(0, 2, 20); // 2 months and 20 days ago
+    const sputum2 = DateUtils.getDateInPast(0, 2, 19); // 2 months and 19 days ago
+    const sputum3 = DateUtils.getDateInPast(0, 2, 18); // 2 months and 18 days ago
+
+    sputumSample1Date = DateUtils.getDateComponents(sputum1);
+    sputumSample1DateFormatted = DateUtils.formatDateGOVUK(sputum1);
+    sputumSample2Date = DateUtils.getDateComponents(sputum2);
+    sputumSample2DateFormatted = DateUtils.formatDateGOVUK(sputum2);
+    sputumSample3Date = DateUtils.getDateComponents(sputum3);
+    sputumSample3DateFormatted = DateUtils.formatDateGOVUK(sputum3);
+
+    // Log generated dates for debugging
+    cy.log(`Child Age: ${childAge}`);
+    cy.log(`Child DOB: ${childDOB.day}/${childDOB.month}/${childDOB.year}`);
+    cy.log(`DOB Formatted: ${childDOBFormatted}`);
+    cy.log(
+      `Passport Issue: ${passportIssueDate.day}/${passportIssueDate.month}/${passportIssueDate.year}`,
+    );
+    cy.log(
+      `Passport Expiry: ${passportExpiryDate.day}/${passportExpiryDate.month}/${passportExpiryDate.year}`,
+    );
   });
 
   it("should complete the full application process for child with no symptoms, no X-ray, sputum required, and issue certificate with 6 month expiry", () => {
@@ -121,9 +177,13 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
       .fillFullName("Nana Quist")
       .selectSex("Female")
       .selectNationality(countryName)
-      .fillBirthDate("10", "11", "2018")
-      .fillPassportIssueDate("20", "03", "2019")
-      .fillPassportExpiryDate("20", "03", "2029")
+      .fillBirthDate(childDOB.day, childDOB.month, childDOB.year)
+      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillPassportExpiryDate(
+        passportExpiryDate.day,
+        passportExpiryDate.month,
+        passportExpiryDate.year,
+      )
       .fillAddressLine1("456 Children's Avenue")
       .fillAddressLine2("Block C")
       .fillAddressLine3("Airport Residential Area")
@@ -153,14 +213,14 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     });
 
     // Verify redirection to the Applicant Summary page
-    cy.url().should("include", "/check-applicant-details");
+    cy.url().should("include", "/check-visa-applicant-details");
     applicantSummaryPage.verifyPageLoaded();
 
     // Verify some of the submitted data appears correctly in the summary
-    applicantSummaryPage.verifySummaryValue("Name", "Nana Quist");
+    applicantSummaryPage.verifySummaryValue("Full name", "Nana Quist");
     applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
     applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
-    applicantSummaryPage.verifySummaryValue("Country of nationality", countryName);
+    applicantSummaryPage.verifySummaryValue("Nationality", countryName);
     applicantSummaryPage.verifySummaryValue("Country", countryName);
 
     // Confirm above details to proceed to next page
@@ -240,8 +300,8 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     medicalScreeningPage.verifyPageLoaded();
 
     medicalScreeningPage
-      .fillScreeningDate("10", "9", "2025")
-      .fillAge("7") // Child age (under 11)
+      .fillScreeningDate(screeningDate.day, screeningDate.month, screeningDate.year)
+      .fillAge(childAge.toString())
       .selectTbSymptoms("No") // No symptoms
       .selectChildTbHistory("None of these") // None of these for child TB history
       .selectPreviousTb("No") // No TB history
@@ -267,10 +327,17 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     // Verify redirection to medical summary
     medicalSummaryPage.verifyPageLoaded();
 
-    // Validate the prefilled form for child
+    // Calculate expected age from birth date
+    const expectedAge = DateUtils.calculateAge(DateUtils.getChildDateOfBirth(childAge));
+
+    // Get the screening date in GOV.UK format for validation
+    const screening = DateUtils.getDateInPast(0, 1, 0); // Same as entered on line 305
+    const expectedScreeningDate = DateUtils.formatDateGOVUK(screening);
+
+    // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "7 years old",
-      dateOfMedicalScreening: "10 September 2025",
+      age: `${expectedAge} years old`,
+      dateOfMedicalScreening: expectedScreeningDate,
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",
@@ -299,7 +366,7 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     tbProgressTrackerPage.verifySectionHeadings();
     tbProgressTrackerPage.verifyApplicantInfo({
       Name: "Nana Quist",
-      "Date of birth": "10/11/2018",
+      "Date of birth": childDOBFormatted,
       "Passport number": passportNumber,
       "TB screening": "In progress",
     });
@@ -338,7 +405,7 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     tbProgressTrackerPage.verifySectionHeadings();
     tbProgressTrackerPage.verifyApplicantInfo({
       Name: "Nana Quist",
-      "Date of birth": "10/11/2018",
+      "Date of birth": childDOBFormatted,
       "Passport number": passportNumber,
       "TB screening": "In progress",
     });
@@ -355,15 +422,15 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     // Fill sputum collection data for all three samples
     const sputumData = {
       sample1: {
-        date: { day: "18", month: "09", year: "2025" },
+        date: sputumSample1Date,
         collectionMethod: "Coughed up",
       },
       sample2: {
-        date: { day: "19", month: "09", year: "2025" },
+        date: sputumSample2Date,
         collectionMethod: "Induced",
       },
       sample3: {
-        date: { day: "20", month: "09", year: "2025" },
+        date: sputumSample3Date,
         collectionMethod: "Coughed up",
       },
     };
@@ -375,7 +442,7 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     sputumCollectionPage.clickSaveAndContinueToResults();
 
     // Verify redirection to Enter Sputum Sample Results page
-    cy.url().should("include", "/enter-sputum-sample-results");
+    cy.url().should("include", "/sputum-results");
 
     // Enter sputum sample results page
     enterSputumSampleResultsPage.verifyPageLoaded();
@@ -398,19 +465,19 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     // Validate sample data matches what was entered
     const expectedSampleData = {
       sample1: {
-        dateTaken: "18 September 2025",
+        dateCollected: sputumSample1DateFormatted,
         collectionMethod: "Coughed up",
         smearResult: "Negative",
         cultureResult: "Negative",
       },
       sample2: {
-        dateTaken: "19 September 2025",
+        dateCollected: sputumSample2DateFormatted,
         collectionMethod: "Induced",
         smearResult: "Negative",
         cultureResult: "Negative",
       },
       sample3: {
-        dateTaken: "20 September 2025",
+        dateCollected: sputumSample3DateFormatted,
         collectionMethod: "Coughed up",
         smearResult: "Negative",
         cultureResult: "Negative",

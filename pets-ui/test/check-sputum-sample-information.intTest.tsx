@@ -445,7 +445,7 @@ describe("SputumSummary", () => {
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/enter-sputum-sample-collection-information");
+    expect(link).toHaveAttribute("href", "/sputum-collection-details");
     expect(link).toHaveClass("govuk-back-link");
   });
 });
