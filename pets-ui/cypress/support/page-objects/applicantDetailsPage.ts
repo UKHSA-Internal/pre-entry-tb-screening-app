@@ -9,13 +9,25 @@ export class ApplicantDetailsPage extends BasePage {
 
   // Page verification
   verifyPageLoaded(): ApplicantDetailsPage {
-    this.verifyPageHeading("Enter applicant information");
+    this.verifyPageHeading("Visa applicant passport information");
+    return this;
+  }
+
+  // Filling helper methods
+  fillInputById(id: string, value: string): ApplicantDetailsPage {
+    cy.get(`#${id}`, { timeout: 10000 }).should("be.visible").clear().type(value);
+    return this;
+  }
+
+  fillInputByName(name: string, value: string): ApplicantDetailsPage {
+    cy.get(`[name="${name}"]`, { timeout: 10000 }).should("be.visible").clear().type(value);
     return this;
   }
 
   // Personal Details Methods
   fillFullName(name: string): ApplicantDetailsPage {
-    this.fillTextInput("Full name", name);
+    // Use data-testid which is more reliable
+    cy.get('[data-testid="name"]', { timeout: 10000 }).should("be.visible").clear().type(name);
     return this;
   }
 
@@ -25,12 +37,16 @@ export class ApplicantDetailsPage extends BasePage {
   }
 
   selectNationality(country: string): ApplicantDetailsPage {
-    this.selectDropdown("Country of nationality", country);
+    cy.get('select[name="countryOfNationality"]', { timeout: 10000 })
+      .should("be.visible")
+      .select(country);
     return this;
   }
 
   selectCountryOfIssue(country: string): ApplicantDetailsPage {
-    this.selectDropdown("Country of issue", country);
+    cy.get('select[name="countryOfIssue"]', { timeout: 10000 })
+      .should("be.visible")
+      .select(country);
     return this;
   }
 
@@ -72,7 +88,10 @@ export class ApplicantDetailsPage extends BasePage {
 
   // Passport Details Methods
   fillPassportNumber(number: string): ApplicantDetailsPage {
-    this.fillTextInput("Applicant's passport number", number);
+    cy.get('[data-testid="passport-number"]', { timeout: 10000 })
+      .should("be.visible")
+      .clear()
+      .type(number);
     return this;
   }
 
@@ -135,37 +154,45 @@ export class ApplicantDetailsPage extends BasePage {
 
   // Address Methods
   fillAddressLine1(text: string): ApplicantDetailsPage {
-    this.fillTextInput("Address line 1", text);
+    cy.get('[data-testid="address-1"]', { timeout: 10000 }).should("be.visible").clear().type(text);
     return this;
   }
 
   fillAddressLine2(text: string): ApplicantDetailsPage {
-    this.fillTextInput("Address line 2", text);
+    cy.get('[data-testid="address-2"]', { timeout: 10000 }).should("be.visible").clear().type(text);
     return this;
   }
 
   fillAddressLine3(text: string): ApplicantDetailsPage {
-    this.fillTextInput("Address line 3", text);
+    cy.get('[data-testid="address-3"]', { timeout: 10000 }).should("be.visible").clear().type(text);
     return this;
   }
 
   fillTownOrCity(text: string): ApplicantDetailsPage {
-    this.fillTextInput("Town/city", text);
+    cy.get('[data-testid="town-or-city"]', { timeout: 10000 })
+      .should("be.visible")
+      .clear()
+      .type(text);
     return this;
   }
 
   fillProvinceOrState(text: string): ApplicantDetailsPage {
-    this.fillTextInput("Province/state", text);
+    cy.get('[data-testid="province-or-state"]', { timeout: 10000 })
+      .should("be.visible")
+      .clear()
+      .type(text);
     return this;
   }
 
   selectAddressCountry(country: string): ApplicantDetailsPage {
-    cy.get('[name="country"]').select(country);
+    cy.get('#address-country-field, select[name="country"]', { timeout: 10000 })
+      .should("be.visible")
+      .select(country);
     return this;
   }
 
   fillPostcode(text: string): ApplicantDetailsPage {
-    this.fillTextInput("Postcode", text);
+    cy.get('[data-testid="postcode"]', { timeout: 10000 }).should("be.visible").clear().type(text);
     return this;
   }
 
