@@ -72,7 +72,7 @@ describe("CheckApplicantPhoto", () => {
 
     expect(screen.getByText("Check visa applicant photo")).toBeInTheDocument();
     await waitFor(() => {
-      expect(screen.getByAltText("Applicant photo preview")).toBeInTheDocument();
+      expect(screen.getByAltText("Applicant preview")).toBeInTheDocument();
     });
     expect(screen.getByText(/photo.jpg/)).toBeInTheDocument();
     expect(screen.getByText("Yes, add this photo")).toBeInTheDocument();
