@@ -99,7 +99,7 @@ const CheckApplicantPhoto = () => {
               {candidatePhotoDataUrl && (
                 <img
                   src={candidatePhotoDataUrl}
-                  alt="Applicant photo preview"
+                  alt="Applicant preview"
                   style={{ maxWidth: "100%", maxHeight: "400px" }}
                 />
               )}
