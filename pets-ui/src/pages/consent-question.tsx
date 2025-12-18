@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 
 import Container from "@/components/container/container";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
@@ -31,7 +31,7 @@ export default function ConsentQuestionPage() {
 
   const onSubmit: SubmitHandler<{ consent: YesOrNo }> = (data) => {
     if (data.consent == YesOrNo.YES) {
-      navigate("/enter-applicant-information");
+      navigate("/visa-applicant-passport-information");
     } else {
       navigate("/get-written-consent");
     }

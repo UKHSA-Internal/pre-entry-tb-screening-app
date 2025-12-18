@@ -9,8 +9,8 @@ import { ApplicationStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
-vi.mock(`react-router-dom`, async (): Promise<unknown> => {
-  const actual: Record<string, unknown> = await vi.importActual(`react-router-dom`);
+vi.mock(`react-router`, async (): Promise<unknown> => {
+  const actual: Record<string, unknown> = await vi.importActual(`react-router`);
   return {
     ...actual,
     useNavigate: (): Mock => useNavigateMock,
@@ -292,7 +292,7 @@ describe("ApplicantForm", () => {
     window.history.pushState(
       {},
       "",
-      "/enter-applicant-information?from=tb-certificate-summary#name",
+      "/visa-applicant-passport-information?from=tb-certificate-summary#name",
     );
     const { store } = renderWithProviders(<ApplicantForm />, { preloadedState: completeState });
 

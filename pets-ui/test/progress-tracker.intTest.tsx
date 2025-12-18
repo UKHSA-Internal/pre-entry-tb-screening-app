@@ -26,8 +26,8 @@ vi.mock("@/context/applicantPhotoContext", async () => {
   };
 });
 
-vi.mock(`react-router-dom`, async (): Promise<unknown> => {
-  const actual: Record<string, unknown> = await vi.importActual(`react-router-dom`);
+vi.mock(`react-router`, async (): Promise<unknown> => {
+  const actual: Record<string, unknown> = await vi.importActual(`react-router`);
   return {
     ...actual,
     useNavigate: (): Mock => useNavigateMock,
@@ -310,7 +310,7 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(screen.getAllByRole("definition")[2]).toHaveTextContent("12345");
 
   const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
-  expect(applicantDetailsLink).toHaveAttribute("href", "/enter-applicant-information");
+  expect(applicantDetailsLink).toHaveAttribute("href", "/visa-applicant-passport-information");
   const applicantDetailsListItem = applicantDetailsLink.closest("li");
   expect(applicantDetailsListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",

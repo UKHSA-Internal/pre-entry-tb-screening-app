@@ -1,15 +1,15 @@
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest";
 
 import ConsentQuestionPage from "@/pages/consent-question";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
-vi.mock(`react-router-dom`, async (): Promise<unknown> => {
-  const actual: Record<string, unknown> = await vi.importActual(`react-router-dom`);
+vi.mock(`react-router`, async (): Promise<unknown> => {
+  const actual: Record<string, unknown> = await vi.importActual(`react-router`);
   return {
     ...actual,
     useNavigate: (): Mock => useNavigateMock,
@@ -121,11 +121,11 @@ describe("ConsentQuestionPage", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("when 'Yes' selected and continue pressed, it navigates to /enter-applicant-information", async () => {
+  it("when 'Yes' selected and continue pressed, it navigates to /visa-applicant-passport-information", async () => {
     const radioYes = screen.getByRole("radio", { name: "Yes" });
     await user.click(radioYes);
     await user.click(screen.getByRole("button", { name: "Continue" }));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/enter-applicant-information");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/visa-applicant-passport-information");
   });
 
   it("when 'No' selected and continue pressed, it navigates to /get-written-consent", async () => {

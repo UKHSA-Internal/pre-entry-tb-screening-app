@@ -69,7 +69,7 @@ jobs:
     name: Run cypress tests
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false  # Added: Don't cancel other matrix jobs if one fails
+      fail-fast: false
       matrix:
         browser: [chrome, edge]
     env:
@@ -87,8 +87,6 @@ jobs:
       USER_6_PASSWORD: ${{ secrets.USER_6_PASSWORD }}
       VITE_MSAL_CLIENT_ID: ${{ secrets.LOCAL_MSAL_CLIENT_ID }}
       VITE_MSAL_TENANT_ID: ${{ secrets.LOCAL_MSAL_TENANT_ID }}
-      # CYPRESS CLOUD CONFIGURATION 
-      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 
     steps:
       - name: Checkout code
@@ -127,7 +125,6 @@ jobs:
         run: |
           pnpm start & sleep 120
 
-      # UPDATED: Cypress run with Cloud recording 
       - name: Cypress run tests
         uses: cypress-io/github-action@v6
         continue-on-error: true
@@ -137,17 +134,9 @@ jobs:
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
           config-file: cypress/cypress.config.mjs
-          # Cypress Cloud options
-          record: true
-          parallel: true  # Enable parallelization
-          group: 'CI-${{ matrix.browser }}'  # Group runs by browser
-          tag: '${{ github.event_name }},${{ github.ref_name }}'  # Tag with event and branch
-          ci-build-id: '${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}'  # Unique build ID
         env:
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      #  UPDATED: Retry with Cloud recording 
       - name: Retry if failed
         if: steps.initial_attempt.outcome != 'success'
         uses: cypress-io/github-action@v6
@@ -157,21 +146,14 @@ jobs:
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
           config-file: cypress/cypress.config.mjs
-          # Cypress Cloud options for retry
-          record: true
-          parallel: true
-          group: 'CI-${{ matrix.browser }}-Retry'
-          tag: '${{ github.event_name }},${{ github.ref_name }},retry'
-          ci-build-id: '${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}-retry'
         env:
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Failed Tests Screenshots
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: failed-tests-screenshots-${{ matrix.browser }}  # Added browser to name
+          name: failed-tests-screenshots-${{ matrix.browser }}
           path: pets-ui/cypress/screenshots
 
       - name: Merge Mochawesome Reports

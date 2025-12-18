@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 
 import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
@@ -21,7 +21,7 @@ export default function ApplicantPhotoPage() {
   } else if (applicant.status === ApplicationStatus.COMPLETE) {
     backLinkTo = "/tb-certificate-summary";
   } else {
-    backLinkTo = "/enter-applicant-information";
+    backLinkTo = "/visa-applicant-passport-information";
   }
 
   useEffect(() => {

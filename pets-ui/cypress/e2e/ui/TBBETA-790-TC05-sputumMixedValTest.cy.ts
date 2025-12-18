@@ -1,6 +1,7 @@
 // Mixed Validation Error Test on Sputum Page
 import { countryList } from "../../../src/utils/countryList";
 import { loginViaB2C } from "../../support/commands";
+import { DateUtils } from "../../support/DateUtils";
 import { ApplicantConfirmationPage } from "../../support/page-objects/applicantConfirmationPage";
 import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
 import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
@@ -69,9 +70,78 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
   let tbCertificateNumber: string = "";
   let selectedVisaCategory: string;
 
+  // Dynamic date variables
+  let adultAge: number;
+  let adultDOB: ReturnType<typeof DateUtils.getDOBComponentsForAge>;
+  let adultDOBFormatted: string;
+  let passportIssueDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let passportExpiryDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let screeningDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let xrayDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let xrayDateFormatted: string;
+  let sputumSample1Date: ReturnType<typeof DateUtils.getDateComponents>;
+  let sputumSample2Date: ReturnType<typeof DateUtils.getDateComponents>;
+  let sputumSample3Date: ReturnType<typeof DateUtils.getDateComponents>;
+
   before(() => {
     // Create test fixtures before test run
     createTestFixtures();
+    // Generate dynamic dates for adult applicant (37 years old)
+    adultAge = 37;
+    adultDOB = DateUtils.getAdultDOBComponents(adultAge);
+    // Format with leading zeros, then normalize for UI comparison
+    adultDOBFormatted = DateUtils.normalizeDateForComparison(
+      DateUtils.formatDateDDMMYYYY(DateUtils.getAdultDateOfBirth(adultAge)),
+    );
+
+    // Generate passport dates (issued 2 years ago, expires in 8 years)
+    const passportIssue = DateUtils.getDateInPast(2);
+    const passportExpiry = DateUtils.getPassportExpiryDate(passportIssue, false);
+    passportIssueDate = DateUtils.getDateComponents(passportIssue);
+    passportExpiryDate = DateUtils.getDateComponents(passportExpiry);
+
+    // Generate screening date (1 month ago for realistic scenario)
+    const screening = DateUtils.getDateInPast(0, 1, 0); // 1 month ago
+    screeningDate = DateUtils.getDateComponents(screening);
+
+    // Generate X-ray date (2 weeks ago, after screening)
+    const xray = DateUtils.getDateInPast(0, 0, 14); // 2 weeks ago
+    xrayDate = DateUtils.getDateComponents(xray);
+    xrayDateFormatted = DateUtils.formatDateGOVUK(xray);
+
+    // Generate sputum collection dates (2-3 months ago for realistic scenario)
+    const sample1 = DateUtils.getDateInPast(0, 3, 0); // 3 months ago
+    const sample2 = DateUtils.getDateInPast(0, 3, -1); // 1 day after sample 1
+    const sample3 = DateUtils.getDateInPast(0, 3, -2); // 1 day after sample 2
+
+    sputumSample1Date = DateUtils.getDateComponents(sample1);
+    sputumSample2Date = DateUtils.getDateComponents(sample2);
+    sputumSample3Date = DateUtils.getDateComponents(sample3);
+
+    // Log generated dates for debugging
+    cy.log(`Adult Age: ${adultAge}`);
+    cy.log(`Adult DOB: ${adultDOB.day}/${adultDOB.month}/${adultDOB.year}`);
+    cy.log(`DOB Formatted: ${adultDOBFormatted}`);
+    cy.log(
+      `Calculated Age: ${DateUtils.calculateAge(DateUtils.getAdultDateOfBirth(adultAge))} years`,
+    );
+    cy.log(
+      `Passport Issue: ${passportIssueDate.day}/${passportIssueDate.month}/${passportIssueDate.year}`,
+    );
+    cy.log(
+      `Passport Expiry: ${passportExpiryDate.day}/${passportExpiryDate.month}/${passportExpiryDate.year}`,
+    );
+    cy.log(`Screening Date: ${screeningDate.day}/${screeningDate.month}/${screeningDate.year}`);
+    cy.log(`X-ray Date: ${xrayDate.day}/${xrayDate.month}/${xrayDate.year}`);
+    cy.log(
+      `Sputum Sample 1: ${sputumSample1Date.day}/${sputumSample1Date.month}/${sputumSample1Date.year}`,
+    );
+    cy.log(
+      `Sputum Sample 2: ${sputumSample2Date.day}/${sputumSample2Date.month}/${sputumSample2Date.year}`,
+    );
+    cy.log(
+      `Sputum Sample 3: ${sputumSample3Date.day}/${sputumSample3Date.month}/${sputumSample3Date.year}`,
+    );
   });
 
   beforeEach(() => {
@@ -118,10 +188,14 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
     applicantDetailsPage
       .fillFullName("Emily Mixed-Tester")
       .selectSex("Female")
-      .selectNationality(countryName)
-      .fillBirthDate("05", "12", "1988")
-      .fillPassportIssueDate("20", "03", "2020")
-      .fillPassportExpiryDate("20", "03", "2030")
+      .selectNationality(countryName) // Use country code for form filling
+      .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
+      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillPassportExpiryDate(
+        passportExpiryDate.day,
+        passportExpiryDate.month,
+        passportExpiryDate.year,
+      )
       .fillAddressLine1("555 Mixed Street")
       .fillAddressLine2("Validation Block")
       .fillAddressLine3("Error District")
@@ -244,8 +318,8 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
     medicalScreeningPage.verifyPageLoaded();
 
     medicalScreeningPage
-      .fillScreeningDate("10", "9", "2025")
-      .fillAge("36")
+      .fillScreeningDate(screeningDate.day, screeningDate.month, screeningDate.year)
+      .fillAge(adultAge.toString())
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
@@ -264,9 +338,12 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
     // Verify redirection to Medical Screening Summary Page
     medicalSummaryPage.verifyPageLoaded();
 
+    // Calculate expected age from birth date
+    const expectedAge = DateUtils.calculateAge(DateUtils.getAdultDateOfBirth(adultAge));
+
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "36 years old",
+      age: `${expectedAge} years old`,
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",
@@ -306,7 +383,7 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
     chestXrayUploadPage.enterDateXrayTaken(xrayDay, xrayMonth, xrayYear);
 
     // Verify the date was entered correctly
-    chestXrayUploadPage.verifyDateValue(xrayDay, xrayMonth, xrayYear);
+    chestXrayUploadPage.enterDateXrayTaken(xrayDate.day, xrayDate.month, xrayDate.year);
 
     // Verify X-ray upload page and sections and upload image(s)
     chestXrayUploadPage.verifyXrayUploadSectionsDisplayed();
@@ -339,7 +416,7 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
     checkChestXrayImagesPage.verifyPageHeading();
 
     // Verify the date of X-ray is displayed (should match what was entered earlier)
-    checkChestXrayImagesPage.verifyDateOfXray("20 September 2025");
+    checkChestXrayImagesPage.verifyDateOfXray(xrayDateFormatted);
 
     // Get and log the date of X-ray value
     checkChestXrayImagesPage.getDateOfXray().then((date) => {
@@ -416,7 +493,6 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
 
       // Verify redirection to Radiological Outcome confirmation Page
       radiologicalOutcomeConfPage.verifyPageLoaded();
-      //radiologicalOutcomeConfPage.verifyPageTitle();
       radiologicalOutcomeConfPage.verifyAllPageElements();
       radiologicalOutcomeConfPage.verifyConfirmationPanel();
       radiologicalOutcomeConfPage.verifyWhatHappensNextSection();
@@ -429,7 +505,7 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
         Name: "Emily Mixed-Tester",
-        "Date of birth": "5/12/1988",
+        "Date of birth": adultDOBFormatted,
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
@@ -457,7 +533,7 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
         Name: "Emily Mixed-Tester",
-        "Date of birth": "5/12/1988",
+        "Date of birth": adultDOBFormatted,
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
@@ -549,7 +625,7 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
       });
 
       // Verify we remain on the sputum collection page
-      cy.url().should("include", "/enter-sputum-sample-collection-information");
+      cy.url().should("include", "/sputum-collection-details");
     });
   });
 });

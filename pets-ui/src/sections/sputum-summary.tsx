@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { postSputumDetails } from "@/api/api";
 import Button from "@/components/button/button";
@@ -256,7 +256,7 @@ const SputumSummary = () => {
     };
 
     if (hasCollectionData && !sample.collection.submittedToDatabase) {
-      dateTaken.link = "/enter-sputum-sample-collection-information";
+      dateTaken.link = "/sputum-collection-details";
     }
     summaryData.push(dateTaken);
 
@@ -272,7 +272,7 @@ const SputumSummary = () => {
     };
 
     if (sample.collection.collectionMethod && !sample.collection.submittedToDatabase) {
-      collectionMethod.link = "/enter-sputum-sample-collection-information";
+      collectionMethod.link = "/sputum-collection-details";
     }
     summaryData.push(collectionMethod);
 
@@ -288,7 +288,7 @@ const SputumSummary = () => {
     };
 
     if (hasSmearResult && !sample.smearResults.submittedToDatabase) {
-      smearResult.link = "/enter-sputum-sample-results";
+      smearResult.link = "/sputum-results";
     }
     summaryData.push(smearResult);
 
@@ -304,7 +304,7 @@ const SputumSummary = () => {
     };
 
     if (hasCultureResult && !sample.cultureResults.submittedToDatabase) {
-      cultureResult.link = "/enter-sputum-sample-results";
+      cultureResult.link = "/sputum-results";
     }
     summaryData.push(cultureResult);
 
