@@ -499,7 +499,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       // Complete X-ray findings with abnormal results indicating TB
       chestXrayFindingsPage.selectActiveTbFindings([
         "4.1 Apical fibronodular, fibrocalcific lesions or apical microcalcifications",
-        "4.7 Any cavitating lesion or ‘fluffy’ or ‘soft’ lesions felt likely to represent active TB",
+        "4.7 Any cavitating lesion or 'fluffy' or 'soft' lesions felt likely to represent active TB",
       ]);
       chestXrayFindingsPage.enterXrayResultDetails("Major Active pulmonary TB Sympmtons observed.");
 
