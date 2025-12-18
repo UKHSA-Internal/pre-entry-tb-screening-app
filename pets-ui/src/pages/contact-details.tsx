@@ -23,7 +23,7 @@ export default function ContactDetailsPage() {
 
   return (
     <Container
-      title="Enter applicant information - Complete UK pre-entry health screening - GOV.UK"
+      title="Visa applicant passport information - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo={backLinkTo}
     >
       <ApplicantForm />
