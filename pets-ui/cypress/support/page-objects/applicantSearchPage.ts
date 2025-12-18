@@ -193,12 +193,12 @@ export class ApplicantSearchPage extends BasePage {
   }
 
   verifyRedirectionToDetailsPage(): this {
-    this.verifyUrlContains("/enter-applicant-information");
+    this.verifyUrlContains("/visa-applicant-passport-information");
     return this;
   }
 
   verifyRedirectionToCreateApplicantPage(): this {
-    this.verifyUrlContains("/enter-applicant-information");
+    this.verifyUrlContains("/visa-applicant-passport-information");
     return this;
   }
 

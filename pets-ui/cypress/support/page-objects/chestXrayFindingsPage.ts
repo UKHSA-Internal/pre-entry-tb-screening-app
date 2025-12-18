@@ -147,7 +147,7 @@ export class ChestXrayFindingsPage extends BasePage {
       "4.4 Single or multiple pulmonary nodules, or masses equal to or greater than 1cm",
       "4.5 Non-calcified pleural fibrosis or effusion",
       "4.6 Interstitial fibrosis, parenchymal lung disease or acute pulmonary disease",
-      "4.7 Any cavitating lesion or ‘fluffy’ or ‘soft’ lesions felt likely to represent active TB",
+      "4.7 Any cavitating lesion or 'fluffy' or 'soft' lesions felt likely to represent active TB",
     ];
 
     activeTbFindingsOptions.forEach((option, index) => {
@@ -285,8 +285,6 @@ export class ChestXrayFindingsPage extends BasePage {
   // Check all elements on the page
   verifyAllPageElements(): ChestXrayFindingsPage {
     this.verifyPageLoaded();
-    //this.verifyRadiographicFindingsSection();
-    //this.verifyMinorFindingsSection();
     this.verifyAssociatedMinorFindingsSection();
     this.verifyActiveTbFindingsSection();
     this.verifyDetailsSection();

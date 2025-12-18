@@ -82,12 +82,19 @@ export class BasePage {
 
   // Common methods for handling form fields
   fillTextInput(labelText: string, value: string): BasePage {
-    cy.contains("label", labelText).parent().find("input").should("be.visible").clear().type(value);
+    cy.contains("label", labelText, { timeout: 10000 })
+      .should("be.visible")
+      .parent()
+      .find("input")
+      .should("be.visible")
+      .clear()
+      .type(value);
     return this;
   }
 
   fillTextarea(labelText: string, value: string): BasePage {
-    cy.contains("label", labelText)
+    cy.contains("label", labelText, { timeout: 10000 })
+      .should("be.visible")
       .parent()
       .find("textarea")
       .should("be.visible")
@@ -97,7 +104,12 @@ export class BasePage {
   }
 
   selectDropdown(labelText: string, value: string): BasePage {
-    cy.contains("label", labelText).parent().find("select").should("be.visible").select(value);
+    cy.contains("label", labelText, { timeout: 10000 })
+      .should("be.visible")
+      .parent()
+      .find("select")
+      .should("be.visible")
+      .select(value);
     return this;
   }
 
