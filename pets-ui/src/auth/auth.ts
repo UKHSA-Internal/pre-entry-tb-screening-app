@@ -64,17 +64,15 @@ export const initializeMsal = async () => {
 };
 
 export const acquireTokenSilently = async (): Promise<AuthenticationResult | null | void> => {
-  const account = msalInstance.getActiveAccount();
+  const accounts = msalInstance.getAllAccounts();
 
-  if (!account) {
-    throw new Error(
-      "No active account! Verify a user has been signed in and setActiveAccount has been called.",
-    );
+  if (accounts.length === 0) {
+    throw new Error("No accounts found");
   }
 
   const accessTokenRequest: SilentRequest = {
     scopes: loginRequest.scopes,
-    account: account,
+    account: accounts[0],
   };
 
   try {

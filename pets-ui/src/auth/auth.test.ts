@@ -13,10 +13,8 @@ beforeEach(() => {
 
 describe("acquireTokenSilently", () => {
   it("should throw an error if no accounts are found", async () => {
-    mockedMsalInstance.getActiveAccount.mockReturnValueOnce(null);
-    await expect(acquireTokenSilently()).rejects.toThrow(
-      "No active account! Verify a user has been signed in and setActiveAccount has been called.",
-    );
+    mockedMsalInstance.getAllAccounts.mockReturnValueOnce([]);
+    await expect(acquireTokenSilently()).rejects.toThrow("No accounts found");
   });
 
   it("should return an access token when an account exists", async () => {
@@ -39,7 +37,7 @@ describe("acquireTokenSilently", () => {
 
 describe("initializeMsal", () => {
   it("should initialize mockedMsalInstance and set active account if accounts exist", async () => {
-    mockedMsalInstance.getActiveAccount.mockReturnValue(mockAccount);
+    mockedMsalInstance.getAllAccounts.mockReturnValue([mockAccount]);
 
     const result = await initializeMsal();
 
@@ -49,7 +47,7 @@ describe("initializeMsal", () => {
   });
 
   it("should initialize mockedMsalInstance without setting an active account if no accounts exist", async () => {
-    mockedMsalInstance.getActiveAccount.mockReturnValue(null);
+    mockedMsalInstance.getAllAccounts.mockReturnValue([]);
 
     const result = await initializeMsal();
 
@@ -101,7 +99,7 @@ describe("initializeMsal", () => {
 
 describe("SwaggerAuthorize", () => {
   it("should authorize swagger docs", async () => {
-    mockedMsalInstance.getActiveAccount.mockReturnValue(mockAccount);
+    mockedMsalInstance.getAllAccounts.mockReturnValue([mockAccount]);
 
     mockedMsalInstance.acquireTokenSilent.mockResolvedValue(mockAuthResult);
 
