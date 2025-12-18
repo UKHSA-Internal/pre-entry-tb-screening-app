@@ -143,7 +143,7 @@ const ChestXrayFindingsForm = () => {
                 "4.4 Single or multiple pulmonary nodules, or masses equal to or greater than 1cm",
                 "4.5 Non-calcified pleural fibrosis or effusion",
                 "4.6 Interstitial fibrosis, parenchymal lung disease or acute pulmonary disease",
-                "4.7 Any cavitating lesion or ‘fluffy’ or ‘soft’ lesions felt likely to represent active TB",
+                "4.7 Any cavitating lesion or 'fluffy' or 'soft' lesions felt likely to represent active TB",
               ]}
               heading="Findings sometimes seen in active TB (or other conditions)"
               headingLevel={2}

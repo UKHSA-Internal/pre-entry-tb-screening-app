@@ -385,7 +385,6 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
       chestXrayConfirmationPage.verifyConfirmationPanel();
       // Verify next steps
       chestXrayConfirmationPage.verifyNextStepsSection();
-
       // Click "Continue" button and verify redirection to TB Progress Tracker
       chestXrayConfirmationPage.clickContinueAndVerifyRedirection();
 
@@ -488,7 +487,6 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
       cy.get('[data-testid="date-sample-3-taken-day"]').should("have.value", "");
       cy.get('[data-testid="date-sample-3-taken-month"]').should("have.value", "");
       cy.get('[data-testid="date-sample-3-taken-year"]').should("have.value", "");
-
       // Check that collection method exists
       cy.get('[name="collectionMethodSample3"]').should("exist");
 

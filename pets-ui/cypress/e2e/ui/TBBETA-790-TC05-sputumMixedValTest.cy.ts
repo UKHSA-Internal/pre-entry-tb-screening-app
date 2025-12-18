@@ -376,12 +376,6 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
     chestXrayUploadPage.verifyDateXrayTakenSectionDisplayed();
     chestXrayUploadPage.verifyDateInputFields();
 
-    // Enter the date manually when X-ray was taken
-    const xrayDay = "20";
-    const xrayMonth = "09";
-    const xrayYear = "2025";
-    chestXrayUploadPage.enterDateXrayTaken(xrayDay, xrayMonth, xrayYear);
-
     // Verify the date was entered correctly
     chestXrayUploadPage.enterDateXrayTaken(xrayDate.day, xrayDate.month, xrayDate.year);
 
