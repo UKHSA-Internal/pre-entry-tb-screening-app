@@ -382,12 +382,6 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     chestXrayUploadPage.verifyDateXrayTakenSectionDisplayed();
     chestXrayUploadPage.verifyDateInputFields();
 
-    /* // Enter the date manually when X-ray was taken
-    const xrayDay = "20";
-    const xrayMonth = "10";
-    const xrayYear = "2025";
-    chestXrayUploadPage.enterDateXrayTaken(xrayDay, xrayMonth, xrayYear); */
-
     // Verify the date was entered correctly
     chestXrayUploadPage.enterDateXrayTaken(xrayDate.day, xrayDate.month, xrayDate.year);
 
@@ -491,7 +485,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       // Complete X-ray findings with abnormal results indicating TB
       chestXrayFindingsPage.selectActiveTbFindings([
         "4.1 Apical fibronodular, fibrocalcific lesions or apical microcalcifications",
-        "4.7 Any cavitating lesion or ‘fluffy’ or ‘soft’ lesions felt likely to represent active TB",
+        "4.7 Any cavitating lesion or 'fluffy' or 'soft' lesions felt likely to represent active TB",
       ]);
       chestXrayFindingsPage.enterXrayResultDetails("Major Active pulmonary TB Sympmtons observed.");
 
