@@ -121,13 +121,14 @@ const CheckApplicantPhoto = () => {
           />
 
           <p className="govuk-body">
-            Check the &nbsp;
+            Check the{" "}
             <LinkLabel
               title="rules for digital photos (opens in new tab)"
               to="https://www.gov.uk/photos-for-passports#rules-for-digital-photos"
               externalLink
               openInNewTab
             />
+            .
           </p>
 
           <SubmitButton id="continue" class={ButtonClass.DEFAULT} text="Continue" />
