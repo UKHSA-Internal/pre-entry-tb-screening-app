@@ -179,7 +179,7 @@ function App() {
         }
       />
       <Route
-        path="/medical-history-tb-symptoms-confirmed"
+        path="/tb-symptoms-medical-history-confirmed"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
