@@ -9,6 +9,7 @@ import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPh
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
 import { CheckChestXrayImagesPage } from "../../support/page-objects/checkChestXrayImagesPage";
+import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
 import { ChestXrayConfirmationPage } from "../../support/page-objects/chestXrayConfirmationPage";
 import { ChestXrayFindingsPage } from "../../support/page-objects/chestXrayFindingsPage";
 import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
@@ -40,6 +41,7 @@ import {
 describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", () => {
   // Page object instances
   const applicantConsentPage = new ApplicantConsentPage();
+  const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
@@ -226,7 +228,17 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
     cy.url().then((url) => {
       cy.log(`Current URL: ${url}`);
     });
+    // Verify redirection to the Check Photo page
+    cy.url().should("include", "/check-visa-applicant-photo");
 
+    checkPhotoPage.verifyPageLoaded();
+    checkPhotoPage.verifyPageHeadingText();
+    checkPhotoPage.verifyUploadedPhotoDisplayed();
+    checkPhotoPage.verifyFilenameDisplayed();
+    checkPhotoPage.verifyImageLayout();
+    checkPhotoPage.verifyRadioButtonsExist();
+    checkPhotoPage.selectYesAddPhoto();
+    checkPhotoPage.clickContinue();
     // Verify redirection to the Applicant Summary page
     cy.url().should("include", "/check-visa-applicant-details");
     applicantSummaryPage.verifyPageLoaded();

@@ -9,6 +9,7 @@ import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPh
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
 import { CheckSputumSampleInfoPage } from "../../support/page-objects/checkSputumSampleInfoPage";
+import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
 import { ChestXrayNotTakenPage } from "../../support/page-objects/chestXrayNotTakenPage";
 import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
 import { ClinicCertificateInfoPage } from "../../support/page-objects/clinicCertificateInfoPage";
@@ -38,6 +39,7 @@ import {
 describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Certificate Issued (6 months)", () => {
   // Page object instances
   const applicantConsentPage = new ApplicantConsentPage();
+  const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
@@ -213,7 +215,17 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     cy.url().then((url) => {
       cy.log(`Current URL: ${url}`);
     });
+    // Verify redirection to the Check Photo page
+    cy.url().should("include", "/check-visa-applicant-photo");
 
+    checkPhotoPage.verifyPageLoaded();
+    checkPhotoPage.verifyPageHeadingText();
+    checkPhotoPage.verifyUploadedPhotoDisplayed();
+    checkPhotoPage.verifyFilenameDisplayed();
+    checkPhotoPage.verifyImageLayout();
+    checkPhotoPage.verifyRadioButtonsExist();
+    checkPhotoPage.selectYesAddPhoto();
+    checkPhotoPage.clickContinue();
     // Verify redirection to the Applicant Summary page
     cy.url().should("include", "/check-visa-applicant-details");
     applicantSummaryPage.verifyPageLoaded();
