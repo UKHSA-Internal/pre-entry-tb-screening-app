@@ -156,7 +156,7 @@ describe("MedicalScreeningReview", () => {
 
     expect(mock.history[0].url).toEqual("/application/abc-123/medical-screening");
     expect(mock.history).toHaveLength(1);
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/medical-history-tb-symptoms-confirmed");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-symptoms-medical-history-confirmed");
   });
 
   test("user is navigated to error page when api call is unsuccessful", async () => {

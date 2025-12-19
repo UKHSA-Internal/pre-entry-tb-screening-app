@@ -176,13 +176,12 @@ const ApplicantSearchForm = () => {
           {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
           <Heading level={1} size="l" title="Search for a visa applicant" />
-          <p className="govuk-body" style={{ fontWeight: "bold" }}>
-            Enter the applicant&apos;s passport number and the passport&apos;s country of issue.
-          </p>
 
           <FreeText
             id="passport-number"
-            label="Applicant's passport number"
+            heading="Visa applicant’s passport number"
+            headingSize="m"
+            hint="For example, 1208297A"
             errorMessage={errors?.passportNumber?.message ?? ""}
             formValue="passportNumber"
             required="Enter the applicant's passport number"
@@ -192,8 +191,9 @@ const ApplicantSearchForm = () => {
 
           <Dropdown
             id="country-of-issue"
-            label="Country of issue"
-            hint="If you have more than one, use the nationality in the primary passport submitted by the applicant. Use the English spelling or the country code."
+            heading="Country of issue"
+            headingSize="m"
+            hint="As shown on passport, at the top of the first page"
             options={countryList}
             errorMessage={errors?.countryOfIssue?.message ?? ""}
             formValue="countryOfIssue"

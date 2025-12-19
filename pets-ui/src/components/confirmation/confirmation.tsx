@@ -61,7 +61,7 @@ export default function Confirmation({
         </h1>
         {showApplicationNumber && props.applicationNumber && (
           <div className="govuk-panel__body confirmation-panel__body">
-            Certificate reference number
+            Your reference number
             <br />
             <strong className="confirmation-panel__reference-number">
               {props.applicationNumber}
@@ -120,6 +120,7 @@ export default function Confirmation({
         <LinkLabel
           title="Search for another visa applicant"
           to="/search-for-visa-applicant"
+          style={{ fontSize: "19px" }}
           externalLink={false}
         />
       )}
