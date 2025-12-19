@@ -68,6 +68,10 @@ test("No results section is correctly displayed with information from the Redux 
 
   renderWithProviders(<ApplicantResultsPage />, { preloadedState });
 
-  expect(screen.getByText("No matching record found")).toBeInTheDocument();
-  expect(screen.getByText("No matches for passport number 12345")).toBeInTheDocument();
+  expect(screen.getByText("No visa applicant found")).toBeInTheDocument();
+  expect(
+    screen.getByText(
+      "You can now create a new record for the visa applicant with passport number 12345",
+    ),
+  ).toBeInTheDocument();
 });
