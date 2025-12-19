@@ -53,7 +53,7 @@ export default function TbConfirmationPage() {
       <Confirmation
         confirmationText={
           isCertificateIssued
-            ? "TB screening complete\nCertificate issued"
+            ? "TB screening complete\n\nCertificate available"
             : "TB screening complete\nCertificate not issued"
         }
         isSuccess={isCertificateIssued}

@@ -32,7 +32,9 @@ export class RadiologicalOutcomeConfPage extends BasePage {
     cy.contains("p.govuk-body", "We have sent the radiological outcome to UKHSA.").should(
       "be.visible",
     );
-    cy.contains("p.govuk-body", "You can now return to the progress tracker.").should("be.visible");
+    cy.contains("p.govuk-body", "You can now view summary for this visa applicant.").should(
+      "be.visible",
+    );
     return this;
   }
 
