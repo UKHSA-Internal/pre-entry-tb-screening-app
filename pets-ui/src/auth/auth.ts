@@ -79,15 +79,6 @@ export const acquireTokenSilently = async (): Promise<AuthenticationResult | nul
     const accessToken: AuthenticationResult =
       await msalInstance.acquireTokenSilent(accessTokenRequest);
 
-    const expiresOn = accessToken.expiresOn;
-    if (expiresOn && expiresOn.getTime() >= Date.now()) {
-      console.info(`Calling 'loginRedirect' as token's expired`);
-
-      return msalInstance.loginRedirect(accessTokenRequest).catch((error: object) => {
-        console.error({ error }, "LoginRedirect failed with the error");
-      });
-    }
-
     return accessToken;
   } catch (e) {
     if (e instanceof InteractionRequiredAuthError) {
