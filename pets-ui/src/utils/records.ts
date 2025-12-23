@@ -87,12 +87,15 @@ const dateValidationMessages: Record<string, Record<string, string>> = {
       "The date the medical screening took place day, month and year must contain only numbers",
     invalidDateError: "The date the medical screening took place must be a real date",
     dateMustBeInPastError: "The medical screening date must be today or in the past",
+    dateMustBeRecentError:
+      "The date of the medical screening must be today or in the past 6 months",
   },
   passportIssueDate: {
     emptyFieldError: "Passport issue date must include a day, month and year",
     invalidCharError: "Passport issue day, month and year must contain only numbers",
     invalidDateError: "Passport issue date must be a real date",
     dateMustBeInPastError: "Passport issue date must be today or in the past",
+    dateMustBeAfterDobError: "The passport issue date must be after the date of birth",
   },
   passportExpiryDate: {
     emptyFieldError: "Passport expiry date must include a day, month and year",
@@ -123,12 +126,19 @@ const dateValidationMessages: Record<string, Record<string, string>> = {
     invalidCharError: "The date the X-ray was taken day, month and year must contain only numbers",
     invalidDateError: "The date the X-ray was taken must be a real date",
     dateMustBeInPastError: "The date the X-ray was taken must be today or in the past",
+    dateMustBeAfterMedicalScreeningError:
+      "The date the X-ray was taken must be the same as or after the medical screening",
   },
 };
 
 const sputumResultsValidationMessages = {
   smearTestRequired: "Select result of smear test",
   cultureTestRequired: "Select result of culture test",
+};
+
+const symptomsValidationMessages = {
+  requiredIfYes: "Select the visa applicant's symptoms",
+  forbiddenIfNo: "If the visa applicant has no symptoms, do not select any symptoms",
 };
 
 const longNumericStrings = ["01", "02", "03", "04", "05", "06", "07", "08", "09"];
@@ -312,5 +322,6 @@ export {
   longNumericStrings,
   shortNumericStrings,
   sputumResultsValidationMessages,
+  symptomsValidationMessages,
   visaOptions,
 };
