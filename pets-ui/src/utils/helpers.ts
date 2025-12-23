@@ -134,7 +134,7 @@ const validatePassportIssueDate = (issueDate: DateType, dateOfBirth: DateType) =
     Number(dateOfBirth.day),
   );
 
-  if (isNaN(issueDateObj.getTime()) || isNaN(dobDateObj.getTime())) {
+  if (Number.isNaN(issueDateObj.getTime()) || Number.isNaN(dobDateObj.getTime())) {
     return true;
   }
 
@@ -159,7 +159,7 @@ const validateMedicalScreeningDate = (completionDate: DateType) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  if (isNaN(date.getTime())) return true;
+  if (Number.isNaN(date.getTime())) return true;
 
   const sixMonthsAgo = new Date(today);
   sixMonthsAgo.setMonth(today.getMonth() - 6);
@@ -197,7 +197,7 @@ const validateXrayDate = (xrayDate: DateType, screeningDate: DateType) => {
     Number(screeningDate.day),
   );
 
-  if (isNaN(xrayDateObj.getTime()) || isNaN(screeningDateObj.getTime())) {
+  if (Number.isNaN(xrayDateObj.getTime()) || Number.isNaN(screeningDateObj.getTime())) {
     return true;
   }
 
