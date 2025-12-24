@@ -48,9 +48,9 @@ petsApi.interceptors.response.use(
     }
 
     if (error.response?.status === 404) {
-      window.location.href = "/page-not-found";
+      globalThis.location.href = "/page-not-found";
     } else if (error.response?.status && error.response.status >= 400) {
-      window.location.href = "/sorry-there-is-problem-with-service";
+      globalThis.location.href = "/sorry-there-is-problem-with-service";
     }
 
     return Promise.reject(error);
