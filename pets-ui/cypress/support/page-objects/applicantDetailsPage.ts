@@ -416,6 +416,8 @@ export class ApplicantDetailsPage extends BasePage {
     passportIssueDate?: string;
     passportExpiryDate?: string;
     address?: string;
+    townOrCity?: string;
+    addressCountry?: string;
   }): ApplicantDetailsPage {
     if (expectedErrorMessages.fullName) {
       this.validateFieldError("name", expectedErrorMessages.fullName);
