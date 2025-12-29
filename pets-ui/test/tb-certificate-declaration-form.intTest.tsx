@@ -1,4 +1,5 @@
 import { fireEvent, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
 import { Mock } from "vitest";
 
@@ -21,6 +22,7 @@ beforeEach(() => useNavigateMock.mockClear());
 describe("TB Certificate Declaration Page", () => {
   test("renders form correctly", () => {
     renderWithProviders(<TbCertificateDeclarationForm />);
+    expect(screen.getByText("You have 150 words remaining")).toBeInTheDocument();
 
     expect(screen.getByText("Clinic and certificate information")).toBeInTheDocument();
     expect(screen.getByText("Clinic name")).toBeInTheDocument();
@@ -38,6 +40,7 @@ describe("TB Certificate Declaration Page", () => {
 
   test("errors when tb certificate issued selection is missing", async () => {
     renderWithProviders(<TbCertificateDeclarationForm />);
+    expect(screen.getByText("You have 150 words remaining")).toBeInTheDocument();
 
     fireEvent.click(screen.getByText("Continue"));
 
@@ -69,6 +72,7 @@ describe("TB Certificate Declaration Page", () => {
         },
       },
     });
+    expect(screen.getByText("You have 150 words remaining")).toBeInTheDocument();
 
     expect(screen.getByText("Clinic name")).toBeInTheDocument();
     expect(screen.getByText("PETS Test Clinic")).toBeInTheDocument();
@@ -86,6 +90,7 @@ describe("TB Certificate Declaration Page", () => {
         <TbCertificateDeclarationPage />
       </HelmetProvider>,
     );
+    expect(screen.getByText("You have 150 words remaining")).toBeInTheDocument();
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
@@ -93,5 +98,26 @@ describe("TB Certificate Declaration Page", () => {
     expect(link).toHaveClass("govuk-back-link");
 
     expect(screen.getByText("Clinic and certificate information")).toBeInTheDocument();
+  });
+
+  test("correct error message is displayed when word count is exceeded in textarea field", async () => {
+    const tooLongInput =
+      "This string is 151 words long a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a";
+    const user = userEvent.setup();
+    renderWithProviders(
+      <HelmetProvider>
+        <TbCertificateDeclarationPage />
+      </HelmetProvider>,
+    );
+    expect(screen.getByText("You have 150 words remaining")).toBeInTheDocument();
+
+    await user.type(screen.getByTestId("physician-comments"), tooLongInput);
+    expect(screen.getByText("You have 1 word too many")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+
+    expect(
+      screen.getAllByText(`"Physician's notes (optional)" must be 150 words or fewer`),
+    ).toHaveLength(2);
   });
 });

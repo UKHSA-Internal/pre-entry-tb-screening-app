@@ -1,4 +1,5 @@
 import { fireEvent, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
 import { describe, expect, it, vi } from "vitest";
 
@@ -25,10 +26,11 @@ describe("TbCertificateNotIssuedForm", () => {
         <TbCertificateNotIssuedForm />
       </HelmetProvider>,
     );
+    expect(screen.getByText("You have 150 words remaining")).toBeInTheDocument();
 
     expect(screen.getByText("Why are you not issuing a certificate?")).toBeInTheDocument();
     expect(screen.getByText("Declaring Physician's name")).toBeInTheDocument();
-    expect(screen.getByText("Physician's notes (Optional)")).toBeInTheDocument();
+    expect(screen.getByText("Physician's notes (optional)")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Continue" })).toBeInTheDocument();
   });
 
@@ -38,6 +40,7 @@ describe("TbCertificateNotIssuedForm", () => {
         <TbCertificateNotIssuedForm />
       </HelmetProvider>,
     );
+    expect(screen.getByText("You have 150 words remaining")).toBeInTheDocument();
 
     expect(screen.getByText("Confirmed or suspected TB")).toBeInTheDocument();
     expect(screen.getByText("Testing postponed")).toBeInTheDocument();
@@ -50,6 +53,7 @@ describe("TbCertificateNotIssuedForm", () => {
         <TbCertificateNotIssuedForm />
       </HelmetProvider>,
     );
+    expect(screen.getByText("You have 150 words remaining")).toBeInTheDocument();
 
     const continueButton = screen.getByRole("button", { name: "Continue" });
     fireEvent.click(continueButton);
@@ -66,6 +70,7 @@ describe("TbCertificateNotIssuedForm", () => {
         <TbCertificateNotIssuedForm />
       </HelmetProvider>,
     );
+    expect(screen.getByText("You have 150 words remaining")).toBeInTheDocument();
 
     const reasonRadio = screen.getByDisplayValue("Confirmed or suspected TB");
     fireEvent.click(reasonRadio);
@@ -73,7 +78,7 @@ describe("TbCertificateNotIssuedForm", () => {
     const physicianNameInput = screen.getByLabelText("Declaring Physician's name");
     fireEvent.change(physicianNameInput, { target: { value: "Dr. Smith" } });
 
-    const commentsTextarea = screen.getByLabelText("Physician's notes (Optional)");
+    const commentsTextarea = screen.getByLabelText("Physician's notes (optional)");
     fireEvent.change(commentsTextarea, { target: { value: "Test comments" } });
 
     const continueButton = screen.getByRole("button", { name: "Continue" });
@@ -90,6 +95,7 @@ describe("TbCertificateNotIssuedForm", () => {
         <TbCertificateNotIssuedForm />
       </HelmetProvider>,
     );
+    expect(screen.getByText("You have 150 words remaining")).toBeInTheDocument();
 
     const reasonRadio = screen.getByDisplayValue("Testing postponed");
     fireEvent.click(reasonRadio);
@@ -105,5 +111,26 @@ describe("TbCertificateNotIssuedForm", () => {
         screen.getByText("Physician name must contain only letters, spaces and punctuation"),
       ).toBeInTheDocument();
     });
+  });
+
+  it("correct error message is displayed when word count is exceeded in textarea field", async () => {
+    const tooLongInput =
+      "This string is 151 words long a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a";
+    const user = userEvent.setup();
+    renderWithProviders(
+      <HelmetProvider>
+        <TbCertificateNotIssuedForm />
+      </HelmetProvider>,
+    );
+    expect(screen.getByText("You have 150 words remaining")).toBeInTheDocument();
+
+    await user.type(screen.getByTestId("physician-comments"), tooLongInput);
+    expect(screen.getByText("You have 1 word too many")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+
+    expect(
+      screen.getAllByText(`"Physician's notes (optional)" must be 150 words or fewer`),
+    ).toHaveLength(2);
   });
 });
