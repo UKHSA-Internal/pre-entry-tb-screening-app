@@ -187,7 +187,7 @@ jobs:
 
           if [ ${#JSON_FILES[@]} -gt 0 ]; then
             echo "Found ${#JSON_FILES[@]} report files to merge"
-            npx mochawesome-merge "${JSON_FILES[@]}" > "$MERGED_FILE"
+            npx --yes mochawesome-merge "${JSON_FILES[@]}" > "$MERGED_FILE"
             echo "✅ Reports merged successfully"
             
             # Show merged stats
