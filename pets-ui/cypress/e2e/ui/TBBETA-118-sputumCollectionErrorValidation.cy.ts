@@ -9,6 +9,7 @@ import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPh
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
 import { CheckChestXrayImagesPage } from "../../support/page-objects/checkChestXrayImagesPage";
+import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
 import { ChestXrayConfirmationPage } from "../../support/page-objects/chestXrayConfirmationPage";
 import { ChestXrayFindingsPage } from "../../support/page-objects/chestXrayFindingsPage";
 import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
@@ -37,6 +38,7 @@ import {
 describe("Empty Form Submission Test On Sputum Collection Page", () => {
   // Page object instances
   const applicantConsentPage = new ApplicantConsentPage();
+  const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
@@ -186,6 +188,19 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
       .uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg")
       .verifyUploadSuccess();
     applicantPhotoUploadPage.clickContinue();
+
+    // Verify Check Photo Page
+    // Verify redirection to the Check Photo page
+    cy.url().should("include", "/check-visa-applicant-photo");
+
+    checkPhotoPage.verifyPageLoaded();
+    checkPhotoPage.verifyPageHeadingText();
+    checkPhotoPage.verifyUploadedPhotoDisplayed();
+    checkPhotoPage.verifyFilenameDisplayed();
+    checkPhotoPage.verifyImageLayout();
+    checkPhotoPage.verifyRadioButtonsExist();
+    checkPhotoPage.selectYesAddPhoto();
+    checkPhotoPage.clickContinue();
 
     // Complete applicant summary
     applicantSummaryPage.verifyPageLoaded();
@@ -386,7 +401,6 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
       chestXrayConfirmationPage.verifyConfirmationPanel();
       // Verify next steps
       chestXrayConfirmationPage.verifyNextStepsSection();
-
       // Click "Continue" button and verify redirection to TB Progress Tracker
       chestXrayConfirmationPage.clickContinueAndVerifyRedirection();
 

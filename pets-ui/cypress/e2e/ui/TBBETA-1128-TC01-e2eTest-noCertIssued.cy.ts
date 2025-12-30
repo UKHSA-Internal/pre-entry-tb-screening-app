@@ -10,6 +10,7 @@ import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchP
 import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
 import { CheckChestXrayImagesPage } from "../../support/page-objects/checkChestXrayImagesPage";
 import { CheckSputumSampleInfoPage } from "../../support/page-objects/checkSputumSampleInfoPage";
+import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
 import { ChestXrayConfirmationPage } from "../../support/page-objects/chestXrayConfirmationPage";
 import { ChestXrayFindingsPage } from "../../support/page-objects/chestXrayFindingsPage";
 import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
@@ -48,6 +49,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
   const applicantConsentPage = new ApplicantConsentPage();
+  const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const travelInformationPage = new TravelInformationPage();
   const travelSummaryPage = new TravelSummaryPage();
   const travelConfirmationPage = new TravelConfirmationPage();
@@ -232,6 +234,17 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       cy.log(`Current URL: ${url}`);
     });
 
+    // Verify redirection to the Check Photo page
+    cy.url().should("include", "/check-visa-applicant-photo");
+
+    checkPhotoPage.verifyPageLoaded();
+    checkPhotoPage.verifyPageHeadingText();
+    checkPhotoPage.verifyUploadedPhotoDisplayed();
+    checkPhotoPage.verifyFilenameDisplayed();
+    checkPhotoPage.verifyImageLayout();
+    checkPhotoPage.verifyRadioButtonsExist();
+    checkPhotoPage.selectYesAddPhoto();
+    checkPhotoPage.clickContinue();
     // Verify redirection to the Applicant Summary page
     cy.url().should("include", "/check-visa-applicant-details");
     applicantSummaryPage.verifyPageLoaded();
@@ -382,12 +395,6 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     chestXrayUploadPage.verifyDateXrayTakenSectionDisplayed();
     chestXrayUploadPage.verifyDateInputFields();
 
-    /* // Enter the date manually when X-ray was taken
-    const xrayDay = "20";
-    const xrayMonth = "10";
-    const xrayYear = "2025";
-    chestXrayUploadPage.enterDateXrayTaken(xrayDay, xrayMonth, xrayYear); */
-
     // Verify the date was entered correctly
     chestXrayUploadPage.enterDateXrayTaken(xrayDate.day, xrayDate.month, xrayDate.year);
 
@@ -491,7 +498,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       // Complete X-ray findings with abnormal results indicating TB
       chestXrayFindingsPage.selectActiveTbFindings([
         "4.1 Apical fibronodular, fibrocalcific lesions or apical microcalcifications",
-        "4.7 Any cavitating lesion or ‘fluffy’ or ‘soft’ lesions felt likely to represent active TB",
+        "4.7 Any cavitating lesion or 'fluffy' or 'soft' lesions felt likely to represent active TB",
       ]);
       chestXrayFindingsPage.enterXrayResultDetails("Major Active pulmonary TB Sympmtons observed.");
 

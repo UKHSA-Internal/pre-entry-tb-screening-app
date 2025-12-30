@@ -19,7 +19,7 @@ export class TbScreeningCompletePage extends BasePage {
   isIssuedMode(): Cypress.Chainable<boolean> {
     return cy.get("h1.govuk-panel__title").then(($h1) => {
       const heading = $h1.text();
-      return heading.includes("Certificate issued");
+      return heading.includes("Certificate available");
     });
   }
 
@@ -36,7 +36,10 @@ export class TbScreeningCompletePage extends BasePage {
   // Verify confirmation panel for ISSUED scenario
   verifyPanelForIssued(): TbScreeningCompletePage {
     cy.get(".govuk-panel.confirmation-panel.govuk-panel--confirmation").should("be.visible");
-    cy.get(".govuk-panel__title.confirmation-panel__title").should("contain", "Certificate issued");
+    cy.get(".govuk-panel__title.confirmation-panel__title").should(
+      "contain",
+      "Certificate available",
+    );
     return this;
   }
 
@@ -77,7 +80,7 @@ export class TbScreeningCompletePage extends BasePage {
       if (isIssued) {
         cy.get(".govuk-panel__title.confirmation-panel__title").should(
           "contain",
-          "Certificate issued",
+          "Certificate available",
         );
       } else {
         cy.get(".govuk-panel__title.confirmation-panel__title").should(
@@ -95,7 +98,7 @@ export class TbScreeningCompletePage extends BasePage {
       if (isIssued) {
         cy.get(".govuk-panel__body.confirmation-panel__body")
           .should("be.visible")
-          .should("contain", "Certificate reference number");
+          .should("contain", "Your reference number");
       }
     });
     return this;
