@@ -119,7 +119,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: pets-ui
-        run: npm install --no-save
+        run: npm install --legacy-peer-deps
 
       - name: Verify Cypress installation
         working-directory: pets-ui
