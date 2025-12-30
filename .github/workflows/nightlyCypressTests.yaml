@@ -173,9 +173,6 @@ jobs:
         if: always()
         working-directory: pets-ui
         run: |
-          # Install mochawesome-merge if not already installed
-          npm list mochawesome-merge || npm install --save-dev mochawesome-merge
-
           REPORT_DIR="cypress/reports/mochawesome"
           MERGED_FILE="$REPORT_DIR/mochawesome.json"
 
