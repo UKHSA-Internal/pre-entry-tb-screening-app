@@ -63,6 +63,7 @@
     "cross-env": "^7.0.3",
     "cypress": "^15.8.0",
     "cypress-multi-reporters": "^2.0.5",
+    "dotenv": "^16.4.7",
     "eslint-plugin-cypress": "^4.1.0",
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^5.0.0",
