@@ -105,7 +105,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: pets-ui/node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('pets-ui/package-lock.json', 'pets-ui/package.json') }}
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('pets-ui/package.json') }}
           restore-keys: |
             ${{ runner.os }}-node-modules-
 
@@ -113,13 +113,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/Cypress
-          key: cypress-binary-${{ runner.os }}-${{ hashFiles('pets-ui/package-lock.json', 'pets-ui/package.json') }}
+          key: cypress-binary-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
           restore-keys: |
             cypress-binary-${{ runner.os }}-
 
       - name: Install dependencies
         working-directory: pets-ui
-        run: npm ci
+        run: npm install --no-save
 
       - name: Verify Cypress installation
         working-directory: pets-ui
