@@ -1,7 +1,6 @@
-// PETS Date Validation Test: INVALID Scenario - X-ray Before Medical Screening
-// VIOLATION: X-ray taken BEFORE medical screening (violates Biz Rule 1)
-// Biz Rule 1: Medical screening must be on clinic visit date, X-ray should be same day or after
-// Expected: System should reject or flag this as invalid
+// PETS Date Validation Test: INVALID - Medical Screening More Than 6 Months Old
+// VIOLATION: Medical screening date cannot be more than 6 months in the past
+// Expected Error: "The date of the medical screening must be today or in the past 6 months"
 import { countryList } from "../../../src/utils/countryList";
 import { loginViaB2C } from "../../support/commands";
 import { DateUtils } from "../../support/DateUtils";
@@ -12,11 +11,7 @@ import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPh
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
 import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
-import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
-import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
-import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
-import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
 import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
 import { TravelConfirmationPage } from "../../support/page-objects/travelConfirmationPage";
 import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
@@ -28,7 +23,7 @@ import {
   randomElement,
 } from "../../support/test-helpers";
 
-describe("PETS Date Validation: INVALID Scenario - X-ray Before Medical", () => {
+describe("PETS Date Validation: INVALID - Medical Screening > 6 Months Old", () => {
   // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
@@ -41,18 +36,12 @@ describe("PETS Date Validation: INVALID Scenario - X-ray Before Medical", () => 
   const travelConfirmationPage = new TravelConfirmationPage();
   const medicalScreeningPage = new MedicalScreeningPage();
   const applicantConfirmationPage = new ApplicantConfirmationPage();
-  const medicalSummaryPage = new MedicalSummaryPage();
-  const medicalConfirmationPage = new MedicalConfirmationPage();
-  const chestXrayPage = new ChestXrayPage();
-  const chestXrayUploadPage = new ChestXrayUploadPage();
   const tbProgressTrackerPage = new TBProgressTrackerPage();
   const visaCategoryPage = new VisaCategoryPage();
 
   // Define variables to store test data
-  //let countryCode: string = "";
   let countryName: string = "";
   let passportNumber: string = "";
-  //let tbCertificateNumber: string = "";
   let selectedVisaCategory: string;
 
   // Dynamic date variables
@@ -61,44 +50,33 @@ describe("PETS Date Validation: INVALID Scenario - X-ray Before Medical", () => 
   let adultDOBSumPageFormat: string;
   let passportIssueDate: ReturnType<typeof DateUtils.getDateComponents>;
   let passportExpiryDate: ReturnType<typeof DateUtils.getDateComponents>;
-  let screeningDate: ReturnType<typeof DateUtils.getDateComponents>;
-  let xrayDate: ReturnType<typeof DateUtils.getDateComponents>;
-
-  // Note: This Test is a Placeholder for when validation is implemented for X-ray dates
-  // The Test should fail at the point where the X-ray date entered is before the medical screening date
+  let invalidScreeningDate: ReturnType<typeof DateUtils.getDateComponents>;
 
   before(() => {
-    // Create test fixtures before test run
     createTestFixtures();
 
-    // Generate dynamic dates for adult applicant (29 years old)
-    adultAge = 29;
+    // Generate dates for 30 year old adult
+    adultAge = 30;
     adultDOB = DateUtils.getAdultDOBComponents(adultAge);
     const dobDate = DateUtils.getAdultDateOfBirth(adultAge);
     adultDOBSumPageFormat = DateUtils.formatDateGOVUK(dobDate);
 
-    // Generate passport dates (issued 2 years ago, expires in 8 years)
+    // Generate valid passport dates
     const passportIssue = DateUtils.getDateInPast(2);
     const passportExpiry = DateUtils.getPassportExpiryDate(passportIssue, false);
     passportIssueDate = DateUtils.getDateComponents(passportIssue);
     passportExpiryDate = DateUtils.getDateComponents(passportExpiry);
 
-    // INVALID SCENARIO: X-ray BEFORE medical screening (violates Rule 1)
-    const screening = DateUtils.getDateInPast(0, 0, 0); // Today (Day 0)
-    screeningDate = DateUtils.getDateComponents(screening);
+    // INVALID SCENARIO: Medical screening 6 months + 1 day in the past
+    const invalidScreening = DateUtils.getDateInPast(6, 0, 1); // 6 months and 1 day ago
+    invalidScreeningDate = DateUtils.getDateComponents(invalidScreening);
 
-    // X-ray 1 day BEFORE medical screening - INVALID!
-    const xray = DateUtils.getDateInPast(0, 0, 1); // 1 day in the past (Day -1)
-    xrayDate = DateUtils.getDateComponents(xray);
-
-    // Log generated dates for debugging
-    cy.log("=== INVALID SCENARIO: X-RAY BEFORE MEDICAL ===");
-    cy.log(`X-ray: Day -1 (BEFORE Medical - INVALID!)`);
-    cy.log(`Medical Screening: Day 0 (Today)`);
-    cy.log(`VIOLATION: X-ray cannot be before medical screening`);
-    cy.log(`Adult Age: ${adultAge}`);
-    cy.log(`Screening Date: ${screeningDate.day}/${screeningDate.month}/${screeningDate.year}`);
-    cy.log(`X-ray Date: ${xrayDate.day}/${xrayDate.month}/${xrayDate.year}`);
+    // Log dates for debugging
+    cy.log("=== INVALID SCENARIO: MEDICAL SCREENING > 6 MONTHS OLD ===");
+    cy.log(
+      `Medical Screening: ${invalidScreeningDate.day}/${invalidScreeningDate.month}/${invalidScreeningDate.year} (6 MONTHS + 1 DAY AGO - INVALID!)`,
+    );
+    cy.log(`VALIDATION: Medical screening cannot be more than 6 months in the past`);
   });
 
   beforeEach(() => {
@@ -109,18 +87,15 @@ describe("PETS Date Validation: INVALID Scenario - X-ray Before Medical", () => 
 
     // Generate random country and passport number
     const randomCountry = randomElement(countryList);
-    //countryCode = randomCountry?.value;
     countryName = randomCountry?.label;
     passportNumber = getRandomPassportNumber();
-    //tbCertificateNumber = "TB" + Math.floor(10000000 + Math.random() * 90000000);
 
     cy.log(`Using passport number: ${passportNumber}`);
     cy.log(`Using country: ${countryName}`);
   });
 
-  it("should test invalid scenario where X-ray date is before medical screening date", () => {
+  it("should reject medical screening date that is more than 6 months old", () => {
     // Search for new applicant
-    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName)
@@ -134,9 +109,10 @@ describe("PETS Date Validation: INVALID Scenario - X-ray Before Medical", () => 
     applicantSearchPage.verifyRedirectionToCreateApplicantPage();
 
     // Fill Applicant Details
+    cy.acceptCookies();
     applicantDetailsPage
       .verifyPageLoaded()
-      .fillFullName("Invalid Test User")
+      .fillFullName("Test Old Medical")
       .selectSex("Male")
       .selectNationality(countryName)
       .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
@@ -146,11 +122,11 @@ describe("PETS Date Validation: INVALID Scenario - X-ray Before Medical", () => 
         passportExpiryDate.month,
         passportExpiryDate.year,
       )
-      .fillAddressLine1("100 Invalid Street")
-      .fillTownOrCity("Invalid City")
-      .fillProvinceOrState("Martinique")
+      .fillAddressLine1("100 Old Medical Street")
+      .fillTownOrCity("Old City")
+      .fillProvinceOrState("Old Province")
       .selectAddressCountry(countryName)
-      .fillPostcode("IV1 1AA")
+      .fillPostcode("O6M 0LD")
       .submitForm();
 
     // Upload Applicant Photo
@@ -159,22 +135,16 @@ describe("PETS Date Validation: INVALID Scenario - X-ray Before Medical", () => 
     applicantPhotoUploadPage.uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg");
     applicantPhotoUploadPage.clickContinue();
 
-    // Verify redirection to the Check Photo page
+    // Check Photo page
     cy.url().should("include", "/check-visa-applicant-photo");
-
     checkPhotoPage.verifyPageLoaded();
-    checkPhotoPage.verifyPageHeadingText();
-    checkPhotoPage.verifyUploadedPhotoDisplayed();
-    checkPhotoPage.verifyFilenameDisplayed();
-    checkPhotoPage.verifyImageLayout();
-    checkPhotoPage.verifyRadioButtonsExist();
     checkPhotoPage.selectYesAddPhoto();
     checkPhotoPage.clickContinue();
 
-    // Applicant Summary
+    // Applicant Summary - verify details were saved correctly
     applicantSummaryPage.verifyPageLoaded();
     applicantSummaryPage.verifyAllSummaryValues({
-      "Full name": "Invalid Test User",
+      "Full name": "Test Old Medical",
       Sex: "Male",
       Nationality: countryName,
       "Date of birth": adultDOBSumPageFormat,
@@ -182,18 +152,13 @@ describe("PETS Date Validation: INVALID Scenario - X-ray Before Medical", () => 
     });
     applicantSummaryPage.confirmDetails();
 
-    // Verify applicant confirmation page
+    // Applicant Confirmation
     applicantConfirmationPage.verifyPageLoaded();
-    applicantConfirmationPage.verifyNextStepsText();
-
-    // Click continue - this goes to tracker
     applicantConfirmationPage.clickContinue();
 
-    // Verify we're on the tracker
+    // TB Progress Tracker
     cy.url().should("include", "/tracker");
     tbProgressTrackerPage.verifyPageLoaded();
-
-    // NOW navigate to travel information from the tracker
     tbProgressTrackerPage.clickTaskLink("UK travel information");
 
     // Select random category and store the selected value
@@ -209,23 +174,22 @@ describe("PETS Date Validation: INVALID Scenario - X-ray Before Medical", () => 
     // Click continue to proceed to travel information page
     visaCategoryPage.clickContinue();
 
-    // Travel Information
+    // Travel Information Page
     travelInformationPage.verifyPageLoaded();
-    travelInformationPage.fillCompleteForm({
-      ukAddressLine1: "100 UK Street",
-      ukAddressLine2: "Floor 2",
-      ukTownOrCity: "London",
-      ukPostcode: "SW11 1AA",
-      mobileNumber: "07700900123",
-      email: "pets.tester@hotmail.com",
-    });
 
+    // Fill out travel information form
+    travelInformationPage.fillCompleteForm({
+      ukAddressLine1: "221B Baker Street",
+      ukAddressLine2: "",
+      ukTownOrCity: "London",
+      ukPostcode: "NW1 6XE",
+      mobileNumber: "07123456789",
+      email: "pets.tester3@hotmail.com",
+    });
     // Submit the form
     travelInformationPage.submitForm();
 
-    // Travel Summary
     travelSummaryPage.verifyPageLoaded();
-
     // Verify the random visa type is valid and displayed correctly
     travelSummaryPage.verifyVisaTypeIsValid();
 
@@ -245,129 +209,58 @@ describe("PETS Date Validation: INVALID Scenario - X-ray Before Medical", () => 
     // Submit the summary page
     travelSummaryPage.submitForm();
 
-    // Travel Confirmation
+    // Travel Confirmation Page
     travelConfirmationPage.verifyPageLoaded();
     travelConfirmationPage.clickContinue();
 
-    // Verify we're back on the tracker
+    // TB Progress Tracker
     cy.url().should("include", "/tracker");
-    tbProgressTrackerPage.verifyPageLoaded();
-
-    // NOW navigate to medical screening from the tracker
     tbProgressTrackerPage.clickTaskLink("Medical history and TB symptoms");
 
-    // Medical Screening
+    // Medical Screening Page - Enter INVALID date (> 6 months old)
     medicalScreeningPage.verifyPageLoaded();
+
+    // ATTEMPTING INVALID MEDICAL SCREENING DATE: > 6 months old
+    // Fill medical screening with INVALID date
+    medicalScreeningPage.fillMedicalScreeningDate(
+      invalidScreeningDate.day,
+      invalidScreeningDate.month,
+      invalidScreeningDate.year,
+    );
     medicalScreeningPage
-      .fillScreeningDate(screeningDate.day, screeningDate.month, screeningDate.year)
-      .fillAge(adultAge.toString())
-      .selectTbSymptoms("No")
+      .selectTBSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
       .selectPregnancyStatus("No")
       .selectMenstrualPeriods("No")
-      .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.")
-      .submitForm();
-
-    // Verify redirection to X-ray Question Page
-    chestXrayPage.verifyPageLoaded();
-
-    // Select "Yes" for X-ray Required
-    chestXrayPage.selectXrayTakenYes();
-    chestXrayPage.submitForm();
-
-    // Medical Summary
-    medicalSummaryPage.verifyPageLoaded();
-
-    // Calculate expected age from birth date
-    const expectedAge = DateUtils.calculateAge(DateUtils.getAdultDateOfBirth(adultAge));
-
-    // Validate the prefilled form
-    medicalSummaryPage.fullyValidateSummary({
-      age: `${expectedAge} years old`,
-      tbSymptoms: "No",
-      previousTb: "No",
-      closeContactWithTb: "No",
-      pregnant: "No",
-      menstrualPeriods: "No",
-      physicalExamNotes: "No abnormalities detected. Patient appears healthy.",
-    });
-
-    // Confirm medical details
-    medicalSummaryPage.confirmDetails();
-
-    // Medical Confirmation
-    medicalConfirmationPage.verifyPageLoaded();
-    medicalConfirmationPage.verifyConfirmationPanel();
-    medicalConfirmationPage.verifyNextStepsSection();
-    medicalConfirmationPage.clickContinueButton();
-
-    // Verify we're back on the tracker
-    cy.url().should("include", "/tracker");
-    tbProgressTrackerPage.verifyPageLoaded();
-
-    // NOW navigate to chest X-ray from the tracker
-    tbProgressTrackerPage.clickTaskLink("Upload chest X-ray images");
-
-    // Verify redirection to chest X-ray Images Upload page
-    chestXrayUploadPage.verifyPageLoaded();
-    chestXrayUploadPage.verifyAllPageElements();
-
-    // Verify date X-ray taken section is displayed
-    chestXrayUploadPage.verifyDateXrayTakenSectionDisplayed();
-    chestXrayUploadPage.verifyDateInputFields();
-
-    // ATTEMPT TO ENTER INVALID X-RAY DATE (before medical screening)
-    cy.log("ATTEMPTING INVALID X-RAY DATE: X-ray before medical screening");
-    cy.log("EXPECTED: The Clinic App should display validation error or prevent submission");
-
-    // Verify the date was entered correctly
-    chestXrayUploadPage.enterDateXrayTaken(xrayDate.day, xrayDate.month, xrayDate.year);
-
-    // Verify X-ray upload page and sections and upload image(s)
-    chestXrayUploadPage.verifyXrayUploadSectionsDisplayed();
-    chestXrayUploadPage.verifyFileUploadInstructions();
-    chestXrayUploadPage.verifyAllFileDropZones();
-    chestXrayUploadPage.verifyDicomUploadContainers();
-
-    // Verify accepted file types include .dcm, .jpg, .jpeg, .png
-    chestXrayUploadPage.verifyAcceptedFileTypes();
-
-    // Upload Chest X-ray file
-    chestXrayUploadPage
-      .uploadPosteroAnteriorXray("cypress/fixtures/test-chest-xray.dcm")
-      .verifyUploadSuccess();
-
-    // Checking no errors appear initially
-    cy.get(".govuk-error-message").should("not.exist");
-    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
+      .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.");
 
     // Attempt to continue - should fail validation
-    chestXrayUploadPage.clickContinue();
+    medicalScreeningPage.submitForm();
 
-    // Verify validation error or that we're still on the same page
-    cy.url().should("include", "/upload-chest-x-ray");
+    // Verify we're still on the medical screening page
+    cy.url().should("include", "/record-medical-history-tb-symptoms");
 
-    // Verify Summary Error Message or Field Error Message is displayed
+    // Verify error summary is displayed
     cy.get(".govuk-error-summary").should("be.visible");
     cy.get(".govuk-error-summary__title")
       .should("be.visible")
       .and("contain.text", "There is a problem");
 
-    // Verify the specific error message in the error summary
+    // Verify the specific error message in error summary
     cy.get(".govuk-error-summary__body")
       .should("be.visible")
       .and(
         "contain.text",
-        "The date the X-ray was taken must be the same as or after the medical screening",
+        "The date of the medical screening must be today or in the past 6 months",
       );
 
-    // VERIFY INLINE ERROR MESSAGE (above date input fields)
+    // Verify inline error message on the medical screening date field
     cy.get(".govuk-error-message")
       .should("be.visible")
       .and(
         "contain.text",
-        "The date the X-ray was taken must be the same as or after the medical screening",
+        "The date of the medical screening must be today or in the past 6 months",
       );
   });
 });

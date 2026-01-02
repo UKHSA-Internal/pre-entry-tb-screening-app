@@ -17,7 +17,12 @@ import { selectApplicant, selectApplication } from "@/redux/store";
 import { DateType, PostedApplicantDetailsType, ReduxApplicantDetailsType } from "@/types";
 import { ApplicationStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
-import { getCountryName, standardiseDayOrMonth, validateDate } from "@/utils/helpers";
+import {
+  getCountryName,
+  standardiseDayOrMonth,
+  validateDate,
+  validatePassportIssueDate,
+} from "@/utils/helpers";
 import { countryList, formRegex } from "@/utils/records";
 
 const ApplicantForm = () => {
@@ -34,6 +39,7 @@ const ApplicantForm = () => {
   const {
     control,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = methods;
 
@@ -289,7 +295,8 @@ const ApplicantForm = () => {
               year: applicantData.passportIssueDate.year,
             }}
             rules={{
-              validate: (value: DateType) => validateDate(value, "passportIssueDate"),
+              validate: (value: DateType) =>
+                validatePassportIssueDate(value, getValues("dateOfBirth")),
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput

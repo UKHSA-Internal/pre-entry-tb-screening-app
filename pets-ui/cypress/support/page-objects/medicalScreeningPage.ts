@@ -49,6 +49,11 @@ export class MedicalScreeningPage extends BasePage {
     return this;
   }
 
+  // Alias for fillScreeningDate
+  fillMedicalScreeningDate(day: string, month: string, year: string): MedicalScreeningPage {
+    return this.fillScreeningDate(day, month, year);
+  }
+
   setScreeningDateToToday(): MedicalScreeningPage {
     cy.get('[data-testid="medical-screening-completion-date-quickfill-today"]').click();
     return this;
@@ -100,6 +105,11 @@ export class MedicalScreeningPage extends BasePage {
     return this;
   }
 
+  // Alias for selectTbSymptoms
+  selectTBSymptoms(option: "Yes" | "No"): MedicalScreeningPage {
+    return this.selectTbSymptoms(option);
+  }
+
   selectTbSymptomsList(symptoms: string[]): MedicalScreeningPage {
     symptoms.forEach((symptom) => {
       cy.get(`input[name="tbSymptomsList"][value="${symptom}"]`)
@@ -107,6 +117,32 @@ export class MedicalScreeningPage extends BasePage {
         .check({ force: true })
         .should("be.checked");
     });
+    return this;
+  }
+
+  // Method to select a single symptom from the TB symptoms list
+  selectSymptom(symptom: string): MedicalScreeningPage {
+    // Handle both exact match and partial match for symptom labels
+    const symptomMap: { [key: string]: string } = {
+      "Cough lasting more than 2 weeks": "Cough",
+      Cough: "Cough",
+      "Night sweats": "Night sweats",
+      "Fever or night sweats": "Night sweats",
+      Fever: "Fever",
+      "Haemoptysis (coughing up blood)": "Haemoptysis (coughing up blood)",
+      Haemoptysis: "Haemoptysis (coughing up blood)",
+      "Weight loss": "Weight loss",
+      "Other symptoms": "Other symptoms",
+    };
+
+    const mappedSymptom = symptomMap[symptom] || symptom;
+
+    cy.get(`input[name="tbSymptomsList"][value="${mappedSymptom}"]`)
+      .should("exist")
+      .check({ force: true })
+      .should("be.checked");
+
+    cy.log(`Selected TB symptom: ${mappedSymptom}`);
     return this;
   }
 
@@ -223,6 +259,11 @@ export class MedicalScreeningPage extends BasePage {
   submitForm(): MedicalScreeningPage {
     cy.get('button[type="submit"]').contains("Continue").click();
     return this;
+  }
+
+  // Alias for submitForm
+  clickSaveAndContinue(): MedicalScreeningPage {
+    return this.submitForm();
   }
 
   // Verify redirection to Medical Summary Page
