@@ -14,7 +14,7 @@ export default function ApplicantContactDetailsPage() {
   } else if (from === "tb-certificate-summary") {
     backLinkTo = "/tb-certificate-summary";
   } else {
-    backLinkTo = "/do-you-have-visa-applicant-written-consent-for-tb-screening";
+    backLinkTo = "/visa-applicant-passport-information";
   }
 
   useEffect(() => {
