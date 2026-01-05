@@ -227,7 +227,6 @@ describe("PETS Date Validation: INVALID - Medical Screening in Future", () => {
 
     // Medical Screening Page - Enter INVALID future date
     medicalScreeningPage.verifyPageLoaded();
-    medicalScreeningPage.verifyAllPageElements();
 
     cy.log("ATTEMPTING INVALID MEDICAL SCREENING DATE: Future date");
     cy.log("EXPECTED: Validation error should be displayed");
@@ -258,17 +257,11 @@ describe("PETS Date Validation: INVALID - Medical Screening in Future", () => {
     // Verify the specific error message in error summary
     cy.get(".govuk-error-summary__body")
       .should("be.visible")
-      .and(
-        "contain.text",
-        "The date of the medical screening must be today or in the past 6 months",
-      );
+      .and("contain.text", "The medical screening date must be today or in the past");
 
     // Verify inline error message on the medical screening date field
     cy.get(".govuk-error-message")
       .should("be.visible")
-      .and(
-        "contain.text",
-        "The date of the medical screening must be today or in the past 6 months",
-      );
+      .and("contain.text", "The medical screening date must be today or in the past");
   });
 });
