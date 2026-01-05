@@ -36,7 +36,7 @@ import {
   randomElement,
 } from "../../support/test-helpers";
 
-describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray, Sputum Required, Certificate Issued (6 months)", () => {
+describe("PETS Scenario: Infant (6 months old) with No Symptoms, No X-ray, Sputum Required, Certificate Issued (6 months)", () => {
   // Page object instances
   const applicantConsentPage = new ApplicantConsentPage();
   const checkPhotoPage = new CheckVisaApplicantPhotoPage();
@@ -74,12 +74,14 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
   let tbCertificateNumber: string = "";
   let selectedVisaCategory: string;
 
-  // Date-related variables for NEWBORN INFANT
+  // Date-related variables for 6-month-old INFANT
   let infantAgeInMonths: number;
   let infantDOB: { day: string; month: string; year: string };
   let infantDOBFormatted: string;
-  let passportIssueDate: { day: string; month: string; year: string };
-  let passportExpiryDate: { day: string; month: string; year: string };
+  let infantDOBGOVUKFormat: string;
+  let screeningDateGOVUKFormat: string;
+  let passportIssueDate: { day: string; month: string; year: string }; //
+  let passportExpiryDate: { day: string; month: string; year: string }; //
   let screeningDate: ReturnType<typeof DateUtils.getDateComponents>;
   let sputumSample1Date: { day: string; month: string; year: string };
   let sputumSample1DateFormatted: string;
@@ -111,15 +113,17 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     cy.log(`Using country name: ${countryName}`);
     cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
 
-    // Generate ALL test-friendly dates for 1-month-old newborn
-    const testDates = DateUtils.getInfantApplicantTestDates(1);
+    // ✅ Generate ALL test-friendly dates for 6-month-old infant
+    const testDates = DateUtils.getInfantApplicantTestDates(6);
 
     infantAgeInMonths = testDates.infantAgeInMonths;
     infantDOB = testDates.birthDate;
     infantDOBFormatted = testDates.birthDateFormatted;
+    infantDOBGOVUKFormat = testDates.birthDateGOVUKFormat;
     passportIssueDate = testDates.passportIssueDate;
     passportExpiryDate = testDates.passportExpiryDate;
     screeningDate = testDates.screeningDate;
+    screeningDateGOVUKFormat = testDates.screeningDateGOVUKFormat;
     sputumSample1Date = testDates.sputumSample1Date;
     sputumSample1DateFormatted = testDates.sputumSample1DateFormatted;
     sputumSample2Date = testDates.sputumSample2Date;
@@ -128,9 +132,10 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     sputumSample3DateFormatted = testDates.sputumSample3DateFormatted;
 
     // Log generated dates for debugging
-    cy.log(`Newborn Age: ${infantAgeInMonths} month`);
-    cy.log(`Newborn DOB: ${infantDOB.day}/${infantDOB.month}/${infantDOB.year}`);
+    cy.log(`Infant Age: ${infantAgeInMonths} months`);
+    cy.log(`Infant DOB: ${infantDOB.day}/${infantDOB.month}/${infantDOB.year}`);
     cy.log(`DOB Formatted: ${infantDOBFormatted}`);
+    cy.log(`DOB GOV.UK Format: ${infantDOBGOVUKFormat}`);
     cy.log(
       `Passport Issue: ${passportIssueDate.day}/${passportIssueDate.month}/${passportIssueDate.year}`,
     );
@@ -138,6 +143,7 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
       `Passport Expiry: ${passportExpiryDate.day}/${passportExpiryDate.month}/${passportExpiryDate.year}`,
     );
     cy.log(`Screening Date: ${screeningDate.day}/${screeningDate.month}/${screeningDate.year}`);
+    cy.log(`Screening Date GOV.UK Format: ${screeningDateGOVUKFormat}`);
   });
 
   it("should complete the full application process for 6-month-old infant with no symptoms, no X-ray, sputum required, and issue certificate with 6 month expiry", () => {
@@ -159,28 +165,24 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     // Verify redirection to applicant search page
     applicantSearchPage.verifyRedirectionToCreateApplicantPage();
 
-    // Fill Applicant Details for Newborn Infant (6 month old)
+    // Fill Applicant Details for 6-month-old Infant
     applicantDetailsPage.verifyPageLoaded();
 
-    // Fill in applicant details for 6-month-old baby
-    applicantDetailsPage
-      .fillFullName("Baby Emma Johnson")
-      .selectSex("Female")
-      .selectNationality(countryName)
-      .fillBirthDate(infantDOB.day, infantDOB.month, infantDOB.year)
-      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
-      .fillPassportExpiryDate(
-        passportExpiryDate.day,
-        passportExpiryDate.month,
-        passportExpiryDate.year,
-      )
-      .fillAddressLine1("123 Infant Care Lane")
-      .fillAddressLine2("Maternity Ward B")
-      .fillAddressLine3("New Born Baby")
-      .fillTownOrCity("Libraville")
-      .fillProvinceOrState("Dahoume")
-      .selectAddressCountry(countryName)
-      .fillPostcode("56109");
+    // Use infant-specific form method
+    applicantDetailsPage.fillCompleteInfantForm({
+      fullName: "Baby Emma Johnson",
+      sex: "Female",
+      nationality: countryName,
+      ageInMonths: infantAgeInMonths, // Will be 6 from beforeEach
+      daysAfterBirthForPassport: 14, // Passport issued 14 days after birth (2 weeks)
+      addressLine1: "123 Infant Care Lane",
+      addressLine2: "Maternity Ward B",
+      addressLine3: "New Born Baby",
+      townOrCity: "Libraville",
+      provinceOrState: "Dahoume",
+      addressCountry: countryName,
+      postcode: "56109",
+    });
 
     // Submit form
     applicantDetailsPage.submitForm();
@@ -338,7 +340,7 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     const expectedScreeningDate = DateUtils.formatDateGOVUK(screening);
 
     medicalSummaryPage.fullyValidateSummary({
-      age: `${expectedAge} month old`,
+      age: `${expectedAge} months old`,
       dateOfMedicalScreening: expectedScreeningDate,
       tbSymptoms: "No",
       previousTb: "No",
