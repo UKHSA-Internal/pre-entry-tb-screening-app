@@ -14,6 +14,7 @@ import {
   dateValidationMessages,
   longNumericStrings,
   shortNumericStrings,
+  symptomsValidationMessages,
 } from "./records";
 
 const standardiseDayOrMonth = (dayOrMonth: string) => {
@@ -104,6 +105,116 @@ const validateDate = (value: DateType, fieldName: string) => {
     return dateValidationMessages[fieldName].dateMustBeInFutureError;
   }
 
+  return true;
+};
+
+const validatePassportIssueDate = (issueDate: DateType, dateOfBirth: DateType) => {
+  const validDate = validateDate(issueDate, "passportIssueDate");
+  if (validDate !== true) return validDate;
+
+  if (
+    !issueDate.day ||
+    !issueDate.month ||
+    !issueDate.year ||
+    !dateOfBirth.day ||
+    !dateOfBirth.month ||
+    !dateOfBirth.year
+  ) {
+    return true;
+  }
+
+  const issueDateObj = new Date(
+    Number(issueDate.year),
+    Number(issueDate.month) - 1,
+    Number(issueDate.day),
+  );
+  const dobDateObj = new Date(
+    Number(dateOfBirth.year),
+    Number(dateOfBirth.month) - 1,
+    Number(dateOfBirth.day),
+  );
+
+  if (Number.isNaN(issueDateObj.getTime()) || Number.isNaN(dobDateObj.getTime())) {
+    return true;
+  }
+
+  if (issueDateObj <= dobDateObj) {
+    return dateValidationMessages.passportIssueDate.dateMustBeAfterDobError;
+  }
+
+  return true;
+};
+
+const validateMedicalScreeningDate = (completionDate: DateType) => {
+  const validDate = validateDate(completionDate, "completionDate");
+  if (validDate !== true) return validDate;
+
+  if (!completionDate.day || !completionDate.month || !completionDate.year) return true;
+
+  const date = new Date(
+    Number(completionDate.year),
+    Number(completionDate.month) - 1,
+    Number(completionDate.day),
+  );
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (Number.isNaN(date.getTime())) return true;
+
+  const sixMonthsAgo = new Date(today);
+  sixMonthsAgo.setMonth(today.getMonth() - 6);
+
+  if (date < sixMonthsAgo) {
+    return dateValidationMessages.completionDate.dateMustBeRecentError;
+  }
+
+  return true;
+};
+
+const validateXrayDate = (xrayDate: DateType, screeningDate: DateType) => {
+  const validDate = validateDate(xrayDate, "dateXrayTaken");
+  if (validDate !== true) return validDate;
+
+  if (
+    !xrayDate.day ||
+    !xrayDate.month ||
+    !xrayDate.year ||
+    !screeningDate.day ||
+    !screeningDate.month ||
+    !screeningDate.year
+  ) {
+    return true;
+  }
+
+  const xrayDateObj = new Date(
+    Number(xrayDate.year),
+    Number(xrayDate.month) - 1,
+    Number(xrayDate.day),
+  );
+  const screeningDateObj = new Date(
+    Number(screeningDate.year),
+    Number(screeningDate.month) - 1,
+    Number(screeningDate.day),
+  );
+
+  if (Number.isNaN(xrayDateObj.getTime()) || Number.isNaN(screeningDateObj.getTime())) {
+    return true;
+  }
+
+  if (xrayDateObj < screeningDateObj) {
+    return dateValidationMessages.dateXrayTaken.dateMustBeAfterMedicalScreeningError;
+  }
+
+  return true;
+};
+
+const validateTbSymptoms = (symptoms: string[], hasSymptoms: string) => {
+  if (hasSymptoms === "Yes" && (!symptoms || symptoms.length === 0)) {
+    return symptomsValidationMessages.requiredIfYes;
+  }
+  if (hasSymptoms === "No" && symptoms && symptoms.length > 0) {
+    return symptomsValidationMessages.forbiddenIfNo;
+  }
   return true;
 };
 
@@ -305,4 +416,8 @@ export {
   standardiseDayOrMonth,
   toArray,
   validateDate,
+  validateMedicalScreeningDate,
+  validatePassportIssueDate,
+  validateTbSymptoms,
+  validateXrayDate,
 };

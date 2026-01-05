@@ -18,11 +18,11 @@ import {
   setPosteroAnteriorXrayFileName,
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectApplication, selectChestXray } from "@/redux/store";
+import { selectApplication, selectChestXray, selectMedicalScreening } from "@/redux/store";
 import { DateType, ReduxChestXrayDetailsType } from "@/types";
 import { ButtonClass, ImageType } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
-import { validateDate } from "@/utils/helpers";
+import { validateXrayDate } from "@/utils/helpers";
 import uploadFile from "@/utils/uploadFile";
 
 const DicomUploadModule = (
@@ -57,6 +57,7 @@ const DicomUploadModule = (
 const ChestXrayForm = () => {
   const chestXrayData = useAppSelector(selectChestXray);
   const applicationData = useAppSelector(selectApplication);
+  const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -164,7 +165,8 @@ const ChestXrayForm = () => {
                   year: chestXrayData.dateXrayTaken.year,
                 }}
                 rules={{
-                  validate: (value: DateType) => validateDate(value, "dateXrayTaken"),
+                  validate: (value: DateType) =>
+                    validateXrayDate(value, medicalScreeningData.completionDate),
                 }}
                 render={({ field: { value, onChange } }) => (
                   <DateTextInput
