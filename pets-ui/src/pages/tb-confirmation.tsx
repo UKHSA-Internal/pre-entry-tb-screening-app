@@ -61,7 +61,7 @@ export default function TbConfirmationPage() {
         applicationNumber={tbCertificateData.certificateNumber}
         preWhatHappensNextText="The visa applicant TB screening is complete."
         whatHappensNext={true}
-        postWhatHappensNextText="We've sent the certificate information to UKHSA."
+        postWhatHappensNextText="We have sent the certificate information to UKHSA."
         furtherInfo={furtherInfo}
         showSearchForAnotherVisaApplicantLink={false}
         actionButton={
