@@ -51,8 +51,10 @@ const ApplicantPassportDetailsForm = () => {
   const onSubmit: SubmitHandler<ApplicantPassportDetailsData> = async (formData) => {
     const fromParam = searchParams.get("from");
 
-    dispatch(setPassportNumber(formData.passportNumber));
-    dispatch(setCountryOfIssue(formData.countryOfIssue));
+    if (!isComplete) {
+      dispatch(setPassportNumber(formData.passportNumber));
+      dispatch(setCountryOfIssue(formData.countryOfIssue));
+    }
     dispatch(setPassportIssueDate(formData.passportIssueDate));
     dispatch(setPassportExpiryDate(formData.passportExpiryDate));
 
