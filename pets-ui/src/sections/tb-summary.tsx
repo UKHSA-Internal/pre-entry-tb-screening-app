@@ -59,11 +59,12 @@ const TbSummary = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const isFromConfirmation = searchParams.get("from") === "/tb-screening-complete";
-  const summaryStatus = isFromConfirmation
-    ? ApplicationStatus.IN_PROGRESS
-    : tbCertificateData.status;
-
   const isCertificateIssued = tbCertificateData.status === ApplicationStatus.COMPLETE;
+  const summaryStatus =
+    isFromConfirmation || isCertificateIssued
+      ? ApplicationStatus.IN_PROGRESS
+      : tbCertificateData.status;
+
   const isIssued = tbCertificateData.isIssued === YesOrNo.YES;
 
   const handleSubmit = async () => {
