@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate, useSearchParams } from "react-router";
 
@@ -8,6 +8,7 @@ import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
+import Spinner from "@/components/spinner/spinner";
 import SubmitButton from "@/components/submitButton/submitButton";
 import Summary from "@/components/summary/summary";
 import {
@@ -38,6 +39,7 @@ const ApplicantPassportDetailsForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const [isLoading, setIsLoading] = useState(false);
   const isComplete = applicantData.status === ApplicationStatus.COMPLETE;
   const summaryStatus = isComplete ? ApplicationStatus.IN_PROGRESS : applicantData.status;
 
@@ -59,6 +61,7 @@ const ApplicantPassportDetailsForm = () => {
     dispatch(setPassportExpiryDate(formData.passportExpiryDate));
 
     if (isComplete && applicationData.applicationId) {
+      setIsLoading(true);
       try {
         const issueDateStr = `${formData.passportIssueDate.year}-${standardiseDayOrMonth(formData.passportIssueDate.month)}-${standardiseDayOrMonth(formData.passportIssueDate.day)}`;
         const expiryDateStr = `${formData.passportExpiryDate.year}-${standardiseDayOrMonth(formData.passportExpiryDate.month)}-${standardiseDayOrMonth(formData.passportExpiryDate.day)}`;
@@ -117,6 +120,8 @@ const ApplicantPassportDetailsForm = () => {
 
   return (
     <FormProvider {...methods}>
+      {isLoading && <Spinner />}
+
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 

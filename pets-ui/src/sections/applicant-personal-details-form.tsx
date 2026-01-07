@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate, useSearchParams } from "react-router";
 
@@ -9,6 +9,7 @@ import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
+import Spinner from "@/components/spinner/spinner";
 import SubmitButton from "@/components/submitButton/submitButton";
 import {
   setApplicantDetailsStatus,
@@ -39,6 +40,7 @@ const ApplicantPersonalDetailsForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const [isLoading, setIsLoading] = useState(false);
   const isComplete = applicantData.status === ApplicationStatus.COMPLETE;
 
   const methods = useForm<ReduxApplicantDetailsType>({ reValidateMode: "onSubmit" });
@@ -57,6 +59,7 @@ const ApplicantPersonalDetailsForm = () => {
     dispatch(setCountryOfNationality(formData.countryOfNationality));
 
     if (isComplete && applicationData.applicationId) {
+      setIsLoading(true);
       try {
         const dateOfBirthStr = `${formData.dateOfBirth.year}-${standardiseDayOrMonth(formData.dateOfBirth.month)}-${standardiseDayOrMonth(formData.dateOfBirth.day)}`;
 
@@ -117,6 +120,8 @@ const ApplicantPersonalDetailsForm = () => {
 
   return (
     <FormProvider {...methods}>
+      {isLoading && <Spinner />}
+
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 

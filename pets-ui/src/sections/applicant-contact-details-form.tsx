@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate, useSearchParams } from "react-router";
 
@@ -7,6 +7,7 @@ import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
+import Spinner from "@/components/spinner/spinner";
 import SubmitButton from "@/components/submitButton/submitButton";
 import {
   setApplicantHomeAddress1,
@@ -41,6 +42,7 @@ const ApplicantContactDetailsForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const [isLoading, setIsLoading] = useState(false);
   const isComplete = applicantData.status === ApplicationStatus.COMPLETE;
 
   const methods = useForm<ReduxApplicantDetailsType>({ reValidateMode: "onSubmit" });
@@ -61,6 +63,7 @@ const ApplicantContactDetailsForm = () => {
     dispatch(setCountry(formData.country));
 
     if (isComplete && applicationData.applicationId) {
+      setIsLoading(true);
       try {
         await putApplicantDetails(applicationData.applicationId, {
           applicantHomeAddress1: formData.applicantHomeAddress1,
@@ -125,6 +128,8 @@ const ApplicantContactDetailsForm = () => {
 
   return (
     <FormProvider {...methods}>
+      {isLoading && <Spinner />}
+
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
