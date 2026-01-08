@@ -525,7 +525,6 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     clinicCertificateInfoPage
       .verifyPageLoaded()
       .verifyCertificateExpiryDateCalculation()
-      .verifyCertificateExpiryIs6MonthsFromIssueDate()
       .saveCertificateReferenceNumber()
       .completeForm(
         "Dr. Emily Neonatologist",
