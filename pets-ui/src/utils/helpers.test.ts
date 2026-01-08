@@ -8,7 +8,12 @@ import {
   spreadArrayIfNotEmpty,
   standardiseDayOrMonth,
   validateDate,
+  validateMedicalScreeningDate,
+  validatePassportIssueDate,
+  validateTbSymptoms,
+  validateXrayDate,
 } from "./helpers";
+import { dateValidationMessages, symptomsValidationMessages } from "./records";
 
 describe("standardiseDayOrMonth function", () => {
   test.each([
@@ -411,5 +416,98 @@ describe("calculateApplicantAge function", () => {
       vi.setSystemTime(today);
       expect(calculateApplicantAge(dob)).toEqual(output);
     });
+  });
+});
+
+describe("validatePassportIssueDate function", () => {
+  const dob = { day: "01", month: "01", year: "1990" };
+
+  it("should return true for a valid issue date after the dob", () => {
+    const issueDate = { day: "01", month: "01", year: "2010" };
+    expect(validatePassportIssueDate(issueDate, dob)).toBe(true);
+  });
+
+  it("should return error if issue date is before the dob", () => {
+    const issueDate = { day: "01", month: "01", year: "1980" };
+    expect(validatePassportIssueDate(issueDate, dob)).toBe(
+      dateValidationMessages.passportIssueDate.dateMustBeAfterDobError,
+    );
+  });
+
+  it("should return error if issue date is same as the dob", () => {
+    const issueDate = { day: "01", month: "01", year: "1990" };
+    expect(validatePassportIssueDate(issueDate, dob)).toBe(
+      dateValidationMessages.passportIssueDate.dateMustBeAfterDobError,
+    );
+  });
+});
+
+describe("validateMedicalScreeningDate function", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("should return true for a recent date that is within 6 months", () => {
+    vi.setSystemTime(new Date("2023-10-01"));
+    const completionDate = { day: "01", month: "09", year: "2023" };
+    expect(validateMedicalScreeningDate(completionDate)).toBe(true);
+  });
+
+  it("should return error for a date older than 6 months", () => {
+    vi.setSystemTime(new Date("2023-10-01"));
+    const completionDate = { day: "01", month: "01", year: "2023" };
+    expect(validateMedicalScreeningDate(completionDate)).toBe(
+      dateValidationMessages.completionDate.dateMustBeRecentError,
+    );
+  });
+
+  it("should return error for a future date (handled by validateDate)", () => {
+    vi.setSystemTime(new Date("2023-10-01"));
+    const completionDate = { day: "01", month: "11", year: "2023" };
+    expect(validateMedicalScreeningDate(completionDate)).toBe(
+      dateValidationMessages.completionDate.dateMustBeInPastError,
+    );
+  });
+});
+
+describe("validateXrayDate function", () => {
+  const screeningDate = { day: "15", month: "06", year: "2023" };
+
+  it("should return true for xray date after screening date", () => {
+    const xrayDate = { day: "20", month: "06", year: "2023" };
+    expect(validateXrayDate(xrayDate, screeningDate)).toBe(true);
+  });
+
+  it("should return true for xray date same as screening date", () => {
+    const xrayDate = { day: "15", month: "06", year: "2023" };
+    expect(validateXrayDate(xrayDate, screeningDate)).toBe(true);
+  });
+
+  it("should return error for xray date before screening date", () => {
+    const xrayDate = { day: "10", month: "06", year: "2023" };
+    expect(validateXrayDate(xrayDate, screeningDate)).toBe(
+      dateValidationMessages.dateXrayTaken.dateMustBeAfterMedicalScreeningError,
+    );
+  });
+});
+
+describe("validateTbSymptoms function", () => {
+  it("should return error if symptoms Yes but list of symptoms is empty", () => {
+    expect(validateTbSymptoms([], "Yes")).toBe(symptomsValidationMessages.requiredIfYes);
+  });
+
+  it("should return true if symptoms Yes and list of symptoms has items", () => {
+    expect(validateTbSymptoms(["Cough"], "Yes")).toBe(true);
+  });
+
+  it("should return error if symptoms No but list of symptoms has items", () => {
+    expect(validateTbSymptoms(["Cough"], "No")).toBe(symptomsValidationMessages.forbiddenIfNo);
+  });
+
+  it("should return true if symptoms No and list of symptoms is empty", () => {
+    expect(validateTbSymptoms([], "No")).toBe(true);
   });
 });

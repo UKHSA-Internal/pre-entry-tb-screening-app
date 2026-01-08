@@ -152,6 +152,95 @@ export class ApplicantDetailsPage extends BasePage {
     return this;
   }
 
+  /**
+   * Fill birth date for an infant (under 12 months)
+   * @param ageInMonths - Age in months (0-11)
+   */
+  fillInfantBirthDate(ageInMonths: number): ApplicantDetailsPage {
+    if (ageInMonths >= 12) {
+      throw new Error("Use fillChildBirthDate for children 12 months or older");
+    }
+    const dob = DateUtils.getInfantDOBComponents(ageInMonths);
+    this.fillBirthDate(dob.day, dob.month, dob.year);
+    return this;
+  }
+
+  /**
+   * Fill passport dates for an infant (under 12 months)
+   * Ensures passport issue date is AFTER the infant's date of birth
+   * @param infantAgeInMonths - Age of infant in months (0-11)
+   * @param daysAfterBirth - Days after birth when passport was issued (default: 7 days)
+   */
+  fillInfantPassportDates(
+    infantAgeInMonths: number,
+    daysAfterBirth: number = 7,
+  ): ApplicantDetailsPage {
+    if (infantAgeInMonths >= 12) {
+      throw new Error(
+        "Use fillChildPassportDates() for children 12 months or older. This method is for infants under 12 months.",
+      );
+    }
+
+    // Get the infant's DOB
+    const infantDOB = DateUtils.getInfantDateOfBirth(infantAgeInMonths);
+
+    // Issue passport X days after birth
+    const issueDate = new Date(infantDOB);
+    issueDate.setDate(issueDate.getDate() + daysAfterBirth);
+
+    // Child passports expire after 5 years
+    const expiryDate = DateUtils.getPassportExpiryDate(issueDate, true);
+
+    const issueComponents = DateUtils.getDateComponents(issueDate);
+    const expiryComponents = DateUtils.getDateComponents(expiryDate);
+
+    cy.log(
+      `Infant Passport: Issue=${issueComponents.day}/${issueComponents.month}/${issueComponents.year}, Expiry=${expiryComponents.day}/${expiryComponents.month}/${expiryComponents.year}`,
+    );
+
+    this.fillPassportIssueDate(issueComponents.day, issueComponents.month, issueComponents.year);
+    this.fillPassportExpiryDate(
+      expiryComponents.day,
+      expiryComponents.month,
+      expiryComponents.year,
+    );
+
+    return this;
+  }
+
+  /**
+   * Fill passport dates for a child (1-10 years old)
+   * Ensures passport is issued after birth
+   * @param childAge - Age of child in years (1-10)
+   * @param monthsAfterBirth - Months after birth when passport was issued (default: 1 month)
+   */
+  fillChildPassportDates(childAge: number, monthsAfterBirth: number = 1): ApplicantDetailsPage {
+    if (childAge < 1 || childAge >= 11) {
+      throw new Error("Child age must be between 1-10 years");
+    }
+
+    const childDOB = DateUtils.getChildDateOfBirth(childAge);
+
+    // Issue passport X months after birth
+    const issueDate = new Date(childDOB);
+    issueDate.setMonth(issueDate.getMonth() + monthsAfterBirth);
+
+    // Child passports expire after 5 years
+    const expiryDate = DateUtils.getPassportExpiryDate(issueDate, true);
+
+    const issueComponents = DateUtils.getDateComponents(issueDate);
+    const expiryComponents = DateUtils.getDateComponents(expiryDate);
+
+    this.fillPassportIssueDate(issueComponents.day, issueComponents.month, issueComponents.year);
+    this.fillPassportExpiryDate(
+      expiryComponents.day,
+      expiryComponents.month,
+      expiryComponents.year,
+    );
+
+    return this;
+  }
+
   // Address Methods
   fillAddressLine1(text: string): ApplicantDetailsPage {
     cy.get('[data-testid="address-1"]', { timeout: 10000 }).should("be.visible").clear().type(text);
@@ -207,14 +296,15 @@ export class ApplicantDetailsPage extends BasePage {
   }
 
   /**
-   * Fill the entire form with valid data for a CHILD
-   * Automatically calculates dates based on age
+   * Fill the entire form with valid data for an INFANT (under 12 months)
+   * Automatically calculates dates ensuring passport is issued AFTER birth
    */
-  fillCompleteChildForm(data: {
+  fillCompleteInfantForm(data: {
     fullName: string;
     sex: string;
     nationality: string;
-    age: number; // Child's age (must be under 11)
+    ageInMonths: number; // Infant's age in months (0-11)
+    daysAfterBirthForPassport?: number; // Days after birth passport was issued (default: 7)
     addressLine1: string;
     addressLine2?: string;
     addressLine3?: string;
@@ -223,15 +313,19 @@ export class ApplicantDetailsPage extends BasePage {
     addressCountry: string;
     postcode: string;
   }): ApplicantDetailsPage {
-    if (data.age >= 11) {
-      throw new Error("Child age must be under 11 years");
+    if (data.ageInMonths >= 12) {
+      throw new Error(
+        "Infant age must be under 12 months. Use fillCompleteChildForm for older children.",
+      );
     }
+
+    const daysAfterBirth = data.daysAfterBirthForPassport || 7;
 
     this.fillFullName(data.fullName)
       .selectSex(data.sex)
       .selectNationality(data.nationality)
-      .fillChildBirthDate(data.age) // Dynamic birth date
-      .fillPassportDatesAuto(2, true) // Automatic passport dates for child
+      .fillInfantBirthDate(data.ageInMonths) // Dynamic infant birth date
+      .fillInfantPassportDates(data.ageInMonths, daysAfterBirth) // Passport issued AFTER birth
       .fillAddressLine1(data.addressLine1);
 
     if (data.addressLine2) {
@@ -249,6 +343,64 @@ export class ApplicantDetailsPage extends BasePage {
     }
 
     this.selectAddressCountry(data.addressCountry).fillPostcode(data.postcode);
+
+    cy.log(
+      `✓ Infant form completed: ${data.ageInMonths} months old, passport issued ${daysAfterBirth} days after birth`,
+    );
+
+    return this;
+  }
+
+  /**
+   * Fill the entire form with valid data for a CHILD (1-10 years)
+   * Automatically calculates dates based on age
+   */
+  fillCompleteChildForm(data: {
+    fullName: string;
+    sex: string;
+    nationality: string;
+    age: number; // Child's age (1-10 years)
+    monthsAfterBirthForPassport?: number; // Months after birth passport was issued (default: 1)
+    addressLine1: string;
+    addressLine2?: string;
+    addressLine3?: string;
+    townOrCity: string;
+    provinceOrState?: string;
+    addressCountry: string;
+    postcode: string;
+  }): ApplicantDetailsPage {
+    if (data.age < 1 || data.age >= 11) {
+      throw new Error("Child age must be between 1-10 years");
+    }
+
+    const monthsAfterBirth = data.monthsAfterBirthForPassport || 1;
+
+    this.fillFullName(data.fullName)
+      .selectSex(data.sex)
+      .selectNationality(data.nationality)
+      .fillChildBirthDate(data.age) // Dynamic child birth date
+      .fillChildPassportDates(data.age, monthsAfterBirth) // Passport issued AFTER birth
+      .fillAddressLine1(data.addressLine1);
+
+    if (data.addressLine2) {
+      this.fillAddressLine2(data.addressLine2);
+    }
+
+    if (data.addressLine3) {
+      this.fillAddressLine3(data.addressLine3);
+    }
+
+    this.fillTownOrCity(data.townOrCity);
+
+    if (data.provinceOrState) {
+      this.fillProvinceOrState(data.provinceOrState);
+    }
+
+    this.selectAddressCountry(data.addressCountry).fillPostcode(data.postcode);
+
+    cy.log(
+      `✓ Child form completed: ${data.age} years old, passport issued ${monthsAfterBirth} months after birth`,
+    );
 
     return this;
   }

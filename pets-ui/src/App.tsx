@@ -32,6 +32,7 @@ import HomePage from "./pages/home-page";
 import MedicalScreeningPage from "./pages/medical-screening";
 import MedicalConfirmation from "./pages/medical-screening-confirmation";
 import MedicalSummaryPage from "./pages/medical-screening-summary";
+import PageNotFound from "./pages/page-not-found";
 import PrivacyNoticePage from "./pages/privacy-notice";
 import ProgressTrackerPage from "./pages/progress-tracker";
 import RadiologicalOutcomeConfirmation from "./pages/radiological-outcome-confirmation";
@@ -509,6 +510,8 @@ function App() {
       <Route path="/cookies" element={<CookiesPage />} />
       <Route path="/privacy-notice" element={<PrivacyNoticePage />} />
       <Route path="/sorry-there-is-problem-with-service" element={<ErrorPage />} />
+      <Route path="/page-not-found" element={<PageNotFound />} />
+      <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
 }

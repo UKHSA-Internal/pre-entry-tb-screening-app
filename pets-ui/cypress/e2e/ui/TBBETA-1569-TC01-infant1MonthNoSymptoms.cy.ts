@@ -78,6 +78,8 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
   let infantAgeInMonths: number;
   let infantDOB: { day: string; month: string; year: string };
   let infantDOBFormatted: string;
+  let infantDOBGOVUKFormat: string;
+  let screeningDateGOVUKFormat: string;
   let passportIssueDate: { day: string; month: string; year: string };
   let passportExpiryDate: { day: string; month: string; year: string };
   let screeningDate: ReturnType<typeof DateUtils.getDateComponents>;
@@ -117,9 +119,11 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     infantAgeInMonths = testDates.infantAgeInMonths;
     infantDOB = testDates.birthDate;
     infantDOBFormatted = testDates.birthDateFormatted;
+    infantDOBGOVUKFormat = testDates.birthDateGOVUKFormat;
     passportIssueDate = testDates.passportIssueDate;
     passportExpiryDate = testDates.passportExpiryDate;
     screeningDate = testDates.screeningDate;
+    screeningDateGOVUKFormat = testDates.screeningDateGOVUKFormat;
     sputumSample1Date = testDates.sputumSample1Date;
     sputumSample1DateFormatted = testDates.sputumSample1DateFormatted;
     sputumSample2Date = testDates.sputumSample2Date;
@@ -131,6 +135,7 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     cy.log(`Newborn Age: ${infantAgeInMonths} month`);
     cy.log(`Newborn DOB: ${infantDOB.day}/${infantDOB.month}/${infantDOB.year}`);
     cy.log(`DOB Formatted: ${infantDOBFormatted}`);
+    cy.log(`DOB GOV.UK Format: ${infantDOBGOVUKFormat}`);
     cy.log(
       `Passport Issue: ${passportIssueDate.day}/${passportIssueDate.month}/${passportIssueDate.year}`,
     );
@@ -138,6 +143,7 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
       `Passport Expiry: ${passportExpiryDate.day}/${passportExpiryDate.month}/${passportExpiryDate.year}`,
     );
     cy.log(`Screening Date: ${screeningDate.day}/${screeningDate.month}/${screeningDate.year}`);
+    cy.log(`Screening Date GOV.UK Format: ${screeningDateGOVUKFormat}`);
   });
 
   it("should complete the full application process for 1-month-old newborn with no symptoms, no X-ray, sputum required, and issue certificate with 6 month expiry", () => {
@@ -162,25 +168,21 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     // Fill Applicant Details for Newborn Infant (1 month old)
     applicantDetailsPage.verifyPageLoaded();
 
-    // Fill in applicant details for 1-month-old newborn
-    applicantDetailsPage
-      .fillFullName("Baby Olivia Smith")
-      .selectSex("Female")
-      .selectNationality(countryName)
-      .fillBirthDate(infantDOB.day, infantDOB.month, infantDOB.year)
-      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
-      .fillPassportExpiryDate(
-        passportExpiryDate.day,
-        passportExpiryDate.month,
-        passportExpiryDate.year,
-      )
-      .fillAddressLine1("123 Newborn Nursery Road")
-      .fillAddressLine2("Maternity Ward B")
-      .fillAddressLine3("City Hospital District")
-      .fillTownOrCity("Manchester")
-      .fillProvinceOrState("Greater Manchester")
-      .selectAddressCountry(countryName)
-      .fillPostcode("M1 1AA");
+    // Use infant-specific form method
+    applicantDetailsPage.fillCompleteInfantForm({
+      fullName: "Baby Olivia Smith",
+      sex: "Female",
+      nationality: countryName,
+      ageInMonths: infantAgeInMonths, // From beforeEach
+      daysAfterBirthForPassport: 7, // Passport issued 7 days after birth
+      addressLine1: "123 Newborn Nursery Road",
+      addressLine2: "Maternity Ward B",
+      addressLine3: "Zongo District",
+      townOrCity: "Zongo Junction",
+      provinceOrState: "Zongo",
+      addressCountry: countryName,
+      postcode: "M1 1AA",
+    });
 
     // Submit form
     applicantDetailsPage.submitForm();
