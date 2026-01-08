@@ -64,7 +64,7 @@ export class TbCertificateConfirmationPage extends BasePage {
   // Verify "What happens next" section
   verifyWhatHappensNextSection(): TbCertificateConfirmationPage {
     cy.contains("h2", "What happens next").should("be.visible");
-    cy.contains("p", "We've sent the certificate information to UKHSA.").should("be.visible");
+    cy.contains("p", "We have sent the certificate information to UKHSA.").should("be.visible");
     return this;
   }
 
