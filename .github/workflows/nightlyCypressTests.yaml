@@ -7,18 +7,18 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Select environment to test'
+        description: "Select environment to test"
         required: true
         default: "all"
         type: choice
         options: [all, qat, dev, preprod]
-      branch:                          
+      branch:
         description: "Branch to run tests against"
         required: false
         default: "develop"
         type: string
       browsers:
-        description: 'Select browsers to test'
+        description: "Select browsers to test"
         required: true
         default: "all"
         type: choice
@@ -175,12 +175,12 @@ jobs:
         run: |
           # Create reports directory if it doesn't exist
           mkdir -p pets-ui/cypress/reports/mochawesome
-          
+
           cd pets-ui
-          
+
           # Find all JSON report files (excluding the merged output)
           JSON_FILES=($(find cypress/reports/mochawesome -name "*.json" -not -name "mochawesome.json" 2>/dev/null || true))
-          
+
           if [ ${#JSON_FILES[@]} -gt 0 ]; then
             echo "Found ${#JSON_FILES[@]} report files to merge"
             
@@ -204,9 +204,9 @@ jobs:
         id: extract_counts
         run: |
           cd pets-ui
-          
+
           REPORT_FILE="cypress/reports/mochawesome/mochawesome.json"
-          
+
           if [ -f "$REPORT_FILE" ]; then
             TOTAL=$(jq -r '.stats.tests // 0' "$REPORT_FILE")
             PASSED=$(jq -r '.stats.passes // 0' "$REPORT_FILE")
@@ -236,10 +236,10 @@ jobs:
           else
             STATUS="FAIL"
           fi
-          
+
           # Create result files
           echo "$STATUS" > result.txt
-          
+
           cat > result.json << EOF
           {
             "status": "$STATUS",
@@ -259,7 +259,7 @@ jobs:
             }
           }
           EOF
-          
+
           echo "Created result files with status: $STATUS"
 
       - name: Upload test result

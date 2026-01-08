@@ -1,5 +1,4 @@
 import { screen, within } from "@testing-library/react";
-import { setupServer } from "msw/node";
 import React from "react";
 import { Mock } from "vitest";
 
@@ -39,17 +38,6 @@ vi.mock("react-helmet-async", () => ({
 }));
 
 export const handlers = [];
-
-const server = setupServer(...handlers);
-
-// Enable API mocking before tests.
-beforeAll(() => server.listen());
-
-// Reset any runtime request handlers we may add during the tests.
-afterEach(() => server.resetHandlers());
-
-// Disable API mocking after the tests are done.
-afterAll(() => server.close());
 
 const travelSlice = {
   applicantUkAddress1: "address-1",
