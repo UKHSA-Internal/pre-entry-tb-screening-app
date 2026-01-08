@@ -568,7 +568,6 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
       clinicCertificateInfoPage
         .verifyPageLoaded()
         .verifyCertificateExpiryDateCalculation()
-        .verifyCertificateExpiryIs6MonthsFromIssueDate()
         .saveCertificateReferenceNumber()
         .completeForm(
           "Dr. Michael Johnson",

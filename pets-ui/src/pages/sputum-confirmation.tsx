@@ -65,7 +65,7 @@ export default function SputumConfirmation() {
   }, []);
 
   return (
-    <Container title="Sputum sample information confirmed - Complete UK pre-entry health screening - GOV.UK">
+    <Container title={confirmationText + " - Complete UK pre-entry health screening - GOV.UK"}>
       <Confirmation
         confirmationText={confirmationText}
         furtherInfo={furtherInfo}

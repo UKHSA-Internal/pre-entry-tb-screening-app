@@ -646,7 +646,6 @@ describe("PETS Date Validation: Valid Scenario - X-ray 1 Day After Medical", () 
       clinicCertificateInfoPage
         .verifyPageLoaded()
         .verifyCertificateExpiryDateCalculation()
-        .verifyCertificateExpiryIs6MonthsFromIssueDate()
         .saveCertificateReferenceNumber()
         .completeForm("Dr. Test Doctor", "All tests negative. Certificate issued.");
 

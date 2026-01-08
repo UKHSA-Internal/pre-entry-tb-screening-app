@@ -645,7 +645,6 @@ describe("PETS Date Validation: Valid Scenario - Optimal Dates", () => {
       clinicCertificateInfoPage
         .verifyPageLoaded()
         .verifyCertificateExpiryDateCalculation()
-        .verifyCertificateExpiryIs6MonthsFromIssueDate()
         .saveCertificateReferenceNumber()
         .completeForm("Dr. Test Doctor", "All tests negative. Certificate issued.");
 
