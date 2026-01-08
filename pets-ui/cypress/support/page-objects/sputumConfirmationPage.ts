@@ -14,7 +14,7 @@ export class SputumConfirmationPage extends BasePage {
       if (titleText.includes("Partial")) {
         cy.contains("h1", "Partial sputum sample information confirmed").should("be.visible");
       } else {
-        cy.contains("h1", "All sputum sample information confirmed").should("be.visible");
+        cy.contains("h1", "Sputum collection and results confirmed").should("be.visible");
       }
     });
     cy.get(".govuk-panel--confirmation").should("be.visible");
@@ -45,7 +45,7 @@ export class SputumConfirmationPage extends BasePage {
       expect(titleText).to.satisfy((text: string) => {
         return (
           text.includes("Partial sputum sample information confirmed") ||
-          text.includes("All sputum sample information confirmed")
+          text.includes("Sputum collection and results confirmed")
         );
       });
     });
@@ -62,7 +62,7 @@ export class SputumConfirmationPage extends BasePage {
   // Verify complete confirmation panel specifically
   verifyCompleteConfirmationPanel(): SputumConfirmationPage {
     cy.get(".govuk-panel--confirmation").should("be.visible");
-    cy.contains("h1", "All sputum sample information confirmed").should("be.visible");
+    cy.contains("h1", "Sputum collection and results confirmed").should("be.visible");
     return this;
   }
 
@@ -76,7 +76,9 @@ export class SputumConfirmationPage extends BasePage {
       const hasPartialText = allText.includes(
         "panel physician should wait to confirm the remaining sputum sample results",
       );
-      const hasCompleteText = allText.includes("You can now return to the progress tracker");
+      const hasCompleteText = allText.includes(
+        "You can now view a summary for this visa applicant.",
+      );
 
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       expect(hasPartialText || hasCompleteText).to.be.true;

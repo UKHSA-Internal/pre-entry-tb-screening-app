@@ -1,9 +1,13 @@
-import { describe, expect, test, vi } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { logger } from "../../shared/logger";
 import { readClinicsFile, validateClinic, validateClinicsDataString } from "./validation";
 
 describe("Load and validate Clinics from json file", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   test("read file with correct path", () => {
     const res = readClinicsFile("src/clinic-service/fixtures/test-file.json");
     expect(JSON.parse(res as string)).toHaveLength(14);

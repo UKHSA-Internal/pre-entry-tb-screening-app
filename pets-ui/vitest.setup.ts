@@ -20,12 +20,14 @@ beforeEach(() => {
   vi.mock("@azure/msal-browser", async (importOriginal) => {
     return {
       ...(await importOriginal<typeof import("@azure/msal-browser")>()),
-      PublicClientApplication: vi.fn().mockReturnValue({
-        initialize: vi.fn(),
-        getAllAccounts: vi.fn().mockReturnValue([mockAccount]),
-        acquireTokenSilent: vi.fn().mockResolvedValue(mockAuthResult),
-        setActiveAccount: vi.fn(),
-        addEventCallback: vi.fn(),
+      PublicClientApplication: vi.fn().mockImplementation(function () {
+        return {
+          initialize: vi.fn(),
+          getAllAccounts: vi.fn().mockReturnValue([mockAccount]),
+          acquireTokenSilent: vi.fn().mockResolvedValue(mockAuthResult),
+          setActiveAccount: vi.fn(),
+          addEventCallback: vi.fn(),
+        };
       }),
     };
   });

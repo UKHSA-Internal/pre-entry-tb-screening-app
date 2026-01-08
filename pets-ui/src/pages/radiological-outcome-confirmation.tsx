@@ -24,7 +24,7 @@ export default function RadiologicalOutcomeConfirmation() {
         confirmationText={"Radiological outcome confirmed"}
         furtherInfo={[
           "We have sent the radiological outcome to UKHSA.",
-          "You can now return to the progress tracker.",
+          "You can now view summary for this visa applicant.",
         ]}
         buttonText={"Continue"}
         buttonLink={"/tracker"}

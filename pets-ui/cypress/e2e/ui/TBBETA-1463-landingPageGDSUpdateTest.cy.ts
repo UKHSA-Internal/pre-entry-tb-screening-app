@@ -53,24 +53,56 @@ describe("Header Styling and Functionality - Logged Out State", () => {
 
     // Verify OGL licensing section
     cy.get(".govuk-footer__licence-description").should("be.visible");
+  });
 
-    // Verify Privacy link
-    cy.contains(".govuk-footer__link", "Privacy").should("have.attr", "href").and("not.be.empty");
+  it("should navigate to Privacy page correctly", () => {
+    cy.acceptCookies();
+
+    // Verify Privacy link exists
+    cy.contains(".govuk-footer__link", "Privacy")
+      .should("be.visible")
+      .and("have.attr", "href")
+      .and("not.be.empty");
+
+    // Click and verify navigation
     cy.contains(".govuk-footer__link", "Privacy").click();
     cy.url().should("include", "/privacy");
 
-    // Navigate back and verify Cookies link
-    cy.visit("/");
-    cy.contains(".govuk-footer__link", "Cookies").should("have.attr", "href").and("not.be.empty");
+    // Verify we're on the privacy page by checking for expected content
+    cy.get("h1").should("be.visible");
+  });
+
+  it("should navigate to Cookies page correctly", () => {
+    cy.acceptCookies();
+
+    // Verify Cookies link exists
+    cy.contains(".govuk-footer__link", "Cookies")
+      .should("be.visible")
+      .and("have.attr", "href")
+      .and("not.be.empty");
+
+    // Click and verify navigation
     cy.contains(".govuk-footer__link", "Cookies").click();
     cy.url().should("include", "/cookies");
 
-    // Navigate back and verify Accessibility statement link
-    cy.visit("/");
+    // Verify we're on the cookies page
+    cy.get("h1").should("be.visible");
+  });
+
+  it("should navigate to Accessibility statement page correctly", () => {
+    cy.acceptCookies();
+
+    // Verify Accessibility statement link exists
     cy.contains(".govuk-footer__link", "Accessibility statement")
-      .should("have.attr", "href")
+      .should("be.visible")
+      .and("have.attr", "href")
       .and("not.be.empty");
+
+    // Click and verify navigation
     cy.contains(".govuk-footer__link", "Accessibility statement").click();
     cy.url().should("include", "/accessibility-statement");
+
+    // Verify we're on the accessibility page
+    cy.get("h1").should("be.visible");
   });
 });

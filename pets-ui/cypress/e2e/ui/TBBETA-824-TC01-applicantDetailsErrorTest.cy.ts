@@ -72,7 +72,9 @@ describe("Applicant Details Form - Empty Form Error Test", () => {
       birthDate: "Date of birth must include a day, month and year",
       passportIssueDate: "Passport issue date must include a day, month and year",
       passportExpiryDate: "Passport expiry date must include a day, month and year",
-      address: "Enter your address",
+      address: "Enter the first line of the applicant's home address",
+      townOrCity: "Enter the town or city of the applicant's home address",
+      addressCountry: "Enter the country of the applicant's home address",
     });
   });
 });

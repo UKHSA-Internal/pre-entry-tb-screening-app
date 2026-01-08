@@ -19,7 +19,11 @@ import { selectApplicant, selectMedicalScreening } from "@/redux/store";
 import { DateType, ReduxMedicalScreeningType } from "@/types";
 import { ApplicationStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
-import { calculateApplicantAge, validateDate } from "@/utils/helpers";
+import {
+  calculateApplicantAge,
+  validateMedicalScreeningDate,
+  validateTbSymptoms,
+} from "@/utils/helpers";
 
 const MedicalScreeningForm = () => {
   const navigate = useNavigate();
@@ -49,12 +53,22 @@ const MedicalScreeningForm = () => {
   });
   const {
     handleSubmit,
+    setError,
     formState: { errors },
   } = methods;
 
   const dispatch = useAppDispatch();
 
   const onSubmit: SubmitHandler<ReduxMedicalScreeningType> = (medicalScreeningData) => {
+    const validationResult = validateTbSymptoms(
+      medicalScreeningData.tbSymptomsList,
+      medicalScreeningData.tbSymptoms,
+    );
+    if (validationResult !== true) {
+      setError("tbSymptomsList", { type: "custom", message: validationResult });
+      return;
+    }
+
     dispatch(
       setMedicalScreeningDetails({
         ...medicalScreeningData,
@@ -133,7 +147,7 @@ const MedicalScreeningForm = () => {
               year: medicalData.completionDate.year,
             }}
             rules={{
-              validate: (value: DateType) => validateDate(value, "completionDate"),
+              validate: (value: DateType) => validateMedicalScreeningDate(value),
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput

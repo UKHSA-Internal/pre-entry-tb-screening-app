@@ -1,6 +1,6 @@
 import { GetCommand, PutCommand, QueryCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
 import { CountryCode } from "../../shared/country";
@@ -51,6 +51,10 @@ describe("Tests for Clinic Model", () => {
 
   beforeEach(() => {
     ddbMock.reset();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   test("Create New Clinic Successfully No StartDate", async () => {

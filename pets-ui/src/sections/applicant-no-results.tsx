@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router";
 
+import Button from "@/components/button/button";
 import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
-import StartButton from "@/components/startButton/startButton";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
+import { ButtonClass } from "@/utils/enums";
 
 const ApplicantEmptyResult = () => {
   const applicantSearchData = useAppSelector(selectApplicant);
@@ -12,15 +13,17 @@ const ApplicantEmptyResult = () => {
 
   return (
     <>
-      <Heading level={1} size="l" title="No matching record found" />
+      <Heading level={1} size="l" title="No visa applicant found" />
       <p className="govuk-body">
-        No matches for passport number {applicantSearchData.passportNumber}
+        You can now create a new record for the visa applicant with passport number{" "}
+        {applicantSearchData.passportNumber}
       </p>
       <br />
-      <StartButton
-        id="create-new-applicant"
-        text="Create new applicant"
+      <Button
+        id="continue"
+        text="Continue"
         handleClick={() => navigate("/do-you-have-visa-applicant-written-consent-for-tb-screening")}
+        class={ButtonClass.DEFAULT}
       />
       <br />
       <p className="govuk-body">

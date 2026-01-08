@@ -17,7 +17,12 @@ import { selectApplicant, selectApplication } from "@/redux/store";
 import { DateType, PostedApplicantDetailsType, ReduxApplicantDetailsType } from "@/types";
 import { ApplicationStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
-import { getCountryName, standardiseDayOrMonth, validateDate } from "@/utils/helpers";
+import {
+  getCountryName,
+  standardiseDayOrMonth,
+  validateDate,
+  validatePassportIssueDate,
+} from "@/utils/helpers";
 import { countryList, formRegex } from "@/utils/records";
 
 const ApplicantForm = () => {
@@ -34,6 +39,7 @@ const ApplicantForm = () => {
   const {
     control,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = methods;
 
@@ -154,11 +160,7 @@ const ApplicantForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
-        <Heading level={1} size="l" title="Enter applicant information" />
-        <p className="govuk-body">
-          Enter the applicant&apos;s profile information below. Select &apos;Save and continue&apos;
-          to save any information added.
-        </p>
+        <Heading level={1} size="l" title="Visa applicant passport information" />
 
         {isComplete && (
           <Summary
@@ -178,11 +180,12 @@ const ApplicantForm = () => {
           />
         )}
 
-        <Heading level={2} size="m" title="Applicant's personal details" />
         <div ref={nameRef}>
           <FreeText
             id="name"
-            label="Full name"
+            heading="Full name"
+            headingSize="m"
+            hint="As shown on passport"
             errorMessage={errors?.fullName?.message ?? ""}
             formValue="fullName"
             required="Enter the applicant's full name"
@@ -195,8 +198,10 @@ const ApplicantForm = () => {
         <div ref={sexRef}>
           <Radio
             id="sex"
-            label="Sex"
-            isInline={RadioIsInline.TRUE}
+            heading="Sex"
+            hint="Select the visa applicant's sex"
+            headingSize="m"
+            isInline={RadioIsInline.FALSE}
             answerOptions={["Female", "Male", "Other"]}
             sortAnswersAlphabetically={false}
             errorMessage={errors?.sex?.message ?? ""}
@@ -209,8 +214,10 @@ const ApplicantForm = () => {
         <div ref={countryOfNationalityRef}>
           <Dropdown
             id="country-of-nationality"
-            label="Country of nationality"
+            heading="Country of nationality"
+            headingSize="m"
             options={countryList}
+            placeholder="Select country"
             errorMessage={errors?.countryOfNationality?.message ?? ""}
             formValue="countryOfNationality"
             required="Select the country of nationality"
@@ -232,8 +239,9 @@ const ApplicantForm = () => {
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
-                label="Date of birth"
-                hint="For example, 31 3 2019"
+                heading="Date of birth"
+                hint="For example, 26 4 2002"
+                headingSize="m"
                 value={value}
                 setDateValue={onChange}
                 id={"birth-date"}
@@ -247,7 +255,9 @@ const ApplicantForm = () => {
           <div ref={passportNumberRef}>
             <FreeText
               id="passport-number"
-              label="Applicant's passport number"
+              heading="Visa applicant's passport number"
+              headingSize="m"
+              hint="For example, 1208297A"
               errorMessage={errors?.passportNumber?.message ?? ""}
               formValue="passportNumber"
               required="Enter the applicant's passport number"
@@ -262,8 +272,10 @@ const ApplicantForm = () => {
           <div ref={countryOfIssueRef}>
             <Dropdown
               id="country-of-issue"
-              label="Country of issue"
-              hint="This is usually shown on the first page of the passport, at the top. Use the English spelling or the country code."
+              heading="Country of issue"
+              headingSize="m"
+              placeholder="Select country"
+              hint="As shown on passport, at the top of the first page"
               options={countryList}
               errorMessage={errors?.countryOfIssue?.message ?? ""}
               formValue="countryOfIssue"
@@ -283,11 +295,13 @@ const ApplicantForm = () => {
               year: applicantData.passportIssueDate.year,
             }}
             rules={{
-              validate: (value: DateType) => validateDate(value, "passportIssueDate"),
+              validate: (value: DateType) =>
+                validatePassportIssueDate(value, getValues("dateOfBirth")),
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
-                label="Issue date"
+                heading="Issue date"
+                headingSize="m"
                 hint="For example, 31 3 2019"
                 value={value}
                 setDateValue={onChange}
@@ -313,7 +327,8 @@ const ApplicantForm = () => {
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
-                label="Expiry date"
+                heading="Expiry date"
+                headingSize="m"
                 hint="For example, 31 3 2019"
                 value={value}
                 setDateValue={onChange}
@@ -397,6 +412,7 @@ const ApplicantForm = () => {
             options={countryList}
             errorMessage={errors?.country?.message ?? ""}
             formValue="country"
+            placeholder="Select country"
             required="Enter the country of the applicant's home address"
             defaultValue={applicantData.country}
           />

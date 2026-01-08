@@ -12,7 +12,7 @@ describe("Google Analytics utilities", () => {
 
   beforeEach(() => {
     gtagMock = vi.fn();
-    globalThis.gtag = gtagMock;
+    globalThis.gtag = gtagMock as unknown as (...args: unknown[]) => void;
   });
 
   describe("updateGoogleAnalyticsConsent", () => {

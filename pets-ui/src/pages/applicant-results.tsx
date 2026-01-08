@@ -11,7 +11,7 @@ export default function ApplicantResultsPage() {
 
   return (
     <Container
-      title="No matching record found - Complete UK pre-entry health screening - GOV.UK"
+      title="No visa applicant found - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo="/search-for-visa-applicant"
     >
       <ApplicantEmptyResult />

@@ -20,7 +20,7 @@ export class ApplicantConfirmationPage extends BasePage {
   // Verify what happens next text
   verifyNextStepsText(): ApplicantConfirmationPage {
     cy.contains("h2", "What happens next").should("be.visible");
-    cy.contains("p", "You can now return to the progress tracker.").should("be.visible");
+    cy.contains("p", "You can now view a summary for this visa applicant.").should("be.visible");
     return this;
   }
 

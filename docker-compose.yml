@@ -8,6 +8,11 @@ services:
       - DEBUG=${DEBUG:-0}
       - DYNAMODB_IN_MEMORY=1
       - LAMBDA_DOCKER_FLAGS=-e LOCALSTACK_FILE_WATCHER_STRATEGY=polling
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
     volumes:
       - "./.localstack-data:/var/lib/localstack"

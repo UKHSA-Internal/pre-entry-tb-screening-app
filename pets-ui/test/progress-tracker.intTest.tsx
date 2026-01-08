@@ -1,5 +1,4 @@
 import { screen, within } from "@testing-library/react";
-import { setupServer } from "msw/node";
 import React from "react";
 import { Mock } from "vitest";
 
@@ -39,17 +38,6 @@ vi.mock("react-helmet-async", () => ({
 }));
 
 export const handlers = [];
-
-const server = setupServer(...handlers);
-
-// Enable API mocking before tests.
-beforeAll(() => server.listen());
-
-// Reset any runtime request handlers we may add during the tests.
-afterEach(() => server.resetHandlers());
-
-// Disable API mocking after the tests are done.
-afterAll(() => server.close());
 
 const travelSlice = {
   applicantUkAddress1: "address-1",
@@ -310,7 +298,7 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(screen.getAllByRole("definition")[2]).toHaveTextContent("12345");
 
   const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
-  expect(applicantDetailsLink).toHaveAttribute("href", "/enter-applicant-information");
+  expect(applicantDetailsLink).toHaveAttribute("href", "/visa-applicant-passport-information");
   const applicantDetailsListItem = applicantDetailsLink.closest("li");
   expect(applicantDetailsListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",
