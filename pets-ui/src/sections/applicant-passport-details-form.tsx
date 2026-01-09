@@ -52,7 +52,6 @@ const ApplicantPassportDetailsForm = () => {
   const {
     control,
     handleSubmit,
-    getValues,
     formState: { errors },
   } = methods;
 
@@ -196,7 +195,7 @@ const ApplicantPassportDetailsForm = () => {
             }}
             rules={{
               validate: (value: DateType) =>
-                validatePassportIssueDate(value, getValues("dateOfBirth")),
+                validatePassportIssueDate(value, applicantData.dateOfBirth),
             }}
             render={({ field: { value, onChange } }) => (
               <DateTextInput
