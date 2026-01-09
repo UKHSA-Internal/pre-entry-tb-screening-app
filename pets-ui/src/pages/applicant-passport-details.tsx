@@ -2,10 +2,10 @@ import { useEffect } from "react";
 import { useSearchParams } from "react-router";
 
 import Container from "@/components/container/container";
-import ApplicantForm from "@/sections/applicant-details-form";
+import ApplicantPassportDetailsForm from "@/sections/applicant-passport-details-form";
 import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
-export default function ContactDetailsPage() {
+export default function ApplicantPassportDetailsPage() {
   const [searchParams] = useSearchParams();
   const from = searchParams.get("from");
   let backLinkTo: string;
@@ -14,11 +14,15 @@ export default function ContactDetailsPage() {
   } else if (from === "tb-certificate-summary") {
     backLinkTo = "/tb-certificate-summary";
   } else {
-    backLinkTo = "/do-you-have-visa-applicant-written-consent-for-tb-screening";
+    backLinkTo = "/visa-applicant-personal-information";
   }
 
   useEffect(() => {
-    sendGoogleAnalyticsJourneyEvent("enter_applicant_information", "UNK", "Visa Applicant Details");
+    sendGoogleAnalyticsJourneyEvent(
+      "visa_applicant_passport_information",
+      "UNK",
+      "Visa Applicant Details",
+    );
   }, []);
 
   return (
@@ -26,7 +30,7 @@ export default function ContactDetailsPage() {
       title="Visa applicant passport information - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo={backLinkTo}
     >
-      <ApplicantForm />
+      <ApplicantPassportDetailsForm />
     </Container>
   );
 }

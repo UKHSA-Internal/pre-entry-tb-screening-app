@@ -21,7 +21,7 @@ export default function ApplicantPhotoPage() {
   } else if (applicant.status === ApplicationStatus.COMPLETE) {
     backLinkTo = "/tb-certificate-summary";
   } else {
-    backLinkTo = "/visa-applicant-passport-information";
+    backLinkTo = "/visa-applicant-contact-information";
   }
 
   useEffect(() => {
