@@ -31,6 +31,15 @@ const sendGoogleAnalyticsFormErrorEvent = (pageTitle: string, errorList: string[
   }
 };
 
+const sendGoogleAnalyticsHttpError = (status: number, url: string): void => {
+  if (typeof globalThis.gtag === "function") {
+    globalThis.gtag("event", "http_error", {
+      status_code: status,
+      request_url: url,
+    });
+  }
+};
+
 const setGoogleAnalyticsParams = (paramName: string, params?: unknown) => {
   if (typeof globalThis.gtag === "function") {
     globalThis.gtag("set", paramName, params);
@@ -39,6 +48,7 @@ const setGoogleAnalyticsParams = (paramName: string, params?: unknown) => {
 
 export {
   sendGoogleAnalyticsFormErrorEvent,
+  sendGoogleAnalyticsHttpError,
   sendGoogleAnalyticsJourneyEvent,
   setGoogleAnalyticsParams,
   updateGoogleAnalyticsConsent,

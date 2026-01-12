@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   sendGoogleAnalyticsFormErrorEvent,
+  sendGoogleAnalyticsHttpError,
   sendGoogleAnalyticsJourneyEvent,
   setGoogleAnalyticsParams,
   updateGoogleAnalyticsConsent,
@@ -80,6 +81,25 @@ describe("Google Analytics utilities", () => {
       globalThis.gtag = undefined as never;
 
       sendGoogleAnalyticsFormErrorEvent("applicant_details", ["name", "dateOfBirth"]);
+
+      expect(gtagMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("sendGoogleAnalyticsHttpError", () => {
+    it("sends a http error event", () => {
+      sendGoogleAnalyticsHttpError(501, "/error-url");
+
+      expect(gtagMock).toHaveBeenCalledWith("event", "http_error", {
+        request_url: "/error-url",
+        status_code: 501,
+      });
+    });
+
+    it("does nothing if gtag is missing", () => {
+      globalThis.gtag = undefined as never;
+
+      sendGoogleAnalyticsHttpError(501, "/error-url");
 
       expect(gtagMock).not.toHaveBeenCalled();
     });
