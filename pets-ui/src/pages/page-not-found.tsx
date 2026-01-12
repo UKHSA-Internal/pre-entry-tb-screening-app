@@ -1,8 +1,20 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router";
+
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
+import { sendGoogleAnalyticsHttpError } from "@/utils/google-analytics-utils";
 
 export default function PageNotFound() {
+  const location = useLocation();
+  const url = location.pathname + location.search + location.hash;
+
+  useEffect(() => {
+    sendGoogleAnalyticsHttpError(404, url);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Container
       title={"Page not found - Complete UK pre-entry health screening - GOV.UK"}
