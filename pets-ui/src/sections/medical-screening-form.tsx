@@ -182,7 +182,7 @@ const MedicalScreeningForm = () => {
         <div ref={tbSymptomsRef}>
           <Radio
             id="tb-symptoms"
-            heading="Does the visa applicant have any pulmonary TB symptoms?"
+            heading="Does the visa applicant have any symptoms of pulmonary TB?"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Yes", "No"]}
             sortAnswersAlphabetically={false}
@@ -255,7 +255,7 @@ const MedicalScreeningForm = () => {
           <Radio
             id="close-contact-with-tb"
             heading="Has the visa applicant had close contact with a person with active pulmonary TB in the past year?"
-            hint="For example, sharing an enclosed air space such as within household, for a prolonged period of at least several days"
+            hint="For example, sharing an enclosed air space such as within a household, for a prolonged period of at least several days"
             isInline={RadioIsInline.TRUE}
             answerOptions={["Yes", "No"]}
             sortAnswersAlphabetically={false}
@@ -269,12 +269,11 @@ const MedicalScreeningForm = () => {
         <div ref={closeContactWithTbDetailRef}>
           <TextArea
             id="close-contact-with-tb-detail"
-            label="Give further details (optional)"
+            heading="Give further details (optional)"
             errorMessage={errors?.closeContactWithTbDetail?.message ?? ""}
             formValue="closeContactWithTbDetail"
             required={false}
             rows={4}
-            labelStyle={{ fontWeight: 700 }}
             defaultValue={medicalData.closeContactWithTbDetail}
           />
         </div>
