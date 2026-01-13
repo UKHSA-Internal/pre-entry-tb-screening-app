@@ -16,12 +16,16 @@ import {
   setCloseContactWithTbDetail,
   setMedicalScreeningCompletionDate,
   setMedicalScreeningStatus,
+  setMenstrualPeriods,
   setOtherSymptomsDetail,
   setPhysicalExamNotes,
+  setPregnant,
   setPreviousTb,
   setPreviousTbDetail,
   setTbSymptoms,
   setTbSymptomsList,
+  setUnderElevenConditions,
+  setUnderElevenConditionsDetail,
 } from "@/redux/medicalScreeningSlice";
 import { selectApplicant, selectMedicalScreening } from "@/redux/store";
 import { DateType } from "@/types";
@@ -82,6 +86,15 @@ const MedicalScreeningForm = () => {
     if (validationResult !== true) {
       setError("tbSymptomsList", { type: "custom", message: validationResult });
       return;
+    }
+
+    if (typeof applicantAge.ageInYears != "number" || applicantAge.ageInYears >= 11) {
+      dispatch(setUnderElevenConditions([]));
+      dispatch(setUnderElevenConditionsDetail(""));
+    }
+    if (applicantData.sex != "Female") {
+      dispatch(setPregnant(""));
+      dispatch(setMenstrualPeriods(""));
     }
 
     dispatch(setMedicalScreeningCompletionDate(medicalScreeningData.completionDate));
