@@ -48,7 +48,7 @@ const MedicalScreeningFormU11Qs = () => {
     dispatch(setMedicalScreeningStatus(ApplicationStatus.IN_PROGRESS));
 
     if (applicantData.sex == "Female") {
-      navigate("medical-history-female");
+      navigate("/medical-history-female");
     } else {
       navigate("/is-an-x-ray-required");
     }
