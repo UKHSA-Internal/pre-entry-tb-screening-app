@@ -86,7 +86,6 @@ const MedicalScreeningFormFemaleQs = () => {
             headingSize="s"
             isInline={RadioIsInline.FALSE}
             answerOptions={["Yes", "No", "Do not know"]}
-            exclusiveAnswerOptions={["Not applicable (the visa applicant is not female)"]}
             sortAnswersAlphabetically={false}
             errorMessage={errors?.pregnant?.message ?? ""}
             formValue="pregnant"
@@ -102,7 +101,6 @@ const MedicalScreeningFormFemaleQs = () => {
             headingSize="s"
             isInline={RadioIsInline.FALSE}
             answerOptions={["Yes", "No", "Do not know"]}
-            exclusiveAnswerOptions={["Not applicable (the visa applicant is not female)"]}
             sortAnswersAlphabetically={false}
             errorMessage={errors?.menstrualPeriods?.message ?? ""}
             formValue="menstrualPeriods"
