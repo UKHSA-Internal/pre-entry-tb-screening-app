@@ -29,7 +29,9 @@ import ErrorPage from "./pages/error-page";
 import HomePage from "./pages/home-page";
 import MedicalScreeningPage from "./pages/medical-screening";
 import MedicalConfirmation from "./pages/medical-screening-confirmation";
+import MedicalScreeningFemalePage from "./pages/medical-screening-female";
 import MedicalSummaryPage from "./pages/medical-screening-summary";
+import MedicalScreeningU11Page from "./pages/medical-screening-u11";
 import PageNotFound from "./pages/page-not-found";
 import PrivacyNoticePage from "./pages/privacy-notice";
 import ProgressTrackerPage from "./pages/progress-tracker";
@@ -176,6 +178,26 @@ function App() {
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <MedicalScreeningPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/medical-history-under-11-years-old"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <MedicalScreeningU11Page />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/medical-history-female"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <MedicalScreeningFemalePage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
