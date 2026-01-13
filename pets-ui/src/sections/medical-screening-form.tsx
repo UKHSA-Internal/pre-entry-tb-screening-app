@@ -12,11 +12,19 @@ import SummaryList from "@/components/summaryList/summaryList";
 import TextArea from "@/components/textArea/textArea";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
-  setMedicalScreeningDetails,
+  setCloseContactWithTb,
+  setCloseContactWithTbDetail,
+  setMedicalScreeningCompletionDate,
   setMedicalScreeningStatus,
+  setOtherSymptomsDetail,
+  setPhysicalExamNotes,
+  setPreviousTb,
+  setPreviousTbDetail,
+  setTbSymptoms,
+  setTbSymptomsList,
 } from "@/redux/medicalScreeningSlice";
 import { selectApplicant, selectMedicalScreening } from "@/redux/store";
-import { DateType, ReduxMedicalScreeningType } from "@/types";
+import { DateType } from "@/types";
 import { ApplicationStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import {
@@ -25,6 +33,18 @@ import {
   validateTbSymptoms,
 } from "@/utils/helpers";
 
+interface MedicalScreeningInitialData {
+  completionDate: DateType;
+  tbSymptoms: string;
+  tbSymptomsList: string[];
+  otherSymptomsDetail: string;
+  previousTb: string;
+  previousTbDetail: string;
+  closeContactWithTb: string;
+  closeContactWithTbDetail: string;
+  physicalExamNotes: string;
+}
+
 const MedicalScreeningForm = () => {
   const navigate = useNavigate();
 
@@ -32,22 +52,17 @@ const MedicalScreeningForm = () => {
   const applicantAge = calculateApplicantAge(applicantData.dateOfBirth);
 
   const medicalData = useAppSelector(selectMedicalScreening);
-  const methods = useForm<ReduxMedicalScreeningType>({
+  const methods = useForm<MedicalScreeningInitialData>({
     reValidateMode: "onSubmit",
     defaultValues: {
       completionDate: medicalData.completionDate,
-      age: medicalData.age,
       tbSymptoms: medicalData.tbSymptoms,
       tbSymptomsList: medicalData.tbSymptomsList,
       otherSymptomsDetail: medicalData.otherSymptomsDetail,
-      underElevenConditions: medicalData.underElevenConditions,
-      underElevenConditionsDetail: medicalData.underElevenConditionsDetail,
       previousTb: medicalData.previousTb,
       previousTbDetail: medicalData.previousTbDetail,
       closeContactWithTb: medicalData.closeContactWithTb,
       closeContactWithTbDetail: medicalData.closeContactWithTbDetail,
-      pregnant: medicalData.pregnant,
-      menstrualPeriods: medicalData.menstrualPeriods,
       physicalExamNotes: medicalData.physicalExamNotes,
     },
   });
@@ -59,7 +74,7 @@ const MedicalScreeningForm = () => {
 
   const dispatch = useAppDispatch();
 
-  const onSubmit: SubmitHandler<ReduxMedicalScreeningType> = (medicalScreeningData) => {
+  const onSubmit: SubmitHandler<MedicalScreeningInitialData> = (medicalScreeningData) => {
     const validationResult = validateTbSymptoms(
       medicalScreeningData.tbSymptomsList,
       medicalScreeningData.tbSymptoms,
@@ -69,14 +84,24 @@ const MedicalScreeningForm = () => {
       return;
     }
 
-    dispatch(
-      setMedicalScreeningDetails({
-        ...medicalScreeningData,
-        age: applicantAge.ageInYears.toString(),
-      }),
-    );
+    dispatch(setMedicalScreeningCompletionDate(medicalScreeningData.completionDate));
+    dispatch(setTbSymptoms(medicalScreeningData.tbSymptoms));
+    dispatch(setTbSymptomsList(medicalScreeningData.tbSymptomsList));
+    dispatch(setOtherSymptomsDetail(medicalScreeningData.otherSymptomsDetail));
+    dispatch(setPreviousTb(medicalScreeningData.previousTb));
+    dispatch(setPreviousTbDetail(medicalScreeningData.previousTbDetail));
+    dispatch(setCloseContactWithTb(medicalScreeningData.closeContactWithTb));
+    dispatch(setCloseContactWithTbDetail(medicalScreeningData.closeContactWithTbDetail));
+    dispatch(setPhysicalExamNotes(medicalScreeningData.physicalExamNotes));
     dispatch(setMedicalScreeningStatus(ApplicationStatus.IN_PROGRESS));
-    navigate("/is-an-x-ray-required");
+
+    if (typeof applicantAge.ageInYears == "number" && applicantAge.ageInYears < 11) {
+      navigate("/medical-history-under-11-years-old");
+    } else if (applicantData.sex == "Female") {
+      navigate("/medical-history-female");
+    } else {
+      navigate("/is-an-x-ray-required");
+    }
   };
 
   const errorsToShow = Object.keys(errors);
@@ -88,35 +113,25 @@ const MedicalScreeningForm = () => {
 
   // Required to scroll to the correct element when a change link on the summary page is clicked
   const location = useLocation();
-  const ageRef = useRef<HTMLDivElement | null>(null);
   const tbSymptomsRef = useRef<HTMLDivElement | null>(null);
   const tbSymptomsListRef = useRef<HTMLDivElement | null>(null);
   const otherSymptomsDetailRef = useRef<HTMLDivElement | null>(null);
-  const underElevenConditionsRef = useRef<HTMLDivElement | null>(null);
-  const underElevenConditionsDetailRef = useRef<HTMLDivElement | null>(null);
   const previousTbRef = useRef<HTMLDivElement | null>(null);
   const previousTbDetailRef = useRef<HTMLDivElement | null>(null);
   const closeContactWithTbRef = useRef<HTMLDivElement | null>(null);
   const closeContactWithTbDetailRef = useRef<HTMLDivElement | null>(null);
-  const pregnantRef = useRef<HTMLDivElement | null>(null);
-  const menstrualPeriodsRef = useRef<HTMLDivElement | null>(null);
   const physicalExamNotesRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (location.hash) {
       const target = location.hash.substring(1);
       const refMap: { [key: string]: HTMLElement | null } = {
-        age: ageRef.current,
         "tb-symptoms": tbSymptomsRef.current,
         "tb-symptoms-list": tbSymptomsListRef.current,
         "other-symptoms-detail": otherSymptomsDetailRef.current,
-        "under-eleven-conditions": underElevenConditionsRef.current,
-        "under-eleven-conditions-detail": underElevenConditionsDetailRef.current,
         "previous-tb": previousTbRef.current,
         "previous-tb-detail": previousTbDetailRef.current,
         "close-contact-with-tb": closeContactWithTbRef.current,
         "close-contact-with-tb-detail": closeContactWithTbDetailRef.current,
-        pregnant: pregnantRef.current,
-        "menstrual-periods": menstrualPeriodsRef.current,
         "physical-exam-notes": physicalExamNotesRef.current,
       };
 
@@ -210,38 +225,6 @@ const MedicalScreeningForm = () => {
           />
         </div>
 
-        <div ref={underElevenConditionsRef}>
-          <Checkbox
-            id="under-eleven-conditions"
-            heading="If the visa applicant is a child aged 11 or under, have they ever had:"
-            hint="Select all that apply"
-            answerOptions={[
-              "Thoracic surgery",
-              "Cyanosis",
-              "Chronic respiratory disease",
-              "Respiratory insufficiency that limits activity",
-              "None of these",
-            ]}
-            exclusiveAnswerOptions={["Not applicable - applicant is aged 11 or over"]}
-            sortAnswersAlphabetically={false}
-            errorMessage={errors?.underElevenConditions?.message ?? ""}
-            formValue="underElevenConditions"
-            required={false}
-          />
-        </div>
-
-        <div ref={underElevenConditionsDetailRef}>
-          <TextArea
-            id="under-eleven-conditions-detail"
-            heading="Give further details (optional)"
-            errorMessage={errors?.underElevenConditionsDetail?.message ?? ""}
-            formValue="underElevenConditionsDetail"
-            required={false}
-            rows={4}
-            defaultValue={medicalData.underElevenConditionsDetail}
-          />
-        </div>
-
         <div ref={previousTbRef}>
           <Radio
             id="previous-tb"
@@ -296,38 +279,6 @@ const MedicalScreeningForm = () => {
           />
         </div>
 
-        <div ref={pregnantRef}>
-          <Radio
-            id="pregnant"
-            heading="Is the visa applicant pregnant?"
-            headingSize="s"
-            isInline={RadioIsInline.FALSE}
-            answerOptions={["Yes", "No", "Do not know"]}
-            exclusiveAnswerOptions={["Not applicable (the visa applicant is not female)"]}
-            sortAnswersAlphabetically={false}
-            errorMessage={errors?.pregnant?.message ?? ""}
-            formValue="pregnant"
-            required="Select whether the visa applicant is pregnant"
-            defaultValue={medicalData.pregnant}
-          />
-        </div>
-
-        <div ref={menstrualPeriodsRef}>
-          <Radio
-            id="menstrual-periods"
-            heading="Does the visa applicant have menstrual periods?"
-            headingSize="s"
-            isInline={RadioIsInline.FALSE}
-            answerOptions={["Yes", "No", "Do not know"]}
-            exclusiveAnswerOptions={["Not applicable (the visa applicant is not female)"]}
-            sortAnswersAlphabetically={false}
-            errorMessage={errors?.menstrualPeriods?.message ?? ""}
-            formValue="menstrualPeriods"
-            required="Select whether the visa applicant has menstrual periods"
-            defaultValue={medicalData.menstrualPeriods}
-          />
-        </div>
-
         <div ref={physicalExamNotesRef}>
           <TextArea
             id="physical-exam-notes"
@@ -341,7 +292,7 @@ const MedicalScreeningForm = () => {
           />
         </div>
 
-        <SubmitButton id="save-and-continue" class={ButtonClass.DEFAULT} text="Continue" />
+        <SubmitButton id="continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>
   );

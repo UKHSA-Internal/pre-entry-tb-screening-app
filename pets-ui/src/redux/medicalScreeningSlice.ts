@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ReceivedMedicalScreeningType, ReduxMedicalScreeningType } from "@/types";
+import { DateType, ReceivedMedicalScreeningType, ReduxMedicalScreeningType } from "@/types";
 import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "@/utils/enums";
 
 const initialState: ReduxMedicalScreeningType = {
@@ -37,6 +37,9 @@ export const medicalScreeningSlice = createSlice({
     },
     setAge: (state, action: PayloadAction<string>) => {
       state.age = action.payload;
+    },
+    setMedicalScreeningCompletionDate: (state, action: PayloadAction<DateType>) => {
+      state.completionDate = action.payload;
     },
     setTbSymptoms: (state, action: PayloadAction<string>) => {
       state.tbSymptoms = action.payload;
@@ -178,6 +181,7 @@ export const medicalScreeningSlice = createSlice({
 export const {
   setMedicalScreeningStatus,
   setAge,
+  setMedicalScreeningCompletionDate,
   setTbSymptoms,
   setTbSymptomsList,
   setOtherSymptomsDetail,
