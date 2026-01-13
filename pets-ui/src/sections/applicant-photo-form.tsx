@@ -7,27 +7,21 @@ import FileUpload from "@/components/fileUpload/fileUpload";
 import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import List from "@/components/list/list";
-import Spinner from "@/components/spinner/spinner";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
-import { setApplicantPhotoFileName } from "@/redux/applicantSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectApplicant, selectApplication } from "@/redux/store";
+import { useAppSelector } from "@/redux/hooks";
+import { selectApplicant } from "@/redux/store";
 import { ReduxApplicantDetailsType } from "@/types";
 import { ApplicationStatus, ButtonClass, ImageType } from "@/utils/enums";
-import uploadFile from "@/utils/uploadFile";
 
 const ApplicantPhotoForm = () => {
   const applicantData = useAppSelector(selectApplicant);
-  const applicationData = useAppSelector(selectApplication);
-  const { applicantPhotoFile, setApplicantPhotoFile } = useApplicantPhoto();
+  const { applicantPhotoFile } = useApplicantPhoto();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const dispatch = useAppDispatch();
 
   const [applicantPhoto, setApplicantPhoto] = useState<File>();
   const [applicantPhotoName, setApplicantPhotoName] = useState<string>();
-  const [isLoading, setIsLoading] = useState(false);
 
   const methods = useForm<ReduxApplicantDetailsType>({
     criteriaMode: "all",
@@ -41,29 +35,10 @@ const ApplicantPhotoForm = () => {
 
   const errorsToShow = Object.keys(errors);
 
-  const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = async () => {
+  const onSubmit: SubmitHandler<ReduxApplicantDetailsType> = () => {
     if (applicantPhoto && applicantPhotoName) {
-      // save only file name in redux
-      dispatch(setApplicantPhotoFileName(applicantPhotoName));
-      setApplicantPhotoFile(applicantPhoto);
-
-      if (applicantData.status === ApplicationStatus.COMPLETE) {
-        setIsLoading(true);
-        try {
-          const fileType = applicantPhoto.name.split(".").pop();
-          await uploadFile(
-            applicantPhoto,
-            `applicant-photo.${fileType}`,
-            applicationData.applicationId,
-            ImageType.Photo,
-          );
-        } catch (error) {
-          console.error(error);
-          navigate("/sorry-there-is-problem-with-service");
-          return;
-        }
-        setIsLoading(false);
-      }
+      navigate("/check-visa-applicant-photo", { state: { applicantPhoto } });
+      return;
     }
 
     const fromParam = searchParams.get("from");
@@ -93,7 +68,6 @@ const ApplicantPhotoForm = () => {
 
   return (
     <div>
-      {isLoading && <Spinner />}
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div>

@@ -28,7 +28,7 @@ const applicationId = "app-123";
 const clinicId = "clinic-456";
 const objectKey = "photos/applicant-1/app-123.jpg";
 // Type-safe access to mocked modules
-const mockedApplicantDbOps = vi.mocked(ApplicantDbOps);
+const mockedApplicantDbOps = vi.mocked(ApplicantDbOps, true).getByApplicationId;
 const mockedGenerateImageObjectkey = vi.mocked(generateImageObjectkey, true); // true = function
 
 describe("ApplicantPhoto.getByApplicationId", () => {
@@ -37,7 +37,7 @@ describe("ApplicantPhoto.getByApplicationId", () => {
   });
 
   it("returns base64 image when all steps succeed", async () => {
-    mockedApplicantDbOps.getByApplicationId.mockResolvedValue(mockApplicant);
+    mockedApplicantDbOps.mockResolvedValue(mockApplicant);
     mockedGenerateImageObjectkey.mockReturnValue(objectKey);
 
     const spy = vi
@@ -59,13 +59,13 @@ describe("ApplicantPhoto.getByApplicationId", () => {
   });
 
   it("returns undefined if applicant not found", async () => {
-    mockedApplicantDbOps.getByApplicationId.mockResolvedValue(undefined);
+    mockedApplicantDbOps.mockResolvedValue(undefined);
     const result = await ApplicantPhoto.getByApplicationId(applicationId, clinicId);
     expect(result).toBeUndefined();
   });
 
   it("returns undefined if image not found", async () => {
-    mockedApplicantDbOps.getByApplicationId.mockResolvedValue(mockApplicant);
+    mockedApplicantDbOps.mockResolvedValue(mockApplicant);
     mockedGenerateImageObjectkey.mockReturnValue(objectKey);
 
     vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue(null);
@@ -75,7 +75,7 @@ describe("ApplicantPhoto.getByApplicationId", () => {
   });
 
   it("throws if getPresignedUrlforImage fails", async () => {
-    mockedApplicantDbOps.getByApplicationId.mockResolvedValue(mockApplicant);
+    mockedApplicantDbOps.mockResolvedValue(mockApplicant);
     mockedGenerateImageObjectkey.mockReturnValue(objectKey);
 
     vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockRejectedValue(new Error("S3 error"));
