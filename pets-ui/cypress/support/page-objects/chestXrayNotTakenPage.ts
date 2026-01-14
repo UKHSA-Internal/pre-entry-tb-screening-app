@@ -1,7 +1,7 @@
 //This holds all fields of the Chest X-ray Not Taken Page
 
 import { BasePage } from "../BasePageNew";
-import { FormHelper, GdsComponentHelper, ButtonHelper, ErrorHelper } from "../helpers";
+import { ButtonHelper, ErrorHelper, FormHelper, GdsComponentHelper } from "../helpers";
 
 // Interface for chest X-ray not taken form data
 interface ChestXrayNotTakenFormData {
@@ -94,7 +94,7 @@ export class ChestXrayNotTakenPage extends BasePage {
   }
 
   validateReasonFieldError(): ChestXrayNotTakenPage {
-    this.validateFieldError("reason-xray-not-taken");
+    this.error.validateFieldError("reason-xray-not-taken");
     return this;
   }
 
@@ -103,7 +103,7 @@ export class ChestXrayNotTakenPage extends BasePage {
     Object.entries(errors).forEach(([field, message]) => {
       switch (field) {
         case "reason":
-          this.validateFieldError("reason-xray-not-taken", message);
+          this.error.validateFieldError("reason-xray-not-taken", message);
           break;
       }
     });

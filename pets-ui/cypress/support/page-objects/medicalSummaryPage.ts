@@ -1,6 +1,6 @@
 //This holds all fields of the Medical Summary Page
 import { BasePage } from "../BasePageNew";
-import { GdsComponentHelper, ButtonHelper, SummaryHelper } from "../helpers";
+import { ButtonHelper, GdsComponentHelper, SummaryHelper } from "../helpers";
 
 export class MedicalSummaryPage extends BasePage {
   // Compose helper instances

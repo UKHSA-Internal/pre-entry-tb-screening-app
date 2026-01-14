@@ -1,7 +1,7 @@
 //This holds all fields for the TB Certificate Confirmation Page
 
 import { BasePage } from "../BasePageNew";
-import { GdsComponentHelper, ButtonHelper, ConfirmationHelper } from "../helpers";
+import { ButtonHelper, ConfirmationHelper, GdsComponentHelper } from "../helpers";
 
 export class TbCertificateConfirmationPage extends BasePage {
   // Compose helper instances

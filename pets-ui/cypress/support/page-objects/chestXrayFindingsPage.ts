@@ -1,6 +1,6 @@
 // This holds all fields for the Chest X-ray Findings Page
 import { BasePage } from "../BasePageNew";
-import { FormHelper, GdsComponentHelper, ButtonHelper, ErrorHelper } from "../helpers";
+import { ButtonHelper, ErrorHelper, FormHelper, GdsComponentHelper } from "../helpers";
 
 // Types for X-ray findings form data
 interface XrayFindingsData {

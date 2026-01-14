@@ -1,6 +1,6 @@
 // This holds all fields for the TB Screening Complete Page
 import { BasePage } from "../BasePageNew";
-import { GdsComponentHelper, ButtonHelper, SummaryHelper } from "../helpers";
+import { ButtonHelper, GdsComponentHelper, SummaryHelper } from "../helpers";
 
 export class TbScreeningCompletePage extends BasePage {
   // Compose helper instances

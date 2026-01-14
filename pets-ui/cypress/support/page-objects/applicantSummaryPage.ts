@@ -1,5 +1,5 @@
 /**
- * ApplicantSummaryPage - REFACTORED EXAMPLE
+ * ApplicantSummaryPage - Updated Page Object Model for the Applicant Summary Page
  * Demonstrates the new composition-based approach for summary pages
  * This page displays a summary of applicant details and allows changes
  */

@@ -1,6 +1,6 @@
 // This holds all fields for the Clinic Certificate Info Page
 import { BasePage } from "../BasePageNew";
-import { GdsComponentHelper, ButtonHelper, SummaryHelper } from "../helpers";
+import { ButtonHelper, GdsComponentHelper, SummaryHelper } from "../helpers";
 
 export class ClinicCertificateInfoPage extends BasePage {
   // Compose helper instances

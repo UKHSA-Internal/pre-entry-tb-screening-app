@@ -1,7 +1,7 @@
 //This holds all fields of the TB Clearance Certificate Declaration Page
 
 import { BasePage } from "../BasePageNew";
-import { FormHelper, GdsComponentHelper, ButtonHelper, ErrorHelper } from "../helpers";
+import { ButtonHelper, ErrorHelper, FormHelper, GdsComponentHelper } from "../helpers";
 
 // Types for TB certificate form
 interface TbCertificateDetails {
@@ -33,7 +33,7 @@ export class TbClearanceCertificatePage extends BasePage {
   }
 
   verifyPageLoaded(): TbClearanceCertificatePage {
-    super.verifyPageHeading("Enter TB clearance certificate declaration");
+    this.gds.verifyPageHeading("Enter TB clearance certificate declaration");
     cy.get("form").should("be.visible");
     return this;
   }
@@ -173,19 +173,22 @@ export class TbClearanceCertificatePage extends BasePage {
   // Enhanced error validation
   validateFormErrors(expectedErrorMessages: TbCertificateErrors): TbClearanceCertificatePage {
     if (expectedErrorMessages.isIssued) {
-      this.validateFieldError("tb-clearance-issued", expectedErrorMessages.isIssued);
+      this.error.validateFieldError("tb-clearance-issued", expectedErrorMessages.isIssued);
     }
 
     if (expectedErrorMessages.comments) {
-      this.validateFieldError("physician-comments", expectedErrorMessages.comments);
+      this.error.validateFieldError("physician-comments", expectedErrorMessages.comments);
     }
 
     if (expectedErrorMessages.issueDate) {
-      this.validateFieldError("tb-certificate-date", expectedErrorMessages.issueDate);
+      this.error.validateFieldError("tb-certificate-date", expectedErrorMessages.issueDate);
     }
 
     if (expectedErrorMessages.certificateNumber) {
-      this.validateFieldError("tb-certificate-number", expectedErrorMessages.certificateNumber);
+      this.error.validateFieldError(
+        "tb-certificate-number",
+        expectedErrorMessages.certificateNumber,
+      );
     }
 
     return this;
@@ -194,7 +197,7 @@ export class TbClearanceCertificatePage extends BasePage {
   // Verify form validation when submitting empty form
   verifyFormValidationForEmptyForm(): TbClearanceCertificatePage {
     this.clickContinue();
-    this.validateErrorSummaryVisible();
+    this.error.validateErrorSummaryVisible();
     return this;
   }
 

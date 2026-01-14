@@ -1,5 +1,5 @@
 import { BasePage } from "../BasePageNew";
-import { GdsComponentHelper, ButtonHelper } from "../helpers";
+import { ButtonHelper, GdsComponentHelper } from "../helpers";
 
 // This holds all fields of the Get Written Consent Page
 export class GetWrittenConsentPage extends BasePage {

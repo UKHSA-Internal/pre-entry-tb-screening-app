@@ -1,7 +1,7 @@
 // This holds all fields of the Medical Screening Page
 
 import { BasePage } from "../BasePageNew";
-import { FormHelper, GdsComponentHelper, ButtonHelper, ErrorHelper } from "../helpers";
+import { ButtonHelper, ErrorHelper, FormHelper, GdsComponentHelper } from "../helpers";
 
 // Interface for medical screening form data
 interface MedicalScreeningFormData {
@@ -292,47 +292,47 @@ export class MedicalScreeningPage extends BasePage {
 
   // Individual field error validations
   validateScreeningDateFieldError(): MedicalScreeningPage {
-    this.validateFieldError("medical-screening-completion-date");
+    this.error.validateFieldError("medical-screening-completion-date");
     return this;
   }
 
   validateAgeFieldError(): MedicalScreeningPage {
-    this.validateFieldError("age");
+    this.error.validateFieldError("age");
     return this;
   }
 
   validateTbSymptomsFieldError(): MedicalScreeningPage {
-    this.validateFieldError("tb-symptoms");
+    this.error.validateFieldError("tb-symptoms");
     return this;
   }
 
   validateTbSymptomsListFieldError(): MedicalScreeningPage {
-    this.validateFieldError("tb-symptoms-list");
+    this.error.validateFieldError("tb-symptoms-list");
     return this;
   }
 
   validateUnderElevenConditionsFieldError(): MedicalScreeningPage {
-    this.validateFieldError("under-eleven-conditions");
+    this.error.validateFieldError("under-eleven-conditions");
     return this;
   }
 
   validatePreviousTbFieldError(): MedicalScreeningPage {
-    this.validateFieldError("previous-tb");
+    this.error.validateFieldError("previous-tb");
     return this;
   }
 
   validateCloseContactFieldError(): MedicalScreeningPage {
-    this.validateFieldError("close-contact-with-tb");
+    this.error.validateFieldError("close-contact-with-tb");
     return this;
   }
 
   validatePregnancyFieldError(): MedicalScreeningPage {
-    this.validateFieldError("pregnant");
+    this.error.validateFieldError("pregnant");
     return this;
   }
 
   validateMenstrualPeriodsFieldError(): MedicalScreeningPage {
-    this.validateFieldError("menstrual-periods");
+    this.error.validateFieldError("menstrual-periods");
     return this;
   }
 
@@ -351,31 +351,31 @@ export class MedicalScreeningPage extends BasePage {
     Object.entries(errors).forEach(([field, message]) => {
       switch (field) {
         case "screeningDate":
-          this.validateFieldError("medical-screening-completion-date", message);
+          this.error.validateFieldError("medical-screening-completion-date", message);
           break;
         case "age":
-          this.validateFieldError("age", message);
+          this.error.validateFieldError("age", message);
           break;
         case "tbSymptoms":
-          this.validateFieldError("tb-symptoms", message);
+          this.error.validateFieldError("tb-symptoms", message);
           break;
         case "tbSymptomsList":
-          this.validateFieldError("tb-symptoms-list", message);
+          this.error.validateFieldError("tb-symptoms-list", message);
           break;
         case "underElevenConditions":
-          this.validateFieldError("under-eleven-conditions", message);
+          this.error.validateFieldError("under-eleven-conditions", message);
           break;
         case "previousTb":
-          this.validateFieldError("previous-tb", message);
+          this.error.validateFieldError("previous-tb", message);
           break;
         case "closeContact":
-          this.validateFieldError("close-contact-with-tb", message);
+          this.error.validateFieldError("close-contact-with-tb", message);
           break;
         case "pregnant":
-          this.validateFieldError("pregnant", message);
+          this.error.validateFieldError("pregnant", message);
           break;
         case "menstrualPeriods":
-          this.validateFieldError("menstrual-periods", message);
+          this.error.validateFieldError("menstrual-periods", message);
           break;
       }
     });

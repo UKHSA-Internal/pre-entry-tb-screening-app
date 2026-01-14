@@ -1,7 +1,7 @@
 //This holds all fields of the Medical Confirmation Page
 
 import { BasePage } from "../BasePageNew";
-import { GdsComponentHelper, ButtonHelper, ConfirmationHelper } from "../helpers";
+import { ButtonHelper, ConfirmationHelper, GdsComponentHelper } from "../helpers";
 
 export class MedicalConfirmationPage extends BasePage {
   // Compose helper instances

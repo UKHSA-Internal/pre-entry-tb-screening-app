@@ -8,7 +8,7 @@ import { BasePage } from "../BasePageNew";
 
 export class ContactInformationPage extends BasePage {
   // ============================================================================
-  // DOM SELECTORS - Centralized for easy maintenance
+  // SELECTORS - Centralized for easy maintenance
   // ============================================================================
 
   private readonly selectors = {

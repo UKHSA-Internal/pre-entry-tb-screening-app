@@ -1,7 +1,7 @@
 /**
- * ============================================================================
- * PASSPORT INFORMATION PAGE - PAGE OBJECT MODEL
- * ============================================================================
+ * =====================================================================================================
+ * PASSPORT INFORMATION PAGE - This Page holds all fields and methods for the Passport Information Page
+ * =====================================================================================================
  */
 import { BasePage } from "../BasePageNew";
 
@@ -811,7 +811,7 @@ export class PassportInformationPage extends BasePage {
   }
 
   // ============================================================================
-  // ACCESSIBILITY AND GOV.UK DESIGN SYSTEM VERIFICATION
+  // ACCESSIBILITY AND GDS VERIFICATION
   // ============================================================================
 
   /**

@@ -1,6 +1,6 @@
 //This holds all fields of the X-ray Results and Findings Check Page
 import { BasePage } from "../BasePageNew";
-import { GdsComponentHelper, ButtonHelper, SummaryHelper } from "../helpers";
+import { ButtonHelper, GdsComponentHelper, SummaryHelper } from "../helpers";
 
 export class XRayResultsAndFindingsPage extends BasePage {
   // Compose helper instances

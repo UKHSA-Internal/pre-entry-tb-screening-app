@@ -1,6 +1,6 @@
 // This holds all the fields on the Travel Information Page
 import { BasePage } from "../BasePageNew";
-import { FormHelper, GdsComponentHelper, ButtonHelper, ErrorHelper } from "../helpers";
+import { ButtonHelper, ErrorHelper, FormHelper, GdsComponentHelper } from "../helpers";
 
 export class TravelInformationPage extends BasePage {
   // Compose helper instances
@@ -292,37 +292,37 @@ export class TravelInformationPage extends BasePage {
 
   // Validate Address Line 1 field error
   validateAddressLine1Error(errorMessage?: string): TravelInformationPage {
-    this.validateFieldError("address-1", errorMessage);
+    this.error.validateFieldError("address-1", errorMessage);
     return this;
   }
 
   // Validate Address Line 3 field error
   validateAddressLine3Error(errorMessage?: string): TravelInformationPage {
-    this.validateFieldError("address-3", errorMessage);
+    this.error.validateFieldError("address-3", errorMessage);
     return this;
   }
 
   // Validate Town or City field error
   validateTownOrCityError(errorMessage?: string): TravelInformationPage {
-    this.validateFieldError("town-or-city", errorMessage);
+    this.error.validateFieldError("town-or-city", errorMessage);
     return this;
   }
 
   // Validate Postcode field error
   validatePostcodeError(errorMessage?: string): TravelInformationPage {
-    this.validateFieldError("postcode", errorMessage);
+    this.error.validateFieldError("postcode", errorMessage);
     return this;
   }
 
   // Validate Mobile Number field error
   validateMobileNumberError(errorMessage?: string): TravelInformationPage {
-    this.validateFieldError("mobile-number", errorMessage);
+    this.error.validateFieldError("mobile-number", errorMessage);
     return this;
   }
 
   // Validate Email field error
   validateEmailError(errorMessage?: string): TravelInformationPage {
-    this.validateFieldError("email", errorMessage);
+    this.error.validateFieldError("email", errorMessage);
     return this;
   }
 

@@ -1,7 +1,7 @@
 //This holds all fields for the TB Certificate Print Page
 
 import { BasePage } from "../BasePageNew";
-import { GdsComponentHelper, ButtonHelper } from "../helpers";
+import { ButtonHelper, GdsComponentHelper } from "../helpers";
 
 export class TbCertificatePrintPage extends BasePage {
   // Compose helper instances

@@ -1,7 +1,7 @@
 // This holds all the fields on the Travel Summary Page
 import { BasePage } from "../BasePageNew";
+import { ButtonHelper, GdsComponentHelper, SummaryHelper } from "../helpers";
 import { randomElement, visaType } from "../test-utils";
-import { GdsComponentHelper, ButtonHelper, SummaryHelper } from "../helpers";
 
 export class TravelSummaryPage extends BasePage {
   // Compose helper instances

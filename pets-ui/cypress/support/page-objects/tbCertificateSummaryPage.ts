@@ -1,6 +1,6 @@
 // This holds all fields for the TB Certificate Summary Page - Handles both Cert issued and not issued scenarios
 import { BasePage } from "../BasePageNew";
-import { GdsComponentHelper, ButtonHelper, SummaryHelper } from "../helpers";
+import { ButtonHelper, GdsComponentHelper, SummaryHelper } from "../helpers";
 
 // Types for certificate not issued information
 interface CertificateNotIssuedInfo {
