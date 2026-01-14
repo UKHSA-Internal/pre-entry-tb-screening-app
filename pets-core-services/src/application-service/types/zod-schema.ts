@@ -1,7 +1,7 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 
-import { TaskStatus } from "../../shared/types/enum";
+import { ApplicationStatus, TaskStatus } from "../../shared/types/enum";
 import {
   ChestXRayNotTakenReason,
   HistoryOfConditionsUnder11,
@@ -23,6 +23,18 @@ export const CreateApplicationResponseSchema = z.object({
   }),
   dateCreated: z.string().date().openapi({
     description: "Creation Date in UTC timezone",
+  }),
+});
+
+export const CancelApplicationRequestSchema = z.object({
+  applicationId: z.string().openapi({
+    description: "ID of newly created application",
+  }),
+  status: z.nativeEnum(ApplicationStatus).openapi({
+    description: "Application current status",
+  }),
+  cancellationReason: z.string().optional().openapi({
+    description: "Reason for application cancelling",
   }),
 });
 
@@ -442,6 +454,15 @@ export const SputumDecisionResponseSchema = SputumDecisionRequestSchema.extend({
 export const ApplicationSchema = z.object({
   applicationId: z.string().openapi({
     description: "application id",
+  }),
+  status: z.nativeEnum(ApplicationStatus).openapi({
+    description: "Application current status",
+  }),
+  cancellationReason: z.string().optional().openapi({
+    description: "Reason for application cancelling",
+  }),
+  expiryDate: z.date().openapi({
+    description: "The date when the certificate expires",
   }),
   applicantPhotoUrl: z.string().openapi({
     description: "Presigned Url for applicant Photo",
