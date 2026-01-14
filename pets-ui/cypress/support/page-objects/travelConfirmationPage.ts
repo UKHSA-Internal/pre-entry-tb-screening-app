@@ -1,7 +1,12 @@
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { GdsComponentHelper, ButtonHelper } from "../helpers";
 
 //This holds all fields on the Travel Confirmation Page
 export class TravelConfirmationPage extends BasePage {
+  // Compose helper instances
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+
   constructor() {
     super("/travel-information-confirmed");
   }

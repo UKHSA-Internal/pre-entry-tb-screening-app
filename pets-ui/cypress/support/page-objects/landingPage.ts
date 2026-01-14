@@ -1,6 +1,6 @@
 // Landing Page POM - Main entry point with Sign In functionality
 
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
 
 export class LandingPage extends BasePage {
   constructor() {

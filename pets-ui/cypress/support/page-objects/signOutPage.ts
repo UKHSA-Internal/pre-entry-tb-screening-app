@@ -1,8 +1,13 @@
 // This holds all fields and interactions for the Sign Out Page
 
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { GdsComponentHelper, ButtonHelper } from "../helpers";
 
 export class SignOutPage extends BasePage {
+  // Compose helper instances
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+
   constructor() {
     super("/are-you-sure-you-want-to-sign-out");
   }

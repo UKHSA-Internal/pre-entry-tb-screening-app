@@ -1,7 +1,13 @@
 //This holds all fields of the Medical Summary Page
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { GdsComponentHelper, ButtonHelper, SummaryHelper } from "../helpers";
 
 export class MedicalSummaryPage extends BasePage {
+  // Compose helper instances
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private summary = new SummaryHelper();
+
   constructor() {
     super("/check-medical-history-and-tb-symptoms");
   }

@@ -7,6 +7,7 @@ import { DateUtils } from "../../support/DateUtils";
 import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
 import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
@@ -18,6 +19,7 @@ describe("PETS Date Validation: BOUNDARY - Passport Issue Date Same as DOB", () 
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
   const applicantConsentPage = new ApplicantConsentPage();
+  const passportInformationPage = new PassportInformationPage();
 
   // Define variables to store test data
   let countryName: string = "";
@@ -91,22 +93,20 @@ describe("PETS Date Validation: BOUNDARY - Passport Issue Date Same as DOB", () 
       .selectSex("Male")
       .selectNationality(countryName)
       .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
-      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
-      .fillPassportExpiryDate(
-        passportExpiryDate.day,
-        passportExpiryDate.month,
-        passportExpiryDate.year,
-      )
-      .fillAddressLine1("456 Boundary Street")
-      .fillTownOrCity("Boundary City")
-      .fillProvinceOrState("Boundary Province")
-      .selectAddressCountry(countryName)
-      .fillPostcode("B0UN 2RY");
+      .submitForm();
+
+    // Fill passport information with issue date SAME as DOB
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName)
+      .fillIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillExpiryDate(passportExpiryDate.day, passportExpiryDate.month, passportExpiryDate.year);
 
     // Attempt to submit form - should fail validation
-    applicantDetailsPage.submitForm();
+    passportInformationPage.submitForm();
 
-    // Verify we're still on the same page
+    // Verify we're still on the passport information page
     cy.url().should("include", "/visa-applicant-passport-information");
 
     // Verify error summary is displayed

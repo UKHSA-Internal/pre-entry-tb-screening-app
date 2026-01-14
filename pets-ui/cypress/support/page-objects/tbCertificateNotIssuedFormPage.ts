@@ -1,5 +1,6 @@
 // This holds all fields of the TB Certificate Not Issued Form Page
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { FormHelper, GdsComponentHelper, ButtonHelper, ErrorHelper } from "../helpers";
 
 // Types for TB certificate not issued form
 interface TbCertificateNotIssuedDetails {
@@ -19,6 +20,12 @@ interface TbCertificateNotIssuedErrors {
 }
 
 export class TbCertificateNotIssuedFormPage extends BasePage {
+  // Compose helper instances
+  private form = new FormHelper();
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private error = new ErrorHelper();
+
   constructor() {
     super("/tb-certificate-not-issued");
   }

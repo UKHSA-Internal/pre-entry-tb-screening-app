@@ -1,6 +1,7 @@
 //This holds all fields of the TB Certificate Declaration Page
 
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { FormHelper, GdsComponentHelper, ButtonHelper, ErrorHelper } from "../helpers";
 
 // Types for TB certificate declaration form
 interface TbCertificateDeclarationDetails {
@@ -23,6 +24,12 @@ interface TbCertificateDeclarationErrors {
 }
 
 export class TbCertificateDeclarationPage extends BasePage {
+  // Compose helper instances
+  private form = new FormHelper();
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private error = new ErrorHelper();
+
   constructor() {
     super("/tb-certificate-declaration");
   }

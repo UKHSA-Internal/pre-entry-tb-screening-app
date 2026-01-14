@@ -1,7 +1,14 @@
 // This holds all the fields on the Travel Information Page
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { FormHelper, GdsComponentHelper, ButtonHelper, ErrorHelper } from "../helpers";
 
 export class TravelInformationPage extends BasePage {
+  // Compose helper instances
+  private form = new FormHelper();
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private error = new ErrorHelper();
+
   constructor() {
     super("/visa-applicant-proposed-uk-address");
   }

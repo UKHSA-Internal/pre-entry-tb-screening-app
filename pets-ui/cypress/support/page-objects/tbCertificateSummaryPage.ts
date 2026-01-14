@@ -1,5 +1,6 @@
 // This holds all fields for the TB Certificate Summary Page - Handles both Cert issued and not issued scenarios
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { GdsComponentHelper, ButtonHelper, SummaryHelper } from "../helpers";
 
 // Types for certificate not issued information
 interface CertificateNotIssuedInfo {
@@ -31,6 +32,11 @@ interface ScreeningInfo {
 }
 
 export class TbCertificateSummaryPage extends BasePage {
+  // Compose helper instances
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private summary = new SummaryHelper();
+
   constructor() {
     super("/tb-certificate-summary");
   }

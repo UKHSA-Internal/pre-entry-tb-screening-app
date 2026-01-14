@@ -1,6 +1,7 @@
 // This holds all fields of the Medical Screening Page
 
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { FormHelper, GdsComponentHelper, ButtonHelper, ErrorHelper } from "../helpers";
 
 // Interface for medical screening form data
 interface MedicalScreeningFormData {
@@ -29,6 +30,12 @@ interface MedicalScreeningFormData {
 }
 
 export class MedicalScreeningPage extends BasePage {
+  // Compose helper instances
+  private form = new FormHelper();
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private error = new ErrorHelper();
+
   constructor() {
     super("/record-medical-history-tb-symptoms");
   }

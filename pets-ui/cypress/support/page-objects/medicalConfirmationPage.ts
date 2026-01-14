@@ -1,8 +1,14 @@
 //This holds all fields of the Medical Confirmation Page
 
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { GdsComponentHelper, ButtonHelper, ConfirmationHelper } from "../helpers";
 
 export class MedicalConfirmationPage extends BasePage {
+  // Compose helper instances
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private confirmation = new ConfirmationHelper();
+
   constructor() {
     super("/tb-symptoms-medical-history-confirmed");
   }
