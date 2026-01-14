@@ -25,7 +25,9 @@ export class GetWrittenConsentPage extends BasePage {
 
   // Verify page heading
   verifyPageHeading(): GetWrittenConsentPage {
-    cy.get("h1.govuk-heading-l").should("be.visible").and("contain", "Get written consent");
+    cy.get("h1.govuk-heading-l")
+      .should("be.visible")
+      .and("contain", "Do you have the visa applicant's written consent for TB screening?");
     return this;
   }
 

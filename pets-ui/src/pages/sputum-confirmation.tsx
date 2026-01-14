@@ -42,17 +42,17 @@ export default function SputumConfirmation() {
 
   const confirmationText =
     sputumData.status === ApplicationStatus.COMPLETE || allResultsComplete
-      ? "All sputum sample information confirmed"
+      ? "Sputum collection and results confirmed"
       : "Partial sputum sample information confirmed";
 
   const furtherInfo = (() => {
-    if (allResultsComplete) {
-      return ["You can now return to the progress tracker."];
-    } else if (allDatesComplete && hasAnyResults) {
+    if (allDatesComplete && hasAnyResults && !allResultsComplete) {
       return ["The panel physician should wait to confirm the remaining sputum sample results"];
-    } else {
-      return ["You can now return to the progress tracker."];
     }
+    return [
+      "We have sent sputum collection details and results to UKHSA.",
+      "You can now view a summary for this visa applicant.",
+    ];
   })();
 
   useEffect(() => {
@@ -65,7 +65,7 @@ export default function SputumConfirmation() {
   }, []);
 
   return (
-    <Container title="Sputum sample information confirmed - Complete UK pre-entry health screening - GOV.UK">
+    <Container title={confirmationText + " - Complete UK pre-entry health screening - GOV.UK"}>
       <Confirmation
         confirmationText={confirmationText}
         furtherInfo={furtherInfo}

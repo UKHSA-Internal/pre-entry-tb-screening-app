@@ -53,7 +53,7 @@ export default function TbConfirmationPage() {
       <Confirmation
         confirmationText={
           isCertificateIssued
-            ? "TB screening complete\nCertificate issued"
+            ? "TB screening complete\n\nCertificate available"
             : "TB screening complete\nCertificate not issued"
         }
         isSuccess={isCertificateIssued}
@@ -61,7 +61,7 @@ export default function TbConfirmationPage() {
         applicationNumber={tbCertificateData.certificateNumber}
         preWhatHappensNextText="The visa applicant TB screening is complete."
         whatHappensNext={true}
-        postWhatHappensNextText="We've sent the certificate information to UKHSA."
+        postWhatHappensNextText="We have sent the certificate information to UKHSA."
         furtherInfo={furtherInfo}
         showSearchForAnotherVisaApplicantLink={false}
         actionButton={

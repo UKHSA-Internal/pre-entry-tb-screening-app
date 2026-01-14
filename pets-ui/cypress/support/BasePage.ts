@@ -82,12 +82,19 @@ export class BasePage {
 
   // Common methods for handling form fields
   fillTextInput(labelText: string, value: string): BasePage {
-    cy.contains("label", labelText).parent().find("input").should("be.visible").clear().type(value);
+    cy.contains("label", labelText, { timeout: 10000 })
+      .should("be.visible")
+      .parent()
+      .find("input")
+      .should("be.visible")
+      .clear()
+      .type(value);
     return this;
   }
 
   fillTextarea(labelText: string, value: string): BasePage {
-    cy.contains("label", labelText)
+    cy.contains("label", labelText, { timeout: 10000 })
+      .should("be.visible")
       .parent()
       .find("textarea")
       .should("be.visible")
@@ -97,7 +104,12 @@ export class BasePage {
   }
 
   selectDropdown(labelText: string, value: string): BasePage {
-    cy.contains("label", labelText).parent().find("select").should("be.visible").select(value);
+    cy.contains("label", labelText, { timeout: 10000 })
+      .should("be.visible")
+      .parent()
+      .find("select")
+      .should("be.visible")
+      .select(value);
     return this;
   }
 
@@ -274,9 +286,20 @@ export class BasePage {
     return this;
   }
 
-  verifyNextStepsSection(): BasePage {
+  verifyNextStepsSection(expectedText?: string): BasePage {
     cy.contains("h2", "What happens next").should("be.visible");
-    cy.contains("p", "You can now return to the progress tracker.").should("be.visible");
+
+    if (expectedText) {
+      cy.contains("p.govuk-body", expectedText).should("be.visible");
+    } else {
+      cy.get("p.govuk-body")
+        .invoke("text")
+        .should(
+          "match",
+          /You can now (view a summary for this visa applicant|return to the progress tracker)/,
+        );
+    }
+
     return this;
   }
 
