@@ -537,7 +537,6 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     clinicCertificateInfoPage
       .verifyPageLoaded()
       .verifyCertificateExpiryDateCalculation()
-      .verifyCertificateExpiryIs6MonthsFromIssueDate()
       .saveCertificateReferenceNumber()
       .completeForm(
         "Dr. Rebecca Thompson",

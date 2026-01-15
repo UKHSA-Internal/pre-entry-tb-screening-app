@@ -91,7 +91,7 @@ function App() {
         }
       />
       <Route
-        path="/no-matching-record-found"
+        path="/no-visa-applicant-found"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
