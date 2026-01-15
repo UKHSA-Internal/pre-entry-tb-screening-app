@@ -1,5 +1,6 @@
 import {
   calculateApplicantAge,
+  calculateCertificateExpiryDate,
   formatDateType,
   isDateInTheFuture,
   isDateInThePast,
@@ -509,5 +510,20 @@ describe("validateTbSymptoms function", () => {
 
   it("should return true if symptoms No and list of symptoms is empty", () => {
     expect(validateTbSymptoms([], "No")).toBe(true);
+  });
+});
+
+describe("calculateCertificateExpiryDate function", () => {
+  it("should handle date rollover correctly", () => {
+    expect(
+      calculateCertificateExpiryDate(
+        {
+          year: "2000",
+          month: "11",
+          day: "30",
+        },
+        true,
+      ),
+    ).toEqual({ year: "2001", month: "2", day: "28" });
   });
 });

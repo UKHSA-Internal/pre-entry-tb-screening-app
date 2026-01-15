@@ -538,7 +538,6 @@ describe("PETS Scenario: Infant (6 months old) with No Symptoms, No X-ray, Sputu
     clinicCertificateInfoPage
       .verifyPageLoaded()
       .verifyCertificateExpiryDateCalculation()
-      .verifyCertificateExpiryIs6MonthsFromIssueDate()
       .saveCertificateReferenceNumber()
       .completeForm(
         "Dr. Sarah Pediatrics",

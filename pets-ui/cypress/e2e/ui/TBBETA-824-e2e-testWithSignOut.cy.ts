@@ -728,7 +728,6 @@ describe("PETS Application End-to-End Tests with Sign Out Functionality", () => 
       clinicCertificateInfoPage
         .verifyPageLoaded()
         .verifyCertificateExpiryDateCalculation()
-        .verifyCertificateExpiryIs6MonthsFromIssueDate()
         .saveCertificateReferenceNumber()
         .completeForm(
           "Dr. Amanda Johnson",

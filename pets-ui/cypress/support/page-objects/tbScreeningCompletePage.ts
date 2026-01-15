@@ -184,7 +184,7 @@ export class TbScreeningCompletePage extends BasePage {
   // Verify UKHSA notification message
   verifyUKHSAMessage(): TbScreeningCompletePage {
     cy.get("p.govuk-body")
-      .contains("We've sent the certificate information to UKHSA")
+      .contains("We have sent the certificate information to UKHSA")
       .should("be.visible");
     return this;
   }

@@ -62,7 +62,7 @@ describe("ConsentQuestionPage", () => {
   it("displays the back link", () => {
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/no-matching-record-found");
+    expect(link).toHaveAttribute("href", "/no-visa-applicant-found");
     expect(link).toHaveClass("govuk-back-link");
   });
 
