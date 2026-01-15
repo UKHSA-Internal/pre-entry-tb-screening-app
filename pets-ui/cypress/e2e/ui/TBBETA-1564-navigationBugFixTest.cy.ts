@@ -15,10 +15,12 @@ import { ChestXrayFindingsPage } from "../../support/page-objects/chestXrayFindi
 import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
 import { ChestXrayResultsPage } from "../../support/page-objects/chestXrayResultsPage";
 import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
+import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { EnterSputumSampleResultsPage } from "../../support/page-objects/enterSputumSampleResultsPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import { RadiologicalOutcomeConfPage } from "../../support/page-objects/radiologicalOutcomeConfPage";
 import { SputumCollectionPage } from "../../support/page-objects/sputumCollectionPage";
 import { SputumConfirmationPage } from "../../support/page-objects/sputumConfirmationPage";
@@ -43,6 +45,8 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
+  const passportInformationPage = new PassportInformationPage();
+  const contactInformationPage = new ContactInformationPage();
   const applicantConsentPage = new ApplicantConsentPage();
   const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const travelInformationPage = new TravelInformationPage();
@@ -119,23 +123,32 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
     // Verify redirection to the contact page
     applicantSearchPage.verifyRedirectionToCreateApplicantPage();
 
-    // Fill Applicant Details
+    // Fill Applicant Details - Page 1: Personal Information
     applicantDetailsPage.verifyPageLoaded();
-
-    // Fill in applicant details
     applicantDetailsPage
       .fillFullName("Jane Smith")
       .selectSex("Female")
-      .selectNationality(countryName) // Use country code for form filling
+      .selectNationality(countryName)
       .fillBirthDate("15", "03", "2000")
-      .fillPassportIssueDate("10", "05", "2018")
-      .fillPassportExpiryDate("10", "05", "2028")
+      .submitForm();
+
+    // Fill Applicant Details - Page 2: Passport Information
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName)
+      .fillIssueDate("10", "05", "2018")
+      .fillExpiryDate("10", "05", "2028")
+      .submitForm();
+
+    // Fill Applicant Details - Page 3: Contact Information
+    contactInformationPage.verifyPageLoaded();
+    contactInformationPage
       .fillAddressLine1("123 High Street")
       .fillAddressLine2("Apartment 4B")
-      .fillAddressLine3("Downtown")
       .fillTownOrCity("London")
       .fillProvinceOrState("Greater London")
-      .selectAddressCountry(countryName) // Use country code for form filling
+      .selectCountry(countryName)
       .fillPostcode("SW1A 1AA")
       .submitForm();
 
@@ -488,7 +501,7 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
       // Verify redirection to Sputum decision Info Page
       sputumDecisionInfoPage.verifyPageLoaded();
       sputumDecisionInfoPage.verifyAllPageElements();
-      sputumDecisionInfoPage.clickSaveAndContinue();
+      sputumDecisionInfoPage.clickSaveAndContinueButton();
 
       // Verify redirection to Sputum Decision Confirmation Page
       sputumDecisionConfirmationPage
@@ -592,17 +605,13 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
       // Verify change links are present and point to correct pages
       checkSputumSampleInfoPage.verifyChangeLinksExist();
 
-      // Verify service name in header
-      checkSputumSampleInfoPage.verifyServiceName();
-
       // Submit the summary and continue to next step
-      checkSputumSampleInfoPage.clickSaveAndContinue();
+      checkSputumSampleInfoPage.clickSubmitButton();
 
       // Verify Sputum confirmation page
       sputumConfirmationPage.verifyPageLoaded();
       sputumConfirmationPage.verifyConfirmationPanel();
       sputumConfirmationPage.verifyNextStepsSection();
-      sputumConfirmationPage.verifyServiceName();
       sputumConfirmationPage.clickContinueButton();
 
       // Verify redirection to TB Screening Progress Tracker page

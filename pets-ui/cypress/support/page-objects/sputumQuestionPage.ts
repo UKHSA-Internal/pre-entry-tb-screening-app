@@ -1,14 +1,21 @@
 // This holds all fields for the Sputum Question Page
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, ErrorHelper, FormHelper, GdsComponentHelper } from "../helpers";
 
 export class SputumQuestionPage extends BasePage {
+  // Compose helper instances
+  private form = new FormHelper();
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private error = new ErrorHelper();
+
   constructor() {
     super("/is-sputum-collection-required");
   }
 
   // Verify page loaded
   verifyPageLoaded(): SputumQuestionPage {
-    this.verifyPageHeading("Is sputum collection required?");
+    this.gds.verifyPageHeading("Is sputum collection required?");
     cy.get("form").should("be.visible");
     return this;
   }
@@ -70,7 +77,7 @@ export class SputumQuestionPage extends BasePage {
 
   // Form validation methods
   validateSputumRequiredFieldError(): SputumQuestionPage {
-    this.validateFieldError("sputum-required");
+    this.error.validateFieldError("sputum-required");
     return this;
   }
 

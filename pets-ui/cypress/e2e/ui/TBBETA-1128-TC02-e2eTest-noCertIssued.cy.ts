@@ -15,9 +15,11 @@ import { ChestXrayFindingsPage } from "../../support/page-objects/chestXrayFindi
 import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
 import { ChestXrayResultsPage } from "../../support/page-objects/chestXrayResultsPage";
 import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
+import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import { RadiologicalOutcomeConfPage } from "../../support/page-objects/radiologicalOutcomeConfPage";
 import { SputumDecisionConfirmationPage } from "../../support/page-objects/sputumDecisionConfirmationPage";
 import { SputumDecisionInfoPage } from "../../support/page-objects/sputumDecisionInfoPage";
@@ -44,6 +46,8 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
+  const passportInformationPage = new PassportInformationPage();
+  const contactInformationPage = new ContactInformationPage();
   const applicantConsentPage = new ApplicantConsentPage();
   const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const travelInformationPage = new TravelInformationPage();
@@ -185,23 +189,31 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
     // Verify redirection to the contact page
     applicantSearchPage.verifyRedirectionToCreateApplicantPage();
 
-    // Fill basic applicant details
+    // Fill Applicant Details - Page 1: Personal Information
     applicantDetailsPage.verifyPageLoaded();
     applicantDetailsPage
       .fillFullName("Jane Tester-Doe")
       .selectSex("Female")
       .selectNationality(countryName)
       .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
-      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
-      .fillPassportExpiryDate(
-        passportExpiryDate.day,
-        passportExpiryDate.month,
-        passportExpiryDate.year,
-      )
+      .submitForm();
+
+    // Fill Applicant Details - Page 2: Passport Information
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName)
+      .fillIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillExpiryDate(passportExpiryDate.day, passportExpiryDate.month, passportExpiryDate.year)
+      .submitForm();
+
+    // Fill Applicant Details - Page 3: Contact Information
+    contactInformationPage.verifyPageLoaded();
+    contactInformationPage
       .fillAddressLine1("456 Oak Tree Avenue")
       .fillTownOrCity("St. Peters")
       .fillProvinceOrState("Dreamland")
-      .selectAddressCountry(countryName)
+      .selectCountry(countryName)
       .fillPostcode("62409")
       .submitForm();
 
@@ -504,7 +516,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       // Verify redirection to Sputum decision Info Page
       sputumDecisionInfoPage.verifyPageLoaded();
       sputumDecisionInfoPage.verifyAllPageElements();
-      sputumDecisionInfoPage.clickSaveAndContinue();
+      sputumDecisionInfoPage.clickSaveAndContinueButton();
 
       // Verify redirection to Sputum Decision Confirmation Page
       sputumDecisionConfirmationPage

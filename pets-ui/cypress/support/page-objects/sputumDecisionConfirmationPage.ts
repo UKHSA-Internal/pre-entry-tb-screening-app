@@ -1,7 +1,13 @@
 // This holds all fields for the Sputum Decision Confirmation Page
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, ConfirmationHelper, GdsComponentHelper } from "../helpers";
 
 export class SputumDecisionConfirmationPage extends BasePage {
+  // Compose helper instances
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private confirmation = new ConfirmationHelper();
+
   constructor() {
     super("/sputum-decision-confirmed");
   }

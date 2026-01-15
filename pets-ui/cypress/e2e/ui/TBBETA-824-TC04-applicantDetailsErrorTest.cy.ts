@@ -64,29 +64,19 @@ describe("Applicant Details Form - Invalid Month Format Test", () => {
     // Fill Applicant Details
     applicantDetailsPage.verifyPageLoaded();
 
-    // Fill in applicant details
+    // Fill in applicant details with invalid month format
     applicantDetailsPage
       .fillFullName("Jane Smith")
       .selectSex("Female")
       .selectNationality(countryName) // Use country code for form filling
       .fillBirthDate("15", "JAZ", "1985")
-      .fillPassportIssueDate("10", "05", "2015")
-      .fillPassportExpiryDate("10", "05", "2035")
-      .fillAddressLine1("123 High Street")
-      .fillAddressLine2("Apartment 4B")
-      .fillAddressLine3("Downtown")
-      .fillTownOrCity("St. Marten")
-      .fillProvinceOrState("Holestown")
-      .selectAddressCountry(countryName) // Use country code for form filling
-      .fillPostcode("94109")
       .submitForm();
 
     // Validate error for invalid date format is displayed
-    applicantDetailsPage.validateErrorContainsText(
+    applicantDetailsPage.verifyErrorSummary();
+    applicantDetailsPage.verifyFieldError(
+      "birth-date",
       "Date of birth day, month and year must contain only numbers",
     );
-    applicantDetailsPage.validateFormErrors({
-      birthDate: "Date of birth day, month and year must contain only numbers",
-    });
   });
 });

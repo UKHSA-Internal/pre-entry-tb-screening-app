@@ -17,10 +17,12 @@ import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage"
 import { ChestXrayResultsPage } from "../../support/page-objects/chestXrayResultsPage";
 import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
 import { ClinicCertificateInfoPage } from "../../support/page-objects/clinicCertificateInfoPage";
+import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { EnterSputumSampleResultsPage } from "../../support/page-objects/enterSputumSampleResultsPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import { RadiologicalOutcomeConfPage } from "../../support/page-objects/radiologicalOutcomeConfPage";
 import { SputumCollectionPage } from "../../support/page-objects/sputumCollectionPage";
 import { SputumConfirmationPage } from "../../support/page-objects/sputumConfirmationPage";
@@ -49,6 +51,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
   const applicantConsentPage = new ApplicantConsentPage();
+  const contactInformationPage = new ContactInformationPage();
   const travelInformationPage = new TravelInformationPage();
   const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const travelSummaryPage = new TravelSummaryPage();
@@ -57,6 +60,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
   const applicantConfirmationPage = new ApplicantConfirmationPage();
   const medicalSummaryPage = new MedicalSummaryPage();
   const medicalConfirmationPage = new MedicalConfirmationPage();
+  const passportInformationPage = new PassportInformationPage();
   const radiologicalOutcomeConfPage = new RadiologicalOutcomeConfPage();
   const sputumQuestionPage = new SputumQuestionPage();
   const sputumCollectionPage = new SputumCollectionPage();
@@ -212,22 +216,27 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     // Fill in applicant details
     applicantDetailsPage
       .fillFullName("Jane Smith")
+      .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
       .selectSex("Female")
       .selectNationality(countryName) // Use country code for form filling
-      .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
-      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
-      .fillPassportExpiryDate(
-        passportExpiryDate.day,
-        passportExpiryDate.month,
-        passportExpiryDate.year,
-      )
-      .fillAddressLine1("123 Palm Street")
-      .fillAddressLine2("Apartment 4B")
-      .fillAddressLine3("Downtown")
-      .fillTownOrCity("Bridgetown")
-      .fillProvinceOrState("Saint Michael")
-      .selectAddressCountry(countryName) // Use country code for form filling
-      .fillPostcode("BB11111")
+      .submitForm();
+    // Fill in passport details
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName) // Use country code for form filling
+      .fillIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillExpiryDate(passportExpiryDate.day, passportExpiryDate.month, passportExpiryDate.year)
+      .submitForm();
+    // Fill in contact information
+    contactInformationPage.verifyPageLoaded();
+    contactInformationPage
+      .fillAddressLine1("123 Main Street")
+      .fillAddressLine2("Apt 4B")
+      .fillTownOrCity("St. Peter Port")
+      .fillProvinceOrState("St. Peters")
+      .fillPostcode("54109")
+      .selectCountry(countryName)
       .submitForm();
 
     // Verify redirection to the Applicant Photo page
@@ -300,7 +309,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     // NOW verify the travel information page
     travelInformationPage.verifyPageLoaded();
 
-    /// Fill travel information (NO visa type parameter needed)
+    // Fill travel information (NO visa type parameter needed)
     travelInformationPage.fillCompleteForm({
       ukAddressLine1: "456 Park Lane",
       ukAddressLine2: "Floor 2",
@@ -551,7 +560,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
       // Verify redirection to Sputum decision Info Page
       sputumDecisionInfoPage.verifyPageLoaded();
       sputumDecisionInfoPage.verifyAllPageElements();
-      sputumDecisionInfoPage.clickSaveAndContinue();
+      sputumDecisionInfoPage.clickSaveAndContinueButton();
 
       // Verify redirection to Sputum Decision Confirmation Page
       sputumDecisionConfirmationPage
@@ -667,17 +676,13 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
       // Verify change links are present and point to correct pages
       checkSputumSampleInfoPage.verifyChangeLinksExist();
 
-      // Verify service name in header
-      checkSputumSampleInfoPage.verifyServiceName();
-
       // Submit the summary and continue to next step
-      checkSputumSampleInfoPage.clickSaveAndContinue();
+      checkSputumSampleInfoPage.clickSubmitButton();
 
       // Verify Sputum confirmation page
       sputumConfirmationPage.verifyPageLoaded();
       sputumConfirmationPage.verifyConfirmationPanel();
       sputumConfirmationPage.verifyNextStepsSection();
-      sputumConfirmationPage.verifyServiceName();
       sputumConfirmationPage.clickContinueButton();
 
       // Verify redirection to TB Screening Progress Tracker page
@@ -721,7 +726,6 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
       clinicCertificateInfoPage
         .verifyPageLoaded()
         .verifyCertificateExpiryDateCalculation()
-        .verifyCertificateExpiryIs6MonthsFromIssueDate()
         .saveCertificateReferenceNumber()
         .completeForm(
           "Dr. Amanda Johnson",

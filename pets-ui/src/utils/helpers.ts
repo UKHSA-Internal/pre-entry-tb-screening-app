@@ -248,9 +248,13 @@ const calculateCertificateExpiryDate = (
   const { year, month, day } = issueDate;
   if (!year || !month || !day) return issueDate;
 
-  const jsDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  const jsDate = new Date(Number(year), Number(month) - 1, Number(day));
   const expiryMonths = hasCloseContactWithTb ? 3 : 6;
+  const originalDay = jsDate.getDate();
   jsDate.setMonth(jsDate.getMonth() + expiryMonths);
+  if (jsDate.getDate() !== originalDay) {
+    jsDate.setDate(0);
+  }
 
   return {
     year: jsDate.getFullYear().toString(),
