@@ -9,14 +9,17 @@ import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPh
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
 import { CheckChestXrayImagesPage } from "../../support/page-objects/checkChestXrayImagesPage";
+import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
 import { ChestXrayConfirmationPage } from "../../support/page-objects/chestXrayConfirmationPage";
 import { ChestXrayFindingsPage } from "../../support/page-objects/chestXrayFindingsPage";
 import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
 import { ChestXrayResultsPage } from "../../support/page-objects/chestXrayResultsPage";
 import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
+import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import { RadiologicalOutcomeConfPage } from "../../support/page-objects/radiologicalOutcomeConfPage";
 import { SputumQuestionPage } from "../../support/page-objects/sputumQuestionPage";
 import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
@@ -34,10 +37,12 @@ import {
 describe("Empty Form Submission Test On Sputum Collection Page", () => {
   // Page object instances
   const applicantConsentPage = new ApplicantConsentPage();
+  const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
+  const passportInformationPage = new PassportInformationPage();
   const travelInformationPage = new TravelInformationPage();
   const travelSummaryPage = new TravelSummaryPage();
   const travelConfirmationPage = new TravelConfirmationPage();
@@ -45,6 +50,7 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
   const applicantConfirmationPage = new ApplicantConfirmationPage();
   const medicalSummaryPage = new MedicalSummaryPage();
   const medicalConfirmationPage = new MedicalConfirmationPage();
+  const contactInformationPage = new ContactInformationPage();
   const radiologicalOutcomeConfPage = new RadiologicalOutcomeConfPage();
   const sputumQuestionPage = new SputumQuestionPage();
   const checkChestXrayImagesPage = new CheckChestXrayImagesPage();
@@ -173,24 +179,30 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
 
     // Fill applicant details
     applicantDetailsPage.verifyPageLoaded();
+    // Fill in applicant details
     applicantDetailsPage
-      .fillFullName("Jane Smith")
-      .selectSex("Female")
-      .selectNationality(countryName)
+      .fillFullName("Juliet Smith")
       .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
-      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
-      .fillPassportExpiryDate(
-        passportExpiryDate.day,
-        passportExpiryDate.month,
-        passportExpiryDate.year,
-      )
-      .fillAddressLine1("100 Palm Street")
-      .fillAddressLine2("Blank Building")
-      .fillAddressLine3("Void Village")
-      .fillTownOrCity("Testers Town")
-      .fillProvinceOrState("Empire State")
-      .selectAddressCountry(countryName)
-      .fillPostcode("EM123")
+      .selectSex("Female")
+      .selectNationality(countryName) // Use country code for form filling
+      .submitForm();
+    // Fill in passport details
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName) // Use country code for form filling
+      .fillIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillExpiryDate(passportExpiryDate.day, passportExpiryDate.month, passportExpiryDate.year)
+      .submitForm();
+    // Fill in contact information
+    contactInformationPage.verifyPageLoaded();
+    contactInformationPage
+      .fillAddressLine1("123 Vanilla Avenue")
+      .fillAddressLine2("Apartment 4B")
+      .fillTownOrCity("Downtown")
+      .fillProvinceOrState("Testershire")
+      .fillPostcode("84109")
+      .selectCountry(countryName)
       .submitForm();
 
     // Complete photo upload
@@ -199,6 +211,18 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
       .uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg")
       .verifyUploadSuccess();
     applicantPhotoUploadPage.clickContinue();
+
+    // Check visa applicant photo page
+    cy.url().should("include", "/check-visa-applicant-photo");
+
+    checkPhotoPage.verifyPageLoaded();
+    checkPhotoPage.verifyPageHeadingText();
+    checkPhotoPage.verifyUploadedPhotoDisplayed();
+    checkPhotoPage.verifyFilenameDisplayed();
+    checkPhotoPage.verifyImageLayout();
+    checkPhotoPage.verifyRadioButtonsExist();
+    checkPhotoPage.selectYesAddPhoto();
+    checkPhotoPage.clickContinue();
 
     // Complete applicant summary
     applicantSummaryPage.verifyPageLoaded();
@@ -447,7 +471,7 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
       tbProgressTrackerPage.verifyPageLoaded();
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
-        Name: "Jane Smith",
+        Name: "Juliet Smith",
         "Date of birth": adultDOBFormatted,
         "Passport number": passportNumber,
         "TB screening": "In progress",

@@ -9,14 +9,17 @@ import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPh
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
 import { CheckChestXrayImagesPage } from "../../support/page-objects/checkChestXrayImagesPage";
+import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
 import { ChestXrayConfirmationPage } from "../../support/page-objects/chestXrayConfirmationPage";
 import { ChestXrayFindingsPage } from "../../support/page-objects/chestXrayFindingsPage";
 import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
 import { ChestXrayResultsPage } from "../../support/page-objects/chestXrayResultsPage";
 import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
+import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import { RadiologicalOutcomeConfPage } from "../../support/page-objects/radiologicalOutcomeConfPage";
 import { SputumCollectionPage } from "../../support/page-objects/sputumCollectionPage";
 import { SputumDecisionConfirmationPage } from "../../support/page-objects/sputumDecisionConfirmationPage";
@@ -41,6 +44,9 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
   const applicantConsentPage = new ApplicantConsentPage();
+  const passportInformationPage = new PassportInformationPage();
+  const contactInformationPage = new ContactInformationPage();
+  const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const travelInformationPage = new TravelInformationPage();
   const travelSummaryPage = new TravelSummaryPage();
   const travelConfirmationPage = new TravelConfirmationPage();
@@ -187,22 +193,27 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
     // Fill in applicant details
     applicantDetailsPage
       .fillFullName("Jane Smith")
-      .selectSex("Female")
-      .selectNationality(countryName)
       .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
-      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
-      .fillPassportExpiryDate(
-        passportExpiryDate.day,
-        passportExpiryDate.month,
-        passportExpiryDate.year,
-      )
+      .selectSex("Female")
+      .selectNationality(countryName) // Use country code for form filling
+      .submitForm();
+    // Fill in passport details
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName) // Use country code for form filling
+      .fillIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillExpiryDate(passportExpiryDate.day, passportExpiryDate.month, passportExpiryDate.year)
+      .submitForm();
+    // Fill in contact information
+    contactInformationPage.verifyPageLoaded();
+    contactInformationPage
       .fillAddressLine1("123 High Street")
-      .fillAddressLine2("Apartment 4B")
-      .fillAddressLine3("Downtown")
+      .fillAddressLine2("Downtown")
       .fillTownOrCity("St. Marten")
       .fillProvinceOrState("Holestown")
-      .selectAddressCountry(countryName) // Use country code for form filling
       .fillPostcode("94109")
+      .selectCountry(countryName)
       .submitForm();
 
     // Verify redirection to the Applicant Photo page
@@ -224,6 +235,17 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
     cy.url().then((url) => {
       cy.log(`Current URL: ${url}`);
     });
+
+    // Verify redirection to the Check Photo page
+    cy.url().should("include", "/check-visa-applicant-photo");
+    checkPhotoPage.verifyPageLoaded();
+    checkPhotoPage.verifyPageHeadingText();
+    checkPhotoPage.verifyUploadedPhotoDisplayed();
+    checkPhotoPage.verifyFilenameDisplayed();
+    checkPhotoPage.verifyImageLayout();
+    checkPhotoPage.verifyRadioButtonsExist();
+    checkPhotoPage.selectYesAddPhoto();
+    checkPhotoPage.clickContinue();
 
     // Verify redirection to the Applicant Summary page
     cy.url().should("include", "/check-visa-applicant-details");
@@ -522,7 +544,7 @@ describe("Date Field Error Test On Sputum Collection Page", () => {
       // Verify redirection to Sputum decision Info Page
       sputumDecisionInfoPage.verifyPageLoaded();
       sputumDecisionInfoPage.verifyAllPageElements();
-      sputumDecisionInfoPage.clickSaveAndContinue();
+      sputumDecisionInfoPage.clickSaveAndContinueButton();
 
       // Verify redirection to Sputum Decision Confirmation Page
       sputumDecisionConfirmationPage

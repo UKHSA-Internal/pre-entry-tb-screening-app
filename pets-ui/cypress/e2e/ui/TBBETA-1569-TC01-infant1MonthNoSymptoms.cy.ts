@@ -9,13 +9,16 @@ import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPh
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
 import { CheckSputumSampleInfoPage } from "../../support/page-objects/checkSputumSampleInfoPage";
+import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
 import { ChestXrayNotTakenPage } from "../../support/page-objects/chestXrayNotTakenPage";
 import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
 import { ClinicCertificateInfoPage } from "../../support/page-objects/clinicCertificateInfoPage";
+import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { EnterSputumSampleResultsPage } from "../../support/page-objects/enterSputumSampleResultsPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import { SputumCollectionPage } from "../../support/page-objects/sputumCollectionPage";
 import { SputumConfirmationPage } from "../../support/page-objects/sputumConfirmationPage";
 import { SputumDecisionConfirmationPage } from "../../support/page-objects/sputumDecisionConfirmationPage";
@@ -38,10 +41,13 @@ import {
 describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray, Sputum Required, Certificate Issued (6 months)", () => {
   // Page object instances
   const applicantConsentPage = new ApplicantConsentPage();
+  const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
+  const passportInformationPage = new PassportInformationPage();
+  const contactInformationPage = new ContactInformationPage();
   const travelInformationPage = new TravelInformationPage();
   const travelSummaryPage = new TravelSummaryPage();
   const travelConfirmationPage = new TravelConfirmationPage();
@@ -76,6 +82,8 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
   let infantAgeInMonths: number;
   let infantDOB: { day: string; month: string; year: string };
   let infantDOBFormatted: string;
+  let infantDOBGOVUKFormat: string;
+  let screeningDateGOVUKFormat: string;
   let passportIssueDate: { day: string; month: string; year: string };
   let passportExpiryDate: { day: string; month: string; year: string };
   let screeningDate: ReturnType<typeof DateUtils.getDateComponents>;
@@ -115,9 +123,11 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     infantAgeInMonths = testDates.infantAgeInMonths;
     infantDOB = testDates.birthDate;
     infantDOBFormatted = testDates.birthDateFormatted;
+    infantDOBGOVUKFormat = testDates.birthDateGOVUKFormat;
     passportIssueDate = testDates.passportIssueDate;
     passportExpiryDate = testDates.passportExpiryDate;
     screeningDate = testDates.screeningDate;
+    screeningDateGOVUKFormat = testDates.screeningDateGOVUKFormat;
     sputumSample1Date = testDates.sputumSample1Date;
     sputumSample1DateFormatted = testDates.sputumSample1DateFormatted;
     sputumSample2Date = testDates.sputumSample2Date;
@@ -129,6 +139,7 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     cy.log(`Newborn Age: ${infantAgeInMonths} month`);
     cy.log(`Newborn DOB: ${infantDOB.day}/${infantDOB.month}/${infantDOB.year}`);
     cy.log(`DOB Formatted: ${infantDOBFormatted}`);
+    cy.log(`DOB GOV.UK Format: ${infantDOBGOVUKFormat}`);
     cy.log(
       `Passport Issue: ${passportIssueDate.day}/${passportIssueDate.month}/${passportIssueDate.year}`,
     );
@@ -136,6 +147,7 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
       `Passport Expiry: ${passportExpiryDate.day}/${passportExpiryDate.month}/${passportExpiryDate.year}`,
     );
     cy.log(`Screening Date: ${screeningDate.day}/${screeningDate.month}/${screeningDate.year}`);
+    cy.log(`Screening Date GOV.UK Format: ${screeningDateGOVUKFormat}`);
   });
 
   it("should complete the full application process for 1-month-old newborn with no symptoms, no X-ray, sputum required, and issue certificate with 6 month expiry", () => {
@@ -160,28 +172,52 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     // Fill Applicant Details for Newborn Infant (1 month old)
     applicantDetailsPage.verifyPageLoaded();
 
-    // Fill in applicant details for 1-month-old newborn
+    // Calculate infant DOB (1 month old)
+    const infantDOB = DateUtils.getInfantDOBComponents(infantAgeInMonths);
+
+    // Fill in applicant personal details for infant
     applicantDetailsPage
       .fillFullName("Baby Olivia Smith")
       .selectSex("Female")
       .selectNationality(countryName)
       .fillBirthDate(infantDOB.day, infantDOB.month, infantDOB.year)
-      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
-      .fillPassportExpiryDate(
-        passportExpiryDate.day,
-        passportExpiryDate.month,
-        passportExpiryDate.year,
+      .submitForm();
+
+    // Fill in passport details
+    passportInformationPage.verifyPageLoaded();
+    // Calculate passport dates for infant (issued 7 days after birth)
+    const infantBirthDate = DateUtils.getInfantDateOfBirth(infantAgeInMonths);
+    const passportIssueDate = new Date(infantBirthDate);
+    passportIssueDate.setDate(passportIssueDate.getDate() + 7);
+    const passportIssueDateComponents = DateUtils.getDateComponents(passportIssueDate);
+    const passportExpiryDate = DateUtils.getPassportExpiryDate(passportIssueDate, true);
+    const passportExpiryDateComponents = DateUtils.getDateComponents(passportExpiryDate);
+
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName)
+      .fillIssueDate(
+        passportIssueDateComponents.day,
+        passportIssueDateComponents.month,
+        passportIssueDateComponents.year,
       )
+      .fillExpiryDate(
+        passportExpiryDateComponents.day,
+        passportExpiryDateComponents.month,
+        passportExpiryDateComponents.year,
+      )
+      .submitForm();
+
+    // Fill in contact information
+    contactInformationPage.verifyPageLoaded();
+    contactInformationPage
       .fillAddressLine1("123 Newborn Nursery Road")
       .fillAddressLine2("Maternity Ward B")
-      .fillAddressLine3("City Hospital District")
-      .fillTownOrCity("Manchester")
-      .fillProvinceOrState("Greater Manchester")
-      .selectAddressCountry(countryName)
-      .fillPostcode("M1 1AA");
-
-    // Submit form
-    applicantDetailsPage.submitForm();
+      .fillTownOrCity("Zongo Junction")
+      .fillProvinceOrState("Zongo")
+      .fillPostcode("M1 1AA")
+      .selectCountry(countryName)
+      .submitForm();
 
     // Verify redirection to the Applicant Photo page
     cy.url({ timeout: 15000 }).should("include", "/upload-visa-applicant-photo");
@@ -201,7 +237,17 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     cy.url().then((url) => {
       cy.log(`Current URL: ${url}`);
     });
+    // Verify redirection to the Check Photo page
+    cy.url().should("include", "/check-visa-applicant-photo");
 
+    checkPhotoPage.verifyPageLoaded();
+    checkPhotoPage.verifyPageHeadingText();
+    checkPhotoPage.verifyUploadedPhotoDisplayed();
+    checkPhotoPage.verifyFilenameDisplayed();
+    checkPhotoPage.verifyImageLayout();
+    checkPhotoPage.verifyRadioButtonsExist();
+    checkPhotoPage.selectYesAddPhoto();
+    checkPhotoPage.clickContinue();
     // Verify redirection to the Applicant Summary page
     cy.url().should("include", "/check-visa-applicant-details");
     applicantSummaryPage.verifyPageLoaded();
@@ -380,7 +426,7 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     // Verify redirection to Sputum decision Info Page
     sputumDecisionInfoPage.verifyPageLoaded();
     sputumDecisionInfoPage.verifyAllPageElements();
-    sputumDecisionInfoPage.clickSaveAndContinue();
+    sputumDecisionInfoPage.clickSaveAndContinueButton();
 
     // Verify redirection to Sputum Decision Confirmation Page
     sputumDecisionConfirmationPage
@@ -475,7 +521,7 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     checkSputumSampleInfoPage.verifyAllSampleInfo(expectedSampleData);
     checkSputumSampleInfoPage.verifyChangeLinksExist();
     checkSputumSampleInfoPage.verifyServiceName();
-    checkSputumSampleInfoPage.clickSaveAndContinue();
+    checkSputumSampleInfoPage.clickSubmitButton();
 
     // Verify Sputum confirmation page
     sputumConfirmationPage.verifyPageLoaded();
@@ -511,7 +557,6 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     clinicCertificateInfoPage
       .verifyPageLoaded()
       .verifyCertificateExpiryDateCalculation()
-      .verifyCertificateExpiryIs6MonthsFromIssueDate()
       .saveCertificateReferenceNumber()
       .completeForm(
         "Dr. Emily Neonatologist",

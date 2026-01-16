@@ -1,6 +1,7 @@
 // This holds all fields of the Medical Screening Page
 
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, ErrorHelper, FormHelper, GdsComponentHelper } from "../helpers";
 
 // Interface for medical screening form data
 interface MedicalScreeningFormData {
@@ -29,6 +30,12 @@ interface MedicalScreeningFormData {
 }
 
 export class MedicalScreeningPage extends BasePage {
+  // Compose helper instances
+  private form = new FormHelper();
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private error = new ErrorHelper();
+
   constructor() {
     super("/record-medical-history-tb-symptoms");
   }
@@ -47,6 +54,11 @@ export class MedicalScreeningPage extends BasePage {
     cy.get("#medical-screening-completion-date-month").clear().type(month);
     cy.get("#medical-screening-completion-date-year").clear().type(year);
     return this;
+  }
+
+  // Alias for fillScreeningDate
+  fillMedicalScreeningDate(day: string, month: string, year: string): MedicalScreeningPage {
+    return this.fillScreeningDate(day, month, year);
   }
 
   setScreeningDateToToday(): MedicalScreeningPage {
@@ -100,6 +112,11 @@ export class MedicalScreeningPage extends BasePage {
     return this;
   }
 
+  // Alias for selectTbSymptoms
+  selectTBSymptoms(option: "Yes" | "No"): MedicalScreeningPage {
+    return this.selectTbSymptoms(option);
+  }
+
   selectTbSymptomsList(symptoms: string[]): MedicalScreeningPage {
     symptoms.forEach((symptom) => {
       cy.get(`input[name="tbSymptomsList"][value="${symptom}"]`)
@@ -107,6 +124,32 @@ export class MedicalScreeningPage extends BasePage {
         .check({ force: true })
         .should("be.checked");
     });
+    return this;
+  }
+
+  // Method to select a single symptom from the TB symptoms list
+  selectSymptom(symptom: string): MedicalScreeningPage {
+    // Handle both exact match and partial match for symptom labels
+    const symptomMap: { [key: string]: string } = {
+      "Cough lasting more than 2 weeks": "Cough",
+      Cough: "Cough",
+      "Night sweats": "Night sweats",
+      "Fever or night sweats": "Night sweats",
+      Fever: "Fever",
+      "Haemoptysis (coughing up blood)": "Haemoptysis (coughing up blood)",
+      Haemoptysis: "Haemoptysis (coughing up blood)",
+      "Weight loss": "Weight loss",
+      "Other symptoms": "Other symptoms",
+    };
+
+    const mappedSymptom = symptomMap[symptom] || symptom;
+
+    cy.get(`input[name="tbSymptomsList"][value="${mappedSymptom}"]`)
+      .should("exist")
+      .check({ force: true })
+      .should("be.checked");
+
+    cy.log(`Selected TB symptom: ${mappedSymptom}`);
     return this;
   }
 
@@ -225,6 +268,11 @@ export class MedicalScreeningPage extends BasePage {
     return this;
   }
 
+  // Alias for submitForm
+  clickSaveAndContinue(): MedicalScreeningPage {
+    return this.submitForm();
+  }
+
   // Verify redirection to Medical Summary Page
   verifyRedirectedToSummary(): MedicalScreeningPage {
     cy.url().should("include", "/check-medical-history-tb-symptoms");
@@ -244,47 +292,47 @@ export class MedicalScreeningPage extends BasePage {
 
   // Individual field error validations
   validateScreeningDateFieldError(): MedicalScreeningPage {
-    this.validateFieldError("medical-screening-completion-date");
+    this.error.validateFieldError("medical-screening-completion-date");
     return this;
   }
 
   validateAgeFieldError(): MedicalScreeningPage {
-    this.validateFieldError("age");
+    this.error.validateFieldError("age");
     return this;
   }
 
   validateTbSymptomsFieldError(): MedicalScreeningPage {
-    this.validateFieldError("tb-symptoms");
+    this.error.validateFieldError("tb-symptoms");
     return this;
   }
 
   validateTbSymptomsListFieldError(): MedicalScreeningPage {
-    this.validateFieldError("tb-symptoms-list");
+    this.error.validateFieldError("tb-symptoms-list");
     return this;
   }
 
   validateUnderElevenConditionsFieldError(): MedicalScreeningPage {
-    this.validateFieldError("under-eleven-conditions");
+    this.error.validateFieldError("under-eleven-conditions");
     return this;
   }
 
   validatePreviousTbFieldError(): MedicalScreeningPage {
-    this.validateFieldError("previous-tb");
+    this.error.validateFieldError("previous-tb");
     return this;
   }
 
   validateCloseContactFieldError(): MedicalScreeningPage {
-    this.validateFieldError("close-contact-with-tb");
+    this.error.validateFieldError("close-contact-with-tb");
     return this;
   }
 
   validatePregnancyFieldError(): MedicalScreeningPage {
-    this.validateFieldError("pregnant");
+    this.error.validateFieldError("pregnant");
     return this;
   }
 
   validateMenstrualPeriodsFieldError(): MedicalScreeningPage {
-    this.validateFieldError("menstrual-periods");
+    this.error.validateFieldError("menstrual-periods");
     return this;
   }
 
@@ -303,31 +351,31 @@ export class MedicalScreeningPage extends BasePage {
     Object.entries(errors).forEach(([field, message]) => {
       switch (field) {
         case "screeningDate":
-          this.validateFieldError("medical-screening-completion-date", message);
+          this.error.validateFieldError("medical-screening-completion-date", message);
           break;
         case "age":
-          this.validateFieldError("age", message);
+          this.error.validateFieldError("age", message);
           break;
         case "tbSymptoms":
-          this.validateFieldError("tb-symptoms", message);
+          this.error.validateFieldError("tb-symptoms", message);
           break;
         case "tbSymptomsList":
-          this.validateFieldError("tb-symptoms-list", message);
+          this.error.validateFieldError("tb-symptoms-list", message);
           break;
         case "underElevenConditions":
-          this.validateFieldError("under-eleven-conditions", message);
+          this.error.validateFieldError("under-eleven-conditions", message);
           break;
         case "previousTb":
-          this.validateFieldError("previous-tb", message);
+          this.error.validateFieldError("previous-tb", message);
           break;
         case "closeContact":
-          this.validateFieldError("close-contact-with-tb", message);
+          this.error.validateFieldError("close-contact-with-tb", message);
           break;
         case "pregnant":
-          this.validateFieldError("pregnant", message);
+          this.error.validateFieldError("pregnant", message);
           break;
         case "menstrualPeriods":
-          this.validateFieldError("menstrual-periods", message);
+          this.error.validateFieldError("menstrual-periods", message);
           break;
       }
     });

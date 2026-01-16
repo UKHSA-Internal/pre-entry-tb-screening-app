@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate, useSearchParams } from "react-router";
 
@@ -6,6 +6,7 @@ import { putTravelDetails } from "@/api/api";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
+import Spinner from "@/components/spinner/spinner";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTravel } from "@/redux/store";
@@ -34,6 +35,8 @@ const ApplicantTravelAddressAndContactDetails = () => {
   const dispatch = useAppDispatch();
   const travelData = useAppSelector(selectTravel);
   const applicationData = useAppSelector(selectApplication);
+  const [isLoading, setIsLoading] = useState(false);
+
   const methods = useForm<TravelAddressAndContactDetailsData>({ reValidateMode: "onSubmit" });
   const {
     handleSubmit,
@@ -52,6 +55,7 @@ const ApplicantTravelAddressAndContactDetails = () => {
     dispatch(setUkEmail(travelAddressAndContactDetailsData.ukEmail ?? ""));
 
     if (travelData.status === ApplicationStatus.COMPLETE && applicationData.applicationId) {
+      setIsLoading(true);
       try {
         await putTravelDetails(applicationData.applicationId, {
           ukAddressLine1: travelAddressAndContactDetailsData.applicantUkAddress1,
@@ -114,6 +118,8 @@ const ApplicantTravelAddressAndContactDetails = () => {
 
   return (
     <FormProvider {...methods}>
+      {isLoading && <Spinner />}
+
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 

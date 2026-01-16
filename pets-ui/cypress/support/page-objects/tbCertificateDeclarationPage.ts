@@ -1,6 +1,7 @@
 //This holds all fields of the TB Certificate Declaration Page
 
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, ErrorHelper, FormHelper, GdsComponentHelper } from "../helpers";
 
 // Types for TB certificate declaration form
 interface TbCertificateDeclarationDetails {
@@ -23,6 +24,12 @@ interface TbCertificateDeclarationErrors {
 }
 
 export class TbCertificateDeclarationPage extends BasePage {
+  // Compose helper instances
+  private form = new FormHelper();
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private error = new ErrorHelper();
+
   constructor() {
     super("/tb-certificate-declaration");
   }
@@ -209,14 +216,14 @@ export class TbCertificateDeclarationPage extends BasePage {
     expectedErrorMessages: TbCertificateDeclarationErrors,
   ): TbCertificateDeclarationPage {
     if (expectedErrorMessages.declaringPhysicianName) {
-      this.validateFieldError(
+      this.error.validateFieldError(
         "declaring-physician-name",
         expectedErrorMessages.declaringPhysicianName,
       );
     }
 
     if (expectedErrorMessages.physicianComments) {
-      this.validateFieldError("physician-comments", expectedErrorMessages.physicianComments);
+      this.error.validateFieldError("physician-comments", expectedErrorMessages.physicianComments);
     }
 
     return this;
@@ -225,7 +232,7 @@ export class TbCertificateDeclarationPage extends BasePage {
   // Verify form validation when submitting empty form
   verifyFormValidationForEmptyForm(): TbCertificateDeclarationPage {
     this.clickContinue();
-    this.validateErrorSummaryVisible();
+    this.error.validateErrorSummaryVisible();
     return this;
   }
 

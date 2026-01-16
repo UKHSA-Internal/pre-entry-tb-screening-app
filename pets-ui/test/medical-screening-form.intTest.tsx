@@ -34,10 +34,15 @@ describe("MedicalScreeningForm", () => {
     const { store } = renderWithProviders(<MedicalScreeningForm />);
     expect(screen.getAllByText("You have 150 words remaining")).toHaveLength(5);
 
+    const today = new Date();
+    const day = today.getDate().toString();
+    const month = (today.getMonth() + 1).toString();
+    const year = today.getFullYear().toString();
+
     const user = userEvent.setup();
-    await user.type(screen.getByTestId("medical-screening-completion-date-day"), "15");
-    await user.type(screen.getByTestId("medical-screening-completion-date-month"), "6");
-    await user.type(screen.getByTestId("medical-screening-completion-date-year"), "2025");
+    await user.type(screen.getByTestId("medical-screening-completion-date-day"), day);
+    await user.type(screen.getByTestId("medical-screening-completion-date-month"), month);
+    await user.type(screen.getByTestId("medical-screening-completion-date-year"), year);
 
     await user.click(screen.getAllByTestId("tb-symptoms")[0]);
     await user.click(screen.getAllByTestId("tb-symptoms-list")[0]);
@@ -95,9 +100,9 @@ describe("MedicalScreeningForm", () => {
       closeContactWithTb: "No",
       closeContactWithTbDetail: "",
       completionDate: {
-        day: "15",
-        month: "6",
-        year: "2025",
+        day: day,
+        month: month,
+        year: year,
       },
       menstrualPeriods: "No",
       otherSymptomsDetail: "",

@@ -31,7 +31,7 @@ export default function ConsentQuestionPage() {
 
   const onSubmit: SubmitHandler<{ consent: YesOrNo }> = (data) => {
     if (data.consent == YesOrNo.YES) {
-      navigate("/visa-applicant-passport-information");
+      navigate("/visa-applicant-personal-information");
     } else {
       navigate("/get-written-consent");
     }
@@ -60,7 +60,7 @@ export default function ConsentQuestionPage() {
   return (
     <Container
       title="Do you have the visa applicant's written consent for TB screening? - Complete UK pre-entry health screening - GOV.UK"
-      backLinkTo="/no-matching-record-found"
+      backLinkTo="/no-visa-applicant-found"
     >
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
