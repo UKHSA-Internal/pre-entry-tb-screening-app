@@ -3,12 +3,14 @@ import { loginViaB2C } from "../../support/commands";
 import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
 import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import { getRandomPassportNumber, randomElement } from "../../support/test-utils";
 
 describe("Applicant Details Form - Invalid Date Format Test", () => {
   const applicantConsentPage = new ApplicantConsentPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
   const applicantSearchPage = new ApplicantSearchPage();
+  const passportInformationPage = new PassportInformationPage();
   // Define variables to store test data
   //let countryName: string;
   let passportNumber: string;
@@ -41,34 +43,40 @@ describe("Applicant Details Form - Invalid Date Format Test", () => {
   });
 
   it("should display error when MONTH NAME is entered in the month fields", () => {
-    // Fill form with valid data except for birth date
-    applicantDetailsPage.fillFullName("Sarah Brown");
-    applicantDetailsPage.selectSex("Female");
-    applicantDetailsPage.selectNationality(countryName);
-    applicantDetailsPage.selectCountryOfIssue(countryName);
+    // Fill form with valid data except for birth date with INVALID MONTH
+    applicantDetailsPage
+      .fillFullName("Sarah Brown")
+      .selectSex("Female")
+      .selectNationality(countryName)
+      .fillBirthDate("15", "JAN", "1988")
+      .submitForm();
 
-    // Enter an INVALID MONTH
-    applicantDetailsPage.fillBirthDate("15", "JAN", "1988");
+    // Validate birth date error
+    applicantDetailsPage.verifyErrorSummary();
+    applicantDetailsPage.verifyFieldError(
+      "birth-date",
+      "Date of birth day, month and year must contain only numbers",
+    );
 
-    applicantDetailsPage.fillPassportNumber(passportNumber);
-    applicantDetailsPage.fillPassportIssueDate("10", "JUN", "2018");
-    applicantDetailsPage.fillPassportExpiryDate("10", "JUN", "2028");
+    // Fill valid birth date and continue to passport page
+    applicantDetailsPage.fillBirthDate("15", "01", "1988").submitForm();
 
-    // Fill address fields
-    applicantDetailsPage.fillAddressLine1("321 Test Blvd");
-    applicantDetailsPage.fillTownOrCity("Toronto");
-    applicantDetailsPage.fillProvinceOrState("Ontario");
-    applicantDetailsPage.selectAddressCountry(countryName);
-    applicantDetailsPage.fillPostcode("M5V 2A8");
+    // On passport information page, enter INVALID MONTH
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName)
+      .fillIssueDate("10", "JUN", "2018")
+      .fillExpiryDate("10", "JUN", "2028")
+      .submitForm();
 
-    // Submit the form
-    applicantDetailsPage.submitForm();
-
-    // Validate error for invalid date format is displayed
-    applicantDetailsPage.validateFormErrors({
-      birthDate: "Date of birth day, month and year must contain only numbers",
-      passportIssueDate: "Passport issue day, month and year must contain only numbers",
-      passportExpiryDate: "Passport expiry day, month and year must contain only numbers",
-    });
+    // Validate passport date errors
+    passportInformationPage.validateErrorSummaryVisible();
+    passportInformationPage.validateIssueDateFieldError(
+      "Passport issue day, month and year must contain only numbers",
+    );
+    passportInformationPage.validateExpiryDateFieldError(
+      "Passport expiry day, month and year must contain only numbers",
+    );
   });
 });

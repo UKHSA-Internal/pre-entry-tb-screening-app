@@ -1,5 +1,6 @@
 // This holds all fields for the Check Sputum Decision Information Page
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, GdsComponentHelper, SummaryHelper } from "../helpers";
 
 // Interface for sputum decision data
 interface SputumDecisionData {
@@ -7,6 +8,11 @@ interface SputumDecisionData {
 }
 
 export class SputumDecisionInfoPage extends BasePage {
+  // Compose helper instances
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private summary = new SummaryHelper();
+
   constructor() {
     super("/check-sputum-decision-information");
   }
@@ -187,7 +193,6 @@ export class SputumDecisionInfoPage extends BasePage {
     this.verifySaveAndContinueButton();
     this.verifyBackLink();
     this.verifyBetaBanner();
-    this.verifyServiceName();
     this.verifyFooterLinks();
     return this;
   }

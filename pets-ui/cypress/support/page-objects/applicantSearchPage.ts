@@ -1,15 +1,22 @@
 // This holds all fields on the Applicant Search Page
 import { countryList } from "../../../src/utils/countryList";
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, ErrorHelper, FormHelper, GdsComponentHelper } from "../helpers";
 
 export class ApplicantSearchPage extends BasePage {
+  // Compose helper instances
+  private form = new FormHelper();
+  private error = new ErrorHelper();
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+
   constructor() {
     super("/");
   }
 
   // Verify Search page loaded
   verifyPageLoaded(): this {
-    this.verifyPageHeading("Search for a visa applicant");
+    this.gds.verifyPageHeading("Search for a visa applicant");
     cy.get('input[name="passportNumber"]').should("be.visible");
     cy.get('select[name="countryOfIssue"]').should("be.visible");
     return this;
@@ -48,12 +55,12 @@ export class ApplicantSearchPage extends BasePage {
   }
 
   validatePassportNumberFieldError(errorMessage?: string): this {
-    this.validateFieldError("passport-number", errorMessage);
+    this.error.validateFieldError("passport-number", errorMessage);
     return this;
   }
 
   validateCountryOfIssueFieldError(errorMessage?: string): this {
-    this.validateFieldError("country-of-issue", errorMessage);
+    this.error.validateFieldError("country-of-issue", errorMessage);
     return this;
   }
 
@@ -193,17 +200,17 @@ export class ApplicantSearchPage extends BasePage {
   }
 
   verifyRedirectionToDetailsPage(): this {
-    this.verifyUrlContains("/visa-applicant-passport-information");
+    this.verifyUrlContains("/visa-applicant-personal-information");
     return this;
   }
 
   verifyRedirectionToCreateApplicantPage(): this {
-    this.verifyUrlContains("/visa-applicant-passport-information");
+    this.verifyUrlContains("/visa-applicant-personal-information");
     return this;
   }
 
   verifyPageHeader(): this {
-    this.verifyServiceName();
+    this.gds.verifyServiceName();
     return this;
   }
 }

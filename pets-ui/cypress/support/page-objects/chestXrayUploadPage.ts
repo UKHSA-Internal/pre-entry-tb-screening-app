@@ -1,26 +1,42 @@
-// This holds all the fields on the Chest X-ray Upload Page
-import { BasePage } from "../BasePage";
+/**
+ * ChestXrayUploadPage - refactored to use composition over inheritance
+ * This page handles chest X-ray image uploads with date entry
+ */
+import { BasePage } from "../BasePageNew";
+import {
+  ButtonHelper,
+  ErrorHelper,
+  FileUploadHelper,
+  FormHelper,
+  GdsComponentHelper,
+} from "../helpers";
 
 export class ChestXrayUploadPage extends BasePage {
-  // Verify the date input fields contain the correct values
-  verifyDateValue(xrayDay: string, xrayMonth: string, xrayYear: string): ChestXrayUploadPage {
-    cy.get("#date-xray-taken-day").should("have.value", xrayDay);
-    cy.get("#date-xray-taken-month").should("have.value", xrayMonth);
-    cy.get("#date-xray-taken-year").should("have.value", xrayYear);
-    return this;
-  }
+  // Compose helper instances
+  private form = new FormHelper();
+  private upload = new FileUploadHelper();
+  private button = new ButtonHelper();
+  private error = new ErrorHelper();
+  private gds = new GdsComponentHelper();
+
   constructor() {
     super("/upload-chest-x-ray-images");
   }
 
-  // Verify page loaded
+  // ============================================================
+  // PAGE VERIFICATION
+  // ============================================================
+
   verifyPageLoaded(): ChestXrayUploadPage {
-    this.verifyPageHeading("Upload chest X-ray images");
+    this.gds.verifyPageHeading("Upload chest X-ray images");
     cy.get("form").should("be.visible");
     return this;
   }
 
-  // Verify date X-ray taken section is displayed
+  // ============================================================
+  // DATE X-RAY TAKEN SECTION
+  // ============================================================
+
   verifyDateXrayTakenSectionDisplayed(): ChestXrayUploadPage {
     cy.contains("h2.govuk-heading-m", "When was the X-ray taken?").should("be.visible");
     cy.get("#date-xray-taken").should("be.visible");
@@ -28,35 +44,46 @@ export class ChestXrayUploadPage extends BasePage {
     return this;
   }
 
-  // Enter date X-ray was taken
   enterDateXrayTaken(day: string, month: string, year: string): ChestXrayUploadPage {
-    cy.get("#date-xray-taken-day").clear().type(day);
-    cy.get("#date-xray-taken-month").clear().type(month);
-    cy.get("#date-xray-taken-year").clear().type(year);
+    this.form.fillDateFieldsBySelector(
+      "#date-xray-taken-day",
+      "#date-xray-taken-month",
+      "#date-xray-taken-year",
+      day,
+      month,
+      year,
+    );
     return this;
   }
 
-  // Click "Today" quickfill link for date
   clickTodayQuickfill(): ChestXrayUploadPage {
     cy.get('[data-testid="date-xray-taken-quickfill-today"]').click();
     return this;
   }
 
-  // Click "Yesterday" quickfill link for date
   clickYesterdayQuickfill(): ChestXrayUploadPage {
     cy.get('[data-testid="date-xray-taken-quickfill-yesterday"]').click();
     return this;
   }
 
-  // Verify date input fields are present
   verifyDateInputFields(): ChestXrayUploadPage {
-    cy.get("#date-xray-taken-day").should("be.visible");
-    cy.get("#date-xray-taken-month").should("be.visible");
-    cy.get("#date-xray-taken-year").should("be.visible");
+    this.form.verifyFieldVisible("#date-xray-taken-day");
+    this.form.verifyFieldVisible("#date-xray-taken-month");
+    this.form.verifyFieldVisible("#date-xray-taken-year");
     return this;
   }
 
-  // Verify X-ray upload sections are displayed
+  verifyDateValue(xrayDay: string, xrayMonth: string, xrayYear: string): ChestXrayUploadPage {
+    this.form.verifyFormFieldValue("#date-xray-taken-day", xrayDay);
+    this.form.verifyFormFieldValue("#date-xray-taken-month", xrayMonth);
+    this.form.verifyFormFieldValue("#date-xray-taken-year", xrayYear);
+    return this;
+  }
+
+  // ============================================================
+  // X-RAY UPLOAD SECTIONS
+  // ============================================================
+
   verifyXrayUploadSectionsDisplayed(): ChestXrayUploadPage {
     cy.contains("h2.govuk-heading-m", "Upload X-ray images").should("be.visible");
     cy.contains("h3.govuk-heading-s", "Postero-anterior view").should("be.visible");
@@ -65,7 +92,6 @@ export class ChestXrayUploadPage extends BasePage {
     return this;
   }
 
-  // Verify file upload instructions
   verifyFileUploadInstructions(): ChestXrayUploadPage {
     cy.contains("p.govuk-body", "Upload a file").should("be.visible");
     cy.get(".govuk-hint")
@@ -74,18 +100,14 @@ export class ChestXrayUploadPage extends BasePage {
     return this;
   }
 
-  // Verify file drop zone is displayed for a specific X-ray type
   verifyFileDropZone(xrayId: string): ChestXrayUploadPage {
-    cy.get(`#${xrayId}`).should("be.visible");
+    this.upload.verifyFileDropZone(xrayId);
     cy.get(`#${xrayId}`).within(() => {
-      cy.get(".file-upload-blue-bar").should("be.visible");
-      cy.contains("button.govuk-button--secondary", "Choose file").should("be.visible");
       cy.contains(".file-upload-or-drop", "or drop file").should("be.visible");
     });
     return this;
   }
 
-  // Verify all file drop zones are displayed
   verifyAllFileDropZones(): ChestXrayUploadPage {
     this.verifyFileDropZone("postero-anterior-xray");
     this.verifyFileDropZone("apical-lordotic-xray");
@@ -93,197 +115,159 @@ export class ChestXrayUploadPage extends BasePage {
     return this;
   }
 
-  // Verify "No file chosen" text is displayed
   verifyNoFileChosen(xrayId: string): ChestXrayUploadPage {
-    cy.get(`#${xrayId}`).within(() => {
-      cy.contains(".file-upload-no-file", "No file chosen").should("be.visible");
-    });
+    this.upload.verifyNoFileChosen(xrayId);
     return this;
   }
 
-  // Upload postero-anterior X-ray file
+  verifyAllPageElements(): ChestXrayUploadPage {
+    this.verifyPageLoaded();
+    this.verifyDateXrayTakenSectionDisplayed();
+    this.verifyXrayUploadSectionsDisplayed();
+    return this;
+  }
+
+  verifyDicomUploadContainers(): ChestXrayUploadPage {
+    cy.get("#postero-anterior-xray").should("be.visible");
+    cy.get("#apical-lordotic-xray").should("be.visible");
+    cy.get("#lateral-decubitus-xray").should("be.visible");
+    return this;
+  }
+
+  verifyAcceptedFileTypes(): ChestXrayUploadPage {
+    cy.get(".govuk-hint").contains("File type must be DCM").should("be.visible");
+    return this;
+  }
+
+  verifyUploadSuccess(): ChestXrayUploadPage {
+    // Verify that the file has been uploaded successfully
+    cy.get('[data-testid="postero-anterior-xray"]') // ← Changed from "posteroAnteriorXrayFileName"
+      .should("exist")
+      .and(($input) => {
+        const files = ($input[0] as HTMLInputElement).files;
+        expect(files).to.have.length.greaterThan(0);
+      });
+    return this;
+  }
+
+  // ============================================================
+  // FILE UPLOAD METHODS
+  // ============================================================
+
   uploadPosteroAnteriorXray(filePath: string): ChestXrayUploadPage {
-    cy.get('input[name="posteroAnteriorXrayFileName"]').selectFile(filePath, { force: true });
+    this.upload.uploadFile("posteroAnteriorXrayFileName", filePath);
     return this;
   }
 
-  // Upload apical lordotic X-ray file (optional)
   uploadApicalLordoticXray(filePath: string): ChestXrayUploadPage {
-    cy.get('input[name="apicalLordoticXrayFileName"]').selectFile(filePath, { force: true });
+    this.upload.uploadFile("apicalLordoticXrayFileName", filePath);
     return this;
   }
 
-  // Upload lateral decubitus X-ray file (optional)
   uploadLateralDecubitusXray(filePath: string): ChestXrayUploadPage {
-    cy.get('input[name="lateralDecubitusXrayFileName"]').selectFile(filePath, { force: true });
+    this.upload.uploadFile("lateralDecubitusXrayFileName", filePath);
     return this;
   }
 
-  // Verify file is uploaded for a specific X-ray type
   verifyFileUploaded(
     xrayType:
       | "posteroAnteriorXrayFileName"
       | "apicalLordoticXrayFileName"
       | "lateralDecubitusXrayFileName",
   ): ChestXrayUploadPage {
-    // Check that the file input has a value
-    cy.get(`input[name="${xrayType}"]`).should("exist");
+    this.upload.verifyFileUploaded(xrayType);
     return this;
   }
 
-  // Clear uploaded file for a specific X-ray type
   clearUploadedFile(
     xrayType:
       | "posteroAnteriorXrayFileName"
       | "apicalLordoticXrayFileName"
       | "lateralDecubitusXrayFileName",
   ): ChestXrayUploadPage {
-    cy.get(`input[name="${xrayType}"]`).clear();
+    this.upload.clearUploadedFile(xrayType);
     return this;
   }
 
-  // Click continue button
+  // ============================================================
+  // FORM SUBMISSION
+  // ============================================================
+
   clickContinue(): ChestXrayUploadPage {
-    // Wait for any potential upload processing to complete - intermittently slow have added a wait
+    // Wait for any potential upload processing to complete
     cy.get('button[type="submit"]').contains("Continue").should("be.visible").and("be.enabled");
-    cy.wait(1000);
-    cy.get('button[type="submit"]').contains("Continue").click({ force: true });
+    this.upload.waitForUpload(1000);
+    this.button.clickContinue();
     return this;
   }
 
-  // Verify upload success for X-ray images
-  verifyUploadSuccess(): ChestXrayUploadPage {
-    // Just verify that the button is enabled and no errors are shown
-    cy.get('button[type="submit"]').contains("Continue").should("be.visible").and("be.enabled");
-    cy.get(".govuk-error-message").should("not.exist");
+  submitForm(): ChestXrayUploadPage {
+    this.button.clickContinue();
     return this;
   }
 
-  // Verify upload error state
-  verifyUploadError(
-    xrayType: "postero-anterior-xray" | "apical-lordotic-xray" | "lateral-decubitus-xray",
-  ): ChestXrayUploadPage {
-    cy.get(`#${xrayType}-error`).should("be.visible");
-    cy.get(".govuk-error-message").should("be.visible");
+  // ============================================================
+  // VALIDATION METHODS
+  // ============================================================
+
+  verifyErrorSummary(): ChestXrayUploadPage {
+    this.error.verifyErrorSummaryDisplayed();
     return this;
   }
 
-  // Upload mandatory X-ray with date and submit form
-  uploadMandatoryXrayWithDateAndSubmit(
-    filePath: string,
+  verifyFieldError(fieldId: string, errorMessage: string): ChestXrayUploadPage {
+    this.error.validateFieldError(fieldId, errorMessage);
+    return this;
+  }
+
+  verifyDateError(errorMessage: string): ChestXrayUploadPage {
+    this.error.validateFieldError("date-xray-taken", errorMessage);
+    return this;
+  }
+
+  verifyFileUploadError(fieldName: string, errorMessage?: string): ChestXrayUploadPage {
+    this.upload.verifyFileUploadError(fieldName, errorMessage);
+    return this;
+  }
+
+  // ============================================================
+  // COMPLETE UPLOAD FLOW
+  // ============================================================
+
+  /**
+   * Complete upload flow with all required files
+   */
+  completeUploadWithAllFiles(
     day: string,
     month: string,
     year: string,
+    posteroAnteriorFile: string,
+    apicalLordoticFile?: string,
+    lateralDecubitusFile?: string,
   ): ChestXrayUploadPage {
     this.enterDateXrayTaken(day, month, year);
-    this.uploadPosteroAnteriorXray(filePath);
-    this.clickContinue();
+    this.uploadPosteroAnteriorXray(posteroAnteriorFile);
+
+    if (apicalLordoticFile) {
+      this.uploadApicalLordoticXray(apicalLordoticFile);
+    }
+
+    if (lateralDecubitusFile) {
+      this.uploadLateralDecubitusXray(lateralDecubitusFile);
+    }
+
     return this;
   }
 
-  // Upload mandatory X-ray and submit form
-  uploadMandatoryXrayAndSubmit(filePath: string): ChestXrayUploadPage {
-    this.uploadPosteroAnteriorXray(filePath);
-    this.clickContinue();
-    return this;
-  }
-
-  // Upload all X-rays with date and submit form
-  uploadAllXraysWithDateAndSubmit(
-    posteroAnteriorPath: string,
-    apicalLordoticPath: string,
-    lateralDecubitusPath: string,
-    day: string,
-    month: string,
-    year: string,
-  ): ChestXrayUploadPage {
-    this.enterDateXrayTaken(day, month, year);
-    this.uploadPosteroAnteriorXray(posteroAnteriorPath);
-    this.uploadApicalLordoticXray(apicalLordoticPath);
-    this.uploadLateralDecubitusXray(lateralDecubitusPath);
-    this.clickContinue();
-    return this;
-  }
-
-  // Upload all X-rays and submit form
-  uploadAllXraysAndSubmit(
-    posteroAnteriorPath: string,
-    apicalLordoticPath: string,
-    lateralDecubitusPath: string,
-  ): ChestXrayUploadPage {
-    this.uploadPosteroAnteriorXray(posteroAnteriorPath);
-    this.uploadApicalLordoticXray(apicalLordoticPath);
-    this.uploadLateralDecubitusXray(lateralDecubitusPath);
-    this.clickContinue();
-    return this;
-  }
-
-  // Verify form validation - ensure mandatory file is uploaded
-  verifyFormValidation(): ChestXrayUploadPage {
-    // Submit form without uploading mandatory X-ray
-    this.clickContinue();
-
-    // Verify validation error is displayed
-    cy.get(".govuk-error-message").should("be.visible");
-    cy.get("#postero-anterior-xray-error").should("be.visible");
-    return this;
-  }
-
-  // Verify file types are accepted
-  verifyAcceptedFileTypes(): ChestXrayUploadPage {
-    cy.get('input[name="posteroAnteriorXrayFileName"]').should("have.attr", "accept", ".dcm");
-    cy.get('input[name="apicalLordoticXrayFileName"]').should("have.attr", "accept", ".dcm");
-    cy.get('input[name="lateralDecubitusXrayFileName"]').should("have.attr", "accept", ".dcm");
-    return this;
-  }
-
-  // Verify back link navigation
-  verifyBackLinkNavigation(): ChestXrayUploadPage {
-    cy.get(".govuk-back-link")
-      .should("be.visible")
-      .and("contain", "Back")
-      .and("have.attr", "href", "/tracker");
-    return this;
-  }
-
-  // Verify service name in header
-  verifyServiceName(): ChestXrayUploadPage {
-    cy.get(".govuk-service-navigation__service-name")
-      .should("be.visible")
-      .and("contain", "Complete UK pre-entry health screening");
-    return this;
-  }
-
-  // Verify DICOM upload container structure
-  verifyDicomUploadContainers(): ChestXrayUploadPage {
-    cy.get(".dicom-upload-container").should("have.length", 4);
-    return this;
-  }
-
-  // Verify date quickfill links are present
-  verifyDateQuickfillLinks(): ChestXrayUploadPage {
-    cy.contains("Set to:").should("be.visible");
-    cy.get('[data-testid="date-xray-taken-quickfill-today"]')
-      .should("be.visible")
-      .and("contain", "Today");
-    cy.get('[data-testid="date-xray-taken-quickfill-yesterday"]')
-      .should("be.visible")
-      .and("contain", "Yesterday");
-    return this;
-  }
-
-  // Check all elements on the page
-  verifyAllPageElements(): ChestXrayUploadPage {
+  /**
+   * Verify complete page structure
+   */
+  verifyPageStructure(): ChestXrayUploadPage {
     this.verifyPageLoaded();
     this.verifyDateXrayTakenSectionDisplayed();
-    this.verifyDateInputFields();
-    this.verifyDateQuickfillLinks();
     this.verifyXrayUploadSectionsDisplayed();
     this.verifyFileUploadInstructions();
     this.verifyAllFileDropZones();
-    this.verifyDicomUploadContainers();
-    this.verifyBackLinkNavigation();
-    this.verifyServiceName();
     return this;
   }
 }

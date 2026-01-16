@@ -7,6 +7,7 @@ import { DateUtils } from "../../support/DateUtils";
 import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
 import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
@@ -18,6 +19,7 @@ describe("PETS Date Validation: INVALID - Passport Issue Date Before DOB", () =>
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
   const applicantConsentPage = new ApplicantConsentPage();
+  const passportInformationPage = new PassportInformationPage();
 
   // Define variables to store test data
   let countryName: string = "";
@@ -89,25 +91,19 @@ describe("PETS Date Validation: INVALID - Passport Issue Date Before DOB", () =>
 
     // Fill Applicant Details with INVALID passport issue date
     applicantDetailsPage
-      .verifyPageLoaded()
-      .fillFullName("Test Invalid Passport")
-      .selectSex("Female")
-      .selectNationality(countryName)
+      .fillFullName("Mary Invalid Passport")
       .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
-      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
-      .fillPassportExpiryDate(
-        passportExpiryDate.day,
-        passportExpiryDate.month,
-        passportExpiryDate.year,
-      )
-      .fillAddressLine1("123 Test Street")
-      .fillTownOrCity("Test City")
-      .fillProvinceOrState("Test Province")
-      .selectAddressCountry(countryName)
-      .fillPostcode("T3ST 1AA");
-
-    // Attempt to submit form - should fail validation
-    applicantDetailsPage.submitForm();
+      .selectSex("Female")
+      .selectNationality(countryName) // Use country code for form filling
+      .submitForm();
+    // Fill in passport details
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName) // Use country code for form filling
+      .fillIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillExpiryDate(passportExpiryDate.day, passportExpiryDate.month, passportExpiryDate.year)
+      .submitForm();
 
     // Verify we're still on the same page
     cy.url().should("include", "/visa-applicant-passport-information");

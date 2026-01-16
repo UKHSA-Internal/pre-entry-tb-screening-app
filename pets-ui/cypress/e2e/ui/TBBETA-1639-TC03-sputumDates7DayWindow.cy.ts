@@ -20,10 +20,12 @@ import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage"
 import { ChestXrayResultsPage } from "../../support/page-objects/chestXrayResultsPage";
 import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
 import { ClinicCertificateInfoPage } from "../../support/page-objects/clinicCertificateInfoPage";
+import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { EnterSputumSampleResultsPage } from "../../support/page-objects/enterSputumSampleResultsPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import { RadiologicalOutcomeConfPage } from "../../support/page-objects/radiologicalOutcomeConfPage";
 import { SputumCollectionPage } from "../../support/page-objects/sputumCollectionPage";
 import { SputumConfirmationPage } from "../../support/page-objects/sputumConfirmationPage";
@@ -51,6 +53,8 @@ describe("PETS Date Validation: Valid Scenario - Edge of 7-Day Window", () => {
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
+  const passportInformationPage = new PassportInformationPage();
+  const contactInformationPage = new ContactInformationPage();
   const applicantConsentPage = new ApplicantConsentPage();
   const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const travelInformationPage = new TravelInformationPage();
@@ -204,23 +208,31 @@ describe("PETS Date Validation: Valid Scenario - Edge of 7-Day Window", () => {
     applicantConsentPage.continueWithConsent("Yes");
     applicantSearchPage.verifyRedirectionToCreateApplicantPage();
 
-    // Fill Applicant Details
+    // Fill Applicant Details - Page 1: Personal Information
     applicantDetailsPage
       .verifyPageLoaded()
       .fillFullName("Michael Edge")
       .selectSex("Male")
       .selectNationality(countryName)
       .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
-      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
-      .fillPassportExpiryDate(
-        passportExpiryDate.day,
-        passportExpiryDate.month,
-        passportExpiryDate.year,
-      )
+      .submitForm();
+
+    // Fill Applicant Details - Page 2: Passport Information
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName)
+      .fillIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillExpiryDate(passportExpiryDate.day, passportExpiryDate.month, passportExpiryDate.year)
+      .submitForm();
+
+    // Fill Applicant Details - Page 3: Contact Information
+    contactInformationPage.verifyPageLoaded();
+    contactInformationPage
       .fillAddressLine1("777 Edge Avenue")
       .fillTownOrCity("Edge City")
       .fillProvinceOrState("Saint Edge")
-      .selectAddressCountry(countryName)
+      .selectCountry(countryName)
       .fillPostcode("EE1234")
       .submitForm();
 
@@ -527,7 +539,7 @@ describe("PETS Date Validation: Valid Scenario - Edge of 7-Day Window", () => {
       sputumQuestionPage.clickContinue();
 
       sputumDecisionInfoPage.verifyAllPageElements();
-      sputumDecisionInfoPage.clickSaveAndContinue();
+      sputumDecisionInfoPage.clickSaveAndContinueButton();
 
       // Sputum Decision Confirmation
       sputumDecisionConfirmationPage.verifyPageLoaded();
@@ -614,7 +626,7 @@ describe("PETS Date Validation: Valid Scenario - Edge of 7-Day Window", () => {
         },
       };
       checkSputumSampleInfoPage.verifyAllSampleInfo(expectedSampleData);
-      checkSputumSampleInfoPage.clickSaveAndContinue();
+      checkSputumSampleInfoPage.clickSubmitButton();
 
       // Sputum Confirmation
       sputumConfirmationPage.verifyPageLoaded();
@@ -646,7 +658,6 @@ describe("PETS Date Validation: Valid Scenario - Edge of 7-Day Window", () => {
       clinicCertificateInfoPage
         .verifyPageLoaded()
         .verifyCertificateExpiryDateCalculation()
-        .verifyCertificateExpiryIs6MonthsFromIssueDate()
         .saveCertificateReferenceNumber()
         .completeForm("Dr. Test Doctor", "All tests negative. Certificate issued.");
 

@@ -62,7 +62,7 @@ describe("ConsentQuestionPage", () => {
   it("displays the back link", () => {
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/no-matching-record-found");
+    expect(link).toHaveAttribute("href", "/no-visa-applicant-found");
     expect(link).toHaveClass("govuk-back-link");
   });
 
@@ -125,7 +125,7 @@ describe("ConsentQuestionPage", () => {
     const radioYes = screen.getByRole("radio", { name: "Yes" });
     await user.click(radioYes);
     await user.click(screen.getByRole("button", { name: "Continue" }));
-    expect(useNavigateMock).toHaveBeenLastCalledWith("/visa-applicant-passport-information");
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/visa-applicant-personal-information");
   });
 
   it("when 'No' selected and continue pressed, it navigates to /get-written-consent", async () => {

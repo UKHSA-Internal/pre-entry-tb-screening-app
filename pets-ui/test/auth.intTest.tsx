@@ -92,7 +92,7 @@ test("In unauthenticated state, user is taken to landing page ('/') if they try 
   await msalTester.isNotLogged();
 
   renderWithProvidersWithoutRouter(
-    <MemoryRouter initialEntries={["/no-matching-record-found"]}>
+    <MemoryRouter initialEntries={["/no-visa-applicant-found"]}>
       <MsalProvider instance={msalTester.client}>
         <ApplicantPhotoProvider>
           <App />
