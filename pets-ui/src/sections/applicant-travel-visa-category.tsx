@@ -3,14 +3,14 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate, useSearchParams } from "react-router";
 
 import { putTravelDetails } from "@/api/api";
-import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
+import Radio from "@/components/radio/radio";
 import Spinner from "@/components/spinner/spinner";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTravel } from "@/redux/store";
 import { setTravelDetailsStatus, setVisaCategory } from "@/redux/travelSlice";
-import { ApplicationStatus, ButtonClass } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { visaOptions } from "@/utils/records";
 
@@ -85,18 +85,19 @@ const ApplicantTravelVisaCategory = () => {
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
         <div ref={visaCategoryRef}>
-          <Dropdown
+          <Radio
             id="visa-category"
             heading="Proposed visa category"
             headingLevel={1}
             headingSize="l"
             headingStyle={{ marginBottom: 30 }}
-            options={visaOptions}
+            answerOptions={visaOptions.map((option) => option.value)}
             errorMessage={errors?.visaCategory?.message ?? ""}
             formValue="visaCategory"
             required="Select visa category"
             defaultValue={travelData.visaCategory}
-            placeholder="Select visa category"
+            isInline={RadioIsInline.FALSE}
+            sortAnswersAlphabetically={false}
           />
         </div>
 
