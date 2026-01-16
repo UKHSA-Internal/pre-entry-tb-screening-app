@@ -11,6 +11,7 @@ import ApplicantPhotoPage from "./pages/applicant-photo";
 import ApplicantResultsPage from "./pages/applicant-results";
 import ApplicantSearchPage from "./pages/applicant-search";
 import ApplicantSummaryPage from "./pages/applicant-summary";
+import CheckApplicantPhotoPage from "./pages/check-applicant-photo";
 import CheckSputumSampleInformationPage from "./pages/check-sputum-sample-information";
 import ChestXrayConfirmation from "./pages/chest-xray-confirmation";
 import ChestXrayFindingsPage from "./pages/chest-xray-findings";
@@ -29,6 +30,7 @@ import HomePage from "./pages/home-page";
 import MedicalScreeningPage from "./pages/medical-screening";
 import MedicalConfirmation from "./pages/medical-screening-confirmation";
 import MedicalSummaryPage from "./pages/medical-screening-summary";
+import PageNotFound from "./pages/page-not-found";
 import PrivacyNoticePage from "./pages/privacy-notice";
 import ProgressTrackerPage from "./pages/progress-tracker";
 import RadiologicalOutcomeConfirmation from "./pages/radiological-outcome-confirmation";
@@ -89,7 +91,7 @@ function App() {
         }
       />
       <Route
-        path="/no-matching-record-found"
+        path="/no-visa-applicant-found"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
@@ -134,6 +136,16 @@ function App() {
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <ApplicantPhotoPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/check-visa-applicant-photo"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <CheckApplicantPhotoPage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
@@ -476,6 +488,8 @@ function App() {
       <Route path="/cookies" element={<CookiesPage />} />
       <Route path="/privacy-notice" element={<PrivacyNoticePage />} />
       <Route path="/sorry-there-is-problem-with-service" element={<ErrorPage />} />
+      <Route path="/page-not-found" element={<PageNotFound />} />
+      <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
 }

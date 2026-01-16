@@ -8,6 +8,7 @@ import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetail
 import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPhotoUploadPage";
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
+import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
 import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
 import {
   createTestFixtures,
@@ -19,6 +20,7 @@ describe("TB certificate declaration task links should NOT be clickable until al
   // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantConsentPage = new ApplicantConsentPage();
+  const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
@@ -149,7 +151,17 @@ describe("TB certificate declaration task links should NOT be clickable until al
     cy.url().then((url) => {
       cy.log(`Current URL: ${url}`);
     });
+    // Verify redirection to the Check Photo page
+    cy.url().should("include", "/check-visa-applicant-photo");
 
+    checkPhotoPage.verifyPageLoaded();
+    checkPhotoPage.verifyPageHeadingText();
+    checkPhotoPage.verifyUploadedPhotoDisplayed();
+    checkPhotoPage.verifyFilenameDisplayed();
+    checkPhotoPage.verifyImageLayout();
+    checkPhotoPage.verifyRadioButtonsExist();
+    checkPhotoPage.selectYesAddPhoto();
+    checkPhotoPage.clickContinue();
     // Verify redirection to the Applicant Summary page
     cy.url().should("include", "/check-visa-applicant-details");
     applicantSummaryPage.verifyPageLoaded();

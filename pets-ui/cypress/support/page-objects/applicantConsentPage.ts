@@ -150,7 +150,7 @@ export class ApplicantConsentPage extends BasePage {
   verifyBackLink(): ApplicantConsentPage {
     cy.get(".govuk-back-link")
       .should("be.visible")
-      .and("have.attr", "href", "/no-matching-record-found")
+      .and("have.attr", "href", "/no-visa-applicant-found")
       .and("contain", "Back");
     return this;
   }

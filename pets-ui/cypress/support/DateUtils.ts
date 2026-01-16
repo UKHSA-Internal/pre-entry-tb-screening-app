@@ -344,7 +344,6 @@ export class DateUtils {
 
   // =====================================================
   // TEST-FRIENDLY DATE METHODS
-  // Added: December 2025
   // These methods generate dates optimized for test stability
   // =====================================================
 
@@ -440,6 +439,8 @@ export class DateUtils {
    * Get complete set of test-friendly dates for an INFANT applicant scenario
    * For babies under 12 months old
    *
+   * Ensures passport is issued AFTER the infant's date of birth
+   *
    * @param infantAgeInMonths - Age of infant in months (1-11)
    * @returns Object with all necessary date components
    *
@@ -455,9 +456,19 @@ export class DateUtils {
       throw new Error("Age in months cannot be negative");
     }
 
+    // Get infant's date of birth
     const dob = this.getInfantDateOfBirth(infantAgeInMonths);
-    const passport = this.getValidPassportDates();
-    const screening = this.getValidScreeningDate();
+
+    // Calculate passport dates AFTER infant's birth
+    // For infants, passport is typically issued within days/weeks of birth
+    const passportIssueDate = new Date(dob);
+    passportIssueDate.setDate(passportIssueDate.getDate() + 7); // 7 days after birth
+
+    // Child passports expire after 5 years
+    const passportExpiryDate = this.getPassportExpiryDate(passportIssueDate, true);
+
+    // Other dates remain the same
+    const screening = this.getValidScreeningDate(31);
     const xray = this.getValidXrayDate(30);
     const sputum = this.getValidSputumSampleDates(60);
 
@@ -466,9 +477,11 @@ export class DateUtils {
       ageInYears: 0,
       birthDate: this.getDateComponents(dob),
       birthDateFormatted: this.normalizeDateForComparison(this.formatDateDDMMYYYY(dob)),
-      passportIssueDate: passport.issueDate,
-      passportExpiryDate: passport.expiryDate,
+      birthDateGOVUKFormat: this.formatDateGOVUK(dob),
+      passportIssueDate: this.getDateComponents(passportIssueDate),
+      passportExpiryDate: this.getDateComponents(passportExpiryDate),
       screeningDate: screening,
+      screeningDateGOVUKFormat: this.formatDateGOVUK(this.getDateInPast(0, 0, 31)),
       xrayDate: xray,
       sputumSample1Date: sputum.sample1,
       sputumSample1DateFormatted: sputum.sample1Formatted,
@@ -483,6 +496,8 @@ export class DateUtils {
    * Get complete set of test-friendly dates for a child applicant scenario
    * For children 1-10 years old
    *
+   * Ensures passport is issued AFTER the child's date of birth
+   *
    * @param childAge - Age of child in years (1-10)
    */
   static getChildApplicantTestDates(childAge: number = 6) {
@@ -496,8 +511,35 @@ export class DateUtils {
     }
 
     const dob = this.getChildDateOfBirth(childAge);
-    const passport = this.getValidPassportDates();
-    const screening = this.getValidScreeningDate();
+
+    // For young children, passport should be issued after birth
+    // For 1-2 year olds: issue 1-3 months after birth
+    // For older children: can be more recent (within last year)
+    const passportIssueDate = new Date(dob);
+
+    if (childAge <= 2) {
+      // For very young children, passport issued 1-3 months after birth
+      const monthsAfterBirth = Math.floor(Math.random() * 3) + 1; // 1-3 months
+      passportIssueDate.setMonth(passportIssueDate.getMonth() + monthsAfterBirth);
+    } else {
+      // For older children (3-10 years), passport can be more recent
+      // Issue anywhere from 1 month to 1 year ago, but ensure it's after birth
+      const monthsAgo = Math.floor(Math.random() * 12) + 1; // 1-12 months ago
+      const issueDate = this.getDateInPast(0, monthsAgo, 0);
+
+      // Ensure it's after DOB
+      if (issueDate > dob) {
+        passportIssueDate.setTime(issueDate.getTime());
+      } else {
+        // If random date is before birth, issue 6 months after birth
+        passportIssueDate.setMonth(passportIssueDate.getMonth() + 6);
+      }
+    }
+
+    // Child passports expire after 5 years
+    const passportExpiryDate = this.getPassportExpiryDate(passportIssueDate, true);
+
+    const screening = this.getValidScreeningDate(31);
     const xray = this.getValidXrayDate(30);
     const sputum = this.getValidSputumSampleDates(60);
 
@@ -505,9 +547,11 @@ export class DateUtils {
       childAge,
       birthDate: this.getDateComponents(dob),
       birthDateFormatted: this.normalizeDateForComparison(this.formatDateDDMMYYYY(dob)),
-      passportIssueDate: passport.issueDate,
-      passportExpiryDate: passport.expiryDate,
+      birthDateGOVUKFormat: this.formatDateGOVUK(dob),
+      passportIssueDate: this.getDateComponents(passportIssueDate),
+      passportExpiryDate: this.getDateComponents(passportExpiryDate),
       screeningDate: screening,
+      screeningDateGOVUKFormat: this.formatDateGOVUK(this.getDateInPast(0, 0, 31)),
       xrayDate: xray,
       sputumSample1Date: sputum.sample1,
       sputumSample1DateFormatted: sputum.sample1Formatted,
@@ -530,7 +574,7 @@ export class DateUtils {
 
     const dob = this.getAdultDateOfBirth(adultAge);
     const passport = this.getValidPassportDates();
-    const screening = this.getValidScreeningDate();
+    const screening = this.getValidScreeningDate(31);
     const xray = this.getValidXrayDate(30);
     const sputum = this.getValidSputumSampleDates(60);
 
@@ -538,9 +582,11 @@ export class DateUtils {
       adultAge,
       birthDate: this.getDateComponents(dob),
       birthDateFormatted: this.normalizeDateForComparison(this.formatDateDDMMYYYY(dob)),
+      birthDateGOVUKFormat: this.formatDateGOVUK(dob),
       passportIssueDate: passport.issueDate,
       passportExpiryDate: passport.expiryDate,
       screeningDate: screening,
+      screeningDateGOVUKFormat: this.formatDateGOVUK(this.getDateInPast(0, 0, 31)),
       xrayDate: xray,
       sputumSample1Date: sputum.sample1,
       sputumSample1DateFormatted: sputum.sample1Formatted,

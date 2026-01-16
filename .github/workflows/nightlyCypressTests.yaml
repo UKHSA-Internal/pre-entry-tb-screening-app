@@ -47,21 +47,18 @@ jobs:
             BROWSER_SELECTION="all"
             ENV_SELECTION="all"
           fi
-
           if [[ "$BROWSER_SELECTION" == "all" ]]; then
             BROWSER_ARRAY='["chrome", "firefox", "edge"]'
           else
             BROWSER_ARRAY='["'$BROWSER_SELECTION'"]'
           fi
           echo "browsers=$BROWSER_ARRAY" >> $GITHUB_OUTPUT
-
           if [[ "$ENV_SELECTION" == "all" ]]; then
             ENV_ARRAY='["qat", "dev", "preprod"]'
           else
             ENV_ARRAY='["'$ENV_SELECTION'"]'
           fi
           echo "environments=$ENV_ARRAY" >> $GITHUB_OUTPUT
-
           echo "Selected browsers: $BROWSER_ARRAY"
           echo "Selected environments: $ENV_ARRAY"
 
@@ -96,30 +93,45 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || github.ref_name }}
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
-          cache-dependency-path: pets-ui/package-lock.json
+          node-version: 20.x
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Debug available Cypress specs
+        run: ls -R pets-ui/cypress/e2e
+
+      - name: Verify Cypress reporter configuration
+        run: |
+          echo "Checking if mochawesome is configured..."
+          if grep -q "mochawesome" pets-ui/package.json; then
+            echo "mochawesome found in package.json"
+          else
+            echo "mochawesome not found - test counts may not be available"
+          fi
 
       - name: Cache Cypress binary
+        id: cache-cypress-binary
         uses: actions/cache@v4
         with:
           path: ~/.cache/Cypress
-          key: cypress-binary-${{ runner.os }}-${{ hashFiles('pets-ui/package-lock.json') }}
-          restore-keys: |
-            cypress-binary-${{ runner.os }}-
+          key: cypress-binary-nightly-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
 
-      - name: Install dependencies
+      - name: Install Cypress Binary
+        if: steps.cache-cypress-binary.outputs.cache-hit != 'true'
+        run: |
+          pnpm exec cypress install --force
+          pnpm exec cypress verify
         working-directory: pets-ui
-        run: npm ci
 
-      - name: Verify Cypress installation
-        working-directory: pets-ui
-        run: npx cypress verify
-
-      - name: Cypress run tests (Initial attempt)
+      - name: Cypress run tests
         uses: cypress-io/github-action@v6
         continue-on-error: true
         id: initial_attempt
@@ -127,114 +139,93 @@ jobs:
           install: false
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
-          config-file: cypress.config.mjs
+          config-file: cypress/cypress.config.mjs
         env:
           ENVIRONMENT: ${{ matrix.environment }}
-          CYPRESS_TEST_ENVIRONMENT: ${{ matrix.environment }}
+          CYPRESS_TEST_ENVIRONMENT: ${{ matrix.environment }} #Keeping for backward compatibility
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Retry failed tests
+      - name: Retry if failed
         if: steps.initial_attempt.outcome != 'success'
         uses: cypress-io/github-action@v6
-        continue-on-error: true
         id: retry_attempt
         with:
           install: false
           working-directory: pets-ui
           browser: ${{ matrix.browser }}
-          config-file: cypress.config.mjs
+          config-file: cypress/cypress.config.mjs
         env:
           ENVIRONMENT: ${{ matrix.environment }}
           CYPRESS_TEST_ENVIRONMENT: ${{ matrix.environment }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload screenshots on failure
+      - name: Upload Failed Tests Screenshots
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: screenshots-${{ matrix.environment }}-${{ matrix.browser }}
+          name: nightly-failed-screenshots-${{ matrix.environment }}-${{ matrix.browser }}
           path: pets-ui/cypress/screenshots
-          if-no-files-found: ignore
           retention-days: 7
 
-      - name: Upload videos
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: videos-${{ matrix.environment }}-${{ matrix.browser }}
-          path: pets-ui/cypress/videos
-          if-no-files-found: ignore
-          retention-days: 7
-
-      - name: Install jq for JSON processing
+      - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Merge Mochawesome reports
+      - name: Merge Mochawesome Reports
         if: always()
-        working-directory: pets-ui
         run: |
-          # Install mochawesome-merge if not already installed
-          npm list mochawesome-merge || npm install --save-dev mochawesome-merge
+          # Create reports directory if it doesn't exist
+          mkdir -p pets-ui/cypress/reports/mochawesome
 
-          REPORT_DIR="cypress/reports/mochawesome"
-          MERGED_FILE="$REPORT_DIR/mochawesome.json"
+          cd pets-ui
 
-          echo "=== Searching for Mochawesome reports ==="
-          mkdir -p "$REPORT_DIR"
-
-          # Find all JSON report files
-          JSON_FILES=($(find "$REPORT_DIR" -name "*.json" -not -name "mochawesome.json" 2>/dev/null || true))
+          # Find all JSON report files (excluding the merged output)
+          JSON_FILES=($(find cypress/reports/mochawesome -name "*.json" -not -name "mochawesome.json" 2>/dev/null || true))
 
           if [ ${#JSON_FILES[@]} -gt 0 ]; then
             echo "Found ${#JSON_FILES[@]} report files to merge"
-            npx mochawesome-merge "${JSON_FILES[@]}" > "$MERGED_FILE"
+            
+            # Use pnpm exec to run mochawesome-merge
+            pnpm exec mochawesome-merge "${JSON_FILES[@]}" > cypress/reports/mochawesome/mochawesome.json
+            
             echo "✅ Reports merged successfully"
             
-            # Show merged stats
-            if [ -f "$MERGED_FILE" ]; then
+            # Display merged results
+            if [ -f cypress/reports/mochawesome/mochawesome.json ]; then
               echo "=== Merged Test Statistics ==="
-              jq '.stats' "$MERGED_FILE" || echo "Could not parse stats"
+              jq '.stats' cypress/reports/mochawesome/mochawesome.json || echo "Could not parse stats"
             fi
           else
             echo "⚠️ No mochawesome reports found - creating minimal report"
-            echo '{"stats":{"suites":0,"tests":0,"passes":0,"pending":0,"failures":0},"results":[]}' > "$MERGED_FILE"
+            echo '{"stats":{"suites":0,"tests":0,"passes":0,"pending":0,"failures":0},"results":[]}' > cypress/reports/mochawesome/mochawesome.json
           fi
 
       - name: Extract test counts
         if: always()
         id: extract_counts
-        working-directory: pets-ui
         run: |
-          JSON_FILE="cypress/reports/mochawesome/mochawesome.json"
+          cd pets-ui
 
-          if [ -f "$JSON_FILE" ]; then
-            TOTAL=$(jq -r '.stats.tests // 0' "$JSON_FILE")
-            PASSED=$(jq -r '.stats.passes // 0' "$JSON_FILE")
-            FAILED=$(jq -r '.stats.failures // 0' "$JSON_FILE")
-            PENDING=$(jq -r '.stats.pending // 0' "$JSON_FILE")
+          REPORT_FILE="cypress/reports/mochawesome/mochawesome.json"
+
+          if [ -f "$REPORT_FILE" ]; then
+            TOTAL=$(jq -r '.stats.tests // 0' "$REPORT_FILE")
+            PASSED=$(jq -r '.stats.passes // 0' "$REPORT_FILE")
+            FAILED=$(jq -r '.stats.failures // 0' "$REPORT_FILE")
+            PENDING=$(jq -r '.stats.pending // 0' "$REPORT_FILE")
             
             echo "total_count=$TOTAL" >> $GITHUB_OUTPUT
             echo "passed_count=$PASSED" >> $GITHUB_OUTPUT
             echo "failed_count=$FAILED" >> $GITHUB_OUTPUT
             echo "pending_count=$PENDING" >> $GITHUB_OUTPUT
             
-            echo "✅ Test counts: Total=$TOTAL, Passed=$PASSED, Failed=$FAILED, Pending=$PENDING"
+            echo "✅ Test counts extracted: Total=$TOTAL, Passed=$PASSED, Failed=$FAILED, Pending=$PENDING"
           else
-            echo "⚠️ No merged report found - using default values"
+            echo "⚠️ No report file found"
             echo "total_count=0" >> $GITHUB_OUTPUT
             echo "passed_count=0" >> $GITHUB_OUTPUT
             echo "failed_count=0" >> $GITHUB_OUTPUT
             echo "pending_count=0" >> $GITHUB_OUTPUT
           fi
-
-      - name: Upload mochawesome report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: mochawesome-report-${{ matrix.environment }}-${{ matrix.browser }}
-          path: pets-ui/cypress/reports/mochawesome/mochawesome.json
-          if-no-files-found: warn
-          retention-days: 7
 
       - name: Store test result
         if: always()
@@ -450,10 +441,10 @@ jobs:
           echo "overall_status=$OVERALL_STATUS" >> $GITHUB_OUTPUT
           echo "success_rate=$SUCCESS_RATE" >> $GITHUB_OUTPUT
 
-      - name: Create dashboard HTML
+      - name: Copy dashboard HTML template
         run: cp .github/workflows/dashboard-template.html dashboard/index.html
 
-      - name: Setup GitHub Pages
+      - name: Setup Pages
         uses: actions/configure-pages@v4
 
       - name: Upload to GitHub Pages
@@ -470,23 +461,14 @@ jobs:
         with:
           name: nightly-summary-report
           path: nightly-summary.md
-          retention-days: 30
+          retention-days: 7
 
-      - name: Create GitHub Step Summary
+      - name: Set workflow conclusion
         if: always()
         run: |
-          cat nightly-summary.md >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "---" >> $GITHUB_STEP_SUMMARY
-          echo "📊 **[View Live Dashboard](${{ steps.deployment.outputs.page_url }})**" >> $GITHUB_STEP_SUMMARY
-
-      - name: Set final status
-        if: always()
-        run: |
+          echo "🔗 Dashboard URL: ${{ steps.deployment.outputs.page_url }}"
           if [[ "${{ steps.summary.outputs.overall_status }}" == "PASS" ]]; then
-            echo "::notice::✅ All tests passed! Dashboard: ${{ steps.deployment.outputs.page_url }}"
-            exit 0
+            echo "::notice::✅ All nightly tests passed! Dashboard updated at ${{ steps.deployment.outputs.page_url }}"
           else
-            echo "::warning::⚠️ Some tests failed. Dashboard: ${{ steps.deployment.outputs.page_url }}"
-            exit 1
+            echo "::warning::⚠️ Some tests failed. Dashboard still updated at ${{ steps.deployment.outputs.page_url }}"
           fi

@@ -6,7 +6,7 @@ import { Mock, vi } from "vitest";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import ApplicantPhotoPage from "@/pages/applicant-photo";
 import ApplicantPhotoForm from "@/sections/applicant-photo-form";
-import { ApplicationStatus, ImageType } from "@/utils/enums";
+import { ApplicationStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 import uploadFile from "@/utils/uploadFile";
 import validateFiles from "@/utils/validateFiles";
@@ -160,8 +160,10 @@ describe("ApplicantPhotoForm", () => {
     await user.click(continueButton);
 
     await waitFor(() => {
-      expect(setApplicantPhotoFile).toHaveBeenCalledWith(file);
-      expect(useNavigateMock).toHaveBeenCalledWith("/check-visa-applicant-details");
+      expect(setApplicantPhotoFile).not.toHaveBeenCalled();
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-visa-applicant-photo", {
+        state: { applicantPhoto: file },
+      });
     });
   });
 
@@ -248,55 +250,10 @@ describe("ApplicantPhotoForm", () => {
     await user.click(continueButton);
 
     await waitFor(() => {
-      expect(uploadFile).toHaveBeenCalledWith(
-        file,
-        "applicant-photo.jpg",
-        "abc-123",
-        ImageType.Photo,
-      );
-      expect(useNavigateMock).toHaveBeenCalledWith("/check-visa-applicant-details");
-    });
-  });
-
-  it("navigates to error page when upload fails and application status is COMPLETE", async () => {
-    vi.mocked(validateFiles).mockResolvedValue(true);
-    vi.mocked(uploadFile).mockRejectedValue(new Error("Upload failed"));
-
-    const preloadedState = {
-      applicant: {
-        status: ApplicationStatus.COMPLETE,
-        fullName: "",
-        sex: "",
-        dateOfBirth: { year: "", month: "", day: "" },
-        countryOfNationality: "",
-        passportNumber: "",
-        countryOfIssue: "",
-        passportIssueDate: { year: "", month: "", day: "" },
-        passportExpiryDate: { year: "", month: "", day: "" },
-        applicantHomeAddress1: "",
-        applicantHomeAddress2: "",
-        applicantHomeAddress3: "",
-        townOrCity: "",
-        provinceOrState: "",
-        country: "",
-        postcode: "",
-        applicantPhotoFileName: "",
-      },
-      application: { applicationId: "abc-123", dateCreated: "" },
-    };
-
-    renderWithProviders(<ApplicantPhotoForm />, { preloadedState });
-
-    const file = new File(["dummy content"], "photo.jpg", { type: "image/jpeg" });
-    const input: HTMLInputElement = screen.getByTestId("applicant-photo");
-
-    await userEvent.upload(input, file);
-    const continueButton = screen.getByRole("button", { name: /Continue/i });
-    await user.click(continueButton);
-
-    await waitFor(() => {
-      expect(uploadFile).toHaveBeenCalled();
-      expect(useNavigateMock).toHaveBeenCalledWith("/sorry-there-is-problem-with-service");
+      expect(uploadFile).not.toHaveBeenCalled();
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-visa-applicant-photo", {
+        state: { applicantPhoto: file },
+      });
     });
   });
 
