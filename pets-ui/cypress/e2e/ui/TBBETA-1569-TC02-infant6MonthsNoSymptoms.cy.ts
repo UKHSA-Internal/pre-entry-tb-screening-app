@@ -13,10 +13,12 @@ import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVis
 import { ChestXrayNotTakenPage } from "../../support/page-objects/chestXrayNotTakenPage";
 import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
 import { ClinicCertificateInfoPage } from "../../support/page-objects/clinicCertificateInfoPage";
+import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { EnterSputumSampleResultsPage } from "../../support/page-objects/enterSputumSampleResultsPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import { SputumCollectionPage } from "../../support/page-objects/sputumCollectionPage";
 import { SputumConfirmationPage } from "../../support/page-objects/sputumConfirmationPage";
 import { SputumDecisionConfirmationPage } from "../../support/page-objects/sputumDecisionConfirmationPage";
@@ -44,6 +46,8 @@ describe("PETS Scenario: Infant (6 months old) with No Symptoms, No X-ray, Sputu
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
+  const passportInformationPage = new PassportInformationPage();
+  const contactInformationPage = new ContactInformationPage();
   const travelInformationPage = new TravelInformationPage();
   const travelSummaryPage = new TravelSummaryPage();
   const travelConfirmationPage = new TravelConfirmationPage();
@@ -168,24 +172,33 @@ describe("PETS Scenario: Infant (6 months old) with No Symptoms, No X-ray, Sputu
     // Fill Applicant Details for 6-month-old Infant
     applicantDetailsPage.verifyPageLoaded();
 
-    // Use infant-specific form method
-    applicantDetailsPage.fillCompleteInfantForm({
-      fullName: "Baby Emma Johnson",
-      sex: "Female",
-      nationality: countryName,
-      ageInMonths: infantAgeInMonths, // Will be 6 from beforeEach
-      daysAfterBirthForPassport: 14, // Passport issued 14 days after birth (2 weeks)
-      addressLine1: "123 Infant Care Lane",
-      addressLine2: "Maternity Ward B",
-      addressLine3: "New Born Baby",
-      townOrCity: "Libraville",
-      provinceOrState: "Dahoume",
-      addressCountry: countryName,
-      postcode: "56109",
-    });
+    // Fill in applicant personal details for 6-month infant
+    applicantDetailsPage
+      .fillFullName("Baby Emma Johnson")
+      .selectSex("Female")
+      .selectNationality(countryName)
+      .fillBirthDate(infantDOB.day, infantDOB.month, infantDOB.year)
+      .submitForm();
 
-    // Submit form
-    applicantDetailsPage.submitForm();
+    // Fill in passport details
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName)
+      .fillIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillExpiryDate(passportExpiryDate.day, passportExpiryDate.month, passportExpiryDate.year)
+      .submitForm();
+
+    // Fill in contact information
+    contactInformationPage.verifyPageLoaded();
+    contactInformationPage
+      .fillAddressLine1("123 Infant Care Lane")
+      .fillAddressLine2("Maternity Ward B")
+      .fillTownOrCity("Libraville")
+      .fillProvinceOrState("Dahoume")
+      .fillPostcode("56109")
+      .selectCountry(countryName)
+      .submitForm();
 
     // Verify redirection to the Applicant Photo page
     cy.url({ timeout: 15000 }).should("include", "/upload-visa-applicant-photo");
@@ -394,7 +407,7 @@ describe("PETS Scenario: Infant (6 months old) with No Symptoms, No X-ray, Sputu
     // Verify redirection to Sputum decision Info Page
     sputumDecisionInfoPage.verifyPageLoaded();
     sputumDecisionInfoPage.verifyAllPageElements();
-    sputumDecisionInfoPage.clickSaveAndContinue();
+    sputumDecisionInfoPage.clickSaveAndContinueButton();
 
     // Verify redirection to Sputum Decision Confirmation Page
     sputumDecisionConfirmationPage
@@ -489,7 +502,7 @@ describe("PETS Scenario: Infant (6 months old) with No Symptoms, No X-ray, Sputu
     checkSputumSampleInfoPage.verifyAllSampleInfo(expectedSampleData);
     checkSputumSampleInfoPage.verifyChangeLinksExist();
     checkSputumSampleInfoPage.verifyServiceName();
-    checkSputumSampleInfoPage.clickSaveAndContinue();
+    checkSputumSampleInfoPage.clickSubmitButton();
 
     // Verify Sputum confirmation page
     sputumConfirmationPage.verifyPageLoaded();

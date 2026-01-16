@@ -298,7 +298,7 @@ test("Progress tracker page displays incomplete application sections correctly &
   expect(screen.getAllByRole("definition")[2]).toHaveTextContent("12345");
 
   const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
-  expect(applicantDetailsLink).toHaveAttribute("href", "/visa-applicant-passport-information");
+  expect(applicantDetailsLink).toHaveAttribute("href", "/visa-applicant-personal-information");
   const applicantDetailsListItem = applicantDetailsLink.closest("li");
   expect(applicantDetailsListItem).toHaveClass(
     "govuk-task-list__item govuk-task-list__item--with-link",

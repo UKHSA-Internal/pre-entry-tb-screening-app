@@ -45,36 +45,18 @@ describe("Applicant Details Form - Empty Form Error Test", () => {
     applicantDetailsPage.submitForm();
 
     // Validate that error summary is visible
-    applicantDetailsPage.validateErrorSummaryVisible();
+    applicantDetailsPage.verifyErrorSummary();
 
-    // Expected error messages
-    const expectedErrors = [
-      "Enter the applicant's full name",
-      "Select the applicant's sex",
+    // Validate individual field errors on personal information page
+    applicantDetailsPage.verifyFieldError("name", "Enter the applicant's full name");
+    applicantDetailsPage.verifyFieldError("sex", "Select the applicant's sex");
+    applicantDetailsPage.verifyFieldError(
+      "country-of-nationality",
       "Select the country of nationality",
+    );
+    applicantDetailsPage.verifyFieldError(
+      "birth-date",
       "Date of birth must include a day, month and year",
-      "Passport issue date must include a day, month and year",
-      "Passport expiry date must include a day, month and year",
-      "Enter the first line of the applicant's home address",
-      "Enter the town or city of the applicant's home address",
-      "Enter the province or state of the applicant's home address",
-      "Enter the country of the applicant's home address",
-    ];
-
-    // Validate that the error summary contains all expected errors
-    applicantDetailsPage.validateErrorSummary(expectedErrors);
-
-    // Validate individual field errors
-    applicantDetailsPage.validateFormErrors({
-      fullName: "Enter the applicant's full name",
-      sex: "Select the applicant's sex",
-      nationality: "Select the country of nationality",
-      birthDate: "Date of birth must include a day, month and year",
-      passportIssueDate: "Passport issue date must include a day, month and year",
-      passportExpiryDate: "Passport expiry date must include a day, month and year",
-      address: "Enter the first line of the applicant's home address",
-      townOrCity: "Enter the town or city of the applicant's home address",
-      addressCountry: "Enter the country of the applicant's home address",
-    });
+    );
   });
 });

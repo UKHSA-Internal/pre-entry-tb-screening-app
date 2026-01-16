@@ -1,9 +1,15 @@
 // This holds all the fields on the Check Visa Applicant Photo Page
 
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, GdsComponentHelper, SummaryHelper } from "../helpers";
 
 export class CheckVisaApplicantPhotoPage extends BasePage {
   pageUrl = "/check-visa-applicant-photo";
+
+  // Compose helper instances
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private summary = new SummaryHelper();
 
   constructor() {
     super("/check-visa-applicant-photo");
@@ -17,7 +23,7 @@ export class CheckVisaApplicantPhotoPage extends BasePage {
   }
   // Verify page heading text
   verifyPageHeadingText(): CheckVisaApplicantPhotoPage {
-    this.verifyPageHeading("Check visa applicant photo");
+    this.gds.verifyPageHeading("Check visa applicant photo");
     return this;
   }
 

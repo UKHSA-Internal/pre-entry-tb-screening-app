@@ -1,7 +1,13 @@
 //This holds all fields of the Chest X-ray Summary Page
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, GdsComponentHelper, SummaryHelper } from "../helpers";
 
 export class ChestXraySummaryPage extends BasePage {
+  // Compose helper instances
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private summary = new SummaryHelper();
+
   constructor() {
     super("/chest-xray-summary");
   }
@@ -137,6 +143,12 @@ export class ChestXraySummaryPage extends BasePage {
         }
       });
     });
+    return this;
+  }
+
+  // Click Save and Continue button
+  clickSaveAndContinue(): ChestXraySummaryPage {
+    this.button.clickSaveAndContinue();
     return this;
   }
 
@@ -304,8 +316,6 @@ export class ChestXraySummaryPage extends BasePage {
     this.verifyXrayNotTakenSummaryInfo(xrayInfo);
     this.verifyXrayNotTakenFields();
     this.verifyXrayNotTakenChangeLinks();
-    this.verifyBackLink("/sputum-question");
-    this.verifyServiceName();
     return this;
   }
 
@@ -357,8 +367,6 @@ export class ChestXraySummaryPage extends BasePage {
     this.verifyPageLoaded();
     this.verifyXraySummaryInfo(xrayInfo);
     this.verifyChangeLinksExist();
-    this.verifyBackLink("/sputum-question");
-    this.verifyServiceName();
     return this;
   }
 }

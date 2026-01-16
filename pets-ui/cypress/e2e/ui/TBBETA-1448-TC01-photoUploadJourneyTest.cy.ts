@@ -6,6 +6,8 @@ import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetail
 import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPhotoUploadPage";
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
 import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
+import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
@@ -17,6 +19,8 @@ describe("Photo Upload and Confirmation Journey - AC Tests", () => {
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
+  const passportInformationPage = new PassportInformationPage();
+  const contactInformationPage = new ContactInformationPage();
   const applicantConsentPage = new ApplicantConsentPage();
   const checkPhotoPage = new CheckVisaApplicantPhotoPage();
 
@@ -106,25 +110,32 @@ describe("Photo Upload and Confirmation Journey - AC Tests", () => {
     // Fill Applicant Details
     applicantDetailsPage.verifyPageLoaded();
 
-    // Fill in applicant details
+    // Fill in applicant personal details
     applicantDetailsPage
       .fillFullName("Jane Smith")
       .selectSex("Female")
-      .selectNationality(countryName) // Use country code for form filling
+      .selectNationality(countryName)
       .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
-      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
-      .fillPassportExpiryDate(
-        passportExpiryDate.day,
-        passportExpiryDate.month,
-        passportExpiryDate.year,
-      )
+      .submitForm();
+
+    // Fill in passport details
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName)
+      .fillIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillExpiryDate(passportExpiryDate.day, passportExpiryDate.month, passportExpiryDate.year)
+      .submitForm();
+
+    // Fill in contact information
+    contactInformationPage.verifyPageLoaded();
+    contactInformationPage
       .fillAddressLine1("123 Palm Street")
       .fillAddressLine2("Apartment 4B")
-      .fillAddressLine3("Downtown")
       .fillTownOrCity("Bridgetown")
       .fillProvinceOrState("Saint Michael")
-      .selectAddressCountry(countryName) // Use country code for form filling
       .fillPostcode("BB11111")
+      .selectCountry(countryName)
       .submitForm();
 
     // Verify redirection to the Applicant Photo page
