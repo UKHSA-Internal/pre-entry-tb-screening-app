@@ -1,10 +1,8 @@
 import { GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
-import { error } from "console";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
-import { logger } from "../../shared/logger";
 import { ApplicationStatus } from "../types/enum";
 import { Application } from "./application";
 
