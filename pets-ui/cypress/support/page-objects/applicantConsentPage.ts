@@ -1,9 +1,16 @@
 // This holds all fields of the Applicant Consent Page
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, ErrorHelper, FormHelper, GdsComponentHelper } from "../helpers";
 import { ApplicantDetailsPage } from "./applicantDetailsPage";
 import { GetWrittenConsentPage } from "./getWrittenConsentPage";
 
 export class ApplicantConsentPage extends BasePage {
+  // Compose helper instances
+  private form = new FormHelper();
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private error = new ErrorHelper();
+
   constructor() {
     super("/do-you-have-visa-applicant-written-consent-for-tb-screening");
   }

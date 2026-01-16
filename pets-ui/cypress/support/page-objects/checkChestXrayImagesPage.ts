@@ -1,8 +1,14 @@
 //This holds all fields of the Check Chest X-ray Images Page
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
 import { DateUtils } from "../DateUtils";
+import { ButtonHelper, GdsComponentHelper, SummaryHelper } from "../helpers";
 
 export class CheckChestXrayImagesPage extends BasePage {
+  // Compose helper instances
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private summary = new SummaryHelper();
+
   constructor() {
     super("/check-chest-x-ray-images");
   }

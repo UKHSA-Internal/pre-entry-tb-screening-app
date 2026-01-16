@@ -1,5 +1,6 @@
 // This holds all the fields on the Sputum Collection Page
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, ErrorHelper, FormHelper, GdsComponentHelper } from "../helpers";
 
 // Interface for date data
 interface DateData {
@@ -22,6 +23,12 @@ interface AllSamplesData {
 }
 
 export class SputumCollectionPage extends BasePage {
+  // Compose helper instances
+  private form = new FormHelper();
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private error = new ErrorHelper();
+
   constructor() {
     super("/sputum-collection-details");
   }
@@ -96,7 +103,7 @@ export class SputumCollectionPage extends BasePage {
 
   // Page verification
   verifyPageLoaded(): SputumCollectionPage {
-    super.verifyPageHeading("Sputum collection details");
+    this.gds.verifyPageHeading("Sputum collection details");
     cy.get("form").should("be.visible");
     return this;
   }
@@ -305,7 +312,7 @@ export class SputumCollectionPage extends BasePage {
 
   // Error validation methods
   validateSample1DateError(expectedMessage?: string): SputumCollectionPage {
-    this.validateFieldError(
+    this.error.validateFieldError(
       "date-sample-1-taken",
       expectedMessage || "Enter the date sample 1 was taken on",
     );
@@ -313,7 +320,7 @@ export class SputumCollectionPage extends BasePage {
   }
 
   validateSample1CollectionMethodError(expectedMessage?: string): SputumCollectionPage {
-    this.validateFieldError(
+    this.error.validateFieldError(
       "collection-method-sample-1",
       expectedMessage || "Enter Sputum sample 1 collection method",
     );
@@ -321,7 +328,7 @@ export class SputumCollectionPage extends BasePage {
   }
 
   validateSample2DateError(expectedMessage?: string): SputumCollectionPage {
-    this.validateFieldError(
+    this.error.validateFieldError(
       "date-sample-2-taken",
       expectedMessage || "Enter the date sample 2 was taken on",
     );
@@ -329,7 +336,7 @@ export class SputumCollectionPage extends BasePage {
   }
 
   validateSample2CollectionMethodError(expectedMessage?: string): SputumCollectionPage {
-    this.validateFieldError(
+    this.error.validateFieldError(
       "collection-method-sample-2",
       expectedMessage || "Enter Sputum sample 2 collection method",
     );
@@ -337,7 +344,7 @@ export class SputumCollectionPage extends BasePage {
   }
 
   validateSample3DateError(expectedMessage?: string): SputumCollectionPage {
-    this.validateFieldError(
+    this.error.validateFieldError(
       "date-sample-3-taken",
       expectedMessage || "Enter the date sample 3 was taken on",
     );
@@ -345,7 +352,7 @@ export class SputumCollectionPage extends BasePage {
   }
 
   validateSample3CollectionMethodError(expectedMessage?: string): SputumCollectionPage {
-    this.validateFieldError(
+    this.error.validateFieldError(
       "collection-method-sample-3",
       expectedMessage || "Enter Sputum sample 3 collection method",
     );
@@ -362,27 +369,27 @@ export class SputumCollectionPage extends BasePage {
     sample3CollectionMethod?: string;
   }): SputumCollectionPage {
     if (errors.sample1Date) {
-      this.validateFieldError("date-sample-1-taken", errors.sample1Date);
+      this.error.validateFieldError("date-sample-1-taken", errors.sample1Date);
     }
 
     if (errors.sample1CollectionMethod) {
-      this.validateFieldError("collection-method-sample-1", errors.sample1CollectionMethod);
+      this.error.validateFieldError("collection-method-sample-1", errors.sample1CollectionMethod);
     }
 
     if (errors.sample2Date) {
-      this.validateFieldError("date-sample-2-taken", errors.sample2Date);
+      this.error.validateFieldError("date-sample-2-taken", errors.sample2Date);
     }
 
     if (errors.sample2CollectionMethod) {
-      this.validateFieldError("collection-method-sample-2", errors.sample2CollectionMethod);
+      this.error.validateFieldError("collection-method-sample-2", errors.sample2CollectionMethod);
     }
 
     if (errors.sample3Date) {
-      this.validateFieldError("date-sample-3-taken", errors.sample3Date);
+      this.error.validateFieldError("date-sample-3-taken", errors.sample3Date);
     }
 
     if (errors.sample3CollectionMethod) {
-      this.validateFieldError("collection-method-sample-3", errors.sample3CollectionMethod);
+      this.error.validateFieldError("collection-method-sample-3", errors.sample3CollectionMethod);
     }
 
     return this;

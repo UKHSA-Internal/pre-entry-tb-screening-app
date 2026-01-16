@@ -6,6 +6,8 @@ import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetail
 import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPhotoUploadPage";
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
 import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
+import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
@@ -17,6 +19,8 @@ describe('TC07: Verify "rules for digital photos" link attributes', () => {
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
+  const passportInformationPage = new PassportInformationPage();
+  const contactInformationPage = new ContactInformationPage();
   const applicantConsentPage = new ApplicantConsentPage();
   const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   // Define variables to store test data
@@ -104,27 +108,33 @@ describe('TC07: Verify "rules for digital photos" link attributes', () => {
     // Verify redirection to the contact page
     applicantSearchPage.verifyRedirectionToCreateApplicantPage();
 
-    // Fill Applicant Details
+    // Fill Personal Information (Page 1)
     applicantDetailsPage.verifyPageLoaded();
-
-    // Fill in applicant details
     applicantDetailsPage
       .fillFullName("Lisa Martinez")
       .selectSex("Female")
       .selectNationality(countryName)
       .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
-      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
-      .fillPassportExpiryDate(
-        passportExpiryDate.day,
-        passportExpiryDate.month,
-        passportExpiryDate.year,
-      )
+      .submitForm();
+
+    // Fill Passport Information (Page 2)
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName)
+      .fillIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillExpiryDate(passportExpiryDate.day, passportExpiryDate.month, passportExpiryDate.year)
+      .submitForm();
+
+    // Fill Contact Information (Page 3)
+    contactInformationPage.verifyPageLoaded();
+    contactInformationPage
       .fillAddressLine1("999 Willow Court")
       .fillAddressLine2("Suite 3E")
       .fillAddressLine3("Central")
       .fillTownOrCity("Bridgetown")
       .fillProvinceOrState("Saint Michael")
-      .selectAddressCountry(countryName)
+      .selectCountry(countryName)
       .fillPostcode("BB77777")
       .submitForm();
 

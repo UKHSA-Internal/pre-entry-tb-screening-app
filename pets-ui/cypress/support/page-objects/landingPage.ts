@@ -1,8 +1,11 @@
 // Landing Page POM - Main entry point with Sign In functionality
 
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { GdsComponentHelper } from "../helpers";
 
 export class LandingPage extends BasePage {
+  private gds = new GdsComponentHelper();
+
   constructor() {
     super("/");
   }
@@ -10,13 +13,13 @@ export class LandingPage extends BasePage {
   // Verify the landing page has loaded correctly
   verifyPageLoaded(): LandingPage {
     cy.url().should("eq", Cypress.config().baseUrl + "/");
-    this.verifyPageHeading("Complete a UK visa applicant's TB screening");
+    this.gds.verifyPageHeading("Complete a UK visa applicant's TB screening");
     this.verifySignInButtonVisible();
     return this;
   }
   // Verify all essential page elements are present
   verifyAllPageElements(): LandingPage {
-    this.verifyPageHeading("Complete a UK visa applicant's TB screening");
+    this.gds.verifyPageHeading("Complete a UK visa applicant's TB screening");
     this.verifyPageDescription();
     this.verifyBeforeYouStartSection();
     this.verifyToCompleteScreeningSection();

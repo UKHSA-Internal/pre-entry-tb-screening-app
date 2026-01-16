@@ -1,5 +1,6 @@
 // This Page holds all fields of the TB Certificate Question Page
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, ErrorHelper, FormHelper, GdsComponentHelper } from "../helpers";
 
 // Types for TB certificate question form
 interface TbCertificateQuestionDetails {
@@ -12,12 +13,18 @@ interface TbCertificateQuestionErrors {
 }
 
 export class TbCertificateQuestionPage extends BasePage {
+  // Compose helper instances
+  private form = new FormHelper();
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private error = new ErrorHelper();
+
   constructor() {
     super("/will-you-issue-tb-clearance-certificate");
   }
 
   verifyPageLoaded(): TbCertificateQuestionPage {
-    super.verifyPageHeading("Will you issue a TB clearance certificate?");
+    this.gds.verifyPageHeading("Will you issue a TB clearance certificate?");
     cy.get("form").should("be.visible");
     return this;
   }
@@ -81,7 +88,7 @@ export class TbCertificateQuestionPage extends BasePage {
     expectedErrorMessages: TbCertificateQuestionErrors,
   ): TbCertificateQuestionPage {
     if (expectedErrorMessages.isIssued) {
-      this.validateFieldError("tb-clearance-issued", expectedErrorMessages.isIssued);
+      this.error.validateFieldError("tb-clearance-issued", expectedErrorMessages.isIssued);
     }
     return this;
   }
@@ -89,7 +96,7 @@ export class TbCertificateQuestionPage extends BasePage {
   // Verify form validation when submitting empty form
   verifyFormValidationForEmptyForm(): TbCertificateQuestionPage {
     this.clickContinue();
-    this.validateErrorSummaryVisible();
+    this.error.validateErrorSummaryVisible();
     return this;
   }
 

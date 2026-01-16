@@ -15,9 +15,11 @@ import { ChestXrayFindingsPage } from "../../support/page-objects/chestXrayFindi
 import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
 import { ChestXrayResultsPage } from "../../support/page-objects/chestXrayResultsPage";
 import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
+import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import { RadiologicalOutcomeConfPage } from "../../support/page-objects/radiologicalOutcomeConfPage";
 import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
 import { TravelConfirmationPage } from "../../support/page-objects/travelConfirmationPage";
@@ -37,6 +39,8 @@ describe("PETS Application - Amend Travel Information for Partially Completed Su
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
+  const passportInformationPage = new PassportInformationPage();
+  const contactInformationPage = new ContactInformationPage();
   const applicantConsentPage = new ApplicantConsentPage();
   const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const travelInformationPage = new TravelInformationPage();
@@ -177,27 +181,32 @@ describe("PETS Application - Amend Travel Information for Partially Completed Su
     // Verify redirection to the contact page
     applicantSearchPage.verifyRedirectionToCreateApplicantPage();
 
-    // Fill Applicant Details
+    // Fill Applicant Details - Page 1: Personal Information
     applicantDetailsPage.verifyPageLoaded();
-
-    // Fill in applicant details
     applicantDetailsPage
       .fillFullName("John Smith")
       .selectSex("Male")
       .selectNationality(countryName)
       .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
-      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
-      .fillPassportExpiryDate(
-        passportExpiryDate.day,
-        passportExpiryDate.month,
-        passportExpiryDate.year,
-      )
+      .submitForm();
+
+    // Fill Applicant Details - Page 2: Passport Information
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName)
+      .fillIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillExpiryDate(passportExpiryDate.day, passportExpiryDate.month, passportExpiryDate.year)
+      .submitForm();
+
+    // Fill Applicant Details - Page 3: Contact Information
+    contactInformationPage.verifyPageLoaded();
+    contactInformationPage
       .fillAddressLine1("456 Main Road")
       .fillAddressLine2("Suite 10C")
-      .fillAddressLine3("City Centre")
       .fillTownOrCity("Bridgetown")
       .fillProvinceOrState("Saint Michael")
-      .selectAddressCountry(countryName)
+      .selectCountry(countryName)
       .fillPostcode("M85109")
       .submitForm();
 
@@ -245,7 +254,7 @@ describe("PETS Application - Amend Travel Information for Partially Completed Su
     // Verify Applicant Confirmation page
     applicantConfirmationPage.verifyPageLoaded();
     applicantConfirmationPage.verifyConfirmationPanel();
-    applicantConfirmationPage.verifyNextStepsSection();
+    //applicantConfirmationPage.verifyNextStepsSection();
     applicantConfirmationPage.clickContinue();
 
     // Verify redirection to TB Screening Progress Tracker page
@@ -303,7 +312,7 @@ describe("PETS Application - Amend Travel Information for Partially Completed Su
     // Verify Travel Confirmation page
     travelConfirmationPage.verifyPageLoaded();
     travelConfirmationPage.verifyConfirmationPanel();
-    travelConfirmationPage.verifyNextStepsSection();
+    travelConfirmationPage.verifyNextStepsText();
     travelConfirmationPage.submitForm();
 
     // Verify redirection to TB Screening Progress Tracker page

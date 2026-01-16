@@ -1,6 +1,13 @@
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, ErrorHelper, FormHelper, GdsComponentHelper } from "../helpers";
 
 export class ChestXrayPage extends BasePage {
+  // Compose helper instances
+  private form = new FormHelper();
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private error = new ErrorHelper();
+
   constructor() {
     super("/is-an-x-ray-required");
   }
@@ -8,7 +15,7 @@ export class ChestXrayPage extends BasePage {
   // Verify page loaded
   verifyPageLoaded(): ChestXrayPage {
     cy.url().should("include", "/is-an-x-ray-required");
-    this.verifyPageHeading("Is an X-ray required?");
+    this.gds.verifyPageHeading("Is an X-ray required?");
     cy.get("form").should("be.visible");
     return this;
   }
@@ -78,7 +85,7 @@ export class ChestXrayPage extends BasePage {
 
   // Form validation
   validateXrayTakenFieldError(): ChestXrayPage {
-    this.validateFieldError("chest-xray-taken");
+    this.error.validateFieldError("chest-xray-taken");
     return this;
   }
 

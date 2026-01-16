@@ -3,17 +3,19 @@ import { loginViaB2C } from "../../support/commands";
 import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
 import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
   randomElement,
 } from "../../support/test-helpers";
 
-describe("PETS Application End-to-End Tests with Sputum Collection", () => {
+describe("PETS Application Applicant Details Error Test", () => {
   // Page object instances
   const applicantConsentPage = new ApplicantConsentPage();
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
+  const passportInformationPage = new PassportInformationPage();
 
   // Define variables to store test data
   let countryCode: string = "";
@@ -48,7 +50,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     // Search for applicant with passport number
     applicantSearchPage
       .fillPassportNumber(passportNumber)
-      .selectCountryOfIssue(countryName) // Use country code for form filling
+      .selectCountryOfIssue(countryCode) // Use country code for form filling
       .submitSearch();
 
     // Verify no matching record found and click create new
@@ -69,30 +71,26 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
     applicantDetailsPage
       .fillFullName("Jon Tester")
       .selectSex("Male")
-      .selectNationality(countryName) // Use country code for form filling
-      .fillBirthDate("15", "09", "1990");
+      .selectNationality(countryCode) // Use country code for form filling
+      .fillBirthDate("15", "09", "1990")
+      .submitForm();
 
-    // Set issue date after expiry date
+    // Move to passport information page
+    passportInformationPage.verifyPageLoaded();
+
+    // Set issue date after expiry date (issue date in future)
     const currentYear = new Date().getFullYear();
-    applicantDetailsPage.fillPassportIssueDate("30", "08", (currentYear + 2).toString());
-    applicantDetailsPage.fillPassportExpiryDate("30", "08", (currentYear + 1).toString());
-
-    // Fill address fields
-    applicantDetailsPage.fillAddressLine1("789 Test Road");
-    applicantDetailsPage.fillTownOrCity("Sydney");
-    applicantDetailsPage.fillProvinceOrState("Greater London");
-    applicantDetailsPage.selectAddressCountry(countryName);
-    applicantDetailsPage.fillPostcode("2000");
-
-    // Submit the form
-    applicantDetailsPage.submitForm();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName)
+      .fillIssueDate("30", "08", (currentYear + 2).toString())
+      .fillExpiryDate("30", "08", (currentYear + 1).toString())
+      .submitForm();
 
     // Validate error specific to INVALID DATE
-    applicantDetailsPage.validateErrorContainsText(
+    passportInformationPage.validateErrorSummaryVisible();
+    passportInformationPage.validateIssueDateFieldError(
       "Passport issue date must be today or in the past",
     );
-    applicantDetailsPage.validateFormErrors({
-      passportIssueDate: "Passport issue date must be today or in the past",
-    });
   });
 });

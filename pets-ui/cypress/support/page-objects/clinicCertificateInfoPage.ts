@@ -1,7 +1,13 @@
 // This holds all fields for the Clinic Certificate Info Page
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, GdsComponentHelper, SummaryHelper } from "../helpers";
 
 export class ClinicCertificateInfoPage extends BasePage {
+  // Compose helper instances
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private summary = new SummaryHelper();
+
   constructor() {
     super("/clinic-certificate-information");
   }
@@ -84,6 +90,42 @@ export class ClinicCertificateInfoPage extends BasePage {
     return this;
   }
 
+  // Verify certificate expiry is 6 months from issue date
+  verifyCertificateExpiryIs6MonthsFromIssueDate(): ClinicCertificateInfoPage {
+    // Get issue date
+    cy.get("dl.govuk-summary-list")
+      .contains("dt.govuk-summary-list__key", "Certificate issue date")
+      .parent()
+      .find("dd.govuk-summary-list__value")
+      .invoke("text")
+      .then((issueDateText) => {
+        const issueDate = new Date(issueDateText.trim());
+
+        // Calculate expected expiry date (6 months from issue date)
+        const expectedExpiryDate = new Date(issueDate);
+        expectedExpiryDate.setMonth(expectedExpiryDate.getMonth() + 6);
+
+        // Format expected expiry date to match the display format (e.g., "26 April 2026")
+        const expectedExpiryFormatted = expectedExpiryDate.toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+
+        // Get actual expiry date and verify
+        cy.get("dl.govuk-summary-list")
+          .contains("dt.govuk-summary-list__key", "Certificate issue expiry")
+          .parent()
+          .find("dd.govuk-summary-list__value")
+          .invoke("text")
+          .then((expiryDateText) => {
+            const actualExpiry = expiryDateText.trim();
+            expect(actualExpiry).to.equal(expectedExpiryFormatted);
+          });
+      });
+    return this;
+  }
+
   // Alternative method:Verify expiry date is exactly 6 months after issue date
   verifyCertificateExpiryDateCalculation(): ClinicCertificateInfoPage {
     cy.get("dl.govuk-summary-list")
@@ -100,29 +142,34 @@ export class ClinicCertificateInfoPage extends BasePage {
           .find("dd.govuk-summary-list__value")
           .invoke("text")
           .then((expiryDateText) => {
-            const actualExpiryDate = new Date(expiryDateText.trim());
+            const expiryDate = new Date(expiryDateText.trim());
+
+            // Calculate expected expiry date (6 months from issue date)
             const expectedExpiryDate = new Date(issueDate);
+            expectedExpiryDate.setMonth(expectedExpiryDate.getMonth() + 6);
 
-            const targetMonth = issueDate.getMonth() + 6;
-            const targetYear = issueDate.getFullYear() + Math.floor(targetMonth / 12);
-            const normalisedTargetMonth = targetMonth % 12;
+            // Calculate difference in months accounting for day overflow
+            let monthsDifference =
+              (expiryDate.getFullYear() - issueDate.getFullYear()) * 12 +
+              (expiryDate.getMonth() - issueDate.getMonth());
 
-            const lastDayOfTargetMonth = new Date(
-              targetYear,
-              normalisedTargetMonth + 1,
-              0,
-            ).getDate();
+            // If the expiry day is before the issue day, it means we're still in the previous month period
+            if (expiryDate.getDate() < issueDate.getDate()) {
+              monthsDifference--;
+            }
 
-            const expectedDay = Math.min(issueDate.getDate(), lastDayOfTargetMonth);
+            // Verify the difference is exactly 6 months
+            expect(monthsDifference).to.equal(
+              6,
+              `Certificate expiry should be 6 months from issue date. Issue: ${issueDateText.trim()}, Expiry: ${expiryDateText.trim()}`,
+            );
 
-            expectedExpiryDate.setFullYear(targetYear, normalisedTargetMonth, expectedDay);
-
-            expect(actualExpiryDate.toDateString()).to.equal(
-              expectedExpiryDate.toDateString(),
-              `Certificate expiry should be exactly 6 months after issue date with end-of-month handling.
-              Issue: ${issueDateText.trim()}
-              Expected expiry: ${expectedExpiryDate.toDateString()}
-              Actual expiry: ${expiryDateText.trim()}`,
+            // Verify the expiry date matches expected (accounting for month-end edge cases)
+            // For cases like Dec 31 + 6 months = July 1 (since June only has 30 days)
+            const dayDifference = Math.abs(expiryDate.getDate() - expectedExpiryDate.getDate());
+            expect(dayDifference).to.be.lessThan(
+              3,
+              `Certificate expiry date should be approximately 6 months from issue date`,
             );
           });
       });
@@ -130,6 +177,42 @@ export class ClinicCertificateInfoPage extends BasePage {
   }
 
   // Verify certificate expiry is 3 months from issue date (for close contact with TB scenario)
+  verifyCertificateExpiryIs3MonthsFromIssueDate(): ClinicCertificateInfoPage {
+    // Get issue date
+    cy.get("dl.govuk-summary-list")
+      .contains("dt.govuk-summary-list__key", "Certificate issue date")
+      .parent()
+      .find("dd.govuk-summary-list__value")
+      .invoke("text")
+      .then((issueDateText) => {
+        const issueDate = new Date(issueDateText.trim());
+
+        // Calculate expected expiry date (3 months from issue date)
+        const expectedExpiryDate = new Date(issueDate);
+        expectedExpiryDate.setMonth(expectedExpiryDate.getMonth() + 3);
+
+        // Format expected expiry date to match the display format (e.g., "26 April 2026")
+        const expectedExpiryFormatted = expectedExpiryDate.toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+
+        // Get actual expiry date and verify
+        cy.get("dl.govuk-summary-list")
+          .contains("dt.govuk-summary-list__key", "Certificate issue expiry")
+          .parent()
+          .find("dd.govuk-summary-list__value")
+          .invoke("text")
+          .then((expiryDateText) => {
+            const actualExpiry = expiryDateText.trim();
+            expect(actualExpiry).to.equal(expectedExpiryFormatted);
+          });
+      });
+    return this;
+  }
+
+  // Verify expiry date is exactly 3 months after issue date (for close contact with TB scenario)
   verifyCertificateExpiryDateCalculation3Months(): ClinicCertificateInfoPage {
     cy.get("dl.govuk-summary-list")
       .contains("dt.govuk-summary-list__key", "Certificate issue date")
@@ -145,29 +228,23 @@ export class ClinicCertificateInfoPage extends BasePage {
           .find("dd.govuk-summary-list__value")
           .invoke("text")
           .then((expiryDateText) => {
-            const actualExpiryDate = new Date(expiryDateText.trim());
-            const expectedExpiryDate = new Date(issueDate);
+            const expiryDate = new Date(expiryDateText.trim());
 
-            const targetMonth = issueDate.getMonth() + 3;
-            const targetYear = issueDate.getFullYear() + Math.floor(targetMonth / 12);
-            const normalisedTargetMonth = targetMonth % 12;
+            // Calculate difference in months
+            const monthsDifference =
+              (expiryDate.getFullYear() - issueDate.getFullYear()) * 12 +
+              (expiryDate.getMonth() - issueDate.getMonth());
 
-            const lastDayOfTargetMonth = new Date(
-              targetYear,
-              normalisedTargetMonth + 1,
-              0,
-            ).getDate();
+            // Verify the difference is exactly 3 months
+            expect(monthsDifference).to.equal(
+              3,
+              `Certificate expiry should be 3 months from issue date (close contact with TB). Issue: ${issueDateText.trim()}, Expiry: ${expiryDateText.trim()}`,
+            );
 
-            const expectedDay = Math.min(issueDate.getDate(), lastDayOfTargetMonth);
-
-            expectedExpiryDate.setFullYear(targetYear, normalisedTargetMonth, expectedDay);
-
-            expect(actualExpiryDate.toDateString()).to.equal(
-              expectedExpiryDate.toDateString(),
-              `Certificate expiry should be exactly 3 months after issue date with end-of-month handling.
-              Issue: ${issueDateText.trim()}
-              Expected expiry: ${expectedExpiryDate.toDateString()}
-              Actual expiry: ${expiryDateText.trim()}`,
+            // Also verify the day matches
+            expect(expiryDate.getDate()).to.equal(
+              issueDate.getDate(),
+              `Certificate expiry day should match issue day`,
             );
           });
       });

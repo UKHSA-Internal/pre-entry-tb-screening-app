@@ -1,7 +1,13 @@
 // This holds all fields for the Radiological Outcome Confirmation Page
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, ConfirmationHelper, GdsComponentHelper } from "../helpers";
 
 export class RadiologicalOutcomeConfPage extends BasePage {
+  // Compose helper instances
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private confirmation = new ConfirmationHelper();
+
   constructor() {
     super("/radiological-outcome-confirmed");
   }
