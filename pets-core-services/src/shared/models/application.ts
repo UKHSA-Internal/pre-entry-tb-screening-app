@@ -94,7 +94,7 @@ export class Application extends IApplication {
       const oldApplication = await this.getByApplicationId(details.applicationId);
 
       if (!oldApplication) {
-        throw Error("Could not fetch the application with the given applicationId");
+        throw new Error("Could not fetch the application with the given applicationId");
       }
 
       const updatedDetails = {
@@ -115,7 +115,6 @@ export class Application extends IApplication {
       const response = await docClient.send(command);
 
       logger.info({ response }, "Application updated successfully");
-      // TODO: Should the Applicant record also be updated?
 
       return updatedApplication;
     } catch (error) {
