@@ -48,8 +48,8 @@ if (
   process.env.ENVIRONMENT.toLocaleLowerCase() === "local"
 ) {
   runCommand("git update-index --assume-unchanged pets-core-services/openapi-docs.json");
+  runCommand("pnpm rimraf pets-local-infra/cdk.out");
 }
-runCommand("pnpm rimraf pets-local-infra/cdk.out");
 console.log("Removing old containers...");
 runCommand("docker compose down");
 console.log("Old containers removed. Generating swagger file...");
