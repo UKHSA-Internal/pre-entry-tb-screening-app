@@ -4,12 +4,8 @@ import { execSync } from "child_process";
 import { resolve } from "path";
 
 console.log("Defining shell...");
-const isPowerShell =
-  !!process.env.PSModulePath || process.env.ComSpec?.toLowerCase().includes("powershell.exe");
-let shell = "/bin/bash";
-// if (isPowerShell) {
-//   shell = "powershell.exe";
-// }
+const isWindows = process.platform === "win32";
+const shell = isWindows ? "powershell.exe" : "/bin/bash";
 console.log("Shell defined:", shell);
 
 function runCommand(cmd) {
