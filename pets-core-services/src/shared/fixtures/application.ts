@@ -1,6 +1,4 @@
-import { IApplication } from "../models/application";
-
-export const seededApplications: Omit<IApplication, "dateCreated">[] = [
+export const seededApplications = [
   {
     applicationId: "generated-app-id-1",
     clinicId: "Apollo Clinic",

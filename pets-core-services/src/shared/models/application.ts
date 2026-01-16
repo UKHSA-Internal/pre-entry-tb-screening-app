@@ -2,6 +2,7 @@ import { GetCommand, PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
 
 import awsClients from "../clients/aws";
 import { logger } from "../logger";
+import { ApplicationStatus } from "../types/enum";
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
@@ -11,15 +12,32 @@ export abstract class IApplication {
   clinicId: string;
   dateCreated: Date;
   createdBy: string;
+  status: ApplicationStatus;
+  cancellationReason?: string;
+  expiryDate?: Date;
 
   constructor(details: IApplication) {
     this.applicationId = details.applicationId;
     this.clinicId = details.clinicId;
     this.dateCreated = details.dateCreated;
     this.createdBy = details.createdBy;
+    this.status = details.status;
+    this.cancellationReason = details.cancellationReason;
+    this.expiryDate = details.expiryDate;
   }
 }
-export type NewApplication = Omit<IApplication, "dateCreated">;
+
+abstract class ICancelApplication {
+  readonly applicationId: string;
+  cancellationReason: string;
+
+  constructor(details: ICancelApplication) {
+    this.applicationId = details.applicationId;
+    this.cancellationReason = details.cancellationReason;
+  }
+}
+
+export type NewApplication = Omit<IApplication, "dateCreated" | "status">;
 
 export class Application extends IApplication {
   static readonly getPk = (applicationId: string) => `APPLICATION#${applicationId}`;
@@ -48,6 +66,7 @@ export class Application extends IApplication {
       const updatedDetails: IApplication = {
         ...details,
         dateCreated: new Date(),
+        status: ApplicationStatus.inProgress,
       };
       const newApplication = new Application(updatedDetails);
       const dbItem = newApplication.todbItem();
@@ -65,6 +84,41 @@ export class Application extends IApplication {
       return newApplication;
     } catch (error) {
       logger.error(error, "Error creating application");
+      throw error;
+    }
+  }
+
+  static async cancelApplication(details: ICancelApplication) {
+    try {
+      logger.info("Updating Applicaton status");
+      const oldApplication = await this.getByApplicationId(details.applicationId);
+
+      if (!oldApplication) {
+        throw new Error("Could not fetch the application with the given applicationId");
+      }
+
+      const updatedDetails = {
+        ...oldApplication,
+        status: ApplicationStatus.cancelled,
+        cancellationReason: details.cancellationReason,
+      };
+
+      // Create Application class instance to have access to toJson() function
+      const updatedApplication = new Application(updatedDetails);
+
+      const params: PutCommandInput = {
+        TableName: Application.getTableName(),
+        Item: { ...updatedApplication.todbItem() },
+        ConditionExpression: "attribute_exists(pk) AND attribute_exists(sk)",
+      };
+      const command = new PutCommand(params);
+      const response = await docClient.send(command);
+
+      logger.info({ response }, "Application updated successfully");
+
+      return updatedApplication;
+    } catch (error) {
+      logger.error(error, "Error updating application");
       throw error;
     }
   }
@@ -109,6 +163,9 @@ export class Application extends IApplication {
     return {
       applicationId: this.applicationId,
       dateCreated: this.dateCreated,
+      status: this.status,
+      cancellationReason: this.cancellationReason,
+      expiryDate: this.expiryDate,
     };
   }
 }
