@@ -66,7 +66,6 @@ describe("Tests for Application Model", () => {
     await expect(
       Application.cancelApplication({
         applicationId: "Bad0ne",
-        status: ApplicationStatus.cancelled,
         cancellationReason: "IDK",
       }),
     ).rejects.toThrow(Error("Error while getting the application details"));
@@ -81,7 +80,6 @@ describe("Tests for Application Model", () => {
     await expect(
       Application.cancelApplication({
         applicationId: "Bad0ne",
-        status: ApplicationStatus.cancelled,
         cancellationReason: "IDK",
       }),
     ).rejects.toThrow(Error("Could not fetch the application with the given applicationId"));
@@ -132,7 +130,6 @@ describe("Tests for Application Model", () => {
     // Act
     const application = await Application.cancelApplication({
       applicationId,
-      status: ApplicationStatus.cancelled,
       cancellationReason: "not needed",
     });
 
