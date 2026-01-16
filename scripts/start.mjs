@@ -38,13 +38,7 @@ if (
 }
 
 console.log("Starting service...");
-if (
-  !process.env.CI &&
-  !process.env.GITHUB_ACTIONS &&
-  process.env.ENVIRONMENT.toLocaleLowerCase() === "local"
-) {
-  runCommand("git update-index --assume-unchanged pets-core-services/openapi-docs.json");
-}
+runCommand("git update-index --assume-unchanged pets-core-services/openapi-docs.json");
 runCommand("pnpm rimraf pets-local-infra/cdk.out");
 console.log("Removing old containers...");
 runCommand("docker compose down");
