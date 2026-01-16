@@ -3,12 +3,8 @@ import concurrently from "concurrently";
 import { execSync } from "child_process";
 import { resolve } from "path";
 
-const isPowerShell =
-  !!process.env.PSModulePath || process.env.ComSpec?.toLowerCase().includes("powershell.exe");
-let shell = "/bin/bash";
-if (isPowerShell) {
-  shell = "powershell.exe";
-}
+const isWindows = process.platform === "win32";
+const shell = isWindows ? "powershell.exe" : "/bin/bash";
 
 function runCommand(cmd) {
   try {
