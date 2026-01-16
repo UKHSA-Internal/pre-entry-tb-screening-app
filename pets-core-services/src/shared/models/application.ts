@@ -29,12 +29,10 @@ export abstract class IApplication {
 
 abstract class ICancelApplication {
   readonly applicationId: string;
-  status: ApplicationStatus;
   cancellationReason: string;
 
   constructor(details: ICancelApplication) {
     this.applicationId = details.applicationId;
-    this.status = details.status;
     this.cancellationReason = details.cancellationReason;
   }
 }
@@ -101,7 +99,7 @@ export class Application extends IApplication {
 
       const updatedDetails = {
         ...oldApplication,
-        status: details.status,
+        status: ApplicationStatus.cancelled,
         cancellationReason: details.cancellationReason,
       };
 

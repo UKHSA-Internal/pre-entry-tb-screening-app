@@ -1,7 +1,7 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 import { seededApplications } from "../../shared/fixtures/application";
-import { ApplicationStatus } from "../../shared/types/enum";
+import { Application } from "../../shared/models/application";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { CancelApplicationEvent, cancelApplicationHandler } from "./cancel-application";
 
@@ -12,10 +12,9 @@ describe("Test for cancel applicantion handler", () => {
     // Act
     const response = await cancelApplicationHandler({
       ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
       parsedBody: {
-        applicationId: seededApplications[0].applicationId,
-        status: ApplicationStatus.cancelled,
-        cancellationReason: "I don't want it anymore",
+        cancellationReason: "not needed anymore",
       },
     });
 
@@ -25,7 +24,7 @@ describe("Test for cancel applicantion handler", () => {
       applicationId: expect.any(String),
       dateCreated: expect.any(String),
       status: "Cancelled",
-      cancellationReason: "I don't want it anymore",
+      cancellationReason: "not needed anymore",
     });
   });
 
@@ -33,10 +32,13 @@ describe("Test for cancel applicantion handler", () => {
     // Arrange
 
     // Act
-    const response = await cancelApplicationHandler(mockAPIGwEvent);
+    const response = await cancelApplicationHandler({
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+    });
 
     // Assert
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Internal Server Error: Request event missing body",
     });
@@ -46,20 +48,41 @@ describe("Test for cancel applicantion handler", () => {
     // Arrange
     const event = {
       ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
       parsedBody: {
         applicationId: seededApplications[0].applicationId,
-        // status: this is required arg is missing,
-        cancellationReason: "change of plan",
+        // incorrect type
+        cancellationReason: 23,
       },
     };
 
     // Act
-    const response = await cancelApplicationHandler(event as CancelApplicationEvent);
+    const response = await cancelApplicationHandler(event as unknown as CancelApplicationEvent);
 
     // Assert
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Request body data validation failed",
+    });
+  });
+
+  test("Unknown error", async () => {
+    // Arrange
+    vi.spyOn(Application, "cancelApplication").mockRejectedValue(Error("can't cancel"));
+
+    // Act
+    const response = await cancelApplicationHandler({
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+      parsedBody: {
+        cancellationReason: "not needed anymore",
+      },
+    });
+
+    // Assert
+    expect(response.statusCode).toBe(500);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Something went wrong",
     });
   });
 });

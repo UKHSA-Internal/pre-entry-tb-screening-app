@@ -27,12 +27,6 @@ export const CreateApplicationResponseSchema = z.object({
 });
 
 export const CancelApplicationRequestSchema = z.object({
-  applicationId: z.string().openapi({
-    description: "ID of newly created application",
-  }),
-  status: z.nativeEnum(ApplicationStatus).openapi({
-    description: "Application current status",
-  }),
   cancellationReason: z.string().optional().openapi({
     description: "Reason for application cancelling",
   }),
