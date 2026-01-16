@@ -9,13 +9,16 @@ import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPh
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
 import { CheckSputumSampleInfoPage } from "../../support/page-objects/checkSputumSampleInfoPage";
+import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
 import { ChestXrayNotTakenPage } from "../../support/page-objects/chestXrayNotTakenPage";
 import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
 import { ClinicCertificateInfoPage } from "../../support/page-objects/clinicCertificateInfoPage";
+import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { EnterSputumSampleResultsPage } from "../../support/page-objects/enterSputumSampleResultsPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import { SputumCollectionPage } from "../../support/page-objects/sputumCollectionPage";
 import { SputumConfirmationPage } from "../../support/page-objects/sputumConfirmationPage";
 import { SputumDecisionConfirmationPage } from "../../support/page-objects/sputumDecisionConfirmationPage";
@@ -38,10 +41,13 @@ import {
 describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Required, Certificate Issued (3 months)", () => {
   // Page object instances
   const applicantConsentPage = new ApplicantConsentPage();
+  const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
+  const passportInformationPage = new PassportInformationPage();
+  const contactInformationPage = new ContactInformationPage();
   const travelInformationPage = new TravelInformationPage();
   const travelSummaryPage = new TravelSummaryPage();
   const travelConfirmationPage = new TravelConfirmationPage();
@@ -191,25 +197,30 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     // Fill Applicant Details
     applicantDetailsPage.verifyPageLoaded();
 
-    // Fill in applicant details for pregnant adult female
+    // Fill in applicant details
     applicantDetailsPage
       .fillFullName("Amina Johnson")
+      .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
       .selectSex("Female")
       .selectNationality(countryName)
-      .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
-      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
-      .fillPassportExpiryDate(
-        passportExpiryDate.day,
-        passportExpiryDate.month,
-        passportExpiryDate.year,
-      )
+      .submitForm();
+    // Fill in passport details
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName)
+      .fillIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillExpiryDate(passportExpiryDate.day, passportExpiryDate.month, passportExpiryDate.year)
+      .submitForm();
+    // Fill in contact information
+    contactInformationPage.verifyPageLoaded();
+    contactInformationPage
       .fillAddressLine1("Flat 2-3")
       .fillAddressLine2("789 Queen Street")
-      .fillAddressLine3("Airport Residential Area")
       .fillTownOrCity("Accra")
       .fillProvinceOrState("Greater Accra")
-      .selectAddressCountry(countryName)
       .fillPostcode("LS1 3BB")
+      .selectCountry(countryName)
       .submitForm();
 
     // Verify redirection to the Applicant Photo page
@@ -226,6 +237,17 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     cy.url().then((url) => {
       cy.log(`Current URL: ${url}`);
     });
+    // Verify redirection to the Check Photo page
+    cy.url().should("include", "/check-visa-applicant-photo");
+
+    checkPhotoPage.verifyPageLoaded();
+    checkPhotoPage.verifyPageHeadingText();
+    checkPhotoPage.verifyUploadedPhotoDisplayed();
+    checkPhotoPage.verifyFilenameDisplayed();
+    checkPhotoPage.verifyImageLayout();
+    checkPhotoPage.verifyRadioButtonsExist();
+    checkPhotoPage.selectYesAddPhoto();
+    checkPhotoPage.clickContinue();
 
     // Verify redirection to the Applicant Summary page
     cy.url().should("include", "/check-visa-applicant-details");
@@ -319,6 +341,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
       .fillScreeningDate(screeningDate.day, screeningDate.month, screeningDate.year)
       .fillAge(adultAge.toString())
       .selectTbSymptoms("Yes") // Yes symptoms
+      .selectTbSymptomsList(["Other symptoms"])
       .selectPreviousTb("No") // No TB history
       .selectCloseContact("Yes") // Yes close contact
       .selectPregnancyStatus("Yes") // Yes Pregnant
@@ -406,7 +429,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     // Verify redirection to Sputum decision Info Page
     sputumDecisionInfoPage.verifyPageLoaded();
     sputumDecisionInfoPage.verifyAllPageElements();
-    sputumDecisionInfoPage.clickSaveAndContinue();
+    sputumDecisionInfoPage.clickSaveAndContinueButton();
 
     // Verify redirection to Sputum Decision Confirmation Page
     sputumDecisionConfirmationPage
@@ -513,7 +536,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     checkSputumSampleInfoPage.verifyAllSampleInfo(expectedSampleData);
     checkSputumSampleInfoPage.verifyChangeLinksExist();
     checkSputumSampleInfoPage.verifyServiceName();
-    checkSputumSampleInfoPage.clickSaveAndContinue();
+    checkSputumSampleInfoPage.clickSubmitButton();
 
     // Verify Sputum confirmation page
     sputumConfirmationPage.verifyPageLoaded();

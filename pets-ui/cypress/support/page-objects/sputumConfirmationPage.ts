@@ -1,7 +1,13 @@
 //This holds all fields of the Sputum Confirmation Page
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, ConfirmationHelper, GdsComponentHelper } from "../helpers";
 
 export class SputumConfirmationPage extends BasePage {
+  // Compose helper instances
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private confirmation = new ConfirmationHelper();
+
   constructor() {
     super("/sputum-sample-information-confirmed");
   }
@@ -203,6 +209,20 @@ export class SputumConfirmationPage extends BasePage {
   verifyAllInteractiveElements(): SputumConfirmationPage {
     this.verifyContinueButtonEnabled();
     this.verifySearchForAnotherApplicantLink();
+    return this;
+  }
+
+  // Verify service name in header
+  verifyServiceName(): SputumConfirmationPage {
+    cy.get("body").then(($body) => {
+      if ($body.find(".govuk-service-navigation__service-name").length > 0) {
+        cy.get(".govuk-service-navigation__link")
+          .should("be.visible")
+          .and("contain", "Complete UK pre-entry health screening");
+      } else {
+        cy.log("Service name not found in header (expected for landing page)");
+      }
+    });
     return this;
   }
 }

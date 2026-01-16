@@ -1,8 +1,14 @@
 //This holds all fields for the TB Certificate Confirmation Page
 
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, ConfirmationHelper, GdsComponentHelper } from "../helpers";
 
 export class TbCertificateConfirmationPage extends BasePage {
+  // Compose helper instances
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private confirmation = new ConfirmationHelper();
+
   constructor() {
     super("/tb-certificate-confirmation");
   }
@@ -64,7 +70,7 @@ export class TbCertificateConfirmationPage extends BasePage {
   // Verify "What happens next" section
   verifyWhatHappensNextSection(): TbCertificateConfirmationPage {
     cy.contains("h2", "What happens next").should("be.visible");
-    cy.contains("p", "We've sent the certificate information to UKHSA.").should("be.visible");
+    cy.contains("p", "We have sent the certificate information to UKHSA.").should("be.visible");
     return this;
   }
 

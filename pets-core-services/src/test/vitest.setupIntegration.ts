@@ -7,12 +7,8 @@ import { seedDatabase } from "./seed-data";
 import { createQueue, createTable } from "./service-utils";
 
 beforeAll(() => {
-  const isPowerShell =
-    !!process.env.PSModulePath || process.env.ComSpec?.toLowerCase().includes("powershell.exe");
-  let shell = "/bin/bash";
-  if (isPowerShell) {
-    shell = "powershell.exe";
-  }
+  const isWindows = process.platform === "win32";
+  const shell = isWindows ? "powershell.exe" : "/bin/bash";
   execSync("docker compose up -d --wait", { stdio: "inherit", shell });
 });
 

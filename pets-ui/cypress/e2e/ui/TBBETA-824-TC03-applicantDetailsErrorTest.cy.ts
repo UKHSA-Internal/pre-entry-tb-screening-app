@@ -3,6 +3,7 @@ import { loginViaB2C } from "../../support/commands";
 import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
 import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
@@ -14,6 +15,7 @@ describe("Applicant Details Form - Expired Passport Test", () => {
   const applicantConsentPage = new ApplicantConsentPage();
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
+  const passportInformationPage = new PassportInformationPage();
 
   // Define variables to store test data
   let countryCode: string = "";
@@ -71,21 +73,23 @@ describe("Applicant Details Form - Expired Passport Test", () => {
       .selectSex("Female")
       .selectNationality(countryName) // Use country code for form filling
       .fillBirthDate("15", "03", "1985")
-      .fillPassportIssueDate("10", "05", "2015")
-      .fillPassportExpiryDate("10", "05", "2020")
-      .fillAddressLine1("123 High Street")
-      .fillAddressLine2("Apartment 4B")
-      .fillAddressLine3("Downtown")
-      .fillTownOrCity("St. Marten")
-      .fillProvinceOrState("Holestown")
-      .selectAddressCountry(countryName) // Use country code for form filling
-      .fillPostcode("94109")
+      .submitForm();
+
+    // Move to passport information page
+    passportInformationPage.verifyPageLoaded();
+
+    // Fill passport details with expired passport (expiry date in the past)
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName)
+      .fillIssueDate("10", "05", "2015")
+      .fillExpiryDate("10", "05", "2020")
       .submitForm();
 
     // Validate error displayed for EXPIRED passport
-    applicantDetailsPage.validateErrorContainsText("Passport expiry date must be in the future");
-    applicantDetailsPage.validateFormErrors({
-      passportExpiryDate: "Passport expiry date must be in the future",
-    });
+    passportInformationPage.validateErrorSummaryVisible();
+    passportInformationPage.validateExpiryDateFieldError(
+      "Passport expiry date must be in the future",
+    );
   });
 });

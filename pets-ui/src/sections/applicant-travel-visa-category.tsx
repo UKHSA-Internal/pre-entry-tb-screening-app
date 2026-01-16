@@ -1,10 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate, useSearchParams } from "react-router";
 
 import { putTravelDetails } from "@/api/api";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Radio from "@/components/radio/radio";
+import Spinner from "@/components/spinner/spinner";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTravel } from "@/redux/store";
@@ -25,6 +26,7 @@ const ApplicantTravelVisaCategory = () => {
   const dispatch = useAppDispatch();
   const travelData = useAppSelector(selectTravel);
   const applicationData = useAppSelector(selectApplication);
+  const [isLoading, setIsLoading] = useState(false);
 
   const methods = useForm<TravelVisaCategoryData>({ reValidateMode: "onSubmit" });
   const {
@@ -36,6 +38,7 @@ const ApplicantTravelVisaCategory = () => {
     dispatch(setVisaCategory(visaCategoryData.visaCategory));
 
     if (travelData.status === ApplicationStatus.COMPLETE && applicationData.applicationId) {
+      setIsLoading(true);
       try {
         await putTravelDetails(applicationData.applicationId, {
           visaCategory: visaCategoryData.visaCategory,
@@ -76,6 +79,8 @@ const ApplicantTravelVisaCategory = () => {
 
   return (
     <FormProvider {...methods}>
+      {isLoading && <Spinner />}
+
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 

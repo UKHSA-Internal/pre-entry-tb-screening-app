@@ -13,10 +13,12 @@ import { ChestXrayFindingsPage } from "./page-objects/chestXrayFindingsPage";
 import { ChestXrayPage } from "./page-objects/chestXrayQuestionPage";
 import { ChestXraySummaryPage } from "./page-objects/chestXraySummaryPage";
 import { ChestXrayUploadPage } from "./page-objects/chestXrayUploadPage";
+import { ContactInformationPage } from "./page-objects/contactInformationPage";
 import { EnterSputumSampleResultsPage } from "./page-objects/enterSputumSampleResultsPage";
 import { MedicalConfirmationPage } from "./page-objects/medicalConfirmationPage";
 import { MedicalScreeningPage } from "./page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "./page-objects/medicalSummaryPage";
+import { PassportInformationPage } from "./page-objects/passportInformationPage";
 import { SputumCollectionPage } from "./page-objects/sputumCollectionPage";
 import { SputumConfirmationPage } from "./page-objects/sputumConfirmationPage";
 import { SputumQuestionPage } from "./page-objects/sputumQuestionPage";
@@ -37,6 +39,7 @@ export { errorMessages, randomElement, visaType };
 /**
  * Generate a random passport number
  * Format: 2 letters followed by 7 digits
+ * Uses timestamp + random for better uniqueness across test runs
  */
 export function getRandomPassportNumber(): string {
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -44,8 +47,10 @@ export function getRandomPassportNumber(): string {
     letters.charAt(Math.floor(Math.random() * letters.length)) +
     letters.charAt(Math.floor(Math.random() * letters.length));
 
-  // Generate 7 random digits
-  const digits = Math.floor(1000000 + Math.random() * 9000000);
+  // Combine timestamp (last 4 digits) with random 3 digits for uniqueness
+  const timestamp = Date.now().toString().slice(-4);
+  const random = Math.floor(100 + Math.random() * 900).toString();
+  const digits = timestamp + random;
 
   return prefix + digits;
 }
@@ -216,30 +221,47 @@ export function createNewApplicant() {
   applicantSearchPage.clickCreateNewApplicant();
   applicantSearchPage.verifyRedirectionToCreateApplicantPage();
 
-  // Fill Applicant Details
+  // Fill Applicant Details (3-page structure)
   applicantDetailsPage.verifyPageLoaded();
-  applicantDetailsPage.fillCompleteForm({
-    fullName: applicantData.fullName,
-    sex: applicantData.sex,
-    nationality: applicantData.countryName,
-    birthDay: applicantData.birthDay,
-    birthMonth: applicantData.birthMonth,
-    birthYear: applicantData.birthYear,
-    passportIssueDay: applicantData.passportIssueDay,
-    passportIssueMonth: applicantData.passportIssueMonth,
-    passportIssueYear: applicantData.passportIssueYear,
-    passportExpiryDay: applicantData.passportExpiryDay,
-    passportExpiryMonth: applicantData.passportExpiryMonth,
-    passportExpiryYear: applicantData.passportExpiryYear,
-    addressLine1: applicantData.addressLine1,
-    addressLine2: applicantData.addressLine2,
-    addressLine3: applicantData.addressLine3,
-    townOrCity: applicantData.townOrCity,
-    provinceOrState: applicantData.provinceOrState,
-    addressCountry: applicantData.countryName,
-    postcode: applicantData.postcode,
-  });
-  applicantDetailsPage.submitForm();
+
+  // Page 1: Personal details
+  const passportInformationPage = new PassportInformationPage();
+  const contactInformationPage = new ContactInformationPage();
+
+  applicantDetailsPage
+    .fillFullName(applicantData.fullName)
+    .selectSex(applicantData.sex as "Male" | "Female")
+    .selectNationality(applicantData.countryName)
+    .fillBirthDate(applicantData.birthDay, applicantData.birthMonth, applicantData.birthYear)
+    .submitForm();
+
+  // Page 2: Passport information
+  passportInformationPage.verifyPageLoaded();
+  passportInformationPage
+    .fillPassportNumber(applicantData.passportNumber)
+    .selectCountryOfIssue(applicantData.countryName)
+    .fillIssueDate(
+      applicantData.passportIssueDay,
+      applicantData.passportIssueMonth,
+      applicantData.passportIssueYear,
+    )
+    .fillExpiryDate(
+      applicantData.passportExpiryDay,
+      applicantData.passportExpiryMonth,
+      applicantData.passportExpiryYear,
+    )
+    .submitForm();
+
+  // Page 3: Contact information
+  contactInformationPage.verifyPageLoaded();
+  contactInformationPage
+    .fillAddressLine1(applicantData.addressLine1)
+    .fillAddressLine2(applicantData.addressLine2)
+    .fillTownOrCity(applicantData.townOrCity)
+    .fillProvinceOrState(applicantData.provinceOrState)
+    .fillPostcode(applicantData.postcode)
+    .selectCountry(applicantData.countryName)
+    .submitForm();
 
   // Verify redirection to the Applicant Photo page
   cy.url().should("include", "/applicant-photo");
@@ -414,7 +436,7 @@ export function navigateToSputumQuestionPage() {
   // Complete the X-ray findings page
   chestXrayFindingsPage.verifyPageLoaded();
   chestXrayFindingsPage.selectMinorFindings(["1.1 Single fibrous streak or band or scar"]);
-  chestXrayFindingsPage.clickSaveAndContinue();
+  chestXrayFindingsPage.clickContinueButton();
 
   return applicantData;
 }
@@ -492,7 +514,7 @@ export function completeSputumCollectionAndResults() {
 
   // Complete the sputum sample info check page
   checkSputumSampleInfoPage.verifyPageLoaded();
-  checkSputumSampleInfoPage.clickSaveAndContinue();
+  checkSputumSampleInfoPage.clickSubmitButton();
 
   // Complete sputum confirmation
   sputumConfirmationPage.verifyPageLoaded();
