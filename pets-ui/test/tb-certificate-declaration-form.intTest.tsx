@@ -116,8 +116,10 @@ describe("TB Certificate Declaration Page", () => {
 
     await user.click(screen.getByRole("button", { name: "Continue" }));
 
-    expect(
-      screen.getAllByText(`"Physician's notes (optional)" must be 150 words or fewer`),
-    ).toHaveLength(2);
+    await waitFor(() => {
+      expect(
+        screen.getAllByText(`"Physician's notes (optional)" must be 150 words or fewer`),
+      ).toHaveLength(2);
+    });
   });
 });

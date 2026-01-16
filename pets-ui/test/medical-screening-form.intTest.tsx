@@ -197,11 +197,13 @@ describe("MedicalScreeningForm", () => {
 
     await user.click(screen.getByRole("button"));
 
-    expect(
-      screen.getAllByText('"Give further details (optional)" must be 150 words or fewer'),
-    ).toHaveLength(8);
-    expect(
-      screen.getAllByText('"Physical examination notes (optional)" must be 150 words or fewer'),
-    ).toHaveLength(2);
+    await waitFor(() => {
+      expect(
+        screen.getAllByText('"Give further details (optional)" must be 150 words or fewer'),
+      ).toHaveLength(8);
+      expect(
+        screen.getAllByText('"Physical examination notes (optional)" must be 150 words or fewer'),
+      ).toHaveLength(2);
+    });
   });
 });
