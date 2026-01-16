@@ -81,7 +81,6 @@ const MedicalScreeningReview = () => {
       link: `/record-medical-history-tb-symptoms#medical-screening-completion-date`,
       hiddenLabel: "date of medical screening",
     },
-
     {
       key: "Does the visa applicant have pulmonary TB symptoms?",
       value: medicalData.tbSymptoms || "Not provided",
@@ -102,21 +101,6 @@ const MedicalScreeningReview = () => {
       value: medicalData.otherSymptomsDetail || "Not provided",
       link: `/record-medical-history-tb-symptoms#${attributeToComponentId.otherSymptomsDetail}`,
       hiddenLabel: "further details of pulmonary TB symptoms (optional)",
-    },
-    {
-      key: "Medical history for under 11",
-      value:
-        medicalData.underElevenConditions.length > 0
-          ? medicalData.underElevenConditions.join(", ")
-          : "Not provided",
-      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.underElevenConditions}`,
-      hiddenLabel: "medical history for under 11",
-    },
-    {
-      key: "Give further details (optional)",
-      value: medicalData.underElevenConditionsDetail || "Not provided",
-      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.underElevenConditionsDetail}`,
-      hiddenLabel: "further details of medical history for under 11 (optional)",
     },
     {
       key: "Has the visa applicant had pulmonary TB?",
@@ -145,23 +129,46 @@ const MedicalScreeningReview = () => {
         "details of visa applicant's close contact with a person with pulmonary TB in the past year",
     },
     {
-      key: "Is the visa applicant pregnant?",
-      value: medicalData.pregnant || "Not provided",
-      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.pregnant}`,
-      hiddenLabel: "whether the visa applicant is pregnant",
-    },
-    {
-      key: "Does the visa applicant have menstrual periods?",
-      value: medicalData.menstrualPeriods || "Not provided",
-      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.menstrualPeriods}`,
-      hiddenLabel: "whether the visa applicant has menstrual periods",
-    },
-    {
       key: "Physical examination notes (optional)",
       value: medicalData.physicalExamNotes || "Not provided",
       link: `/record-medical-history-tb-symptoms#${attributeToComponentId.physicalExamNotes}`,
       hiddenLabel: "physical examination notes (optional)",
     },
+    ...(typeof applicantAge.ageInYears == "number" && applicantAge.ageInYears < 11
+      ? [
+          {
+            key: "Medical history for under 11",
+            value:
+              medicalData.underElevenConditions.length > 0
+                ? medicalData.underElevenConditions.join(", ")
+                : "Not provided",
+            link: `/medical-history-under-11-years-old#${attributeToComponentId.underElevenConditions}`,
+            hiddenLabel: "medical history for under 11",
+          },
+          {
+            key: "Give further details (optional)",
+            value: medicalData.underElevenConditionsDetail || "Not provided",
+            link: `/medical-history-under-11-years-old#${attributeToComponentId.underElevenConditionsDetail}`,
+            hiddenLabel: "further details of medical history for under 11 (optional)",
+          },
+        ]
+      : []),
+    ...(applicantData.sex == "Female"
+      ? [
+          {
+            key: "Is the visa applicant pregnant?",
+            value: medicalData.pregnant || "Not provided",
+            link: `/medical-history-female#${attributeToComponentId.pregnant}`,
+            hiddenLabel: "whether the visa applicant is pregnant",
+          },
+          {
+            key: "Does the visa applicant have menstrual periods?",
+            value: medicalData.menstrualPeriods || "Not provided",
+            link: `/medical-history-female#${attributeToComponentId.menstrualPeriods}`,
+            hiddenLabel: "whether the visa applicant has menstrual periods",
+          },
+        ]
+      : []),
     {
       key: "Is an X-ray required?",
       value: medicalData.chestXrayTaken,
