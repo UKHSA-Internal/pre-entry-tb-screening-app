@@ -7,9 +7,9 @@ console.log("Defining shell...");
 const isPowerShell =
   !!process.env.PSModulePath || process.env.ComSpec?.toLowerCase().includes("powershell.exe");
 let shell = "/bin/bash";
-if (isPowerShell) {
-  shell = "powershell.exe";
-}
+// if (isPowerShell) {
+//   shell = "powershell.exe";
+// }
 console.log("Shell defined:", shell);
 
 function runCommand(cmd) {
