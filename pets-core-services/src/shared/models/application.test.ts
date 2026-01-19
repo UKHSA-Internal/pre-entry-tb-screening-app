@@ -67,6 +67,7 @@ describe("Tests for Application Model", () => {
       Application.cancelApplication({
         applicationId: "Bad0ne",
         cancellationReason: "IDK",
+        updatedBy: createdBy,
       }),
     ).rejects.toThrow(Error("Error while getting the application details"));
   });
@@ -81,6 +82,7 @@ describe("Tests for Application Model", () => {
       Application.cancelApplication({
         applicationId: "Bad0ne",
         cancellationReason: "IDK",
+        updatedBy: createdBy,
       }),
     ).rejects.toThrow(Error("Could not fetch the application with the given applicationId"));
   });
@@ -114,7 +116,9 @@ describe("Tests for Application Model", () => {
 
   test("Change application status to 'Cancelled'", async () => {
     const dateCreated = "2025-02-07";
-    const applicationId = "test-application-id";
+    vi.useFakeTimers();
+    const expectedDateTime = "2025-03-04";
+    vi.setSystemTime(expectedDateTime);
     ddbMock.on(GetCommand).resolves({
       Item: {
         applicationId,
@@ -131,6 +135,7 @@ describe("Tests for Application Model", () => {
     const application = await Application.cancelApplication({
       applicationId,
       cancellationReason: "not needed",
+      updatedBy: createdBy,
     });
 
     // Assert
@@ -141,14 +146,18 @@ describe("Tests for Application Model", () => {
       dateCreated: new Date("2025-02-07"),
       status: "Cancelled",
       cancellationReason: "not needed",
+      dateUpdated: new Date(expectedDateTime),
+      updatedBy: createdBy,
     });
     // Checking toJson() output
     expect(application.toJson()).toMatchObject({
       applicationId,
-      dateCreated: new Date("2025-02-07"),
+      dateCreated: new Date("2025-02-07").toISOString(),
       status: "Cancelled",
       cancellationReason: "not needed",
       expiryDate: undefined,
+      dateUpdated: new Date(expectedDateTime).toISOString(),
+      updatedBy: createdBy,
     });
   });
 });

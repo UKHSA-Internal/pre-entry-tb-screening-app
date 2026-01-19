@@ -15,6 +15,8 @@ export abstract class IApplication {
   status: ApplicationStatus;
   cancellationReason?: string;
   expiryDate?: Date;
+  dateUpdated?: Date;
+  updatedBy?: string;
 
   constructor(details: IApplication) {
     this.applicationId = details.applicationId;
@@ -24,16 +26,22 @@ export abstract class IApplication {
     this.status = details.status;
     this.cancellationReason = details.cancellationReason;
     this.expiryDate = details.expiryDate;
+    this.dateUpdated = details.dateUpdated;
+    this.updatedBy = details.updatedBy;
   }
 }
 
 abstract class ICancelApplication {
   readonly applicationId: string;
   cancellationReason: string;
+  updatedBy: string;
+  dateUpdated: Date;
 
   constructor(details: ICancelApplication) {
     this.applicationId = details.applicationId;
     this.cancellationReason = details.cancellationReason;
+    this.updatedBy = details.updatedBy;
+    this.dateUpdated = details.dateUpdated;
   }
 }
 
@@ -54,6 +62,8 @@ export class Application extends IApplication {
     const dbItem = {
       ...this,
       dateCreated: this.dateCreated.toISOString(),
+      dateUpdated: this.dateUpdated?.toISOString(),
+      updatedBy: this.updatedBy,
       pk: Application.getPk(this.applicationId),
       sk: Application.sk,
     };
@@ -88,7 +98,7 @@ export class Application extends IApplication {
     }
   }
 
-  static async cancelApplication(details: ICancelApplication) {
+  static async cancelApplication(details: Omit<ICancelApplication, "dateUpdated">) {
     try {
       logger.info("Updating Applicaton status");
       const application = await this.getByApplicationId(details.applicationId);
@@ -101,6 +111,8 @@ export class Application extends IApplication {
         ...application,
         status: ApplicationStatus.cancelled,
         cancellationReason: details.cancellationReason,
+        updatedBy: details.updatedBy,
+        dateUpdated: new Date(),
       };
 
       // Create Application class instance to have access to toJson() function
@@ -162,10 +174,12 @@ export class Application extends IApplication {
   toJson() {
     return {
       applicationId: this.applicationId,
-      dateCreated: this.dateCreated,
+      dateCreated: this.dateCreated.toISOString(),
       status: this.status,
       cancellationReason: this.cancellationReason,
-      expiryDate: this.expiryDate,
+      expiryDate: this.expiryDate?.toISOString(),
+      dateUpdated: this.dateUpdated?.toISOString(),
+      updatedBy: this.updatedBy,
     };
   }
 }

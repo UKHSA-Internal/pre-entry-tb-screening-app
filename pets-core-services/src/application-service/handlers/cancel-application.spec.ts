@@ -23,6 +23,8 @@ describe("Test for cancel applicantion handler", () => {
     expect(JSON.parse(response.body)).toMatchObject({
       applicationId: expect.any(String),
       dateCreated: expect.any(String),
+      dateUpdated: expect.any(String),
+      updatedBy: mockAPIGwEvent.requestContext.authorizer.createdBy,
       status: "Cancelled",
       cancellationReason: "not needed anymore",
     });

@@ -34,9 +34,11 @@ export const cancelApplicationHandler = async (event: CancelApplicationEvent) =>
       });
     }
 
+    const { createdBy } = event.requestContext.authorizer;
     const updatedApplication = await Application.cancelApplication({
       applicationId: applicationId,
       cancellationReason: parsedBody.cancellationReason as string,
+      updatedBy: createdBy,
     });
 
     return createHttpResponse(200, { ...updatedApplication.toJson() });
