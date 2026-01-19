@@ -75,4 +75,31 @@ export class BasePage {
     });
     return this;
   }
+
+  // Test textarea word count
+  fillTextAreaWithTooLongInput(fieldName: string): BasePage {
+    cy.get(`[name="${fieldName}"]`)
+      .closest("div")
+      .should("contain.text", "You have 150 words remaining");
+
+    cy.get(`[name="${fieldName}"]`).clear().type("1");
+    cy.get(`[name="${fieldName}"]`)
+      .closest("div")
+      .should("contain.text", "You have 149 words remaining");
+
+    cy.get(`[name="${fieldName}"]`).clear().type(" 1 2 3 ");
+    cy.get(`[name="${fieldName}"]`)
+      .closest("div")
+      .should("contain.text", "You have 147 words remaining");
+
+    cy.get(`[name="${fieldName}"]`)
+      .clear()
+      .type(
+        "This string is 151 words long a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a",
+      );
+    cy.get(`[name="${fieldName}"]`)
+      .closest("div")
+      .should("contain.text", "You have 1 word too many");
+    return this;
+  }
 }
