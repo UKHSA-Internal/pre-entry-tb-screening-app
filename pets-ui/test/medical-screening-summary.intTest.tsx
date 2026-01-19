@@ -36,11 +36,11 @@ const medicalScreeningState = {
   previousTbDetail: "Details of previous pulmonary TB.",
   tbSymptoms: "Yes",
   tbSymptomsList: ["Cough", "Night sweats"],
-  underElevenConditions: ["Not applicable - applicant is aged 11 or over"],
-  underElevenConditionsDetail: "",
+  underElevenConditions: ["U11 condition 1", "U11 condition 2"],
+  underElevenConditionsDetail: "U11 medical history details",
   chestXrayTaken: YesOrNo.YES,
   reasonXrayNotRequired: "",
-  completionDate: { year: "2025", month: "5", day: "31" },
+  completionDate: { year: "2025", month: "1", day: "1" },
 };
 
 const applicationState = { applicationId: "abc-123", dateCreated: "" };
@@ -48,7 +48,7 @@ const applicationState = { applicationId: "abc-123", dateCreated: "" };
 const applicantState = {
   status: ApplicationStatus.COMPLETE,
   fullName: "Full Name",
-  sex: "",
+  sex: "Male",
   dateOfBirth: { year: "1979", month: "10", day: "20" },
   countryOfNationality: "",
   passportNumber: "0987",
@@ -62,6 +62,17 @@ const applicantState = {
   provinceOrState: "",
   country: "",
   postcode: "",
+};
+
+const femaleApplicantState = { ...applicantState, sex: "Female" };
+const maleU11ApplicantState = {
+  ...applicantState,
+  dateOfBirth: { year: "2015", month: "1", day: "1" },
+};
+const femaleU11ApplicantState = {
+  ...applicantState,
+  sex: "Female",
+  dateOfBirth: { year: "2015", month: "1", day: "1" },
 };
 
 const tbCertificateState = {
@@ -98,65 +109,118 @@ describe("MedicalScreeningReview", () => {
   beforeEach(() => {
     mock = new MockAdapter(petsApi);
     useNavigateMock.mockClear();
+    vi.setSystemTime("2025-01-31T00:00:00Z");
   });
   afterEach(() => {
     vi.useRealTimers();
   });
 
-  test("state is displayed correctly & user is navigated to confirmation page when medical details are posted successfully", async () => {
-    vi.setSystemTime("2030-01-31T00:00:00Z");
-    renderWithProviders(<MedicalScreeningReview />, { preloadedState });
+  test("state is displayed correctly with all u11/female fields & user is navigated to confirmation page when medical details are posted successfully", async () => {
+    const femaleU11PreloadedState = {
+      ...preloadedState,
+      applicant: { ...femaleU11ApplicantState },
+    };
+
+    renderWithProviders(<MedicalScreeningReview />, { preloadedState: femaleU11PreloadedState });
     const user = userEvent.setup();
 
     mock.onPost("/application/abc-123/medical-screening").reply(200);
 
-    expect(screen.getAllByRole("term")[0]).toHaveTextContent("Age");
-    expect(screen.getAllByRole("definition")[0]).toHaveTextContent("50");
-    expect(screen.getAllByRole("term")[1]).toHaveTextContent("Date of medical screening");
-    expect(screen.getAllByRole("definition")[1]).toHaveTextContent("31 May 2025");
-    expect(screen.getAllByRole("term")[2]).toHaveTextContent(
+    const terms = screen.getAllByRole("term");
+    const termTexts = [...terms].map((term) => term.textContent?.trim() ?? "");
+
+    expect(termTexts).toEqual([
+      "Age",
+      "Date of medical screening",
       "Does the visa applicant have pulmonary TB symptoms?",
-    );
-    expect(screen.getAllByRole("definition")[3]).toHaveTextContent("Yes");
-    expect(screen.getAllByRole("term")[3]).toHaveTextContent("If yes, which pulmonary TB symptoms");
-    expect(screen.getAllByRole("definition")[5]).toHaveTextContent("Cough, Night sweats");
-    expect(screen.getAllByRole("term")[4]).toHaveTextContent("Give further details (optional)");
-    expect(screen.getAllByRole("definition")[7]).toHaveTextContent("Not provided");
-    expect(screen.getAllByRole("term")[5]).toHaveTextContent("Medical history for under 11");
-    expect(screen.getAllByRole("definition")[9]).toHaveTextContent(
-      "Not applicable - applicant is aged 11 or over",
-    );
-    expect(screen.getAllByRole("term")[6]).toHaveTextContent("Give further details (optional)");
-    expect(screen.getAllByRole("definition")[11]).toHaveTextContent("Not provided");
-    expect(screen.getAllByRole("term")[7]).toHaveTextContent(
+      "If yes, which pulmonary TB symptoms",
+      "Give further details (optional)",
       "Has the visa applicant had pulmonary TB?",
-    );
-    expect(screen.getAllByRole("definition")[13]).toHaveTextContent("Yes");
-    expect(screen.getAllByRole("term")[8]).toHaveTextContent("If yes, give details (optional)");
-    expect(screen.getAllByRole("definition")[15]).toHaveTextContent(
-      "Details of previous pulmonary TB.",
-    );
-    expect(screen.getAllByRole("term")[9]).toHaveTextContent(
+      "If yes, give details (optional)",
       "Has the visa applicant had close contact with a person with active pulmonary TB in the past year?",
-    );
-    expect(screen.getAllByRole("definition")[19]).toHaveTextContent("Not provided");
-    expect(screen.getAllByRole("term")[10]).toHaveTextContent("If yes, give details");
-    expect(screen.getAllByRole("term")[11]).toHaveTextContent("Is the visa applicant pregnant?");
-    expect(screen.getAllByRole("definition")[21]).toHaveTextContent("Do not know");
-    expect(screen.getAllByRole("term")[12]).toHaveTextContent(
+      "If yes, give details",
+      "Physical examination notes (optional)",
+      "Medical history for under 11",
+      "Give further details (optional)",
+      "Is the visa applicant pregnant?",
       "Does the visa applicant have menstrual periods?",
-    );
-    expect(screen.getAllByRole("definition")[23]).toHaveTextContent("No");
-    expect(screen.getAllByRole("term")[13]).toHaveTextContent("Physical examination notes");
-    expect(screen.getAllByRole("definition")[25]).toHaveTextContent(
+      "Is an X-ray required?",
+    ]);
+
+    const definitions = screen.getAllByRole("definition");
+    const definitionTexts = [...definitions].map((term) => term.textContent?.trim() ?? "");
+
+    expect(definitionTexts).toEqual([
+      "10 years old",
+      "1 January 2025",
+      "Change date of medical screening",
+      "Yes",
+      "Change whether the visa applicant has pulmonary TB symptoms",
+      "Cough, Night sweats",
+      "Change pulmonary TB symptoms",
+      "Not provided",
+      "Change further details of pulmonary TB symptoms (optional)",
+      "Yes",
+      "Change whether the visa applicant has had pulmonary TB",
+      "Details of previous pulmonary TB.",
+      "Change details of visa applicant's previous pulmonary TB",
+      "No",
+      "Change whether the visa applicant has had close contact with active pulmonary TB in the past year",
+      "Not provided",
+      "Change details of visa applicant's close contact with a person with pulmonary TB in the past year",
       "Details of physical examination.",
-    );
+      "Change physical examination notes (optional)",
+      "U11 condition 1, U11 condition 2",
+      "Change medical history for under 11",
+      "U11 medical history details",
+      "Change further details of medical history for under 11 (optional)",
+      "Do not know",
+      "Change whether the visa applicant is pregnant",
+      "No",
+      "Change whether the visa applicant has menstrual periods",
+      "Yes",
+      "Change whether an X-ray is required",
+    ]);
 
     await user.click(screen.getByRole("button"));
 
     expect(mock.history[0].url).toEqual("/application/abc-123/medical-screening");
     expect(mock.history).toHaveLength(1);
     expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-symptoms-medical-history-confirmed");
+  });
+
+  test("only relevant fields are shown for under 11 male applicant", () => {
+    const maleU11PreloadedState = {
+      ...preloadedState,
+      applicant: { ...maleU11ApplicantState },
+    };
+
+    renderWithProviders(<MedicalScreeningReview />, { preloadedState: maleU11PreloadedState });
+
+    expect(screen.queryByText("Medical history for under 11")).toBeTruthy();
+    expect(screen.queryByText("Is the visa applicant pregnant?")).toBeNull();
+    expect(screen.queryByText("Does the visa applicant have menstrual periods?")).toBeNull();
+  });
+
+  test("only relevant fields are shown for over 11 female applicant", () => {
+    const femalePreloadedState = {
+      ...preloadedState,
+      applicant: { ...femaleApplicantState },
+    };
+
+    renderWithProviders(<MedicalScreeningReview />, { preloadedState: femalePreloadedState });
+
+    expect(screen.queryByText("Medical history for under 11")).toBeNull();
+    expect(screen.queryByText("Is the visa applicant pregnant?")).toBeTruthy();
+    expect(screen.queryByText("Does the visa applicant have menstrual periods?")).toBeTruthy();
+  });
+
+  test("only relevant fields are shown for over 11 male applicant", () => {
+    renderWithProviders(<MedicalScreeningReview />, { preloadedState });
+
+    expect(screen.queryByText("Medical history for under 11")).toBeNull();
+    expect(screen.queryByText("Is the visa applicant pregnant?")).toBeNull();
+    expect(screen.queryByText("Does the visa applicant have menstrual periods?")).toBeNull();
   });
 
   test("user is navigated to error page when api call is unsuccessful", async () => {
@@ -203,7 +267,7 @@ describe("MedicalScreeningReview", () => {
     expect(link).toHaveClass("govuk-back-link");
   });
 
-  test("back link points to medical screening form page status is not complete", () => {
+  test("back link points to cxr question page when status is not complete", () => {
     const preloadedState = {
       medicalScreening: {
         status: ApplicationStatus.IN_PROGRESS,
