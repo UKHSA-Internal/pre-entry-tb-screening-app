@@ -46,7 +46,7 @@ describe("Tests for Application Model", () => {
       Item: {
         clinicId,
         createdBy,
-        status: "In progress",
+        status: "In Progress",
         pk: "APPLICATION#test-application-id",
         sk: "APPLICATION#ROOT",
       },

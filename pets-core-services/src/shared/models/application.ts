@@ -91,14 +91,14 @@ export class Application extends IApplication {
   static async cancelApplication(details: ICancelApplication) {
     try {
       logger.info("Updating Applicaton status");
-      const oldApplication = await this.getByApplicationId(details.applicationId);
+      const application = await this.getByApplicationId(details.applicationId);
 
-      if (!oldApplication) {
+      if (!application) {
         throw new Error("Could not fetch the application with the given applicationId");
       }
 
       const updatedDetails = {
-        ...oldApplication,
+        ...application,
         status: ApplicationStatus.cancelled,
         cancellationReason: details.cancellationReason,
       };

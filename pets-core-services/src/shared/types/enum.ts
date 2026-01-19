@@ -4,8 +4,8 @@ export enum TaskStatus {
 }
 
 export enum ApplicationStatus {
-  inProgress = "In progress",
-  certificateNotIssued = "Certifitae no issued",
+  inProgress = "In Progress",
+  certificateNotIssued = "Certificate Not Issued",
   certificateAvailable = "Certificate Available",
   cancelled = "Cancelled",
 }

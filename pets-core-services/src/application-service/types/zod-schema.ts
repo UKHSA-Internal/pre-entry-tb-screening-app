@@ -455,7 +455,7 @@ export const ApplicationSchema = z.object({
   cancellationReason: z.string().optional().openapi({
     description: "Reason for application cancelling",
   }),
-  expiryDate: z.date().openapi({
+  expiryDate: z.date().optional().openapi({
     description: "The date when the certificate expires",
   }),
   applicantPhotoUrl: z.string().openapi({
