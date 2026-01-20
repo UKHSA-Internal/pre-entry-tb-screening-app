@@ -1,5 +1,6 @@
 // This holds all fields for the Enter Sputum Sample Results Page
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, ErrorHelper, FormHelper, GdsComponentHelper } from "../helpers";
 
 // Type safety for sputum result values
 export type SputumResult = "Negative" | "Positive" | "Inconclusive";
@@ -18,6 +19,12 @@ export interface AllSampleResultsData {
 }
 
 export class EnterSputumSampleResultsPage extends BasePage {
+  // Compose helper instances
+  private form = new FormHelper();
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private error = new ErrorHelper();
+
   constructor() {
     super("/sputum-results");
   }
@@ -70,7 +77,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
 
   // Page verification
   verifyPageLoaded(): EnterSputumSampleResultsPage {
-    super.verifyPageHeading("Sputum results");
+    this.gds.verifyPageHeading("Sputum results");
     this.verifyFormVisible();
     return this;
   }
@@ -371,7 +378,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
 
   // Specific field error validation methods with custom messages
   validateSample1SmearResultError(expectedMessage?: string): EnterSputumSampleResultsPage {
-    this.validateFieldError(
+    this.error.validateFieldError(
       "sample1-smear-result",
       expectedMessage || "Select result of smear test",
     );
@@ -379,7 +386,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
   }
 
   validateSample1CultureResultError(expectedMessage?: string): EnterSputumSampleResultsPage {
-    this.validateFieldError(
+    this.error.validateFieldError(
       "sample1-culture-result",
       expectedMessage || "Select result of culture test",
     );
@@ -387,7 +394,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
   }
 
   validateSample2SmearResultError(expectedMessage?: string): EnterSputumSampleResultsPage {
-    this.validateFieldError(
+    this.error.validateFieldError(
       "sample2-smear-result",
       expectedMessage || "Select result of smear test",
     );
@@ -395,7 +402,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
   }
 
   validateSample2CultureResultError(expectedMessage?: string): EnterSputumSampleResultsPage {
-    this.validateFieldError(
+    this.error.validateFieldError(
       "sample2-culture-result",
       expectedMessage || "Select result of culture test",
     );
@@ -403,7 +410,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
   }
 
   validateSample3SmearResultError(expectedMessage?: string): EnterSputumSampleResultsPage {
-    this.validateFieldError(
+    this.error.validateFieldError(
       "sample3-smear-result",
       expectedMessage || "Select result of smear test",
     );
@@ -411,7 +418,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
   }
 
   validateSample3CultureResultError(expectedMessage?: string): EnterSputumSampleResultsPage {
-    this.validateFieldError(
+    this.error.validateFieldError(
       "sample3-culture-result",
       expectedMessage || "Select result of culture test",
     );
@@ -425,7 +432,7 @@ export class EnterSputumSampleResultsPage extends BasePage {
   ): EnterSputumSampleResultsPage {
     const fieldId = `sample${sampleNumber}-${fieldType}-result`;
     const expectedMessage = `Select a ${fieldType} result for sample ${sampleNumber}`;
-    this.validateFieldError(fieldId, expectedMessage);
+    this.error.validateFieldError(fieldId, expectedMessage);
     return this;
   }
 

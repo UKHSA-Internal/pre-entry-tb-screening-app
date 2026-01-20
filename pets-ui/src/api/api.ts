@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 
 import { acquireTokenSilently } from "@/auth/auth";
 import {
@@ -19,6 +19,7 @@ import {
   ReceivedApplicantDetailsType,
   ReceivedApplicationDetailsType,
 } from "@/types";
+import { sendGoogleAnalyticsHttpError } from "@/utils/google-analytics-utils";
 
 export const petsApi = axios.create({
   baseURL: "/api",
@@ -39,6 +40,34 @@ petsApi.interceptors.request.use(async (config) => {
 
   return config;
 });
+
+petsApi.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    if (import.meta.env.VITE_AZURE_SKIP_TOKEN_ACQUISITION === "true") {
+      return Promise.reject(error);
+    }
+
+    if (error.response) {
+      const status = error.response.status;
+      const url = error.config?.url ?? "unknown_url";
+      if (status === 404 || status >= 500) {
+        sendGoogleAnalyticsHttpError(status, url);
+      }
+    } else {
+      const url = error.config?.url ?? "unknown_url";
+      sendGoogleAnalyticsHttpError(0, url);
+    }
+
+    if (error.response?.status === 404) {
+      globalThis.location.href = "/page-not-found";
+    } else if (error.response?.status && error.response.status >= 400) {
+      globalThis.location.href = "/sorry-there-is-problem-with-service";
+    }
+
+    return Promise.reject(error);
+  },
+);
 
 export const getApplicants = async (passportDetails: ApplicantSearchFormType) => {
   const result = await petsApi.get("/applicant/search", {

@@ -1,5 +1,6 @@
 // This holds all fields of the TB Certificate Not Issued Form Page
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, ErrorHelper, FormHelper, GdsComponentHelper } from "../helpers";
 
 // Types for TB certificate not issued form
 interface TbCertificateNotIssuedDetails {
@@ -19,6 +20,12 @@ interface TbCertificateNotIssuedErrors {
 }
 
 export class TbCertificateNotIssuedFormPage extends BasePage {
+  // Compose helper instances
+  private form = new FormHelper();
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private error = new ErrorHelper();
+
   constructor() {
     super("/tb-certificate-not-issued");
   }
@@ -218,18 +225,18 @@ export class TbCertificateNotIssuedFormPage extends BasePage {
     expectedErrorMessages: TbCertificateNotIssuedErrors,
   ): TbCertificateNotIssuedFormPage {
     if (expectedErrorMessages.reasonNotIssued) {
-      this.validateFieldError("reason-not-issued", expectedErrorMessages.reasonNotIssued);
+      this.error.validateFieldError("reason-not-issued", expectedErrorMessages.reasonNotIssued);
     }
 
     if (expectedErrorMessages.declaringPhysicianName) {
-      this.validateFieldError(
+      this.error.validateFieldError(
         "declaring-physician-name",
         expectedErrorMessages.declaringPhysicianName,
       );
     }
 
     if (expectedErrorMessages.physicianComments) {
-      this.validateFieldError("physician-comments", expectedErrorMessages.physicianComments);
+      this.error.validateFieldError("physician-comments", expectedErrorMessages.physicianComments);
     }
 
     return this;
@@ -238,7 +245,7 @@ export class TbCertificateNotIssuedFormPage extends BasePage {
   // Verify form validation when submitting empty form
   verifyFormValidationForEmptyForm(): TbCertificateNotIssuedFormPage {
     this.clickContinue();
-    this.validateErrorSummaryVisible();
+    this.error.validateErrorSummaryVisible();
     return this;
   }
 

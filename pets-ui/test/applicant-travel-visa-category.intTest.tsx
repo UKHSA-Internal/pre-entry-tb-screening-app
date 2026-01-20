@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Mock } from "vitest";
 
@@ -38,11 +38,9 @@ describe("ApplicantTravelForm", () => {
 
     const user = userEvent.setup();
 
-    fireEvent.change(screen.getAllByRole("combobox")[0], {
-      target: { value: "Family reunion" },
-    });
+    await user.click(screen.getByRole("radio", { name: "Family reunion" }));
 
-    expect(screen.getAllByRole("combobox")[0]).toHaveValue("Family reunion");
+    expect(screen.getByRole("radio", { name: "Family reunion" })).toBeChecked();
 
     await user.click(screen.getAllByRole("button")[0]);
 
@@ -68,7 +66,7 @@ describe("ApplicantTravelForm", () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getAllByText("Error: Select visa category".slice(7))).toHaveLength(3);
+      expect(screen.getAllByText("Error: Select visa category".slice(7))).toHaveLength(2);
       expect(screen.getAllByText("Error: Select visa category".slice(7))[0]).toHaveAttribute(
         "aria-label",
         "Error: Select visa category",
@@ -141,7 +139,7 @@ describe("ApplicantTravelForm", () => {
       preloadedState: completeState,
     });
 
-    fireEvent.change(screen.getByRole("combobox"), { target: { value: "Family reunion" } });
+    await user.click(screen.getByRole("radio", { name: "Family reunion" }));
     await user.click(screen.getByRole("button"));
 
     await waitFor(() => {
@@ -170,7 +168,7 @@ describe("ApplicantTravelForm", () => {
     };
     renderWithProviders(<ApplicantTravelVisaCategory />, { preloadedState: completeState });
 
-    fireEvent.change(screen.getByRole("combobox"), { target: { value: "Family reunion" } });
+    await user.click(screen.getByRole("radio", { name: "Family reunion" }));
     await user.click(screen.getByRole("button"));
 
     await waitFor(() => {

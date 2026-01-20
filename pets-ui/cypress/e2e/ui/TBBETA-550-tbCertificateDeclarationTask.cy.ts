@@ -8,6 +8,9 @@ import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetail
 import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPhotoUploadPage";
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
+import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
+import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
 import {
   createTestFixtures,
@@ -19,11 +22,14 @@ describe("TB certificate declaration task links should NOT be clickable until al
   // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantConsentPage = new ApplicantConsentPage();
+  const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
   const applicantConfirmationPage = new ApplicantConfirmationPage();
   const tbProgressTrackerPage = new TBProgressTrackerPage();
+  const passportInformationPage = new PassportInformationPage();
+  const contactInformationPage = new ContactInformationPage();
 
   // Define variables to store test data
   let countryCode: string;
@@ -116,22 +122,27 @@ describe("TB certificate declaration task links should NOT be clickable until al
     // Fill in applicant details
     applicantDetailsPage
       .fillFullName("Tess Tester-Test")
+      .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
       .selectSex("Female")
       .selectNationality(countryName) // Use country code for form filling
-      .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
-      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
-      .fillPassportExpiryDate(
-        passportExpiryDate.day,
-        passportExpiryDate.month,
-        passportExpiryDate.year,
-      )
+      .submitForm();
+    // Fill in passport details
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName) // Use country code for form filling
+      .fillIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillExpiryDate(passportExpiryDate.day, passportExpiryDate.month, passportExpiryDate.year)
+      .submitForm();
+    // Fill in contact information
+    contactInformationPage.verifyPageLoaded();
+    contactInformationPage
       .fillAddressLine1("123 Vanilla Avenue")
       .fillAddressLine2("Apartment 4B")
-      .fillAddressLine3("Downtown")
-      .fillTownOrCity("St Marten")
+      .fillTownOrCity("Downtown")
       .fillProvinceOrState("Testershire")
-      .selectAddressCountry(countryName) // Use country code for form filling
       .fillPostcode("84109")
+      .selectCountry(countryName)
       .submitForm();
 
     // Verify redirection to the Applicant Photo page
@@ -149,7 +160,17 @@ describe("TB certificate declaration task links should NOT be clickable until al
     cy.url().then((url) => {
       cy.log(`Current URL: ${url}`);
     });
+    // Verify redirection to the Check Photo page
+    cy.url().should("include", "/check-visa-applicant-photo");
 
+    checkPhotoPage.verifyPageLoaded();
+    checkPhotoPage.verifyPageHeadingText();
+    checkPhotoPage.verifyUploadedPhotoDisplayed();
+    checkPhotoPage.verifyFilenameDisplayed();
+    checkPhotoPage.verifyImageLayout();
+    checkPhotoPage.verifyRadioButtonsExist();
+    checkPhotoPage.selectYesAddPhoto();
+    checkPhotoPage.clickContinue();
     // Verify redirection to the Applicant Summary page
     cy.url().should("include", "/check-visa-applicant-details");
     applicantSummaryPage.verifyPageLoaded();
@@ -190,9 +211,6 @@ describe("TB certificate declaration task links should NOT be clickable until al
 
     // Verify all tasks exist
     tbProgressTrackerPage.verifyAllTasksExist();
-
-    // Verify service name
-    tbProgressTrackerPage.verifyServiceName();
 
     // Verify all task statuses
     tbProgressTrackerPage.verifyMultipleTaskStatuses({

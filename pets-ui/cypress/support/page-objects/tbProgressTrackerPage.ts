@@ -1,5 +1,6 @@
 // This holds all fields for the TB Progress Tracker Page
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, GdsComponentHelper, SummaryHelper } from "../helpers";
 
 // Type safety for task statuses
 type TaskStatus =
@@ -32,8 +33,19 @@ interface TaskStatuses {
 }
 
 export class TBProgressTrackerPage extends BasePage {
+  // Compose helper instances
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private summary = new SummaryHelper();
+
   constructor() {
     super("/tracker");
+  }
+
+  // Override to maintain return type
+  verifyServiceName(): TBProgressTrackerPage {
+    super.verifyServiceName();
+    return this;
   }
 
   // Verify page loaded with correct heading
@@ -51,7 +63,7 @@ export class TBProgressTrackerPage extends BasePage {
   verifyApplicantInfo(expectedValues: ApplicantInfo): TBProgressTrackerPage {
     (Object.entries(expectedValues) as [keyof ApplicantInfo, string][]).forEach(([key, value]) => {
       if (value !== undefined) {
-        this.verifySummaryValue(key, value);
+        this.summary.verifySummaryValue(key, value);
       }
     });
     return this;
@@ -140,7 +152,7 @@ export class TBProgressTrackerPage extends BasePage {
 
   // Verify TB screening status shows specified value in header - DYNAMIC
   verifyTBScreeningStatus(expectedStatus: string): TBProgressTrackerPage {
-    this.verifySummaryValue("TB screening", expectedStatus);
+    this.summary.verifySummaryValue("TB screening", expectedStatus);
     return this;
   }
 

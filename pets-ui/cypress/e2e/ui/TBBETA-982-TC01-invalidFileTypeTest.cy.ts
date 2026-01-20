@@ -4,6 +4,8 @@ import { ApplicantConsentPage } from "../../support/page-objects/applicantConsen
 import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
 import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPhotoUploadPage";
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
@@ -16,6 +18,8 @@ describe("Applicant Details Form - Invalid File Type Test", () => {
   const applicantConsentPage = new ApplicantConsentPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
+  const passportInformationPage = new PassportInformationPage();
+  const contactInformationPage = new ContactInformationPage();
 
   // Define variables to store test data
   let countryCode: string = "";
@@ -63,21 +67,32 @@ describe("Applicant Details Form - Invalid File Type Test", () => {
     // Fill Applicant Details
     applicantDetailsPage.verifyPageLoaded();
 
-    // Fill in applicant details
+    // Fill in applicant personal details
     applicantDetailsPage
       .fillFullName("Jan Hailes")
       .selectSex("Female")
       .selectNationality(countryName)
       .fillBirthDate("01", "01", "2000")
-      .fillPassportIssueDate("15", "08", "2020")
-      .fillPassportExpiryDate("15", "08", "2040")
+      .submitForm();
+
+    // Fill in passport details
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName)
+      .fillIssueDate("15", "08", "2020")
+      .fillExpiryDate("15", "08", "2040")
+      .submitForm();
+
+    // Fill in contact information
+    contactInformationPage.verifyPageLoaded();
+    contactInformationPage
       .fillAddressLine1("789 Main Street")
       .fillAddressLine2("Suite 101")
-      .fillAddressLine3("Stanbic Heights")
       .fillTownOrCity("Hallstatt")
       .fillProvinceOrState("Hallstatt")
-      .selectAddressCountry(countryName)
       .fillPostcode("84209")
+      .selectCountry(countryName)
       .submitForm();
 
     // Verify redirection to the Applicant Photo page
