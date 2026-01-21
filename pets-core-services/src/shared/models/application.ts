@@ -2,6 +2,7 @@ import { GetCommand, PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
 
 import awsClients from "../clients/aws";
 import { logger } from "../logger";
+import { ApplicationStatus } from "../types/enum";
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
@@ -11,15 +12,40 @@ export abstract class IApplication {
   clinicId: string;
   dateCreated: Date;
   createdBy: string;
+  status: ApplicationStatus;
+  cancellationReason?: string;
+  expiryDate?: Date;
+  dateUpdated?: Date;
+  updatedBy?: string;
 
   constructor(details: IApplication) {
     this.applicationId = details.applicationId;
     this.clinicId = details.clinicId;
     this.dateCreated = details.dateCreated;
     this.createdBy = details.createdBy;
+    this.status = details.status;
+    this.cancellationReason = details.cancellationReason;
+    this.expiryDate = details.expiryDate;
+    this.dateUpdated = details.dateUpdated;
+    this.updatedBy = details.updatedBy;
   }
 }
-export type NewApplication = Omit<IApplication, "dateCreated">;
+
+abstract class ICancelApplication {
+  readonly applicationId: string;
+  cancellationReason: string;
+  updatedBy: string;
+  dateUpdated: Date;
+
+  constructor(details: ICancelApplication) {
+    this.applicationId = details.applicationId;
+    this.cancellationReason = details.cancellationReason;
+    this.updatedBy = details.updatedBy;
+    this.dateUpdated = details.dateUpdated;
+  }
+}
+
+export type NewApplication = Omit<IApplication, "dateCreated" | "status">;
 
 export class Application extends IApplication {
   static readonly getPk = (applicationId: string) => `APPLICATION#${applicationId}`;
@@ -36,6 +62,8 @@ export class Application extends IApplication {
     const dbItem = {
       ...this,
       dateCreated: this.dateCreated.toISOString(),
+      dateUpdated: this.dateUpdated?.toISOString(),
+      updatedBy: this.updatedBy,
       pk: Application.getPk(this.applicationId),
       sk: Application.sk,
     };
@@ -48,6 +76,7 @@ export class Application extends IApplication {
       const updatedDetails: IApplication = {
         ...details,
         dateCreated: new Date(),
+        status: ApplicationStatus.inProgress,
       };
       const newApplication = new Application(updatedDetails);
       const dbItem = newApplication.todbItem();
@@ -65,6 +94,43 @@ export class Application extends IApplication {
       return newApplication;
     } catch (error) {
       logger.error(error, "Error creating application");
+      throw error;
+    }
+  }
+
+  static async cancelApplication(details: Omit<ICancelApplication, "dateUpdated">) {
+    try {
+      logger.info("Updating Applicaton status");
+      const application = await this.getByApplicationId(details.applicationId);
+
+      if (!application) {
+        throw new Error("Could not fetch the application with the given applicationId");
+      }
+
+      const updatedDetails = {
+        ...application,
+        status: ApplicationStatus.cancelled,
+        cancellationReason: details.cancellationReason,
+        updatedBy: details.updatedBy,
+        dateUpdated: new Date(),
+      };
+
+      // Create Application class instance to have access to toJson() function
+      const updatedApplication = new Application(updatedDetails);
+
+      const params: PutCommandInput = {
+        TableName: Application.getTableName(),
+        Item: { ...updatedApplication.todbItem() },
+        ConditionExpression: "attribute_exists(pk) AND attribute_exists(sk)",
+      };
+      const command = new PutCommand(params);
+      const response = await docClient.send(command);
+
+      logger.info({ response }, "Application updated successfully");
+
+      return updatedApplication;
+    } catch (error) {
+      logger.error(error, "Error updating application");
       throw error;
     }
   }
@@ -108,7 +174,12 @@ export class Application extends IApplication {
   toJson() {
     return {
       applicationId: this.applicationId,
-      dateCreated: this.dateCreated,
+      dateCreated: this.dateCreated.toISOString(),
+      status: this.status,
+      cancellationReason: this.cancellationReason,
+      expiryDate: this.expiryDate?.toISOString(),
+      dateUpdated: this.dateUpdated?.toISOString(),
+      updatedBy: this.updatedBy,
     };
   }
 }
