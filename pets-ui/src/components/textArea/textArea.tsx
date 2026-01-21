@@ -82,7 +82,7 @@ export default function TextArea(props: Readonly<TextAreaProps>) {
         defaultValue={props.defaultValue ?? ""}
         style={maxWordCount ? { margin: 0 } : {}}
       />
-      {maxWordCount && (
+      {maxWordCount > 0 && (
         <div style={{ margin: 0, padding: 0 }}>
           <div
             id="word-count-info"
