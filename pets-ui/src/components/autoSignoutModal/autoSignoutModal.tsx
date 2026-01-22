@@ -3,15 +3,18 @@ import "./autoSignoutModal.scss";
 import { useMsal } from "@azure/msal-react";
 import { useState } from "react";
 import { useIdleTimer } from "react-idle-timer";
+import { useNavigate } from "react-router";
 
 import { ButtonClass } from "@/utils/enums";
+import { setGoogleAnalyticsParams } from "@/utils/google-analytics-utils";
 
 import Button from "../button/button";
 import Heading from "../heading/heading";
 import LinkLabel from "../linkLabel/LinkLabel";
 
 export default function AutoSignoutModal() {
-  const { accounts } = useMsal();
+  const navigate = useNavigate();
+  const { accounts, instance } = useMsal();
   const [showModal, setShowModal] = useState(false);
 
   useIdleTimer({
@@ -24,6 +27,21 @@ export default function AutoSignoutModal() {
       }
     },
   });
+
+  const handleSignOut = () => {
+    setGoogleAnalyticsParams("user_properties", {
+      user_role: undefined,
+      clinic_id: undefined,
+    });
+    instance
+      .logoutRedirect({
+        postLogoutRedirectUri: "/you-have-signed-out",
+      })
+      .catch((error) => {
+        console.error("MSAL logout error: ", error);
+        navigate("/sorry-there-is-problem-with-service");
+      });
+  };
 
   return (
     showModal && (
@@ -51,9 +69,7 @@ export default function AutoSignoutModal() {
               to="/"
               title="Sign out"
               externalLink={false}
-              onClick={() => {
-                // sign out flow
-              }}
+              onClick={handleSignOut}
             />
           </div>
         </div>
