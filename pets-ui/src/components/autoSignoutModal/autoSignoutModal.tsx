@@ -65,9 +65,9 @@ export default function AutoSignoutModal() {
       <div id="signout-modal-container" data-testid="signout-modal-container">
         <div id="signout-modal-overlay" data-testid="signout-modal-overlay">
           <div id="signout-modal" data-testid="signout-modal">
-            <Heading title="You're about to be signed out" level={1} size="m" />
+            <Heading title="You are about to be signed out" level={1} size="m" />
             <p className="govuk-body" style={{ margin: 0 }}>
-              For your security, we will sign you out in <strong>2 minutes</strong>.
+              To protect the information, we will sign you out in <strong>2 minutes</strong>.
             </p>
             <Button
               id="stay-signed-in"
