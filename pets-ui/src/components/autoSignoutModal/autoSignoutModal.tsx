@@ -1,7 +1,7 @@
 import "./autoSignoutModal.scss";
 
 import { useMsal } from "@azure/msal-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useIdleTimer } from "react-idle-timer";
 import { useNavigate } from "react-router";
 
@@ -12,18 +12,35 @@ import Button from "../button/button";
 import Heading from "../heading/heading";
 import LinkLabel from "../linkLabel/LinkLabel";
 
+const IDLE_DELAY = 1000 * 60 * 18;
+const SIGN_OUT_DELAY = 1000 * 60 * 2;
+
 export default function AutoSignoutModal() {
   const navigate = useNavigate();
   const { accounts, instance } = useMsal();
   const [showModal, setShowModal] = useState(false);
 
+  const signOutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const startSignOutTimer = () => {
+    if (signOutTimerRef.current) return;
+    signOutTimerRef.current = setTimeout(handleSignOut, SIGN_OUT_DELAY);
+  };
+
+  const cancelSignOutTimer = () => {
+    if (signOutTimerRef.current != null) {
+      clearTimeout(signOutTimerRef.current);
+      signOutTimerRef.current = null;
+    }
+  };
+
   useIdleTimer({
-    timeout: 1000 * 60 * 18,
+    timeout: IDLE_DELAY,
     crossTab: true,
     onIdle: () => {
       if (accounts.length > 0) {
         setShowModal(true);
-        // start normal timer, sign out after 2 mins
+        startSignOutTimer();
       }
     },
   });
@@ -58,7 +75,7 @@ export default function AutoSignoutModal() {
               text="Stay signed in"
               handleClick={() => {
                 setShowModal(false);
-                // reset normal timer
+                cancelSignOutTimer();
               }}
             />
             <br />
