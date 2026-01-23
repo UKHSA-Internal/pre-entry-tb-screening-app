@@ -80,6 +80,30 @@ describe("AutoSignoutModal component", () => {
     expect(screen.getByText("Sign out")).toBeInTheDocument();
   });
 
+  it("hides the modal & resets timers when 'Stay signed in' button is clicked", () => {
+    renderWithProviders(<AutoSignoutModal />);
+
+    act(() => {
+      vi.advanceTimersByTime(1000 * 60 * 18);
+    });
+    expect(screen.queryByTestId("signout-modal")).toBeInTheDocument();
+
+    const button = screen.getByRole("button", { name: "Stay signed in" });
+    act(() => {
+      button.click();
+    });
+
+    expect(screen.queryByTestId("signout-modal")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("signout-modal-overlay")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("signout-modal-container")).not.toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(1000 * 60 * 17);
+    });
+    expect(screen.queryByTestId("signout-modal")).not.toBeInTheDocument();
+    expect(logoutRedirectMock).not.toHaveBeenCalled();
+  });
+
   it("logout function is called after 20 minutes of inactivity", () => {
     renderWithProviders(<AutoSignoutModal />);
 
