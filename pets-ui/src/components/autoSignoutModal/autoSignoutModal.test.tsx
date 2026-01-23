@@ -5,10 +5,11 @@ import { renderWithProviders } from "@/utils/test-utils";
 
 import AutoSignoutModal from "./autoSignoutModal";
 
+const mockAccounts: { username: string }[] = [{ username: "user@test.com" }];
 const logoutRedirectMock = vi.hoisted(() => vi.fn(() => Promise.resolve()));
 vi.mock("@azure/msal-react", () => ({
   useMsal: () => ({
-    accounts: [{ username: "user@test.com" }],
+    accounts: mockAccounts,
     instance: { logoutRedirect: logoutRedirectMock },
   }),
 }));
@@ -91,5 +92,17 @@ describe("AutoSignoutModal component", () => {
       vi.advanceTimersByTime(1000 * 60 * 2);
     });
     expect(logoutRedirectMock).toHaveBeenCalled();
+  });
+
+  it("modal is not displayed if idle user is not logged in", () => {
+    mockAccounts.length = 0;
+    renderWithProviders(<AutoSignoutModal />);
+
+    act(() => {
+      vi.advanceTimersByTime(1000 * 60 * 18);
+    });
+    expect(screen.queryByTestId("signout-modal")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("signout-modal-overlay")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("signout-modal-container")).not.toBeInTheDocument();
   });
 });
