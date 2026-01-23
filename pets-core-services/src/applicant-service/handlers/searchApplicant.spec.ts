@@ -1,7 +1,8 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
+import { logger } from "../../shared/logger";
 import { ApplicantDbOps } from "../../shared/models/applicant";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicants } from "../fixtures/applicants";
@@ -36,6 +37,72 @@ describe("Test for Getting Applicant", () => {
     const { createdBy, ...expectedJsonResponse } = existingApplicant;
 
     expect(JSON.parse(response.body)).toMatchObject([expectedJsonResponse]);
+  });
+
+  test("Fetching an Applicant with different clinicId", async () => {
+    // Arrange
+    const existingApplicant = seededApplicants[1]; // Already preloaded into DB,
+    const infoLoggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
+
+    const event: SearchApplicantEvent = {
+      ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: {
+          ...mockAPIGwEvent.requestContext.authorizer,
+          clinicId: process.env.CLINIC_ID as string,
+        },
+      },
+      parsedHeaders: {
+        passportnumber: existingApplicant.passportNumber,
+        countryofissue: existingApplicant.countryOfIssue,
+      },
+    };
+
+    // Act
+    const response = await searchApplicantHandler(event);
+
+    // Assert
+    expect(infoLoggerMock).toHaveBeenNthCalledWith(
+      6,
+      "Getting an application from a different clinic then the user's one",
+    );
+    expect(response.statusCode).toBe(200);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { createdBy, ...expectedJsonResponse } = existingApplicant;
+  });
+
+  test("Fetching an Applicant that does not have an application", async () => {
+    // Arrange
+    const existingApplicant = seededApplicants[3];
+    const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+
+    const event: SearchApplicantEvent = {
+      ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: {
+          ...mockAPIGwEvent.requestContext.authorizer,
+          clinicId: seededApplications[2].clinicId,
+        },
+      },
+      parsedHeaders: {
+        passportnumber: existingApplicant.passportNumber,
+        countryofissue: existingApplicant.countryOfIssue,
+      },
+    };
+
+    // Act
+    const response = await searchApplicantHandler(event);
+
+    // Assert
+    expect(errorLoggerMock).toHaveBeenCalledWith(
+      "Edge-Case: Applicant has been created without an application",
+    );
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Matched Applicant has been created without an application",
+    });
   });
 
   test("Fetching a non-existing Applicant returns a 404 response", async () => {

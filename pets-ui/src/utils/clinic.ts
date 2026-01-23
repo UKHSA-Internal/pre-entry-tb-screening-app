@@ -28,11 +28,12 @@ export const getClinicId = async (): Promise<string | null> => {
   return clinicId;
 };
 
-export const fetchClinic = async (dispatch: AppDispatch): Promise<void> => {
-  const clinicId = await getClinicId();
-  if (!clinicId) return;
-
-  void getClinicById(clinicId).then(({ data }) => {
+export const fetchClinic = async (
+  dispatch: AppDispatch,
+  applicationClinicId: string,
+  // eslint-disable-next-line @typescript-eslint/require-await
+): Promise<void> => {
+  void getClinicById(applicationClinicId).then(({ data }) => {
     dispatch(setClinic(data.clinic));
   });
 };
