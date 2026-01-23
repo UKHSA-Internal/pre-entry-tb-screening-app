@@ -85,7 +85,7 @@ const ApplicantTravelVisaCategory = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
-        <Heading level={1} size="l" title="Proposed visa category" style={{ marginBottom: 30 }} />
+        <Heading level={1} size="l" title="Proposed visa category" style={{ marginBottom: 10 }} />
 
         <div ref={visaCategoryRef}>
           <Radio

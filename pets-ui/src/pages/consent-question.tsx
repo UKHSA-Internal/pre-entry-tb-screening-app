@@ -71,6 +71,7 @@ export default function ConsentQuestionPage() {
             level={1}
             size="l"
             title="Do you have the visa applicant's written consent for TB screening?"
+            style={{ marginBottom: 10 }}
           />
 
           <div ref={consentRef}>
