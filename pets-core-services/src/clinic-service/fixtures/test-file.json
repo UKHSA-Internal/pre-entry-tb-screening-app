@@ -124,5 +124,14 @@
     "startDate": "2025-04-01",
     "endDate": null,
     "createdBy": "tmp@email.com"
+  },
+  {
+    "clinicId": "UK/PETS/02",
+    "name": "dev PETS Clinic 2",
+    "city": "DevLand",
+    "country": "GBR",
+    "startDate": "2023-04-01",
+    "endDate": "2043-04-01",
+    "createdBy": "devs@test.pets.org"
   }
 ]
