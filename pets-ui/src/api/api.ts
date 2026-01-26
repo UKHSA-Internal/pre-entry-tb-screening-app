@@ -55,6 +55,7 @@ petsApi.interceptors.response.use(
         sendGoogleAnalyticsHttpError(status, url);
       }
     } else {
+      console.error({ error }, "API error");
       const url = error.config?.url ?? "unknown_url";
       sendGoogleAnalyticsHttpError(0, url);
     }
