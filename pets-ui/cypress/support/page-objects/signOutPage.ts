@@ -355,7 +355,6 @@ export class SignOutPage extends BasePage {
     return this;
   }
 
-  // NOTE: B2C account picker handling with cy.origin() CANNOT be encapsulated in a POM method
   // due to how Cypress command chains work. The cy.origin() call must be made directly in the
   // test file immediately after clicking the sign-out button. See test file for example.
 

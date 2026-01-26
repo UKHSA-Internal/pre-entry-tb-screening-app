@@ -68,15 +68,16 @@ describe("Sign Out Functionality Tests", () => {
 
           cy.log("Selected account to sign out");
         });
-
-        //cy.wait(3000);
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
+        cy.wait(3000);
       } else if (url.includes("petsb2cdev.ciamlogin.com")) {
         // We went straight to B2C - handle it directly
         cy.log("Went straight to B2C account picker");
 
         cy.origin("https://petsb2cdev.ciamlogin.com", () => {
           cy.log("Inside B2C account picker page");
-          //cy.wait(2000);
+          // eslint-disable-next-line cypress/no-unnecessary-waiting
+          cy.wait(2000);
 
           cy.contains("Pick an account", { timeout: 15000 }).should("be.visible");
           cy.contains("Which account do you want to sign out of?", { timeout: 10000 }).should(
