@@ -60,7 +60,6 @@ petsApi.interceptors.response.use(
     }
 
     if (error.response?.status === 404) {
-      console.error(error);
       globalThis.location.href = "/page-not-found";
     } else if (error.response?.status && error.response.status >= 400) {
       globalThis.location.href = "/sorry-there-is-problem-with-service";
