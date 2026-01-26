@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router";
 
 import Container from "@/components/container/container";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
+import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
@@ -66,12 +67,16 @@ export default function ConsentQuestionPage() {
         <form onSubmit={handleSubmit(onSubmit)}>
           {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
+          <Heading
+            level={1}
+            size="l"
+            title="Do you have the visa applicant's written consent for TB screening?"
+            style={{ marginBottom: 10 }}
+          />
+
           <div ref={consentRef}>
             <Radio
               id="do-you-have-consent"
-              heading="Do you have the visa applicant's written consent for TB screening?"
-              headingLevel={1}
-              headingSize="l"
               hint="The visa applicant (or their parent or guardian) must have signed a paper consent form before you start TB screening"
               isInline={RadioIsInline.TRUE}
               answerOptions={["Yes", "No"]}
