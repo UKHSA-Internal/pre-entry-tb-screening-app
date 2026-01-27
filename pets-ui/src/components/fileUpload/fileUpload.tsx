@@ -200,6 +200,7 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
               }}
               id={props.id}
               aria-hidden={true}
+              tabIndex={-1}
               className={inputClass}
               type="file"
               accept={props.type === ImageType.Dicom ? ".dcm" : ""}
