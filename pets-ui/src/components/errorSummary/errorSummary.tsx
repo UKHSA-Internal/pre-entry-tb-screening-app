@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { FieldErrors } from "react-hook-form";
 
 import { attributeToComponentId } from "@/utils/records";
@@ -8,8 +9,11 @@ interface ErrorSummaryProps {
 }
 
 export default function ErrorSummary(props: Readonly<ErrorSummaryProps>) {
+  const hasFocusedRef = useRef(false);
+
   const setErrorSummaryRef = (element: HTMLDivElement | null) => {
-    if (element && props.errorsToShow.length > 0) {
+    if (element && !hasFocusedRef.current && props.errorsToShow.length > 0) {
+      hasFocusedRef.current = true;
       setTimeout(() => element.focus(), 0);
     }
   };
