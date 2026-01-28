@@ -4,6 +4,7 @@ import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
+import { ApplicationStatus } from "../../shared/types/enum";
 import { CancelApplicationRequestSchema } from "../types/zod-schema";
 
 export type CancelApplicationRequestSchema = z.infer<typeof CancelApplicationRequestSchema>;
@@ -35,8 +36,9 @@ export const cancelApplicationHandler = async (event: CancelApplicationEvent) =>
     }
 
     const { createdBy } = event.requestContext.authorizer;
-    const updatedApplication = await Application.cancelApplication({
+    const updatedApplication = await Application.updateApplication({
       applicationId: applicationId,
+      status: ApplicationStatus.cancelled,
       cancellationReason: parsedBody.cancellationReason as string,
       updatedBy: createdBy,
     });
