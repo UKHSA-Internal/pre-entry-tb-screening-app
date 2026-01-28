@@ -546,9 +546,9 @@ export class SputumCollectionPage extends BasePage {
     cy.get("form").should("be.visible");
 
     // Verify all date input hints
-    cy.get("#date-sample-1-taken-hint").should("contain.text", "For example, 31 3 2024");
-    cy.get("#date-sample-2-taken-hint").should("contain.text", "For example, 31 3 2024");
-    cy.get("#date-sample-3-taken-hint").should("contain.text", "For example, 31 3 2024");
+    cy.get("#date-sample-1-taken-hint").should("contain.text", "For example, 16 9 2025");
+    cy.get("#date-sample-2-taken-hint").should("contain.text", "For example, 17 9 2025");
+    cy.get("#date-sample-3-taken-hint").should("contain.text", "For example, 18 9 2025");
 
     return this;
   }
