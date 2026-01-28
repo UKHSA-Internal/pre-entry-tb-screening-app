@@ -7,6 +7,9 @@ import { AuthenticatedRoute, UnauthenticatedRoute } from "./auth/authRoutes";
 import AccessibilityStatementPage from "./pages/accessibility-statement";
 import ApiDocs from "./pages/api-docs";
 import ApplicantConfirmation from "./pages/applicant-confirmation";
+import ApplicantContactDetailsPage from "./pages/applicant-contact-details";
+import ApplicantPassportDetailsPage from "./pages/applicant-passport-details";
+import ApplicantPersonalDetailsPage from "./pages/applicant-personal-details";
 import ApplicantPhotoPage from "./pages/applicant-photo";
 import ApplicantResultsPage from "./pages/applicant-results";
 import ApplicantSearchPage from "./pages/applicant-search";
@@ -22,7 +25,6 @@ import ChestXraySummaryPage from "./pages/chest-xray-summary";
 import ChestXrayUploadPage from "./pages/chest-xray-upload";
 import ConsentInstructionPage from "./pages/consent-instruction";
 import ConsentQuestionPage from "./pages/consent-question";
-import ContactDetailsPage from "./pages/contact-details";
 import CookiesPage from "./pages/cookies";
 import EnterSputumSampleResultsPage from "./pages/enter-sputum-sample-results";
 import ErrorPage from "./pages/error-page";
@@ -30,6 +32,7 @@ import HomePage from "./pages/home-page";
 import MedicalScreeningPage from "./pages/medical-screening";
 import MedicalConfirmation from "./pages/medical-screening-confirmation";
 import MedicalSummaryPage from "./pages/medical-screening-summary";
+import PageNotFound from "./pages/page-not-found";
 import PrivacyNoticePage from "./pages/privacy-notice";
 import ProgressTrackerPage from "./pages/progress-tracker";
 import RadiologicalOutcomeConfirmation from "./pages/radiological-outcome-confirmation";
@@ -120,11 +123,31 @@ function App() {
         }
       />
       <Route
+        path="/visa-applicant-personal-information"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <ApplicantPersonalDetailsPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
         path="/visa-applicant-passport-information"
         element={
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
-              <ContactDetailsPage />
+              <ApplicantPassportDetailsPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/visa-applicant-contact-information"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <ApplicantContactDetailsPage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
@@ -487,6 +510,8 @@ function App() {
       <Route path="/cookies" element={<CookiesPage />} />
       <Route path="/privacy-notice" element={<PrivacyNoticePage />} />
       <Route path="/sorry-there-is-problem-with-service" element={<ErrorPage />} />
+      <Route path="/page-not-found" element={<PageNotFound />} />
+      <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
 }

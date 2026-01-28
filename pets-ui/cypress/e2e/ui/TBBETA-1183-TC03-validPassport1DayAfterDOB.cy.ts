@@ -11,6 +11,8 @@ import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPh
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
 import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
+import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
@@ -26,6 +28,8 @@ describe("PETS Date Validation: VALID - Passport Issue 1 Day After DOB", () => {
   const applicantConsentPage = new ApplicantConsentPage();
   const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const applicantConfirmationPage = new ApplicantConfirmationPage();
+  const passportInformationPage = new PassportInformationPage();
+  const contactInformationPage = new ContactInformationPage();
 
   // Define variables to store test data
   let countryName: string = "";
@@ -105,20 +109,26 @@ describe("PETS Date Validation: VALID - Passport Issue 1 Day After DOB", () => {
       .selectSex("Female")
       .selectNationality(countryName)
       .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
-      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
-      .fillPassportExpiryDate(
-        passportExpiryDate.day,
-        passportExpiryDate.month,
-        passportExpiryDate.year,
-      )
+      .submitForm();
+
+    // Fill passport information
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName)
+      .fillIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillExpiryDate(passportExpiryDate.day, passportExpiryDate.month, passportExpiryDate.year)
+      .submitForm();
+
+    // Fill contact information
+    contactInformationPage.verifyPageLoaded();
+    contactInformationPage
       .fillAddressLine1("789 Valid Street")
       .fillTownOrCity("Valid City")
       .fillProvinceOrState("Valid Province")
-      .selectAddressCountry(countryName)
-      .fillPostcode("V4L 1DD");
-
-    // Submit form - should succeed
-    applicantDetailsPage.submitForm();
+      .fillPostcode("V4L 1DD")
+      .selectCountry(countryName)
+      .submitForm();
 
     // Verify no errors
     cy.get(".govuk-error-summary").should("not.exist");

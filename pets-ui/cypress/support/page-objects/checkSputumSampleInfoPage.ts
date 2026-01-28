@@ -1,9 +1,27 @@
 //This holds all fields of the Check Sputum Collection Details and Results Page
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import { ButtonHelper, GdsComponentHelper, SummaryHelper } from "../helpers";
 
 export class CheckSputumSampleInfoPage extends BasePage {
+  // Compose helper instances
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private summary = new SummaryHelper();
+
   constructor() {
     super("/check-sputum-collection-details-results");
+  }
+
+  // Override to maintain return type
+  verifyBackLink(expectedHref: string): CheckSputumSampleInfoPage {
+    super.verifyBackLink(expectedHref);
+    return this;
+  }
+
+  // Override to maintain return type
+  verifyServiceName(): CheckSputumSampleInfoPage {
+    super.verifyServiceName();
+    return this;
   }
 
   // Verify page loaded
@@ -379,7 +397,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
 
   // Check URL after form submission
   checkRedirectionAfterSubmit(expectedUrlPath: string): CheckSputumSampleInfoPage {
-    this.clickSaveAndContinue();
+    this.button.clickSaveAndContinue();
     cy.url().should("include", expectedUrlPath);
     return this;
   }
@@ -411,7 +429,6 @@ export class CheckSputumSampleInfoPage extends BasePage {
     this.verifyRequiredFieldsPresent();
     this.verifyChangeLinksExist();
     this.verifyBackLink("/sputum-collection-details");
-    this.verifyServiceName();
 
     if (expectedSampleData) {
       this.verifyAllSampleInfo(expectedSampleData);
@@ -449,7 +466,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
 
   // Check that Save and Continue button is enabled
   verifySaveAndContinueButton(): CheckSputumSampleInfoPage {
-    this.verifySaveAndContinueButtonDisplayed();
+    this.button.verifySaveAndContinueButtonDisplayed();
     return this;
   }
 
@@ -516,7 +533,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
   // Click submit button
   clickSubmitButton(): CheckSputumSampleInfoPage {
     cy.get("button[type='submit']")
-      .contains("Save and continue")
+      .contains("Submit and continue")
       .filter(":visible")
       .first()
       .click();

@@ -14,9 +14,11 @@ import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummar
 import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
 import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
 import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
+import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
 import { TravelConfirmationPage } from "../../support/page-objects/travelConfirmationPage";
 import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
@@ -33,6 +35,8 @@ describe("PETS Date Validation: INVALID - X-ray Date in Future", () => {
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
+  const passportInformationPage = new PassportInformationPage();
+  const contactInformationPage = new ContactInformationPage();
   const applicantConsentPage = new ApplicantConsentPage();
   const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const chestXrayPage = new ChestXrayPage();
@@ -99,22 +103,31 @@ describe("PETS Date Validation: INVALID - X-ray Date in Future", () => {
     applicantConsentPage.continueWithConsent("Yes");
     cy.acceptCookies();
 
+    // Fill Applicant Details - Page 1: Personal Information
     applicantDetailsPage
       .verifyPageLoaded()
       .fillFullName("Tricia Future Xray")
       .selectSex("Female")
       .selectNationality(countryName)
       .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
-      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
-      .fillPassportExpiryDate(
-        passportExpiryDate.day,
-        passportExpiryDate.month,
-        passportExpiryDate.year,
-      )
+      .submitForm();
+
+    // Fill Applicant Details - Page 2: Passport Information
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName)
+      .fillIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillExpiryDate(passportExpiryDate.day, passportExpiryDate.month, passportExpiryDate.year)
+      .submitForm();
+
+    // Fill Applicant Details - Page 3: Contact Information
+    contactInformationPage.verifyPageLoaded();
+    contactInformationPage
       .fillAddressLine1("555 Future Xray Street")
       .fillTownOrCity("Future City")
       .fillProvinceOrState("Future Province")
-      .selectAddressCountry(countryName)
+      .selectCountry(countryName)
       .fillPostcode("FUT XR1")
       .submitForm();
 

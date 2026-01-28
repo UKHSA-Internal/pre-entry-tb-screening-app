@@ -11,7 +11,9 @@ import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPh
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
 import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
 import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
+import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
 import { TravelConfirmationPage } from "../../support/page-objects/travelConfirmationPage";
 import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
@@ -29,6 +31,8 @@ describe("PETS Date Validation: INVALID - Medical Screening > 6 Months Old", () 
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
+  const passportInformationPage = new PassportInformationPage();
+  const contactInformationPage = new ContactInformationPage();
   const applicantConsentPage = new ApplicantConsentPage();
   const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const travelInformationPage = new TravelInformationPage();
@@ -108,7 +112,7 @@ describe("PETS Date Validation: INVALID - Medical Screening > 6 Months Old", () 
     applicantConsentPage.continueWithConsent("Yes");
     applicantSearchPage.verifyRedirectionToCreateApplicantPage();
 
-    // Fill Applicant Details
+    // Fill Applicant Details - Page 1: Personal Information
     cy.acceptCookies();
     applicantDetailsPage
       .verifyPageLoaded()
@@ -116,16 +120,24 @@ describe("PETS Date Validation: INVALID - Medical Screening > 6 Months Old", () 
       .selectSex("Male")
       .selectNationality(countryName)
       .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
-      .fillPassportIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
-      .fillPassportExpiryDate(
-        passportExpiryDate.day,
-        passportExpiryDate.month,
-        passportExpiryDate.year,
-      )
+      .submitForm();
+
+    // Fill Applicant Details - Page 2: Passport Information
+    passportInformationPage.verifyPageLoaded();
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName)
+      .fillIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillExpiryDate(passportExpiryDate.day, passportExpiryDate.month, passportExpiryDate.year)
+      .submitForm();
+
+    // Fill Applicant Details - Page 3: Contact Information
+    contactInformationPage.verifyPageLoaded();
+    contactInformationPage
       .fillAddressLine1("100 Old Medical Street")
       .fillTownOrCity("Old City")
       .fillProvinceOrState("Old Province")
-      .selectAddressCountry(countryName)
+      .selectCountry(countryName)
       .fillPostcode("O6M 0LD")
       .submitForm();
 

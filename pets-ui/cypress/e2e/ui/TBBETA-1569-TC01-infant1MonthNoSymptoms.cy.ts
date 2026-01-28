@@ -13,10 +13,12 @@ import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVis
 import { ChestXrayNotTakenPage } from "../../support/page-objects/chestXrayNotTakenPage";
 import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
 import { ClinicCertificateInfoPage } from "../../support/page-objects/clinicCertificateInfoPage";
+import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { EnterSputumSampleResultsPage } from "../../support/page-objects/enterSputumSampleResultsPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
+import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import { SputumCollectionPage } from "../../support/page-objects/sputumCollectionPage";
 import { SputumConfirmationPage } from "../../support/page-objects/sputumConfirmationPage";
 import { SputumDecisionConfirmationPage } from "../../support/page-objects/sputumDecisionConfirmationPage";
@@ -44,6 +46,8 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
+  const passportInformationPage = new PassportInformationPage();
+  const contactInformationPage = new ContactInformationPage();
   const travelInformationPage = new TravelInformationPage();
   const travelSummaryPage = new TravelSummaryPage();
   const travelConfirmationPage = new TravelConfirmationPage();
@@ -168,24 +172,52 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     // Fill Applicant Details for Newborn Infant (1 month old)
     applicantDetailsPage.verifyPageLoaded();
 
-    // Use infant-specific form method
-    applicantDetailsPage.fillCompleteInfantForm({
-      fullName: "Baby Olivia Smith",
-      sex: "Female",
-      nationality: countryName,
-      ageInMonths: infantAgeInMonths, // From beforeEach
-      daysAfterBirthForPassport: 7, // Passport issued 7 days after birth
-      addressLine1: "123 Newborn Nursery Road",
-      addressLine2: "Maternity Ward B",
-      addressLine3: "Zongo District",
-      townOrCity: "Zongo Junction",
-      provinceOrState: "Zongo",
-      addressCountry: countryName,
-      postcode: "M1 1AA",
-    });
+    // Calculate infant DOB (1 month old)
+    const infantDOB = DateUtils.getInfantDOBComponents(infantAgeInMonths);
 
-    // Submit form
-    applicantDetailsPage.submitForm();
+    // Fill in applicant personal details for infant
+    applicantDetailsPage
+      .fillFullName("Baby Olivia Smith")
+      .selectSex("Female")
+      .selectNationality(countryName)
+      .fillBirthDate(infantDOB.day, infantDOB.month, infantDOB.year)
+      .submitForm();
+
+    // Fill in passport details
+    passportInformationPage.verifyPageLoaded();
+    // Calculate passport dates for infant (issued 7 days after birth)
+    const infantBirthDate = DateUtils.getInfantDateOfBirth(infantAgeInMonths);
+    const passportIssueDate = new Date(infantBirthDate);
+    passportIssueDate.setDate(passportIssueDate.getDate() + 7);
+    const passportIssueDateComponents = DateUtils.getDateComponents(passportIssueDate);
+    const passportExpiryDate = DateUtils.getPassportExpiryDate(passportIssueDate, true);
+    const passportExpiryDateComponents = DateUtils.getDateComponents(passportExpiryDate);
+
+    passportInformationPage
+      .fillPassportNumber(passportNumber)
+      .selectCountryOfIssue(countryName)
+      .fillIssueDate(
+        passportIssueDateComponents.day,
+        passportIssueDateComponents.month,
+        passportIssueDateComponents.year,
+      )
+      .fillExpiryDate(
+        passportExpiryDateComponents.day,
+        passportExpiryDateComponents.month,
+        passportExpiryDateComponents.year,
+      )
+      .submitForm();
+
+    // Fill in contact information
+    contactInformationPage.verifyPageLoaded();
+    contactInformationPage
+      .fillAddressLine1("123 Newborn Nursery Road")
+      .fillAddressLine2("Maternity Ward B")
+      .fillTownOrCity("Zongo Junction")
+      .fillProvinceOrState("Zongo")
+      .fillPostcode("M1 1AA")
+      .selectCountry(countryName)
+      .submitForm();
 
     // Verify redirection to the Applicant Photo page
     cy.url({ timeout: 15000 }).should("include", "/upload-visa-applicant-photo");
@@ -394,7 +426,7 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     // Verify redirection to Sputum decision Info Page
     sputumDecisionInfoPage.verifyPageLoaded();
     sputumDecisionInfoPage.verifyAllPageElements();
-    sputumDecisionInfoPage.clickSaveAndContinue();
+    sputumDecisionInfoPage.clickSaveAndContinueButton();
 
     // Verify redirection to Sputum Decision Confirmation Page
     sputumDecisionConfirmationPage
@@ -489,7 +521,7 @@ describe("PETS Scenario: Newborn Infant (1 month old) with No Symptoms, No X-ray
     checkSputumSampleInfoPage.verifyAllSampleInfo(expectedSampleData);
     checkSputumSampleInfoPage.verifyChangeLinksExist();
     checkSputumSampleInfoPage.verifyServiceName();
-    checkSputumSampleInfoPage.clickSaveAndContinue();
+    checkSputumSampleInfoPage.clickSubmitButton();
 
     // Verify Sputum confirmation page
     sputumConfirmationPage.verifyPageLoaded();

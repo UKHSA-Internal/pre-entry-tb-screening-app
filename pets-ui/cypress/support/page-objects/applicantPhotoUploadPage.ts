@@ -1,15 +1,29 @@
 // This holds all the fields on the Applicant Photo Upload Page
 
-import { BasePage } from "../BasePage";
+import { BasePage } from "../BasePageNew";
+import {
+  ButtonHelper,
+  ErrorHelper,
+  FileUploadHelper,
+  FormHelper,
+  GdsComponentHelper,
+} from "../helpers";
 
 export class ApplicantPhotoUploadPage extends BasePage {
+  // Compose helper instances
+  private form = new FormHelper();
+  private gds = new GdsComponentHelper();
+  private button = new ButtonHelper();
+  private error = new ErrorHelper();
+  private fileUpload = new FileUploadHelper();
+
   constructor() {
     super("/upload-visa-applicant-photo");
   }
 
   // Verify page loaded
   verifyPageLoaded(): ApplicantPhotoUploadPage {
-    this.verifyPageHeading("Upload visa applicant photo (optional)");
+    this.gds.verifyPageHeading("Upload visa applicant photo (optional)");
     return this;
   }
 
