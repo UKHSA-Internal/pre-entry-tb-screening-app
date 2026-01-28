@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter, Route, Routes } from "react-router";
@@ -26,7 +26,7 @@ vi.mock("@azure/msal-react", () => ({
   }),
 }));
 
-const renderSignOut = () =>
+const renderSignOut = () => {
   renderWithProvidersWithoutRouter(
     <HelmetProvider>
       <MemoryRouter initialEntries={["/are-you-sure-you-want-to-sign-out"]}>
@@ -37,6 +37,20 @@ const renderSignOut = () =>
       </MemoryRouter>
     </HelmetProvider>,
   );
+};
+
+const renderSignOutWithSkipParam = () => {
+  renderWithProvidersWithoutRouter(
+    <HelmetProvider>
+      <MemoryRouter initialEntries={["/are-you-sure-you-want-to-sign-out?skipSignOutCheck=true"]}>
+        <Routes>
+          <Route path="/are-you-sure-you-want-to-sign-out" element={<SignOutPage />} />
+          <Route path="/previous-page" element={<div>Previous Page</div>} />
+        </Routes>
+      </MemoryRouter>
+    </HelmetProvider>,
+  );
+};
 
 describe("Sign out page", () => {
   let user: ReturnType<typeof userEvent.setup>;
@@ -86,5 +100,14 @@ describe("Sign out page", () => {
     renderSignOut();
     await user.click(screen.getByRole("button", { name: "Sign out" }));
     expect(mockNavigate).toHaveBeenCalledWith("/sorry-there-is-problem-with-service");
+  });
+
+  it("logs user out immediately if skipSignOutCheck query param set to true", async () => {
+    renderSignOutWithSkipParam();
+    await waitFor(() => {
+      expect(mockLogoutRedirect).toHaveBeenCalledWith({
+        postLogoutRedirectUri: "/you-have-signed-out",
+      });
+    });
   });
 });

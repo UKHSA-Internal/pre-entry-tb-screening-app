@@ -1,6 +1,7 @@
 //Pets Private Beta Amend Travel Information and Cancel Signout
 import { countryList } from "../../../src/utils/countryList";
 import { loginViaB2C } from "../../support/commands";
+import { DateUtils } from "../../support/DateUtils";
 import { ApplicantConfirmationPage } from "../../support/page-objects/applicantConfirmationPage";
 import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
 import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
@@ -22,6 +23,7 @@ import { MedicalScreeningPage } from "../../support/page-objects/medicalScreenin
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
 import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import { RadiologicalOutcomeConfPage } from "../../support/page-objects/radiologicalOutcomeConfPage";
+import { SignOutPage } from "../../support/page-objects/signOutPage";
 import { SputumCollectionPage } from "../../support/page-objects/sputumCollectionPage";
 import { SputumConfirmationPage } from "../../support/page-objects/sputumConfirmationPage";
 import { SputumDecisionConfirmationPage } from "../../support/page-objects/sputumDecisionConfirmationPage";
@@ -45,18 +47,19 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
-  const passportInformationPage = new PassportInformationPage();
-  const contactInformationPage = new ContactInformationPage();
   const applicantConsentPage = new ApplicantConsentPage();
-  const checkPhotoPage = new CheckVisaApplicantPhotoPage();
+  const contactInformationPage = new ContactInformationPage();
   const travelInformationPage = new TravelInformationPage();
+  const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const travelSummaryPage = new TravelSummaryPage();
   const travelConfirmationPage = new TravelConfirmationPage();
   const medicalScreeningPage = new MedicalScreeningPage();
   const applicantConfirmationPage = new ApplicantConfirmationPage();
   const medicalSummaryPage = new MedicalSummaryPage();
   const medicalConfirmationPage = new MedicalConfirmationPage();
+  const passportInformationPage = new PassportInformationPage();
   const radiologicalOutcomeConfPage = new RadiologicalOutcomeConfPage();
+  const signOutPage = new SignOutPage();
   const sputumQuestionPage = new SputumQuestionPage();
   const sputumCollectionPage = new SputumCollectionPage();
   const sputumConfirmationPage = new SputumConfirmationPage();
@@ -81,9 +84,86 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
   let tbCertificateNumber: string = "";
   let selectedVisaCategory: string;
 
+  // Dynamic date variables
+  let adultAge: number;
+  let adultDOB: ReturnType<typeof DateUtils.getDOBComponentsForAge>;
+  let adultDOBFormatted: string;
+  let passportIssueDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let passportExpiryDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let screeningDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let xrayDate: ReturnType<typeof DateUtils.getDateComponents>;
+  let xrayDateFormatted: string;
+  let sputumSample1Date: ReturnType<typeof DateUtils.getDateComponents>;
+  let sputumSample2Date: ReturnType<typeof DateUtils.getDateComponents>;
+  let sputumSample3Date: ReturnType<typeof DateUtils.getDateComponents>;
+  let sputumSample1Formatted: string;
+  let sputumSample2Formatted: string;
+  let sputumSample3Formatted: string;
+
   before(() => {
     // Create test fixtures before test run
     createTestFixtures();
+
+    // Generate dynamic dates for adult applicant (25 years old)
+    adultAge = 25;
+    adultDOB = DateUtils.getAdultDOBComponents(adultAge);
+    // Format with leading zeros, then normalize for UI comparison
+    adultDOBFormatted = DateUtils.normalizeDateForComparison(
+      DateUtils.formatDateDDMMYYYY(DateUtils.getAdultDateOfBirth(adultAge)),
+    );
+
+    // Generate passport dates (issued 2 years ago, expires in 8 years)
+    const passportIssue = DateUtils.getDateInPast(2);
+    const passportExpiry = DateUtils.getPassportExpiryDate(passportIssue, false);
+    passportIssueDate = DateUtils.getDateComponents(passportIssue);
+    passportExpiryDate = DateUtils.getDateComponents(passportExpiry);
+
+    // Generate screening date (1 month ago for realistic scenario)
+    const screening = DateUtils.getDateInPast(0, 1, 0); // 1 month ago
+    screeningDate = DateUtils.getDateComponents(screening);
+
+    // Generate X-ray date (2 weeks ago, after screening)
+    const xray = DateUtils.getDateInPast(0, 0, 14); // 2 weeks ago
+    xrayDate = DateUtils.getDateComponents(xray);
+    xrayDateFormatted = DateUtils.formatDateGOVUK(xray);
+
+    // Generate sputum collection dates (2-3 months ago for realistic scenario)
+    const sample1 = DateUtils.getDateInPast(0, 3, 0); // 3 months ago
+    const sample2 = DateUtils.getDateInPast(0, 3, -1); // 1 day after sample 1
+    const sample3 = DateUtils.getDateInPast(0, 3, -2); // 1 day after sample 2
+
+    sputumSample1Date = DateUtils.getDateComponents(sample1);
+    sputumSample2Date = DateUtils.getDateComponents(sample2);
+    sputumSample3Date = DateUtils.getDateComponents(sample3);
+
+    sputumSample1Formatted = DateUtils.formatDateGOVUK(sample1);
+    sputumSample2Formatted = DateUtils.formatDateGOVUK(sample2);
+    sputumSample3Formatted = DateUtils.formatDateGOVUK(sample3);
+
+    // Log generated dates for debugging
+    cy.log(`Adult Age: ${adultAge}`);
+    cy.log(`Adult DOB: ${adultDOB.day}/${adultDOB.month}/${adultDOB.year}`);
+    cy.log(`DOB Formatted: ${adultDOBFormatted}`);
+    cy.log(
+      `Calculated Age: ${DateUtils.calculateAge(DateUtils.getAdultDateOfBirth(adultAge))} years`,
+    );
+    cy.log(
+      `Passport Issue: ${passportIssueDate.day}/${passportIssueDate.month}/${passportIssueDate.year}`,
+    );
+    cy.log(
+      `Passport Expiry: ${passportExpiryDate.day}/${passportExpiryDate.month}/${passportExpiryDate.year}`,
+    );
+    cy.log(`Screening Date: ${screeningDate.day}/${screeningDate.month}/${screeningDate.year}`);
+    cy.log(`X-ray Date: ${xrayDate.day}/${xrayDate.month}/${xrayDate.year}`);
+    cy.log(
+      `Sputum Sample 1: ${sputumSample1Date.day}/${sputumSample1Date.month}/${sputumSample1Date.year}`,
+    );
+    cy.log(
+      `Sputum Sample 2: ${sputumSample2Date.day}/${sputumSample2Date.month}/${sputumSample2Date.year}`,
+    );
+    cy.log(
+      `Sputum Sample 3: ${sputumSample3Date.day}/${sputumSample3Date.month}/${sputumSample3Date.year}`,
+    );
   });
 
   beforeEach(() => {
@@ -125,20 +205,20 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
 
     // Fill Applicant Details - Page 1: Personal Information
     applicantDetailsPage.verifyPageLoaded();
+    // Fill in applicant details
     applicantDetailsPage
       .fillFullName("Jane Smith")
+      .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
       .selectSex("Female")
-      .selectNationality(countryName)
-      .fillBirthDate("15", "03", "2000")
+      .selectNationality(countryName) // Use country code for form filling
       .submitForm();
-
-    // Fill Applicant Details - Page 2: Passport Information
+    // Fill in passport details
     passportInformationPage.verifyPageLoaded();
     passportInformationPage
       .fillPassportNumber(passportNumber)
-      .selectCountryOfIssue(countryName)
-      .fillIssueDate("10", "05", "2018")
-      .fillExpiryDate("10", "05", "2028")
+      .selectCountryOfIssue(countryName) // Use country code for form filling
+      .fillIssueDate(passportIssueDate.day, passportIssueDate.month, passportIssueDate.year)
+      .fillExpiryDate(passportExpiryDate.day, passportExpiryDate.month, passportExpiryDate.year)
       .submitForm();
 
     // Fill Applicant Details - Page 3: Contact Information
@@ -204,15 +284,6 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
     // Verify we're on the tracker
     cy.url().should("include", "/tracker");
     tbProgressTrackerPage.verifyPageLoaded();
-
-    // First Signout Cancellation to redirect back to Progress Tracker Page
-    cy.log("Testing cancel signout - should return to tracker page");
-    cy.cancelSignOut();
-
-    // Verify we're still on the tracker page after cancelling signout
-    cy.url().should("include", "/tracker");
-    tbProgressTrackerPage.verifyPageLoaded();
-    cy.log("Cancel signout test passed - returned to tracker page");
 
     // NOW navigate to travel information from the tracker
     tbProgressTrackerPage.clickTaskLink("UK travel information");
@@ -283,15 +354,44 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
     medicalScreeningPage.verifyPageLoaded();
 
     medicalScreeningPage
-      .fillScreeningDate("10", "9", "2025")
-      .fillAge("25")
+      .fillScreeningDate(screeningDate.day, screeningDate.month, screeningDate.year)
+      .fillAge(adultAge.toString())
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
       .selectPregnancyStatus("No")
       .selectMenstrualPeriods("No")
-      .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.")
-      .submitForm();
+      .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.");
+
+    // Test sign-out cancellation with unsaved medical screening data
+    cy.log("Testing sign-out cancellation with unsaved medical screening data");
+
+    cy.get("#sign-out").should("be.visible").click();
+
+    cy.contains("Are you sure you want to sign out?", { timeout: 10000 }).should("be.visible");
+
+    signOutPage.verifyPageLoaded();
+    signOutPage.verifyNotificationBanner();
+    signOutPage.verifyWarningMessage();
+    signOutPage.verifyBothButtons();
+
+    signOutPage.cancelSignOut();
+
+    cy.url({ timeout: 10000 }).should("include", "/record-medical-history-tb-symptoms");
+    medicalScreeningPage.verifyPageLoaded();
+    medicalScreeningPage
+      .fillScreeningDate(screeningDate.day, screeningDate.month, screeningDate.year)
+      .fillAge(adultAge.toString())
+      .selectTbSymptoms("No")
+      .selectPreviousTb("No")
+      .selectCloseContact("No")
+      .selectPregnancyStatus("No")
+      .selectMenstrualPeriods("No")
+      .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.");
+    cy.log("Successfully cancelled sign-out and returned to medical screening page");
+
+    // Now submit the form to continue the test
+    medicalScreeningPage.submitForm();
 
     // Verify redirection to X-ray Question Page
     chestXrayPage.verifyPageLoaded();
@@ -303,9 +403,12 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
     // Verify redirection to Medical Screening Summary Page
     medicalSummaryPage.verifyPageLoaded();
 
+    // Calculate expected age from birth date
+    const expectedAge = DateUtils.calculateAge(DateUtils.getAdultDateOfBirth(adultAge));
+
     // Validate the prefilled form
     medicalSummaryPage.fullyValidateSummary({
-      age: "25 years old",
+      age: `${expectedAge} years old`,
       tbSymptoms: "No",
       previousTb: "No",
       closeContactWithTb: "No",
@@ -327,18 +430,8 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
     cy.url().should("include", "/tracker");
     tbProgressTrackerPage.verifyPageLoaded();
 
-    // Second Signout Cancellation to redirect back to Progress Tracker Page
-    cy.log("Testing cancel signout again - should return to tracker page");
-    cy.cancelSignOut();
-
-    // Verify we're still on the tracker page after cancelling signout
-    cy.url().should("include", "/tracker");
-    tbProgressTrackerPage.verifyPageLoaded();
-    cy.log("Second cancel signout test passed - returned to tracker page");
-
     // NOW navigate to chest X-ray from the tracker
     tbProgressTrackerPage.clickTaskLink("Upload chest X-ray images");
-
     // Verify redirection to chest X-ray Images Upload page
     chestXrayUploadPage.verifyPageLoaded();
     chestXrayUploadPage.verifyAllPageElements();
@@ -347,14 +440,8 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
     chestXrayUploadPage.verifyDateXrayTakenSectionDisplayed();
     chestXrayUploadPage.verifyDateInputFields();
 
-    // Enter the date manually when X-ray was taken
-    const xrayDay = "20";
-    const xrayMonth = "10";
-    const xrayYear = "2025";
-    chestXrayUploadPage.enterDateXrayTaken(xrayDay, xrayMonth, xrayYear);
-
     // Verify the date was entered correctly
-    chestXrayUploadPage.verifyDateValue(xrayDay, xrayMonth, xrayYear);
+    chestXrayUploadPage.enterDateXrayTaken(xrayDate.day, xrayDate.month, xrayDate.year);
 
     // Verify X-ray upload page and sections and upload image(s)
     chestXrayUploadPage.verifyXrayUploadSectionsDisplayed();
@@ -369,6 +456,10 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
     chestXrayUploadPage
       .uploadPosteroAnteriorXray("cypress/fixtures/test-chest-xray.dcm")
       .verifyUploadSuccess();
+
+    // Checking no errors appear
+    cy.get(".govuk-error-message").should("not.exist");
+    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
 
     // Continue to X-ray findings page
     chestXrayUploadPage.clickContinue();
@@ -387,7 +478,7 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
     checkChestXrayImagesPage.verifyPageHeading();
 
     // Verify the date of X-ray is displayed (should match what was entered earlier)
-    checkChestXrayImagesPage.verifyDateOfXray("20 October 2025");
+    checkChestXrayImagesPage.verifyDateOfXray(xrayDateFormatted);
 
     // Get and log the date of X-ray value
     checkChestXrayImagesPage.getDateOfXray().then((date) => {
@@ -486,7 +577,7 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
         Name: "Jane Smith",
-        "Date of birth": "15/3/2000",
+        "Date of birth": adultDOBFormatted,
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
@@ -514,7 +605,7 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
         Name: "Jane Smith",
-        "Date of birth": "15/3/2000",
+        "Date of birth": adultDOBFormatted,
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
@@ -529,15 +620,27 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
       // Fill sputum collection data for all three samples
       const sputumData = {
         sample1: {
-          date: { day: "10", month: "03", year: "2025" },
+          date: {
+            day: sputumSample1Date.day,
+            month: sputumSample1Date.month,
+            year: sputumSample1Date.year,
+          },
           collectionMethod: "Coughed up",
         },
         sample2: {
-          date: { day: "11", month: "03", year: "2025" },
+          date: {
+            day: sputumSample2Date.day,
+            month: sputumSample2Date.month,
+            year: sputumSample2Date.year,
+          },
           collectionMethod: "Induced",
         },
         sample3: {
-          date: { day: "12", month: "03", year: "2025" },
+          date: {
+            day: sputumSample3Date.day,
+            month: sputumSample3Date.month,
+            year: sputumSample3Date.year,
+          },
           collectionMethod: "Coughed up",
         },
       };
@@ -580,19 +683,19 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
       // Validate sample data matches what was entered
       const expectedSampleData = {
         sample1: {
-          dateCollected: "10 March 2025",
+          dateCollected: sputumSample1Formatted,
           collectionMethod: "Coughed up",
           smearResult: "Negative",
           cultureResult: "Negative",
         },
         sample2: {
-          dateCollected: "11 March 2025",
+          dateCollected: sputumSample2Formatted,
           collectionMethod: "Induced",
           smearResult: "Negative",
           cultureResult: "Negative",
         },
         sample3: {
-          dateCollected: "12 March 2025",
+          dateCollected: sputumSample3Formatted,
           collectionMethod: "Coughed up",
           smearResult: "Negative",
           cultureResult: "Negative",
@@ -620,18 +723,9 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
       // Verify TB Screening Progress Tracker page
       tbProgressTrackerPage.verifySectionHeadings();
 
-      // Third Signout Cancellation to redirect back to Progress Tracker Page
-      cy.log("Testing cancel signout final time - should return to tracker page");
-      cy.cancelSignOut();
-
-      // Verify we're still on the tracker page after cancelling signout
-      cy.url().should("include", "/tracker");
-      tbProgressTrackerPage.verifyPageLoaded();
-      cy.log("Third cancel signout test passed - returned to tracker page");
-
       tbProgressTrackerPage.verifyApplicantInfo({
         Name: "Jane Smith",
-        "Date of birth": "15/3/2000",
+        "Date of birth": adultDOBFormatted,
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });

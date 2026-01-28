@@ -4,6 +4,7 @@ import { useLocation, useNavigate, useSearchParams } from "react-router";
 
 import { putTravelDetails } from "@/api/api";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
+import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import Spinner from "@/components/spinner/spinner";
 import SubmitButton from "@/components/submitButton/submitButton";
@@ -84,13 +85,11 @@ const ApplicantTravelVisaCategory = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
 
+        <Heading level={1} size="l" title="Proposed visa category" style={{ marginBottom: 10 }} />
+
         <div ref={visaCategoryRef}>
           <Radio
             id="visa-category"
-            heading="Proposed visa category"
-            headingLevel={1}
-            headingSize="l"
-            headingStyle={{ marginBottom: 30 }}
             answerOptions={visaOptions.map((option) => option.value)}
             errorMessage={errors?.visaCategory?.message ?? ""}
             formValue="visaCategory"
