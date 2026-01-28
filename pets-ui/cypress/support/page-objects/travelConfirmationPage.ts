@@ -17,7 +17,7 @@ export class TravelConfirmationPage extends BasePage {
     cy.get(".govuk-panel--confirmation").should("be.visible");
     cy.get(".govuk-panel__title")
       .should("be.visible")
-      .and("contain", "Travel information confirmed");
+      .and("contain", "UK travel information confirmed");
     return this;
   }
 
@@ -69,7 +69,7 @@ export class TravelConfirmationPage extends BasePage {
     cy.get(".govuk-panel--confirmation").should("be.visible");
     cy.get(".govuk-panel__title")
       .should("be.visible")
-      .and("contain", "Travel information confirmed");
+      .and("contain", "UK travel information confirmed");
     return this;
   }
 

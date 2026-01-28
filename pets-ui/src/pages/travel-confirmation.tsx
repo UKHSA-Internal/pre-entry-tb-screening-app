@@ -19,9 +19,9 @@ export default function TravelConfirmation() {
   }, []);
 
   return (
-    <Container title="Travel information confirmed - Complete UK pre-entry health screening - GOV.UK">
+    <Container title="UK travel information confirmed - Complete UK pre-entry health screening - GOV.UK">
       <Confirmation
-        confirmationText={"Travel information confirmed"}
+        confirmationText={"UK travel information confirmed"}
         furtherInfo={["You can now return to the progress tracker."]}
         buttonText={"Continue"}
         buttonLink={"/tracker"}
