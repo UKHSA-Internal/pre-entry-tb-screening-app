@@ -31,20 +31,6 @@ export abstract class IApplication {
   }
 }
 
-abstract class ICancelApplication {
-  readonly applicationId: string;
-  cancellationReason: string;
-  updatedBy: string;
-  dateUpdated: Date;
-
-  constructor(details: ICancelApplication) {
-    this.applicationId = details.applicationId;
-    this.cancellationReason = details.cancellationReason;
-    this.updatedBy = details.updatedBy;
-    this.dateUpdated = details.dateUpdated;
-  }
-}
-
 export type NewApplication = Omit<IApplication, "dateCreated" | "status">;
 
 export class Application extends IApplication {
@@ -63,6 +49,7 @@ export class Application extends IApplication {
       ...this,
       dateCreated: this.dateCreated.toISOString(),
       dateUpdated: this.dateUpdated?.toISOString(),
+      expiryDate: this.expiryDate?.toISOString(),
       updatedBy: this.updatedBy,
       pk: Application.getPk(this.applicationId),
       sk: Application.sk,
@@ -98,22 +85,20 @@ export class Application extends IApplication {
     }
   }
 
-  static async cancelApplication(details: Omit<ICancelApplication, "dateUpdated">) {
+  static async updateApplication(details: Partial<IApplication>) {
     try {
-      logger.info("Updating Applicaton status");
-      const application = await this.getByApplicationId(details.applicationId);
+      logger.info("Updating Applicaton details");
+      const application = await this.getByApplicationId(details.applicationId!);
 
       if (!application) {
         throw new Error("Could not fetch the application with the given applicationId");
       }
 
-      const updatedDetails = {
-        ...application,
-        status: ApplicationStatus.cancelled,
-        cancellationReason: details.cancellationReason,
+      const updatedDetails = Object.assign(application, {
+        ...details,
         updatedBy: details.updatedBy,
         dateUpdated: new Date(),
-      };
+      });
 
       // Create Application class instance to have access to toJson() function
       const updatedApplication = new Application(updatedDetails);
