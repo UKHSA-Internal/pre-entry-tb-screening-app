@@ -87,11 +87,7 @@ export class SputumDecisionInfoPage extends BasePage {
     cy.contains("h2.govuk-heading-m", "Now send the sputum decision").should("be.visible");
     cy.contains(
       "p.govuk-body",
-      "You will not be able to change the collection details and results after you submit this information.",
-    ).should("be.visible");
-    cy.contains(
-      "p.govuk-body",
-      "However, you will be able to return and complete any information that you have not provided.",
+      "You will not be able to change the sputum decision after you submit this information.",
     ).should("be.visible");
     return this;
   }
@@ -100,7 +96,7 @@ export class SputumDecisionInfoPage extends BasePage {
   verifyWarningText(): SputumDecisionInfoPage {
     cy.get("p.govuk-body").should(
       "contain",
-      "You will not be able to change the collection details and results after you submit this information",
+      "You will not be able to change the sputum decision after you submit this information.",
     );
     return this;
   }
