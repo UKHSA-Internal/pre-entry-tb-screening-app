@@ -16,7 +16,7 @@ export const errorMessages = [
   "Home address must contain only letters, numbers, spaces and punctuation",
   "Home address must contain only letters, numbers, spaces and punctuation",
   "Town name must contain only letters, spaces and punctuation",
-  "Province/state name must contain only letters, spaces and punctuation",
+  "Province or state name must contain only letters, spaces and punctuation",
   "Enter the applicant's passport number",
   "Select the country of issue",
   "Enter UK mobile number",

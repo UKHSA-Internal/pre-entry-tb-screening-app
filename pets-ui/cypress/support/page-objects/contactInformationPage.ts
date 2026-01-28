@@ -50,7 +50,7 @@ export class ContactInformationPage extends BasePage {
       errorContainer: "#address-3.govuk-form-group--error",
     },
 
-    // Town/city field
+    // Town or city field
     townOrCity: {
       container: "#town-or-city",
       input: '[data-testid="town-or-city"]',
@@ -61,7 +61,7 @@ export class ContactInformationPage extends BasePage {
       errorContainer: "#town-or-city.govuk-form-group--error",
     },
 
-    // Province/state field
+    // Province or state field
     provinceOrState: {
       container: "#province-or-state",
       input: '[data-testid="province-or-state"]',
@@ -920,10 +920,10 @@ export class ContactInformationPage extends BasePage {
     // Address line 3
     cy.get(this.selectors.addressLine3.label).should("have.attr", "for", "address-3-field");
 
-    // Town/city
+    // Town or city
     cy.get(this.selectors.townOrCity.label).should("have.attr", "for", "town-or-city-field");
 
-    // Province/state
+    // Province or state
     cy.get(this.selectors.provinceOrState.label).should(
       "have.attr",
       "for",
