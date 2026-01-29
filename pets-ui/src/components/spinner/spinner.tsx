@@ -14,7 +14,12 @@ export default function Spinner() {
   return (
     <div id="spinner-container" data-testid="spinner-container">
       <div id="spinner-overlay" data-testid="spinner-overlay">
-        <div id="spinner" data-testid="spinner" />
+        <div id="spinner-box" data-testid="spinner-box">
+          <div id="spinner" data-testid="spinner" />
+          <p id="spinner-text" className="govuk-heading-m">
+            Loading...
+          </p>
+        </div>
       </div>
     </div>
   );
