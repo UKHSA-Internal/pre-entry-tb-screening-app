@@ -64,8 +64,9 @@ describe("Tests for Application Model", () => {
 
     // Act
     await expect(
-      Application.cancelApplication({
+      Application.updateApplication({
         applicationId: "Bad0ne",
+        status: ApplicationStatus.cancelled,
         cancellationReason: "IDK",
         updatedBy: createdBy,
       }),
@@ -79,8 +80,9 @@ describe("Tests for Application Model", () => {
 
     // Act
     await expect(
-      Application.cancelApplication({
+      Application.updateApplication({
         applicationId: "Bad0ne",
+        status: ApplicationStatus.cancelled,
         cancellationReason: "IDK",
         updatedBy: createdBy,
       }),
@@ -132,8 +134,10 @@ describe("Tests for Application Model", () => {
     });
 
     // Act
-    const application = await Application.cancelApplication({
+    const application = await Application.updateApplication({
+      // These are the args that are used by cancel application handler
       applicationId,
+      status: ApplicationStatus.cancelled,
       cancellationReason: "not needed",
       updatedBy: createdBy,
     });
@@ -157,6 +161,55 @@ describe("Tests for Application Model", () => {
       cancellationReason: "not needed",
       expiryDate: undefined,
       dateUpdated: new Date(expectedDateTime).toISOString(),
+      updatedBy: createdBy,
+    });
+  });
+
+  test("Change application status related to TB Certificate details", async () => {
+    const dateCreated = "2025-02-07";
+    vi.useFakeTimers();
+    const expectedDateTime = "2025-03-04";
+    vi.setSystemTime(expectedDateTime);
+    ddbMock.on(GetCommand).resolves({
+      Item: {
+        applicationId,
+        clinicId,
+        createdBy,
+        dateCreated,
+        status: ApplicationStatus.inProgress,
+        pk: `APPLICATION#${applicationId}`,
+        sk: "APPLICANT#DETAILS",
+      },
+    });
+
+    // Act
+    const application = await Application.updateApplication({
+      // These are the args that are used by cancel application handler
+      applicationId,
+      status: ApplicationStatus.certificateAvailable,
+      expiryDate: new Date("2027-06-06"),
+      updatedBy: createdBy,
+    });
+
+    // Assert
+    expect(application).toMatchObject({
+      applicationId,
+      clinicId,
+      createdBy,
+      dateCreated: new Date("2025-02-07"),
+      status: "Certificate Available",
+      cancellationReason: undefined,
+      dateUpdated: new Date(expectedDateTime),
+      updatedBy: createdBy,
+    });
+    // Checking toJson() output
+    expect(application.toJson()).toMatchObject({
+      applicationId,
+      dateCreated: "2025-02-07T00:00:00.000Z",
+      status: "Certificate Available",
+      cancellationReason: undefined,
+      expiryDate: "2027-06-06T00:00:00.000Z",
+      dateUpdated: "2025-03-04T00:00:00.000Z",
       updatedBy: createdBy,
     });
   });
