@@ -75,7 +75,7 @@ const SputumCollectionForm = () => {
               heading="Date collected"
               headingSize="s"
               headingLevel={3}
-              hint={hintTextList[sampleNumber]}
+              hint={hintTextList[sampleNumber - 1]}
               value={
                 typeof value === "object" && value !== null
                   ? value
