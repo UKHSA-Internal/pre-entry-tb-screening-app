@@ -20,9 +20,9 @@ export const validateApplication = async (request: {
       });
     }
 
-    const CLINIC_ID = process.env.CLINIC_ID;
+    const SUPPORT_CLINIC_ID = process.env.SUPPORT_CLINIC_ID;
     const { clinicId } = event.requestContext.authorizer;
-    if (clinicId !== CLINIC_ID && application.clinicId != clinicId) {
+    if (clinicId !== SUPPORT_CLINIC_ID && application.clinicId != clinicId) {
       logger.error("ClinicId mismatch with existing application");
       return createHttpResponse(403, { message: "Clinic Id mismatch" });
     }
