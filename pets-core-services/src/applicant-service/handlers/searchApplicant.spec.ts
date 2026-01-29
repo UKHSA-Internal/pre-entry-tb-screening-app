@@ -65,7 +65,7 @@ describe("Test for Getting Applicant", () => {
     // Assert
     expect(infoLoggerMock).toHaveBeenNthCalledWith(
       6,
-      "Getting an application from a different clinic then the user's one",
+      "Getting an application for the support clinic",
     );
     expect(response.statusCode).toBe(200);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
