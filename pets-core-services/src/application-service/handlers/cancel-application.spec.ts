@@ -70,7 +70,7 @@ describe("Test for cancel applicantion handler", () => {
 
   test("Unknown error", async () => {
     // Arrange
-    vi.spyOn(Application, "cancelApplication").mockRejectedValue(Error("can't cancel"));
+    vi.spyOn(Application, "updateApplication").mockRejectedValue(Error("can't cancel"));
 
     // Act
     const response = await cancelApplicationHandler({
