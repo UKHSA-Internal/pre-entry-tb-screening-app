@@ -77,6 +77,7 @@ describe("Getting Application Handler", () => {
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toEqual({
       applicationId: seededApplications[1].applicationId,
+      clinicId: "Apollo Clinic",
       // Defined in pets-core-services/src/application-service/fixtures/applicant-photo.ts
       applicantPhotoUrl: seededApplicantPhoto[1].applicantPhotoUrl,
       // Defined in pets-core-services/src/application-service/fixtures/travel-information.ts
@@ -159,6 +160,46 @@ describe("Getting Application Handler", () => {
         status: "completed",
       },
     });
+  });
+
+  test("Fetch application from different clinic as ukhsa staff", async () => {
+    // Arrange
+    const event: PetsAPIGatewayProxyEvent = {
+      ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+      },
+      pathParameters: { applicationId: seededApplications[1].applicationId },
+    };
+
+    // Act
+    const response = await getApplicationHandler(event);
+    // Assert
+    expect(response.statusCode).toBe(200);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(JSON.parse(response.body)?.applicationId as string).toEqual(
+      seededApplications[1].applicationId,
+    );
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(JSON.parse(response.body)?.clinicId).toEqual("Apollo Clinic");
+  });
+
+  test("Error while fetching application from different clinic", async () => {
+    // Arrange
+    const event: PetsAPIGatewayProxyEvent = {
+      ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "other one", createdBy: "hardcoded@user.com" },
+      },
+      pathParameters: { applicationId: seededApplications[1].applicationId },
+    };
+
+    // Act
+    const response = await getApplicationHandler(event);
+    // Assert
+    expect(response.statusCode).toBe(403);
   });
 
   test("Fetch application returns error", async () => {

@@ -43,6 +43,31 @@ describe("Generating signed PUT url for DICOM Upload", () => {
     });
   });
 
+  test("Upload url should be generated successfully for ukhsa staff from different clinic", async () => {
+    const event: GenerateUploadEvent = {
+      ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+      },
+      pathParameters: { applicationId: seededApplications[1].applicationId },
+      parsedBody: uploadInfo,
+    };
+
+    // Act
+    const response = await generateImageUploadUrlHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toMatchObject({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      uploadUrl: expect.stringContaining(
+        "http://test.co.uk/dicom/Apollo%20Clinic/BRB/ABC1234JANE/generated-app-id-2/test-file-name",
+      ),
+      bucketPath: "dicom/Apollo Clinic/BRB/ABC1234JANE/generated-app-id-2/test-file-name",
+    });
+  });
+
   test("400 error when applicant info is missing", async () => {
     const event: GenerateUploadEvent = {
       ...mockAPIGwEvent,

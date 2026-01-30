@@ -16,6 +16,7 @@ export type SearchApplicantEvent = PetsAPIGatewayProxyEvent & {
 };
 
 export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
+  const SUPPORT_CLINIC_ID = process.env.SUPPORT_CLINIC_ID;
   try {
     logger.info("Search applicant details handler triggered");
 
@@ -62,9 +63,13 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
       return createHttpResponse(400, { message: "Clinic Id missing" });
     }
 
-    if (application.clinicId !== clinicId) {
+    if (clinicId !== SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
       logger.error("Clinic Id mismatch");
       return createHttpResponse(403, { message: "Clinic Id mismatch" });
+    }
+
+    if (clinicId === SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
+      logger.info("Getting an application for the support clinic");
     }
 
     return createHttpResponse(200, [

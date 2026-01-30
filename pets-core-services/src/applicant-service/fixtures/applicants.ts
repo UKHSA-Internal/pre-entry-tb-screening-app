@@ -61,4 +61,25 @@ export const seededApplicants: NewApplicant[] = [
     postcode: "1234",
     createdBy: "mike.jones@clinic.com",
   },
+  // This one is to test error handling caused by
+  // inability to fetch application (as it does not exist)
+  {
+    applicationId: "non-existing one",
+    fullName: "Marco Polo",
+    passportNumber: "ITS0042TEST",
+    countryOfNationality: CountryCode.ISL,
+    countryOfIssue: CountryCode.ISL,
+    issueDate: "2025-12-12",
+    expiryDate: "2026-12-12",
+    dateOfBirth: "1970-04-01",
+    sex: AllowedSex.Female,
+    applicantHomeAddress1: "42 High Street",
+    applicantHomeAddress2: "Long Valley",
+    applicantHomeAddress3: "Otherworld",
+    townOrCity: "Akranes",
+    provinceOrState: "Vesturland",
+    country: CountryCode.ISL,
+    postcode: "IC0001AK",
+    createdBy: "marco.polo@universe.com",
+  },
 ];

@@ -7,6 +7,7 @@ import { assertEnvExists } from "../../shared/config";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { ApplicantDbOps } from "../../shared/models/applicant";
+import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { generateImageObjectkey, KeyParameters } from "../helpers/upload";
 import { ChestXRay } from "../models/chest-xray";
@@ -36,9 +37,17 @@ export const saveChestXRayHandler = async (event: SaveChestXrayEvent) => {
       });
     }
 
-    const { clinicId, createdBy } = event.requestContext.authorizer;
+    const { createdBy } = event.requestContext.authorizer;
+    // at this point application must contain correct data.
+    // If there was no application with this ID, it would be caught while searching for one.
+    const application = await Application.getByApplicationId(applicationId);
+
     //validate xray images
-    const validationError = await validateImages(parsedBody, applicationId, clinicId);
+    const validationError = await validateImages(
+      parsedBody,
+      applicationId,
+      application?.clinicId as string,
+    );
     if (validationError) {
       return createHttpResponse(400, { message: validationError });
     }

@@ -10,7 +10,7 @@ describe("Load and validate Clinics from json file", () => {
 
   test("read file with correct path", () => {
     const res = readClinicsFile("src/clinic-service/fixtures/test-file.json");
-    expect(JSON.parse(res as string)).toHaveLength(14);
+    expect(JSON.parse(res as string)).toHaveLength(15);
   });
 
   test("read incorrect file path", () => {
