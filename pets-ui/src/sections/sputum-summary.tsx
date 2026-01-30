@@ -251,7 +251,9 @@ const SputumSummary = () => {
       hiddenLabel: string;
     } = {
       key: "Date collected",
-      value: hasCollectionData ? formatDateForDisplay(sample.collection.dateOfSample) : "No data",
+      value: hasCollectionData
+        ? formatDateForDisplay(sample.collection.dateOfSample)
+        : "Not provided",
       hiddenLabel: `date sample ${sampleNumber} was taken`,
     };
 
@@ -267,7 +269,7 @@ const SputumSummary = () => {
       hiddenLabel: string;
     } = {
       key: "Collection method",
-      value: sample.collection.collectionMethod || "No data",
+      value: sample.collection.collectionMethod || "Not provided",
       hiddenLabel: `collection method for sample ${sampleNumber}`,
     };
 
@@ -283,7 +285,7 @@ const SputumSummary = () => {
       hiddenLabel: string;
     } = {
       key: "Smear result",
-      value: hasSmearResult ? sample.smearResults.smearResult : "No data",
+      value: hasSmearResult ? sample.smearResults.smearResult : "Not provided",
       hiddenLabel: `smear result for sample ${sampleNumber}`,
     };
 
@@ -299,7 +301,7 @@ const SputumSummary = () => {
       hiddenLabel: string;
     } = {
       key: "Culture result",
-      value: hasCultureResult ? sample.cultureResults.cultureResult : "No data",
+      value: hasCultureResult ? sample.cultureResults.cultureResult : "Not provided",
       hiddenLabel: `culture result for sample ${sampleNumber}`,
     };
 

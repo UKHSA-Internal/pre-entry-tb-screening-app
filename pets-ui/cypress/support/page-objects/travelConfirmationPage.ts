@@ -17,14 +17,15 @@ export class TravelConfirmationPage extends BasePage {
     cy.get(".govuk-panel--confirmation").should("be.visible");
     cy.get(".govuk-panel__title")
       .should("be.visible")
-      .and("contain", "Travel information confirmed");
+      .and("contain", "UK travel information confirmed");
     return this;
   }
 
   // Verify what happens next text
   verifyNextStepsText(): TravelConfirmationPage {
     cy.contains("h2", "What happens next").should("be.visible");
-    cy.contains("p", "You can now return to the progress tracker.").should("be.visible");
+    cy.contains("p", "We have sent the UK travel information to UKHSA.").should("be.visible");
+    cy.contains("p", "You can now view a summary for this visa applicant.").should("be.visible");
     return this;
   }
 
@@ -69,7 +70,7 @@ export class TravelConfirmationPage extends BasePage {
     cy.get(".govuk-panel--confirmation").should("be.visible");
     cy.get(".govuk-panel__title")
       .should("be.visible")
-      .and("contain", "Travel information confirmed");
+      .and("contain", "UK travel information confirmed");
     return this;
   }
 

@@ -182,7 +182,7 @@ const ApplicantContactDetailsForm = () => {
         <div ref={townRef}>
           <FreeText
             id="town-or-city"
-            label="Town/city"
+            label="Town or city"
             errorMessage={errors?.townOrCity?.message ?? ""}
             formValue="townOrCity"
             required="Enter the town or city of the applicant's home address"
@@ -195,12 +195,12 @@ const ApplicantContactDetailsForm = () => {
         <div ref={provinceRef}>
           <FreeText
             id="province-or-state"
-            label="Province/state"
+            label="Province or state"
             errorMessage={errors?.provinceOrState?.message ?? ""}
             formValue="provinceOrState"
             required="Enter the province or state of the applicant's home address"
             patternValue={formRegex.lettersSpacesAndPunctuation}
-            patternError="Province/state name must contain only letters, spaces and punctuation"
+            patternError="Province or state name must contain only letters, spaces and punctuation"
             defaultValue={applicantData.provinceOrState}
           />
         </div>

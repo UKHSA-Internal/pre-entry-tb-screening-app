@@ -82,20 +82,20 @@ export class CheckSputumSampleInfoPage extends BasePage {
     return this;
   }
 
-  // methid to verify "No data" is displayed for empty results
+  // methid to verify "Not provided" is displayed for empty results
   verifySampleShowsNoData(sampleNumber: number, fieldKey: string): CheckSputumSampleInfoPage {
-    this.verifySampleSummaryValue(sampleNumber, fieldKey, "No data");
+    this.verifySampleSummaryValue(sampleNumber, fieldKey, "Not provided");
     return this;
   }
 
-  // Verify sample shows "No data" for both result fields
+  // Verify sample shows "Not provided" for both result fields
   verifySampleResultsShowNoData(sampleNumber: number): CheckSputumSampleInfoPage {
     this.verifySampleShowsNoData(sampleNumber, "Smear result");
     this.verifySampleShowsNoData(sampleNumber, "Culture result");
     return this;
   }
 
-  // Verify sample has actual result data (not "No data")
+  // Verify sample has actual result data (not "Not provided")
   verifySampleHasResultData(
     sampleNumber: number,
     smearResult: string,
@@ -241,7 +241,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
     return this;
   }
 
-  // Verify first and second samples have data, third shows "No data"
+  // Verify first and second samples have data, third shows "Not provided"
   verifyFirstTwoSamplesHaveData(
     sample1: { smearResult: string; cultureResult: string },
     sample2: { smearResult: string; cultureResult: string },
@@ -263,7 +263,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
     return this;
   }
 
-  // Verify all three samples show "No data" for results
+  // Verify all three samples show "Not provided" for results
   verifyAllSamplesShowNoData(): CheckSputumSampleInfoPage {
     this.verifySampleResultsShowNoData(1);
     this.verifySampleResultsShowNoData(2);
@@ -336,7 +336,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
 
     // Test results change link (sample 1) - only if data exists
     this.getSampleSummaryValue(1, "Smear result").then((smearValue) => {
-      if (smearValue !== "No data") {
+      if (smearValue !== "Not provided") {
         this.clickSampleChangeLink(1, "Smear result");
         cy.url().should("include", "/sputum-results");
         cy.go("back");
@@ -456,7 +456,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
     });
 
     // Verify result values
-    const validResults = ["Negative", "Positive", "Inconclusive", "No data"];
+    const validResults = ["Negative", "Positive", "Inconclusive", "Not provided"];
     [1, 2, 3].forEach((sampleNum) => {
       this.getSampleSummaryValue(sampleNum, "Smear result").should("be.oneOf", validResults);
       this.getSampleSummaryValue(sampleNum, "Culture result").should("be.oneOf", validResults);
@@ -470,12 +470,12 @@ export class CheckSputumSampleInfoPage extends BasePage {
     return this;
   }
 
-  // Verify scenario where sample 1 has negative smear and positive culture, other samples show no data
+  // Verify scenario where sample 1 has negative smear and positive culture, other samples show Not provided
   verifySample1MixedScenario(): CheckSputumSampleInfoPage {
     // Sample 1 should have: Negative smear, Positive culture
     this.verifySampleHasResultData(1, "Negative", "Positive");
 
-    // No Data for the other fields - Samples 2 and 3 should show "No data" for results
+    // Not provided for the other fields - Samples 2 and 3 should show "Not provided" for results
     this.verifySampleResultsShowNoData(2);
     this.verifySampleResultsShowNoData(3);
     return this;
@@ -486,10 +486,10 @@ export class CheckSputumSampleInfoPage extends BasePage {
     [1, 2, 3].forEach((sampleNum) => {
       if (completedSamples.includes(sampleNum)) {
         // Sample should have actual result data
-        this.getSampleSummaryValue(sampleNum, "Smear result").should("not.eq", "No data");
-        this.getSampleSummaryValue(sampleNum, "Culture result").should("not.eq", "No data");
+        this.getSampleSummaryValue(sampleNum, "Smear result").should("not.eq", "Not provided");
+        this.getSampleSummaryValue(sampleNum, "Culture result").should("not.eq", "Not provided");
       } else {
-        // Sample should show "No data"
+        // Sample should show "Not provided"
         this.verifySampleResultsShowNoData(sampleNum);
       }
     });
@@ -504,7 +504,7 @@ export class CheckSputumSampleInfoPage extends BasePage {
       [1, 2, 3].forEach((sampleNum) => {
         this.getSampleSummaryValue(sampleNum, "Smear result").then((smearValue) => {
           this.getSampleSummaryValue(sampleNum, "Culture result").then((cultureValue) => {
-            if (smearValue !== "No data" && cultureValue !== "No data") {
+            if (smearValue !== "Not provided" && cultureValue !== "Not provided") {
               count++;
             }
           });

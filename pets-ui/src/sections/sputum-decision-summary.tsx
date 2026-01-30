@@ -67,9 +67,7 @@ const SputumDecisionSummary = () => {
         <div>
           <Heading title="Now send the sputum decision" level={2} size="m" />
           <p className="govuk-body">
-            You will not be able to change the collection details and results after you submit this
-            information. However, you will be able to return and complete any information that you
-            have not provided.
+            You will not be able to change the sputum decision after you submit this information.
           </p>
           <Button
             id="submit"
