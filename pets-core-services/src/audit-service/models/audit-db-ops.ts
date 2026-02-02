@@ -1,5 +1,5 @@
 import { AttributeValue } from "@aws-sdk/client-dynamodb";
-import { paginateListObjectsV2, S3ServiceException } from "@aws-sdk/client-s3";
+import { _Object, paginateListObjectsV2, S3ServiceException } from "@aws-sdk/client-s3";
 import { PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
 import { DynamoDBRecord } from "aws-lambda";
@@ -144,23 +144,35 @@ const getCloudTrailLogs = async (): Promise<SourceType> => {
   const bucketName = process.env.S3_AUDIT_LOGS_BUCKET;
   const pageSize = "50";
 
-  const objects = [];
   try {
     const paginator = paginateListObjectsV2(
       { client, pageSize: Number.parseInt(pageSize) },
       { Bucket: bucketName },
     );
 
+    let theNewest: _Object | undefined = undefined;
+
     for await (const page of paginator) {
       if (page?.Contents) {
-        objects.push(page.Contents.map((o) => o.Key));
+        if (!theNewest) {
+          theNewest = page?.Contents[0];
+        }
+        for (const obj of page.Contents) {
+          if (
+            obj?.LastModified &&
+            theNewest?.LastModified &&
+            obj.LastModified > theNewest.LastModified
+          ) {
+            theNewest = obj;
+          }
+        }
       } else {
         break;
       }
     }
-    objects.forEach((objectList, pageNum) => {
-      logger.info(`Page ${pageNum + 1}\n------\n${objectList.map((o) => `• ${o}`).join("\n")}\n`);
-    });
+    if (theNewest !== undefined) {
+      logger.info(`The newest element: ${JSON.stringify(theNewest)}`);
+    }
   } catch (caught) {
     if (caught instanceof S3ServiceException && caught.name === "NoSuchBucket") {
       logger.error(
@@ -176,36 +188,4 @@ const getCloudTrailLogs = async (): Promise<SourceType> => {
   }
 
   return SourceType.app;
-
-  // try {
-  //   const objectKey = "";
-
-  //   // const SSE_ALGORITHM = "aws:kms"; // value for x-amz-server-side-encryption
-  //   const command = new HeadObjectCommand({
-  //     Bucket: IMAGE_BUCKET,
-  //     Key: objectKey,
-  //   });
-
-  //   let data: HeadBucketCommandOutput;
-
-  //   try {
-  //     data = await s3Client.send(command);
-  //   } catch (error) {
-  //     if (error instanceof S3ServiceException && error.$metadata?.httpStatusCode === 404) {
-  //       logger.error("Object does not exist");
-
-  //       return SourceType.app;
-  //     }
-  //     throw error;
-  //   }
-
-  //   const exists = data.$metadata.httpStatusCode === 200;
-  //   logger.info({ exists }, "Check Result");
-
-  //   return SourceType.app;
-  // } catch (error) {
-  //   logger.error(error, "Error generating uploading url");
-
-  //   return SourceType.app;
-  // }
 };
