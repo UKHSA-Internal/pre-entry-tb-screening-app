@@ -1,4 +1,5 @@
 import { AttributeValue } from "@aws-sdk/client-dynamodb";
+import { paginateListObjectsV2, S3ServiceException } from "@aws-sdk/client-s3";
 import { PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
 import { DynamoDBRecord } from "aws-lambda";
@@ -86,6 +87,7 @@ export class AuditDbOps {
       if (!email) logger.info("Missing email (updatedBy or createdBy field)");
 
       let source = SourceType.app;
+      source = await getCloudTrailLogs();
 
       // Figure out the right string related to API source
       if (changeDetails?.source && changeDetails.source === "api") {
@@ -99,7 +101,7 @@ export class AuditDbOps {
         updatedBy: email ?? "",
         eventType: record.eventName,
         // Application (App/API) - Application, API (for IOM) or Console
-        source: source ? (source as SourceType) : SourceType.app,
+        source: source ? source : SourceType.app,
         // applicant-details / application-details
         sourceTable: tableName,
         changeDetails: oldImage
@@ -135,3 +137,75 @@ export class AuditDbOps {
     }
   }
 }
+
+const getCloudTrailLogs = async (): Promise<SourceType> => {
+  logger.info("Getting CloudTrail logs from S3");
+  const client = awsClients.s3Client;
+  const bucketName = process.env.S3_AUDIT_LOGS_BUCKET;
+  const pageSize = "50";
+
+  const objects = [];
+  try {
+    const paginator = paginateListObjectsV2(
+      { client, pageSize: Number.parseInt(pageSize) },
+      { Bucket: bucketName },
+    );
+
+    for await (const page of paginator) {
+      if (page?.Contents) {
+        objects.push(page.Contents.map((o) => o.Key));
+      } else {
+        break;
+      }
+    }
+    objects.forEach((objectList, pageNum) => {
+      logger.info(`Page ${pageNum + 1}\n------\n${objectList.map((o) => `• ${o}`).join("\n")}\n`);
+    });
+  } catch (caught) {
+    if (caught instanceof S3ServiceException && caught.name === "NoSuchBucket") {
+      logger.error(
+        `Error from S3 while listing objects for "${bucketName}". The bucket doesn't exist.`,
+      );
+    } else if (caught instanceof S3ServiceException) {
+      logger.error(
+        `Error from S3 while listing objects for "${bucketName}".  ${caught.name}: ${caught.message}`,
+      );
+    } else {
+      throw caught;
+    }
+  }
+
+  return SourceType.app;
+
+  // try {
+  //   const objectKey = "";
+
+  //   // const SSE_ALGORITHM = "aws:kms"; // value for x-amz-server-side-encryption
+  //   const command = new HeadObjectCommand({
+  //     Bucket: IMAGE_BUCKET,
+  //     Key: objectKey,
+  //   });
+
+  //   let data: HeadBucketCommandOutput;
+
+  //   try {
+  //     data = await s3Client.send(command);
+  //   } catch (error) {
+  //     if (error instanceof S3ServiceException && error.$metadata?.httpStatusCode === 404) {
+  //       logger.error("Object does not exist");
+
+  //       return SourceType.app;
+  //     }
+  //     throw error;
+  //   }
+
+  //   const exists = data.$metadata.httpStatusCode === 200;
+  //   logger.info({ exists }, "Check Result");
+
+  //   return SourceType.app;
+  // } catch (error) {
+  //   logger.error(error, "Error generating uploading url");
+
+  //   return SourceType.app;
+  // }
+};
