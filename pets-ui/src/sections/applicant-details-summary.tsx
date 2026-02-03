@@ -173,7 +173,7 @@ const ApplicantReview = () => {
       key: "Photo",
       value: applicantData.applicantPhotoFileName,
       link: "/upload-visa-applicant-photo?from=check-visa-applicant-details",
-      hiddenLabel: "photo",
+      hiddenLabel: "applicant photo",
     },
   ];
 
