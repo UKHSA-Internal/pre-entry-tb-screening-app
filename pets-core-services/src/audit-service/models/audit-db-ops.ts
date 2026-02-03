@@ -1,5 +1,12 @@
 import { AttributeValue } from "@aws-sdk/client-dynamodb";
-import { _Object, paginateListObjectsV2, S3ServiceException } from "@aws-sdk/client-s3";
+import {
+  _Object,
+  GetObjectCommand,
+  NoSuchKey,
+  paginateListObjectsV2,
+  S3Client,
+  S3ServiceException,
+} from "@aws-sdk/client-s3";
 import { PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
 import { DynamoDBRecord } from "aws-lambda";
@@ -89,8 +96,7 @@ export class AuditDbOps {
       let source = SourceType.app;
       source = await getCloudTrailLogs();
 
-      // Figure out the right string related to API source
-      if (changeDetails?.source && changeDetails.source === "api") {
+      if (source && source === SourceType.api) {
         source = SourceType.api;
       }
       logger.info(`Returned event source: ${source}`);
@@ -143,6 +149,7 @@ const getCloudTrailLogs = async (): Promise<SourceType> => {
   const client = awsClients.s3Client;
   const bucketName = process.env.S3_AUDIT_LOGS_BUCKET;
   const pageSize = "50";
+  const source = SourceType.app;
 
   try {
     const paginator = paginateListObjectsV2(
@@ -154,7 +161,7 @@ const getCloudTrailLogs = async (): Promise<SourceType> => {
 
     for await (const page of paginator) {
       if (page?.Contents) {
-        if (!theNewest) {
+        if (theNewest === undefined) {
           theNewest = page?.Contents[0];
         }
         for (const obj of page.Contents) {
@@ -173,6 +180,15 @@ const getCloudTrailLogs = async (): Promise<SourceType> => {
     if (theNewest !== undefined) {
       logger.info(`The newest element: ${JSON.stringify(theNewest)}`);
     }
+
+    const cloudTrailLog = await getFileFromS3(client, theNewest?.Key as string);
+
+    if (cloudTrailLog) {
+      // TODO: return proper value based on logs content
+      return source;
+    }
+
+    return source;
   } catch (caught) {
     if (caught instanceof S3ServiceException && caught.name === "NoSuchBucket") {
       logger.error(
@@ -186,6 +202,45 @@ const getCloudTrailLogs = async (): Promise<SourceType> => {
       throw caught;
     }
   }
+  logger.info(`Returning 'source' as: ${source}`);
 
-  return SourceType.app;
+  return source;
+};
+
+const getFileFromS3 = async (
+  client: S3Client,
+  key: string = "",
+): Promise<string | undefined | void> => {
+  const bucketName = process.env.S3_AUDIT_LOGS_BUCKET;
+
+  if (!key) {
+    logger.info("No file was found in S3 logs");
+
+    return;
+  }
+
+  try {
+    const response = await client.send(
+      new GetObjectCommand({
+        Bucket: bucketName,
+        Key: key,
+      }),
+    );
+    // The Body object also has 'transformToByteArray' and 'transformToWebStream' methods.
+    const str = await response.Body!.transformToString();
+    logger.info(str);
+    return str;
+  } catch (caught) {
+    if (caught instanceof NoSuchKey) {
+      logger.error(
+        `Error from S3 while getting object "${key}" from "${bucketName}". No such key exists.`,
+      );
+    } else if (caught instanceof S3ServiceException) {
+      logger.error(
+        `Error from S3 while getting object from ${bucketName}.  ${caught.name}: ${caught.message}`,
+      );
+    } else {
+      throw caught;
+    }
+  }
 };
