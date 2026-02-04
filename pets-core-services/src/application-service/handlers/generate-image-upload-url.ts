@@ -7,7 +7,7 @@ import awsClients from "../../shared/clients/aws";
 import { assertEnvExists, isLocal, isTest } from "../../shared/config";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
-import { ApplicantDbOps } from "../../shared/models/applicant";
+import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { generateImageObjectkey } from "../helpers/upload";
 import { ImageType } from "../types/enums";
@@ -56,14 +56,17 @@ export const generateImageUploadUrlHandler = async (event: GenerateUploadEvent) 
         });
       }
     }
-    const applicant = await ApplicantDbOps.getByApplicationId(applicationId);
-    if (!applicant) {
-      logger.error("Application does not have an applicant");
-      return createHttpResponse(400, { message: "Invalid Application - No Applicant" });
+    const application = await Application.getByApplicationId(applicationId);
+    if (!application) {
+      logger.error("Application does not exist");
+      return createHttpResponse(400, {
+        message: "Invalid Application: Application does not exist",
+      });
     }
 
     const objectKey = generateImageObjectkey({
-      applicant,
+      passportNumber: application.passportNumber,
+      countryOfIssue: application.countryOfIssue,
       clinicId: event.requestContext.authorizer.clinicId,
       fileName: parsedBody.fileName,
       imageType,

@@ -1,14 +1,24 @@
-import { GetCommand, PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
+import {
+  GetCommand,
+  PutCommand,
+  PutCommandInput,
+  QueryCommand,
+  QueryCommandInput,
+} from "@aws-sdk/lib-dynamodb";
 
 import awsClients from "../clients/aws";
+import { assertEnvExists } from "../config";
+import { CountryCode } from "../country";
 import { logger } from "../logger";
 import { ApplicationStatus } from "../types/enum";
+import { ApplicantBase } from "./applicant";
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
 export abstract class IApplication {
   readonly applicationId: string;
-
+  passportNumber: string;
+  countryOfIssue: CountryCode;
   clinicId: string;
   dateCreated: Date;
   createdBy: string;
@@ -20,6 +30,8 @@ export abstract class IApplication {
 
   constructor(details: IApplication) {
     this.applicationId = details.applicationId;
+    this.passportNumber = details.passportNumber;
+    this.countryOfIssue = details.countryOfIssue;
     this.clinicId = details.clinicId;
     this.dateCreated = details.dateCreated;
     this.createdBy = details.createdBy;
@@ -53,6 +65,7 @@ export class Application extends IApplication {
       updatedBy: this.updatedBy,
       pk: Application.getPk(this.applicationId),
       sk: Application.sk,
+      applicantId: ApplicantBase.getPassportId(this.countryOfIssue, this.passportNumber),
     };
     return dbItem;
   }
@@ -120,7 +133,7 @@ export class Application extends IApplication {
     }
   }
 
-  static async getByApplicationId(applicationId: string) {
+  static async getByApplicationId(applicationId: string): Promise<Application | null> {
     try {
       logger.info("fetching Application Details");
 
@@ -137,19 +150,67 @@ export class Application extends IApplication {
       const applicationDbItem = data.Item;
 
       if (!applicationDbItem) {
-        logger.info("No application found");
-        return;
+        logger.info("No appliction found");
+        return null;
       }
 
       logger.info("Application fetched successfully");
 
       const dbItem = applicationDbItem as ReturnType<Application["todbItem"]>;
+      const { countryOfIssue, passportNumber } = ApplicantBase.parsePassportId(dbItem.applicantId);
 
       const application = new Application({
         ...dbItem,
+        passportNumber: passportNumber,
+        countryOfIssue: countryOfIssue,
         dateCreated: new Date(dbItem.dateCreated),
       });
       return application;
+    } catch (error) {
+      logger.error(error, "Error retrieving application");
+      throw error;
+    }
+  }
+
+  static async getByApplicantId(
+    passportNumber: string,
+    countryOfIssue: CountryCode,
+  ): Promise<Application[]> {
+    try {
+      logger.info("fetching All Applications of the applicant");
+
+      const params: QueryCommandInput = {
+        TableName: this.getTableName(),
+        IndexName: assertEnvExists(process.env.APLLICANT_ID_INDEX),
+        KeyConditionExpression: `passportId = :passportId`,
+        ExpressionAttributeValues: {
+          ":passportId": ApplicantBase.getPassportId(countryOfIssue, passportNumber),
+        },
+      };
+
+      const command = new QueryCommand(params);
+      const data = await docClient.send(command);
+
+      if (!data.Items || (data.Items && data.Items?.length < 1)) {
+        logger.info("No applicantions found");
+        return [];
+      }
+
+      logger.info({ resultCount: data.Items.length }, "Applicaton details fetched successfully");
+
+      const results = data.Items as ReturnType<Application["todbItem"]>[];
+
+      return results.map((dbItem) => {
+        const { countryOfIssue, passportNumber } = ApplicantBase.parsePassportId(
+          dbItem.applicantId,
+        );
+        return new Application({
+          ...dbItem,
+          passportNumber: passportNumber,
+          countryOfIssue: countryOfIssue,
+          dateCreated: new Date(dbItem.dateCreated),
+        });
+      });
     } catch (error) {
       logger.error(error, "Error retrieving application");
       throw error;

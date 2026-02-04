@@ -1,14 +1,22 @@
 import { describe, expect, test } from "vitest";
 
+import { CountryCode } from "../../shared/country";
 import { mockAPIGwEvent } from "../../test/mocks/events";
-import { createApplicationHandler } from "./create-application";
+import { createApplicationHandler, SaveApplicationEvent } from "./create-application";
 
+const newApplication: SaveApplicationEvent["parsedBody"] = {
+  passportNumber: "test-passport-id",
+  countryOfIssue: CountryCode.ALA,
+};
 describe("Test for create applicantion handler", () => {
   test("Application is generated successfully", async () => {
     // Arrange
-
+    const event: SaveApplicationEvent = {
+      ...mockAPIGwEvent,
+      parsedBody: newApplication,
+    };
     // Act
-    const response = await createApplicationHandler(mockAPIGwEvent);
+    const response = await createApplicationHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(200);
@@ -19,9 +27,13 @@ describe("Test for create applicantion handler", () => {
   });
 
   test("No duplicate Application is generated", async () => {
+    const event: SaveApplicationEvent = {
+      ...mockAPIGwEvent,
+      parsedBody: newApplication,
+    };
     // Act
-    const responseOne = await createApplicationHandler(mockAPIGwEvent);
-    const responseTwo = await createApplicationHandler(mockAPIGwEvent);
+    const responseOne = await createApplicationHandler(event);
+    const responseTwo = await createApplicationHandler(event);
 
     // Assert
     const responseBodyOne = JSON.parse(responseOne.body);

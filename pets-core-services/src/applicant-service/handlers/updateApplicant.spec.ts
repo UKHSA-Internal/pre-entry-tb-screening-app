@@ -23,6 +23,8 @@ const applicantDetails: PutApplicantEvent["parsedBody"] = {
   provinceOrState: "the-province",
   postcode: "the-post-code",
   country: CountryCode.ALA,
+  passportNumber: "test",
+  countryOfIssue: CountryCode.ALA,
 };
 
 const newApplicantDetails: PostApplicantEvent["parsedBody"] = {

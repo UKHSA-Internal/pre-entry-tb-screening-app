@@ -1,11 +1,9 @@
 import { CountryCode } from "../../shared/country";
-import { seededApplications } from "../../shared/fixtures/application";
 import { NewApplicant } from "../../shared/models/applicant";
 import { AllowedSex } from "../types/enums";
 
 export const seededApplicants: NewApplicant[] = [
   {
-    applicationId: seededApplications[1].applicationId,
     fullName: "Jane Doe",
     passportNumber: "ABC1234JANE",
     countryOfNationality: CountryCode.BRB,
@@ -24,7 +22,6 @@ export const seededApplicants: NewApplicant[] = [
     createdBy: "shane.park@iom.com",
   },
   {
-    applicationId: seededApplications[2].applicationId,
     fullName: "Dave Jones",
     passportNumber: "ABC1234DAVE",
     countryOfNationality: CountryCode.MAR,
@@ -43,7 +40,6 @@ export const seededApplicants: NewApplicant[] = [
     createdBy: "shawn.jones@clinic.com",
   },
   {
-    applicationId: seededApplications[3].applicationId,
     fullName: "Kathy Jones",
     passportNumber: "ABC1234KAT",
     countryOfNationality: CountryCode.ARG,

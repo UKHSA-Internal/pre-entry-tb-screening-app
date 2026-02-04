@@ -5,12 +5,15 @@ import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import { seededApplicants } from "../../applicant-service/fixtures/applicants";
+import { AllowedSex } from "../../applicant-service/types/enums";
 import awsClients from "../../shared/clients/aws";
+import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { ApplicationStatus, TaskStatus } from "../../shared/types/enum";
 import { context, mockAPIGwEvent } from "../../test/mocks/events";
+import { SaveApplicationEvent } from "../handlers/create-application";
 import { APPLICANT_PHOTOS_FOLDER } from "../helpers/upload";
 import { SputumDetailsDbOps } from "../models/sputum-details";
 import {
@@ -25,11 +28,57 @@ import {
 } from "../types/enums";
 import { handler } from "./application";
 
+// Mock getByApplicationId from Applicant model
+vi.mock("../../shared/models/applicant", () => ({
+  ApplicantDbOps: {
+    getByApplicationId: vi.fn().mockResolvedValue({
+      fullName: "John Doe",
+      passportNumber: "test-passport-id",
+      countryOfNationality: CountryCode.ALA,
+      countryOfIssue: CountryCode.ALA,
+      issueDate: "2025-01-01",
+      expiryDate: "2030-01-01",
+      dateOfBirth: "2000-02-07",
+      sex: AllowedSex.Female,
+      applicantHomeAddress1: "First Line of Address",
+      applicantHomeAddress2: "Second Line of Address",
+      applicantHomeAddress3: "Third Line of Address",
+      townOrCity: "the-town-or-city",
+      provinceOrState: "the-province",
+      postcode: "the-post-code",
+      country: CountryCode.ALA,
+      createdBy: "test-applicant-creator",
+    }),
+    findByPassportId: vi.fn().mockResolvedValue({
+      fullName: "John Doe",
+      passportNumber: "test-passport-id",
+      countryOfNationality: CountryCode.ALA,
+      countryOfIssue: CountryCode.ALA,
+      issueDate: "2025-01-01",
+      expiryDate: "2030-01-01",
+      dateOfBirth: "2000-02-07",
+      sex: AllowedSex.Female,
+      applicantHomeAddress1: "First Line of Address",
+      applicantHomeAddress2: "Second Line of Address",
+      applicantHomeAddress3: "Third Line of Address",
+      townOrCity: "the-town-or-city",
+      provinceOrState: "the-province",
+      postcode: "the-post-code",
+      country: CountryCode.ALA,
+      createdBy: "test-applicant-creator",
+    }),
+  },
+}));
 describe("Test for Application Lambda", () => {
   test("Creating an Application Successfully", async () => {
+    const newApplication: SaveApplicationEvent["parsedBody"] = {
+      passportNumber: "test-passport-id",
+      countryOfIssue: CountryCode.ALA,
+    };
     // Arrange
-    const event: PetsAPIGatewayProxyEvent = {
+    const event: SaveApplicationEvent = {
       ...mockAPIGwEvent,
+      parsedBody: newApplication,
       resource: "/application",
       path: "/application",
       httpMethod: "POST",

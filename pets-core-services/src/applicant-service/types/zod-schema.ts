@@ -11,6 +11,13 @@ export const ApplicantBaseSchema = z.object({
   fullName: z.string().optional().openapi({
     description: "Full name of Applicant",
   }),
+  passportNumber: z.string().openapi({
+    description: "PassportNumber of Applicant",
+  }),
+
+  countryOfIssue: z.nativeEnum(CountryCode).openapi({
+    description: "Passport Issue Country",
+  }),
   countryOfNationality: z.nativeEnum(CountryCode).optional().openapi({
     description: "Applicant's nationality",
   }),

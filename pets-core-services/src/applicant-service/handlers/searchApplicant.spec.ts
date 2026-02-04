@@ -60,7 +60,6 @@ describe("Test for Getting Applicant", () => {
     // Arrange
     await ApplicantDbOps.createNewApplicant({
       ...seededApplicants[0],
-      applicationId: "duplicate-application-id",
     });
 
     const event: SearchApplicantEvent = {

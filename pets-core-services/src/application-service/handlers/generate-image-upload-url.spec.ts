@@ -43,10 +43,10 @@ describe("Generating signed PUT url for DICOM Upload", () => {
     });
   });
 
-  test("400 error when applicant info is missing", async () => {
+  test("400 error when application is invalid", async () => {
     const event: GenerateUploadEvent = {
       ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[0].applicationId },
+      pathParameters: { applicationId: "Invalid-ID" },
       parsedBody: uploadInfo,
     };
 
@@ -56,7 +56,7 @@ describe("Generating signed PUT url for DICOM Upload", () => {
     // Assert
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Invalid Application - No Applicant",
+      message: "Invalid Application: Application does not exist",
     });
   });
 
@@ -152,10 +152,10 @@ describe("Generating signed PUT url for Photo Upload", () => {
     });
   });
 
-  test("400 error when applicant info is missing", async () => {
+  test("400 error when application id is invalid", async () => {
     const event: GenerateUploadEvent = {
       ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[0].applicationId },
+      pathParameters: { applicationId: "Invalid-Id" },
       parsedBody: uploadInfo,
     };
 
@@ -165,7 +165,7 @@ describe("Generating signed PUT url for Photo Upload", () => {
     // Assert
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Invalid Application - No Applicant",
+      message: "Invalid Application: Application does not exist",
     });
   });
 

@@ -9,7 +9,7 @@ import { ApplicantPhoto, IApplicantPhoto } from "./applicant-photo";
 // Mock direct dependencies
 vi.mock("../../shared/models/applicant", () => ({
   ApplicantDbOps: {
-    getByApplicationId: vi.fn(),
+    findByPassportId: vi.fn(),
   },
 }));
 
@@ -27,8 +27,10 @@ const mockApplicant = {
 const applicationId = "app-123";
 const clinicId = "clinic-456";
 const objectKey = "photos/applicant-1/app-123.jpg";
+const passportNumber = "passport-number";
+const countryOfIssue = CountryCode.IND;
 // Type-safe access to mocked modules
-const mockedApplicantDbOps = vi.mocked(ApplicantDbOps, true).getByApplicationId;
+const mockedApplicantDbOps = vi.mocked(ApplicantDbOps, true).findByPassportId;
 const mockedGenerateImageObjectkey = vi.mocked(generateImageObjectkey, true); // true = function
 
 describe("ApplicantPhoto.getByApplicationId", () => {
@@ -44,10 +46,16 @@ describe("ApplicantPhoto.getByApplicationId", () => {
       .spyOn(ImageHelper, "getPresignedUrlforImage")
       .mockResolvedValue("https://signed.url");
 
-    const result = await ApplicantPhoto.getByApplicationId(applicationId, clinicId);
+    const result = await ApplicantPhoto.getByApplicationId(
+      applicationId,
+      clinicId,
+      passportNumber,
+      countryOfIssue,
+    );
 
     expect(generateImageObjectkey).toHaveBeenCalledWith({
-      applicant: mockApplicant,
+      countryOfIssue: CountryCode.IND,
+      passportNumber: "passport-number",
       clinicId,
       fileName: "applicant-photo",
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -59,8 +67,13 @@ describe("ApplicantPhoto.getByApplicationId", () => {
   });
 
   it("returns undefined if applicant not found", async () => {
-    mockedApplicantDbOps.mockResolvedValue(undefined);
-    const result = await ApplicantPhoto.getByApplicationId(applicationId, clinicId);
+    mockedApplicantDbOps.mockResolvedValue(null);
+    const result = await ApplicantPhoto.getByApplicationId(
+      applicationId,
+      clinicId,
+      passportNumber,
+      countryOfIssue,
+    );
     expect(result).toBeUndefined();
   });
 
@@ -70,7 +83,12 @@ describe("ApplicantPhoto.getByApplicationId", () => {
 
     vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue(null);
 
-    const result = await ApplicantPhoto.getByApplicationId(applicationId, clinicId);
+    const result = await ApplicantPhoto.getByApplicationId(
+      applicationId,
+      clinicId,
+      passportNumber,
+      countryOfIssue,
+    );
     expect(result).toBeUndefined();
   });
 
@@ -80,9 +98,9 @@ describe("ApplicantPhoto.getByApplicationId", () => {
 
     vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockRejectedValue(new Error("S3 error"));
 
-    await expect(ApplicantPhoto.getByApplicationId(applicationId, clinicId)).rejects.toThrow(
-      "S3 error",
-    );
+    await expect(
+      ApplicantPhoto.getByApplicationId(applicationId, clinicId, passportNumber, countryOfIssue),
+    ).rejects.toThrow("S3 error");
   });
 });
 

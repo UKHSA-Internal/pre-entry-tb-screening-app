@@ -1,5 +1,6 @@
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
+import { ApplicantDbOps } from "../../shared/models/applicant";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { ApplicantPhoto } from "../models/applicant-photo";
@@ -20,12 +21,28 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
     const application = await Application.getByApplicationId(applicationId);
     if (!application) return createHttpResponse(404, { message: "Application does not exist" });
 
+    let applicant = await ApplicantDbOps.findByPassportId(
+      application.countryOfIssue,
+      application.passportNumber,
+    );
+    if (!applicant && application.applicationId) {
+      applicant = await ApplicantDbOps.getByApplicationId(application.applicationId);
+    }
+    if (!applicant) {
+      logger.error("Application does not have an applicant");
+      return createHttpResponse(400, { message: "Invalid Application - No Applicant" });
+    }
     if (application.clinicId != event.requestContext.authorizer.clinicId) {
       logger.error("ClinicId mismatch");
       return createHttpResponse(403, { message: "Clinic Id mismatch" });
     }
     const clinicId = application.clinicId;
-    const applicantPhotoUrl = await ApplicantPhoto.getByApplicationId(applicationId, clinicId);
+    const applicantPhotoUrl = await ApplicantPhoto.getByApplicationId(
+      applicationId,
+      clinicId,
+      application.passportNumber,
+      application.countryOfIssue,
+    );
     const travelInformation = await TravelInformationDbOps.getByApplicationId(applicationId);
     const medicalScreening = await MedicalScreeningDbOps.getByApplicationId(applicationId);
     const chestXray = await ChestXRay.getByApplicationId(applicationId);

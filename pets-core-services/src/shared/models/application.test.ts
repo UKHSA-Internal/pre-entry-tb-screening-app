@@ -3,6 +3,7 @@ import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
+import { CountryCode } from "../country";
 import { ApplicationStatus } from "../types/enum";
 import { Application } from "./application";
 
@@ -16,6 +17,8 @@ describe("Tests for Application Model", () => {
   const clinicId = "test-clinic-id";
   const createdBy = "test-email";
   const applicationId = "test-application-id";
+  const passportNumber = "Test";
+  const countryOfIssue = CountryCode.IND;
 
   test("Creating new application", async () => {
     // Arrange
@@ -29,6 +32,8 @@ describe("Tests for Application Model", () => {
       clinicId,
       createdBy,
       applicationId,
+      passportNumber,
+      countryOfIssue,
     });
 
     // Assert
@@ -81,6 +86,8 @@ describe("Tests for Application Model", () => {
     // Act
     await expect(
       Application.updateApplication({
+        passportNumber: "TEST1",
+        countryOfIssue: CountryCode.IND,
         applicationId: "Bad0ne",
         status: ApplicationStatus.cancelled,
         cancellationReason: "IDK",

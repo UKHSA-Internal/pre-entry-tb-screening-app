@@ -6,12 +6,12 @@ import awsClients from "../../shared/clients/aws";
 import { assertEnvExists } from "../../shared/config";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
-import { ApplicantDbOps } from "../../shared/models/applicant";
+import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { generateImageObjectkey, KeyParameters } from "../helpers/upload";
 import { ChestXRay } from "../models/chest-xray";
 import { ImageType } from "../types/enums";
-import { ApplicantNotFound, InvalidObjectKey, ObjectNotFound } from "../types/errors";
+import { ApplicationNotFound, InvalidObjectKey, ObjectNotFound } from "../types/errors";
 import { ChestXRayRequestSchema } from "../types/zod-schema";
 
 export type ChestXRayRequestSchema = z.infer<typeof ChestXRayRequestSchema>;
@@ -70,9 +70,9 @@ async function validateImages(images: ChestXRayImages, applicationId: string, cl
     await validateChestXRayImages(images, { applicationId, clinicId });
     return null;
   } catch (error) {
-    if (error instanceof ApplicantNotFound) {
-      logger.error(error, "Applicant not found");
-      return "Invalid Application - No Applicant";
+    if (error instanceof ApplicationNotFound) {
+      logger.error(error, "Application not found");
+      return "Invalid Application: Application does not exist";
     }
     if (error instanceof InvalidObjectKey) {
       logger.error(error, "Object key does not match expected");
@@ -120,11 +120,13 @@ const checkIfExists = async (objectKey: string) => {
 };
 
 const validateObjectKey = async (value: string, expectedKeyParameters: KeyParameters) => {
-  const { applicant, clinicId, applicationId, fileName, imageType } = expectedKeyParameters;
+  const { passportNumber, countryOfIssue, clinicId, applicationId, fileName, imageType } =
+    expectedKeyParameters;
   logger.info({ applicationId, clinicId, fileName }, "Validating object key");
 
   const expectedObjectKey = generateImageObjectkey({
-    applicant,
+    passportNumber,
+    countryOfIssue,
     clinicId,
     applicationId,
     fileName,
@@ -156,15 +158,15 @@ const validateChestXRayImages = async (
 ) => {
   logger.info({ applicationInfo }, "Validating Uploaded Chest X-Ray Images");
   const { applicationId } = applicationInfo;
-  const applicant = await ApplicantDbOps.getByApplicationId(applicationId);
-  if (!applicant) {
-    logger.error("Application does not have an applicant");
-    throw new ApplicantNotFound("Invalid Application - No Applicant");
+  const application = await Application.getByApplicationId(applicationId);
+  if (!application) {
+    logger.error("Application does not exist");
+    throw new ApplicationNotFound("Application not found");
   }
-
   const { clinicId } = applicationInfo;
   await validateObjectKey(images.posteroAnteriorXray, {
-    applicant,
+    passportNumber: application.passportNumber,
+    countryOfIssue: application.countryOfIssue,
     applicationId,
     clinicId,
     fileName: "postero-anterior.dcm",
@@ -173,7 +175,8 @@ const validateChestXRayImages = async (
 
   if (images.apicalLordoticXray) {
     await validateObjectKey(images.apicalLordoticXray, {
-      applicant,
+      passportNumber: application.passportNumber,
+      countryOfIssue: application.countryOfIssue,
       applicationId,
       clinicId,
       fileName: "apical-lordotic.dcm",
@@ -183,7 +186,8 @@ const validateChestXRayImages = async (
 
   if (images.lateralDecubitusXray) {
     await validateObjectKey(images.lateralDecubitusXray, {
-      applicant,
+      passportNumber: application.passportNumber,
+      countryOfIssue: application.countryOfIssue,
       applicationId,
       clinicId,
       fileName: "lateral-decubitus.dcm",
@@ -191,4 +195,5 @@ const validateChestXRayImages = async (
     });
   }
   logger.info({ applicationInfo }, "Validation Completed");
+  return;
 };

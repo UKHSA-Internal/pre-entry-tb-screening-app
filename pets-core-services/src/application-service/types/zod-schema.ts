@@ -1,6 +1,7 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 
+import { CountryCode } from "../../shared/country";
 import { ApplicationStatus, TaskStatus } from "../../shared/types/enum";
 import {
   ChestXRayNotTakenReason,
@@ -16,6 +17,15 @@ import {
 } from "./enums";
 
 extendZodWithOpenApi(z);
+
+export const ApplicationRequestSchema = z.object({
+  passportNumber: z.string().openapi({
+    description: "PassportNumber of Applicant",
+  }),
+  countryOfIssue: z.nativeEnum(CountryCode).openapi({
+    description: "Passport Issue Country",
+  }),
+});
 
 export const CreateApplicationResponseSchema = z.object({
   applicationId: z.string().openapi({

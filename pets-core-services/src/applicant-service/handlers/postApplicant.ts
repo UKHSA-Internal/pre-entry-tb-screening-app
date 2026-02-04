@@ -51,12 +51,12 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
       return createHttpResponse(403, { message: "Clinic Id mismatch" });
     }
 
-    const existingApplicants = await ApplicantDbOps.findByPassportId(
+    const existingApplicant = await ApplicantDbOps.findByPassportId(
       parsedBody.countryOfIssue,
       parsedBody.passportNumber,
     );
 
-    if (existingApplicants.length) {
+    if (existingApplicant) {
       logger.error("An applicant with similar information already exists");
       return createHttpResponse(400, {
         message: "A record with this applicant details has already been saved",
@@ -67,7 +67,6 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
     try {
       applicant = await ApplicantDbOps.createNewApplicant({
         ...parsedBody,
-        applicationId,
         createdBy,
       });
     } catch (error) {
