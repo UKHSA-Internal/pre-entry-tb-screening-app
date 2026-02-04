@@ -18,6 +18,7 @@ import { saveTravelInformationHandler as createTravelInformationHandler } from "
 import { updateTravelInformationHandler } from "../handlers/update-travel-information";
 import { setApplicationIdContext } from "../middlewares/application-logger-context";
 import { validateApplication } from "../middlewares/application-validation";
+import { YesOrNo } from "../types/enums";
 import {
   ApplicationSchema,
   CancelApplicationRequestSchema,
@@ -124,6 +125,11 @@ export const routes: PetsRoute[] = [
       .before(setApplicationIdContext)
       .before(validateApplication)
       .handler(saveChestXRayHandler),
+    queryParams: {
+      requireValidation: z.nativeEnum(YesOrNo, {
+        description: "Disable Validation if set as No",
+      }),
+    },
     requestBodySchema: ChestXRayRequestSchema.openapi({
       description: "Chest Xray of an Applicant",
     }),

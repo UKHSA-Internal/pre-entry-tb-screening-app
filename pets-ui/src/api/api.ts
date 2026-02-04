@@ -146,7 +146,7 @@ export const postChestXrayDetails = async (
   applicationId: string,
   chestXrayDetails: PostedChestXrayUnionType,
 ) => {
-  const result = await petsApi.post(`/application/${applicationId}/chest-xray`, chestXrayDetails);
+  const result = await petsApi.post(`/application/${applicationId}/chest-xray?requireValidation=Yes`, chestXrayDetails);
   return { status: result.status, statusText: result.statusText };
 };
 

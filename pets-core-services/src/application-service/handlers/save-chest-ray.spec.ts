@@ -8,6 +8,7 @@ import { logger } from "../../shared/logger";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededChestXray } from "../fixtures/chest-xray";
 import { ChestXRay } from "../models/chest-xray";
+import { YesOrNo } from "../types/enums";
 import { SaveChestXrayEvent, saveChestXRayHandler } from "./save-chest-ray";
 
 const newChestXray: SaveChestXrayEvent["parsedBody"] = {
@@ -101,6 +102,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[3].applicationId },
+      queryStringParameters: { requireValidation: YesOrNo.Yes },
       parsedBody: {
         ...newChestXray,
         posteroAnteriorXray: "invalid-object-key",
@@ -120,6 +122,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[3].applicationId },
+      queryStringParameters: { requireValidation: YesOrNo.Yes },
       parsedBody: newChestXray,
     };
 
@@ -144,6 +147,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[3].applicationId },
+      queryStringParameters: { requireValidation: YesOrNo.Yes },
       parsedBody: newChestXray,
     };
 
@@ -161,6 +165,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[0].applicationId },
+      queryStringParameters: { requireValidation: YesOrNo.Yes },
       parsedBody: newChestXray,
     };
 
