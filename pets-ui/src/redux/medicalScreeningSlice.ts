@@ -5,7 +5,6 @@ import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "@/utils/en
 
 const initialState: ReduxMedicalScreeningType = {
   status: ApplicationStatus.NOT_YET_STARTED,
-  age: "",
   tbSymptoms: "",
   tbSymptomsList: [],
   otherSymptomsDetail: "",
@@ -34,9 +33,6 @@ export const medicalScreeningSlice = createSlice({
   reducers: {
     setMedicalScreeningStatus: (state, action: PayloadAction<ApplicationStatus>) => {
       state.status = action.payload;
-    },
-    setAge: (state, action: PayloadAction<string>) => {
-      state.age = action.payload;
     },
     setMedicalScreeningCompletionDate: (state, action: PayloadAction<DateType>) => {
       state.completionDate = action.payload;
@@ -87,7 +83,6 @@ export const medicalScreeningSlice = createSlice({
       state.reasonXrayNotRequiredFurtherDetails = action.payload;
     },
     setMedicalScreeningDetails: (state, action: PayloadAction<ReduxMedicalScreeningType>) => {
-      state.age = action.payload.age;
       state.completionDate = action.payload.completionDate;
       state.tbSymptoms = action.payload.tbSymptoms;
       state.tbSymptomsList = action.payload.tbSymptomsList
@@ -112,7 +107,6 @@ export const medicalScreeningSlice = createSlice({
     },
     clearMedicalScreeningDetails: (state) => {
       state.status = ApplicationStatus.NOT_YET_STARTED;
-      state.age = "";
       state.tbSymptoms = "";
       state.tbSymptomsList = [];
       state.otherSymptomsDetail = "";
@@ -142,7 +136,6 @@ export const medicalScreeningSlice = createSlice({
         action.payload.status == BackendApplicationStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
           : ApplicationStatus.IN_PROGRESS;
-      state.age = action.payload.age.toString();
       state.tbSymptoms = action.payload.symptomsOfTb;
       state.tbSymptomsList = action.payload.symptoms ? [...action.payload.symptoms] : [];
       state.otherSymptomsDetail = action.payload.symptomsOther;
@@ -180,7 +173,6 @@ export const medicalScreeningSlice = createSlice({
 
 export const {
   setMedicalScreeningStatus,
-  setAge,
   setMedicalScreeningCompletionDate,
   setTbSymptoms,
   setTbSymptomsList,

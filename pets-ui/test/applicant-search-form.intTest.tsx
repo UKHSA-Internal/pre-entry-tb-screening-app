@@ -97,7 +97,6 @@ const emptyTravelSlice = {
   visaCategory: "",
 };
 const emptyMedicalSlice = {
-  age: "",
   chestXrayTaken: "",
   closeContactWithTb: "",
   closeContactWithTbDetail: "",
@@ -334,7 +333,6 @@ describe("ApplicantSearchForm", () => {
       visaCategory: "Visitor",
     });
     expect(store.getState().medicalScreening).toEqual({
-      age: "43",
       chestXrayTaken: "",
       closeContactWithTb: "Yes",
       closeContactWithTbDetail: "details1",
@@ -710,7 +708,6 @@ describe("ApplicantSearchForm", () => {
       townOrCity: "Sydney",
     });
     expect(store.getState().medicalScreening).toEqual({
-      age: "43",
       chestXrayTaken: "",
       closeContactWithTb: "Yes",
       closeContactWithTbDetail: "details1",

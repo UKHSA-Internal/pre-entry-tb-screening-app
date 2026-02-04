@@ -43,7 +43,7 @@ const MedicalScreeningReview = () => {
           medicalData.completionDate.day
             ? `${medicalData.completionDate.year}-${medicalData.completionDate.month.padStart(2, "0")}-${medicalData.completionDate.day.padStart(2, "0")}`
             : new Date().toISOString().split("T")[0],
-        age: parseInt(medicalData.age),
+        age: typeof applicantAge.ageInYears == "number" ? applicantAge.ageInYears : -1,
         symptomsOfTb: medicalData.tbSymptoms,
         symptoms: medicalData.tbSymptomsList,
         symptomsOther: medicalData.otherSymptomsDetail,

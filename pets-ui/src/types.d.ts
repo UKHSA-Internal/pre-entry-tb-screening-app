@@ -128,7 +128,6 @@ type ReceivedTravelDetailsType = PostedTravelDetailsType & ReceivedApplicationAt
 // Medical Screening types
 type ReduxMedicalScreeningType = {
   status: ApplicationStatus;
-  age: string;
   tbSymptoms: string;
   tbSymptomsList: string[];
   otherSymptomsDetail: string;
