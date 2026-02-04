@@ -1,4 +1,9 @@
-import { EventMessage, EventType, PublicClientApplication } from "@azure/msal-browser";
+import {
+  EventMessage,
+  EventType,
+  InteractionRequiredAuthError,
+  PublicClientApplication,
+} from "@azure/msal-browser";
 import { beforeEach, describe, expect, it, Mocked, vi } from "vitest";
 
 import { mockAccount, mockAuthResult } from "@/test-data/auth";
@@ -32,6 +37,30 @@ describe("acquireTokenSilently", () => {
       account: mockAccount,
     });
     expect(result).toEqual(mockAuthResult);
+  });
+
+  it("should handle InteractionRequiredAuthError", async () => {
+    mockedMsalInstance.getAllAccounts.mockReturnValue([mockAccount]);
+    mockedMsalInstance.acquireTokenSilent.mockRejectedValue(
+      new InteractionRequiredAuthError("eRr0r!"),
+    );
+
+    // Act & Assert
+    await expect(acquireTokenSilently()).rejects.toBeTruthy();
+  });
+
+  it("should handle InteractionRequiredAuthError", async () => {
+    mockedMsalInstance.getAllAccounts.mockReturnValue([mockAccount]);
+    mockedMsalInstance.acquireTokenSilent.mockRejectedValue(new Error("eRr0r!"));
+    const loggerMock = vi.spyOn(console, "error").mockImplementation(() => null);
+
+    // Act & Assert
+    const result = await acquireTokenSilently();
+    expect(result).toBe(undefined);
+    expect(loggerMock).toHaveBeenCalledWith(
+      { e: Error("eRr0r!") },
+      "Exception caused while acquiring a token",
+    );
   });
 });
 
