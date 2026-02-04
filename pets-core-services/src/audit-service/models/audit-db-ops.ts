@@ -10,6 +10,7 @@ import {
 import { PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
 import { DynamoDBRecord } from "aws-lambda";
+import * as zlib from "zlib";
 
 import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
@@ -147,14 +148,21 @@ export class AuditDbOps {
 const getCloudTrailLogs = async (): Promise<SourceType> => {
   logger.info("Getting CloudTrail logs from S3");
   const client = awsClients.s3Client;
-  const bucketName = process.env.S3_AUDIT_LOGS_BUCKET;
+  // const bucketName = process.env.S3_AUDIT_LOGS_BUCKET;
+  const bucketName = "audit-logs-aw-pets-euw-dev-s3-managementevents";
   const pageSize = "50";
   const source = SourceType.app;
+  const accountId = process.env.AWS_ACCOUNT_ID;
+  const region = process.env.AWS_REGION;
+  const dateStr = new Date(Date.now()).toISOString();
 
   try {
     const paginator = paginateListObjectsV2(
       { client, pageSize: Number.parseInt(pageSize) },
-      { Bucket: bucketName },
+      {
+        Bucket: bucketName,
+        Prefix: `AWSLogs/${accountId}/CloudTrail/${region}/${dateStr.slice(0, 4)}/${dateStr.slice(5, 7)}/${dateStr.slice(8, 10)}/`,
+      },
     );
 
     let theNewest: _Object | undefined = undefined;
@@ -211,7 +219,8 @@ const getFileFromS3 = async (
   client: S3Client,
   key: string = "",
 ): Promise<string | undefined | void> => {
-  const bucketName = process.env.S3_AUDIT_LOGS_BUCKET;
+  // const bucketName = process.env.S3_AUDIT_LOGS_BUCKET;
+  const bucketName = "audit-logs-aw-pets-euw-dev-s3-managementevents";
 
   if (!key) {
     logger.info("No file was found in S3 logs");
@@ -226,10 +235,28 @@ const getFileFromS3 = async (
         Key: key,
       }),
     );
-    // The Body object also has 'transformToByteArray' and 'transformToWebStream' methods.
-    const str = await response.Body!.transformToString();
-    logger.info(str);
-    return str;
+    const zipBody = await streamToBuffer(response.Body);
+    const jsonString = zlib.gunzipSync(zipBody).toString("utf-8");
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const cloudTrail = JSON.parse(jsonString);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    const records: Array<Record<string, string>> = cloudTrail?.Records;
+    let count = 0;
+
+    if (!records) return;
+
+    // Loop through CloudTrail event records
+    for (const eventRecord of records) {
+      if (eventRecord.eventSource === "dynamodb.amazonaws.com") {
+        logger.info(eventRecord, "log record");
+        count += 1;
+      }
+    }
+
+    logger.info(`End of log records (${count})`);
+
+    // TODO: return appropriate detail
+    return SourceType.app;
   } catch (caught) {
     if (caught instanceof NoSuchKey) {
       logger.error(
@@ -244,3 +271,16 @@ const getFileFromS3 = async (
     }
   }
 };
+
+// Helper: stream → buffer
+async function streamToBuffer(stream: any): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    stream.on("data", (chunk: Buffer) => chunks.push(chunk));
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    stream.on("end", () => resolve(Buffer.concat(chunks)));
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    stream.on("error", reject);
+  });
+}
