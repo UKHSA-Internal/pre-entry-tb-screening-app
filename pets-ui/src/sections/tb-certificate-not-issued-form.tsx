@@ -113,7 +113,7 @@ const TbCertificateNotIssuedForm = () => {
         <div ref={commentsRef}>
           <TextArea
             id="physician-comments"
-            label="Physician's notes (Optional)"
+            label="Physician's notes (optional)"
             errorMessage={errors?.comments?.message ?? ""}
             formValue="comments"
             required={false}

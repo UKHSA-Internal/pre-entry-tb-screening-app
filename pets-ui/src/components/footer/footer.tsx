@@ -40,7 +40,7 @@ export default function Footer() {
         <hr style={{ border: "none", borderTop: "1px solid #bbb", margin: "15px 0" }} />
         <div className="govuk-footer__meta">
           <div className="govuk-footer__meta-item govuk-footer__meta-item--grow">
-            <h3 className="govuk-visually-hidden">Support links</h3>
+            <h2 className="govuk-visually-hidden">Support links</h2>
             <ul className="govuk-footer__inline-list">
               <li className="govuk-footer__inline-list-item">
                 <LinkLabel

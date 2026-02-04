@@ -6,33 +6,12 @@ import { describe, expect, it, Mock } from "vitest";
 import CookiesPage from "@/pages/cookies";
 import { renderWithProviders } from "@/utils/test-utils";
 
-// const setCookieConsent = vi.fn((consentValue: string) => {});
-// const updateGoogleAnalyticsConsent = vi.fn();
-// const setShowSubmissionBanner = vi.fn();
-// const focusMock = vi.fn();
-// const scrollMock = vi.fn();
-
-// const bannerRef = {
-//   current: {
-//     focus: focusMock,
-//     scrollIntoView: scrollMock,
-//   },
-// };
-
-// beforeAll(() => {
-//   // Mock scrollIntoView globally
-//   Element.prototype.scrollIntoView = vi.fn();
-
-//   // Mock focus globally
-//   // Element.prototype.focus = vi.fn();
-// });
 let emptyMockFn: Mock;
 
 beforeEach(() => {
   vi.clearAllMocks();
   emptyMockFn = vi.fn();
   window.HTMLElement.prototype.scrollIntoView = emptyMockFn;
-  // window.HTMLElement.prototype.focus = emptyMockFn;
   localStorage.clear();
 });
 

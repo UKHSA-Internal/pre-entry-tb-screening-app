@@ -159,7 +159,7 @@ export class TbCertificateNotIssuedFormPage extends BasePage {
   // Verify form field labels and structure
   verifyFormFieldLabels(): TbCertificateNotIssuedFormPage {
     cy.contains("label", "Declaring Physician's name").should("be.visible");
-    cy.contains("label", "Physician's notes (Optional)").should("be.visible");
+    cy.contains("label", "Physician's notes (optional)").should("be.visible");
     return this;
   }
 
@@ -484,6 +484,68 @@ export class TbCertificateNotIssuedFormPage extends BasePage {
     cy.get("#reason-not-issued").should("be.visible");
     cy.get('input[name="reasonNotIssued"]').should("have.length", 3);
     cy.get('label[for^="reason-not-issued"]').should("have.length", 3);
+    return this;
+  }
+
+  // ===================================
+  // WORD COUNT VALIDATION METHODS
+  // ===================================
+
+  /**
+   * Verify word count message is displayed
+   * Note: The textarea field name is "comments" not "physicianComments"
+   */
+  verifyWordCountMessage(expectedMessage: string): TbCertificateNotIssuedFormPage {
+    cy.get('textarea[name="comments"]')
+      .closest("div")
+      .find(".govuk-character-count__message")
+      .should("contain.text", expectedMessage);
+    return this;
+  }
+
+  /**
+   * Clear the physician comments textarea
+   */
+  clearPhysicianComments(): TbCertificateNotIssuedFormPage {
+    cy.get('textarea[name="comments"]').clear();
+    return this;
+  }
+
+  /**
+   * Test textarea word count validation
+   * Note: This method specifically tests the "comments" field (Physician's notes)
+   * The actual field name in the DOM is "comments" not "physicianComments"
+   */
+  testWordCountValidation(): TbCertificateNotIssuedFormPage {
+    const fieldName = "comments"; // The actual name attribute in the DOM
+
+    // Initial state - 150 words remaining
+    cy.get(`textarea[name="${fieldName}"]`)
+      .closest("div")
+      .should("contain.text", "You have 150 words remaining");
+
+    // Type 1 character - 149 words remaining
+    cy.get(`textarea[name="${fieldName}"]`).clear().type("1");
+    cy.get(`textarea[name="${fieldName}"]`)
+      .closest("div")
+      .should("contain.text", "You have 149 words remaining");
+
+    // Type 3 words - 147 words remaining
+    cy.get(`textarea[name="${fieldName}"]`).clear().type(" 1 2 3 ");
+    cy.get(`textarea[name="${fieldName}"]`)
+      .closest("div")
+      .should("contain.text", "You have 147 words remaining");
+
+    // Type 151 words - 1 word too many
+    cy.get(`textarea[name="${fieldName}"]`)
+      .clear()
+      .type(
+        "This string is 151 words long a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a",
+      );
+    cy.get(`textarea[name="${fieldName}"]`)
+      .closest("div")
+      .should("contain.text", "You have 1 word too many");
+
     return this;
   }
 }

@@ -65,7 +65,7 @@ const ChestXraySummary = () => {
         [chestXrayData.lateralDecubitusXrayFileName ?? ""],
       ),
       link: `/upload-chest-x-ray-images#${attributeToComponentId.posteroAnteriorXrayFileName}`,
-      hiddenLabel: "chest X-rays",
+      hiddenLabel: "chest X-ray images",
     },
   ];
 
