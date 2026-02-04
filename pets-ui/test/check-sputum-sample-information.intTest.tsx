@@ -163,13 +163,13 @@ describe("SputumSummary", () => {
       },
     });
 
-    const noDataTexts = screen.getAllByText("No data");
+    const noDataTexts = screen.getAllByText("Not provided");
     expect(noDataTexts).toHaveLength(12);
 
     const changeLinks = screen.queryAllByRole("link", { name: /Change/ });
     expect(changeLinks).toHaveLength(0);
 
-    const noDataLinks = screen.queryAllByRole("link", { name: "No data" });
+    const noDataLinks = screen.queryAllByRole("link", { name: "Not provided" });
     expect(noDataLinks).toHaveLength(0);
   });
 
@@ -193,7 +193,7 @@ describe("SputumSummary", () => {
     const changeLinks = screen.getAllByRole("link", { name: /Change/ });
     expect(changeLinks).toHaveLength(4);
 
-    const noDataTexts = screen.getAllByText("No data");
+    const noDataTexts = screen.getAllByText("Not provided");
     expect(noDataTexts).toHaveLength(8);
   });
 
@@ -271,7 +271,7 @@ describe("SputumSummary", () => {
     const changeLinks = screen.queryAllByRole("link", { name: /Change/ });
     expect(changeLinks).toHaveLength(0);
 
-    const noDataTexts = screen.getAllByText("No data");
+    const noDataTexts = screen.getAllByText("Not provided");
     expect(noDataTexts).toHaveLength(8);
   });
 
