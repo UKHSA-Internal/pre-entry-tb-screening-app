@@ -8,6 +8,7 @@ import { assertEnvExists, isLocal, isTest } from "../../shared/config";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { ApplicantDbOps } from "../../shared/models/applicant";
+import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { generateImageObjectkey } from "../helpers/upload";
 import { ImageType } from "../types/enums";
@@ -62,9 +63,11 @@ export const generateImageUploadUrlHandler = async (event: GenerateUploadEvent) 
       return createHttpResponse(400, { message: "Invalid Application - No Applicant" });
     }
 
+    const application = await Application.getByApplicationId(applicationId);
+
     const objectKey = generateImageObjectkey({
       applicant,
-      clinicId: event.requestContext.authorizer.clinicId,
+      clinicId: application?.clinicId as string,
       fileName: parsedBody.fileName,
       imageType,
       applicationId,

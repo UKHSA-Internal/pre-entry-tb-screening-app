@@ -42,4 +42,22 @@ describe("Application Validation", () => {
       message: "Clinic Id mismatch",
     });
   });
+
+  test("UKHSA staff from different clinic should not result in error", async () => {
+    // Arrange
+    const event: PetsAPIGatewayProxyEvent = {
+      ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+      },
+      pathParameters: { applicationId: seededApplications[2].applicationId },
+    };
+
+    // Act
+    const response = await validateApplication({ event });
+
+    // Assert
+    expect(response).toBe(undefined);
+  });
 });
