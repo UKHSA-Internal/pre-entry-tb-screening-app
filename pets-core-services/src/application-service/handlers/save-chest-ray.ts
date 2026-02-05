@@ -7,7 +7,6 @@ import { assertEnvExists } from "../../shared/config";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { ApplicantDbOps } from "../../shared/models/applicant";
-import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { generateImageObjectkey, KeyParameters } from "../helpers/upload";
 import { ChestXRay } from "../models/chest-xray";
@@ -39,17 +38,11 @@ export const saveChestXRayHandler = async (event: SaveChestXrayEvent) => {
       });
     }
 
-    const { createdBy } = event.requestContext.authorizer;
+    const { createdBy, clinicId } = event.requestContext.authorizer;
     // Enable validations only if it has been selected as YES
     if (requireValidation && requireValidation == YesOrNo.Yes) {
-      const application = await Application.getByApplicationId(applicationId);
-
       //validate xray images
-      const validationError = await validateImages(
-        parsedBody,
-        applicationId,
-        application?.clinicId as string,
-      );
+      const validationError = await validateImages(parsedBody, applicationId, clinicId);
       if (validationError) {
         return createHttpResponse(400, { message: validationError });
       }

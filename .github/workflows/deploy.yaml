@@ -52,7 +52,6 @@ jobs:
       API_GATEWAY_ID: ${{ vars.API_GATEWAY_ID }}
       VITE_MSAL_CLIENT_ID: ${{ secrets.VITE_MSAL_CLIENT_ID }}
       VITE_MSAL_TENANT_ID: ${{ secrets.VITE_MSAL_TENANT_ID }}
-      SUPPORT_CLINIC_ID: ${{ vars.SUPPORT_CLINIC_ID }}
 
     outputs:
       config: ${{ steps.deployment-config.outputs.deploy_config }}
@@ -100,7 +99,6 @@ jobs:
       VITE_MSAL_CLIENT_ID: ${{ secrets.VITE_MSAL_CLIENT_ID }}
       VITE_MSAL_TENANT_ID: ${{ secrets.VITE_MSAL_TENANT_ID }}
       VITE_SSE_KEY_ID: ${{ vars.SSE_KEY_ID }}
-      SUPPORT_CLINIC_ID: ${{ vars.SUPPORT_CLINIC_ID }}
 
     strategy:
       matrix:
