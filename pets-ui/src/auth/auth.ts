@@ -2,7 +2,6 @@ import {
   AuthenticationResult,
   EventMessage,
   EventType,
-  InteractionRequiredAuthError,
   PublicClientApplication,
   RedirectRequest,
   SilentRequest,
@@ -63,7 +62,7 @@ export const initializeMsal = async () => {
   return msalInstance;
 };
 
-export const acquireTokenSilently = async (): Promise<AuthenticationResult | null | void> => {
+export const acquireTokenSilently = async (): Promise<AuthenticationResult | null> => {
   const accounts = msalInstance.getAllAccounts();
 
   if (accounts.length === 0) {
@@ -75,22 +74,10 @@ export const acquireTokenSilently = async (): Promise<AuthenticationResult | nul
     account: accounts[0],
   };
 
-  try {
-    const accessToken: AuthenticationResult =
-      await msalInstance.acquireTokenSilent(accessTokenRequest);
+  const accessToken: AuthenticationResult =
+    await msalInstance.acquireTokenSilent(accessTokenRequest);
 
-    return accessToken;
-  } catch (e) {
-    if (e instanceof InteractionRequiredAuthError) {
-      console.info("Handling exception caused by InteractionRequiredAuthError");
-
-      return msalInstance.loginRedirect(accessTokenRequest).catch((error: object) => {
-        console.error({ error }, "LoginRedirect failed with the error");
-      });
-    } else {
-      console.error({ e }, "Exception caused while acquiring a token");
-    }
-  }
+  return accessToken;
 };
 
 export const swaggerAuth = async (swagger: any) => {
