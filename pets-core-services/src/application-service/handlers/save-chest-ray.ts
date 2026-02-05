@@ -40,20 +40,19 @@ export const saveChestXRayHandler = async (event: SaveChestXrayEvent) => {
     }
 
     const { createdBy } = event.requestContext.authorizer;
-    // at this point application must contain correct data.
-    // If there was no application with this ID, it would be caught while searching for one.
+    // Enable validations only if it has been selected as YES
     if (requireValidation && requireValidation == YesOrNo.Yes) {
-    const application = await Application.getByApplicationId(applicationId);
+      const application = await Application.getByApplicationId(applicationId);
 
-    //validate xray images
-    const validationError = await validateImages(
-      parsedBody,
-      applicationId,
-      application?.clinicId as string,
-    );
-    if (validationError) {
-      return createHttpResponse(400, { message: validationError });
-    }
+      //validate xray images
+      const validationError = await validateImages(
+        parsedBody,
+        applicationId,
+        application?.clinicId as string,
+      );
+      if (validationError) {
+        return createHttpResponse(400, { message: validationError });
+      }
     }
 
     let chestXray: ChestXRay;
