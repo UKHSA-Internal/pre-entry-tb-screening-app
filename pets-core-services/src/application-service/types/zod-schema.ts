@@ -449,6 +449,9 @@ export const ApplicationSchema = z.object({
   applicationId: z.string().openapi({
     description: "application id",
   }),
+  clinicId: z.string().openapi({
+    description: "Clinic ID",
+  }),
   status: z.nativeEnum(ApplicationStatus).openapi({
     description: "Application current status",
   }),
