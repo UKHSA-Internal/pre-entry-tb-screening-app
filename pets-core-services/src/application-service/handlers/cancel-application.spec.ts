@@ -25,7 +25,7 @@ describe("Test for cancel applicantion handler", () => {
       dateCreated: expect.any(String),
       dateUpdated: expect.any(String),
       updatedBy: mockAPIGwEvent.requestContext.authorizer.createdBy,
-      status: "Cancelled",
+      applicationStatus: "Cancelled",
       cancellationReason: "not needed anymore",
     });
   });

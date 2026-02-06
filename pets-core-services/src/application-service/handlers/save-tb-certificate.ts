@@ -50,7 +50,7 @@ export const saveTbCertificateHandler = async (event: SaveTbCertificateEvent) =>
     }
 
     // Update details in APPLICATION#ROOT record as well
-    const status =
+    const applicationStatus =
       tbCertificate.isIssued === YesOrNo.Yes
         ? ApplicationStatus.certificateAvailable
         : ApplicationStatus.certificateNotIssued;
@@ -61,7 +61,7 @@ export const saveTbCertificateHandler = async (event: SaveTbCertificateEvent) =>
     await Application.updateApplication({
       applicationId: applicationId,
       updatedBy: createdBy,
-      status: status,
+      applicationStatus: applicationStatus,
       expiryDate: expiryDate,
     });
 
