@@ -121,6 +121,7 @@ const ApplicantSearchForm = () => {
 
       const applicantRes = await getApplicants(passportDetails);
       if (applicantRes.data.length === 0) {
+        await fetchClinic(dispatch);
         navigate("/no-visa-applicant-found");
         return;
       }
@@ -128,7 +129,7 @@ const ApplicantSearchForm = () => {
       dispatch(setApplicationId(applicantRes.data[0].applicationId));
 
       const applicationRes = await getApplication(applicantRes.data);
-      const applicationClinicId = applicationRes.data.clinicId;
+      const applicationClinicId = applicationRes.data.clinicId as string | undefined;
       await fetchClinic(dispatch, applicationClinicId);
 
       if (applicationRes.data.applicantPhotoUrl) {
