@@ -181,10 +181,10 @@ export class Application extends IApplication {
 
       const params: QueryCommandInput = {
         TableName: this.getTableName(),
-        IndexName: assertEnvExists(process.env.APLLICANT_ID_INDEX),
-        KeyConditionExpression: `passportId = :passportId`,
+        IndexName: assertEnvExists(process.env.APPLICANT_ID_INDEX),
+        KeyConditionExpression: `applicantId = :applicantId`,
         ExpressionAttributeValues: {
-          ":passportId": ApplicantBase.getPassportId(countryOfIssue, passportNumber),
+          ":applicantId": ApplicantBase.getPassportId(countryOfIssue, passportNumber),
         },
       };
 

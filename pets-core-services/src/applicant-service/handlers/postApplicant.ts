@@ -59,7 +59,7 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
     if (existingApplicant) {
       logger.error("An applicant with similar information already exists");
       return createHttpResponse(400, {
-        message: "A record with this applicant details has already been saved",
+        message: "Applicant Details already saved",
       });
     }
 

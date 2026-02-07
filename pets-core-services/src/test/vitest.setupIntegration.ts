@@ -34,7 +34,7 @@ beforeEach(async () => {
   const applicationServiceGSI = [
     {
       IndexName: process.env.APPLICANT_ID_INDEX,
-      KeySchema: [{ KeyType: KeyType.HASH, AttributeName: "passportId" }],
+      KeySchema: [{ KeyType: KeyType.HASH, AttributeName: "applicantId" }],
       Projection: { ProjectionType: ProjectionType.ALL },
     },
   ];

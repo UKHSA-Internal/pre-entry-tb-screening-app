@@ -105,7 +105,7 @@ describe("Test for Posting Applicant into DB", () => {
     // Assert
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "A record with this applicant details has already been saved",
+      message: "Applicant Details already saved",
     });
   });
 
@@ -113,8 +113,8 @@ describe("Test for Posting Applicant into DB", () => {
     // Arrange
     const parsedBody: PostApplicantEvent["parsedBody"] = {
       ...newApplicantDetails,
-      passportNumber: "new-passport-id",
-      countryOfIssue: CountryCode.FSM,
+      passportNumber: "ABC1234JANE",
+      countryOfIssue: CountryCode.BRB,
     };
     const event: PostApplicantEvent = {
       ...mockAPIGwEvent,
@@ -127,7 +127,9 @@ describe("Test for Posting Applicant into DB", () => {
 
     // Assert
     expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toMatchObject({ message: "Applicant Details already saved" });
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Applicant Details already saved",
+    });
   });
 
   test("Missing required Headers returns a 500 response", async () => {

@@ -108,6 +108,7 @@ describe("Tests for Application Model", () => {
         status: ApplicationStatus.inProgress,
         pk: `APPLICATION#${applicationId}`,
         sk: "APPLICANT#DETAILS",
+        applicantId: `COUNTRY#${countryOfIssue}#PASSPORT#${passportNumber}`,
       },
     });
 
@@ -137,6 +138,7 @@ describe("Tests for Application Model", () => {
         status: ApplicationStatus.inProgress,
         pk: `APPLICATION#${applicationId}`,
         sk: "APPLICANT#DETAILS",
+        applicantId: `COUNTRY#${countryOfIssue}#PASSPORT#${passportNumber}`,
       },
     });
 
@@ -186,6 +188,7 @@ describe("Tests for Application Model", () => {
         status: ApplicationStatus.inProgress,
         pk: `APPLICATION#${applicationId}`,
         sk: "APPLICANT#DETAILS",
+        applicantId: `COUNTRY#${countryOfIssue}#PASSPORT#${passportNumber}`,
       },
     });
 

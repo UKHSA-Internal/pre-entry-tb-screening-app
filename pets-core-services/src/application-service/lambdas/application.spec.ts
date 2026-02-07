@@ -96,7 +96,7 @@ describe("Test for Application Lambda", () => {
     const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
       resource: "/application/{applicationId}",
-      path: `/application/${seededApplications[0].applicationId}`,
+      path: `/application/${seededApplications[1].applicationId}`,
       httpMethod: "GET",
     };
 

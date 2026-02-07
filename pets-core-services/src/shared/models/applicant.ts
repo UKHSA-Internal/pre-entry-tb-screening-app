@@ -183,7 +183,6 @@ export class ApplicantDbOps {
   static todbItem(applicant: Applicant) {
     const dbItem = {
       ...applicant,
-      applicationId: applicant.applicationId,
       dateCreated: applicant.dateCreated.toISOString(),
       issueDate: applicant.issueDate.toISOString(),
       expiryDate: applicant.expiryDate.toISOString(),
