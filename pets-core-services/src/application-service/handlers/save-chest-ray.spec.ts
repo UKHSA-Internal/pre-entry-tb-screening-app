@@ -8,6 +8,7 @@ import { logger } from "../../shared/logger";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededChestXray } from "../fixtures/chest-xray";
 import { ChestXRay } from "../models/chest-xray";
+import { YesOrNo } from "../types/enums";
 import { SaveChestXrayEvent, saveChestXRayHandler } from "./save-chest-ray";
 
 const newChestXray: SaveChestXrayEvent["parsedBody"] = {
@@ -57,6 +58,37 @@ describe("Test for Saving Chest X-ray into DB", () => {
     });
   });
 
+  test("Saving a new Chest X-Ray details in different clinic as ukhsa staff", async () => {
+    // Arrange
+    const event: SaveChestXrayEvent = {
+      ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+      },
+      pathParameters: { applicationId: seededApplications[3].applicationId },
+      parsedBody: newChestXray,
+    };
+
+    // Act
+    const response = await saveChestXRayHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toMatchObject({
+      applicationId: seededApplications[3].applicationId,
+      ...newChestXray,
+      dateXrayTaken: expect.any(String),
+      dateCreated: expect.any(String),
+      apicalLordoticXray:
+        "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/apical-lordotic.dcm",
+      lateralDecubitusXray:
+        "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/lateral-decubitus.dcm",
+      posteroAnteriorXray:
+        "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/postero-anterior.dcm",
+    });
+  });
+
   test("Duplicate post throws a 400 error", async () => {
     // Arrange
     const existingChestXray = seededChestXray[0];
@@ -101,6 +133,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[3].applicationId },
+      queryStringParameters: { requireValidation: YesOrNo.Yes },
       parsedBody: {
         ...newChestXray,
         posteroAnteriorXray: "invalid-object-key",
@@ -120,6 +153,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[3].applicationId },
+      queryStringParameters: { requireValidation: YesOrNo.Yes },
       parsedBody: newChestXray,
     };
 
@@ -144,6 +178,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[3].applicationId },
+      queryStringParameters: { requireValidation: YesOrNo.Yes },
       parsedBody: newChestXray,
     };
 
@@ -161,6 +196,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[0].applicationId },
+      queryStringParameters: { requireValidation: YesOrNo.Yes },
       parsedBody: newChestXray,
     };
 

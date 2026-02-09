@@ -58,6 +58,11 @@ const SputumCollectionForm = () => {
     const dateFieldName = `dateOfSputumSample${sampleNumber}` as keyof SputumCollectionFormFields;
     const methodFieldName =
       `collectionMethodSample${sampleNumber}` as keyof SputumCollectionFormFields;
+    const hintTextList = [
+      "For example, 16 9 2025",
+      "For example, 17 9 2025",
+      "For example, 18 9 2025",
+    ];
 
     return (
       <div>
@@ -70,7 +75,7 @@ const SputumCollectionForm = () => {
               heading="Date collected"
               headingSize="s"
               headingLevel={3}
-              hint="For example, 31 3 2024"
+              hint={hintTextList[sampleNumber - 1]}
               value={
                 typeof value === "object" && value !== null
                   ? value

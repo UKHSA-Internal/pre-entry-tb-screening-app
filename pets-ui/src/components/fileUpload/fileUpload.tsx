@@ -174,7 +174,14 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
             onDragLeave={preventDragDefaults}
           >
             <div className="file-upload-blue-bar">
-              {showExistingFileName ? props.existingFileName : lastFile?.name}
+              {showExistingFileName ? (
+                props.existingFileName
+              ) : (
+                <div aria-live="polite" aria-atomic="true">
+                  <span className="govuk-visually-hidden">Selected file: </span>
+                  {lastFile?.name}
+                </div>
+              )}
               {!showExistingFileName && !lastFile && (
                 <span className="file-upload-no-file">No file chosen</span>
               )}
@@ -199,6 +206,8 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
                 if (typeof rhfRef === "function") rhfRef(el);
               }}
               id={props.id}
+              aria-hidden={true}
+              tabIndex={-1}
               className={inputClass}
               type="file"
               accept={props.type === ImageType.Dicom ? ".dcm" : ""}

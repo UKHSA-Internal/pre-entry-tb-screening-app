@@ -1,29 +1,37 @@
-// Sign Out Functionality Test
+// TBBETA-1586: Test visa category page with radio buttons
 import { countryList } from "../../../src/utils/countryList";
 import { loginViaB2C } from "../../support/commands";
 import { DateUtils } from "../../support/DateUtils";
+import { ApplicantConfirmationPage } from "../../support/page-objects/applicantConfirmationPage";
 import { ApplicantConsentPage } from "../../support/page-objects/applicantConsentPage";
 import { ApplicantDetailsPage } from "../../support/page-objects/applicantDetailsPage";
 import { ApplicantPhotoUploadPage } from "../../support/page-objects/applicantPhotoUploadPage";
 import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchPage";
+import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
+import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
 import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
-import { SignOutPage } from "../../support/page-objects/signOutPage";
+import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
+import { VisaCategoryPage } from "../../support/page-objects/visaCategoryPage";
 import {
   createTestFixtures,
   getRandomPassportNumber,
   randomElement,
 } from "../../support/test-helpers";
 
-describe("Sign Out Functionality Tests", () => {
+describe("TBBETA-1586: Visa Category Radio Buttons Tests", () => {
   // Page object instances
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
+  const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
   const applicantConsentPage = new ApplicantConsentPage();
   const contactInformationPage = new ContactInformationPage();
+  const checkPhotoPage = new CheckVisaApplicantPhotoPage();
+  const applicantConfirmationPage = new ApplicantConfirmationPage();
   const passportInformationPage = new PassportInformationPage();
-  const signOutPage = new SignOutPage();
+  const tbProgressTrackerPage = new TBProgressTrackerPage();
+  const visaCategoryPage = new VisaCategoryPage();
 
   // Define variables to store test data
   let countryCode: string = "";
@@ -123,7 +131,7 @@ describe("Sign Out Functionality Tests", () => {
     cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
   });
 
-  it("should successfully navigate back when clicking 'Go back to screening' button", () => {
+  it("TC03: should allow changing selection between radio buttons", () => {
     // Search for applicant with passport number
     cy.acceptCookies();
     applicantSearchPage
@@ -174,22 +182,77 @@ describe("Sign Out Functionality Tests", () => {
     // Verify redirection to the Applicant Photo page
     cy.url().should("include", "/upload-visa-applicant-photo");
     applicantPhotoUploadPage.verifyPageLoaded();
-    // Click the sign out link in the header
-    cy.get("#sign-out").should("be.visible").click();
 
-    // Wait for navigation to the sign-out dialog page
-    cy.url({ timeout: 10000 }).should("include", "/are-you-sure-you-want-to-sign-out");
+    // Upload Applicant Photo file
+    applicantPhotoUploadPage
+      .uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg")
+      .verifyUploadSuccess();
 
-    // Verify we're on the sign-out dialog page
-    signOutPage.verifyPageLoaded();
-    signOutPage.verifyNotificationBanner();
-    signOutPage.verifyWarningMessage();
-    signOutPage.verifyBothButtons();
+    // Continue to Applicant Summary page
+    applicantPhotoUploadPage.clickContinue();
 
-    // Click the "Go back to screening" button using POM method
-    signOutPage.cancelSignOut();
+    cy.url().then((url) => {
+      cy.log(`Current URL: ${url}`);
+    });
+    // Verify redirection to the Check Photo page
+    cy.url().should("include", "/check-visa-applicant-photo");
 
-    // Verify we're navigated back to the applicant photo upload page
-    cy.url({ timeout: 10000 }).should("include", "/upload-visa-applicant-photo");
+    checkPhotoPage.verifyPageLoaded();
+    checkPhotoPage.verifyPageHeadingText();
+    checkPhotoPage.verifyUploadedPhotoDisplayed();
+    checkPhotoPage.verifyFilenameDisplayed();
+    checkPhotoPage.verifyImageLayout();
+    checkPhotoPage.verifyRadioButtonsExist();
+    checkPhotoPage.selectYesAddPhoto();
+    checkPhotoPage.clickContinue();
+    // Verify redirection to the Applicant Summary page
+    cy.url().should("include", "/check-visa-applicant-details");
+    applicantSummaryPage.verifyPageLoaded();
+
+    // Verify some of the submitted data appears correctly in the summary
+    applicantSummaryPage.verifySummaryValue("Full name", "Jane Smith");
+    applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
+    applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
+    applicantSummaryPage.verifySummaryValue("Nationality", countryName);
+    applicantSummaryPage.verifySummaryValue("Country", countryName);
+
+    // Confirm above details to proceed to next page
+    applicantSummaryPage.confirmDetails();
+
+    // Verify applicant confirmation page
+    applicantConfirmationPage.verifyPageLoaded();
+    applicantConfirmationPage.verifyNextStepsText();
+
+    // Click continue - this goes to tracker
+    applicantConfirmationPage.clickContinue();
+
+    // Verify we're on the tracker
+    cy.url().should("include", "/tracker");
+    tbProgressTrackerPage.verifyPageLoaded();
+
+    // NOW navigate to travel information from the tracker
+    tbProgressTrackerPage.clickTaskLink("UK travel information");
+
+    // Verify we're on the visa category page
+    cy.url().should("include", "/proposed-visa-category");
+    visaCategoryPage.verifyPageLoaded();
+
+    // Select "Work"
+    visaCategoryPage.selectVisaCategory("Work");
+    visaCategoryPage.verifyVisaCategorySelected("Work");
+
+    // Change to "Study"
+    visaCategoryPage.selectVisaCategory("Study");
+    visaCategoryPage.verifyVisaCategorySelected("Study");
+
+    // Verify "Work" is no longer selected
+    cy.get('input[name="visaCategory"][value="Work"]').should("not.be.checked");
+
+    // Change to "Family reunion"
+    visaCategoryPage.selectVisaCategory("Family reunion");
+    visaCategoryPage.verifyVisaCategorySelected("Family reunion");
+
+    // Verify only one radio button is checked
+    cy.get('input[name="visaCategory"]:checked').should("have.length", 1);
   });
 });

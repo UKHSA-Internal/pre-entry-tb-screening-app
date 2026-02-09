@@ -12,6 +12,7 @@ import { TbCertificateDbOps } from "../models/tb-certificate";
 import { TravelInformationDbOps } from "../models/travel-information";
 
 export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => {
+  const SUPPORT_CLINIC_ID = process.env.SUPPORT_CLINIC_ID;
   try {
     const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
 
@@ -20,7 +21,10 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
     const application = await Application.getByApplicationId(applicationId);
     if (!application) return createHttpResponse(404, { message: "Application does not exist" });
 
-    if (application.clinicId != event.requestContext.authorizer.clinicId) {
+    if (
+      event.requestContext.authorizer.clinicId !== SUPPORT_CLINIC_ID &&
+      application.clinicId != event.requestContext.authorizer.clinicId
+    ) {
       logger.error("ClinicId mismatch");
       return createHttpResponse(403, { message: "Clinic Id mismatch" });
     }
@@ -37,6 +41,7 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
     return createHttpResponse(200, {
       applicationId,
       applicantPhotoUrl,
+      clinicId,
       travelInformation: travelInformation?.toJson(),
       medicalScreening: medicalScreening?.toJson(),
       chestXray: chestXray?.toJson(),

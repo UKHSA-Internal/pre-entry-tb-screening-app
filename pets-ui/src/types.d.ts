@@ -35,6 +35,7 @@ type DateType = {
 
 type ReceivedApplicationAttributesType = {
   applicationId: string;
+  clinicId: string;
   dateCreated: string;
   status: BackendApplicationStatus;
 };
@@ -47,6 +48,7 @@ type ApplicationIdAndDateCreatedType = {
 
 type ReceivedApplicationDetailsType = {
   applicationId: string;
+  clinicId: string;
   applicantPhotoUrl?: string;
   travelInformation: ReceivedTravelDetailsType | undefined;
   medicalScreening: ReceivedMedicalScreeningType | undefined;

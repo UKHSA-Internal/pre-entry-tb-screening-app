@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { boostrapLambdaRoutes } from "../../shared/bootstrap";
 import { PetsAPIGatewayProxyEvent, PetsRoute } from "../../shared/types";
+import { cancelApplicationHandler } from "../handlers/cancel-application";
 import { createApplicationHandler } from "../handlers/create-application";
 import { generateImageUploadUrlHandler } from "../handlers/generate-image-upload-url";
 import { getApplicationHandler } from "../handlers/get-application";
@@ -17,8 +18,10 @@ import { saveTravelInformationHandler as createTravelInformationHandler } from "
 import { updateTravelInformationHandler } from "../handlers/update-travel-information";
 import { setApplicationIdContext } from "../middlewares/application-logger-context";
 import { validateApplication } from "../middlewares/application-validation";
+import { YesOrNo } from "../types/enums";
 import {
   ApplicationSchema,
+  CancelApplicationRequestSchema,
   ChestXRayRequestSchema,
   ChestXRayResponseSchema,
   CreateApplicationResponseSchema,
@@ -57,6 +60,20 @@ export const routes: PetsRoute[] = [
       .handler(getApplicationHandler),
     responseSchema: ApplicationSchema.openapi({
       description: "Application Details",
+    }),
+  },
+  {
+    method: "PUT",
+    path: "/application/{applicationId}/cancel",
+    handler: middy<PetsAPIGatewayProxyEvent>()
+      .before(setApplicationIdContext)
+      .before(validateApplication)
+      .handler(cancelApplicationHandler),
+    requestBodySchema: CancelApplicationRequestSchema.openapi({
+      description: "Application status details",
+    }),
+    responseSchema: ApplicationSchema.openapi({
+      description: "Updated application status details",
     }),
   },
   {
@@ -108,6 +125,11 @@ export const routes: PetsRoute[] = [
       .before(setApplicationIdContext)
       .before(validateApplication)
       .handler(saveChestXRayHandler),
+    queryParams: {
+      requireValidation: z.nativeEnum(YesOrNo, {
+        description: "Disable Validation if set as No",
+      }),
+    },
     requestBodySchema: ChestXRayRequestSchema.openapi({
       description: "Chest Xray of an Applicant",
     }),
