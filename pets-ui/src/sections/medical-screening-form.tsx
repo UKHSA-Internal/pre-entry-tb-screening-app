@@ -93,8 +93,8 @@ const MedicalScreeningForm = () => {
       dispatch(setUnderElevenConditionsDetail(""));
     }
     if (applicantData.sex != "Female") {
-      dispatch(setPregnant(""));
-      dispatch(setMenstrualPeriods(""));
+      dispatch(setPregnant("Not applicable (the visa applicant is not female)"));
+      dispatch(setMenstrualPeriods("Not applicable (the visa applicant is not female)"));
     }
 
     dispatch(setMedicalScreeningCompletionDate(medicalScreeningData.completionDate));
