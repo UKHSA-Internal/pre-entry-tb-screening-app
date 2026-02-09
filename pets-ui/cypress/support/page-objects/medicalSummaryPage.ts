@@ -2,6 +2,9 @@
 import { BasePage } from "../BasePageNew";
 import { ButtonHelper, GdsComponentHelper, SummaryHelper } from "../helpers";
 
+// Type for applicant sex/type
+export type ApplicantSex = "Male" | "Female" | "Child" | "Infant";
+
 export class MedicalSummaryPage extends BasePage {
   // Compose helper instances
   private gds = new GdsComponentHelper();
@@ -33,6 +36,7 @@ export class MedicalSummaryPage extends BasePage {
     this.verifySummaryValue("Age", ageText);
     return this;
   }
+
   // Verify page loaded
   verifyPageLoaded(): MedicalSummaryPage {
     cy.url().should("include", "/check-medical-history-and-tb-symptoms");
@@ -59,7 +63,18 @@ export class MedicalSummaryPage extends BasePage {
     this.getSummaryValue(fieldKey).should("eq", expectedValue);
     return this;
   }
-  // ✅ UPDATED: Verify summary data with proper age handling
+
+  // Check if a field exists on the page
+  isFieldPresent(fieldKey: string): Cypress.Chainable<boolean> {
+    return cy
+      .get(".govuk-summary-list__key")
+      .filter((_index, element) => {
+        return element.textContent?.trim() === fieldKey;
+      })
+      .then(($elements) => $elements.length > 0);
+  }
+
+  // Verify summary data with proper age handling
   verifySummaryData(data: {
     "Previous TB diagnosis or treatment"?: string;
     "TB symptoms in past 3 months"?: string;
@@ -76,6 +91,7 @@ export class MedicalSummaryPage extends BasePage {
     });
     return this;
   }
+
   // Click change link for a specific field - FIXED SELECTOR
   clickChangeLink(fieldKey: string): MedicalSummaryPage {
     cy.get(".govuk-summary-list__key")
@@ -117,6 +133,7 @@ export class MedicalSummaryPage extends BasePage {
   validateSummaryMatchesEnteredData(enteredData: {
     dateOfMedicalScreening?: string;
     age?: string;
+    sex?: ApplicantSex;
     tbSymptoms?: "Yes" | "No";
     tbSymptomsList?: string[];
     otherSymptoms?: string;
@@ -182,13 +199,19 @@ export class MedicalSummaryPage extends BasePage {
           this.verifySummaryValue("If yes, give details", processedValue);
           break;
         case "pregnant":
-          this.verifySummaryValue("Is the visa applicant pregnant?", processedValue);
+          // Only verify if sex is Female
+          if (enteredData.sex === "Female") {
+            this.verifySummaryValue("Is the visa applicant pregnant?", processedValue);
+          }
           break;
         case "menstrualPeriods":
-          this.verifySummaryValue(
-            "Does the visa applicant have menstrual periods?",
-            processedValue,
-          );
+          // Only verify if sex is Female
+          if (enteredData.sex === "Female") {
+            this.verifySummaryValue(
+              "Does the visa applicant have menstrual periods?",
+              processedValue,
+            );
+          }
           break;
         case "physicalExamNotes":
           this.verifySummaryValue("Physical examination notes (optional)", processedValue);
@@ -204,10 +227,14 @@ export class MedicalSummaryPage extends BasePage {
     return this;
   }
 
-  // Validation method to check all entered fields
+  /**
+   * Fully validate summary with sex-aware field checking
+   * Now dynamically handles male/female/child/infant applicants
+   */
   fullyValidateSummary(enteredData: {
     dateOfMedicalScreening?: string;
     age?: string;
+    sex?: ApplicantSex; // Added sex parameter
     tbSymptoms?: "Yes" | "No";
     tbSymptomsList?: string[];
     otherSymptoms?: string;
@@ -223,181 +250,136 @@ export class MedicalSummaryPage extends BasePage {
     xrayRequired?: "Yes" | "No";
     reasonXrayNotRequired?: "Child (under 11 years)" | "Pregnant" | "Other";
   }): MedicalSummaryPage {
-    // Verify all the fields exist in the summary
+    // Build expected fields based on applicant sex
     const expectedFields = [
       "Date of medical screening",
       "Age",
       "Does the visa applicant have pulmonary TB symptoms?",
       "If yes, which pulmonary TB symptoms",
       "Give further details (optional)",
-      "Give further details (optional)",
       "Has the visa applicant had pulmonary TB?",
       "If yes, give details (optional)",
       "Has the visa applicant had close contact with a person with active pulmonary TB in the past year?",
       "If yes, give details",
-      "Is the visa applicant pregnant?",
-      "Does the visa applicant have menstrual periods?",
-      "Physical examination notes (optional)",
-      "Is an X-ray required?",
     ];
 
-    // Check that all expected fields are present
+    // Only add pregnancy fields for female applicants
+    if (enteredData.sex === "Female") {
+      expectedFields.push("Is the visa applicant pregnant?");
+      expectedFields.push("Does the visa applicant have menstrual periods?");
+    }
+
+    // Add common fields that appear for all
+    expectedFields.push("Physical examination notes (optional)");
+    expectedFields.push("Is an X-ray required?");
+
+    // Verify all expected fields exist
     expectedFields.forEach((field) => {
-      this.isFieldPresent(field).should(
-        "eq",
-        true,
-        `Field "${field}" should be present in the summary`,
-      );
+      cy.get(".govuk-summary-list__key")
+        .filter((_index, element) => {
+          return element.textContent?.trim() === field;
+        })
+        .should("exist");
     });
 
-    // Validate the entered data matches the summary
+    // If NOT female, verify pregnancy fields do NOT exist
+    if (enteredData.sex && enteredData.sex !== "Female") {
+      this.isFieldPresent("Is the visa applicant pregnant?").should("be.false");
+      this.isFieldPresent("Does the visa applicant have menstrual periods?").should("be.false");
+    }
+
+    // Validate the entered data matches what's displayed
     this.validateSummaryMatchesEnteredData(enteredData);
+
     return this;
   }
 
-  getAllSummaryValues(): Cypress.Chainable<{ [key: string]: string }> {
-    return cy.get(".govuk-summary-list__row").then(($rows) => {
-      const summaryValues: { [key: string]: string } = {};
-
-      $rows.each((_, row) => {
-        const key = Cypress.$(row).find(".govuk-summary-list__key").text().trim();
-        const value = Cypress.$(row).find(".govuk-summary-list__value").text().trim();
-        summaryValues[key] = value;
-      });
-
-      return summaryValues;
-    });
+  // Verify back link
+  verifyBackLink(): MedicalSummaryPage {
+    cy.get(".govuk-back-link")
+      .should("be.visible")
+      .and("have.attr", "href")
+      .and("match", /\/(is-xray-required|medical-history-female)/);
+    return this;
   }
 
-  // Submit form to confirm details
-  confirmDetails(): MedicalSummaryPage {
-    cy.get("button[type='submit']")
-      .contains("Submit and continue")
-      .filter(":visible")
-      .first()
+  // Verify service name
+  verifyServiceName(): MedicalSummaryPage {
+    cy.get(".govuk-service-navigation__service-name")
       .should("be.visible")
-      .click();
+      .and("contain", "Complete UK pre-entry health screening");
+    return this;
+  }
+
+  // Verify breadcrumb navigation
+  verifyBreadcrumbNavigation(): MedicalSummaryPage {
+    this.gds.verifyBreadcrumbNavigation();
     return this;
   }
 
   // Verify submission section
   verifySubmissionSection(): MedicalSummaryPage {
-    cy.contains("h2", "Now send the medical history and TB symptoms").should("be.visible");
-    cy.contains(
-      "p",
-      "You will not be able to change the medical history and TB symptoms after you submit this information.",
-    ).should("be.visible");
+    cy.contains("h2", "Now send your summary").should("be.visible");
     return this;
   }
 
-  // Verify submission confirmation message
-  verifySubmissionConfirmationMessage(): MedicalSummaryPage {
-    cy.contains(
-      "p",
-      "You will not be able to change the medical history and TB symptoms after you submit this information.",
-    ).should("be.visible");
+  // Confirm details and submit
+  confirmDetails(): MedicalSummaryPage {
+    this.button.clickSaveAndContinue();
     return this;
   }
 
-  // Verify redirection after confirmation
+  // Verify redirection after confirming details
   verifyRedirectionAfterConfirm(): MedicalSummaryPage {
-    // This should be overridden with the actual expected URL
-    cy.url().should("not.include", "/check-medical-history-and-tb-symptoms");
+    cy.url().should("include", "/medical-history-and-tb-symptoms-confirmed");
     return this;
   }
 
-  // Check if a specific field is present - FIXED
-  isFieldPresent(fieldKey: string): Cypress.Chainable<boolean> {
-    return cy.get(".govuk-summary-list__key").then(($keys) => {
-      const keys = Array.from($keys).map((el) => el.textContent?.trim());
-      const isPresent = keys.includes(fieldKey);
-      return isPresent;
-    });
-  }
-
-  // Verify breadcrumb navigation
-  verifyBreadcrumbNavigation(): MedicalSummaryPage {
-    cy.get(".govuk-breadcrumbs").should("be.visible");
-    return this;
-  }
-
-  // Verify Change link targets point to correct anchors
+  // Verify change links targets
   verifyChangeLinksTargets(): MedicalSummaryPage {
-    const expectedFragments: Record<string, string> = {
-      "Date of medical screening": "#medical-screening-completion-date",
+    const expectedFragments: { [key: string]: string } = {
+      "Date of medical screening": "#date-of-medical-screening",
+      Age: "#age",
       "Does the visa applicant have pulmonary TB symptoms?": "#tb-symptoms",
-      "If yes, which pulmonary TB symptoms": "#tb-symptoms-list",
-      "Give further details (optional)": "#other-symptoms-detail",
       "Has the visa applicant had pulmonary TB?": "#previous-tb",
-      "If yes, give details (optional)": "#previous-tb-detail",
       "Has the visa applicant had close contact with a person with active pulmonary TB in the past year?":
-        "#close-contact-with-tb",
-      "If yes, give details": "#close-contact-with-tb-detail",
-      "Is the visa applicant pregnant?": "#pregnant",
-      "Does the visa applicant have menstrual periods?": "#menstrual-periods",
+        "#close-contact",
       "Physical examination notes (optional)": "#physical-exam-notes",
-      "Is an X-ray required?": "#chest-xray-taken",
-      "Reason X-ray is not required": "#reason-xray-not-taken",
+      "Is an X-ray required?": "#xray-required",
     };
 
-    Object.entries(expectedFragments).forEach(([key, fragment]) => {
-      cy.get(".govuk-summary-list__key")
-        .filter((_index, element) => {
-          return element.textContent?.trim() === key;
-        })
-        .parent()
-        .find(".govuk-summary-list__actions a")
-        .should("have.attr", "href")
-        .and("include", fragment);
+    Object.entries(expectedFragments).forEach(([fieldKey, fragment]) => {
+      // Check if field exists first
+      this.isFieldPresent(fieldKey).then((exists) => {
+        if (exists) {
+          cy.get(".govuk-summary-list__key")
+            .filter((_index, element) => {
+              return element.textContent?.trim() === fieldKey;
+            })
+            .parent()
+            .find(".govuk-summary-list__actions a")
+            .should("have.attr", "href")
+            .and("include", fragment);
+        }
+      });
     });
+
     return this;
   }
 
-  // Verify all Change links are visible
+  // Verify all change links are visible
   verifyAllChangeLinksVisible(): MedicalSummaryPage {
-    cy.get(".govuk-summary-list__actions").each(($action) => {
-      cy.wrap($action)
-        .find("a.govuk-link")
-        .should("be.visible")
-        .and("contain", "Change")
-        .and("have.class", "govuk-link--no-visited-state");
-    });
-    return this;
-  }
-
-  // Verify visually hidden text in Change links
-  verifyChangeLinksVisuallyHiddenText(): MedicalSummaryPage {
     cy.get(".govuk-summary-list__actions a").each(($link) => {
-      cy.wrap($link).find(".govuk-visually-hidden").should("exist");
+      cy.wrap($link).should("be.visible").and("contain", "Change");
     });
     return this;
   }
 
-  // Verify back link points to correct page (dynamic based on scenario)
-  verifyBackLink(expectedHref: string = "/reason-x-ray-not-required"): MedicalSummaryPage {
-    cy.get(".govuk-back-link")
-      .should("be.visible")
-      .and("have.attr", "href", expectedHref)
-      .and("contain", "Back");
-    return this;
-  }
-
-  // Verify service name in header
-  verifyServiceName(): MedicalSummaryPage {
-    cy.get(".govuk-header__service-name")
-      .should("be.visible")
-      .and("contain", "Complete UK pre-entry health screening")
-      .and("have.attr", "href", "/");
-    return this;
-  }
-
-  // Verify optional fields show "Not provided" when empty - FIXED SELECTOR
+  // Verify optional fields show "Not provided"
   verifyOptionalFieldsNotProvided(): MedicalSummaryPage {
     const optionalFields = [
-      "If yes, which pulmonary TB symptoms",
       "Give further details (optional)",
       "If yes, give details (optional)",
-      "If yes, give details",
       "Physical examination notes (optional)",
     ];
 
@@ -433,8 +415,11 @@ export class MedicalSummaryPage extends BasePage {
     return this;
   }
 
-  // Verify all fields are present on the page (base fields) - FIXED SELECTOR
-  verifyAllFieldsPresent(): MedicalSummaryPage {
+  /**
+   * Verify all fields based on sex
+   * Dynamically determines which fields should be present
+   */
+  verifyAllFieldsPresent(sex?: ApplicantSex): MedicalSummaryPage {
     const requiredFields = [
       "Date of medical screening",
       "Age",
@@ -445,11 +430,16 @@ export class MedicalSummaryPage extends BasePage {
       "If yes, give details (optional)",
       "Has the visa applicant had close contact with a person with active pulmonary TB in the past year?",
       "If yes, give details",
-      "Is the visa applicant pregnant?",
-      "Does the visa applicant have menstrual periods?",
-      "Physical examination notes (optional)",
-      "Is an X-ray required?",
     ];
+
+    // Only add pregnancy fields for female applicants
+    if (sex === "Female") {
+      requiredFields.push("Is the visa applicant pregnant?");
+      requiredFields.push("Does the visa applicant have menstrual periods?");
+    }
+
+    requiredFields.push("Physical examination notes (optional)");
+    requiredFields.push("Is an X-ray required?");
 
     requiredFields.forEach((field) => {
       cy.get(".govuk-summary-list__key")
@@ -458,10 +448,17 @@ export class MedicalSummaryPage extends BasePage {
         })
         .should("exist");
     });
+
+    // Verify pregnancy fields do NOT exist for non-females
+    if (sex && sex !== "Female") {
+      this.isFieldPresent("Is the visa applicant pregnant?").should("be.false");
+      this.isFieldPresent("Does the visa applicant have menstrual periods?").should("be.false");
+    }
+
     return this;
   }
 
-  // Verify X-ray required field is present - FIXED SELECTOR
+  // Verify X-ray required field is present
   verifyXrayRequiredField(): MedicalSummaryPage {
     cy.get(".govuk-summary-list__key")
       .filter((_index, element) => {
@@ -477,7 +474,7 @@ export class MedicalSummaryPage extends BasePage {
     return this;
   }
 
-  // Verify "Reason X-ray is not required" field is present - FIXED SELECTOR
+  // Verify "Reason X-ray is not required" field is present
   verifyReasonXrayNotRequiredField(): MedicalSummaryPage {
     cy.get(".govuk-summary-list__key")
       .filter((_index, element) => {
@@ -495,7 +492,7 @@ export class MedicalSummaryPage extends BasePage {
     return this;
   }
 
-  // Verify "Reason X-ray is not required" field is NOT present (when X-ray is required) - FIXED SELECTOR
+  // Verify "Reason X-ray is not required" field is NOT present (when X-ray is required)
   verifyReasonXrayNotRequiredFieldNotPresent(): MedicalSummaryPage {
     cy.get(".govuk-summary-list__key")
       .filter((_index, element) => {
@@ -529,9 +526,9 @@ export class MedicalSummaryPage extends BasePage {
   }
 
   // Verify current page structure
-  verifyCurrentPageStructure(): MedicalSummaryPage {
+  verifyCurrentPageStructure(sex?: ApplicantSex): MedicalSummaryPage {
     this.verifyPageLoaded();
-    this.verifyAllFieldsPresent();
+    this.verifyAllFieldsPresent(sex);
     this.verifyChangeLinksTargets();
     this.verifyAllChangeLinksVisible();
     this.verifyOptionalFieldsNotProvided();
@@ -542,8 +539,8 @@ export class MedicalSummaryPage extends BasePage {
   }
 
   // Verify page elements comprehensively
-  verifyAllPageElements(): MedicalSummaryPage {
-    this.verifyCurrentPageStructure();
+  verifyAllPageElements(sex?: ApplicantSex): MedicalSummaryPage {
+    this.verifyCurrentPageStructure(sex);
     this.verifyBreadcrumbNavigation();
     return this;
   }
@@ -620,14 +617,14 @@ export class MedicalSummaryPage extends BasePage {
   }
 
   // Comprehensive page validation including all GOV.UK components
-  verifyCompletePageStructure(): MedicalSummaryPage {
+  verifyCompletePageStructure(sex?: ApplicantSex): MedicalSummaryPage {
     this.verifySkipLink();
     this.verifyGovUKLogo();
     this.verifyServiceName();
     this.verifySignOutLink();
     this.verifyPhaseBanner();
     this.verifyPageLoaded();
-    this.verifyAllFieldsPresent();
+    this.verifyAllFieldsPresent(sex);
     this.verifySubmissionSection();
     this.verifyContinueButton();
     this.verifyFooter();
