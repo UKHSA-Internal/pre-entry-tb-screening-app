@@ -299,7 +299,7 @@ export class DateUtils {
   }
 
   /**
-   * Format date for GOV.UK style display (e.g., "4 December 2025")
+   * Format date for Summary Page style display (e.g., "4 December 2025")
    */
   static formatDateGOVUK(date: Date): string {
     const months = [
@@ -317,6 +317,46 @@ export class DateUtils {
       "December",
     ];
     return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+  }
+  /**
+   * Convert DD/MM/YYYY format to GOV.UK format (e.g., "17/12/2000" to "17 December 2000")
+   * @param dateString - Date string in DD/MM/YYYY format
+   * @returns Date string in GOV.UK format (e.g., "17 December 2000")
+   *
+   * @example
+   * DateUtils.convertDDMMYYYYtoGOVUK("17/12/2000"); // Returns: "17 December 2000"
+   * DateUtils.convertDDMMYYYYtoGOVUK("01/01/2025"); // Returns: "1 January 2025"
+   */
+  static convertDDMMYYYYtoGOVUK(dateString: string): string {
+    const parts = dateString.split("/");
+    if (parts.length !== 3) {
+      throw new Error(`Invalid date format: ${dateString}. Expected DD/MM/YYYY format.`);
+    }
+
+    const day = parseInt(parts[0], 10); // Remove leading zeros
+    const month = parseInt(parts[1], 10);
+    const year = parts[2];
+
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    if (month < 1 || month > 12) {
+      throw new Error(`Invalid month: ${month}. Must be between 1 and 12.`);
+    }
+
+    return `${day} ${months[month - 1]} ${year}`;
   }
 
   /**

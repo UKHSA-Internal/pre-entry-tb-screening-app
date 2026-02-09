@@ -7,10 +7,11 @@ import { assertEnvExists } from "../../shared/config";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { ApplicantDbOps } from "../../shared/models/applicant";
+import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { generateImageObjectkey, KeyParameters } from "../helpers/upload";
 import { ChestXRay } from "../models/chest-xray";
-import { ImageType } from "../types/enums";
+import { ImageType, YesOrNo } from "../types/enums";
 import { ApplicantNotFound, InvalidObjectKey, ObjectNotFound } from "../types/errors";
 import { ChestXRayRequestSchema } from "../types/zod-schema";
 
@@ -24,6 +25,8 @@ export const saveChestXRayHandler = async (event: SaveChestXrayEvent) => {
   try {
     const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
 
+    const requireValidation = event?.queryStringParameters?.requireValidation as YesOrNo;
+
     logger.info({ applicationId }, "Save Chest X-ray Information handler triggered");
 
     const { parsedBody } = event;
@@ -36,11 +39,20 @@ export const saveChestXRayHandler = async (event: SaveChestXrayEvent) => {
       });
     }
 
-    const { clinicId, createdBy } = event.requestContext.authorizer;
-    //validate xray images
-    const validationError = await validateImages(parsedBody, applicationId, clinicId);
-    if (validationError) {
-      return createHttpResponse(400, { message: validationError });
+    const { createdBy } = event.requestContext.authorizer;
+    // Enable validations only if it has been selected as YES
+    if (requireValidation && requireValidation == YesOrNo.Yes) {
+      const application = await Application.getByApplicationId(applicationId);
+
+      //validate xray images
+      const validationError = await validateImages(
+        parsedBody,
+        applicationId,
+        application?.clinicId as string,
+      );
+      if (validationError) {
+        return createHttpResponse(400, { message: validationError });
+      }
     }
 
     let chestXray: ChestXRay;

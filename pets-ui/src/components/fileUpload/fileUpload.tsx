@@ -174,7 +174,14 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
             onDragLeave={preventDragDefaults}
           >
             <div className="file-upload-blue-bar">
-              {showExistingFileName ? props.existingFileName : lastFile?.name}
+              {showExistingFileName ? (
+                props.existingFileName
+              ) : (
+                <div aria-live="polite" aria-atomic="true">
+                  <span className="govuk-visually-hidden">Selected file: </span>
+                  {lastFile?.name}
+                </div>
+              )}
               {!showExistingFileName && !lastFile && (
                 <span className="file-upload-no-file">No file chosen</span>
               )}
