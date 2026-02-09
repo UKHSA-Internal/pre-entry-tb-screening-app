@@ -107,7 +107,7 @@ describe("MedicalScreeningForm", () => {
     expect(screen.getByTestId("physical-exam-notes")).toHaveValue(
       "Details of physical examination.",
     );
-    expect(screen.getAllByText("You have 150 words remaining")).toHaveLength(3);
+    expect(screen.getAllByText("You have 150 words remaining")).toHaveLength(2);
     expect(screen.getAllByText("You have 145 words remaining")).toHaveLength(1);
     expect(screen.getAllByText("You have 146 words remaining")).toHaveLength(1);
 
@@ -231,7 +231,7 @@ describe("MedicalScreeningForm", () => {
 
   it("errors for mandatory fields are rendered as expected", async () => {
     renderWithProviders(<MedicalScreeningForm />);
-    expect(screen.getAllByText("You have 150 words remaining")).toHaveLength(5);
+    expect(screen.getAllByText("You have 150 words remaining")).toHaveLength(4);
 
     const submitButton = screen.getByRole("button", { name: /Continue/i });
 
@@ -254,7 +254,7 @@ describe("MedicalScreeningForm", () => {
 
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
     renderWithProviders(<MedicalScreeningForm />);
-    expect(screen.getAllByText("You have 150 words remaining")).toHaveLength(5);
+    expect(screen.getAllByText("You have 150 words remaining")).toHaveLength(4);
     await user.click(screen.getByRole("button"));
     const errorSummaryDiv = screen.getByTestId("error-summary");
     await waitFor(() => {
@@ -264,7 +264,7 @@ describe("MedicalScreeningForm", () => {
 
   it("back link points to tracker", () => {
     renderWithProviders(<MedicalScreeningPage />);
-    expect(screen.getAllByText("You have 150 words remaining")).toHaveLength(5);
+    expect(screen.getAllByText("You have 150 words remaining")).toHaveLength(4);
 
     const link = screen.getByRole("link", { name: "Back" });
     expect(link).toBeInTheDocument();
@@ -276,7 +276,7 @@ describe("MedicalScreeningForm", () => {
     const tooLongInput =
       "This string is 151 words long a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a";
     renderWithProviders(<MedicalScreeningForm />);
-    expect(screen.getAllByText("You have 150 words remaining")).toHaveLength(5);
+    expect(screen.getAllByText("You have 150 words remaining")).toHaveLength(4);
 
     const user = userEvent.setup();
     await user.type(screen.getByTestId("medical-screening-completion-date-day"), "15");
@@ -285,28 +285,24 @@ describe("MedicalScreeningForm", () => {
     await user.click(screen.getAllByTestId("tb-symptoms")[0]);
     await user.click(screen.getAllByTestId("previous-tb")[0]);
     await user.click(screen.getAllByTestId("close-contact-with-tb")[1]);
-    await user.click(screen.getAllByTestId("pregnant")[2]);
-    await user.click(screen.getAllByTestId("menstrual-periods")[1]);
 
     await user.type(screen.getByTestId("other-symptoms-detail"), tooLongInput);
-    await user.type(screen.getByTestId("under-eleven-conditions-detail"), tooLongInput);
     await user.type(screen.getByTestId("previous-tb-detail"), tooLongInput);
     await user.type(screen.getByTestId("close-contact-with-tb-detail"), tooLongInput);
     await user.type(screen.getByTestId("physical-exam-notes"), tooLongInput);
 
     expect(screen.getByTestId("other-symptoms-detail")).toHaveValue(tooLongInput);
-    expect(screen.getByTestId("under-eleven-conditions-detail")).toHaveValue(tooLongInput);
     expect(screen.getByTestId("previous-tb-detail")).toHaveValue(tooLongInput);
     expect(screen.getByTestId("close-contact-with-tb-detail")).toHaveValue(tooLongInput);
     expect(screen.getByTestId("physical-exam-notes")).toHaveValue(tooLongInput);
-    expect(screen.getAllByText("You have 1 word too many")).toHaveLength(5);
+    expect(screen.getAllByText("You have 1 word too many")).toHaveLength(4);
 
     await user.click(screen.getByRole("button"));
 
     await waitFor(() => {
       expect(
         screen.getAllByText('"Give further details (optional)" must be 150 words or fewer'),
-      ).toHaveLength(8);
+      ).toHaveLength(6);
       expect(
         screen.getAllByText('"Physical examination notes (optional)" must be 150 words or fewer'),
       ).toHaveLength(2);
