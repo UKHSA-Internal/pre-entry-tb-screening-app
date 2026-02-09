@@ -60,8 +60,7 @@ export default function Dropdown(props: Readonly<DropdownProps>) {
         </div>
       )}
       <select
-        aria-labelledby={props.heading && `${props.id}-field`}
-        id={`${props.id}-dropdown`}
+        id={`${props.id}-field`}
         aria-describedby={getDescribedBy(props.id, props.hint, props.heading, props.label)}
         className={selectClass}
         defaultValue={props.defaultValue ?? ""}

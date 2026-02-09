@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MockAdapter from "axios-mock-adapter";
 import React from "react";
@@ -277,10 +277,11 @@ describe("ApplicantSearchForm", () => {
     });
 
     await user.type(screen.getByTestId("passport-number"), "12345");
-    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "AUS");
 
     expect(screen.getByTestId("passport-number")).toHaveValue("12345");
-    expect(screen.getAllByRole("combobox")[0]).toHaveValue("AUS");
+    expect(countryDropdown).toHaveValue("AUS");
 
     await user.click(screen.getByRole("button"));
     expect(mock.history.get[0].url).toEqual("/applicant/search");
@@ -445,10 +446,11 @@ describe("ApplicantSearchForm", () => {
     mock.onGet("/application/abc-123").reply(403);
 
     await user.type(screen.getByTestId("passport-number"), "12345");
-    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "AUS");
 
     expect(screen.getByTestId("passport-number")).toHaveValue("12345");
-    expect(screen.getAllByRole("combobox")[0]).toHaveValue("AUS");
+    expect(countryDropdown).toHaveValue("AUS");
 
     await user.click(screen.getByRole("button"));
     expect(mock.history.get[0].url).toEqual("/applicant/search");
@@ -524,10 +526,11 @@ describe("ApplicantSearchForm", () => {
     mock.onGet("/application/abc-123").reply(500);
 
     await user.type(screen.getByTestId("passport-number"), "12345");
-    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "AUS");
 
     expect(screen.getByTestId("passport-number")).toHaveValue("12345");
-    expect(screen.getAllByRole("combobox")[0]).toHaveValue("AUS");
+    expect(countryDropdown).toHaveValue("AUS");
 
     await user.click(screen.getByRole("button"));
     expect(mock.history.get[0].url).toEqual("/applicant/search");
@@ -668,10 +671,11 @@ describe("ApplicantSearchForm", () => {
     });
 
     await user.type(screen.getByTestId("passport-number"), "12345");
-    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "AUS");
 
     expect(screen.getByTestId("passport-number")).toHaveValue("12345");
-    expect(screen.getAllByRole("combobox")[0]).toHaveValue("AUS");
+    expect(countryDropdown).toHaveValue("AUS");
 
     await user.click(screen.getByRole("button"));
     expect(mock.history.get[0].url).toEqual("/applicant/search");
@@ -797,10 +801,11 @@ describe("ApplicantSearchForm", () => {
     mock.onGet("/applicant/search").reply(204, []);
 
     await user.type(screen.getByTestId("passport-number"), "12345");
-    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "AUS");
 
     expect(screen.getByTestId("passport-number")).toHaveValue("12345");
-    expect(screen.getAllByRole("combobox")[0]).toHaveValue("AUS");
+    expect(countryDropdown).toHaveValue("AUS");
 
     await user.click(screen.getByRole("button"));
     expect(mock.history.get[0].url).toEqual("/applicant/search");
@@ -826,10 +831,11 @@ describe("ApplicantSearchForm", () => {
     mock.onGet("/applicant/search").reply(500);
 
     await user.type(screen.getByTestId("passport-number"), "12345");
-    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "AUS");
 
     expect(screen.getByTestId("passport-number")).toHaveValue("12345");
-    expect(screen.getAllByRole("combobox")[0]).toHaveValue("AUS");
+    expect(countryDropdown).toHaveValue("AUS");
 
     await user.click(screen.getByRole("button"));
     expect(mock.history.get[0].url).toEqual("/applicant/search");
@@ -897,7 +903,8 @@ describe("ApplicantSearchForm", () => {
     });
 
     await user.type(screen.getByTestId("passport-number"), "12345");
-    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "AUS");
 
     await user.click(screen.getByRole("button"));
     await new Promise((resolve) => process.nextTick(resolve));
