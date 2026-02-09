@@ -14,8 +14,8 @@ const initialState: ReduxMedicalScreeningType = {
   previousTbDetail: "",
   closeContactWithTb: "",
   closeContactWithTbDetail: "",
-  pregnant: "Not applicable (the visa applicant is not female)",
-  menstrualPeriods: "Not applicable (the visa applicant is not female)",
+  pregnant: "",
+  menstrualPeriods: "",
   physicalExamNotes: "",
   chestXrayTaken: YesOrNo.NULL,
   reasonXrayNotRequired: "",
@@ -116,8 +116,8 @@ export const medicalScreeningSlice = createSlice({
       state.previousTbDetail = "";
       state.closeContactWithTb = "";
       state.closeContactWithTbDetail = "";
-      state.pregnant = "Not applicable (the visa applicant is not female)";
-      state.menstrualPeriods = "Not applicable (the visa applicant is not female)";
+      state.pregnant = "";
+      state.menstrualPeriods = "";
       state.physicalExamNotes = "";
       state.chestXrayTaken = YesOrNo.NULL;
       state.reasonXrayNotRequired = "";
