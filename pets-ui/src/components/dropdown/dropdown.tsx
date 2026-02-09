@@ -55,7 +55,7 @@ export default function Dropdown(props: Readonly<DropdownProps>) {
     >
       <select
         aria-labelledby={props.heading && `${props.id}-field`}
-        id={props.label && !props.heading ? `${props.id}-field` : undefined}
+        id={`${props.id}-dropdown`}
         aria-describedby={getDescribedBy(props.id, props.hint, props.heading, props.label)}
         className={selectClass}
         defaultValue={props.defaultValue ?? ""}
