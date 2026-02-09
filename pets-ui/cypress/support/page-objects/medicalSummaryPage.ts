@@ -93,17 +93,15 @@ export class MedicalSummaryPage extends BasePage {
     "Date of medical screening"?: string;
     Age?: string;
     "Does the visa applicant have pulmonary TB symptoms?"?: string;
-    "Pulmonary TB symptoms"?: string;
-    "Other symptoms"?: string;
-    "Applicant history if under 11"?: string;
-    "Additional details of applicant history if under 11"?: string;
-    "Has the applicant ever had pulmonary TB?"?: string;
-    "Detail of applicant's previous pulmonary TB"?: string;
-    "Has the applicant had close contact with any person with active pulmonary TB within the past year?"?: string;
-    "Details of applicant's close contact with any person with active pulmonary TB"?: string;
-    "Is the applicant pregnant?"?: string;
-    "Does the applicant have menstrual periods?"?: string;
-    "Physical examination notes"?: string;
+    "If yes, which pulmonary TB symptoms"?: string;
+    "Give further details (optional)"?: string;
+    "Has the visa applicant had pulmonary TB?"?: string;
+    "If yes, give details (optional)"?: string;
+    "Has the visa applicant had close contact with a person with active pulmonary TB in the past year?"?: string;
+    "If yes, give details"?: string;
+    "Is the visa applicant pregnant?"?: string;
+    "Does the visa applicant have menstrual periods?"?: string;
+    "Physical examination notes (optional)"?: string;
     "Is an X-ray required?"?: string;
     "Reason X-ray is not required"?: string;
   }): MedicalSummaryPage {
@@ -162,26 +160,17 @@ export class MedicalSummaryPage extends BasePage {
           break;
         case "tbSymptomsList":
           if (processedValue) {
-            this.verifySummaryValue("Pulmonary TB symptoms", processedValue);
+            this.verifySummaryValue("If yes, which pulmonary TB symptoms", processedValue);
           }
           break;
         case "otherSymptoms":
-          this.verifySummaryValue("Other symptoms", processedValue);
-          break;
-        case "underElevenConditions":
-          this.verifySummaryValue("Applicant history if under 11", processedValue);
-          break;
-        case "underElevenConditionsDetail":
-          this.verifySummaryValue(
-            "Additional details of applicant history if under 11",
-            processedValue,
-          );
+          this.verifySummaryValue("Give further details (optional)", processedValue);
           break;
         case "previousTb":
           this.verifySummaryValue("Has the visa applicant had pulmonary TB?", processedValue);
           break;
         case "previousTbDetail":
-          this.verifySummaryValue("Detail of applicant's previous pulmonary TB", processedValue);
+          this.verifySummaryValue("If yes, give details (optional)", processedValue);
           break;
         case "closeContactWithTb":
           this.verifySummaryValue(
@@ -190,10 +179,7 @@ export class MedicalSummaryPage extends BasePage {
           );
           break;
         case "closeContactWithTbDetail":
-          this.verifySummaryValue(
-            "Details of applicant's close contact with any person with active pulmonary TB",
-            processedValue,
-          );
+          this.verifySummaryValue("If yes, give details", processedValue);
           break;
         case "pregnant":
           this.verifySummaryValue("Is the visa applicant pregnant?", processedValue);
@@ -244,7 +230,6 @@ export class MedicalSummaryPage extends BasePage {
       "Does the visa applicant have pulmonary TB symptoms?",
       "If yes, which pulmonary TB symptoms",
       "Give further details (optional)",
-      "Medical history for under 11",
       "Give further details (optional)",
       "Has the visa applicant had pulmonary TB?",
       "If yes, give details (optional)",
@@ -340,21 +325,17 @@ export class MedicalSummaryPage extends BasePage {
   verifyChangeLinksTargets(): MedicalSummaryPage {
     const expectedFragments: Record<string, string> = {
       "Date of medical screening": "#medical-screening-completion-date",
-      Age: "#age",
-      "Does the applicant have pulmonary TB symptoms?": "#tb-symptoms",
-      "Pulmonary TB symptoms": "#tb-symptoms-list",
-      "Other symptoms": "#other-symptoms-detail",
-      "Applicant history if under 11": "#under-eleven-conditions",
-      "Additional details of applicant history if under 11": "#under-eleven-conditions-detail",
-      "Has the applicant ever had pulmonary TB?": "#previous-tb",
-      "Detail of applicant's previous pulmonary TB": "#previous-tb-detail",
-      "Has the applicant had close contact with any person with active pulmonary TB within the past year?":
+      "Does the visa applicant have pulmonary TB symptoms?": "#tb-symptoms",
+      "If yes, which pulmonary TB symptoms": "#tb-symptoms-list",
+      "Give further details (optional)": "#other-symptoms-detail",
+      "Has the visa applicant had pulmonary TB?": "#previous-tb",
+      "If yes, give details (optional)": "#previous-tb-detail",
+      "Has the visa applicant had close contact with a person with active pulmonary TB in the past year?":
         "#close-contact-with-tb",
-      "Details of applicant's close contact with any person with active pulmonary TB":
-        "#close-contact-with-tb-detail",
-      "Is the applicant pregnant?": "#pregnant",
-      "Does the applicant have menstrual periods?": "#menstrual-periods",
-      "Physical examination notes": "#physical-exam-notes",
+      "If yes, give details": "#close-contact-with-tb-detail",
+      "Is the visa applicant pregnant?": "#pregnant",
+      "Does the visa applicant have menstrual periods?": "#menstrual-periods",
+      "Physical examination notes (optional)": "#physical-exam-notes",
       "Is an X-ray required?": "#chest-xray-taken",
       "Reason X-ray is not required": "#reason-xray-not-taken",
     };
@@ -413,12 +394,11 @@ export class MedicalSummaryPage extends BasePage {
   // Verify optional fields show "Not provided" when empty - FIXED SELECTOR
   verifyOptionalFieldsNotProvided(): MedicalSummaryPage {
     const optionalFields = [
-      "Pulmonary TB symptoms",
-      "Other symptoms",
-      "Additional details of applicant history if under 11",
-      "Detail of applicant's previous pulmonary TB",
-      "Details of applicant's close contact with any person with active pulmonary TB",
-      "Physical examination notes",
+      "If yes, which pulmonary TB symptoms",
+      "Give further details (optional)",
+      "If yes, give details (optional)",
+      "If yes, give details",
+      "Physical examination notes (optional)",
     ];
 
     optionalFields.forEach((field) => {
@@ -458,18 +438,16 @@ export class MedicalSummaryPage extends BasePage {
     const requiredFields = [
       "Date of medical screening",
       "Age",
-      "Does the applicant have pulmonary TB symptoms?",
-      "Pulmonary TB symptoms",
-      "Other symptoms",
-      "Applicant history if under 11",
-      "Additional details of applicant history if under 11",
-      "Has the applicant ever had pulmonary TB?",
-      "Detail of applicant's previous pulmonary TB",
-      "Has the applicant had close contact with any person with active pulmonary TB within the past year?",
-      "Details of applicant's close contact with any person with active pulmonary TB",
-      "Is the applicant pregnant?",
-      "Does the applicant have menstrual periods?",
-      "Physical examination notes",
+      "Does the visa applicant have pulmonary TB symptoms?",
+      "If yes, which pulmonary TB symptoms",
+      "Give further details (optional)",
+      "Has the visa applicant had pulmonary TB?",
+      "If yes, give details (optional)",
+      "Has the visa applicant had close contact with a person with active pulmonary TB in the past year?",
+      "If yes, give details",
+      "Is the visa applicant pregnant?",
+      "Does the visa applicant have menstrual periods?",
+      "Physical examination notes (optional)",
       "Is an X-ray required?",
     ];
 
