@@ -16,6 +16,8 @@ import { ClinicCertificateInfoPage } from "../../support/page-objects/clinicCert
 import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { EnterSputumSampleResultsPage } from "../../support/page-objects/enterSputumSampleResultsPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
+import { MedicalHistoryFemalePage } from "../../support/page-objects/medicalHistoryFemalePage";
+import { MedicalHistoryUnderElevenPage } from "../../support/page-objects/medicalHistoryUnderElevenPage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
 import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
@@ -55,6 +57,8 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
   const applicantConfirmationPage = new ApplicantConfirmationPage();
   const medicalSummaryPage = new MedicalSummaryPage();
   const medicalConfirmationPage = new MedicalConfirmationPage();
+  const medicalHistoryUnderElevenPage = new MedicalHistoryUnderElevenPage();
+  const medicalHistoryFemalePage = new MedicalHistoryFemalePage();
   const sputumDecisionConfirmationPage = new SputumDecisionConfirmationPage();
   const sputumDecisionInfoPage = new SputumDecisionInfoPage();
   const sputumQuestionPage = new SputumQuestionPage();
@@ -328,15 +332,26 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
       .fillScreeningDate(screeningDate.day, screeningDate.month, screeningDate.year)
       .fillAge(childAge.toString())
       .selectTbSymptoms("No") // No symptoms
-      .selectChildTbHistory("None of these") // None of these for child TB history
       .selectPreviousTb("No") // No TB history
       .selectCloseContact("No") // No close contact
-      .selectPregnancyStatus("No") // No for child
-      .selectMenstrualPeriods("No") // No for child
       .fillPhysicalExamNotes(
         "Child applicant aged 6 years. No TB symptoms or history. No close contact with TB. Physical examination normal for age.",
       )
       .submitForm();
+
+    // Verify redirection to Medical History Under 11 Page
+    medicalHistoryUnderElevenPage.verifyPageLoaded();
+
+    medicalHistoryUnderElevenPage.verifyAllConditionsPresent();
+    medicalHistoryUnderElevenPage
+      .selectNoneOfThese() // Select "None of these" option
+      .submitForm();
+    // Verify redirection to Medical History Female
+    medicalHistoryFemalePage.verifyPageLoaded();
+
+    medicalHistoryFemalePage.selectPregnant("No");
+    medicalHistoryFemalePage.selectMenstrualPeriods("No");
+    medicalHistoryFemalePage.submitForm();
 
     // Verify redirection to X-ray Question Page
     chestXrayPage.verifyPageLoaded();
@@ -375,7 +390,7 @@ describe("PETS Scenario 4: Child with No Symptoms, No X-ray, Sputum Required, Ce
     });
 
     // Confirm medical details
-    medicalSummaryPage.verifySubmissionConfirmationMessage();
+    medicalSummaryPage.verifySubmissionWarningText();
     medicalSummaryPage.confirmDetails();
 
     // Verify medical confirmation page and continue to chest X-ray

@@ -17,6 +17,7 @@ import { ChestXrayResultsPage } from "../../support/page-objects/chestXrayResult
 import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
 import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
+import { MedicalHistoryFemalePage } from "../../support/page-objects/medicalHistoryFemalePage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
 import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
@@ -52,6 +53,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
   const travelInformationPage = new TravelInformationPage();
   const travelSummaryPage = new TravelSummaryPage();
   const travelConfirmationPage = new TravelConfirmationPage();
+  const medicalHistoryFemalePage = new MedicalHistoryFemalePage();
   const medicalScreeningPage = new MedicalScreeningPage();
   const applicantConfirmationPage = new ApplicantConfirmationPage();
   const medicalSummaryPage = new MedicalSummaryPage();
@@ -275,10 +277,15 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
-      .selectPregnancyStatus("No")
-      .selectMenstrualPeriods("No")
-      .fillPhysicalExamNotes("Patient appears healthy.")
+      .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.")
       .submitForm();
+
+    // Verify redirection to Medical History Female
+    medicalHistoryFemalePage.verifyPageLoaded();
+
+    medicalHistoryFemalePage.selectPregnant("No");
+    medicalHistoryFemalePage.selectMenstrualPeriods("No");
+    medicalHistoryFemalePage.submitForm();
 
     // X-ray question
     chestXrayPage.verifyPageLoaded();

@@ -569,6 +569,20 @@ export class MedicalSummaryPage extends BasePage {
     }
     return this;
   }
+  // Verify warning text about not being able to change after submission
+  verifySubmissionWarningText(): MedicalSummaryPage {
+    cy.get("h2.govuk-heading-m")
+      .contains("Now send the medical history and TB symptoms")
+      .should("be.visible");
+
+    cy.get("p.govuk-body")
+      .contains(
+        "You will not be able to change the medical history and TB symptoms after you submit this information.",
+      )
+      .should("be.visible");
+
+    return this;
+  }
 
   // Verify GOV.UK footer is present
   verifyFooter(): MedicalSummaryPage {

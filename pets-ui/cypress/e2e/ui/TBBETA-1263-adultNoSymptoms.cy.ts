@@ -333,12 +333,9 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
     medicalScreeningPage
       .fillScreeningDate(screeningDate.day, screeningDate.month, screeningDate.year)
       .fillAge(adultAge.toString())
-      .fillAge("35") // Adult age
       .selectTbSymptoms("No") // No symptoms
       .selectPreviousTb("Yes") // Yes to TB history
       .selectCloseContact("No") // No close contact
-      .selectPregnancyStatus("No") // Not pregnant
-      .selectMenstrualPeriods("No") // No menstrual periods (male)
       .fillPhysicalExamNotes(
         "Adult male with history of tuberculosis. No current symptoms. Physical examination normal.",
       )
@@ -363,8 +360,6 @@ describe("Adult with TB History, X-ray Normal, Certificate Issued (6 months)", (
       tbSymptoms: "No",
       previousTb: "Yes",
       closeContactWithTb: "No",
-      pregnant: "No",
-      menstrualPeriods: "No",
       physicalExamNotes:
         "Adult male with history of tuberculosis. No current symptoms. Physical examination normal.",
     });
