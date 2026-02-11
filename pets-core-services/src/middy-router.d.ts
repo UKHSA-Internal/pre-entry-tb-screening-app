@@ -23,10 +23,8 @@ declare module "@middy/http-router" {
 
   export default function httpRouterHandler<
     TEvent extends ALBEvent | APIGatewayProxyEvent | APIGatewayProxyEventV2 = APIGatewayProxyEvent,
-    TResult extends
-      | ALBResult
-      | APIGatewayProxyResult
-      | APIGatewayProxyResultV2 = APIGatewayProxyResult,
+    TResult extends ALBResult | APIGatewayProxyResult | APIGatewayProxyResultV2 =
+      APIGatewayProxyResult,
   >({
     routes,
     notFoundResponse,
