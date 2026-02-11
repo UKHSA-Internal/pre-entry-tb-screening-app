@@ -9,7 +9,7 @@ import awsClients from "../../shared/clients/aws";
 import { seededApplications } from "../../shared/fixtures/application";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { TaskStatus } from "../../shared/types/enum";
+import { ApplicationStatus, TaskStatus } from "../../shared/types/enum";
 import { context, mockAPIGwEvent } from "../../test/mocks/events";
 import { APPLICANT_PHOTOS_FOLDER } from "../helpers/upload";
 import { SputumDetailsDbOps } from "../models/sputum-details";
@@ -49,6 +49,27 @@ describe("Test for Application Lambda", () => {
       resource: "/application/{applicationId}",
       path: `/application/${seededApplications[0].applicationId}`,
       httpMethod: "GET",
+    };
+
+    // Act
+    const response: APIGatewayProxyResult = await handler(event, context);
+
+    // Assert
+    expect(response.statusCode).toBe(200);
+  });
+
+  test("Cancel an application", async () => {
+    // Arrange
+    const event: PetsAPIGatewayProxyEvent = {
+      ...mockAPIGwEvent,
+      resource: "/application/{applicationId}/cancel",
+      path: `/application/${seededApplications[0].applicationId}/cancel`,
+      httpMethod: "PUT",
+      body: JSON.stringify({
+        applicationId: seededApplications[0].applicationId,
+        status: ApplicationStatus.cancelled,
+        cancellationReason: "do it",
+      }),
     };
 
     // Act

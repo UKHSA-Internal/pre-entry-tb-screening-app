@@ -111,7 +111,7 @@ describe("RadiologicalOutcomeSummary Section", () => {
       },
     } as unknown as Record<string, unknown>;
 
-    mock.onPost("/application/abc-123/chest-xray").reply(200);
+    mock.onPost("/application/abc-123/chest-xray?requireValidation=Yes").reply(200);
 
     renderWithProviders(<RadiologicalOutcomeSummary />, { preloadedState });
 
@@ -119,7 +119,9 @@ describe("RadiologicalOutcomeSummary Section", () => {
 
     await waitFor(() => {
       expect(mock.history.post).toHaveLength(1);
-      expect(mock.history.post[0].url).toBe("/application/abc-123/chest-xray");
+      expect(mock.history.post[0].url).toBe(
+        "/application/abc-123/chest-xray?requireValidation=Yes",
+      );
       expect(JSON.parse(mock.history.post[0].data as string)).toMatchObject({
         chestXrayTaken: "No",
         reasonXrayWasNotTaken: "Pregnancy",
@@ -150,7 +152,9 @@ describe("RadiologicalOutcomeSummary Section", () => {
 
     await waitFor(() => {
       expect(mock.history.post).toHaveLength(1);
-      expect(mock.history.post[0].url).toBe("/application/abc-123/chest-xray");
+      expect(mock.history.post[0].url).toBe(
+        "/application/abc-123/chest-xray?requireValidation=Yes",
+      );
       expect(JSON.parse(mock.history.post[0].data as string)).toMatchObject({
         chestXrayTaken: "No",
         reasonXrayWasNotTaken: "Pregnancy",
@@ -181,7 +185,9 @@ describe("RadiologicalOutcomeSummary Section", () => {
 
     await waitFor(() => {
       expect(mock.history.post).toHaveLength(1);
-      expect(mock.history.post[0].url).toBe("/application/abc-123/chest-xray");
+      expect(mock.history.post[0].url).toBe(
+        "/application/abc-123/chest-xray?requireValidation=Yes",
+      );
       expect(JSON.parse(mock.history.post[0].data as string)).toMatchObject({
         chestXrayTaken: "No",
         reasonXrayWasNotTaken: "Pregnancy",
