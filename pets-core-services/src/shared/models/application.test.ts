@@ -37,7 +37,7 @@ describe("Tests for Application Model", () => {
       clinicId,
       createdBy,
       applicationId,
-      status: ApplicationStatus.inProgress,
+      applicationStatus: ApplicationStatus.inProgress,
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -46,7 +46,7 @@ describe("Tests for Application Model", () => {
       Item: {
         clinicId,
         createdBy,
-        status: "In Progress",
+        applicationStatus: "In Progress",
         pk: "APPLICATION#test-application-id",
         sk: "APPLICATION#ROOT",
       },
@@ -66,7 +66,7 @@ describe("Tests for Application Model", () => {
     await expect(
       Application.updateApplication({
         applicationId: "Bad0ne",
-        status: ApplicationStatus.cancelled,
+        applicationStatus: ApplicationStatus.cancelled,
         cancellationReason: "IDK",
         updatedBy: createdBy,
       }),
@@ -82,7 +82,7 @@ describe("Tests for Application Model", () => {
     await expect(
       Application.updateApplication({
         applicationId: "Bad0ne",
-        status: ApplicationStatus.cancelled,
+        applicationStatus: ApplicationStatus.cancelled,
         cancellationReason: "IDK",
         updatedBy: createdBy,
       }),
@@ -98,7 +98,7 @@ describe("Tests for Application Model", () => {
         clinicId,
         createdBy,
         dateCreated,
-        status: ApplicationStatus.inProgress,
+        applicationStatus: ApplicationStatus.inProgress,
         pk: `APPLICATION#${applicationId}`,
         sk: "APPLICANT#DETAILS",
       },
@@ -127,7 +127,7 @@ describe("Tests for Application Model", () => {
         clinicId,
         createdBy,
         dateCreated,
-        status: ApplicationStatus.inProgress,
+        applicationStatus: ApplicationStatus.inProgress,
         pk: `APPLICATION#${applicationId}`,
         sk: "APPLICANT#DETAILS",
       },
@@ -137,7 +137,7 @@ describe("Tests for Application Model", () => {
     const application = await Application.updateApplication({
       // These are the args that are used by cancel application handler
       applicationId,
-      status: ApplicationStatus.cancelled,
+      applicationStatus: ApplicationStatus.cancelled,
       cancellationReason: "not needed",
       updatedBy: createdBy,
     });
@@ -148,7 +148,7 @@ describe("Tests for Application Model", () => {
       clinicId,
       createdBy,
       dateCreated: new Date("2025-02-07"),
-      status: "Cancelled",
+      applicationStatus: "Cancelled",
       cancellationReason: "not needed",
       dateUpdated: new Date(expectedDateTime),
       updatedBy: createdBy,
@@ -157,7 +157,7 @@ describe("Tests for Application Model", () => {
     expect(application.toJson()).toMatchObject({
       applicationId,
       dateCreated: new Date("2025-02-07").toISOString(),
-      status: "Cancelled",
+      applicationStatus: "Cancelled",
       cancellationReason: "not needed",
       expiryDate: undefined,
       dateUpdated: new Date(expectedDateTime).toISOString(),
@@ -176,7 +176,7 @@ describe("Tests for Application Model", () => {
         clinicId,
         createdBy,
         dateCreated,
-        status: ApplicationStatus.inProgress,
+        applicationStatus: ApplicationStatus.inProgress,
         pk: `APPLICATION#${applicationId}`,
         sk: "APPLICANT#DETAILS",
       },
@@ -186,7 +186,7 @@ describe("Tests for Application Model", () => {
     const application = await Application.updateApplication({
       // These are the args that are used by cancel application handler
       applicationId,
-      status: ApplicationStatus.certificateAvailable,
+      applicationStatus: ApplicationStatus.certificateAvailable,
       expiryDate: new Date("2027-06-06"),
       updatedBy: createdBy,
     });
@@ -197,7 +197,7 @@ describe("Tests for Application Model", () => {
       clinicId,
       createdBy,
       dateCreated: new Date("2025-02-07"),
-      status: "Certificate Available",
+      applicationStatus: "Certificate Available",
       cancellationReason: undefined,
       dateUpdated: new Date(expectedDateTime),
       updatedBy: createdBy,
@@ -206,7 +206,7 @@ describe("Tests for Application Model", () => {
     expect(application.toJson()).toMatchObject({
       applicationId,
       dateCreated: "2025-02-07T00:00:00.000Z",
-      status: "Certificate Available",
+      applicationStatus: "Certificate Available",
       cancellationReason: undefined,
       expiryDate: "2027-06-06T00:00:00.000Z",
       dateUpdated: "2025-03-04T00:00:00.000Z",
