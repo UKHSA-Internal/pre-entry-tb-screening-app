@@ -352,6 +352,20 @@ test("Progress tracker page displays incomplete application sections correctly &
   );
   expect(within(tbCertificateListItem as HTMLElement).getByText("Cannot start yet"));
 
+  expect(screen.getByText("View screening history")).toBeInTheDocument();
+  const historyLink = screen.getByRole("link", {
+    name: /View the screening history for this visa applicant/i,
+  });
+  expect(historyLink).toHaveAttribute("href", "/screening-history");
+
+  expect(screen.getByText("Cancel screening")).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", {
+      name: /Cancel this screening/i,
+    }),
+  ).toBeInTheDocument();
+
+  expect(screen.getByText("Start a new search")).toBeInTheDocument();
   const searchLink = screen.getByRole("link", { name: /Search for another visa applicant/i });
   expect(searchLink).toHaveAttribute("href", "/search-for-visa-applicant");
 });
@@ -449,6 +463,19 @@ test("Progress tracker page displays complete application sections correctly, li
   expect(within(tbCertificateListItem as HTMLElement).getByText("Certificate issued"));
   const img = await screen.findByAltText(/applicant/i);
   expect(img).toBeInTheDocument();
+
+  expect(screen.getByText("View screening history")).toBeInTheDocument();
+  const historyLink = screen.getByRole("link", {
+    name: /View the screening history for this visa applicant/i,
+  });
+  expect(historyLink).toHaveAttribute("href", "/screening-history");
+
+  expect(screen.queryByText("Cancel screening")).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", {
+      name: /Cancel this screening/i,
+    }),
+  ).not.toBeInTheDocument();
 
   const searchLink = screen.getByRole("link", { name: /Search for another visa applicant/i });
   expect(searchLink).toHaveAttribute("href", "/search-for-visa-applicant");
