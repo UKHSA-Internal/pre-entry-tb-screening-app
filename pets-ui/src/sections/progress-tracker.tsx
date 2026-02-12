@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router";
 
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
+import Button from "@/components/button/button";
 import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
@@ -15,7 +17,7 @@ import {
   selectTbCertificate,
   selectTravel,
 } from "@/redux/store";
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
 
 interface TaskProps {
   description: string;
@@ -100,6 +102,7 @@ const ProgressTracker = () => {
   const sputumData = useAppSelector(selectSputum);
   const tbCertificateData = useAppSelector(selectTbCertificate);
   const applicantPhotoContext = useApplicantPhoto();
+  const navigate = useNavigate();
 
   const allSputumSamplesSubmitted =
     sputumData.sample1.collection.submittedToDatabase &&
@@ -264,10 +267,46 @@ const ProgressTracker = () => {
       </ul>
 
       <Heading
+        title="View screening history"
+        level={2}
+        size="s"
+        additionalClasses="progress-tracker-lower-headings"
+      />
+      <p className="govuk-body">
+        <LinkLabel
+          className="govuk-link"
+          to="/screening-history"
+          title="View the screening history for this visa applicant"
+          externalLink={false}
+        />
+      </p>
+
+      {(tbCertificateData.status == ApplicationStatus.NOT_YET_STARTED ||
+        tbCertificateData.status == ApplicationStatus.IN_PROGRESS) && (
+        <>
+          <Heading
+            title="Cancel screening"
+            level={2}
+            size="s"
+            additionalClasses="progress-tracker-lower-headings"
+          />
+          <Button
+            id="cancel-screening"
+            class={ButtonClass.WARNING}
+            text="Cancel this screening"
+            handleClick={() => {
+              navigate("/why-are-you-cancelling-this-screening");
+            }}
+            style={{ marginTop: 0 }}
+          />
+        </>
+      )}
+
+      <Heading
         title="Start a new search"
         level={2}
         size="s"
-        additionalClasses="progress-tracker-start-search"
+        additionalClasses="progress-tracker-lower-headings"
       />
       <p className="govuk-body">
         <LinkLabel
