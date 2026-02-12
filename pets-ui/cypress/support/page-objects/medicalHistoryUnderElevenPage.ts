@@ -154,7 +154,22 @@ export class MedicalHistoryUnderElevenPage extends BasePage {
     cy.get(".govuk-error-summary__title").should("contain", "There is a problem");
     return this;
   }
+  // Verify the two error messages shown when mandatory conditions question is skipped
+  verifyMandatoryErrors(): MedicalHistoryUnderElevenPage {
+    const expectedError = 'Select all that apply, or select "None of these"';
 
+    // Error summary link at the top of the page
+    cy.get('[data-testid="error-summary"] .govuk-error-summary__list a')
+      .should("be.visible")
+      .and("contain.text", expectedError);
+
+    // Inline field-level error message beneath the hint text
+    cy.get("#under-eleven-conditions p.govuk-error-message")
+      .should("be.visible")
+      .and("contain.text", expectedError);
+
+    return this;
+  }
   validateErrorSummaryNotVisible(): MedicalHistoryUnderElevenPage {
     cy.get(".govuk-error-summary").should("not.exist");
     return this;
