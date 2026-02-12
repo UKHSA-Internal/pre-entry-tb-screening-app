@@ -38,7 +38,7 @@ export const cancelApplicationHandler = async (event: CancelApplicationEvent) =>
     const { createdBy } = event.requestContext.authorizer;
     const updatedApplication = await Application.updateApplication({
       applicationId: applicationId,
-      status: ApplicationStatus.cancelled,
+      applicationStatus: ApplicationStatus.cancelled,
       cancellationReason: parsedBody.cancellationReason as string,
       updatedBy: createdBy,
     });
