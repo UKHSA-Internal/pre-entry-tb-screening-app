@@ -33,7 +33,7 @@ export const fetchClinic = async (
   applicationClinicId?: string,
 ): Promise<void> => {
   let clinicId: string | null = null;
-  clinicId = applicationClinicId ? applicationClinicId : await getClinicId();
+  clinicId = applicationClinicId || (await getClinicId());
   if (!clinicId) return;
   void getClinicById(clinicId).then(({ data }) => {
     dispatch(setClinic(data.clinic));
