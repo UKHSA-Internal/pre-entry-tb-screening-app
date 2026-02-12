@@ -489,7 +489,7 @@ jobs:
             --return-consumed-capacity INDEXES \
             --return-item-collection-metrics SIZE
 
-  upload_migration_script:
+  upload-migration-script:
     name: Copy migration script to S3 bucket
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -510,5 +510,5 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Upload Spec to S3 # Ensures IAC deployments always deploy the latest changes in this repo.
-        run: aws s3 cp $MIGRATION_FILE_PATH s3://${{ MIGRATION_SCRIPT_S3_BUCKET }}/scripts/ --sse aws:kms --sse-kms-key-id ${{ vars.SSE_KEY_ID }}
+        run: aws s3 cp $MIGRATION_FILE_PATH s3://$MIGRATION_SCRIPT_S3_BUCKET/scripts/ --sse aws:kms --sse-kms-key-id ${{ vars.SSE_KEY_ID }}
         working-directory: pets-core-services
