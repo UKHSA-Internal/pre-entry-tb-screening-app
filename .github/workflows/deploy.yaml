@@ -497,7 +497,7 @@ jobs:
 
     env:
       MIGRATION_SCRIPT_S3_BUCKET: ${{ vars.MIGRATION_SCRIPT_S3_BUCKET }}
-      MIGRATION_FILE_PATH: "migration_script.py"
+      MIGRATION_FILE: "migration_script.py"
 
     steps:
       - name: Configure AWS credentials
