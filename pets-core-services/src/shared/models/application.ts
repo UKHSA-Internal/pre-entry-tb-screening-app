@@ -12,7 +12,7 @@ export abstract class IApplication {
   clinicId: string;
   dateCreated: Date;
   createdBy: string;
-  status: ApplicationStatus;
+  applicationStatus: ApplicationStatus;
   cancellationReason?: string;
   expiryDate?: Date;
   dateUpdated?: Date;
@@ -23,7 +23,7 @@ export abstract class IApplication {
     this.clinicId = details.clinicId;
     this.dateCreated = details.dateCreated;
     this.createdBy = details.createdBy;
-    this.status = details.status;
+    this.applicationStatus = details.applicationStatus;
     this.cancellationReason = details.cancellationReason;
     this.expiryDate = details.expiryDate;
     this.dateUpdated = details.dateUpdated;
@@ -31,21 +31,7 @@ export abstract class IApplication {
   }
 }
 
-abstract class ICancelApplication {
-  readonly applicationId: string;
-  cancellationReason: string;
-  updatedBy: string;
-  dateUpdated: Date;
-
-  constructor(details: ICancelApplication) {
-    this.applicationId = details.applicationId;
-    this.cancellationReason = details.cancellationReason;
-    this.updatedBy = details.updatedBy;
-    this.dateUpdated = details.dateUpdated;
-  }
-}
-
-export type NewApplication = Omit<IApplication, "dateCreated" | "status">;
+export type NewApplication = Omit<IApplication, "dateCreated" | "applicationStatus">;
 
 export class Application extends IApplication {
   static readonly getPk = (applicationId: string) => `APPLICATION#${applicationId}`;
@@ -63,6 +49,7 @@ export class Application extends IApplication {
       ...this,
       dateCreated: this.dateCreated.toISOString(),
       dateUpdated: this.dateUpdated?.toISOString(),
+      expiryDate: this.expiryDate?.toISOString(),
       updatedBy: this.updatedBy,
       pk: Application.getPk(this.applicationId),
       sk: Application.sk,
@@ -76,7 +63,7 @@ export class Application extends IApplication {
       const updatedDetails: IApplication = {
         ...details,
         dateCreated: new Date(),
-        status: ApplicationStatus.inProgress,
+        applicationStatus: ApplicationStatus.inProgress,
       };
       const newApplication = new Application(updatedDetails);
       const dbItem = newApplication.todbItem();
@@ -98,22 +85,20 @@ export class Application extends IApplication {
     }
   }
 
-  static async cancelApplication(details: Omit<ICancelApplication, "dateUpdated">) {
+  static async updateApplication(details: Partial<IApplication>) {
     try {
-      logger.info("Updating Applicaton status");
-      const application = await this.getByApplicationId(details.applicationId);
+      logger.info("Updating Applicaton details");
+      const application = await this.getByApplicationId(details.applicationId!);
 
       if (!application) {
         throw new Error("Could not fetch the application with the given applicationId");
       }
 
-      const updatedDetails = {
-        ...application,
-        status: ApplicationStatus.cancelled,
-        cancellationReason: details.cancellationReason,
+      const updatedDetails = Object.assign(application, {
+        ...details,
         updatedBy: details.updatedBy,
         dateUpdated: new Date(),
-      };
+      });
 
       // Create Application class instance to have access to toJson() function
       const updatedApplication = new Application(updatedDetails);
@@ -163,6 +148,8 @@ export class Application extends IApplication {
       const application = new Application({
         ...dbItem,
         dateCreated: new Date(dbItem.dateCreated),
+        dateUpdated: dbItem.dateUpdated ? new Date(dbItem.dateUpdated) : undefined,
+        expiryDate: dbItem.expiryDate ? new Date(dbItem.expiryDate) : undefined,
       });
       return application;
     } catch (error) {
@@ -175,10 +162,10 @@ export class Application extends IApplication {
     return {
       applicationId: this.applicationId,
       dateCreated: this.dateCreated.toISOString(),
-      status: this.status,
+      applicationStatus: this.applicationStatus,
       cancellationReason: this.cancellationReason,
-      expiryDate: this.expiryDate?.toISOString(),
-      dateUpdated: this.dateUpdated?.toISOString(),
+      expiryDate: this.expiryDate ? this.expiryDate.toISOString() : undefined,
+      dateUpdated: this.dateUpdated ? this.dateUpdated?.toISOString() : undefined,
       updatedBy: this.updatedBy,
     };
   }

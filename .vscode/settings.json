@@ -1,18 +1,19 @@
 {
-  "cSpell.diagnosticLevel": "Hint",
-  "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "yaml.schemas": {
-    "https://www.artillery.io/schema.json": []
-  },
-  "snyk.advanced.autoSelectOrganization": true
+    "cSpell.diagnosticLevel": "Hint",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "yaml.schemas": {
+        "https://www.artillery.io/schema.json": []
+    },
+    "snyk.advanced.organization": "d8274cef-c73d-4890-84d3-ccd2409cdf46",
+    "snyk.advanced.autoSelectOrganization": true
 }

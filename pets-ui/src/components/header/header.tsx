@@ -1,9 +1,17 @@
 import { useMsal } from "@azure/msal-react";
+import { useLocation } from "react-router";
 
 import LinkLabel from "../linkLabel/LinkLabel";
 
 export default function Header() {
   const { accounts } = useMsal();
+  const location = useLocation();
+  const url = String(location.pathname + location.search + location.hash);
+
+  let signOutUrl = "/are-you-sure-you-want-to-sign-out";
+  if (url == "/search-for-visa-applicant" || url == "/tracker" || url.includes("confirmed")) {
+    signOutUrl += "?skipSignOutCheck=true";
+  }
 
   return (
     <header className="govuk-header" data-module="govuk-header">
@@ -45,7 +53,7 @@ export default function Header() {
           {accounts.length > 0 ? (
             <LinkLabel
               title="Sign out"
-              to="/are-you-sure-you-want-to-sign-out"
+              to={signOutUrl}
               externalLink={false}
               id="sign-out"
               className="govuk-header__link govuk-header__service-name"

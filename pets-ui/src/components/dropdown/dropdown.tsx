@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 import { getDescribedBy } from "@/utils/getDescribedBy";
@@ -34,6 +34,7 @@ interface DropdownProps {
 export default function Dropdown(props: Readonly<DropdownProps>) {
   const { register } = useFormContext();
   const [selectClass, setSelectClass] = useState("govuk-select");
+  const [selectedOption, setSelectedOption] = useState("");
 
   useEffect(() => {
     setSelectClass("govuk-select" + (props.errorMessage ? " govuk-select--error" : ""));
@@ -53,9 +54,13 @@ export default function Dropdown(props: Readonly<DropdownProps>) {
       labelStyle={props.labelStyle}
       divStyle={props.divStyle}
     >
+      {selectedOption && (
+        <div className="govuk-visually-hidden" tabIndex={-1} aria-live="polite" aria-atomic="true">
+          Selected option: {selectedOption}
+        </div>
+      )}
       <select
-        aria-labelledby={props.heading && `${props.id}-field`}
-        id={props.label && !props.heading ? `${props.id}-field` : undefined}
+        id={`${props.id}-field`}
         aria-describedby={getDescribedBy(props.id, props.hint, props.heading, props.label)}
         className={selectClass}
         defaultValue={props.defaultValue ?? ""}
@@ -64,6 +69,9 @@ export default function Dropdown(props: Readonly<DropdownProps>) {
         {...register(props.formValue, {
           required: props.required,
         })}
+        onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+          setSelectedOption(e.target.selectedOptions[0].text);
+        }}
       >
         <option disabled value="">
           {props.placeholder ?? "Select an option"}

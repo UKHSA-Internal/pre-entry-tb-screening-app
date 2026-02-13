@@ -1,5 +1,5 @@
 import { useMsal } from "@azure/msal-react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 
 import Button from "@/components/button/button";
 import Container from "@/components/container/container";
@@ -28,6 +28,11 @@ export default function SignOutPage() {
         navigate("/sorry-there-is-problem-with-service");
       });
   };
+
+  const [searchParams] = useSearchParams();
+  if (searchParams.get("skipSignOutCheck") == "true") {
+    handleSignOut();
+  }
 
   const backLinkTo = "/";
 
