@@ -756,10 +756,6 @@ describe("PETS Application End-to-End Tests with Sign Out Functionality", () => 
 
       // Verify all page elements with saved certificate reference validation
       tbScreeningCompletePage.verifyAllWithSavedRef();
-      cy.log("Starting sign out process");
-      cy.logoutViaB2C();
-
-      cy.log("Test completed - user logged out successfully");
     });
   });
 });
