@@ -197,7 +197,7 @@ importers:
   pets-ui:
     dependencies:
       '@aws-sdk/client-sqs':
-        specifier: 3.974.0
+        specifier: ^3.864.0
         version: 3.974.0
       '@azure/msal-browser':
         specifier: ^4.21.0
@@ -221,8 +221,8 @@ importers:
         specifier: ^1.8.21
         version: 1.8.21
       glob:
-        specifier: 12.0.0
-        version: 12.0.0
+        specifier: ^11.1.0
+        version: 11.1.0
       govuk-frontend:
         specifier: ^5.13.0
         version: 5.13.0
@@ -248,7 +248,7 @@ importers:
         specifier: ^9.2.0
         version: 9.2.0(@types/react@19.2.7)(react@19.2.1)(redux@5.0.1)
       react-router:
-        specifier: 7.12.0
+        specifier: ^7.10.1
         version: 7.12.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       sass:
         specifier: ^1.81.0
@@ -1720,10 +1720,6 @@ packages:
 
   '@smithy/service-error-classification@4.0.1':
     resolution: {integrity: sha512-3JNjBfOWpj/mYfjXJHB4Txc/7E4LVq32bwzE7m28GN79+M1f76XHflUaSUkhOriprPDzev9cX/M+dEB80DNDKA==}
-    engines: {node: '>=18.0.0'}
-
-  '@smithy/service-error-classification@4.0.2':
-    resolution: {integrity: sha512-LA86xeFpTKn270Hbkixqs5n73S+LVM0/VZco8dqd+JT75Dyx3Lcw/MraL7ybjmz786+160K8rPOmhsq0SocoJQ==}
     engines: {node: '>=18.0.0'}
 
   '@smithy/service-error-classification@4.2.8':
@@ -3663,9 +3659,10 @@ packages:
     deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
-  glob@12.0.0:
-    resolution: {integrity: sha512-5Qcll1z7IKgHr5g485ePDdHcNQY0k2dtv/bjYy0iuyGxQw2qSOiiXUXJ+AYQpg3HNoUMHqAruX478Jeev7UULw==}
+  glob@11.1.0:
+    resolution: {integrity: sha512-vuNwKSaKiqm7g0THUBu2x7ckSs3XJLXE+2ssL7/MfTGPLLcrJQ/4Uq1CjPTtO5cCIiRxqvN6Twy1qOwhL0Xjcw==}
     engines: {node: 20 || >=22}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@13.0.0:
@@ -8234,7 +8231,7 @@ snapshots:
     dependencies:
       '@smithy/node-config-provider': 4.3.8
       '@smithy/protocol-http': 5.3.8
-      '@smithy/service-error-classification': 4.0.2
+      '@smithy/service-error-classification': 4.2.8
       '@smithy/smithy-client': 4.11.3
       '@smithy/types': 4.12.0
       '@smithy/util-middleware': 4.2.8
@@ -8382,10 +8379,6 @@ snapshots:
       '@smithy/types': 2.12.0
 
   '@smithy/service-error-classification@4.0.1':
-    dependencies:
-      '@smithy/types': 4.12.0
-
-  '@smithy/service-error-classification@4.0.2':
     dependencies:
       '@smithy/types': 4.12.0
 
@@ -8625,7 +8618,7 @@ snapshots:
 
   '@smithy/util-retry@4.0.2':
     dependencies:
-      '@smithy/service-error-classification': 4.0.2
+      '@smithy/service-error-classification': 4.2.8
       '@smithy/types': 4.12.0
       tslib: 2.8.1
 
@@ -11061,7 +11054,7 @@ snapshots:
       package-json-from-dist: 1.0.1
       path-scurry: 1.11.1
 
-  glob@12.0.0:
+  glob@11.1.0:
     dependencies:
       foreground-child: 3.3.1
       jackspeak: 4.1.1
