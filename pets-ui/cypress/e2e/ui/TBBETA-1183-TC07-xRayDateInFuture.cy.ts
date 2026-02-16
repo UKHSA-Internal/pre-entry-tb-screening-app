@@ -16,6 +16,7 @@ import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage"
 import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
 import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
+import { MedicalHistoryFemalePage } from "../../support/page-objects/medicalHistoryFemalePage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
 import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
@@ -44,6 +45,7 @@ describe("PETS Date Validation: INVALID - X-ray Date in Future", () => {
   const travelSummaryPage = new TravelSummaryPage();
   const travelConfirmationPage = new TravelConfirmationPage();
   const medicalScreeningPage = new MedicalScreeningPage();
+  const medicalHistoryFemalePage = new MedicalHistoryFemalePage();
   const medicalSummaryPage = new MedicalSummaryPage();
   const medicalConfirmationPage = new MedicalConfirmationPage();
   const applicantConfirmationPage = new ApplicantConfirmationPage();
@@ -198,11 +200,15 @@ describe("PETS Date Validation: INVALID - X-ray Date in Future", () => {
       .selectTBSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
-      .selectPregnancyStatus("No")
-      .selectMenstrualPeriods("No")
       .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.")
       .submitForm();
 
+    // Verify redirection to Medical History Female
+    medicalHistoryFemalePage.verifyPageLoaded();
+
+    medicalHistoryFemalePage.selectPregnant("No");
+    medicalHistoryFemalePage.selectMenstrualPeriods("No");
+    medicalHistoryFemalePage.submitForm();
     // Verify redirection to X-ray Question Page
     chestXrayPage.verifyPageLoaded();
 

@@ -1,4 +1,5 @@
 // This holds all fields of the Medical Screening Page
+// Updated to reflect removal of under-11's questions and female-specific questions
 
 import { BasePage } from "../BasePageNew";
 import { ButtonHelper, ErrorHelper, FormHelper, GdsComponentHelper } from "../helpers";
@@ -14,18 +15,10 @@ interface MedicalScreeningFormData {
   tbSymptoms: "Yes" | "No";
   tbSymptomsList?: string[];
   otherSymptoms?: string;
-  underElevenConditions?: string[];
-  underElevenConditionsDetail?: string;
   previousTb: "Yes" | "No";
   previousTbDetails?: string;
   closeContactWithTb: "Yes" | "No";
   closeContactDetails?: string;
-  pregnant: "Yes" | "No" | "Do not know" | "Not applicable (the visa applicant is not female)";
-  menstrualPeriods:
-    | "Yes"
-    | "No"
-    | "Do not know"
-    | "Not applicable (the visa applicant is not female)";
   physicalExamNotes?: string;
 }
 
@@ -158,18 +151,6 @@ export class MedicalScreeningPage extends BasePage {
     return this;
   }
 
-  selectUnderElevenOption(option: string): MedicalScreeningPage {
-    cy.get(`input[name="underElevenConditions"][value="${option}"]`)
-      .should("exist")
-      .check({ force: true });
-    return this;
-  }
-
-  fillUnderElevenDetails(text: string): MedicalScreeningPage {
-    cy.get('[name="underElevenConditionsDetail"]').clear().type(text);
-    return this;
-  }
-
   selectPreviousTb(option: "Yes" | "No"): MedicalScreeningPage {
     cy.get(`input[name="previousTb"][value="${option}"]`).check({ force: true });
     return this;
@@ -187,20 +168,6 @@ export class MedicalScreeningPage extends BasePage {
 
   fillCloseContactDetails(text: string): MedicalScreeningPage {
     cy.get('[name="closeContactWithTbDetail"]').clear().type(text);
-    return this;
-  }
-
-  selectPregnancyStatus(
-    option: "Yes" | "No" | "Do not know" | "Not applicable (the visa applicant is not female)",
-  ): MedicalScreeningPage {
-    cy.get(`input[name="pregnant"][value="${option}"]`).check({ force: true });
-    return this;
-  }
-
-  selectMenstrualPeriods(
-    option: "Yes" | "No" | "Do not know" | "Not applicable (the visa applicant is not female)",
-  ): MedicalScreeningPage {
-    cy.get(`input[name="menstrualPeriods"][value="${option}"]`).check({ force: true });
     return this;
   }
 
@@ -230,30 +197,17 @@ export class MedicalScreeningPage extends BasePage {
       }
     }
 
-    if (data.underElevenConditions && data.underElevenConditions.length > 0) {
-      data.underElevenConditions.forEach((condition) => {
-        this.selectUnderElevenOption(condition);
-      });
-
-      if (data.underElevenConditionsDetail) {
-        this.fillUnderElevenDetails(data.underElevenConditionsDetail);
-      }
-    }
-
     this.selectPreviousTb(data.previousTb);
 
-    if (data.previousTb === "Yes" && data.previousTbDetails) {
+    if (data.previousTbDetails) {
       this.fillPreviousTbDetails(data.previousTbDetails);
     }
 
     this.selectCloseContact(data.closeContactWithTb);
 
-    if (data.closeContactWithTb === "Yes" && data.closeContactDetails) {
+    if (data.closeContactDetails) {
       this.fillCloseContactDetails(data.closeContactDetails);
     }
-
-    this.selectPregnancyStatus(data.pregnant);
-    this.selectMenstrualPeriods(data.menstrualPeriods);
 
     if (data.physicalExamNotes) {
       this.fillPhysicalExamNotes(data.physicalExamNotes);
@@ -262,7 +216,7 @@ export class MedicalScreeningPage extends BasePage {
     return this;
   }
 
-  // Form submission
+  // Form submission methods
   submitForm(): MedicalScreeningPage {
     cy.get('button[type="submit"]').contains("Continue").click();
     return this;
@@ -273,13 +227,29 @@ export class MedicalScreeningPage extends BasePage {
     return this.submitForm();
   }
 
+  // Click the continue button
+  clickContinue(): void {
+    cy.get('button[type="submit"]').contains("Continue").click();
+  }
+
+  // Alternative click continue with return type
+  clickContinueButton(): MedicalScreeningPage {
+    cy.get('button[type="submit"]').contains("Continue").click();
+    return this;
+  }
+
+  // Click the back link
+  clickBack(): void {
+    cy.get(".govuk-back-link").click();
+  }
+
   // Verify redirection to Medical Summary Page
   verifyRedirectedToSummary(): MedicalScreeningPage {
     cy.url().should("include", "/check-medical-history-tb-symptoms");
     return this;
   }
 
-  // Error validation
+  // Error validation methods
   validateErrorSummaryVisible(): MedicalScreeningPage {
     cy.get(".govuk-error-summary").should("be.visible");
     return this;
@@ -311,11 +281,6 @@ export class MedicalScreeningPage extends BasePage {
     return this;
   }
 
-  validateUnderElevenConditionsFieldError(): MedicalScreeningPage {
-    this.error.validateFieldError("under-eleven-conditions");
-    return this;
-  }
-
   validatePreviousTbFieldError(): MedicalScreeningPage {
     this.error.validateFieldError("previous-tb");
     return this;
@@ -326,27 +291,14 @@ export class MedicalScreeningPage extends BasePage {
     return this;
   }
 
-  validatePregnancyFieldError(): MedicalScreeningPage {
-    this.error.validateFieldError("pregnant");
-    return this;
-  }
-
-  validateMenstrualPeriodsFieldError(): MedicalScreeningPage {
-    this.error.validateFieldError("menstrual-periods");
-    return this;
-  }
-
-  // Comprehensive validation method
+  // Comprehensive validation method (removed underElevenConditions, pregnant, menstrualPeriods)
   validateFormErrors(errors: {
     screeningDate?: string;
     age?: string;
     tbSymptoms?: string;
     tbSymptomsList?: string;
-    underElevenConditions?: string;
     previousTb?: string;
     closeContact?: string;
-    pregnant?: string;
-    menstrualPeriods?: string;
   }): MedicalScreeningPage {
     Object.entries(errors).forEach(([field, message]) => {
       switch (field) {
@@ -362,20 +314,11 @@ export class MedicalScreeningPage extends BasePage {
         case "tbSymptomsList":
           this.error.validateFieldError("tb-symptoms-list", message);
           break;
-        case "underElevenConditions":
-          this.error.validateFieldError("under-eleven-conditions", message);
-          break;
         case "previousTb":
           this.error.validateFieldError("previous-tb", message);
           break;
         case "closeContact":
           this.error.validateFieldError("close-contact-with-tb", message);
-          break;
-        case "pregnant":
-          this.error.validateFieldError("pregnant", message);
-          break;
-        case "menstrualPeriods":
-          this.error.validateFieldError("menstrual-periods", message);
           break;
       }
     });
@@ -404,22 +347,40 @@ export class MedicalScreeningPage extends BasePage {
     return this;
   }
 
-  // Verify all form fields are present
+  // Verify all required fields are present on the page (updated to exclude removed fields)
   verifyAllFieldsPresent(): MedicalScreeningPage {
-    cy.get("#medical-screening-completion-date-day").should("be.visible");
-    cy.get("#medical-screening-completion-date-month").should("be.visible");
-    cy.get("#medical-screening-completion-date-year").should("be.visible");
-    cy.get('[name="age"]').should("be.visible");
-    cy.get('input[name="tbSymptoms"]').should("exist");
-    cy.get('input[name="previousTb"]').should("exist");
-    cy.get('input[name="closeContactWithTb"]').should("exist");
-    cy.get('input[name="pregnant"]').should("exist");
-    cy.get('input[name="menstrualPeriods"]').should("exist");
-    cy.get('[name="physicalExamNotes"]').should("be.visible");
+    cy.get("#medical-screening-completion-date").should("be.visible");
+    cy.get("#tb-symptoms").should("be.visible");
+    cy.get("#previous-tb").should("be.visible");
+    cy.get("#close-contact-with-tb").should("be.visible");
+    cy.get("#physical-exam-notes").should("be.visible");
     return this;
   }
 
-  // Verify back link
+  // Verify questions about under 11's are NOT present
+  verifyUnderElevenQuestionsNotPresent(): MedicalScreeningPage {
+    cy.get("#under-eleven-conditions").should("not.exist");
+    cy.contains("If the visa applicant is a child aged 11 or under").should("not.exist");
+    return this;
+  }
+
+  // Verify questions about pregnancy and menstrual periods are NOT present
+  verifyFemaleSpecificQuestionsNotPresent(): MedicalScreeningPage {
+    cy.get("#pregnant").should("not.exist");
+    cy.get("#menstrual-periods").should("not.exist");
+    cy.contains("Is the visa applicant pregnant").should("not.exist");
+    cy.contains("menstrual periods").should("not.exist");
+    return this;
+  }
+
+  // Verify the page does NOT contain removed questions
+  verifyRemovedQuestionsNotPresent(): MedicalScreeningPage {
+    this.verifyUnderElevenQuestionsNotPresent();
+    this.verifyFemaleSpecificQuestionsNotPresent();
+    return this;
+  }
+
+  // Verify Back link
   verifyBackLink(): MedicalScreeningPage {
     cy.get(".govuk-back-link")
       .should("be.visible")
@@ -428,7 +389,7 @@ export class MedicalScreeningPage extends BasePage {
     return this;
   }
 
-  // Verify service name
+  // Verify Service Name
   verifyServiceName(): MedicalScreeningPage {
     cy.get(".govuk-service-navigation__service-name")
       .should("be.visible")
@@ -437,68 +398,37 @@ export class MedicalScreeningPage extends BasePage {
     return this;
   }
 
-  // Method for selecting child TB history - maps to under eleven conditions
-  selectChildTbHistory(option: string): MedicalScreeningPage {
-    cy.get(`input[name="underElevenConditions"][value="${option}"]`)
-      .should("exist")
-      .check({ force: true });
+  // Verify footer
+  verifyFooter(): MedicalScreeningPage {
+    cy.get(".govuk-footer").should("be.visible");
     return this;
   }
 
-  // More specific method for under eleven conditions with better naming
-  selectUnderElevenConditions(condition: string): MedicalScreeningPage {
-    cy.get(`input[name="underElevenConditions"][value="${condition}"]`)
-      .should("exist")
-      .check({ force: true });
+  // Verify error messages
+  verifyErrorSummary(): MedicalScreeningPage {
+    cy.get(".govuk-error-summary").should("be.visible");
     return this;
   }
 
-  // Method to select multiple under eleven conditions
-  selectMultipleUnderElevenConditions(conditions: string[]): MedicalScreeningPage {
-    conditions.forEach((condition) => {
-      cy.get(`input[name="underElevenConditions"][value="${condition}"]`)
-        .should("exist")
-        .check({ force: true });
-    });
+  verifyErrorMessage(fieldId: string, expectedMessage: string): MedicalScreeningPage {
+    cy.get(`#${fieldId}-error`).should("contain.text", expectedMessage);
     return this;
   }
 
-  // Verification methods for under eleven conditions
-  verifyUnderElevenConditionsVisible(): MedicalScreeningPage {
-    cy.get("#under-eleven-conditions").should("be.visible");
-    cy.contains("If the visa applicant is a child aged 11 or under, have they ever had:").should(
-      "be.visible",
-    );
+  // Verify field-level error for a specific field
+  verifyFieldError(fieldId: string): MedicalScreeningPage {
+    cy.get(`#${fieldId}`).should("have.class", "govuk-form-group--error");
     return this;
   }
 
-  verifyUnderElevenConditionSelected(condition: string): MedicalScreeningPage {
-    cy.get(`input[name="underElevenConditions"][value="${condition}"]`).should("be.checked");
-    return this;
+  // Click the sign out link
+  clickSignOut(): void {
+    cy.get("#sign-out").click();
   }
 
-  // Method to verify all under eleven condition options are present
-  verifyAllUnderElevenConditionsPresent(): MedicalScreeningPage {
-    const expectedConditions = [
-      "Thoracic surgery",
-      "Cyanosis",
-      "Chronic respiratory disease",
-      "Respiratory insufficiency that limits activity",
-      "None of these",
-      "Not applicable - applicant is aged 11 or over",
-    ];
-
-    expectedConditions.forEach((condition) => {
-      cy.get(`input[name="underElevenConditions"][value="${condition}"]`).should("exist");
-    });
-    return this;
-  }
-
-  // Method to clear all under eleven conditions
-  clearAllUnderElevenConditions(): MedicalScreeningPage {
-    cy.get('input[name="underElevenConditions"]:checked').each(($el) => {
-      cy.wrap($el).uncheck({ force: true });
-    });
+  // Verify the visa applicant's age is displayed correctly
+  verifyVisaApplicantAge(expectedAge: string): MedicalScreeningPage {
+    cy.get(".summary-list-value").should("contain", expectedAge);
     return this;
   }
 
@@ -543,112 +473,6 @@ export class MedicalScreeningPage extends BasePage {
     return this;
   }
 
-  // Method to verify conditional fields based on age
-  verifyConditionalFieldsForAge(age: number): MedicalScreeningPage {
-    if (age <= 11) {
-      this.verifyUnderElevenConditionsVisible();
-    } else {
-      // For adults, "Not applicable" should be available for under eleven conditions
-      cy.get(
-        'input[name="underElevenConditions"][value="Not applicable - applicant is aged 11 or over"]',
-      ).should("exist");
-    }
-    return this;
-  }
-
-  // Enhanced form validation for child-specific scenarios
-  validateChildFormData(data: {
-    screeningDate?: { day: string; month: string; year: string };
-    age: string;
-    tbSymptoms: "Yes" | "No";
-    underElevenConditions?: string[];
-    previousTb: "Yes" | "No";
-    closeContactWithTb: "Yes" | "No";
-    pregnant: "N/A";
-    menstrualPeriods: "N/A";
-    physicalExamNotes?: string;
-  }): MedicalScreeningPage {
-    // Verify screening date
-    if (data.screeningDate) {
-      cy.get("#medical-screening-completion-date-day").should("have.value", data.screeningDate.day);
-      cy.get("#medical-screening-completion-date-month").should(
-        "have.value",
-        data.screeningDate.month,
-      );
-      cy.get("#medical-screening-completion-date-year").should(
-        "have.value",
-        data.screeningDate.year,
-      );
-    }
-
-    // Verify age field
-    cy.get('[name="age"]').should("have.value", data.age);
-
-    // Verify TB symptoms selection
-    cy.get(`input[name="tbSymptoms"][value="${data.tbSymptoms}"]`).should("be.checked");
-
-    // Verify under eleven conditions if specified
-    if (data.underElevenConditions) {
-      data.underElevenConditions.forEach((condition) => {
-        cy.get(`input[name="underElevenConditions"][value="${condition}"]`).should("be.checked");
-      });
-    }
-
-    // Verify TB history
-    cy.get(`input[name="previousTb"][value="${data.previousTb}"]`).should("be.checked");
-
-    // Verify close contact
-    cy.get(`input[name="closeContactWithTb"][value="${data.closeContactWithTb}"]`).should(
-      "be.checked",
-    );
-
-    // Verify pregnancy status (should be N/A for children)
-    cy.get(`input[name="pregnant"][value="${data.pregnant}"]`).should("be.checked");
-
-    // Verify menstrual periods (should be N/A for children)
-    cy.get(`input[name="menstrualPeriods"][value="${data.menstrualPeriods}"]`).should("be.checked");
-
-    // Verify physical exam notes if provided
-    if (data.physicalExamNotes) {
-      cy.get('[name="physicalExamNotes"]').should("contain.value", data.physicalExamNotes);
-    }
-
-    return this;
-  }
-
-  // Method to fill form specifically for child applicants
-  fillChildForm(data: {
-    screeningDate?: { day: string; month: string; year: string };
-    age: string;
-    tbSymptoms: "Yes" | "No";
-    underElevenConditions: string[];
-    previousTb: "Yes" | "No";
-    closeContactWithTb: "Yes" | "No";
-    physicalExamNotes?: string;
-  }): MedicalScreeningPage {
-    if (data.screeningDate) {
-      this.fillScreeningDate(
-        data.screeningDate.day,
-        data.screeningDate.month,
-        data.screeningDate.year,
-      );
-    }
-
-    this.fillAge(data.age);
-    this.selectTbSymptoms(data.tbSymptoms);
-    this.selectMultipleUnderElevenConditions(data.underElevenConditions);
-    this.selectPreviousTb(data.previousTb);
-    this.selectCloseContact(data.closeContactWithTb);
-    this.selectPregnancyStatus("Not applicable (the visa applicant is not female)");
-    this.selectMenstrualPeriods("Not applicable (the visa applicant is not female)");
-
-    if (data.physicalExamNotes) {
-      this.fillPhysicalExamNotes(data.physicalExamNotes);
-    }
-
-    return this;
-  }
-
   // Method to verify form state after conditional selections
   verifyFormStateAfterSelection(): MedicalScreeningPage {
     // Check if TB symptoms "Yes" is selected, then symptoms list should be visible
@@ -674,13 +498,75 @@ export class MedicalScreeningPage extends BasePage {
 
     return this;
   }
+
   // Comprehensive page verification
   verifyAllPageElements(): MedicalScreeningPage {
     this.verifyPageLoaded();
     this.verifyAllFieldsPresent();
+    this.verifyRemovedQuestionsNotPresent();
     this.verifyScreeningDateQuickFillLinks();
     this.verifyBackLink();
     this.verifyServiceName();
+    return this;
+  }
+
+  // Method to verify all mandatory fields are completed
+  verifyMandatoryFieldsCompleted(): MedicalScreeningPage {
+    // Verify screening date is filled
+    cy.get("#medical-screening-completion-date-day").should("not.have.value", "");
+    cy.get("#medical-screening-completion-date-month").should("not.have.value", "");
+    cy.get("#medical-screening-completion-date-year").should("not.have.value", "");
+
+    // Verify TB symptoms is selected
+    cy.get('input[name="tbSymptoms"]:checked').should("exist");
+
+    // Verify previous TB is selected
+    cy.get('input[name="previousTb"]:checked').should("exist");
+
+    // Verify close contact with TB is selected
+    cy.get('input[name="closeContactWithTb"]:checked').should("exist");
+
+    return this;
+  }
+
+  // Method to fill minimum required data
+  fillMandatoryFields(data: {
+    screeningDate: { day: string; month: string; year: string };
+    tbSymptoms: "Yes" | "No";
+    previousTb: "Yes" | "No";
+    closeContactWithTb: "Yes" | "No";
+  }): MedicalScreeningPage {
+    this.fillScreeningDate(
+      data.screeningDate.day,
+      data.screeningDate.month,
+      data.screeningDate.year,
+    );
+    this.selectTbSymptoms(data.tbSymptoms);
+    this.selectPreviousTb(data.previousTb);
+    this.selectCloseContact(data.closeContactWithTb);
+    return this;
+  }
+
+  // Clear all form fields
+  clearAllFields(): MedicalScreeningPage {
+    cy.get("#medical-screening-completion-date-day").clear();
+    cy.get("#medical-screening-completion-date-month").clear();
+    cy.get("#medical-screening-completion-date-year").clear();
+
+    // Uncheck all radio buttons
+    cy.get('input[name="tbSymptoms"]:checked').uncheck({ force: true });
+    cy.get('input[name="previousTb"]:checked').uncheck({ force: true });
+    cy.get('input[name="closeContactWithTb"]:checked').uncheck({ force: true });
+
+    // Uncheck all checkboxes
+    cy.get('input[name="tbSymptomsList"]:checked').uncheck({ force: true });
+
+    // Clear all text areas
+    cy.get('[name="otherSymptomsDetail"]').clear();
+    cy.get('[name="previousTbDetail"]').clear();
+    cy.get('[name="closeContactWithTbDetail"]').clear();
+    cy.get('[name="physicalExamNotes"]').clear();
+
     return this;
   }
 }

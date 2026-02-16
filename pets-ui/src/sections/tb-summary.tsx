@@ -337,7 +337,7 @@ const TbSummary = () => {
         },
         {
           key: "Child under 11 years",
-          value: isChildUnder11(medicalScreeningData),
+          value: isChildUnder11(applicantData),
           hiddenLabel: "Child under 11 years",
         },
       ]

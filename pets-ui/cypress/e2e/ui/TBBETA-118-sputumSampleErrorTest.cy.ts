@@ -18,6 +18,7 @@ import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadP
 import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { EnterSputumSampleResultsPage } from "../../support/page-objects/enterSputumSampleResultsPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
+import { MedicalHistoryFemalePage } from "../../support/page-objects/medicalHistoryFemalePage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
 import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
@@ -50,6 +51,7 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
   const travelSummaryPage = new TravelSummaryPage();
   const travelConfirmationPage = new TravelConfirmationPage();
   const medicalScreeningPage = new MedicalScreeningPage();
+  const medicalHistoryFemalePage = new MedicalHistoryFemalePage();
   const passportInformationPage = new PassportInformationPage();
   const contactInformationPage = new ContactInformationPage();
   const applicantConfirmationPage = new ApplicantConfirmationPage();
@@ -275,10 +277,15 @@ describe("Empty Form Submission Test On Sputum Collection Page", () => {
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
-      .selectPregnancyStatus("No")
-      .selectMenstrualPeriods("No")
       .fillPhysicalExamNotes("Test where NO sputum sample results is selected.")
       .submitForm();
+
+    // Verify redirection to Medical History Female
+    medicalHistoryFemalePage.verifyPageLoaded();
+
+    medicalHistoryFemalePage.selectPregnant("No");
+    medicalHistoryFemalePage.selectMenstrualPeriods("No");
+    medicalHistoryFemalePage.submitForm();
 
     // Verify redirection to X-ray Question Page
     chestXrayPage.verifyPageLoaded();
