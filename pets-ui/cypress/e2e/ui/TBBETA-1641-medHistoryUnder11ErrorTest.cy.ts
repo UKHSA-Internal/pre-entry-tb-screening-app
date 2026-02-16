@@ -1,6 +1,4 @@
-// PETS Date Validation Test: INVALID - Medical Screening Date in the Future
-// VIOLATION: Medical screening date cannot be in the future
-// Expected Error: "The date of the medical screening must be today or in the past 6 months"
+//PETS Scenario: Under 11 years Old - Medical history under 11 years Old Error Validation
 import { countryList } from "../../../src/utils/countryList";
 import { loginViaB2C } from "../../support/commands";
 import { DateUtils } from "../../support/DateUtils";
@@ -12,6 +10,7 @@ import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchP
 import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
 import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
 import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
+import { MedicalHistoryUnderElevenPage } from "../../support/page-objects/medicalHistoryUnderElevenPage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
@@ -25,104 +24,123 @@ import {
   randomElement,
 } from "../../support/test-helpers";
 
-describe("PETS Date Validation: INVALID - Medical Screening in Future", () => {
+describe("PETS Scenario : Medical history under 11 years Old Error Validation", () => {
   // Page object instances
+  const applicantConsentPage = new ApplicantConsentPage();
+  const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const applicantSearchPage = new ApplicantSearchPage();
   const applicantPhotoUploadPage = new ApplicantPhotoUploadPage();
   const applicantSummaryPage = new ApplicantSummaryPage();
   const applicantDetailsPage = new ApplicantDetailsPage();
   const passportInformationPage = new PassportInformationPage();
   const contactInformationPage = new ContactInformationPage();
-  const applicantConsentPage = new ApplicantConsentPage();
-  const checkPhotoPage = new CheckVisaApplicantPhotoPage();
   const travelInformationPage = new TravelInformationPage();
   const travelSummaryPage = new TravelSummaryPage();
   const travelConfirmationPage = new TravelConfirmationPage();
   const medicalScreeningPage = new MedicalScreeningPage();
+  const medicalHistoryUnderElevenPage = new MedicalHistoryUnderElevenPage();
   const applicantConfirmationPage = new ApplicantConfirmationPage();
   const tbProgressTrackerPage = new TBProgressTrackerPage();
   const visaCategoryPage = new VisaCategoryPage();
 
   // Define variables to store test data
+  let countryCode: string = "";
   let countryName: string = "";
   let passportNumber: string = "";
+  let tbCertificateNumber: string = "";
   let selectedVisaCategory: string;
 
-  // Dynamic date variables
-  let adultAge: number;
-  let adultDOB: ReturnType<typeof DateUtils.getDOBComponentsForAge>;
-  let adultDOBSumPageFormat: string;
-  let passportIssueDate: ReturnType<typeof DateUtils.getDateComponents>;
-  let passportExpiryDate: ReturnType<typeof DateUtils.getDateComponents>;
-  let futureScreeningDate: ReturnType<typeof DateUtils.getDateComponents>;
+  // Date-related variables
+  let childAge: number;
+  let childDOB: { day: string; month: string; year: string };
+  let childDOBFormatted: string;
+  let passportIssueDate: { day: string; month: string; year: string };
+  let passportExpiryDate: { day: string; month: string; year: string };
+  let screeningDate: ReturnType<typeof DateUtils.getDateComponents>;
 
   before(() => {
+    // Create test fixtures before test run
     createTestFixtures();
-
-    // Generate dates for 32 year old adult
-    adultAge = 32;
-    adultDOB = DateUtils.getAdultDOBComponents(adultAge);
-    const dobDate = DateUtils.getAdultDateOfBirth(adultAge);
-    adultDOBSumPageFormat = DateUtils.formatDateGOVUK(dobDate);
-
-    // Generate valid passport dates
-    const passportIssue = DateUtils.getDateInPast(2);
-    const passportExpiry = DateUtils.getPassportExpiryDate(passportIssue, false);
-    passportIssueDate = DateUtils.getDateComponents(passportIssue);
-    passportExpiryDate = DateUtils.getDateComponents(passportExpiry);
-
-    // INVALID SCENARIO: Medical screening in the future (1 day from now)
-    const futureScreening = DateUtils.getDateInFuture(0, 0, 1); // 1 day in the future
-    futureScreeningDate = DateUtils.getDateComponents(futureScreening);
-
-    // Log dates for debugging
-    cy.log("=== INVALID SCENARIO: MEDICAL SCREENING IN FUTURE ===");
-    cy.log(`DOB Formatted: ${adultDOBSumPageFormat}`);
-    cy.log(
-      `Medical Screening: ${futureScreeningDate.day}/${futureScreeningDate.month}/${futureScreeningDate.year} (1 DAY IN FUTURE - INVALID!)`,
-    );
-    cy.log(`VIOLATION: Medical screening date cannot be in the future`);
   });
 
   beforeEach(() => {
     loginViaB2C();
     applicantSearchPage.visit();
-    cy.acceptCookies();
     applicantSearchPage.verifyPageLoaded();
-
     // Generate random country and passport number
     const randomCountry = randomElement(countryList);
-    countryName = randomCountry?.label;
+    countryCode = randomCountry?.value; // For form filling (e.g., "BRB")
+    countryName = randomCountry?.label; // For validation (e.g., "Barbados")
     passportNumber = getRandomPassportNumber();
+    tbCertificateNumber = "TB" + Math.floor(10000000 + Math.random() * 90000000);
 
+    // Log what we're using for debugging
     cy.log(`Using passport number: ${passportNumber}`);
-    cy.log(`Using country: ${countryName}`);
+    cy.log(`Using country code: ${countryCode}`);
+    cy.log(`Using country name: ${countryName}`);
+    cy.log(`Using TB certificate number: ${tbCertificateNumber}`);
+
+    // Generate dynamic dates for child applicant (age 6 years)
+    childAge = 6;
+    childDOB = DateUtils.getChildDOBComponents(childAge);
+    childDOBFormatted = DateUtils.normalizeDateForComparison(
+      DateUtils.formatDateDDMMYYYY(DateUtils.getChildDateOfBirth(childAge)),
+    );
+
+    // Generate passport dates (issued 1 year ago, 5-year validity for child)
+    const { issueDate, expiryDate } = DateUtils.getValidPassportDates();
+    passportIssueDate = issueDate;
+    passportExpiryDate = expiryDate;
+    /// Generate screening date (1 month ago for realistic scenario)
+    const screening = DateUtils.getDateInPast(0, 1, 0); // 1 month ago
+    screeningDate = DateUtils.getDateComponents(screening);
+
+    // Log screening date
+    cy.log(`Screening Date: ${screeningDate.day}/${screeningDate.month}/${screeningDate.year}`);
+
+    // Log generated dates for debugging
+    cy.log(`Child Age: ${childAge}`);
+    cy.log(`Child DOB: ${childDOB.day}/${childDOB.month}/${childDOB.year}`);
+    cy.log(`DOB Formatted: ${childDOBFormatted}`);
+    cy.log(
+      `Passport Issue: ${passportIssueDate.day}/${passportIssueDate.month}/${passportIssueDate.year}`,
+    );
+    cy.log(
+      `Passport Expiry: ${passportExpiryDate.day}/${passportExpiryDate.month}/${passportExpiryDate.year}`,
+    );
   });
 
-  it("should reject medical screening date that is in the future", () => {
-    // Search for new applicant
+  it('should display error message: Select all that apply, or select "None of these" on Medical History Under 11 Years Old page', () => {
+    // Search for applicant with passport number
+    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName)
       .submitSearch();
 
+    // Verify no matching record found and click create new
     applicantSearchPage.verifyNoMatchingRecordMessage(20000);
+    applicantSearchPage.verifyCreateNewApplicantExists();
     applicantSearchPage.clickCreateNewApplicant();
 
-    // Applicant Consent
+    // Verify Applicant Consent
     applicantConsentPage.continueWithConsent("Yes");
+
+    // Verify redirection to applicant search page
     applicantSearchPage.verifyRedirectionToCreateApplicantPage();
 
-    // Fill Applicant Details - Page 1: Personal Information
+    // Fill Applicant Details for Child
+    applicantDetailsPage.verifyPageLoaded();
+
+    // Fill in applicant personal details for child (born in 2018, so under 11)
     applicantDetailsPage
-      .verifyPageLoaded()
-      .fillFullName("Test Future Medical")
+      .fillFullName("Nana Kobi Quist")
       .selectSex("Male")
       .selectNationality(countryName)
-      .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
+      .fillBirthDate(childDOB.day, childDOB.month, childDOB.year)
       .submitForm();
 
-    // Fill Applicant Details - Page 2: Passport Information
+    // Fill in passport details
     passportInformationPage.verifyPageLoaded();
     passportInformationPage
       .fillPassportNumber(passportNumber)
@@ -131,24 +149,38 @@ describe("PETS Date Validation: INVALID - Medical Screening in Future", () => {
       .fillExpiryDate(passportExpiryDate.day, passportExpiryDate.month, passportExpiryDate.year)
       .submitForm();
 
-    // Fill Applicant Details - Page 3: Contact Information
+    // Fill in contact information
     contactInformationPage.verifyPageLoaded();
     contactInformationPage
-      .fillAddressLine1("999 Future Street")
-      .fillTownOrCity("Future City")
-      .fillProvinceOrState("Future Province")
+      .fillAddressLine1("456 Children's Avenue")
+      .fillAddressLine2("Block C")
+      .fillTownOrCity("Accra")
+      .fillProvinceOrState("Greater Accra")
+      .fillPostcode("LS1 3BB")
       .selectCountry(countryName)
-      .fillPostcode("FUT 0RE")
       .submitForm();
 
-    // Upload Applicant Photo
+    // Verify redirection to the Applicant Photo page
     cy.url().should("include", "/upload-visa-applicant-photo");
     applicantPhotoUploadPage.verifyPageLoaded();
-    applicantPhotoUploadPage.uploadApplicantPhotoFile("cypress/fixtures/passportpic.jpeg");
-    applicantPhotoUploadPage.clickContinue();
 
-    // Check Photo page
+    // Upload Applicant Photo file
+    applicantPhotoUploadPage
+      .uploadApplicantPhotoFile("cypress/fixtures/child-passport-photo.jpg")
+      .verifyUploadSuccess();
+
+    //Checking no errors appear
+    cy.get(".govuk-error-message").should("not.exist");
+    cy.get("button").contains("Continue").should("be.visible").and("be.enabled");
+
+    // Continue to Applicant Summary page
+    applicantPhotoUploadPage.clickContinue();
+    cy.url().then((url) => {
+      cy.log(`Current URL: ${url}`);
+    });
+    // Verify redirection to the Check Photo page
     cy.url().should("include", "/check-visa-applicant-photo");
+
     checkPhotoPage.verifyPageLoaded();
     checkPhotoPage.verifyPageHeadingText();
     checkPhotoPage.verifyUploadedPhotoDisplayed();
@@ -157,26 +189,32 @@ describe("PETS Date Validation: INVALID - Medical Screening in Future", () => {
     checkPhotoPage.verifyRadioButtonsExist();
     checkPhotoPage.selectYesAddPhoto();
     checkPhotoPage.clickContinue();
-
-    // Applicant Summary - verify details were saved correctly
+    // Verify redirection to the Applicant Summary page
+    cy.url().should("include", "/check-visa-applicant-details");
     applicantSummaryPage.verifyPageLoaded();
-    applicantSummaryPage.verifyAllSummaryValues({
-      "Full name": "Test Future Medical",
-      Sex: "Male",
-      Nationality: countryName,
-      "Date of birth": adultDOBSumPageFormat,
-      "Passport number": passportNumber,
-    });
+
+    // Verify some of the submitted data appears correctly in the summary
+    applicantSummaryPage.verifySummaryValue("Full name", "Nana Kobi Quist");
+    applicantSummaryPage.verifySummaryValue("Passport number", passportNumber);
+    applicantSummaryPage.verifySummaryValue("Country of issue", countryName);
+    applicantSummaryPage.verifySummaryValue("Nationality", countryName);
+    applicantSummaryPage.verifySummaryValue("Country", countryName);
+
+    // Confirm above details to proceed to next page
     applicantSummaryPage.confirmDetails();
 
-    // Applicant Confirmation
+    // Verify applicant confirmation page
     applicantConfirmationPage.verifyPageLoaded();
     applicantConfirmationPage.verifyNextStepsText();
+
+    // Click continue - this goes to tracker
     applicantConfirmationPage.clickContinue();
 
-    // TB Progress Tracker
+    // Verify we're on the tracker
     cy.url().should("include", "/tracker");
     tbProgressTrackerPage.verifyPageLoaded();
+
+    // Navigate to travel information from the tracker
     tbProgressTrackerPage.clickTaskLink("UK travel information");
 
     // Select random category and store the selected value
@@ -188,32 +226,27 @@ describe("PETS Date Validation: INVALID - Medical Screening in Future", () => {
       // Store as alias for use throughout the test
       cy.wrap(selectedVisaCategory).as("selectedVisa");
     });
-
     // Click continue to proceed to travel information page
     visaCategoryPage.clickContinue();
 
-    // NOW verify the travel information page
+    // Fill travel information
     travelInformationPage.verifyPageLoaded();
 
-    /// Fill travel information (NO visa type parameter needed)
     travelInformationPage.fillCompleteForm({
-      ukAddressLine1: "Flat 201, Future Building",
-      ukAddressLine2: "Floor 2",
-      ukTownOrCity: "Manchester",
-      ukPostcode: "FT2 3AB",
-      mobileNumber: "07700900123",
-      email: "pets.tester@hotmail.com",
+      ukAddressLine1: "789 Family Road",
+      ukAddressLine2: "Apartment 2C",
+      ukTownOrCity: "Bristol",
+      ukPostcode: "BS1 4CC",
+      mobileNumber: "07700900789",
+      email: "pets.parents@hotmail.com",
     });
 
     // Submit the form
     travelInformationPage.submitForm();
 
-    // Review Travel Summary with random visa type
+    // Review Travel Summary
     travelSummaryPage.verifyPageLoaded();
-
-    // Verify the random visa type is valid and displayed correctly
     travelSummaryPage.verifyVisaTypeIsValid();
-
     // Verify details by clicking change links and checking fields
     travelSummaryPage.clickChangeLink("Address line 1 (optional)");
     cy.url().should("include", "/visa-applicant-proposed-uk-address");
@@ -230,48 +263,35 @@ describe("PETS Date Validation: INVALID - Medical Screening in Future", () => {
     // Submit the summary page
     travelSummaryPage.submitForm();
 
+    // Travel Confirmation
     travelConfirmationPage.verifyPageLoaded();
     travelConfirmationPage.clickContinue();
 
-    // TB Progress Tracker
+    // Verify we're back on the tracker
     cy.url().should("include", "/tracker");
+    tbProgressTrackerPage.verifyPageLoaded();
+    // Navigate to medical screening from the tracker
     tbProgressTrackerPage.clickTaskLink("Medical history and TB symptoms");
 
-    // Medical Screening Page - Enter INVALID future date
+    // Medical Screening Page - Child with no symptoms, no TB history, no close contact
     medicalScreeningPage.verifyPageLoaded();
 
-    cy.log("ATTEMPTING INVALID MEDICAL SCREENING DATE: Future date");
-    cy.log("EXPECTED: Validation error should be displayed");
-
-    // Fill medical screening with INVALID future date
-    medicalScreeningPage.fillMedicalScreeningDate(
-      futureScreeningDate.day,
-      futureScreeningDate.month,
-      futureScreeningDate.year,
-    );
     medicalScreeningPage
-      .selectTBSymptoms("No")
-      .selectPreviousTb("No")
-      .selectCloseContact("No")
-      .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.");
+      .fillScreeningDate(screeningDate.day, screeningDate.month, screeningDate.year)
+      .fillAge(childAge.toString())
+      .selectTbSymptoms("No") // No symptoms
+      .selectPreviousTb("No") // No TB history
+      .selectCloseContact("No") // No close contact
+      .fillPhysicalExamNotes(
+        "Child applicant aged 6 years. No TB symptoms or history. No close contact with TB. Physical examination normal for age.",
+      )
+      .submitForm();
+    // Verify redirection to Medical History Under 11 Page
+    medicalHistoryUnderElevenPage.verifyPageLoaded();
 
-    // Attempt to continue - should fail validation
-    medicalScreeningPage.submitForm();
-
-    // Verify error summary is displayed
-    cy.get(".govuk-error-summary").should("be.visible");
-    cy.get(".govuk-error-summary__title")
-      .should("be.visible")
-      .and("contain.text", "There is a problem");
-
-    // Verify the specific error message in error summary
-    cy.get(".govuk-error-summary__body")
-      .should("be.visible")
-      .and("contain.text", "The medical screening date must be today or in the past");
-
-    // Verify inline error message on the medical screening date field
-    cy.get(".govuk-error-message")
-      .should("be.visible")
-      .and("contain.text", "The medical screening date must be today or in the past");
+    // Submit withoiut selecting any conditions to verify error handling
+    medicalHistoryUnderElevenPage.verifyAllConditionsPresent();
+    medicalHistoryUnderElevenPage.submitForm();
+    medicalHistoryUnderElevenPage.verifyMandatoryErrors();
   });
 });

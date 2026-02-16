@@ -354,8 +354,6 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       .selectTbSymptomsList(["Cough", "Night sweats"])
       .selectPreviousTb("No")
       .selectCloseContact("Yes")
-      .selectPregnancyStatus("No")
-      .selectMenstrualPeriods("No")
       .fillPhysicalExamNotes("Applicant presents with persistent cough and night sweats.")
       .submitForm();
 
@@ -376,8 +374,6 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       tbSymptomsList: [],
       previousTb: "No",
       closeContactWithTb: "Yes",
-      pregnant: "No",
-      menstrualPeriods: "No",
       physicalExamNotes: "Applicant presents with persistent cough and night sweats.",
     });
 
