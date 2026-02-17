@@ -1,6 +1,6 @@
 import {
   DateType,
-  ReduxMedicalScreeningType,
+  ReduxApplicantDetailsType,
   ReduxSputumRequirementType,
   ReduxSputumType,
 } from "@/types";
@@ -349,11 +349,13 @@ const calculateSputumOutcome = (
   }
 };
 
-const isChildUnder11 = (medicalScreeningData: ReduxMedicalScreeningType) => {
-  const age = medicalScreeningData?.age;
-  if (!age) return "No";
-  const parsedAge = typeof age === "string" ? parseInt(age) : age;
-  return parsedAge < 11 ? "Yes" : "No";
+const isChildUnder11 = (applicantData: ReduxApplicantDetailsType) => {
+  const applicantAge = calculateApplicantAge(applicantData.dateOfBirth);
+  if (typeof applicantAge.ageInYears == "number" && applicantAge.ageInYears < 11) {
+    return "Yes";
+  } else {
+    return "No";
+  }
 };
 
 const calculateApplicantAge = (dateOfBirth: DateType) => {

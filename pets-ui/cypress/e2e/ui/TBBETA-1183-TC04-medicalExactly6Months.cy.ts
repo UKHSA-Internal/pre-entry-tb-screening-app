@@ -252,8 +252,6 @@ describe("PETS Date Validation: BOUNDARY VALID - Medical Screening Exactly 6 Mon
       .selectTBSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
-      .selectPregnancyStatus("No")
-      .selectMenstrualPeriods("No")
       .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.")
       .submitForm();
 

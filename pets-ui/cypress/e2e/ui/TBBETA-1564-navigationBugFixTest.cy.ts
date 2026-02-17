@@ -19,6 +19,7 @@ import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadP
 import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { EnterSputumSampleResultsPage } from "../../support/page-objects/enterSputumSampleResultsPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
+import { MedicalHistoryFemalePage } from "../../support/page-objects/medicalHistoryFemalePage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
 import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
@@ -57,6 +58,7 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
   const applicantConfirmationPage = new ApplicantConfirmationPage();
   const medicalSummaryPage = new MedicalSummaryPage();
   const medicalConfirmationPage = new MedicalConfirmationPage();
+  const medicalHistoryFemalePage = new MedicalHistoryFemalePage();
   const passportInformationPage = new PassportInformationPage();
   const radiologicalOutcomeConfPage = new RadiologicalOutcomeConfPage();
   const signOutPage = new SignOutPage();
@@ -359,9 +361,15 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
-      .selectPregnancyStatus("No")
-      .selectMenstrualPeriods("No")
-      .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.");
+      .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.")
+      .submitForm();
+
+    // Verify redirection to Medical History Female
+    medicalHistoryFemalePage.verifyPageLoaded();
+
+    medicalHistoryFemalePage.selectPregnant("No");
+    medicalHistoryFemalePage.selectMenstrualPeriods("No");
+    medicalHistoryFemalePage.submitForm();
 
     // Test sign-out cancellation with unsaved medical screening data
     cy.log("Testing sign-out cancellation with unsaved medical screening data");
@@ -377,17 +385,7 @@ describe("Pets Private Beta Amend Travel Information and Cancel Signout", () => 
 
     signOutPage.cancelSignOut();
 
-    cy.url({ timeout: 10000 }).should("include", "/record-medical-history-tb-symptoms");
-    medicalScreeningPage.verifyPageLoaded();
-    medicalScreeningPage
-      .fillScreeningDate(screeningDate.day, screeningDate.month, screeningDate.year)
-      .fillAge(adultAge.toString())
-      .selectTbSymptoms("No")
-      .selectPreviousTb("No")
-      .selectCloseContact("No")
-      .selectPregnancyStatus("No")
-      .selectMenstrualPeriods("No")
-      .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.");
+    cy.url({ timeout: 10000 }).should("include", "/is-an-x-ray-required");
     cy.log("Successfully cancelled sign-out and returned to medical screening page");
 
     // Now submit the form to continue the test
