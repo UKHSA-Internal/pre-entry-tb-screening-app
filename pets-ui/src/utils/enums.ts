@@ -24,6 +24,14 @@ export enum TaskStatus {
   CERTIFICATE_NOT_ISSUED = "Certificate not issued",
 }
 
+export enum ApplicationStatus {
+  NULL = "",
+  IN_PROGRESS = "In Progress",
+  CERTIFICATE_NOT_ISSUED = "Certificate Not Issued",
+  CERTIFICATE_AVAILABLE = "Certificate Available",
+  CANCELLED = "Cancelled",
+}
+
 export enum BackendTaskStatus {
   INCOMPLETE = "incompleted",
   COMPLETE = "completed",

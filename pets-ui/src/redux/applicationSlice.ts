@@ -1,11 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { ReduxApplicationDetailsType } from "@/types";
+import { ApplicationStatus } from "@/utils/enums";
 
 const initialState: ReduxApplicationDetailsType = {
   applicationId: "",
   dateCreated: "",
-  applicationStatus: "", //use enum here?
+  applicationStatus: ApplicationStatus.NULL,
   cancellationReason: "",
   cancellationFurtherInfo: "",
 };
@@ -20,8 +21,7 @@ export const applicationSlice = createSlice({
     setDateCreated: (state, action: PayloadAction<string>) => {
       state.dateCreated = action.payload;
     },
-    setTaskStatus: (state, action: PayloadAction<string>) => {
-      //check type
+    setTaskStatus: (state, action: PayloadAction<ApplicationStatus>) => {
       state.applicationStatus = action.payload;
     },
     setCancellationReason: (state, action: PayloadAction<string>) => {
@@ -34,15 +34,15 @@ export const applicationSlice = createSlice({
       state.applicationId = action.payload.applicationId;
       state.dateCreated = action.payload.dateCreated;
       state.applicationStatus = action.payload.applicationStatus;
-      state.cancellationReason = action.payload.cancellationReason || ""; //check this is the same as initial value
-      state.cancellationFurtherInfo = action.payload.cancellationFurtherInfo || ""; //check this is the same as initial value
+      state.cancellationReason = action.payload.cancellationReason || "";
+      state.cancellationFurtherInfo = action.payload.cancellationFurtherInfo || "";
     },
     clearApplicationDetails: (state) => {
       state.applicationId = "";
       state.dateCreated = "";
-      state.applicationStatus = ""; //check this is the same as initial value
-      state.cancellationReason = ""; //check this is the same as initial value
-      state.cancellationFurtherInfo = ""; //check this is the same as initial value
+      state.applicationStatus = ApplicationStatus.NULL;
+      state.cancellationReason = "";
+      state.cancellationFurtherInfo = "";
     },
   },
 });

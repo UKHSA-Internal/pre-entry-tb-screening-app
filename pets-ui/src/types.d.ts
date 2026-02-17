@@ -1,6 +1,7 @@
 import "react-router";
 
 import {
+  ApplicationStatus,
   BackendTaskStatus,
   ImageType,
   PositiveOrNegative,
@@ -46,8 +47,17 @@ type ApplicationIdAndDateCreatedType = {
   dateCreated: string;
 };
 
+type ReduxApplicationDetailsType = ApplicationIdAndDateCreatedType & {
+  applicationStatus: ApplicationStatus;
+  cancellationReason?: string;
+  cancellationFurtherInfo?: string;
+};
+
 type ReceivedApplicationDetailsType = {
   applicationId: string;
+  applicationStatus: ApplicationStatus;
+  cancellationReason?: string;
+  cancellationFurtherInfo?: string;
   clinicId: string;
   applicantPhotoUrl?: string;
   travelInformation: ReceivedTravelDetailsType | undefined;
