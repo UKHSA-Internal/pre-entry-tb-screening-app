@@ -24,7 +24,10 @@ export class ImageHelper {
         return null;
       }
       // Sort by LastModified (descending)
-      const mostRecentObject = listResult.Contents?.sort(
+
+      const contents = listResult.Contents ?? [];
+
+      const mostRecentObject = [...contents].sort(
         (a, b) => (b.LastModified?.getTime() ?? 0) - (a.LastModified?.getTime() ?? 0),
       )[0];
 
