@@ -6,10 +6,10 @@ import {
   ReceivedApplicantDetailsType,
   ReduxApplicantDetailsType,
 } from "@/types";
-import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
+import { BackendTaskStatus, TaskStatus } from "@/utils/enums";
 
 const initialState: ReduxApplicantDetailsType = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   fullName: "",
   sex: "",
   dateOfBirth: {
@@ -44,7 +44,7 @@ export const applicantSlice = createSlice({
   name: "applicantDetails",
   initialState,
   reducers: {
-    setApplicantDetailsStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+    setApplicantDetailsStatus: (state, action: PayloadAction<TaskStatus>) => {
       state.status = action.payload;
     },
     setFullName: (state, action: PayloadAction<string>) => {
@@ -118,7 +118,7 @@ export const applicantSlice = createSlice({
       state.applicantPhotoFileName = action.payload.applicantPhotoFileName ?? "";
     },
     clearApplicantDetails: (state) => {
-      state.status = ApplicationStatus.NOT_YET_STARTED;
+      state.status = TaskStatus.NOT_YET_STARTED;
       state.fullName = "";
       state.sex = "";
       state.dateOfBirth = {
@@ -153,9 +153,9 @@ export const applicantSlice = createSlice({
       action: PayloadAction<ReceivedApplicantDetailsType>,
     ) => {
       state.status =
-        action.payload.status == BackendApplicationStatus.COMPLETE
-          ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.IN_PROGRESS;
+        action.payload.status == BackendTaskStatus.COMPLETE
+          ? TaskStatus.COMPLETE
+          : TaskStatus.IN_PROGRESS;
       state.fullName = action.payload.fullName;
       state.sex = action.payload.sex;
       state.countryOfNationality = action.payload.countryOfNationality;
