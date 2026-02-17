@@ -4,7 +4,7 @@ import {
   ReceivedRadiologicalOutcomeDetailsType,
   ReduxRadiologicalOutcomeDetailsType,
 } from "@/types";
-import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
+import { ApplicationStatus, BackendTaskStatus } from "@/utils/enums";
 
 const initialState: ReduxRadiologicalOutcomeDetailsType = {
   status: ApplicationStatus.NOT_YET_STARTED,
@@ -99,7 +99,7 @@ export const radiologicalOutcomeSlice = createSlice({
       action: PayloadAction<ReceivedRadiologicalOutcomeDetailsType>,
     ) => {
       state.status =
-        action.payload.status == BackendApplicationStatus.COMPLETE
+        action.payload.status == BackendTaskStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
           : ApplicationStatus.IN_PROGRESS;
       state.xrayResult = action.payload.xrayResult;

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { ClinicType, DateType, ReceivedTbCertificateType, ReduxTbCertificateType } from "@/types";
-import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, BackendTaskStatus, YesOrNo } from "@/utils/enums";
 
 const initialState: ReduxTbCertificateType = {
   status: ApplicationStatus.NOT_YET_STARTED,
@@ -72,7 +72,7 @@ export const tbCertificateSlice = createSlice({
     },
     setTbCertificateFromApiResponse: (state, action: PayloadAction<ReceivedTbCertificateType>) => {
       state.status =
-        action.payload.status == BackendApplicationStatus.COMPLETE
+        action.payload.status == BackendTaskStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
           : ApplicationStatus.IN_PROGRESS;
       state.isIssued = action.payload.isIssued;

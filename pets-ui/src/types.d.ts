@@ -2,7 +2,7 @@ import "react-router";
 
 import {
   ApplicationStatus,
-  BackendApplicationStatus,
+  BackendTaskStatus,
   ImageType,
   PositiveOrNegative,
   YesOrNo,
@@ -37,7 +37,7 @@ type ReceivedApplicationAttributesType = {
   applicationId: string;
   clinicId: string;
   dateCreated: string;
-  status: BackendApplicationStatus;
+  status: BackendTaskStatus;
 };
 
 // Application types
@@ -332,7 +332,7 @@ type PostedTbCertificateType = {
 
 type ReceivedTbCertificateType = {
   applicationId: string;
-  status: BackendApplicationStatus;
+  status: BackendTaskStatus;
   isIssued: YesOrNo;
   comments?: string;
   issueDate: string;

@@ -24,7 +24,7 @@ export enum ApplicationStatus {
   CERTIFICATE_NOT_ISSUED = "Certificate not issued",
 }
 
-export enum BackendApplicationStatus {
+export enum BackendTaskStatus {
   INCOMPLETE = "incompleted",
   COMPLETE = "completed",
 }

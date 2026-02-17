@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { DateType, ReceivedMedicalScreeningType, ReduxMedicalScreeningType } from "@/types";
-import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, BackendTaskStatus, YesOrNo } from "@/utils/enums";
 
 const initialState: ReduxMedicalScreeningType = {
   status: ApplicationStatus.NOT_YET_STARTED,
@@ -133,7 +133,7 @@ export const medicalScreeningSlice = createSlice({
       action: PayloadAction<ReceivedMedicalScreeningType>,
     ) => {
       state.status =
-        action.payload.status == BackendApplicationStatus.COMPLETE
+        action.payload.status == BackendTaskStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
           : ApplicationStatus.IN_PROGRESS;
       state.tbSymptoms = action.payload.symptomsOfTb;

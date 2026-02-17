@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { DateType, ReceivedChestXrayDetailsType, ReduxChestXrayDetailsType } from "@/types";
-import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
+import { ApplicationStatus, BackendTaskStatus } from "@/utils/enums";
 
 const initialState: ReduxChestXrayDetailsType = {
   status: ApplicationStatus.NOT_YET_STARTED,
@@ -70,7 +70,7 @@ export const chestXraySlice = createSlice({
     },
     setChestXrayFromApiResponse: (state, action: PayloadAction<ReceivedChestXrayDetailsType>) => {
       state.status =
-        action.payload.status == BackendApplicationStatus.COMPLETE
+        action.payload.status == BackendTaskStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
           : ApplicationStatus.IN_PROGRESS;
       state.posteroAnteriorXrayFileName = action.payload.posteroAnteriorXrayFileName;

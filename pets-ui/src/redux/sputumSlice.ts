@@ -12,7 +12,7 @@ import {
   ReduxSputumSmearResultType,
   ReduxSputumType,
 } from "@/types";
-import { ApplicationStatus, BackendApplicationStatus, PositiveOrNegative } from "@/utils/enums";
+import { ApplicationStatus, BackendTaskStatus, PositiveOrNegative } from "@/utils/enums";
 
 const initialState: ReduxSputumType = {
   status: ApplicationStatus.NOT_YET_STARTED,
@@ -211,7 +211,7 @@ export const sputumSlice = createSlice({
     },
     setSputumDetailsFromApiResponse: (state, action: PayloadAction<ReceivedSputumType>) => {
       state.status =
-        action.payload.status == BackendApplicationStatus.COMPLETE
+        action.payload.status == BackendTaskStatus.COMPLETE
           ? ApplicationStatus.COMPLETE
           : ApplicationStatus.IN_PROGRESS;
 
