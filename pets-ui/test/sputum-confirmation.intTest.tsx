@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { Mock } from "vitest";
 
 import SputumConfirmation from "@/pages/sputum-confirmation";
-import { ApplicationStatus, PositiveOrNegative, SputumCollectionMethod } from "@/utils/enums";
+import { TaskStatus, PositiveOrNegative, SputumCollectionMethod } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -29,7 +29,7 @@ afterEach(() => {
 
 const preloadedState = {
   sputum: {
-    status: ApplicationStatus.NOT_YET_STARTED,
+    status: TaskStatus.NOT_YET_STARTED,
     sample1: {
       collection: {
         submittedToDatabase: true,
@@ -106,7 +106,7 @@ const preloadedState = {
 };
 
 test("Sputum confirmation page renders correctly when sputum task is in progress & redirects on button click", async () => {
-  preloadedState.sputum.status = ApplicationStatus.IN_PROGRESS;
+  preloadedState.sputum.status = TaskStatus.IN_PROGRESS;
   renderWithProviders(<SputumConfirmation />, { preloadedState });
 
   const user = userEvent.setup();
@@ -116,7 +116,7 @@ test("Sputum confirmation page renders correctly when sputum task is in progress
 });
 
 test("Sputum confirmation page renders correctly when sputum task is completed & redirects on button click", async () => {
-  preloadedState.sputum.status = ApplicationStatus.COMPLETE;
+  preloadedState.sputum.status = TaskStatus.COMPLETE;
   renderWithProviders(<SputumConfirmation />, { preloadedState });
 
   const user = userEvent.setup();

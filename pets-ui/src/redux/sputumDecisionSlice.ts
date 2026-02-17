@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { TaskStatus, YesOrNo } from "@/utils/enums";
 
 interface SputumDecisionState {
-  status: ApplicationStatus;
+  status: TaskStatus;
   isSputumRequired: YesOrNo;
   completionDate: {
     year: string;
@@ -13,7 +13,7 @@ interface SputumDecisionState {
 }
 
 const initialState: SputumDecisionState = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   isSputumRequired: YesOrNo.NULL,
   completionDate: {
     year: "",
@@ -26,7 +26,7 @@ export const sputumDecisionSlice = createSlice({
   name: "sputumDecision",
   initialState,
   reducers: {
-    setSputumDecisionStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+    setSputumDecisionStatus: (state, action: PayloadAction<TaskStatus>) => {
       state.status = action.payload;
     },
     setSputumDecisionRequired: (state, action: PayloadAction<YesOrNo>) => {
@@ -39,7 +39,7 @@ export const sputumDecisionSlice = createSlice({
       state.completionDate = action.payload;
     },
     clearSputumDecision: (state) => {
-      state.status = ApplicationStatus.NOT_YET_STARTED;
+      state.status = TaskStatus.NOT_YET_STARTED;
       state.isSputumRequired = YesOrNo.NULL;
       state.completionDate = {
         year: "",

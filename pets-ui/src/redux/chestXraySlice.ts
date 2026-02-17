@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { DateType, ReceivedChestXrayDetailsType, ReduxChestXrayDetailsType } from "@/types";
-import { ApplicationStatus, BackendTaskStatus } from "@/utils/enums";
+import { TaskStatus, BackendTaskStatus } from "@/utils/enums";
 
 const initialState: ReduxChestXrayDetailsType = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   posteroAnteriorXrayFileName: "",
   posteroAnteriorXrayFile: "",
   apicalLordoticXrayFileName: "",
@@ -22,7 +22,7 @@ export const chestXraySlice = createSlice({
   name: "chestXrayDetails",
   initialState,
   reducers: {
-    setChestXrayStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+    setChestXrayStatus: (state, action: PayloadAction<TaskStatus>) => {
       state.status = action.payload;
     },
     setPosteroAnteriorXrayFileName: (state, action: PayloadAction<string>) => {
@@ -55,7 +55,7 @@ export const chestXraySlice = createSlice({
       state.lateralDecubitusXrayFile = action.payload.lateralDecubitusXrayFile;
     },
     clearChestXrayDetails: (state) => {
-      state.status = ApplicationStatus.NOT_YET_STARTED;
+      state.status = TaskStatus.NOT_YET_STARTED;
       state.posteroAnteriorXrayFileName = "";
       state.apicalLordoticXrayFileName = "";
       state.lateralDecubitusXrayFileName = "";
@@ -71,8 +71,8 @@ export const chestXraySlice = createSlice({
     setChestXrayFromApiResponse: (state, action: PayloadAction<ReceivedChestXrayDetailsType>) => {
       state.status =
         action.payload.status == BackendTaskStatus.COMPLETE
-          ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.IN_PROGRESS;
+          ? TaskStatus.COMPLETE
+          : TaskStatus.IN_PROGRESS;
       state.posteroAnteriorXrayFileName = action.payload.posteroAnteriorXrayFileName;
       state.posteroAnteriorXrayFile = action.payload.posteroAnteriorXray;
       state.apicalLordoticXrayFileName = action.payload.apicalLordoticXrayFileName;

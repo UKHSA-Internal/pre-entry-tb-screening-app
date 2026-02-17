@@ -5,7 +5,7 @@ import { Mock } from "vitest";
 import * as api from "@/api/api";
 import TravelVisaCategoryPage from "@/pages/travel-visa-category";
 import ApplicantTravelVisaCategory from "@/sections/applicant-travel-visa-category";
-import { ApplicationStatus } from "@/utils/enums";
+import { TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -95,7 +95,7 @@ describe("ApplicantTravelForm", () => {
   it("back link points to TB summary when travel status is COMPLETE", () => {
     const completeState = {
       travel: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         visaCategory: "",
         applicantUkAddress1: "",
         applicantUkAddress2: "",
@@ -124,7 +124,7 @@ describe("ApplicantTravelForm", () => {
     const completeState = {
       application: { applicationId: "abc-123", dateCreated: "" },
       travel: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         visaCategory: "Work",
         applicantUkAddress1: "1 Street",
         applicantUkAddress2: "",
@@ -144,7 +144,7 @@ describe("ApplicantTravelForm", () => {
 
     await waitFor(() => {
       expect(store.getState().travel.visaCategory).toBe("Family reunion");
-      expect(store.getState().travel.status).toBe(ApplicationStatus.COMPLETE);
+      expect(store.getState().travel.status).toBe(TaskStatus.COMPLETE);
       expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-summary");
     });
   });
@@ -155,7 +155,7 @@ describe("ApplicantTravelForm", () => {
     const completeState = {
       application: { applicationId: "abc-123", dateCreated: "" },
       travel: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         visaCategory: "Work",
         applicantUkAddress1: "1 Street",
         applicantUkAddress2: "",

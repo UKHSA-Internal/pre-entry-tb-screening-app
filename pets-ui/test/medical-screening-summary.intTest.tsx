@@ -6,7 +6,7 @@ import { Mock } from "vitest";
 import { petsApi } from "@/api/api";
 import MedicalSummaryPage from "@/pages/medical-screening-summary";
 import MedicalScreeningReview from "@/sections/medical-screening-summary";
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -24,7 +24,7 @@ vi.mock("react-helmet-async", () => ({
 }));
 
 const medicalScreeningState = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   age: "99",
   closeContactWithTb: "No",
   closeContactWithTbDetail: "",
@@ -46,7 +46,7 @@ const medicalScreeningState = {
 const applicationState = { applicationId: "abc-123", dateCreated: "" };
 
 const applicantState = {
-  status: ApplicationStatus.COMPLETE,
+  status: TaskStatus.COMPLETE,
   fullName: "Full Name",
   sex: "Male",
   dateOfBirth: { year: "1979", month: "10", day: "20" },
@@ -76,7 +76,7 @@ const femaleU11ApplicantState = {
 };
 
 const tbCertificateState = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   isIssued: YesOrNo.NO,
   comments: "",
   certificateDate: {
@@ -239,7 +239,7 @@ describe("MedicalScreeningReview", () => {
   test("back link points to tracker when status is complete", () => {
     const preloadedState = {
       medicalScreening: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         age: "",
         tbSymptoms: "",
         tbSymptomsList: [],
@@ -270,7 +270,7 @@ describe("MedicalScreeningReview", () => {
   test("back link points to cxr question page when status is not complete", () => {
     const preloadedState = {
       medicalScreening: {
-        status: ApplicationStatus.IN_PROGRESS,
+        status: TaskStatus.IN_PROGRESS,
         age: "",
         tbSymptoms: "",
         tbSymptomsList: [],

@@ -5,7 +5,7 @@ import { Mock } from "vitest";
 import * as api from "@/api/api";
 import ApplicantPassportDetailsPage from "@/pages/applicant-passport-details";
 import ApplicantPassportDetailsForm from "@/sections/applicant-passport-details-form";
-import { ApplicationStatus } from "@/utils/enums";
+import { TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -24,7 +24,7 @@ vi.mock("react-helmet-async", () => ({
 
 const preloadedState = {
   applicant: {
-    status: ApplicationStatus.IN_PROGRESS,
+    status: TaskStatus.IN_PROGRESS,
     fullName: "Sigmund Sigmundson",
     sex: "Male",
     dateOfBirth: {
@@ -150,7 +150,7 @@ describe("ApplicantPassportDetailsForm", () => {
       ...preloadedState,
       applicant: {
         ...preloadedState.applicant,
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
       },
     };
     window.history.pushState({}, "", "/?from=tb-certificate-summary");
@@ -193,7 +193,7 @@ describe("ApplicantPassportDetailsForm", () => {
     const completeState = {
       application: { applicationId: "abc-123", dateCreated: "" },
       applicant: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         fullName: "John Smith",
         sex: "Male",
         dateOfBirth: { year: "1970", month: "1", day: "1" },
@@ -231,7 +231,7 @@ describe("ApplicantPassportDetailsForm", () => {
         month: "1",
         year: "2020",
       });
-      expect(store.getState().applicant.status).toBe(ApplicationStatus.COMPLETE);
+      expect(store.getState().applicant.status).toBe(TaskStatus.COMPLETE);
       expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-summary");
     });
   });
@@ -240,7 +240,7 @@ describe("ApplicantPassportDetailsForm", () => {
     const completeState = {
       application: { applicationId: "abc-123", dateCreated: "" },
       applicant: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         fullName: "John Smith",
         sex: "Male",
         dateOfBirth: { year: "1970", month: "1", day: "1" },

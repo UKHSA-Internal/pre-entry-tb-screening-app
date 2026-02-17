@@ -7,7 +7,7 @@ import { Mock } from "vitest";
 import { petsApi } from "@/api/api";
 import ChestXraySummaryPage from "@/pages/chest-xray-summary";
 import { ReduxChestXrayDetailsType } from "@/types";
-import { ApplicationStatus } from "@/utils/enums";
+import { TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -30,7 +30,7 @@ afterEach(() => {
 const applicationState = { applicationId: "abc-123", dateCreated: "" };
 
 const chestXrayState: ReduxChestXrayDetailsType = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   posteroAnteriorXrayFileName: "PA Example FileName",
   posteroAnteriorXrayFile: "PA Example File",
   apicalLordoticXrayFileName: "AL Example FileName",

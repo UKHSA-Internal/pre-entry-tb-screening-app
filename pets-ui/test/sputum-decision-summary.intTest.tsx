@@ -4,7 +4,7 @@ import { Mock } from "vitest";
 
 import { postSputumRequirement } from "@/api/api";
 import SputumDecisionSummary from "@/sections/sputum-decision-summary";
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const user = userEvent.setup();
@@ -35,7 +35,7 @@ describe("SputumDecisionSummary", () => {
     const preloadedState = {
       application: { applicationId, dateCreated: "2025-01-01" },
       sputumDecision: {
-        status: ApplicationStatus.NOT_YET_STARTED,
+        status: TaskStatus.NOT_YET_STARTED,
         isSputumRequired: YesOrNo.YES,
         completionDate: { year: "", month: "", day: "" },
       },
@@ -50,7 +50,7 @@ describe("SputumDecisionSummary", () => {
     const preloadedState = {
       application: { applicationId, dateCreated: "2025-01-01" },
       sputumDecision: {
-        status: ApplicationStatus.NOT_YET_STARTED,
+        status: TaskStatus.NOT_YET_STARTED,
         isSputumRequired: YesOrNo.NO,
         completionDate: { year: "", month: "", day: "" },
       },
@@ -68,7 +68,7 @@ describe("SputumDecisionSummary", () => {
     const preloadedState = {
       application: { applicationId, dateCreated: "2025-01-01" },
       sputumDecision: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         isSputumRequired: YesOrNo.NO,
         completionDate: { year: "", month: "", day: "" },
       },
@@ -81,7 +81,7 @@ describe("SputumDecisionSummary", () => {
     const preloadedState = {
       application: { applicationId, dateCreated: "2025-01-01" },
       sputumDecision: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         isSputumRequired: YesOrNo.YES,
         completionDate: { year: "", month: "", day: "" },
       },
@@ -95,7 +95,7 @@ describe("SputumDecisionSummary", () => {
     const preloadedState = {
       application: { applicationId, dateCreated: "2025-01-01" },
       sputumDecision: {
-        status: ApplicationStatus.NOT_YET_STARTED,
+        status: TaskStatus.NOT_YET_STARTED,
         isSputumRequired: YesOrNo.YES,
         completionDate: { year: "", month: "", day: "" },
       },

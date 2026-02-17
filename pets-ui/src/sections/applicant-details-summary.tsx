@@ -10,7 +10,7 @@ import { setApplicantDetailsStatus } from "@/redux/applicantSlice";
 import { setApplicationDetails } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
-import { ApplicationStatus, ButtonClass, ImageType } from "@/utils/enums";
+import { TaskStatus, ButtonClass, ImageType } from "@/utils/enums";
 import { formatDateForDisplay, getCountryName, standardiseDayOrMonth } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 import uploadFile from "@/utils/uploadFile";
@@ -25,8 +25,8 @@ const ApplicantReview = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { applicantPhotoFile } = useApplicantPhoto();
-  const isComplete = applicantData.status === ApplicationStatus.COMPLETE;
-  const summaryStatus = isComplete ? ApplicationStatus.IN_PROGRESS : applicantData.status;
+  const isComplete = applicantData.status === TaskStatus.COMPLETE;
+  const summaryStatus = isComplete ? TaskStatus.IN_PROGRESS : applicantData.status;
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -66,7 +66,7 @@ const ApplicantReview = () => {
         );
       }
 
-      dispatch(setApplicantDetailsStatus(ApplicationStatus.COMPLETE));
+      dispatch(setApplicantDetailsStatus(TaskStatus.COMPLETE));
       navigate("/visa-applicant-details-confirmed");
     } catch (error) {
       console.error(error);
@@ -182,8 +182,8 @@ const ApplicantReview = () => {
       {isLoading && <Spinner />}
       <Summary status={summaryStatus} summaryElements={summaryData} />
 
-      {(applicantData.status == ApplicationStatus.NOT_YET_STARTED ||
-        applicantData.status == ApplicationStatus.IN_PROGRESS) && (
+      {(applicantData.status == TaskStatus.NOT_YET_STARTED ||
+        applicantData.status == TaskStatus.IN_PROGRESS) && (
         <Button
           id="submit"
           class={ButtonClass.DEFAULT}
@@ -191,8 +191,8 @@ const ApplicantReview = () => {
           handleClick={handleSubmit}
         />
       )}
-      {(applicantData.status == ApplicationStatus.COMPLETE ||
-        applicantData.status == ApplicationStatus.NOT_REQUIRED) && (
+      {(applicantData.status == TaskStatus.COMPLETE ||
+        applicantData.status == TaskStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
           class={ButtonClass.DEFAULT}

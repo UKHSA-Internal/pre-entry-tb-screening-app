@@ -11,7 +11,7 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTravel } from "@/redux/store";
 import { setTravelDetailsStatus, setVisaCategory } from "@/redux/travelSlice";
-import { ApplicationStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
+import { TaskStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { visaOptions } from "@/utils/records";
 
@@ -38,7 +38,7 @@ const ApplicantTravelVisaCategory = () => {
   const onSubmit: SubmitHandler<TravelVisaCategoryData> = async (visaCategoryData) => {
     dispatch(setVisaCategory(visaCategoryData.visaCategory));
 
-    if (travelData.status === ApplicationStatus.COMPLETE && applicationData.applicationId) {
+    if (travelData.status === TaskStatus.COMPLETE && applicationData.applicationId) {
       setIsLoading(true);
       try {
         await putTravelDetails(applicationData.applicationId, {
@@ -55,7 +55,7 @@ const ApplicantTravelVisaCategory = () => {
         navigate("/sorry-there-is-problem-with-service");
       }
     } else {
-      dispatch(setTravelDetailsStatus(ApplicationStatus.IN_PROGRESS));
+      dispatch(setTravelDetailsStatus(TaskStatus.IN_PROGRESS));
       navigate("/visa-applicant-proposed-uk-address");
     }
   };

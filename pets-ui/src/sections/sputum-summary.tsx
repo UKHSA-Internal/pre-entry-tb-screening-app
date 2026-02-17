@@ -22,7 +22,7 @@ import {
   setSputumVersion,
 } from "@/redux/sputumSlice";
 import { selectApplication, selectSputum } from "@/redux/store";
-import { ApplicationStatus, ButtonClass, PositiveOrNegative } from "@/utils/enums";
+import { TaskStatus, ButtonClass, PositiveOrNegative } from "@/utils/enums";
 import { formatDateForDisplay } from "@/utils/helpers";
 
 const SputumSummary = () => {
@@ -168,10 +168,10 @@ const SputumSummary = () => {
       );
 
       if (allSamplesComplete) {
-        dispatch(setSputumStatus(ApplicationStatus.COMPLETE));
+        dispatch(setSputumStatus(TaskStatus.COMPLETE));
         navigate("/sputum-sample-information-confirmed");
       } else {
-        dispatch(setSputumStatus(ApplicationStatus.IN_PROGRESS));
+        dispatch(setSputumStatus(TaskStatus.IN_PROGRESS));
         navigate("/sputum-sample-information-confirmed");
       }
     } catch (error) {
@@ -180,7 +180,7 @@ const SputumSummary = () => {
     }
   };
 
-  const getSampleStatus = (sampleNumber: 1 | 2 | 3): ApplicationStatus => {
+  const getSampleStatus = (sampleNumber: 1 | 2 | 3): TaskStatus => {
     let sample;
     if (sampleNumber === 1) {
       sample = sputumData.sample1;
@@ -208,14 +208,14 @@ const SputumSummary = () => {
     const allSaved = collectionSaved && smearSaved && cultureSaved;
 
     if (allPresent && allSaved) {
-      return ApplicationStatus.COMPLETE;
+      return TaskStatus.COMPLETE;
     }
 
     if (hasCollectionData || hasSmearResult || hasCultureResult) {
-      return ApplicationStatus.IN_PROGRESS;
+      return TaskStatus.IN_PROGRESS;
     }
 
-    return ApplicationStatus.NOT_YET_STARTED;
+    return TaskStatus.NOT_YET_STARTED;
   };
 
   const generateSampleSummaryData = (sampleNumber: 1 | 2 | 3) => {
@@ -336,8 +336,8 @@ const SputumSummary = () => {
       </p>
 
       <div style={{ marginTop: 40 }}>
-        {(sputumData.status === ApplicationStatus.NOT_YET_STARTED ||
-          sputumData.status === ApplicationStatus.IN_PROGRESS) && (
+        {(sputumData.status === TaskStatus.NOT_YET_STARTED ||
+          sputumData.status === TaskStatus.IN_PROGRESS) && (
           <Button
             id="submit"
             class={ButtonClass.DEFAULT}
@@ -345,8 +345,8 @@ const SputumSummary = () => {
             handleClick={handleSubmit}
           />
         )}
-        {(sputumData.status === ApplicationStatus.COMPLETE ||
-          sputumData.status === ApplicationStatus.NOT_REQUIRED) && (
+        {(sputumData.status === TaskStatus.COMPLETE ||
+          sputumData.status === TaskStatus.NOT_REQUIRED) && (
           <Button
             id="back-to-tracker"
             class={ButtonClass.DEFAULT}

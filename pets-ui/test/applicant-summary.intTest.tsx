@@ -6,7 +6,7 @@ import { Mock } from "vitest";
 import { petsApi } from "@/api/api";
 import ApplicantSummaryPage from "@/pages/applicant-summary";
 import ApplicantReview from "@/sections/applicant-details-summary";
-import { ApplicationStatus, ImageType } from "@/utils/enums";
+import { TaskStatus, ImageType } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 import uploadFile from "@/utils/uploadFile";
 
@@ -50,7 +50,7 @@ describe("ApplicantReview", () => {
   test("state is displayed correctly & user is navigated to confirmation page when both api calls are successful", async () => {
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.NOT_YET_STARTED,
+        status: TaskStatus.NOT_YET_STARTED,
         fullName: "Sigmund Sigmundson",
         sex: "Male",
         dateOfBirth: {
@@ -174,7 +174,7 @@ describe("ApplicantReview", () => {
   test("back link points to tracker when status is complete", () => {
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         fullName: "Sigmund Sigmundson",
         sex: "Male",
         dateOfBirth: {
@@ -217,7 +217,7 @@ describe("ApplicantReview", () => {
   test("back link points to applicant photo page when status is not complete", () => {
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.IN_PROGRESS,
+        status: TaskStatus.IN_PROGRESS,
         fullName: "Sigmund Sigmundson",
         sex: "Male",
         dateOfBirth: {
@@ -260,7 +260,7 @@ describe("ApplicantReview", () => {
   test("shows Change links for Passport number and Country of issue when task is IN_PROGRESS", () => {
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.IN_PROGRESS,
+        status: TaskStatus.IN_PROGRESS,
         fullName: "Sigmund Sigmundson",
         sex: "Male",
         dateOfBirth: { year: "1901", month: "1", day: "1" },
@@ -297,7 +297,7 @@ describe("ApplicantReview", () => {
   test("hides Change links for Passport number and Country of issue when task is COMPLETE", () => {
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         fullName: "Sigmund Sigmundson",
         sex: "Male",
         dateOfBirth: { year: "1901", month: "1", day: "1" },

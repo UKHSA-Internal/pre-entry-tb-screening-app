@@ -17,14 +17,14 @@ import {
   selectTbCertificate,
   selectTravel,
 } from "@/redux/store";
-import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { TaskStatus, ButtonClass, YesOrNo } from "@/utils/enums";
 
 interface TaskProps {
   description: string;
-  status: ApplicationStatus;
+  status: TaskStatus;
   linkWhenIncomplete: string;
   linkWhenComplete: string;
-  prerequisiteTaskStatuses: ApplicationStatus[];
+  prerequisiteTaskStatuses: TaskStatus[];
   statusOverride?: React.ReactNode;
 }
 
@@ -33,18 +33,18 @@ const Task = (props: Readonly<TaskProps>) => {
     props.prerequisiteTaskStatuses.length < 1 ||
     props.prerequisiteTaskStatuses.every(
       (status) =>
-        status == ApplicationStatus.COMPLETE ||
-        status == ApplicationStatus.NOT_REQUIRED ||
-        status == ApplicationStatus.CERTIFICATE_ISSUED ||
-        status == ApplicationStatus.CERTIFICATE_NOT_ISSUED,
+        status == TaskStatus.COMPLETE ||
+        status == TaskStatus.NOT_REQUIRED ||
+        status == TaskStatus.CERTIFICATE_ISSUED ||
+        status == TaskStatus.CERTIFICATE_NOT_ISSUED,
     );
 
   return (
     <li className="govuk-task-list__item govuk-task-list__item--with-link">
       <div className="govuk-task-list__name-and-hint">
         {allPrerequisitesComplete &&
-          (props.status == ApplicationStatus.NOT_YET_STARTED ||
-            props.status == ApplicationStatus.IN_PROGRESS) && (
+          (props.status == TaskStatus.NOT_YET_STARTED ||
+            props.status == TaskStatus.IN_PROGRESS) && (
             <LinkLabel
               className="govuk-link govuk-task-list__link"
               to={props.linkWhenIncomplete}
@@ -52,7 +52,7 @@ const Task = (props: Readonly<TaskProps>) => {
               externalLink={false}
             />
           )}
-        {props.status == ApplicationStatus.COMPLETE && (
+        {props.status == TaskStatus.COMPLETE && (
           <LinkLabel
             className="govuk-link govuk-task-list__link"
             to={props.linkWhenComplete}
@@ -60,30 +60,30 @@ const Task = (props: Readonly<TaskProps>) => {
             externalLink={false}
           />
         )}
-        {(!allPrerequisitesComplete || props.status == ApplicationStatus.NOT_REQUIRED) &&
-          props.status !== ApplicationStatus.COMPLETE && (
+        {(!allPrerequisitesComplete || props.status == TaskStatus.NOT_REQUIRED) &&
+          props.status !== TaskStatus.COMPLETE && (
             <p className="govuk-body task-description-static">{props.description}</p>
           )}
       </div>
-      {allPrerequisitesComplete && props.status == ApplicationStatus.NOT_YET_STARTED && (
+      {allPrerequisitesComplete && props.status == TaskStatus.NOT_YET_STARTED && (
         <div className="govuk-task-list__status">
           <strong className="govuk-tag govuk-tag--blue">Not yet started</strong>
         </div>
       )}
-      {!allPrerequisitesComplete && props.status == ApplicationStatus.NOT_YET_STARTED && (
+      {!allPrerequisitesComplete && props.status == TaskStatus.NOT_YET_STARTED && (
         <div className="govuk-task-list__status">
           <strong className="govuk-tag govuk-tag--grey">Cannot start yet</strong>
         </div>
       )}
-      {props.status == ApplicationStatus.IN_PROGRESS && (
+      {props.status == TaskStatus.IN_PROGRESS && (
         <div className="govuk-task-list__status">
           <strong className="govuk-tag govuk-tag--yellow">In progress</strong>
         </div>
       )}
-      {props.status == ApplicationStatus.COMPLETE && (
+      {props.status == TaskStatus.COMPLETE && (
         <div className="govuk-task-list__status">{props.statusOverride ?? <>Completed</>}</div>
       )}
-      {props.status == ApplicationStatus.NOT_REQUIRED && (
+      {props.status == TaskStatus.NOT_REQUIRED && (
         <div className="govuk-task-list__status">
           <strong className="govuk-tag govuk-tag--grey">Not required</strong>
         </div>
@@ -111,7 +111,7 @@ const ProgressTracker = () => {
 
   let sputumLink = "/sputum-collection-details";
 
-  if (sputumData.status === ApplicationStatus.COMPLETE) {
+  if (sputumData.status === TaskStatus.COMPLETE) {
     sputumLink = "/check-sputum-collection-details-results";
   } else if (allSputumSamplesSubmitted) {
     sputumLink = "/sputum-results";
@@ -119,19 +119,19 @@ const ProgressTracker = () => {
 
   let sputumCollectionStatus = sputumData.status;
   if (sputumDecisionData.isSputumRequired === YesOrNo.NO) {
-    sputumCollectionStatus = ApplicationStatus.NOT_REQUIRED;
+    sputumCollectionStatus = TaskStatus.NOT_REQUIRED;
   }
 
   let chestXrayStatus = chestXrayData.status;
   let radiologicalOutcomeStatus = radiologicalOutcomeData.status;
 
   if (medicalScreeningData.chestXrayTaken === YesOrNo.NO) {
-    chestXrayStatus = ApplicationStatus.NOT_REQUIRED;
-    radiologicalOutcomeStatus = ApplicationStatus.NOT_REQUIRED;
+    chestXrayStatus = TaskStatus.NOT_REQUIRED;
+    radiologicalOutcomeStatus = TaskStatus.NOT_REQUIRED;
   }
 
   let tbCertificateStatusOverride = undefined;
-  if (tbCertificateData.status === ApplicationStatus.COMPLETE) {
+  if (tbCertificateData.status === TaskStatus.COMPLETE) {
     if (tbCertificateData.isIssued === YesOrNo.YES) {
       tbCertificateStatusOverride = (
         <strong className="govuk-tag govuk-tag--green">Certificate issued</strong>
@@ -281,8 +281,8 @@ const ProgressTracker = () => {
         />
       </p>
 
-      {(tbCertificateData.status == ApplicationStatus.NOT_YET_STARTED ||
-        tbCertificateData.status == ApplicationStatus.IN_PROGRESS) && (
+      {(tbCertificateData.status == TaskStatus.NOT_YET_STARTED ||
+        tbCertificateData.status == TaskStatus.IN_PROGRESS) && (
         <>
           <Heading
             title="Cancel screening"

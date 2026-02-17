@@ -5,7 +5,7 @@ import { Mock } from "vitest";
 import * as api from "@/api/api";
 import ApplicantContactDetailsPage from "@/pages/applicant-contact-details";
 import ApplicantContactDetailsForm from "@/sections/applicant-contact-details-form";
-import { ApplicationStatus } from "@/utils/enums";
+import { TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -24,7 +24,7 @@ vi.mock("react-helmet-async", () => ({
 
 const preloadedState = {
   applicant: {
-    status: ApplicationStatus.IN_PROGRESS,
+    status: TaskStatus.IN_PROGRESS,
     fullName: "Sigmund Sigmundson",
     sex: "Male",
     dateOfBirth: {
@@ -151,7 +151,7 @@ describe("ApplicantContactDetailsForm", () => {
       ...preloadedState,
       applicant: {
         ...preloadedState.applicant,
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
       },
     };
     window.history.pushState({}, "", "/?from=tb-certificate-summary");
@@ -191,7 +191,7 @@ describe("ApplicantContactDetailsForm", () => {
     const completeState = {
       application: { applicationId: "abc-123", dateCreated: "" },
       applicant: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         fullName: "John Smith",
         sex: "Male",
         dateOfBirth: { year: "1970", month: "1", day: "1" },
@@ -225,7 +225,7 @@ describe("ApplicantContactDetailsForm", () => {
 
     await waitFor(() => {
       expect(store.getState().applicant.applicantHomeAddress1).toBe("New Road");
-      expect(store.getState().applicant.status).toBe(ApplicationStatus.COMPLETE);
+      expect(store.getState().applicant.status).toBe(TaskStatus.COMPLETE);
       expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-summary");
     });
   });

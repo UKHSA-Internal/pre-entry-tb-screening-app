@@ -12,7 +12,7 @@ import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { setApplicantPhotoFileName } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant, selectApplication } from "@/redux/store";
-import { ApplicationStatus, ButtonClass, ImageType, RadioIsInline } from "@/utils/enums";
+import { TaskStatus, ButtonClass, ImageType, RadioIsInline } from "@/utils/enums";
 import uploadFile from "@/utils/uploadFile";
 
 type CheckApplicantPhotoFormType = {
@@ -60,7 +60,7 @@ const CheckApplicantPhoto = () => {
         dispatch(setApplicantPhotoFileName(candidatePhoto.name));
         setApplicantPhotoFile(candidatePhoto);
 
-        if (applicantData.status === ApplicationStatus.COMPLETE) {
+        if (applicantData.status === TaskStatus.COMPLETE) {
           setIsLoading(true);
           try {
             const fileType = candidatePhoto.name.split(".").pop();

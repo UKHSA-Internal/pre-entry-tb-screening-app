@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { DateType, ReceivedMedicalScreeningType, ReduxMedicalScreeningType } from "@/types";
-import { ApplicationStatus, BackendTaskStatus, YesOrNo } from "@/utils/enums";
+import { TaskStatus, BackendTaskStatus, YesOrNo } from "@/utils/enums";
 
 const initialState: ReduxMedicalScreeningType = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   tbSymptoms: "",
   tbSymptomsList: [],
   otherSymptomsDetail: "",
@@ -31,7 +31,7 @@ export const medicalScreeningSlice = createSlice({
   name: "medicalScreeningDetails",
   initialState,
   reducers: {
-    setMedicalScreeningStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+    setMedicalScreeningStatus: (state, action: PayloadAction<TaskStatus>) => {
       state.status = action.payload;
     },
     setMedicalScreeningCompletionDate: (state, action: PayloadAction<DateType>) => {
@@ -106,7 +106,7 @@ export const medicalScreeningSlice = createSlice({
         action.payload.reasonXrayNotRequiredFurtherDetails || "";
     },
     clearMedicalScreeningDetails: (state) => {
-      state.status = ApplicationStatus.NOT_YET_STARTED;
+      state.status = TaskStatus.NOT_YET_STARTED;
       state.tbSymptoms = "";
       state.tbSymptomsList = [];
       state.otherSymptomsDetail = "";
@@ -134,8 +134,8 @@ export const medicalScreeningSlice = createSlice({
     ) => {
       state.status =
         action.payload.status == BackendTaskStatus.COMPLETE
-          ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.IN_PROGRESS;
+          ? TaskStatus.COMPLETE
+          : TaskStatus.IN_PROGRESS;
       state.tbSymptoms = action.payload.symptomsOfTb;
       state.tbSymptomsList = action.payload.symptoms ? [...action.payload.symptoms] : [];
       state.otherSymptomsDetail = action.payload.symptomsOther;

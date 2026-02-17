@@ -21,7 +21,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant, selectApplication } from "@/redux/store";
 import { ReduxApplicantDetailsType } from "@/types";
-import { ApplicationStatus, ButtonClass } from "@/utils/enums";
+import { TaskStatus, ButtonClass } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { countryList, formRegex } from "@/utils/records";
 
@@ -43,7 +43,7 @@ const ApplicantContactDetailsForm = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
-  const isComplete = applicantData.status === ApplicationStatus.COMPLETE;
+  const isComplete = applicantData.status === TaskStatus.COMPLETE;
 
   const methods = useForm<ReduxApplicantDetailsType>({ reValidateMode: "onSubmit" });
   const {

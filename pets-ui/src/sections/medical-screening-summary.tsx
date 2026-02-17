@@ -10,7 +10,7 @@ import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
 import { setMedicalScreeningStatus } from "@/redux/medicalScreeningSlice";
 import { selectApplicant, selectApplication, selectMedicalScreening } from "@/redux/store";
-import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { TaskStatus, ButtonClass, YesOrNo } from "@/utils/enums";
 import { calculateApplicantAge, formatDateForDisplay } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
@@ -61,7 +61,7 @@ const MedicalScreeningReview = () => {
         reasonXrayNotRequiredFurtherDetails: medicalData.reasonXrayNotRequiredFurtherDetails,
       });
 
-      dispatch(setMedicalScreeningStatus(ApplicationStatus.COMPLETE));
+      dispatch(setMedicalScreeningStatus(TaskStatus.COMPLETE));
       navigate("/tb-symptoms-medical-history-confirmed");
     } catch (error) {
       console.error(error);
@@ -205,8 +205,8 @@ const MedicalScreeningReview = () => {
 
       <Summary status={medicalData.status} summaryElements={summaryData} />
 
-      {(medicalData.status == ApplicationStatus.NOT_YET_STARTED ||
-        medicalData.status == ApplicationStatus.IN_PROGRESS) && (
+      {(medicalData.status == TaskStatus.NOT_YET_STARTED ||
+        medicalData.status == TaskStatus.IN_PROGRESS) && (
         <div>
           <Heading title="Now send the medical history and TB symptoms" level={2} size="m" />
           <p className="govuk-body">
@@ -222,8 +222,8 @@ const MedicalScreeningReview = () => {
           />
         </div>
       )}
-      {(medicalData.status == ApplicationStatus.COMPLETE ||
-        medicalData.status == ApplicationStatus.NOT_REQUIRED) && (
+      {(medicalData.status == TaskStatus.COMPLETE ||
+        medicalData.status == TaskStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
           class={ButtonClass.DEFAULT}

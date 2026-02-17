@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { ClinicType, DateType, ReceivedTbCertificateType, ReduxTbCertificateType } from "@/types";
-import { ApplicationStatus, BackendTaskStatus, YesOrNo } from "@/utils/enums";
+import { TaskStatus, BackendTaskStatus, YesOrNo } from "@/utils/enums";
 
 const initialState: ReduxTbCertificateType = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   isIssued: YesOrNo.NULL,
   comments: "",
   certificateDate: {
@@ -29,7 +29,7 @@ export const tbCertificateSlice = createSlice({
   name: "tbCertificateDetails",
   initialState,
   reducers: {
-    setTbCertificateStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+    setTbCertificateStatus: (state, action: PayloadAction<TaskStatus>) => {
       state.status = action.payload;
     },
     setIsIssued: (state, action: PayloadAction<YesOrNo>) => {
@@ -54,7 +54,7 @@ export const tbCertificateSlice = createSlice({
       state.clinic = action.payload;
     },
     clearTbCertificateDetails: (state) => {
-      state.status = ApplicationStatus.NOT_YET_STARTED;
+      state.status = TaskStatus.NOT_YET_STARTED;
       state.isIssued = YesOrNo.NULL;
       state.comments = "";
       state.certificateDate = { year: "", month: "", day: "" };
@@ -73,8 +73,8 @@ export const tbCertificateSlice = createSlice({
     setTbCertificateFromApiResponse: (state, action: PayloadAction<ReceivedTbCertificateType>) => {
       state.status =
         action.payload.status == BackendTaskStatus.COMPLETE
-          ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.IN_PROGRESS;
+          ? TaskStatus.COMPLETE
+          : TaskStatus.IN_PROGRESS;
       state.isIssued = action.payload.isIssued;
       state.comments = action.payload.comments ?? "";
       state.certificateDate = action.payload.issueDate

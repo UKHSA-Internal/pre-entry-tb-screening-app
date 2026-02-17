@@ -7,7 +7,7 @@ import { Mock } from "vitest";
 import { ApplicantPhotoProvider, useApplicantPhoto } from "@/context/applicantPhotoContext";
 import type { AppDispatch } from "@/redux/store";
 import ApplicantSearchForm from "@/sections/applicant-search-form";
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 import { petsApi } from "../src/api/api";
@@ -120,7 +120,7 @@ const emptyMedicalSlice = {
   underElevenConditionsDetail: "",
 };
 const emptyChestXraySlice = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   posteroAnteriorXrayFileName: "",
   posteroAnteriorXrayFile: "",
   apicalLordoticXrayFileName: "",
@@ -134,7 +134,7 @@ const emptyChestXraySlice = {
   },
 };
 const emptyRadiologicalOutcomeSlice = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   reasonXrayWasNotTaken: "",
   xrayWasNotTakenFurtherDetails: "",
   xrayResult: "",
@@ -319,7 +319,7 @@ describe("ApplicantSearchForm", () => {
       applicantPhotoFileName: "photo.jpg",
       provinceOrState: "New South Wales",
       sex: "Male",
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       townOrCity: "Sydney",
     });
     expect(store.getState().travel).toEqual({
@@ -327,7 +327,7 @@ describe("ApplicantSearchForm", () => {
       applicantUkAddress2: "",
       applicantUkAddress3: "",
       postcode: "W1 1AS",
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       townOrCity: "London",
       ukEmail: "Maxwell@Spiffington.com",
       ukMobileNumber: "071234567890",
@@ -350,14 +350,14 @@ describe("ApplicantSearchForm", () => {
       previousTbDetail: "details3",
       reasonXrayNotRequired: "",
       reasonXrayNotRequiredFurtherDetails: "",
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       tbSymptoms: "Yes",
       tbSymptomsList: ["symptom1", "symptom2"],
       underElevenConditions: ["history1", "history2"],
       underElevenConditionsDetail: "details2",
     });
     expect(store.getState().chestXray).toEqual({
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       posteroAnteriorXrayFileName: "pa-file-name",
       posteroAnteriorXrayFile: "pa-bucket",
       apicalLordoticXrayFileName: "al-file-name",
@@ -371,7 +371,7 @@ describe("ApplicantSearchForm", () => {
       },
     });
     expect(store.getState().radiologicalOutcome).toEqual({
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       reasonXrayWasNotTaken: "",
       xrayWasNotTakenFurtherDetails: "",
       xrayResult: "normal",
@@ -386,7 +386,7 @@ describe("ApplicantSearchForm", () => {
       },
     });
     expect(store.getState().tbCertificate).toEqual({
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       isIssued: YesOrNo.YES,
       comments: "Comments",
       certificateDate: {
@@ -728,14 +728,14 @@ describe("ApplicantSearchForm", () => {
       previousTbDetail: "details3",
       reasonXrayNotRequired: "",
       reasonXrayNotRequiredFurtherDetails: "",
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       tbSymptoms: "Yes",
       tbSymptomsList: ["symptom1", "symptom2"],
       underElevenConditions: ["history1", "history2"],
       underElevenConditionsDetail: "details2",
     });
     expect(store.getState().chestXray).toEqual({
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       posteroAnteriorXrayFileName: "pa-file-name",
       posteroAnteriorXrayFile: "pa-bucket",
       apicalLordoticXrayFileName: "al-file-name",
@@ -749,7 +749,7 @@ describe("ApplicantSearchForm", () => {
       },
     });
     expect(store.getState().radiologicalOutcome).toEqual({
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       reasonXrayWasNotTaken: "",
       xrayWasNotTakenFurtherDetails: "",
       xrayResult: "normal",
@@ -764,7 +764,7 @@ describe("ApplicantSearchForm", () => {
       },
     });
     expect(store.getState().tbCertificate).toEqual({
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       isIssued: YesOrNo.YES,
       comments: "Comments",
       certificateDate: {

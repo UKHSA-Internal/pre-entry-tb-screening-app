@@ -5,7 +5,7 @@ import Heading from "@/components/heading/heading";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTravel } from "@/redux/store";
 import TravelReview from "@/sections/applicant-travel-summary";
-import { ApplicationStatus } from "@/utils/enums";
+import { TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function TravelSummaryPage() {
@@ -25,7 +25,7 @@ export default function TravelSummaryPage() {
     <Container
       title="Check UK travel information - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo={
-        travelData.status == ApplicationStatus.COMPLETE
+        travelData.status == TaskStatus.COMPLETE
           ? "/tracker"
           : "/visa-applicant-proposed-uk-address"
       }

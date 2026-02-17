@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { ApplicationStatus } from "@/utils/enums";
+import { TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 import Summary from "./summary";
@@ -27,7 +27,7 @@ const summaryArrayData = [
 describe("Summary Component", () => {
   it("renders correctly when props are specified", () => {
     renderWithProviders(
-      <Summary status={ApplicationStatus.NOT_YET_STARTED} summaryElements={summaryData} />,
+      <Summary status={TaskStatus.NOT_YET_STARTED} summaryElements={summaryData} />,
     );
     expect(screen.getByText("Example Title")).toBeInTheDocument();
     expect(screen.getByText("A typical value")).toBeInTheDocument();
@@ -35,7 +35,7 @@ describe("Summary Component", () => {
   });
   it("renders an array of strings", () => {
     renderWithProviders(
-      <Summary status={ApplicationStatus.NOT_YET_STARTED} summaryElements={summaryArrayData} />,
+      <Summary status={TaskStatus.NOT_YET_STARTED} summaryElements={summaryArrayData} />,
     );
     expect(screen.getByText("A typical value")).toBeInTheDocument();
     expect(screen.getByText("Another value")).toBeInTheDocument();
@@ -43,7 +43,7 @@ describe("Summary Component", () => {
   });
   it("renders a link attached to the word 'Change'", () => {
     renderWithProviders(
-      <Summary status={ApplicationStatus.NOT_YET_STARTED} summaryElements={summaryData} />,
+      <Summary status={TaskStatus.NOT_YET_STARTED} summaryElements={summaryData} />,
     );
     expect(screen.getByText("Change")).toBeInTheDocument();
     expect(screen.getAllByRole("definition")).toHaveLength(2);
@@ -52,9 +52,7 @@ describe("Summary Component", () => {
     expect(changeLink.getAttribute("href")).toEqual("/example-link");
   });
   it("does not render a link attached to the word 'Change' when the status is complete", () => {
-    renderWithProviders(
-      <Summary status={ApplicationStatus.COMPLETE} summaryElements={summaryData} />,
-    );
+    renderWithProviders(<Summary status={TaskStatus.COMPLETE} summaryElements={summaryData} />);
     expect(screen.getAllByRole("definition")).toHaveLength(1);
   });
 });

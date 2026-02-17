@@ -43,7 +43,7 @@ import {
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
 import { ApplicantSearchFormType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
-import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { TaskStatus, ButtonClass, YesOrNo } from "@/utils/enums";
 import { setGoogleAnalyticsParams } from "@/utils/google-analytics-utils";
 import { countryList, formRegex } from "@/utils/records";
 import { getUserProperties } from "@/utils/userProperties";
@@ -150,9 +150,9 @@ const ApplicantSearchForm = () => {
       }
       if (applicationRes.data.sputumRequirement) {
         dispatch(setSputumDecisionRequired(applicationRes.data.sputumRequirement.sputumRequired));
-        dispatch(setSputumDecisionStatus(ApplicationStatus.COMPLETE));
+        dispatch(setSputumDecisionStatus(TaskStatus.COMPLETE));
         if (applicationRes.data.sputumRequirement.sputumRequired === YesOrNo.NO) {
-          dispatch(setSputumStatus(ApplicationStatus.NOT_REQUIRED));
+          dispatch(setSputumStatus(TaskStatus.NOT_REQUIRED));
         }
       }
       if (

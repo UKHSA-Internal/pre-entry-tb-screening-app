@@ -4,7 +4,7 @@ import { Mock } from "vitest";
 
 import { ApplicantPhotoProvider, useApplicantPhoto } from "@/context/applicantPhotoContext";
 import ProgressTrackerPage from "@/pages/progress-tracker";
-import { ApplicationStatus, PositiveOrNegative, YesOrNo } from "@/utils/enums";
+import { TaskStatus, PositiveOrNegative, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -189,7 +189,7 @@ const tbCertSlice = {
 
 const incompleteState = {
   applicant: {
-    status: ApplicationStatus.NOT_YET_STARTED,
+    status: TaskStatus.NOT_YET_STARTED,
     fullName: "Reginald Backwaters",
     sex: "",
     dateOfBirth: {
@@ -218,21 +218,21 @@ const incompleteState = {
     country: "",
     postcode: "",
   },
-  travel: { status: ApplicationStatus.NOT_YET_STARTED, ...travelSlice },
-  medicalScreening: { status: ApplicationStatus.NOT_YET_STARTED, ...medicalScreeningSlice },
-  chestXray: { status: ApplicationStatus.IN_PROGRESS, ...chestXraySlice },
-  radiologicalOutcome: { status: ApplicationStatus.NOT_YET_STARTED, ...radiologicalOutcomeSlice },
+  travel: { status: TaskStatus.NOT_YET_STARTED, ...travelSlice },
+  medicalScreening: { status: TaskStatus.NOT_YET_STARTED, ...medicalScreeningSlice },
+  chestXray: { status: TaskStatus.IN_PROGRESS, ...chestXraySlice },
+  radiologicalOutcome: { status: TaskStatus.NOT_YET_STARTED, ...radiologicalOutcomeSlice },
   sputumDecision: {
-    status: ApplicationStatus.NOT_YET_STARTED,
+    status: TaskStatus.NOT_YET_STARTED,
     isSputumRequired: YesOrNo.NULL,
     completionDate: { year: "", month: "", day: "" },
   },
-  tbCertificate: { status: ApplicationStatus.NOT_YET_STARTED, ...tbCertSlice },
+  tbCertificate: { status: TaskStatus.NOT_YET_STARTED, ...tbCertSlice },
 };
 
 const completeState = {
   applicant: {
-    status: ApplicationStatus.COMPLETE,
+    status: TaskStatus.COMPLETE,
     fullName: "Chelsea Cummerbund",
     sex: "",
     dateOfBirth: {
@@ -261,23 +261,23 @@ const completeState = {
     country: "",
     postcode: "",
   },
-  travel: { status: ApplicationStatus.COMPLETE, ...travelSlice },
-  medicalScreening: { status: ApplicationStatus.COMPLETE, ...medicalScreeningSlice },
-  chestXray: { status: ApplicationStatus.COMPLETE, ...chestXraySlice },
+  travel: { status: TaskStatus.COMPLETE, ...travelSlice },
+  medicalScreening: { status: TaskStatus.COMPLETE, ...medicalScreeningSlice },
+  chestXray: { status: TaskStatus.COMPLETE, ...chestXraySlice },
   radiologicalOutcome: {
-    status: ApplicationStatus.COMPLETE,
+    status: TaskStatus.COMPLETE,
     ...radiologicalOutcomeSlice,
   },
   sputumDecision: {
-    status: ApplicationStatus.COMPLETE,
+    status: TaskStatus.COMPLETE,
     isSputumRequired: YesOrNo.YES,
     completionDate: { year: "2025", month: "01", day: "15" },
   },
   sputum: {
-    status: ApplicationStatus.COMPLETE,
+    status: TaskStatus.COMPLETE,
     ...sputumResultsSlice,
   },
-  tbCertificate: { status: ApplicationStatus.COMPLETE, ...tbCertSlice },
+  tbCertificate: { status: TaskStatus.COMPLETE, ...tbCertSlice },
 };
 
 test("Progress tracker page displays incomplete application sections correctly & links to applicant details form", () => {

@@ -11,7 +11,7 @@ import {
   ReduxSputumSampleType,
   ReduxSputumType,
 } from "@/types";
-import { ApplicationStatus, PositiveOrNegative, SputumCollectionMethod } from "@/utils/enums";
+import { TaskStatus, PositiveOrNegative, SputumCollectionMethod } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -58,7 +58,7 @@ const initialSputumSampleEmpty: ReduxSputumSampleType = {
 };
 
 const initialSputumDataEmpty: ReduxSputumType = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   version: undefined,
   sample1: { ...initialSputumSampleEmpty },
   sample2: { ...initialSputumSampleEmpty },
@@ -83,7 +83,7 @@ const sampleWithData: ReduxSputumSampleType = {
 };
 
 const initialApplicantData: ReduxApplicantDetailsType & { applicationId: string } = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   applicationId: "test-123",
   fullName: "John Doe",
   sex: "Male",
@@ -202,7 +202,7 @@ describe("SputumSummary", () => {
     const sputumDataPartial: ReduxSputumType = {
       ...initialSputumDataEmpty,
       sample1: sampleWithData,
-      status: ApplicationStatus.IN_PROGRESS,
+      status: TaskStatus.IN_PROGRESS,
     };
 
     renderWithProviders(<SputumSummary />, {
@@ -225,7 +225,7 @@ describe("SputumSummary", () => {
     renderWithProviders(<SputumSummary />, {
       preloadedState: {
         applicant: initialApplicantData,
-        sputum: { ...initialSputumDataEmpty, status: ApplicationStatus.NOT_YET_STARTED },
+        sputum: { ...initialSputumDataEmpty, status: TaskStatus.NOT_YET_STARTED },
       },
     });
 
@@ -278,7 +278,7 @@ describe("SputumSummary", () => {
   test("back link points to tracker when status is complete", () => {
     const preloadedState = {
       sputum: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         sample1: {
           collection: {
             submittedToDatabase: false,
@@ -365,7 +365,7 @@ describe("SputumSummary", () => {
   test("back link points to previous page when status is not complete", () => {
     const preloadedState = {
       sputum: {
-        status: ApplicationStatus.IN_PROGRESS,
+        status: TaskStatus.IN_PROGRESS,
         sample1: {
           collection: {
             submittedToDatabase: false,

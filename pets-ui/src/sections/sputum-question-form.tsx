@@ -9,7 +9,7 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setSputumDecisionRequired, setSputumDecisionStatus } from "@/redux/sputumDecisionSlice";
 import { selectSputumDecision } from "@/redux/store";
-import { ApplicationStatus, ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
+import { TaskStatus, ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 
 interface SputumDecisionFormData {
@@ -32,7 +32,7 @@ const SputumQuestionForm = () => {
 
   const onSubmit: SubmitHandler<SputumDecisionFormData> = (data) => {
     dispatch(setSputumDecisionRequired(data.isSputumRequired));
-    dispatch(setSputumDecisionStatus(ApplicationStatus.IN_PROGRESS));
+    dispatch(setSputumDecisionStatus(TaskStatus.IN_PROGRESS));
 
     navigate("/check-sputum-decision-information");
   };

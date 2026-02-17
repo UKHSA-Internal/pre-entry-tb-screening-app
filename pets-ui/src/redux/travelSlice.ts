@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { ReceivedTravelDetailsType, ReduxTravelDetailsType } from "@/types";
-import { ApplicationStatus, BackendTaskStatus } from "@/utils/enums";
+import { TaskStatus, BackendTaskStatus } from "@/utils/enums";
 
 const initialState: ReduxTravelDetailsType = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   visaCategory: "",
   applicantUkAddress1: "",
   applicantUkAddress2: "",
@@ -19,7 +19,7 @@ export const travelSlice = createSlice({
   name: "travelDetails",
   initialState,
   reducers: {
-    setTravelDetailsStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+    setTravelDetailsStatus: (state, action: PayloadAction<TaskStatus>) => {
       state.status = action.payload;
     },
     setVisaCategory: (state, action: PayloadAction<string>) => {
@@ -57,7 +57,7 @@ export const travelSlice = createSlice({
       state.ukEmail = action.payload.ukEmail ?? "";
     },
     clearTravelDetails: (state) => {
-      state.status = ApplicationStatus.NOT_YET_STARTED;
+      state.status = TaskStatus.NOT_YET_STARTED;
       state.visaCategory = "";
       state.applicantUkAddress1 = "";
       state.applicantUkAddress2 = "";
@@ -70,8 +70,8 @@ export const travelSlice = createSlice({
     setTravelDetailsFromApiResponse: (state, action: PayloadAction<ReceivedTravelDetailsType>) => {
       state.status =
         action.payload.status == BackendTaskStatus.COMPLETE
-          ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.IN_PROGRESS;
+          ? TaskStatus.COMPLETE
+          : TaskStatus.IN_PROGRESS;
       state.visaCategory = action.payload.visaCategory;
       state.applicantUkAddress1 = action.payload.ukAddressLine1 ?? "";
       state.applicantUkAddress2 = action.payload.ukAddressLine2 ?? "";

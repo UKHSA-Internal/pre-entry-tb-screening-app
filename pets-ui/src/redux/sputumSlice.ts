@@ -12,10 +12,10 @@ import {
   ReduxSputumSmearResultType,
   ReduxSputumType,
 } from "@/types";
-import { ApplicationStatus, BackendTaskStatus, PositiveOrNegative } from "@/utils/enums";
+import { TaskStatus, BackendTaskStatus, PositiveOrNegative } from "@/utils/enums";
 
 const initialState: ReduxSputumType = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   version: undefined,
   sample1: {
     collection: {
@@ -95,7 +95,7 @@ export const sputumSlice = createSlice({
   name: "sputumDetails",
   initialState,
   reducers: {
-    setSputumStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+    setSputumStatus: (state, action: PayloadAction<TaskStatus>) => {
       state.status = action.payload;
     },
     setSample1Collection: (state, action: PayloadAction<ReduxSputumCollectionType>) => {
@@ -182,7 +182,7 @@ export const sputumSlice = createSlice({
       }
     },
     clearSputumDetails: (state) => {
-      state.status = ApplicationStatus.NOT_YET_STARTED;
+      state.status = TaskStatus.NOT_YET_STARTED;
       state.version = undefined;
       state.sample1.collection.submittedToDatabase = false;
       state.sample1.collection.dateOfSample = { year: "", month: "", day: "" };
@@ -212,8 +212,8 @@ export const sputumSlice = createSlice({
     setSputumDetailsFromApiResponse: (state, action: PayloadAction<ReceivedSputumType>) => {
       state.status =
         action.payload.status == BackendTaskStatus.COMPLETE
-          ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.IN_PROGRESS;
+          ? TaskStatus.COMPLETE
+          : TaskStatus.IN_PROGRESS;
 
       state.version = action.payload.version;
 

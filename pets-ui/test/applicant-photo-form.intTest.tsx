@@ -6,7 +6,7 @@ import { Mock, vi } from "vitest";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import ApplicantPhotoPage from "@/pages/applicant-photo";
 import ApplicantPhotoForm from "@/sections/applicant-photo-form";
-import { ApplicationStatus } from "@/utils/enums";
+import { TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 import uploadFile from "@/utils/uploadFile";
 import validateFiles from "@/utils/validateFiles";
@@ -85,7 +85,7 @@ describe("ApplicantPhotoForm", () => {
     window.history.pushState({}, "", "/upload-visa-applicant-photo?from=tb-certificate-summary");
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         fullName: "",
         sex: "",
         dateOfBirth: { year: "", month: "", day: "" },
@@ -120,7 +120,7 @@ describe("ApplicantPhotoForm", () => {
     );
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         fullName: "",
         sex: "",
         dateOfBirth: { year: "", month: "", day: "" },
@@ -219,7 +219,7 @@ describe("ApplicantPhotoForm", () => {
 
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         fullName: "",
         sex: "",
         dateOfBirth: { year: "", month: "", day: "" },

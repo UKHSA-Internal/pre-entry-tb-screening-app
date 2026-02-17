@@ -15,7 +15,7 @@ import {
   selectRadiologicalOutcome,
 } from "@/redux/store";
 import { PostedRadiologicalOutcomeDetailsType } from "@/types";
-import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { TaskStatus, ButtonClass, YesOrNo } from "@/utils/enums";
 import { spreadArrayIfNotEmpty } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
@@ -50,7 +50,7 @@ const RadiologicalOutcomeSummary = () => {
         await postChestXrayDetails(applicationData.applicationId, payload);
       }
 
-      dispatch(setRadiologicalOutcomeStatus(ApplicationStatus.COMPLETE));
+      dispatch(setRadiologicalOutcomeStatus(TaskStatus.COMPLETE));
       navigate("/radiological-outcome-confirmed");
     } catch (error) {
       console.error(error);
@@ -121,8 +121,8 @@ const RadiologicalOutcomeSummary = () => {
         />
       )}
 
-      {(radiologicalOutcomeData.status == ApplicationStatus.NOT_YET_STARTED ||
-        radiologicalOutcomeData.status == ApplicationStatus.IN_PROGRESS) && (
+      {(radiologicalOutcomeData.status == TaskStatus.NOT_YET_STARTED ||
+        radiologicalOutcomeData.status == TaskStatus.IN_PROGRESS) && (
         <div>
           <Heading title="Now send the chest X-ray results and findings" level={2} size="m" />
           <p className="govuk-body">
@@ -138,8 +138,8 @@ const RadiologicalOutcomeSummary = () => {
           />
         </div>
       )}
-      {(radiologicalOutcomeData.status == ApplicationStatus.COMPLETE ||
-        radiologicalOutcomeData.status == ApplicationStatus.NOT_REQUIRED) && (
+      {(radiologicalOutcomeData.status == TaskStatus.COMPLETE ||
+        radiologicalOutcomeData.status == TaskStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
           class={ButtonClass.DEFAULT}

@@ -4,7 +4,7 @@ import { Mock } from "vitest";
 
 import { ApplicantPhotoProvider } from "@/context/applicantPhotoContext";
 import TbCertificatePrintPage from "@/pages/tb-certificate-print";
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 vi.mock("@react-pdf/renderer", () => ({
@@ -66,7 +66,7 @@ beforeEach(() => {
 
 const mockPreloadedState = {
   applicant: {
-    status: ApplicationStatus.COMPLETE,
+    status: TaskStatus.COMPLETE,
     fullName: "John Smith",
     sex: "Male",
     dateOfBirth: { year: "1970", month: "01", day: "01" },
@@ -88,7 +88,7 @@ const mockPreloadedState = {
     dateCreated: "2025-01-01",
   },
   tbCertificate: {
-    status: ApplicationStatus.COMPLETE,
+    status: TaskStatus.COMPLETE,
     isIssued: YesOrNo.YES,
     certificateNumber: "1111",
     certificateDate: { year: "2025", month: "01", day: "01" },
