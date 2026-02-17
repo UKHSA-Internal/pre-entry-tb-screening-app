@@ -3,25 +3,23 @@ import { useEffect } from "react";
 import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant, selectApplication } from "@/redux/store";
-import ChestXrayQuestionForm from "@/sections/chest-xray-question-form";
+import MedicalScreeningFormFemaleQs from "@/sections/medical-screening-form-female-qs";
 import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 import { calculateApplicantAge } from "@/utils/helpers";
 
-export default function ChestXrayQuestionPage() {
+export default function MedicalScreeningFemalePage() {
   const applicationData = useAppSelector(selectApplication);
   const applicantData = useAppSelector(selectApplicant);
   const applicantAge = calculateApplicantAge(applicantData.dateOfBirth);
 
   let backLinkUrl = "/record-medical-history-tb-symptoms";
-  if (applicantData.sex == "Female") {
-    backLinkUrl = "/medical-history-female";
-  } else if (typeof applicantAge.ageInYears == "number" && applicantAge.ageInYears < 11) {
+  if (typeof applicantAge.ageInYears == "number" && applicantAge.ageInYears < 11) {
     backLinkUrl = "/medical-history-under-11-years-old";
   }
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "is_an_xray_required",
+      "medical_history_female",
       applicationData.applicationId,
       "Medical history and TB symptoms",
     );
@@ -30,10 +28,10 @@ export default function ChestXrayQuestionPage() {
 
   return (
     <Container
-      title="Is an X-ray required? - Complete UK pre-entry health screening - GOV.UK"
+      title="Medical history: female - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo={backLinkUrl}
     >
-      <ChestXrayQuestionForm />
+      <MedicalScreeningFormFemaleQs />
     </Container>
   );
 }

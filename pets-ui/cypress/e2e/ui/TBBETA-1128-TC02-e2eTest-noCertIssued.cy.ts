@@ -17,6 +17,7 @@ import { ChestXrayResultsPage } from "../../support/page-objects/chestXrayResult
 import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
 import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
+import { MedicalHistoryFemalePage } from "../../support/page-objects/medicalHistoryFemalePage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
 import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
@@ -56,6 +57,7 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
   const medicalScreeningPage = new MedicalScreeningPage();
   const applicantConfirmationPage = new ApplicantConfirmationPage();
   const medicalSummaryPage = new MedicalSummaryPage();
+  const medicalHistoryFemalePage = new MedicalHistoryFemalePage();
   const medicalConfirmationPage = new MedicalConfirmationPage();
   const radiologicalOutcomeConfPage = new RadiologicalOutcomeConfPage();
   const sputumQuestionPage = new SputumQuestionPage();
@@ -321,12 +323,17 @@ describe("PETS Application End-to-End Tests with TB Certificate Not Issued", () 
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
-      .selectPregnancyStatus("No")
-      .selectMenstrualPeriods("No")
       .fillPhysicalExamNotes(
         "Patient appears healthy but unable to complete full screening today due to scheduling conflicts.",
       )
       .submitForm();
+
+    // Verify redirection to Medical History Female
+    medicalHistoryFemalePage.verifyPageLoaded();
+
+    medicalHistoryFemalePage.selectPregnant("No");
+    medicalHistoryFemalePage.selectMenstrualPeriods("No");
+    medicalHistoryFemalePage.submitForm();
 
     // Verify redirection to X-ray Question Page
     chestXrayPage.verifyPageLoaded();

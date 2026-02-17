@@ -116,12 +116,12 @@ const ApplicantSearchForm = () => {
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (passportDetails) => {
     setIsLoading(true);
     try {
-      await fetchClinic(dispatch);
       dispatch(setApplicantPassportDetails(passportDetails));
       setApplicantPhotoUrl(null);
 
       const applicantRes = await getApplicants(passportDetails);
       if (applicantRes.data.length === 0) {
+        await fetchClinic(dispatch);
         navigate("/no-visa-applicant-found");
         return;
       }
@@ -129,6 +129,9 @@ const ApplicantSearchForm = () => {
       dispatch(setApplicationId(applicantRes.data[0].applicationId));
 
       const applicationRes = await getApplication(applicantRes.data);
+      const applicationClinicId = applicationRes.data.clinicId as string | undefined;
+      await fetchClinic(dispatch, applicationClinicId);
+
       if (applicationRes.data.applicantPhotoUrl) {
         await handleApplicantPhoto(applicationRes.data.applicantPhotoUrl);
       }

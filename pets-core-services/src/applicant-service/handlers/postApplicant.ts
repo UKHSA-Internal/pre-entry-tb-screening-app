@@ -46,12 +46,23 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
     }
 
     const { clinicId, createdBy } = event.requestContext.authorizer;
-    if (application.clinicId != clinicId) {
-      logger.error("ClinicId mismatch with existing application");
+    const SUPPORT_CLINIC_ID = process.env.SUPPORT_CLINIC_ID;
+
+    if (!clinicId) {
+      logger.error("Clinic Id missing");
+      return createHttpResponse(400, { message: "Clinic Id missing" });
+    }
+
+    if (clinicId !== SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
+      logger.error("Clinic Id mismatch");
       return createHttpResponse(403, { message: "Clinic Id mismatch" });
     }
 
-    const existingApplicant = await ApplicantDbOps.findByPassportId(
+    if (clinicId === SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
+      logger.info("Validated clinic Id is a support clinicId");
+    }
+
+    const existingApplicants = await ApplicantDbOps.findByPassportId(
       parsedBody.countryOfIssue,
       parsedBody.passportNumber,
     );

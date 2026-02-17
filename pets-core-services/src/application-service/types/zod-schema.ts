@@ -459,7 +459,7 @@ export const ApplicationSchema = z.object({
   applicationId: z.string().openapi({
     description: "application id",
   }),
-  status: z.nativeEnum(ApplicationStatus).openapi({
+  applicationStatus: z.nativeEnum(ApplicationStatus).openapi({
     description: "Application current status",
   }),
   cancellationReason: z.string().optional().openapi({

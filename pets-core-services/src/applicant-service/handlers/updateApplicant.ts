@@ -29,7 +29,7 @@ export const updateApplicantHandler = async (event: PutApplicantEvent) => {
     }
 
     const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
-    const { createdBy } = event.requestContext.authorizer;
+    const { clinicId, createdBy } = event.requestContext.authorizer;
 
     const application = await Application.getByApplicationId(applicationId);
     if (!application) {
@@ -38,7 +38,20 @@ export const updateApplicantHandler = async (event: PutApplicantEvent) => {
         message: `Application with ID: ${applicationId} does not exist`,
       });
     }
+    const SUPPORT_CLINIC_ID = process.env.SUPPORT_CLINIC_ID;
+    if (!clinicId) {
+      logger.error("Clinic Id missing");
+      return createHttpResponse(400, { message: "Clinic Id missing" });
+    }
 
+    if (clinicId !== SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
+      logger.error("ClinicId mismatch with existing application");
+      return createHttpResponse(403, { message: "Clinic Id mismatch" });
+    }
+
+    if (clinicId === SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
+      logger.info("Validated clinic Id is a support clinicId");
+    }
     const applicantData = await ApplicantDbOps.updateApplicant({
       ...parsedBody,
       updatedBy: createdBy,

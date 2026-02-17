@@ -7,6 +7,7 @@ import awsClients from "../../shared/clients/aws";
 import { assertEnvExists, isLocal, isTest } from "../../shared/config";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
+import { ApplicantDbOps } from "../../shared/models/applicant";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { generateImageObjectkey } from "../helpers/upload";
@@ -63,6 +64,8 @@ export const generateImageUploadUrlHandler = async (event: GenerateUploadEvent) 
         message: "Invalid Application: Application does not exist",
       });
     }
+
+    const application = await Application.getByApplicationId(applicationId);
 
     const objectKey = generateImageObjectkey({
       passportNumber: application.passportNumber,
