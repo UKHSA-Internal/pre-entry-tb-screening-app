@@ -35,6 +35,7 @@ describe("ImageHelper", () => {
             LastModified: new Date("2025-01-01"),
           },
           { Key: "photo/q2378/.../applicant-photo/test.jpg", LastModified: new Date() },
+          { Key: "photo/q2378/.../applicant-photo/test.png" },
         ],
       });
 
@@ -53,7 +54,7 @@ describe("ImageHelper", () => {
     });
 
     it("returns null and logs error if object not found", async () => {
-      s3ClientMock.on(ListObjectsV2Command).resolves({ Contents: [] });
+      s3ClientMock.on(ListObjectsV2Command).resolves({ Contents: undefined });
 
       const result = await ImageHelper.getPresignedUrlforImage(bucket, key);
       expect(result).toBeNull();
