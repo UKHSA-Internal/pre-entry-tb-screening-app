@@ -12,7 +12,7 @@ import {
   ReduxSputumSmearResultType,
   ReduxSputumType,
 } from "@/types";
-import { TaskStatus, BackendTaskStatus, PositiveOrNegative } from "@/utils/enums";
+import { BackendTaskStatus, PositiveOrNegative, TaskStatus } from "@/utils/enums";
 
 const initialState: ReduxSputumType = {
   status: TaskStatus.NOT_YET_STARTED,

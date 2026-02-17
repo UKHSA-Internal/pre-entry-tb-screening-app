@@ -21,7 +21,7 @@ import {
   setUkMobileNumber,
 } from "@/redux/travelSlice";
 import { ReduxTravelDetailsType } from "@/types";
-import { TaskStatus, ButtonClass } from "@/utils/enums";
+import { ButtonClass, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { formRegex } from "@/utils/records";
 

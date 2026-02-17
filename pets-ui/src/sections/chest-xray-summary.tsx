@@ -10,7 +10,7 @@ import Summary from "@/components/summary/summary";
 import { setChestXrayStatus } from "@/redux/chestXraySlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectChestXray } from "@/redux/store";
-import { TaskStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 import {
   formatDateForDisplay,
   spreadArrayIfNotEmpty,

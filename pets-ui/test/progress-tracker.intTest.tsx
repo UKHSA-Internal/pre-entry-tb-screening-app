@@ -4,7 +4,7 @@ import { Mock } from "vitest";
 
 import { ApplicantPhotoProvider, useApplicantPhoto } from "@/context/applicantPhotoContext";
 import ProgressTrackerPage from "@/pages/progress-tracker";
-import { TaskStatus, PositiveOrNegative, YesOrNo } from "@/utils/enums";
+import { PositiveOrNegative, TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();

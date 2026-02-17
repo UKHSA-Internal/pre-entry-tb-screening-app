@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { DateType, ReceivedMedicalScreeningType, ReduxMedicalScreeningType } from "@/types";
-import { TaskStatus, BackendTaskStatus, YesOrNo } from "@/utils/enums";
+import { BackendTaskStatus, TaskStatus, YesOrNo } from "@/utils/enums";
 
 const initialState: ReduxMedicalScreeningType = {
   status: TaskStatus.NOT_YET_STARTED,

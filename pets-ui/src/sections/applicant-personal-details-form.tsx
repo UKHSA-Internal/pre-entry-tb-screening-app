@@ -21,7 +21,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant, selectApplication } from "@/redux/store";
 import { DateType, ReduxApplicantDetailsType } from "@/types";
-import { TaskStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
+import { ButtonClass, RadioIsInline, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { standardiseDayOrMonth, validateDate } from "@/utils/helpers";
 import { countryList, formRegex } from "@/utils/records";

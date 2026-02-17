@@ -24,7 +24,7 @@ import {
   setTbCertificateStatus,
 } from "@/redux/tbCertificateSlice";
 import { ReduxTbCertificateType } from "@/types";
-import { TaskStatus, ButtonClass } from "@/utils/enums";
+import { ButtonClass, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import {
   calculateCertificateExpiryDate,

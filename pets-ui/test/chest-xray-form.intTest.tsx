@@ -5,7 +5,7 @@ import { describe, expect, it, Mock } from "vitest";
 
 import ChestXrayUploadPage from "@/pages/chest-xray-upload";
 import ChestXrayForm from "@/sections/chest-xray-form";
-import { TaskStatus, ImageType } from "@/utils/enums";
+import { ImageType, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 import uploadFile from "@/utils/uploadFile";
 import validateFiles from "@/utils/validateFiles";

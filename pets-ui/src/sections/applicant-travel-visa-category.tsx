@@ -11,7 +11,7 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTravel } from "@/redux/store";
 import { setTravelDetailsStatus, setVisaCategory } from "@/redux/travelSlice";
-import { TaskStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
+import { ButtonClass, RadioIsInline, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { visaOptions } from "@/utils/records";
 

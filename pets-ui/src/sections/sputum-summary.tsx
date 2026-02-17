@@ -22,7 +22,7 @@ import {
   setSputumVersion,
 } from "@/redux/sputumSlice";
 import { selectApplication, selectSputum } from "@/redux/store";
-import { TaskStatus, ButtonClass, PositiveOrNegative } from "@/utils/enums";
+import { ButtonClass, PositiveOrNegative, TaskStatus } from "@/utils/enums";
 import { formatDateForDisplay } from "@/utils/helpers";
 
 const SputumSummary = () => {

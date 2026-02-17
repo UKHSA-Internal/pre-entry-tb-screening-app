@@ -22,7 +22,7 @@ import {
   selectTravel,
 } from "@/redux/store";
 import { setTbCertificateStatus } from "@/redux/tbCertificateSlice";
-import { TaskStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 import {
   calculateCertificateExpiryDate,
   calculateCertificateIssueDate,

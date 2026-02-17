@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { ReceivedTravelDetailsType, ReduxTravelDetailsType } from "@/types";
-import { TaskStatus, BackendTaskStatus } from "@/utils/enums";
+import { BackendTaskStatus, TaskStatus } from "@/utils/enums";
 
 const initialState: ReduxTravelDetailsType = {
   status: TaskStatus.NOT_YET_STARTED,

@@ -20,7 +20,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant, selectApplication } from "@/redux/store";
 import { DateType, ReduxApplicantDetailsType } from "@/types";
-import { TaskStatus, ButtonClass } from "@/utils/enums";
+import { ButtonClass, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import {
   getCountryName,

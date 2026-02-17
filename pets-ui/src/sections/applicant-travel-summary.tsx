@@ -9,7 +9,7 @@ import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTravel } from "@/redux/store";
 import { setTravelDetailsStatus } from "@/redux/travelSlice";
-import { TaskStatus, ButtonClass } from "@/utils/enums";
+import { ButtonClass, TaskStatus } from "@/utils/enums";
 import { attributeToComponentId } from "@/utils/records";
 
 const TravelReview = () => {

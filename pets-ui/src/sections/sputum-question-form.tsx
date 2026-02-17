@@ -9,7 +9,7 @@ import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setSputumDecisionRequired, setSputumDecisionStatus } from "@/redux/sputumDecisionSlice";
 import { selectSputumDecision } from "@/redux/store";
-import { TaskStatus, ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
+import { ButtonClass, RadioIsInline, TaskStatus, YesOrNo } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 
 interface SputumDecisionFormData {

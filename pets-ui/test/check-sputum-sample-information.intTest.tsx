@@ -11,7 +11,7 @@ import {
   ReduxSputumSampleType,
   ReduxSputumType,
 } from "@/types";
-import { TaskStatus, PositiveOrNegative, SputumCollectionMethod } from "@/utils/enums";
+import { PositiveOrNegative, SputumCollectionMethod, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();

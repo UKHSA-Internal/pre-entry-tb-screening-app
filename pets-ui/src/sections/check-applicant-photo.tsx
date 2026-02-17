@@ -12,7 +12,7 @@ import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { setApplicantPhotoFileName } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant, selectApplication } from "@/redux/store";
-import { TaskStatus, ButtonClass, ImageType, RadioIsInline } from "@/utils/enums";
+import { ButtonClass, ImageType, RadioIsInline, TaskStatus } from "@/utils/enums";
 import uploadFile from "@/utils/uploadFile";
 
 type CheckApplicantPhotoFormType = {

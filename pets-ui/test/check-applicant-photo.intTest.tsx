@@ -6,7 +6,7 @@ import { Mock, vi } from "vitest";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import CheckApplicantPhotoPage from "@/pages/check-applicant-photo";
 import CheckApplicantPhoto from "@/sections/check-applicant-photo";
-import { TaskStatus, ImageType } from "@/utils/enums";
+import { ImageType, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 import uploadFile from "@/utils/uploadFile";
 

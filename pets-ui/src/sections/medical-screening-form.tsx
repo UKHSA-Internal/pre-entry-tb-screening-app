@@ -29,7 +29,7 @@ import {
 } from "@/redux/medicalScreeningSlice";
 import { selectApplicant, selectMedicalScreening } from "@/redux/store";
 import { DateType } from "@/types";
-import { TaskStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
+import { ButtonClass, RadioIsInline, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import {
   calculateApplicantAge,

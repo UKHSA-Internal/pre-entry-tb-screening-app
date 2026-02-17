@@ -4,7 +4,7 @@ import {
   ReceivedRadiologicalOutcomeDetailsType,
   ReduxRadiologicalOutcomeDetailsType,
 } from "@/types";
-import { TaskStatus, BackendTaskStatus } from "@/utils/enums";
+import { BackendTaskStatus, TaskStatus } from "@/utils/enums";
 
 const initialState: ReduxRadiologicalOutcomeDetailsType = {
   status: TaskStatus.NOT_YET_STARTED,

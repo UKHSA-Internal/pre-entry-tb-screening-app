@@ -13,7 +13,7 @@ import {
   setPregnant,
 } from "@/redux/medicalScreeningSlice";
 import { selectMedicalScreening } from "@/redux/store";
-import { TaskStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
+import { ButtonClass, RadioIsInline, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 
 interface MedicalScreeningFemaleData {

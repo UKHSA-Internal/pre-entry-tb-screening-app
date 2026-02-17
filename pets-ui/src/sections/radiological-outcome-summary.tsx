@@ -15,7 +15,7 @@ import {
   selectRadiologicalOutcome,
 } from "@/redux/store";
 import { PostedRadiologicalOutcomeDetailsType } from "@/types";
-import { TaskStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 import { spreadArrayIfNotEmpty } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 

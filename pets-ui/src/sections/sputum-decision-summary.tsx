@@ -13,7 +13,7 @@ import {
   setSputumDecisionStatus,
 } from "@/redux/sputumDecisionSlice";
 import { selectApplication, selectSputumDecision } from "@/redux/store";
-import { TaskStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 
 const SputumDecisionSummary = () => {
   const sputumDecisionData = useAppSelector(selectSputumDecision);

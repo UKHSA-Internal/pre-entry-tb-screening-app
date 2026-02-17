@@ -6,7 +6,7 @@ import { Mock } from "vitest";
 import { petsApi } from "@/api/api";
 import ApplicantSummaryPage from "@/pages/applicant-summary";
 import ApplicantReview from "@/sections/applicant-details-summary";
-import { TaskStatus, ImageType } from "@/utils/enums";
+import { ImageType, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 import uploadFile from "@/utils/uploadFile";
 

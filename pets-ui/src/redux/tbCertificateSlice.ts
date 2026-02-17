@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { ClinicType, DateType, ReceivedTbCertificateType, ReduxTbCertificateType } from "@/types";
-import { TaskStatus, BackendTaskStatus, YesOrNo } from "@/utils/enums";
+import { BackendTaskStatus, TaskStatus, YesOrNo } from "@/utils/enums";
 
 const initialState: ReduxTbCertificateType = {
   status: TaskStatus.NOT_YET_STARTED,

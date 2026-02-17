@@ -12,7 +12,7 @@ import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
 import { ReduxApplicantDetailsType } from "@/types";
-import { TaskStatus, ButtonClass, ImageType } from "@/utils/enums";
+import { ButtonClass, ImageType, TaskStatus } from "@/utils/enums";
 
 const ApplicantPhotoForm = () => {
   const applicantData = useAppSelector(selectApplicant);

@@ -17,7 +17,7 @@ import {
   setTbCertificateStatus,
 } from "@/redux/tbCertificateSlice";
 import { ReduxTbCertificateType } from "@/types";
-import { TaskStatus, ButtonClass, RadioIsInline, TBCertNotIssuedReason } from "@/utils/enums";
+import { ButtonClass, RadioIsInline, TaskStatus, TBCertNotIssuedReason } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { formRegex } from "@/utils/records";
 

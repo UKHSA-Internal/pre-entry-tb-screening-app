@@ -14,7 +14,7 @@ import {
   setUnderElevenConditionsDetail,
 } from "@/redux/medicalScreeningSlice";
 import { selectApplicant, selectMedicalScreening } from "@/redux/store";
-import { TaskStatus, ButtonClass } from "@/utils/enums";
+import { ButtonClass, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 
 interface MedicalScreeningU11Data {

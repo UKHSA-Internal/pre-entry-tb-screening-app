@@ -23,7 +23,7 @@ import {
 } from "@/redux/sputumSlice";
 import { selectSputum } from "@/redux/store";
 import { DateType } from "@/types";
-import { TaskStatus, ButtonClass, SputumCollectionMethod } from "@/utils/enums";
+import { ButtonClass, SputumCollectionMethod, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { validateDate } from "@/utils/helpers";
 import { dateValidationMessages } from "@/utils/records";

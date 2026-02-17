@@ -5,7 +5,7 @@ import { Mock, vi } from "vitest";
 import EnterSputumSampleResultsPage from "@/pages/enter-sputum-sample-results";
 import SputumResultsForm from "@/sections/sputum-results-form";
 import { DateType, ReduxSputumSampleType, ReduxSputumType } from "@/types";
-import { TaskStatus, PositiveOrNegative } from "@/utils/enums";
+import { PositiveOrNegative, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();

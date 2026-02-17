@@ -4,7 +4,7 @@ import Confirmation from "@/components/confirmation/confirmation";
 import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectSputum } from "@/redux/store";
-import { TaskStatus, PositiveOrNegative } from "@/utils/enums";
+import { PositiveOrNegative, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function SputumConfirmation() {

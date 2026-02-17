@@ -10,7 +10,7 @@ import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
 import { setMedicalScreeningStatus } from "@/redux/medicalScreeningSlice";
 import { selectApplicant, selectApplication, selectMedicalScreening } from "@/redux/store";
-import { TaskStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 import { calculateApplicantAge, formatDateForDisplay } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
