@@ -7,10 +7,10 @@ import Button from "@/components/button/button";
 import Summary from "@/components/summary/summary";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { setApplicantDetailsStatus } from "@/redux/applicantSlice";
-import { setApplicationDetails } from "@/redux/applicationSlice";
+import { setApplicationId, setDateCreated } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
-import { TaskStatus, ButtonClass, ImageType } from "@/utils/enums";
+import { ButtonClass, ImageType, TaskStatus } from "@/utils/enums";
 import { formatDateForDisplay, getCountryName, standardiseDayOrMonth } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 import uploadFile from "@/utils/uploadFile";
@@ -32,7 +32,8 @@ const ApplicantReview = () => {
     setIsLoading(true);
     try {
       const applicationRes = await createNewApplication();
-      dispatch(setApplicationDetails(applicationRes.data));
+      dispatch(setApplicationId(applicationRes.data.applicationId));
+      dispatch(setDateCreated(applicationRes.data.dateCreated));
 
       const dateOfBirthStr = `${applicantData.dateOfBirth.year}-${standardiseDayOrMonth(applicantData.dateOfBirth.month)}-${standardiseDayOrMonth(applicantData.dateOfBirth.day)}`;
       const issueDateStr = `${applicantData.passportIssueDate.year}-${standardiseDayOrMonth(applicantData.passportIssueDate.month)}-${standardiseDayOrMonth(applicantData.passportIssueDate.day)}`;

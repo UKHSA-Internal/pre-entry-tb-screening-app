@@ -15,7 +15,11 @@ import {
   setApplicantPassportDetails,
   setApplicantPhotoFileName,
 } from "@/redux/applicantSlice";
-import { clearApplicationDetails, setApplicationId } from "@/redux/applicationSlice";
+import {
+  clearApplicationDetails,
+  setApplicationDetails,
+  setApplicationId,
+} from "@/redux/applicationSlice";
 import { clearChestXrayDetails, setChestXrayFromApiResponse } from "@/redux/chestXraySlice";
 import { useAppDispatch } from "@/redux/hooks";
 import {
@@ -43,7 +47,7 @@ import {
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
 import { ApplicantSearchFormType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
-import { TaskStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 import { setGoogleAnalyticsParams } from "@/utils/google-analytics-utils";
 import { countryList, formRegex } from "@/utils/records";
 import { getUserProperties } from "@/utils/userProperties";
@@ -129,6 +133,15 @@ const ApplicantSearchForm = () => {
       dispatch(setApplicationId(applicantRes.data[0].applicationId));
 
       const applicationRes = await getApplication(applicantRes.data);
+      dispatch(
+        setApplicationDetails({
+          applicationId: applicationRes.data.applicationId,
+          applicationStatus: applicationRes.data.applicationStatus,
+          dateCreated: applicationRes.data.dateCreated || "",
+          cancellationReason: applicationRes.data.cancellationReason,
+          cancellationFurtherInfo: applicationRes.data.cancellationFurtherInfo,
+        }),
+      );
       const applicationClinicId = applicationRes.data.clinicId as string | undefined;
       await fetchClinic(dispatch, applicationClinicId);
 

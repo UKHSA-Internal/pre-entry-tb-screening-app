@@ -17,7 +17,7 @@ import {
   selectTbCertificate,
   selectTravel,
 } from "@/redux/store";
-import { TaskStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 
 interface TaskProps {
   description: string;

@@ -56,6 +56,7 @@ type ReduxApplicationDetailsType = ApplicationIdAndDateCreatedType & {
 type ReceivedApplicationDetailsType = {
   applicationId: string;
   applicationStatus: ApplicationStatus;
+  dateCreated?: string;
   cancellationReason?: string;
   cancellationFurtherInfo?: string;
   clinicId: string;
