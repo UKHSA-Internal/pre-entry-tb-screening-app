@@ -1,4 +1,4 @@
-import { GetObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
+import { ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -29,13 +29,24 @@ describe("ImageHelper", () => {
     it("returns presigned URL when object is found", async () => {
       // Mock S3 responses
       s3ClientMock.on(ListObjectsV2Command).resolves({
-        Contents: [{ Key: "photo/q2378/.../applicant-photo/test.jpg" }],
+        Contents: [
+          {
+            Key: "photo/q2378/.../applicant-photo/test.jpeg",
+            LastModified: new Date("2025-01-01"),
+          },
+          { Key: "photo/q2378/.../applicant-photo/test.jpg", LastModified: new Date() },
+        ],
       });
 
       const url = await ImageHelper.getPresignedUrlforImage(bucket, key);
       expect(getSignedUrl).toHaveBeenCalledWith(
         awsClients.s3Client,
-        expect.any(GetObjectCommand),
+        expect.objectContaining({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          input: expect.objectContaining({
+            Key: "photo/q2378/.../applicant-photo/test.jpg",
+          }),
+        }),
         expect.objectContaining({ expiresIn: 300 }),
       );
       expect(url).toBe("https://mocked-signed-url.com");
