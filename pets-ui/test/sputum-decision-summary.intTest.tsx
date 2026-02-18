@@ -4,11 +4,11 @@ import { Mock } from "vitest";
 
 import { postSputumRequirement } from "@/api/api";
 import SputumDecisionSummary from "@/sections/sputum-decision-summary";
-import { TaskStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const user = userEvent.setup();
-const applicationId = "test-app-id";
+
 const useNavigateMock: Mock = vi.fn();
 vi.mock("react-router", async () => {
   const actual = await vi.importActual("react-router");
@@ -33,7 +33,11 @@ describe("SputumDecisionSummary", () => {
 
   it("renders summary and Submit and continue button when status is NOT_YET_STARTED", () => {
     const preloadedState = {
-      application: { applicationId, dateCreated: "2025-01-01" },
+      application: {
+        applicationId: "test-app-id",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
       sputumDecision: {
         status: TaskStatus.NOT_YET_STARTED,
         isSputumRequired: YesOrNo.YES,
@@ -48,7 +52,11 @@ describe("SputumDecisionSummary", () => {
 
   it("posts data and navigates to confirmation on Submit and continue", async () => {
     const preloadedState = {
-      application: { applicationId, dateCreated: "2025-01-01" },
+      application: {
+        applicationId: "test-app-id",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
       sputumDecision: {
         status: TaskStatus.NOT_YET_STARTED,
         isSputumRequired: YesOrNo.NO,
@@ -58,7 +66,7 @@ describe("SputumDecisionSummary", () => {
     (postSputumRequirement as Mock).mockResolvedValue({});
     renderWithProviders(<SputumDecisionSummary />, { preloadedState });
     await user.click(screen.getByRole("button", { name: "Submit and continue" }));
-    expect(postSputumRequirement).toHaveBeenCalledWith(applicationId, {
+    expect(postSputumRequirement).toHaveBeenCalledWith("test-app-id", {
       sputumRequired: YesOrNo.NO,
     });
     expect(useNavigateMock).toHaveBeenLastCalledWith("/sputum-decision-confirmed");
@@ -66,7 +74,11 @@ describe("SputumDecisionSummary", () => {
 
   it("shows Return to tracker button when status is COMPLETE", () => {
     const preloadedState = {
-      application: { applicationId, dateCreated: "2025-01-01" },
+      application: {
+        applicationId: "test-app-id",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
       sputumDecision: {
         status: TaskStatus.COMPLETE,
         isSputumRequired: YesOrNo.NO,
@@ -79,7 +91,11 @@ describe("SputumDecisionSummary", () => {
 
   it("navigates to tracker on Return to tracker click", async () => {
     const preloadedState = {
-      application: { applicationId, dateCreated: "2025-01-01" },
+      application: {
+        applicationId: "test-app-id",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
       sputumDecision: {
         status: TaskStatus.COMPLETE,
         isSputumRequired: YesOrNo.YES,
@@ -93,7 +109,11 @@ describe("SputumDecisionSummary", () => {
 
   it("navigates to /sorry-there-is-problem-with-service if API fails", async () => {
     const preloadedState = {
-      application: { applicationId, dateCreated: "2025-01-01" },
+      application: {
+        applicationId: "test-app-id",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
       sputumDecision: {
         status: TaskStatus.NOT_YET_STARTED,
         isSputumRequired: YesOrNo.YES,

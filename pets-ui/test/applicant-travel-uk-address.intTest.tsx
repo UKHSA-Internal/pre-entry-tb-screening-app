@@ -5,7 +5,7 @@ import { Mock } from "vitest";
 import * as api from "@/api/api";
 import TravelAddressAndContactDetailsPage from "@/pages/travel-uk-address";
 import ApplicantTravelAddressAndContactDetails from "@/sections/applicant-travel-uk-address";
-import { TaskStatus } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -119,7 +119,11 @@ describe("ApplicantTravelAddressAndContactDetails", () => {
     vi.spyOn(api, "putTravelDetails").mockResolvedValue({ status: 200, statusText: "OK" });
     const user = userEvent.setup();
     const completeState = {
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
       travel: {
         status: TaskStatus.COMPLETE,
         visaCategory: "Work",
@@ -156,7 +160,11 @@ describe("ApplicantTravelAddressAndContactDetails", () => {
     );
     const user = userEvent.setup();
     const completeState = {
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
       travel: {
         status: TaskStatus.COMPLETE,
         visaCategory: "Work",

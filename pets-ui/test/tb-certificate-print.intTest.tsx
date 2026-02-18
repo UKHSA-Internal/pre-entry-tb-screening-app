@@ -4,7 +4,7 @@ import { Mock } from "vitest";
 
 import { ApplicantPhotoProvider } from "@/context/applicantPhotoContext";
 import TbCertificatePrintPage from "@/pages/tb-certificate-print";
-import { TaskStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 vi.mock("@react-pdf/renderer", () => ({
@@ -85,7 +85,8 @@ const mockPreloadedState = {
   },
   application: {
     applicationId: "123",
-    dateCreated: "2025-01-01",
+    dateCreated: { year: "2010", month: "1", day: "1" },
+    applicationStatus: ApplicationStatus.IN_PROGRESS,
   },
   tbCertificate: {
     status: TaskStatus.COMPLETE,

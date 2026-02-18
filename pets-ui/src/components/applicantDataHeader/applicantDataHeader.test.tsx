@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 
-import { TaskStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 import ApplicantDataHeader from "./applicantDataHeader";
@@ -41,8 +41,7 @@ describe("applicantDataHeader", () => {
     renderWithProviders(
       <ApplicantDataHeader
         applicantData={applicantData}
-        tbCertificateStatus={TaskStatus.NOT_YET_STARTED}
-        tbCertificateIsIssued={YesOrNo.YES}
+        applicationStatus={ApplicationStatus.IN_PROGRESS}
       />,
     );
 

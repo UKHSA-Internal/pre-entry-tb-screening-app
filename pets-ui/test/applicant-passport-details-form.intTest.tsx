@@ -5,7 +5,7 @@ import { Mock } from "vitest";
 import * as api from "@/api/api";
 import ApplicantPassportDetailsPage from "@/pages/applicant-passport-details";
 import ApplicantPassportDetailsForm from "@/sections/applicant-passport-details-form";
-import { TaskStatus } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -191,7 +191,11 @@ describe("ApplicantPassportDetailsForm", () => {
       statusText: "OK",
     });
     const completeState = {
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
       applicant: {
         status: TaskStatus.COMPLETE,
         fullName: "John Smith",
@@ -238,7 +242,11 @@ describe("ApplicantPassportDetailsForm", () => {
 
   it("hides passport number and country of issue fields when status is COMPLETE and shows static summary", () => {
     const completeState = {
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
       applicant: {
         status: TaskStatus.COMPLETE,
         fullName: "John Smith",

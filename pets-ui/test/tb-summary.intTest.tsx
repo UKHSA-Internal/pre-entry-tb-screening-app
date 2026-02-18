@@ -8,7 +8,7 @@ import { petsApi } from "@/api/api";
 import { ApplicantPhotoProvider } from "@/context/applicantPhotoContext";
 import TbSummaryPage from "@/pages/tb-summary";
 import { ReduxTbCertificateType } from "@/types";
-import { TaskStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -51,7 +51,11 @@ const tbState: ReduxTbCertificateType = {
 };
 
 const completeState = {
-  application: { applicationId: "abc-123", dateCreated: "" },
+  application: {
+    applicationId: "abc-123",
+    dateCreated: { year: "2010", month: "1", day: "1" },
+    applicationStatus: ApplicationStatus.IN_PROGRESS,
+  },
   applicant: {
     status: TaskStatus.COMPLETE,
     fullName: "John Smith",
@@ -159,7 +163,11 @@ describe("TBSummaryPage", () => {
 
   describe("TB Summary Data & post request", () => {
     const preloadedState = {
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
       tbCertificate: { ...tbState },
     };
 

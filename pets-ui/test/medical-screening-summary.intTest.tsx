@@ -6,7 +6,7 @@ import { Mock } from "vitest";
 import { petsApi } from "@/api/api";
 import MedicalSummaryPage from "@/pages/medical-screening-summary";
 import MedicalScreeningReview from "@/sections/medical-screening-summary";
-import { TaskStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -43,7 +43,11 @@ const medicalScreeningState = {
   completionDate: { year: "2025", month: "1", day: "1" },
 };
 
-const applicationState = { applicationId: "abc-123", dateCreated: "" };
+const applicationState = {
+  applicationId: "abc-123",
+  dateCreated: { year: "2010", month: "1", day: "1" },
+  applicationStatus: ApplicationStatus.IN_PROGRESS,
+};
 
 const applicantState = {
   status: TaskStatus.COMPLETE,

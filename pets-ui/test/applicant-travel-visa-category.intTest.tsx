@@ -5,7 +5,7 @@ import { Mock } from "vitest";
 import * as api from "@/api/api";
 import TravelVisaCategoryPage from "@/pages/travel-visa-category";
 import ApplicantTravelVisaCategory from "@/sections/applicant-travel-visa-category";
-import { TaskStatus } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -122,7 +122,11 @@ describe("ApplicantTravelForm", () => {
     vi.spyOn(api, "putTravelDetails").mockResolvedValue({ status: 200, statusText: "OK" });
     const user = userEvent.setup();
     const completeState = {
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
       travel: {
         status: TaskStatus.COMPLETE,
         visaCategory: "Work",
@@ -153,7 +157,11 @@ describe("ApplicantTravelForm", () => {
     vi.spyOn(api, "putTravelDetails").mockResolvedValue({ status: 200, statusText: "OK" });
     window.history.pushState({}, "", "/proposed-visa-category?from=/check-travel-information");
     const completeState = {
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
       travel: {
         status: TaskStatus.COMPLETE,
         visaCategory: "Work",

@@ -5,7 +5,7 @@ import { Mock } from "vitest";
 import * as api from "@/api/api";
 import ApplicantPersonalDetailsPage from "@/pages/applicant-personal-details";
 import ApplicantPersonalDetailsForm from "@/sections/applicant-personal-details-form";
-import { TaskStatus } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -193,7 +193,11 @@ describe("ApplicantPersonalDetailsForm", () => {
       statusText: "OK",
     });
     const completeState = {
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
       applicant: {
         status: TaskStatus.COMPLETE,
         fullName: "John Smith",

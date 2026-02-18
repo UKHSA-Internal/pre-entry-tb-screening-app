@@ -6,7 +6,7 @@ import { Mock } from "vitest";
 import { petsApi } from "@/api/api";
 import TravelSummaryPage from "@/pages/travel-summary";
 import TravelReview from "@/sections/applicant-travel-summary";
-import { TaskStatus } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -35,7 +35,11 @@ const travelState = {
   visaCategory: "Government Sponsored",
 };
 
-const applicationState = { applicationId: "abc-123", dateCreated: "" };
+const applicationState = {
+  applicationId: "abc-123",
+  dateCreated: { year: "2010", month: "1", day: "1" },
+  applicationStatus: ApplicationStatus.IN_PROGRESS,
+};
 
 const preloadedState = {
   travel: { ...travelState },
@@ -153,7 +157,11 @@ describe("TravelReview", () => {
         ukMobileNumber: "07123456789",
         ukEmail: "test@test.com",
       },
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
     };
 
     renderWithProviders(<TravelReview />, { preloadedState: completeState });

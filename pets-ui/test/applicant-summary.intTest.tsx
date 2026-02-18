@@ -6,7 +6,7 @@ import { Mock } from "vitest";
 import { petsApi } from "@/api/api";
 import ApplicantSummaryPage from "@/pages/applicant-summary";
 import ApplicantReview from "@/sections/applicant-details-summary";
-import { ImageType, TaskStatus } from "@/utils/enums";
+import { ApplicationStatus, ImageType, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 import uploadFile from "@/utils/uploadFile";
 
@@ -156,7 +156,11 @@ describe("ApplicantReview", () => {
 
   test("calls uploadFile to upload applicant photo if present", async () => {
     const preloadedState = {
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
     };
 
     renderWithProviders(<ApplicantReview />, { preloadedState });

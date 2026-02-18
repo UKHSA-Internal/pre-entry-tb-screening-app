@@ -11,7 +11,7 @@ import {
   ReduxSputumSampleType,
   ReduxSputumType,
 } from "@/types";
-import { PositiveOrNegative, TaskStatus } from "@/utils/enums";
+import { ApplicationStatus, PositiveOrNegative, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -101,7 +101,8 @@ const preloadedStateWithEmptySputum = {
   applicant: defaultApplicantData,
   application: {
     applicationId: "test-app-123",
-    dateCreated: "2024-01-01",
+    dateCreated: { year: "2010", month: "1", day: "1" },
+    applicationStatus: ApplicationStatus.IN_PROGRESS,
   },
   sputum: initialEmptySputumState,
 };
@@ -110,7 +111,8 @@ const preloadedStateWithPartialSputum = {
   applicant: defaultApplicantData,
   application: {
     applicationId: "test-app-123",
-    dateCreated: "2024-01-01",
+    dateCreated: { year: "2010", month: "1", day: "1" },
+    applicationStatus: ApplicationStatus.IN_PROGRESS,
   },
   sputum: {
     status: TaskStatus.IN_PROGRESS,
@@ -134,7 +136,8 @@ const preloadedStateWithSubmittedSample = {
   applicant: defaultApplicantData,
   application: {
     applicationId: "test-app-123",
-    dateCreated: "2024-01-01",
+    dateCreated: { year: "2010", month: "1", day: "1" },
+    applicationStatus: ApplicationStatus.IN_PROGRESS,
   },
   sputum: {
     status: TaskStatus.IN_PROGRESS,
@@ -149,7 +152,8 @@ const preloadedStateWithMixedSamples = {
   applicant: defaultApplicantData,
   application: {
     applicationId: "test-app-123",
-    dateCreated: "2024-01-01",
+    dateCreated: { year: "2010", month: "1", day: "1" },
+    applicationStatus: ApplicationStatus.IN_PROGRESS,
   },
   sputum: {
     status: TaskStatus.IN_PROGRESS,

@@ -6,7 +6,7 @@ import { Mock, vi } from "vitest";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import ApplicantPhotoPage from "@/pages/applicant-photo";
 import ApplicantPhotoForm from "@/sections/applicant-photo-form";
-import { TaskStatus } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 import uploadFile from "@/utils/uploadFile";
 import validateFiles from "@/utils/validateFiles";
@@ -45,7 +45,11 @@ describe("ApplicantPhotoForm", () => {
 
   it("displays page content correctly", () => {
     const preloadedState = {
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
     };
 
     renderWithProviders(
@@ -237,7 +241,11 @@ describe("ApplicantPhotoForm", () => {
         postcode: "",
         applicantPhotoFileName: "",
       },
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
     };
 
     renderWithProviders(<ApplicantPhotoForm />, { preloadedState });
