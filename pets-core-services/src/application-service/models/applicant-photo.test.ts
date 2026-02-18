@@ -23,7 +23,7 @@ const mockApplicant = {
   applicationId: "test-application-id",
   countryOfIssue: CountryCode.ABW,
   passportNumber: "passport-number",
-} as Applicant;
+} as unknown as Applicant;
 const applicationId = "app-123";
 const clinicId = "clinic-456";
 const objectKey = "photos/applicant-1/app-123.jpg";

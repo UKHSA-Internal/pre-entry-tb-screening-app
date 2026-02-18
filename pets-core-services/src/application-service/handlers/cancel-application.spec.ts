@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { describe, expect, test, vi } from "vitest";
 
+import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
 import { Application, IApplication } from "../../shared/models/application";
 import { mockAPIGwEvent } from "../../test/mocks/events";
@@ -13,6 +14,8 @@ const createNewApplication = async () => {
     clinicId: "UK/LHR/00/",
     createdBy: "dev@test.org",
     applicationId: crypto.randomUUID(),
+    passportNumber: "test01",
+    countryOfIssue: CountryCode.GBR,
   });
 };
 

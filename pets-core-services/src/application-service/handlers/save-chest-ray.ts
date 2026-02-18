@@ -6,15 +6,12 @@ import awsClients from "../../shared/clients/aws";
 import { assertEnvExists } from "../../shared/config";
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
-import { ApplicantDbOps } from "../../shared/models/applicant";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { generateImageObjectkey, KeyParameters } from "../helpers/upload";
 import { ChestXRay } from "../models/chest-xray";
-import { ImageType } from "../types/enums";
-import { ApplicationNotFound, InvalidObjectKey, ObjectNotFound } from "../types/errors";
 import { ImageType, YesOrNo } from "../types/enums";
-import { ApplicantNotFound, InvalidObjectKey, ObjectNotFound } from "../types/errors";
+import { ApplicationNotFound, InvalidObjectKey, ObjectNotFound } from "../types/errors";
 import { ChestXRayRequestSchema } from "../types/zod-schema";
 
 export type ChestXRayRequestSchema = z.infer<typeof ChestXRayRequestSchema>;

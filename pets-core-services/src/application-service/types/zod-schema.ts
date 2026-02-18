@@ -18,7 +18,7 @@ import {
 
 extendZodWithOpenApi(z);
 
-export const ApplicationRequestSchema = z.object({
+export const CreateApplicationRequestSchema = z.object({
   passportNumber: z.string().openapi({
     description: "PassportNumber of Applicant",
   }),
@@ -464,6 +464,9 @@ export const ApplicationSchema = z.object({
   }),
   cancellationReason: z.string().optional().openapi({
     description: "Reason for application cancelling",
+  }),
+  cancellationFurtherInfo: z.string().optional().openapi({
+    description: "Additional Information regarding application cancellation",
   }),
   expiryDate: z.date().optional().openapi({
     description: "The date when the certificate expires",

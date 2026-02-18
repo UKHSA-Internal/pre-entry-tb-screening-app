@@ -148,7 +148,6 @@ describe("Tests for Application Model", () => {
       applicationId,
       applicationStatus: ApplicationStatus.cancelled,
       cancellationReason: "not needed",
-      updatedBy: createdBy,
     });
 
     // Assert
@@ -160,7 +159,6 @@ describe("Tests for Application Model", () => {
       applicationStatus: "Cancelled",
       cancellationReason: "not needed",
       dateUpdated: new Date(expectedDateTime),
-      updatedBy: createdBy,
     });
     // Checking toJson() output
     expect(application.toJson()).toMatchObject({
@@ -170,7 +168,6 @@ describe("Tests for Application Model", () => {
       cancellationReason: "not needed",
       expiryDate: undefined,
       dateUpdated: new Date(expectedDateTime).toISOString(),
-      updatedBy: createdBy,
     });
   });
 
@@ -198,7 +195,6 @@ describe("Tests for Application Model", () => {
       applicationId,
       applicationStatus: ApplicationStatus.certificateAvailable,
       expiryDate: new Date("2027-06-06"),
-      updatedBy: createdBy,
     });
 
     // Assert
@@ -210,7 +206,6 @@ describe("Tests for Application Model", () => {
       applicationStatus: "Certificate Available",
       cancellationReason: undefined,
       dateUpdated: new Date(expectedDateTime),
-      updatedBy: createdBy,
     });
     // Checking toJson() output
     expect(application.toJson()).toMatchObject({
@@ -220,7 +215,6 @@ describe("Tests for Application Model", () => {
       cancellationReason: undefined,
       expiryDate: "2027-06-06T00:00:00.000Z",
       dateUpdated: "2025-03-04T00:00:00.000Z",
-      updatedBy: createdBy,
     });
   });
 });

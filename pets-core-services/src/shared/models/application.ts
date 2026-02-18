@@ -24,6 +24,7 @@ export abstract class IApplication {
   createdBy: string;
   applicationStatus: ApplicationStatus;
   cancellationReason?: string;
+  cancellationFurthurInfo?: string;
   expiryDate?: Date;
   dateUpdated?: Date;
   updatedBy?: string;
@@ -37,6 +38,7 @@ export abstract class IApplication {
     this.createdBy = details.createdBy;
     this.applicationStatus = details.applicationStatus;
     this.cancellationReason = details.cancellationReason;
+    this.cancellationFurthurInfo = details.cancellationFurthurInfo;
     this.expiryDate = details.expiryDate;
     this.dateUpdated = details.dateUpdated;
     this.updatedBy = details.updatedBy;
@@ -150,7 +152,7 @@ export class Application extends IApplication {
       const applicationDbItem = data.Item;
 
       if (!applicationDbItem) {
-        logger.info("No appliction found");
+        logger.info("No application found");
         return null;
       }
 
@@ -194,7 +196,7 @@ export class Application extends IApplication {
       const data = await docClient.send(command);
 
       if (!data.Items || (data.Items && data.Items?.length < 1)) {
-        logger.info("No applicantions found");
+        logger.info("No applications found");
         return [];
       }
 
@@ -225,6 +227,7 @@ export class Application extends IApplication {
       dateCreated: this.dateCreated.toISOString(),
       applicationStatus: this.applicationStatus,
       cancellationReason: this.cancellationReason,
+      cancellationFurthurInfo: this.cancellationFurthurInfo,
       expiryDate: this.expiryDate ? this.expiryDate.toISOString() : undefined,
       dateUpdated: this.dateUpdated ? this.dateUpdated?.toISOString() : undefined,
       updatedBy: this.updatedBy,

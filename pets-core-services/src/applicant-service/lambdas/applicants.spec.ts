@@ -104,6 +104,6 @@ describe("Test for Applicant Lambda", () => {
     const response: APIGatewayProxyResult = await handler(event, context);
 
     // Assert
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(201);
   });
 });

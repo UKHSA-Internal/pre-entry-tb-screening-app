@@ -22,18 +22,15 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
     const application = await Application.getByApplicationId(applicationId);
     if (!application) return createHttpResponse(404, { message: "Application does not exist" });
 
-    let applicant = await ApplicantDbOps.findByPassportId(
+    const applicant = await ApplicantDbOps.findByPassportId(
       application.countryOfIssue,
       application.passportNumber,
     );
-    if (!applicant && application.applicationId) {
-      applicant = await ApplicantDbOps.getByApplicationId(application.applicationId);
-    }
     if (!applicant) {
       logger.error("Application does not have an applicant");
       return createHttpResponse(400, { message: "Invalid Application - No Applicant" });
     }
-    if (application.clinicId != event.requestContext.authorizer.clinicId) {
+
     if (
       event.requestContext.authorizer.clinicId !== SUPPORT_CLINIC_ID &&
       application.clinicId != event.requestContext.authorizer.clinicId

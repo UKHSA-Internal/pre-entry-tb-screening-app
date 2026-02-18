@@ -14,6 +14,7 @@ import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { ApplicationStatus, TaskStatus } from "../../shared/types/enum";
 import { context, mockAPIGwEvent } from "../../test/mocks/events";
 import { SaveApplicationEvent } from "../handlers/create-application";
+import { ImageHelper } from "../helpers/image-helper";
 import { APPLICANT_PHOTOS_FOLDER } from "../helpers/upload";
 import { SputumDetailsDbOps } from "../models/sputum-details";
 import {
@@ -99,7 +100,7 @@ describe("Test for Application Lambda", () => {
       path: `/application/${seededApplications[1].applicationId}`,
       httpMethod: "GET",
     };
-
+    vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue("https://presigned.url");
     // Act
     const response: APIGatewayProxyResult = await handler(event, context);
 

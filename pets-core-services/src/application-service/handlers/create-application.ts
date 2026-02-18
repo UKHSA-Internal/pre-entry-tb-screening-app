@@ -5,9 +5,9 @@ import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { ApplicationRequestSchema } from "../types/zod-schema";
+import { CreateApplicationRequestSchema } from "../types/zod-schema";
 
-export type ApplicationRequestSchema = z.infer<typeof ApplicationRequestSchema>;
+export type ApplicationRequestSchema = z.infer<typeof CreateApplicationRequestSchema>;
 export type SaveApplicationEvent = PetsAPIGatewayProxyEvent & {
   parsedBody?: ApplicationRequestSchema;
 };

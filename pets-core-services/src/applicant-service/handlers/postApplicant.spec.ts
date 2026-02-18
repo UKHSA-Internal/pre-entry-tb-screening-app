@@ -25,6 +25,24 @@ const newApplicantDetails: PostApplicantEvent["parsedBody"] = {
   country: CountryCode.ALA,
 };
 
+const existingApplicantDetails: PostApplicantEvent["parsedBody"] = {
+  fullName: "Jane Doe",
+  passportNumber: "ABC1234JANE",
+  countryOfNationality: CountryCode.BRB,
+  countryOfIssue: CountryCode.BRB,
+  issueDate: "2007-05-12",
+  expiryDate: "2012-05-12",
+  dateOfBirth: "2003-05-12",
+  sex: AllowedSex.Male,
+  applicantHomeAddress1: "23 Long street",
+  applicantHomeAddress2: "River Valley",
+  applicantHomeAddress3: "Southumberland",
+  townOrCity: "Mumbai",
+  provinceOrState: "Mumbai",
+  postcode: "1234",
+  country: CountryCode.BRB,
+};
+
 describe("Test for Posting Applicant into DB", () => {
   test("Saving a new Applicant Successfully", async () => {
     // Arrange
@@ -38,7 +56,7 @@ describe("Test for Posting Applicant into DB", () => {
     const response = await postApplicantHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(201);
     expect(JSON.parse(response.body)).toMatchObject(newApplicantDetails);
   });
 
@@ -61,7 +79,7 @@ describe("Test for Posting Applicant into DB", () => {
     const response = await postApplicantHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(201);
     expect(JSON.parse(response.body)).toMatchObject(newApplicantDetails);
   });
 
@@ -134,7 +152,7 @@ describe("Test for Posting Applicant into DB", () => {
     });
   });
 
-  test("Existing passport number and country throws a 400 error", async () => {
+  test("Existing passport number and country  returns back applicant details with a 200 ", async () => {
     // Arrange
     const existingApplicant = seededApplicants[0];
     const parsedBody: PostApplicantEvent["parsedBody"] = {
@@ -152,13 +170,11 @@ describe("Test for Posting Applicant into DB", () => {
     const response = await postApplicantHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "Applicant Details already saved",
-    });
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toMatchObject(existingApplicantDetails);
   });
 
-  test("Duplicate post throws a 400 error", async () => {
+  test("For an Existing Applicant- Return back the applicant details", async () => {
     // Arrange
     const parsedBody: PostApplicantEvent["parsedBody"] = {
       ...newApplicantDetails,
@@ -175,10 +191,8 @@ describe("Test for Posting Applicant into DB", () => {
     const response = await postApplicantHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "Applicant Details already saved",
-    });
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toMatchObject(existingApplicantDetails);
   });
 
   test("Missing required Headers returns a 500 response", async () => {

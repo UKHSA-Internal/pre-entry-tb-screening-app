@@ -3,7 +3,7 @@ import { describe, expect, test, vi } from "vitest";
 import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
 import { logger } from "../../shared/logger";
-import { ApplicantDbOps } from "../../shared/models/applicant";
+import { Applicant } from "../../shared/models/applicant";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicants } from "../fixtures/applicants";
 import { Header, SearchApplicantEvent, searchApplicantHandler } from "./searchApplicant";
@@ -11,7 +11,7 @@ import { Header, SearchApplicantEvent, searchApplicantHandler } from "./searchAp
 describe("Test for Getting Applicant", () => {
   test("Fetching an Applicant Successfully", async () => {
     // Arrange
-    const existingApplicant = seededApplicants[0]; // Already preloaded into DB,
+    const existingApplicant = new Applicant(seededApplicants[0]); // Already preloaded into DB,
 
     const event: SearchApplicantEvent = {
       ...mockAPIGwEvent,
@@ -33,15 +33,25 @@ describe("Test for Getting Applicant", () => {
 
     // Assert
     expect(response.statusCode).toBe(200);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { createdBy, ...expectedJsonResponse } = existingApplicant;
 
-    expect(JSON.parse(response.body)).toMatchObject([expectedJsonResponse]);
+    const expectedJsonResponse = {
+      ...existingApplicant.toJson(),
+      dateCreated: expect.any(String),
+      applications: [
+        {
+          applicationId: "generated-app-id-2",
+          dateCreated: expect.any(String),
+          applicationStatus: "In Progress",
+        },
+      ],
+    };
+
+    expect(JSON.parse(response.body)).toMatchObject(expectedJsonResponse);
   });
 
   test("Fetching an Applicant with different clinicId", async () => {
     // Arrange
-    const existingApplicant = seededApplicants[1]; // Already preloaded into DB,
+    const existingApplicant = new Applicant(seededApplicants[0]); // Already preloaded into DB,
     const infoLoggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
 
     const event: SearchApplicantEvent = {
@@ -63,13 +73,24 @@ describe("Test for Getting Applicant", () => {
     const response = await searchApplicantHandler(event);
 
     // Assert
+    expect(response.statusCode).toBe(200);
+
     expect(infoLoggerMock).toHaveBeenNthCalledWith(
       6,
       "Getting an application for the support clinic",
     );
-    expect(response.statusCode).toBe(200);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { createdBy, ...expectedJsonResponse } = existingApplicant;
+    const expectedJsonResponse = {
+      ...existingApplicant.toJson(),
+      dateCreated: expect.any(String),
+      applications: [
+        {
+          applicationId: "generated-app-id-2",
+          dateCreated: expect.any(String),
+          applicationStatus: "In Progress",
+        },
+      ],
+    };
+    expect(JSON.parse(response.body)).toMatchObject(expectedJsonResponse);
   });
 
   test("Fetching an Applicant that does not have an application", async () => {

@@ -1,5 +1,4 @@
 import {
-  GetCommand,
   PutCommand,
   PutCommandInput,
   QueryCommand,
@@ -15,7 +14,6 @@ import { CountryCode } from "../country";
 import { getDateWithoutTime } from "../date";
 import { logger } from "../logger";
 import { TaskStatus } from "../types/enum";
-import { Application } from "./application";
 
 type AllApplicantTypes = AllowedSex | CountryCode | Date | TaskStatus | string;
 
@@ -69,6 +67,8 @@ export abstract class ApplicantBase {
     delete json.updatedBy;
     delete json.pk;
     delete json.sk;
+    delete json.passportId;
+    delete json.status;
 
     return json;
   }
@@ -92,7 +92,6 @@ export type IApplicant = {
   provinceOrState: string;
   postcode: string;
   country: CountryCode;
-  applicationId: string;
 
   //audit
   dateCreated: Date;
@@ -123,12 +122,13 @@ export type IApplicantUpdate = {
 
 export type NewApplicant = Omit<
   IApplicant,
-  "dateCreated" | "issueDate" | "expiryDate" | "dateOfBirth" | "status" | "applicationId"
+  "dateCreated" | "issueDate" | "expiryDate" | "dateOfBirth" | "status"
 > & {
   issueDate: Date | string;
   expiryDate: Date | string;
   dateOfBirth: Date | string;
 };
+
 export type UpdatedApplicant = Omit<
   IApplicantUpdate,
   "dateUpdated" | "issueDate" | "expiryDate" | "dateOfBirth"
@@ -139,7 +139,6 @@ export type UpdatedApplicant = Omit<
 };
 
 export class Applicant extends ApplicantBase {
-  applicationId: string;
   passportNumber: string;
   countryOfIssue: CountryCode;
   dateCreated: Date;
@@ -158,7 +157,6 @@ export class Applicant extends ApplicantBase {
     this.createdBy = details.createdBy;
     this.dateCreated = new Date(details.dateCreated);
     this.status = details.status;
-    this.applicationId = details.applicationId;
   }
 }
 
@@ -200,7 +198,6 @@ export class ApplicantDbOps {
 
       const updatedDetails: IApplicant = {
         ...details,
-        applicationId: "",
         dateCreated: new Date(),
         issueDate: new Date(details.issueDate),
         expiryDate: new Date(details.expiryDate),
@@ -308,44 +305,44 @@ export class ApplicantDbOps {
     }
   }
 
-  static async getByApplicationId(applicationId: string): Promise<Applicant | null> {
-    try {
-      logger.info("fetching applicant details");
+  // static async getByApplicationId(applicationId: string): Promise<Applicant | null> {
+  //   try {
+  //     logger.info("fetching applicant details");
 
-      const params = {
-        TableName: this.getTableName(),
-        Key: {
-          pk: Application.getPk(applicationId),
-          sk: this.sk,
-        },
-      };
+  //     const params = {
+  //       TableName: this.getTableName(),
+  //       Key: {
+  //         pk: Application.getPk(applicationId),
+  //         sk: this.sk,
+  //       },
+  //     };
 
-      const command = new GetCommand(params);
-      const data = await docClient.send(command);
+  //     const command = new GetCommand(params);
+  //     const data = await docClient.send(command);
 
-      if (!data.Item) {
-        logger.info("No applicant details found");
-        return null;
-      }
+  //     if (!data.Item) {
+  //       logger.info("No applicant details found");
+  //       return null;
+  //     }
 
-      logger.info("Applicant Details fetched successfully");
+  //     logger.info("Applicant Details fetched successfully");
 
-      const dbItem = data.Item as ReturnType<(typeof ApplicantDbOps)["todbItem"]>;
+  //     const dbItem = data.Item as ReturnType<(typeof ApplicantDbOps)["todbItem"]>;
 
-      const applicantInformation = new Applicant({
-        ...dbItem,
-        townOrCity: dbItem.townOrCity as string,
-        dateCreated: new Date(dbItem.dateCreated),
-        issueDate: new Date(dbItem.issueDate),
-        expiryDate: new Date(dbItem.expiryDate),
-        dateOfBirth: new Date(dbItem.dateOfBirth),
-      });
-      return applicantInformation;
-    } catch (error) {
-      logger.error(error, "Error retrieving applicant details");
-      throw error;
-    }
-  }
+  //     const applicantInformation = new Applicant({
+  //       ...dbItem,
+  //       townOrCity: dbItem.townOrCity as string,
+  //       dateCreated: new Date(dbItem.dateCreated),
+  //       issueDate: new Date(dbItem.issueDate),
+  //       expiryDate: new Date(dbItem.expiryDate),
+  //       dateOfBirth: new Date(dbItem.dateOfBirth),
+  //     });
+  //     return applicantInformation;
+  //   } catch (error) {
+  //     logger.error(error, "Error retrieving applicant details");
+  //     throw error;
+  //   }
+  // }
 
   static async findByPassportId(
     countryOfIssue: CountryCode,
@@ -378,7 +375,6 @@ export class ApplicantDbOps {
 
       const applicantInformation = new Applicant({
         ...dbItem,
-        applicationId: dbItem.applicationId,
         townOrCity: dbItem.townOrCity as string,
         dateCreated: new Date(dbItem.dateCreated),
         issueDate: new Date(dbItem.issueDate),
