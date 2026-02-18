@@ -180,8 +180,7 @@ const ProgressTracker = () => {
         <div className="progress-tracker-header-content">
           <ApplicantDataHeader
             applicantData={applicantData}
-            tbCertificateStatus={tbCertificateData.status}
-            tbCertificateIsIssued={tbCertificateData.isIssued}
+            applicationStatus={applicationData.applicationStatus}
           />
         </div>
         {applicantPhotoContext?.applicantPhotoDataUrl && (

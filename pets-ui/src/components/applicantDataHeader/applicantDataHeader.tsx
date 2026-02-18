@@ -1,31 +1,14 @@
 import React from "react";
 
 import { ReduxApplicantDetailsType } from "@/types";
-import { TaskStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus } from "@/utils/enums";
 
 interface ApplicantDataHeaderProps {
   applicantData: ReduxApplicantDetailsType;
-  tbCertificateStatus: TaskStatus;
-  tbCertificateIsIssued: YesOrNo;
+  applicationStatus: ApplicationStatus;
 }
 
 export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderProps>) {
-  let overallTbScreeningStatus: TaskStatus;
-
-  if (
-    props.tbCertificateStatus === TaskStatus.COMPLETE &&
-    props.tbCertificateIsIssued === YesOrNo.YES
-  ) {
-    overallTbScreeningStatus = TaskStatus.CERTIFICATE_ISSUED;
-  } else if (
-    props.tbCertificateStatus === TaskStatus.COMPLETE &&
-    props.tbCertificateIsIssued === YesOrNo.NO
-  ) {
-    overallTbScreeningStatus = TaskStatus.CERTIFICATE_NOT_ISSUED;
-  } else {
-    overallTbScreeningStatus = TaskStatus.IN_PROGRESS;
-  }
-
   const certificateNotIssuedStyle: React.CSSProperties = {
     maxWidth: "none",
     whiteSpace: "nowrap",
@@ -54,17 +37,23 @@ export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderP
       <div className="govuk-summary-list__row">
         <dt className="govuk-summary-list__key">TB screening</dt>
         <dd className="govuk-summary-list__value">
-          {overallTbScreeningStatus === TaskStatus.CERTIFICATE_ISSUED && (
+          {props.applicationStatus === ApplicationStatus.CERTIFICATE_AVAILABLE && (
             <strong className="govuk-tag govuk-tag--green">Certificate issued</strong>
           )}
-          {overallTbScreeningStatus === TaskStatus.CERTIFICATE_NOT_ISSUED && (
+          {props.applicationStatus === ApplicationStatus.CERTIFICATE_NOT_ISSUED && (
             <strong className="govuk-tag govuk-tag--red" style={certificateNotIssuedStyle}>
               Certificate not issued
             </strong>
           )}
-          {overallTbScreeningStatus === TaskStatus.IN_PROGRESS && (
-            <strong className="govuk-tag govuk-tag--yellow">In progress</strong>
+          {props.applicationStatus === ApplicationStatus.CANCELLED && (
+            <strong className="govuk-tag govuk-tag--orange" style={certificateNotIssuedStyle}>
+              Screening cancelled
+            </strong>
           )}
+          {props.applicationStatus === ApplicationStatus.IN_PROGRESS ||
+            (props.applicationStatus === ApplicationStatus.NULL && (
+              <strong className="govuk-tag govuk-tag--yellow">In progress</strong>
+            ))}
         </dd>
       </div>
     </dl>
