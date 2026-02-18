@@ -15,20 +15,25 @@ export class ImageHelper {
       const listCommand = new ListObjectsV2Command({
         Bucket: bucket,
         Prefix: key,
-        MaxKeys: 1,
       });
 
       const listResult = await s3Client.send(listCommand);
-      const object = listResult.Contents?.[0];
 
-      if (!object?.Key) {
+      if (!listResult.Contents || listResult.Contents.length === 0) {
         logger.error("No image found under the specified prefix.");
         return null;
       }
+      // Sort by LastModified (descending)
+
+      const contents = listResult.Contents ?? [];
+
+      const mostRecentObject = [...contents].sort(
+        (a, b) => (b.LastModified?.getTime() ?? 0) - (a.LastModified?.getTime() ?? 0),
+      )[0];
 
       const getCommand = new GetObjectCommand({
         Bucket: bucket,
-        Key: object.Key,
+        Key: mostRecentObject.Key,
       });
 
       const presignedUrl: string = await getSignedUrl(s3Client, getCommand, {
