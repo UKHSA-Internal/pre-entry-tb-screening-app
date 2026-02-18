@@ -13,7 +13,6 @@ interface LabelProps {
   openInNewTab?: boolean;
 }
 
-// excludes internal page navigations (e.g. error summary, skip to main content)
 const LinkLabel = ({
   className = "govuk-link govuk-link--no-visited-state",
   ...props
