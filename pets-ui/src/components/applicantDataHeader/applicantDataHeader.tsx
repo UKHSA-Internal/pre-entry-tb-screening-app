@@ -1,5 +1,3 @@
-import React from "react";
-
 import { ReduxApplicantDetailsType } from "@/types";
 import { ApplicationStatus } from "@/utils/enums";
 import { formatDateForDisplay } from "@/utils/helpers";
@@ -10,11 +8,6 @@ interface ApplicantDataHeaderProps {
 }
 
 export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderProps>) {
-  const certificateNotIssuedStyle: React.CSSProperties = {
-    maxWidth: "none",
-    whiteSpace: "nowrap",
-  };
-
   return (
     <table className="govuk-table">
       <tbody className="govuk-table__body">
@@ -51,12 +44,12 @@ export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderP
               <strong className="govuk-tag govuk-tag--green">Certificate issued</strong>
             )}
             {props.applicationStatus === ApplicationStatus.CERTIFICATE_NOT_ISSUED && (
-              <strong className="govuk-tag govuk-tag--red" style={certificateNotIssuedStyle}>
+              <strong className="govuk-tag govuk-tag--red progress-tracker-task-nowrap">
                 Certificate not issued
               </strong>
             )}
             {props.applicationStatus === ApplicationStatus.CANCELLED && (
-              <strong className="govuk-tag govuk-tag--orange" style={certificateNotIssuedStyle}>
+              <strong className="govuk-tag govuk-tag--orange progress-tracker-task-nowrap">
                 Screening cancelled
               </strong>
             )}

@@ -24,7 +24,8 @@ import { formatDateForDisplay } from "@/utils/helpers";
 
 interface TaskProps {
   description: string;
-  status: TaskStatus;
+  taskStatus: TaskStatus;
+  applicationStatus: ApplicationStatus;
   linkWhenIncomplete: string;
   linkWhenComplete: string;
   prerequisiteTaskStatuses: TaskStatus[];
@@ -45,17 +46,7 @@ const Task = (props: Readonly<TaskProps>) => {
   return (
     <li className="govuk-task-list__item govuk-task-list__item--with-link">
       <div className="govuk-task-list__name-and-hint">
-        {allPrerequisitesComplete &&
-          (props.status == TaskStatus.NOT_YET_STARTED ||
-            props.status == TaskStatus.IN_PROGRESS) && (
-            <LinkLabel
-              className="govuk-link govuk-task-list__link"
-              to={props.linkWhenIncomplete}
-              title={props.description}
-              externalLink={false}
-            />
-          )}
-        {props.status == TaskStatus.COMPLETE && (
+        {props.taskStatus == TaskStatus.COMPLETE && (
           <LinkLabel
             className="govuk-link govuk-task-list__link"
             to={props.linkWhenComplete}
@@ -63,34 +54,63 @@ const Task = (props: Readonly<TaskProps>) => {
             externalLink={false}
           />
         )}
-        {(!allPrerequisitesComplete || props.status == TaskStatus.NOT_REQUIRED) &&
-          props.status !== TaskStatus.COMPLETE && (
-            <p className="govuk-body task-description-static">{props.description}</p>
+        {props.applicationStatus != ApplicationStatus.CANCELLED &&
+          allPrerequisitesComplete &&
+          (props.taskStatus == TaskStatus.NOT_YET_STARTED ||
+            props.taskStatus == TaskStatus.IN_PROGRESS) && (
+            <LinkLabel
+              className="govuk-link govuk-task-list__link"
+              to={props.linkWhenIncomplete}
+              title={props.description}
+              externalLink={false}
+            />
           )}
+        {((props.applicationStatus != ApplicationStatus.CANCELLED &&
+          props.taskStatus != TaskStatus.COMPLETE &&
+          (!allPrerequisitesComplete || props.taskStatus == TaskStatus.NOT_REQUIRED)) ||
+          (props.applicationStatus == ApplicationStatus.CANCELLED &&
+            props.taskStatus != TaskStatus.COMPLETE)) && (
+          <p className="govuk-body task-description-static">{props.description}</p>
+        )}
       </div>
-      {allPrerequisitesComplete && props.status == TaskStatus.NOT_YET_STARTED && (
-        <div className="govuk-task-list__status">
-          <strong className="govuk-tag govuk-tag--blue">Not yet started</strong>
-        </div>
-      )}
-      {!allPrerequisitesComplete && props.status == TaskStatus.NOT_YET_STARTED && (
-        <div className="govuk-task-list__status">
-          <strong className="govuk-tag govuk-tag--grey">Cannot start yet</strong>
-        </div>
-      )}
-      {props.status == TaskStatus.IN_PROGRESS && (
-        <div className="govuk-task-list__status">
-          <strong className="govuk-tag govuk-tag--yellow">In progress</strong>
-        </div>
-      )}
-      {props.status == TaskStatus.COMPLETE && (
+
+      {props.applicationStatus != ApplicationStatus.CANCELLED &&
+        allPrerequisitesComplete &&
+        props.taskStatus == TaskStatus.NOT_YET_STARTED && (
+          <div className="govuk-task-list__status">
+            <strong className="govuk-tag govuk-tag--blue">Not yet started</strong>
+          </div>
+        )}
+      {props.applicationStatus != ApplicationStatus.CANCELLED &&
+        !allPrerequisitesComplete &&
+        props.taskStatus == TaskStatus.NOT_YET_STARTED && (
+          <div className="govuk-task-list__status">
+            <strong className="govuk-tag govuk-tag--grey">Cannot start yet</strong>
+          </div>
+        )}
+      {props.applicationStatus != ApplicationStatus.CANCELLED &&
+        props.taskStatus == TaskStatus.IN_PROGRESS && (
+          <div className="govuk-task-list__status">
+            <strong className="govuk-tag govuk-tag--yellow">In progress</strong>
+          </div>
+        )}
+      {props.taskStatus == TaskStatus.COMPLETE && (
         <div className="govuk-task-list__status">{props.statusOverride ?? <>Completed</>}</div>
       )}
-      {props.status == TaskStatus.NOT_REQUIRED && (
+      {props.taskStatus == TaskStatus.NOT_REQUIRED && (
         <div className="govuk-task-list__status">
           <strong className="govuk-tag govuk-tag--grey">Not required</strong>
         </div>
       )}
+      {props.applicationStatus == ApplicationStatus.CANCELLED &&
+        props.taskStatus != TaskStatus.COMPLETE &&
+        props.taskStatus != TaskStatus.NOT_REQUIRED && (
+          <div className="govuk-task-list__status">
+            <strong className="govuk-tag govuk-tag--orange progress-tracker-task-nowrap">
+              Screening cancelled
+            </strong>
+          </div>
+        )}
     </li>
   );
 };
@@ -144,7 +164,7 @@ const ProgressTracker = () => {
       );
     } else {
       tbCertificateStatusOverride = (
-        <strong className="govuk-tag govuk-tag--red progress-tracker-certificate-not-issued">
+        <strong className="govuk-tag govuk-tag--red progress-tracker-task-nowrap">
           Certificate not issued
         </strong>
       );
@@ -205,14 +225,16 @@ const ProgressTracker = () => {
       <ul className="govuk-task-list">
         <Task
           description="Visa applicant details"
-          status={applicantData.status}
+          taskStatus={applicantData.status}
+          applicationStatus={applicationData.applicationStatus}
           linkWhenIncomplete="/visa-applicant-personal-information"
           linkWhenComplete="/check-visa-applicant-details"
           prerequisiteTaskStatuses={[]}
         />
         <Task
           description="UK travel information"
-          status={travelData.status}
+          taskStatus={travelData.status}
+          applicationStatus={applicationData.applicationStatus}
           linkWhenIncomplete="/proposed-visa-category"
           linkWhenComplete="/check-travel-information"
           prerequisiteTaskStatuses={[applicantData.status]}
@@ -223,14 +245,16 @@ const ProgressTracker = () => {
       <ul className="govuk-task-list">
         <Task
           description="Medical history and TB symptoms"
-          status={medicalScreeningData.status}
+          taskStatus={medicalScreeningData.status}
+          applicationStatus={applicationData.applicationStatus}
           linkWhenIncomplete="/record-medical-history-tb-symptoms"
           linkWhenComplete="/check-medical-history-and-tb-symptoms"
           prerequisiteTaskStatuses={[applicantData.status, travelData.status]}
         />
         <Task
           description="Upload chest X-ray images"
-          status={chestXrayStatus}
+          taskStatus={chestXrayStatus}
+          applicationStatus={applicationData.applicationStatus}
           linkWhenIncomplete="/upload-chest-x-ray-images"
           linkWhenComplete="/check-chest-x-ray-images"
           prerequisiteTaskStatuses={[
@@ -241,7 +265,8 @@ const ProgressTracker = () => {
         />
         <Task
           description="Radiological outcome"
-          status={radiologicalOutcomeStatus}
+          taskStatus={radiologicalOutcomeStatus}
+          applicationStatus={applicationData.applicationStatus}
           linkWhenIncomplete="/chest-x-ray-results"
           linkWhenComplete="/check-chest-x-ray-results-findings"
           prerequisiteTaskStatuses={[
@@ -253,7 +278,8 @@ const ProgressTracker = () => {
         />
         <Task
           description="Make a sputum decision"
-          status={sputumDecisionData.status}
+          taskStatus={sputumDecisionData.status}
+          applicationStatus={applicationData.applicationStatus}
           linkWhenIncomplete="/is-sputum-collection-required"
           linkWhenComplete="/check-sputum-decision-information"
           prerequisiteTaskStatuses={[
@@ -266,7 +292,8 @@ const ProgressTracker = () => {
         />
         <Task
           description="Sputum collection and results"
-          status={sputumCollectionStatus}
+          taskStatus={sputumCollectionStatus}
+          applicationStatus={applicationData.applicationStatus}
           linkWhenIncomplete={sputumLink}
           linkWhenComplete={sputumLink}
           prerequisiteTaskStatuses={[
@@ -284,7 +311,8 @@ const ProgressTracker = () => {
       <ul className="govuk-task-list">
         <Task
           description="TB certificate outcome"
-          status={tbCertificateData.status}
+          taskStatus={tbCertificateData.status}
+          applicationStatus={applicationData.applicationStatus}
           linkWhenIncomplete="/will-you-issue-tb-clearance-certificate"
           linkWhenComplete="/tb-screening-complete"
           prerequisiteTaskStatuses={[
