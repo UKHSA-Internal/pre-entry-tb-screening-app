@@ -47,8 +47,10 @@ type ApplicationIdAndDateCreatedType = {
   dateCreated: string;
 };
 
-type ReduxApplicationDetailsType = ApplicationIdAndDateCreatedType & {
+type ReduxApplicationDetailsType = {
   applicationStatus: ApplicationStatus;
+  applicationId: string;
+  dateCreated: DateType;
   cancellationReason?: string;
   cancellationFurtherInfo?: string;
 };

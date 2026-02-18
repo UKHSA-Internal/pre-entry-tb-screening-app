@@ -20,6 +20,7 @@ import {
   selectTravel,
 } from "@/redux/store";
 import { ApplicationStatus, ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
+import { formatDateForDisplay } from "@/utils/helpers";
 
 interface TaskProps {
   description: string;
@@ -155,7 +156,7 @@ const ProgressTracker = () => {
       {isApplicationCancelled && (
         <NotificationBanner
           bannerTitle="Important"
-          bannerHeading={`Start date: ${applicationData.dateCreated}`}
+          bannerHeading={`Start date: ${formatDateForDisplay(applicationData.dateCreated)}`}
         >
           <p className="govuk-body">
             This screening was cancelled because {applicationData.cancellationReason}

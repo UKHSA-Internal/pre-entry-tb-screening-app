@@ -33,7 +33,15 @@ const ApplicantReview = () => {
     try {
       const applicationRes = await createNewApplication();
       dispatch(setApplicationId(applicationRes.data.applicationId));
-      dispatch(setDateCreated(applicationRes.data.dateCreated));
+      dispatch(
+        setDateCreated({
+          year: applicationRes.data.dateCreated.split("-")[0],
+          month: applicationRes.data.dateCreated.split("-")[1],
+          day: applicationRes.data.dateCreated.includes("T")
+            ? applicationRes.data.dateCreated.split("-")[2].split("T")[0]
+            : applicationRes.data.dateCreated.split("-")[2],
+        }),
+      );
 
       const dateOfBirthStr = `${applicantData.dateOfBirth.year}-${standardiseDayOrMonth(applicantData.dateOfBirth.month)}-${standardiseDayOrMonth(applicantData.dateOfBirth.day)}`;
       const issueDateStr = `${applicantData.passportIssueDate.year}-${standardiseDayOrMonth(applicantData.passportIssueDate.month)}-${standardiseDayOrMonth(applicantData.passportIssueDate.day)}`;
