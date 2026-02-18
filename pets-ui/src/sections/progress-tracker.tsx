@@ -9,6 +9,7 @@ import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { useAppSelector } from "@/redux/hooks";
 import {
   selectApplicant,
+  selectApplication,
   selectChestXray,
   selectMedicalScreening,
   selectRadiologicalOutcome,
@@ -17,7 +18,7 @@ import {
   selectTbCertificate,
   selectTravel,
 } from "@/redux/store";
-import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 
 interface TaskProps {
   description: string;
@@ -94,6 +95,7 @@ const Task = (props: Readonly<TaskProps>) => {
 
 const ProgressTracker = () => {
   const applicantData = useAppSelector(selectApplicant);
+  const applicationData = useAppSelector(selectApplication);
   const travelData = useAppSelector(selectTravel);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const chestXrayData = useAppSelector(selectChestXray);
@@ -103,6 +105,8 @@ const ProgressTracker = () => {
   const tbCertificateData = useAppSelector(selectTbCertificate);
   const applicantPhotoContext = useApplicantPhoto();
   const navigate = useNavigate();
+
+  const isApplicationCancelled = applicationData.applicationStatus == ApplicationStatus.CANCELLED;
 
   const allSputumSamplesSubmitted =
     sputumData.sample1.collection.submittedToDatabase &&
@@ -281,26 +285,27 @@ const ProgressTracker = () => {
         />
       </p>
 
-      {(tbCertificateData.status == TaskStatus.NOT_YET_STARTED ||
-        tbCertificateData.status == TaskStatus.IN_PROGRESS) && (
-        <>
-          <Heading
-            title="Cancel screening"
-            level={2}
-            size="s"
-            additionalClasses="progress-tracker-lower-headings"
-          />
-          <Button
-            id="cancel-screening"
-            class={ButtonClass.WARNING}
-            text="Cancel this screening"
-            handleClick={() => {
-              navigate("/why-are-you-cancelling-this-screening");
-            }}
-            style={{ marginTop: 0 }}
-          />
-        </>
-      )}
+      {!isApplicationCancelled &&
+        (tbCertificateData.status == TaskStatus.NOT_YET_STARTED ||
+          tbCertificateData.status == TaskStatus.IN_PROGRESS) && (
+          <>
+            <Heading
+              title="Cancel screening"
+              level={2}
+              size="s"
+              additionalClasses="progress-tracker-lower-headings"
+            />
+            <Button
+              id="cancel-screening"
+              class={ButtonClass.WARNING}
+              text="Cancel this screening"
+              handleClick={() => {
+                navigate("/why-are-you-cancelling-this-screening");
+              }}
+              style={{ marginTop: 0 }}
+            />
+          </>
+        )}
 
       <Heading
         title="Start a new search"
