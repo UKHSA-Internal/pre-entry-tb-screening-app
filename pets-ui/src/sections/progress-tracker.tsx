@@ -5,6 +5,7 @@ import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataH
 import Button from "@/components/button/button";
 import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
+import NotificationBanner from "@/components/notificationBanner/notificationBanner";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { useAppSelector } from "@/redux/hooks";
 import {
@@ -151,6 +152,29 @@ const ProgressTracker = () => {
 
   return (
     <div>
+      {isApplicationCancelled && (
+        <NotificationBanner
+          bannerTitle="Important"
+          bannerHeading={`Start date: ${applicationData.dateCreated}`}
+        >
+          <p className="govuk-body">
+            This screening was cancelled because {applicationData.cancellationReason}
+          </p>
+          {applicationData.cancellationFurtherInfo && (
+            <p className="govuk-body">
+              <strong>Further information</strong>
+              <br />
+              {applicationData.cancellationFurtherInfo}
+            </p>
+          )}
+          <LinkLabel
+            title="Return to screening history for this visa applicant"
+            to="/screening-history"
+            externalLink={false}
+          />
+        </NotificationBanner>
+      )}
+
       <div className="progress-tracker-header">
         <div className="progress-tracker-header-content">
           <ApplicantDataHeader
