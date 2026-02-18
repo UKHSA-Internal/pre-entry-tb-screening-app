@@ -45,14 +45,14 @@ describe("applicantDataHeader", () => {
       />,
     );
 
-    expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
-    expect(screen.getAllByRole("term")[1]).toHaveTextContent("Date of birth");
-    expect(screen.getAllByRole("term")[2]).toHaveTextContent("Passport number");
-    expect(screen.getAllByRole("term")[3]).toHaveTextContent("TB screening");
+    expect(screen.getAllByRole("rowheader")[0]).toHaveTextContent("Name");
+    expect(screen.getAllByRole("rowheader")[1]).toHaveTextContent("Date of birth");
+    expect(screen.getAllByRole("rowheader")[2]).toHaveTextContent("Passport number");
+    expect(screen.getAllByRole("rowheader")[3]).toHaveTextContent("TB screening");
 
-    expect(screen.getAllByRole("definition")[0]).toHaveTextContent("full name");
-    expect(screen.getAllByRole("definition")[1]).toHaveTextContent("01/02/1980");
-    expect(screen.getAllByRole("definition")[2]).toHaveTextContent("12345");
-    expect(screen.getAllByRole("definition")[3]).toHaveTextContent("In progress");
+    expect(screen.getAllByRole("cell")[0]).toHaveTextContent("full name");
+    expect(screen.getAllByRole("cell")[1]).toHaveTextContent("1 February 1980");
+    expect(screen.getAllByRole("cell")[2]).toHaveTextContent("12345");
+    expect(screen.getAllByRole("cell")[3]).toHaveTextContent("In progress");
   });
 });

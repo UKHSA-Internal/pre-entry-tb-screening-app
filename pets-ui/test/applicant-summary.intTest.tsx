@@ -84,7 +84,7 @@ describe("ApplicantReview", () => {
 
     renderWithProviders(<ApplicantReview />, { preloadedState });
 
-    mock.onPost("/application").reply(200, { applicationId: "abc-123" });
+    mock.onPost("/application").reply(200, { applicationId: "abc-123", dateCreated: "2010-01-01" });
     mock.onPost("/applicant/register/abc-123").reply(200);
 
     expect(screen.getAllByRole("term")[0]).toHaveTextContent("Full name");
@@ -143,7 +143,7 @@ describe("ApplicantReview", () => {
   test("user is navigated to error page when second api call is unsuccessful", async () => {
     renderWithProviders(<ApplicantReview />);
 
-    mock.onPost("/application").reply(200, { applicationId: "abc-123" });
+    mock.onPost("/application").reply(200, { applicationId: "abc-123", dateCreated: "2010-01-01" });
     mock.onPost("/applicant/register/abc-123").reply(500);
 
     await user.click(screen.getByRole("button"));

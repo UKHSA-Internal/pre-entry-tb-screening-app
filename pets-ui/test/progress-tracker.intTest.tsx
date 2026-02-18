@@ -290,12 +290,12 @@ test("Progress tracker page displays incomplete application sections correctly &
 
   expect(screen.getAllByText("Complete UK pre-entry health screening")).toHaveLength(2);
 
-  expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
-  expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Reginald Backwaters");
-  expect(screen.getAllByRole("term")[1]).toHaveTextContent("Date of birth");
-  expect(screen.getAllByRole("definition")[1]).toHaveTextContent("31/12/1970");
-  expect(screen.getAllByRole("term")[2]).toHaveTextContent("Passport number");
-  expect(screen.getAllByRole("definition")[2]).toHaveTextContent("12345");
+  expect(screen.getAllByRole("rowheader")[0]).toHaveTextContent("Name");
+  expect(screen.getAllByRole("cell")[0]).toHaveTextContent("Reginald Backwaters");
+  expect(screen.getAllByRole("rowheader")[1]).toHaveTextContent("Date of birth");
+  expect(screen.getAllByRole("cell")[1]).toHaveTextContent("31 December 1970");
+  expect(screen.getAllByRole("rowheader")[2]).toHaveTextContent("Passport number");
+  expect(screen.getAllByRole("cell")[2]).toHaveTextContent("12345");
 
   const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
   expect(applicantDetailsLink).toHaveAttribute("href", "/visa-applicant-personal-information");
@@ -391,12 +391,12 @@ test("Progress tracker page displays complete application sections correctly, li
 
   expect(screen.getAllByText("Complete UK pre-entry health screening")).toHaveLength(2);
 
-  expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
-  expect(screen.getAllByRole("definition")[0]).toHaveTextContent("Chelsea Cummerbund");
-  expect(screen.getAllByRole("term")[1]).toHaveTextContent("Date of birth");
-  expect(screen.getAllByRole("definition")[1]).toHaveTextContent("30/11/1971");
-  expect(screen.getAllByRole("term")[2]).toHaveTextContent("Passport number");
-  expect(screen.getAllByRole("definition")[2]).toHaveTextContent("54321");
+  expect(screen.getAllByRole("rowheader")[0]).toHaveTextContent("Name");
+  expect(screen.getAllByRole("cell")[0]).toHaveTextContent("Chelsea Cummerbund");
+  expect(screen.getAllByRole("rowheader")[1]).toHaveTextContent("Date of birth");
+  expect(screen.getAllByRole("cell")[1]).toHaveTextContent("30 November 1971");
+  expect(screen.getAllByRole("rowheader")[2]).toHaveTextContent("Passport number");
+  expect(screen.getAllByRole("cell")[2]).toHaveTextContent("54321");
 
   const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
   expect(applicantDetailsLink).toHaveAttribute("href", "/check-visa-applicant-details");
