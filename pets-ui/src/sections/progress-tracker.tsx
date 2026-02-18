@@ -154,37 +154,41 @@ const ProgressTracker = () => {
   return (
     <div>
       {isApplicationCancelled && (
-        <NotificationBanner
-          bannerTitle="Important"
-          bannerHeading={`Start date: ${formatDateForDisplay(applicationData.dateCreated)}`}
-        >
-          <p className="govuk-body">
-            This screening was cancelled because {applicationData.cancellationReason}
-          </p>
-          {applicationData.cancellationFurtherInfo && (
-            <p className="govuk-body">
-              <strong>Further information</strong>
-              <br />
-              {applicationData.cancellationFurtherInfo}
-            </p>
-          )}
-          <LinkLabel
-            title="Return to screening history for this visa applicant"
-            to="/screening-history"
-            externalLink={false}
-          />
-        </NotificationBanner>
+        <div className="govuk-grid-row">
+          <div className="govuk-grid-column-two-thirds">
+            <NotificationBanner
+              bannerTitle="Important"
+              bannerHeading={`Start date: ${formatDateForDisplay(applicationData.dateCreated)}`}
+            >
+              <p className="govuk-body">
+                This screening was cancelled because {applicationData.cancellationReason}
+              </p>
+              {applicationData.cancellationFurtherInfo && (
+                <p className="govuk-body">
+                  <strong>Further information</strong>
+                  <br />
+                  {applicationData.cancellationFurtherInfo}
+                </p>
+              )}
+              <LinkLabel
+                title="Return to screening history for this visa applicant"
+                to="/screening-history"
+                externalLink={false}
+              />
+            </NotificationBanner>
+          </div>
+        </div>
       )}
 
-      <div className="progress-tracker-header">
-        <div className="progress-tracker-header-content">
+      <div className="govuk-grid-row progress-tracker-header">
+        <div className="govuk-grid-column-two-thirds progress-tracker-header-content">
           <ApplicantDataHeader
             applicantData={applicantData}
             applicationStatus={applicationData.applicationStatus}
           />
         </div>
-        {applicantPhotoContext?.applicantPhotoDataUrl && (
-          <div className="progress-tracker-photo-container">
+        {applicantPhotoContext?.applicantPhotoDataUrl ? (
+          <div className="govuk-grid-column-one-third progress-tracker-photo-container">
             <img
               src={applicantPhotoContext.applicantPhotoDataUrl}
               alt={"Applicant"}
@@ -192,6 +196,8 @@ const ProgressTracker = () => {
               className="progress-tracker-photo"
             />
           </div>
+        ) : (
+          <div className="govuk-grid-column-one-third" />
         )}
       </div>
 
