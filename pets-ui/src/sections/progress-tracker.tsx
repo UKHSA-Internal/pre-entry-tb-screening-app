@@ -128,8 +128,6 @@ const ProgressTracker = () => {
   const applicantPhotoContext = useApplicantPhoto();
   const navigate = useNavigate();
 
-  const isApplicationCancelled = applicationData.applicationStatus == ApplicationStatus.CANCELLED;
-
   const allSputumSamplesSubmitted =
     sputumData.sample1.collection.submittedToDatabase &&
     sputumData.sample2.collection.submittedToDatabase &&
@@ -173,7 +171,7 @@ const ProgressTracker = () => {
 
   return (
     <div>
-      {isApplicationCancelled && (
+      {applicationData.applicationStatus == ApplicationStatus.CANCELLED && (
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <NotificationBanner
@@ -199,7 +197,6 @@ const ProgressTracker = () => {
           </div>
         </div>
       )}
-
       <div className="govuk-grid-row progress-tracker-header">
         <div className="govuk-grid-column-two-thirds progress-tracker-header-content">
           <ApplicantDataHeader
@@ -220,7 +217,6 @@ const ProgressTracker = () => {
           <div className="govuk-grid-column-one-third" />
         )}
       </div>
-
       <Heading title="1. Visa applicant information" level={2} size="s" />
       <ul className="govuk-task-list">
         <Task
@@ -240,7 +236,6 @@ const ProgressTracker = () => {
           prerequisiteTaskStatuses={[applicantData.status]}
         />
       </ul>
-
       <Heading title="2. Medical screening" level={2} size="s" />
       <ul className="govuk-task-list">
         <Task
@@ -306,7 +301,6 @@ const ProgressTracker = () => {
           ]}
         />
       </ul>
-
       <Heading title="3. Review outcome" level={2} size="s" />
       <ul className="govuk-task-list">
         <Task
@@ -327,7 +321,6 @@ const ProgressTracker = () => {
           statusOverride={tbCertificateStatusOverride}
         />
       </ul>
-
       <Heading
         title="View screening history"
         level={2}
@@ -343,28 +336,26 @@ const ProgressTracker = () => {
         />
       </p>
 
-      {!isApplicationCancelled &&
-        (tbCertificateData.status == TaskStatus.NOT_YET_STARTED ||
-          tbCertificateData.status == TaskStatus.IN_PROGRESS) && (
-          <>
-            <Heading
-              title="Cancel screening"
-              level={2}
-              size="s"
-              additionalClasses="progress-tracker-lower-headings"
-            />
-            <Button
-              id="cancel-screening"
-              class={ButtonClass.WARNING}
-              text="Cancel this screening"
-              handleClick={() => {
-                navigate("/why-are-you-cancelling-this-screening");
-              }}
-              style={{ marginTop: 0 }}
-            />
-          </>
-        )}
-
+      {(applicationData.applicationStatus == ApplicationStatus.IN_PROGRESS ||
+        applicationData.applicationStatus == ApplicationStatus.NULL) && (
+        <>
+          <Heading
+            title="Cancel screening"
+            level={2}
+            size="s"
+            additionalClasses="progress-tracker-lower-headings"
+          />
+          <Button
+            id="cancel-screening"
+            class={ButtonClass.WARNING}
+            text="Cancel this screening"
+            handleClick={() => {
+              navigate("/why-are-you-cancelling-this-screening");
+            }}
+            style={{ marginTop: 0 }}
+          />
+        </>
+      )}
       <Heading
         title="Start a new search"
         level={2}
