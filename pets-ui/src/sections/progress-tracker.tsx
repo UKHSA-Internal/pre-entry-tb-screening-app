@@ -181,7 +181,7 @@ const ProgressTracker = () => {
               bannerHeading={`Start date: ${formatDateForDisplay(applicationData.dateCreated)}`}
             >
               <p className="govuk-body">
-                This screening was cancelled because {applicationData.cancellationReason}
+                This screening was cancelled because {applicationData.cancellationReason}.
               </p>
               {applicationData.cancellationFurtherInfo && (
                 <p className="govuk-body">
