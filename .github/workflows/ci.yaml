@@ -252,6 +252,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - name: Check migration_script changed
         working-directory: "scripts/applicant_migration/"
