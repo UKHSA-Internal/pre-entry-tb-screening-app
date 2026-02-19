@@ -257,7 +257,7 @@ jobs:
         working-directory: "scripts/applicant_migration/"
         id: check_file_changed
         run: |
-          echo "::set-output name=run_tests::$(./file_chenged.sh)"
+          echo "::set-output name=run_tests::$(./file_changed.sh)"
 
       - name: Setting up Python
         if: steps.check_file_changed.outputs.run_tests == 'true'
