@@ -112,7 +112,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/Cypress
-          key: cypress-binary-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
+          key: cypress-binary-${{ runner.os }}-${{ hashFiles('pets-ui/pnpm-lock.yaml') }}
 
       - name: Install Cypress Binary
         if: steps.cache-cypress-binary.outputs.cache-hit != 'true'

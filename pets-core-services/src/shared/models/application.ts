@@ -12,7 +12,7 @@ export abstract class IApplication {
   clinicId: string;
   dateCreated: Date;
   createdBy: string;
-  status: ApplicationStatus;
+  applicationStatus: ApplicationStatus;
   cancellationReason?: string;
   expiryDate?: Date;
   dateUpdated?: Date;
@@ -23,7 +23,7 @@ export abstract class IApplication {
     this.clinicId = details.clinicId;
     this.dateCreated = details.dateCreated;
     this.createdBy = details.createdBy;
-    this.status = details.status;
+    this.applicationStatus = details.applicationStatus;
     this.cancellationReason = details.cancellationReason;
     this.expiryDate = details.expiryDate;
     this.dateUpdated = details.dateUpdated;
@@ -31,7 +31,7 @@ export abstract class IApplication {
   }
 }
 
-export type NewApplication = Omit<IApplication, "dateCreated" | "status">;
+export type NewApplication = Omit<IApplication, "dateCreated" | "applicationStatus">;
 
 export class Application extends IApplication {
   static readonly getPk = (applicationId: string) => `APPLICATION#${applicationId}`;
@@ -63,7 +63,7 @@ export class Application extends IApplication {
       const updatedDetails: IApplication = {
         ...details,
         dateCreated: new Date(),
-        status: ApplicationStatus.inProgress,
+        applicationStatus: ApplicationStatus.inProgress,
       };
       const newApplication = new Application(updatedDetails);
       const dbItem = newApplication.todbItem();
@@ -148,6 +148,8 @@ export class Application extends IApplication {
       const application = new Application({
         ...dbItem,
         dateCreated: new Date(dbItem.dateCreated),
+        dateUpdated: dbItem.dateUpdated ? new Date(dbItem.dateUpdated) : undefined,
+        expiryDate: dbItem.expiryDate ? new Date(dbItem.expiryDate) : undefined,
       });
       return application;
     } catch (error) {
@@ -160,10 +162,10 @@ export class Application extends IApplication {
     return {
       applicationId: this.applicationId,
       dateCreated: this.dateCreated.toISOString(),
-      status: this.status,
+      applicationStatus: this.applicationStatus,
       cancellationReason: this.cancellationReason,
-      expiryDate: this.expiryDate?.toISOString(),
-      dateUpdated: this.dateUpdated?.toISOString(),
+      expiryDate: this.expiryDate ? this.expiryDate.toISOString() : undefined,
+      dateUpdated: this.dateUpdated ? this.dateUpdated?.toISOString() : undefined,
       updatedBy: this.updatedBy,
     };
   }
