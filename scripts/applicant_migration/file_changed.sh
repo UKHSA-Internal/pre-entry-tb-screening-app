@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-all_changed_files=$(git diff --name-only HEAD^ HEAD)
+all_changed_files=$(git diff --name-only HEAD^)
 
 for changed_file in $all_changed_files;
 do
