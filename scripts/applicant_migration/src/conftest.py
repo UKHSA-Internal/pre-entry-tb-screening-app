@@ -9,7 +9,6 @@ docker-compose.yml in this directory. Tables are recreated before
 each test so every test starts with a clean, predictable state.
 """
 
-import time
 import sys
 import types
 from unittest.mock import MagicMock
@@ -23,25 +22,28 @@ from botocore.exceptions import ClientError
 # Constants
 # ---------------------------------------------------------------------------
 
-APPLICANT_TABLE  = "applicant-table"
+APPLICANT_TABLE = "applicant-table"
 APPLICATION_TABLE = "application-table"
-DYNAMO_LOCAL_URL  = "http://localhost:8000"
-REGION            = "eu-west-2"
+DYNAMO_LOCAL_URL = "http://localhost:8000"
+REGION = "eu-west-2"
 
 # ---------------------------------------------------------------------------
 # Stub awsglue so migration.py can be imported without a Glue runtime
 # ---------------------------------------------------------------------------
 
+
 def _stub_awsglue(dry_run: bool = False):
-    awsglue_pkg   = types.ModuleType("awsglue")
+    awsglue_pkg = types.ModuleType("awsglue")
     awsglue_utils = types.ModuleType("awsglue.utils")
-    awsglue_utils.getResolvedOptions = MagicMock(return_value={
-        "APPLICANT_TABLE":  APPLICANT_TABLE,
-        "APPLICATION_TABLE": APPLICATION_TABLE,
-        "DRY_RUN": str(dry_run),
-    })
+    awsglue_utils.getResolvedOptions = MagicMock(
+        return_value={
+            "APPLICANT_TABLE": APPLICANT_TABLE,
+            "APPLICATION_TABLE": APPLICATION_TABLE,
+            "DRY_RUN": str(dry_run),
+        }
+    )
     awsglue_pkg.utils = awsglue_utils
-    sys.modules["awsglue"]       = awsglue_pkg
+    sys.modules["awsglue"] = awsglue_pkg
     sys.modules["awsglue.utils"] = awsglue_utils
 
 
@@ -49,14 +51,16 @@ def _stub_awsglue(dry_run: bool = False):
 # pytest-docker: tell it where our docker-compose file lives
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture(scope="session")
 def docker_compose_file(pytestconfig):
-    return str(path.join(pytestconfig.rootdir, "src", "docker-compose.yml"))
+    return str(path.join(pytestconfig.rootdir, "docker-compose.yml"))
 
 
 # ---------------------------------------------------------------------------
 # Session-scoped: wait for DynamoDB Local to be ready
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture(scope="session")
 def dynamodb_local(docker_services):
@@ -98,6 +102,7 @@ def _is_dynamo_ready() -> bool:
 # ---------------------------------------------------------------------------
 # Function-scoped: recreate both tables before every test
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture()
 def tables(dynamodb_local):
@@ -144,6 +149,7 @@ def _create_table(dynamodb, table_name: str):
 # ---------------------------------------------------------------------------
 # Helpers used by integration tests
 # ---------------------------------------------------------------------------
+
 
 def make_statistics():
     return {
