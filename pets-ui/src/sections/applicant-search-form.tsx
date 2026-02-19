@@ -131,25 +131,23 @@ const ApplicantSearchForm = () => {
       }
       dispatch(setApplicantDetailsFromApiResponse(applicantRes.data[0]));
       dispatch(setApplicationId(applicantRes.data[0].applicationId));
+      const dateCreated = { year: "", month: "", day: "" };
+      if (applicantRes.data[0].dateCreated) {
+        dateCreated.year = applicantRes.data[0].dateCreated.split("-")[0];
+        dateCreated.month = applicantRes.data[0].dateCreated.split("-")[1];
+        if (applicantRes.data[0].dateCreated.includes("T")) {
+          dateCreated.day = applicantRes.data[0].dateCreated.split("-")[2].split("T")[0];
+        } else {
+          dateCreated.day = applicantRes.data[0].dateCreated.split("-")[2];
+        }
+      }
 
       const applicationRes = await getApplication(applicantRes.data);
       dispatch(
         setApplicationDetails({
           applicationId: applicationRes.data.applicationId,
           applicationStatus: applicationRes.data.applicationStatus,
-          dateCreated: applicantRes.data[0].dateCreated
-            ? {
-                year: applicantRes.data[0].dateCreated.split("-")[0],
-                month: applicantRes.data[0].dateCreated.split("-")[1],
-                day: applicantRes.data[0].dateCreated.includes("T")
-                  ? applicantRes.data[0].dateCreated.split("-")[2].split("T")[0]
-                  : applicantRes.data[0].dateCreated.split("-")[2],
-              }
-            : {
-                year: "",
-                month: "",
-                day: "",
-              },
+          dateCreated: dateCreated,
           cancellationReason: applicationRes.data.cancellationReason,
           cancellationFurtherInfo: applicationRes.data.cancellationFurtherInfo,
         }),
