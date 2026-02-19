@@ -399,6 +399,12 @@ const cancelledAfterSputumState = {
   tbCertificate: { status: TaskStatus.NOT_YET_STARTED, ...tbCertSlice },
 };
 
+const tasksNotRequiredState = {
+  ...completeState,
+  medicalScreening: { ...completeState.medicalScreening, chestXrayTaken: YesOrNo.NO },
+  sputumDecision: { ...completeState.sputumDecision, isSputumRequired: YesOrNo.NO },
+};
+
 test("Progress tracker page displays incomplete application sections correctly & links to applicant details form", async () => {
   renderWithProviders(
     <ApplicantPhotoProvider>
@@ -845,4 +851,23 @@ test("Progress tracker page displays cancelled application sections correctly & 
 
   const searchLink = screen.getByRole("link", { name: /Search for another visa applicant/i });
   expect(searchLink).toHaveAttribute("href", "/search-for-visa-applicant");
+});
+
+test("Progress tracker page sets tasks to not required when applicable (sputum, cxr upload, radiological outcome)", () => {
+  renderWithProviders(
+    <ApplicantPhotoProvider>
+      <ProgressTrackerPage />
+    </ApplicantPhotoProvider>,
+    { preloadedState: tasksNotRequiredState },
+  );
+
+  const chestXrayListItem = screen.getByText("Upload chest X-ray images").closest("li");
+  expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
+  expect(within(chestXrayListItem as HTMLElement).getByText("Not required"));
+
+  const radiologicalOutcomeListItem = screen.getByText("Radiological outcome").closest("li");
+  expect(radiologicalOutcomeListItem).toHaveClass(
+    "govuk-task-list__item govuk-task-list__item--with-link",
+  );
+  expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Not required"));
 });

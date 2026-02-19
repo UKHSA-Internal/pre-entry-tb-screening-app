@@ -283,4 +283,93 @@ describe("ApplicantPhotoForm", () => {
     expect(backLink).toHaveAttribute("href", "/check-visa-applicant-details");
     expect(backLink).toHaveClass("govuk-back-link");
   });
+
+  it("back link points to certificate summary when from=tb-certificate-summary", () => {
+    window.history.pushState({}, "", "/upload-visa-applicant-photo?from=tb-certificate-summary");
+
+    renderWithProviders(
+      <HelmetProvider>
+        <ApplicantPhotoPage />
+      </HelmetProvider>,
+    );
+
+    const backLink = screen.getByRole("link", { name: "Back" });
+    expect(backLink).toBeInTheDocument();
+    expect(backLink).toHaveAttribute("href", "/tb-certificate-summary");
+    expect(backLink).toHaveClass("govuk-back-link");
+  });
+
+  it("back link points to certificate summary when from query param is empty & applicant task is complete", () => {
+    window.history.pushState({}, "", "/upload-visa-applicant-photo");
+    const preloadedState = {
+      applicant: {
+        status: TaskStatus.COMPLETE,
+        fullName: "",
+        sex: "",
+        dateOfBirth: { year: "", month: "", day: "" },
+        countryOfNationality: "",
+        passportNumber: "",
+        countryOfIssue: "",
+        passportIssueDate: { year: "", month: "", day: "" },
+        passportExpiryDate: { year: "", month: "", day: "" },
+        applicantHomeAddress1: "",
+        applicantHomeAddress2: "",
+        applicantHomeAddress3: "",
+        townOrCity: "",
+        provinceOrState: "",
+        country: "",
+        postcode: "",
+        applicantPhotoFileName: "",
+      },
+    };
+
+    renderWithProviders(
+      <HelmetProvider>
+        <ApplicantPhotoPage />
+      </HelmetProvider>,
+      { preloadedState },
+    );
+
+    const backLink = screen.getByRole("link", { name: "Back" });
+    expect(backLink).toBeInTheDocument();
+    expect(backLink).toHaveAttribute("href", "/tb-certificate-summary");
+    expect(backLink).toHaveClass("govuk-back-link");
+  });
+
+  it("back link points to contact info page when from query param is empty & applicant task is not complete", () => {
+    window.history.pushState({}, "", "/upload-visa-applicant-photo");
+    const preloadedState = {
+      applicant: {
+        status: TaskStatus.IN_PROGRESS,
+        fullName: "",
+        sex: "",
+        dateOfBirth: { year: "", month: "", day: "" },
+        countryOfNationality: "",
+        passportNumber: "",
+        countryOfIssue: "",
+        passportIssueDate: { year: "", month: "", day: "" },
+        passportExpiryDate: { year: "", month: "", day: "" },
+        applicantHomeAddress1: "",
+        applicantHomeAddress2: "",
+        applicantHomeAddress3: "",
+        townOrCity: "",
+        provinceOrState: "",
+        country: "",
+        postcode: "",
+        applicantPhotoFileName: "",
+      },
+    };
+
+    renderWithProviders(
+      <HelmetProvider>
+        <ApplicantPhotoPage />
+      </HelmetProvider>,
+      { preloadedState },
+    );
+
+    const backLink = screen.getByRole("link", { name: "Back" });
+    expect(backLink).toBeInTheDocument();
+    expect(backLink).toHaveAttribute("href", "/visa-applicant-contact-information");
+    expect(backLink).toHaveClass("govuk-back-link");
+  });
 });

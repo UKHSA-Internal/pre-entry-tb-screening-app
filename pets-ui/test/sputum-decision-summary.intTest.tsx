@@ -1,8 +1,10 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { HelmetProvider } from "react-helmet-async";
 import { Mock } from "vitest";
 
 import { postSputumRequirement } from "@/api/api";
+import SputumDecisionSummaryPage from "@/pages/sputum-decision-summary";
 import SputumDecisionSummary from "@/sections/sputum-decision-summary";
 import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
@@ -124,5 +126,49 @@ describe("SputumDecisionSummary", () => {
     renderWithProviders(<SputumDecisionSummary />, { preloadedState });
     await user.click(screen.getByRole("button", { name: "Submit and continue" }));
     expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
+  });
+
+  it("back link points to tracker page when sputum decision task is complete", () => {
+    const preloadedState = {
+      sputumDecision: {
+        status: TaskStatus.COMPLETE,
+        isSputumRequired: YesOrNo.YES,
+        completionDate: { year: "", month: "", day: "" },
+      },
+    };
+
+    renderWithProviders(
+      <HelmetProvider>
+        <SputumDecisionSummaryPage />
+      </HelmetProvider>,
+      { preloadedState },
+    );
+
+    const backLink = screen.getByRole("link", { name: "Back" });
+    expect(backLink).toBeInTheDocument();
+    expect(backLink).toHaveAttribute("href", "/tracker");
+    expect(backLink).toHaveClass("govuk-back-link");
+  });
+
+  it("back link points to sputum question page when sputum decision task is not complete", () => {
+    const preloadedState = {
+      sputumDecision: {
+        status: TaskStatus.IN_PROGRESS,
+        isSputumRequired: YesOrNo.NULL,
+        completionDate: { year: "", month: "", day: "" },
+      },
+    };
+
+    renderWithProviders(
+      <HelmetProvider>
+        <SputumDecisionSummaryPage />
+      </HelmetProvider>,
+      { preloadedState },
+    );
+
+    const backLink = screen.getByRole("link", { name: "Back" });
+    expect(backLink).toBeInTheDocument();
+    expect(backLink).toHaveAttribute("href", "/is-sputum-collection-required");
+    expect(backLink).toHaveClass("govuk-back-link");
   });
 });
