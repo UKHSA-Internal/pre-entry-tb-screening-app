@@ -259,7 +259,9 @@ jobs:
         working-directory: "scripts/applicant_migration/"
         id: check_file_changed
         run: |
-          echo "run_tests=$(./file_changed.sh)" >> $GITHUB_OUTPUT
+          run_tests=$(./file_changed.sh)
+          echo $run_tests
+          echo "run_tests=${{ run_tests }}" >> $GITHUB_OUTPUT
 
       - name: Setting up Python
         if: steps.check_file_changed.outputs.run_tests == 'true'

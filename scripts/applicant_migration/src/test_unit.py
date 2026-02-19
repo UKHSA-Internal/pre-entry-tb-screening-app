@@ -21,12 +21,12 @@ import sys
 import types
 import importlib
 import pytest
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
+
 
 # ---------------------------------------------------------------------------
 # Bootstrap: stub out awsglue before importing the module under test
 # ---------------------------------------------------------------------------
-
 def _load_migration(dry_run: bool = False):
     """
     Import (or re-import) migration.py with the desired DRY_RUN value and
@@ -35,11 +35,13 @@ def _load_migration(dry_run: bool = False):
     # Stub awsglue.utils so the top-level import doesn't fail
     awsglue_pkg = types.ModuleType("awsglue")
     awsglue_utils = types.ModuleType("awsglue.utils")
-    awsglue_utils.getResolvedOptions = MagicMock(return_value={
-        "APPLICANT_TABLE": "applicant-table",
-        "APPLICATION_TABLE": "application-table",
-        "DRY_RUN": str(dry_run),
-    })
+    awsglue_utils.getResolvedOptions = MagicMock(
+        return_value={
+            "APPLICANT_TABLE": "applicant-table",
+            "APPLICATION_TABLE": "application-table",
+            "DRY_RUN": str(dry_run),
+        }
+    )
     awsglue_pkg.utils = awsglue_utils
     sys.modules.setdefault("awsglue", awsglue_pkg)
     sys.modules["awsglue.utils"] = awsglue_utils
@@ -53,8 +55,7 @@ def _load_migration(dry_run: bool = False):
 
 # ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
-
+# -----------
 def _make_statistics():
     return {
         "all_applicants": 0,
@@ -77,21 +78,21 @@ def _mock_tables():
 # ===========================================================================
 # migrate_item — happy path & skip branches
 # ===========================================================================
-
 class TestMigrateItemSkips:
-
     def setup_method(self):
         self.mod = _load_migration(dry_run=False)
 
     def _run(self, applicant_row, applicant_table=None, application_table=None):
         at, apt = _mock_tables()
         stats = _make_statistics()
-        self.mod.migrate_item((
-            applicant_row,
-            applicant_table or at,
-            application_table or apt,
-            stats,
-        ))
+        self.mod.migrate_item(
+            (
+                applicant_row,
+                applicant_table or at,
+                application_table or apt,
+                stats,
+            )
+        )
         return stats, at, apt
 
     def test_skip_when_passport_id_missing(self):
@@ -124,7 +125,6 @@ class TestMigrateItemSkips:
 
 
 class TestMigrateItemDryRun:
-
     def setup_method(self):
         self.mod = _load_migration(dry_run=True)
 
@@ -151,7 +151,9 @@ class TestMigrateItemDryRun:
     def test_dry_run_counts_migration_but_does_not_write(self):
         stats, at, apt = self._run(self._base_row(), app_root_status="Approved")
         assert stats["migrated_applicants"] == 1
-        assert {"pk": "APPLICATION#abc", "sk": "APPLICANT#DETAILS"} in stats["applicants_to_remove"]
+        assert {"pk": "APPLICATION#abc", "sk": "APPLICANT#DETAILS"} in stats[
+            "applicants_to_remove"
+        ]
         at.put_item.assert_not_called()
         apt.update_item.assert_not_called()
 
@@ -164,8 +166,8 @@ class TestMigrateItemDryRun:
         stats = _make_statistics()
         # First get_item (ROOT) returns nothing; second (TB#CERTIFICATE) returns isIssued=Yes
         apt.get_item.side_effect = [
-            {},                                   # APPLICATION#ROOT — not found
-            {"Item": {"isIssued": "Yes"}},        # APPLICATION#TB#CERTIFICATE
+            {},  # APPLICATION#ROOT — not found
+            {"Item": {"isIssued": "Yes"}},  # APPLICATION#TB#CERTIFICATE
         ]
         self.mod.migrate_item((self._base_row(), at, apt, stats))
         assert stats["migrated_applicants"] == 1
@@ -190,7 +192,6 @@ class TestMigrateItemDryRun:
 
 
 class TestMigrateItemLive:
-
     def setup_method(self):
         self.mod = _load_migration(dry_run=False)
 
@@ -220,7 +221,9 @@ class TestMigrateItemLive:
 
         self.mod.migrate_item((self._base_row(), at, apt, stats))
 
-        assert {"pk": "APPLICATION#abc", "sk": "APPLICANT#DETAILS"} in stats["applicants_to_remove"]
+        assert {"pk": "APPLICATION#abc", "sk": "APPLICANT#DETAILS"} in stats[
+            "applicants_to_remove"
+        ]
 
     def test_live_updates_application_root_row(self):
         at, apt = _mock_tables()
@@ -275,6 +278,7 @@ class TestMigrateItemLive:
     def test_live_conditional_check_failed_is_swallowed(self):
         """ConditionalCheckFailedException on update_item must not raise."""
         from botocore.exceptions import ClientError
+
         at, apt = _mock_tables()
         stats = _make_statistics()
         apt.get_item.return_value = {"Item": {"applicationStatus": "Approved"}}
@@ -289,6 +293,7 @@ class TestMigrateItemLive:
     def test_live_other_client_error_is_raised(self):
         """Any ClientError other than ConditionalCheckFailed must propagate."""
         from botocore.exceptions import ClientError
+
         at, apt = _mock_tables()
         stats = _make_statistics()
         apt.get_item.return_value = {"Item": {"applicationStatus": "Approved"}}
@@ -310,9 +315,7 @@ class TestMigrateItemLive:
 # ===========================================================================
 # remove_original_applicants — batching
 # ===========================================================================
-
 class TestRemoveOriginalApplicants:
-
     def setup_method(self):
         self.mod = _load_migration(dry_run=False)
 
@@ -322,7 +325,9 @@ class TestRemoveOriginalApplicants:
     def _collect_deleted_keys(self, at):
         """Return all keys passed to delete_item across all batch_writer calls."""
         deleted = []
-        for ctx_call in at.batch_writer.return_value.__enter__.return_value.delete_item.call_args_list:
+        for ctx_call in (
+            at.batch_writer.return_value.__enter__.return_value.delete_item.call_args_list
+        ):
             deleted.append(ctx_call[1]["Key"])
         return deleted
 
@@ -384,9 +389,7 @@ class TestRemoveOriginalApplicants:
 # ===========================================================================
 # scan_applicant_table — pagination & DRY_RUN wiring
 # ===========================================================================
-
 class TestScanApplicantTable:
-
     def _make_scan_response(self, items, last_key=None):
         r = {"Items": items}
         if last_key:
@@ -402,10 +405,16 @@ class TestScanApplicantTable:
         at, apt = _mock_tables()
         dynamodb.Table.side_effect = [at, apt]
 
-        at.scan.return_value = self._make_scan_response([
-            {"pk": "APPLICATION#1", "sk": "APPLICANT#DETAILS", "passportId": "COUNTRY#GB#PASSPORT#111"},
-            {"pk": "APPLICATION#2", "sk": "APPLICANT#DETAILS"},  # missing passportId
-        ])
+        at.scan.return_value = self._make_scan_response(
+            [
+                {
+                    "pk": "APPLICATION#1",
+                    "sk": "APPLICANT#DETAILS",
+                    "passportId": "COUNTRY#GB#PASSPORT#111",
+                },
+                {"pk": "APPLICATION#2", "sk": "APPLICANT#DETAILS"},  # missing passportId
+            ]
+        )
         apt.get_item.return_value = {"Item": {"applicationStatus": "Approved"}}
 
         stats = _make_statistics()
@@ -425,11 +434,23 @@ class TestScanApplicantTable:
         dynamodb.Table.side_effect = [at, apt]
 
         page1 = self._make_scan_response(
-            [{"pk": "APPLICATION#1", "sk": "APPLICANT#DETAILS", "passportId": "COUNTRY#GB#PASSPORT#1"}],
+            [
+                {
+                    "pk": "APPLICATION#1",
+                    "sk": "APPLICANT#DETAILS",
+                    "passportId": "COUNTRY#GB#PASSPORT#1",
+                }
+            ],
             last_key={"pk": "APPLICATION#1"},
         )
         page2 = self._make_scan_response(
-            [{"pk": "APPLICATION#2", "sk": "APPLICANT#DETAILS", "passportId": "COUNTRY#GB#PASSPORT#2"}],
+            [
+                {
+                    "pk": "APPLICATION#2",
+                    "sk": "APPLICANT#DETAILS",
+                    "passportId": "COUNTRY#GB#PASSPORT#2",
+                }
+            ],
         )
         at.scan.side_effect = [page1, page2]
         apt.get_item.return_value = {"Item": {"applicationStatus": "Approved"}}
@@ -449,9 +470,15 @@ class TestScanApplicantTable:
         at, apt = _mock_tables()
         dynamodb.Table.side_effect = [at, apt]
 
-        at.scan.return_value = self._make_scan_response([
-            {"pk": "APPLICATION#1", "sk": "APPLICANT#DETAILS", "passportId": "COUNTRY#GB#PASSPORT#111"},
-        ])
+        at.scan.return_value = self._make_scan_response(
+            [
+                {
+                    "pk": "APPLICATION#1",
+                    "sk": "APPLICANT#DETAILS",
+                    "passportId": "COUNTRY#GB#PASSPORT#111",
+                },
+            ]
+        )
         apt.get_item.return_value = {"Item": {"applicationStatus": "Approved"}}
 
         stats = _make_statistics()
@@ -469,9 +496,15 @@ class TestScanApplicantTable:
         at, apt = _mock_tables()
         dynamodb.Table.side_effect = [at, apt]
 
-        at.scan.return_value = self._make_scan_response([
-            {"pk": "APPLICATION#1", "sk": "APPLICANT#DETAILS", "passportId": "COUNTRY#GB#PASSPORT#111"},
-        ])
+        at.scan.return_value = self._make_scan_response(
+            [
+                {
+                    "pk": "APPLICATION#1",
+                    "sk": "APPLICANT#DETAILS",
+                    "passportId": "COUNTRY#GB#PASSPORT#111",
+                },
+            ]
+        )
         apt.get_item.return_value = {"Item": {"applicationStatus": "Approved"}}
 
         stats = _make_statistics()
@@ -500,7 +533,6 @@ class TestScanApplicantTable:
 # ===========================================================================
 # main() — orchestration, statistics summary output, DRY_RUN flag
 # ===========================================================================
-
 class TestMain:
     """
     Strategy:
@@ -517,6 +549,7 @@ class TestMain:
         stats_override values are merged into the statistics dict
         that main() creates internally.
         """
+
         def fake_scan(statistics):
             statistics.update(stats_override)
 
@@ -575,7 +608,9 @@ class TestMain:
 
     def test_main_prints_applicants_to_remove_count(self, capsys):
         mod = _load_migration(dry_run=True)
-        fake_removals = [{"pk": f"APPLICATION#{i}", "sk": "APPLICATION#ROOT"} for i in range(5)]
+        fake_removals = [
+            {"pk": f"APPLICATION#{i}", "sk": "APPLICATION#ROOT"} for i in range(5)
+        ]
         self._run_main(mod, {"applicants_to_remove": fake_removals})
         out = capsys.readouterr().out
         assert "5" in out
