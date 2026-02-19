@@ -13,6 +13,7 @@ import {
   ReduxSputumType,
 } from "@/types";
 import { BackendTaskStatus, PositiveOrNegative, TaskStatus } from "@/utils/enums";
+import { convertDateStrToObj } from "@/utils/helpers";
 
 const initialState: ReduxSputumType = {
   status: TaskStatus.NOT_YET_STARTED,
@@ -222,11 +223,7 @@ export const sputumSlice = createSlice({
         target: ReduxSputumSampleType,
       ) => {
         if (sampleData) {
-          const dateStr = sampleData.dateOfSample.includes("T")
-            ? sampleData.dateOfSample.split("T")[0]
-            : sampleData.dateOfSample;
-          const [year, month, day] = dateStr.split("-");
-          target.collection.dateOfSample = { year, month, day };
+          target.collection.dateOfSample = convertDateStrToObj(sampleData.dateOfSample);
           target.collection.collectionMethod = sampleData.collectionMethod;
           target.collection.submittedToDatabase = true;
         } else {
@@ -267,11 +264,7 @@ export const sputumSlice = createSlice({
         target: ReduxSputumSampleType,
       ) => {
         if (sampleData) {
-          const dateStr = sampleData.dateUpdated.includes("T")
-            ? sampleData.dateUpdated.split("T")[0]
-            : sampleData.dateUpdated;
-          const [year, month, day] = dateStr.split("-");
-          target.lastUpdatedDate = { year, month, day };
+          target.lastUpdatedDate = convertDateStrToObj(sampleData.dateUpdated);
         } else {
           target.lastUpdatedDate = { year: "", month: "", day: "" };
         }

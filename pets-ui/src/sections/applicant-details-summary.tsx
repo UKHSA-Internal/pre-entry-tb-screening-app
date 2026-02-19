@@ -11,7 +11,12 @@ import { setApplicationId, setDateCreated } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
 import { ButtonClass, ImageType, TaskStatus } from "@/utils/enums";
-import { formatDateForDisplay, getCountryName, standardiseDayOrMonth } from "@/utils/helpers";
+import {
+  convertDateStrToObj,
+  formatDateForDisplay,
+  getCountryName,
+  standardiseDayOrMonth,
+} from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 import uploadFile from "@/utils/uploadFile";
 
@@ -33,15 +38,7 @@ const ApplicantReview = () => {
     try {
       const applicationRes = await createNewApplication();
       dispatch(setApplicationId(applicationRes.data.applicationId));
-      dispatch(
-        setDateCreated({
-          year: applicationRes.data.dateCreated.split("-")[0],
-          month: applicationRes.data.dateCreated.split("-")[1],
-          day: applicationRes.data.dateCreated.includes("T")
-            ? applicationRes.data.dateCreated.split("-")[2].split("T")[0]
-            : applicationRes.data.dateCreated.split("-")[2],
-        }),
-      );
+      dispatch(setDateCreated(convertDateStrToObj(applicationRes.data.dateCreated)));
 
       const dateOfBirthStr = `${applicantData.dateOfBirth.year}-${standardiseDayOrMonth(applicantData.dateOfBirth.month)}-${standardiseDayOrMonth(applicantData.dateOfBirth.day)}`;
       const issueDateStr = `${applicantData.passportIssueDate.year}-${standardiseDayOrMonth(applicantData.passportIssueDate.month)}-${standardiseDayOrMonth(applicantData.passportIssueDate.day)}`;

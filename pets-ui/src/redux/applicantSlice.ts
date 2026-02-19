@@ -7,6 +7,7 @@ import {
   ReduxApplicantDetailsType,
 } from "@/types";
 import { BackendTaskStatus, TaskStatus } from "@/utils/enums";
+import { convertDateStrToObj } from "@/utils/helpers";
 
 const initialState: ReduxApplicantDetailsType = {
   status: TaskStatus.NOT_YET_STARTED,
@@ -161,27 +162,9 @@ export const applicantSlice = createSlice({
       state.countryOfNationality = action.payload.countryOfNationality;
       state.passportNumber = action.payload.passportNumber;
       state.countryOfIssue = action.payload.countryOfIssue;
-      state.dateOfBirth = {
-        year: action.payload.dateOfBirth.split("-")[0],
-        month: action.payload.dateOfBirth.split("-")[1],
-        day: action.payload.dateOfBirth.includes("T")
-          ? action.payload.dateOfBirth.split("-")[2].split("T")[0]
-          : action.payload.dateOfBirth.split("-")[2],
-      };
-      state.passportIssueDate = {
-        year: action.payload.issueDate.split("-")[0],
-        month: action.payload.issueDate.split("-")[1],
-        day: action.payload.issueDate.includes("T")
-          ? action.payload.issueDate.split("-")[2].split("T")[0]
-          : action.payload.issueDate.split("-")[2],
-      };
-      state.passportExpiryDate = {
-        year: action.payload.expiryDate.split("-")[0],
-        month: action.payload.expiryDate.split("-")[1],
-        day: action.payload.expiryDate.includes("T")
-          ? action.payload.expiryDate.split("-")[2].split("T")[0]
-          : action.payload.expiryDate.split("-")[2],
-      };
+      state.dateOfBirth = convertDateStrToObj(action.payload.dateOfBirth);
+      state.passportIssueDate = convertDateStrToObj(action.payload.issueDate);
+      state.passportExpiryDate = convertDateStrToObj(action.payload.expiryDate);
       state.applicantHomeAddress1 = action.payload.applicantHomeAddress1;
       state.applicantHomeAddress2 = action.payload.applicantHomeAddress2 ?? "";
       state.applicantHomeAddress3 = action.payload.applicantHomeAddress3 ?? "";

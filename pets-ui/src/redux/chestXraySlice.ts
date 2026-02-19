@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { DateType, ReceivedChestXrayDetailsType, ReduxChestXrayDetailsType } from "@/types";
 import { BackendTaskStatus, TaskStatus } from "@/utils/enums";
+import { convertDateStrToObj } from "@/utils/helpers";
 
 const initialState: ReduxChestXrayDetailsType = {
   status: TaskStatus.NOT_YET_STARTED,
@@ -79,19 +80,7 @@ export const chestXraySlice = createSlice({
       state.apicalLordoticXrayFile = action.payload.apicalLordoticXray;
       state.lateralDecubitusXrayFileName = action.payload.lateralDecubitusXrayFileName;
       state.lateralDecubitusXrayFile = action.payload.lateralDecubitusXray;
-      state.dateXrayTaken = action.payload.dateXrayTaken
-        ? {
-            year: action.payload.dateXrayTaken.split("-")[0],
-            month: action.payload.dateXrayTaken.split("-")[1],
-            day: action.payload.dateXrayTaken.includes("T")
-              ? action.payload.dateXrayTaken.split("-")[2].split("T")[0]
-              : action.payload.dateXrayTaken.split("-")[2],
-          }
-        : {
-            year: "",
-            month: "",
-            day: "",
-          };
+      state.dateXrayTaken = convertDateStrToObj(action.payload.dateXrayTaken);
     },
   },
 });

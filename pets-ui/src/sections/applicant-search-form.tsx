@@ -49,6 +49,7 @@ import { ApplicantSearchFormType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 import { setGoogleAnalyticsParams } from "@/utils/google-analytics-utils";
+import { convertDateStrToObj } from "@/utils/helpers";
 import { countryList, formRegex } from "@/utils/records";
 import { getUserProperties } from "@/utils/userProperties";
 
@@ -137,19 +138,7 @@ const ApplicantSearchForm = () => {
         setApplicationDetails({
           applicationId: applicationRes.data.applicationId,
           applicationStatus: applicationRes.data.applicationStatus,
-          dateCreated: applicantRes.data[0].dateCreated
-            ? {
-                year: applicantRes.data[0].dateCreated.split("-")[0],
-                month: applicantRes.data[0].dateCreated.split("-")[1],
-                day: applicantRes.data[0].dateCreated.includes("T")
-                  ? applicantRes.data[0].dateCreated.split("-")[2].split("T")[0]
-                  : applicantRes.data[0].dateCreated.split("-")[2],
-              }
-            : {
-                year: "",
-                month: "",
-                day: "",
-              },
+          dateCreated: convertDateStrToObj(applicantRes.data[0].dateCreated),
           cancellationReason: applicationRes.data.cancellationReason,
           cancellationFurtherInfo: applicationRes.data.cancellationFurtherInfo,
         }),

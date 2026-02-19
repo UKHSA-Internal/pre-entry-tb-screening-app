@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { DateType, ReceivedMedicalScreeningType, ReduxMedicalScreeningType } from "@/types";
 import { BackendTaskStatus, TaskStatus, YesOrNo } from "@/utils/enums";
+import { convertDateStrToObj } from "@/utils/helpers";
 
 const initialState: ReduxMedicalScreeningType = {
   status: TaskStatus.NOT_YET_STARTED,
@@ -154,19 +155,7 @@ export const medicalScreeningSlice = createSlice({
       state.reasonXrayNotRequired = action.payload.reasonXrayNotRequired ?? "";
       state.reasonXrayNotRequiredFurtherDetails =
         action.payload.reasonXrayNotRequiredFurtherDetails ?? "";
-      state.completionDate = action.payload.dateCreated
-        ? {
-            year: action.payload.dateCreated.split("-")[0],
-            month: action.payload.dateCreated.split("-")[1],
-            day: action.payload.dateCreated.includes("T")
-              ? action.payload.dateCreated.split("-")[2].split("T")[0]
-              : action.payload.dateCreated.split("-")[2],
-          }
-        : {
-            year: "",
-            month: "",
-            day: "",
-          };
+      state.completionDate = convertDateStrToObj(action.payload.dateCreated);
     },
   },
 });

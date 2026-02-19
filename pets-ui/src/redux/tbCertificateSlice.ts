@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { ClinicType, DateType, ReceivedTbCertificateType, ReduxTbCertificateType } from "@/types";
 import { BackendTaskStatus, TaskStatus, YesOrNo } from "@/utils/enums";
+import { convertDateStrToObj } from "@/utils/helpers";
 
 const initialState: ReduxTbCertificateType = {
   status: TaskStatus.NOT_YET_STARTED,
@@ -77,19 +78,7 @@ export const tbCertificateSlice = createSlice({
           : TaskStatus.IN_PROGRESS;
       state.isIssued = action.payload.isIssued;
       state.comments = action.payload.comments ?? "";
-      state.certificateDate = action.payload.issueDate
-        ? {
-            year: action.payload.issueDate.split("-")[0],
-            month: action.payload.issueDate.split("-")[1],
-            day: action.payload.issueDate.includes("T")
-              ? action.payload.issueDate.split("-")[2].split("T")[0]
-              : action.payload.issueDate.split("-")[2],
-          }
-        : {
-            year: "",
-            month: "",
-            day: "",
-          };
+      state.certificateDate = convertDateStrToObj(action.payload.issueDate);
       state.certificateNumber = action.payload.certificateNumber;
       if (action.payload.physicianName) {
         state.declaringPhysicianName = action.payload.physicianName;
