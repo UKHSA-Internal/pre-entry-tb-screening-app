@@ -24,6 +24,7 @@ import {
   CancelApplicationRequestSchema,
   ChestXRayRequestSchema,
   ChestXRayResponseSchema,
+  CreateApplicationRequestSchema,
   CreateApplicationResponseSchema,
   ImageUploadUrlRequestSchema,
   ImageUploadUrlResponseSchema,
@@ -50,6 +51,9 @@ export const routes: PetsRoute[] = [
     method: "POST",
     path: "/application",
     handler: createApplicationHandler,
+    requestBodySchema: CreateApplicationRequestSchema.openapi({
+      description: "Application Details",
+    }),
     responseSchema: CreateApplicationResponseSchema,
   },
   {

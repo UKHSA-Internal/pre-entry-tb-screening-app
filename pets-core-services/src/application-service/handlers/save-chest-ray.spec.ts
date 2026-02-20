@@ -192,10 +192,10 @@ describe("Test for Saving Chest X-ray into DB", () => {
     expect(errorLoggerMock).toHaveBeenCalledWith(Error("S3 error"), "Error saving Chest X-ray");
   });
 
-  test("Missing Applicant throws a 400 error", async () => {
+  test("Invalid Application throws a 400 error", async () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[0].applicationId },
+      pathParameters: { applicationId: "Invalid-Id" },
       queryStringParameters: { requireValidation: YesOrNo.Yes },
       parsedBody: newChestXray,
     };
@@ -206,7 +206,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     // Assert
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Invalid Application - No Applicant",
+      message: "Invalid Application: Application does not exist",
     });
   });
 

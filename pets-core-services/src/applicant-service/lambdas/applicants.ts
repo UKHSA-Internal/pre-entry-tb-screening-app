@@ -10,6 +10,7 @@ import { updateApplicantHandler } from "../handlers/updateApplicant";
 import {
   ApplicantRegisterRequestSchema,
   ApplicantResponseSchema,
+  ApplicantSearchResponseSchema,
   ApplicantUpdateRequestSchema,
   ApplicantUpdateResponseSchema,
 } from "../types/zod-schema";
@@ -47,11 +48,9 @@ export const routes: PetsRoute[] = [
         description: "Passport Issue Country",
       }),
     },
-    responseSchema: z.array(
-      ApplicantResponseSchema.openapi("Applicant", {
-        description: "Details about an Applicant",
-      }),
-    ),
+    responseSchema: ApplicantSearchResponseSchema.openapi("Applicant", {
+      description: "Details about an Applicant",
+    }),
   },
 ];
 

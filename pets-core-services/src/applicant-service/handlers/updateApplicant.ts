@@ -54,7 +54,6 @@ export const updateApplicantHandler = async (event: PutApplicantEvent) => {
     }
     const applicantData = await ApplicantDbOps.updateApplicant({
       ...parsedBody,
-      applicationId: applicationId,
       updatedBy: createdBy,
     });
 

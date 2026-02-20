@@ -19,7 +19,24 @@ vi.mock("../helpers/upload", () => ({
 vi.mock("../../shared/models/applicant", () => ({
   ApplicantDbOps: {
     getByApplicationId: vi.fn().mockResolvedValue({
-      applicationId: "test-application-id",
+      fullName: "John Doe",
+      passportNumber: "test-passport-id",
+      countryOfNationality: CountryCode.ALA,
+      countryOfIssue: CountryCode.ALA,
+      issueDate: "2025-01-01",
+      expiryDate: "2030-01-01",
+      dateOfBirth: "2000-02-07",
+      sex: AllowedSex.Female,
+      applicantHomeAddress1: "First Line of Address",
+      applicantHomeAddress2: "Second Line of Address",
+      applicantHomeAddress3: "Third Line of Address",
+      townOrCity: "the-town-or-city",
+      provinceOrState: "the-province",
+      postcode: "the-post-code",
+      country: CountryCode.ALA,
+      createdBy: "test-applicant-creator",
+    }),
+    findByPassportId: vi.fn().mockResolvedValue({
       fullName: "John Doe",
       passportNumber: "test-passport-id",
       countryOfNationality: CountryCode.ALA,

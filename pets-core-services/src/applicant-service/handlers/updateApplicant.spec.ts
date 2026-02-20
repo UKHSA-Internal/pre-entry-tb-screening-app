@@ -23,13 +23,15 @@ const applicantDetails: PutApplicantEvent["parsedBody"] = {
   provinceOrState: "the-province",
   postcode: "the-post-code",
   country: CountryCode.ALA,
+  passportNumber: "test",
+  countryOfIssue: CountryCode.ALA,
 };
 
 const newApplicantDetails: PostApplicantEvent["parsedBody"] = {
   fullName: "John Doe",
-  passportNumber: "test-passport-id",
-  countryOfNationality: CountryCode.ALA,
+  passportNumber: "test",
   countryOfIssue: CountryCode.ALA,
+  countryOfNationality: CountryCode.ALA,
   issueDate: "2024-07-07",
   expiryDate: "2029-07-07",
   dateOfBirth: "1999-07-07",
@@ -69,13 +71,13 @@ describe("Test for Updating Applicant into DB", () => {
     // Arrange
     const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[0].applicationId },
+      pathParameters: { applicationId: seededApplications[1].applicationId },
       parsedBody: applicantDetails,
     };
     // Create an applicant
     const eventPOST: PostApplicantEvent = {
       ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[0].applicationId },
+      pathParameters: { applicationId: seededApplications[1].applicationId },
       parsedBody: newApplicantDetails,
     };
     await postApplicantHandler(eventPOST);

@@ -28,33 +28,41 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
         message: "Internal Server Error: Request not parsed correctly",
       });
     }
+    const countryOfIssue = parsedHeaders.countryofissue;
+    const passportNumber = parsedHeaders.passportnumber;
 
     GlobalContextStorageProvider.updateContext({
-      countryOfIssue: parsedHeaders.countryofissue,
-      passportNumber: parsedHeaders.passportnumber.slice(-4),
+      countryOfIssue: countryOfIssue,
+      passportNumber: passportNumber.slice(-4),
     });
 
-    const applicants = await ApplicantDbOps.findByPassportId(
-      parsedHeaders.countryofissue,
-      parsedHeaders.passportnumber,
-    );
+    const applicant = await ApplicantDbOps.findByPassportId(countryOfIssue, passportNumber);
+    if (!applicant) return createHttpResponse(204, []);
 
-    if (!applicants.length) return createHttpResponse(204, []);
-
-    // Note: This check would need to be modified Post-MVP, For MVP, only a single applicant should exist for passport and country combination
-    if (applicants.length > 1) {
-      logger.error("Duplicate applicants found");
-      return createHttpResponse(500, { message: "Unexpected duplicate results found" });
-    }
-
-    const applicant = applicants[0];
-    const application = await Application.getByApplicationId(applicant.applicationId);
-    if (!application) {
+    const applications = await Application.getByApplicantId(passportNumber, countryOfIssue);
+    if (!applications.length && applicant) {
       logger.error("Edge-Case: Applicant has been created without an application");
       return createHttpResponse(400, {
         message: `Matched Applicant has been created without an application`,
       });
     }
+    // let application: Application | null;
+
+    const sortedApplications = applications?.sort(
+      (a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime(),
+    );
+
+    const application = sortedApplications?.[0] ?? null;
+
+    // if (applications.length < 1 && applicant.applicationId) {
+    //   application = await Application.getByApplicationId(applicant.applicationId);
+    //   if (!application) {
+    //     logger.error("Edge-Case: Applicant has been created without an application");
+    //     return createHttpResponse(400, {
+    //       message: `Matched Applicant has been created without an application`,
+    //     });
+    //   }
+    // }
 
     const { clinicId } = event.requestContext.authorizer;
 
@@ -71,12 +79,10 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
     if (clinicId === SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
       logger.info("Getting an application for the support clinic");
     }
-
-    return createHttpResponse(200, [
-      {
-        ...applicant.toJson(),
-      },
-    ]);
+    return createHttpResponse(200, {
+      ...applicant.toJson(),
+      applications: sortedApplications.map((e) => e.toJson()),
+    });
   } catch (error) {
     logger.error(error, "Searching Applicant Details Failed");
     return createHttpResponse(500, { message: "Something went wrong" });

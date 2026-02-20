@@ -1,6 +1,7 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 
+import { ApplicationSchema } from "../../application-service/types/zod-schema";
 import { CountryCode } from "../../shared/country";
 import { TaskStatus } from "../../shared/types/enum";
 import { AllowedSex } from "./enums";
@@ -10,6 +11,13 @@ extendZodWithOpenApi(z);
 export const ApplicantBaseSchema = z.object({
   fullName: z.string().optional().openapi({
     description: "Full name of Applicant",
+  }),
+  passportNumber: z.string().openapi({
+    description: "PassportNumber of Applicant",
+  }),
+
+  countryOfIssue: z.nativeEnum(CountryCode).openapi({
+    description: "Passport Issue Country",
   }),
   countryOfNationality: z.nativeEnum(CountryCode).optional().openapi({
     description: "Applicant's nationality",
@@ -79,6 +87,17 @@ export const ApplicantRegisterRequestSchema = ApplicantBaseSchema.extend({
   }),
 });
 
+export const ApplicantSearchResponseSchema = ApplicantRegisterRequestSchema.extend({
+  applications: z.array(ApplicationSchema).openapi({
+    description: "Applicant's applications",
+  }),
+  dateCreated: z.string().date().openapi({
+    description: "Creation Date in UTC timezone",
+  }),
+  status: z.nativeEnum(TaskStatus).openapi({
+    description: "Status of Task",
+  }),
+});
 export const ApplicantResponseSchema = ApplicantRegisterRequestSchema.extend({
   applicationId: z.string().openapi({
     description: "Unique Application ID for applicant",

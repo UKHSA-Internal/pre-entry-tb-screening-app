@@ -10,7 +10,6 @@ import { logger } from "../logger";
 import { ApplicantDbOps, NewApplicant, UpdatedApplicant } from "./applicant";
 
 const applicantDetails: NewApplicant = {
-  applicationId: seededApplications[2].applicationId,
   fullName: "John Doe",
   passportNumber: "test-passport-id",
   countryOfNationality: CountryCode.ALA,
@@ -63,7 +62,7 @@ describe("Tests for Applicant Model", () => {
         issueDate: "2025-01-01T00:00:00.000Z",
         expiryDate: "2030-01-01T00:00:00.000Z",
         dateOfBirth: "2000-02-07T00:00:00.000Z",
-        pk: "APPLICATION#generated-app-id-3",
+        pk: "COUNTRY#ALA#PASSPORT#test-passport-id",
         sk: "APPLICANT#DETAILS",
       },
     });
@@ -106,7 +105,6 @@ describe("Tests for Applicant Model", () => {
       ":applicantHomeAddress1": "First Line of Address",
       ":applicantHomeAddress2": "Second Line of Address",
       ":applicantHomeAddress3": "Third Line of Address",
-      ":applicationId": "generated-app-id-3",
       ":country": "ALA",
       ":countryOfNationality": "ALA",
       ":createdBy": "test-applicant-creator",
@@ -140,7 +138,7 @@ describe("Tests for Applicant Model", () => {
     );
 
     // Assert
-    expect(searchResult).toHaveLength(0);
+    expect(searchResult).toBeNull();
   });
 
   test("Search existing applicant details", async () => {
@@ -158,7 +156,7 @@ describe("Tests for Applicant Model", () => {
           expiryDate: "2030-01-01T00:00:00.000Z",
           dateOfBirth: "2000-02-07T00:00:00.000Z",
           passportId: "COUNTRY#ALA#PASSPORT#saved-applicant",
-          pk: "APPLICATION#test-application-id",
+          pk: "COUNTRY#ALA#PASSPORT#test-passport-id",
           sk: "APPLICANT#DETAILS",
         },
       ],
@@ -168,34 +166,9 @@ describe("Tests for Applicant Model", () => {
     const searchResult = await ApplicantDbOps.findByPassportId(CountryCode.ALA, "saved-applicant");
 
     // Assert
-    expect(searchResult).toHaveLength(1);
-    expect(searchResult[0]).toMatchObject({
+    expect(searchResult).toMatchObject({
       ...applicantDetails,
       dateCreated: new Date(dateCreated),
-      issueDate: new Date("2025-01-01"),
-      expiryDate: new Date("2030-01-01"),
-      dateOfBirth: new Date("2000-02-07"),
-    });
-  });
-
-  test("Getting applicant by application ID", async () => {
-    const dateCreated = "2025-02-07";
-    ddbMock.on(GetCommand).resolves({
-      Item: {
-        ...applicantDetails,
-        dateCreated,
-        pk: "APPLICATION#test-application-id",
-        sk: "APPLICANT#DETAILS",
-      },
-    });
-
-    // Act
-    const applicant = await ApplicantDbOps.getByApplicationId(applicantDetails.applicationId);
-
-    // Assert
-    expect(applicant).toMatchObject({
-      ...applicantDetails,
-      dateCreated: new Date("2025-02-07"),
       issueDate: new Date("2025-01-01"),
       expiryDate: new Date("2030-01-01"),
       dateOfBirth: new Date("2000-02-07"),
@@ -213,7 +186,8 @@ describe("Tests for Applicant Model", () => {
     try {
       await ApplicantDbOps.updateApplicant({
         country: CountryCode.KOR,
-        applicationId: "whatever",
+        passportNumber: "test",
+        countryOfIssue: CountryCode.KOR,
         updatedBy: "me",
       });
     } catch (err) {
@@ -235,8 +209,9 @@ describe("Tests for Applicant Model", () => {
     // Act / Assert
     try {
       await ApplicantDbOps.updateApplicant({
+        passportNumber: "T123",
+        countryOfIssue: CountryCode.IND,
         country: CountryCode.KOR,
-        applicationId: "oneofthem",
         updatedBy: "admin",
       });
     } catch (err) {

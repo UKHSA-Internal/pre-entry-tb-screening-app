@@ -62,15 +62,15 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
       logger.info("Validated clinic Id is a support clinicId");
     }
 
-    const existingApplicants = await ApplicantDbOps.findByPassportId(
+    const existingApplicant = await ApplicantDbOps.findByPassportId(
       parsedBody.countryOfIssue,
       parsedBody.passportNumber,
     );
 
-    if (existingApplicants.length) {
-      logger.error("An applicant with similar information already exists");
-      return createHttpResponse(400, {
-        message: "A record with this applicant details has already been saved",
+    if (existingApplicant) {
+      logger.info("An applicant with similar information already exists");
+      return createHttpResponse(200, {
+        ...existingApplicant.toJson(),
       });
     }
 
@@ -78,7 +78,6 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
     try {
       applicant = await ApplicantDbOps.createNewApplicant({
         ...parsedBody,
-        applicationId,
         createdBy,
       });
     } catch (error) {
@@ -87,7 +86,7 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
       throw error;
     }
 
-    return createHttpResponse(200, {
+    return createHttpResponse(201, {
       ...applicant.toJson(),
     });
   } catch (err: unknown) {
