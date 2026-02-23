@@ -44,7 +44,6 @@ def migrate_item(args):
 
     # --------------- APPLICATION RECORD CHANGES SECTION ---------------
     # 3. Workout application status
-    # TODO: shouldn't it include all other SKs as they also contain old applicationId?!
     response = application_table.get_item(
         Key={"pk": applicationId, "sk": "APPLICATION#ROOT"}
     )
@@ -143,8 +142,6 @@ def remove_original_applicants(dynamodb, applicant_table, id_list):
         with applicant_table.batch_writer() as ddb_batch:
             for key in ids25:
                 ddb_batch.delete_item(Key=key)
-
-        print(f"removed ids: {[item['pk'].split('#')[1] for item in ids25]}")
 
 
 def scan_applicant_table(statistics, dynamodb=None):
