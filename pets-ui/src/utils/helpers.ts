@@ -242,7 +242,7 @@ const formatDateForDisplay = (date: DateType): string => {
 };
 
 const convertDateStrToObj = (date?: string): DateType => {
-  if (date && date?.includes("T")) {
+  if (date?.includes("T")) {
     return {
       year: date.split("-")[0],
       month: date.split("-")[1],
