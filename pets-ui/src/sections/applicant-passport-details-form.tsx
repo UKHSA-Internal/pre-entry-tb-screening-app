@@ -20,6 +20,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant, selectApplication } from "@/redux/store";
 import { DateType, ReduxApplicantDetailsType } from "@/types";
+import { countryList } from "@/utils/countryList";
 import { ButtonClass, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import {
@@ -28,7 +29,7 @@ import {
   validateDate,
   validatePassportIssueDate,
 } from "@/utils/helpers";
-import { countryList, formRegex } from "@/utils/records";
+import { formRegex } from "@/utils/records";
 
 interface ApplicantPassportDetailsData {
   passportNumber: string;

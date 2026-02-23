@@ -8,7 +8,7 @@ async function computeBase64SHA256(file: File) {
   const arrayBuffer = await file.arrayBuffer();
   const hashBuffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hash = btoa(String.fromCharCode(...hashArray));
+  const hash = btoa(String.fromCodePoint(...hashArray));
   return hash;
 }
 

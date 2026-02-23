@@ -21,10 +21,11 @@ import {
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant, selectApplication } from "@/redux/store";
 import { DateType, ReduxApplicantDetailsType } from "@/types";
+import { countryList } from "@/utils/countryList";
 import { ButtonClass, RadioIsInline, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { standardiseDayOrMonth, validateDate } from "@/utils/helpers";
-import { countryList, formRegex } from "@/utils/records";
+import { formRegex } from "@/utils/records";
 
 interface ApplicantPersonalDetailsData {
   fullName: string;

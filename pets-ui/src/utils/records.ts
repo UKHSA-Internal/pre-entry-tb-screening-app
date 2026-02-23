@@ -1,5 +1,3 @@
-import { countryList } from "./countryList";
-
 const attributeToComponentId: { [key: string]: string } = {
   fullName: "name",
   passportNumber: "passport-number",
@@ -312,7 +310,6 @@ const legacyVisaOptions = [
 
 export {
   attributeToComponentId,
-  countryList,
   dateEntryMustBeInTheFuture,
   dateEntryMustBeInThePast,
   dateEntryNames,

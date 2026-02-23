@@ -59,7 +59,7 @@ const SputumSummary = () => {
         setSample3CultureResults,
       ];
 
-      sampleKeys.forEach((sampleKey) => {
+      for (const sampleKey of sampleKeys) {
         const sample = sputumData[sampleKey];
 
         const hasCollectionDate =
@@ -102,7 +102,7 @@ const SputumSummary = () => {
 
           sputumSamples[sampleKey] = sampleData;
         }
-      });
+      }
 
       if (Object.keys(sputumSamples).length > 0) {
         const response = await postSputumDetails(
@@ -115,7 +115,7 @@ const SputumSummary = () => {
           dispatch(setSputumVersion(response.data.version));
         }
 
-        sampleKeys.forEach((sampleKey, index) => {
+        for (const [index, sampleKey] of sampleKeys.entries()) {
           const sample = sputumData[sampleKey];
 
           if (
@@ -147,7 +147,7 @@ const SputumSummary = () => {
               }),
             );
           }
-        });
+        }
       }
 
       const allSamplesComplete = [sputumData.sample1, sputumData.sample2, sputumData.sample3].every(
