@@ -30,7 +30,7 @@ export default function TbCertificatePrintPage() {
     () => (
       <CertificateTemplate
         applicantData={applicantData}
-        applicationData={applicationData}
+        applicationId={applicationData.applicationId}
         tbCertificateData={tbCertificateData}
         travelData={travelData}
         medicalScreeningData={medicalScreeningData}

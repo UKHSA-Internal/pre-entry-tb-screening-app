@@ -5,7 +5,7 @@ import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTravel } from "@/redux/store";
 import ApplicantTravelVisaCategory from "@/sections/applicant-travel-visa-category";
-import { ApplicationStatus } from "@/utils/enums";
+import { TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function TravelVisaCategoryPage() {
@@ -25,7 +25,7 @@ export default function TravelVisaCategoryPage() {
   let backLinkTo: string;
   if (fromParam === "/check-travel-information") {
     backLinkTo = "/check-travel-information";
-  } else if (travel.status === ApplicationStatus.COMPLETE) {
+  } else if (travel.status === TaskStatus.COMPLETE) {
     backLinkTo = "/tb-certificate-summary";
   } else {
     backLinkTo = "/tracker";

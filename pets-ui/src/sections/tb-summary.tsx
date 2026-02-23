@@ -22,7 +22,7 @@ import {
   selectTravel,
 } from "@/redux/store";
 import { setTbCertificateStatus } from "@/redux/tbCertificateSlice";
-import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 import {
   calculateCertificateExpiryDate,
   calculateCertificateIssueDate,
@@ -59,11 +59,9 @@ const TbSummary = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const isFromConfirmation = searchParams.get("from") === "/tb-screening-complete";
-  const isCertificateIssued = tbCertificateData.status === ApplicationStatus.COMPLETE;
+  const isCertificateIssued = tbCertificateData.status === TaskStatus.COMPLETE;
   const summaryStatus =
-    isFromConfirmation || isCertificateIssued
-      ? ApplicationStatus.IN_PROGRESS
-      : tbCertificateData.status;
+    isFromConfirmation || isCertificateIssued ? TaskStatus.IN_PROGRESS : tbCertificateData.status;
 
   const isIssued = tbCertificateData.isIssued === YesOrNo.YES;
 
@@ -110,7 +108,7 @@ const TbSummary = () => {
         throw new Error("certificateIssued field missing");
       }
 
-      dispatch(setTbCertificateStatus(ApplicationStatus.COMPLETE));
+      dispatch(setTbCertificateStatus(TaskStatus.COMPLETE));
       navigate("/tb-screening-complete");
     } catch (error) {
       console.error(error);
@@ -412,8 +410,8 @@ const TbSummary = () => {
         </div>
       )}
 
-      {(tbCertificateData.status == ApplicationStatus.NOT_YET_STARTED ||
-        tbCertificateData.status == ApplicationStatus.IN_PROGRESS) && (
+      {(tbCertificateData.status == TaskStatus.NOT_YET_STARTED ||
+        tbCertificateData.status == TaskStatus.IN_PROGRESS) && (
         <Button
           id="submit"
           class={ButtonClass.DEFAULT}
@@ -421,8 +419,8 @@ const TbSummary = () => {
           handleClick={handleSubmit}
         />
       )}
-      {(tbCertificateData.status == ApplicationStatus.COMPLETE ||
-        tbCertificateData.status == ApplicationStatus.NOT_REQUIRED) && (
+      {(tbCertificateData.status == TaskStatus.COMPLETE ||
+        tbCertificateData.status == TaskStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
           class={ButtonClass.DEFAULT}

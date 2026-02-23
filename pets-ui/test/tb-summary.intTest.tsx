@@ -8,7 +8,7 @@ import { petsApi } from "@/api/api";
 import { ApplicantPhotoProvider } from "@/context/applicantPhotoContext";
 import TbSummaryPage from "@/pages/tb-summary";
 import { ReduxTbCertificateType } from "@/types";
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -29,7 +29,7 @@ afterEach(() => {
 });
 
 const tbState: ReduxTbCertificateType = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   isIssued: YesOrNo.YES,
   comments: "Extra Details",
   certificateDate: {
@@ -51,9 +51,13 @@ const tbState: ReduxTbCertificateType = {
 };
 
 const completeState = {
-  application: { applicationId: "abc-123", dateCreated: "" },
+  application: {
+    applicationId: "abc-123",
+    dateCreated: { year: "2010", month: "1", day: "1" },
+    applicationStatus: ApplicationStatus.IN_PROGRESS,
+  },
   applicant: {
-    status: ApplicationStatus.COMPLETE,
+    status: TaskStatus.COMPLETE,
     fullName: "John Smith",
     sex: "Male",
     dateOfBirth: { year: "1970", month: "1", day: "1" },
@@ -72,7 +76,7 @@ const completeState = {
     applicantPhotoFileName: "photo.jpg",
   },
   travel: {
-    status: ApplicationStatus.COMPLETE,
+    status: TaskStatus.COMPLETE,
     visaCategory: "Work",
     applicantUkAddress1: "1 Street",
     applicantUkAddress2: "",
@@ -84,7 +88,7 @@ const completeState = {
   },
   tbCertificate: {
     ...tbState,
-    status: ApplicationStatus.IN_PROGRESS,
+    status: TaskStatus.IN_PROGRESS,
   },
 };
 
@@ -159,7 +163,11 @@ describe("TBSummaryPage", () => {
 
   describe("TB Summary Data & post request", () => {
     const preloadedState = {
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
       tbCertificate: { ...tbState },
     };
 

@@ -4,7 +4,7 @@ import { Mock } from "vitest";
 
 import MedicalScreeningPage from "@/pages/medical-screening";
 import MedicalScreeningForm from "@/sections/medical-screening-form";
-import { ApplicationStatus } from "@/utils/enums";
+import { TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -22,7 +22,7 @@ vi.mock("react-helmet-async", () => ({
 }));
 
 const applicantState = {
-  status: ApplicationStatus.COMPLETE,
+  status: TaskStatus.COMPLETE,
   fullName: "Full Name",
   sex: "Male",
   dateOfBirth: { year: "1979", month: "10", day: "20" },

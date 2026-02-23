@@ -6,7 +6,7 @@ import { Mock, vi } from "vitest";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import CheckApplicantPhotoPage from "@/pages/check-applicant-photo";
 import CheckApplicantPhoto from "@/sections/check-applicant-photo";
-import { ApplicationStatus, ImageType } from "@/utils/enums";
+import { ApplicationStatus, ImageType, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 import uploadFile from "@/utils/uploadFile";
 
@@ -118,7 +118,7 @@ describe("CheckApplicantPhoto", () => {
 
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         fullName: "",
         sex: "",
         dateOfBirth: { year: "", month: "", day: "" },
@@ -136,7 +136,11 @@ describe("CheckApplicantPhoto", () => {
         postcode: "",
         applicantPhotoFileName: "",
       },
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
     };
 
     renderWithProviders(<CheckApplicantPhoto />, { preloadedState });
@@ -163,7 +167,7 @@ describe("CheckApplicantPhoto", () => {
 
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         fullName: "",
         sex: "",
         dateOfBirth: { year: "", month: "", day: "" },
@@ -181,7 +185,11 @@ describe("CheckApplicantPhoto", () => {
         postcode: "",
         applicantPhotoFileName: "",
       },
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
     };
 
     renderWithProviders(<CheckApplicantPhoto />, { preloadedState });

@@ -7,11 +7,16 @@ import Button from "@/components/button/button";
 import Summary from "@/components/summary/summary";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { setApplicantDetailsStatus } from "@/redux/applicantSlice";
-import { setApplicationDetails } from "@/redux/applicationSlice";
+import { setApplicationId, setDateCreated } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
-import { ApplicationStatus, ButtonClass, ImageType } from "@/utils/enums";
-import { formatDateForDisplay, getCountryName, standardiseDayOrMonth } from "@/utils/helpers";
+import { ButtonClass, ImageType, TaskStatus } from "@/utils/enums";
+import {
+  convertDateStrToObj,
+  formatDateForDisplay,
+  getCountryName,
+  standardiseDayOrMonth,
+} from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 import uploadFile from "@/utils/uploadFile";
 
@@ -25,14 +30,15 @@ const ApplicantReview = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { applicantPhotoFile } = useApplicantPhoto();
-  const isComplete = applicantData.status === ApplicationStatus.COMPLETE;
-  const summaryStatus = isComplete ? ApplicationStatus.IN_PROGRESS : applicantData.status;
+  const isComplete = applicantData.status === TaskStatus.COMPLETE;
+  const summaryStatus = isComplete ? TaskStatus.IN_PROGRESS : applicantData.status;
 
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
       const applicationRes = await createNewApplication();
-      dispatch(setApplicationDetails(applicationRes.data));
+      dispatch(setApplicationId(applicationRes.data.applicationId));
+      dispatch(setDateCreated(convertDateStrToObj(applicationRes.data.dateCreated)));
 
       const dateOfBirthStr = `${applicantData.dateOfBirth.year}-${standardiseDayOrMonth(applicantData.dateOfBirth.month)}-${standardiseDayOrMonth(applicantData.dateOfBirth.day)}`;
       const issueDateStr = `${applicantData.passportIssueDate.year}-${standardiseDayOrMonth(applicantData.passportIssueDate.month)}-${standardiseDayOrMonth(applicantData.passportIssueDate.day)}`;
@@ -66,7 +72,7 @@ const ApplicantReview = () => {
         );
       }
 
-      dispatch(setApplicantDetailsStatus(ApplicationStatus.COMPLETE));
+      dispatch(setApplicantDetailsStatus(TaskStatus.COMPLETE));
       navigate("/visa-applicant-details-confirmed");
     } catch (error) {
       console.error(error);
@@ -182,8 +188,8 @@ const ApplicantReview = () => {
       {isLoading && <Spinner />}
       <Summary status={summaryStatus} summaryElements={summaryData} />
 
-      {(applicantData.status == ApplicationStatus.NOT_YET_STARTED ||
-        applicantData.status == ApplicationStatus.IN_PROGRESS) && (
+      {(applicantData.status == TaskStatus.NOT_YET_STARTED ||
+        applicantData.status == TaskStatus.IN_PROGRESS) && (
         <Button
           id="submit"
           class={ButtonClass.DEFAULT}
@@ -191,8 +197,8 @@ const ApplicantReview = () => {
           handleClick={handleSubmit}
         />
       )}
-      {(applicantData.status == ApplicationStatus.COMPLETE ||
-        applicantData.status == ApplicationStatus.NOT_REQUIRED) && (
+      {(applicantData.status == TaskStatus.COMPLETE ||
+        applicantData.status == TaskStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
           class={ButtonClass.DEFAULT}

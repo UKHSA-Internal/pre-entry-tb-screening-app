@@ -11,7 +11,7 @@ import {
   ReduxSputumSampleType,
   ReduxSputumType,
 } from "@/types";
-import { ApplicationStatus, PositiveOrNegative } from "@/utils/enums";
+import { ApplicationStatus, PositiveOrNegative, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -71,7 +71,7 @@ const submittedSputumSample = {
 };
 
 const defaultApplicantData: ReduxApplicantDetailsType & { applicationId: string } = {
-  status: ApplicationStatus.IN_PROGRESS,
+  status: TaskStatus.IN_PROGRESS,
   fullName: "Test User One",
   sex: "Female",
   dateOfBirth: { day: "10", month: "5", year: "1985" },
@@ -90,7 +90,7 @@ const defaultApplicantData: ReduxApplicantDetailsType & { applicationId: string 
 };
 
 const initialEmptySputumState: ReduxSputumType = {
-  status: ApplicationStatus.IN_PROGRESS,
+  status: TaskStatus.IN_PROGRESS,
   sample1: JSON.parse(JSON.stringify(initialSputumSampleEmpty)) as ReduxSputumSampleType,
   sample2: JSON.parse(JSON.stringify(initialSputumSampleEmpty)) as ReduxSputumSampleType,
   sample3: JSON.parse(JSON.stringify(initialSputumSampleEmpty)) as ReduxSputumSampleType,
@@ -101,7 +101,8 @@ const preloadedStateWithEmptySputum = {
   applicant: defaultApplicantData,
   application: {
     applicationId: "test-app-123",
-    dateCreated: "2024-01-01",
+    dateCreated: { year: "2010", month: "1", day: "1" },
+    applicationStatus: ApplicationStatus.IN_PROGRESS,
   },
   sputum: initialEmptySputumState,
 };
@@ -110,10 +111,11 @@ const preloadedStateWithPartialSputum = {
   applicant: defaultApplicantData,
   application: {
     applicationId: "test-app-123",
-    dateCreated: "2024-01-01",
+    dateCreated: { year: "2010", month: "1", day: "1" },
+    applicationStatus: ApplicationStatus.IN_PROGRESS,
   },
   sputum: {
-    status: ApplicationStatus.IN_PROGRESS,
+    status: TaskStatus.IN_PROGRESS,
     sample1: {
       collection: {
         dateOfSample: { day: "5", month: "5", year: "2024" },
@@ -134,10 +136,11 @@ const preloadedStateWithSubmittedSample = {
   applicant: defaultApplicantData,
   application: {
     applicationId: "test-app-123",
-    dateCreated: "2024-01-01",
+    dateCreated: { year: "2010", month: "1", day: "1" },
+    applicationStatus: ApplicationStatus.IN_PROGRESS,
   },
   sputum: {
-    status: ApplicationStatus.IN_PROGRESS,
+    status: TaskStatus.IN_PROGRESS,
     sample1: JSON.parse(JSON.stringify(submittedSputumSample)) as ReduxSputumSampleType,
     sample2: JSON.parse(JSON.stringify(initialSputumSampleEmpty)) as ReduxSputumSampleType,
     sample3: JSON.parse(JSON.stringify(initialSputumSampleEmpty)) as ReduxSputumSampleType,
@@ -149,10 +152,11 @@ const preloadedStateWithMixedSamples = {
   applicant: defaultApplicantData,
   application: {
     applicationId: "test-app-123",
-    dateCreated: "2024-01-01",
+    dateCreated: { year: "2010", month: "1", day: "1" },
+    applicationStatus: ApplicationStatus.IN_PROGRESS,
   },
   sputum: {
-    status: ApplicationStatus.IN_PROGRESS,
+    status: TaskStatus.IN_PROGRESS,
     sample1: JSON.parse(JSON.stringify(submittedSputumSample)) as ReduxSputumSampleType,
     sample2: {
       collection: {
@@ -350,7 +354,7 @@ describe("SputumCollectionForm", () => {
       expect(mockPostSputumDetails).not.toHaveBeenCalled();
 
       const sputumState = store.getState().sputum;
-      expect(sputumState.status).toBe(ApplicationStatus.IN_PROGRESS);
+      expect(sputumState.status).toBe(TaskStatus.IN_PROGRESS);
       expect(sputumState.sample1.collection.dateOfSample).toEqual({
         day: "15",
         month: "7",
@@ -430,7 +434,7 @@ describe("SputumCollectionForm", () => {
       expect(mockPostSputumDetails).not.toHaveBeenCalled();
 
       const sputumState = store.getState().sputum;
-      expect(sputumState.status).toBe(ApplicationStatus.IN_PROGRESS);
+      expect(sputumState.status).toBe(TaskStatus.IN_PROGRESS);
       expect(sputumState.sample1.collection.submittedToDatabase).toBe(false);
       expect(sputumState.sample2.collection.submittedToDatabase).toBe(false);
       expect(sputumState.sample3.collection.submittedToDatabase).toBe(false);
