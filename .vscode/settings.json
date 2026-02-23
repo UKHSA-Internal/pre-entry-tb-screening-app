@@ -14,6 +14,5 @@
     "yaml.schemas": {
         "https://www.artillery.io/schema.json": []
     },
-    "snyk.advanced.organization": "d8274cef-c73d-4890-84d3-ccd2409cdf46",
-    "snyk.advanced.autoSelectOrganization": true
+    "snyk.advanced.autoSelectOrganization": false
 }

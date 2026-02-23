@@ -1,6 +1,6 @@
 import {
   DateType,
-  ReduxMedicalScreeningType,
+  ReduxApplicantDetailsType,
   ReduxSputumRequirementType,
   ReduxSputumType,
 } from "@/types";
@@ -241,6 +241,24 @@ const formatDateForDisplay = (date: DateType): string => {
   return `${dayNumber} ${monthName} ${dateToDisplay.getFullYear()}`;
 };
 
+const convertDateStrToObj = (date?: string): DateType => {
+  if (date?.includes("T")) {
+    return {
+      year: date.split("-")[0],
+      month: date.split("-")[1],
+      day: date.split("-")[2].split("T")[0],
+    };
+  } else if (date) {
+    return {
+      year: date.split("-")[0],
+      month: date.split("-")[1],
+      day: date.split("-")[2],
+    };
+  } else {
+    return { year: "", month: "", day: "" };
+  }
+};
+
 const calculateCertificateExpiryDate = (
   issueDate: DateType,
   hasCloseContactWithTb: boolean,
@@ -349,11 +367,13 @@ const calculateSputumOutcome = (
   }
 };
 
-const isChildUnder11 = (medicalScreeningData: ReduxMedicalScreeningType) => {
-  const age = medicalScreeningData?.age;
-  if (!age) return "No";
-  const parsedAge = typeof age === "string" ? parseInt(age) : age;
-  return parsedAge < 11 ? "Yes" : "No";
+const isChildUnder11 = (applicantData: ReduxApplicantDetailsType) => {
+  const applicantAge = calculateApplicantAge(applicantData.dateOfBirth);
+  if (typeof applicantAge.ageInYears == "number" && applicantAge.ageInYears < 11) {
+    return "Yes";
+  } else {
+    return "No";
+  }
 };
 
 const calculateApplicantAge = (dateOfBirth: DateType) => {
@@ -406,6 +426,7 @@ export {
   calculateCertificateExpiryDate,
   calculateCertificateIssueDate,
   calculateSputumOutcome,
+  convertDateStrToObj,
   formatDateForDisplay,
   formatDateType,
   getCountryName,

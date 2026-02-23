@@ -42,6 +42,29 @@ describe("Test for Posting Applicant into DB", () => {
     expect(JSON.parse(response.body)).toMatchObject(newApplicantDetails);
   });
 
+  test("Saving a new Applicant Successfully: Support ClinicId", async () => {
+    // Arrange
+    const event: PostApplicantEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+      parsedBody: newApplicantDetails,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: {
+          ...mockAPIGwEvent.requestContext.authorizer,
+          clinicId: process.env.SUPPORT_CLINIC_ID as string,
+        },
+      },
+    };
+
+    // Act
+    const response = await postApplicantHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toMatchObject(newApplicantDetails);
+  });
+
   test("Missing application throws a 400 error", async () => {
     // Arrange
     const parsedBody: PostApplicantEvent["parsedBody"] = {
@@ -63,7 +86,7 @@ describe("Test for Posting Applicant into DB", () => {
     });
   });
 
-  test("Mismatch in Clinic ID throws a 400 error", async () => {
+  test("Mismatch in Clinic ID throws a 403 error", async () => {
     // Arrange
     const parsedBody: PostApplicantEvent["parsedBody"] = {
       ...newApplicantDetails,
@@ -82,6 +105,32 @@ describe("Test for Posting Applicant into DB", () => {
     expect(response.statusCode).toBe(403);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Clinic Id mismatch",
+    });
+  });
+
+  test("Missing Clinic ID throws a 400 error", async () => {
+    // Arrange
+    const parsedBody: PostApplicantEvent["parsedBody"] = {
+      ...newApplicantDetails,
+    };
+
+    const event: PostApplicantEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[2].applicationId },
+      parsedBody,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { ...mockAPIGwEvent.requestContext.authorizer, clinicId: "" },
+      },
+    };
+
+    // Act
+    const response = await postApplicantHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Clinic Id missing",
     });
   });
 

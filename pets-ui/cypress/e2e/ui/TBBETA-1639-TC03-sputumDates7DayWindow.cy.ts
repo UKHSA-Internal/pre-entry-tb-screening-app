@@ -347,8 +347,6 @@ describe("PETS Date Validation: Valid Scenario - Edge of 7-Day Window", () => {
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
-      .selectPregnancyStatus("No")
-      .selectMenstrualPeriods("No")
       .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.")
       .submitForm();
 

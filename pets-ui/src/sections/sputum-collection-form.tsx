@@ -23,7 +23,7 @@ import {
 } from "@/redux/sputumSlice";
 import { selectSputum } from "@/redux/store";
 import { DateType } from "@/types";
-import { ApplicationStatus, ButtonClass, SputumCollectionMethod } from "@/utils/enums";
+import { ButtonClass, SputumCollectionMethod, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { validateDate } from "@/utils/helpers";
 import { dateValidationMessages } from "@/utils/records";
@@ -225,7 +225,7 @@ const SputumCollectionForm = () => {
       return;
     }
 
-    dispatch(setSputumStatus(ApplicationStatus.IN_PROGRESS));
+    dispatch(setSputumStatus(TaskStatus.IN_PROGRESS));
 
     const sampleKeys = ["sample1", "sample2", "sample3"] as const;
     const dispatchActions = [setSample1Collection, setSample2Collection, setSample3Collection];

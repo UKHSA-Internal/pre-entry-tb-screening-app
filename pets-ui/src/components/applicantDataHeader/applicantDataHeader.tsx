@@ -1,72 +1,65 @@
-import React from "react";
-
 import { ReduxApplicantDetailsType } from "@/types";
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus } from "@/utils/enums";
+import { formatDateForDisplay } from "@/utils/helpers";
 
 interface ApplicantDataHeaderProps {
   applicantData: ReduxApplicantDetailsType;
-  tbCertificateStatus: ApplicationStatus;
-  tbCertificateIsIssued: YesOrNo;
+  applicationStatus: ApplicationStatus;
 }
 
 export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderProps>) {
-  let overallTbScreeningStatus: ApplicationStatus;
-
-  if (
-    props.tbCertificateStatus === ApplicationStatus.COMPLETE &&
-    props.tbCertificateIsIssued === YesOrNo.YES
-  ) {
-    overallTbScreeningStatus = ApplicationStatus.CERTIFICATE_ISSUED;
-  } else if (
-    props.tbCertificateStatus === ApplicationStatus.COMPLETE &&
-    props.tbCertificateIsIssued === YesOrNo.NO
-  ) {
-    overallTbScreeningStatus = ApplicationStatus.CERTIFICATE_NOT_ISSUED;
-  } else {
-    overallTbScreeningStatus = ApplicationStatus.IN_PROGRESS;
-  }
-
-  const certificateNotIssuedStyle: React.CSSProperties = {
-    maxWidth: "none",
-    whiteSpace: "nowrap",
-  };
-
   return (
-    <dl className="govuk-summary-list">
-      <div className="govuk-summary-list__row">
-        <dt className="govuk-summary-list__key">Name</dt>
-        <dd className="govuk-summary-list__value">{props.applicantData.fullName}</dd>
-      </div>
-
-      <div className="govuk-summary-list__row">
-        <dt className="govuk-summary-list__key">Date of birth</dt>
-        <dd className="govuk-summary-list__value">
-          {props.applicantData.dateOfBirth.day}/{props.applicantData.dateOfBirth.month}/
-          {props.applicantData.dateOfBirth.year}
-        </dd>
-      </div>
-
-      <div className="govuk-summary-list__row">
-        <dt className="govuk-summary-list__key">Passport number</dt>
-        <dd className="govuk-summary-list__value">{props.applicantData.passportNumber}</dd>
-      </div>
-
-      <div className="govuk-summary-list__row">
-        <dt className="govuk-summary-list__key">TB screening</dt>
-        <dd className="govuk-summary-list__value">
-          {overallTbScreeningStatus === ApplicationStatus.CERTIFICATE_ISSUED && (
-            <strong className="govuk-tag govuk-tag--green">Certificate issued</strong>
-          )}
-          {overallTbScreeningStatus === ApplicationStatus.CERTIFICATE_NOT_ISSUED && (
-            <strong className="govuk-tag govuk-tag--red" style={certificateNotIssuedStyle}>
-              Certificate not issued
-            </strong>
-          )}
-          {overallTbScreeningStatus === ApplicationStatus.IN_PROGRESS && (
-            <strong className="govuk-tag govuk-tag--yellow">In progress</strong>
-          )}
-        </dd>
-      </div>
-    </dl>
+    <table className="govuk-table">
+      <tbody className="govuk-table__body">
+        <tr className="govuk-table__row">
+          <th scope="row" className="govuk-table__header">
+            Name
+          </th>
+          <td className="govuk-table__cell progress-tracker-header-cells">
+            {props.applicantData.fullName}
+          </td>
+        </tr>
+        <tr className="govuk-table__row">
+          <th scope="row" className="govuk-table__header">
+            Date of birth
+          </th>
+          <td className="govuk-table__cell progress-tracker-header-cells">
+            {formatDateForDisplay(props.applicantData.dateOfBirth)}
+          </td>
+        </tr>
+        <tr className="govuk-table__row">
+          <th scope="row" className="govuk-table__header">
+            Passport number
+          </th>
+          <td className="govuk-table__cell progress-tracker-header-cells">
+            {props.applicantData.passportNumber}
+          </td>
+        </tr>
+        <tr className="govuk-table__row">
+          <th scope="row" className="govuk-table__header">
+            TB screening
+          </th>
+          <td className="govuk-table__cell progress-tracker-header-cells">
+            {props.applicationStatus === ApplicationStatus.CERTIFICATE_AVAILABLE && (
+              <strong className="govuk-tag govuk-tag--green">Certificate issued</strong>
+            )}
+            {props.applicationStatus === ApplicationStatus.CERTIFICATE_NOT_ISSUED && (
+              <strong className="govuk-tag govuk-tag--red progress-tracker-task-nowrap">
+                Certificate not issued
+              </strong>
+            )}
+            {props.applicationStatus === ApplicationStatus.CANCELLED && (
+              <strong className="govuk-tag govuk-tag--orange progress-tracker-task-nowrap">
+                Screening cancelled
+              </strong>
+            )}
+            {(props.applicationStatus === ApplicationStatus.IN_PROGRESS ||
+              props.applicationStatus === ApplicationStatus.NULL) && (
+              <strong className="govuk-tag govuk-tag--yellow">In progress</strong>
+            )}
+          </td>
+        </tr>
+      </tbody>
+    </table>
   );
 }

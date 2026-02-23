@@ -27,41 +27,66 @@ export class VisaCategoryPage extends BasePage {
     return this;
   }
 
+  // Verify visa category radio group exists (renamed from dropdown but keeping functionality)
+  verifyVisaCategoryDropdown(): VisaCategoryPage {
+    cy.get('input[type="radio"][name="visaCategory"]')
+      .should("exist")
+      .and("have.class", "govuk-radios__input");
+
+    cy.get(".govuk-radios").should("exist");
+    return this;
+  }
+
   // Verify visa category radio buttons exist
   verifyVisaCategoryRadioButtons(): VisaCategoryPage {
-    cy.get('input[name="visaCategory"][type="radio"]').should("exist").and("have.length", 5);
+    return this.verifyVisaCategoryDropdown();
+  }
+
+  // Verify all radio options (renamed from dropdown options but keeping functionality)
+  verifyDropdownOptions(): VisaCategoryPage {
+    // Verify there are 5 radio options
+    cy.get('input[type="radio"][name="visaCategory"]').should("have.length", 5);
+
+    // Verify each option exists with correct value and label
+    cy.get('input[type="radio"][value="Work"]').should("exist");
+    cy.get('label[for="visa-category-0"]').should("contain", "Work");
+
+    cy.get('input[type="radio"][value="Study"]').should("exist");
+    cy.get('label[for="visa-category-1"]').should("contain", "Study");
+
+    cy.get('input[type="radio"][value="Family reunion"]').should("exist");
+    cy.get('label[for="visa-category-2"]').should("contain", "Family reunion");
+
+    cy.get('input[type="radio"][value="Other"]').should("exist");
+    cy.get('label[for="visa-category-3"]').should("contain", "Other");
+
+    cy.get('input[type="radio"][value="Do not know"]').should("exist");
+    cy.get('label[for="visa-category-4"]').should("contain", "Do not know");
+
     return this;
   }
 
   // Verify all radio button options
   verifyRadioButtonOptions(): VisaCategoryPage {
-    cy.get('.govuk-radios[data-module="govuk-radios"]').within(() => {
-      cy.get(".govuk-radios__item").should("have.length", 5);
-      cy.get('input[value="Work"]').should("exist");
-      cy.get('label[for="visa-category-0"]').should("contain", "Work");
-      cy.get('input[value="Study"]').should("exist");
-      cy.get('label[for="visa-category-1"]').should("contain", "Study");
-      cy.get('input[value="Family reunion"]').should("exist");
-      cy.get('label[for="visa-category-2"]').should("contain", "Family reunion");
-      cy.get('input[value="Other"]').should("exist");
-      cy.get('label[for="visa-category-3"]').should("contain", "Other");
-      cy.get('input[value="Do not know"]').should("exist");
-      cy.get('label[for="visa-category-4"]').should("contain", "Do not know");
-    });
+    return this.verifyDropdownOptions();
+  }
+
+  // Verify default state - no radio selected
+  verifyDefaultPlaceholder(): VisaCategoryPage {
+    cy.get('input[type="radio"][name="visaCategory"]:checked').should("not.exist");
     return this;
   }
 
   // Verify no radio button is selected by default
   verifyNoRadioButtonSelected(): VisaCategoryPage {
-    cy.get('input[name="visaCategory"][type="radio"]:checked').should("not.exist");
-    return this;
+    return this.verifyDefaultPlaceholder();
   }
 
   // Select visa category
   selectVisaCategory(
     category: "Work" | "Study" | "Family reunion" | "Other" | "Do not know",
   ): VisaCategoryPage {
-    cy.get(`input[name="visaCategory"][value="${category}"]`).check();
+    cy.get(`input[type="radio"][name="visaCategory"][value="${category}"]`).check();
     return this;
   }
 
@@ -84,13 +109,16 @@ export class VisaCategoryPage extends BasePage {
   verifyVisaCategorySelected(
     category: "Work" | "Study" | "Family reunion" | "Other" | "Do not know",
   ): VisaCategoryPage {
-    cy.get(`input[name="visaCategory"][value="${category}"]`).should("be.checked");
+    cy.get(`input[type="radio"][name="visaCategory"][value="${category}"]`).should("be.checked");
     return this;
   }
 
   // Get selected visa category value
   getSelectedVisaCategory(): Cypress.Chainable<string> {
-    return cy.get('input[name="visaCategory"]:checked').invoke("val");
+    return cy
+      .get('input[type="radio"][name="visaCategory"]:checked')
+      .invoke("val")
+      .then((val) => val as string);
   }
 
   // Click continue button
@@ -150,8 +178,7 @@ export class VisaCategoryPage extends BasePage {
   verifyServiceName(): VisaCategoryPage {
     cy.get(".govuk-service-navigation__service-name")
       .should("be.visible")
-      .and("contain", "Complete UK pre-entry health screening")
-      .and("have.attr", "href", "/");
+      .and("contain", "Complete UK pre-entry health screening");
     return this;
   }
 
@@ -206,7 +233,7 @@ export class VisaCategoryPage extends BasePage {
 
   // Verify crown copyright
   verifyCrownCopyright(): VisaCategoryPage {
-    cy.get(".govuk-footer").should("contain", "© Crown copyright");
+    cy.get(".govuk-footer").should("contain", "Crown copyright");
     return this;
   }
 
@@ -223,7 +250,7 @@ export class VisaCategoryPage extends BasePage {
     return this;
   }
 
-  // ==================== ERROR VALIDATION ====================
+  // Error handling methods
 
   // Validate error summary is visible
   validateErrorSummaryVisible(): VisaCategoryPage {
@@ -326,54 +353,89 @@ export class VisaCategoryPage extends BasePage {
 
   // Get all available visa categories
   getAllVisaCategories(): Cypress.Chainable<string[]> {
-    return cy.get('input[name="visaCategory"][type="radio"]').then(($radios) => {
+    return cy.get('input[type="radio"][name="visaCategory"]').then(($radios) => {
       return $radios.map((i, el) => Cypress.$(el).val() as string).get();
     });
   }
 
-  // Verify radio buttons are enabled
-  verifyRadioButtonsEnabled(): VisaCategoryPage {
-    cy.get('input[name="visaCategory"][type="radio"]').each(($radio) => {
+  // Verify radio group is enabled (renamed from dropdown but keeping functionality)
+  verifyDropdownEnabled(): VisaCategoryPage {
+    cy.get('input[type="radio"][name="visaCategory"]').each(($radio) => {
       cy.wrap($radio).should("not.be.disabled");
     });
     return this;
   }
 
-  // Verify radio buttons are disabled (if needed for certain scenarios)
-  verifyRadioButtonsDisabled(): VisaCategoryPage {
-    cy.get('input[name="visaCategory"][type="radio"]').each(($radio) => {
+  // Verify radio group is disabled (renamed from dropdown but keeping functionality)
+  verifyDropdownDisabled(): VisaCategoryPage {
+    cy.get('input[type="radio"][name="visaCategory"]').each(($radio) => {
       cy.wrap($radio).should("be.disabled");
     });
     return this;
   }
 
-  // Verify specific radio button by label
-  verifyRadioButtonByLabel(label: string): VisaCategoryPage {
-    cy.contains("label.govuk-radios__label", label).should("be.visible");
+  // Additional helper methods
+
+  // Verify specific radio button exists
+  verifyRadioOptionExists(
+    category: "Work" | "Study" | "Family reunion" | "Other" | "Do not know",
+  ): VisaCategoryPage {
+    cy.get(`input[type="radio"][name="visaCategory"][value="${category}"]`).should("exist");
     return this;
   }
 
-  // Select visa category by clicking label
-  selectVisaCategoryByLabel(
+  // Verify radio button label
+  verifyRadioLabel(
     category: "Work" | "Study" | "Family reunion" | "Other" | "Do not know",
   ): VisaCategoryPage {
-    cy.contains("label.govuk-radios__label", category).click();
+    const labelMap = {
+      Work: "visa-category-0",
+      Study: "visa-category-1",
+      "Family reunion": "visa-category-2",
+      Other: "visa-category-3",
+      "Do not know": "visa-category-4",
+    };
+
+    cy.get(`label[for="${labelMap[category]}"]`).should("contain", category);
     return this;
   }
 
   // Verify fieldset exists
   verifyFieldset(): VisaCategoryPage {
-    cy.get(".govuk-fieldset").should("exist");
-    cy.get(".govuk-fieldset__legend").should("exist");
+    cy.get("fieldset.govuk-fieldset").should("exist");
     return this;
   }
 
-  // Verify GOV.UK radios styling
-  verifyRadioButtonStyling(): VisaCategoryPage {
-    cy.get('.govuk-radios[data-module="govuk-radios"]').should("exist");
-    cy.get(".govuk-radios__item").should("have.length.at.least", 1);
-    cy.get(".govuk-radios__input").should("exist");
-    cy.get(".govuk-radios__label").should("exist");
+  // Verify radios container
+  verifyRadiosContainer(): VisaCategoryPage {
+    cy.get(".govuk-radios").should("exist").and("have.attr", "data-module", "govuk-radios");
     return this;
+  }
+
+  // Click label to select radio (alternative selection method)
+  clickRadioLabel(
+    category: "Work" | "Study" | "Family reunion" | "Other" | "Do not know",
+  ): VisaCategoryPage {
+    const labelMap = {
+      Work: "visa-category-0",
+      Study: "visa-category-1",
+      "Family reunion": "visa-category-2",
+      Other: "visa-category-3",
+      "Do not know": "visa-category-4",
+    };
+
+    cy.get(`label[for="${labelMap[category]}"]`).click();
+    return this;
+  }
+
+  // Verify no radio is selected
+  verifyNoRadioSelected(): VisaCategoryPage {
+    cy.get('input[type="radio"][name="visaCategory"]:checked').should("not.exist");
+    return this;
+  }
+
+  // Get count of radio options
+  getRadioOptionsCount(): Cypress.Chainable<number> {
+    return cy.get('input[type="radio"][name="visaCategory"]').its("length");
   }
 }

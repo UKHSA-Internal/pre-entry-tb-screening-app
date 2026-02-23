@@ -17,12 +17,7 @@ import {
   setTbCertificateStatus,
 } from "@/redux/tbCertificateSlice";
 import { ReduxTbCertificateType } from "@/types";
-import {
-  ApplicationStatus,
-  ButtonClass,
-  RadioIsInline,
-  TBCertNotIssuedReason,
-} from "@/utils/enums";
+import { ButtonClass, RadioIsInline, TaskStatus, TBCertNotIssuedReason } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { formRegex } from "@/utils/records";
 
@@ -42,7 +37,7 @@ const TbCertificateNotIssuedForm = () => {
     dispatch(setReasonNotIssued(data.reasonNotIssued || ""));
     dispatch(setDeclaringPhysicianName(data.declaringPhysicianName));
     dispatch(setComments(data.comments));
-    dispatch(setTbCertificateStatus(ApplicationStatus.IN_PROGRESS));
+    dispatch(setTbCertificateStatus(TaskStatus.IN_PROGRESS));
     navigate("/tb-certificate-summary");
   };
 

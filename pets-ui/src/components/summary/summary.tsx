@@ -1,4 +1,4 @@
-import { ApplicationStatus } from "@/utils/enums";
+import { TaskStatus } from "@/utils/enums";
 
 import LinkLabel from "../linkLabel/LinkLabel";
 
@@ -10,7 +10,7 @@ export type SummaryElement = {
 };
 
 interface SummaryProps {
-  status: ApplicationStatus;
+  status: TaskStatus;
   summaryElements: SummaryElement[];
 }
 
@@ -52,7 +52,7 @@ export default function Summary(props: Readonly<SummaryProps>) {
             {summaryValue(summaryElement)}
             {summaryElement.link &&
               summaryElement.link.length > 0 &&
-              props.status !== ApplicationStatus.COMPLETE && (
+              props.status !== TaskStatus.COMPLETE && (
                 <dd className="govuk-summary-list__actions">
                   <LinkLabel
                     to={summaryElement.link}
