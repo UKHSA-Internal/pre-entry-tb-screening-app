@@ -259,8 +259,12 @@ jobs:
         working-directory: "scripts/applicant_migration/"
         id: check_file_changed
         run: |
-          run_tests=$(./file_changed.sh)
-          echo "run_tests=$run_tests" >> $GITHUB_OUTPUT
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "run_tests=true" >> $GITHUB_OUTPUT
+          else
+            run_tests=$(./file_changed.sh)
+            echo "run_tests=$run_tests" >> $GITHUB_OUTPUT
+          fi
 
       - name: Setting up Python
         if: steps.check_file_changed.outputs.run_tests == 'true'
