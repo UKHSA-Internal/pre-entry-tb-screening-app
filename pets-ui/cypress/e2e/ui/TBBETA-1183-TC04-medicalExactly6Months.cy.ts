@@ -12,11 +12,8 @@ import { ApplicantSearchPage } from "../../support/page-objects/applicantSearchP
 import { ApplicantSummaryPage } from "../../support/page-objects/applicantSummaryPage";
 import { CheckVisaApplicantPhotoPage } from "../../support/page-objects/checkVisaApplicantPhotoPage";
 import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
-//import { ChestXrayPage } from "../../support/page-objects/chestXrayQuestionPage";
-//import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
-//import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
 import { TBProgressTrackerPage } from "../../support/page-objects/tbProgressTrackerPage";
 import { TravelConfirmationPage } from "../../support/page-objects/travelConfirmationPage";
 import { TravelInformationPage } from "../../support/page-objects/travelInformationPage";
@@ -38,14 +35,11 @@ describe("PETS Date Validation: BOUNDARY VALID - Medical Screening Exactly 6 Mon
   const contactInformationPage = new ContactInformationPage();
   const applicantConsentPage = new ApplicantConsentPage();
   const checkPhotoPage = new CheckVisaApplicantPhotoPage();
-  //const chestXrayPage = new ChestXrayPage();
   const travelInformationPage = new TravelInformationPage();
   const travelSummaryPage = new TravelSummaryPage();
   const travelConfirmationPage = new TravelConfirmationPage();
   const medicalScreeningPage = new MedicalScreeningPage();
   const applicantConfirmationPage = new ApplicantConfirmationPage();
-  //const medicalSummaryPage = new MedicalSummaryPage();
-  //const medicalConfirmationPage = new MedicalConfirmationPage();
   const tbProgressTrackerPage = new TBProgressTrackerPage();
   const visaCategoryPage = new VisaCategoryPage();
 
