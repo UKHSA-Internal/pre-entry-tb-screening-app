@@ -253,18 +253,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Check migration_script changed
         working-directory: "scripts/applicant_migration/"
         id: check_file_changed
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "run_tests=true" >> $GITHUB_OUTPUT
-          else
-            run_tests=$(./file_changed.sh)
-            echo "run_tests=$run_tests" >> $GITHUB_OUTPUT
-          fi
+          run_tests=$(./file_changed.sh)
+          echo "run tests?: $run_tests"
+          echo "run_tests=$run_tests" >> $GITHUB_OUTPUT
 
       - name: Setting up Python
         if: steps.check_file_changed.outputs.run_tests == 'true'
