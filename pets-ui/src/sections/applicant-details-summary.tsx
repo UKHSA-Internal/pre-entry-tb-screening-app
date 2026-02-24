@@ -36,7 +36,10 @@ const ApplicantReview = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      const applicationRes = await createNewApplication();
+      const applicationRes = await createNewApplication({
+        passportNumber: applicantData.passportNumber,
+        countryOfIssue: applicantData.countryOfIssue,
+      });
       dispatch(setApplicationId(applicationRes.data.applicationId));
       dispatch(setDateCreated(convertDateStrToObj(applicationRes.data.dateCreated)));
 

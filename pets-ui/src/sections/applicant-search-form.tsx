@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { validate as uuidValidate } from "uuid";
 
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
@@ -126,22 +127,26 @@ const ApplicantSearchForm = () => {
       setApplicantPhotoUrl(null);
 
       const applicantRes = await getApplicants(passportDetails);
-      if (applicantRes.data.length === 0) {
+      if (applicantRes.status === 204) {
         await fetchClinic(dispatch);
         navigate("/no-visa-applicant-found");
         return;
       }
-      dispatch(setApplicantDetailsFromApiResponse(applicantRes.data[0]));
-      dispatch(setApplicationId(applicantRes.data[0].applicationId));
+      const applicationId = applicantRes.data.applications[0].applicationId;
+      if (!uuidValidate(applicationId)) {
+        throw new Error(`Application ID (${applicationId}) is in an invalid UUID format`);
+      }
+      dispatch(setApplicantDetailsFromApiResponse(applicantRes.data));
+      dispatch(setApplicationId(applicationId));
 
-      const applicationRes = await getApplication(applicantRes.data);
+      const applicationRes = await getApplication(applicationId);
       dispatch(
         setApplicationDetails({
-          applicationId: applicationRes.data.applicationId,
+          applicationId: applicationId,
           applicationStatus: applicationRes.data.applicationStatus,
-          dateCreated: convertDateStrToObj(applicantRes.data[0].dateCreated),
-          cancellationReason: applicationRes.data.cancellationReason,
-          cancellationFurtherInfo: applicationRes.data.cancellationFurtherInfo,
+          dateCreated: convertDateStrToObj(applicantRes.data.dateCreated ?? ""), // need to fix this, currently  may need some backend updates?
+          cancellationReason: applicationRes.data.cancellationReason ?? "",
+          cancellationFurtherInfo: applicationRes.data.cancellationFurtherInfo ?? "",
         }),
       );
       const applicationClinicId = applicationRes.data.clinicId as string | undefined;

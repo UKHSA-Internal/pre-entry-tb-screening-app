@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
+import { validate as uuidValidate } from "uuid";
 
 import { acquireTokenSilently } from "@/auth/auth";
 import {
@@ -76,20 +77,20 @@ export const getApplicants = async (passportDetails: ApplicantSearchFormType) =>
       countryofissue: passportDetails.countryOfIssue,
     },
   });
-  return result as AxiosResponse<ReceivedApplicantDetailsType[]>;
+  return result as AxiosResponse<ReceivedApplicantDetailsType>;
 };
 
-export const getApplication = async (applicantData: ReceivedApplicantDetailsType[]) => {
-  if (applicantData[0]) {
-    const result = await petsApi.get(`/application/${applicantData[0].applicationId}`);
+export const getApplication = async (applicationId: string) => {
+  if (uuidValidate(applicationId)) {
+    const result = await petsApi.get(`/application/${applicationId}`);
     return result as AxiosResponse<ReceivedApplicationDetailsType>;
   } else {
-    throw new Error("Applicant data in unexpected format or does not exist");
+    throw new Error("Application ID in unexpected format or does not exist");
   }
 };
 
-export const createNewApplication = async () => {
-  const result = await petsApi.post("/application");
+export const createNewApplication = async (applicantPassportDetails: ApplicantSearchFormType) => {
+  const result = await petsApi.post("/application", applicantPassportDetails);
   return result as AxiosResponse<ApplicationIdAndDateCreatedType>;
 };
 

@@ -6,7 +6,7 @@ import {
   ReceivedApplicantDetailsType,
   ReduxApplicantDetailsType,
 } from "@/types";
-import { BackendTaskStatus, TaskStatus } from "@/utils/enums";
+import { TaskStatus } from "@/utils/enums";
 import { convertDateStrToObj } from "@/utils/helpers";
 
 const initialState: ReduxApplicantDetailsType = {
@@ -153,10 +153,7 @@ export const applicantSlice = createSlice({
       state,
       action: PayloadAction<ReceivedApplicantDetailsType>,
     ) => {
-      state.status =
-        action.payload.status == BackendTaskStatus.COMPLETE
-          ? TaskStatus.COMPLETE
-          : TaskStatus.IN_PROGRESS;
+      state.status = TaskStatus.COMPLETE;
       state.fullName = action.payload.fullName;
       state.sex = action.payload.sex;
       state.countryOfNationality = action.payload.countryOfNationality;
@@ -172,7 +169,6 @@ export const applicantSlice = createSlice({
       state.provinceOrState = action.payload.provinceOrState;
       state.country = action.payload.country;
       state.postcode = action.payload.postcode ?? "";
-      state.applicantPhotoFileName = action.payload.applicantPhotoFileName ?? "";
     },
   },
 });
