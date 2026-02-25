@@ -1,5 +1,6 @@
-import sys
 import boto3
+import os
+import sys
 import time
 from botocore.exceptions import ClientError
 from awsglue.utils import getResolvedOptions
@@ -13,6 +14,7 @@ args = getResolvedOptions(
 
 APPLICANT_TABLE_NAME = args["APPLICANT_TABLE"].strip()
 APPLICATION_TABLE_NAME = args["APPLICATION_TABLE"].strip()
+AWS_REGION = os.getenv("AWS_REGION", "eu-west-2")
 DRY_RUN = args["DRY_RUN"].lower() == "true"
 
 
@@ -146,7 +148,7 @@ def remove_original_applicants(dynamodb, applicant_table, id_list):
 
 def scan_applicant_table(statistics, dynamodb=None):
     if dynamodb is None:
-        dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
+        dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
 
     applicant_table = dynamodb.Table(APPLICANT_TABLE_NAME)
     application_table = dynamodb.Table(APPLICATION_TABLE_NAME)
