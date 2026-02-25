@@ -72,6 +72,11 @@ type ReceivedApplicationDetailsType = {
   tbCertificate: ReceivedTbCertificateType | undefined;
 };
 
+type ApplicationCancellationInfo = {
+  cancellationReason: string;
+  cancellationFurtherInfo: string;
+};
+
 // Applicant types
 type ReduxApplicantDetailsType = {
   status: TaskStatus;

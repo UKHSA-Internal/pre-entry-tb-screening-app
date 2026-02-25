@@ -14,6 +14,7 @@ import ApplicantPhotoPage from "./pages/applicant-photo";
 import ApplicantResultsPage from "./pages/applicant-results";
 import ApplicantSearchPage from "./pages/applicant-search";
 import ApplicantSummaryPage from "./pages/applicant-summary";
+import CancellationAreYouSurePage from "./pages/cancellation-are-you-sure";
 import CancellationReasonPage from "./pages/cancellation-reason";
 import CheckApplicantPhotoPage from "./pages/check-applicant-photo";
 import CheckSputumSampleInformationPage from "./pages/check-sputum-sample-information";
@@ -534,6 +535,14 @@ function App() {
         element={
           <AuthenticatedRoute>
             <CancellationReasonPage />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/are-you-sure-you-want-to-cancel-this-screening"
+        element={
+          <AuthenticatedRoute>
+            <CancellationAreYouSurePage />
           </AuthenticatedRoute>
         }
       />

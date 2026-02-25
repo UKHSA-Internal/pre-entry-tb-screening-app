@@ -4,6 +4,7 @@ import { validate as uuidValidate } from "uuid";
 import { acquireTokenSilently } from "@/auth/auth";
 import {
   ApplicantSearchFormType,
+  ApplicationCancellationInfo,
   ApplicationIdAndDateCreatedType,
   ClinicType,
   GenerateImageUploadUrlRequest,
@@ -220,4 +221,12 @@ export const generateImageUploadUrl = async (
 export const getClinicById = async (clinicId: string) => {
   const result = await petsApi.get(`/clinics/${encodeURIComponent(clinicId)}`);
   return result as AxiosResponse<{ clinic: ClinicType }>;
+};
+
+export const cancelApplication = async (
+  applicationId: string,
+  cancellationInfo: ApplicationCancellationInfo,
+) => {
+  const result = await petsApi.put(`/application/${applicationId}/cancel`, cancellationInfo);
+  return result as AxiosResponse<ReceivedApplicationDetailsType>;
 };
