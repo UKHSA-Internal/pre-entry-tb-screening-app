@@ -14,6 +14,7 @@ import ApplicantPhotoPage from "./pages/applicant-photo";
 import ApplicantResultsPage from "./pages/applicant-results";
 import ApplicantSearchPage from "./pages/applicant-search";
 import ApplicantSummaryPage from "./pages/applicant-summary";
+import CancellationReasonPage from "./pages/cancellation-reason";
 import CheckApplicantPhotoPage from "./pages/check-applicant-photo";
 import CheckSputumSampleInformationPage from "./pages/check-sputum-sample-information";
 import ChestXrayConfirmation from "./pages/chest-xray-confirmation";
@@ -526,6 +527,14 @@ function App() {
           <UnauthenticatedRoute>
             <SignedOutPage />
           </UnauthenticatedRoute>
+        }
+      />
+      <Route
+        path="/why-are-you-cancelling-this-screening"
+        element={
+          <AuthenticatedRoute>
+            <CancellationReasonPage />
+          </AuthenticatedRoute>
         }
       />
       <Route path="/accessibility-statement" element={<AccessibilityStatementPage />} />
