@@ -1,0 +1,23 @@
+name: Manual Trigger Workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  migrate_applicant_data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ vars.AWS_REGION}}
+          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_DEPLOY_ROLE_NAME }}"
+
+      - name: Trigger Glue job (migration script)
+        run: |
+          aws glue start-job-run --job-name ${{ env.GLUE_MIGRATION_JOB_NAME }} \
+            --arguments '{"--APPLICANT_TABLE":"${{ env.GLUE_JOB_APPLICANT_TABLE_NAME }}","--APPLICATION_TABLE":"${{ env.GLUE_JOB_APPLICATION_TABLE_NAME }}","--DRY_RUN":"false"}' \
+            --region ${{ vars.AWS_REGION }} \
+            --sse aws:kms \
+            --sse-kms-key-id ${{ vars.SSE_KEY_ID }}
