@@ -10,8 +10,6 @@ import SplitRadio from "@/components/splitRadio/splitRadio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
 import { setCancellationFurtherInfo, setCancellationReason } from "@/redux/applicationSlice";
-import { useAppSelector } from "@/redux/hooks";
-import { selectApplication } from "@/redux/store";
 import { ButtonClass, RadioIsInline } from "@/utils/enums";
 import { formatCancellationReasonForDisplay } from "@/utils/helpers";
 
@@ -24,7 +22,6 @@ export default function CancellationReasonPage() {
     handleSubmit,
     formState: { errors },
   } = methods;
-  const applicationData = useAppSelector(selectApplication);
 
   const errorsToShow = Object.keys(errors);
 
@@ -100,7 +97,6 @@ export default function CancellationReasonPage() {
               }}
               isInline={RadioIsInline.FALSE}
               sortAnswersAlphabetically={false}
-              defaultValue={applicationData.cancellationReason}
             />
           </div>
 
@@ -113,7 +109,6 @@ export default function CancellationReasonPage() {
             errorMessage={errors?.cancellationFurtherInfo?.message ?? ""}
             required={false}
             rows={4}
-            defaultValue={applicationData.cancellationFurtherInfo}
           />
 
           <SubmitButton id="continue" class={ButtonClass.DEFAULT} text="Continue" />
