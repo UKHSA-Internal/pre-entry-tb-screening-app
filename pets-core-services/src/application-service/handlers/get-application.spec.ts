@@ -236,7 +236,7 @@ describe("Getting Application Handler", () => {
         status: "completed",
       },
       radiologicalOutcome: {
-        applicationId: "generated-app-id-3",
+        applicationId: "cbdcc218-316e-4ae1-835f-ccde4c17a7e2",
         dateCreated: expect.any(String),
         status: "completed",
         xrayActiveTbFindings: ["All good"],
@@ -246,14 +246,14 @@ describe("Getting Application Handler", () => {
         xrayResultDetail: "Result explanation",
       },
       sputumRequirement: {
-        applicationId: "generated-app-id-3",
+        applicationId: "cbdcc218-316e-4ae1-835f-ccde4c17a7e2",
         dateCreated: expect.any(String),
         sputumRequired: "No",
         status: "completed",
       },
       // Defined in pets-core-services\src\application-service\fixtures\tb-certificate.ts
       tbCertificate: {
-        applicationId: "generated-app-id-3",
+        applicationId: "cbdcc218-316e-4ae1-835f-ccde4c17a7e2",
         comments: "TB is present",
         isIssued: "No",
         notIssuedREason: "Confirmed or suspected TB",
