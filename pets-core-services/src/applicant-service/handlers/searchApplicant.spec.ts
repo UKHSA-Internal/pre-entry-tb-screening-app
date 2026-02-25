@@ -6,7 +6,7 @@ import { logger } from "../../shared/logger";
 import { Applicant } from "../../shared/models/applicant";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicants } from "../fixtures/applicants";
-import { Header, SearchApplicantEvent, searchApplicantHandler } from "./searchApplicant";
+import { ApplicantHeader, SearchApplicantEvent, searchApplicantHandler } from "./searchApplicant";
 
 describe("Test for Getting Applicant", () => {
   test("Fetching an Applicant Successfully", async () => {
@@ -234,7 +234,7 @@ describe("Test for Getting Applicant", () => {
 
     const malformedEvent: SearchApplicantEvent = {
       ...mockAPIGwEvent,
-      parsedHeaders: {} as Header,
+      parsedHeaders: {} as ApplicantHeader,
     };
 
     // Act

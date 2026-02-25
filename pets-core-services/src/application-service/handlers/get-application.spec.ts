@@ -95,7 +95,6 @@ describe("Getting Application Handler", () => {
     expect(JSON.parse(response.body)).toEqual({
       applicationId: seededApplications[1].applicationId,
       applicationStatus: "In Progress",
-      clinicId: "Apollo Clinic",
       // Defined in pets-core-services/src/application-service/fixtures/applicant-photo.ts
       applicantPhotoUrl: seededApplicantPhoto[1].applicantPhotoUrl,
       // Defined in pets-core-services/src/application-service/fixtures/travel-information.ts
@@ -198,7 +197,6 @@ describe("Getting Application Handler", () => {
     expect(JSON.parse(response.body)).toEqual({
       applicationId: seededApplications[2].applicationId,
       applicationStatus: "In Progress",
-      clinicId: "test-clinic-id-3",
       // Defined in pets-core-services/src/application-service/fixtures/applicant-photo.ts
       applicantPhotoUrl: seededApplicantPhoto[1].applicantPhotoUrl,
       // Defined in pets-core-services/src/application-service/fixtures/travel-information.ts
@@ -285,8 +283,6 @@ describe("Getting Application Handler", () => {
     expect(JSON.parse(response.body)?.applicationId as string).toEqual(
       seededApplications[1].applicationId,
     );
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    expect(JSON.parse(response.body)?.clinicId).toEqual("Apollo Clinic");
   });
 
   test("Error while fetching application from different clinic", async () => {

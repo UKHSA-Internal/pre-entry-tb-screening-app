@@ -7,12 +7,12 @@ import { ApplicantDbOps } from "../../shared/models/applicant";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 
-export type Header = {
+export type ApplicantHeader = {
   passportnumber: string;
   countryofissue: CountryCode;
 };
 export type SearchApplicantEvent = PetsAPIGatewayProxyEvent & {
-  parsedHeaders?: Header;
+  parsedHeaders?: ApplicantHeader;
 };
 
 export const searchApplicantHandler = async (event: SearchApplicantEvent) => {

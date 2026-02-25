@@ -1,10 +1,10 @@
 import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
+import { GlobalContextStorageProvider } from "pino-lambda";
 import { z } from "zod";
 
 import { createHttpResponse } from "../../shared/http";
 import { logger } from "../../shared/logger";
 import { ApplicantDbOps } from "../../shared/models/applicant";
-import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { ApplicantUpdateRequestSchema } from "../types/zod-schema";
 
@@ -27,31 +27,45 @@ export const updateApplicantHandler = async (event: PutApplicantEvent) => {
         message: "Internal Server Error: Request not parsed correctly",
       });
     }
+    GlobalContextStorageProvider.updateContext({
+      countryOfIssue: parsedBody.countryOfIssue,
+      passportNumber: parsedBody.passportNumber.slice(-4),
+    });
 
-    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
-    const { clinicId, createdBy } = event.requestContext.authorizer;
+    // const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
+    const { createdBy } = event.requestContext.authorizer;
 
-    const application = await Application.getByApplicationId(applicationId);
-    if (!application) {
-      logger.error("Application does not exist");
-      return createHttpResponse(400, {
-        message: `Application with ID: ${applicationId} does not exist`,
+    const applicant = await ApplicantDbOps.findByPassportId(
+      parsedBody.countryOfIssue,
+      parsedBody.passportNumber,
+    );
+    if (!applicant) {
+      logger.error("Applicant does not exist");
+      return createHttpResponse(404, {
+        message: `Applicant does not exist`,
       });
     }
-    const SUPPORT_CLINIC_ID = process.env.SUPPORT_CLINIC_ID;
-    if (!clinicId) {
-      logger.error("Clinic Id missing");
-      return createHttpResponse(400, { message: "Clinic Id missing" });
-    }
+    // const application = await Application.getByApplicationId (applicationId);
+    // if (!application) {
+    //   logger.error("Application does not exist");
+    //   return createHttpResponse(400, {
+    //     message: `Application with ID: ${applicationId} does not exist`,
+    //   });
+    // }
+    // const SUPPORT_CLINIC_ID = process.env.SUPPORT_CLINIC_ID;
+    // if (!clinicId) {
+    //   logger.error("Clinic Id missing");
+    //   return createHttpResponse(400, { message: "Clinic Id missing" });
+    // }
 
-    if (clinicId !== SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
-      logger.error("ClinicId mismatch with existing application");
-      return createHttpResponse(403, { message: "Clinic Id mismatch" });
-    }
+    // if (clinicId !== SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
+    //   logger.error("ClinicId mismatch with existing application");
+    //   return createHttpResponse(403, { message: "Clinic Id mismatch" });
+    // }
 
-    if (clinicId === SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
-      logger.info("Validated clinic Id is a support clinicId");
-    }
+    // if (clinicId === SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
+    //   logger.info("Validated clinic Id is a support clinicId");
+    // }
     const applicantData = await ApplicantDbOps.updateApplicant({
       ...parsedBody,
       updatedBy: createdBy,
