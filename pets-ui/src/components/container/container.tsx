@@ -4,6 +4,7 @@ import { useLocation } from "react-router";
 
 import { useNavigationHistory } from "@/utils/useNavigationHistory";
 
+import AutoSignoutModal from "../autoSignoutModal/autoSignoutModal";
 import BackLink from "../backLink/backLink";
 import CookieBanner from "../cookieBanner/cookieBanner";
 import Footer from "../footer/footer";
@@ -61,6 +62,7 @@ const Container = ({
           ref={mainContent}
           tabIndex={-1}
         >
+          <AutoSignoutModal />
           {useTwoThirdsColumn ? (
             <div className="govuk-grid-row">
               <div className="govuk-grid-column-two-thirds">{children}</div>
