@@ -5,7 +5,7 @@ import { describe, expect, it, Mock } from "vitest";
 
 import ChestXrayUploadPage from "@/pages/chest-xray-upload";
 import ChestXrayForm from "@/sections/chest-xray-form";
-import { ApplicationStatus, ImageType } from "@/utils/enums";
+import { ApplicationStatus, ImageType, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 import uploadFile from "@/utils/uploadFile";
 import validateFiles from "@/utils/validateFiles";
@@ -67,7 +67,7 @@ describe("ChestXrayForm Section", () => {
   it("renders components correctly when state is populated", () => {
     const preloadedState = {
       chestXray: {
-        status: ApplicationStatus.NOT_YET_STARTED,
+        status: TaskStatus.NOT_YET_STARTED,
         posteroAnteriorXrayFileName: "pa-file-name.jpg",
         posteroAnteriorXrayFile: "examplejpgexamplejpgexamplejpg",
         apicalLordoticXrayFileName: "",
@@ -93,7 +93,11 @@ describe("ChestXrayForm Section", () => {
     vi.mocked(uploadFile).mockResolvedValue("test/bucket/path");
 
     const preloadedState = {
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
     };
 
     renderWithProviders(<ChestXrayForm />, { preloadedState });

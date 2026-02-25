@@ -5,7 +5,7 @@ import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
 import ApplicantPhotoForm from "@/sections/applicant-photo-form";
-import { ApplicationStatus } from "@/utils/enums";
+import { TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function ApplicantPhotoPage() {
@@ -18,7 +18,7 @@ export default function ApplicantPhotoPage() {
     backLinkTo = "/check-visa-applicant-details";
   } else if (fromParam === "tb-certificate-summary") {
     backLinkTo = "/tb-certificate-summary";
-  } else if (applicant.status === ApplicationStatus.COMPLETE) {
+  } else if (applicant.status === TaskStatus.COMPLETE) {
     backLinkTo = "/tb-certificate-summary";
   } else {
     backLinkTo = "/visa-applicant-contact-information";

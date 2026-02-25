@@ -6,7 +6,7 @@ import NotificationBanner from "@/components/notificationBanner/notificationBann
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTbCertificate } from "@/redux/store";
 import TbSummary from "@/sections/tb-summary";
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { TaskStatus, YesOrNo } from "@/utils/enums";
 import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function TbSummaryPage() {
@@ -14,7 +14,7 @@ export default function TbSummaryPage() {
   const tbCertificateData = useAppSelector(selectTbCertificate);
 
   let backLinkUrl = "/clinic-certificate-information";
-  if (tbCertificateData.status === ApplicationStatus.COMPLETE) {
+  if (tbCertificateData.status === TaskStatus.COMPLETE) {
     backLinkUrl = "/tracker";
   } else if (tbCertificateData.isIssued === YesOrNo.NO) {
     backLinkUrl = "/why-are-you-not-issuing-certificate";

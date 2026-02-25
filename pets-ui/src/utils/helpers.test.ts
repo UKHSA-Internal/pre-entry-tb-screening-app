@@ -1,6 +1,7 @@
 import {
   calculateApplicantAge,
   calculateCertificateExpiryDate,
+  convertDateStrToObj,
   formatDateType,
   isDateInTheFuture,
   isDateInThePast,
@@ -76,6 +77,47 @@ describe("FormatDateType function", () => {
     expect(formatDateType({ year: "", month: "5", day: "4" })).toBe("");
     expect(formatDateType({ year: "2025", month: "", day: "4" })).toBe("");
     expect(formatDateType({ year: "2025", month: "5", day: "" })).toBe("");
+  });
+});
+
+describe("convertDateStrToObj function", () => {
+  it("returns a DateType Object in the correct format", () => {
+    expect(convertDateStrToObj("2025-05-04")).toStrictEqual({
+      day: "04",
+      month: "05",
+      year: "2025",
+    });
+    expect(convertDateStrToObj("1999-12-15")).toStrictEqual({
+      day: "15",
+      month: "12",
+      year: "1999",
+    });
+    expect(convertDateStrToObj("2030-01-24")).toStrictEqual({
+      day: "24",
+      month: "01",
+      year: "2030",
+    });
+  });
+  it("returns a DateType Object in the correct format when timestamp is included", () => {
+    expect(convertDateStrToObj("2025-05-04T00:00:00Z")).toStrictEqual({
+      day: "04",
+      month: "05",
+      year: "2025",
+    });
+    expect(convertDateStrToObj("1999-12-15T05:05:05Z")).toStrictEqual({
+      day: "15",
+      month: "12",
+      year: "1999",
+    });
+    expect(convertDateStrToObj("2030-01-24T23:59:59Z")).toStrictEqual({
+      day: "24",
+      month: "01",
+      year: "2030",
+    });
+  });
+  it("should return an empty string if input is missing or an empty string", () => {
+    expect(convertDateStrToObj()).toStrictEqual({ year: "", month: "", day: "" });
+    expect(convertDateStrToObj("")).toStrictEqual({ year: "", month: "", day: "" });
   });
 });
 

@@ -1,7 +1,6 @@
 import { Document, Font, Image, Page, Text, View } from "@react-pdf/renderer";
 
 import {
-  ApplicationIdAndDateCreatedType,
   ClinicType,
   ReduxApplicantDetailsType,
   ReduxMedicalScreeningType,
@@ -18,7 +17,7 @@ import { styles } from "./certificateTemplate.style";
 
 interface CertificateTemplateProps {
   applicantData: ReduxApplicantDetailsType;
-  applicationData: ApplicationIdAndDateCreatedType;
+  applicationId: string;
   tbCertificateData: ReduxTbCertificateType;
   travelData: ReduxTravelDetailsType;
   medicalScreeningData: ReduxMedicalScreeningType;
@@ -49,7 +48,7 @@ const Field = ({ label, value }: FieldProps) => {
 
 export const CertificateTemplate = ({
   applicantData,
-  applicationData,
+  applicationId,
   tbCertificateData,
   travelData,
   medicalScreeningData,
@@ -78,8 +77,8 @@ export const CertificateTemplate = ({
 
   return (
     <Document
-      title={`${applicationData.applicationId}.pdf`}
-      subject={`TB clearance certificate ${applicationData.applicationId}`}
+      title={`${applicationId}.pdf`}
+      subject={`TB clearance certificate ${applicationId}`}
       creator="pets-ui"
       producer="pets-ui"
     >

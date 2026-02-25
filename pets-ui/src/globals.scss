@@ -29,9 +29,12 @@ input[type='file'].hide-text {
   flex-grow: 1;
 }
 
+.progress-tracker-header-cells {
+  text-align: right;
+}
+
 .progress-tracker-photo-container {
   margin-left: 20px;
-  border: 1px solid #b1b4b6;
   display: flex;
   align-items: stretch;
 }
@@ -39,16 +42,17 @@ input[type='file'].hide-text {
 .progress-tracker-photo {
   display: block;
   height: 100%;
-  max-height: 150px;
+  max-height: 200px;
   width: auto;
   object-fit: cover;
 }
 
-.progress-tracker-start-search {
-  margin-top: 60px;
+.progress-tracker-lower-headings {
+  padding-top: 10px;
+  margin-bottom: 10px;
 }
 
-.progress-tracker-certificate-not-issued {
+.progress-tracker-task-nowrap {
   max-width: none;
   white-space: nowrap;
 }

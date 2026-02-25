@@ -6,10 +6,11 @@ import {
   ReceivedApplicantDetailsType,
   ReduxApplicantDetailsType,
 } from "@/types";
-import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
+import { BackendTaskStatus, TaskStatus } from "@/utils/enums";
+import { convertDateStrToObj } from "@/utils/helpers";
 
 const initialState: ReduxApplicantDetailsType = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   fullName: "",
   sex: "",
   dateOfBirth: {
@@ -44,7 +45,7 @@ export const applicantSlice = createSlice({
   name: "applicantDetails",
   initialState,
   reducers: {
-    setApplicantDetailsStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+    setApplicantDetailsStatus: (state, action: PayloadAction<TaskStatus>) => {
       state.status = action.payload;
     },
     setFullName: (state, action: PayloadAction<string>) => {
@@ -118,7 +119,7 @@ export const applicantSlice = createSlice({
       state.applicantPhotoFileName = action.payload.applicantPhotoFileName ?? "";
     },
     clearApplicantDetails: (state) => {
-      state.status = ApplicationStatus.NOT_YET_STARTED;
+      state.status = TaskStatus.NOT_YET_STARTED;
       state.fullName = "";
       state.sex = "";
       state.dateOfBirth = {
@@ -153,35 +154,17 @@ export const applicantSlice = createSlice({
       action: PayloadAction<ReceivedApplicantDetailsType>,
     ) => {
       state.status =
-        action.payload.status == BackendApplicationStatus.COMPLETE
-          ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.IN_PROGRESS;
+        action.payload.status == BackendTaskStatus.COMPLETE
+          ? TaskStatus.COMPLETE
+          : TaskStatus.IN_PROGRESS;
       state.fullName = action.payload.fullName;
       state.sex = action.payload.sex;
       state.countryOfNationality = action.payload.countryOfNationality;
       state.passportNumber = action.payload.passportNumber;
       state.countryOfIssue = action.payload.countryOfIssue;
-      state.dateOfBirth = {
-        year: action.payload.dateOfBirth.split("-")[0],
-        month: action.payload.dateOfBirth.split("-")[1],
-        day: action.payload.dateOfBirth.includes("T")
-          ? action.payload.dateOfBirth.split("-")[2].split("T")[0]
-          : action.payload.dateOfBirth.split("-")[2],
-      };
-      state.passportIssueDate = {
-        year: action.payload.issueDate.split("-")[0],
-        month: action.payload.issueDate.split("-")[1],
-        day: action.payload.issueDate.includes("T")
-          ? action.payload.issueDate.split("-")[2].split("T")[0]
-          : action.payload.issueDate.split("-")[2],
-      };
-      state.passportExpiryDate = {
-        year: action.payload.expiryDate.split("-")[0],
-        month: action.payload.expiryDate.split("-")[1],
-        day: action.payload.expiryDate.includes("T")
-          ? action.payload.expiryDate.split("-")[2].split("T")[0]
-          : action.payload.expiryDate.split("-")[2],
-      };
+      state.dateOfBirth = convertDateStrToObj(action.payload.dateOfBirth);
+      state.passportIssueDate = convertDateStrToObj(action.payload.issueDate);
+      state.passportExpiryDate = convertDateStrToObj(action.payload.expiryDate);
       state.applicantHomeAddress1 = action.payload.applicantHomeAddress1;
       state.applicantHomeAddress2 = action.payload.applicantHomeAddress2 ?? "";
       state.applicantHomeAddress3 = action.payload.applicantHomeAddress3 ?? "";
