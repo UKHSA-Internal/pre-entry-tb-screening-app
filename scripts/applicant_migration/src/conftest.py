@@ -15,7 +15,7 @@ from unittest.mock import MagicMock
 
 import boto3
 import pytest
-from os import path
+from os import getenv, path
 from botocore.exceptions import ClientError
 
 # ---------------------------------------------------------------------------
@@ -25,7 +25,7 @@ from botocore.exceptions import ClientError
 APPLICANT_TABLE = "applicant-table"
 APPLICATION_TABLE = "application-table"
 DYNAMO_LOCAL_URL = "http://localhost:8000"
-REGION = "eu-west-2"
+REGION = getenv("AWS_REGION", "eu-west-2")
 
 # ---------------------------------------------------------------------------
 # Stub awsglue so migration.py can be imported without a Glue runtime
