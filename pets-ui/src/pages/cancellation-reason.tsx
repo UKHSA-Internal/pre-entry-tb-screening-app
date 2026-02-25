@@ -106,7 +106,7 @@ export default function CancellationReasonPage() {
             errorMessage={errors?.cancellationFurtherInfo?.message ?? ""}
             required={false}
             rows={4}
-            defaultValue="dummy default value"
+            defaultValue={applicationData.cancellationFurtherInfo}
           />
 
           <SubmitButton id="continue" class={ButtonClass.DEFAULT} text="Continue" />
