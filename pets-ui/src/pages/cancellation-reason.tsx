@@ -13,6 +13,7 @@ import { setCancellationFurtherInfo, setCancellationReason } from "@/redux/appli
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication } from "@/redux/store";
 import { ButtonClass, RadioIsInline } from "@/utils/enums";
+import { formatCancellationReasonForDisplay } from "@/utils/helpers";
 
 export default function CancellationReasonPage() {
   const navigate = useNavigate();
@@ -37,6 +38,12 @@ export default function CancellationReasonPage() {
     }
   }, [location]);
 
+  useEffect(() => {
+    dispatch(setCancellationReason(""));
+    dispatch(setCancellationFurtherInfo(""));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   type CancellationReasonType = {
     cancellationReason: string;
     cancellationReasonOther: string;
@@ -47,7 +54,7 @@ export default function CancellationReasonPage() {
     const cancellationReason =
       data.cancellationReason == "Other"
         ? data.cancellationReasonOther.trim()
-        : data.cancellationReason;
+        : formatCancellationReasonForDisplay(data.cancellationReason);
     dispatch(setCancellationReason(cancellationReason));
     dispatch(setCancellationFurtherInfo(data.cancellationFurtherInfo ?? ""));
     navigate("/are-you-sure-you-want-to-cancel-this-screening");
