@@ -133,7 +133,9 @@ describe("CancellationReasonPage", () => {
     const firstRadio = screen.getByRole("radio", { name: "Did not continue with sputum testing" });
     const radioGroupElement = firstRadio.closest("fieldset");
     expect(radioGroupElement).toBeInTheDocument();
-    expect(within(radioGroupElement!).getByText(expectedErrorMessageText)).toBeInTheDocument();
+    await waitFor(() =>
+      expect(within(radioGroupElement!).getByText(expectedErrorMessageText)).toBeInTheDocument(),
+    );
   });
 
   it("renders an in-focus error summary when continue button pressed but required question not answered", async () => {
