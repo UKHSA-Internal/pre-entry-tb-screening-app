@@ -12,10 +12,10 @@ args = getResolvedOptions(
     ["APPLICANT_TABLE", "APPLICATION_TABLE", "DRY_RUN"]
 )
 
-APPLICANT_TABLE_NAME = args["APPLICANT_TABLE"].strip()
-APPLICATION_TABLE_NAME = args["APPLICATION_TABLE"].strip()
+APPLICANT_TABLE_NAME = args["APPLICANT_TABLE"]
+APPLICATION_TABLE_NAME = args["APPLICATION_TABLE"]
 AWS_REGION = os.getenv("AWS_REGION", "eu-west-2")
-DRY_RUN = args["DRY_RUN"].lower() == "true"
+DRY_RUN = args["DRY_RUN"]
 
 
 def migrate_item(args):
@@ -183,6 +183,19 @@ def scan_applicant_table(statistics, dynamodb=None):
 
 def main():
     print(f"Starting Glue DynamoDB migration (DRY_RUN={DRY_RUN})")
+
+    if not APPLICANT_TABLE_NAME or not APPLICATION_TABLE_NAME or DRY_RUN is None:
+        print("ERROR: Missing required parameters")
+        print(f"APPLICANT_TABLE_NAME: {APPLICANT_TABLE_NAME}")
+        print(f"APPLICATION_TABLE_NAME: {APPLICATION_TABLE_NAME}")
+        print(f"DRY_RUN: {DRY_RUN}")
+
+        sys.exit(1)
+    else:
+        APPLICANT_TABLE_NAME = APPLICANT_TABLE_NAME.strip()
+        APPLICATION_TABLE_NAME = APPLICATION_TABLE_NAME.strip()
+        DRY_RUN = DRY_RUN.lower() == "true"
+
 
     statistics = {
         "all_applicants": 0,
