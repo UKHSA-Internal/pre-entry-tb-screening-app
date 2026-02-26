@@ -10,7 +10,13 @@ import SplitRadio from "@/components/splitRadio/splitRadio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import TextArea from "@/components/textArea/textArea";
 import { setCancellationFurtherInfo, setCancellationReason } from "@/redux/applicationSlice";
+import { useAppSelector } from "@/redux/hooks";
+import { selectApplication } from "@/redux/store";
 import { ButtonClass, RadioIsInline } from "@/utils/enums";
+import {
+  sendGoogleAnalyticsFormErrorEvent,
+  sendGoogleAnalyticsJourneyEvent,
+} from "@/utils/google-analytics-utils";
 import { formatCancellationReasonForDisplay } from "@/utils/helpers";
 
 export default function CancellationReasonPage() {
@@ -22,6 +28,7 @@ export default function CancellationReasonPage() {
     handleSubmit,
     formState: { errors },
   } = methods;
+  const applicationData = useAppSelector(selectApplication);
 
   const errorsToShow = Object.keys(errors);
 
@@ -40,6 +47,21 @@ export default function CancellationReasonPage() {
     dispatch(setCancellationFurtherInfo(""));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    sendGoogleAnalyticsJourneyEvent(
+      "why_are_you_cancelling_this_screening",
+      applicationData.applicationId,
+      "Cancel application",
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (errorsToShow.length > 0) {
+      sendGoogleAnalyticsFormErrorEvent("Why are you cancelling this screening?", errorsToShow);
+    }
+  }, [errorsToShow]);
 
   type CancellationReasonType = {
     cancellationReason: string;

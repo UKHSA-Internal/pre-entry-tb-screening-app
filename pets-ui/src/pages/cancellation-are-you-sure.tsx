@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
@@ -9,11 +10,21 @@ import { setCancellationFurtherInfo, setCancellationReason } from "@/redux/appli
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication } from "@/redux/store";
 import { ButtonClass } from "@/utils/enums";
+import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function CancellationAreYouSurePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const applicationData = useAppSelector(selectApplication);
+
+  useEffect(() => {
+    sendGoogleAnalyticsJourneyEvent(
+      "are_you_sure_you_want_to_cancel_this_screening",
+      applicationData.applicationId,
+      "Cancel application",
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCancelApp = async () => {
     try {

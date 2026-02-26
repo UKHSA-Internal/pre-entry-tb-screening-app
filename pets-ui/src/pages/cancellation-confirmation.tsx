@@ -42,9 +42,9 @@ export default function CancellationConfirmationPage() {
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(
-      "tb_clearance_complete",
+      "tb_screening_cancelled",
       applicationData.applicationId,
-      "TB certificate outcome",
+      "Cancel application",
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
