@@ -72,14 +72,15 @@ vi.mock("../../shared/models/applicant", () => ({
 }));
 describe("Test for Application Lambda", () => {
   test("Creating an Application Successfully", async () => {
-    const newApplication: SaveApplicationEvent["parsedBody"] = {
+    const newApplication = {
       passportNumber: "test-passport-id",
       countryOfIssue: CountryCode.ALA,
     };
+
     // Arrange
     const event: SaveApplicationEvent = {
       ...mockAPIGwEvent,
-      parsedBody: newApplication,
+      body: JSON.stringify(newApplication),
       resource: "/application",
       path: "/application",
       httpMethod: "POST",
@@ -194,7 +195,7 @@ describe("Test for Application Lambda", () => {
       const response: APIGatewayProxyResult = await handler(event, context);
 
       // Assert
-      expect(response.statusCode).toBe(400);
+      expect(response.statusCode).toBe(404);
       expect(JSON.parse(response.body)).toMatchObject({
         message: "Application with ID: nonexisting-application-id does not exist",
       });

@@ -71,6 +71,7 @@ describe("Test for cancel applicantion handler", () => {
       pathParameters: { applicationId: seededApplications[0].applicationId },
       parsedBody: {
         cancellationReason: "not needed anymore",
+        cancellationFurtherInfo: "further Info",
       },
     });
 
@@ -83,6 +84,7 @@ describe("Test for cancel applicantion handler", () => {
       updatedBy: mockAPIGwEvent.requestContext.authorizer.createdBy,
       applicationStatus: "Cancelled",
       cancellationReason: "not needed anymore",
+      cancellationFurtherInfo: "further Info",
     });
   });
 

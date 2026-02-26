@@ -40,6 +40,9 @@ export const CancelApplicationRequestSchema = z.object({
   cancellationReason: z.string().optional().openapi({
     description: "Reason for application cancelling",
   }),
+  cancellationFurtherInfo: z.string().optional().openapi({
+    description: "Additional Information regarding application cancellation",
+  }),
 });
 
 export const TravelInformationBaseSchema = z.object({
@@ -457,7 +460,10 @@ export const SputumDecisionResponseSchema = SputumDecisionRequestSchema.extend({
 
 export const ApplicationSchema = z.object({
   applicationId: z.string().openapi({
-    description: "application id",
+    description: "Application id",
+  }),
+  dateCreated: z.string().date().openapi({
+    description: "Creation Date in UTC timezone",
   }),
   applicationStatus: z.nativeEnum(ApplicationStatus).openapi({
     description: "Application current status",

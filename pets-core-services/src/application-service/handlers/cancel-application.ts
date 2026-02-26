@@ -40,6 +40,7 @@ export const cancelApplicationHandler = async (event: CancelApplicationEvent) =>
       applicationId: applicationId,
       applicationStatus: ApplicationStatus.cancelled,
       cancellationReason: parsedBody.cancellationReason as string,
+      cancellationFurtherInfo: parsedBody.cancellationFurtherInfo as string,
       updatedBy: createdBy,
     });
 
