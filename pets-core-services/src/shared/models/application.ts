@@ -34,13 +34,13 @@ export abstract class IApplication {
     this.passportNumber = details.passportNumber;
     this.countryOfIssue = details.countryOfIssue;
     this.clinicId = details.clinicId;
-    this.dateCreated = details.dateCreated;
+    this.dateCreated = new Date(details.dateCreated);
     this.createdBy = details.createdBy;
     this.applicationStatus = details.applicationStatus;
     this.cancellationReason = details.cancellationReason;
     this.cancellationFurtherInfo = details.cancellationFurtherInfo;
-    this.expiryDate = details.expiryDate;
-    this.dateUpdated = details.dateUpdated;
+    this.expiryDate = details.expiryDate ? new Date(details.expiryDate) : undefined;
+    this.dateUpdated = details.dateUpdated ? new Date(details.dateUpdated) : undefined;
     this.updatedBy = details.updatedBy;
   }
 }
@@ -109,11 +109,12 @@ export class Application extends IApplication {
         throw new Error("Could not fetch the application with the given applicationId");
       }
 
-      const updatedDetails = Object.assign(application, {
+      const updatedDetails = {
+        ...application,
         ...details,
         updatedBy: details.updatedBy,
         dateUpdated: new Date(),
-      });
+      };
 
       // Create Application class instance to have access to toJson() function
       const updatedApplication = new Application(updatedDetails);
@@ -228,8 +229,7 @@ export class Application extends IApplication {
       cancellationReason: this.cancellationReason,
       cancellationFurtherInfo: this.cancellationFurtherInfo,
       expiryDate: this.expiryDate ? this.expiryDate.toISOString() : undefined,
-      dateUpdated: this.dateUpdated ? this.dateUpdated?.toISOString() : undefined,
-      updatedBy: this.updatedBy,
+      dateUpdated: this.dateUpdated ? this.dateUpdated.toISOString() : undefined,
     };
   }
 }

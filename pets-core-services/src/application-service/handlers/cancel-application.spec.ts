@@ -81,7 +81,6 @@ describe("Test for cancel applicantion handler", () => {
       applicationId: expect.any(String),
       dateCreated: expect.any(String),
       dateUpdated: expect.any(String),
-      updatedBy: mockAPIGwEvent.requestContext.authorizer.createdBy,
       applicationStatus: "Cancelled",
       cancellationReason: "not needed anymore",
       cancellationFurtherInfo: "further Info",
@@ -170,7 +169,6 @@ describe("Test for cancel applicantion handler", () => {
       dateCreated: expect.any(String),
       dateUpdated: expect.any(String),
       expiryDate: expect.any(String),
-      updatedBy: mockAPIGwEvent.requestContext.authorizer.createdBy,
       applicationStatus: "Cancelled",
       cancellationReason: "not needed anymore",
     });
@@ -198,7 +196,6 @@ describe("Test for cancel applicantion handler", () => {
       applicationId: expect.any(String),
       dateCreated: expect.any(String),
       dateUpdated: expect.any(String),
-      updatedBy: mockAPIGwEvent.requestContext.authorizer.createdBy,
       applicationStatus: "Cancelled",
       cancellationReason: "not needed anymore",
     });
