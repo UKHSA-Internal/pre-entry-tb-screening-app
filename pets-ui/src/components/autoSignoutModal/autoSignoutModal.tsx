@@ -12,10 +12,8 @@ import Button from "../button/button";
 import Heading from "../heading/heading";
 import LinkLabel from "../linkLabel/LinkLabel";
 
-// const IDLE_DELAY = 1000 * 60 * 18;
-// const SIGN_OUT_DELAY = 1000 * 60 * 2;
-const IDLE_DELAY = 1000 * 5;
-const SIGN_OUT_DELAY = 1000 * 5;
+const IDLE_DELAY = 1000 * 60 * 18;
+const SIGN_OUT_DELAY = 1000 * 60 * 2;
 
 export default function AutoSignoutModal() {
   const navigate = useNavigate();
