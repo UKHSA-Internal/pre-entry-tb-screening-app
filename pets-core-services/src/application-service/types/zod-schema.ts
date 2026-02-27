@@ -474,6 +474,9 @@ export const ApplicationSchema = z.object({
   cancellationFurtherInfo: z.string().optional().openapi({
     description: "Additional Information regarding application cancellation",
   }),
+  dateUpdated: z.string().date().openapi({
+    description: "Modified Date in UTC timezone",
+  }),
   expiryDate: z.date().optional().openapi({
     description: "The date when the certificate expires",
   }),
