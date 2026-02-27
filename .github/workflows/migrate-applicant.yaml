@@ -24,6 +24,6 @@ jobs:
       - name: Trigger Glue job (migration script)
         run: |
           aws glue start-job-run --job-name "${{ env.GLUE_MIGRATION_JOB_NAME }}" \
-            --arguments '{"--APPLICANT_TABLE":"${{ env.GLUE_APPLICANT_TABLE_NAME }}","--APPLICATION_TABLE":"${{ env.GLUE_APPLICATION_TABLE_NAME }}","--DRY_RUN":"${{ github.event.inputs.dry_run }}","--customer-executor-env-vars":"${{ vars.AWS_REGION }}"}' \
+            --arguments '{"--APPLICANT_TABLE":"${{ env.GLUE_APPLICANT_TABLE_NAME }}","--APPLICATION_TABLE":"${{ env.GLUE_APPLICATION_TABLE_NAME }}","--DRY_RUN":"${{ github.event.inputs.dry_run }}","--customer-executor-env-vars":"AWS_REGION=${{ vars.AWS_REGION }}"}' \
             --sse aws:kms \
             --sse-kms-key-id ${{ vars.SSE_KEY_ID }}
