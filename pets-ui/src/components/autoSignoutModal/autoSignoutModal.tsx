@@ -12,8 +12,10 @@ import Button from "../button/button";
 import Heading from "../heading/heading";
 import LinkLabel from "../linkLabel/LinkLabel";
 
-const IDLE_DELAY = 1000 * 60 * 18;
-const SIGN_OUT_DELAY = 1000 * 60 * 2;
+// const IDLE_DELAY = 1000 * 60 * 18;
+// const SIGN_OUT_DELAY = 1000 * 60 * 2;
+const IDLE_DELAY = 1000 * 5;
+const SIGN_OUT_DELAY = 1000 * 5;
 
 export default function AutoSignoutModal() {
   const navigate = useNavigate();
@@ -52,7 +54,7 @@ export default function AutoSignoutModal() {
     });
     instance
       .logoutRedirect({
-        postLogoutRedirectUri: "/you-have-signed-out",
+        postLogoutRedirectUri: "/you-have-been-signed-out",
       })
       .catch((error) => {
         console.error("MSAL logout error: ", error);
