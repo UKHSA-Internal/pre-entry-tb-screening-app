@@ -42,4 +42,18 @@ describe("Test for create applicantion handler", () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(responseBodyOne.applicationId).not.toEqual(responseBodyTwo.applicationId);
   });
+
+  test("Missing required body returns a 500 response", async () => {
+    // Arrange
+    const event: SaveApplicationEvent = {
+      ...mockAPIGwEvent,
+    };
+    // Act
+    const response = await createApplicationHandler(event);
+    // Assert
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Request event missing body",
+    });
+  });
 });

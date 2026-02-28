@@ -99,11 +99,11 @@ describe("Test for cancel applicantion handler", () => {
     // Assert
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Request event missing body",
+      message: "Request event missing body",
     });
   });
 
-  test("Validation error returns a 500 response", async () => {
+  test("Validation error returns a 400 response", async () => {
     // Arrange
     const event = {
       ...mockAPIGwEvent,

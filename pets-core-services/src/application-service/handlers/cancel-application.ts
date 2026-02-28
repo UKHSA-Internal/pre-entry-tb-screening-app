@@ -23,7 +23,7 @@ export const cancelApplicationHandler = async (event: CancelApplicationEvent) =>
     if (!parsedBody) {
       logger.error("Event missing parsed body");
       return createHttpResponse(400, {
-        message: "Internal Server Error: Request event missing body",
+        message: "Request event missing body",
       });
     }
 
