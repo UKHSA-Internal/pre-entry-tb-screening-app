@@ -327,13 +327,13 @@ describe("Test for Application Lambda", () => {
           dateXrayTaken: "2025-05-05",
           posteroAnteriorXrayFileName: "pa.dicom",
           posteroAnteriorXray:
-            "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/postero-anterior.dcm",
+            "dicom/Apollo Clinic/ARG/ABC1234KAT/d9505644-1c9a-46ff-8195-b144b4556352/postero-anterior.dcm",
           apicalLordoticXrayFileName: "al.dicom",
           apicalLordoticXray:
-            "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/apical-lordotic.dcm",
+            "dicom/Apollo Clinic/ARG/ABC1234KAT/d9505644-1c9a-46ff-8195-b144b4556352/apical-lordotic.dcm",
           lateralDecubitusXrayFileName: "ld.dicom",
           lateralDecubitusXray:
-            "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/lateral-decubitus.dcm",
+            "dicom/Apollo Clinic/ARG/ABC1234KAT/d9505644-1c9a-46ff-8195-b144b4556352/lateral-decubitus.dcm",
           xrayResult: ChestXRayResult.Normal,
           xrayMinorFindings: [],
           xrayAssociatedMinorFindings: [],

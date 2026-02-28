@@ -74,7 +74,7 @@ export const updateApplicantHandler = async (event: PutApplicantEvent) => {
     return createHttpResponse(200, applicantData.toJson());
   } catch (err: unknown) {
     if (err instanceof ConditionalCheckFailedException) {
-      logger.error("Applicant db record not found");
+      logger.error("Applicant doesn't exist");
       return createHttpResponse(404, {
         message: "Applicant doesn't exist",
         error: "ConditionalCheckFailedException",

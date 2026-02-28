@@ -22,7 +22,7 @@ export const seededApplications: IApplication[] = [
     applicationStatus: ApplicationStatus.inProgress,
   },
   {
-    applicationId: "generated-app-id-3",
+    applicationId: "cbdcc218-316e-4ae1-835f-ccde4c17a7e2",
     passportNumber: "ABC1234KAT",
     countryOfIssue: CountryCode.ARG,
     clinicId: "test-clinic-id-3",
@@ -31,7 +31,7 @@ export const seededApplications: IApplication[] = [
     applicationStatus: ApplicationStatus.inProgress,
   },
   {
-    applicationId: "generated-app-id-4",
+    applicationId: "d9505644-1c9a-46ff-8195-b144b4556352",
     passportNumber: "ABC1234KAT",
     countryOfIssue: CountryCode.ARG,
     clinicId: "Apollo Clinic",
@@ -40,7 +40,7 @@ export const seededApplications: IApplication[] = [
     applicationStatus: ApplicationStatus.inProgress,
   },
   {
-    applicationId: "generated-app-id-5",
+    applicationId: "42a17558-8727-4ab6-b155-8af44f5a6723",
     passportNumber: "Test05",
     countryOfIssue: CountryCode.IND,
     clinicId: "Apollo Clinic",

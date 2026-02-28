@@ -21,8 +21,8 @@ export const createApplicationHandler = async (event: SaveApplicationEvent) => {
   if (!parsedBody) {
     logger.error("Event missing parsed body");
 
-    return createHttpResponse(500, {
-      message: "Internal Server Error: Create Application request not parsed correctly",
+    return createHttpResponse(400, {
+      message: "Request event missing body",
     });
   }
 

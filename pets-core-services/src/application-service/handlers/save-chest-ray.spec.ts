@@ -14,12 +14,14 @@ import { SaveChestXrayEvent, saveChestXRayHandler } from "./save-chest-ray";
 const newChestXray: SaveChestXrayEvent["parsedBody"] = {
   dateXrayTaken: "2025-05-05",
   posteroAnteriorXrayFileName: "posterior-anterior.dicom",
-  posteroAnteriorXray: "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/postero-anterior.dcm",
+  posteroAnteriorXray:
+    "dicom/Apollo Clinic/ARG/ABC1234KAT/d9505644-1c9a-46ff-8195-b144b4556352/postero-anterior.dcm",
   apicalLordoticXrayFileName: "apical-lordotic.dicom",
-  apicalLordoticXray: "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/apical-lordotic.dcm",
+  apicalLordoticXray:
+    "dicom/Apollo Clinic/ARG/ABC1234KAT/d9505644-1c9a-46ff-8195-b144b4556352/apical-lordotic.dcm",
   lateralDecubitusXrayFileName: "lateral-decubitus.dicom",
   lateralDecubitusXray:
-    "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/lateral-decubitus.dcm",
+    "dicom/Apollo Clinic/ARG/ABC1234KAT/d9505644-1c9a-46ff-8195-b144b4556352/lateral-decubitus.dcm",
 };
 
 describe("Test for Saving Chest X-ray into DB", () => {
@@ -81,11 +83,11 @@ describe("Test for Saving Chest X-ray into DB", () => {
       dateXrayTaken: expect.any(String),
       dateCreated: expect.any(String),
       apicalLordoticXray:
-        "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/apical-lordotic.dcm",
+        "dicom/Apollo Clinic/ARG/ABC1234KAT/d9505644-1c9a-46ff-8195-b144b4556352/apical-lordotic.dcm",
       lateralDecubitusXray:
-        "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/lateral-decubitus.dcm",
+        "dicom/Apollo Clinic/ARG/ABC1234KAT/d9505644-1c9a-46ff-8195-b144b4556352/lateral-decubitus.dcm",
       posteroAnteriorXray:
-        "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/postero-anterior.dcm",
+        "dicom/Apollo Clinic/ARG/ABC1234KAT/d9505644-1c9a-46ff-8195-b144b4556352/postero-anterior.dcm",
     });
   });
 
