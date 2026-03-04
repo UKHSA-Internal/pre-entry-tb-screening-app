@@ -61,9 +61,7 @@ petsApi.interceptors.response.use(
       sendGoogleAnalyticsHttpError(0, url);
     }
 
-    if (error.response?.status === 404) {
-      globalThis.location.href = "/page-not-found";
-    } else if (error.response?.status && error.response.status >= 400) {
+    if (error.response?.status && error.response?.status !== 404 && error.response.status >= 400) {
       globalThis.location.href = "/sorry-there-is-problem-with-service";
     }
 
