@@ -1,7 +1,7 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 
-import { ApplicationSchema } from "../../application-service/types/zod-schema";
+import { ApplicationBaseSchema } from "../../application-service/types/zod-schema";
 import { CountryCode } from "../../shared/country";
 import { TaskStatus } from "../../shared/types/enum";
 import { AllowedSex } from "./enums";
@@ -88,7 +88,7 @@ export const ApplicantRegisterRequestSchema = ApplicantBaseSchema.extend({
 });
 
 export const ApplicantSearchResponseSchema = ApplicantRegisterRequestSchema.extend({
-  applications: z.array(ApplicationSchema).openapi({
+  applications: z.array(ApplicationBaseSchema).openapi({
     description: "Applicant's applications",
   }),
   dateCreated: z.string().date().openapi({

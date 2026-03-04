@@ -458,7 +458,7 @@ export const SputumDecisionResponseSchema = SputumDecisionRequestSchema.extend({
   status: z.nativeEnum(TaskStatus).openapi({ description: "Status of Task" }),
 });
 
-export const ApplicationSchema = z.object({
+export const ApplicationBaseSchema = z.object({
   applicationId: z.string().openapi({
     description: "Application id",
   }),
@@ -480,6 +480,9 @@ export const ApplicationSchema = z.object({
   expiryDate: z.date().optional().openapi({
     description: "The date when the certificate expires",
   }),
+});
+
+export const ApplicationSchema = ApplicationBaseSchema.extend({
   applicantPhotoUrl: z.string().openapi({
     description: "Presigned Url for applicant Photo",
   }),
