@@ -115,7 +115,8 @@ const TbCertificateDeclarationForm = () => {
         <Heading level={1} size="l" title="Clinic and certificate information" />
 
         <Summary
-          status={tbCertificateData.status}
+          taskStatus={tbCertificateData.status}
+          applicationStatus={applicationData.applicationStatus}
           summaryElements={[
             {
               key: "Clinic name",

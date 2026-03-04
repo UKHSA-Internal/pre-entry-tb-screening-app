@@ -9,7 +9,7 @@ import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { setApplicantDetailsStatus } from "@/redux/applicantSlice";
 import { setApplicationId, setDateCreated } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { selectApplicant } from "@/redux/store";
+import { selectApplicant, selectApplication } from "@/redux/store";
 import { ButtonClass, ImageType, TaskStatus } from "@/utils/enums";
 import {
   convertDateStrToObj,
@@ -24,6 +24,7 @@ import Spinner from "../components/spinner/spinner";
 
 const ApplicantReview = () => {
   const applicantData = useAppSelector(selectApplicant);
+  const applicationData = useAppSelector(selectApplication);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -189,7 +190,11 @@ const ApplicantReview = () => {
   return (
     <div>
       {isLoading && <Spinner />}
-      <Summary status={summaryStatus} summaryElements={summaryData} />
+      <Summary
+        taskStatus={summaryStatus}
+        applicationStatus={applicationData.applicationStatus}
+        summaryElements={summaryData}
+      />
 
       {(applicantData.status == TaskStatus.NOT_YET_STARTED ||
         applicantData.status == TaskStatus.IN_PROGRESS) && (

@@ -135,7 +135,8 @@ const ApplicantPassportDetailsForm = () => {
 
         {isComplete && (
           <Summary
-            status={summaryStatus}
+            taskStatus={summaryStatus}
+            applicationStatus={applicationData.applicationStatus}
             summaryElements={[
               {
                 key: "Passport number",
