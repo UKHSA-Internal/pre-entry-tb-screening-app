@@ -1,12 +1,13 @@
+import { CountryCode } from "../../shared/country";
 import { logger } from "../../shared/logger";
-import { Applicant } from "../../shared/models/applicant";
 import { ImageType } from "../types/enums";
 
 const DICOM_FOLDER = "dicom";
 export const APPLICANT_PHOTOS_FOLDER = "photos";
 
 export type KeyParameters = {
-  applicant: Applicant;
+  passportNumber: string;
+  countryOfIssue: CountryCode;
   clinicId: string;
   fileName: string;
   imageType: ImageType;
@@ -14,11 +15,9 @@ export type KeyParameters = {
 };
 
 export const generateImageObjectkey = (keyParameters: KeyParameters) => {
-  const { clinicId, applicant, fileName, imageType, applicationId } = keyParameters;
+  const { clinicId, passportNumber, countryOfIssue, fileName, imageType, applicationId } =
+    keyParameters;
   logger.info({ clinicId, fileName, applicationId }, "Generating Image object key");
-
-  const countryOfIssue = applicant.countryOfIssue;
-  const passportNumber = applicant.passportNumber;
 
   const clinicIDFormatted = clinicId.replaceAll("/", "-");
 

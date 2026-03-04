@@ -1,5 +1,4 @@
 import {
-  GetCommand,
   PutCommand,
   PutCommandInput,
   QueryCommand,
@@ -15,15 +14,12 @@ import { CountryCode } from "../country";
 import { getDateWithoutTime } from "../date";
 import { logger } from "../logger";
 import { TaskStatus } from "../types/enum";
-import { Application } from "./application";
 
 type AllApplicantTypes = AllowedSex | CountryCode | Date | TaskStatus | string;
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
 export abstract class ApplicantBase {
-  applicationId!: string;
-
   fullName!: string;
   countryOfNationality!: CountryCode;
   issueDate!: Date;
@@ -41,6 +37,20 @@ export abstract class ApplicantBase {
   static readonly getPassportId = (countryOfIssue: CountryCode, passportNumber: string) =>
     `COUNTRY#${countryOfIssue}#PASSPORT#${passportNumber}`;
 
+  static readonly parsePassportId = (passportId: string) => {
+    const match = passportId.match(/^COUNTRY#([^#]+)#PASSPORT#(.+)$/);
+
+    if (!match) {
+      throw new Error(`Invalid passport id format: ${passportId}`);
+    }
+
+    const [, countryOfIssue, passportNumber] = match;
+
+    return {
+      countryOfIssue: countryOfIssue as CountryCode,
+      passportNumber,
+    };
+  };
   constructor(details: Partial<ApplicantBase>) {
     Object.assign(this, details); // copies all matching props
   }
@@ -57,13 +67,14 @@ export abstract class ApplicantBase {
     delete json.updatedBy;
     delete json.pk;
     delete json.sk;
+    delete json.passportId;
+    delete json.status;
 
     return json;
   }
 }
 
 export type IApplicant = {
-  applicationId: string;
   status: TaskStatus;
 
   fullName: string;
@@ -88,8 +99,8 @@ export type IApplicant = {
 };
 
 export type IApplicantUpdate = {
-  applicationId: string;
-
+  passportNumber: string;
+  countryOfIssue: CountryCode;
   fullName?: string;
   countryOfNationality?: CountryCode;
   issueDate?: Date;
@@ -117,6 +128,7 @@ export type NewApplicant = Omit<
   expiryDate: Date | string;
   dateOfBirth: Date | string;
 };
+
 export type UpdatedApplicant = Omit<
   IApplicantUpdate,
   "dateUpdated" | "issueDate" | "expiryDate" | "dateOfBirth"
@@ -160,7 +172,9 @@ export class ApplicantUpdate extends ApplicantBase {
 }
 
 export class ApplicantDbOps {
-  static readonly getPk = (applicationId: string) => Application.getPk(applicationId);
+  static readonly getPk = (countryOfIssue: CountryCode, passportNumber: string) =>
+    ApplicantBase.getPassportId(countryOfIssue, passportNumber);
+
   static readonly sk = "APPLICANT#DETAILS";
   static readonly getTableName = () => process.env.APPLICANT_SERVICE_DATABASE_NAME;
 
@@ -172,7 +186,7 @@ export class ApplicantDbOps {
       expiryDate: applicant.expiryDate.toISOString(),
       dateOfBirth: applicant.dateOfBirth.toISOString(),
       passportId: ApplicantBase.getPassportId(applicant.countryOfIssue, applicant.passportNumber),
-      pk: this.getPk(applicant.applicationId),
+      pk: this.getPk(applicant.countryOfIssue, applicant.passportNumber),
       sk: this.sk,
     };
     return dbItem;
@@ -230,7 +244,7 @@ export class ApplicantDbOps {
     try {
       logger.info("Updating applicant Information to DB");
 
-      const pk = this.getPk(details.applicationId);
+      const pk = this.getPk(details.countryOfIssue, details.passportNumber);
       const sk = this.sk;
 
       // Clean up: remove undefined fields before building update expression
@@ -264,7 +278,6 @@ export class ApplicantDbOps {
 
       logger.info({ response }, "Applicant details updated successfully");
       const applicant = new ApplicantUpdate({
-        applicationId: attrs?.applicationId as string,
         fullName: attrs?.fullName as string,
         countryOfNationality: attrs?.countryOfNationality as CountryCode,
         issueDate: new Date(attrs?.issueDate as string),
@@ -281,6 +294,8 @@ export class ApplicantDbOps {
 
         dateUpdated: new Date(attrs?.dateUpdated as string),
         updatedBy: attrs?.updatedBy as string,
+        passportNumber: attrs?.passportNumber as string,
+        countryOfIssue: attrs?.countryOfIssue as CountryCode,
       });
 
       return applicant;
@@ -290,29 +305,73 @@ export class ApplicantDbOps {
     }
   }
 
-  static async getByApplicationId(applicationId: string) {
-    try {
-      logger.info("fetching applicant details");
+  // static async getByApplicationId(applicationId: string): Promise<Applicant | null> {
+  //   try {
+  //     logger.info("fetching applicant details");
 
-      const params = {
+  //     const params = {
+  //       TableName: this.getTableName(),
+  //       Key: {
+  //         pk: Application.getPk(applicationId),
+  //         sk: this.sk,
+  //       },
+  //     };
+
+  //     const command = new GetCommand(params);
+  //     const data = await docClient.send(command);
+
+  //     if (!data.Item) {
+  //       logger.info("No applicant details found");
+  //       return null;
+  //     }
+
+  //     logger.info("Applicant Details fetched successfully");
+
+  //     const dbItem = data.Item as ReturnType<(typeof ApplicantDbOps)["todbItem"]>;
+
+  //     const applicantInformation = new Applicant({
+  //       ...dbItem,
+  //       townOrCity: dbItem.townOrCity as string,
+  //       dateCreated: new Date(dbItem.dateCreated),
+  //       issueDate: new Date(dbItem.issueDate),
+  //       expiryDate: new Date(dbItem.expiryDate),
+  //       dateOfBirth: new Date(dbItem.dateOfBirth),
+  //     });
+  //     return applicantInformation;
+  //   } catch (error) {
+  //     logger.error(error, "Error retrieving applicant details");
+  //     throw error;
+  //   }
+  // }
+
+  static async findByPassportId(
+    countryOfIssue: CountryCode,
+    passportNumber: string,
+  ): Promise<Applicant | null> {
+    try {
+      logger.info("Finding all applicant details linked to Passport ID");
+
+      const params: QueryCommandInput = {
         TableName: this.getTableName(),
-        Key: {
-          pk: this.getPk(applicationId),
-          sk: this.sk,
+        IndexName: assertEnvExists(process.env.PASSPORT_ID_INDEX),
+        KeyConditionExpression: `passportId = :passportId`,
+        ExpressionAttributeValues: {
+          ":passportId": ApplicantBase.getPassportId(countryOfIssue, passportNumber),
         },
+        Limit: 1, // Passport Id assumed unique
       };
 
-      const command = new GetCommand(params);
+      const command = new QueryCommand(params);
       const data = await docClient.send(command);
 
-      if (!data.Item) {
-        logger.info("No applicant details found");
-        return;
+      if (!data.Items || (data.Items && data.Items?.length < 1)) {
+        logger.info("No applicant found");
+        return null;
       }
 
-      logger.info("Applicant Details fetched successfully");
+      logger.info({ resultCount: data.Items.length }, "Applicant details fetched successfully");
 
-      const dbItem = data.Item as ReturnType<(typeof ApplicantDbOps)["todbItem"]>;
+      const dbItem = data.Items[0] as ReturnType<(typeof ApplicantDbOps)["todbItem"]>;
 
       const applicantInformation = new Applicant({
         ...dbItem,
@@ -324,49 +383,7 @@ export class ApplicantDbOps {
       });
       return applicantInformation;
     } catch (error) {
-      logger.error(error, "Error retrieving applicant details");
-      throw error;
-    }
-  }
-
-  static async findByPassportId(countryOfIssue: CountryCode, passportNumber: string) {
-    try {
-      logger.info("Finding all applicant details linked to Passport ID");
-
-      const params: QueryCommandInput = {
-        TableName: this.getTableName(),
-        IndexName: assertEnvExists(process.env.PASSPORT_ID_INDEX),
-        KeyConditionExpression: `passportId = :passportId`,
-        ExpressionAttributeValues: {
-          ":passportId": ApplicantBase.getPassportId(countryOfIssue, passportNumber),
-        },
-      };
-
-      const command = new QueryCommand(params);
-      const data = await docClient.send(command);
-
-      if (!data.Items || (data.Items && data.Items?.length < 1)) {
-        logger.info("No applicants found");
-        return [];
-      }
-
-      logger.info({ resultCount: data.Items.length }, "Applicant details fetched successfully");
-
-      const results = data.Items as ReturnType<(typeof ApplicantDbOps)["todbItem"]>[];
-
-      return results.map(
-        (dbItem) =>
-          new Applicant({
-            ...dbItem,
-            townOrCity: dbItem.townOrCity as string,
-            dateCreated: new Date(dbItem.dateCreated),
-            issueDate: new Date(dbItem.issueDate),
-            expiryDate: new Date(dbItem.expiryDate),
-            dateOfBirth: new Date(dbItem.dateOfBirth),
-          }),
-      );
-    } catch (error) {
-      logger.error(error, "Error retrieving Applicants linked to passport id");
+      logger.error(error, "Error retrieving Applicant linked to passport id");
       throw error;
     }
   }

@@ -99,7 +99,11 @@ const TravelReview = () => {
   return (
     <div>
       {isLoading && <Spinner />}
-      <Summary status={summaryStatus} summaryElements={summaryData} />
+      <Summary
+        taskStatus={summaryStatus}
+        applicationStatus={applicationData.applicationStatus}
+        summaryElements={summaryData}
+      />
 
       {(travelData.status == TaskStatus.NOT_YET_STARTED ||
         travelData.status == TaskStatus.IN_PROGRESS) && (

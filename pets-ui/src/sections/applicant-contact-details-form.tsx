@@ -21,9 +21,10 @@ import {
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant, selectApplication } from "@/redux/store";
 import { ReduxApplicantDetailsType } from "@/types";
+import { countryList } from "@/utils/countryList";
 import { ButtonClass, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
-import { countryList, formRegex } from "@/utils/records";
+import { formRegex } from "@/utils/records";
 
 interface ApplicantContactDetailsData {
   applicantHomeAddress1: string;
@@ -66,6 +67,8 @@ const ApplicantContactDetailsForm = () => {
       setIsLoading(true);
       try {
         await putApplicantDetails(applicationData.applicationId, {
+          passportNumber: applicantData.passportNumber,
+          countryOfIssue: applicantData.countryOfIssue,
           applicantHomeAddress1: formData.applicantHomeAddress1,
           applicantHomeAddress2: formData.applicantHomeAddress2,
           applicantHomeAddress3: formData.applicantHomeAddress3,

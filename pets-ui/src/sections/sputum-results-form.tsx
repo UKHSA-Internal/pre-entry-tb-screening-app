@@ -109,29 +109,29 @@ const SputumResultsForm = () => {
     reValidateMode: "onSubmit",
     defaultValues: {
       sample1SmearResult:
-        sputumData.sample1.smearResults.smearResult !== PositiveOrNegative.NOT_YET_ENTERED
-          ? sputumData.sample1.smearResults.smearResult
-          : "",
+        sputumData.sample1.smearResults.smearResult == PositiveOrNegative.NOT_YET_ENTERED
+          ? ""
+          : sputumData.sample1.smearResults.smearResult,
       sample1CultureResult:
-        sputumData.sample1.cultureResults.cultureResult !== PositiveOrNegative.NOT_YET_ENTERED
-          ? sputumData.sample1.cultureResults.cultureResult
-          : "",
+        sputumData.sample1.cultureResults.cultureResult == PositiveOrNegative.NOT_YET_ENTERED
+          ? ""
+          : sputumData.sample1.cultureResults.cultureResult,
       sample2SmearResult:
-        sputumData.sample2.smearResults.smearResult !== PositiveOrNegative.NOT_YET_ENTERED
-          ? sputumData.sample2.smearResults.smearResult
-          : "",
+        sputumData.sample2.smearResults.smearResult == PositiveOrNegative.NOT_YET_ENTERED
+          ? ""
+          : sputumData.sample2.smearResults.smearResult,
       sample2CultureResult:
-        sputumData.sample2.cultureResults.cultureResult !== PositiveOrNegative.NOT_YET_ENTERED
-          ? sputumData.sample2.cultureResults.cultureResult
-          : "",
+        sputumData.sample2.cultureResults.cultureResult == PositiveOrNegative.NOT_YET_ENTERED
+          ? ""
+          : sputumData.sample2.cultureResults.cultureResult,
       sample3SmearResult:
-        sputumData.sample3.smearResults.smearResult !== PositiveOrNegative.NOT_YET_ENTERED
-          ? sputumData.sample3.smearResults.smearResult
-          : "",
+        sputumData.sample3.smearResults.smearResult == PositiveOrNegative.NOT_YET_ENTERED
+          ? ""
+          : sputumData.sample3.smearResults.smearResult,
       sample3CultureResult:
-        sputumData.sample3.cultureResults.cultureResult !== PositiveOrNegative.NOT_YET_ENTERED
-          ? sputumData.sample3.cultureResults.cultureResult
-          : "",
+        sputumData.sample3.cultureResults.cultureResult == PositiveOrNegative.NOT_YET_ENTERED
+          ? ""
+          : sputumData.sample3.cultureResults.cultureResult,
     },
   });
 
@@ -162,7 +162,7 @@ const SputumResultsForm = () => {
     let hasAnySmearResult = false;
     let hasAnyCultureResult = false;
 
-    samples.forEach((sample) => {
+    for (const sample of samples) {
       const smearResults = sputumData[sample].smearResults;
       const cultureResults = sputumData[sample].cultureResults;
 
@@ -199,7 +199,7 @@ const SputumResultsForm = () => {
           hasAnyCultureResult = true;
         }
       }
-    });
+    }
 
     return { hasEditableFields, hasAnySmearResult, hasAnyCultureResult };
   };
@@ -207,7 +207,7 @@ const SputumResultsForm = () => {
   const applyRequiredFieldErrors = (samples: SampleKey[]): boolean => {
     let foundError = false;
 
-    samples.forEach((sample) => {
+    for (const sample of samples) {
       const smearNotInDb = !sputumData[sample].smearResults.submittedToDatabase;
       const cultureNotInDb = !sputumData[sample].cultureResults.submittedToDatabase;
 
@@ -228,7 +228,7 @@ const SputumResultsForm = () => {
         });
         foundError = true;
       }
-    });
+    }
 
     return foundError;
   };
@@ -290,27 +290,27 @@ const SputumResultsForm = () => {
       },
     ];
 
-    resultConfigs.forEach(({ sample, smearField, cultureField, smearAction, cultureAction }) => {
-      const sampleData = sputumData[sample];
+    for (const resultConfig of resultConfigs) {
+      const sampleData = sputumData[resultConfig.sample];
 
-      if (formData[smearField] && !sampleData.smearResults.submittedToDatabase) {
+      if (formData[resultConfig.smearField] && !sampleData.smearResults.submittedToDatabase) {
         dispatch(
-          smearAction({
+          resultConfig.smearAction({
             submittedToDatabase: false,
-            smearResult: formData[smearField] as PositiveOrNegative,
+            smearResult: formData[resultConfig.smearField] as PositiveOrNegative,
           }),
         );
       }
 
-      if (formData[cultureField] && !sampleData.cultureResults.submittedToDatabase) {
+      if (formData[resultConfig.cultureField] && !sampleData.cultureResults.submittedToDatabase) {
         dispatch(
-          cultureAction({
+          resultConfig.cultureAction({
             submittedToDatabase: false,
-            cultureResult: formData[cultureField] as PositiveOrNegative,
+            cultureResult: formData[resultConfig.cultureField] as PositiveOrNegative,
           }),
         );
       }
-    });
+    }
   };
 
   const onSubmit: SubmitHandler<SputumResultsFormType> = (formData) => {

@@ -62,7 +62,7 @@ describe("simulateLambdaAuthorizer", () => {
     expect(lambdaClientMock.commandCalls(InvokeCommand)).toHaveLength(1);
     expect(result.statusCode).toBe(500);
     expect(JSON.parse(result.body)).toMatchObject({
-      message: "Invalid token",
+      message: "Something went wrong",
     });
   });
 
