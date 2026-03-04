@@ -52,7 +52,7 @@ export default function AutoSignoutModal() {
     });
     instance
       .logoutRedirect({
-        postLogoutRedirectUri: "/you-have-signed-out",
+        postLogoutRedirectUri: "/you-have-been-signed-out",
       })
       .catch((error) => {
         console.error("MSAL logout error: ", error);
