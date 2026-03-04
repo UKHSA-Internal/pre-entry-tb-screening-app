@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { z } from "zod";
 
-import { createHttpResponse } from "../../shared/http";
+import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
@@ -21,9 +21,7 @@ export const createApplicationHandler = async (event: SaveApplicationEvent) => {
   if (!parsedBody) {
     logger.error("Event missing parsed body");
 
-    return createHttpResponse(400, {
-      message: "Request event missing body",
-    });
+    return HttpErrors.badRequest("Request event missing body");
   }
 
   const newApplication = await Application.createNewApplication({
@@ -33,5 +31,5 @@ export const createApplicationHandler = async (event: SaveApplicationEvent) => {
     applicationId: crypto.randomUUID(),
   });
 
-  return createHttpResponse(200, { ...newApplication.toJson() });
+  return HttpResponses.ok(newApplication.toJson());
 };

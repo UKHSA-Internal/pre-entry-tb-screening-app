@@ -118,11 +118,11 @@ describe("Test for Getting Applicant", () => {
 
     // Assert
     expect(errorLoggerMock).toHaveBeenCalledWith(
-      "Edge-Case: Applicant has been created without an application",
+      "Applicant has been created without an application",
     );
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(422);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Matched Applicant has been created without an application",
+      message: "Applicant has been created without an application",
     });
   });
 
@@ -213,7 +213,7 @@ describe("Test for Getting Applicant", () => {
     expect(JSON.parse(response.body)).toMatchObject({ message: "Clinic Id missing" });
   });
 
-  test("Missing required Headers returns a 500 response", async () => {
+  test("Missing required Body returns a 500 response", async () => {
     // Arrange
     const event: SearchApplicantEvent = {
       ...mockAPIGwEvent,
@@ -223,9 +223,9 @@ describe("Test for Getting Applicant", () => {
     const response = await searchApplicantHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Request not parsed correctly",
+      message: "Request event missing body",
     });
   });
 

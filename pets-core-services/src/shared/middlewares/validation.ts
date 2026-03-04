@@ -2,7 +2,7 @@ import middy from "@middy/core";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { z } from "zod";
 
-import { createHttpResponse } from "../http";
+import { HttpErrors } from "../httpResponses";
 import { logger } from "../logger";
 import { RouteParam } from "../types";
 
@@ -31,7 +31,7 @@ export const validateRequest = ({
 
           if (parsedResult.error) {
             logger.error("Failed Validation");
-            return createHttpResponse(400, {
+            return HttpErrors.badRequest({
               message: "Request Body failed validation",
               validationError: parsedResult.error.flatten().fieldErrors,
               validationErrorVerbose: parsedResult.error,
@@ -54,7 +54,7 @@ export const validateRequest = ({
 
           if (parsedResult.error) {
             logger.error("Request Parameters failed validation");
-            return createHttpResponse(400, {
+            return HttpErrors.badRequest({
               message: "Request Parameters failed validation",
               validationError: parsedResult.error.flatten().fieldErrors,
             });
@@ -69,7 +69,7 @@ export const validateRequest = ({
 
           if (parsedResult.error) {
             logger.error("Headers failed validation");
-            return createHttpResponse(400, {
+            return HttpErrors.badRequest({
               message: "Headers failed validation",
               validationError: parsedResult.error.flatten().fieldErrors,
             });
@@ -77,10 +77,8 @@ export const validateRequest = ({
           Object.assign(request.event, { parsedHeaders: parsedResult.data });
         }
       } catch (error) {
-        logger.error(error, "Validation Failed");
-        return createHttpResponse(500, {
-          message: "Something went wrong",
-        });
+        logger.error(error, "Validation Failed due to server error");
+        return HttpErrors.serverError("Something went wrong");
       }
     },
   };

@@ -1,6 +1,6 @@
 import { APIGatewayProxyResult } from "aws-lambda";
 
-import { createHttpResponse } from "../http";
+import { HttpErrors } from "../httpResponses";
 import { logger } from "../logger";
 import { Application } from "../models/application";
 import { PetsAPIGatewayProxyEvent } from "../types";
@@ -15,9 +15,7 @@ export const validateClinicAndApplication = async (request: {
     const application = await Application.getByApplicationId(applicationId);
     if (!application) {
       logger.error("Application does not exist");
-      return createHttpResponse(404, {
-        message: `Application with ID: ${applicationId} does not exist`,
-      });
+      return HttpErrors.notFound(`Application with ID: ${applicationId} does not exist`);
     }
 
     const { clinicId } = event.requestContext.authorizer;
@@ -25,12 +23,12 @@ export const validateClinicAndApplication = async (request: {
 
     if (!clinicId) {
       logger.error("Clinic Id missing");
-      return createHttpResponse(400, { message: "Clinic Id missing" });
+      return HttpErrors.badRequest("Clinic Id missing");
     }
 
     if (clinicId !== SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
       logger.error("Clinic Id mismatch");
-      return createHttpResponse(403, { message: "Clinic Id mismatch" });
+      return HttpErrors.forbidden("Clinic Id mismatch");
     }
 
     if (clinicId === SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
@@ -38,8 +36,6 @@ export const validateClinicAndApplication = async (request: {
     }
   } catch (error) {
     logger.error(error, "Error in validation");
-    return createHttpResponse(500, {
-      message: "Something went wrong",
-    });
+    return HttpErrors.serverError("Something went wrong");
   }
 };

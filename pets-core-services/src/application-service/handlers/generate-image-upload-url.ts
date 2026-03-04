@@ -5,7 +5,8 @@ import { z } from "zod";
 
 import awsClients from "../../shared/clients/aws";
 import { assertEnvExists, isLocal, isTest } from "../../shared/config";
-import { createHttpResponse } from "../../shared/http";
+import { CountryCode } from "../../shared/country";
+import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
@@ -39,9 +40,7 @@ export const generateImageUploadUrlHandler = async (event: GenerateUploadEvent) 
     if (!parsedBody) {
       logger.error("Event missing parsed body");
 
-      return createHttpResponse(500, {
-        message: "Internal Server Error: Generate Upload URL Request not parsed correctly",
-      });
+      return HttpErrors.badRequest("Request event missing body");
     }
     const imageType = parsedBody.imageType as ImageType;
     let contentType = "application/octet-stream";
@@ -51,23 +50,21 @@ export const generateImageUploadUrlHandler = async (event: GenerateUploadEvent) 
       contentType = mimeTypes[ext];
       if (!contentType) {
         logger.error("Invalid file type. Only .jpg, .jpeg, and .png are allowed.");
-        return createHttpResponse(400, {
-          message: "Invalid file type. Only .jpg, .jpeg, and .png are allowed.",
-        });
+        return HttpErrors.validationError(
+          "Invalid file type. Only .jpg, .jpeg, and .png are allowed.",
+        );
       }
     }
 
     const application = await Application.getByApplicationId(applicationId);
-    if (!application) {
-      logger.error("Application does not exist");
-      return createHttpResponse(400, {
-        message: "Invalid Application: Application does not exist",
-      });
-    }
+    // if (!application) {
+    //   logger.error("Application does not exist");
+    //   return HttpErrors.validationError("Invalid Application: Application does not exist");
+    // }
     const objectKey = generateImageObjectkey({
-      passportNumber: application?.passportNumber,
-      countryOfIssue: application?.countryOfIssue,
-      clinicId: application?.clinicId,
+      passportNumber: application?.passportNumber as string,
+      countryOfIssue: application?.countryOfIssue as CountryCode,
+      clinicId: application?.clinicId as string,
       fileName: parsedBody.fileName,
       imageType,
       applicationId,
@@ -106,9 +103,9 @@ export const generateImageUploadUrlHandler = async (event: GenerateUploadEvent) 
       );
     }
 
-    return createHttpResponse(200, { uploadUrl: appUrl, bucketPath: objectKey });
+    return HttpResponses.ok({ uploadUrl: appUrl, bucketPath: objectKey });
   } catch (error) {
     logger.error(error, "Error generating uploading url");
-    return createHttpResponse(500, { message: "Something went wrong" });
+    return HttpErrors.serverError("Something went wrong");
   }
 };

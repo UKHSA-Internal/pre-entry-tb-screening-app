@@ -195,7 +195,7 @@ describe("Test for Posting Applicant into DB", () => {
     expect(JSON.parse(response.body)).toMatchObject(existingApplicantDetails);
   });
 
-  test("Missing required Headers returns a 500 response", async () => {
+  test("Missing required body returns a 400 response", async () => {
     // Arrange
     const event: PostApplicantEvent = {
       ...mockAPIGwEvent,
@@ -205,9 +205,9 @@ describe("Test for Posting Applicant into DB", () => {
     const response = await postApplicantHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Request not parsed correctly",
+      message: "Request event missing body",
     });
   });
 

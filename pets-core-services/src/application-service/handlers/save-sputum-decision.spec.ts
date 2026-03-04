@@ -34,7 +34,7 @@ describe("Test for Sputum Decision into DB", () => {
     });
   });
 
-  test("Duplicate post throws a 400 error", async () => {
+  test("Duplicate post throws a 409 error", async () => {
     // Arrange
     const existingSputumDecision = {
       ...seededSputumDecision[0],
@@ -51,11 +51,11 @@ describe("Test for Sputum Decision into DB", () => {
     const response = await saveSputumDecisionHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(409);
     expect(JSON.parse(response.body)).toMatchObject({ message: "Sputum Decision already saved" });
   });
 
-  test("Missing required body returns a 500 response", async () => {
+  test("Missing required body returns a 400 response", async () => {
     // Arrange
     const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
     const event: SaveSputumDecisionEvent = {
@@ -67,13 +67,13 @@ describe("Test for Sputum Decision into DB", () => {
 
     // Assert
     expect(errorLoggerMock).toHaveBeenCalledWith("Event missing parsed body");
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Sputum Decision Request not parsed correctly",
+      message: "Request event missing body",
     });
   });
 
-  test("Failed validation returns a 400 response", async () => {
+  test("Failed validation returns a 422 response", async () => {
     // Arrange
     const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
     const event: SaveSputumDecisionEvent = {
@@ -101,7 +101,7 @@ describe("Test for Sputum Decision into DB", () => {
       },
       "Validation failed",
     );
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(422);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Sputum Decision Request validation failed",
     });
