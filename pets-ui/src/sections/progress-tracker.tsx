@@ -1,4 +1,5 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
@@ -7,6 +8,7 @@ import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import NotificationBanner from "@/components/notificationBanner/notificationBanner";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
+import { setApplicationStatus } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import {
   selectApplicant,
@@ -126,7 +128,12 @@ const ProgressTracker = () => {
   const sputumData = useAppSelector(selectSputum);
   const tbCertificateData = useAppSelector(selectTbCertificate);
   const applicantPhotoContext = useApplicantPhoto();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  if (applicationData.applicationStatus == ApplicationStatus.NULL) {
+    dispatch(setApplicationStatus(ApplicationStatus.IN_PROGRESS));
+  }
 
   const allSputumSamplesSubmitted =
     sputumData.sample1.collection.submittedToDatabase &&

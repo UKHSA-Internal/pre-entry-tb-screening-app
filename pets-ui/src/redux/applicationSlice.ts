@@ -25,7 +25,7 @@ export const applicationSlice = createSlice({
     setDateCreated: (state, action: PayloadAction<DateType>) => {
       state.dateCreated = action.payload;
     },
-    setTaskStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+    setApplicationStatus: (state, action: PayloadAction<ApplicationStatus>) => {
       state.applicationStatus = action.payload;
     },
     setCancellationReason: (state, action: PayloadAction<string>) => {
@@ -58,7 +58,7 @@ export const applicationSlice = createSlice({
 export const {
   setApplicationId,
   setDateCreated,
-  setTaskStatus,
+  setApplicationStatus,
   setCancellationReason,
   setCancellationFurtherInfo,
   setApplicationDetails,
