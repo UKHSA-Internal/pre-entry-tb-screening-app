@@ -550,7 +550,7 @@ describe("Test for Application Lambda", () => {
       // Act
       const response: APIGatewayProxyResult = await handler(event, context);
 
-      expect(response.statusCode).toBe(400);
+      expect(response.statusCode).toBe(409);
       expect(response.body).toContain("Sputum Details already saved");
     });
 

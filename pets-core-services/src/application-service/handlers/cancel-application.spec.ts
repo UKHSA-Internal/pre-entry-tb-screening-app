@@ -121,7 +121,7 @@ describe("Test for cancel applicantion handler", () => {
     // Assert
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Request body data validation failed",
+      message: "Request body failed validation",
     });
   });
 

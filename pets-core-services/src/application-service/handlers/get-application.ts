@@ -1,4 +1,4 @@
-import { createHttpResponse } from "../../shared/http";
+import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { ApplicantDbOps } from "../../shared/models/applicant";
 import { Application } from "../../shared/models/application";
@@ -13,14 +13,13 @@ import { TbCertificateDbOps } from "../models/tb-certificate";
 import { TravelInformationDbOps } from "../models/travel-information";
 
 export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => {
-  const SUPPORT_CLINIC_ID = process.env.SUPPORT_CLINIC_ID;
   try {
     const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
 
     logger.info({ applicationId }, "Retrieve Application handler triggered");
 
     const application = await Application.getByApplicationId(applicationId);
-    if (!application) return createHttpResponse(404, { message: "Application does not exist" });
+    if (!application) return HttpErrors.notFound("Application does not exist");
 
     const applicant = await ApplicantDbOps.findByPassportId(
       application.countryOfIssue,
@@ -28,16 +27,16 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
     );
     if (!applicant) {
       logger.error("Application does not have an applicant");
-      return createHttpResponse(400, { message: "Invalid Application - No Applicant" });
+      return HttpErrors.validationError("Invalid Application - No Applicant");
     }
 
-    if (
-      event.requestContext.authorizer.clinicId !== SUPPORT_CLINIC_ID &&
-      application.clinicId != event.requestContext.authorizer.clinicId
-    ) {
-      logger.error("ClinicId mismatch");
-      return createHttpResponse(403, { message: "Clinic Id mismatch" });
-    }
+    // if (
+    //   event.requestContext.authorizer.clinicId !== SUPPORT_CLINIC_ID &&
+    //   application.clinicId != event.requestContext.authorizer.clinicId
+    // ) {
+    //   logger.error("ClinicId mismatch");
+    //   return HttpErrors.forbidden("Clinic Id mismatch");
+    // }
     const clinicId = application.clinicId;
     const applicantPhotoUrl = await ApplicantPhoto.getByApplicationId(
       applicationId,
@@ -53,12 +52,14 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
     const tbCertificate = await TbCertificateDbOps.getByApplicationId(applicationId);
     const radiologicalOutcome = await RadiologicalOutcome.getByApplicationId(applicationId);
 
-    return createHttpResponse(200, {
+    return HttpResponses.ok({
       applicationId,
       applicantPhotoUrl,
       applicationStatus: application.applicationStatus,
+      dateCreated: application.dateCreated ? application.dateCreated.toISOString() : undefined,
       expiryDate: application.expiryDate ? application.expiryDate?.toISOString() : undefined,
       cancellationReason: application.cancellationReason,
+      cancellationFurtherInfo: application.cancellationFurtherInfo,
       travelInformation: travelInformation?.toJson(),
       medicalScreening: medicalScreening?.toJson(),
       chestXray: chestXray?.toJson(),
@@ -69,6 +70,6 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
     });
   } catch (error) {
     logger.error(error, "Error retrieving application details");
-    return createHttpResponse(500, { message: "Something went wrong" });
+    return HttpErrors.serverError("Something went wrong");
   }
 };

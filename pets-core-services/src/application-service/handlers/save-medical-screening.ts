@@ -1,7 +1,7 @@
 import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
 import { z } from "zod";
 
-import { createHttpResponse } from "../../shared/http";
+import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import {
@@ -28,9 +28,7 @@ export const saveMedicalScreeningHandler = async (event: SaveMedicalScreeningEve
     if (!parsedBody) {
       logger.error("Event missing parsed body");
 
-      return createHttpResponse(500, {
-        message: "Internal Server Error: Medical Screening Request not parsed correctly",
-      });
+      return HttpErrors.badRequest("Request event missing body");
     }
 
     const { createdBy } = event.requestContext.authorizer;
@@ -43,15 +41,15 @@ export const saveMedicalScreeningHandler = async (event: SaveMedicalScreeningEve
       });
     } catch (error) {
       if (error instanceof ConditionalCheckFailedException)
-        return createHttpResponse(400, { message: "Medical Screening already saved" });
+        return HttpErrors.conflictError("Medical Screening already saved");
       throw error;
     }
 
-    return createHttpResponse(200, {
+    return HttpResponses.ok({
       ...medicalScreening.toJson(),
     });
   } catch (err) {
     logger.error(err, "Error saving Medical Screening");
-    return createHttpResponse(500, { message: "Something went wrong" });
+    return HttpErrors.serverError("Something went wrong");
   }
 };

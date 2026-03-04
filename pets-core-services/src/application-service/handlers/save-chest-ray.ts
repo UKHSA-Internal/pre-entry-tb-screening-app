@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import awsClients from "../../shared/clients/aws";
 import { assertEnvExists } from "../../shared/config";
-import { createHttpResponse } from "../../shared/http";
+import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
@@ -33,9 +33,7 @@ export const saveChestXRayHandler = async (event: SaveChestXrayEvent) => {
     if (!parsedBody) {
       logger.error("Event missing parsed body");
 
-      return createHttpResponse(500, {
-        message: "Internal Server Error: Chest X-Ray Request not parsed correctly",
-      });
+      return HttpErrors.badRequest("Request event missing body");
     }
 
     const { createdBy } = event.requestContext.authorizer;
@@ -50,7 +48,7 @@ export const saveChestXRayHandler = async (event: SaveChestXrayEvent) => {
         application?.clinicId as string,
       );
       if (validationError) {
-        return createHttpResponse(400, { message: validationError });
+        return HttpErrors.validationError(validationError);
       }
     }
 
@@ -63,16 +61,16 @@ export const saveChestXRayHandler = async (event: SaveChestXrayEvent) => {
       });
     } catch (error) {
       if (error instanceof ConditionalCheckFailedException)
-        return createHttpResponse(400, { message: "Chest X-ray already saved" });
+        return HttpErrors.conflictError("Chest X-ray already saved");
       throw error;
     }
 
-    return createHttpResponse(200, {
+    return HttpResponses.ok({
       ...chestXray.toJson(),
     });
   } catch (error) {
     logger.error(error, "Error saving Chest X-ray");
-    return createHttpResponse(500, { message: "Something went wrong" });
+    return HttpErrors.serverError("Something went wrong");
   }
 };
 

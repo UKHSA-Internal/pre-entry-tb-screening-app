@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { createHttpResponse } from "../../shared/http";
+import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
@@ -22,17 +22,13 @@ export const cancelApplicationHandler = async (event: CancelApplicationEvent) =>
 
     if (!parsedBody) {
       logger.error("Event missing parsed body");
-      return createHttpResponse(400, {
-        message: "Request event missing body",
-      });
+      return HttpErrors.badRequest("Request event missing body");
     }
 
     const parsed = CancelApplicationRequestSchema.safeParse(parsedBody);
     if (!parsed.success) {
       logger.error({ error: parsed.error.flatten() }, "Validation failed");
-      return createHttpResponse(400, {
-        message: "Request body data validation failed",
-      });
+      return HttpErrors.badRequest("Request body failed validation");
     }
 
     const { createdBy } = event.requestContext.authorizer;
@@ -44,9 +40,9 @@ export const cancelApplicationHandler = async (event: CancelApplicationEvent) =>
       updatedBy: createdBy,
     });
 
-    return createHttpResponse(200, { ...updatedApplication.toJson() });
+    return HttpResponses.ok({ ...updatedApplication.toJson() });
   } catch (error) {
     logger.error(error, "Cancel Application Handler");
-    return createHttpResponse(500, { message: "Something went wrong" });
+    return HttpErrors.serverError("Something went wrong");
   }
 };

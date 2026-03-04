@@ -91,7 +91,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     });
   });
 
-  test("Duplicate post throws a 400 error", async () => {
+  test("Duplicate post throws a 409 error", async () => {
     // Arrange
     const existingChestXray = seededChestXray[0];
     const event: SaveChestXrayEvent = {
@@ -104,7 +104,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const response = await saveChestXRayHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(409);
     expect(JSON.parse(response.body)).toMatchObject({ message: "Chest X-ray already saved" });
   });
 
@@ -131,7 +131,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     chestXrayMock.mockReset();
   });
 
-  test("Invalid Object Key for any image throws a 400 error", async () => {
+  test("Invalid Object Key for any image throws a 422 error", async () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[3].applicationId },
@@ -145,13 +145,13 @@ describe("Test for Saving Chest X-ray into DB", () => {
     // Act
     const response = await saveChestXRayHandler(event);
     // Assert
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(422);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "postero-anterior.dcm object key is invalid",
     });
   });
 
-  test("Missing Object in S3 for any image throws a 400 error", async () => {
+  test("Missing Object in S3 for any image throws a 422 error", async () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[3].applicationId },
@@ -169,7 +169,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const response = await saveChestXRayHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(422);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "postero-anterior.dcm image does not exist",
     });
@@ -194,7 +194,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     expect(errorLoggerMock).toHaveBeenCalledWith(Error("S3 error"), "Error saving Chest X-ray");
   });
 
-  test("Invalid Application throws a 400 error", async () => {
+  test("Invalid Application throws a 422 error", async () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: "Invalid-Id" },
@@ -206,13 +206,13 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const response = await saveChestXRayHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(422);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Invalid Application: Application does not exist",
     });
   });
 
-  test("Missing required body returns a 500 response", async () => {
+  test("Missing required body returns a 400 response", async () => {
     // Arrange
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
@@ -222,9 +222,9 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const response = await saveChestXRayHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Chest X-Ray Request not parsed correctly",
+      message: "Request event missing body",
     });
   });
 

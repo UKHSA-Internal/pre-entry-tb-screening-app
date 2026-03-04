@@ -2,6 +2,7 @@ import { GlobalContextStorageProvider } from "pino-lambda";
 
 import { CountryCode } from "../../shared/country";
 import { createHttpResponse } from "../../shared/http";
+import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { ApplicantDbOps } from "../../shared/models/applicant";
 import { Application } from "../../shared/models/application";
@@ -24,9 +25,7 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
 
     if (!parsedHeaders) {
       logger.error("Request missing parsed headers");
-      return createHttpResponse(500, {
-        message: "Internal Server Error: Request not parsed correctly",
-      });
+      return HttpErrors.badRequest("Request event missing body");
     }
     const countryOfIssue = parsedHeaders.countryofissue;
     const passportNumber = parsedHeaders.passportnumber;
@@ -41,10 +40,8 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
 
     const applications = await Application.getByApplicantId(passportNumber, countryOfIssue);
     if (!applications.length && applicant) {
-      logger.error("Edge-Case: Applicant has been created without an application");
-      return createHttpResponse(400, {
-        message: `Matched Applicant has been created without an application`,
-      });
+      logger.error("Applicant has been created without an application");
+      return HttpErrors.validationError("Applicant has been created without an application");
     }
     // let application: Application | null;
 
@@ -68,23 +65,23 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
 
     if (!clinicId) {
       logger.error("Clinic Id missing");
-      return createHttpResponse(400, { message: "Clinic Id missing" });
+      return HttpErrors.badRequest("Clinic Id missing");
     }
 
     if (clinicId !== SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
       logger.error("Clinic Id mismatch");
-      return createHttpResponse(403, { message: "Clinic Id mismatch" });
+      return HttpErrors.forbidden("Clinic Id mismatch");
     }
 
     if (clinicId === SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
       logger.info("Getting an application for the support clinic");
     }
-    return createHttpResponse(200, {
+    return HttpResponses.ok({
       ...applicant.toJson(),
       applications: sortedApplications.map((e) => e.toJson()),
     });
   } catch (error) {
     logger.error(error, "Searching Applicant Details Failed");
-    return createHttpResponse(500, { message: "Something went wrong" });
+    return HttpErrors.serverError("Something went wrong");
   }
 };
