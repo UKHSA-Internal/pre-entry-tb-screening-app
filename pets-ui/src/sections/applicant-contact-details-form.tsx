@@ -67,6 +67,8 @@ const ApplicantContactDetailsForm = () => {
       setIsLoading(true);
       try {
         await putApplicantDetails(applicationData.applicationId, {
+          passportNumber: applicantData.passportNumber,
+          countryOfIssue: applicantData.countryOfIssue,
           applicantHomeAddress1: formData.applicantHomeAddress1,
           applicantHomeAddress2: formData.applicantHomeAddress2,
           applicantHomeAddress3: formData.applicantHomeAddress3,

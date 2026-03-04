@@ -65,6 +65,8 @@ const ApplicantPersonalDetailsForm = () => {
         const dateOfBirthStr = `${formData.dateOfBirth.year}-${standardiseDayOrMonth(formData.dateOfBirth.month)}-${standardiseDayOrMonth(formData.dateOfBirth.day)}`;
 
         await putApplicantDetails(applicationData.applicationId, {
+          passportNumber: applicantData.passportNumber,
+          countryOfIssue: applicantData.countryOfIssue,
           fullName: formData.fullName,
           sex: formData.sex,
           dateOfBirth: dateOfBirthStr,
