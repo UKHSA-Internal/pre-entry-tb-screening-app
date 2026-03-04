@@ -332,8 +332,6 @@ describe("PETS Application - Amend Travel Information for Partially Completed Su
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
-      .selectPregnancyStatus("No")
-      .selectMenstrualPeriods("No")
       .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.")
       .submitForm();
 
@@ -365,7 +363,7 @@ describe("PETS Application - Amend Travel Information for Partially Completed Su
     });
 
     // Verify warning message and Submit form to confirm details
-    medicalSummaryPage.verifySubmissionSection();
+    medicalSummaryPage.verifySubmissionWarningText();
     medicalSummaryPage.confirmDetails();
 
     // Verify Medical Confirmation page

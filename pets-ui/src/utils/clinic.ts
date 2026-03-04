@@ -28,10 +28,13 @@ export const getClinicId = async (): Promise<string | null> => {
   return clinicId;
 };
 
-export const fetchClinic = async (dispatch: AppDispatch): Promise<void> => {
-  const clinicId = await getClinicId();
+export const fetchClinic = async (
+  dispatch: AppDispatch,
+  applicationClinicId?: string,
+): Promise<void> => {
+  let clinicId: string | null = null;
+  clinicId = applicationClinicId || (await getClinicId());
   if (!clinicId) return;
-
   void getClinicById(clinicId).then(({ data }) => {
     dispatch(setClinic(data.clinic));
   });

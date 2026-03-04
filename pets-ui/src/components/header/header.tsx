@@ -9,7 +9,12 @@ export default function Header() {
   const url = String(location.pathname + location.search + location.hash);
 
   let signOutUrl = "/are-you-sure-you-want-to-sign-out";
-  if (url == "/search-for-visa-applicant" || url == "/tracker" || url.includes("confirmed")) {
+  if (
+    url == "/search-for-visa-applicant" ||
+    url == "/tracker" ||
+    url.includes("confirmed") ||
+    url == "/tb-screening-complete"
+  ) {
     signOutUrl += "?skipSignOutCheck=true";
   }
 

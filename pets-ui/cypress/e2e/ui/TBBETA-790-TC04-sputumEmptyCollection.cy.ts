@@ -17,6 +17,7 @@ import { ChestXrayResultsPage } from "../../support/page-objects/chestXrayResult
 import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
 import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
+import { MedicalHistoryFemalePage } from "../../support/page-objects/medicalHistoryFemalePage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
 import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
@@ -51,6 +52,7 @@ describe("Empty Collection Method Test On Sputum Collection Page", () => {
   const travelSummaryPage = new TravelSummaryPage();
   const travelConfirmationPage = new TravelConfirmationPage();
   const medicalScreeningPage = new MedicalScreeningPage();
+  const medicalHistoryFemalePage = new MedicalHistoryFemalePage();
   const applicantConfirmationPage = new ApplicantConfirmationPage();
   const medicalSummaryPage = new MedicalSummaryPage();
   const medicalConfirmationPage = new MedicalConfirmationPage();
@@ -195,7 +197,7 @@ describe("Empty Collection Method Test On Sputum Collection Page", () => {
     applicantDetailsPage
       .fillFullName("Jane Sputum-Collection")
       .fillBirthDate(adultDOB.day, adultDOB.month, adultDOB.year)
-      .selectSex("Male")
+      .selectSex("Female")
       .selectNationality(countryName) // Use country code for form filling
       .submitForm();
     // Fill in passport details
@@ -344,10 +346,15 @@ describe("Empty Collection Method Test On Sputum Collection Page", () => {
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
-      .selectPregnancyStatus("No")
-      .selectMenstrualPeriods("No")
-      .fillPhysicalExamNotes("Applicant shows no signs of active TB symptoms.")
+      .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.")
       .submitForm();
+
+    // Verify redirection to Medical History Female
+    medicalHistoryFemalePage.verifyPageLoaded();
+
+    medicalHistoryFemalePage.selectPregnant("No");
+    medicalHistoryFemalePage.selectMenstrualPeriods("No");
+    medicalHistoryFemalePage.submitForm();
 
     // Verify redirection to X-ray Question Page
     chestXrayPage.verifyPageLoaded();
@@ -370,7 +377,7 @@ describe("Empty Collection Method Test On Sputum Collection Page", () => {
       closeContactWithTb: "No",
       pregnant: "No",
       menstrualPeriods: "No",
-      physicalExamNotes: "Applicant shows no signs of active TB symptoms.",
+      physicalExamNotes: "No abnormalities detected. Patient appears healthy.",
     });
 
     // Confirm medical details

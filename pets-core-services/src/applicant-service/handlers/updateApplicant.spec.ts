@@ -87,7 +87,35 @@ describe("Test for Updating Applicant into DB", () => {
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toMatchObject(applicantDetails);
   });
+  test("Updating an Applicant - using support clinicId", async () => {
+    // Arrange
+    const event: PutApplicantEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+      parsedBody: applicantDetails,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: {
+          ...mockAPIGwEvent.requestContext.authorizer,
+          clinicId: process.env.SUPPORT_CLINIC_ID as string,
+        },
+      },
+    };
+    // Create an applicant
+    const eventPOST: PostApplicantEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+      parsedBody: newApplicantDetails,
+    };
+    await postApplicantHandler(eventPOST);
 
+    // Act
+    const response = await updateApplicantHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toMatchObject(applicantDetails);
+  });
   test("Incorrect applicationId throws a 400 error", async () => {
     // Arrange
     const parsedBody: PutApplicantEvent["parsedBody"] = {
@@ -122,7 +150,63 @@ describe("Test for Updating Applicant into DB", () => {
     // Assert
     expect(response.statusCode).toBe(400);
   });
+  test("Clinic Id mismatch returns a 403 response", async () => {
+    // Arrange
+    const event: PutApplicantEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+      parsedBody: applicantDetails,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: {
+          ...mockAPIGwEvent.requestContext.authorizer,
+          clinicId: "invalid-clinic-id",
+        },
+      },
+    };
+    // Create an applicant
+    const eventPOST: PostApplicantEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+      parsedBody: newApplicantDetails,
+    };
+    await postApplicantHandler(eventPOST);
 
+    // Act
+    const response = await updateApplicantHandler(event);
+
+    expect(response.statusCode).toBe(403);
+    expect(JSON.parse(response.body)).toMatchObject({ message: "Clinic Id mismatch" });
+  });
+
+  test("Missing clinicId in the request returns a 400 response", async () => {
+    // Arrange
+    const event: PutApplicantEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+      parsedBody: applicantDetails,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: {
+          ...mockAPIGwEvent.requestContext.authorizer,
+          clinicId: "",
+        },
+      },
+    };
+    // Create an applicant
+    const eventPOST: PostApplicantEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+      parsedBody: newApplicantDetails,
+    };
+    await postApplicantHandler(eventPOST);
+
+    // Act
+    const response = await updateApplicantHandler(event);
+
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body)).toMatchObject({ message: "Clinic Id missing" });
+  });
   test("Missing required Headers returns a 500 response", async () => {
     // Arrange
     const event: PutApplicantEvent = {

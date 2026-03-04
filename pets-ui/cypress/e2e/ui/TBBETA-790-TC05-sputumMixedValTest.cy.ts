@@ -17,6 +17,7 @@ import { ChestXrayResultsPage } from "../../support/page-objects/chestXrayResult
 import { ChestXrayUploadPage } from "../../support/page-objects/chestXrayUploadPage";
 import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
+import { MedicalHistoryFemalePage } from "../../support/page-objects/medicalHistoryFemalePage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
 import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
@@ -52,6 +53,7 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
   const travelConfirmationPage = new TravelConfirmationPage();
   const medicalScreeningPage = new MedicalScreeningPage();
   const applicantConfirmationPage = new ApplicantConfirmationPage();
+  const medicalHistoryFemalePage = new MedicalHistoryFemalePage();
   const medicalSummaryPage = new MedicalSummaryPage();
   const medicalConfirmationPage = new MedicalConfirmationPage();
   const radiologicalOutcomeConfPage = new RadiologicalOutcomeConfPage();
@@ -346,11 +348,15 @@ describe("Mixed Validation Error Test On Sputum Collection Page", () => {
       .selectTbSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
-      .selectPregnancyStatus("No")
-      .selectMenstrualPeriods("No")
       .fillPhysicalExamNotes("Applicant shows no signs of active TB symptoms.")
       .submitForm();
 
+    // Verify redirection to Medical History Female
+    medicalHistoryFemalePage.verifyPageLoaded();
+
+    medicalHistoryFemalePage.selectPregnant("No");
+    medicalHistoryFemalePage.selectMenstrualPeriods("No");
+    medicalHistoryFemalePage.submitForm();
     // Verify redirection to X-ray Question Page
     chestXrayPage.verifyPageLoaded();
 
