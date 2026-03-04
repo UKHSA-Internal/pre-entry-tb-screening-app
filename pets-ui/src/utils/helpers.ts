@@ -431,12 +431,12 @@ const formatCancellationReasonForDisplay = (cancellationReason: string) => {
     case "Had inconclusive sputum test results":
     case "Did not attend their screening appointment":
     case "Changed their travel plans and does not need TB screening": {
-      return `The visa applicant ${cancellationReason.charAt(0).toLowerCase()}${cancellationReason.slice(1)}`;
+      return `the visa applicant ${cancellationReason.charAt(0).toLowerCase()}${cancellationReason.slice(1)}`;
     }
     case "Uploaded the wrong X-ray":
     case "Submitted the wrong sputum decision":
     case "Submitted an error in the screening details": {
-      return `The clinic ${cancellationReason.charAt(0).toLowerCase()}${cancellationReason.slice(1)}`;
+      return `the clinic ${cancellationReason.charAt(0).toLowerCase()}${cancellationReason.slice(1)}`;
     }
     default: {
       return cancellationReason;
