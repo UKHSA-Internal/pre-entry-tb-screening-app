@@ -41,6 +41,7 @@ import RadiologicalOutcomeConfirmation from "./pages/radiological-outcome-confir
 import RadiologicalOutcomeSummaryPage from "./pages/radiological-outcome-summary";
 import SignOutPage from "./pages/sign-out";
 import SignedOutPage from "./pages/signed-out";
+import AutoSignedOutPage from "./pages/signed-out-auto";
 import SputumCollectionPage from "./pages/sputum-collection";
 import SputumConfirmation from "./pages/sputum-confirmation";
 import SputumDecisionConfirmation from "./pages/sputum-decision-confirmation";
@@ -525,6 +526,14 @@ function App() {
         element={
           <UnauthenticatedRoute>
             <SignedOutPage />
+          </UnauthenticatedRoute>
+        }
+      />
+      <Route
+        path="/you-have-been-signed-out"
+        element={
+          <UnauthenticatedRoute>
+            <AutoSignedOutPage />
           </UnauthenticatedRoute>
         }
       />

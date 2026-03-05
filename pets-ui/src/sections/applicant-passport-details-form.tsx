@@ -20,7 +20,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant, selectApplication } from "@/redux/store";
 import { DateType, ReduxApplicantDetailsType } from "@/types";
-import { ApplicationStatus, ButtonClass } from "@/utils/enums";
+import { ButtonClass, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import {
   getCountryName,
@@ -45,8 +45,8 @@ const ApplicantPassportDetailsForm = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
-  const isComplete = applicantData.status === ApplicationStatus.COMPLETE;
-  const summaryStatus = isComplete ? ApplicationStatus.IN_PROGRESS : applicantData.status;
+  const isComplete = applicantData.status === TaskStatus.COMPLETE;
+  const summaryStatus = isComplete ? TaskStatus.IN_PROGRESS : applicantData.status;
 
   const methods = useForm<ReduxApplicantDetailsType>({ reValidateMode: "onSubmit" });
   const {

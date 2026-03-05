@@ -4,7 +4,7 @@ import { Mock } from "vitest";
 
 import MedicalScreeningFemalePage from "@/pages/medical-screening-female";
 import MedicalScreeningFormFemaleQs from "@/sections/medical-screening-form-female-qs";
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -22,7 +22,7 @@ vi.mock("react-helmet-async", () => ({
 }));
 
 const applicantState = {
-  status: ApplicationStatus.COMPLETE,
+  status: TaskStatus.COMPLETE,
   fullName: "Full Name",
   sex: "Female",
   dateOfBirth: { year: "1979", month: "10", day: "20" },
@@ -63,7 +63,7 @@ const medicalScreeningState = {
   previousTbDetail: "Details of previous pulmonary TB.",
   reasonXrayNotRequired: "",
   reasonXrayNotRequiredFurtherDetails: "",
-  status: ApplicationStatus.IN_PROGRESS,
+  status: TaskStatus.IN_PROGRESS,
   tbSymptoms: "Yes",
   tbSymptomsList: ["Cough", "Night sweats"],
   underElevenConditions: [],

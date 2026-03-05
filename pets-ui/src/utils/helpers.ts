@@ -241,6 +241,24 @@ const formatDateForDisplay = (date: DateType): string => {
   return `${dayNumber} ${monthName} ${dateToDisplay.getFullYear()}`;
 };
 
+const convertDateStrToObj = (date?: string): DateType => {
+  if (date?.includes("T")) {
+    return {
+      year: date.split("-")[0],
+      month: date.split("-")[1],
+      day: date.split("-")[2].split("T")[0],
+    };
+  } else if (date) {
+    return {
+      year: date.split("-")[0],
+      month: date.split("-")[1],
+      day: date.split("-")[2],
+    };
+  } else {
+    return { year: "", month: "", day: "" };
+  }
+};
+
 const calculateCertificateExpiryDate = (
   issueDate: DateType,
   hasCloseContactWithTb: boolean,
@@ -408,6 +426,7 @@ export {
   calculateCertificateExpiryDate,
   calculateCertificateIssueDate,
   calculateSputumOutcome,
+  convertDateStrToObj,
   formatDateForDisplay,
   formatDateType,
   getCountryName,

@@ -14,7 +14,7 @@ import {
   setUnderElevenConditionsDetail,
 } from "@/redux/medicalScreeningSlice";
 import { selectApplicant, selectMedicalScreening } from "@/redux/store";
-import { ApplicationStatus, ButtonClass } from "@/utils/enums";
+import { ButtonClass, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 
 interface MedicalScreeningU11Data {
@@ -45,7 +45,7 @@ const MedicalScreeningFormU11Qs = () => {
   const onSubmit: SubmitHandler<MedicalScreeningU11Data> = (medicalScreeningData) => {
     dispatch(setUnderElevenConditions(medicalScreeningData.underElevenConditions));
     dispatch(setUnderElevenConditionsDetail(medicalScreeningData.underElevenConditionsDetail));
-    dispatch(setMedicalScreeningStatus(ApplicationStatus.IN_PROGRESS));
+    dispatch(setMedicalScreeningStatus(TaskStatus.IN_PROGRESS));
 
     if (applicantData.sex == "Female") {
       navigate("/medical-history-female");

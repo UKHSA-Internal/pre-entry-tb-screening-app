@@ -12,10 +12,11 @@ import {
   ReduxSputumSmearResultType,
   ReduxSputumType,
 } from "@/types";
-import { ApplicationStatus, BackendApplicationStatus, PositiveOrNegative } from "@/utils/enums";
+import { BackendTaskStatus, PositiveOrNegative, TaskStatus } from "@/utils/enums";
+import { convertDateStrToObj } from "@/utils/helpers";
 
 const initialState: ReduxSputumType = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   version: undefined,
   sample1: {
     collection: {
@@ -95,7 +96,7 @@ export const sputumSlice = createSlice({
   name: "sputumDetails",
   initialState,
   reducers: {
-    setSputumStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+    setSputumStatus: (state, action: PayloadAction<TaskStatus>) => {
       state.status = action.payload;
     },
     setSample1Collection: (state, action: PayloadAction<ReduxSputumCollectionType>) => {
@@ -182,7 +183,7 @@ export const sputumSlice = createSlice({
       }
     },
     clearSputumDetails: (state) => {
-      state.status = ApplicationStatus.NOT_YET_STARTED;
+      state.status = TaskStatus.NOT_YET_STARTED;
       state.version = undefined;
       state.sample1.collection.submittedToDatabase = false;
       state.sample1.collection.dateOfSample = { year: "", month: "", day: "" };
@@ -211,9 +212,9 @@ export const sputumSlice = createSlice({
     },
     setSputumDetailsFromApiResponse: (state, action: PayloadAction<ReceivedSputumType>) => {
       state.status =
-        action.payload.status == BackendApplicationStatus.COMPLETE
-          ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.IN_PROGRESS;
+        action.payload.status == BackendTaskStatus.COMPLETE
+          ? TaskStatus.COMPLETE
+          : TaskStatus.IN_PROGRESS;
 
       state.version = action.payload.version;
 
@@ -222,11 +223,7 @@ export const sputumSlice = createSlice({
         target: ReduxSputumSampleType,
       ) => {
         if (sampleData) {
-          const dateStr = sampleData.dateOfSample.includes("T")
-            ? sampleData.dateOfSample.split("T")[0]
-            : sampleData.dateOfSample;
-          const [year, month, day] = dateStr.split("-");
-          target.collection.dateOfSample = { year, month, day };
+          target.collection.dateOfSample = convertDateStrToObj(sampleData.dateOfSample);
           target.collection.collectionMethod = sampleData.collectionMethod;
           target.collection.submittedToDatabase = true;
         } else {
@@ -267,11 +264,7 @@ export const sputumSlice = createSlice({
         target: ReduxSputumSampleType,
       ) => {
         if (sampleData) {
-          const dateStr = sampleData.dateUpdated.includes("T")
-            ? sampleData.dateUpdated.split("T")[0]
-            : sampleData.dateUpdated;
-          const [year, month, day] = dateStr.split("-");
-          target.lastUpdatedDate = { year, month, day };
+          target.lastUpdatedDate = convertDateStrToObj(sampleData.dateUpdated);
         } else {
           target.lastUpdatedDate = { year: "", month: "", day: "" };
         }

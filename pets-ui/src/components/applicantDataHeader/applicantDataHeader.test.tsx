@@ -1,12 +1,12 @@
 import { screen } from "@testing-library/react";
 
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 import ApplicantDataHeader from "./applicantDataHeader";
 
 const applicantData = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   fullName: "full name",
   sex: "male",
   dateOfBirth: {
@@ -41,19 +41,18 @@ describe("applicantDataHeader", () => {
     renderWithProviders(
       <ApplicantDataHeader
         applicantData={applicantData}
-        tbCertificateStatus={ApplicationStatus.NOT_YET_STARTED}
-        tbCertificateIsIssued={YesOrNo.YES}
+        applicationStatus={ApplicationStatus.IN_PROGRESS}
       />,
     );
 
-    expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
-    expect(screen.getAllByRole("term")[1]).toHaveTextContent("Date of birth");
-    expect(screen.getAllByRole("term")[2]).toHaveTextContent("Passport number");
-    expect(screen.getAllByRole("term")[3]).toHaveTextContent("TB screening");
+    expect(screen.getAllByRole("rowheader")[0]).toHaveTextContent("Name");
+    expect(screen.getAllByRole("rowheader")[1]).toHaveTextContent("Date of birth");
+    expect(screen.getAllByRole("rowheader")[2]).toHaveTextContent("Passport number");
+    expect(screen.getAllByRole("rowheader")[3]).toHaveTextContent("TB screening");
 
-    expect(screen.getAllByRole("definition")[0]).toHaveTextContent("full name");
-    expect(screen.getAllByRole("definition")[1]).toHaveTextContent("01/02/1980");
-    expect(screen.getAllByRole("definition")[2]).toHaveTextContent("12345");
-    expect(screen.getAllByRole("definition")[3]).toHaveTextContent("In progress");
+    expect(screen.getAllByRole("cell")[0]).toHaveTextContent("full name");
+    expect(screen.getAllByRole("cell")[1]).toHaveTextContent("1 February 1980");
+    expect(screen.getAllByRole("cell")[2]).toHaveTextContent("12345");
+    expect(screen.getAllByRole("cell")[3]).toHaveTextContent("In progress");
   });
 });
