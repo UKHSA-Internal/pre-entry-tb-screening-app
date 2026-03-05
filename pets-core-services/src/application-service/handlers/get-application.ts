@@ -19,7 +19,8 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
     logger.info({ applicationId }, "Retrieve Application handler triggered");
 
     const application = await Application.getByApplicationId(applicationId);
-    if (!application) return HttpErrors.notFound("Application does not exist");
+    if (!application)
+      return HttpErrors.notFound(`Application with ID: ${applicationId} does not exist`);
 
     const applicant = await ApplicantDbOps.findByPassportId(
       application.countryOfIssue,
@@ -30,13 +31,6 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
       return HttpErrors.validationError("Invalid Application - No Applicant");
     }
 
-    // if (
-    //   event.requestContext.authorizer.clinicId !== SUPPORT_CLINIC_ID &&
-    //   application.clinicId != event.requestContext.authorizer.clinicId
-    // ) {
-    //   logger.error("ClinicId mismatch");
-    //   return HttpErrors.forbidden("Clinic Id mismatch");
-    // }
     const clinicId = application.clinicId;
     const applicantPhotoUrl = await ApplicantPhoto.getByApplicationId(
       applicationId,

@@ -1,7 +1,6 @@
 import { GlobalContextStorageProvider } from "pino-lambda";
 
 import { CountryCode } from "../../shared/country";
-import { createHttpResponse } from "../../shared/http";
 import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { ApplicantDbOps } from "../../shared/models/applicant";
@@ -36,7 +35,7 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
     });
 
     const applicant = await ApplicantDbOps.findByPassportId(countryOfIssue, passportNumber);
-    if (!applicant) return createHttpResponse(204, []);
+    if (!applicant) return HttpErrors.notFound("Applicant does not exist");
 
     const applications = await Application.getByApplicantId(passportNumber, countryOfIssue);
     if (!applications.length && applicant) {
@@ -50,16 +49,6 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
     );
 
     const application = sortedApplications?.[0] ?? null;
-
-    // if (applications.length < 1 && applicant.applicationId) {
-    //   application = await Application.getByApplicationId(applicant.applicationId);
-    //   if (!application) {
-    //     logger.error("Edge-Case: Applicant has been created without an application");
-    //     return createHttpResponse(400, {
-    //       message: `Matched Applicant has been created without an application`,
-    //     });
-    //   }
-    // }
 
     const { clinicId } = event.requestContext.authorizer;
 

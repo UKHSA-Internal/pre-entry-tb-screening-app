@@ -109,6 +109,45 @@ describe("Test for Application Lambda", () => {
     expect(response.statusCode).toBe(200);
   });
 
+  test("Fetching an application from a different clinic", async () => {
+    // Arrange
+    const event: PetsAPIGatewayProxyEvent = {
+      ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "other one", createdBy: "hardcoded@user.com" },
+      },
+      resource: "/application/{applicationId}",
+      path: `/application/${seededApplications[1].applicationId}`,
+      httpMethod: "GET",
+    };
+    vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue("https://presigned.url");
+    // Act
+    const response: APIGatewayProxyResult = await handler(event, context);
+
+    // Assert
+    expect(response.statusCode).toBe(403);
+  });
+
+  test("Fetch application from support clinic as ukhsa staff", async () => {
+    // Arrange
+    const event: PetsAPIGatewayProxyEvent = {
+      ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+      },
+      resource: "/application/{applicationId}",
+      path: `/application/${seededApplications[1].applicationId}`,
+      httpMethod: "GET",
+    };
+    vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue("https://presigned.url");
+    // Act
+    const response: APIGatewayProxyResult = await handler(event, context);
+
+    // Assert
+    expect(response.statusCode).toBe(200);
+  });
   test("Cancel an application", async () => {
     // Arrange
     const event: PetsAPIGatewayProxyEvent = {

@@ -9,7 +9,7 @@ export const seededApplications: IApplication[] = [
     countryOfIssue: CountryCode.IND,
     clinicId: "Apollo Clinic",
     createdBy: "clinic-one-user@email",
-    dateCreated: new Date("16-01-2025"),
+    dateCreated: new Date(),
     applicationStatus: ApplicationStatus.inProgress,
   },
   {
@@ -18,7 +18,7 @@ export const seededApplications: IApplication[] = [
     countryOfIssue: CountryCode.BRB,
     clinicId: "Apollo Clinic",
     createdBy: "appollo-clinic-user@email",
-    dateCreated: new Date("17-01-2025"),
+    dateCreated: new Date(),
     applicationStatus: ApplicationStatus.inProgress,
   },
   {
@@ -27,7 +27,7 @@ export const seededApplications: IApplication[] = [
     countryOfIssue: CountryCode.ARG,
     clinicId: "test-clinic-id-3",
     createdBy: "clinic-three-user@email",
-    dateCreated: new Date("18-01-2025"),
+    dateCreated: new Date(),
     applicationStatus: ApplicationStatus.inProgress,
   },
   {
@@ -36,7 +36,7 @@ export const seededApplications: IApplication[] = [
     countryOfIssue: CountryCode.ARG,
     clinicId: "Apollo Clinic",
     createdBy: "clinic-four-user@email",
-    dateCreated: new Date("19-01-2025"),
+    dateCreated: new Date(),
     applicationStatus: ApplicationStatus.inProgress,
   },
   {
@@ -45,7 +45,7 @@ export const seededApplications: IApplication[] = [
     countryOfIssue: CountryCode.IND,
     clinicId: "Apollo Clinic",
     createdBy: "clinic-four-user@email",
-    dateCreated: new Date("26-01-2025"),
+    dateCreated: new Date(),
     applicationStatus: ApplicationStatus.inProgress,
   },
 ];
