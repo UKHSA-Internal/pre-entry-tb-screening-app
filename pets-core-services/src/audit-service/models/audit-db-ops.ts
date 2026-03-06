@@ -1,6 +1,5 @@
 import { AttributeValue } from "@aws-sdk/client-dynamodb";
 import {
-  _Object,
   GetObjectCommand,
   NoSuchKey,
   paginateListObjectsV2,
@@ -16,8 +15,13 @@ import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
 import { SourceType } from "../types/enums";
 
-const { dynamoDBDocClient: docClient } = awsClients;
 export type EventType = "INSERT" | "MODIFY" | "REMOVE" | undefined;
+
+const { dynamoDBDocClient: docClient } = awsClients;
+const s3client = awsClients.s3Client;
+// const bucketName = process.env.S3_AUDIT_LOGS_BUCKET;
+const accountId = process.env.AWS_ACCOUNT_ID;
+const region = process.env.AWS_REGION;
 
 export abstract class AuditBase {
   applicationId: string;
@@ -65,14 +69,22 @@ export class AuditDbOps {
     logger.info(`Processing record: ${JSON.stringify(record)}`);
 
     try {
-      if (!record?.dynamodb?.NewImage || !record?.eventSourceARN) {
-        logger.info({ record }, "There was no newImage object in the record");
+      if (
+        !record?.dynamodb?.NewImage ||
+        !record?.eventSourceARN ||
+        !record.dynamodb?.ApproximateCreationDateTime
+      ) {
+        logger.info(
+          { record },
+          "There are some important attributes (NewImage/eventSourceARN/ApproximateCreationDateTime) missing in the record",
+        );
 
         return;
       }
 
       const newImage = record.dynamodb?.NewImage;
       const oldImage = record.dynamodb?.OldImage;
+      const approximateCreationDateTime = record.dynamodb.ApproximateCreationDateTime;
       const changeDetails = unmarshall(newImage as AttributeValue | Record<string, AttributeValue>);
       logger.info({ changeDetails }, "unmarshalled 'newImage'");
 
@@ -95,7 +107,10 @@ export class AuditDbOps {
       if (!email) logger.info("Missing email (updatedBy or createdBy field)");
 
       let source = SourceType.app;
-      source = await getCloudTrailLogs();
+      if (approximateCreationDateTime) {
+        source = await findSourceInCTLogs(record);
+        logger.info(`The 'source' returned from findSourceInCTLogs(): ${source}`);
+      }
 
       if (source && source === SourceType.api) {
         source = SourceType.api;
@@ -145,58 +160,99 @@ export class AuditDbOps {
   }
 }
 
-const getCloudTrailLogs = async (): Promise<SourceType> => {
+const findSourceInCTLogs = async (record: DynamoDBRecord): Promise<SourceType> => {
   logger.info("Getting CloudTrail logs from S3");
-  const client = awsClients.s3Client;
-  // const bucketName = process.env.S3_AUDIT_LOGS_BUCKET;
+
+  const approximateCreationDateTime = record.dynamodb!.ApproximateCreationDateTime;
+  let source: SourceType | undefined = undefined;
+  const theNewestFiles: Record<string, string> = {};
+  const alreadyScanned: Array<string> = [];
+  const logs: Array<Record<string, any>> = [];
+  const delay = 3000;
+  const maxTimeAwaiting = 10 * 60 * 1000; // 10 minutes in milliseconds
+
+  const intervalId = setInterval(() => {
+    // approximateCreationDateTime can't be undefined, but checking it here will prevent the linter issues
+    if (approximateCreationDateTime !== undefined) {
+      scanFiles(
+        new Date(approximateCreationDateTime * 1000),
+        theNewestFiles,
+        alreadyScanned,
+        logs,
+      ).catch((error) => {
+        logger.error({ error }, "Error scanning CloudTrail files");
+      });
+    }
+  }, delay);
+  const startTime = Date.now();
+
+  await new Promise((resolve) => {
+    const checkInterval = setInterval(() => {
+      source = analyseLogs(logs, record);
+      if (source || Date.now() - startTime >= maxTimeAwaiting) {
+        clearInterval(checkInterval);
+        resolve(undefined);
+      }
+    }, delay);
+  });
+
+  clearInterval(intervalId);
+
+  logger.info(`Returning 'source' as: ${source ?? ""}`);
+
+  return source ? source : SourceType.app;
+};
+
+const scanFiles = async (
+  approximateCreationDateTime: Date,
+  theNewestFiles: Record<string, string>,
+  alreadyScanned: Array<string>,
+  logs: Array<any>,
+): Promise<void> => {
+  // TODO: Get the bucket name from env vars
   const bucketName = "audit-logs-aw-pets-euw-dev-s3-managementevents";
   const pageSize = "50";
-  const source = SourceType.app;
-  const accountId = process.env.AWS_ACCOUNT_ID;
-  const region = process.env.AWS_REGION;
   const dateStr = new Date(Date.now()).toISOString();
 
   try {
     const paginator = paginateListObjectsV2(
-      { client, pageSize: Number.parseInt(pageSize) },
+      { client: s3client, pageSize: Number.parseInt(pageSize) },
       {
         Bucket: bucketName,
         Prefix: `AWSLogs/${accountId}/CloudTrail/${region}/${dateStr.slice(0, 4)}/${dateStr.slice(5, 7)}/${dateStr.slice(8, 10)}/`,
       },
     );
 
-    let theNewest: _Object | undefined = undefined;
-
     for await (const page of paginator) {
       if (page?.Contents) {
-        if (theNewest === undefined) {
-          theNewest = page?.Contents[0];
-        }
         for (const obj of page.Contents) {
           if (
+            obj.Key &&
             obj?.LastModified &&
-            theNewest?.LastModified &&
-            obj.LastModified > theNewest.LastModified
+            obj.LastModified >= approximateCreationDateTime &&
+            !alreadyScanned.includes(obj.Key)
           ) {
-            theNewest = obj;
+            const dateString = new Date(obj.LastModified).toISOString();
+            theNewestFiles[dateString] = obj.Key || "";
           }
         }
       } else {
         break;
       }
     }
-    if (theNewest !== undefined) {
-      logger.info(`The newest element: ${JSON.stringify(theNewest)}`);
+
+    if (Object.keys(theNewestFiles).length > 0) {
+      for (const key of Object.values(theNewestFiles)) {
+        if (key) {
+          const cloudTrailLog = await getFileFromS3(s3client, key);
+
+          if (cloudTrailLog) {
+            logs.push(cloudTrailLog);
+          }
+          alreadyScanned.push(key);
+        }
+      }
     }
-
-    const cloudTrailLog = await getFileFromS3(client, theNewest?.Key as string);
-
-    if (cloudTrailLog) {
-      // TODO: return proper value based on logs content
-      return source;
-    }
-
-    return source;
   } catch (caught) {
     if (caught instanceof S3ServiceException && caught.name === "NoSuchBucket") {
       logger.error(
@@ -210,7 +266,70 @@ const getCloudTrailLogs = async (): Promise<SourceType> => {
       throw caught;
     }
   }
-  logger.info(`Returning 'source' as: ${source}`);
+};
+
+const analyseLogs = (
+  logs: Array<Record<string, any>>,
+  record: DynamoDBRecord,
+): SourceType | undefined => {
+  if (logs.length === 0) {
+    logger.info("No logs to analyse");
+
+    return;
+  }
+
+  // Again check to prevent some linter issues, but the values should be present (checked in previous function)
+  if (
+    !record?.dynamodb?.NewImage ||
+    !record?.eventSourceARN ||
+    !record.dynamodb?.ApproximateCreationDateTime
+  ) {
+    logger.info({ record }, "The record missing some important attributes");
+
+    return;
+  }
+
+  const source: SourceType | undefined = undefined;
+  // Extract just the table name from ARN
+  const tableArn = record.eventSourceARN;
+  const tableName = tableArn.split("/")[1];
+  const approximateCreationDateTime = record.dynamodb.ApproximateCreationDateTime;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const userIdentity = record?.userIdentity;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const principalId = (userIdentity as Record<string, any>)?.principalId;
+  const userIdParts = (principalId as string).split(":");
+  const user = userIdParts.length >= 2 ? userIdParts[1] : "";
+  const appIdentities = [
+    "applicant-service-lambda",
+    "application-service-lambda",
+    "clinic",
+    "qa-service-lambda",
+  ];
+
+  for (const eventRecord of logs) {
+    if (
+      eventRecord.eventSource === "dynamodb.amazonaws.com" &&
+      eventRecord?.eventCategory === "Data" &&
+      // TODO: provide the table name
+      eventRecord?.requestParameters &&
+      (eventRecord.requestParameters as Record<string, any>)?.tableName === tableName &&
+      eventRecord?.eventTime ===
+        `${new Date(approximateCreationDateTime * 1000).toISOString().substring(0, 19)}Z`
+      // TODO: Also can be checked: pk, sk (in requestParameters.key), eventRecord.eventName (PutItem/UpdateItem...)
+    ) {
+      logger.info(eventRecord, "log record");
+      // eventRecord.eventType is always AwsApiCall for data changes triggered by app and console.
+      if (user && appIdentities.includes(user)) return SourceType.console;
+    }
+  }
+
+  // Remove all analysed logs
+  while (logs.length > 0) {
+    logs.pop();
+  }
+
+  logger.info(`Returning 'source': ${source}`);
 
   return source;
 };
@@ -218,7 +337,7 @@ const getCloudTrailLogs = async (): Promise<SourceType> => {
 const getFileFromS3 = async (
   client: S3Client,
   key: string = "",
-): Promise<string | undefined | void> => {
+): Promise<Record<string, any> | undefined | void> => {
   // const bucketName = process.env.S3_AUDIT_LOGS_BUCKET;
   const bucketName = "audit-logs-aw-pets-euw-dev-s3-managementevents";
 
@@ -240,23 +359,9 @@ const getFileFromS3 = async (
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const cloudTrail = JSON.parse(jsonString);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    const records: Array<Record<string, string>> = cloudTrail?.Records;
-    let count = 0;
+    const records: Array<Record<string, any>> = cloudTrail?.Records;
 
-    if (!records) return;
-
-    // Loop through CloudTrail event records
-    for (const eventRecord of records) {
-      if (eventRecord.eventSource === "dynamodb.amazonaws.com") {
-        logger.info(eventRecord, "log record");
-        count += 1;
-      }
-    }
-
-    logger.info(`End of log records (${count})`);
-
-    // TODO: return appropriate detail
-    return SourceType.app;
+    return records;
   } catch (caught) {
     if (caught instanceof NoSuchKey) {
       logger.error(
