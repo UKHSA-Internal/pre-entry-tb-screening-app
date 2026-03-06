@@ -34,24 +34,27 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
       passportNumber: passportNumber.slice(-4),
     });
 
+    // Fetch an applicant
     const applicant = await ApplicantDbOps.findByPassportId(countryOfIssue, passportNumber);
     if (!applicant) return HttpErrors.notFound("Applicant does not exist");
+
+    // Fetch the applications created for the applicant
 
     const applications = await Application.getByApplicantId(passportNumber, countryOfIssue);
     if (!applications.length && applicant) {
       logger.error("Applicant has been created without an application");
       return HttpErrors.validationError("Applicant has been created without an application");
     }
-    // let application: Application | null;
-
+    // Sort the applications by created Date
     const sortedApplications = applications?.sort(
       (a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime(),
     );
 
+    //Get the latest application
     const application = sortedApplications?.[0] ?? null;
 
     const { clinicId } = event.requestContext.authorizer;
-
+    // validate the clinic id
     if (!clinicId) {
       logger.error("Clinic Id missing");
       return HttpErrors.badRequest("Clinic Id missing");

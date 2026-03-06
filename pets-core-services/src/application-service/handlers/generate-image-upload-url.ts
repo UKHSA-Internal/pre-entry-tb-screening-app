@@ -57,10 +57,7 @@ export const generateImageUploadUrlHandler = async (event: GenerateUploadEvent) 
     }
 
     const application = await Application.getByApplicationId(applicationId);
-    // if (!application) {
-    //   logger.error("Application does not exist");
-    //   return HttpErrors.validationError("Invalid Application: Application does not exist");
-    // }
+
     const objectKey = generateImageObjectkey({
       passportNumber: application?.passportNumber as string,
       countryOfIssue: application?.countryOfIssue as CountryCode,

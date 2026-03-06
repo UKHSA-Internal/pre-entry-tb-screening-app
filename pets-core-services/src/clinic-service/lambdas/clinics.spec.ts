@@ -36,7 +36,6 @@ describe("Test for Clinic Lambda", () => {
         clinicId: clinicDetails[0].clinicId,
       },
       httpMethod: "POST",
-      // requestSchema: ClinicSchema,
       body: JSON.stringify({
         ...clinicDetails[0],
       }),
@@ -45,7 +44,6 @@ describe("Test for Clinic Lambda", () => {
     // Act
     const response: APIGatewayProxyResult = await handler(event, context);
     const parsedBody = JSON.parse(response.body) as { body: string };
-    // const parsedBody = JSON.parse(parsedResponse.body) as NewClinic[];
 
     // Assert
     expect(response.statusCode).toBe(200);

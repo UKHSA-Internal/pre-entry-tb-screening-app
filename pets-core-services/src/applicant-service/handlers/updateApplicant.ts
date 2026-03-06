@@ -30,7 +30,6 @@ export const updateApplicantHandler = async (event: PutApplicantEvent) => {
       passportNumber: parsedBody.passportNumber.slice(-4),
     });
 
-    // const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
     const { createdBy } = event.requestContext.authorizer;
 
     const applicant = await ApplicantDbOps.findByPassportId(
