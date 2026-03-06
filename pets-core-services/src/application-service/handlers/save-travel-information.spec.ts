@@ -41,7 +41,7 @@ describe("Test for Saving Travel Information into DB", () => {
     });
   });
 
-  test("Duplicate post throws a 400 error", async () => {
+  test("Duplicate post throws a 409 error", async () => {
     // Arrange
     const existingTravelInformation = seededTravelInformation[0];
     const event: SaveTravelInformationEvent = {
@@ -54,11 +54,11 @@ describe("Test for Saving Travel Information into DB", () => {
     const response = await saveTravelInformationHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(409);
     expect(JSON.parse(response.body)).toMatchObject({ message: "Travel Details already saved" });
   });
 
-  test("Missing required body returns a 500 response", async () => {
+  test("Missing required body returns a 400 response", async () => {
     // Arrange
     const event: SaveTravelInformationEvent = {
       ...mockAPIGwEvent,
@@ -68,9 +68,9 @@ describe("Test for Saving Travel Information into DB", () => {
     const response = await saveTravelInformationHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Travel Information Request not parsed correctly",
+      message: "Request event missing body",
     });
   });
 

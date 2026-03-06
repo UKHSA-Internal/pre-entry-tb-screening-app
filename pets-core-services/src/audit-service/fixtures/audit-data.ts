@@ -29,7 +29,7 @@ export const seededApplicationsDynamoDBJSON: Array<NewAudit> = [
     sourceTable: "application-details",
     changeDetails: JSON.stringify({
       ...seededApplications[1],
-      dateCreated: new Date(seededApplications[1].createdBy),
+      dateCreated: new Date(seededApplications[1].dateCreated),
     }),
   },
 ];

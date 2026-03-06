@@ -3,6 +3,7 @@ import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
+import { CountryCode } from "../country";
 import { ApplicationStatus } from "../types/enum";
 import { Application } from "./application";
 
@@ -16,6 +17,8 @@ describe("Tests for Application Model", () => {
   const clinicId = "test-clinic-id";
   const createdBy = "test-email";
   const applicationId = "test-application-id";
+  const passportNumber = "Test";
+  const countryOfIssue = CountryCode.IND;
 
   test("Creating new application", async () => {
     // Arrange
@@ -29,6 +32,8 @@ describe("Tests for Application Model", () => {
       clinicId,
       createdBy,
       applicationId,
+      passportNumber,
+      countryOfIssue,
     });
 
     // Assert
@@ -81,6 +86,8 @@ describe("Tests for Application Model", () => {
     // Act
     await expect(
       Application.updateApplication({
+        passportNumber: "TEST1",
+        countryOfIssue: CountryCode.IND,
         applicationId: "Bad0ne",
         applicationStatus: ApplicationStatus.cancelled,
         cancellationReason: "IDK",
@@ -101,6 +108,7 @@ describe("Tests for Application Model", () => {
         applicationStatus: ApplicationStatus.inProgress,
         pk: `APPLICATION#${applicationId}`,
         sk: "APPLICANT#DETAILS",
+        applicantId: `COUNTRY#${countryOfIssue}#PASSPORT#${passportNumber}`,
       },
     });
 
@@ -130,6 +138,7 @@ describe("Tests for Application Model", () => {
         applicationStatus: ApplicationStatus.inProgress,
         pk: `APPLICATION#${applicationId}`,
         sk: "APPLICANT#DETAILS",
+        applicantId: `COUNTRY#${countryOfIssue}#PASSPORT#${passportNumber}`,
       },
     });
 
@@ -139,7 +148,6 @@ describe("Tests for Application Model", () => {
       applicationId,
       applicationStatus: ApplicationStatus.cancelled,
       cancellationReason: "not needed",
-      updatedBy: createdBy,
     });
 
     // Assert
@@ -151,7 +159,6 @@ describe("Tests for Application Model", () => {
       applicationStatus: "Cancelled",
       cancellationReason: "not needed",
       dateUpdated: new Date(expectedDateTime),
-      updatedBy: createdBy,
     });
     // Checking toJson() output
     expect(application.toJson()).toMatchObject({
@@ -161,7 +168,6 @@ describe("Tests for Application Model", () => {
       cancellationReason: "not needed",
       expiryDate: undefined,
       dateUpdated: new Date(expectedDateTime).toISOString(),
-      updatedBy: createdBy,
     });
   });
 
@@ -179,6 +185,7 @@ describe("Tests for Application Model", () => {
         applicationStatus: ApplicationStatus.inProgress,
         pk: `APPLICATION#${applicationId}`,
         sk: "APPLICANT#DETAILS",
+        applicantId: `COUNTRY#${countryOfIssue}#PASSPORT#${passportNumber}`,
       },
     });
 
@@ -188,7 +195,6 @@ describe("Tests for Application Model", () => {
       applicationId,
       applicationStatus: ApplicationStatus.certificateAvailable,
       expiryDate: new Date("2027-06-06"),
-      updatedBy: createdBy,
     });
 
     // Assert
@@ -200,7 +206,6 @@ describe("Tests for Application Model", () => {
       applicationStatus: "Certificate Available",
       cancellationReason: undefined,
       dateUpdated: new Date(expectedDateTime),
-      updatedBy: createdBy,
     });
     // Checking toJson() output
     expect(application.toJson()).toMatchObject({
@@ -210,7 +215,6 @@ describe("Tests for Application Model", () => {
       cancellationReason: undefined,
       expiryDate: "2027-06-06T00:00:00.000Z",
       dateUpdated: "2025-03-04T00:00:00.000Z",
-      updatedBy: createdBy,
     });
   });
 });

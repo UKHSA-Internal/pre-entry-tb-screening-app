@@ -5,12 +5,16 @@ import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import { seededApplicants } from "../../applicant-service/fixtures/applicants";
+import { AllowedSex } from "../../applicant-service/types/enums";
 import awsClients from "../../shared/clients/aws";
+import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { ApplicationStatus, TaskStatus } from "../../shared/types/enum";
 import { context, mockAPIGwEvent } from "../../test/mocks/events";
+import { SaveApplicationEvent } from "../handlers/create-application";
+import { ImageHelper } from "../helpers/image-helper";
 import { APPLICANT_PHOTOS_FOLDER } from "../helpers/upload";
 import { SputumDetailsDbOps } from "../models/sputum-details";
 import {
@@ -25,11 +29,58 @@ import {
 } from "../types/enums";
 import { handler } from "./application";
 
+// Mock getByApplicationId from Applicant model
+vi.mock("../../shared/models/applicant", () => ({
+  ApplicantDbOps: {
+    getByApplicationId: vi.fn().mockResolvedValue({
+      fullName: "John Doe",
+      passportNumber: "test-passport-id",
+      countryOfNationality: CountryCode.ALA,
+      countryOfIssue: CountryCode.ALA,
+      issueDate: "2025-01-01",
+      expiryDate: "2030-01-01",
+      dateOfBirth: "2000-02-07",
+      sex: AllowedSex.Female,
+      applicantHomeAddress1: "First Line of Address",
+      applicantHomeAddress2: "Second Line of Address",
+      applicantHomeAddress3: "Third Line of Address",
+      townOrCity: "the-town-or-city",
+      provinceOrState: "the-province",
+      postcode: "the-post-code",
+      country: CountryCode.ALA,
+      createdBy: "test-applicant-creator",
+    }),
+    findByPassportId: vi.fn().mockResolvedValue({
+      fullName: "John Doe",
+      passportNumber: "test-passport-id",
+      countryOfNationality: CountryCode.ALA,
+      countryOfIssue: CountryCode.ALA,
+      issueDate: "2025-01-01",
+      expiryDate: "2030-01-01",
+      dateOfBirth: "2000-02-07",
+      sex: AllowedSex.Female,
+      applicantHomeAddress1: "First Line of Address",
+      applicantHomeAddress2: "Second Line of Address",
+      applicantHomeAddress3: "Third Line of Address",
+      townOrCity: "the-town-or-city",
+      provinceOrState: "the-province",
+      postcode: "the-post-code",
+      country: CountryCode.ALA,
+      createdBy: "test-applicant-creator",
+    }),
+  },
+}));
 describe("Test for Application Lambda", () => {
   test("Creating an Application Successfully", async () => {
+    const newApplication = {
+      passportNumber: "test-passport-id",
+      countryOfIssue: CountryCode.ALA,
+    };
+
     // Arrange
-    const event: PetsAPIGatewayProxyEvent = {
+    const event: SaveApplicationEvent = {
       ...mockAPIGwEvent,
+      body: JSON.stringify(newApplication),
       resource: "/application",
       path: "/application",
       httpMethod: "POST",
@@ -41,23 +92,78 @@ describe("Test for Application Lambda", () => {
     // Assert
     expect(response.statusCode).toBe(200);
   });
+  describe("Fetching an Application", () => {
+    test("Fetching an application", async () => {
+      // Arrange
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        resource: "/application/{applicationId}",
+        path: `/application/${seededApplications[1].applicationId}`,
+        httpMethod: "GET",
+      };
+      vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue("https://presigned.url");
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
 
-  test("Fetching an application", async () => {
-    // Arrange
-    const event: PetsAPIGatewayProxyEvent = {
-      ...mockAPIGwEvent,
-      resource: "/application/{applicationId}",
-      path: `/application/${seededApplications[0].applicationId}`,
-      httpMethod: "GET",
-    };
+      // Assert
+      expect(response.statusCode).toBe(200);
+    });
 
-    // Act
-    const response: APIGatewayProxyResult = await handler(event, context);
+    test("Fetching an application taht does not exist throws 404", async () => {
+      // Arrange
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        resource: "/application/{applicationId}",
+        path: `/application/incorrect-id`,
+        httpMethod: "GET",
+      };
+      vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue("https://presigned.url");
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
 
-    // Assert
-    expect(response.statusCode).toBe(200);
+      // Assert
+      expect(response.statusCode).toBe(404);
+    });
+    test("Fetching an application from a different clinic", async () => {
+      // Arrange
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        requestContext: {
+          ...mockAPIGwEvent.requestContext,
+          authorizer: { clinicId: "other one", createdBy: "hardcoded@user.com" },
+        },
+        resource: "/application/{applicationId}",
+        path: `/application/${seededApplications[1].applicationId}`,
+        httpMethod: "GET",
+      };
+      vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue("https://presigned.url");
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+
+      // Assert
+      expect(response.statusCode).toBe(403);
+    });
+
+    test("Fetch application from support clinic as ukhsa staff", async () => {
+      // Arrange
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        requestContext: {
+          ...mockAPIGwEvent.requestContext,
+          authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+        },
+        resource: "/application/{applicationId}",
+        path: `/application/${seededApplications[1].applicationId}`,
+        httpMethod: "GET",
+      };
+      vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue("https://presigned.url");
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+
+      // Assert
+      expect(response.statusCode).toBe(200);
+    });
   });
-
   test("Cancel an application", async () => {
     // Arrange
     const event: PetsAPIGatewayProxyEvent = {
@@ -144,7 +250,7 @@ describe("Test for Application Lambda", () => {
       const response: APIGatewayProxyResult = await handler(event, context);
 
       // Assert
-      expect(response.statusCode).toBe(400);
+      expect(response.statusCode).toBe(404);
       expect(JSON.parse(response.body)).toMatchObject({
         message: "Application with ID: nonexisting-application-id does not exist",
       });
@@ -276,13 +382,13 @@ describe("Test for Application Lambda", () => {
           dateXrayTaken: "2025-05-05",
           posteroAnteriorXrayFileName: "pa.dicom",
           posteroAnteriorXray:
-            "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/postero-anterior.dcm",
+            "dicom/Apollo Clinic/ARG/ABC1234KAT/d9505644-1c9a-46ff-8195-b144b4556352/postero-anterior.dcm",
           apicalLordoticXrayFileName: "al.dicom",
           apicalLordoticXray:
-            "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/apical-lordotic.dcm",
+            "dicom/Apollo Clinic/ARG/ABC1234KAT/d9505644-1c9a-46ff-8195-b144b4556352/apical-lordotic.dcm",
           lateralDecubitusXrayFileName: "ld.dicom",
           lateralDecubitusXray:
-            "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/lateral-decubitus.dcm",
+            "dicom/Apollo Clinic/ARG/ABC1234KAT/d9505644-1c9a-46ff-8195-b144b4556352/lateral-decubitus.dcm",
           xrayResult: ChestXRayResult.Normal,
           xrayMinorFindings: [],
           xrayAssociatedMinorFindings: [],
@@ -342,6 +448,28 @@ describe("Test for Application Lambda", () => {
         `${APPLICANT_PHOTOS_FOLDER}/${seededApplications[3].clinicId}/${seededApplicants[2].country}/${seededApplicants[2].passportNumber}/${seededApplications[3].applicationId}/${fileName}`,
       );
       expect(obj).toHaveProperty("uploadUrl");
+    });
+    test("Should throw a 404 error if application. for the provided appliocation id is not found", async () => {
+      // Arrange;
+
+      const fileName = "applicant-photo.jpg";
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        resource: "/application/{applicationId}/generate-image-upload-url",
+        path: `/application/incorrect-id/generate-image-upload-url`,
+        httpMethod: "PUT",
+        body: JSON.stringify({
+          fileName: fileName,
+          checksum: "whatever",
+          imageType: ImageType.Photo,
+        }),
+      };
+
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+
+      // Assert
+      expect(response.statusCode).toBe(404);
     });
   });
 
@@ -499,7 +627,7 @@ describe("Test for Application Lambda", () => {
       // Act
       const response: APIGatewayProxyResult = await handler(event, context);
 
-      expect(response.statusCode).toBe(400);
+      expect(response.statusCode).toBe(409);
       expect(response.body).toContain("Sputum Details already saved");
     });
 

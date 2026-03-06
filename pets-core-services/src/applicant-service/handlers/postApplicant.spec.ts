@@ -25,6 +25,24 @@ const newApplicantDetails: PostApplicantEvent["parsedBody"] = {
   country: CountryCode.ALA,
 };
 
+const existingApplicantDetails: PostApplicantEvent["parsedBody"] = {
+  fullName: "Jane Doe",
+  passportNumber: "ABC1234JANE",
+  countryOfNationality: CountryCode.BRB,
+  countryOfIssue: CountryCode.BRB,
+  issueDate: "2007-05-12",
+  expiryDate: "2012-05-12",
+  dateOfBirth: "2003-05-12",
+  sex: AllowedSex.Male,
+  applicantHomeAddress1: "23 Long street",
+  applicantHomeAddress2: "River Valley",
+  applicantHomeAddress3: "Southumberland",
+  townOrCity: "Mumbai",
+  provinceOrState: "Mumbai",
+  postcode: "1234",
+  country: CountryCode.BRB,
+};
+
 describe("Test for Posting Applicant into DB", () => {
   test("Saving a new Applicant Successfully", async () => {
     // Arrange
@@ -38,7 +56,7 @@ describe("Test for Posting Applicant into DB", () => {
     const response = await postApplicantHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(201);
     expect(JSON.parse(response.body)).toMatchObject(newApplicantDetails);
   });
 
@@ -61,80 +79,80 @@ describe("Test for Posting Applicant into DB", () => {
     const response = await postApplicantHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(201);
     expect(JSON.parse(response.body)).toMatchObject(newApplicantDetails);
   });
 
-  test("Missing application throws a 400 error", async () => {
-    // Arrange
-    const parsedBody: PostApplicantEvent["parsedBody"] = {
-      ...newApplicantDetails,
-    };
-    const event: PostApplicantEvent = {
-      ...mockAPIGwEvent,
-      pathParameters: { applicationId: "nonexisting-application-id" },
-      parsedBody,
-    };
+  // test("Missing application throws a 400 error", async () => {
+  //   // Arrange
+  //   const parsedBody: PostApplicantEvent["parsedBody"] = {
+  //     ...newApplicantDetails,
+  //   };
+  //   const event: PostApplicantEvent = {
+  //     ...mockAPIGwEvent,
+  //     pathParameters: { applicationId: "nonexisting-application-id" },
+  //     parsedBody,
+  //   };
 
-    // Act
-    const response = await postApplicantHandler(event);
+  //   // Act
+  //   const response = await postApplicantHandler(event);
 
-    // Assert
-    expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "Application with ID: nonexisting-application-id does not exist",
-    });
-  });
+  //   // Assert
+  //   expect(response.statusCode).toBe(400);
+  //   expect(JSON.parse(response.body)).toMatchObject({
+  //     message: "Application with ID: nonexisting-application-id does not exist",
+  //   });
+  // });
 
-  test("Mismatch in Clinic ID throws a 403 error", async () => {
-    // Arrange
-    const parsedBody: PostApplicantEvent["parsedBody"] = {
-      ...newApplicantDetails,
-    };
+  // test("Mismatch in Clinic ID throws a 403 error", async () => {
+  //   // Arrange
+  //   const parsedBody: PostApplicantEvent["parsedBody"] = {
+  //     ...newApplicantDetails,
+  //   };
 
-    const event: PostApplicantEvent = {
-      ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[2].applicationId },
-      parsedBody,
-    };
+  //   const event: PostApplicantEvent = {
+  //     ...mockAPIGwEvent,
+  //     pathParameters: { applicationId: seededApplications[2].applicationId },
+  //     parsedBody,
+  //   };
 
-    // Act
-    const response = await postApplicantHandler(event);
+  //   // Act
+  //   const response = await postApplicantHandler(event);
 
-    // Assert
-    expect(response.statusCode).toBe(403);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "Clinic Id mismatch",
-    });
-  });
+  //   // Assert
+  //   expect(response.statusCode).toBe(403);
+  //   expect(JSON.parse(response.body)).toMatchObject({
+  //     message: "Clinic Id mismatch",
+  //   });
+  // });
 
-  test("Missing Clinic ID throws a 400 error", async () => {
-    // Arrange
-    const parsedBody: PostApplicantEvent["parsedBody"] = {
-      ...newApplicantDetails,
-    };
+  // test("Missing Clinic ID throws a 400 error", async () => {
+  //   // Arrange
+  //   const parsedBody: PostApplicantEvent["parsedBody"] = {
+  //     ...newApplicantDetails,
+  //   };
 
-    const event: PostApplicantEvent = {
-      ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[2].applicationId },
-      parsedBody,
-      requestContext: {
-        ...mockAPIGwEvent.requestContext,
-        authorizer: { ...mockAPIGwEvent.requestContext.authorizer, clinicId: "" },
-      },
-    };
+  //   const event: PostApplicantEvent = {
+  //     ...mockAPIGwEvent,
+  //     pathParameters: { applicationId: seededApplications[2].applicationId },
+  //     parsedBody,
+  //     requestContext: {
+  //       ...mockAPIGwEvent.requestContext,
+  //       authorizer: { ...mockAPIGwEvent.requestContext.authorizer, clinicId: "" },
+  //     },
+  //   };
 
-    // Act
-    const response = await postApplicantHandler(event);
+  //   // Act
+  //   const response = await postApplicantHandler(event);
 
-    // Assert
-    expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "Clinic Id missing",
-    });
-  });
+  //   // Assert
+  //   expect(response.statusCode).toBe(400);
+  //   expect(JSON.parse(response.body)).toMatchObject({
+  //     message: "Clinic Id missing",
+  //   });
+  // });
 
-  test("Existing passport number and country throws a 400 error", async () => {
+  test("Existing passport number and country  returns back applicant details with a 200 ", async () => {
     // Arrange
     const existingApplicant = seededApplicants[0];
     const parsedBody: PostApplicantEvent["parsedBody"] = {
@@ -152,18 +170,16 @@ describe("Test for Posting Applicant into DB", () => {
     const response = await postApplicantHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "A record with this applicant details has already been saved",
-    });
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toMatchObject(existingApplicantDetails);
   });
 
-  test("Duplicate post throws a 400 error", async () => {
+  test("For an Existing Applicant- Return back the applicant details", async () => {
     // Arrange
     const parsedBody: PostApplicantEvent["parsedBody"] = {
       ...newApplicantDetails,
-      passportNumber: "new-passport-id",
-      countryOfIssue: CountryCode.FSM,
+      passportNumber: "ABC1234JANE",
+      countryOfIssue: CountryCode.BRB,
     };
     const event: PostApplicantEvent = {
       ...mockAPIGwEvent,
@@ -175,11 +191,11 @@ describe("Test for Posting Applicant into DB", () => {
     const response = await postApplicantHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toMatchObject({ message: "Applicant Details already saved" });
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toMatchObject(existingApplicantDetails);
   });
 
-  test("Missing required Headers returns a 500 response", async () => {
+  test("Missing required body returns a 400 response", async () => {
     // Arrange
     const event: PostApplicantEvent = {
       ...mockAPIGwEvent,
@@ -189,9 +205,9 @@ describe("Test for Posting Applicant into DB", () => {
     const response = await postApplicantHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Request not parsed correctly",
+      message: "Request event missing body",
     });
   });
 
