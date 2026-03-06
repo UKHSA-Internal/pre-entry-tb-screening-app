@@ -188,6 +188,7 @@ const findSourceInCTLogs = async (record: DynamoDBRecord): Promise<SourceType> =
 
   await new Promise((resolve) => {
     const checkInterval = setInterval(() => {
+      logger.info("Sending log files to analyse its content");
       source = analyseLogs(logs, record);
       if (source || Date.now() - startTime >= maxTimeAwaiting) {
         clearInterval(checkInterval);
@@ -209,6 +210,7 @@ const scanFiles = async (
   alreadyScanned: Array<string>,
   logs: Array<any>,
 ): Promise<void> => {
+  logger.info("Scanning log files");
   // TODO: Get the bucket name from env vars
   const bucketName = "audit-logs-aw-pets-euw-dev-s3-managementevents";
   const pageSize = "50";
@@ -272,6 +274,8 @@ const analyseLogs = (
   logs: Array<Record<string, any>>,
   record: DynamoDBRecord,
 ): SourceType | undefined => {
+  logger.info("Analysing logs");
+
   if (logs.length === 0) {
     logger.info("No logs to analyse");
 
@@ -294,12 +298,6 @@ const analyseLogs = (
   const tableArn = record.eventSourceARN;
   const tableName = tableArn.split("/")[1];
   const approximateCreationDateTime = record.dynamodb.ApproximateCreationDateTime;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const userIdentity = record?.userIdentity;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const principalId = (userIdentity as Record<string, any>)?.principalId;
-  const userIdParts = (principalId as string).split(":");
-  const user = userIdParts.length >= 2 ? userIdParts[1] : "";
   const appIdentities = [
     "applicant-service-lambda",
     "application-service-lambda",
@@ -308,6 +306,17 @@ const analyseLogs = (
   ];
 
   for (const eventRecord of logs) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const userIdentity = eventRecord?.userIdentity;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const principalId = (userIdentity as Record<string, any>)?.principalId;
+    let userIdParts: Array<string> = [];
+
+    if (principalId) {
+      userIdParts = (principalId as string).split(":");
+    }
+    const user = userIdParts.length >= 2 ? userIdParts[1] : "";
+
     if (
       eventRecord.eventSource === "dynamodb.amazonaws.com" &&
       eventRecord?.eventCategory === "Data" &&
@@ -338,6 +347,7 @@ const getFileFromS3 = async (
   client: S3Client,
   key: string = "",
 ): Promise<Record<string, any> | undefined | void> => {
+  logger.info(`Getting log file: ${key}`);
   // const bucketName = process.env.S3_AUDIT_LOGS_BUCKET;
   const bucketName = "audit-logs-aw-pets-euw-dev-s3-managementevents";
 
