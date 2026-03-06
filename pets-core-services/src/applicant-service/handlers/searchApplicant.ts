@@ -46,7 +46,9 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
       return HttpErrors.validationError("Applicant has been created without an application");
     }
     // Sort the applications by created Date
-    const sortedApplications = applications?.sort(
+    const sortedApplications = applications ? [...applications] : [];
+
+    sortedApplications.sort(
       (a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime(),
     );
 

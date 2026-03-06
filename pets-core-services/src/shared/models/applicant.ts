@@ -38,8 +38,8 @@ export abstract class ApplicantBase {
     `COUNTRY#${countryOfIssue}#PASSPORT#${passportNumber}`;
 
   static readonly parsePassportId = (passportId: string) => {
-    const match = passportId.match(/^COUNTRY#([^#]+)#PASSPORT#(.+)$/);
-
+    const regex = /^COUNTRY#([^#]+)#PASSPORT#(.+)$/;
+    const match = regex.exec(passportId);
     if (!match) {
       throw new Error(`Invalid passport id format: ${passportId}`);
     }
@@ -304,45 +304,6 @@ export class ApplicantDbOps {
       throw error;
     }
   }
-
-  // static async getByApplicationId(applicationId: string): Promise<Applicant | null> {
-  //   try {
-  //     logger.info("fetching applicant details");
-
-  //     const params = {
-  //       TableName: this.getTableName(),
-  //       Key: {
-  //         pk: Application.getPk(applicationId),
-  //         sk: this.sk,
-  //       },
-  //     };
-
-  //     const command = new GetCommand(params);
-  //     const data = await docClient.send(command);
-
-  //     if (!data.Item) {
-  //       logger.info("No applicant details found");
-  //       return null;
-  //     }
-
-  //     logger.info("Applicant Details fetched successfully");
-
-  //     const dbItem = data.Item as ReturnType<(typeof ApplicantDbOps)["todbItem"]>;
-
-  //     const applicantInformation = new Applicant({
-  //       ...dbItem,
-  //       townOrCity: dbItem.townOrCity as string,
-  //       dateCreated: new Date(dbItem.dateCreated),
-  //       issueDate: new Date(dbItem.issueDate),
-  //       expiryDate: new Date(dbItem.expiryDate),
-  //       dateOfBirth: new Date(dbItem.dateOfBirth),
-  //     });
-  //     return applicantInformation;
-  //   } catch (error) {
-  //     logger.error(error, "Error retrieving applicant details");
-  //     throw error;
-  //   }
-  // }
 
   static async findByPassportId(
     countryOfIssue: CountryCode,

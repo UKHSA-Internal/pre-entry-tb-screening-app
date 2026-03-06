@@ -204,5 +204,4 @@ const validateChestXRayImages = async (
     });
   }
   logger.info({ applicationInfo }, "Validation Completed");
-  return;
 };
