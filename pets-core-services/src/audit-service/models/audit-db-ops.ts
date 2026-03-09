@@ -305,41 +305,45 @@ const analyseLogs = (
     "qa-service-lambda",
   ];
 
-  for (const eventRecord of logs) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const userIdentity = eventRecord?.userIdentity;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const principalId = (userIdentity as Record<string, any>)?.principalId;
-    let userIdParts: Array<string> = [];
+  for (const logStream of logs) {
+    for (const record of Object.values(logStream)) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const eventRecord: Record<string, any> = record;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const userIdentity = eventRecord?.userIdentity;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const principalId = (userIdentity as Record<string, any>)?.principalId;
+      let userIdParts: Array<string> = [];
 
-    if (principalId) {
-      userIdParts = (principalId as string).split(":");
-    }
-    const user = userIdParts.length >= 2 ? userIdParts[1] : "";
+      if (principalId) {
+        userIdParts = (principalId as string).split(":");
+      }
+      const user = userIdParts.length >= 2 ? userIdParts[1] : "";
 
-    logger.info(
-      `eventSource: ${eventRecord?.eventSource}, eventCategory: ${eventRecord?.eventCategory}, eventTime: ${eventRecord?.eventTime}, requestParameters: ${eventRecord?.requestParameters}`,
-    );
+      logger.info(
+        `eventSource: ${eventRecord?.eventSource}, eventCategory: ${eventRecord?.eventCategory}, eventTime: ${eventRecord?.eventTime}, requestParameters: ${eventRecord?.requestParameters}`,
+      );
 
-    if (
-      eventRecord.eventSource === "dynamodb.amazonaws.com" &&
-      eventRecord?.eventCategory === "Data" &&
-      // TODO: provide the table name
-      eventRecord?.requestParameters &&
-      (eventRecord.requestParameters as Record<string, any>)?.tableName === tableName &&
-      eventRecord?.eventTime ===
-        `${new Date(approximateCreationDateTime * 1000).toISOString().substring(0, 19)}Z`
-      // TODO: Also can be checked: pk, sk (in requestParameters.key), eventRecord.eventName (PutItem/UpdateItem...)
-    ) {
-      // eventRecord.eventType is always AwsApiCall for data changes triggered by app and console.
-      if (user && appIdentities.includes(user)) return SourceType.console;
-    }
-    if (
-      eventRecord.eventSource === "dynamodb.amazonaws.com" &&
-      eventRecord?.eventCategory === "Data"
-    ) {
-      // Print out analysed log stream.
-      logger.info(eventRecord, "log record");
+      if (
+        eventRecord.eventSource === "dynamodb.amazonaws.com" &&
+        eventRecord?.eventCategory === "Data" &&
+        // TODO: provide the table name
+        eventRecord?.requestParameters &&
+        (eventRecord.requestParameters as Record<string, any>)?.tableName === tableName &&
+        eventRecord?.eventTime ===
+          `${new Date(approximateCreationDateTime * 1000).toISOString().substring(0, 19)}Z`
+        // TODO: Also can be checked: pk, sk (in requestParameters.key), eventRecord.eventName (PutItem/UpdateItem...)
+      ) {
+        // eventRecord.eventType is always AwsApiCall for data changes triggered by app and console.
+        if (user && appIdentities.includes(user)) return SourceType.console;
+      }
+      if (
+        eventRecord.eventSource === "dynamodb.amazonaws.com" &&
+        eventRecord?.eventCategory === "Data"
+      ) {
+        // Print out analysed log stream.
+        logger.info(eventRecord, "log record");
+      }
     }
   }
 
