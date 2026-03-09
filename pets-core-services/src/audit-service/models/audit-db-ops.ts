@@ -298,6 +298,9 @@ const analyseLogs = (
   const tableArn = record.eventSourceARN;
   const tableName = tableArn.split("/")[1];
   const approximateCreationDateTime = record.dynamodb.ApproximateCreationDateTime;
+  const changeDetails = unmarshall(
+    record.dynamodb.NewImage as AttributeValue | Record<string, AttributeValue>,
+  );
   const appIdentities = [
     "applicant-service-lambda",
     "application-service-lambda",
@@ -320,20 +323,37 @@ const analyseLogs = (
       }
       const user = userIdParts.length >= 2 ? userIdParts[1] : "";
       const creationDateTimeString = `${new Date(approximateCreationDateTime * 1000).toISOString().substring(0, 19)}Z`;
+      let tableNameReqParams = "";
+      let pk = "";
+      let sk = "";
+
+      if (eventRecord?.requestParameters) {
+        const requestParameters: Record<string, any> = eventRecord.requestParameters as Record<
+          string,
+          any
+        >;
+        tableNameReqParams = requestParameters?.tableName as string;
+        const key = requestParameters?.key as Record<string, string>;
+        pk = key?.pk;
+        sk = key?.sk;
+      } else {
+        return source;
+      }
 
       if (
         eventRecord.eventSource === "dynamodb.amazonaws.com" &&
         eventRecord?.eventCategory === "Data" &&
-        // TODO: provide the table name
-        eventRecord?.requestParameters &&
-        (eventRecord.requestParameters as Record<string, any>)?.tableName === tableName
-        // TODO: Also can be checked: pk, sk (in requestParameters.key), eventRecord.eventName (PutItem/UpdateItem...)
+        tableNameReqParams === tableName &&
+        pk === changeDetails?.pk &&
+        sk === changeDetails?.sk
       ) {
         if (eventRecord?.eventTime === creationDateTimeString) {
           // eventRecord.eventType is always AwsApiCall for data changes triggered by app and console.
           if (user && appIdentities.includes(user)) return SourceType.app;
           if (user && user.endsWith("ukhsa.gok.uk")) return SourceType.console;
         } else {
+          // If all the above conditions are true, but only time is not right,
+          // log both date time values (the one from audit service event, and the one from logs)
           logger.info(
             `Time difference: enventTime = ${eventRecord?.eventTime}, approximateCreationDateTime = ${creationDateTimeString}`,
           );
