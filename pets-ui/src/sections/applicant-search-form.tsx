@@ -1,3 +1,4 @@
+import axios, { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -46,7 +47,7 @@ import {
   setTbCertificateFromApiResponse,
 } from "@/redux/tbCertificateSlice";
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
-import { ApplicantSearchFormType } from "@/types";
+import { ApplicantSearchFormType, ReceivedApplicantDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { countryList } from "@/utils/countryList";
 import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
@@ -122,29 +123,38 @@ const ApplicantSearchForm = () => {
 
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (passportDetails) => {
     setIsLoading(true);
-    try {
-      dispatch(setApplicantPassportDetails(passportDetails));
-      setApplicantPhotoUrl(null);
+    dispatch(setApplicantPassportDetails(passportDetails));
+    setApplicantPhotoUrl(null);
 
-      const applicantRes = await getApplicants(passportDetails);
-      if (applicantRes.status === 204) {
-        await fetchClinic(dispatch);
-        navigate("/no-visa-applicant-found");
-        return;
-      }
-      const applicationId = applicantRes.data.applications[0].applicationId;
+    let applicantRes: AxiosResponse<ReceivedApplicantDetailsType> | null = null;
+    let applicationId: string | null = null;
+    try {
+      applicantRes = await getApplicants(passportDetails);
+      applicationId = applicantRes.data.applications[0].applicationId;
       if (!uuidValidate(applicationId)) {
         throw new Error(`Application ID (${applicationId}) is in an invalid UUID format`);
       }
       dispatch(setApplicantDetailsFromApiResponse(applicantRes.data));
       dispatch(setApplicationId(applicationId));
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.status == 404) {
+        await fetchClinic(dispatch);
+        navigate("/no-visa-applicant-found");
+        return;
+      } else {
+        console.error(error);
+        navigate("/sorry-there-is-problem-with-service");
+        return;
+      }
+    }
 
+    try {
       const applicationRes = await getApplication(applicationId);
       dispatch(
         setApplicationDetails({
           applicationId: applicationId,
           applicationStatus: applicationRes.data.applicationStatus,
-          dateCreated: convertDateStrToObj(applicantRes.data.dateCreated ?? ""), // need to fix this, currently  may need some backend updates?
+          dateCreated: convertDateStrToObj(applicantRes?.data.dateCreated ?? ""),
           cancellationReason: applicationRes.data.cancellationReason ?? "",
           cancellationFurtherInfo: applicationRes.data.cancellationFurtherInfo ?? "",
         }),
@@ -202,7 +212,7 @@ const ApplicantSearchForm = () => {
 
           <FreeText
             id="passport-number"
-            heading="Visa applicant’s passport number"
+            heading="Visa applicant's passport number"
             headingSize="m"
             hint="For example, 1208297A"
             errorMessage={errors?.passportNumber?.message ?? ""}
