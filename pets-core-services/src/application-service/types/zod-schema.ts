@@ -462,6 +462,9 @@ export const ApplicationBaseSchema = z.object({
   applicationId: z.string().openapi({
     description: "Application id",
   }),
+  clinicId: z.string().openapi({
+    description: "ID of the Clinic",
+  }),
   dateCreated: z.string().date().openapi({
     description: "Creation Date in UTC timezone",
   }),
