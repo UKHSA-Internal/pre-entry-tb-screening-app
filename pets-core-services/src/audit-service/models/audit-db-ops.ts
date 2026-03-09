@@ -331,10 +331,11 @@ const analyseLogs = (
         `${new Date(approximateCreationDateTime * 1000).toISOString().substring(0, 19)}Z`
       // TODO: Also can be checked: pk, sk (in requestParameters.key), eventRecord.eventName (PutItem/UpdateItem...)
     ) {
-      logger.info(eventRecord, "log record");
       // eventRecord.eventType is always AwsApiCall for data changes triggered by app and console.
       if (user && appIdentities.includes(user)) return SourceType.console;
     }
+    // Print out analysed log stream.
+    logger.info(eventRecord, "log record");
   }
 
   // Remove all analysed logs
