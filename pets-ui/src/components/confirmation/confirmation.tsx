@@ -71,14 +71,13 @@ export default function Confirmation({
         )}
       </div>
 
-      {props.preWhatHappensNextElems &&
-        props.preWhatHappensNextElems.map((elem, i) => {
-          return (
-            <p className="govuk-body" key={"Explanatory text " + i}>
-              {elem}
-            </p>
-          );
-        })}
+      {props.preWhatHappensNextElems?.map((elem, i) => {
+        return (
+          <p className="govuk-body" key={"Explanatory text " + i}>
+            {elem}
+          </p>
+        );
+      })}
       {preWhatHappensNextText && <p className="govuk-body">{preWhatHappensNextText}</p>}
 
       {whatHappensNext === true && <Heading level={2} size="m" title="What happens next" />}
