@@ -334,8 +334,13 @@ const analyseLogs = (
       // eventRecord.eventType is always AwsApiCall for data changes triggered by app and console.
       if (user && appIdentities.includes(user)) return SourceType.console;
     }
-    // Print out analysed log stream.
-    logger.info(eventRecord, "log record");
+    if (
+      eventRecord.eventSource === "dynamodb.amazonaws.com" &&
+      eventRecord?.eventCategory === "Data"
+    ) {
+      // Print out analysed log stream.
+      logger.info(eventRecord, "log record");
+    }
   }
 
   // Remove all analysed logs
