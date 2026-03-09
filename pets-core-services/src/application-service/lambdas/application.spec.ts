@@ -92,23 +92,78 @@ describe("Test for Application Lambda", () => {
     // Assert
     expect(response.statusCode).toBe(200);
   });
+  describe("Fetching an Application", () => {
+    test("Fetching an application", async () => {
+      // Arrange
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        resource: "/application/{applicationId}",
+        path: `/application/${seededApplications[1].applicationId}`,
+        httpMethod: "GET",
+      };
+      vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue("https://presigned.url");
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
 
-  test("Fetching an application", async () => {
-    // Arrange
-    const event: PetsAPIGatewayProxyEvent = {
-      ...mockAPIGwEvent,
-      resource: "/application/{applicationId}",
-      path: `/application/${seededApplications[1].applicationId}`,
-      httpMethod: "GET",
-    };
-    vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue("https://presigned.url");
-    // Act
-    const response: APIGatewayProxyResult = await handler(event, context);
+      // Assert
+      expect(response.statusCode).toBe(200);
+    });
 
-    // Assert
-    expect(response.statusCode).toBe(200);
+    test("Fetching an application taht does not exist throws 404", async () => {
+      // Arrange
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        resource: "/application/{applicationId}",
+        path: `/application/incorrect-id`,
+        httpMethod: "GET",
+      };
+      vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue("https://presigned.url");
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+
+      // Assert
+      expect(response.statusCode).toBe(404);
+    });
+    test("Fetching an application from a different clinic", async () => {
+      // Arrange
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        requestContext: {
+          ...mockAPIGwEvent.requestContext,
+          authorizer: { clinicId: "other one", createdBy: "hardcoded@user.com" },
+        },
+        resource: "/application/{applicationId}",
+        path: `/application/${seededApplications[1].applicationId}`,
+        httpMethod: "GET",
+      };
+      vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue("https://presigned.url");
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+
+      // Assert
+      expect(response.statusCode).toBe(403);
+    });
+
+    test("Fetch application from support clinic as ukhsa staff", async () => {
+      // Arrange
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        requestContext: {
+          ...mockAPIGwEvent.requestContext,
+          authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+        },
+        resource: "/application/{applicationId}",
+        path: `/application/${seededApplications[1].applicationId}`,
+        httpMethod: "GET",
+      };
+      vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue("https://presigned.url");
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+
+      // Assert
+      expect(response.statusCode).toBe(200);
+    });
   });
-
   test("Cancel an application", async () => {
     // Arrange
     const event: PetsAPIGatewayProxyEvent = {
@@ -393,6 +448,28 @@ describe("Test for Application Lambda", () => {
         `${APPLICANT_PHOTOS_FOLDER}/${seededApplications[3].clinicId}/${seededApplicants[2].country}/${seededApplicants[2].passportNumber}/${seededApplications[3].applicationId}/${fileName}`,
       );
       expect(obj).toHaveProperty("uploadUrl");
+    });
+    test("Should throw a 404 error if application. for the provided appliocation id is not found", async () => {
+      // Arrange;
+
+      const fileName = "applicant-photo.jpg";
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        resource: "/application/{applicationId}/generate-image-upload-url",
+        path: `/application/incorrect-id/generate-image-upload-url`,
+        httpMethod: "PUT",
+        body: JSON.stringify({
+          fileName: fileName,
+          checksum: "whatever",
+          imageType: ImageType.Photo,
+        }),
+      };
+
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+
+      // Assert
+      expect(response.statusCode).toBe(404);
     });
   });
 

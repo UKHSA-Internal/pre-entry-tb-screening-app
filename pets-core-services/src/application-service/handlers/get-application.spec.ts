@@ -77,7 +77,7 @@ describe("Getting Application Handler", () => {
     // Assert
     expect(response.statusCode).toBe(404);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Application does not exist",
+      message: "Application with ID: non-existing-application-ids does not exist",
     });
   });
 
@@ -289,23 +289,6 @@ describe("Getting Application Handler", () => {
     );
   });
 
-  // test("Error while fetching application from different clinic", async () => {
-  //   // Arrange
-  //   const event: PetsAPIGatewayProxyEvent = {
-  //     ...mockAPIGwEvent,
-  //     requestContext: {
-  //       ...mockAPIGwEvent.requestContext,
-  //       authorizer: { clinicId: "other one", createdBy: "hardcoded@user.com" },
-  //     },
-  //     pathParameters: { applicationId: seededApplications[1].applicationId },
-  //   };
-
-  //   // Act
-  //   const response = await getApplicationHandler(event);
-  //   // Assert
-  //   expect(response.statusCode).toBe(403);
-  // });
-
   test("Fetch application returns error", async () => {
     const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
@@ -326,26 +309,4 @@ describe("Getting Application Handler", () => {
     });
     detailsSpy.mockRestore();
   });
-
-  // test("Verify Clinic ID", async () => {
-  //   // Arrange
-  //   const event: PetsAPIGatewayProxyEvent = {
-  //     ...mockAPIGwEvent,
-  //     pathParameters: { applicationId: seededApplications[1].applicationId },
-  //     requestContext: {
-  //       ...mockAPIGwEvent.requestContext,
-  //       authorizer: {
-  //         ...mockAPIGwEvent.requestContext.authorizer,
-  //         clinicId: "compromised-clinic-id",
-  //       },
-  //     },
-  //   };
-
-  //   // Act
-  //   const response = await getApplicationHandler(event);
-
-  //   // Assert
-  //   expect(response.statusCode).toBe(403);
-  //   expect(JSON.parse(response.body)).toMatchObject({ message: "Clinic Id mismatch" });
-  // });
 });

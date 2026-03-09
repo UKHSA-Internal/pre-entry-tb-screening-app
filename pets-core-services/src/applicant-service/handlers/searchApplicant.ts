@@ -1,7 +1,6 @@
 import { GlobalContextStorageProvider } from "pino-lambda";
 
 import { CountryCode } from "../../shared/country";
-import { createHttpResponse } from "../../shared/http";
 import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { ApplicantDbOps } from "../../shared/models/applicant";
@@ -35,34 +34,29 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
       passportNumber: passportNumber.slice(-4),
     });
 
+    // Fetch an applicant
     const applicant = await ApplicantDbOps.findByPassportId(countryOfIssue, passportNumber);
-    if (!applicant) return createHttpResponse(204, []);
+    if (!applicant) return HttpErrors.notFound("Applicant does not exist");
+
+    // Fetch the applications created for the applicant
 
     const applications = await Application.getByApplicantId(passportNumber, countryOfIssue);
     if (!applications.length && applicant) {
       logger.error("Applicant has been created without an application");
       return HttpErrors.validationError("Applicant has been created without an application");
     }
-    // let application: Application | null;
+    // Sort the applications by created Date
+    const sortedApplications = applications ? [...applications] : [];
 
-    const sortedApplications = applications?.sort(
+    sortedApplications.sort(
       (a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime(),
     );
 
+    //Get the latest application
     const application = sortedApplications?.[0] ?? null;
 
-    // if (applications.length < 1 && applicant.applicationId) {
-    //   application = await Application.getByApplicationId(applicant.applicationId);
-    //   if (!application) {
-    //     logger.error("Edge-Case: Applicant has been created without an application");
-    //     return createHttpResponse(400, {
-    //       message: `Matched Applicant has been created without an application`,
-    //     });
-    //   }
-    // }
-
     const { clinicId } = event.requestContext.authorizer;
-
+    // validate the clinic id
     if (!clinicId) {
       logger.error("Clinic Id missing");
       return HttpErrors.badRequest("Clinic Id missing");

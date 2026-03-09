@@ -40,7 +40,7 @@ export abstract class IClinic {
 }
 export type NewClinic = Omit<IClinic, "startDate" | "endDate"> & {
   startDate: Date | string;
-  endDate?: Date | string | null | undefined;
+  endDate?: Date | string | null;
 };
 
 export class Clinic extends IClinic {

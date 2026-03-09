@@ -140,33 +140,11 @@ describe("Test for Getting Applicant", () => {
     const response = await searchApplicantHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(204);
-    expect(JSON.parse(response.body)).toMatchObject([]);
+    expect(response.statusCode).toBe(404);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Applicant does not exist",
+    });
   });
-
-  // test("Duplicate results returns a 500 response", async () => {
-  //   // Arrange
-  //   await ApplicantDbOps.createNewApplicant({
-  //     ...seededApplicants[0],
-  //   });
-
-  //   const event: SearchApplicantEvent = {
-  //     ...mockAPIGwEvent,
-  //     parsedHeaders: {
-  //       passportnumber: seededApplicants[0].passportNumber,
-  //       countryofissue: seededApplicants[0].countryOfIssue,
-  //     },
-  //   };
-
-  //   // Act
-  //   const response = await searchApplicantHandler(event);
-
-  //   // Assert
-  //   expect(response.statusCode).toBe(500);
-  //   expect(JSON.parse(response.body)).toMatchObject({
-  //     message: "Unexpected duplicate results found",
-  //   });
-  // });
 
   test("Clinic Id mismatch returns a 403 response", async () => {
     const existingApplicant = seededApplicants[0]; // Already preloaded into DB

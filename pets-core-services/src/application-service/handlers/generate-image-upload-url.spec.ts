@@ -177,23 +177,6 @@ describe("Generating signed PUT url for Photo Upload", () => {
     });
   });
 
-  // test("400 error when application id is invalid", async () => {
-  //   const event: GenerateUploadEvent = {
-  //     ...mockAPIGwEvent,
-  //     pathParameters: { applicationId: "Invalid-Id" },
-  //     parsedBody: uploadInfo,
-  //   };
-
-  //   // Act
-  //   const response = await generateImageUploadUrlHandler(event);
-
-  //   // Assert
-  //   expect(response.statusCode).toBe(400);
-  //   expect(JSON.parse(response.body)).toMatchObject({
-  //     message: "Invalid Application: Application does not exist",
-  //   });
-  // });
-
   test("400 error when flletype is not of jpg/jpeg/png", async () => {
     const uploadImageInfo: ImageUploadUrlRequestSchema = {
       fileName: "applicant-photo.txt",
