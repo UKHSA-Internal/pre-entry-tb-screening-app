@@ -343,19 +343,23 @@ const analyseLogs = (
       if (
         eventRecord.eventSource === "dynamodb.amazonaws.com" &&
         eventRecord?.eventCategory === "Data" &&
-        tableNameReqParams === tableName &&
-        pk === changeDetails?.pk &&
-        sk === changeDetails?.sk
+        tableNameReqParams === tableName
       ) {
-        if (eventRecord?.eventTime === creationDateTimeString) {
-          // eventRecord.eventType is always AwsApiCall for data changes triggered by app and console.
-          if (user && appIdentities.includes(user)) return SourceType.app;
-          if (user && user.endsWith("ukhsa.gok.uk")) return SourceType.console;
+        if (pk === changeDetails?.pk && sk === changeDetails?.sk) {
+          if (eventRecord?.eventTime === creationDateTimeString) {
+            // eventRecord.eventType is always AwsApiCall for data changes triggered by app and console.
+            if (user && appIdentities.includes(user)) return SourceType.app;
+            if (user && user.endsWith("ukhsa.gok.uk")) return SourceType.console;
+          } else {
+            // If all the above conditions are true, but only time is not right,
+            // log both date time values (the one from audit service event, and the one from logs)
+            logger.info(
+              `Time difference: enventTime = ${eventRecord?.eventTime}, approximateCreationDateTime = ${creationDateTimeString}`,
+            );
+          }
         } else {
-          // If all the above conditions are true, but only time is not right,
-          // log both date time values (the one from audit service event, and the one from logs)
           logger.info(
-            `Time difference: enventTime = ${eventRecord?.eventTime}, approximateCreationDateTime = ${creationDateTimeString}`,
+            `Event record pk: ${changeDetails?.pk} and in the log: ${pk}, event record sk: ${changeDetails?.pk} and in the log: ${sk}`,
           );
         }
       }
