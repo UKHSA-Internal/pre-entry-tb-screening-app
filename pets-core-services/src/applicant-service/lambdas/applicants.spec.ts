@@ -144,6 +144,147 @@ describe("Test for Applicant Lambda", () => {
     // Assert
     expect(response.statusCode).toBe(201);
   });
+  test("Posting an Applicant is successful from support clinic ", async () => {
+    // Arrange;
+    const event: PetsAPIGatewayProxyEvent = {
+      ...mockAPIGwEvent,
+      resource: "/applicant/register/{applicationId}",
+      path: `/applicant/register/${seededApplications[0].applicationId}`,
+      httpMethod: "POST",
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: {
+          ...mockAPIGwEvent.requestContext.authorizer,
+          clinicId: "UK/LHR/00/",
+        },
+      },
+      body: JSON.stringify({
+        fullName: "John Doe",
+        passportNumber: "test-passport-id",
+        countryOfNationality: CountryCode.IND,
+        countryOfIssue: CountryCode.IND,
+        issueDate: "2025-01-01",
+        expiryDate: "2030-01-01",
+        dateOfBirth: "2000-02-07",
+        sex: AllowedSex.Other,
+        applicantHomeAddress1: "First Line of Address",
+        townOrCity: "the-town-or-city",
+        provinceOrState: "the-province",
+        postcode: "the-post-code",
+        country: CountryCode.BMU,
+      }),
+    };
+
+    // Act
+    const response: APIGatewayProxyResult = await handler(event, context);
+
+    // Assert
+    expect(response.statusCode).toBe(201);
+  });
+  test("Posting an Applicant is missing application throws a 404 error", async () => {
+    // Arrange;
+    const event: PetsAPIGatewayProxyEvent = {
+      ...mockAPIGwEvent,
+      resource: "/applicant/register/{applicationId}",
+      path: `/applicant/register/invalid-id`,
+      httpMethod: "POST",
+      body: JSON.stringify({
+        fullName: "John Doe",
+        passportNumber: "test-passport-id",
+        countryOfNationality: CountryCode.IND,
+        countryOfIssue: CountryCode.IND,
+        issueDate: "2025-01-01",
+        expiryDate: "2030-01-01",
+        dateOfBirth: "2000-02-07",
+        sex: AllowedSex.Other,
+        applicantHomeAddress1: "First Line of Address",
+        townOrCity: "the-town-or-city",
+        provinceOrState: "the-province",
+        postcode: "the-post-code",
+        country: CountryCode.BMU,
+      }),
+    };
+
+    // Act
+    const response: APIGatewayProxyResult = await handler(event, context);
+
+    // Assert
+    expect(response.statusCode).toBe(404);
+  });
+  test("Posting an Applicant from  other clinic throws  validation error", async () => {
+    // Arrange;
+    const event: PetsAPIGatewayProxyEvent = {
+      ...mockAPIGwEvent,
+      resource: "/applicant/register/{applicationId}",
+      path: `/applicant/register/${seededApplications[0].applicationId}`,
+      httpMethod: "POST",
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: {
+          ...mockAPIGwEvent.requestContext.authorizer,
+          clinicId: "invalid-clinic-id",
+        },
+      },
+      body: JSON.stringify({
+        fullName: "John Doe",
+        passportNumber: "test-passport-id",
+        countryOfNationality: CountryCode.IND,
+        countryOfIssue: CountryCode.IND,
+        issueDate: "2025-01-01",
+        expiryDate: "2030-01-01",
+        dateOfBirth: "2000-02-07",
+        sex: AllowedSex.Other,
+        applicantHomeAddress1: "First Line of Address",
+        townOrCity: "the-town-or-city",
+        provinceOrState: "the-province",
+        postcode: "the-post-code",
+        country: CountryCode.BMU,
+      }),
+    };
+
+    // Act
+    const response: APIGatewayProxyResult = await handler(event, context);
+
+    // Assert
+    expect(response.statusCode).toBe(403);
+  });
+  test("Posting an Applicant  Missing clinic Id throws bad request", async () => {
+    // Arrange;
+    const event: PetsAPIGatewayProxyEvent = {
+      ...mockAPIGwEvent,
+      resource: "/applicant/register/{applicationId}",
+      path: `/applicant/register/${seededApplications[0].applicationId}`,
+      httpMethod: "POST",
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: {
+          ...mockAPIGwEvent.requestContext.authorizer,
+          clinicId: "",
+        },
+      },
+      body: JSON.stringify({
+        fullName: "John Doe",
+        passportNumber: "test-passport-id",
+        countryOfNationality: CountryCode.IND,
+        countryOfIssue: CountryCode.IND,
+        issueDate: "2025-01-01",
+        expiryDate: "2030-01-01",
+        dateOfBirth: "2000-02-07",
+        sex: AllowedSex.Other,
+        applicantHomeAddress1: "First Line of Address",
+        townOrCity: "the-town-or-city",
+        provinceOrState: "the-province",
+        postcode: "the-post-code",
+        country: CountryCode.BMU,
+      }),
+    };
+
+    // Act
+    const response: APIGatewayProxyResult = await handler(event, context);
+
+    // Assert
+    expect(response.statusCode).toBe(400);
+  });
   test("Updating an Applicant Successfully", async () => {
     // Arrange;
     const event: PetsAPIGatewayProxyEvent = {
