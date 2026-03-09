@@ -319,20 +319,25 @@ const analyseLogs = (
         userIdParts = (principalId as string).split(":");
       }
       const user = userIdParts.length >= 2 ? userIdParts[1] : "";
+      const creationDateTimeString = `${new Date(approximateCreationDateTime * 1000).toISOString().substring(0, 19)}Z`;
 
       if (
         eventRecord.eventSource === "dynamodb.amazonaws.com" &&
         eventRecord?.eventCategory === "Data" &&
         // TODO: provide the table name
         eventRecord?.requestParameters &&
-        (eventRecord.requestParameters as Record<string, any>)?.tableName === tableName &&
-        eventRecord?.eventTime ===
-          `${new Date(approximateCreationDateTime * 1000).toISOString().substring(0, 19)}Z`
+        (eventRecord.requestParameters as Record<string, any>)?.tableName === tableName
         // TODO: Also can be checked: pk, sk (in requestParameters.key), eventRecord.eventName (PutItem/UpdateItem...)
       ) {
-        // eventRecord.eventType is always AwsApiCall for data changes triggered by app and console.
-        if (user && appIdentities.includes(user)) return SourceType.app;
-        if (user && user.endsWith("ukhsa.gok.uk")) return SourceType.console;
+        if (eventRecord?.eventTime === creationDateTimeString) {
+          // eventRecord.eventType is always AwsApiCall for data changes triggered by app and console.
+          if (user && appIdentities.includes(user)) return SourceType.app;
+          if (user && user.endsWith("ukhsa.gok.uk")) return SourceType.console;
+        } else {
+          logger.info(
+            `Time difference: enventTime = ${eventRecord?.eventTime}, approximateCreationDateTime = ${creationDateTimeString}`,
+          );
+        }
       }
       if (
         eventRecord.eventSource === "dynamodb.amazonaws.com" &&
