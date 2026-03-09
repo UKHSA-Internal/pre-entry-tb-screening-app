@@ -186,16 +186,20 @@ const findSourceInCTLogs = async (record: DynamoDBRecord): Promise<SourceType> =
   }, delay);
   const startTime = Date.now();
 
-  await new Promise((resolve) => {
-    const checkInterval = setInterval(() => {
-      logger.info("Sending log files to analyse its content");
-      source = analyseLogs(logs, record);
-      if (source || Date.now() - startTime >= maxTimeAwaiting) {
-        clearInterval(checkInterval);
-        resolve(undefined);
-      }
-    }, delay);
-  });
+  source = analyseLogs(logs, record);
+
+  if (!source) {
+    await new Promise((resolve) => {
+      const checkInterval = setInterval(() => {
+        logger.info("Sending log files to analyse its content");
+        source = analyseLogs(logs, record);
+        if (source || Date.now() - startTime >= maxTimeAwaiting) {
+          clearInterval(checkInterval);
+          resolve(undefined);
+        }
+      }, delay);
+    });
+  }
 
   clearInterval(intervalId);
 
