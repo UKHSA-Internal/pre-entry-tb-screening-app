@@ -317,6 +317,10 @@ const analyseLogs = (
     }
     const user = userIdParts.length >= 2 ? userIdParts[1] : "";
 
+    logger.info(
+      `eventSource: ${eventRecord?.eventSource}, eventCategory: ${eventRecord?.eventCategory}, eventTime: ${eventRecord?.eventTime}, requestParameters: ${eventRecord?.requestParameters}`,
+    );
+
     if (
       eventRecord.eventSource === "dynamodb.amazonaws.com" &&
       eventRecord?.eventCategory === "Data" &&
