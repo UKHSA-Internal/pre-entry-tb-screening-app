@@ -301,7 +301,7 @@ const analyseLogs = (
   const appIdentities = [
     "applicant-service-lambda",
     "application-service-lambda",
-    "clinic",
+    "clinic-service-lambda",
     "qa-service-lambda",
   ];
 
@@ -320,10 +320,6 @@ const analyseLogs = (
       }
       const user = userIdParts.length >= 2 ? userIdParts[1] : "";
 
-      logger.info(
-        `eventSource: ${eventRecord?.eventSource}, eventCategory: ${eventRecord?.eventCategory}, eventTime: ${eventRecord?.eventTime}, requestParameters: ${eventRecord?.requestParameters}`,
-      );
-
       if (
         eventRecord.eventSource === "dynamodb.amazonaws.com" &&
         eventRecord?.eventCategory === "Data" &&
@@ -335,7 +331,8 @@ const analyseLogs = (
         // TODO: Also can be checked: pk, sk (in requestParameters.key), eventRecord.eventName (PutItem/UpdateItem...)
       ) {
         // eventRecord.eventType is always AwsApiCall for data changes triggered by app and console.
-        if (user && appIdentities.includes(user)) return SourceType.console;
+        if (user && appIdentities.includes(user)) return SourceType.app;
+        if (user && user.endsWith("ukhsa.gok.uk")) return SourceType.console;
       }
       if (
         eventRecord.eventSource === "dynamodb.amazonaws.com" &&
