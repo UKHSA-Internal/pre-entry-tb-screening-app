@@ -205,7 +205,10 @@ const scanFiles = async (
   const bucketName = "audit-logs-aw-pets-euw-dev-s3-managementevents";
   const pageSize = "50";
   const dateStr = new Date(Date.now()).toISOString();
+  const id = record.eventID;
   let source: SourceType | undefined = undefined;
+  let readFiles = 0;
+  let scannedFiles = 0;
 
   try {
     const paginator = paginateListObjectsV2(
@@ -216,10 +219,11 @@ const scanFiles = async (
       },
     );
 
-    logger.info("---------- reading files started ----------");
+    logger.info(`---------- (${id}) reading files started ----------`);
     for await (const page of paginator) {
       if (page?.Contents) {
         for (const obj of page.Contents) {
+          readFiles += 1;
           if (
             obj.Key &&
             obj?.LastModified &&
@@ -228,19 +232,31 @@ const scanFiles = async (
           ) {
             const cloudTrailLog = await getFileFromS3(s3client, obj.Key);
 
-            if (cloudTrailLog) {
+            if (cloudTrailLog && cloudTrailLog["0"]) {
+              if (cloudTrailLog["0"]) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                const logRecord: Record<string, unknown> = cloudTrailLog["0"];
+                // If the logs category is not 'Data', then probably all the messages in this file
+                if (logRecord?.eventCategory && logRecord.eventCategory !== "Data") continue;
+              } else {
+                logger.info({ cloudTrailLog });
+              }
+
               source = analyseLogs(cloudTrailLog, record);
 
               if (source) return source;
             }
             alreadyScanned.push(obj.Key);
+            scannedFiles += 1;
           }
         }
       } else {
         break;
       }
     }
-    logger.info("---------- finished reading files ----------");
+    logger.info(
+      `---------- (${id}) finished reading files (${readFiles}, scanned: ${scannedFiles}) ----------`,
+    );
 
     return source;
   } catch (caught) {
