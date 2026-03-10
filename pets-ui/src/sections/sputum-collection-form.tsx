@@ -219,10 +219,8 @@ const SputumCollectionForm = () => {
 
     if (submittedBy === "save-progress") {
       navigate("/check-sputum-collection-details-results");
-      return;
     } else if (submittedBy === "save-and-continue-to-results") {
       navigate("/sputum-results");
-      return;
     }
   };
 
