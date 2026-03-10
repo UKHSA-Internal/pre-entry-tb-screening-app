@@ -160,35 +160,44 @@ export class AuditDbOps {
   }
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 const findSourceInCTLogs = async (record: DynamoDBRecord): Promise<SourceType> => {
   logger.info("Getting CloudTrail logs from S3");
 
   const approximateCreationDateTime = record.dynamodb!.ApproximateCreationDateTime as number;
   let source: SourceType | undefined = undefined;
   const alreadyScanned: Array<string> = [];
-  const delay = 20 * 1000; // 20 second
+  const delay = 5 * 1000; // 5 second
   const maxTimeAwaiting = 10 * 60 * 1000; // 10 minutes in milliseconds
   const startTime = Date.now();
 
-  source = await scanFiles(new Date(approximateCreationDateTime * 1000), alreadyScanned, record);
-
-  if (!source) {
-    await new Promise((resolve) => {
-      const checkInterval = setInterval(() => {
-        scanFiles(new Date(approximateCreationDateTime * 1000), alreadyScanned, record)
-          .then((result) => {
-            source = result;
-            if (source || Date.now() - startTime >= maxTimeAwaiting) {
-              clearInterval(checkInterval);
-              resolve(undefined);
-            }
-          })
-          .catch((error) => {
-            logger.error({ error }, "Error scanning CloudTrail files");
-          });
-      }, delay);
-    });
+  while (!source) {
+    source = await scanFiles(new Date(approximateCreationDateTime * 1000), alreadyScanned, record);
+    // to avoid delay, check for 'source' now
+    if (source || Date.now() - startTime > maxTimeAwaiting) break;
+    await sleep(delay);
   }
+
+  // source = await scanFiles(new Date(approximateCreationDateTime * 1000), alreadyScanned, record);
+
+  // if (!source) {
+  //   await new Promise((resolve) => {
+  //     const checkInterval = setInterval(() => {
+  //       scanFiles(new Date(approximateCreationDateTime * 1000), alreadyScanned, record)
+  //         .then((result) => {
+  //           source = result;
+  //           if (source || Date.now() - startTime >= maxTimeAwaiting) {
+  //             clearInterval(checkInterval);
+  //             resolve(undefined);
+  //           }
+  //         })
+  //         .catch((error) => {
+  //           logger.error({ error }, "Error scanning CloudTrail files");
+  //         });
+  //     }, delay);
+  //   });
+  // }
 
   logger.info(`Returning 'source': ${source ?? ""}`);
 
@@ -218,6 +227,8 @@ const scanFiles = async (
       {
         Bucket: bucketName,
         Prefix: `AWSLogs/${accountId}/CloudTrail/${region}/${dateStr.slice(0, 4)}/${dateStr.slice(5, 7)}/${dateStr.slice(8, 10)}/`,
+        StartAfter:
+          alreadyScanned.length > 0 ? alreadyScanned[alreadyScanned.length - 1] : undefined,
       },
     );
 
