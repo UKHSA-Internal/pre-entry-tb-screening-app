@@ -206,9 +206,11 @@ const scanFiles = async (
   const pageSize = "50";
   const dateStr = new Date(Date.now()).toISOString();
   const id = record.eventID;
+  const timeStarted = Date.now();
   let source: SourceType | undefined = undefined;
   let readFiles = 0;
   let scannedFiles = 0;
+  let ignoredFiles = 0;
 
   try {
     const paginator = paginateListObjectsV2(
@@ -237,17 +239,20 @@ const scanFiles = async (
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 const logRecord: Record<string, unknown> = cloudTrailLog["0"];
                 // If the logs category is not 'Data', then probably all the messages in this file
-                if (logRecord?.eventCategory && logRecord.eventCategory !== "Data") continue;
+                if (logRecord?.eventCategory && logRecord.eventCategory !== "Data") {
+                  ignoredFiles += 1;
+                  continue;
+                }
               } else {
                 logger.info({ cloudTrailLog });
               }
 
               source = analyseLogs(cloudTrailLog, record);
+              scannedFiles += 1;
 
               if (source) return source;
             }
             alreadyScanned.push(obj.Key);
-            scannedFiles += 1;
           }
         }
         // logger.info(`Read ${pageSize} files`);
@@ -255,9 +260,9 @@ const scanFiles = async (
         break;
       }
     }
-    logger.info(
-      `---------- (${id}) finished reading files (${readFiles}, scanned: ${scannedFiles}) ----------`,
-    );
+    logger.info(`---------- (${id}) finished reading files  ----------`);
+    logger.info(`All files: ${readFiles}, scanned: ${scannedFiles}, ignored: ${ignoredFiles}`);
+    logger.info(`It was running for: ${(Date.now() - timeStarted) / 1000} seconds`);
 
     return source;
   } catch (caught) {
