@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { describe, expect, test, vi } from "vitest";
 
+import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
 import { Application, IApplication } from "../../shared/models/application";
 import { mockAPIGwEvent } from "../../test/mocks/events";
@@ -13,6 +14,8 @@ const createNewApplication = async () => {
     clinicId: "UK/LHR/00/",
     createdBy: "dev@test.org",
     applicationId: crypto.randomUUID(),
+    passportNumber: "test01",
+    countryOfIssue: CountryCode.GBR,
   });
 };
 
@@ -68,6 +71,7 @@ describe("Test for cancel applicantion handler", () => {
       pathParameters: { applicationId: seededApplications[0].applicationId },
       parsedBody: {
         cancellationReason: "not needed anymore",
+        cancellationFurtherInfo: "further Info",
       },
     });
 
@@ -77,9 +81,9 @@ describe("Test for cancel applicantion handler", () => {
       applicationId: expect.any(String),
       dateCreated: expect.any(String),
       dateUpdated: expect.any(String),
-      updatedBy: mockAPIGwEvent.requestContext.authorizer.createdBy,
       applicationStatus: "Cancelled",
       cancellationReason: "not needed anymore",
+      cancellationFurtherInfo: "further Info",
     });
   });
 
@@ -95,11 +99,11 @@ describe("Test for cancel applicantion handler", () => {
     // Assert
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Request event missing body",
+      message: "Request event missing body",
     });
   });
 
-  test("Validation error returns a 500 response", async () => {
+  test("Validation error returns a 400 response", async () => {
     // Arrange
     const event = {
       ...mockAPIGwEvent,
@@ -117,7 +121,7 @@ describe("Test for cancel applicantion handler", () => {
     // Assert
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Request body data validation failed",
+      message: "Request body failed validation",
     });
   });
 
@@ -165,7 +169,6 @@ describe("Test for cancel applicantion handler", () => {
       dateCreated: expect.any(String),
       dateUpdated: expect.any(String),
       expiryDate: expect.any(String),
-      updatedBy: mockAPIGwEvent.requestContext.authorizer.createdBy,
       applicationStatus: "Cancelled",
       cancellationReason: "not needed anymore",
     });
@@ -193,7 +196,6 @@ describe("Test for cancel applicantion handler", () => {
       applicationId: expect.any(String),
       dateCreated: expect.any(String),
       dateUpdated: expect.any(String),
-      updatedBy: mockAPIGwEvent.requestContext.authorizer.createdBy,
       applicationStatus: "Cancelled",
       cancellationReason: "not needed anymore",
     });

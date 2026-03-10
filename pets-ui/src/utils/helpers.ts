@@ -425,12 +425,32 @@ const calculateApplicantAge = (dateOfBirth: DateType) => {
   }
 };
 
+const formatCancellationReasonForDisplay = (cancellationReason: string) => {
+  switch (cancellationReason) {
+    case "Did not continue with sputum testing":
+    case "Had inconclusive sputum test results":
+    case "Did not attend their screening appointment":
+    case "Changed their travel plans and does not need TB screening": {
+      return `the visa applicant ${cancellationReason.charAt(0).toLowerCase()}${cancellationReason.slice(1)}`;
+    }
+    case "Uploaded the wrong X-ray":
+    case "Submitted the wrong sputum decision":
+    case "Submitted an error in the screening details": {
+      return `the clinic ${cancellationReason.charAt(0).toLowerCase()}${cancellationReason.slice(1)}`;
+    }
+    default: {
+      return cancellationReason;
+    }
+  }
+};
+
 export {
   calculateApplicantAge,
   calculateCertificateExpiryDate,
   calculateCertificateIssueDate,
   calculateSputumOutcome,
   convertDateStrToObj,
+  formatCancellationReasonForDisplay,
   formatDateForDisplay,
   formatDateType,
   getCountryName,

@@ -46,9 +46,9 @@ describe("Test for Updating Travel Information into DB", () => {
     const response = await updateTravelInformationHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Travel Information Request not parsed correctly",
+      message: "Request event missing body",
     });
   });
 

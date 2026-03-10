@@ -112,11 +112,16 @@ const RadiologicalOutcomeSummary = () => {
       {isLoading && <Spinner />}
 
       {medicalScreeningData.chestXrayTaken == YesOrNo.YES && (
-        <Summary status={radiologicalOutcomeData.status} summaryElements={xrayTakenSummaryData} />
+        <Summary
+          taskStatus={radiologicalOutcomeData.status}
+          applicationStatus={applicationData.applicationStatus}
+          summaryElements={xrayTakenSummaryData}
+        />
       )}
       {medicalScreeningData.chestXrayTaken == YesOrNo.NO && (
         <Summary
-          status={radiologicalOutcomeData.status}
+          taskStatus={radiologicalOutcomeData.status}
+          applicationStatus={applicationData.applicationStatus}
           summaryElements={xrayNotTakenSummaryData}
         />
       )}

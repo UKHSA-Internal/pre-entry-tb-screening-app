@@ -1,18 +1,17 @@
 import { CountryCode } from "../../shared/country";
-import { seededApplications } from "../../shared/fixtures/application";
-import { NewApplicant } from "../../shared/models/applicant";
+import { IApplicant } from "../../shared/models/applicant";
+import { TaskStatus } from "../../shared/types/enum";
 import { AllowedSex } from "../types/enums";
 
-export const seededApplicants: NewApplicant[] = [
+export const seededApplicants: IApplicant[] = [
   {
-    applicationId: seededApplications[1].applicationId,
     fullName: "Jane Doe",
     passportNumber: "ABC1234JANE",
     countryOfNationality: CountryCode.BRB,
     countryOfIssue: CountryCode.BRB,
-    issueDate: "2007-05-12",
-    expiryDate: "2012-05-12",
-    dateOfBirth: "2003-05-12",
+    issueDate: new Date("2007-05-12"),
+    expiryDate: new Date("2012-05-12"),
+    dateOfBirth: new Date("2003-05-12"),
     sex: AllowedSex.Male,
     applicantHomeAddress1: "23 Long street",
     applicantHomeAddress2: "River Valley",
@@ -22,16 +21,17 @@ export const seededApplicants: NewApplicant[] = [
     country: CountryCode.BRB,
     postcode: "1234",
     createdBy: "shane.park@iom.com",
+    dateCreated: new Date("2025-01-01"),
+    status: TaskStatus.completed,
   },
   {
-    applicationId: seededApplications[2].applicationId,
     fullName: "Dave Jones",
     passportNumber: "ABC1234DAVE",
     countryOfNationality: CountryCode.MAR,
     countryOfIssue: CountryCode.MAR,
-    issueDate: "2008-05-12",
-    expiryDate: "2014-05-12",
-    dateOfBirth: "2006-05-12",
+    issueDate: new Date("2008-05-12"),
+    expiryDate: new Date("2014-05-12"),
+    dateOfBirth: new Date("2006-05-12"),
     sex: AllowedSex.Male,
     applicantHomeAddress1: "23 Long street",
     applicantHomeAddress2: "River Valley",
@@ -41,16 +41,17 @@ export const seededApplicants: NewApplicant[] = [
     country: CountryCode.ARG,
     postcode: "1234",
     createdBy: "shawn.jones@clinic.com",
+    status: TaskStatus.completed,
+    dateCreated: new Date("2025-01-01"),
   },
   {
-    applicationId: seededApplications[3].applicationId,
     fullName: "Kathy Jones",
     passportNumber: "ABC1234KAT",
     countryOfNationality: CountryCode.ARG,
     countryOfIssue: CountryCode.ARG,
-    issueDate: "2008-05-12",
-    expiryDate: "2014-05-12",
-    dateOfBirth: "2006-05-12",
+    issueDate: new Date("2008-05-12"),
+    expiryDate: new Date("2014-05-12"),
+    dateOfBirth: new Date("2006-05-12"),
     sex: AllowedSex.Female,
     applicantHomeAddress1: "23 Long street",
     applicantHomeAddress2: "River Valley",
@@ -60,18 +61,19 @@ export const seededApplicants: NewApplicant[] = [
     country: CountryCode.ARG,
     postcode: "1234",
     createdBy: "mike.jones@clinic.com",
+    status: TaskStatus.completed,
+    dateCreated: new Date("2025-01-01"),
   },
   // This one is to test error handling caused by
   // inability to fetch application (as it does not exist)
   {
-    applicationId: "non-existing one",
     fullName: "Marco Polo",
     passportNumber: "ITS0042TEST",
     countryOfNationality: CountryCode.ISL,
     countryOfIssue: CountryCode.ISL,
-    issueDate: "2025-12-12",
-    expiryDate: "2026-12-12",
-    dateOfBirth: "1970-04-01",
+    issueDate: new Date("2025-12-12"),
+    expiryDate: new Date("2026-12-12"),
+    dateOfBirth: new Date("1970-04-01"),
     sex: AllowedSex.Female,
     applicantHomeAddress1: "42 High Street",
     applicantHomeAddress2: "Long Valley",
@@ -81,5 +83,7 @@ export const seededApplicants: NewApplicant[] = [
     country: CountryCode.ISL,
     postcode: "IC0001AK",
     createdBy: "marco.polo@universe.com",
+    status: TaskStatus.completed,
+    dateCreated: new Date("2025-01-01"),
   },
 ];

@@ -1,20 +1,29 @@
 import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
 import Confirmation from "@/components/confirmation/confirmation";
 import Container from "@/components/container/container";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
+import { setApplicationStatus } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTbCertificate } from "@/redux/store";
-import { YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, YesOrNo } from "@/utils/enums";
 import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function TbConfirmationPage() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const applicationData = useAppSelector(selectApplication);
   const tbCertificateData = useAppSelector(selectTbCertificate);
 
   const isCertificateIssued = tbCertificateData.isIssued === YesOrNo.YES;
+
+  if (isCertificateIssued) {
+    dispatch(setApplicationStatus(ApplicationStatus.CERTIFICATE_AVAILABLE));
+  } else {
+    dispatch(setApplicationStatus(ApplicationStatus.CERTIFICATE_NOT_ISSUED));
+  }
 
   const furtherInfo = [
     <LinkLabel

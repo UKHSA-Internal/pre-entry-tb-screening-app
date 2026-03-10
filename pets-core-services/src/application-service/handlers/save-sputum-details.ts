@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { createHttpResponse } from "../../shared/http";
+import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { SputumDetails, SputumDetailsDbOps } from "../models/sputum-details";
@@ -22,18 +22,14 @@ export const saveSputumDetailsHandler = async (event: SaveSputumDetailsEvent) =>
 
     if (!parsedBody) {
       logger.error("Event missing parsed body");
-      return createHttpResponse(500, {
-        message: "Internal Server Error: Sputum Details Request missing",
-      });
+      return HttpErrors.badRequest("Request event missing body");
     }
 
     //  Validate Sputum  Details Request
     const parsed = SputumRequestSchema.safeParse(parsedBody);
     if (!parsed.success) {
       logger.error({ error: parsed.error.flatten() }, "Validation failed");
-      return createHttpResponse(400, {
-        message: "Sputum Details Request validation failed",
-      });
+      return HttpErrors.validationError("Sputum Details Request validation failed");
     }
 
     const { createdBy } = event.requestContext.authorizer;
@@ -47,15 +43,13 @@ export const saveSputumDetailsHandler = async (event: SaveSputumDetailsEvent) =>
     } catch (error: unknown) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if ((error as any).name === "ConditionalCheckFailedException")
-        return createHttpResponse(400, { message: "Sputum Details already saved" });
+        return HttpErrors.conflictError("Sputum Details already saved");
       throw error;
     }
 
-    return createHttpResponse(200, {
-      ...sputumDetails.toJson(),
-    });
+    return HttpResponses.ok({ ...sputumDetails.toJson() });
   } catch (err) {
     logger.error(err, "Error saving Sputum Details");
-    return createHttpResponse(500, { message: "Something went wrong" });
+    return HttpErrors.serverError("Something went wrong");
   }
 };

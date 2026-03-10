@@ -7,7 +7,7 @@ import {
 
 import awsClients from "../clients/aws";
 import { assertEnvExists, isLocal } from "../config";
-import { createHttpResponse } from "../http";
+import { HttpErrors } from "../httpResponses";
 import { logger } from "../logger";
 
 /**
@@ -35,13 +35,13 @@ export const simulateLambdaAuthorizer = async (request: {
       );
 
       if (payload.policyDocument?.Statement[0]?.Effect !== "Allow") {
-        return createHttpResponse(401, { message: "Unauthorized" });
+        return HttpErrors.unauthorized("Unauthorized");
       }
 
       Object.assign(request.event, { requestContext: { authorizer: { ...payload.context } } });
     } catch (error) {
-      logger.error({ error }, "Authorization failed");
-      return createHttpResponse(500, { message: "Invalid token" });
+      logger.error({ error }, "Authorization failed due to server error");
+      return HttpErrors.serverError("Something went wrong");
     }
   }
 };

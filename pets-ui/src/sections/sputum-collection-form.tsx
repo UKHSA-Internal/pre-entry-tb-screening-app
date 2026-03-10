@@ -145,7 +145,7 @@ const SputumCollectionForm = () => {
 
     let hasError = false;
 
-    [1, 2, 3].forEach((sampleNumber) => {
+    for (const sampleNumber of [1, 2, 3]) {
       const dateFieldName = `dateOfSputumSample${sampleNumber}` as keyof SputumCollectionFormFields;
       const methodFieldName =
         `collectionMethodSample${sampleNumber}` as keyof SputumCollectionFormFields;
@@ -187,7 +187,7 @@ const SputumCollectionForm = () => {
         });
         hasError = true;
       }
-    });
+    };
 
     if (hasError) {
       return;
@@ -195,13 +195,11 @@ const SputumCollectionForm = () => {
 
     dispatch(setSputumStatus(TaskStatus.IN_PROGRESS));
 
-    const sampleKeys = ["sample1", "sample2", "sample3"] as const;
     const dispatchActions = [setSample1Collection, setSample2Collection, setSample3Collection];
-
-    sampleKeys.forEach((_, index) => {
-      const formDateField = `dateOfSputumSample${index + 1}` as keyof SputumCollectionFormFields;
+    for (const [index, sampleNumber] of [1, 2, 3].entries()) {
+      const formDateField = `dateOfSputumSample${sampleNumber}` as keyof SputumCollectionFormFields;
       const formMethodField =
-        `collectionMethodSample${index + 1}` as keyof SputumCollectionFormFields;
+        `collectionMethodSample${sampleNumber}` as keyof SputumCollectionFormFields;
 
       const dateValue = formData[formDateField] as DateType;
       const methodValue = formData[formMethodField] as string;
@@ -215,7 +213,7 @@ const SputumCollectionForm = () => {
           }),
         );
       }
-    });
+    }
 
     if (submittedBy === "save-progress") {
       navigate("/check-sputum-collection-details-results");

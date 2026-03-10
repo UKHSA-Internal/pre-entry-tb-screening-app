@@ -1,7 +1,7 @@
 import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
 import { z } from "zod";
 
-import { createHttpResponse } from "../../shared/http";
+import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { TravelInformation, TravelInformationDbOps } from "../models/travel-information";
@@ -24,9 +24,7 @@ export const saveTravelInformationHandler = async (event: SaveTravelInformationE
     if (!parsedBody) {
       logger.error("Event missing parsed body");
 
-      return createHttpResponse(500, {
-        message: "Internal Server Error: Travel Information Request not parsed correctly",
-      });
+      return HttpErrors.badRequest("Request event missing body");
     }
 
     let travelInformation: TravelInformation;
@@ -39,15 +37,15 @@ export const saveTravelInformationHandler = async (event: SaveTravelInformationE
       });
     } catch (error) {
       if (error instanceof ConditionalCheckFailedException)
-        return createHttpResponse(400, { message: "Travel Details already saved" });
+        return HttpErrors.conflictError("Travel Details already saved");
       throw error;
     }
 
-    return createHttpResponse(200, {
+    return HttpResponses.ok({
       ...travelInformation.toJson(),
     });
   } catch (err) {
     logger.error(err, "Error saving travel information");
-    return createHttpResponse(500, { message: "Something went wrong" });
+    return HttpErrors.serverError("Something went wrong");
   }
 };
