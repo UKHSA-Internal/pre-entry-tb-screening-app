@@ -316,6 +316,7 @@ const analyseLogs = (
       pk = key?.pk;
       sk = key?.sk;
     } else {
+      // If no requestParameters, then return from the function, as the details can't be found
       return source;
     }
 
@@ -336,16 +337,8 @@ const analyseLogs = (
             `Time difference: enventTime = ${logRecord?.eventTime}, approximateCreationDateTime = ${creationDateTimeString}`,
           );
         }
-      } else {
-        logger.info(
-          `Event/logs pk: ${changeDetails?.pk} / ${pk}, event/logs sk: ${changeDetails?.sk} / ${sk}`,
-        );
       }
     }
-    // if (logRecord.eventSource === "dynamodb.amazonaws.com" && logRecord?.eventCategory === "Data") {
-    //   // Print out analysed log stream.
-    //   logger.info(logRecord, "log record");
-    // }
   }
 
   if (source) {
