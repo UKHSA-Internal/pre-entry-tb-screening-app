@@ -352,7 +352,7 @@ const analyseLogs = (
         }
       } else {
         logger.info(
-          `Event record pk: ${changeDetails?.pk} and in the log: ${pk}, event record sk: ${changeDetails?.pk} and in the log: ${sk}`,
+          `Event record pk: ${changeDetails?.pk} and in the log: ${pk}, event record sk: ${changeDetails?.sk} and in the log: ${sk}`,
         );
       }
     }
