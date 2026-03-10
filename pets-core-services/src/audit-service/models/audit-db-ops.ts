@@ -163,62 +163,55 @@ export class AuditDbOps {
 const findSourceInCTLogs = async (record: DynamoDBRecord): Promise<SourceType> => {
   logger.info("Getting CloudTrail logs from S3");
 
-  const approximateCreationDateTime = record.dynamodb!.ApproximateCreationDateTime;
+  const approximateCreationDateTime = record.dynamodb!.ApproximateCreationDateTime as number;
   let source: SourceType | undefined = undefined;
-  const theNewestFiles: Record<string, string> = {};
   const alreadyScanned: Array<string> = [];
-  const logs: Array<Record<string, any>> = [];
   const delay = 3000;
   const maxTimeAwaiting = 10 * 60 * 1000; // 10 minutes in milliseconds
-
-  const intervalId = setInterval(() => {
-    // approximateCreationDateTime can't be undefined, but checking it here will prevent the linter issues
-    if (approximateCreationDateTime !== undefined) {
-      scanFiles(
-        new Date(approximateCreationDateTime * 1000),
-        theNewestFiles,
-        alreadyScanned,
-        logs,
-      ).catch((error) => {
-        logger.error({ error }, "Error scanning CloudTrail files");
-      });
-    }
-  }, delay);
   const startTime = Date.now();
 
-  source = analyseLogs(logs, record);
+  // source = analyseLogs(logs, record);
+  source = await scanFiles(new Date(approximateCreationDateTime * 1000), alreadyScanned, record);
 
   if (!source) {
     await new Promise((resolve) => {
       const checkInterval = setInterval(() => {
         logger.info("Sending log files to analyse its content");
-        source = analyseLogs(logs, record);
-        if (source || Date.now() - startTime >= maxTimeAwaiting) {
-          clearInterval(checkInterval);
-          resolve(undefined);
-        }
+        scanFiles(new Date(approximateCreationDateTime * 1000), alreadyScanned, record)
+          .then((result) => {
+            source = result;
+            if (source || Date.now() - startTime >= maxTimeAwaiting) {
+              clearInterval(checkInterval);
+              resolve(undefined);
+            }
+          })
+          .catch((error) => {
+            logger.error({ error }, "Error scanning CloudTrail files");
+          });
       }, delay);
     });
   }
 
-  clearInterval(intervalId);
+  // clearInterval(intervalId);
 
-  logger.info(`Returning 'source' as: ${source ?? ""}`);
+  logger.info(`Returning 'source': ${source ?? ""}`);
 
   return source ? source : SourceType.app;
 };
 
 const scanFiles = async (
   approximateCreationDateTime: Date,
-  theNewestFiles: Record<string, string>,
+  // theNewestFiles: Record<string, string>,
   alreadyScanned: Array<string>,
-  logs: Array<any>,
-): Promise<void> => {
+  record: DynamoDBRecord,
+): Promise<SourceType | undefined> => {
   logger.info("Scanning log files");
   // TODO: Get the bucket name from env vars
   const bucketName = "audit-logs-aw-pets-euw-dev-s3-managementevents";
   const pageSize = "50";
+  const theNewestFiles: Record<string, string> = {};
   const dateStr = new Date(Date.now()).toISOString();
+  let source: SourceType | undefined = undefined;
 
   try {
     const paginator = paginateListObjectsV2(
@@ -249,11 +242,14 @@ const scanFiles = async (
 
     if (Object.keys(theNewestFiles).length > 0) {
       for (const key of Object.values(theNewestFiles)) {
-        if (key) {
+        if (key && !alreadyScanned.includes(key)) {
           const cloudTrailLog = await getFileFromS3(s3client, key);
 
           if (cloudTrailLog) {
-            logs.push(cloudTrailLog);
+            // logs.push(cloudTrailLog);
+            source = analyseLogs(cloudTrailLog, record);
+
+            if (source) return source;
           }
           alreadyScanned.push(key);
         }
@@ -275,16 +271,10 @@ const scanFiles = async (
 };
 
 const analyseLogs = (
-  logs: Array<Record<string, any>>,
+  cloudTrailLog: Record<string, any>,
   record: DynamoDBRecord,
 ): SourceType | undefined => {
   logger.info("Analysing logs");
-
-  if (logs.length === 0) {
-    logger.info("No logs to analyse");
-
-    return;
-  }
 
   // Again check to prevent some linter issues, but the values should be present (checked in previous function)
   if (
@@ -312,77 +302,67 @@ const analyseLogs = (
     "qa-service-lambda",
   ];
 
-  for (const logStream of logs) {
-    for (const record of Object.values(logStream)) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const eventRecord: Record<string, any> = record;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const userIdentity = eventRecord?.userIdentity;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const principalId = (userIdentity as Record<string, any>)?.principalId;
-      let userIdParts: Array<string> = [];
+  for (const logObject of Object.values(cloudTrailLog)) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const logRecord: Record<string, any> = logObject;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const userIdentity = logRecord?.userIdentity;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const principalId = (userIdentity as Record<string, any>)?.principalId;
+    let userIdParts: Array<string> = [];
 
-      if (principalId) {
-        userIdParts = (principalId as string).split(":");
-      }
-      const user = userIdParts.length >= 2 ? userIdParts[1] : "";
-      const creationDateTimeString = `${new Date(approximateCreationDateTime * 1000).toISOString().substring(0, 19)}Z`;
-      let tableNameReqParams = "";
-      let pk = "";
-      let sk = "";
+    if (principalId) {
+      userIdParts = (principalId as string).split(":");
+    }
+    const user = userIdParts.length >= 2 ? userIdParts[1] : "";
+    const creationDateTimeString = `${new Date(approximateCreationDateTime * 1000).toISOString().substring(0, 19)}Z`;
+    let tableNameReqParams = "";
+    let pk = "";
+    let sk = "";
 
-      if (eventRecord?.requestParameters) {
-        const requestParameters: Record<string, any> = eventRecord.requestParameters as Record<
-          string,
-          any
-        >;
-        tableNameReqParams = requestParameters?.tableName as string;
-        const key = requestParameters?.key as Record<string, string>;
-        pk = key?.pk;
-        sk = key?.sk;
-      } else {
-        return source;
-      }
+    if (logRecord?.requestParameters) {
+      const requestParameters: Record<string, any> = logRecord.requestParameters as Record<
+        string,
+        any
+      >;
+      tableNameReqParams = requestParameters?.tableName as string;
+      const key = requestParameters?.key as Record<string, string>;
+      pk = key?.pk;
+      sk = key?.sk;
+    } else {
+      return source;
+    }
 
-      if (
-        eventRecord.eventSource === "dynamodb.amazonaws.com" &&
-        eventRecord?.eventCategory === "Data" &&
-        tableNameReqParams === tableName
-      ) {
-        if (pk === changeDetails?.pk && sk === changeDetails?.sk) {
-          if (eventRecord?.eventTime === creationDateTimeString) {
-            // eventRecord.eventType is always AwsApiCall for data changes triggered by app and console.
-            if (user && appIdentities.includes(user)) return SourceType.app;
-            if (user && user.endsWith("ukhsa.gok.uk")) return SourceType.console;
-          } else {
-            // If all the above conditions are true, but only time is not right,
-            // log both date time values (the one from audit service event, and the one from logs)
-            logger.info(
-              `Time difference: enventTime = ${eventRecord?.eventTime}, approximateCreationDateTime = ${creationDateTimeString}`,
-            );
-          }
+    if (
+      logRecord.eventSource === "dynamodb.amazonaws.com" &&
+      logRecord?.eventCategory === "Data" &&
+      tableNameReqParams === tableName
+    ) {
+      if (pk === changeDetails?.pk && sk === changeDetails?.sk) {
+        if (logRecord?.eventTime === creationDateTimeString) {
+          // eventRecord.eventType is always AwsApiCall for data changes triggered by app and console.
+          if (user && appIdentities.includes(user)) return SourceType.app;
+          if (user && user.endsWith("ukhsa.gok.uk")) return SourceType.console;
         } else {
+          // If all the above conditions are true, but only time is not right,
+          // log both date time values (the one from audit service event, and the one from logs)
           logger.info(
-            `Event record pk: ${changeDetails?.pk} and in the log: ${pk}, event record sk: ${changeDetails?.pk} and in the log: ${sk}`,
+            `Time difference: enventTime = ${logRecord?.eventTime}, approximateCreationDateTime = ${creationDateTimeString}`,
           );
         }
+      } else {
+        logger.info(
+          `Event record pk: ${changeDetails?.pk} and in the log: ${pk}, event record sk: ${changeDetails?.pk} and in the log: ${sk}`,
+        );
       }
-      if (
-        eventRecord.eventSource === "dynamodb.amazonaws.com" &&
-        eventRecord?.eventCategory === "Data"
-      ) {
-        // Print out analysed log stream.
-        logger.info(eventRecord, "log record");
-      }
+    }
+    if (logRecord.eventSource === "dynamodb.amazonaws.com" && logRecord?.eventCategory === "Data") {
+      // Print out analysed log stream.
+      logger.info(logRecord, "log record");
     }
   }
 
-  // Remove all analysed logs
-  while (logs.length > 0) {
-    logs.pop();
-  }
-
-  logger.info(`Returning 'source': ${source}`);
+  logger.info(`'source' ==> ${source}`);
 
   return source;
 };
