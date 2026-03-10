@@ -68,23 +68,6 @@ describe("Generating signed PUT url for DICOM Upload", () => {
     });
   });
 
-  // test("400 error when applicant info is missing", async () => {
-  //   const event: GenerateUploadEvent = {
-  //     ...mockAPIGwEvent,
-  //     pathParameters: { applicationId: "Invalid-ID" },
-  //     parsedBody: uploadInfo,
-  //   };
-
-  //   // Act
-  //   const response = await generateImageUploadUrlHandler(event);
-
-  //   // Assert
-  //   expect(response.statusCode).toBe(400);
-  //   expect(JSON.parse(response.body)).toMatchObject({
-  //     message: "Invalid Application: Application does not exist",
-  //   });
-  // });
-
   test("Local Environment", async () => {
     // Arrange
     // process.env.ENVIRONMENT = "TEST_LOCAL";
