@@ -187,7 +187,7 @@ const SputumCollectionForm = () => {
         });
         hasError = true;
       }
-    };
+    }
 
     if (hasError) {
       return;
