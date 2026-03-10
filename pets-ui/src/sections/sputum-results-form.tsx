@@ -17,6 +17,7 @@ import {
   setSample3SmearResults,
 } from "@/redux/sputumSlice";
 import { selectSputum } from "@/redux/store";
+import { ReduxSputumCultureResultType, ReduxSputumSmearResultType } from "@/types";
 import { ButtonClass, PositiveOrNegative } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { formatDateForDisplay } from "@/utils/helpers";
@@ -150,6 +151,31 @@ const SputumResultsForm = () => {
       return day && month && year;
     });
 
+  const isResultNonEmpty = (
+    sample: SampleKey,
+    result: ReduxSputumSmearResultType | ReduxSputumCultureResultType,
+    formData: SputumResultsFormType,
+  ) => {
+    if (result.submittedToDatabase) {
+      return true;
+    }
+
+    let fieldName = "" as keyof SputumResultsFormType;
+    let initialValue: PositiveOrNegative = PositiveOrNegative.NOT_YET_ENTERED;
+    if ("smearResult" in result) {
+      fieldName = `${sample}SmearResult`;
+      initialValue = result.smearResult;
+    } else if ("cultureResult" in result) {
+      fieldName = `${sample}CultureResult`;
+      initialValue = result.cultureResult;
+    }
+
+    const formValue = formData[fieldName]?.toString().trim();
+    if ((formValue && formValue !== "") || initialValue !== PositiveOrNegative.NOT_YET_ENTERED) {
+      return true;
+    }
+  };
+
   const getValidationStats = (
     samples: SampleKey[],
     formData: SputumResultsFormType,
@@ -169,35 +195,11 @@ const SputumResultsForm = () => {
       if (!smearResults.submittedToDatabase || !cultureResults.submittedToDatabase) {
         hasEditableFields = true;
       }
-
-      if (smearResults.submittedToDatabase) {
+      if (isResultNonEmpty(sample, smearResults, formData)) {
         hasAnySmearResult = true;
-      } else {
-        const smearField = `${sample}SmearResult` as keyof SputumResultsFormType;
-        const formValue = formData[smearField]?.toString().trim();
-        const initialValue = smearResults.smearResult;
-
-        if (
-          (formValue && formValue !== "") ||
-          initialValue !== PositiveOrNegative.NOT_YET_ENTERED
-        ) {
-          hasAnySmearResult = true;
-        }
       }
-
-      if (cultureResults.submittedToDatabase) {
+      if (isResultNonEmpty(sample, cultureResults, formData)) {
         hasAnyCultureResult = true;
-      } else {
-        const cultureField = `${sample}CultureResult` as keyof SputumResultsFormType;
-        const formValue = formData[cultureField]?.toString().trim();
-        const initialValue = cultureResults.cultureResult;
-
-        if (
-          (formValue && formValue !== "") ||
-          initialValue !== PositiveOrNegative.NOT_YET_ENTERED
-        ) {
-          hasAnyCultureResult = true;
-        }
       }
     });
 
