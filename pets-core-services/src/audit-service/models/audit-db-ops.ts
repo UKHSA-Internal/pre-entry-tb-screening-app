@@ -170,13 +170,11 @@ const findSourceInCTLogs = async (record: DynamoDBRecord): Promise<SourceType> =
   const maxTimeAwaiting = 10 * 60 * 1000; // 10 minutes in milliseconds
   const startTime = Date.now();
 
-  // source = analyseLogs(logs, record);
   source = await scanFiles(new Date(approximateCreationDateTime * 1000), alreadyScanned, record);
 
   if (!source) {
     await new Promise((resolve) => {
       const checkInterval = setInterval(() => {
-        logger.info("Sending log files to analyse its content");
         scanFiles(new Date(approximateCreationDateTime * 1000), alreadyScanned, record)
           .then((result) => {
             source = result;
@@ -192,8 +190,6 @@ const findSourceInCTLogs = async (record: DynamoDBRecord): Promise<SourceType> =
     });
   }
 
-  // clearInterval(intervalId);
-
   logger.info(`Returning 'source': ${source ?? ""}`);
 
   return source ? source : SourceType.app;
@@ -201,7 +197,6 @@ const findSourceInCTLogs = async (record: DynamoDBRecord): Promise<SourceType> =
 
 const scanFiles = async (
   approximateCreationDateTime: Date,
-  // theNewestFiles: Record<string, string>,
   alreadyScanned: Array<string>,
   record: DynamoDBRecord,
 ): Promise<SourceType | undefined> => {
@@ -209,7 +204,6 @@ const scanFiles = async (
   // TODO: Get the bucket name from env vars
   const bucketName = "audit-logs-aw-pets-euw-dev-s3-managementevents";
   const pageSize = "50";
-  const theNewestFiles: Record<string, string> = {};
   const dateStr = new Date(Date.now()).toISOString();
   let source: SourceType | undefined = undefined;
 
@@ -231,8 +225,14 @@ const scanFiles = async (
             obj.LastModified >= approximateCreationDateTime &&
             !alreadyScanned.includes(obj.Key)
           ) {
-            const dateString = new Date(obj.LastModified).toISOString();
-            theNewestFiles[dateString] = obj.Key || "";
+            const cloudTrailLog = await getFileFromS3(s3client, obj.Key);
+
+            if (cloudTrailLog) {
+              source = analyseLogs(cloudTrailLog, record);
+
+              if (source) return source;
+            }
+            alreadyScanned.push(obj.Key);
           }
         }
       } else {
@@ -240,21 +240,7 @@ const scanFiles = async (
       }
     }
 
-    if (Object.keys(theNewestFiles).length > 0) {
-      for (const key of Object.values(theNewestFiles)) {
-        if (key && !alreadyScanned.includes(key)) {
-          const cloudTrailLog = await getFileFromS3(s3client, key);
-
-          if (cloudTrailLog) {
-            // logs.push(cloudTrailLog);
-            source = analyseLogs(cloudTrailLog, record);
-
-            if (source) return source;
-          }
-          alreadyScanned.push(key);
-        }
-      }
-    }
+    return source;
   } catch (caught) {
     if (caught instanceof S3ServiceException && caught.name === "NoSuchBucket") {
       logger.error(
@@ -274,7 +260,7 @@ const analyseLogs = (
   cloudTrailLog: Record<string, any>,
   record: DynamoDBRecord,
 ): SourceType | undefined => {
-  logger.info("Analysing logs");
+  // logger.info("Analysing logs");
 
   // Again check to prevent some linter issues, but the values should be present (checked in previous function)
   if (
@@ -352,17 +338,19 @@ const analyseLogs = (
         }
       } else {
         logger.info(
-          `Event record pk: ${changeDetails?.pk} and in the log: ${pk}, event record sk: ${changeDetails?.sk} and in the log: ${sk}`,
+          `Event/logs pk: ${changeDetails?.pk} / ${pk}, event/logs sk: ${changeDetails?.sk} / ${sk}`,
         );
       }
     }
-    if (logRecord.eventSource === "dynamodb.amazonaws.com" && logRecord?.eventCategory === "Data") {
-      // Print out analysed log stream.
-      logger.info(logRecord, "log record");
-    }
+    // if (logRecord.eventSource === "dynamodb.amazonaws.com" && logRecord?.eventCategory === "Data") {
+    //   // Print out analysed log stream.
+    //   logger.info(logRecord, "log record");
+    // }
   }
 
-  logger.info(`'source' ==> ${source}`);
+  if (source) {
+    logger.info(`'source' ==> ${source as string}`);
+  }
 
   return source;
 };
