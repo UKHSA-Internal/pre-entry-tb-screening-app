@@ -462,6 +462,12 @@ export const ApplicationBaseSchema = z.object({
   applicationId: z.string().openapi({
     description: "Application id",
   }),
+<<<<<<< feature/TBBETA-1962-new-cancel-app-pages
+=======
+  clinicId: z.string().openapi({
+    description: "ID of the Clinic",
+  }),
+>>>>>>> develop
   dateCreated: z.string().date().openapi({
     description: "Creation Date in UTC timezone",
   }),

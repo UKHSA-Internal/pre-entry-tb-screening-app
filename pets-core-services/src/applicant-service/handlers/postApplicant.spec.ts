@@ -83,6 +83,7 @@ describe("Test for Posting Applicant into DB", () => {
     expect(JSON.parse(response.body)).toMatchObject(newApplicantDetails);
   });
 
+<<<<<<< feature/TBBETA-1962-new-cancel-app-pages
   // test("Missing application throws a 400 error", async () => {
   //   // Arrange
   //   const parsedBody: PostApplicantEvent["parsedBody"] = {
@@ -153,6 +154,9 @@ describe("Test for Posting Applicant into DB", () => {
   // });
 
   test("Existing passport number and country  returns back applicant details with a 200 ", async () => {
+=======
+  test("Saving an Applicant with existing passport number and country returns back the existing applicant details", async () => {
+>>>>>>> develop
     // Arrange
     const existingApplicant = seededApplicants[0];
     const parsedBody: PostApplicantEvent["parsedBody"] = {

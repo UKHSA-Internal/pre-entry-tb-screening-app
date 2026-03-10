@@ -224,6 +224,7 @@ export class Application extends IApplication {
   toJson() {
     return {
       applicationId: this.applicationId,
+      clinicId: this.clinicId,
       dateCreated: this.dateCreated.toISOString(),
       applicationStatus: this.applicationStatus,
       cancellationReason: this.cancellationReason,
