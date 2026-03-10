@@ -144,8 +144,6 @@ describe("Test for Applicant Lambda", () => {
     // Assert
     expect(response.statusCode).toBe(201);
   });
-<<<<<<< feature/TBBETA-1962-new-cancel-app-pages
-=======
   test("Posting an Applicant is successful from support clinic ", async () => {
     // Arrange;
     const event: PetsAPIGatewayProxyEvent = {
@@ -287,7 +285,6 @@ describe("Test for Applicant Lambda", () => {
     // Assert
     expect(response.statusCode).toBe(400);
   });
->>>>>>> develop
   test("Updating an Applicant Successfully", async () => {
     // Arrange;
     const event: PetsAPIGatewayProxyEvent = {
