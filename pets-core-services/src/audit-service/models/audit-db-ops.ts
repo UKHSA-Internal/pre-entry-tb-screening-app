@@ -166,7 +166,7 @@ const findSourceInCTLogs = async (record: DynamoDBRecord): Promise<SourceType> =
   const approximateCreationDateTime = record.dynamodb!.ApproximateCreationDateTime as number;
   let source: SourceType | undefined = undefined;
   const alreadyScanned: Array<string> = [];
-  const delay = 3000;
+  const delay = 30 * 1000; // 30 second
   const maxTimeAwaiting = 10 * 60 * 1000; // 10 minutes in milliseconds
   const startTime = Date.now();
 
@@ -216,6 +216,7 @@ const scanFiles = async (
       },
     );
 
+    logger.info("---------- reading files started ----------");
     for await (const page of paginator) {
       if (page?.Contents) {
         for (const obj of page.Contents) {
@@ -239,6 +240,7 @@ const scanFiles = async (
         break;
       }
     }
+    logger.info("---------- finished reading files ----------");
 
     return source;
   } catch (caught) {
