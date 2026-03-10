@@ -1,7 +1,7 @@
 import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
 import { z } from "zod";
 
-import { createHttpResponse } from "../../shared/http";
+import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
@@ -30,9 +30,7 @@ export const saveTbCertificateHandler = async (event: SaveTbCertificateEvent) =>
     if (!parsedBody) {
       logger.error("Event missing parsed body");
 
-      return createHttpResponse(500, {
-        message: "Internal Server Error: TB Certificate Request not parsed correctly",
-      });
+      return HttpErrors.badRequest("Request event missing body");
     }
 
     const { createdBy } = event.requestContext.authorizer;
@@ -45,7 +43,7 @@ export const saveTbCertificateHandler = async (event: SaveTbCertificateEvent) =>
       });
     } catch (error) {
       if (error instanceof ConditionalCheckFailedException)
-        return createHttpResponse(400, { message: "TB Certificate already saved" });
+        return HttpErrors.conflictError("TB Certificate already saved");
       throw error;
     }
 
@@ -65,11 +63,11 @@ export const saveTbCertificateHandler = async (event: SaveTbCertificateEvent) =>
       expiryDate: expiryDate,
     });
 
-    return createHttpResponse(200, {
+    return HttpResponses.ok({
       ...tbCertificate.toJson(),
     });
   } catch (err) {
     logger.error(err, "Error saving TB Certificate information");
-    return createHttpResponse(500, { message: "Something went wrong" });
+    return HttpErrors.serverError("Something went wrong");
   }
 };

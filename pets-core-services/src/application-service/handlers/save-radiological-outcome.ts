@@ -1,7 +1,7 @@
 import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
 import { z } from "zod";
 
-import { createHttpResponse } from "../../shared/http";
+import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { RadiologicalOutcome } from "../models/radiological-outcome";
@@ -25,9 +25,7 @@ export const saveRadiologicalOutcomeHandler = async (event: SaveRadiologicalOutc
     if (!parsedBody) {
       logger.error("Event missing parsed body");
 
-      return createHttpResponse(500, {
-        message: "Internal Server Error: Radiological Outcome Request not parsed correctly",
-      });
+      return HttpErrors.badRequest("Request event missing body");
     }
 
     let radiologicalOutcome: RadiologicalOutcome;
@@ -39,15 +37,15 @@ export const saveRadiologicalOutcomeHandler = async (event: SaveRadiologicalOutc
       });
     } catch (error) {
       if (error instanceof ConditionalCheckFailedException)
-        return createHttpResponse(400, { message: "Radiological Outcome already saved" });
+        return HttpErrors.conflictError("Radiological Outcome already saved");
       throw error;
     }
 
-    return createHttpResponse(200, {
+    return HttpResponses.ok({
       ...radiologicalOutcome.toJson(),
     });
   } catch (err) {
     logger.error(err, "Error saving Radiological Outcome");
-    return createHttpResponse(500, { message: "Something went wrong" });
+    return HttpErrors.serverError("Something went wrong");
   }
 };

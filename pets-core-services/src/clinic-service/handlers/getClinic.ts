@@ -1,4 +1,4 @@
-import { createHttpResponse } from "../../shared/http";
+import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { Clinic } from "../models/clinics";
@@ -13,17 +13,20 @@ export const getClinicHandler = async (event: PetsAPIGatewayProxyEvent) => {
     try {
       logger.info(`clinicId from queryStringParameters: ${clinicId}`);
       const clinic = await Clinic.getClinicById(clinicId);
-      if (!clinic) return createHttpResponse(404, { message: "Clinic Details Not Found" });
+      if (!clinic) {
+        logger.error(`Clinic with ID: ${clinicId} not found`);
+        return HttpErrors.notFound("Clinic Details Not Found");
+      }
 
-      return createHttpResponse(200, JSON.stringify({ clinic }));
+      return HttpResponses.ok(JSON.stringify({ clinic }));
     } catch (error) {
       logger.error({ error }, `Fetching clinic with ID: ${clinicId} failed`);
 
-      return createHttpResponse(500, { message: "Something went wrong" });
+      return HttpErrors.serverError("Something went wrong");
     }
   }
 
   logger.error(`The 'clinicId' is missing or incorrect`);
 
-  return createHttpResponse(400, { message: "The 'clinicId' is missing or incorrect" });
+  return HttpErrors.badRequest("The 'clinicId' is missing or incorrect");
 };

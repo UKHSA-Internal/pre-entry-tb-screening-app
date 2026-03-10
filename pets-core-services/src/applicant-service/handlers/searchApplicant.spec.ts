@@ -3,15 +3,15 @@ import { describe, expect, test, vi } from "vitest";
 import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
 import { logger } from "../../shared/logger";
-import { ApplicantDbOps } from "../../shared/models/applicant";
+import { Applicant } from "../../shared/models/applicant";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicants } from "../fixtures/applicants";
-import { Header, SearchApplicantEvent, searchApplicantHandler } from "./searchApplicant";
+import { ApplicantHeader, SearchApplicantEvent, searchApplicantHandler } from "./searchApplicant";
 
 describe("Test for Getting Applicant", () => {
   test("Fetching an Applicant Successfully", async () => {
     // Arrange
-    const existingApplicant = seededApplicants[1]; // Already preloaded into DB,
+    const existingApplicant = new Applicant(seededApplicants[0]); // Already preloaded into DB,
 
     const event: SearchApplicantEvent = {
       ...mockAPIGwEvent,
@@ -19,7 +19,7 @@ describe("Test for Getting Applicant", () => {
         ...mockAPIGwEvent.requestContext,
         authorizer: {
           ...mockAPIGwEvent.requestContext.authorizer,
-          clinicId: seededApplications[2].clinicId,
+          clinicId: seededApplications[0].clinicId,
         },
       },
       parsedHeaders: {
@@ -33,15 +33,25 @@ describe("Test for Getting Applicant", () => {
 
     // Assert
     expect(response.statusCode).toBe(200);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { createdBy, ...expectedJsonResponse } = existingApplicant;
 
-    expect(JSON.parse(response.body)).toMatchObject([expectedJsonResponse]);
+    const expectedJsonResponse = {
+      ...existingApplicant.toJson(),
+      dateCreated: expect.any(String),
+      applications: [
+        {
+          applicationId: "generated-app-id-2",
+          dateCreated: expect.any(String),
+          applicationStatus: "In Progress",
+        },
+      ],
+    };
+
+    expect(JSON.parse(response.body)).toMatchObject(expectedJsonResponse);
   });
 
   test("Fetching an Applicant with different clinicId", async () => {
     // Arrange
-    const existingApplicant = seededApplicants[1]; // Already preloaded into DB,
+    const existingApplicant = new Applicant(seededApplicants[0]); // Already preloaded into DB,
     const infoLoggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
 
     const event: SearchApplicantEvent = {
@@ -63,13 +73,24 @@ describe("Test for Getting Applicant", () => {
     const response = await searchApplicantHandler(event);
 
     // Assert
+    expect(response.statusCode).toBe(200);
+
     expect(infoLoggerMock).toHaveBeenNthCalledWith(
       6,
       "Getting an application for the support clinic",
     );
-    expect(response.statusCode).toBe(200);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { createdBy, ...expectedJsonResponse } = existingApplicant;
+    const expectedJsonResponse = {
+      ...existingApplicant.toJson(),
+      dateCreated: expect.any(String),
+      applications: [
+        {
+          applicationId: "generated-app-id-2",
+          dateCreated: expect.any(String),
+          applicationStatus: "In Progress",
+        },
+      ],
+    };
+    expect(JSON.parse(response.body)).toMatchObject(expectedJsonResponse);
   });
 
   test("Fetching an Applicant that does not have an application", async () => {
@@ -97,11 +118,11 @@ describe("Test for Getting Applicant", () => {
 
     // Assert
     expect(errorLoggerMock).toHaveBeenCalledWith(
-      "Edge-Case: Applicant has been created without an application",
+      "Applicant has been created without an application",
     );
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(422);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Matched Applicant has been created without an application",
+      message: "Applicant has been created without an application",
     });
   });
 
@@ -119,37 +140,14 @@ describe("Test for Getting Applicant", () => {
     const response = await searchApplicantHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(204);
-    expect(JSON.parse(response.body)).toMatchObject([]);
-  });
-
-  test("Duplicate results returns a 500 response", async () => {
-    // Arrange
-    await ApplicantDbOps.createNewApplicant({
-      ...seededApplicants[0],
-      applicationId: "duplicate-application-id",
-    });
-
-    const event: SearchApplicantEvent = {
-      ...mockAPIGwEvent,
-      parsedHeaders: {
-        passportnumber: seededApplicants[0].passportNumber,
-        countryofissue: seededApplicants[0].countryOfIssue,
-      },
-    };
-
-    // Act
-    const response = await searchApplicantHandler(event);
-
-    // Assert
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(404);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Unexpected duplicate results found",
+      message: "Applicant does not exist",
     });
   });
 
   test("Clinic Id mismatch returns a 403 response", async () => {
-    const existingApplicant = seededApplicants[1]; // Already preloaded into DB
+    const existingApplicant = seededApplicants[0]; // Already preloaded into DB
 
     const event: SearchApplicantEvent = {
       ...mockAPIGwEvent,
@@ -173,7 +171,7 @@ describe("Test for Getting Applicant", () => {
   });
 
   test("Missing clinicId in the request returns a 400 response", async () => {
-    const existingApplicant = seededApplicants[1]; // Already preloaded into DB
+    const existingApplicant = seededApplicants[0]; // Already preloaded into DB
 
     const event: SearchApplicantEvent = {
       ...mockAPIGwEvent,
@@ -193,7 +191,7 @@ describe("Test for Getting Applicant", () => {
     expect(JSON.parse(response.body)).toMatchObject({ message: "Clinic Id missing" });
   });
 
-  test("Missing required Headers returns a 500 response", async () => {
+  test("Missing required Body returns a 500 response", async () => {
     // Arrange
     const event: SearchApplicantEvent = {
       ...mockAPIGwEvent,
@@ -203,9 +201,9 @@ describe("Test for Getting Applicant", () => {
     const response = await searchApplicantHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Request not parsed correctly",
+      message: "Request event missing body",
     });
   });
 
@@ -214,7 +212,7 @@ describe("Test for Getting Applicant", () => {
 
     const malformedEvent: SearchApplicantEvent = {
       ...mockAPIGwEvent,
-      parsedHeaders: {} as Header,
+      parsedHeaders: {} as ApplicantHeader,
     };
 
     // Act
