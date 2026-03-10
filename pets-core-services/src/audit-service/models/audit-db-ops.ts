@@ -166,7 +166,7 @@ const findSourceInCTLogs = async (record: DynamoDBRecord): Promise<SourceType> =
   const approximateCreationDateTime = record.dynamodb!.ApproximateCreationDateTime as number;
   let source: SourceType | undefined = undefined;
   const alreadyScanned: Array<string> = [];
-  const delay = 30 * 1000; // 30 second
+  const delay = 20 * 1000; // 20 second
   const maxTimeAwaiting = 10 * 60 * 1000; // 10 minutes in milliseconds
   const startTime = Date.now();
 
@@ -250,6 +250,7 @@ const scanFiles = async (
             scannedFiles += 1;
           }
         }
+        // logger.info(`Read ${pageSize} files`);
       } else {
         break;
       }
@@ -370,7 +371,8 @@ const getFileFromS3 = async (
   client: S3Client,
   key: string = "",
 ): Promise<Record<string, any> | undefined | void> => {
-  logger.info(`Getting log file: ${key}`);
+  // logger.info(`Getting log file: ${key}`);
+  // TODO: Get bucket name from env vars
   // const bucketName = process.env.S3_AUDIT_LOGS_BUCKET;
   const bucketName = "audit-logs-aw-pets-euw-dev-s3-managementevents";
 
