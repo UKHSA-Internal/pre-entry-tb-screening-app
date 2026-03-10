@@ -59,7 +59,7 @@ const SputumSummary = () => {
         setSample3CultureResults,
       ];
 
-      sampleKeys.forEach((sampleKey) => {
+      for (const sampleKey of sampleKeys) {
         const sample = sputumData[sampleKey];
 
         const hasCollectionDate =
@@ -102,7 +102,7 @@ const SputumSummary = () => {
 
           sputumSamples[sampleKey] = sampleData;
         }
-      });
+      }
 
       if (Object.keys(sputumSamples).length > 0) {
         const response = await postSputumDetails(
@@ -115,7 +115,7 @@ const SputumSummary = () => {
           dispatch(setSputumVersion(response.data.version));
         }
 
-        sampleKeys.forEach((sampleKey, index) => {
+        for (const [index, sampleKey] of sampleKeys.entries()) {
           const sample = sputumData[sampleKey];
 
           if (
@@ -147,7 +147,7 @@ const SputumSummary = () => {
               }),
             );
           }
-        });
+        }
       }
 
       const allSamplesComplete = [sputumData.sample1, sputumData.sample2, sputumData.sample3].every(
@@ -320,13 +320,25 @@ const SputumSummary = () => {
       <Heading level={1} size="l" title="Check sputum collection details and results" />
 
       <Heading level={2} size="m" title="Sputum sample 1" />
-      <Summary status={getSampleStatus(1)} summaryElements={generateSampleSummaryData(1)} />
+      <Summary
+        taskStatus={getSampleStatus(1)}
+        applicationStatus={applicationData.applicationStatus}
+        summaryElements={generateSampleSummaryData(1)}
+      />
 
       <Heading level={2} size="m" title="Sputum sample 2" />
-      <Summary status={getSampleStatus(2)} summaryElements={generateSampleSummaryData(2)} />
+      <Summary
+        taskStatus={getSampleStatus(2)}
+        applicationStatus={applicationData.applicationStatus}
+        summaryElements={generateSampleSummaryData(2)}
+      />
 
       <Heading level={2} size="m" title="Sputum sample 3" />
-      <Summary status={getSampleStatus(3)} summaryElements={generateSampleSummaryData(3)} />
+      <Summary
+        taskStatus={getSampleStatus(3)}
+        applicationStatus={applicationData.applicationStatus}
+        summaryElements={generateSampleSummaryData(3)}
+      />
 
       <Heading title="Now send the sputum collection details and results" level={2} size="m" />
       <p className="govuk-body">

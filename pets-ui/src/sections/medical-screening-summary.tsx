@@ -203,7 +203,11 @@ const MedicalScreeningReview = () => {
     <div>
       {isLoading && <Spinner />}
 
-      <Summary status={medicalData.status} summaryElements={summaryData} />
+      <Summary
+        taskStatus={medicalData.status}
+        applicationStatus={applicationData.applicationStatus}
+        summaryElements={summaryData}
+      />
 
       {(medicalData.status == TaskStatus.NOT_YET_STARTED ||
         medicalData.status == TaskStatus.IN_PROGRESS) && (

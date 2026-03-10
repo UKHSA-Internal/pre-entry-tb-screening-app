@@ -349,19 +349,31 @@ const TbSummary = () => {
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h2 className="govuk-heading-m">Visa applicant information</h2>
-            <Summary status={summaryStatus} summaryElements={summaryData} />
+            <Summary
+              taskStatus={summaryStatus}
+              applicationStatus={applicationData.applicationStatus}
+              summaryElements={summaryData}
+            />
 
             {currentAddressData.length > 0 && (
               <>
                 <h2 className="govuk-heading-m">Current residential address</h2>
-                <Summary status={summaryStatus} summaryElements={currentAddressData} />
+                <Summary
+                  taskStatus={summaryStatus}
+                  applicationStatus={applicationData.applicationStatus}
+                  summaryElements={currentAddressData}
+                />
               </>
             )}
 
             {ukAddressData.length > 0 && (
               <>
                 <h2 className="govuk-heading-m">Proposed UK address</h2>
-                <Summary status={summaryStatus} summaryElements={ukAddressData} />
+                <Summary
+                  taskStatus={summaryStatus}
+                  applicationStatus={applicationData.applicationStatus}
+                  summaryElements={ukAddressData}
+                />
               </>
             )}
 
@@ -369,7 +381,11 @@ const TbSummary = () => {
               <>
                 <h2 className="govuk-heading-m">Clinic and certificate information</h2>
                 <div className="certificate-reference-nowrap">
-                  <Summary status={summaryStatus} summaryElements={certificateData} />
+                  <Summary
+                    taskStatus={summaryStatus}
+                    applicationStatus={applicationData.applicationStatus}
+                    summaryElements={certificateData}
+                  />
                 </div>
               </>
             )}
@@ -377,7 +393,11 @@ const TbSummary = () => {
             {screeningData.length > 0 && (
               <>
                 <h2 className="govuk-heading-m">Screening information</h2>
-                <Summary status={summaryStatus} summaryElements={screeningData} />
+                <Summary
+                  taskStatus={summaryStatus}
+                  applicationStatus={applicationData.applicationStatus}
+                  summaryElements={screeningData}
+                />
               </>
             )}
             <p className="govuk-body">
@@ -397,7 +417,11 @@ const TbSummary = () => {
           )}
         </div>
       ) : (
-        <Summary status={summaryStatus} summaryElements={summaryData} />
+        <Summary
+          taskStatus={summaryStatus}
+          applicationStatus={applicationData.applicationStatus}
+          summaryElements={summaryData}
+        />
       )}
 
       {!isIssued && (

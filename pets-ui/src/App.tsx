@@ -14,6 +14,9 @@ import ApplicantPhotoPage from "./pages/applicant-photo";
 import ApplicantResultsPage from "./pages/applicant-results";
 import ApplicantSearchPage from "./pages/applicant-search";
 import ApplicantSummaryPage from "./pages/applicant-summary";
+import CancellationAreYouSurePage from "./pages/cancellation-are-you-sure";
+import CancellationConfirmationPage from "./pages/cancellation-confirmation";
+import CancellationReasonPage from "./pages/cancellation-reason";
 import CheckApplicantPhotoPage from "./pages/check-applicant-photo";
 import CheckSputumSampleInformationPage from "./pages/check-sputum-sample-information";
 import ChestXrayConfirmation from "./pages/chest-xray-confirmation";
@@ -535,6 +538,30 @@ function App() {
           <UnauthenticatedRoute>
             <AutoSignedOutPage />
           </UnauthenticatedRoute>
+        }
+      />
+      <Route
+        path="/why-are-you-cancelling-this-screening"
+        element={
+          <AuthenticatedRoute>
+            <CancellationReasonPage />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/are-you-sure-you-want-to-cancel-this-screening"
+        element={
+          <AuthenticatedRoute>
+            <CancellationAreYouSurePage />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/tb-screening-cancelled"
+        element={
+          <AuthenticatedRoute>
+            <CancellationConfirmationPage />
+          </AuthenticatedRoute>
         }
       />
       <Route path="/accessibility-statement" element={<AccessibilityStatementPage />} />
