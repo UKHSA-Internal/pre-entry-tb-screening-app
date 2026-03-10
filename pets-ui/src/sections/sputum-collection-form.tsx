@@ -141,82 +141,50 @@ const SputumCollectionForm = () => {
   const onSubmit: SubmitHandler<SputumCollectionFormFields> = (formData) => {
     const submittedBy = lastClickedButtonId.current;
     lastClickedButtonId.current = null;
+    if (!submittedBy) return; // submittedBy will be null if user presses return
 
     let hasError = false;
-    if (submittedBy === "save-progress" || submittedBy === "save-and-continue-to-results") {
-      const isAnySampleFilled = Object.values(formData).some((field) => {
-        if (typeof field === "string") {
-          return field.trim() !== "";
-        }
-        if (typeof field === "object" && field !== null) {
-          const date = field as DateType;
-          return date.day || date.month || date.year;
-        }
-        return false;
-      });
 
-      if (isAnySampleFilled) {
-        for (const sampleNumber of [1, 2, 3]) {
-          const dateFieldName =
-            `dateOfSputumSample${sampleNumber}` as keyof SputumCollectionFormFields;
-          const methodFieldName =
-            `collectionMethodSample${sampleNumber}` as keyof SputumCollectionFormFields;
-          const date = formData[dateFieldName] as DateType;
-          const method = formData[methodFieldName] as string;
+    for (const sampleNumber of [1, 2, 3]) {
+      const dateFieldName = `dateOfSputumSample${sampleNumber}` as keyof SputumCollectionFormFields;
+      const methodFieldName =
+        `collectionMethodSample${sampleNumber}` as keyof SputumCollectionFormFields;
+      const date = formData[dateFieldName] as DateType;
+      const method = formData[methodFieldName] as string;
 
-          const hasDate = date.day || date.month || date.year;
+      const hasDate = date.day || date.month || date.year;
 
-          if (!hasDate) {
-            methods.setError(dateFieldName, {
-              type: "manual",
-              message: `Enter the date sample ${sampleNumber} was taken on`,
-            });
-            hasError = true;
-          } else if (!date.day || !date.month || !date.year) {
-            methods.setError(dateFieldName, {
-              type: "manual",
-              message: dateValidationMessages.sputumSampleDate.emptyFieldError.replace(
-                "{sampleNumber}",
-                sampleNumber.toString(),
-              ),
-            });
-            hasError = true;
-          } else {
-            const result = validateDate(date, "sputumSampleDate");
-            if (typeof result === "string") {
-              methods.setError(dateFieldName, {
-                type: "manual",
-                message: result.replace("{sampleNumber}", sampleNumber.toString()),
-              });
-              hasError = true;
-            }
-          }
-
-          if (!method) {
-            methods.setError(methodFieldName, {
-              type: "manual",
-              message: `Enter Sputum sample ${sampleNumber} collection method`,
-            });
-            hasError = true;
-          }
-        }
+      if (!hasDate) {
+        methods.setError(dateFieldName, {
+          type: "manual",
+          message: `Enter the date sample ${sampleNumber} was taken on`,
+        });
+        hasError = true;
+      } else if (!date.day || !date.month || !date.year) {
+        methods.setError(dateFieldName, {
+          type: "manual",
+          message: dateValidationMessages.sputumSampleDate.emptyFieldError.replace(
+            "{sampleNumber}",
+            sampleNumber.toString(),
+          ),
+        });
+        hasError = true;
       } else {
-        for (const sampleNumber of [1, 2, 3]) {
-          methods.setError(
-            `dateOfSputumSample${sampleNumber}` as keyof SputumCollectionFormFields,
-            {
-              type: "manual",
-              message: `Enter the date sample ${sampleNumber} was taken on`,
-            },
-          );
-          methods.setError(
-            `collectionMethodSample${sampleNumber}` as keyof SputumCollectionFormFields,
-            {
-              type: "manual",
-              message: `Enter Sputum sample ${sampleNumber} collection method`,
-            },
-          );
+        const result = validateDate(date, "sputumSampleDate");
+        if (typeof result === "string") {
+          methods.setError(dateFieldName, {
+            type: "manual",
+            message: result.replace("{sampleNumber}", sampleNumber.toString()),
+          });
+          hasError = true;
         }
+      }
+
+      if (!method) {
+        methods.setError(methodFieldName, {
+          type: "manual",
+          message: `Enter Sputum sample ${sampleNumber} collection method`,
+        });
         hasError = true;
       }
     }
