@@ -44,7 +44,7 @@ export default function TbConfirmationPage() {
         title="What did you think of this service?"
         externalLink={true}
       />{" "}
-      (takes 30 seconds)
+      (takes 10 minutes)
     </React.Fragment>,
   ];
 
