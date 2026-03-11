@@ -42,6 +42,7 @@ import PrivacyNoticePage from "./pages/privacy-notice";
 import ProgressTrackerPage from "./pages/progress-tracker";
 import RadiologicalOutcomeConfirmation from "./pages/radiological-outcome-confirmation";
 import RadiologicalOutcomeSummaryPage from "./pages/radiological-outcome-summary";
+import ScreeningHistoryPage from "./pages/screening-history";
 import SignOutPage from "./pages/sign-out";
 import SignedOutPage from "./pages/signed-out";
 import AutoSignedOutPage from "./pages/signed-out-auto";
@@ -85,6 +86,16 @@ function App() {
         element={
           <AuthenticatedRoute>
             <ApplicantSearchPage />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/screening-history"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <ScreeningHistoryPage />
+            </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
       />
