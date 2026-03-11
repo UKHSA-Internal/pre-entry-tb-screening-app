@@ -1,10 +1,11 @@
 import { ReduxApplicantDetailsType } from "@/types";
 import { ApplicationStatus } from "@/utils/enums";
-import { formatDateForDisplay } from "@/utils/helpers";
+import { formatDateForDisplay, getCountryName } from "@/utils/helpers";
 
 interface ApplicantDataHeaderProps {
   applicantData: ReduxApplicantDetailsType;
-  applicationStatus: ApplicationStatus;
+  applicationStatus?: ApplicationStatus;
+  showCountryOfIssue: boolean;
 }
 
 export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderProps>) {
@@ -35,30 +36,41 @@ export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderP
             {props.applicantData.passportNumber}
           </td>
         </tr>
-        <tr className="govuk-table__row">
-          <th scope="row" className="govuk-table__header">
-            TB screening
-          </th>
-          <td className="govuk-table__cell progress-tracker-header-cells">
-            {props.applicationStatus === ApplicationStatus.CERTIFICATE_AVAILABLE && (
-              <strong className="govuk-tag govuk-tag--green">Certificate issued</strong>
-            )}
-            {props.applicationStatus === ApplicationStatus.CERTIFICATE_NOT_ISSUED && (
-              <strong className="govuk-tag govuk-tag--red progress-tracker-task-nowrap">
-                Certificate not issued
-              </strong>
-            )}
-            {props.applicationStatus === ApplicationStatus.CANCELLED && (
-              <strong className="govuk-tag govuk-tag--orange progress-tracker-task-nowrap">
-                Screening cancelled
-              </strong>
-            )}
-            {(props.applicationStatus === ApplicationStatus.IN_PROGRESS ||
-              props.applicationStatus === ApplicationStatus.NULL) && (
-              <strong className="govuk-tag govuk-tag--yellow">In progress</strong>
-            )}
-          </td>
-        </tr>
+        {props.showCountryOfIssue && (
+          <tr className="govuk-table__row">
+            <th scope="row" className="govuk-table__header">
+              Country of issue
+            </th>
+            <td className="govuk-table__cell progress-tracker-header-cells">
+              {getCountryName(props.applicantData.countryOfIssue)}
+            </td>
+          </tr>
+        )}
+        {props.applicationStatus && (
+          <tr className="govuk-table__row">
+            <th scope="row" className="govuk-table__header">
+              TB screening
+            </th>
+            <td className="govuk-table__cell progress-tracker-header-cells">
+              {props.applicationStatus === ApplicationStatus.CERTIFICATE_AVAILABLE && (
+                <strong className="govuk-tag govuk-tag--green">Certificate issued</strong>
+              )}
+              {props.applicationStatus === ApplicationStatus.CERTIFICATE_NOT_ISSUED && (
+                <strong className="govuk-tag govuk-tag--red progress-tracker-task-nowrap">
+                  Certificate not issued
+                </strong>
+              )}
+              {props.applicationStatus === ApplicationStatus.CANCELLED && (
+                <strong className="govuk-tag govuk-tag--orange progress-tracker-task-nowrap">
+                  Screening cancelled
+                </strong>
+              )}
+              {props.applicationStatus === ApplicationStatus.IN_PROGRESS && (
+                <strong className="govuk-tag govuk-tag--yellow">In progress</strong>
+              )}
+            </td>
+          </tr>
+        )}
       </tbody>
     </table>
   );
