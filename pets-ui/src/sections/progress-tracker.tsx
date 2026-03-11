@@ -209,6 +209,7 @@ const ProgressTracker = () => {
           <ApplicantDataHeader
             applicantData={applicantData}
             applicationStatus={applicationData.applicationStatus}
+            showCountryOfIssue={false}
           />
         </div>
         {applicantPhotoContext?.applicantPhotoDataUrl ? (
