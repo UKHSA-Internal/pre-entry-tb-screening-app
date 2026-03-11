@@ -169,7 +169,7 @@ const findSourceInCTLogs = async (record: DynamoDBRecord): Promise<SourceType> =
   let source: SourceType | undefined = undefined;
   const alreadyScanned: Array<string> = [];
   const delay = 5 * 1000; // 5 second
-  const maxTimeAwaiting = 10 * 60 * 1000; // 10 minutes in milliseconds
+  const maxTimeAwaiting = 5 * 60 * 1000; // 5 minutes in milliseconds
   const startTime = Date.now();
 
   while (!source) {
@@ -178,26 +178,6 @@ const findSourceInCTLogs = async (record: DynamoDBRecord): Promise<SourceType> =
     if (source || Date.now() - startTime > maxTimeAwaiting) break;
     await sleep(delay);
   }
-
-  // source = await scanFiles(new Date(approximateCreationDateTime * 1000), alreadyScanned, record);
-
-  // if (!source) {
-  //   await new Promise((resolve) => {
-  //     const checkInterval = setInterval(() => {
-  //       scanFiles(new Date(approximateCreationDateTime * 1000), alreadyScanned, record)
-  //         .then((result) => {
-  //           source = result;
-  //           if (source || Date.now() - startTime >= maxTimeAwaiting) {
-  //             clearInterval(checkInterval);
-  //             resolve(undefined);
-  //           }
-  //         })
-  //         .catch((error) => {
-  //           logger.error({ error }, "Error scanning CloudTrail files");
-  //         });
-  //     }, delay);
-  //   });
-  // }
 
   logger.info(`Returning 'source': ${source ?? ""}`);
 
@@ -212,11 +192,12 @@ const scanFiles = async (
   logger.info("Scanning log files");
   // TODO: Get the bucket name from env vars
   const bucketName = "audit-logs-aw-pets-euw-dev-s3-managementevents";
-  const pageSize = "50";
+  const pageSize = "20";
   const dateStr = new Date(Date.now()).toISOString();
   const id = record.eventID;
   const timeStarted = Date.now();
   let source: SourceType | undefined = undefined;
+  let allFiles = 0;
   let readFiles = 0;
   let scannedFiles = 0;
   let ignoredFiles = 0;
@@ -236,7 +217,7 @@ const scanFiles = async (
     for await (const page of paginator) {
       if (page?.Contents) {
         for (const obj of page.Contents) {
-          readFiles += 1;
+          allFiles += 1;
           if (
             obj.Key &&
             obj?.LastModified &&
@@ -244,6 +225,7 @@ const scanFiles = async (
             !alreadyScanned.includes(obj.Key)
           ) {
             const cloudTrailLog = await getFileFromS3(s3client, obj.Key);
+            readFiles += 1;
 
             if (cloudTrailLog && cloudTrailLog["0"]) {
               if (cloudTrailLog["0"]) {
@@ -266,13 +248,14 @@ const scanFiles = async (
             alreadyScanned.push(obj.Key);
           }
         }
-        // logger.info(`Read ${pageSize} files`);
       } else {
         break;
       }
     }
     logger.info(`---------- (${id}) finished reading files  ----------`);
-    logger.info(`All files: ${readFiles}, scanned: ${scannedFiles}, ignored: ${ignoredFiles}`);
+    logger.info(
+      `All files: ${allFiles}, downloaded: ${readFiles}, scanned: ${scannedFiles}, ignored: ${ignoredFiles}`,
+    );
     logger.info(`It was running for: ${(Date.now() - timeStarted) / 1000} seconds`);
 
     return source;
