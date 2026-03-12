@@ -1,4 +1,5 @@
-import assert from "assert";
+import assert from "node:assert";
+
 import { JwtVerifier } from "aws-jwt-verify";
 import { JwtPayload } from "aws-jwt-verify/jwt-model";
 import {

@@ -1,5 +1,5 @@
-import { readFileSync } from "fs";
-import { resolve } from "path";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 import { CountryCode } from "../../shared/country";
 import { logger } from "../../shared/logger";
@@ -20,19 +20,21 @@ export const validateClinic = (obj: Record<string, string | null>): NewClinic | 
 
   const parsedStartDate = new Date(startDate!);
 
-  if (isNaN(parsedStartDate.getDate()) || parsedStartDate < new Date("2024-01-01")) {
+  if (Number.isNaN(parsedStartDate.getDate()) || parsedStartDate < new Date("2024-01-01")) {
     logger.error(`Invalid or too early startDate: ${startDate}`);
     return;
   }
 
-  if (endDate && (isNaN(new Date(endDate).getDate()) || new Date(endDate) < parsedStartDate)) {
+  if (
+    endDate &&
+    (Number.isNaN(new Date(endDate).getDate()) || new Date(endDate) < parsedStartDate)
+  ) {
     logger.error(`Failed to validate endDate: ${endDate}`);
 
     return;
   }
 
-  const countries = Object(CountryCode) as CountryCode;
-
+  const countries = { ...CountryCode };
   // Checking if country is one of CountryCode keys
   if (Object.keys(countries).indexOf(country as string) < 0) {
     logger.error(`Can't convert to CountyCode: ${country}`);

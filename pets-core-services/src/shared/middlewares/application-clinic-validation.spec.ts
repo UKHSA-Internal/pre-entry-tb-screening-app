@@ -1,4 +1,5 @@
-import assert from "assert";
+import assert from "node:assert";
+
 import { describe, expect, test } from "vitest";
 
 import { mockAPIGwEvent } from "../../test/mocks/events";
