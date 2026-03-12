@@ -2,6 +2,8 @@ import { ReduxApplicantDetailsType } from "@/types";
 import { ApplicationStatus } from "@/utils/enums";
 import { formatDateForDisplay, getCountryName } from "@/utils/helpers";
 
+import StatusTag from "../statusTag/statusTag";
+
 interface ApplicantDataHeaderProps {
   applicantData: ReduxApplicantDetailsType;
   applicationStatus?: ApplicationStatus;
@@ -52,22 +54,7 @@ export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderP
               TB screening
             </th>
             <td className="govuk-table__cell progress-tracker-header-cells">
-              {props.applicationStatus === ApplicationStatus.CERTIFICATE_AVAILABLE && (
-                <strong className="govuk-tag govuk-tag--green">Certificate issued</strong>
-              )}
-              {props.applicationStatus === ApplicationStatus.CERTIFICATE_NOT_ISSUED && (
-                <strong className="govuk-tag govuk-tag--red progress-tracker-task-nowrap">
-                  Certificate not issued
-                </strong>
-              )}
-              {props.applicationStatus === ApplicationStatus.CANCELLED && (
-                <strong className="govuk-tag govuk-tag--orange progress-tracker-task-nowrap">
-                  Screening cancelled
-                </strong>
-              )}
-              {props.applicationStatus === ApplicationStatus.IN_PROGRESS && (
-                <strong className="govuk-tag govuk-tag--yellow">In progress</strong>
-              )}
+              <StatusTag status={props.applicationStatus} />
             </td>
           </tr>
         )}
