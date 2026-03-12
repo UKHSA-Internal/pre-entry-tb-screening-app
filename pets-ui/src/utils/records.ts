@@ -1,5 +1,3 @@
-import { countryList } from "./countryList";
-
 const attributeToComponentId: { [key: string]: string } = {
   fullName: "name",
   passportNumber: "passport-number",
@@ -67,6 +65,8 @@ const attributeToComponentId: { [key: string]: string } = {
   collectionMethodSample3: "collection-method-sample-3",
   dateXrayTaken: "date-xray-taken",
   consent: "do-you-have-consent",
+  cancellationReason: "why-are-you-cancelling-screening",
+  cancellationReasonOther: "conditional-why-are-you-cancelling-screening-other",
 };
 
 const formRegex = {
@@ -312,7 +312,6 @@ const legacyVisaOptions = [
 
 export {
   attributeToComponentId,
-  countryList,
   dateEntryMustBeInTheFuture,
   dateEntryMustBeInThePast,
   dateEntryNames,

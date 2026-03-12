@@ -68,23 +68,6 @@ describe("Generating signed PUT url for DICOM Upload", () => {
     });
   });
 
-  test("400 error when applicant info is missing", async () => {
-    const event: GenerateUploadEvent = {
-      ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[0].applicationId },
-      parsedBody: uploadInfo,
-    };
-
-    // Act
-    const response = await generateImageUploadUrlHandler(event);
-
-    // Assert
-    expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "Invalid Application - No Applicant",
-    });
-  });
-
   test("Local Environment", async () => {
     // Arrange
     // process.env.ENVIRONMENT = "TEST_LOCAL";
@@ -107,7 +90,7 @@ describe("Generating signed PUT url for DICOM Upload", () => {
     });
   });
 
-  test("Missing required body returns a 500 response", async () => {
+  test("Missing required body returns a 400 response", async () => {
     // Arrange
     const event: GenerateUploadEvent = {
       ...mockAPIGwEvent,
@@ -117,9 +100,9 @@ describe("Generating signed PUT url for DICOM Upload", () => {
     const response = await generateImageUploadUrlHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Generate Upload URL Request not parsed correctly",
+      message: "Request event missing body",
     });
   });
 
@@ -177,23 +160,6 @@ describe("Generating signed PUT url for Photo Upload", () => {
     });
   });
 
-  test("400 error when applicant info is missing", async () => {
-    const event: GenerateUploadEvent = {
-      ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[0].applicationId },
-      parsedBody: uploadInfo,
-    };
-
-    // Act
-    const response = await generateImageUploadUrlHandler(event);
-
-    // Assert
-    expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "Invalid Application - No Applicant",
-    });
-  });
-
   test("400 error when flletype is not of jpg/jpeg/png", async () => {
     const uploadImageInfo: ImageUploadUrlRequestSchema = {
       fileName: "applicant-photo.txt",
@@ -210,7 +176,7 @@ describe("Generating signed PUT url for Photo Upload", () => {
     const response = await generateImageUploadUrlHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(422);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Invalid file type. Only .jpg, .jpeg, and .png are allowed.",
     });
@@ -237,7 +203,7 @@ describe("Generating signed PUT url for Photo Upload", () => {
     });
   });
 
-  test("Missing required body returns a 500 response", async () => {
+  test("Missing required body returns a 400 response", async () => {
     // Arrange
     const event: GenerateUploadEvent = {
       ...mockAPIGwEvent,
@@ -247,9 +213,9 @@ describe("Generating signed PUT url for Photo Upload", () => {
     const response = await generateImageUploadUrlHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Generate Upload URL Request not parsed correctly",
+      message: "Request event missing body",
     });
   });
 

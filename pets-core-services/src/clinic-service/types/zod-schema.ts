@@ -1,6 +1,8 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 
+import { CountryCode } from "../../shared/country";
+
 extendZodWithOpenApi(z);
 
 export const ClinicSchema = z
@@ -11,7 +13,7 @@ export const ClinicSchema = z
     name: z.string().openapi({
       description: "Name of the Clinic",
     }),
-    country: z.string().openapi({
+    country: z.nativeEnum(CountryCode).openapi({
       description: "Country of the Clinic",
     }),
     city: z.string().openapi({

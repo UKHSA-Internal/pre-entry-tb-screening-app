@@ -135,7 +135,7 @@ describe("ConsentQuestionPage", () => {
     expect(useNavigateMock).toHaveBeenLastCalledWith("/get-written-consent");
   });
 
-  it("scrolls to the sputum collected radio group if location hash is #sputum-required", () => {
+  it("scrolls to the radio group if location hash is #do-you-have-consent", () => {
     (useLocation as Mock).mockReturnValue({
       pathname: "/do-you-have-visa-applicant-written-consent-for-tb-screening",
       hash: "#do-you-have-consent",

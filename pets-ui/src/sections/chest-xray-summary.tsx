@@ -72,7 +72,11 @@ const ChestXraySummary = () => {
   return (
     <div>
       {isLoading && <Spinner />}
-      <Summary status={chestXrayData.status} summaryElements={summaryData} />
+      <Summary
+        taskStatus={chestXrayData.status}
+        applicationStatus={applicationData.applicationStatus}
+        summaryElements={summaryData}
+      />
 
       {(chestXrayData.status == TaskStatus.NOT_YET_STARTED ||
         chestXrayData.status == TaskStatus.IN_PROGRESS) && (

@@ -72,6 +72,11 @@ type ReceivedApplicationDetailsType = {
   tbCertificate: ReceivedTbCertificateType | undefined;
 };
 
+type ApplicationCancellationInfo = {
+  cancellationReason: string;
+  cancellationFurtherInfo: string;
+};
+
 // Applicant types
 type ReduxApplicantDetailsType = {
   status: TaskStatus;
@@ -112,7 +117,26 @@ type PostedApplicantDetailsType = {
   applicantPhotoFileName?: string;
 };
 
-type ReceivedApplicantDetailsType = PostedApplicantDetailsType & ReceivedApplicationAttributesType;
+type ReceivedApplicantDetailsType = {
+  fullName: string;
+  sex: string;
+  dateOfBirth: string;
+  countryOfNationality: string;
+  passportNumber: string;
+  countryOfIssue: string;
+  issueDate: string;
+  expiryDate: string;
+  applicantHomeAddress1: string;
+  applicantHomeAddress2?: string;
+  applicantHomeAddress3?: string;
+  townOrCity: string;
+  provinceOrState: string;
+  country: string;
+  postcode?: string;
+  applications: ReceivedApplicationDetailsType[];
+  dateCreated: string;
+  status: BackendTaskStatus;
+};
 
 // Travel types
 type ReduxTravelDetailsType = {

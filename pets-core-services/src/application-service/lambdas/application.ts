@@ -3,6 +3,7 @@ import middy from "@middy/core";
 import { z } from "zod";
 
 import { boostrapLambdaRoutes } from "../../shared/bootstrap";
+import { validateClinicAndApplication } from "../../shared/middlewares/application-clinic-validation";
 import { PetsAPIGatewayProxyEvent, PetsRoute } from "../../shared/types";
 import { cancelApplicationHandler } from "../handlers/cancel-application";
 import { createApplicationHandler } from "../handlers/create-application";
@@ -17,13 +18,13 @@ import { saveTbCertificateHandler } from "../handlers/save-tb-certificate";
 import { saveTravelInformationHandler as createTravelInformationHandler } from "../handlers/save-travel-information";
 import { updateTravelInformationHandler } from "../handlers/update-travel-information";
 import { setApplicationIdContext } from "../middlewares/application-logger-context";
-import { validateApplication } from "../middlewares/application-validation";
 import { YesOrNo } from "../types/enums";
 import {
   ApplicationSchema,
   CancelApplicationRequestSchema,
   ChestXRayRequestSchema,
   ChestXRayResponseSchema,
+  CreateApplicationRequestSchema,
   CreateApplicationResponseSchema,
   ImageUploadUrlRequestSchema,
   ImageUploadUrlResponseSchema,
@@ -50,6 +51,9 @@ export const routes: PetsRoute[] = [
     method: "POST",
     path: "/application",
     handler: createApplicationHandler,
+    requestBodySchema: CreateApplicationRequestSchema.openapi({
+      description: "Application Details",
+    }),
     responseSchema: CreateApplicationResponseSchema,
   },
   {
@@ -57,6 +61,7 @@ export const routes: PetsRoute[] = [
     path: "/application/{applicationId}",
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(setApplicationIdContext)
+      .before(validateClinicAndApplication)
       .handler(getApplicationHandler),
     responseSchema: ApplicationSchema.openapi({
       description: "Application Details",
@@ -67,7 +72,7 @@ export const routes: PetsRoute[] = [
     path: "/application/{applicationId}/cancel",
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(setApplicationIdContext)
-      .before(validateApplication)
+      .before(validateClinicAndApplication)
       .handler(cancelApplicationHandler),
     requestBodySchema: CancelApplicationRequestSchema.openapi({
       description: "Application status details",
@@ -81,7 +86,7 @@ export const routes: PetsRoute[] = [
     path: "/application/{applicationId}/travel-information",
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(setApplicationIdContext)
-      .before(validateApplication)
+      .before(validateClinicAndApplication)
       .handler(createTravelInformationHandler),
     requestBodySchema: TravelInformationPostRequestSchema.openapi({
       description: "Travel Details of an Applicant",
@@ -95,7 +100,7 @@ export const routes: PetsRoute[] = [
     path: "/application/{applicationId}/travel-information",
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(setApplicationIdContext)
-      .before(validateApplication)
+      .before(validateClinicAndApplication)
       .handler(updateTravelInformationHandler),
     requestBodySchema: TravelInformationPutRequestSchema.openapi({
       description: "Travel Details of an Applicant",
@@ -109,7 +114,7 @@ export const routes: PetsRoute[] = [
     path: "/application/{applicationId}/medical-screening",
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(setApplicationIdContext)
-      .before(validateApplication)
+      .before(validateClinicAndApplication)
       .handler(saveMedicalScreeningHandler),
     requestBodySchema: MedicalScreeningRequestSchema.openapi({
       description: "Medical Screening Details of an Applicant",
@@ -123,7 +128,7 @@ export const routes: PetsRoute[] = [
     path: "/application/{applicationId}/chest-xray",
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(setApplicationIdContext)
-      .before(validateApplication)
+      .before(validateClinicAndApplication)
       .handler(saveChestXRayHandler),
     queryParams: {
       requireValidation: z.nativeEnum(YesOrNo, {
@@ -142,7 +147,7 @@ export const routes: PetsRoute[] = [
     path: "/application/{applicationId}/tb-certificate",
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(setApplicationIdContext)
-      .before(validateApplication)
+      .before(validateClinicAndApplication)
       .handler(saveTbCertificateHandler),
     requestBodySchema: TbCertificateRequestSchema.openapi({
       description: "TB Certificate Details of an Applicant",
@@ -156,7 +161,7 @@ export const routes: PetsRoute[] = [
     path: "/application/{applicationId}/radiological-outcome",
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(setApplicationIdContext)
-      .before(validateApplication)
+      .before(validateClinicAndApplication)
       .handler(saveRadiologicalOutcomeHandler),
     requestBodySchema: RadiologicalOutcomeRequestSchema.openapi({
       description: "Radiological Outcome of an Applicant",
@@ -170,7 +175,7 @@ export const routes: PetsRoute[] = [
     path: "/application/{applicationId}/sputum-decision",
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(setApplicationIdContext)
-      .before(validateApplication)
+      .before(validateClinicAndApplication)
       .handler(saveSputumDecisionHandler),
     requestBodySchema: SputumDecisionRequestSchema.openapi({
       description: "Sputum Decision Details of an Applicant",
@@ -184,7 +189,7 @@ export const routes: PetsRoute[] = [
     path: "/application/{applicationId}/generate-image-upload-url",
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(setApplicationIdContext)
-      .before(validateApplication)
+      .before(validateClinicAndApplication)
       .handler(generateImageUploadUrlHandler),
     requestBodySchema: ImageUploadUrlRequestSchema.openapi({
       description: "Details of the Image to be uploaded",
@@ -198,7 +203,7 @@ export const routes: PetsRoute[] = [
     path: "/application/{applicationId}/sputum-details",
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(setApplicationIdContext)
-      .before(validateApplication)
+      .before(validateClinicAndApplication)
       .handler(saveSputumDetailsHandler),
     requestBodySchema: SputumRequestSchema.openapi({
       description: "Sputum Collection and Testing Details of Applicant",

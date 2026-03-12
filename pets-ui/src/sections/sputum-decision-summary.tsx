@@ -60,7 +60,11 @@ const SputumDecisionSummary = () => {
   return (
     <div>
       {isLoading && <Spinner />}
-      <Summary status={sputumDecisionData.status} summaryElements={summaryData} />
+      <Summary
+        taskStatus={sputumDecisionData.status}
+        applicationStatus={applicationData.applicationStatus}
+        summaryElements={summaryData}
+      />
 
       {(sputumDecisionData.status == TaskStatus.NOT_YET_STARTED ||
         sputumDecisionData.status == TaskStatus.IN_PROGRESS) && (

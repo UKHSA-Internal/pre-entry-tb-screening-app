@@ -50,7 +50,7 @@ describe("Test for Saving Medical Screening into DB", () => {
     });
   });
 
-  test("Duplicate post throws a 400 error", async () => {
+  test("Duplicate post throws a 409 error", async () => {
     // Arrange
     const existingMedicalScreening = seededMedicalScreening[1];
     const event: SaveMedicalScreeningEvent = {
@@ -68,11 +68,11 @@ describe("Test for Saving Medical Screening into DB", () => {
     const response = await saveMedicalScreeningHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(409);
     expect(JSON.parse(response.body)).toMatchObject({ message: "Medical Screening already saved" });
   });
 
-  test("Missing required body returns a 500 response", async () => {
+  test("Missing required body returns a 400 response", async () => {
     // Arrange
     const event: SaveMedicalScreeningEvent = {
       ...mockAPIGwEvent,
@@ -82,9 +82,9 @@ describe("Test for Saving Medical Screening into DB", () => {
     const response = await saveMedicalScreeningHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Medical Screening Request not parsed correctly",
+      message: "Request event missing body",
     });
   });
 
