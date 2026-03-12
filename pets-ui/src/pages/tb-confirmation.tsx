@@ -43,8 +43,9 @@ export default function TbConfirmationPage() {
         to="https://forms.office.com/pages/responsepage.aspx?id=mRRO7jVKLkutR188-d6GZtaAaJfrhApCue13O2-oStFUNlIyRkRMWVBNQkszSTJISDJGU1pJTTkxNy4u&route=shorturl"
         title="What did you think of this service?"
         externalLink={true}
+        openInNewTab
       />{" "}
-      (takes 30 seconds)
+      (takes 10 minutes)
     </React.Fragment>,
   ];
 
