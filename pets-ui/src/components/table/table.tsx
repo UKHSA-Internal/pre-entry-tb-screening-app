@@ -1,6 +1,6 @@
 export type TableRow = {
   rowTitle: string;
-  cells: string[];
+  cells: (string | React.JSX.Element)[];
 };
 
 interface TableProps {
@@ -30,7 +30,7 @@ export default function Table(props: Readonly<TableProps>) {
         </thead>
       )}
       <tbody className="govuk-table__body">
-        {props.tableRows.map((tableRow) => {
+        {props.tableRows.map((tableRow, i) => {
           return (
             <tr className="govuk-table__row" key={tableRow.rowTitle}>
               {props.removeRowTitleStyling ? (
@@ -42,9 +42,9 @@ export default function Table(props: Readonly<TableProps>) {
                   {tableRow.rowTitle}
                 </th>
               )}
-              {tableRow.cells.map((cell) => {
+              {tableRow.cells.map((cell, j) => {
                 return (
-                  <td className="govuk-table__cell" key={cell}>
+                  <td className="govuk-table__cell" key={"cell-" + i + "-" + j}>
                     {cell}
                   </td>
                 );
