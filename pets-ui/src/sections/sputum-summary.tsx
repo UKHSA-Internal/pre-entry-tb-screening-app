@@ -22,8 +22,9 @@ import {
   setSputumVersion,
 } from "@/redux/sputumSlice";
 import { selectApplication, selectSputum } from "@/redux/store";
-import { ApplicationStatus, ButtonClass, PositiveOrNegative } from "@/utils/enums";
+import { ButtonClass, PositiveOrNegative, TaskStatus } from "@/utils/enums";
 import { formatDateForDisplay } from "@/utils/helpers";
+import { areAllSamplesComplete, buildSamplePayload } from "@/utils/sputumHelpers";
 
 const SputumSummary = () => {
   const sputumData = useAppSelector(selectSputum);
@@ -36,20 +37,6 @@ const SputumSummary = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      const sputumSamples: Record<
-        string,
-        {
-          dateOfSample?: string;
-          collectionMethod?: string;
-          smearResult?: PositiveOrNegative;
-          cultureResult?: PositiveOrNegative;
-          dateUpdated: string;
-        }
-      > = {};
-
-      const formatDate = (date: { year: string; month: string; day: string }) =>
-        `${date.year}-${date.month.padStart(2, "0")}-${date.day.padStart(2, "0")}`;
-
       const sampleKeys = ["sample1", "sample2", "sample3"] as const;
       const collectionActions = [setSample1Collection, setSample2Collection, setSample3Collection];
       const smearActions = [setSample1SmearResults, setSample2SmearResults, setSample3SmearResults];
@@ -59,50 +46,21 @@ const SputumSummary = () => {
         setSample3CultureResults,
       ];
 
-      sampleKeys.forEach((sampleKey) => {
-        const sample = sputumData[sampleKey];
-
-        const hasCollectionDate =
-          sample.collection.dateOfSample.day &&
-          sample.collection.dateOfSample.month &&
-          sample.collection.dateOfSample.year;
-        const hasCollectionMethod = !!sample.collection.collectionMethod;
-        const hasAnyCollectionData = hasCollectionDate || hasCollectionMethod;
-
-        const hasSmearResult =
-          sample.smearResults.smearResult !== PositiveOrNegative.NOT_YET_ENTERED;
-        const hasCultureResult =
-          sample.cultureResults.cultureResult !== PositiveOrNegative.NOT_YET_ENTERED;
-
-        if (hasAnyCollectionData || hasSmearResult || hasCultureResult) {
-          const sampleData: {
-            dateOfSample?: string;
-            collectionMethod?: string;
-            smearResult?: PositiveOrNegative;
-            cultureResult?: PositiveOrNegative;
-            dateUpdated: string;
-          } = {
-            dateUpdated: new Date().toISOString().split("T")[0],
-          };
-
-          if (hasCollectionDate) {
-            sampleData.dateOfSample = formatDate(sample.collection.dateOfSample);
-          }
-          if (hasCollectionMethod) {
-            sampleData.collectionMethod = sample.collection.collectionMethod;
-          }
-
-          if (hasSmearResult) {
-            sampleData.smearResult = sample.smearResults.smearResult;
-          }
-
-          if (hasCultureResult) {
-            sampleData.cultureResult = sample.cultureResults.cultureResult;
-          }
-
-          sputumSamples[sampleKey] = sampleData;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const sputumSamples: Record<
+        string,
+        {
+          dateOfSample?: string;
+          collectionMethod?: string;
+          smearResult?: PositiveOrNegative;
+          cultureResult?: PositiveOrNegative;
+          dateUpdated: string;
         }
-      });
+      > = Object.fromEntries(
+        sampleKeys
+          .map((key) => [key, buildSamplePayload(sputumData[key])])
+          .filter(([, value]) => value !== null),
+      );
 
       if (Object.keys(sputumSamples).length > 0) {
         const response = await postSputumDetails(
@@ -115,7 +73,7 @@ const SputumSummary = () => {
           dispatch(setSputumVersion(response.data.version));
         }
 
-        sampleKeys.forEach((sampleKey, index) => {
+        for (const [index, sampleKey] of sampleKeys.entries()) {
           const sample = sputumData[sampleKey];
 
           if (
@@ -147,31 +105,16 @@ const SputumSummary = () => {
               }),
             );
           }
-        });
+        }
       }
 
-      const allSamplesComplete = [sputumData.sample1, sputumData.sample2, sputumData.sample3].every(
-        (sample) => {
-          const hasCollectionData =
-            sample.collection.dateOfSample.day &&
-            sample.collection.dateOfSample.month &&
-            sample.collection.dateOfSample.year &&
-            sample.collection.collectionMethod;
-
-          const hasSmearResult =
-            sample.smearResults.smearResult !== PositiveOrNegative.NOT_YET_ENTERED;
-          const hasCultureResult =
-            sample.cultureResults.cultureResult !== PositiveOrNegative.NOT_YET_ENTERED;
-
-          return hasCollectionData && hasSmearResult && hasCultureResult;
-        },
-      );
+      const allSamplesComplete = areAllSamplesComplete(sputumData);
 
       if (allSamplesComplete) {
-        dispatch(setSputumStatus(ApplicationStatus.COMPLETE));
+        dispatch(setSputumStatus(TaskStatus.COMPLETE));
         navigate("/sputum-sample-information-confirmed");
       } else {
-        dispatch(setSputumStatus(ApplicationStatus.IN_PROGRESS));
+        dispatch(setSputumStatus(TaskStatus.IN_PROGRESS));
         navigate("/sputum-sample-information-confirmed");
       }
     } catch (error) {
@@ -180,7 +123,7 @@ const SputumSummary = () => {
     }
   };
 
-  const getSampleStatus = (sampleNumber: 1 | 2 | 3): ApplicationStatus => {
+  const getSampleStatus = (sampleNumber: 1 | 2 | 3): TaskStatus => {
     let sample;
     if (sampleNumber === 1) {
       sample = sputumData.sample1;
@@ -208,14 +151,14 @@ const SputumSummary = () => {
     const allSaved = collectionSaved && smearSaved && cultureSaved;
 
     if (allPresent && allSaved) {
-      return ApplicationStatus.COMPLETE;
+      return TaskStatus.COMPLETE;
     }
 
     if (hasCollectionData || hasSmearResult || hasCultureResult) {
-      return ApplicationStatus.IN_PROGRESS;
+      return TaskStatus.IN_PROGRESS;
     }
 
-    return ApplicationStatus.NOT_YET_STARTED;
+    return TaskStatus.NOT_YET_STARTED;
   };
 
   const generateSampleSummaryData = (sampleNumber: 1 | 2 | 3) => {
@@ -320,13 +263,25 @@ const SputumSummary = () => {
       <Heading level={1} size="l" title="Check sputum collection details and results" />
 
       <Heading level={2} size="m" title="Sputum sample 1" />
-      <Summary status={getSampleStatus(1)} summaryElements={generateSampleSummaryData(1)} />
+      <Summary
+        taskStatus={getSampleStatus(1)}
+        applicationStatus={applicationData.applicationStatus}
+        summaryElements={generateSampleSummaryData(1)}
+      />
 
       <Heading level={2} size="m" title="Sputum sample 2" />
-      <Summary status={getSampleStatus(2)} summaryElements={generateSampleSummaryData(2)} />
+      <Summary
+        taskStatus={getSampleStatus(2)}
+        applicationStatus={applicationData.applicationStatus}
+        summaryElements={generateSampleSummaryData(2)}
+      />
 
       <Heading level={2} size="m" title="Sputum sample 3" />
-      <Summary status={getSampleStatus(3)} summaryElements={generateSampleSummaryData(3)} />
+      <Summary
+        taskStatus={getSampleStatus(3)}
+        applicationStatus={applicationData.applicationStatus}
+        summaryElements={generateSampleSummaryData(3)}
+      />
 
       <Heading title="Now send the sputum collection details and results" level={2} size="m" />
       <p className="govuk-body">
@@ -336,8 +291,8 @@ const SputumSummary = () => {
       </p>
 
       <div style={{ marginTop: 40 }}>
-        {(sputumData.status === ApplicationStatus.NOT_YET_STARTED ||
-          sputumData.status === ApplicationStatus.IN_PROGRESS) && (
+        {(sputumData.status === TaskStatus.NOT_YET_STARTED ||
+          sputumData.status === TaskStatus.IN_PROGRESS) && (
           <Button
             id="submit"
             class={ButtonClass.DEFAULT}
@@ -345,8 +300,8 @@ const SputumSummary = () => {
             handleClick={handleSubmit}
           />
         )}
-        {(sputumData.status === ApplicationStatus.COMPLETE ||
-          sputumData.status === ApplicationStatus.NOT_REQUIRED) && (
+        {(sputumData.status === TaskStatus.COMPLETE ||
+          sputumData.status === TaskStatus.NOT_REQUIRED) && (
           <Button
             id="back-to-tracker"
             class={ButtonClass.DEFAULT}

@@ -1,6 +1,7 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 
+import { CountryCode } from "../../shared/country";
 import { ApplicationStatus, TaskStatus } from "../../shared/types/enum";
 import {
   ChestXRayNotTakenReason,
@@ -17,6 +18,15 @@ import {
 
 extendZodWithOpenApi(z);
 
+export const CreateApplicationRequestSchema = z.object({
+  passportNumber: z.string().openapi({
+    description: "PassportNumber of Applicant",
+  }),
+  countryOfIssue: z.nativeEnum(CountryCode).openapi({
+    description: "Passport Issue Country",
+  }),
+});
+
 export const CreateApplicationResponseSchema = z.object({
   applicationId: z.string().openapi({
     description: "ID of newly created application",
@@ -29,6 +39,9 @@ export const CreateApplicationResponseSchema = z.object({
 export const CancelApplicationRequestSchema = z.object({
   cancellationReason: z.string().optional().openapi({
     description: "Reason for application cancelling",
+  }),
+  cancellationFurtherInfo: z.string().optional().openapi({
+    description: "Additional Information regarding application cancellation",
   }),
 });
 
@@ -445,19 +458,34 @@ export const SputumDecisionResponseSchema = SputumDecisionRequestSchema.extend({
   status: z.nativeEnum(TaskStatus).openapi({ description: "Status of Task" }),
 });
 
-export const ApplicationSchema = z.object({
+export const ApplicationBaseSchema = z.object({
   applicationId: z.string().openapi({
-    description: "application id",
+    description: "Application id",
   }),
-  status: z.nativeEnum(ApplicationStatus).openapi({
+  clinicId: z.string().openapi({
+    description: "ID of the Clinic",
+  }),
+  dateCreated: z.string().date().openapi({
+    description: "Creation Date in UTC timezone",
+  }),
+  applicationStatus: z.nativeEnum(ApplicationStatus).openapi({
     description: "Application current status",
   }),
   cancellationReason: z.string().optional().openapi({
     description: "Reason for application cancelling",
   }),
+  cancellationFurtherInfo: z.string().optional().openapi({
+    description: "Additional Information regarding application cancellation",
+  }),
+  dateUpdated: z.string().date().openapi({
+    description: "Modified Date in UTC timezone",
+  }),
   expiryDate: z.date().optional().openapi({
     description: "The date when the certificate expires",
   }),
+});
+
+export const ApplicationSchema = ApplicationBaseSchema.extend({
   applicantPhotoUrl: z.string().openapi({
     description: "Presigned Url for applicant Photo",
   }),

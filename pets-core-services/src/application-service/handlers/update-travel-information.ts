@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { createHttpResponse } from "../../shared/http";
+import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { TravelInformationDbOps, TravelInformationUpdate } from "../models/travel-information";
@@ -23,9 +23,7 @@ export const updateTravelInformationHandler = async (event: UpdateTravelInformat
     if (!parsedBody) {
       logger.error("Event missing parsed body");
 
-      return createHttpResponse(500, {
-        message: "Internal Server Error: Travel Information Request not parsed correctly",
-      });
+      return HttpErrors.badRequest("Request event missing body");
     }
 
     const { createdBy } = event.requestContext.authorizer;
@@ -36,11 +34,11 @@ export const updateTravelInformationHandler = async (event: UpdateTravelInformat
         applicationId,
       });
 
-    return createHttpResponse(200, {
+    return HttpResponses.ok({
       ...travelInformation.toJson(),
     });
   } catch (err) {
     logger.error(err, "Error updating travel information");
-    return createHttpResponse(500, { message: "Something went wrong" });
+    return HttpErrors.serverError("Something went wrong");
   }
 };

@@ -7,7 +7,7 @@ import { Mock } from "vitest";
 import { petsApi } from "@/api/api";
 import RadiologicalOutcomeSummaryPage from "@/pages/radiological-outcome-summary";
 import RadiologicalOutcomeSummary from "@/sections/radiological-outcome-summary";
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -22,7 +22,7 @@ vi.mock(`react-router`, async (): Promise<unknown> => {
 describe("RadiologicalOutcomeSummary Page", () => {
   it("shows back link to findings when status in progress", () => {
     const preloadedState = {
-      radiologicalOutcome: { status: ApplicationStatus.IN_PROGRESS },
+      radiologicalOutcome: { status: TaskStatus.IN_PROGRESS },
     } as unknown as Record<string, unknown>;
 
     renderWithProviders(
@@ -38,7 +38,7 @@ describe("RadiologicalOutcomeSummary Page", () => {
 
   it("shows back link to tracker when status complete", () => {
     const preloadedState = {
-      radiologicalOutcome: { status: ApplicationStatus.COMPLETE },
+      radiologicalOutcome: { status: TaskStatus.COMPLETE },
     } as unknown as Record<string, unknown>;
 
     renderWithProviders(
@@ -69,7 +69,7 @@ describe("RadiologicalOutcomeSummary Section", () => {
         chestXrayTaken: YesOrNo.YES,
       },
       radiologicalOutcome: {
-        status: ApplicationStatus.NOT_YET_STARTED,
+        status: TaskStatus.NOT_YET_STARTED,
         xrayResult: "Chest X-ray normal",
         xrayResultDetail: "Some details",
         xrayMinorFindings: ["1.1 Single fibrous streak or band or scar"],
@@ -105,13 +105,13 @@ describe("RadiologicalOutcomeSummary Section", () => {
         chestXrayTaken: YesOrNo.NO,
       },
       radiologicalOutcome: {
-        status: ApplicationStatus.IN_PROGRESS,
+        status: TaskStatus.IN_PROGRESS,
         reasonXrayWasNotTaken: "Pregnancy",
         xrayWasNotTakenFurtherDetails: "First trimester",
       },
     } as unknown as Record<string, unknown>;
 
-    mock.onPost("/application/abc-123/chest-xray").reply(200);
+    mock.onPost("/application/abc-123/chest-xray?requireValidation=Yes").reply(200);
 
     renderWithProviders(<RadiologicalOutcomeSummary />, { preloadedState });
 
@@ -119,7 +119,9 @@ describe("RadiologicalOutcomeSummary Section", () => {
 
     await waitFor(() => {
       expect(mock.history.post).toHaveLength(1);
-      expect(mock.history.post[0].url).toBe("/application/abc-123/chest-xray");
+      expect(mock.history.post[0].url).toBe(
+        "/application/abc-123/chest-xray?requireValidation=Yes",
+      );
       expect(JSON.parse(mock.history.post[0].data as string)).toMatchObject({
         chestXrayTaken: "No",
         reasonXrayWasNotTaken: "Pregnancy",
@@ -136,7 +138,7 @@ describe("RadiologicalOutcomeSummary Section", () => {
         chestXrayTaken: YesOrNo.NO,
       },
       radiologicalOutcome: {
-        status: ApplicationStatus.IN_PROGRESS,
+        status: TaskStatus.IN_PROGRESS,
         reasonXrayWasNotTaken: "Pregnancy",
         xrayWasNotTakenFurtherDetails: "First trimester",
       },
@@ -150,7 +152,9 @@ describe("RadiologicalOutcomeSummary Section", () => {
 
     await waitFor(() => {
       expect(mock.history.post).toHaveLength(1);
-      expect(mock.history.post[0].url).toBe("/application/abc-123/chest-xray");
+      expect(mock.history.post[0].url).toBe(
+        "/application/abc-123/chest-xray?requireValidation=Yes",
+      );
       expect(JSON.parse(mock.history.post[0].data as string)).toMatchObject({
         chestXrayTaken: "No",
         reasonXrayWasNotTaken: "Pregnancy",
@@ -167,7 +171,7 @@ describe("RadiologicalOutcomeSummary Section", () => {
         chestXrayTaken: YesOrNo.NO,
       },
       radiologicalOutcome: {
-        status: ApplicationStatus.IN_PROGRESS,
+        status: TaskStatus.IN_PROGRESS,
         reasonXrayWasNotTaken: "Pregnancy",
         xrayWasNotTakenFurtherDetails: "First trimester",
       },
@@ -181,7 +185,9 @@ describe("RadiologicalOutcomeSummary Section", () => {
 
     await waitFor(() => {
       expect(mock.history.post).toHaveLength(1);
-      expect(mock.history.post[0].url).toBe("/application/abc-123/chest-xray");
+      expect(mock.history.post[0].url).toBe(
+        "/application/abc-123/chest-xray?requireValidation=Yes",
+      );
       expect(JSON.parse(mock.history.post[0].data as string)).toMatchObject({
         chestXrayTaken: "No",
         reasonXrayWasNotTaken: "Pregnancy",
@@ -193,7 +199,7 @@ describe("RadiologicalOutcomeSummary Section", () => {
 
   it("shows Return to tracker when status complete", () => {
     const preloadedState = {
-      radiologicalOutcome: { status: ApplicationStatus.COMPLETE, chestXrayTaken: YesOrNo.YES },
+      radiologicalOutcome: { status: TaskStatus.COMPLETE, chestXrayTaken: YesOrNo.YES },
     } as unknown as Record<string, unknown>;
 
     renderWithProviders(<RadiologicalOutcomeSummary />, { preloadedState });

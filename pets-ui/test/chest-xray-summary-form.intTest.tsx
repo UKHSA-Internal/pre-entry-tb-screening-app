@@ -7,7 +7,7 @@ import { Mock } from "vitest";
 import { petsApi } from "@/api/api";
 import ChestXraySummaryPage from "@/pages/chest-xray-summary";
 import { ReduxChestXrayDetailsType } from "@/types";
-import { ApplicationStatus } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -27,10 +27,14 @@ afterEach(() => {
   localStorage.clear();
 });
 
-const applicationState = { applicationId: "abc-123", dateCreated: "" };
+const applicationState = {
+  applicationId: "abc-123",
+  dateCreated: { year: "2010", month: "1", day: "1" },
+  applicationStatus: ApplicationStatus.IN_PROGRESS,
+};
 
 const chestXrayState: ReduxChestXrayDetailsType = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   posteroAnteriorXrayFileName: "PA Example FileName",
   posteroAnteriorXrayFile: "PA Example File",
   apicalLordoticXrayFileName: "AL Example FileName",
@@ -73,9 +77,9 @@ describe("ChestXraySummaryPage", () => {
   });
 
   it("when continue pressed, data is posted & user is navigated to /chest-x-ray-images-confirmed", async () => {
-    mock.onPost("/application/abc-123/chest-xray").reply(200);
+    mock.onPost("/application/abc-123/chest-xray?requireValidation=Yes").reply(200);
     await user.click(screen.getByRole("button"));
-    expect(mock.history[0].url).toEqual("/application/abc-123/chest-xray");
+    expect(mock.history[0].url).toEqual("/application/abc-123/chest-xray?requireValidation=Yes");
     expect(mock.history).toHaveLength(1);
     expect(JSON.parse(mock.history.post[0].data as string)).toMatchObject({
       chestXrayTaken: "Yes",
@@ -90,7 +94,7 @@ describe("ChestXraySummaryPage", () => {
   it("when post request returns client-side error then user is navigated to /sorry-there-is-problem-with-service", async () => {
     mock.onPost("/application/abc-123/chest-xray").reply(400);
     await user.click(screen.getByRole("button"));
-    expect(mock.history[0].url).toEqual("/application/abc-123/chest-xray");
+    expect(mock.history[0].url).toEqual("/application/abc-123/chest-xray?requireValidation=Yes");
     expect(mock.history).toHaveLength(1);
     expect(JSON.parse(mock.history.post[0].data as string)).toMatchObject({
       chestXrayTaken: "Yes",
@@ -105,7 +109,7 @@ describe("ChestXraySummaryPage", () => {
   it("when post request returns server-side error then user is navigated to /sorry-there-is-problem-with-service", async () => {
     mock.onPost("/application/abc-123/chest-xray").reply(500);
     await user.click(screen.getByRole("button"));
-    expect(mock.history[0].url).toEqual("/application/abc-123/chest-xray");
+    expect(mock.history[0].url).toEqual("/application/abc-123/chest-xray?requireValidation=Yes");
     expect(mock.history).toHaveLength(1);
     expect(JSON.parse(mock.history.post[0].data as string)).toMatchObject({
       chestXrayTaken: "Yes",

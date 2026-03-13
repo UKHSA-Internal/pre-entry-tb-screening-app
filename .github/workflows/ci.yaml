@@ -112,7 +112,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/Cypress
-          key: cypress-binary-${{ runner.os }}-${{ hashFiles('pets-ui/package.json') }}
+          key: cypress-binary-${{ runner.os }}-${{ hashFiles('pets-ui/pnpm-lock.yaml') }}
 
       - name: Install Cypress Binary
         if: steps.cache-cypress-binary.outputs.cache-hit != 'true'
@@ -246,6 +246,45 @@ jobs:
         with:
           name: coverage-core-services
           path: pets-core-services/coverage/
+
+  migration-script-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check migration_script changed
+        working-directory: "scripts/applicant_migration/"
+        id: check_file_changed
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          run_tests=$(./file_changed.sh)
+          echo "run tests?: $run_tests"
+          echo "run_tests=$run_tests" >> $GITHUB_OUTPUT
+
+      - name: Setting up Python
+        if: steps.check_file_changed.outputs.run_tests == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - name: Install Python dependencies
+        if: steps.check_file_changed.outputs.run_tests == 'true'
+        working-directory: "scripts/applicant_migration/"
+        run: python -m pip install -r requirements.txt
+
+      - name: Run unit tests for applicant migration script
+        if: steps.check_file_changed.outputs.run_tests == 'true'
+        working-directory: "scripts/applicant_migration/"
+        run: python -m pytest -c ./pytest.ini --cov=migration_script --cov-report=term-missing ./src/test_unit.py
+
+      - name: Run integration tests for applicant migration script
+        if: steps.check_file_changed.outputs.run_tests == 'true'
+        working-directory: "scripts/applicant_migration/"
+        run: python -m pytest -c ./pytest.ini --cov=migration_script --cov-report=term-missing ./src/test_integration.py
 
   sonar-scan:
     runs-on: ubuntu-latest

@@ -5,7 +5,7 @@ import { Mock, vi } from "vitest";
 import EnterSputumSampleResultsPage from "@/pages/enter-sputum-sample-results";
 import SputumResultsForm from "@/sections/sputum-results-form";
 import { DateType, ReduxSputumSampleType, ReduxSputumType } from "@/types";
-import { ApplicationStatus, PositiveOrNegative } from "@/utils/enums";
+import { PositiveOrNegative, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -55,7 +55,7 @@ const sampleWithDate = (date: DateType): ReduxSputumSampleType => ({
 });
 
 const defaultSputumState: ReduxSputumType = {
-  status: ApplicationStatus.IN_PROGRESS,
+  status: TaskStatus.IN_PROGRESS,
   version: 1,
   sample1: sampleWithDate({ day: "05", month: "05", year: "2024" }),
   sample2: createEmptySample(),
@@ -310,7 +310,7 @@ describe("SputumResultsForm", () => {
   test("back link points to tracker when collection information has been submitted", () => {
     const preloadedState = {
       sputum: {
-        status: ApplicationStatus.IN_PROGRESS,
+        status: TaskStatus.IN_PROGRESS,
         sample1: {
           collection: {
             submittedToDatabase: true,
@@ -397,7 +397,7 @@ describe("SputumResultsForm", () => {
   test("back link points to sputum collection page when collection information has not been submitted", () => {
     const preloadedState = {
       sputum: {
-        status: ApplicationStatus.IN_PROGRESS,
+        status: TaskStatus.IN_PROGRESS,
         sample1: {
           collection: {
             submittedToDatabase: false,

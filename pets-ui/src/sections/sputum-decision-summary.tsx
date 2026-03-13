@@ -13,7 +13,7 @@ import {
   setSputumDecisionStatus,
 } from "@/redux/sputumDecisionSlice";
 import { selectApplication, selectSputumDecision } from "@/redux/store";
-import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 
 const SputumDecisionSummary = () => {
   const sputumDecisionData = useAppSelector(selectSputumDecision);
@@ -29,7 +29,7 @@ const SputumDecisionSummary = () => {
         sputumRequired: sputumDecisionData.isSputumRequired,
       });
 
-      dispatch(setSputumDecisionStatus(ApplicationStatus.COMPLETE));
+      dispatch(setSputumDecisionStatus(TaskStatus.COMPLETE));
       const now = new Date();
       dispatch(
         setSputumDecisionCompletionDate({
@@ -60,10 +60,14 @@ const SputumDecisionSummary = () => {
   return (
     <div>
       {isLoading && <Spinner />}
-      <Summary status={sputumDecisionData.status} summaryElements={summaryData} />
+      <Summary
+        taskStatus={sputumDecisionData.status}
+        applicationStatus={applicationData.applicationStatus}
+        summaryElements={summaryData}
+      />
 
-      {(sputumDecisionData.status == ApplicationStatus.NOT_YET_STARTED ||
-        sputumDecisionData.status == ApplicationStatus.IN_PROGRESS) && (
+      {(sputumDecisionData.status == TaskStatus.NOT_YET_STARTED ||
+        sputumDecisionData.status == TaskStatus.IN_PROGRESS) && (
         <div>
           <Heading title="Now send the sputum decision" level={2} size="m" />
           <p className="govuk-body">
@@ -78,7 +82,7 @@ const SputumDecisionSummary = () => {
         </div>
       )}
 
-      {sputumDecisionData.status == ApplicationStatus.COMPLETE && (
+      {sputumDecisionData.status == TaskStatus.COMPLETE && (
         <Button
           id="back-to-tracker"
           class={ButtonClass.DEFAULT}

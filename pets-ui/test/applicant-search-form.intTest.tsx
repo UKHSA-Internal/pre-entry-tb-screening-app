@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MockAdapter from "axios-mock-adapter";
 import React from "react";
@@ -7,7 +7,7 @@ import { Mock } from "vitest";
 import { ApplicantPhotoProvider, useApplicantPhoto } from "@/context/applicantPhotoContext";
 import type { AppDispatch } from "@/redux/store";
 import ApplicantSearchForm from "@/sections/applicant-search-form";
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 import { petsApi } from "../src/api/api";
@@ -97,7 +97,6 @@ const emptyTravelSlice = {
   visaCategory: "",
 };
 const emptyMedicalSlice = {
-  age: "",
   chestXrayTaken: "",
   closeContactWithTb: "",
   closeContactWithTbDetail: "",
@@ -121,7 +120,7 @@ const emptyMedicalSlice = {
   underElevenConditionsDetail: "",
 };
 const emptyChestXraySlice = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   posteroAnteriorXrayFileName: "",
   posteroAnteriorXrayFile: "",
   apicalLordoticXrayFileName: "",
@@ -135,7 +134,7 @@ const emptyChestXraySlice = {
   },
 };
 const emptyRadiologicalOutcomeSlice = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   reasonXrayWasNotTaken: "",
   xrayWasNotTakenFurtherDetails: "",
   xrayResult: "",
@@ -190,27 +189,32 @@ describe("ApplicantSearchForm", () => {
     );
     const user = userEvent.setup();
 
-    mock.onGet("/applicant/search").reply(200, [
-      {
-        applicationId: "abc-123",
-        status: "completed",
-        fullName: "Maxwell Spiffington",
-        sex: "Male",
-        dateOfBirth: "1991-01-01",
-        countryOfNationality: "AUS",
-        passportNumber: "12345",
-        countryOfIssue: "AUS",
-        issueDate: "1992-02-02",
-        expiryDate: "2053-03-03",
-        applicantHomeAddress1: "1 Ayres Rock Way",
-        townOrCity: "Sydney",
-        provinceOrState: "New South Wales",
-        country: "Australia",
-      },
-    ]);
+    mock.onGet("/applicant/search").reply(200, {
+      status: "completed",
+      fullName: "Maxwell Spiffington",
+      sex: "Male",
+      dateOfBirth: "1991-01-01",
+      countryOfNationality: "AUS",
+      passportNumber: "12345",
+      countryOfIssue: "AUS",
+      issueDate: "1992-02-02",
+      expiryDate: "2053-03-03",
+      applicantHomeAddress1: "1 Ayres Rock Way",
+      townOrCity: "Sydney",
+      provinceOrState: "New South Wales",
+      country: "Australia",
+      applications: [
+        {
+          applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+          applicationStatus: "In progress",
+          clinicId: "UK/LHR/00/",
+        },
+      ],
+      dateCreated: "2025-01-01",
+    });
 
-    mock.onGet("/application/abc-123").reply(200, {
-      applicationId: "abc-123",
+    mock.onGet("/application/271554de-f2a9-4660-8ddf-7f070f1b8a62").reply(200, {
+      applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
       applicantPhotoUrl: "http://localhost:4566/photos/photo.jpg",
       travelInformation: {
         ukAddressLine1: "99 Downing Street",
@@ -222,7 +226,7 @@ describe("ApplicantSearchForm", () => {
         visaCategory: "Visitor",
       },
       medicalScreening: {
-        applicationId: "abc-123",
+        applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
         dateCreated: "2025-01-01",
         status: "completed",
         age: 43,
@@ -277,18 +281,19 @@ describe("ApplicantSearchForm", () => {
     });
 
     await user.type(screen.getByTestId("passport-number"), "12345");
-    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "AUS");
 
     expect(screen.getByTestId("passport-number")).toHaveValue("12345");
-    expect(screen.getAllByRole("combobox")[0]).toHaveValue("AUS");
+    expect(countryDropdown).toHaveValue("AUS");
 
     await user.click(screen.getByRole("button"));
     expect(mock.history.get[0].url).toEqual("/applicant/search");
-    expect(mock.history.get[1].url).toEqual("/application/abc-123");
+    expect(mock.history.get[1].url).toEqual("/application/271554de-f2a9-4660-8ddf-7f070f1b8a62");
     expect(mock.history).toHaveLength(2);
 
     expect(store.getState().application).toMatchObject({
-      applicationId: "abc-123",
+      applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
     });
 
     expect(store.getState().applicant).toEqual({
@@ -319,7 +324,7 @@ describe("ApplicantSearchForm", () => {
       applicantPhotoFileName: "photo.jpg",
       provinceOrState: "New South Wales",
       sex: "Male",
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       townOrCity: "Sydney",
     });
     expect(store.getState().travel).toEqual({
@@ -327,14 +332,13 @@ describe("ApplicantSearchForm", () => {
       applicantUkAddress2: "",
       applicantUkAddress3: "",
       postcode: "W1 1AS",
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       townOrCity: "London",
       ukEmail: "Maxwell@Spiffington.com",
       ukMobileNumber: "071234567890",
       visaCategory: "Visitor",
     });
     expect(store.getState().medicalScreening).toEqual({
-      age: "43",
       chestXrayTaken: "",
       closeContactWithTb: "Yes",
       closeContactWithTbDetail: "details1",
@@ -351,14 +355,14 @@ describe("ApplicantSearchForm", () => {
       previousTbDetail: "details3",
       reasonXrayNotRequired: "",
       reasonXrayNotRequiredFurtherDetails: "",
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       tbSymptoms: "Yes",
       tbSymptomsList: ["symptom1", "symptom2"],
       underElevenConditions: ["history1", "history2"],
       underElevenConditionsDetail: "details2",
     });
     expect(store.getState().chestXray).toEqual({
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       posteroAnteriorXrayFileName: "pa-file-name",
       posteroAnteriorXrayFile: "pa-bucket",
       apicalLordoticXrayFileName: "al-file-name",
@@ -372,7 +376,7 @@ describe("ApplicantSearchForm", () => {
       },
     });
     expect(store.getState().radiologicalOutcome).toEqual({
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       reasonXrayWasNotTaken: "",
       xrayWasNotTakenFurtherDetails: "",
       xrayResult: "normal",
@@ -387,7 +391,7 @@ describe("ApplicantSearchForm", () => {
       },
     });
     expect(store.getState().tbCertificate).toEqual({
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       isIssued: YesOrNo.YES,
       comments: "Comments",
       certificateDate: {
@@ -423,36 +427,42 @@ describe("ApplicantSearchForm", () => {
     );
     const user = userEvent.setup();
 
-    mock.onGet("/applicant/search").reply(200, [
-      {
-        applicationId: "abc-123",
-        status: "completed",
-        fullName: "Maxwell Spiffington",
-        sex: "Male",
-        dateOfBirth: "01-01-1991",
-        countryOfNationality: "AUS",
-        passportNumber: "12345",
-        countryOfIssue: "AUS",
-        issueDate: "02-02-1992",
-        expiryDate: "03-03-2053",
-        applicantHomeAddress1: "1 Ayres Rock Way",
-        townOrCity: "Sydney",
-        provinceOrState: "New South Wales",
-        country: "Australia",
-      },
-    ]);
+    mock.onGet("/applicant/search").reply(200, {
+      status: "completed",
+      fullName: "Maxwell Spiffington",
+      sex: "Male",
+      dateOfBirth: "1991-01-01",
+      countryOfNationality: "AUS",
+      passportNumber: "12345",
+      countryOfIssue: "AUS",
+      issueDate: "1992-02-02",
+      expiryDate: "2053-03-03",
+      applicantHomeAddress1: "1 Ayres Rock Way",
+      townOrCity: "Sydney",
+      provinceOrState: "New South Wales",
+      country: "Australia",
+      applications: [
+        {
+          applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+          applicationStatus: "In progress",
+          clinicId: "UK/LHR/00/",
+        },
+      ],
+      dateCreated: "2025-01-01",
+    });
 
-    mock.onGet("/application/abc-123").reply(403);
+    mock.onGet("/application/271554de-f2a9-4660-8ddf-7f070f1b8a62").reply(403);
 
     await user.type(screen.getByTestId("passport-number"), "12345");
-    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "AUS");
 
     expect(screen.getByTestId("passport-number")).toHaveValue("12345");
-    expect(screen.getAllByRole("combobox")[0]).toHaveValue("AUS");
+    expect(countryDropdown).toHaveValue("AUS");
 
     await user.click(screen.getByRole("button"));
     expect(mock.history.get[0].url).toEqual("/applicant/search");
-    expect(mock.history.get[1].url).toEqual("/application/abc-123");
+    expect(mock.history.get[1].url).toEqual("/application/271554de-f2a9-4660-8ddf-7f070f1b8a62");
     expect(mock.history).toHaveLength(2);
 
     expect(store.getState().applicant).toEqual({
@@ -463,20 +473,20 @@ describe("ApplicantSearchForm", () => {
       countryOfIssue: "AUS",
       countryOfNationality: "AUS",
       dateOfBirth: {
-        day: "1991",
+        day: "01",
         month: "01",
-        year: "01",
+        year: "1991",
       },
       fullName: "Maxwell Spiffington",
       passportExpiryDate: {
-        day: "2053",
+        day: "03",
         month: "03",
-        year: "03",
+        year: "2053",
       },
       passportIssueDate: {
-        day: "1992",
+        day: "02",
         month: "02",
-        year: "02",
+        year: "1992",
       },
       passportNumber: "12345",
       postcode: "",
@@ -502,36 +512,42 @@ describe("ApplicantSearchForm", () => {
     );
     const user = userEvent.setup();
 
-    mock.onGet("/applicant/search").reply(200, [
-      {
-        applicationId: "abc-123",
-        status: "completed",
-        fullName: "Maxwell Spiffington",
-        sex: "Male",
-        dateOfBirth: "01-01-1991",
-        countryOfNationality: "AUS",
-        passportNumber: "12345",
-        countryOfIssue: "AUS",
-        issueDate: "02-02-1992",
-        expiryDate: "03-03-2053",
-        applicantHomeAddress1: "1 Ayres Rock Way",
-        townOrCity: "Sydney",
-        provinceOrState: "New South Wales",
-        country: "Australia",
-      },
-    ]);
+    mock.onGet("/applicant/search").reply(200, {
+      status: "completed",
+      fullName: "Maxwell Spiffington",
+      sex: "Male",
+      dateOfBirth: "1991-01-01",
+      countryOfNationality: "AUS",
+      passportNumber: "12345",
+      countryOfIssue: "AUS",
+      issueDate: "1992-02-02",
+      expiryDate: "2053-03-03",
+      applicantHomeAddress1: "1 Ayres Rock Way",
+      townOrCity: "Sydney",
+      provinceOrState: "New South Wales",
+      country: "Australia",
+      applications: [
+        {
+          applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+          applicationStatus: "In progress",
+          clinicId: "UK/LHR/00/",
+        },
+      ],
+      dateCreated: "2025-01-01",
+    });
 
-    mock.onGet("/application/abc-123").reply(500);
+    mock.onGet("/application/271554de-f2a9-4660-8ddf-7f070f1b8a62").reply(500);
 
     await user.type(screen.getByTestId("passport-number"), "12345");
-    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "AUS");
 
     expect(screen.getByTestId("passport-number")).toHaveValue("12345");
-    expect(screen.getAllByRole("combobox")[0]).toHaveValue("AUS");
+    expect(countryDropdown).toHaveValue("AUS");
 
     await user.click(screen.getByRole("button"));
     expect(mock.history.get[0].url).toEqual("/applicant/search");
-    expect(mock.history.get[1].url).toEqual("/application/abc-123");
+    expect(mock.history.get[1].url).toEqual("/application/271554de-f2a9-4660-8ddf-7f070f1b8a62");
     expect(mock.history).toHaveLength(2);
 
     expect(store.getState().applicant).toEqual({
@@ -542,20 +558,20 @@ describe("ApplicantSearchForm", () => {
       countryOfIssue: "AUS",
       countryOfNationality: "AUS",
       dateOfBirth: {
-        day: "1991",
+        day: "01",
         month: "01",
-        year: "01",
+        year: "1991",
       },
       fullName: "Maxwell Spiffington",
       passportExpiryDate: {
-        day: "2053",
+        day: "03",
         month: "03",
-        year: "03",
+        year: "2053",
       },
       passportIssueDate: {
-        day: "1992",
+        day: "02",
         month: "02",
-        year: "02",
+        year: "1992",
       },
       passportNumber: "12345",
       postcode: "",
@@ -581,27 +597,32 @@ describe("ApplicantSearchForm", () => {
     );
     const user = userEvent.setup();
 
-    mock.onGet("/applicant/search").reply(200, [
-      {
-        applicationId: "abc-123",
-        status: "completed",
-        fullName: "Maxwell Spiffington",
-        sex: "Male",
-        dateOfBirth: "01-01-1991T12:30:00Z",
-        countryOfNationality: "AUS",
-        passportNumber: "12345",
-        countryOfIssue: "AUS",
-        issueDate: "02-02-1992T05:15:00Z",
-        expiryDate: "03-03-2053T23:45:00Z",
-        applicantHomeAddress1: "1 Ayres Rock Way",
-        townOrCity: "Sydney",
-        provinceOrState: "New South Wales",
-        country: "Australia",
-      },
-    ]);
+    mock.onGet("/applicant/search").reply(200, {
+      status: "completed",
+      fullName: "Maxwell Spiffington",
+      sex: "Male",
+      dateOfBirth: "1991-01-01",
+      countryOfNationality: "AUS",
+      passportNumber: "12345",
+      countryOfIssue: "AUS",
+      issueDate: "1992-02-02",
+      expiryDate: "2053-03-03",
+      applicantHomeAddress1: "1 Ayres Rock Way",
+      townOrCity: "Sydney",
+      provinceOrState: "New South Wales",
+      country: "Australia",
+      applications: [
+        {
+          applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+          applicationStatus: "In progress",
+          clinicId: "UK/LHR/00/",
+        },
+      ],
+      dateCreated: "2025-01-01",
+    });
 
-    mock.onGet("/application/abc-123").reply(200, {
-      applicationId: "abc-123",
+    mock.onGet("/application/271554de-f2a9-4660-8ddf-7f070f1b8a62").reply(200, {
+      applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
       applicantPhotoUrl: "",
       travelInformation: {
         ukAddressLine1: "99 Downing Street",
@@ -613,7 +634,7 @@ describe("ApplicantSearchForm", () => {
         visaCategory: "Visitor",
       },
       medicalScreening: {
-        applicationId: "abc-123",
+        applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
         dateCreated: "2025-01-01T12:30:00Z",
         status: "completed",
         age: 43,
@@ -668,14 +689,15 @@ describe("ApplicantSearchForm", () => {
     });
 
     await user.type(screen.getByTestId("passport-number"), "12345");
-    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "AUS");
 
     expect(screen.getByTestId("passport-number")).toHaveValue("12345");
-    expect(screen.getAllByRole("combobox")[0]).toHaveValue("AUS");
+    expect(countryDropdown).toHaveValue("AUS");
 
     await user.click(screen.getByRole("button"));
     expect(mock.history.get[0].url).toEqual("/applicant/search");
-    expect(mock.history.get[1].url).toEqual("/application/abc-123");
+    expect(mock.history.get[1].url).toEqual("/application/271554de-f2a9-4660-8ddf-7f070f1b8a62");
     expect(mock.history).toHaveLength(2);
 
     expect(store.getState().applicant).toEqual({
@@ -686,20 +708,20 @@ describe("ApplicantSearchForm", () => {
       countryOfIssue: "AUS",
       countryOfNationality: "AUS",
       dateOfBirth: {
-        day: "1991",
+        day: "01",
         month: "01",
-        year: "01",
+        year: "1991",
       },
       fullName: "Maxwell Spiffington",
       passportExpiryDate: {
-        day: "2053",
+        day: "03",
         month: "03",
-        year: "03",
+        year: "2053",
       },
       passportIssueDate: {
-        day: "1992",
+        day: "02",
         month: "02",
-        year: "02",
+        year: "1992",
       },
       passportNumber: "12345",
       postcode: "",
@@ -710,7 +732,6 @@ describe("ApplicantSearchForm", () => {
       townOrCity: "Sydney",
     });
     expect(store.getState().medicalScreening).toEqual({
-      age: "43",
       chestXrayTaken: "",
       closeContactWithTb: "Yes",
       closeContactWithTbDetail: "details1",
@@ -727,14 +748,14 @@ describe("ApplicantSearchForm", () => {
       previousTbDetail: "details3",
       reasonXrayNotRequired: "",
       reasonXrayNotRequiredFurtherDetails: "",
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       tbSymptoms: "Yes",
       tbSymptomsList: ["symptom1", "symptom2"],
       underElevenConditions: ["history1", "history2"],
       underElevenConditionsDetail: "details2",
     });
     expect(store.getState().chestXray).toEqual({
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       posteroAnteriorXrayFileName: "pa-file-name",
       posteroAnteriorXrayFile: "pa-bucket",
       apicalLordoticXrayFileName: "al-file-name",
@@ -748,7 +769,7 @@ describe("ApplicantSearchForm", () => {
       },
     });
     expect(store.getState().radiologicalOutcome).toEqual({
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       reasonXrayWasNotTaken: "",
       xrayWasNotTakenFurtherDetails: "",
       xrayResult: "normal",
@@ -763,7 +784,7 @@ describe("ApplicantSearchForm", () => {
       },
     });
     expect(store.getState().tbCertificate).toEqual({
-      status: ApplicationStatus.COMPLETE,
+      status: TaskStatus.COMPLETE,
       isIssued: YesOrNo.YES,
       comments: "Comments",
       certificateDate: {
@@ -794,13 +815,14 @@ describe("ApplicantSearchForm", () => {
     );
     const user = userEvent.setup();
 
-    mock.onGet("/applicant/search").reply(204, []);
+    mock.onGet("/applicant/search").reply(404);
 
     await user.type(screen.getByTestId("passport-number"), "12345");
-    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "AUS");
 
     expect(screen.getByTestId("passport-number")).toHaveValue("12345");
-    expect(screen.getAllByRole("combobox")[0]).toHaveValue("AUS");
+    expect(countryDropdown).toHaveValue("AUS");
 
     await user.click(screen.getByRole("button"));
     expect(mock.history.get[0].url).toEqual("/applicant/search");
@@ -826,10 +848,11 @@ describe("ApplicantSearchForm", () => {
     mock.onGet("/applicant/search").reply(500);
 
     await user.type(screen.getByTestId("passport-number"), "12345");
-    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "AUS");
 
     expect(screen.getByTestId("passport-number")).toHaveValue("12345");
-    expect(screen.getAllByRole("combobox")[0]).toHaveValue("AUS");
+    expect(countryDropdown).toHaveValue("AUS");
 
     await user.click(screen.getByRole("button"));
     expect(mock.history.get[0].url).toEqual("/applicant/search");
@@ -863,27 +886,32 @@ describe("ApplicantSearchForm", () => {
     );
     const user = userEvent.setup();
 
-    mock.onGet("/applicant/search").reply(200, [
-      {
-        applicationId: "abc-123",
-        status: "completed",
-        fullName: "Maxwell Spiffington",
-        sex: "Male",
-        dateOfBirth: "01-01-1991",
-        countryOfNationality: "AUS",
-        passportNumber: "12345",
-        countryOfIssue: "AUS",
-        issueDate: "02-02-1992",
-        expiryDate: "03-03-2053",
-        applicantHomeAddress1: "1 Ayres Rock Way",
-        townOrCity: "Sydney",
-        provinceOrState: "New South Wales",
-        country: "Australia",
-      },
-    ]);
+    mock.onGet("/applicant/search").reply(200, {
+      status: "completed",
+      fullName: "Maxwell Spiffington",
+      sex: "Male",
+      dateOfBirth: "1991-01-01",
+      countryOfNationality: "AUS",
+      passportNumber: "12345",
+      countryOfIssue: "AUS",
+      issueDate: "1992-02-02",
+      expiryDate: "2053-03-03",
+      applicantHomeAddress1: "1 Ayres Rock Way",
+      townOrCity: "Sydney",
+      provinceOrState: "New South Wales",
+      country: "Australia",
+      applications: [
+        {
+          applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+          applicationStatus: "In progress",
+          clinicId: "UK/LHR/00/",
+        },
+      ],
+      dateCreated: "2025-01-01",
+    });
 
-    mock.onGet("/application/abc-123").reply(200, {
-      applicationId: "abc-123",
+    mock.onGet("/application/271554de-f2a9-4660-8ddf-7f070f1b8a62").reply(200, {
+      applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
       applicantPhotoUrl: "http://localhost:4566/photos/photo.jpg",
       travelInformation: {
         ukAddressLine1: "99 Downing Street",
@@ -897,7 +925,8 @@ describe("ApplicantSearchForm", () => {
     });
 
     await user.type(screen.getByTestId("passport-number"), "12345");
-    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "AUS" } });
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "AUS");
 
     await user.click(screen.getByRole("button"));
     await new Promise((resolve) => process.nextTick(resolve));

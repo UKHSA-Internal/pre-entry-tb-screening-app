@@ -43,10 +43,14 @@ describe("Generating signed PUT url for DICOM Upload", () => {
     });
   });
 
-  test("400 error when applicant info is missing", async () => {
+  test("Upload url should be generated successfully for ukhsa staff from different clinic", async () => {
     const event: GenerateUploadEvent = {
       ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[0].applicationId },
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+      },
+      pathParameters: { applicationId: seededApplications[1].applicationId },
       parsedBody: uploadInfo,
     };
 
@@ -54,9 +58,13 @@ describe("Generating signed PUT url for DICOM Upload", () => {
     const response = await generateImageUploadUrlHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Invalid Application - No Applicant",
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      uploadUrl: expect.stringContaining(
+        "http://test.co.uk/dicom/Apollo%20Clinic/BRB/ABC1234JANE/generated-app-id-2/test-file-name",
+      ),
+      bucketPath: "dicom/Apollo Clinic/BRB/ABC1234JANE/generated-app-id-2/test-file-name",
     });
   });
 
@@ -82,7 +90,7 @@ describe("Generating signed PUT url for DICOM Upload", () => {
     });
   });
 
-  test("Missing required body returns a 500 response", async () => {
+  test("Missing required body returns a 400 response", async () => {
     // Arrange
     const event: GenerateUploadEvent = {
       ...mockAPIGwEvent,
@@ -92,9 +100,9 @@ describe("Generating signed PUT url for DICOM Upload", () => {
     const response = await generateImageUploadUrlHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Generate Upload URL Request not parsed correctly",
+      message: "Request event missing body",
     });
   });
 
@@ -152,23 +160,6 @@ describe("Generating signed PUT url for Photo Upload", () => {
     });
   });
 
-  test("400 error when applicant info is missing", async () => {
-    const event: GenerateUploadEvent = {
-      ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[0].applicationId },
-      parsedBody: uploadInfo,
-    };
-
-    // Act
-    const response = await generateImageUploadUrlHandler(event);
-
-    // Assert
-    expect(response.statusCode).toBe(400);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "Invalid Application - No Applicant",
-    });
-  });
-
   test("400 error when flletype is not of jpg/jpeg/png", async () => {
     const uploadImageInfo: ImageUploadUrlRequestSchema = {
       fileName: "applicant-photo.txt",
@@ -185,7 +176,7 @@ describe("Generating signed PUT url for Photo Upload", () => {
     const response = await generateImageUploadUrlHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(422);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Invalid file type. Only .jpg, .jpeg, and .png are allowed.",
     });
@@ -212,7 +203,7 @@ describe("Generating signed PUT url for Photo Upload", () => {
     });
   });
 
-  test("Missing required body returns a 500 response", async () => {
+  test("Missing required body returns a 400 response", async () => {
     // Arrange
     const event: GenerateUploadEvent = {
       ...mockAPIGwEvent,
@@ -222,9 +213,9 @@ describe("Generating signed PUT url for Photo Upload", () => {
     const response = await generateImageUploadUrlHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Generate Upload URL Request not parsed correctly",
+      message: "Request event missing body",
     });
   });
 

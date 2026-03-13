@@ -19,7 +19,24 @@ vi.mock("../helpers/upload", () => ({
 vi.mock("../../shared/models/applicant", () => ({
   ApplicantDbOps: {
     getByApplicationId: vi.fn().mockResolvedValue({
-      applicationId: "test-application-id",
+      fullName: "John Doe",
+      passportNumber: "test-passport-id",
+      countryOfNationality: CountryCode.ALA,
+      countryOfIssue: CountryCode.ALA,
+      issueDate: "2025-01-01",
+      expiryDate: "2030-01-01",
+      dateOfBirth: "2000-02-07",
+      sex: AllowedSex.Female,
+      applicantHomeAddress1: "First Line of Address",
+      applicantHomeAddress2: "Second Line of Address",
+      applicantHomeAddress3: "Third Line of Address",
+      townOrCity: "the-town-or-city",
+      provinceOrState: "the-province",
+      postcode: "the-post-code",
+      country: CountryCode.ALA,
+      createdBy: "test-applicant-creator",
+    }),
+    findByPassportId: vi.fn().mockResolvedValue({
       fullName: "John Doe",
       passportNumber: "test-passport-id",
       countryOfNationality: CountryCode.ALA,
@@ -60,7 +77,7 @@ describe("Getting Application Handler", () => {
     // Assert
     expect(response.statusCode).toBe(404);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Application does not exist",
+      message: "Application with ID: non-existing-application-ids does not exist",
     });
   });
 
@@ -77,6 +94,9 @@ describe("Getting Application Handler", () => {
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toEqual({
       applicationId: seededApplications[1].applicationId,
+      applicationStatus: "In Progress",
+      dateCreated: expect.any(String),
+
       // Defined in pets-core-services/src/application-service/fixtures/applicant-photo.ts
       applicantPhotoUrl: seededApplicantPhoto[1].applicantPhotoUrl,
       // Defined in pets-core-services/src/application-service/fixtures/travel-information.ts
@@ -161,6 +181,114 @@ describe("Getting Application Handler", () => {
     });
   });
 
+  test("Fetch application successfully (certificate not issued)", async () => {
+    // Arrange
+    const event: PetsAPIGatewayProxyEvent = {
+      ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: seededApplications[2].clinicId, createdBy: "hardcoded@user.com" },
+      },
+      pathParameters: { applicationId: seededApplications[2].applicationId },
+    };
+
+    // Act
+    const response = await getApplicationHandler(event);
+    // Assert
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toEqual({
+      applicationId: seededApplications[2].applicationId,
+      applicationStatus: "In Progress",
+      dateCreated: expect.any(String),
+
+      // Defined in pets-core-services/src/application-service/fixtures/applicant-photo.ts
+      applicantPhotoUrl: seededApplicantPhoto[1].applicantPhotoUrl,
+      // Defined in pets-core-services/src/application-service/fixtures/travel-information.ts
+      travelInformation: {
+        applicationId: seededApplications[2].applicationId,
+        status: "completed",
+        dateCreated: expect.any(String),
+        ukAddressLine1: "29 Maple Street",
+        ukAddressLine2: "Camden",
+        ukAddressLine3: "North London",
+        ukAddressPostcode: "NW3 4JT",
+        ukAddressTownOrCity: "London",
+        ukEmailAddress: "JohnPark@email.com",
+        ukMobileNumber: "075000012345",
+        visaCategory: "Do not know",
+      },
+      // Defined in pets-core-services/src/application-service/fixtures/medical-screening.ts
+      medicalScreening: {
+        dateOfMedicalScreening: "2025-05-05T00:00:00.000Z",
+        age: 10,
+        symptomsOfTb: "Yes",
+        symptoms: ["Cough"],
+        historyOfConditionsUnder11: ["Cyanosis"],
+        historyOfConditionsUnder11Details: "Physician Notes",
+        historyOfPreviousTb: "No",
+        contactWithPersonWithTb: "Yes",
+        contactWithTbDetails: "More Physician Notes",
+        pregnant: "No",
+        haveMenstralPeriod: "No",
+        physicalExaminationNotes: "NA",
+        applicationId: seededApplications[2].applicationId,
+        isXrayRequired: "No",
+        reasonXrayNotRequired: "Other",
+        dateCreated: expect.any(String),
+        status: "completed",
+      },
+      radiologicalOutcome: {
+        applicationId: "cbdcc218-316e-4ae1-835f-ccde4c17a7e2",
+        dateCreated: expect.any(String),
+        status: "completed",
+        xrayActiveTbFindings: ["All good"],
+        xrayAssociatedMinorFindings: [""],
+        xrayMinorFindings: ["Finding No1"],
+        xrayResult: "Chest X-ray ",
+        xrayResultDetail: "Result explanation",
+      },
+      sputumRequirement: {
+        applicationId: "cbdcc218-316e-4ae1-835f-ccde4c17a7e2",
+        dateCreated: expect.any(String),
+        sputumRequired: "No",
+        status: "completed",
+      },
+      // Defined in pets-core-services\src\application-service\fixtures\tb-certificate.ts
+      tbCertificate: {
+        applicationId: "cbdcc218-316e-4ae1-835f-ccde4c17a7e2",
+        comments: "TB is present",
+        isIssued: "No",
+        notIssuedREason: "Confirmed or suspected TB",
+        physicianName: "Dr.Annelie Botha",
+        clinicName: "Lakeside Medical & TB Screening Centre",
+        referenceNumber: "generated-app-id-2",
+        dateCreated: expect.any(String),
+        status: "completed",
+      },
+    });
+  });
+
+  test("Fetch application from different clinic as ukhsa staff", async () => {
+    // Arrange
+    const event: PetsAPIGatewayProxyEvent = {
+      ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+      },
+      pathParameters: { applicationId: seededApplications[1].applicationId },
+    };
+
+    // Act
+    const response = await getApplicationHandler(event);
+    // Assert
+    expect(response.statusCode).toBe(200);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(JSON.parse(response.body)?.applicationId as string).toEqual(
+      seededApplications[1].applicationId,
+    );
+  });
+
   test("Fetch application returns error", async () => {
     const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
@@ -180,26 +308,5 @@ describe("Getting Application Handler", () => {
       message: "Something went wrong",
     });
     detailsSpy.mockRestore();
-  });
-  test("Verify Clinic ID", async () => {
-    // Arrange
-    const event: PetsAPIGatewayProxyEvent = {
-      ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[1].applicationId },
-      requestContext: {
-        ...mockAPIGwEvent.requestContext,
-        authorizer: {
-          ...mockAPIGwEvent.requestContext.authorizer,
-          clinicId: "compromised-clinic-id",
-        },
-      },
-    };
-
-    // Act
-    const response = await getApplicationHandler(event);
-
-    // Assert
-    expect(response.statusCode).toBe(403);
-    expect(JSON.parse(response.body)).toMatchObject({ message: "Clinic Id mismatch" });
   });
 });

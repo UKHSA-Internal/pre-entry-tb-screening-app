@@ -1,21 +1,22 @@
 import { GlobalContextStorageProvider } from "pino-lambda";
 
 import { CountryCode } from "../../shared/country";
-import { createHttpResponse } from "../../shared/http";
+import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { ApplicantDbOps } from "../../shared/models/applicant";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 
-export type Header = {
+export type ApplicantHeader = {
   passportnumber: string;
   countryofissue: CountryCode;
 };
 export type SearchApplicantEvent = PetsAPIGatewayProxyEvent & {
-  parsedHeaders?: Header;
+  parsedHeaders?: ApplicantHeader;
 };
 
 export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
+  const SUPPORT_CLINIC_ID = process.env.SUPPORT_CLINIC_ID;
   try {
     logger.info("Search applicant details handler triggered");
 
@@ -23,57 +24,58 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
 
     if (!parsedHeaders) {
       logger.error("Request missing parsed headers");
-      return createHttpResponse(500, {
-        message: "Internal Server Error: Request not parsed correctly",
-      });
+      return HttpErrors.badRequest("Request event missing body");
     }
+    const countryOfIssue = parsedHeaders.countryofissue;
+    const passportNumber = parsedHeaders.passportnumber;
 
     GlobalContextStorageProvider.updateContext({
-      countryOfIssue: parsedHeaders.countryofissue,
-      passportNumber: parsedHeaders.passportnumber.slice(-4),
+      countryOfIssue: countryOfIssue,
+      passportNumber: passportNumber.slice(-4),
     });
 
-    const applicants = await ApplicantDbOps.findByPassportId(
-      parsedHeaders.countryofissue,
-      parsedHeaders.passportnumber,
+    // Fetch an applicant
+    const applicant = await ApplicantDbOps.findByPassportId(countryOfIssue, passportNumber);
+    if (!applicant) return HttpErrors.notFound("Applicant does not exist");
+
+    // Fetch the applications created for the applicant
+
+    const applications = await Application.getByApplicantId(passportNumber, countryOfIssue);
+    if (!applications.length && applicant) {
+      logger.error("Applicant has been created without an application");
+      return HttpErrors.validationError("Applicant has been created without an application");
+    }
+    // Sort the applications by created Date
+    const sortedApplications = applications ? [...applications] : [];
+
+    sortedApplications.sort(
+      (a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime(),
     );
 
-    if (!applicants.length) return createHttpResponse(204, []);
-
-    // Note: This check would need to be modified Post-MVP, For MVP, only a single applicant should exist for passport and country combination
-    if (applicants.length > 1) {
-      logger.error("Duplicate applicants found");
-      return createHttpResponse(500, { message: "Unexpected duplicate results found" });
-    }
-
-    const applicant = applicants[0];
-    const application = await Application.getByApplicationId(applicant.applicationId);
-    if (!application) {
-      logger.error("Edge-Case: Applicant has been created without an application");
-      return createHttpResponse(400, {
-        message: `Matched Applicant has been created without an application`,
-      });
-    }
+    //Get the latest application
+    const application = sortedApplications?.[0] ?? null;
 
     const { clinicId } = event.requestContext.authorizer;
-
+    // validate the clinic id
     if (!clinicId) {
       logger.error("Clinic Id missing");
-      return createHttpResponse(400, { message: "Clinic Id missing" });
+      return HttpErrors.badRequest("Clinic Id missing");
     }
 
-    if (application.clinicId !== clinicId) {
+    if (clinicId !== SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
       logger.error("Clinic Id mismatch");
-      return createHttpResponse(403, { message: "Clinic Id mismatch" });
+      return HttpErrors.forbidden("Clinic Id mismatch");
     }
 
-    return createHttpResponse(200, [
-      {
-        ...applicant.toJson(),
-      },
-    ]);
+    if (clinicId === SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
+      logger.info("Getting an application for the support clinic");
+    }
+    return HttpResponses.ok({
+      ...applicant.toJson(),
+      applications: sortedApplications.map((e) => e.toJson()),
+    });
   } catch (error) {
     logger.error(error, "Searching Applicant Details Failed");
-    return createHttpResponse(500, { message: "Something went wrong" });
+    return HttpErrors.serverError("Something went wrong");
   }
 };

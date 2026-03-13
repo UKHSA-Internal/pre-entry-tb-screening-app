@@ -14,6 +14,9 @@ import ApplicantPhotoPage from "./pages/applicant-photo";
 import ApplicantResultsPage from "./pages/applicant-results";
 import ApplicantSearchPage from "./pages/applicant-search";
 import ApplicantSummaryPage from "./pages/applicant-summary";
+import CancellationAreYouSurePage from "./pages/cancellation-are-you-sure";
+import CancellationConfirmationPage from "./pages/cancellation-confirmation";
+import CancellationReasonPage from "./pages/cancellation-reason";
 import CheckApplicantPhotoPage from "./pages/check-applicant-photo";
 import CheckSputumSampleInformationPage from "./pages/check-sputum-sample-information";
 import ChestXrayConfirmation from "./pages/chest-xray-confirmation";
@@ -31,7 +34,9 @@ import ErrorPage from "./pages/error-page";
 import HomePage from "./pages/home-page";
 import MedicalScreeningPage from "./pages/medical-screening";
 import MedicalConfirmation from "./pages/medical-screening-confirmation";
+import MedicalScreeningFemalePage from "./pages/medical-screening-female";
 import MedicalSummaryPage from "./pages/medical-screening-summary";
+import MedicalScreeningU11Page from "./pages/medical-screening-u11";
 import PageNotFound from "./pages/page-not-found";
 import PrivacyNoticePage from "./pages/privacy-notice";
 import ProgressTrackerPage from "./pages/progress-tracker";
@@ -39,6 +44,7 @@ import RadiologicalOutcomeConfirmation from "./pages/radiological-outcome-confir
 import RadiologicalOutcomeSummaryPage from "./pages/radiological-outcome-summary";
 import SignOutPage from "./pages/sign-out";
 import SignedOutPage from "./pages/signed-out";
+import AutoSignedOutPage from "./pages/signed-out-auto";
 import SputumCollectionPage from "./pages/sputum-collection";
 import SputumConfirmation from "./pages/sputum-confirmation";
 import SputumDecisionConfirmation from "./pages/sputum-decision-confirmation";
@@ -198,6 +204,26 @@ function App() {
           <AuthenticatedRoute>
             <RedirectedRouteIfReduxEmpty>
               <MedicalScreeningPage />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/medical-history-under-11-years-old"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <MedicalScreeningU11Page />
+            </RedirectedRouteIfReduxEmpty>
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/medical-history-female"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <MedicalScreeningFemalePage />
             </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
@@ -504,6 +530,38 @@ function App() {
           <UnauthenticatedRoute>
             <SignedOutPage />
           </UnauthenticatedRoute>
+        }
+      />
+      <Route
+        path="/you-have-been-signed-out"
+        element={
+          <UnauthenticatedRoute>
+            <AutoSignedOutPage />
+          </UnauthenticatedRoute>
+        }
+      />
+      <Route
+        path="/why-are-you-cancelling-this-screening"
+        element={
+          <AuthenticatedRoute>
+            <CancellationReasonPage />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/are-you-sure-you-want-to-cancel-this-screening"
+        element={
+          <AuthenticatedRoute>
+            <CancellationAreYouSurePage />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/tb-screening-cancelled"
+        element={
+          <AuthenticatedRoute>
+            <CancellationConfirmationPage />
+          </AuthenticatedRoute>
         }
       />
       <Route path="/accessibility-statement" element={<AccessibilityStatementPage />} />

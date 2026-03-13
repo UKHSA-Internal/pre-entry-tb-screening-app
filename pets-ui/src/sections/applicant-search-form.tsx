@@ -1,6 +1,8 @@
+import axios, { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { validate as uuidValidate } from "uuid";
 
 import Dropdown from "@/components/dropdown/dropdown";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
@@ -15,7 +17,11 @@ import {
   setApplicantPassportDetails,
   setApplicantPhotoFileName,
 } from "@/redux/applicantSlice";
-import { clearApplicationDetails, setApplicationId } from "@/redux/applicationSlice";
+import {
+  clearApplicationDetails,
+  setApplicationDetails,
+  setApplicationId,
+} from "@/redux/applicationSlice";
 import { clearChestXrayDetails, setChestXrayFromApiResponse } from "@/redux/chestXraySlice";
 import { useAppDispatch } from "@/redux/hooks";
 import {
@@ -41,11 +47,13 @@ import {
   setTbCertificateFromApiResponse,
 } from "@/redux/tbCertificateSlice";
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
-import { ApplicantSearchFormType } from "@/types";
+import { ApplicantSearchFormType, ReceivedApplicantDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
-import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { countryList } from "@/utils/countryList";
+import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 import { setGoogleAnalyticsParams } from "@/utils/google-analytics-utils";
-import { countryList, formRegex } from "@/utils/records";
+import { convertDateStrToObj } from "@/utils/helpers";
+import { formRegex } from "@/utils/records";
 import { getUserProperties } from "@/utils/userProperties";
 
 import { getApplicants, getApplication } from "../api/api";
@@ -101,34 +109,59 @@ const ApplicantSearchForm = () => {
     dispatch(setApplicantPhotoFileName(filename));
     const response = await fetch(fixedUrl);
     const blob = await response.blob();
-    if (typeof File !== "undefined") {
+    if (typeof File == "undefined") {
+      setApplicantPhotoUrl(fixedUrl);
+    } else {
       try {
         const file = new File([blob], filename, { type: blob.type });
         setApplicantPhotoFile(file);
       } catch {
         setApplicantPhotoUrl(fixedUrl);
       }
-    } else {
-      setApplicantPhotoUrl(fixedUrl);
     }
   };
 
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (passportDetails) => {
     setIsLoading(true);
-    try {
-      await fetchClinic(dispatch);
-      dispatch(setApplicantPassportDetails(passportDetails));
-      setApplicantPhotoUrl(null);
+    dispatch(setApplicantPassportDetails(passportDetails));
+    setApplicantPhotoUrl(null);
 
-      const applicantRes = await getApplicants(passportDetails);
-      if (applicantRes.data.length === 0) {
+    let applicantRes: AxiosResponse<ReceivedApplicantDetailsType> | null = null;
+    let applicationId: string | null = null;
+    try {
+      applicantRes = await getApplicants(passportDetails);
+      applicationId = applicantRes.data.applications[0].applicationId;
+      if (!uuidValidate(applicationId)) {
+        throw new Error(`Application ID (${applicationId}) is in an invalid UUID format`);
+      }
+      dispatch(setApplicantDetailsFromApiResponse(applicantRes.data));
+      dispatch(setApplicationId(applicationId));
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.status == 404) {
+        await fetchClinic(dispatch);
         navigate("/no-visa-applicant-found");
         return;
+      } else {
+        console.error(error);
+        navigate("/sorry-there-is-problem-with-service");
+        return;
       }
-      dispatch(setApplicantDetailsFromApiResponse(applicantRes.data[0]));
-      dispatch(setApplicationId(applicantRes.data[0].applicationId));
+    }
 
-      const applicationRes = await getApplication(applicantRes.data);
+    try {
+      const applicationRes = await getApplication(applicationId);
+      dispatch(
+        setApplicationDetails({
+          applicationId: applicationId,
+          applicationStatus: applicationRes.data.applicationStatus,
+          dateCreated: convertDateStrToObj(applicantRes?.data.dateCreated ?? ""),
+          cancellationReason: applicationRes.data.cancellationReason ?? "",
+          cancellationFurtherInfo: applicationRes.data.cancellationFurtherInfo ?? "",
+        }),
+      );
+      const applicationClinicId = applicationRes.data.clinicId as string | undefined;
+      await fetchClinic(dispatch, applicationClinicId);
+
       if (applicationRes.data.applicantPhotoUrl) {
         await handleApplicantPhoto(applicationRes.data.applicantPhotoUrl);
       }
@@ -147,9 +180,9 @@ const ApplicantSearchForm = () => {
       }
       if (applicationRes.data.sputumRequirement) {
         dispatch(setSputumDecisionRequired(applicationRes.data.sputumRequirement.sputumRequired));
-        dispatch(setSputumDecisionStatus(ApplicationStatus.COMPLETE));
+        dispatch(setSputumDecisionStatus(TaskStatus.COMPLETE));
         if (applicationRes.data.sputumRequirement.sputumRequired === YesOrNo.NO) {
-          dispatch(setSputumStatus(ApplicationStatus.NOT_REQUIRED));
+          dispatch(setSputumStatus(TaskStatus.NOT_REQUIRED));
         }
       }
       if (
@@ -179,7 +212,7 @@ const ApplicantSearchForm = () => {
 
           <FreeText
             id="passport-number"
-            heading="Visa applicant’s passport number"
+            heading="Visa applicant's passport number"
             headingSize="m"
             hint="For example, 1208297A"
             errorMessage={errors?.passportNumber?.message ?? ""}

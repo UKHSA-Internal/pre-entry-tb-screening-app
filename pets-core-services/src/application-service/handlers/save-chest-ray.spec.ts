@@ -8,17 +8,20 @@ import { logger } from "../../shared/logger";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededChestXray } from "../fixtures/chest-xray";
 import { ChestXRay } from "../models/chest-xray";
+import { YesOrNo } from "../types/enums";
 import { SaveChestXrayEvent, saveChestXRayHandler } from "./save-chest-ray";
 
 const newChestXray: SaveChestXrayEvent["parsedBody"] = {
   dateXrayTaken: "2025-05-05",
   posteroAnteriorXrayFileName: "posterior-anterior.dicom",
-  posteroAnteriorXray: "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/postero-anterior.dcm",
+  posteroAnteriorXray:
+    "dicom/Apollo Clinic/ARG/ABC1234KAT/d9505644-1c9a-46ff-8195-b144b4556352/postero-anterior.dcm",
   apicalLordoticXrayFileName: "apical-lordotic.dicom",
-  apicalLordoticXray: "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/apical-lordotic.dcm",
+  apicalLordoticXray:
+    "dicom/Apollo Clinic/ARG/ABC1234KAT/d9505644-1c9a-46ff-8195-b144b4556352/apical-lordotic.dcm",
   lateralDecubitusXrayFileName: "lateral-decubitus.dicom",
   lateralDecubitusXray:
-    "dicom/Apollo Clinic/ARG/ABC1234KAT/generated-app-id-4/lateral-decubitus.dcm",
+    "dicom/Apollo Clinic/ARG/ABC1234KAT/d9505644-1c9a-46ff-8195-b144b4556352/lateral-decubitus.dcm",
 };
 
 describe("Test for Saving Chest X-ray into DB", () => {
@@ -57,7 +60,38 @@ describe("Test for Saving Chest X-ray into DB", () => {
     });
   });
 
-  test("Duplicate post throws a 400 error", async () => {
+  test("Saving a new Chest X-Ray details in different clinic as ukhsa staff", async () => {
+    // Arrange
+    const event: SaveChestXrayEvent = {
+      ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+      },
+      pathParameters: { applicationId: seededApplications[3].applicationId },
+      parsedBody: newChestXray,
+    };
+
+    // Act
+    const response = await saveChestXRayHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toMatchObject({
+      applicationId: seededApplications[3].applicationId,
+      ...newChestXray,
+      dateXrayTaken: expect.any(String),
+      dateCreated: expect.any(String),
+      apicalLordoticXray:
+        "dicom/Apollo Clinic/ARG/ABC1234KAT/d9505644-1c9a-46ff-8195-b144b4556352/apical-lordotic.dcm",
+      lateralDecubitusXray:
+        "dicom/Apollo Clinic/ARG/ABC1234KAT/d9505644-1c9a-46ff-8195-b144b4556352/lateral-decubitus.dcm",
+      posteroAnteriorXray:
+        "dicom/Apollo Clinic/ARG/ABC1234KAT/d9505644-1c9a-46ff-8195-b144b4556352/postero-anterior.dcm",
+    });
+  });
+
+  test("Duplicate post throws a 409 error", async () => {
     // Arrange
     const existingChestXray = seededChestXray[0];
     const event: SaveChestXrayEvent = {
@@ -70,7 +104,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const response = await saveChestXRayHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(409);
     expect(JSON.parse(response.body)).toMatchObject({ message: "Chest X-ray already saved" });
   });
 
@@ -97,10 +131,11 @@ describe("Test for Saving Chest X-ray into DB", () => {
     chestXrayMock.mockReset();
   });
 
-  test("Invalid Object Key for any image throws a 400 error", async () => {
+  test("Invalid Object Key for any image throws a 422 error", async () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[3].applicationId },
+      queryStringParameters: { requireValidation: YesOrNo.Yes },
       parsedBody: {
         ...newChestXray,
         posteroAnteriorXray: "invalid-object-key",
@@ -110,16 +145,17 @@ describe("Test for Saving Chest X-ray into DB", () => {
     // Act
     const response = await saveChestXRayHandler(event);
     // Assert
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(422);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "postero-anterior.dcm object key is invalid",
     });
   });
 
-  test("Missing Object in S3 for any image throws a 400 error", async () => {
+  test("Missing Object in S3 for any image throws a 422 error", async () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[3].applicationId },
+      queryStringParameters: { requireValidation: YesOrNo.Yes },
       parsedBody: newChestXray,
     };
 
@@ -133,7 +169,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const response = await saveChestXRayHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(422);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "postero-anterior.dcm image does not exist",
     });
@@ -144,6 +180,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[3].applicationId },
+      queryStringParameters: { requireValidation: YesOrNo.Yes },
       parsedBody: newChestXray,
     };
 
@@ -157,10 +194,11 @@ describe("Test for Saving Chest X-ray into DB", () => {
     expect(errorLoggerMock).toHaveBeenCalledWith(Error("S3 error"), "Error saving Chest X-ray");
   });
 
-  test("Missing Applicant throws a 400 error", async () => {
+  test("Invalid Application throws a 422 error", async () => {
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[0].applicationId },
+      pathParameters: { applicationId: "Invalid-Id" },
+      queryStringParameters: { requireValidation: YesOrNo.Yes },
       parsedBody: newChestXray,
     };
 
@@ -168,13 +206,13 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const response = await saveChestXRayHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(422);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Invalid Application - No Applicant",
+      message: "Invalid Application: Application does not exist",
     });
   });
 
-  test("Missing required body returns a 500 response", async () => {
+  test("Missing required body returns a 400 response", async () => {
     // Arrange
     const event: SaveChestXrayEvent = {
       ...mockAPIGwEvent,
@@ -184,9 +222,9 @@ describe("Test for Saving Chest X-ray into DB", () => {
     const response = await saveChestXRayHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Chest X-Ray Request not parsed correctly",
+      message: "Request event missing body",
     });
   });
 

@@ -10,7 +10,7 @@ import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
 import { setMedicalScreeningStatus } from "@/redux/medicalScreeningSlice";
 import { selectApplicant, selectApplication, selectMedicalScreening } from "@/redux/store";
-import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 import { calculateApplicantAge, formatDateForDisplay } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
@@ -43,7 +43,7 @@ const MedicalScreeningReview = () => {
           medicalData.completionDate.day
             ? `${medicalData.completionDate.year}-${medicalData.completionDate.month.padStart(2, "0")}-${medicalData.completionDate.day.padStart(2, "0")}`
             : new Date().toISOString().split("T")[0],
-        age: parseInt(medicalData.age),
+        age: typeof applicantAge.ageInYears == "number" ? applicantAge.ageInYears : -1,
         symptomsOfTb: medicalData.tbSymptoms,
         symptoms: medicalData.tbSymptomsList,
         symptomsOther: medicalData.otherSymptomsDetail,
@@ -61,7 +61,7 @@ const MedicalScreeningReview = () => {
         reasonXrayNotRequiredFurtherDetails: medicalData.reasonXrayNotRequiredFurtherDetails,
       });
 
-      dispatch(setMedicalScreeningStatus(ApplicationStatus.COMPLETE));
+      dispatch(setMedicalScreeningStatus(TaskStatus.COMPLETE));
       navigate("/tb-symptoms-medical-history-confirmed");
     } catch (error) {
       console.error(error);
@@ -81,7 +81,6 @@ const MedicalScreeningReview = () => {
       link: `/record-medical-history-tb-symptoms#medical-screening-completion-date`,
       hiddenLabel: "date of medical screening",
     },
-
     {
       key: "Does the visa applicant have pulmonary TB symptoms?",
       value: medicalData.tbSymptoms || "Not provided",
@@ -102,21 +101,6 @@ const MedicalScreeningReview = () => {
       value: medicalData.otherSymptomsDetail || "Not provided",
       link: `/record-medical-history-tb-symptoms#${attributeToComponentId.otherSymptomsDetail}`,
       hiddenLabel: "further details of pulmonary TB symptoms (optional)",
-    },
-    {
-      key: "Medical history for under 11",
-      value:
-        medicalData.underElevenConditions.length > 0
-          ? medicalData.underElevenConditions.join(", ")
-          : "Not provided",
-      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.underElevenConditions}`,
-      hiddenLabel: "medical history for under 11",
-    },
-    {
-      key: "Give further details (optional)",
-      value: medicalData.underElevenConditionsDetail || "Not provided",
-      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.underElevenConditionsDetail}`,
-      hiddenLabel: "further details of medical history for under 11 (optional)",
     },
     {
       key: "Has the visa applicant had pulmonary TB?",
@@ -145,23 +129,46 @@ const MedicalScreeningReview = () => {
         "details of visa applicant's close contact with a person with pulmonary TB in the past year",
     },
     {
-      key: "Is the visa applicant pregnant?",
-      value: medicalData.pregnant || "Not provided",
-      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.pregnant}`,
-      hiddenLabel: "whether the visa applicant is pregnant",
-    },
-    {
-      key: "Does the visa applicant have menstrual periods?",
-      value: medicalData.menstrualPeriods || "Not provided",
-      link: `/record-medical-history-tb-symptoms#${attributeToComponentId.menstrualPeriods}`,
-      hiddenLabel: "whether the visa applicant has menstrual periods",
-    },
-    {
       key: "Physical examination notes (optional)",
       value: medicalData.physicalExamNotes || "Not provided",
       link: `/record-medical-history-tb-symptoms#${attributeToComponentId.physicalExamNotes}`,
       hiddenLabel: "physical examination notes (optional)",
     },
+    ...(typeof applicantAge.ageInYears == "number" && applicantAge.ageInYears < 11
+      ? [
+          {
+            key: "Medical history for under 11",
+            value:
+              medicalData.underElevenConditions.length > 0
+                ? medicalData.underElevenConditions.join(", ")
+                : "Not provided",
+            link: `/medical-history-under-11-years-old#${attributeToComponentId.underElevenConditions}`,
+            hiddenLabel: "medical history for under 11",
+          },
+          {
+            key: "Give further details (optional)",
+            value: medicalData.underElevenConditionsDetail || "Not provided",
+            link: `/medical-history-under-11-years-old#${attributeToComponentId.underElevenConditionsDetail}`,
+            hiddenLabel: "further details of medical history for under 11 (optional)",
+          },
+        ]
+      : []),
+    ...(applicantData.sex == "Female"
+      ? [
+          {
+            key: "Is the visa applicant pregnant?",
+            value: medicalData.pregnant || "Not provided",
+            link: `/medical-history-female#${attributeToComponentId.pregnant}`,
+            hiddenLabel: "whether the visa applicant is pregnant",
+          },
+          {
+            key: "Does the visa applicant have menstrual periods?",
+            value: medicalData.menstrualPeriods || "Not provided",
+            link: `/medical-history-female#${attributeToComponentId.menstrualPeriods}`,
+            hiddenLabel: "whether the visa applicant has menstrual periods",
+          },
+        ]
+      : []),
     {
       key: "Is an X-ray required?",
       value: medicalData.chestXrayTaken,
@@ -196,10 +203,14 @@ const MedicalScreeningReview = () => {
     <div>
       {isLoading && <Spinner />}
 
-      <Summary status={medicalData.status} summaryElements={summaryData} />
+      <Summary
+        taskStatus={medicalData.status}
+        applicationStatus={applicationData.applicationStatus}
+        summaryElements={summaryData}
+      />
 
-      {(medicalData.status == ApplicationStatus.NOT_YET_STARTED ||
-        medicalData.status == ApplicationStatus.IN_PROGRESS) && (
+      {(medicalData.status == TaskStatus.NOT_YET_STARTED ||
+        medicalData.status == TaskStatus.IN_PROGRESS) && (
         <div>
           <Heading title="Now send the medical history and TB symptoms" level={2} size="m" />
           <p className="govuk-body">
@@ -215,8 +226,8 @@ const MedicalScreeningReview = () => {
           />
         </div>
       )}
-      {(medicalData.status == ApplicationStatus.COMPLETE ||
-        medicalData.status == ApplicationStatus.NOT_REQUIRED) && (
+      {(medicalData.status == TaskStatus.COMPLETE ||
+        medicalData.status == TaskStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
           class={ButtonClass.DEFAULT}

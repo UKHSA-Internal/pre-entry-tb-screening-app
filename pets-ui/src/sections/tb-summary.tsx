@@ -22,7 +22,7 @@ import {
   selectTravel,
 } from "@/redux/store";
 import { setTbCertificateStatus } from "@/redux/tbCertificateSlice";
-import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 import {
   calculateCertificateExpiryDate,
   calculateCertificateIssueDate,
@@ -59,11 +59,9 @@ const TbSummary = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const isFromConfirmation = searchParams.get("from") === "/tb-screening-complete";
-  const isCertificateIssued = tbCertificateData.status === ApplicationStatus.COMPLETE;
+  const isCertificateIssued = tbCertificateData.status === TaskStatus.COMPLETE;
   const summaryStatus =
-    isFromConfirmation || isCertificateIssued
-      ? ApplicationStatus.IN_PROGRESS
-      : tbCertificateData.status;
+    isFromConfirmation || isCertificateIssued ? TaskStatus.IN_PROGRESS : tbCertificateData.status;
 
   const isIssued = tbCertificateData.isIssued === YesOrNo.YES;
 
@@ -110,7 +108,7 @@ const TbSummary = () => {
         throw new Error("certificateIssued field missing");
       }
 
-      dispatch(setTbCertificateStatus(ApplicationStatus.COMPLETE));
+      dispatch(setTbCertificateStatus(TaskStatus.COMPLETE));
       navigate("/tb-screening-complete");
     } catch (error) {
       console.error(error);
@@ -337,7 +335,7 @@ const TbSummary = () => {
         },
         {
           key: "Child under 11 years",
-          value: isChildUnder11(medicalScreeningData),
+          value: isChildUnder11(applicantData),
           hiddenLabel: "Child under 11 years",
         },
       ]
@@ -351,19 +349,31 @@ const TbSummary = () => {
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h2 className="govuk-heading-m">Visa applicant information</h2>
-            <Summary status={summaryStatus} summaryElements={summaryData} />
+            <Summary
+              taskStatus={summaryStatus}
+              applicationStatus={applicationData.applicationStatus}
+              summaryElements={summaryData}
+            />
 
             {currentAddressData.length > 0 && (
               <>
                 <h2 className="govuk-heading-m">Current residential address</h2>
-                <Summary status={summaryStatus} summaryElements={currentAddressData} />
+                <Summary
+                  taskStatus={summaryStatus}
+                  applicationStatus={applicationData.applicationStatus}
+                  summaryElements={currentAddressData}
+                />
               </>
             )}
 
             {ukAddressData.length > 0 && (
               <>
                 <h2 className="govuk-heading-m">Proposed UK address</h2>
-                <Summary status={summaryStatus} summaryElements={ukAddressData} />
+                <Summary
+                  taskStatus={summaryStatus}
+                  applicationStatus={applicationData.applicationStatus}
+                  summaryElements={ukAddressData}
+                />
               </>
             )}
 
@@ -371,7 +381,11 @@ const TbSummary = () => {
               <>
                 <h2 className="govuk-heading-m">Clinic and certificate information</h2>
                 <div className="certificate-reference-nowrap">
-                  <Summary status={summaryStatus} summaryElements={certificateData} />
+                  <Summary
+                    taskStatus={summaryStatus}
+                    applicationStatus={applicationData.applicationStatus}
+                    summaryElements={certificateData}
+                  />
                 </div>
               </>
             )}
@@ -379,7 +393,11 @@ const TbSummary = () => {
             {screeningData.length > 0 && (
               <>
                 <h2 className="govuk-heading-m">Screening information</h2>
-                <Summary status={summaryStatus} summaryElements={screeningData} />
+                <Summary
+                  taskStatus={summaryStatus}
+                  applicationStatus={applicationData.applicationStatus}
+                  summaryElements={screeningData}
+                />
               </>
             )}
             <p className="govuk-body">
@@ -399,7 +417,11 @@ const TbSummary = () => {
           )}
         </div>
       ) : (
-        <Summary status={summaryStatus} summaryElements={summaryData} />
+        <Summary
+          taskStatus={summaryStatus}
+          applicationStatus={applicationData.applicationStatus}
+          summaryElements={summaryData}
+        />
       )}
 
       {!isIssued && (
@@ -412,8 +434,8 @@ const TbSummary = () => {
         </div>
       )}
 
-      {(tbCertificateData.status == ApplicationStatus.NOT_YET_STARTED ||
-        tbCertificateData.status == ApplicationStatus.IN_PROGRESS) && (
+      {(tbCertificateData.status == TaskStatus.NOT_YET_STARTED ||
+        tbCertificateData.status == TaskStatus.IN_PROGRESS) && (
         <Button
           id="submit"
           class={ButtonClass.DEFAULT}
@@ -421,8 +443,8 @@ const TbSummary = () => {
           handleClick={handleSubmit}
         />
       )}
-      {(tbCertificateData.status == ApplicationStatus.COMPLETE ||
-        tbCertificateData.status == ApplicationStatus.NOT_REQUIRED) && (
+      {(tbCertificateData.status == TaskStatus.COMPLETE ||
+        tbCertificateData.status == TaskStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
           class={ButtonClass.DEFAULT}

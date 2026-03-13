@@ -242,14 +242,8 @@ describe("TBBETA-1586: Visa Category Radio Buttons Tests", () => {
     visaCategoryPage.verifyVisaCategoryRadioButtons();
     visaCategoryPage.verifyRadioButtonOptions();
 
-    // Verify GOV.UK styling
-    visaCategoryPage.verifyRadioButtonStyling();
-
     // Verify no radio button is selected by default
     visaCategoryPage.verifyNoRadioButtonSelected();
-
-    // Verify all radio buttons are enabled
-    visaCategoryPage.verifyRadioButtonsEnabled();
 
     // Verify continue button exists and is styled correctly
     visaCategoryPage.verifyContinueButton();

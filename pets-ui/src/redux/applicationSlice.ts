@@ -1,10 +1,18 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ApplicationIdAndDateCreatedType } from "@/types";
+import { DateType, ReduxApplicationDetailsType } from "@/types";
+import { ApplicationStatus } from "@/utils/enums";
 
-const initialState: ApplicationIdAndDateCreatedType = {
+const initialState: ReduxApplicationDetailsType = {
   applicationId: "",
-  dateCreated: "",
+  dateCreated: {
+    year: "",
+    month: "",
+    day: "",
+  },
+  applicationStatus: ApplicationStatus.NULL,
+  cancellationReason: "",
+  cancellationFurtherInfo: "",
 };
 
 export const applicationSlice = createSlice({
@@ -14,21 +22,47 @@ export const applicationSlice = createSlice({
     setApplicationId: (state, action: PayloadAction<string>) => {
       state.applicationId = action.payload;
     },
-    setDateCreated: (state, action: PayloadAction<string>) => {
+    setDateCreated: (state, action: PayloadAction<DateType>) => {
       state.dateCreated = action.payload;
     },
-    setApplicationDetails: (state, action: PayloadAction<ApplicationIdAndDateCreatedType>) => {
+    setApplicationStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+      state.applicationStatus = action.payload;
+    },
+    setCancellationReason: (state, action: PayloadAction<string>) => {
+      state.cancellationReason = action.payload;
+    },
+    setCancellationFurtherInfo: (state, action: PayloadAction<string>) => {
+      state.cancellationFurtherInfo = action.payload;
+    },
+    setApplicationDetails: (state, action: PayloadAction<ReduxApplicationDetailsType>) => {
       state.applicationId = action.payload.applicationId;
       state.dateCreated = action.payload.dateCreated;
+      state.applicationStatus = action.payload.applicationStatus;
+      state.cancellationReason = action.payload.cancellationReason || "";
+      state.cancellationFurtherInfo = action.payload.cancellationFurtherInfo || "";
     },
     clearApplicationDetails: (state) => {
       state.applicationId = "";
-      state.dateCreated = "";
+      state.dateCreated = {
+        year: "",
+        month: "",
+        day: "",
+      };
+      state.applicationStatus = ApplicationStatus.NULL;
+      state.cancellationReason = "";
+      state.cancellationFurtherInfo = "";
     },
   },
 });
 
-export const { setApplicationId, setDateCreated, setApplicationDetails, clearApplicationDetails } =
-  applicationSlice.actions;
+export const {
+  setApplicationId,
+  setDateCreated,
+  setApplicationStatus,
+  setCancellationReason,
+  setCancellationFurtherInfo,
+  setApplicationDetails,
+  clearApplicationDetails,
+} = applicationSlice.actions;
 
 export const applicationReducer = applicationSlice.reducer;

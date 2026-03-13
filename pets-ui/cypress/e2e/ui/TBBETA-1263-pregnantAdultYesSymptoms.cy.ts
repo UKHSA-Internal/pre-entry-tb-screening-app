@@ -16,6 +16,7 @@ import { ClinicCertificateInfoPage } from "../../support/page-objects/clinicCert
 import { ContactInformationPage } from "../../support/page-objects/contactInformationPage";
 import { EnterSputumSampleResultsPage } from "../../support/page-objects/enterSputumSampleResultsPage";
 import { MedicalConfirmationPage } from "../../support/page-objects/medicalConfirmationPage";
+import { MedicalHistoryFemalePage } from "../../support/page-objects/medicalHistoryFemalePage";
 import { MedicalScreeningPage } from "../../support/page-objects/medicalScreeningPage";
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
 import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
@@ -55,6 +56,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
   const applicantConfirmationPage = new ApplicantConfirmationPage();
   const medicalSummaryPage = new MedicalSummaryPage();
   const medicalConfirmationPage = new MedicalConfirmationPage();
+  const medicalHistoryFemalePage = new MedicalHistoryFemalePage();
   const sputumDecisionConfirmationPage = new SputumDecisionConfirmationPage();
   const sputumDecisionInfoPage = new SputumDecisionInfoPage();
   const sputumQuestionPage = new SputumQuestionPage();
@@ -344,13 +346,17 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
       .selectTbSymptomsList(["Other symptoms"])
       .selectPreviousTb("No") // No TB history
       .selectCloseContact("Yes") // Yes close contact
-      .selectPregnancyStatus("Yes") // Yes Pregnant
-      .selectMenstrualPeriods("No") // No due to pregnancy
       .fillPhysicalExamNotes(
         "Pregnant adult female with TB symptoms. Reports close contact with active TB case. Requires comprehensive screening.",
       )
       .submitForm();
 
+    // Verify redirection to Medical History Female
+    medicalHistoryFemalePage.verifyPageLoaded();
+
+    medicalHistoryFemalePage.selectPregnant("Yes");
+    medicalHistoryFemalePage.selectMenstrualPeriods("No");
+    medicalHistoryFemalePage.submitForm();
     // Verify redirection to X-ray Question Page
     chestXrayPage.verifyPageLoaded();
 
@@ -387,7 +393,7 @@ describe("PETS Scenario 4: Pregnant Adult Yes Symptoms, No X-ray, Sputum Require
     });
 
     // Confirm medical details
-    medicalSummaryPage.verifySubmissionConfirmationMessage();
+    medicalSummaryPage.verifySubmissionWarningText();
     medicalSummaryPage.confirmDetails();
 
     // Verify medical confirmation page and continue to chest X-ray

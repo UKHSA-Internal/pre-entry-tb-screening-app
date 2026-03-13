@@ -243,8 +243,6 @@ describe("PETS Date Validation: INVALID - Medical Screening > 6 Months Old", () 
       .selectTBSymptoms("No")
       .selectPreviousTb("No")
       .selectCloseContact("No")
-      .selectPregnancyStatus("No")
-      .selectMenstrualPeriods("No")
       .fillPhysicalExamNotes("No abnormalities detected. Patient appears healthy.");
 
     // Attempt to continue - should fail validation

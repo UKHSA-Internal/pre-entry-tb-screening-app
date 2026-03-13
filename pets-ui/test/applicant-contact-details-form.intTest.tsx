@@ -1,11 +1,11 @@
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Mock } from "vitest";
 
 import * as api from "@/api/api";
 import ApplicantContactDetailsPage from "@/pages/applicant-contact-details";
 import ApplicantContactDetailsForm from "@/sections/applicant-contact-details-form";
-import { ApplicationStatus } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -24,7 +24,7 @@ vi.mock("react-helmet-async", () => ({
 
 const preloadedState = {
   applicant: {
-    status: ApplicationStatus.IN_PROGRESS,
+    status: TaskStatus.IN_PROGRESS,
     fullName: "Sigmund Sigmundson",
     sex: "Male",
     dateOfBirth: {
@@ -93,7 +93,8 @@ describe("ApplicantContactDetailsForm", () => {
     await user.type(screen.getByTestId("address-3"), "Hallgrimstorg 1");
     await user.type(screen.getByTestId("town-or-city"), "Reykjavik");
     await user.type(screen.getByTestId("province-or-state"), "Reykjavik");
-    fireEvent.change(screen.getByRole("combobox"), { target: { value: "ISL" } });
+    const countryDropdown = screen.getByLabelText(/country/i);
+    await user.selectOptions(countryDropdown, "ISL");
     await user.type(screen.getByTestId("postcode"), "101");
 
     expect(screen.getByTestId("address-1")).toHaveValue("The Bell Tower");
@@ -101,7 +102,7 @@ describe("ApplicantContactDetailsForm", () => {
     expect(screen.getByTestId("address-3")).toHaveValue("Hallgrimstorg 1");
     expect(screen.getByTestId("town-or-city")).toHaveValue("Reykjavik");
     expect(screen.getByTestId("province-or-state")).toHaveValue("Reykjavik");
-    expect(screen.getByRole("combobox")).toHaveValue("ISL");
+    expect(countryDropdown).toHaveValue("ISL");
     expect(screen.getByTestId("postcode")).toHaveValue("101");
 
     await user.click(screen.getByRole("button"));
@@ -150,7 +151,7 @@ describe("ApplicantContactDetailsForm", () => {
       ...preloadedState,
       applicant: {
         ...preloadedState.applicant,
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
       },
     };
     window.history.pushState({}, "", "/?from=tb-certificate-summary");
@@ -174,7 +175,8 @@ describe("ApplicantContactDetailsForm", () => {
     await user.type(screen.getByTestId("address-1"), "1 Street");
     await user.type(screen.getByTestId("town-or-city"), "London");
     await user.type(screen.getByTestId("province-or-state"), "London");
-    fireEvent.change(screen.getByRole("combobox"), { target: { value: "GBR" } });
+    const countryDropdown = screen.getByLabelText(/country/i);
+    await user.selectOptions(countryDropdown, "GBR");
 
     await user.click(screen.getByRole("button"));
 
@@ -187,9 +189,13 @@ describe("ApplicantContactDetailsForm", () => {
       statusText: "OK",
     });
     const completeState = {
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
       applicant: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         fullName: "John Smith",
         sex: "Male",
         dateOfBirth: { year: "1970", month: "1", day: "1" },
@@ -223,7 +229,7 @@ describe("ApplicantContactDetailsForm", () => {
 
     await waitFor(() => {
       expect(store.getState().applicant.applicantHomeAddress1).toBe("New Road");
-      expect(store.getState().applicant.status).toBe(ApplicationStatus.COMPLETE);
+      expect(store.getState().applicant.status).toBe(TaskStatus.COMPLETE);
       expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-summary");
     });
   });

@@ -1,11 +1,11 @@
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Mock } from "vitest";
 
 import * as api from "@/api/api";
 import ApplicantPersonalDetailsPage from "@/pages/applicant-personal-details";
 import ApplicantPersonalDetailsForm from "@/sections/applicant-personal-details-form";
-import { ApplicationStatus } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -24,7 +24,7 @@ vi.mock("react-helmet-async", () => ({
 
 const preloadedState = {
   applicant: {
-    status: ApplicationStatus.NOT_YET_STARTED,
+    status: TaskStatus.NOT_YET_STARTED,
     fullName: "",
     sex: "",
     dateOfBirth: {
@@ -68,7 +68,8 @@ describe("ApplicantPersonalDetailsForm", () => {
 
     await user.type(screen.getByTestId("name"), "Sigmund Sigmundson");
     await user.click(screen.getAllByTestId("sex")[1]);
-    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "NOR" } });
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "NOR");
     await user.type(screen.getByTestId("birth-date-day"), "1");
     await user.type(screen.getByTestId("birth-date-month"), "1");
     await user.type(screen.getByTestId("birth-date-year"), "1901");
@@ -76,7 +77,7 @@ describe("ApplicantPersonalDetailsForm", () => {
     expect(screen.getByTestId("name")).toHaveValue("Sigmund Sigmundson");
     expect(screen.getAllByTestId("sex")[0]).not.toBeChecked();
     expect(screen.getAllByTestId("sex")[1]).toBeChecked();
-    expect(screen.getAllByRole("combobox")[0]).toHaveValue("NOR");
+    expect(countryDropdown).toHaveValue("NOR");
     expect(screen.getByTestId("birth-date-day")).toHaveValue("1");
     expect(screen.getByTestId("birth-date-month")).toHaveValue("1");
     expect(screen.getByTestId("birth-date-year")).toHaveValue("1901");
@@ -152,7 +153,7 @@ describe("ApplicantPersonalDetailsForm", () => {
       ...preloadedState,
       applicant: {
         ...preloadedState.applicant,
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
       },
     };
     window.history.pushState({}, "", "/?from=tb-certificate-summary");
@@ -175,7 +176,8 @@ describe("ApplicantPersonalDetailsForm", () => {
 
     await user.type(screen.getByTestId("name"), "John Smith");
     await user.click(screen.getAllByTestId("sex")[0]);
-    fireEvent.change(screen.getAllByRole("combobox")[0], { target: { value: "GBR" } });
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "GBR");
     await user.type(screen.getByTestId("birth-date-day"), "1");
     await user.type(screen.getByTestId("birth-date-month"), "1");
     await user.type(screen.getByTestId("birth-date-year"), "1970");
@@ -191,9 +193,13 @@ describe("ApplicantPersonalDetailsForm", () => {
       statusText: "OK",
     });
     const completeState = {
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
       applicant: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         fullName: "John Smith",
         sex: "Male",
         dateOfBirth: { year: "1970", month: "1", day: "1" },
@@ -227,7 +233,7 @@ describe("ApplicantPersonalDetailsForm", () => {
 
     await waitFor(() => {
       expect(store.getState().applicant.fullName).toBe("Jeff Smith");
-      expect(store.getState().applicant.status).toBe(ApplicationStatus.COMPLETE);
+      expect(store.getState().applicant.status).toBe(TaskStatus.COMPLETE);
       expect(useNavigateMock).toHaveBeenLastCalledWith("/tb-certificate-summary");
     });
   });
