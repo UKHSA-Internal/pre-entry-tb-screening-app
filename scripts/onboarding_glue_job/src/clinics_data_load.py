@@ -1,13 +1,19 @@
 import csv
 import io
+import os
+
 import boto3
+
+BUCKET = os.getenv("ONBOARDING_SCRIPT_S3_BUCKET", "clinics-data-load-sanj")
+CLINICS_TABLE = os.getenv("ONBOARDING_CLINICS_TABLE", "clinics-details-sanj")
+
 
 def load_clinics_data(
     s3=None,
     dynamodb=None,
-    bucket="clinics-data-load-sanj",
+    bucket=BUCKET,
     key="PETS-Clinic-Dataload.csv",
-    table_name="clinics-details-sanj",
+    table_name=CLINICS_TABLE,
     encoding="cp1252"
 ):
     """
