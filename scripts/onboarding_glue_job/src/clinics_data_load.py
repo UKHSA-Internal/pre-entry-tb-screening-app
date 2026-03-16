@@ -1,50 +1,61 @@
 import csv
-import boto3
 import io
+import boto3
 
-s3 = boto3.client("s3")
-dynamodb = boto3.resource("dynamodb")
+def load_clinics_data(
+    s3=None,
+    dynamodb=None,
+    bucket="clinics-data-load-sanj",
+    key="PETS-Clinic-Dataload.csv",
+    table_name="clinics-details-sanj",
+    encoding="cp1252"
+):
+    """
+    Loads clinic data from a CSV in S3 and writes to DynamoDB.
+    Allows dependency injection for testing.
+    """
+    if s3 is None:
+        s3 = boto3.client("s3")
+    if dynamodb is None:
+        dynamodb = boto3.resource("dynamodb")
+    table = dynamodb.Table(table_name)
 
-bucket = "clinics-data-load-sanj"
-key = "PETS-Clinic-Dataload.csv"
-table_name = "clinics-details-sanj"
+    obj = s3.get_object(Bucket=bucket, Key=key)
+    data = obj["Body"].read().decode(encoding)
+    reader = csv.DictReader(io.StringIO(data))
 
-table = dynamodb.Table(table_name)
+    for row in reader:
+        clinic_ref = row["TB clinic reference number"]
+        address = row["Address"]
 
-# Read CSV from S3
-obj = s3.get_object(Bucket=bucket, Key=key)
-data = obj["Body"].read().decode("cp1252")
+        # Extract city from address
+        city = row.get("City")
 
-reader = csv.DictReader(io.StringIO(data))
+        if not city and "," in address:
+            city = address.split(",")[1].split("-")[0].strip()
 
-for row in reader:
+        item = {
+            "pk": clinic_ref,
+            "sk": "CLINIC#ROOT",
+            "clinicId": clinic_ref,
+            "country": row["Country"],
+            "name": row["Name"],
+            "city": city,
+            "createdBy": row["Created By "],
+            "startDate": row.get("Start Date", "2000-01-01"),
+        }
 
-    clinic_ref = row["TB clinic reference number"]
-    address = row["Address"]
+        if row.get("End Date"):
+            item["endDate"] = row["End Date"]
 
-    # Extract city from address
-    city = None
-    if "," in address:
-        city = address.split(",")[1].split("-")[0].strip()
+        try:
+            table.put_item(
+                Item=item,
+                ConditionExpression="attribute_not_exists(pk)"
+            )
+        except dynamodb.meta.client.exceptions.ConditionalCheckFailedException:
+            pass
 
-    item = {
-        "pk": clinic_ref,
-        "sk": "CLINIC#ROOT",
-        "clinicId": clinic_ref,
-        "country": row["Country"],
-        "name": row["Name"],
-        "city": city,
-        "createdBy": row["Created By "],
-        "startDate": row.get("Start Date", "2000-01-01"),
-    }
-
-    if row.get("End Date"):
-        item["endDate"] = row["End Date"]
-
-    try:
-        table.put_item(
-            Item=item,
-            ConditionExpression="attribute_not_exists(pk)"
-        )
-    except dynamodb.meta.client.exceptions.ConditionalCheckFailedException:
-        pass
+# If run as a script, execute with default AWS resources
+if __name__ == "__main__":
+    load_clinics_data()
