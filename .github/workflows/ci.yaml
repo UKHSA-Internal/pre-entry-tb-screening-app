@@ -295,7 +295,7 @@ jobs:
           fetch-depth: 0
 
       - name: Check clinics_data_load.py changed
-        working-directory: "scripts/onboarding_glue_job/"
+        working-directory: "scripts/"
         id: check_file_changed
         env:
           BEFORE_SHA: ${{ github.event.before }}
