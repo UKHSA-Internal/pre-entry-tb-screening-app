@@ -308,9 +308,8 @@ jobs:
       - name: Set up Python
         if: steps.check_file_changed.outputs.run_tests == 'true'
         uses: actions/setup-python@v6
-        working-directory: "scripts/onboarding_glue_job/"
         with:
-          python-version-file: ".python-version"
+          python-version-file: "scripts/onboarding_glue_job/.python-version"
 
       - name: Install uv
         if: steps.check_file_changed.outputs.run_tests == 'true'
