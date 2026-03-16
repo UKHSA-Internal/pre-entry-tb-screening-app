@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ReduxApplicationDetailsType } from "@/types";
+import { ReceivedApplicationListType, ReduxApplicationDetailsType } from "@/types";
+import { convertDateStrToObj } from "@/utils/helpers";
 
 const initialState: ReduxApplicationDetailsType[] = [];
 
@@ -8,8 +9,21 @@ export const applicationsListSlice = createSlice({
   name: "applicationsListDetails",
   initialState,
   reducers: {
-    setApplicationsListDetails: (state, action: PayloadAction<ReduxApplicationDetailsType[]>) => {
-      state.push(...action.payload);
+    setApplicationsListDetails: (state, action: PayloadAction<ReceivedApplicationListType[]>) => {
+      const appListWithCorrectedDates: ReduxApplicationDetailsType[] = [];
+      for (const application of action.payload) {
+        appListWithCorrectedDates.push({
+          ...application,
+          dateCreated: convertDateStrToObj(application.dateCreated),
+          dateUpdated: application.dateUpdated
+            ? convertDateStrToObj(application.dateUpdated)
+            : undefined,
+          expiryDate: application.expiryDate
+            ? convertDateStrToObj(application.expiryDate)
+            : undefined,
+        });
+      }
+      state.push(...appListWithCorrectedDates);
     },
     clearApplicationsListDetails: () => {
       return [];

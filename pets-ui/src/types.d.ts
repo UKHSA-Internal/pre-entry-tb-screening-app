@@ -47,6 +47,17 @@ type ApplicationIdAndDateCreatedType = {
   dateCreated: string;
 };
 
+type ReceivedApplicationListType = {
+  applicationStatus: ApplicationStatus;
+  applicationId: string;
+  clinicId: string;
+  dateCreated: string;
+  dateUpdated?: string;
+  expiryDate?: string;
+  cancellationReason?: string;
+  cancellationFurtherInfo?: string;
+};
+
 type ReduxApplicationDetailsType = {
   applicationStatus: ApplicationStatus;
   applicationId: string;
@@ -138,7 +149,7 @@ type ReceivedApplicantDetailsType = {
   provinceOrState: string;
   country: string;
   postcode?: string;
-  applications: ReduxApplicationDetailsType[];
+  applications: ReceivedApplicationListType[];
   dateCreated: string;
   status: BackendTaskStatus;
 };
