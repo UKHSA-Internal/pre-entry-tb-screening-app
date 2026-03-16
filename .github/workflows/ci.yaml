@@ -296,11 +296,10 @@ jobs:
 
       - name: Check clinics_data_load.py changed
         working-directory: "scripts/onboarding_glue_job/"
-        env:
-          FILE: "scripts/onboarding_glue_job/src/clinics_data_load.py"
         id: check_file_changed
         env:
           BEFORE_SHA: ${{ github.event.before }}
+          FILE: "scripts/onboarding_glue_job/src/clinics_data_load.py"
         run: |
           run_tests=$(./file_changed.sh $env.FILE)
           echo "run tests?: $run_tests"
