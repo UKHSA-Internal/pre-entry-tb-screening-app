@@ -1,15 +1,19 @@
-import React from "react";
+import { AxiosResponse } from "axios";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
+import { getApplicants } from "@/api/api";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import NotificationBanner from "@/components/notificationBanner/notificationBanner";
+import Spinner from "@/components/spinner/spinner";
 import StatusTag from "@/components/statusTag/statusTag";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { setApplicationStatus } from "@/redux/applicationSlice";
+import { setApplicationsListDetails } from "@/redux/applicationsListSlice";
 import { useAppSelector } from "@/redux/hooks";
 import {
   selectApplicant,
@@ -22,6 +26,7 @@ import {
   selectTbCertificate,
   selectTravel,
 } from "@/redux/store";
+import { ApplicantSearchFormType, ReceivedApplicantDetailsType } from "@/types";
 import {
   AdditionalStatusTagTexts,
   ApplicationStatus,
@@ -126,6 +131,23 @@ const ProgressTracker = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const getApplicationsList = async (passportDetails: ApplicantSearchFormType) => {
+    setIsLoading(true);
+    let applicantRes: AxiosResponse<ReceivedApplicantDetailsType> | null = null;
+    try {
+      applicantRes = await getApplicants(passportDetails);
+      dispatch(setApplicationsListDetails(applicantRes.data.applications));
+      navigate("/screening-history");
+      return;
+    } catch (error) {
+      console.error(error);
+      navigate("/sorry-there-is-problem-with-service");
+      return;
+    }
+  };
+
   if (applicationData.applicationStatus == ApplicationStatus.NULL) {
     dispatch(setApplicationStatus(ApplicationStatus.IN_PROGRESS));
   }
@@ -173,6 +195,8 @@ const ProgressTracker = () => {
 
   return (
     <div>
+      {isLoading && <Spinner />}
+
       {applicationData.applicationStatus == ApplicationStatus.CANCELLED && (
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
@@ -194,6 +218,12 @@ const ProgressTracker = () => {
                 title="Return to screening history for this visa applicant"
                 to="/screening-history"
                 externalLink={false}
+                onClick={async () => {
+                  await getApplicationsList({
+                    passportNumber: applicantData.passportNumber,
+                    countryOfIssue: applicantData.countryOfIssue,
+                  });
+                }}
               />
             </NotificationBanner>
           </div>
@@ -336,6 +366,12 @@ const ProgressTracker = () => {
           to="/screening-history"
           title="View the screening history for this visa applicant"
           externalLink={false}
+          onClick={async () => {
+            await getApplicationsList({
+              passportNumber: applicantData.passportNumber,
+              countryOfIssue: applicantData.countryOfIssue,
+            });
+          }}
         />
       </p>
 
