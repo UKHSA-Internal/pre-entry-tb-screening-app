@@ -4,8 +4,8 @@ import os
 
 import boto3
 
-BUCKET = os.getenv("ONBOARDING_SCRIPT_S3_BUCKET", "clinics-data-load-sanj")
-CLINICS_TABLE = os.getenv("ONBOARDING_CLINICS_TABLE", "clinics-details-sanj")
+BUCKET = os.getenv("ONBOARDING_SCRIPT_S3_BUCKET", "aw-pets-euw-dev-s3-glue-onboarding")
+CLINICS_TABLE = os.getenv("ONBOARDING_CLINICS_TABLE", "clinics-details-test")
 
 
 # This function is designed to be testable

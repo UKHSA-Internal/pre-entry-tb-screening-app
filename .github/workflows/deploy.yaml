@@ -533,5 +533,5 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Upload file to s3
-        run: aws s3 cp ${{ env.ONBOARDING_FILE }} s3://${{ vars.ONBOARDING_SCRIPT_S3_BUCKET }}/scripts/ --sse aws:kms --sse-kms-key-id ${{ vars.SSE_KEY_ID }}
+        run: aws s3 cp ${{ env.ONBOARDING_FILE }} s3://${{ vars.ONBOARDING_SCRIPT_S3_BUCKET }}/ --sse aws:kms --sse-kms-key-id ${{ vars.SSE_KEY_ID }}
         working-directory: "./scripts/onboarding_glue_job/src/"
