@@ -320,6 +320,7 @@ jobs:
 
       - name: Install the project
         if: steps.check_file_changed.outputs.run_tests == 'true'
+        working-directory: "scripts/onboarding_glue_job/"
         run: uv sync --locked
 
       - name: Run unit tests for applicant migration script
