@@ -8,6 +8,8 @@ BUCKET = os.getenv("ONBOARDING_SCRIPT_S3_BUCKET", "clinics-data-load-sanj")
 CLINICS_TABLE = os.getenv("ONBOARDING_CLINICS_TABLE", "clinics-details-sanj")
 
 
+# This function is designed to be testable
+# by allowing dependency injection of the S3 client and DynamoDB resource.
 def load_clinics_data(
     s3=None,
     dynamodb=None,
