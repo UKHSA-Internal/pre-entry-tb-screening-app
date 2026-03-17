@@ -5,8 +5,6 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-echo "File to check: $1"
-
 before="${BEFORE_SHA}"
 all_changed_files=$(git diff --name-only "$before" HEAD)
 
