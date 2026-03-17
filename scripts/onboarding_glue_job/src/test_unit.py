@@ -41,12 +41,12 @@ def test_load_clinics_data_inserts_items(monkeypatch, sample_csv):
   assert table_mock.put_item.call_count == 2
   # Check first call's item
   item1 = table_mock.put_item.call_args_list[0][1]["Item"]
-  assert item1["pk"] == "123"
+  assert item1["pk"] == "CLINIC#123"
   assert item1["city"] == "London"
   assert item1["endDate"] == "2022-01-01"
   # Check second call's item
   item2 = table_mock.put_item.call_args_list[1][1]["Item"]
-  assert item2["pk"] == "456"
+  assert item2["pk"] == "CLINIC#456"
   assert item2["city"] == "Manchester"
   assert "endDate" not in item2 or item2["endDate"] == ""
 

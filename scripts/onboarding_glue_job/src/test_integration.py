@@ -55,5 +55,5 @@ def test_load_clinics_data_integration(tables, test_csv, tmp_path, monkeypatch):
   # Verify the item was inserted
   items = list(tables.scan()["Items"])
   assert len(items) == 1
-  assert items[0]["pk"] == "789"
+  assert items[0]["pk"] == "CLINIC#789"
   assert items[0]["city"] == "Leeds"
