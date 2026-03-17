@@ -301,7 +301,7 @@ jobs:
           BEFORE_SHA: ${{ github.event.before }}
           FILE: "scripts/onboarding_glue_job/src/clinics_data_load.py"
         run: |
-          run_tests=$(./file_changed.sh $env.FILE)
+          run_tests=$(./file_changed.sh ${{ env.FILE }})
           echo "run tests?: $run_tests"
           echo "run_tests=$run_tests" >> $GITHUB_OUTPUT
 

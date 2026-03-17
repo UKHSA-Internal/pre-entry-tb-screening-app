@@ -43,12 +43,13 @@ def load_clinics_data(
             city = address.split(",")[1].split("-")[0].strip()
 
         item = {
-            "pk": clinic_ref,
+            "pk": f"CLINIC#{clinic_ref}",
             "sk": "CLINIC#ROOT",
             "clinicId": clinic_ref,
             "country": row["Country"],
             "name": row["Name"],
             "city": city,
+            "address": address,
             "createdBy": row["Created By "],
             "startDate": row.get("Start Date", "2000-01-01"),
         }
