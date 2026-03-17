@@ -14,15 +14,32 @@ import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { setApplicantDetailsStatus, setApplicantPhotoFileName } from "@/redux/applicantSlice";
 import { clearApplicationDetails, setApplicationDetails } from "@/redux/applicationSlice";
 import { clearApplicationsListDetails } from "@/redux/applicationsListSlice";
-import { setChestXrayFromApiResponse } from "@/redux/chestXraySlice";
+import { clearChestXrayDetails, setChestXrayFromApiResponse } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { setMedicalScreeningDetailsFromApiResponse } from "@/redux/medicalScreeningSlice";
-import { setRadiologicalOutcomeFromApiResponse } from "@/redux/radiologicalOutcomeSlice";
-import { setSputumDecisionRequired, setSputumDecisionStatus } from "@/redux/sputumDecisionSlice";
-import { setSputumDetailsFromApiResponse, setSputumStatus } from "@/redux/sputumSlice";
+import {
+  clearMedicalScreeningDetails,
+  setMedicalScreeningDetailsFromApiResponse,
+} from "@/redux/medicalScreeningSlice";
+import {
+  clearRadiologicalOutcomeDetails,
+  setRadiologicalOutcomeFromApiResponse,
+} from "@/redux/radiologicalOutcomeSlice";
+import {
+  clearSputumDecision,
+  setSputumDecisionRequired,
+  setSputumDecisionStatus,
+} from "@/redux/sputumDecisionSlice";
+import {
+  clearSputumDetails,
+  setSputumDetailsFromApiResponse,
+  setSputumStatus,
+} from "@/redux/sputumSlice";
 import { selectApplicant, selectApplicationsList } from "@/redux/store";
-import { setTbCertificateFromApiResponse } from "@/redux/tbCertificateSlice";
-import { setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
+import {
+  clearTbCertificateDetails,
+  setTbCertificateFromApiResponse,
+} from "@/redux/tbCertificateSlice";
+import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
 import { ReduxApplicationDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 // import { getClinicId } from "@/utils/clinic";
@@ -57,6 +74,13 @@ const ScreeningHistory = () => {
 
   useEffect(() => {
     dispatch(clearApplicationDetails());
+    dispatch(clearMedicalScreeningDetails());
+    dispatch(clearTravelDetails());
+    dispatch(clearChestXrayDetails());
+    dispatch(clearRadiologicalOutcomeDetails());
+    dispatch(clearSputumDetails());
+    dispatch(clearSputumDecision());
+    dispatch(clearTbCertificateDetails());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
