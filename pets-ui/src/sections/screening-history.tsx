@@ -13,7 +13,6 @@ import Table from "@/components/table/table";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { setApplicantDetailsStatus, setApplicantPhotoFileName } from "@/redux/applicantSlice";
 import { clearApplicationDetails, setApplicationDetails } from "@/redux/applicationSlice";
-import { clearApplicationsListDetails } from "@/redux/applicationsListSlice";
 import { clearChestXrayDetails, setChestXrayFromApiResponse } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
@@ -55,7 +54,12 @@ const getApplicationExpiryDate = (application: ReduxApplicationDetailsType): str
     application.applicationStatus == ApplicationStatus.CERTIFICATE_NOT_ISSUED
   ) {
     return "Not applicable";
-  } else if (application.expiryDate) {
+  } else if (
+    application.expiryDate &&
+    application.expiryDate.year &&
+    application.expiryDate.month &&
+    application.expiryDate.day
+  ) {
     return formatDateForDisplay(application.expiryDate);
   } else {
     return "No data";
@@ -106,7 +110,11 @@ const ScreeningHistory = () => {
     }
   };
 
-  const loadSingleApplication = async (applicationId: string) => {
+  const loadSingleApplication = async (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    applicationId: string,
+  ) => {
+    e.preventDefault();
     setIsLoading(true);
 
     try {
@@ -158,7 +166,6 @@ const ScreeningHistory = () => {
       if (applicationRes.data.tbCertificate) {
         dispatch(setTbCertificateFromApiResponse(applicationRes.data.tbCertificate));
       }
-      dispatch(clearApplicationsListDetails());
       navigate("/tracker");
       return;
     } catch (error) {
@@ -181,7 +188,7 @@ const ScreeningHistory = () => {
           }
           to="/tracker"
           externalLink={false}
-          onClick={() => loadSingleApplication(application.applicationId)}
+          onClick={(e) => loadSingleApplication(e, application.applicationId)}
         />
       );
     } else {
