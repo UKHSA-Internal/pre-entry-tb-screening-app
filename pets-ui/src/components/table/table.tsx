@@ -32,7 +32,7 @@ export default function Table(props: Readonly<TableProps>) {
       <tbody className="govuk-table__body">
         {props.tableRows.map((tableRow, i) => {
           return (
-            <tr className="govuk-table__row" key={tableRow.rowTitle}>
+            <tr className="govuk-table__row" key={i + ": " + tableRow.rowTitle}>
               {props.removeRowTitleStyling ? (
                 <td scope="row" className="govuk-table__cell">
                   {tableRow.rowTitle}
