@@ -19,9 +19,9 @@ export default function Table(props: Readonly<TableProps>) {
       {props.columnHeaders && (
         <thead className="govuk-table__head">
           <tr className="govuk-table__row">
-            {props.columnHeaders.map((columnHeader) => {
+            {props.columnHeaders.map((columnHeader, index) => {
               return (
-                <th scope="col" className="govuk-table__header" key={columnHeader}>
+                <th scope="col" className="govuk-table__header" key={`${index}: ${columnHeader}`}>
                   {columnHeader}
                 </th>
               );
