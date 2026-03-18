@@ -13,7 +13,7 @@ import Spinner from "@/components/spinner/spinner";
 import StatusTag from "@/components/statusTag/statusTag";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { setApplicationStatus } from "@/redux/applicationSlice";
-import { setApplicationsListDetails } from "@/redux/applicationsListSlice";
+import { setApplicationsListDetailsFromApiResponse } from "@/redux/applicationsListSlice";
 import { useAppSelector } from "@/redux/hooks";
 import {
   selectApplicant,
@@ -138,7 +138,7 @@ const ProgressTracker = () => {
     let applicantRes: AxiosResponse<ReceivedApplicantDetailsType> | null = null;
     try {
       applicantRes = await getApplicants(passportDetails);
-      dispatch(setApplicationsListDetails(applicantRes.data.applications));
+      dispatch(setApplicationsListDetailsFromApiResponse(applicantRes.data.applications));
       navigate("/screening-history");
       return;
     } catch (error) {

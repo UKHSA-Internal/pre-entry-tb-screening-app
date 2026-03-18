@@ -20,7 +20,7 @@ import {
 import { clearApplicationDetails } from "@/redux/applicationSlice";
 import {
   clearApplicationsListDetails,
-  setApplicationsListDetails,
+  setApplicationsListDetailsFromApiResponse,
 } from "@/redux/applicationsListSlice";
 import { clearChestXrayDetails } from "@/redux/chestXraySlice";
 import { useAppDispatch } from "@/redux/hooks";
@@ -97,7 +97,7 @@ const ApplicantSearchForm = () => {
         }
       }
       dispatch(setApplicantDetailsFromApiResponse(applicantRes.data));
-      dispatch(setApplicationsListDetails(applicantRes.data.applications));
+      dispatch(setApplicationsListDetailsFromApiResponse(applicantRes.data.applications));
       navigate("/screening-history");
     } catch (error) {
       if (axios.isAxiosError(error) && error.status == 404) {

@@ -9,7 +9,10 @@ export const applicationsListSlice = createSlice({
   name: "applicationsListDetails",
   initialState,
   reducers: {
-    setApplicationsListDetails: (state, action: PayloadAction<ReceivedApplicationListType[]>) => {
+    setApplicationsListDetailsFromApiResponse: (
+      state,
+      action: PayloadAction<ReceivedApplicationListType[]>,
+    ) => {
       const appListWithCorrectedDates: ReduxApplicationDetailsType[] = [];
       for (const application of action.payload) {
         appListWithCorrectedDates.push({
@@ -31,7 +34,7 @@ export const applicationsListSlice = createSlice({
   },
 });
 
-export const { setApplicationsListDetails, clearApplicationsListDetails } =
+export const { setApplicationsListDetailsFromApiResponse, clearApplicationsListDetails } =
   applicationsListSlice.actions;
 
 export const applicationsListReducer = applicationsListSlice.reducer;
