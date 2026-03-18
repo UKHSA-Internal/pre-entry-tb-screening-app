@@ -323,15 +323,15 @@ jobs:
         working-directory: "scripts/onboarding_glue_job/"
         run: uv sync --locked
 
-      - name: Run unit tests for applicant migration script
+      - name: Run unit tests for applicant onboarding script
         if: steps.check_file_changed.outputs.run_tests == 'true'
         working-directory: "scripts/onboarding_glue_job/"
-        run: uv run pytest -c ./pyproject.toml --cov=migration_script --cov-report=term-missing ./src/test_unit.py
+        run: uv run pytest -c ./pyproject.toml --cov=clinics_data_load --cov-report=term-missing ./src/test_unit.py
 
-      - name: Run integration tests for applicant migration script
+      - name: Run integration tests for applicant onboarding script
         if: steps.check_file_changed.outputs.run_tests == 'true'
         working-directory: "scripts/onboarding_glue_job/"
-        run: uv run pytest -c ./pyproject.toml --cov=migration_script --cov-report=term-missing ./src/test_integration.py
+        run: uv run pytest -c ./pyproject.toml --cov=clinics_data_load --cov-report=term-missing ./src/test_integration.py
 
   sonar-scan:
     runs-on: ubuntu-latest
