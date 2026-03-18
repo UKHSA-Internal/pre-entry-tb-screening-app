@@ -37,7 +37,6 @@ const ApplicantReview = () => {
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    // need to double check that this condition works correctly (pulled from previous implementation of submit buttons)
     if (
       applicantData.status == TaskStatus.COMPLETE ||
       applicantData.status == TaskStatus.NOT_REQUIRED
