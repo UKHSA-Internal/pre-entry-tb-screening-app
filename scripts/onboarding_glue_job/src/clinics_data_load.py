@@ -22,6 +22,7 @@ def load_clinics_data(
     Loads clinic data from a CSV in S3 and writes to DynamoDB.
     Allows dependency injection for testing.
     """
+    print("Creating s3 client and DynamoDB resource...")
     if s3 is None:
         s3 = boto3.client("s3")
     if dynamodb is None:
@@ -29,9 +30,24 @@ def load_clinics_data(
     table = dynamodb.Table(table_name)
 
     obj = s3.get_object(Bucket=bucket, Key=key)
-    data = obj["Body"].read().decode(encoding)
+    data = None
+
+    print("Decoding file content...")
+    try:
+        data = obj["Body"].read().decode(encoding)
+    except UnicodeDecodeError as err:
+        print(f"Error decoding file with encoding {encoding}: {err}")
+
+    if not data and encoding != "utf-8":
+        try:
+            data = obj["Body"].read().decode("utf-8")
+        except UnicodeDecodeError as err:
+            print(f"Error decoding file with utf-8 encoding: {err}")
+            raise Exception("Failed to decode the file with both encodings.")
+
     reader = csv.DictReader(io.StringIO(data))
 
+    print("Converting CSV rows to DynamoDB items and inserting into table...")
     for row in reader:
         clinic_ref = row["TB clinic reference number"]
         address = row["Address"]
@@ -64,6 +80,8 @@ def load_clinics_data(
             )
         except dynamodb.meta.client.exceptions.ConditionalCheckFailedException:
             pass
+
+    print("Data load complete.")
 
 # If run as a script, execute with default AWS resources
 if __name__ == "__main__":
