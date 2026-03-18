@@ -1,42 +1,25 @@
-import { AxiosResponse } from "axios";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
-import { getApplicants } from "@/api/api";
 import Confirmation from "@/components/confirmation/confirmation";
 import Container from "@/components/container/container";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import Spinner from "@/components/spinner/spinner";
 import { setApplicationsListDetails } from "@/redux/applicationsListSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { selectApplicant, selectApplication } from "@/redux/store";
-import { ApplicantSearchFormType, ReceivedApplicantDetailsType } from "@/types";
+import { selectApplication, selectApplicationsList } from "@/redux/store";
 import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
+import { upsertAppIntoAppList } from "@/utils/helpers";
 
 export default function CancellationConfirmationPage() {
-  const applicantData = useAppSelector(selectApplicant);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const getApplicationsList = async (passportDetails: ApplicantSearchFormType) => {
-    setIsLoading(true);
-    let applicantRes: AxiosResponse<ReceivedApplicantDetailsType> | null = null;
-    try {
-      applicantRes = await getApplicants(passportDetails);
-      dispatch(setApplicationsListDetails(applicantRes.data.applications));
-      navigate("/screening-history");
-      return;
-    } catch (error) {
-      console.error(error);
-      navigate("/sorry-there-is-problem-with-service");
-      return;
-    }
-  };
-
   const applicationData = useAppSelector(selectApplication);
+  const applicationsListData = useAppSelector(selectApplicationsList);
 
   const preWhatHappensNextElems = [
     `The visa applicant TB screening has been cancelled because ${applicationData.cancellationReason?.charAt(0).toLowerCase()}${applicationData.cancellationReason?.slice(1)}.`,
@@ -46,11 +29,14 @@ export default function CancellationConfirmationPage() {
         title="visa applicant's screening history"
         to="/screening-history"
         externalLink={false}
-        onClick={async () => {
-          await getApplicationsList({
-            passportNumber: applicantData.passportNumber,
-            countryOfIssue: applicantData.countryOfIssue,
-          });
+        onClick={(e) => {
+          e.preventDefault();
+          setIsLoading(true);
+          dispatch(
+            setApplicationsListDetails(upsertAppIntoAppList(applicationData, applicationsListData)),
+          );
+          navigate("/screening-history");
+          return;
         }}
       />
       .

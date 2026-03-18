@@ -9,6 +9,10 @@ export const applicationsListSlice = createSlice({
   name: "applicationsListDetails",
   initialState,
   reducers: {
+    setApplicationsListDetails: (state, action: PayloadAction<ReduxApplicationDetailsType[]>) => {
+      state.splice(0, state.length);
+      state.push(...action.payload);
+    },
     setApplicationsListDetailsFromApiResponse: (
       state,
       action: PayloadAction<ReceivedApplicationListType[]>,
@@ -20,10 +24,10 @@ export const applicationsListSlice = createSlice({
           dateCreated: convertDateStrToObj(application.dateCreated),
           dateUpdated: application.dateUpdated
             ? convertDateStrToObj(application.dateUpdated)
-            : undefined,
+            : { year: "", month: "", day: "" },
           expiryDate: application.expiryDate
             ? convertDateStrToObj(application.expiryDate)
-            : undefined,
+            : { year: "", month: "", day: "" },
         });
       }
       state.push(...appListWithCorrectedDates);
@@ -34,7 +38,10 @@ export const applicationsListSlice = createSlice({
   },
 });
 
-export const { setApplicationsListDetailsFromApiResponse, clearApplicationsListDetails } =
-  applicationsListSlice.actions;
+export const {
+  setApplicationsListDetails,
+  setApplicationsListDetailsFromApiResponse,
+  clearApplicationsListDetails,
+} = applicationsListSlice.actions;
 
 export const applicationsListReducer = applicationsListSlice.reducer;

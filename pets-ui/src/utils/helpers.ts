@@ -1,6 +1,7 @@
 import {
   DateType,
   ReduxApplicantDetailsType,
+  ReduxApplicationDetailsType,
   ReduxSputumRequirementType,
   ReduxSputumType,
 } from "@/types";
@@ -444,6 +445,31 @@ const formatCancellationReasonForDisplay = (cancellationReason: string) => {
   }
 };
 
+const upsertAppIntoAppList = (
+  newApplication: ReduxApplicationDetailsType,
+  applicationsList: ReduxApplicationDetailsType[],
+): ReduxApplicationDetailsType[] => {
+  if (newApplication.applicationId.length < 1) {
+    return applicationsList;
+  }
+  const appIndexInList = applicationsList.findIndex(
+    (app) => app.applicationId === newApplication.applicationId,
+  );
+  if (appIndexInList == -1) {
+    return [...applicationsList, newApplication];
+  } else {
+    const updatedList = [...applicationsList];
+    const appToUpdate = applicationsList[appIndexInList];
+    updatedList[appIndexInList] = {
+      ...newApplication,
+      applicationId: appToUpdate.applicationId,
+      clinicId: appToUpdate.clinicId,
+      dateCreated: appToUpdate.dateCreated,
+    };
+    return updatedList;
+  }
+};
+
 export {
   calculateApplicantAge,
   calculateCertificateExpiryDate,
@@ -464,6 +490,7 @@ export {
   spreadArrayIfNotEmpty,
   standardiseDayOrMonth,
   toArray,
+  upsertAppIntoAppList,
   validateDate,
   validateMedicalScreeningDate,
   validatePassportIssueDate,

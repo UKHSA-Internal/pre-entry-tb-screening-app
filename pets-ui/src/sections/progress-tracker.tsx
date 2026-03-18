@@ -1,9 +1,9 @@
-import { AxiosResponse } from "axios";
-import React, { useState } from "react";
+// import { AxiosResponse } from "axios";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
-import { getApplicants } from "@/api/api";
+// import { getApplicants } from "@/api/api";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import Heading from "@/components/heading/heading";
@@ -13,11 +13,13 @@ import Spinner from "@/components/spinner/spinner";
 import StatusTag from "@/components/statusTag/statusTag";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { setApplicationStatus } from "@/redux/applicationSlice";
-import { setApplicationsListDetailsFromApiResponse } from "@/redux/applicationsListSlice";
+import { setApplicationsListDetails } from "@/redux/applicationsListSlice";
+// import { setApplicationsListDetailsFromApiResponse } from "@/redux/applicationsListSlice";
 import { useAppSelector } from "@/redux/hooks";
 import {
   selectApplicant,
   selectApplication,
+  selectApplicationsList,
   selectChestXray,
   selectMedicalScreening,
   selectRadiologicalOutcome,
@@ -26,7 +28,8 @@ import {
   selectTbCertificate,
   selectTravel,
 } from "@/redux/store";
-import { ApplicantSearchFormType, ReceivedApplicantDetailsType } from "@/types";
+import { ReduxApplicationDetailsType } from "@/types";
+// import { ApplicantSearchFormType, ReceivedApplicantDetailsType } from "@/types";
 import {
   AdditionalStatusTagTexts,
   ApplicationStatus,
@@ -34,7 +37,7 @@ import {
   TaskStatus,
   YesOrNo,
 } from "@/utils/enums";
-import { formatDateForDisplay } from "@/utils/helpers";
+import { formatDateForDisplay, upsertAppIntoAppList } from "@/utils/helpers";
 
 interface TaskProps {
   description: string;
@@ -120,6 +123,7 @@ const Task = (props: Readonly<TaskProps>) => {
 const ProgressTracker = () => {
   const applicantData = useAppSelector(selectApplicant);
   const applicationData = useAppSelector(selectApplication);
+  const applicationsListData = useAppSelector(selectApplicationsList);
   const travelData = useAppSelector(selectTravel);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const chestXrayData = useAppSelector(selectChestXray);
@@ -133,24 +137,12 @@ const ProgressTracker = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const getApplicationsList = async (passportDetails: ApplicantSearchFormType) => {
-    setIsLoading(true);
-    let applicantRes: AxiosResponse<ReceivedApplicantDetailsType> | null = null;
-    try {
-      applicantRes = await getApplicants(passportDetails);
-      dispatch(setApplicationsListDetailsFromApiResponse(applicantRes.data.applications));
-      navigate("/screening-history");
-      return;
-    } catch (error) {
-      console.error(error);
-      navigate("/sorry-there-is-problem-with-service");
-      return;
+  useEffect(() => {
+    if (applicationData.applicationStatus == ApplicationStatus.NULL) {
+      dispatch(setApplicationStatus(ApplicationStatus.IN_PROGRESS));
     }
-  };
-
-  if (applicationData.applicationStatus == ApplicationStatus.NULL) {
-    dispatch(setApplicationStatus(ApplicationStatus.IN_PROGRESS));
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [applicationData]);
 
   const allSputumSamplesSubmitted =
     sputumData.sample1.collection.submittedToDatabase &&
@@ -193,6 +185,20 @@ const ProgressTracker = () => {
     }
   }
 
+  const returnToScreeningHistory = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    currentApplication: ReduxApplicationDetailsType,
+    applicationsList: ReduxApplicationDetailsType[],
+  ) => {
+    e.preventDefault();
+    setIsLoading(true);
+    dispatch(
+      setApplicationsListDetails(upsertAppIntoAppList(currentApplication, applicationsList)),
+    );
+    navigate("/screening-history");
+    return;
+  };
+
   return (
     <div>
       {isLoading && <Spinner />}
@@ -218,11 +224,8 @@ const ProgressTracker = () => {
                 title="Return to screening history for this visa applicant"
                 to="/screening-history"
                 externalLink={false}
-                onClick={async () => {
-                  await getApplicationsList({
-                    passportNumber: applicantData.passportNumber,
-                    countryOfIssue: applicantData.countryOfIssue,
-                  });
+                onClick={(e) => {
+                  returnToScreeningHistory(e, applicationData, applicationsListData);
                 }}
               />
             </NotificationBanner>
@@ -366,11 +369,8 @@ const ProgressTracker = () => {
           to="/screening-history"
           title="View the screening history for this visa applicant"
           externalLink={false}
-          onClick={async () => {
-            await getApplicationsList({
-              passportNumber: applicantData.passportNumber,
-              countryOfIssue: applicantData.countryOfIssue,
-            });
+          onClick={(e) => {
+            returnToScreeningHistory(e, applicationData, applicationsListData);
           }}
         />
       </p>
