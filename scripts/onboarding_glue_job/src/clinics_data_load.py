@@ -39,7 +39,7 @@ def load_clinics_data(
     try:
         data = obj["Body"].read().decode(encoding)
     except UnicodeDecodeError as err:
-        print(f"Error decoding file with encoding: {encoding}")
+        print(f"Could not decode the file with encoding: {encoding}")
 
     # If decoding with the specified encoding fails, try with utf-8 as a fallback
     if not data and encoding != "utf-8":
@@ -75,7 +75,11 @@ def load_clinics_data(
             "name": row["Name"],
             "city": city,
             "address": address,
-            "createdBy": row["Created By "],
+            "createdBy": (
+                row.get("Created By ")
+                if row.get("Created By ")
+                else row.get("Created By", "BulkDataLoad")
+            ),
             "startDate": row.get("Start Date", "2000-01-01"),
         }
 
