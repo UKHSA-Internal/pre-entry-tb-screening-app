@@ -33,6 +33,8 @@ def load_clinics_data(
     table = dynamodb.Table(table_name)
 
     obj = s3.get_object(Bucket=bucket, Key=key)
+    print(f"Retrieved object from S3, content length: {obj['ContentLength']} bytes")
+
     data = None
 
     print("Decoding file content...")
@@ -50,6 +52,8 @@ def load_clinics_data(
             raise Exception(
                 "Failed to decode the file with both (cp1252/utf-8) encodings."
             )
+    # Print the first 200 characters of the file for verification
+    print(f"obj content: {data[:200]}...")
 
     reader = csv.DictReader(io.StringIO(data))
     print(f"Header: {reader.fieldnames}")
