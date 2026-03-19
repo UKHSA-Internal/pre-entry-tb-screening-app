@@ -53,4 +53,4 @@ jobs:
       - name: Trigger Glue job (onboarding clinics)
         run: |
           aws glue start-job-run --job-name "${{ vars.ONBOARDING_CLINICS_JOB_NAME }}" \
-            --arguments '{"--customer-executor-env-vars":"ONBOARDING_CLINICS_TABLE="${{ vars.ONBOARDING_CLINICS_TABLE }}","ONBOARDING_SCRIPT_S3_BUCKET="${{ vars.ONBOARDING_SCRIPT_S3_BUCKET }}"}'
+            --arguments '{"--customer-executor-env-vars":"ONBOARDING_CLINICS_TABLE=${{ vars.ONBOARDING_CLINICS_TABLE }},ONBOARDING_SCRIPT_S3_BUCKET=${{ vars.ONBOARDING_SCRIPT_S3_BUCKET }}"}'
