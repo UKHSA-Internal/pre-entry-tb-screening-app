@@ -52,6 +52,8 @@ def load_clinics_data(
             )
 
     reader = csv.DictReader(io.StringIO(data))
+    print(f"Header: {reader.fieldnames}")
+
     all_rows = 0
     new_rows = 0
 
