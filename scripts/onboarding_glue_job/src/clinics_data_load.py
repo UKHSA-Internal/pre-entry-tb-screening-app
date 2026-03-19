@@ -7,6 +7,9 @@ import boto3
 BUCKET = os.getenv("ONBOARDING_SCRIPT_S3_BUCKET", "aw-pets-euw-dev-s3-glue-onboarding")
 CLINICS_TABLE = os.getenv("ONBOARDING_CLINICS_TABLE", "clinics-details-test")
 
+print(f"Bucket name from env vars: {os.getenv("ONBOARDING_SCRIPT_S3_BUCKET")}, using: {BUCKET}")
+print(f"Table name from env vars: {os.getenv("ONBOARDING_CLINICS_TABLE")}, using: {CLINICS_TABLE}")
+
 
 # This function is designed to be testable by allowing dependency injection
 # of the S3 client and DynamoDB resource.
@@ -36,19 +39,25 @@ def load_clinics_data(
     try:
         data = obj["Body"].read().decode(encoding)
     except UnicodeDecodeError as err:
-        print(f"Error decoding file with encoding {encoding}: {err}")
+        print(f"Error decoding file with encoding: {encoding}")
 
+    # If decoding with the specified encoding fails, try with utf-8 as a fallback
     if not data and encoding != "utf-8":
         try:
             data = obj["Body"].read().decode("utf-8")
         except UnicodeDecodeError as err:
-            print(f"Error decoding file with utf-8 encoding: {err}")
-            raise Exception("Failed to decode the file with both encodings.")
+            print(f"Error decoding file: {err}")
+            raise Exception(
+                "Failed to decode the file with both (cp1252/utf-8) encodings."
+            )
 
     reader = csv.DictReader(io.StringIO(data))
+    all_rows = 0
+    new_rows = 0
 
     print("Converting CSV rows to DynamoDB items and inserting into table...")
     for row in reader:
+        all_rows += 1
         clinic_ref = row["TB clinic reference number"]
         address = row["Address"]
 
@@ -79,9 +88,13 @@ def load_clinics_data(
                 ConditionExpression="attribute_not_exists(pk)"
             )
         except dynamodb.meta.client.exceptions.ConditionalCheckFailedException:
-            pass
+            print(f"Record with this attribute already exists: {item['pk']}")
+        else:
+            new_rows += 1
 
     print("Data load complete.")
+    print(f"Total rows processed: {all_rows}")
+    print(f"New rows inserted: {new_rows}")
 
 # If run as a script, execute with default AWS resources
 if __name__ == "__main__":
