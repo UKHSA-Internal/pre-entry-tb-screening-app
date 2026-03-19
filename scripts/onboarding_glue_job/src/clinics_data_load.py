@@ -1,4 +1,5 @@
 import csv
+import datetime as dt
 import io
 import os
 
@@ -66,6 +67,11 @@ def load_clinics_data(
         all_rows += 1
         clinic_ref = row["TB clinic reference number"]
         address = row["Address"]
+        start_date = row.get("Start Date") if row.get("Start Date") else "2000-01-01"
+
+        if "/" in start_date:
+            start_date_obj = dt.datetime.strptime(start_date, "%d/%m/%Y")
+            start_date = start_date_obj.strftime("%Y-%m-%d")
 
         # Extract city from address
         city = row.get("City")
@@ -88,7 +94,7 @@ def load_clinics_data(
                 if row.get("Created By ")
                 else row.get("Created By", "BulkDataLoad")
             ),
-            "startDate": row.get("Start Date", "2000-01-01"),
+            "startDate": start_date,
         }
 
         if row.get("End Date"):
