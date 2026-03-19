@@ -87,6 +87,7 @@ const mockPreloadedState = {
     applicationId: "123",
     dateCreated: { year: "2010", month: "1", day: "1" },
     applicationStatus: ApplicationStatus.IN_PROGRESS,
+    clinicId: "clinic-001",
   },
   tbCertificate: {
     status: TaskStatus.COMPLETE,

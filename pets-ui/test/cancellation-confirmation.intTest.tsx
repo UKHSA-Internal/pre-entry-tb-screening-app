@@ -24,6 +24,7 @@ describe("Cancellation confirmation page", () => {
         applicationStatus: ApplicationStatus.IN_PROGRESS,
         cancellationReason: "The clinic uploaded the wrong data",
         cancellationFurtherInfo: "They messed it up big time",
+        clinicId: "clinic-001",
       },
     };
     renderWithProviders(
