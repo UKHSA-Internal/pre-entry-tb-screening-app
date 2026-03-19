@@ -34,26 +34,26 @@ def load_clinics_data(
 
     obj = s3.get_object(Bucket=bucket, Key=key)
     print(f"Retrieved object from S3, content length: {obj['ContentLength']} bytes")
-
     data = None
 
-    print("Decoding file content...")
     try:
         data = obj["Body"].read().decode(encoding)
     except UnicodeDecodeError as err:
         print(f"Could not decode the file with encoding: {encoding}")
 
-    # If decoding with the specified encoding fails, try with utf-8 as a fallback
-    if not data and encoding != "utf-8":
+    # If decoding with the specified encoding fails, try with default one as a fallback
+    if not data:
+        print("Trying to decode with default encoding...")
         try:
-            data = obj["Body"].read().decode("utf-8")
+            obj = s3.get_object(Bucket=bucket, Key=key)
+            data = obj["Body"].read().decode()
         except UnicodeDecodeError as err:
             print(f"Error decoding file: {err}")
             raise Exception(
-                "Failed to decode the file with both (cp1252/utf-8) encodings."
+                "Failed to decode the file with both (cp1252/default) encodings."
             )
     # Print the first 200 characters of the file for verification
-    print(f"obj content: {data[:200]}...")
+    print(f"data: {data[:200]}...")
 
     reader = csv.DictReader(io.StringIO(data))
     print(f"Header: {reader.fieldnames}")
@@ -70,6 +70,8 @@ def load_clinics_data(
         # Extract city from address
         city = row.get("City")
 
+        # City column should be present in the CSV,
+        # but if it's missing or empty, try to extract from address
         if not city and "," in address:
             city = address.split(",")[1].split("-")[0].strip()
 
