@@ -7,6 +7,8 @@ import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import pluginCypress from "eslint-plugin-cypress/flat";
+import nodePlugin from "eslint-plugin-n";
+import unicorn from "eslint-plugin-unicorn";
 
 export default tseslint.config(
   {
@@ -23,6 +25,8 @@ export default tseslint.config(
     extends: [js.configs.recommended, ...tseslint.configs.recommendedTypeChecked],
     plugins: {
       "simple-import-sort": simpleImportSort,
+      n: nodePlugin,
+      unicorn,
     },
     languageOptions: {
       ecmaVersion: 2022,
@@ -49,6 +53,8 @@ export default tseslint.config(
           allow: ["info", "warn", "error"],
         },
       ],
+      "n/prefer-node-protocol": "error",
+      "unicorn/prefer-number-properties": "error",
     },
   },
   eslintPluginPrettier,
