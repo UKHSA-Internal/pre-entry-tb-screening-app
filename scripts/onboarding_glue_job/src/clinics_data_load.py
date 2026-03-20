@@ -116,13 +116,17 @@ def load_clinics_data(
 # If run as a script, execute with default AWS resources
 if __name__ == "__main__":
     import sys
-    import boto3
     from awsglue.utils import getResolvedOptions
 
     args = getResolvedOptions(sys.argv, ['customer-executor-env-vars'])
+    print(f"Received arguments: {args}")
 
-    for pair in args['customer-executor-env-vars'].split(','):
-        k, v = pair.split('=', 1)
-        os.environ[k] = v
+    try:
+        for pair in args['customer-executor-env-vars'].split(','):
+            k, v = pair.split('=', 1)
+            os.environ[k] = v
+    except Exception as e:
+        print(f"Error parsing environment variables from arguments: {e}")
+        raise
 
     load_clinics_data()
