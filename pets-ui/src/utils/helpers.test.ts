@@ -1,3 +1,6 @@
+import { ReduxApplicationDetailsType } from "@/types";
+
+import { ApplicationStatus } from "./enums";
 import {
   calculateApplicantAge,
   calculateCertificateExpiryDate,
@@ -9,6 +12,7 @@ import {
   missingFieldsMessage,
   spreadArrayIfNotEmpty,
   standardiseDayOrMonth,
+  upsertAppIntoAppList,
   validateDate,
   validateMedicalScreeningDate,
   validatePassportIssueDate,
@@ -567,5 +571,79 @@ describe("calculateCertificateExpiryDate function", () => {
         true,
       ),
     ).toEqual({ year: "2001", month: "2", day: "28" });
+  });
+});
+
+describe("upsertAppIntoAppList", () => {
+  const application01: ReduxApplicationDetailsType = {
+    applicationId: "app-01",
+    applicationStatus: ApplicationStatus.NULL,
+    clinicId: "clinic-01",
+    dateCreated: {
+      year: "2000",
+      month: "01",
+      day: "01",
+    },
+  };
+  const applicationEmptyId = { ...application01, applicationId: "" };
+  const application02 = { ...application01, applicationId: "app-02", clinicId: "clinic-02" };
+  const application01CertAvailable = {
+    ...application01,
+    applicationStatus: ApplicationStatus.CERTIFICATE_AVAILABLE,
+  };
+
+  it("returns original list if applicationId is empty", () => {
+    const list: ReduxApplicationDetailsType[] = [application01];
+
+    const result = upsertAppIntoAppList(applicationEmptyId, list);
+
+    expect(result).toBe(list);
+  });
+
+  it("adds a new application if not already in list", () => {
+    const list: ReduxApplicationDetailsType[] = [application01];
+
+    const result = upsertAppIntoAppList(application02, [application01]);
+
+    expect(result).toHaveLength(2);
+    expect(result).toContainEqual(application01);
+    expect(result).toContainEqual(application02);
+    expect(result).not.toBe(list);
+  });
+
+  it("updates an existing application", () => {
+    const list: ReduxApplicationDetailsType[] = [application01];
+
+    const result = upsertAppIntoAppList(application01CertAvailable, list);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].applicationId).toBe("app-01");
+    expect(result[0].applicationStatus).toBe(ApplicationStatus.CERTIFICATE_AVAILABLE);
+  });
+
+  it("preserves applicationId, clinicId, and dateCreated on update", () => {
+    const list: ReduxApplicationDetailsType[] = [application01];
+
+    const updatedApp = {
+      applicationId: "app-01",
+      applicationStatus: ApplicationStatus.CERTIFICATE_AVAILABLE,
+      clinicId: "clinic-02",
+      dateCreated: {
+        year: "1999",
+        month: "12",
+        day: "31",
+      },
+    };
+
+    const result = upsertAppIntoAppList(updatedApp, list);
+
+    expect(result[0].applicationId).toBe("app-01");
+    expect(result[0].clinicId).toBe("clinic-01");
+    expect(result[0].dateCreated).toMatchObject({
+      year: "2000",
+      month: "01",
+      day: "01",
+    });
+    expect(result[0].applicationStatus).toBe(ApplicationStatus.CERTIFICATE_AVAILABLE);
   });
 });
