@@ -195,6 +195,7 @@ const incompleteState = {
     applicationStatus: ApplicationStatus.IN_PROGRESS,
     applicationId: "abc-123",
     dateCreated: { year: "2020", month: "12", day: "31" },
+    clinicId: "clinic-001",
   },
   applicant: {
     status: TaskStatus.NOT_YET_STARTED,
@@ -243,6 +244,7 @@ const completeState = {
     applicationStatus: ApplicationStatus.CERTIFICATE_AVAILABLE,
     applicationId: "abc-123",
     dateCreated: { year: "2020", month: "12", day: "31" },
+    clinicId: "clinic-001",
   },
   applicant: {
     status: TaskStatus.COMPLETE,
@@ -299,6 +301,7 @@ const cancelledImmediatelyState = {
     applicationId: "abc-123",
     dateCreated: { year: "2020", month: "12", day: "31" },
     cancellationReason: "the visa applicant ran away",
+    clinicId: "clinic-001",
   },
   applicant: {
     status: TaskStatus.COMPLETE,
@@ -349,6 +352,7 @@ const cancelledAfterSputumState = {
     dateCreated: { year: "2020", month: "12", day: "31" },
     cancellationReason: "the visa applicant ran away",
     cancellationFurtherInfo: "They ran really fast.",
+    clinicId: "clinic-001",
   },
   applicant: {
     status: TaskStatus.COMPLETE,

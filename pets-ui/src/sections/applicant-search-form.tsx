@@ -17,58 +17,41 @@ import {
   setApplicantPassportDetails,
   setApplicantPhotoFileName,
 } from "@/redux/applicantSlice";
+import { clearApplicationDetails } from "@/redux/applicationSlice";
 import {
-  clearApplicationDetails,
-  setApplicationDetails,
-  setApplicationId,
-} from "@/redux/applicationSlice";
-import { clearChestXrayDetails, setChestXrayFromApiResponse } from "@/redux/chestXraySlice";
+  clearApplicationsListDetails,
+  setApplicationsListDetailsFromApiResponse,
+} from "@/redux/applicationsListSlice";
+import { clearChestXrayDetails } from "@/redux/chestXraySlice";
 import { useAppDispatch } from "@/redux/hooks";
-import {
-  clearMedicalScreeningDetails,
-  setMedicalScreeningDetailsFromApiResponse,
-} from "@/redux/medicalScreeningSlice";
-import {
-  clearRadiologicalOutcomeDetails,
-  setRadiologicalOutcomeFromApiResponse,
-} from "@/redux/radiologicalOutcomeSlice";
-import {
-  clearSputumDecision,
-  setSputumDecisionRequired,
-  setSputumDecisionStatus,
-} from "@/redux/sputumDecisionSlice";
-import {
-  clearSputumDetails,
-  setSputumDetailsFromApiResponse,
-  setSputumStatus,
-} from "@/redux/sputumSlice";
-import {
-  clearTbCertificateDetails,
-  setTbCertificateFromApiResponse,
-} from "@/redux/tbCertificateSlice";
-import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
+import { clearMedicalScreeningDetails } from "@/redux/medicalScreeningSlice";
+import { clearRadiologicalOutcomeDetails } from "@/redux/radiologicalOutcomeSlice";
+import { clearSputumDecision } from "@/redux/sputumDecisionSlice";
+import { clearSputumDetails } from "@/redux/sputumSlice";
+import { clearTbCertificateDetails } from "@/redux/tbCertificateSlice";
+import { clearTravelDetails } from "@/redux/travelSlice";
 import { ApplicantSearchFormType, ReceivedApplicantDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { countryList } from "@/utils/countryList";
-import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
+import { ButtonClass } from "@/utils/enums";
 import { setGoogleAnalyticsParams } from "@/utils/google-analytics-utils";
-import { convertDateStrToObj } from "@/utils/helpers";
 import { formRegex } from "@/utils/records";
 import { getUserProperties } from "@/utils/userProperties";
 
-import { getApplicants, getApplication } from "../api/api";
+import { getApplicants } from "../api/api";
 
 const ApplicantSearchForm = () => {
   const navigate = useNavigate();
   const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
   const dispatch = useAppDispatch();
-  const { setApplicantPhotoUrl, setApplicantPhotoFile } = useApplicantPhoto();
+  const { setApplicantPhotoUrl } = useApplicantPhoto();
 
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     dispatch(clearApplicantDetails());
     dispatch(clearApplicationDetails());
+    dispatch(clearApplicationsListDetails());
     dispatch(clearMedicalScreeningDetails());
     dispatch(clearTravelDetails());
     dispatch(clearChestXrayDetails());
@@ -99,43 +82,23 @@ const ApplicantSearchForm = () => {
 
   const errorsToShow = Object.keys(errors);
 
-  const handleApplicantPhoto = async (photoUrl: string) => {
-    const env = import.meta.env.VITE_ENVIRONMENT as string | undefined;
-    const fixedUrl =
-      env === "local" ? photoUrl.replace(/172\.\d+\.\d+\.\d+:4566/, "localhost:4566") : photoUrl;
-
-    const urlParts = photoUrl.split("/");
-    const filename = urlParts.pop()?.split("?")[0] ?? "applicant-photo.jpg";
-    dispatch(setApplicantPhotoFileName(filename));
-    const response = await fetch(fixedUrl);
-    const blob = await response.blob();
-    if (typeof File == "undefined") {
-      setApplicantPhotoUrl(fixedUrl);
-    } else {
-      try {
-        const file = new File([blob], filename, { type: blob.type });
-        setApplicantPhotoFile(file);
-      } catch {
-        setApplicantPhotoUrl(fixedUrl);
-      }
-    }
-  };
-
   const onSubmit: SubmitHandler<ApplicantSearchFormType> = async (passportDetails) => {
     setIsLoading(true);
     dispatch(setApplicantPassportDetails(passportDetails));
     setApplicantPhotoUrl(null);
 
     let applicantRes: AxiosResponse<ReceivedApplicantDetailsType> | null = null;
-    let applicationId: string | null = null;
     try {
       applicantRes = await getApplicants(passportDetails);
-      applicationId = applicantRes.data.applications[0].applicationId;
-      if (!uuidValidate(applicationId)) {
-        throw new Error(`Application ID (${applicationId}) is in an invalid UUID format`);
+      for (const application of applicantRes.data.applications) {
+        const applicationId = application.applicationId;
+        if (!uuidValidate(application.applicationId)) {
+          throw new Error(`Application ID (${applicationId}) is in an invalid UUID format`);
+        }
       }
       dispatch(setApplicantDetailsFromApiResponse(applicantRes.data));
-      dispatch(setApplicationId(applicationId));
+      dispatch(setApplicationsListDetailsFromApiResponse(applicantRes.data.applications));
+      navigate("/screening-history");
     } catch (error) {
       if (axios.isAxiosError(error) && error.status == 404) {
         await fetchClinic(dispatch);
@@ -147,63 +110,12 @@ const ApplicantSearchForm = () => {
         return;
       }
     }
-
-    try {
-      const applicationRes = await getApplication(applicationId);
-      dispatch(
-        setApplicationDetails({
-          applicationId: applicationId,
-          applicationStatus: applicationRes.data.applicationStatus,
-          dateCreated: convertDateStrToObj(applicantRes?.data.dateCreated ?? ""),
-          cancellationReason: applicationRes.data.cancellationReason ?? "",
-          cancellationFurtherInfo: applicationRes.data.cancellationFurtherInfo ?? "",
-        }),
-      );
-      const applicationClinicId = applicationRes.data.clinicId as string | undefined;
-      await fetchClinic(dispatch, applicationClinicId);
-
-      if (applicationRes.data.applicantPhotoUrl) {
-        await handleApplicantPhoto(applicationRes.data.applicantPhotoUrl);
-      }
-
-      if (applicationRes.data.travelInformation) {
-        dispatch(setTravelDetailsFromApiResponse(applicationRes.data.travelInformation));
-      }
-      if (applicationRes.data.medicalScreening) {
-        dispatch(setMedicalScreeningDetailsFromApiResponse(applicationRes.data.medicalScreening));
-      }
-      if (applicationRes.data.chestXray) {
-        dispatch(setChestXrayFromApiResponse(applicationRes.data.chestXray));
-      }
-      if (applicationRes.data.radiologicalOutcome) {
-        dispatch(setRadiologicalOutcomeFromApiResponse(applicationRes.data.radiologicalOutcome));
-      }
-      if (applicationRes.data.sputumRequirement) {
-        dispatch(setSputumDecisionRequired(applicationRes.data.sputumRequirement.sputumRequired));
-        dispatch(setSputumDecisionStatus(TaskStatus.COMPLETE));
-        if (applicationRes.data.sputumRequirement.sputumRequired === YesOrNo.NO) {
-          dispatch(setSputumStatus(TaskStatus.NOT_REQUIRED));
-        }
-      }
-      if (
-        applicationRes.data.sputumDetails &&
-        applicationRes.data.sputumRequirement?.sputumRequired !== YesOrNo.NO
-      ) {
-        dispatch(setSputumDetailsFromApiResponse(applicationRes.data.sputumDetails));
-      }
-      if (applicationRes.data.tbCertificate) {
-        dispatch(setTbCertificateFromApiResponse(applicationRes.data.tbCertificate));
-      }
-      navigate("/tracker");
-    } catch (error) {
-      console.error(error);
-      navigate("/sorry-there-is-problem-with-service");
-    }
   };
 
   return (
     <div>
       {isLoading && <Spinner />}
+
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}

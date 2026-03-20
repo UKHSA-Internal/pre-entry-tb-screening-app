@@ -42,15 +42,25 @@ type ReceivedApplicationAttributesType = {
 };
 
 // Application types
-type ApplicationIdAndDateCreatedType = {
+
+type ReceivedApplicationListType = {
+  applicationStatus: ApplicationStatus;
   applicationId: string;
+  clinicId: string;
   dateCreated: string;
+  dateUpdated?: string;
+  expiryDate?: string;
+  cancellationReason?: string;
+  cancellationFurtherInfo?: string;
 };
 
 type ReduxApplicationDetailsType = {
   applicationStatus: ApplicationStatus;
   applicationId: string;
+  clinicId: string;
   dateCreated: DateType;
+  dateUpdated?: DateType;
+  expiryDate?: DateType;
   cancellationReason?: string;
   cancellationFurtherInfo?: string;
 };
@@ -59,6 +69,8 @@ type ReceivedApplicationDetailsType = {
   applicationId: string;
   applicationStatus: ApplicationStatus;
   dateCreated?: string;
+  dateUpdated?: string;
+  expiryDate?: string;
   cancellationReason?: string;
   cancellationFurtherInfo?: string;
   clinicId: string;
@@ -133,7 +145,7 @@ type ReceivedApplicantDetailsType = {
   provinceOrState: string;
   country: string;
   postcode?: string;
-  applications: ReceivedApplicationDetailsType[];
+  applications: ReceivedApplicationListType[];
   dateCreated: string;
   status: BackendTaskStatus;
 };
