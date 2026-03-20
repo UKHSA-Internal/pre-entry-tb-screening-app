@@ -5,7 +5,7 @@ import os
 
 import boto3
 
-BUCKET = os.getenv("ONBOARDING_SCRIPT_S3_BUCKET", "aw-pets-euw-dev-s3-glue-onboarding")
+BUCKET = os.getenv("ONBOARDING_SCRIPT_S3_BUCKET", "aw-pets-euw-qat-s3-glue-onboarding")
 CLINICS_TABLE = os.getenv("ONBOARDING_CLINICS_TABLE", "clinics-details")
 
 print(f"Bucket name from env vars: {os.getenv('ONBOARDING_SCRIPT_S3_BUCKET')}, using: {BUCKET}")
