@@ -10,15 +10,23 @@ import boto3
 def load_clinics_data(
     s3=None,
     dynamodb=None,
+    bucket="",
     key="PETS-Clinic-Dataload.csv",
+    table_name="",
     encoding="cp1252"
 ):
     """
     Loads clinic data from a CSV in S3 and writes to DynamoDB.
     Allows dependency injection for testing.
     """
-    bucket = os.getenv("ONBOARDING_SCRIPT_S3_BUCKET", "aw-pets-euw-qat-s3-glue-onboarding")
-    table_name = os.getenv("ONBOARDING_CLINICS_TABLE", "clinics-details")
+    bucket = (
+        bucket or
+        os.getenv("ONBOARDING_SCRIPT_S3_BUCKET", "aw-pets-euw-qat-s3-glue-onboarding")
+    )
+    table_name = (
+        table_name or
+        os.getenv("ONBOARDING_CLINICS_TABLE", "clinics-details")
+    )
 
     print(f"Bucket name from env vars: {os.getenv('ONBOARDING_SCRIPT_S3_BUCKET')}, using: {bucket}")
     print(f"Table name from env vars: {os.getenv('ONBOARDING_CLINICS_TABLE')}, using: {table_name}")
