@@ -119,4 +119,14 @@ def load_clinics_data(
 
 # If run as a script, execute with default AWS resources
 if __name__ == "__main__":
+    import sys
+    import boto3
+    from awsglue.utils import getResolvedOptions
+
+    args = getResolvedOptions(sys.argv, ['customer-executor-env-vars'])
+
+    for pair in args['customer-executor-env-vars'].split(','):
+        k, v = pair.split('=', 1)
+        os.environ[k] = v
+
     load_clinics_data()
