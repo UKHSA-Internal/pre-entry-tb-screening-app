@@ -53,8 +53,8 @@ def load_clinics_data(
             raise Exception(
                 "Failed to decode the file with both (cp1252/default) encodings."
             )
-    # Print the first 200 characters of the file for verification
-    print(f"data: {data[:200]}...")
+    # Print the first 100 characters of the file for verification
+    print(f"data: {data[:100]}...")
 
     reader = csv.DictReader(io.StringIO(data))
     print(f"Header: {reader.fieldnames}")
