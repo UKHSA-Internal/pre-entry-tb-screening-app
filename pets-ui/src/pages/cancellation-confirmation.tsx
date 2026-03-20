@@ -36,7 +36,6 @@ export default function CancellationConfirmationPage() {
             setApplicationsListDetails(upsertAppIntoAppList(applicationData, applicationsListData)),
           );
           navigate("/screening-history");
-          return;
         }}
       />
       .

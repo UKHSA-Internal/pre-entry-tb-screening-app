@@ -1,9 +1,7 @@
-// import { AxiosResponse } from "axios";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
-// import { getApplicants } from "@/api/api";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import Heading from "@/components/heading/heading";
@@ -14,7 +12,6 @@ import StatusTag from "@/components/statusTag/statusTag";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { setApplicationStatus } from "@/redux/applicationSlice";
 import { setApplicationsListDetails } from "@/redux/applicationsListSlice";
-// import { setApplicationsListDetailsFromApiResponse } from "@/redux/applicationsListSlice";
 import { useAppSelector } from "@/redux/hooks";
 import {
   selectApplicant,
@@ -29,7 +26,6 @@ import {
   selectTravel,
 } from "@/redux/store";
 import { ReduxApplicationDetailsType } from "@/types";
-// import { ApplicantSearchFormType, ReceivedApplicantDetailsType } from "@/types";
 import {
   AdditionalStatusTagTexts,
   ApplicationStatus,
@@ -196,7 +192,6 @@ const ProgressTracker = () => {
       setApplicationsListDetails(upsertAppIntoAppList(currentApplication, applicationsList)),
     );
     navigate("/screening-history");
-    return;
   };
 
   return (

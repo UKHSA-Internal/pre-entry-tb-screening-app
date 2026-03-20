@@ -42,7 +42,6 @@ const ApplicantReview = () => {
       applicantData.status == TaskStatus.NOT_REQUIRED
     ) {
       navigate("/tracker");
-      return;
     } else {
       try {
         const applicationRes = await createNewApplication({
