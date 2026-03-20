@@ -7,7 +7,7 @@ import Button from "@/components/button/button";
 import Summary from "@/components/summary/summary";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { setApplicantDetailsStatus } from "@/redux/applicantSlice";
-import { setApplicationId, setDateCreated } from "@/redux/applicationSlice";
+import { setApplicationId, setClinicId, setDateCreated } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant, selectApplication, selectApplicationsList } from "@/redux/store";
 import { ButtonClass, ImageType, TaskStatus } from "@/utils/enums";
@@ -51,6 +51,7 @@ const ApplicantReview = () => {
         });
         dispatch(setApplicationId(applicationRes.data.applicationId));
         dispatch(setDateCreated(convertDateStrToObj(applicationRes.data.dateCreated)));
+        dispatch(setClinicId(applicationRes.data.clinicId));
 
         if (applicationsListData.length < 1) {
           const dateOfBirthStr = `${applicantData.dateOfBirth.year}-${standardiseDayOrMonth(applicantData.dateOfBirth.month)}-${standardiseDayOrMonth(applicantData.dateOfBirth.day)}`;

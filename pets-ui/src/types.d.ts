@@ -42,10 +42,6 @@ type ReceivedApplicationAttributesType = {
 };
 
 // Application types
-type ApplicationIdAndDateCreatedType = {
-  applicationId: string;
-  dateCreated: string;
-};
 
 type ReceivedApplicationListType = {
   applicationStatus: ApplicationStatus;
