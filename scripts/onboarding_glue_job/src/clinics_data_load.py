@@ -118,7 +118,7 @@ if __name__ == "__main__":
     import sys
     from awsglue.utils import getResolvedOptions
 
-    args = getResolvedOptions(sys.argv, ["customer_executor_env_vars"])
+    args = getResolvedOptions(sys.argv, ["customer-executor-env-vars"])
     print(f"Received arguments: {args}")
 
     try:
