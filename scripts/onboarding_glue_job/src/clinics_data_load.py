@@ -118,11 +118,11 @@ if __name__ == "__main__":
     import sys
     from awsglue.utils import getResolvedOptions
 
-    args = getResolvedOptions(sys.argv, ['customer-executor-env-vars'])
+    args = getResolvedOptions(sys.argv, ["customer_executor_env_vars"])
     print(f"Received arguments: {args}")
 
     try:
-        for pair in args['customer-executor-env-vars'].split(','):
+        for pair in args["customer_executor_env_vars"].split(','):
             k, v = pair.split('=', 1)
             os.environ[k] = v
     except Exception as e:
