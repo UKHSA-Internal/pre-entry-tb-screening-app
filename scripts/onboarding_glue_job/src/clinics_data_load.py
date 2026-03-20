@@ -67,8 +67,11 @@ def load_clinics_data(
         all_rows += 1
         clinic_ref = row["TB clinic reference number"]
         address = row["Address"]
-        start_date = row.get("Start Date") if row.get("Start Date") else "2000-01-01"
+        today_date_str = dt.datetime.now().strftime("%Y-%m-%d")
+        start_date = row.get("Start Date") if row.get("Start Date") else today_date_str
 
+        # It won't work for all date formats, but if the date is in dd/mm/yyyy format,
+        # then this will convert it to yyyy-mm-dd
         if "/" in start_date:
             start_date_obj = dt.datetime.strptime(start_date, "%d/%m/%Y")
             start_date = start_date_obj.strftime("%Y-%m-%d")

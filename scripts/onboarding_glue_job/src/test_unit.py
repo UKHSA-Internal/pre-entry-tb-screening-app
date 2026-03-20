@@ -121,6 +121,7 @@ def test_load_clinics_data_date_format_conversion():
   assert item["endDate"] == "01/01/2023"  # End date is not converted
 
 
+@pytest.mark.freeze_time('2026-02-03')
 def test_load_clinics_data_missing_start_date_defaults():
   """Test missing Start Date defaults to 2000-01-01"""
   csv_data = (
@@ -140,7 +141,7 @@ def test_load_clinics_data_missing_start_date_defaults():
   )
 
   item = table_mock.put_item.call_args_list[0][1]["Item"]
-  assert item["startDate"] == "2000-01-01"
+  assert item["startDate"] == "2026-02-03"
 
 
 def test_load_clinics_data_missing_city_field_parses_from_address():
