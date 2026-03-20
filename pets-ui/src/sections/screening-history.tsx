@@ -236,7 +236,7 @@ const ScreeningHistory = () => {
 
       {noInProgressApps && (
         <div>
-          <Heading title="Start a new screening" level={2} size="s" />
+          <Heading title="Start a new screening" level={2} size="m" />
           <StartButton
             id="start-new-screening"
             text="Start now"
@@ -252,7 +252,6 @@ const ScreeningHistory = () => {
 
       {appFromOtherClinic && (
         <>
-          <br />
           <br />
           <Details
             summary="Help with screening details that are not available"
