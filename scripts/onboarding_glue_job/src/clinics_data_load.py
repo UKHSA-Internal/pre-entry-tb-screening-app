@@ -5,27 +5,23 @@ import os
 
 import boto3
 
-BUCKET = os.getenv("ONBOARDING_SCRIPT_S3_BUCKET", "aw-pets-euw-qat-s3-glue-onboarding")
-CLINICS_TABLE = os.getenv("ONBOARDING_CLINICS_TABLE", "clinics-details")
-
-print(f"Bucket name from env vars: {os.getenv('ONBOARDING_SCRIPT_S3_BUCKET')}, using: {BUCKET}")
-print(f"Table name from env vars: {os.getenv('ONBOARDING_CLINICS_TABLE')}, using: {CLINICS_TABLE}")
-
-
 # This function is designed to be testable by allowing dependency injection
 # of the S3 client and DynamoDB resource.
 def load_clinics_data(
     s3=None,
     dynamodb=None,
-    bucket=BUCKET,
     key="PETS-Clinic-Dataload.csv",
-    table_name=CLINICS_TABLE,
     encoding="cp1252"
 ):
     """
     Loads clinic data from a CSV in S3 and writes to DynamoDB.
     Allows dependency injection for testing.
     """
+    bucket = os.getenv("ONBOARDING_SCRIPT_S3_BUCKET", "aw-pets-euw-qat-s3-glue-onboarding")
+    table_name = os.getenv("ONBOARDING_CLINICS_TABLE", "clinics-details")
+
+    print(f"Bucket name from env vars: {os.getenv('ONBOARDING_SCRIPT_S3_BUCKET')}, using: {bucket}")
+    print(f"Table name from env vars: {os.getenv('ONBOARDING_CLINICS_TABLE')}, using: {table_name}")
     print("Creating s3 client and DynamoDB resource...")
     if s3 is None:
         s3 = boto3.client("s3")
