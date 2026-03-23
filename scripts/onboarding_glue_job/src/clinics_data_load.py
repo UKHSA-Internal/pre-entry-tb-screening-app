@@ -19,17 +19,17 @@ def load_clinics_data(
     Loads clinic data from a CSV in S3 and writes to DynamoDB.
     Allows dependency injection for testing.
     """
-    bucket = (
-        bucket or
-        os.getenv("ONBOARDING_SCRIPT_S3_BUCKET", "aw-pets-euw-qat-s3-glue-onboarding")
-    )
-    table_name = (
-        table_name or
-        os.getenv("ONBOARDING_CLINICS_TABLE", "clinics-details")
+    bucket = bucket or os.getenv("ONBOARDING_SCRIPT_S3_BUCKET")
+    table_name = table_name or os.getenv("ONBOARDING_CLINICS_TABLE")
+    key = key or os.getenv("ONBOARDING_CLINICS_CSV_FILE_NAME")
+
+    print(f"Bucket name: {bucket}")
+    print(f"Table name: {table_name}")
+    print(
+        f"CSV file name from env vars: {os.getenv('ONBOARDING_CLINICS_CSV_FILE_NAME')}, "
+        f"used name: {key}"
     )
 
-    print(f"Bucket name from env vars: {os.getenv('ONBOARDING_SCRIPT_S3_BUCKET')}, using: {bucket}")
-    print(f"Table name from env vars: {os.getenv('ONBOARDING_CLINICS_TABLE')}, using: {table_name}")
     print("Creating s3 client and DynamoDB resource...")
     if s3 is None:
         s3 = boto3.client("s3")
@@ -58,7 +58,7 @@ def load_clinics_data(
                 "Failed to decode the file with both (cp1252/default) encodings."
             )
     # Print the first 100 characters of the file for verification
-    print(f"data: {data[:100]}...")
+    print(f"data from the file (first 100 characters): {data[:100]}...")
 
     reader = csv.DictReader(io.StringIO(data))
     print(f"Header: {reader.fieldnames}")
