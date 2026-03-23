@@ -32,8 +32,7 @@ const ApplicantReview = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { applicantPhotoFile } = useApplicantPhoto();
-  const isComplete = applicantData.status === TaskStatus.COMPLETE;
-  const summaryStatus = isComplete ? TaskStatus.IN_PROGRESS : applicantData.status;
+  const taskComplete = applicantData.status === TaskStatus.COMPLETE;
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -123,7 +122,7 @@ const ApplicantReview = () => {
     {
       key: "Passport number",
       value: applicantData.passportNumber,
-      link: isComplete
+      link: taskComplete
         ? undefined
         : `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.passportNumber}`,
       hiddenLabel: "passport number",
@@ -131,7 +130,7 @@ const ApplicantReview = () => {
     {
       key: "Country of issue",
       value: getCountryName(applicantData.countryOfIssue),
-      link: isComplete
+      link: taskComplete
         ? undefined
         : `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.countryOfIssue}`,
       hiddenLabel: "country of issue",
@@ -202,9 +201,10 @@ const ApplicantReview = () => {
     <div>
       {isLoading && <Spinner />}
       <Summary
-        taskStatus={summaryStatus}
+        taskStatus={applicantData.status}
         applicationStatus={applicationData.applicationStatus}
         summaryElements={summaryData}
+        showChangeLinksAfterTaskComplete
       />
 
       <Button
