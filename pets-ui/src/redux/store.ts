@@ -4,6 +4,7 @@ import { applicantReducer } from "./applicantSlice";
 import { applicationReducer } from "./applicationSlice";
 import { applicationsListReducer } from "./applicationsListSlice";
 import { chestXrayReducer } from "./chestXraySlice";
+import { clinicReducer } from "./clinicSlice";
 import { medicalScreeningReducer } from "./medicalScreeningSlice";
 import { radiologicalOutcomeReducer } from "./radiologicalOutcomeSlice";
 import { sputumDecisionReducer } from "./sputumDecisionSlice";
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   applicant: applicantReducer,
   application: applicationReducer,
   applicationsList: applicationsListReducer,
+  clinic: clinicReducer,
   chestXray: chestXrayReducer,
   radiologicalOutcome: radiologicalOutcomeReducer,
   medicalScreening: medicalScreeningReducer,
@@ -46,4 +48,5 @@ export const selectSputum = (state: RootState) => state.sputum;
 export const selectSputumDecision = (state: RootState) => state.sputumDecision;
 export const selectTbCertificate = (state: RootState) => state.tbCertificate;
 export const selectClinic = (state: RootState) => state.tbCertificate.clinic;
+export const selectUserClinic = (state: RootState) => state.clinic;
 export const selectTravel = (state: RootState) => state.travel;

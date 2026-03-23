@@ -33,7 +33,7 @@ import {
   setSputumDetailsFromApiResponse,
   setSputumStatus,
 } from "@/redux/sputumSlice";
-import { selectApplicant, selectApplicationsList } from "@/redux/store";
+import { selectApplicant, selectApplicationsList, selectUserClinic } from "@/redux/store";
 import {
   clearTbCertificateDetails,
   setTbCertificateFromApiResponse,
@@ -41,12 +41,8 @@ import {
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
 import { ReduxApplicationDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
-// import { getClinicId } from "@/utils/clinic";
 import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
 import { convertDateStrToObj, formatDateForDisplay } from "@/utils/helpers";
-
-// const currentClinicId = await getClinicId(); // this line currently causes Uncaught BrowserAuthError
-const currentClinicId = "UK/LHR/00/"; // placeholder so page can be tested
 
 const getApplicationExpiryDate = (application: ReduxApplicationDetailsType): string => {
   if (
@@ -69,6 +65,7 @@ const getApplicationExpiryDate = (application: ReduxApplicationDetailsType): str
 const ScreeningHistory = () => {
   const applicantData = useAppSelector(selectApplicant);
   const applicationsListData = useAppSelector(selectApplicationsList);
+  const userClinicData = useAppSelector(selectUserClinic);
   const applicantPhotoContext = useApplicantPhoto();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -178,7 +175,7 @@ const ScreeningHistory = () => {
   const getApplicationAction = (
     application: ReduxApplicationDetailsType,
   ): string | React.JSX.Element => {
-    if (application.clinicId == currentClinicId) {
+    if (application.clinicId == userClinicData.clinicId) {
       return (
         <LinkLabel
           title={
@@ -197,7 +194,7 @@ const ScreeningHistory = () => {
   };
 
   const appFromOtherClinic = applicationsListData.some(
-    (application) => application.clinicId !== currentClinicId,
+    (application) => application.clinicId !== userClinicData.clinicId,
   );
 
   const noInProgressApps = applicationsListData.every(

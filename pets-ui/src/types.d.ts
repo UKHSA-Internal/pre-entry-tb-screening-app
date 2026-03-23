@@ -41,8 +41,11 @@ type ReceivedApplicationAttributesType = {
   status: BackendTaskStatus;
 };
 
-// Application types
+type ReduxClinicDetailsType = {
+  clinicId: string;
+};
 
+// Application types
 type ReceivedApplicationListType = {
   applicationStatus: ApplicationStatus;
   applicationId: string;

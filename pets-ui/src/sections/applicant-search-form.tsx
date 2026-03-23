@@ -23,6 +23,7 @@ import {
   setApplicationsListDetailsFromApiResponse,
 } from "@/redux/applicationsListSlice";
 import { clearChestXrayDetails } from "@/redux/chestXraySlice";
+import { setUserClinicId } from "@/redux/clinicSlice";
 import { useAppDispatch } from "@/redux/hooks";
 import { clearMedicalScreeningDetails } from "@/redux/medicalScreeningSlice";
 import { clearRadiologicalOutcomeDetails } from "@/redux/radiologicalOutcomeSlice";
@@ -71,8 +72,10 @@ const ApplicantSearchForm = () => {
         user_role: userProperties.jobTitle,
         clinic_id: userProperties.clinicId,
       });
+      dispatch(setUserClinicId(userProperties.clinicId ?? ""));
     };
     void setUserProperties();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const {
