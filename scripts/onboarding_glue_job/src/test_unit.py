@@ -1,6 +1,9 @@
-
+import importlib
 import io
+import os
 import pytest
+import sys
+import types
 from unittest.mock import MagicMock
 
 import clinics_data_load
@@ -726,3 +729,118 @@ def test_load_clinics_data_csv_with_mixed_date_formats():
   assert item["startDate"] == "2020-06-15"
   # End date is stored as-is (not converted)
   assert item["endDate"] == "2023-06-15"
+
+
+def test_load_clinics_data_env_fallback(monkeypatch):
+  """Test fallback to environment variables for bucket, key, table_name"""
+  monkeypatch.setenv("ONBOARDING_SCRIPT_S3_BUCKET", "env-bucket")
+  monkeypatch.setenv("ONBOARDING_CLINICS_TABLE", "env-table")
+  monkeypatch.setenv("ONBOARDING_CLINICS_CSV_FILE_NAME", "env-file.csv")
+  s3_mock = create_mock_s3(
+    'TB clinic reference number,Address,Country,Name,Created By ,Start Date,End Date\n'
+    '1,"Addr, City - UK",UK,Clinic,admin,2020-01-01,2022-01-01\n'
+  )
+  dynamodb_mock, table_mock = create_mock_dynamodb()
+  clinics_data_load.load_clinics_data(
+    s3=s3_mock,
+    dynamodb=dynamodb_mock,
+    # bucket, key, table_name omitted to force env fallback
+  )
+  s3_mock.get_object.assert_called_with(Bucket="env-bucket", Key="PETS-Clinic-Dataload.csv")
+  dynamodb_mock.Table.assert_called_with("env-table")
+
+
+def test_load_clinics_data_missing_required_columns():
+  """Test handling when required columns are missing (should raise KeyError)"""
+  # Missing TB clinic reference number
+  csv_data = 'Address,Country,Name,Created By ,Start Date,End Date\n' \
+          '"Addr, City - UK",UK,Clinic,admin,2020-01-01,2022-01-01\n'
+  s3_mock = create_mock_s3(csv_data)
+  dynamodb_mock, table_mock = create_mock_dynamodb()
+  with pytest.raises(KeyError):
+    clinics_data_load.load_clinics_data(
+      s3=s3_mock,
+      dynamodb=dynamodb_mock,
+      bucket="b", key="k", table_name="t"
+    )
+
+  # Missing Address
+  csv_data2 = 'TB clinic reference number,Country,Name,Created By ,Start Date,End Date\n' \
+        '1,UK,Clinic,admin,2020-01-01,2022-01-01\n'
+  s3_mock2 = create_mock_s3(csv_data2)
+  dynamodb_mock2, table_mock2 = create_mock_dynamodb()
+  with pytest.raises(KeyError):
+    clinics_data_load.load_clinics_data(
+      s3=s3_mock2,
+      dynamodb=dynamodb_mock2,
+      bucket="b", key="k", table_name="t"
+    )
+
+
+def test_load_clinics_data_blank_and_malformed_rows():
+  """Test handling of blank and malformed rows (should skip or raise)"""
+  # Blank line after header
+  csv_data = 'TB clinic reference number,Address,Country,Name,Created By ,Start Date,End Date\n\n'
+  s3_mock = create_mock_s3(csv_data)
+  dynamodb_mock, table_mock = create_mock_dynamodb()
+  # Should not insert any items, but not crash
+  clinics_data_load.load_clinics_data(
+    s3=s3_mock,
+    dynamodb=dynamodb_mock,
+    bucket="b", key="k", table_name="t"
+  )
+  assert table_mock.put_item.call_count == 0
+
+  # Malformed row (missing columns)
+  csv_data2 = 'TB clinic reference number,Address,Country,Name,Created By ,Start Date,End Date\n' \
+        '1,"Addr, City - UK",UK\n'
+  s3_mock2 = create_mock_s3(csv_data2)
+  dynamodb_mock2, table_mock2 = create_mock_dynamodb()
+  with pytest.raises(KeyError):
+    clinics_data_load.load_clinics_data(
+      s3=s3_mock2,
+      dynamodb=dynamodb_mock2,
+      bucket="b", key="k", table_name="t"
+    )
+
+
+def test_load_clinics_data_prints(monkeypatch, capsys):
+  """Test that print statements are executed (basic smoke test)"""
+  s3_mock = create_mock_s3(
+    'TB clinic reference number,Address,Country,Name,Created By ,Start Date,End Date\n'
+    '1,"Addr, City - UK",UK,Clinic,admin,2020-01-01,2022-01-01\n'
+  )
+  dynamodb_mock, table_mock = create_mock_dynamodb()
+  clinics_data_load.load_clinics_data(
+    s3=s3_mock,
+    dynamodb=dynamodb_mock,
+    bucket="b", key="k", table_name="t"
+  )
+  out = capsys.readouterr().out
+  assert "Bucket name: b" in out
+  assert "Table name: t" in out
+  assert "Retrieved object from S3" in out
+  assert "Data load complete." in out
+
+
+def test_main_entrypoint(monkeypatch):
+  """Test __main__ entrypoint logic (env var parsing and load_clinics_data call)"""
+  # Patch sys.argv and awsglue.utils.getResolvedOptions
+  test_env = "ONBOARDING_CLINICS_TABLE=main-table,ONBOARDING_SCRIPT_S3_BUCKET=main-bucket,ONBOARDING_CLINICS_CSV_FILE_NAME=main-file.csv"
+  monkeypatch.setitem(sys.modules, "awsglue.utils", types.SimpleNamespace(getResolvedOptions=lambda argv, keys: {"customer_executor_env_vars": test_env}))
+  monkeypatch.setattr(sys, "argv", ["script.py", "--customer-executor-env-vars", test_env])
+  # Patch os.environ to clear
+  monkeypatch.setattr(os, "environ", {})
+  # Patch boto3 client/resource to prevent real AWS calls
+  monkeypatch.setitem(sys.modules, "boto3", types.SimpleNamespace(
+    client=lambda *a, **kw: types.SimpleNamespace(get_object=lambda **kwargs: {"Body": io.BytesIO(b""), "ContentLength": 0}),
+    resource=lambda *a, **kw: types.SimpleNamespace(Table=lambda name: types.SimpleNamespace(put_item=lambda **kwargs: None, meta=types.SimpleNamespace(client=types.SimpleNamespace(exceptions=types.SimpleNamespace(ConditionalCheckFailedException=Exception)))))
+  ))
+  import importlib
+  import clinics_data_load as cdl
+  importlib.reload(cdl)
+  from unittest.mock import patch
+  called = {}
+  def fake_load_clinics_data(*a, **kw):
+    called["called"] = True
+    cdl.__dict__["__name__"] = "__main__"

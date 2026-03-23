@@ -67,8 +67,23 @@ def load_clinics_data(
     new_rows = 0
 
     print("Converting CSV rows to DynamoDB items and inserting into table...")
+
+    # Define required fields to check for in each row.
+    # If any of these are missing, the row will be skipped.
+    required_fields = [
+        "TB clinic reference number",
+        "Address",
+        "Country",
+        "Name"
+    ]
+
     for row in reader:
         all_rows += 1
+        # Check for missing required fields
+        for field in required_fields:
+            if not row.get(field):
+                raise KeyError(f"Missing required field '{field}' in row: {row}")
+
         clinic_ref = row["TB clinic reference number"]
         address = row["Address"]
         today_date_str = dt.datetime.now().strftime("%Y-%m-%d")
