@@ -51,10 +51,9 @@ const getApplicationExpiryDate = (application: ReduxApplicationDetailsType): str
   ) {
     return "Not applicable";
   } else if (
-    application.expiryDate &&
-    application.expiryDate.year &&
-    application.expiryDate.month &&
-    application.expiryDate.day
+    application.expiryDate?.year &&
+    application.expiryDate?.month &&
+    application.expiryDate?.day
   ) {
     return formatDateForDisplay(application.expiryDate);
   } else {
@@ -201,11 +200,14 @@ const ScreeningHistory = () => {
     (application) => application.applicationStatus !== ApplicationStatus.IN_PROGRESS,
   );
 
-  const applicationTableInfo = applicationsListData.map((application, index) => ({
+  const applicationTableInfo = applicationsListData.map((application) => ({
     rowTitle: formatDateForDisplay(application.dateCreated),
     cells: [
       getApplicationExpiryDate(application),
-      <StatusTag key={index} status={application.applicationStatus} />,
+      <StatusTag
+        key={`application-${application.applicationId.slice(0, 8)}-state`}
+        status={application.applicationStatus}
+      />,
       getApplicationAction(application),
     ],
   }));
@@ -241,7 +243,6 @@ const ScreeningHistory = () => {
               setIsLoading(true);
               dispatch(setApplicantDetailsStatus(TaskStatus.IN_PROGRESS));
               navigate("/do-you-have-visa-applicant-written-consent-for-tb-screening");
-              return;
             }}
           />
         </div>
