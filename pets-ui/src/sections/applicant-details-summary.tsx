@@ -32,10 +32,6 @@ const ApplicantReview = () => {
 
   const { applicantPhotoFile } = useApplicantPhoto();
   const taskComplete = applicantData.status === TaskStatus.COMPLETE;
-  // const cancelledOrCertNotIssued =
-  //   applicationData.applicationStatus === ApplicationStatus.CANCELLED ||
-  //   applicationData.applicationStatus === ApplicationStatus.CERTIFICATE_NOT_ISSUED;
-  // const summaryStatus = cancelledOrCertNotIssued ? TaskStatus.COMPLETE : TaskStatus.IN_PROGRESS;
 
   const handleSubmit = async () => {
     setIsLoading(true);
