@@ -746,7 +746,7 @@ def test_load_clinics_data_env_fallback(monkeypatch):
     dynamodb=dynamodb_mock,
     # bucket, key, table_name omitted to force env fallback
   )
-  s3_mock.get_object.assert_called_with(Bucket="env-bucket", Key="PETS-Clinic-Dataload.csv")
+  s3_mock.get_object.assert_called_with(Bucket="env-bucket", Key="env-file.csv")
   dynamodb_mock.Table.assert_called_with("env-table")
 
 

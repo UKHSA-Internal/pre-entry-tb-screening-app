@@ -25,10 +25,7 @@ def load_clinics_data(
 
     print(f"Bucket name: {bucket}")
     print(f"Table name: {table_name}")
-    print(
-        f"CSV file name from env vars: {os.getenv('ONBOARDING_CLINICS_CSV_FILE_NAME')}, "
-        f"used name: {key}"
-    )
+    print(f"CSV file name: {key}")
 
     print("Creating s3 client and DynamoDB resource...")
     if s3 is None:
