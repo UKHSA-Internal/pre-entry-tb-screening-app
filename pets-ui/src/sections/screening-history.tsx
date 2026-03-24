@@ -174,7 +174,10 @@ const ScreeningHistory = () => {
   const getApplicationAction = (
     application: ReduxApplicationDetailsType,
   ): string | React.JSX.Element => {
-    if (application.clinicId == userClinicData.clinicId) {
+    if (
+      userClinicData.clinicId == import.meta.env.VITE_SUPPORT_CLINIC_ID ||
+      application.clinicId == userClinicData.clinicId
+    ) {
       return (
         <LinkLabel
           title={
