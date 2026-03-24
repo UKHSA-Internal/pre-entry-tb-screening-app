@@ -407,4 +407,27 @@ describe("ScreeningHistory", () => {
     expect(store.getState().applicant.applicantPhotoFileName).toBe("photo.jpg");
     consoleErrorSpy.mockRestore();
   });
+
+  it("should update store & redirect to consent question page when start now button clicked", async () => {
+    const preloadedState = {
+      applicant: { ...populatedApplicantSlice, status: TaskStatus.COMPLETE },
+      applicationsList: [applicationCancelled],
+      clinic: { clinicId: "my-clinic" },
+    };
+
+    const { store } = renderWithProviders(
+      <ApplicantPhotoProvider>
+        <ScreeningHistory />
+      </ApplicantPhotoProvider>,
+      { preloadedState },
+    );
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Start now" }));
+
+    expect(store.getState().applicant.status).toBe(TaskStatus.IN_PROGRESS);
+    expect(useNavigateMock).toHaveBeenLastCalledWith(
+      "/do-you-have-visa-applicant-written-consent-for-tb-screening",
+    );
+  });
 });

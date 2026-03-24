@@ -197,6 +197,7 @@ const incompleteState = {
     dateCreated: { year: "2020", month: "12", day: "31" },
     clinicId: "clinic-001",
   },
+  applicationsList: [],
   applicant: {
     status: TaskStatus.NOT_YET_STARTED,
     fullName: "Reginald Backwaters",
@@ -875,5 +876,54 @@ describe("ProgressTrackerPage", () => {
       "govuk-task-list__item govuk-task-list__item--with-link",
     );
     expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Not required"));
+  });
+
+  it("correctly updates state and navigates user to screening history when link at bottom of page is clicked", async () => {
+    const { store } = renderWithProviders(
+      <ApplicantPhotoProvider>
+        <ProgressTrackerPage />
+      </ApplicantPhotoProvider>,
+      { preloadedState: incompleteState },
+    );
+
+    const user = userEvent.setup();
+    await user.click(
+      screen.getByRole("link", { name: "View the screening history for this visa applicant" }),
+    );
+
+    expect(store.getState().applicationsList).toStrictEqual([
+      {
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+        applicationId: "abc-123",
+        dateCreated: { year: "2020", month: "12", day: "31" },
+        clinicId: "clinic-001",
+      },
+    ]);
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/screening-history");
+  });
+
+  it("correctly updates state and navigates user to screening history when link in cancellation info box is clicked", async () => {
+    const { store } = renderWithProviders(
+      <ApplicantPhotoProvider>
+        <ProgressTrackerPage />
+      </ApplicantPhotoProvider>,
+      { preloadedState: cancelledImmediatelyState },
+    );
+
+    const user = userEvent.setup();
+    await user.click(
+      screen.getByRole("link", { name: "Return to screening history for this visa applicant" }),
+    );
+
+    expect(store.getState().applicationsList).toStrictEqual([
+      {
+        applicationStatus: ApplicationStatus.CANCELLED,
+        applicationId: "abc-123",
+        dateCreated: { year: "2020", month: "12", day: "31" },
+        clinicId: "clinic-001",
+        cancellationReason: "the visa applicant ran away",
+      },
+    ]);
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/screening-history");
   });
 });
