@@ -11,7 +11,7 @@ def load_clinics_data(
     s3=None,
     dynamodb=None,
     bucket="",
-    key="PETS-Clinic-Dataload.csv",
+    key="",
     table_name="",
     encoding="cp1252"
 ):
