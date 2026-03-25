@@ -95,6 +95,7 @@ describe("Getting Application Handler", () => {
     expect(JSON.parse(response.body)).toEqual({
       applicationId: seededApplications[1].applicationId,
       applicationStatus: "In Progress",
+      clinicId: "Apollo Clinic",
       dateCreated: expect.any(String),
 
       // Defined in pets-core-services/src/application-service/fixtures/applicant-photo.ts
@@ -199,6 +200,7 @@ describe("Getting Application Handler", () => {
     expect(JSON.parse(response.body)).toEqual({
       applicationId: seededApplications[2].applicationId,
       applicationStatus: "In Progress",
+      clinicId: "test-clinic-id-3",
       dateCreated: expect.any(String),
 
       // Defined in pets-core-services/src/application-service/fixtures/applicant-photo.ts
