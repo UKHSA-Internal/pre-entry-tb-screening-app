@@ -1,4 +1,4 @@
-name: Run Virtuoso Goal
+6name: Run Virtuoso Goal
 
 # Trigger the workflow on push to the main branch
 on:
@@ -14,7 +14,7 @@ jobs:
     steps:
       # Step 1: Check out the repository
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
 
       # Step 2: Download the Virtuoso Shell Script
       - name: Download Virtuoso Shell Script
