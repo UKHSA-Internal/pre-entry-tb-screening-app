@@ -30,4 +30,4 @@ jobs:
           ./scripts/execute.sh \
             --token ${{ secrets.VIRTUOSOUKPRD_API_TOKEN }} \
             --goal_id 490 \
-            --app
+            --app-uk
