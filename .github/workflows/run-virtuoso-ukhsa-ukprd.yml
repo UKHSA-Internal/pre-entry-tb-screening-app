@@ -1,4 +1,4 @@
-6name: Run Virtuoso Goal
+name: Run Virtuoso Goal
 
 # Trigger the workflow on push to the main branch
 on:
