@@ -5,6 +5,7 @@ import { useLocation } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest";
 
 import ConsentQuestionPage from "@/pages/consent-question";
+import { ApplicationStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -119,6 +120,35 @@ describe("ConsentQuestionPage", () => {
         "Select yes if you have the visa applicant's written consent for TB screening",
       ),
     ).not.toBeInTheDocument();
+  });
+
+  it("when 'Yes' selected and continue pressed and a previous application exists, it navigates to /check-visa-applicant-details", async () => {
+    cleanup();
+    const preloadedState = {
+      applicationsList: [
+        {
+          applicationStatus: ApplicationStatus.CANCELLED,
+          applicationId: "app-01",
+          clinicId: "my-clinic",
+          dateCreated: {
+            year: "2000",
+            month: "12",
+            day: "12",
+          },
+        },
+      ],
+    };
+    renderWithProviders(
+      <HelmetProvider>
+        <ConsentQuestionPage />
+      </HelmetProvider>,
+      { preloadedState },
+    );
+
+    const radioYes = screen.getByRole("radio", { name: "Yes" });
+    await user.click(radioYes);
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/check-visa-applicant-details");
   });
 
   it("when 'Yes' selected and continue pressed, it navigates to /visa-applicant-passport-information", async () => {
