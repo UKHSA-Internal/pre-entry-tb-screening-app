@@ -27,4 +27,4 @@ jobs:
       # Step 4: Run the Script with Necessary Parameters
       - name: Execute Virtuoso Goal
         run: |
-          ./execute.sh --token ${{ secrets.virtuosoukprd_api_token }} --goal_id 490 --app
+          ./execute.sh --token ${{ secrets.VIRTUOSOUKPRD_API_TOKEN }} --goal_id 490 --app
