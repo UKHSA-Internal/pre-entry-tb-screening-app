@@ -20,9 +20,6 @@ const TravelReview = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const summaryStatus =
-    travelData.status === TaskStatus.COMPLETE ? TaskStatus.IN_PROGRESS : travelData.status;
-
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
@@ -100,9 +97,10 @@ const TravelReview = () => {
     <div>
       {isLoading && <Spinner />}
       <Summary
-        taskStatus={summaryStatus}
+        taskStatus={travelData.status}
         applicationStatus={applicationData.applicationStatus}
         summaryElements={summaryData}
+        showChangeLinksAfterTaskComplete
       />
 
       {(travelData.status == TaskStatus.NOT_YET_STARTED ||

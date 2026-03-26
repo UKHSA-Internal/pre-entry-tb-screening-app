@@ -13,6 +13,7 @@ interface SummaryProps {
   taskStatus: TaskStatus;
   applicationStatus: ApplicationStatus;
   summaryElements: SummaryElement[];
+  showChangeLinksAfterTaskComplete?: boolean;
 }
 
 function summaryValue(summaryElement: SummaryElement) {
@@ -44,6 +45,18 @@ function summaryValue(summaryElement: SummaryElement) {
 }
 
 export default function Summary(props: Readonly<SummaryProps>) {
+  let showChangeLink = undefined;
+  if (props.showChangeLinksAfterTaskComplete) {
+    showChangeLink =
+      props.applicationStatus !== ApplicationStatus.CANCELLED &&
+      props.applicationStatus !== ApplicationStatus.CERTIFICATE_NOT_ISSUED;
+  } else {
+    showChangeLink =
+      props.taskStatus !== TaskStatus.COMPLETE &&
+      (props.applicationStatus === ApplicationStatus.IN_PROGRESS ||
+        props.applicationStatus === ApplicationStatus.NULL);
+  }
+
   return (
     <dl className="govuk-summary-list">
       {props.summaryElements.map((summaryElement) => {
@@ -51,20 +64,16 @@ export default function Summary(props: Readonly<SummaryProps>) {
           <div className="govuk-summary-list__row" key={summaryElement.key}>
             <dt className="govuk-summary-list__key">{summaryElement.key}</dt>
             {summaryValue(summaryElement)}
-            {summaryElement.link &&
-              summaryElement.link.length > 0 &&
-              props.taskStatus !== TaskStatus.COMPLETE &&
-              (props.applicationStatus === ApplicationStatus.IN_PROGRESS ||
-                props.applicationStatus === ApplicationStatus.NULL) && (
-                <dd className="govuk-summary-list__actions">
-                  <LinkLabel
-                    to={summaryElement.link}
-                    title="Change"
-                    hiddenLabel={" " + summaryElement.hiddenLabel}
-                    externalLink={false}
-                  />
-                </dd>
-              )}
+            {summaryElement.link && summaryElement.link.length > 0 && showChangeLink && (
+              <dd className="govuk-summary-list__actions">
+                <LinkLabel
+                  to={summaryElement.link}
+                  title="Change"
+                  hiddenLabel={" " + summaryElement.hiddenLabel}
+                  externalLink={false}
+                />
+              </dd>
+            )}
           </div>
         );
       })}
