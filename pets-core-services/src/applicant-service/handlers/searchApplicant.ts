@@ -16,7 +16,7 @@ export type SearchApplicantEvent = PetsAPIGatewayProxyEvent & {
 };
 
 export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
-  const SUPPORT_CLINIC_ID = process.env.SUPPORT_CLINIC_ID;
+  const SUPPORT_CLINIC_ID = process.env.VITE_SUPPORT_CLINIC_ID;
   try {
     logger.info("Search applicant details handler triggered");
 

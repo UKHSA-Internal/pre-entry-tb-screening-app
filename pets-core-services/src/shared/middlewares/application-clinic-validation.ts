@@ -19,7 +19,7 @@ export const validateClinicAndApplication = async (request: {
     }
 
     const { clinicId } = event.requestContext.authorizer;
-    const SUPPORT_CLINIC_ID = process.env.SUPPORT_CLINIC_ID;
+    const SUPPORT_CLINIC_ID = process.env.VITE_SUPPORT_CLINIC_ID;
 
     if (!clinicId) {
       logger.error("Clinic Id missing");
