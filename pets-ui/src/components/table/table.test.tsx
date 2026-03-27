@@ -20,13 +20,14 @@ const tableData: TableRow[] = [
   },
 ];
 
-describe("Summary Component", () => {
+describe("Table component", () => {
   it("renders correctly when all props are specified", () => {
     renderWithProviders(
       <Table
         title="Example Title"
         columnHeaders={["Column one", "Column two", "Column three"]}
         tableRows={tableData}
+        removeRowTitleStyling
       />,
     );
 

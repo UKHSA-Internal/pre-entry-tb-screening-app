@@ -7,9 +7,9 @@ import Button from "@/components/button/button";
 import Summary from "@/components/summary/summary";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { setApplicantDetailsStatus } from "@/redux/applicantSlice";
-import { setApplicationId, setDateCreated } from "@/redux/applicationSlice";
+import { setApplicationId, setClinicId, setDateCreated } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { selectApplicant, selectApplication } from "@/redux/store";
+import { selectApplicant, selectApplication, selectApplicationsList } from "@/redux/store";
 import { ButtonClass, ImageType, TaskStatus } from "@/utils/enums";
 import {
   convertDateStrToObj,
@@ -25,6 +25,7 @@ import Spinner from "../components/spinner/spinner";
 const ApplicantReview = () => {
   const applicantData = useAppSelector(selectApplicant);
   const applicationData = useAppSelector(selectApplication);
+  const applicationsListData = useAppSelector(selectApplicationsList);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -35,51 +36,61 @@ const ApplicantReview = () => {
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    try {
-      const applicationRes = await createNewApplication({
-        passportNumber: applicantData.passportNumber,
-        countryOfIssue: applicantData.countryOfIssue,
-      });
-      dispatch(setApplicationId(applicationRes.data.applicationId));
-      dispatch(setDateCreated(convertDateStrToObj(applicationRes.data.dateCreated)));
+    if (
+      applicantData.status == TaskStatus.COMPLETE ||
+      applicantData.status == TaskStatus.NOT_REQUIRED
+    ) {
+      navigate("/tracker");
+    } else {
+      try {
+        const applicationRes = await createNewApplication({
+          passportNumber: applicantData.passportNumber,
+          countryOfIssue: applicantData.countryOfIssue,
+        });
+        dispatch(setApplicationId(applicationRes.data.applicationId));
+        dispatch(setDateCreated(convertDateStrToObj(applicationRes.data.dateCreated)));
+        dispatch(setClinicId(applicationRes.data.clinicId));
 
-      const dateOfBirthStr = `${applicantData.dateOfBirth.year}-${standardiseDayOrMonth(applicantData.dateOfBirth.month)}-${standardiseDayOrMonth(applicantData.dateOfBirth.day)}`;
-      const issueDateStr = `${applicantData.passportIssueDate.year}-${standardiseDayOrMonth(applicantData.passportIssueDate.month)}-${standardiseDayOrMonth(applicantData.passportIssueDate.day)}`;
-      const expiryDateStr = `${applicantData.passportExpiryDate.year}-${standardiseDayOrMonth(applicantData.passportExpiryDate.month)}-${standardiseDayOrMonth(applicantData.passportExpiryDate.day)}`;
-      await postApplicantDetails(applicationRes.data.applicationId, {
-        fullName: applicantData.fullName,
-        sex: applicantData.sex,
-        dateOfBirth: dateOfBirthStr,
-        countryOfNationality: applicantData.countryOfNationality,
-        passportNumber: applicantData.passportNumber,
-        countryOfIssue: applicantData.countryOfIssue,
-        issueDate: issueDateStr,
-        expiryDate: expiryDateStr,
-        applicantHomeAddress1: applicantData.applicantHomeAddress1,
-        applicantHomeAddress2: applicantData.applicantHomeAddress2,
-        applicantHomeAddress3: applicantData.applicantHomeAddress3,
-        townOrCity: applicantData.townOrCity,
-        provinceOrState: applicantData.provinceOrState,
-        country: applicantData.country,
-        postcode: applicantData.postcode,
-      });
+        if (applicationsListData.length < 1) {
+          const dateOfBirthStr = `${applicantData.dateOfBirth.year}-${standardiseDayOrMonth(applicantData.dateOfBirth.month)}-${standardiseDayOrMonth(applicantData.dateOfBirth.day)}`;
+          const issueDateStr = `${applicantData.passportIssueDate.year}-${standardiseDayOrMonth(applicantData.passportIssueDate.month)}-${standardiseDayOrMonth(applicantData.passportIssueDate.day)}`;
+          const expiryDateStr = `${applicantData.passportExpiryDate.year}-${standardiseDayOrMonth(applicantData.passportExpiryDate.month)}-${standardiseDayOrMonth(applicantData.passportExpiryDate.day)}`;
+          await postApplicantDetails(applicationRes.data.applicationId, {
+            fullName: applicantData.fullName,
+            sex: applicantData.sex,
+            dateOfBirth: dateOfBirthStr,
+            countryOfNationality: applicantData.countryOfNationality,
+            passportNumber: applicantData.passportNumber,
+            countryOfIssue: applicantData.countryOfIssue,
+            issueDate: issueDateStr,
+            expiryDate: expiryDateStr,
+            applicantHomeAddress1: applicantData.applicantHomeAddress1,
+            applicantHomeAddress2: applicantData.applicantHomeAddress2,
+            applicantHomeAddress3: applicantData.applicantHomeAddress3,
+            townOrCity: applicantData.townOrCity,
+            provinceOrState: applicantData.provinceOrState,
+            country: applicantData.country,
+            postcode: applicantData.postcode,
+          });
 
-      // Upload applicant photo if it exists
-      if (applicantData.applicantPhotoFileName && applicantPhotoFile) {
-        const fileType = applicantPhotoFile.name.split(".").pop();
-        await uploadFile(
-          applicantPhotoFile,
-          `applicant-photo.${fileType}`,
-          applicationRes.data.applicationId,
-          ImageType.Photo,
-        );
+          // Upload applicant photo if it exists
+          if (applicantData.applicantPhotoFileName && applicantPhotoFile) {
+            const fileType = applicantPhotoFile.name.split(".").pop();
+            await uploadFile(
+              applicantPhotoFile,
+              `applicant-photo.${fileType}`,
+              applicationRes.data.applicationId,
+              ImageType.Photo,
+            );
+          }
+        }
+
+        dispatch(setApplicantDetailsStatus(TaskStatus.COMPLETE));
+        navigate("/visa-applicant-details-confirmed");
+      } catch (error) {
+        console.error(error);
+        navigate("/sorry-there-is-problem-with-service");
       }
-
-      dispatch(setApplicantDetailsStatus(TaskStatus.COMPLETE));
-      navigate("/visa-applicant-details-confirmed");
-    } catch (error) {
-      console.error(error);
-      navigate("/sorry-there-is-problem-with-service");
     }
   };
 
@@ -196,24 +207,12 @@ const ApplicantReview = () => {
         showChangeLinksAfterTaskComplete
       />
 
-      {(applicantData.status == TaskStatus.NOT_YET_STARTED ||
-        applicantData.status == TaskStatus.IN_PROGRESS) && (
-        <Button
-          id="submit"
-          class={ButtonClass.DEFAULT}
-          text="Submit and continue"
-          handleClick={handleSubmit}
-        />
-      )}
-      {(applicantData.status == TaskStatus.COMPLETE ||
-        applicantData.status == TaskStatus.NOT_REQUIRED) && (
-        <Button
-          id="back-to-tracker"
-          class={ButtonClass.DEFAULT}
-          text="Submit and continue"
-          handleClick={() => navigate("/tracker")}
-        />
-      )}
+      <Button
+        id="submit"
+        class={ButtonClass.DEFAULT}
+        text="Submit and continue"
+        handleClick={handleSubmit}
+      />
     </div>
   );
 };

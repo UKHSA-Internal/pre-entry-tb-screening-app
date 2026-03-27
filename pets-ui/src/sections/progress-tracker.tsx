@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
@@ -7,12 +7,16 @@ import Button from "@/components/button/button";
 import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import NotificationBanner from "@/components/notificationBanner/notificationBanner";
+import Spinner from "@/components/spinner/spinner";
+import StatusTag from "@/components/statusTag/statusTag";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { setApplicationStatus } from "@/redux/applicationSlice";
+import { setApplicationsListDetails } from "@/redux/applicationsListSlice";
 import { useAppSelector } from "@/redux/hooks";
 import {
   selectApplicant,
   selectApplication,
+  selectApplicationsList,
   selectChestXray,
   selectMedicalScreening,
   selectRadiologicalOutcome,
@@ -21,8 +25,15 @@ import {
   selectTbCertificate,
   selectTravel,
 } from "@/redux/store";
-import { ApplicationStatus, ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
-import { formatDateForDisplay } from "@/utils/helpers";
+import { ReduxApplicationDetailsType } from "@/types";
+import {
+  AdditionalStatusTagTexts,
+  ApplicationStatus,
+  ButtonClass,
+  TaskStatus,
+  YesOrNo,
+} from "@/utils/enums";
+import { formatDateForDisplay, upsertAppIntoAppList } from "@/utils/helpers";
 
 interface TaskProps {
   description: string;
@@ -79,39 +90,27 @@ const Task = (props: Readonly<TaskProps>) => {
       {props.applicationStatus != ApplicationStatus.CANCELLED &&
         allPrerequisitesComplete &&
         props.taskStatus == TaskStatus.NOT_YET_STARTED && (
-          <div className="govuk-task-list__status">
-            <strong className="govuk-tag govuk-tag--blue">Not yet started</strong>
-          </div>
+          <StatusTag status={props.taskStatus} taskListWrapper />
         )}
       {props.applicationStatus != ApplicationStatus.CANCELLED &&
         !allPrerequisitesComplete &&
         props.taskStatus == TaskStatus.NOT_YET_STARTED && (
-          <div className="govuk-task-list__status">
-            <strong className="govuk-tag govuk-tag--grey">Cannot start yet</strong>
-          </div>
+          <StatusTag status={AdditionalStatusTagTexts.CANNOT_START_YET} taskListWrapper />
         )}
       {props.applicationStatus != ApplicationStatus.CANCELLED &&
         props.taskStatus == TaskStatus.IN_PROGRESS && (
-          <div className="govuk-task-list__status">
-            <strong className="govuk-tag govuk-tag--yellow">In progress</strong>
-          </div>
+          <StatusTag status={props.taskStatus} taskListWrapper />
         )}
       {props.taskStatus == TaskStatus.COMPLETE && (
         <div className="govuk-task-list__status">{props.statusOverride ?? <>Completed</>}</div>
       )}
       {props.taskStatus == TaskStatus.NOT_REQUIRED && (
-        <div className="govuk-task-list__status">
-          <strong className="govuk-tag govuk-tag--grey">Not required</strong>
-        </div>
+        <StatusTag status={props.taskStatus} taskListWrapper />
       )}
       {props.applicationStatus == ApplicationStatus.CANCELLED &&
         props.taskStatus != TaskStatus.COMPLETE &&
         props.taskStatus != TaskStatus.NOT_REQUIRED && (
-          <div className="govuk-task-list__status">
-            <strong className="govuk-tag govuk-tag--orange progress-tracker-task-nowrap">
-              Screening cancelled
-            </strong>
-          </div>
+          <StatusTag status={props.applicationStatus} taskListWrapper />
         )}
     </li>
   );
@@ -120,6 +119,7 @@ const Task = (props: Readonly<TaskProps>) => {
 const ProgressTracker = () => {
   const applicantData = useAppSelector(selectApplicant);
   const applicationData = useAppSelector(selectApplication);
+  const applicationsListData = useAppSelector(selectApplicationsList);
   const travelData = useAppSelector(selectTravel);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const chestXrayData = useAppSelector(selectChestXray);
@@ -131,9 +131,14 @@ const ProgressTracker = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  if (applicationData.applicationStatus == ApplicationStatus.NULL) {
-    dispatch(setApplicationStatus(ApplicationStatus.IN_PROGRESS));
-  }
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (applicationData.applicationStatus == ApplicationStatus.NULL) {
+      dispatch(setApplicationStatus(ApplicationStatus.IN_PROGRESS));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [applicationData]);
 
   const allSputumSamplesSubmitted =
     sputumData.sample1.collection.submittedToDatabase &&
@@ -176,8 +181,23 @@ const ProgressTracker = () => {
     }
   }
 
+  const returnToScreeningHistory = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    currentApplication: ReduxApplicationDetailsType,
+    applicationsList: ReduxApplicationDetailsType[],
+  ) => {
+    e.preventDefault();
+    setIsLoading(true);
+    dispatch(
+      setApplicationsListDetails(upsertAppIntoAppList(currentApplication, applicationsList)),
+    );
+    navigate("/screening-history");
+  };
+
   return (
     <div>
+      {isLoading && <Spinner />}
+
       {applicationData.applicationStatus == ApplicationStatus.CANCELLED && (
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
@@ -199,6 +219,9 @@ const ProgressTracker = () => {
                 title="Return to screening history for this visa applicant"
                 to="/screening-history"
                 externalLink={false}
+                onClick={(e) => {
+                  returnToScreeningHistory(e, applicationData, applicationsListData);
+                }}
               />
             </NotificationBanner>
           </div>
@@ -209,6 +232,7 @@ const ProgressTracker = () => {
           <ApplicantDataHeader
             applicantData={applicantData}
             applicationStatus={applicationData.applicationStatus}
+            showCountryOfIssue={false}
           />
         </div>
         {applicantPhotoContext?.applicantPhotoDataUrl ? (
@@ -340,6 +364,9 @@ const ProgressTracker = () => {
           to="/screening-history"
           title="View the screening history for this visa applicant"
           externalLink={false}
+          onClick={(e) => {
+            returnToScreeningHistory(e, applicationData, applicationsListData);
+          }}
         />
       </p>
 

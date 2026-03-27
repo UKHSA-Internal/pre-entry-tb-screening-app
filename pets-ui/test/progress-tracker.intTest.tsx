@@ -195,7 +195,9 @@ const incompleteState = {
     applicationStatus: ApplicationStatus.IN_PROGRESS,
     applicationId: "abc-123",
     dateCreated: { year: "2020", month: "12", day: "31" },
+    clinicId: "clinic-001",
   },
+  applicationsList: [],
   applicant: {
     status: TaskStatus.NOT_YET_STARTED,
     fullName: "Reginald Backwaters",
@@ -243,6 +245,7 @@ const completeState = {
     applicationStatus: ApplicationStatus.CERTIFICATE_AVAILABLE,
     applicationId: "abc-123",
     dateCreated: { year: "2020", month: "12", day: "31" },
+    clinicId: "clinic-001",
   },
   applicant: {
     status: TaskStatus.COMPLETE,
@@ -299,6 +302,7 @@ const cancelledImmediatelyState = {
     applicationId: "abc-123",
     dateCreated: { year: "2020", month: "12", day: "31" },
     cancellationReason: "the visa applicant ran away",
+    clinicId: "clinic-001",
   },
   applicant: {
     status: TaskStatus.COMPLETE,
@@ -349,6 +353,7 @@ const cancelledAfterSputumState = {
     dateCreated: { year: "2020", month: "12", day: "31" },
     cancellationReason: "the visa applicant ran away",
     cancellationFurtherInfo: "They ran really fast.",
+    clinicId: "clinic-001",
   },
   applicant: {
     status: TaskStatus.COMPLETE,
@@ -405,469 +410,520 @@ const tasksNotRequiredState = {
   sputumDecision: { ...completeState.sputumDecision, isSputumRequired: YesOrNo.NO },
 };
 
-test("Progress tracker page displays incomplete application sections correctly & links to applicant details form", async () => {
-  renderWithProviders(
-    <ApplicantPhotoProvider>
-      <ProgressTrackerPage />
-    </ApplicantPhotoProvider>,
-    { preloadedState: incompleteState },
-  );
-
-  expect(screen.getAllByText("Complete UK pre-entry health screening")).toHaveLength(2);
-
-  expect(
-    screen.queryByRole("region", {
-      name: "Important",
-    }),
-  ).not.toBeInTheDocument();
-
-  expect(screen.getAllByRole("rowheader")[0]).toHaveTextContent("Name");
-  expect(screen.getAllByRole("cell")[0]).toHaveTextContent("Reginald Backwaters");
-  expect(screen.getAllByRole("rowheader")[1]).toHaveTextContent("Date of birth");
-  expect(screen.getAllByRole("cell")[1]).toHaveTextContent("31 December 1970");
-  expect(screen.getAllByRole("rowheader")[2]).toHaveTextContent("Passport number");
-  expect(screen.getAllByRole("cell")[2]).toHaveTextContent("12345");
-
-  const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
-  expect(applicantDetailsLink).toHaveAttribute("href", "/visa-applicant-personal-information");
-  const applicantDetailsListItem = applicantDetailsLink.closest("li");
-  expect(applicantDetailsListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(applicantDetailsListItem as HTMLElement).getByText("Not yet started"));
-
-  const travelDetailsText = screen.getByText(/Travel information/i);
-  const travelDetailsListItem = travelDetailsText.closest("li");
-  expect(travelDetailsListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(travelDetailsListItem as HTMLElement).getByText("Cannot start yet"));
-
-  const medicalScreeningText = screen.getByText(/Medical history and TB symptoms/i);
-  const medicalScreeningListItem = medicalScreeningText.closest("li");
-  expect(medicalScreeningListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(medicalScreeningListItem as HTMLElement).getByText("Cannot start yet"));
-
-  const chestXrayText = screen.getByText(/Upload chest X-ray images/i);
-  const chestXrayListItem = chestXrayText.closest("li");
-  expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
-  expect(within(medicalScreeningListItem as HTMLElement).getByText("Cannot start yet"));
-
-  const radiologicalOutcomeText = screen.getByText(/Radiological outcome/i);
-  const radiologicalOutcomeListItem = radiologicalOutcomeText.closest("li");
-  expect(radiologicalOutcomeListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Cannot start yet"));
-
-  const sputumDecisionText = screen.getByText(/Make a sputum decision/i);
-  const sputumDecisionListItem = sputumDecisionText.closest("li");
-  expect(sputumDecisionListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(sputumDecisionListItem as HTMLElement).getByText("Cannot start yet"));
-
-  const sputumResultsText = screen.getByText(/Sputum collection and results/i);
-  const sputumResultsListItem = sputumResultsText.closest("li");
-  expect(sputumResultsListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(sputumResultsListItem as HTMLElement).getByText("Cannot start yet"));
-
-  const tbCertificateText = screen.getByText(/TB certificate outcome/i);
-  const tbCertificateListItem = tbCertificateText.closest("li");
-  expect(tbCertificateListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(tbCertificateListItem as HTMLElement).getByText("Cannot start yet"));
-
-  expect(screen.getByText("View screening history")).toBeInTheDocument();
-  const historyLink = screen.getByRole("link", {
-    name: /View the screening history for this visa applicant/i,
-  });
-  expect(historyLink).toHaveAttribute("href", "/screening-history");
-
-  expect(screen.getByText("Cancel screening")).toBeInTheDocument();
-  const cancelScreeningButton = screen.getByRole("button", {
-    name: /Cancel this screening/i,
-  });
-  expect(cancelScreeningButton).toBeInTheDocument();
-
-  expect(screen.getByText("Start a new search")).toBeInTheDocument();
-  const searchLink = screen.getByRole("link", { name: /Search for another visa applicant/i });
-  expect(searchLink).toHaveAttribute("href", "/search-for-visa-applicant");
-
-  await user.click(cancelScreeningButton);
-  expect(useNavigateMock).toHaveBeenCalledWith("/why-are-you-cancelling-this-screening");
-});
-
-test("Progress tracker page displays complete application sections correctly, links to summary page, and displays applicant photo from context", async () => {
-  const mockPhotoUrl = "http://localhost/test-photo.jpg";
-  const SetPhoto: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { setApplicantPhotoUrl } = useApplicantPhoto();
-    React.useEffect(() => {
-      setApplicantPhotoUrl(mockPhotoUrl);
-    }, [setApplicantPhotoUrl]);
-    return <>{children}</>;
-  };
-
-  renderWithProviders(
-    <ApplicantPhotoProvider>
-      <SetPhoto>
+describe("ProgressTrackerPage", () => {
+  it("displays incomplete application sections correctly & links to applicant details form", async () => {
+    renderWithProviders(
+      <ApplicantPhotoProvider>
         <ProgressTrackerPage />
-      </SetPhoto>
-    </ApplicantPhotoProvider>,
-    { preloadedState: completeState },
-  );
+      </ApplicantPhotoProvider>,
+      { preloadedState: incompleteState },
+    );
 
-  expect(screen.getAllByText("Complete UK pre-entry health screening")).toHaveLength(2);
+    expect(screen.getAllByText("Complete UK pre-entry health screening")).toHaveLength(2);
 
-  expect(
-    screen.queryByRole("region", {
-      name: "Important",
-    }),
-  ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("region", {
+        name: "Important",
+      }),
+    ).not.toBeInTheDocument();
 
-  expect(screen.getAllByRole("rowheader")[0]).toHaveTextContent("Name");
-  expect(screen.getAllByRole("cell")[0]).toHaveTextContent("Chelsea Cummerbund");
-  expect(screen.getAllByRole("rowheader")[1]).toHaveTextContent("Date of birth");
-  expect(screen.getAllByRole("cell")[1]).toHaveTextContent("30 November 1971");
-  expect(screen.getAllByRole("rowheader")[2]).toHaveTextContent("Passport number");
-  expect(screen.getAllByRole("cell")[2]).toHaveTextContent("54321");
+    expect(screen.getAllByRole("rowheader")[0]).toHaveTextContent("Name");
+    expect(screen.getAllByRole("cell")[0]).toHaveTextContent("Reginald Backwaters");
+    expect(screen.getAllByRole("rowheader")[1]).toHaveTextContent("Date of birth");
+    expect(screen.getAllByRole("cell")[1]).toHaveTextContent("31 December 1970");
+    expect(screen.getAllByRole("rowheader")[2]).toHaveTextContent("Passport number");
+    expect(screen.getAllByRole("cell")[2]).toHaveTextContent("12345");
 
-  const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
-  expect(applicantDetailsLink).toHaveAttribute("href", "/check-visa-applicant-details");
-  const applicantDetailsListItem = applicantDetailsLink.closest("li");
-  expect(applicantDetailsListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(applicantDetailsListItem as HTMLElement).getByText("Completed"));
+    const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
+    expect(applicantDetailsLink).toHaveAttribute("href", "/visa-applicant-personal-information");
+    const applicantDetailsListItem = applicantDetailsLink.closest("li");
+    expect(applicantDetailsListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(applicantDetailsListItem as HTMLElement).getByText("Not yet started"));
 
-  const travelDetailsLink = screen.getByRole("link", { name: /Travel information/i });
-  expect(travelDetailsLink).toHaveAttribute("href", "/check-travel-information");
-  const travelDetailsListItem = travelDetailsLink.closest("li");
-  expect(travelDetailsListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(travelDetailsListItem as HTMLElement).getByText("Completed"));
+    const travelDetailsText = screen.getByText(/Travel information/i);
+    const travelDetailsListItem = travelDetailsText.closest("li");
+    expect(travelDetailsListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(travelDetailsListItem as HTMLElement).getByText("Cannot start yet"));
 
-  const medicalScreeningLink = screen.getByRole("link", {
-    name: /Medical history and TB symptoms/i,
-  });
-  expect(medicalScreeningLink).toHaveAttribute("href", "/check-medical-history-and-tb-symptoms");
-  const medicalScreeningListItem = medicalScreeningLink.closest("li");
-  expect(medicalScreeningListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(medicalScreeningListItem as HTMLElement).getByText("Completed"));
+    const medicalScreeningText = screen.getByText(/Medical history and TB symptoms/i);
+    const medicalScreeningListItem = medicalScreeningText.closest("li");
+    expect(medicalScreeningListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(medicalScreeningListItem as HTMLElement).getByText("Cannot start yet"));
 
-  const chestXrayLink = screen.getByRole("link", { name: /Upload chest X-ray images/i });
-  expect(chestXrayLink).toHaveAttribute("href", "/check-chest-x-ray-images");
-  const chestXrayListItem = chestXrayLink.closest("li");
-  expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
-  expect(within(chestXrayListItem as HTMLElement).getByText("Completed"));
+    const chestXrayText = screen.getByText(/Upload chest X-ray images/i);
+    const chestXrayListItem = chestXrayText.closest("li");
+    expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
+    expect(within(medicalScreeningListItem as HTMLElement).getByText("Cannot start yet"));
 
-  const radiologicalOutcomeLink = screen.getByRole("link", { name: /Radiological outcome/i });
-  expect(radiologicalOutcomeLink).toHaveAttribute("href", "/check-chest-x-ray-results-findings");
-  const radiologicalOutcomeListItem = radiologicalOutcomeLink.closest("li");
-  expect(radiologicalOutcomeListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Completed"));
+    const radiologicalOutcomeText = screen.getByText(/Radiological outcome/i);
+    const radiologicalOutcomeListItem = radiologicalOutcomeText.closest("li");
+    expect(radiologicalOutcomeListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Cannot start yet"));
 
-  const sputumDecisionLink = screen.getByRole("link", { name: /Make a sputum decision/i });
-  expect(sputumDecisionLink).toHaveAttribute("href", "/check-sputum-decision-information");
-  const sputumDecisionListItem = sputumDecisionLink.closest("li");
-  expect(sputumDecisionListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(sputumDecisionListItem as HTMLElement).getByText("Completed"));
+    const sputumDecisionText = screen.getByText(/Make a sputum decision/i);
+    const sputumDecisionListItem = sputumDecisionText.closest("li");
+    expect(sputumDecisionListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(sputumDecisionListItem as HTMLElement).getByText("Cannot start yet"));
 
-  const sputumResultsLink = screen.getByRole("link", { name: /Sputum collection and results/i });
-  expect(sputumResultsLink).toHaveAttribute("href", "/check-sputum-collection-details-results");
-  const sputumResultsListItem = sputumDecisionLink.closest("li");
-  expect(sputumResultsListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(sputumResultsListItem as HTMLElement).getByText("Completed"));
+    const sputumResultsText = screen.getByText(/Sputum collection and results/i);
+    const sputumResultsListItem = sputumResultsText.closest("li");
+    expect(sputumResultsListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(sputumResultsListItem as HTMLElement).getByText("Cannot start yet"));
 
-  const tbCertificateLink = screen.getByRole("link", { name: /TB certificate outcome/i });
-  expect(tbCertificateLink).toHaveAttribute("href", "/tb-screening-complete");
-  const tbCertificateListItem = tbCertificateLink.closest("li");
-  expect(tbCertificateListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(tbCertificateListItem as HTMLElement).getByText("Certificate issued"));
+    const tbCertificateText = screen.getByText(/TB certificate outcome/i);
+    const tbCertificateListItem = tbCertificateText.closest("li");
+    expect(tbCertificateListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(tbCertificateListItem as HTMLElement).getByText("Cannot start yet"));
 
-  const img = await screen.findByAltText(/applicant/i);
-  expect(img).toBeInTheDocument();
+    expect(screen.getByText("View screening history")).toBeInTheDocument();
+    const historyLink = screen.getByRole("link", {
+      name: /View the screening history for this visa applicant/i,
+    });
+    expect(historyLink).toHaveAttribute("href", "/screening-history");
 
-  expect(screen.getByText("View screening history")).toBeInTheDocument();
-  const historyLink = screen.getByRole("link", {
-    name: /View the screening history for this visa applicant/i,
-  });
-  expect(historyLink).toHaveAttribute("href", "/screening-history");
-
-  expect(screen.queryByText("Cancel screening")).not.toBeInTheDocument();
-  expect(
-    screen.queryByRole("button", {
+    expect(screen.getByText("Cancel screening")).toBeInTheDocument();
+    const cancelScreeningButton = screen.getByRole("button", {
       name: /Cancel this screening/i,
-    }),
-  ).not.toBeInTheDocument();
+    });
+    expect(cancelScreeningButton).toBeInTheDocument();
 
-  const searchLink = screen.getByRole("link", { name: /Search for another visa applicant/i });
-  expect(searchLink).toHaveAttribute("href", "/search-for-visa-applicant");
-});
+    expect(screen.getByText("Start a new search")).toBeInTheDocument();
+    const searchLink = screen.getByRole("link", { name: /Search for another visa applicant/i });
+    expect(searchLink).toHaveAttribute("href", "/search-for-visa-applicant");
 
-test("Progress tracker page displays cancelled application sections correctly & info box without the further information text", () => {
-  renderWithProviders(
-    <ApplicantPhotoProvider>
-      <ProgressTrackerPage />
-    </ApplicantPhotoProvider>,
-    { preloadedState: cancelledImmediatelyState },
-  );
-
-  expect(screen.getAllByText("Complete UK pre-entry health screening")).toHaveLength(2);
-
-  const notificationBanner = screen.getByRole("region", {
-    name: "Important",
+    await user.click(cancelScreeningButton);
+    expect(useNavigateMock).toHaveBeenCalledWith("/why-are-you-cancelling-this-screening");
   });
-  expect(notificationBanner).toBeInTheDocument();
-  const bannerQueries = within(notificationBanner);
-  expect(
-    bannerQueries.getByRole("heading", {
-      level: 2,
+
+  it("displays complete application sections correctly, links to summary page, and displays applicant photo from context", async () => {
+    const mockPhotoUrl = "http://localhost/test-photo.jpg";
+    const SetPhoto: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+      const { setApplicantPhotoUrl } = useApplicantPhoto();
+      React.useEffect(() => {
+        setApplicantPhotoUrl(mockPhotoUrl);
+      }, [setApplicantPhotoUrl]);
+      return <>{children}</>;
+    };
+
+    renderWithProviders(
+      <ApplicantPhotoProvider>
+        <SetPhoto>
+          <ProgressTrackerPage />
+        </SetPhoto>
+      </ApplicantPhotoProvider>,
+      { preloadedState: completeState },
+    );
+
+    expect(screen.getAllByText("Complete UK pre-entry health screening")).toHaveLength(2);
+
+    expect(
+      screen.queryByRole("region", {
+        name: "Important",
+      }),
+    ).not.toBeInTheDocument();
+
+    expect(screen.getAllByRole("rowheader")[0]).toHaveTextContent("Name");
+    expect(screen.getAllByRole("cell")[0]).toHaveTextContent("Chelsea Cummerbund");
+    expect(screen.getAllByRole("rowheader")[1]).toHaveTextContent("Date of birth");
+    expect(screen.getAllByRole("cell")[1]).toHaveTextContent("30 November 1971");
+    expect(screen.getAllByRole("rowheader")[2]).toHaveTextContent("Passport number");
+    expect(screen.getAllByRole("cell")[2]).toHaveTextContent("54321");
+
+    const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
+    expect(applicantDetailsLink).toHaveAttribute("href", "/check-visa-applicant-details");
+    const applicantDetailsListItem = applicantDetailsLink.closest("li");
+    expect(applicantDetailsListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(applicantDetailsListItem as HTMLElement).getByText("Completed"));
+
+    const travelDetailsLink = screen.getByRole("link", { name: /Travel information/i });
+    expect(travelDetailsLink).toHaveAttribute("href", "/check-travel-information");
+    const travelDetailsListItem = travelDetailsLink.closest("li");
+    expect(travelDetailsListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(travelDetailsListItem as HTMLElement).getByText("Completed"));
+
+    const medicalScreeningLink = screen.getByRole("link", {
+      name: /Medical history and TB symptoms/i,
+    });
+    expect(medicalScreeningLink).toHaveAttribute("href", "/check-medical-history-and-tb-symptoms");
+    const medicalScreeningListItem = medicalScreeningLink.closest("li");
+    expect(medicalScreeningListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(medicalScreeningListItem as HTMLElement).getByText("Completed"));
+
+    const chestXrayLink = screen.getByRole("link", { name: /Upload chest X-ray images/i });
+    expect(chestXrayLink).toHaveAttribute("href", "/check-chest-x-ray-images");
+    const chestXrayListItem = chestXrayLink.closest("li");
+    expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
+    expect(within(chestXrayListItem as HTMLElement).getByText("Completed"));
+
+    const radiologicalOutcomeLink = screen.getByRole("link", { name: /Radiological outcome/i });
+    expect(radiologicalOutcomeLink).toHaveAttribute("href", "/check-chest-x-ray-results-findings");
+    const radiologicalOutcomeListItem = radiologicalOutcomeLink.closest("li");
+    expect(radiologicalOutcomeListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Completed"));
+
+    const sputumDecisionLink = screen.getByRole("link", { name: /Make a sputum decision/i });
+    expect(sputumDecisionLink).toHaveAttribute("href", "/check-sputum-decision-information");
+    const sputumDecisionListItem = sputumDecisionLink.closest("li");
+    expect(sputumDecisionListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(sputumDecisionListItem as HTMLElement).getByText("Completed"));
+
+    const sputumResultsLink = screen.getByRole("link", { name: /Sputum collection and results/i });
+    expect(sputumResultsLink).toHaveAttribute("href", "/check-sputum-collection-details-results");
+    const sputumResultsListItem = sputumDecisionLink.closest("li");
+    expect(sputumResultsListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(sputumResultsListItem as HTMLElement).getByText("Completed"));
+
+    const tbCertificateLink = screen.getByRole("link", { name: /TB certificate outcome/i });
+    expect(tbCertificateLink).toHaveAttribute("href", "/tb-screening-complete");
+    const tbCertificateListItem = tbCertificateLink.closest("li");
+    expect(tbCertificateListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(tbCertificateListItem as HTMLElement).getByText("Certificate issued"));
+
+    const img = await screen.findByAltText(/applicant/i);
+    expect(img).toBeInTheDocument();
+
+    expect(screen.getByText("View screening history")).toBeInTheDocument();
+    const historyLink = screen.getByRole("link", {
+      name: /View the screening history for this visa applicant/i,
+    });
+    expect(historyLink).toHaveAttribute("href", "/screening-history");
+
+    expect(screen.queryByText("Cancel screening")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", {
+        name: /Cancel this screening/i,
+      }),
+    ).not.toBeInTheDocument();
+
+    const searchLink = screen.getByRole("link", { name: /Search for another visa applicant/i });
+    expect(searchLink).toHaveAttribute("href", "/search-for-visa-applicant");
+  });
+
+  it("displays cancelled application sections correctly & info box without the further information text", () => {
+    renderWithProviders(
+      <ApplicantPhotoProvider>
+        <ProgressTrackerPage />
+      </ApplicantPhotoProvider>,
+      { preloadedState: cancelledImmediatelyState },
+    );
+
+    expect(screen.getAllByText("Complete UK pre-entry health screening")).toHaveLength(2);
+
+    const notificationBanner = screen.getByRole("region", {
       name: "Important",
-    }),
-  ).toBeInTheDocument();
-  expect(bannerQueries.getByText("Start date: 31 December 2020")).toBeInTheDocument();
-  expect(
-    bannerQueries.getByText("This screening was cancelled because the visa applicant ran away."),
-  ).toBeInTheDocument();
-  expect(bannerQueries.queryByText("Further information")).not.toBeInTheDocument();
-  expect(
-    bannerQueries.getByRole("link", {
-      name: "Return to screening history for this visa applicant",
-    }),
-  ).toHaveAttribute("href", "/screening-history");
+    });
+    expect(notificationBanner).toBeInTheDocument();
+    const bannerQueries = within(notificationBanner);
+    expect(
+      bannerQueries.getByRole("heading", {
+        level: 2,
+        name: "Important",
+      }),
+    ).toBeInTheDocument();
+    expect(bannerQueries.getByText("Start date: 31 December 2020")).toBeInTheDocument();
+    expect(
+      bannerQueries.getByText("This screening was cancelled because the visa applicant ran away."),
+    ).toBeInTheDocument();
+    expect(bannerQueries.queryByText("Further information")).not.toBeInTheDocument();
+    expect(
+      bannerQueries.getByRole("link", {
+        name: "Return to screening history for this visa applicant",
+      }),
+    ).toHaveAttribute("href", "/screening-history");
 
-  expect(screen.getAllByRole("rowheader")[0]).toHaveTextContent("Name");
-  expect(screen.getAllByRole("cell")[0]).toHaveTextContent("Bill Blacksteel");
-  expect(screen.getAllByRole("rowheader")[1]).toHaveTextContent("Date of birth");
-  expect(screen.getAllByRole("cell")[1]).toHaveTextContent("4 July 1991");
-  expect(screen.getAllByRole("rowheader")[2]).toHaveTextContent("Passport number");
-  expect(screen.getAllByRole("cell")[2]).toHaveTextContent("67890");
+    expect(screen.getAllByRole("rowheader")[0]).toHaveTextContent("Name");
+    expect(screen.getAllByRole("cell")[0]).toHaveTextContent("Bill Blacksteel");
+    expect(screen.getAllByRole("rowheader")[1]).toHaveTextContent("Date of birth");
+    expect(screen.getAllByRole("cell")[1]).toHaveTextContent("4 July 1991");
+    expect(screen.getAllByRole("rowheader")[2]).toHaveTextContent("Passport number");
+    expect(screen.getAllByRole("cell")[2]).toHaveTextContent("67890");
 
-  const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
-  expect(applicantDetailsLink).toHaveAttribute("href", "/check-visa-applicant-details");
-  const applicantDetailsListItem = applicantDetailsLink.closest("li");
-  expect(applicantDetailsListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(applicantDetailsListItem as HTMLElement).getByText("Completed"));
+    const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
+    expect(applicantDetailsLink).toHaveAttribute("href", "/check-visa-applicant-details");
+    const applicantDetailsListItem = applicantDetailsLink.closest("li");
+    expect(applicantDetailsListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(applicantDetailsListItem as HTMLElement).getByText("Completed"));
 
-  const travelDetailsText = screen.getByText(/Travel information/i);
-  const travelDetailsListItem = travelDetailsText.closest("li");
-  expect(travelDetailsListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(travelDetailsListItem as HTMLElement).getByText("Screening cancelled"));
+    const travelDetailsText = screen.getByText(/Travel information/i);
+    const travelDetailsListItem = travelDetailsText.closest("li");
+    expect(travelDetailsListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(travelDetailsListItem as HTMLElement).getByText("Screening cancelled"));
 
-  const medicalScreeningText = screen.getByText(/Medical history and TB symptoms/i);
-  const medicalScreeningListItem = medicalScreeningText.closest("li");
-  expect(medicalScreeningListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(medicalScreeningListItem as HTMLElement).getByText("Screening cancelled"));
+    const medicalScreeningText = screen.getByText(/Medical history and TB symptoms/i);
+    const medicalScreeningListItem = medicalScreeningText.closest("li");
+    expect(medicalScreeningListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(medicalScreeningListItem as HTMLElement).getByText("Screening cancelled"));
 
-  const chestXrayText = screen.getByText(/Upload chest X-ray images/i);
-  const chestXrayListItem = chestXrayText.closest("li");
-  expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
-  expect(within(medicalScreeningListItem as HTMLElement).getByText("Screening cancelled"));
+    const chestXrayText = screen.getByText(/Upload chest X-ray images/i);
+    const chestXrayListItem = chestXrayText.closest("li");
+    expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
+    expect(within(medicalScreeningListItem as HTMLElement).getByText("Screening cancelled"));
 
-  const radiologicalOutcomeText = screen.getByText(/Radiological outcome/i);
-  const radiologicalOutcomeListItem = radiologicalOutcomeText.closest("li");
-  expect(radiologicalOutcomeListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Screening cancelled"));
+    const radiologicalOutcomeText = screen.getByText(/Radiological outcome/i);
+    const radiologicalOutcomeListItem = radiologicalOutcomeText.closest("li");
+    expect(radiologicalOutcomeListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Screening cancelled"));
 
-  const sputumDecisionText = screen.getByText(/Make a sputum decision/i);
-  const sputumDecisionListItem = sputumDecisionText.closest("li");
-  expect(sputumDecisionListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(sputumDecisionListItem as HTMLElement).getByText("Screening cancelled"));
+    const sputumDecisionText = screen.getByText(/Make a sputum decision/i);
+    const sputumDecisionListItem = sputumDecisionText.closest("li");
+    expect(sputumDecisionListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(sputumDecisionListItem as HTMLElement).getByText("Screening cancelled"));
 
-  const sputumResultsText = screen.getByText(/Sputum collection and results/i);
-  const sputumResultsListItem = sputumResultsText.closest("li");
-  expect(sputumResultsListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(sputumResultsListItem as HTMLElement).getByText("Screening cancelled"));
+    const sputumResultsText = screen.getByText(/Sputum collection and results/i);
+    const sputumResultsListItem = sputumResultsText.closest("li");
+    expect(sputumResultsListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(sputumResultsListItem as HTMLElement).getByText("Screening cancelled"));
 
-  const tbCertificateText = screen.getByText(/TB certificate outcome/i);
-  const tbCertificateListItem = tbCertificateText.closest("li");
-  expect(tbCertificateListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(tbCertificateListItem as HTMLElement).getByText("Screening cancelled"));
+    const tbCertificateText = screen.getByText(/TB certificate outcome/i);
+    const tbCertificateListItem = tbCertificateText.closest("li");
+    expect(tbCertificateListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(tbCertificateListItem as HTMLElement).getByText("Screening cancelled"));
 
-  expect(screen.getByText("View screening history")).toBeInTheDocument();
-  const historyLink = screen.getByRole("link", {
-    name: /View the screening history for this visa applicant/i,
+    expect(screen.getByText("View screening history")).toBeInTheDocument();
+    const historyLink = screen.getByRole("link", {
+      name: /View the screening history for this visa applicant/i,
+    });
+    expect(historyLink).toHaveAttribute("href", "/screening-history");
+
+    expect(screen.queryByText("Cancel screening")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", {
+        name: /Cancel this screening/i,
+      }),
+    ).not.toBeInTheDocument();
+
+    expect(screen.getByText("Start a new search")).toBeInTheDocument();
+    const searchLink = screen.getByRole("link", { name: /Search for another visa applicant/i });
+    expect(searchLink).toHaveAttribute("href", "/search-for-visa-applicant");
   });
-  expect(historyLink).toHaveAttribute("href", "/screening-history");
 
-  expect(screen.queryByText("Cancel screening")).not.toBeInTheDocument();
-  expect(
-    screen.queryByRole("button", {
-      name: /Cancel this screening/i,
-    }),
-  ).not.toBeInTheDocument();
+  it("displays cancelled application sections correctly & info box with the further information text", () => {
+    renderWithProviders(
+      <ApplicantPhotoProvider>
+        <ProgressTrackerPage />
+      </ApplicantPhotoProvider>,
+      { preloadedState: cancelledAfterSputumState },
+    );
 
-  expect(screen.getByText("Start a new search")).toBeInTheDocument();
-  const searchLink = screen.getByRole("link", { name: /Search for another visa applicant/i });
-  expect(searchLink).toHaveAttribute("href", "/search-for-visa-applicant");
-});
+    expect(screen.getAllByText("Complete UK pre-entry health screening")).toHaveLength(2);
 
-test("Progress tracker page displays cancelled application sections correctly & info box with the further information text", () => {
-  renderWithProviders(
-    <ApplicantPhotoProvider>
-      <ProgressTrackerPage />
-    </ApplicantPhotoProvider>,
-    { preloadedState: cancelledAfterSputumState },
-  );
-
-  expect(screen.getAllByText("Complete UK pre-entry health screening")).toHaveLength(2);
-
-  const notificationBanner = screen.getByRole("region", {
-    name: "Important",
-  });
-  expect(notificationBanner).toBeInTheDocument();
-  const bannerQueries = within(notificationBanner);
-  expect(
-    bannerQueries.getByRole("heading", {
-      level: 2,
+    const notificationBanner = screen.getByRole("region", {
       name: "Important",
-    }),
-  ).toBeInTheDocument();
-  expect(bannerQueries.getByText("Start date: 31 December 2020")).toBeInTheDocument();
-  expect(
-    bannerQueries.getByText("This screening was cancelled because the visa applicant ran away."),
-  ).toBeInTheDocument();
-  expect(bannerQueries.getByText("Further information")).toBeInTheDocument();
-  expect(bannerQueries.getByText("They ran really fast.")).toBeInTheDocument();
-  expect(
-    bannerQueries.getByRole("link", {
-      name: "Return to screening history for this visa applicant",
-    }),
-  ).toHaveAttribute("href", "/screening-history");
+    });
+    expect(notificationBanner).toBeInTheDocument();
+    const bannerQueries = within(notificationBanner);
+    expect(
+      bannerQueries.getByRole("heading", {
+        level: 2,
+        name: "Important",
+      }),
+    ).toBeInTheDocument();
+    expect(bannerQueries.getByText("Start date: 31 December 2020")).toBeInTheDocument();
+    expect(
+      bannerQueries.getByText("This screening was cancelled because the visa applicant ran away."),
+    ).toBeInTheDocument();
+    expect(bannerQueries.getByText("Further information")).toBeInTheDocument();
+    expect(bannerQueries.getByText("They ran really fast.")).toBeInTheDocument();
+    expect(
+      bannerQueries.getByRole("link", {
+        name: "Return to screening history for this visa applicant",
+      }),
+    ).toHaveAttribute("href", "/screening-history");
 
-  expect(screen.getAllByRole("rowheader")[0]).toHaveTextContent("Name");
-  expect(screen.getAllByRole("cell")[0]).toHaveTextContent("Gwendolyne Harmbarnt");
-  expect(screen.getAllByRole("rowheader")[1]).toHaveTextContent("Date of birth");
-  expect(screen.getAllByRole("cell")[1]).toHaveTextContent("17 March 2010");
-  expect(screen.getAllByRole("rowheader")[2]).toHaveTextContent("Passport number");
-  expect(screen.getAllByRole("cell")[2]).toHaveTextContent("09876");
+    expect(screen.getAllByRole("rowheader")[0]).toHaveTextContent("Name");
+    expect(screen.getAllByRole("cell")[0]).toHaveTextContent("Gwendolyne Harmbarnt");
+    expect(screen.getAllByRole("rowheader")[1]).toHaveTextContent("Date of birth");
+    expect(screen.getAllByRole("cell")[1]).toHaveTextContent("17 March 2010");
+    expect(screen.getAllByRole("rowheader")[2]).toHaveTextContent("Passport number");
+    expect(screen.getAllByRole("cell")[2]).toHaveTextContent("09876");
 
-  const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
-  expect(applicantDetailsLink).toHaveAttribute("href", "/check-visa-applicant-details");
-  const applicantDetailsListItem = applicantDetailsLink.closest("li");
-  expect(applicantDetailsListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(applicantDetailsListItem as HTMLElement).getByText("Completed"));
+    const applicantDetailsLink = screen.getByRole("link", { name: /Visa applicant details/i });
+    expect(applicantDetailsLink).toHaveAttribute("href", "/check-visa-applicant-details");
+    const applicantDetailsListItem = applicantDetailsLink.closest("li");
+    expect(applicantDetailsListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(applicantDetailsListItem as HTMLElement).getByText("Completed"));
 
-  const travelDetailsLink = screen.getByRole("link", { name: /Travel information/i });
-  expect(travelDetailsLink).toHaveAttribute("href", "/check-travel-information");
-  const travelDetailsListItem = travelDetailsLink.closest("li");
-  expect(travelDetailsListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(travelDetailsListItem as HTMLElement).getByText("Completed"));
+    const travelDetailsLink = screen.getByRole("link", { name: /Travel information/i });
+    expect(travelDetailsLink).toHaveAttribute("href", "/check-travel-information");
+    const travelDetailsListItem = travelDetailsLink.closest("li");
+    expect(travelDetailsListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(travelDetailsListItem as HTMLElement).getByText("Completed"));
 
-  const medicalScreeningLink = screen.getByRole("link", {
-    name: /Medical history and TB symptoms/i,
+    const medicalScreeningLink = screen.getByRole("link", {
+      name: /Medical history and TB symptoms/i,
+    });
+    expect(medicalScreeningLink).toHaveAttribute("href", "/check-medical-history-and-tb-symptoms");
+    const medicalScreeningListItem = medicalScreeningLink.closest("li");
+    expect(medicalScreeningListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(medicalScreeningListItem as HTMLElement).getByText("Completed"));
+
+    const chestXrayLink = screen.getByRole("link", { name: /Upload chest X-ray images/i });
+    expect(chestXrayLink).toHaveAttribute("href", "/check-chest-x-ray-images");
+    const chestXrayListItem = chestXrayLink.closest("li");
+    expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
+    expect(within(chestXrayListItem as HTMLElement).getByText("Completed"));
+
+    const radiologicalOutcomeLink = screen.getByRole("link", { name: /Radiological outcome/i });
+    expect(radiologicalOutcomeLink).toHaveAttribute("href", "/check-chest-x-ray-results-findings");
+    const radiologicalOutcomeListItem = radiologicalOutcomeLink.closest("li");
+    expect(radiologicalOutcomeListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Completed"));
+
+    const sputumDecisionLink = screen.getByRole("link", { name: /Make a sputum decision/i });
+    expect(sputumDecisionLink).toHaveAttribute("href", "/check-sputum-decision-information");
+    const sputumDecisionListItem = sputumDecisionLink.closest("li");
+    expect(sputumDecisionListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(sputumDecisionListItem as HTMLElement).getByText("Completed"));
+
+    const sputumResultsLink = screen.getByRole("link", { name: /Sputum collection and results/i });
+    expect(sputumResultsLink).toHaveAttribute("href", "/check-sputum-collection-details-results");
+    const sputumResultsListItem = sputumDecisionLink.closest("li");
+    expect(sputumResultsListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(sputumResultsListItem as HTMLElement).getByText("Completed"));
+
+    const tbCertificateText = screen.getByText(/TB certificate outcome/i);
+    const tbCertificateListItem = tbCertificateText.closest("li");
+    expect(tbCertificateListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(tbCertificateListItem as HTMLElement).getByText("Screening cancelled"));
+
+    expect(screen.getByText("View screening history")).toBeInTheDocument();
+    const historyLink = screen.getByRole("link", {
+      name: /View the screening history for this visa applicant/i,
+    });
+    expect(historyLink).toHaveAttribute("href", "/screening-history");
+
+    expect(screen.queryByText("Cancel screening")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", {
+        name: /Cancel this screening/i,
+      }),
+    ).not.toBeInTheDocument();
+
+    const searchLink = screen.getByRole("link", { name: /Search for another visa applicant/i });
+    expect(searchLink).toHaveAttribute("href", "/search-for-visa-applicant");
   });
-  expect(medicalScreeningLink).toHaveAttribute("href", "/check-medical-history-and-tb-symptoms");
-  const medicalScreeningListItem = medicalScreeningLink.closest("li");
-  expect(medicalScreeningListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(medicalScreeningListItem as HTMLElement).getByText("Completed"));
 
-  const chestXrayLink = screen.getByRole("link", { name: /Upload chest X-ray images/i });
-  expect(chestXrayLink).toHaveAttribute("href", "/check-chest-x-ray-images");
-  const chestXrayListItem = chestXrayLink.closest("li");
-  expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
-  expect(within(chestXrayListItem as HTMLElement).getByText("Completed"));
+  it("sets tasks to not required when applicable (sputum, cxr upload, radiological outcome)", () => {
+    renderWithProviders(
+      <ApplicantPhotoProvider>
+        <ProgressTrackerPage />
+      </ApplicantPhotoProvider>,
+      { preloadedState: tasksNotRequiredState },
+    );
 
-  const radiologicalOutcomeLink = screen.getByRole("link", { name: /Radiological outcome/i });
-  expect(radiologicalOutcomeLink).toHaveAttribute("href", "/check-chest-x-ray-results-findings");
-  const radiologicalOutcomeListItem = radiologicalOutcomeLink.closest("li");
-  expect(radiologicalOutcomeListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Completed"));
+    const chestXrayListItem = screen.getByText("Upload chest X-ray images").closest("li");
+    expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
+    expect(within(chestXrayListItem as HTMLElement).getByText("Not required"));
 
-  const sputumDecisionLink = screen.getByRole("link", { name: /Make a sputum decision/i });
-  expect(sputumDecisionLink).toHaveAttribute("href", "/check-sputum-decision-information");
-  const sputumDecisionListItem = sputumDecisionLink.closest("li");
-  expect(sputumDecisionListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(sputumDecisionListItem as HTMLElement).getByText("Completed"));
-
-  const sputumResultsLink = screen.getByRole("link", { name: /Sputum collection and results/i });
-  expect(sputumResultsLink).toHaveAttribute("href", "/check-sputum-collection-details-results");
-  const sputumResultsListItem = sputumDecisionLink.closest("li");
-  expect(sputumResultsListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(sputumResultsListItem as HTMLElement).getByText("Completed"));
-
-  const tbCertificateText = screen.getByText(/TB certificate outcome/i);
-  const tbCertificateListItem = tbCertificateText.closest("li");
-  expect(tbCertificateListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(tbCertificateListItem as HTMLElement).getByText("Screening cancelled"));
-
-  expect(screen.getByText("View screening history")).toBeInTheDocument();
-  const historyLink = screen.getByRole("link", {
-    name: /View the screening history for this visa applicant/i,
+    const radiologicalOutcomeListItem = screen.getByText("Radiological outcome").closest("li");
+    expect(radiologicalOutcomeListItem).toHaveClass(
+      "govuk-task-list__item govuk-task-list__item--with-link",
+    );
+    expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Not required"));
   });
-  expect(historyLink).toHaveAttribute("href", "/screening-history");
 
-  expect(screen.queryByText("Cancel screening")).not.toBeInTheDocument();
-  expect(
-    screen.queryByRole("button", {
-      name: /Cancel this screening/i,
-    }),
-  ).not.toBeInTheDocument();
+  it("correctly updates state and navigates user to screening history when link at bottom of page is clicked", async () => {
+    const { store } = renderWithProviders(
+      <ApplicantPhotoProvider>
+        <ProgressTrackerPage />
+      </ApplicantPhotoProvider>,
+      { preloadedState: incompleteState },
+    );
 
-  const searchLink = screen.getByRole("link", { name: /Search for another visa applicant/i });
-  expect(searchLink).toHaveAttribute("href", "/search-for-visa-applicant");
-});
+    const user = userEvent.setup();
+    await user.click(
+      screen.getByRole("link", { name: "View the screening history for this visa applicant" }),
+    );
 
-test("Progress tracker page sets tasks to not required when applicable (sputum, cxr upload, radiological outcome)", () => {
-  renderWithProviders(
-    <ApplicantPhotoProvider>
-      <ProgressTrackerPage />
-    </ApplicantPhotoProvider>,
-    { preloadedState: tasksNotRequiredState },
-  );
+    expect(store.getState().applicationsList).toStrictEqual([
+      {
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+        applicationId: "abc-123",
+        dateCreated: { year: "2020", month: "12", day: "31" },
+        clinicId: "clinic-001",
+      },
+    ]);
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/screening-history");
+  });
 
-  const chestXrayListItem = screen.getByText("Upload chest X-ray images").closest("li");
-  expect(chestXrayListItem).toHaveClass("govuk-task-list__item govuk-task-list__item--with-link");
-  expect(within(chestXrayListItem as HTMLElement).getByText("Not required"));
+  it("correctly updates state and navigates user to screening history when link in cancellation info box is clicked", async () => {
+    const { store } = renderWithProviders(
+      <ApplicantPhotoProvider>
+        <ProgressTrackerPage />
+      </ApplicantPhotoProvider>,
+      { preloadedState: cancelledImmediatelyState },
+    );
 
-  const radiologicalOutcomeListItem = screen.getByText("Radiological outcome").closest("li");
-  expect(radiologicalOutcomeListItem).toHaveClass(
-    "govuk-task-list__item govuk-task-list__item--with-link",
-  );
-  expect(within(radiologicalOutcomeListItem as HTMLElement).getByText("Not required"));
+    const user = userEvent.setup();
+    await user.click(
+      screen.getByRole("link", { name: "Return to screening history for this visa applicant" }),
+    );
+
+    expect(store.getState().applicationsList).toStrictEqual([
+      {
+        applicationStatus: ApplicationStatus.CANCELLED,
+        applicationId: "abc-123",
+        dateCreated: { year: "2020", month: "12", day: "31" },
+        clinicId: "clinic-001",
+        cancellationReason: "the visa applicant ran away",
+      },
+    ]);
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/screening-history");
+  });
 });
