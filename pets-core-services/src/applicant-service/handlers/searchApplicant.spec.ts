@@ -60,7 +60,7 @@ describe("Test for Getting Applicant", () => {
         ...mockAPIGwEvent.requestContext,
         authorizer: {
           ...mockAPIGwEvent.requestContext.authorizer,
-          clinicId: process.env.SUPPORT_CLINIC_ID as string,
+          clinicId: process.env.VITE_SUPPORT_CLINIC_ID as string,
         },
       },
       parsedHeaders: {
