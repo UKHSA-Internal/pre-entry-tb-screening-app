@@ -23,7 +23,13 @@ import importlib
 import pytest
 from unittest.mock import MagicMock, patch
 
+from enum import Enum
 
+class ApplicationStatus(str, Enum):
+  inProgress = "In Progress",
+  certificateNotIssued = "Certificate Not Issued",
+  certificateAvailable = "Certificate Available",
+  cancelled = "Cancelled",
 # ---------------------------------------------------------------------------
 # Bootstrap: stub out awsglue before importing the module under test
 # ---------------------------------------------------------------------------
@@ -250,7 +256,7 @@ class TestMigrateItemLive:
 
         update_kwargs = apt.update_item.call_args[1]
         ev = update_kwargs["ExpressionAttributeValues"]
-        assert ev[":new_application_status"] == "Certificate Available"
+        assert ev[":new_application_status"] == ApplicationStatus.certificateAvailable
 
     def test_live_status_derived_from_tb_certificate_issued_no(self):
         at, apt = _mock_tables()
@@ -263,7 +269,7 @@ class TestMigrateItemLive:
 
         update_kwargs = apt.update_item.call_args[1]
         ev = update_kwargs["ExpressionAttributeValues"]
-        assert ev[":new_application_status"] == "Certificate not issued"
+        assert ev[":new_application_status"] == ApplicationStatus.certificateNotIssued
 
     def test_live_status_defaults_to_in_progress_when_no_tb_row(self):
         at, apt = _mock_tables()
@@ -273,7 +279,7 @@ class TestMigrateItemLive:
 
         update_kwargs = apt.update_item.call_args[1]
         ev = update_kwargs["ExpressionAttributeValues"]
-        assert ev[":new_application_status"] == "In progress"
+        assert ev[":new_application_status"] == ApplicationStatus.inProgress
 
     def test_live_conditional_check_failed_is_swallowed(self):
         """ConditionalCheckFailedException on update_item must not raise."""

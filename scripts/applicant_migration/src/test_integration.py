@@ -20,7 +20,14 @@ import sys
 import pytest
 
 from conftest import _stub_awsglue, make_statistics
+from enum import Enum
 
+
+class ApplicationStatus(str, Enum):
+  inProgress = "In Progress",
+  certificateNotIssued = "Certificate Not Issued",
+  certificateAvailable = "Certificate Available",
+  cancelled = "Cancelled",
 
 # ---------------------------------------------------------------------------
 # Load migration module with DRY_RUN=False and tables pointing at local
@@ -230,6 +237,8 @@ class TestApplicationStatusDerivation:
         # (ConditionalCheckFailed) — verify the TB row is still intact
         tb = _get_item(application_table, "APPLICATION#abc", "APPLICATION#TB#CERTIFICATE")
         assert tb["isIssued"] == "Yes"
+        assert root["applicationStatus"] == ApplicationStatus.certificateAvailable
+
 
     def test_status_is_certificate_not_issued_when_tb_issued_no(
         self, mod, tables, dynamodb_local
@@ -244,7 +253,7 @@ class TestApplicationStatusDerivation:
         _run(mod, dynamodb_local)
 
         root = _get_item(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
-        assert root["applicationStatus"] == "Certificate not issued"
+        assert root["applicationStatus"] == ApplicationStatus.certificateNotIssued
 
     def test_status_defaults_to_in_progress_when_no_tb_row(
         self, mod, tables, dynamodb_local
@@ -258,7 +267,7 @@ class TestApplicationStatusDerivation:
         _run(mod, dynamodb_local)
 
         root = _get_item(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
-        assert root["applicationStatus"] == "In progress"
+        assert root["applicationStatus"] == ApplicationStatus.inProgress
 
 
 # ===========================================================================
