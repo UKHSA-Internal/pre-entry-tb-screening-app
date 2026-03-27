@@ -4,10 +4,10 @@ import sys
 import time
 from botocore.exceptions import ClientError
 from awsglue.utils import getResolvedOptions
-from enum import StrEnum
+from enum import Enum
 
 
-class ApplicationStatus(StrEnum):
+class ApplicationStatus(str, Enum):
   inProgress = "In Progress",
   certificateNotIssued = "Certificate Not Issued",
   certificateAvailable = "Certificate Available",
