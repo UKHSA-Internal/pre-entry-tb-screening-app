@@ -720,4 +720,62 @@ describe("Test for Application Lambda", () => {
       expect(response.statusCode).toBe(200);
     });
   });
+
+  describe("Dashboard: Fetching all in progress applications ", () => {
+    test("Fetching applications in progress for a clinic", async () => {
+      // Arrange
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        resource: "/applications/",
+        path: `/applications/`,
+        httpMethod: "GET",
+      };
+      vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue("https://presigned.url");
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+
+      // Assert
+      expect(response.statusCode).toBe(200);
+    });
+
+    test("Fetching  applications from a different clinic", async () => {
+      // Arrange
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        requestContext: {
+          ...mockAPIGwEvent.requestContext,
+          authorizer: { clinicId: "other one", createdBy: "hardcoded@user.com" },
+        },
+        resource: "/applications/",
+        path: `/applications/`,
+        httpMethod: "GET",
+      };
+      vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue("https://presigned.url");
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+
+      // Assert
+      expect(response.statusCode).toBe(403);
+    });
+
+    test("Fetch applications from support clinic as ukhsa staff", async () => {
+      // Arrange
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        requestContext: {
+          ...mockAPIGwEvent.requestContext,
+          authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+        },
+        resource: "/applications/",
+        path: `/applications/`,
+        httpMethod: "GET",
+      };
+      vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue("https://presigned.url");
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+
+      // Assert
+      expect(response.statusCode).toBe(200);
+    });
+  });
 });

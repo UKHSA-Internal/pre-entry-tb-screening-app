@@ -9,6 +9,7 @@ import { cancelApplicationHandler } from "../handlers/cancel-application";
 import { createApplicationHandler } from "../handlers/create-application";
 import { generateImageUploadUrlHandler } from "../handlers/generate-image-upload-url";
 import { getApplicationHandler } from "../handlers/get-application";
+import { getApplicationsHandler } from "../handlers/get-applications";
 import { saveChestXRayHandler } from "../handlers/save-chest-ray";
 import { saveMedicalScreeningHandler } from "../handlers/save-medical-screening";
 import { saveRadiologicalOutcomeHandler } from "../handlers/save-radiological-outcome";
@@ -210,6 +211,14 @@ export const routes: PetsRoute[] = [
     }),
     responseSchema: SputumResponseSchema.openapi({
       description: "Saved Sputum Details of Applicant",
+    }),
+  },
+  {
+    method: "GET",
+    path: "/applications/",
+    handler: middy<PetsAPIGatewayProxyEvent>().handler(getApplicationsHandler),
+    responseSchema: ApplicationSchema.openapi({
+      description: "All in progress applications  root records for a given clinic",
     }),
   },
 ];

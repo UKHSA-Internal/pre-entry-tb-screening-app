@@ -503,3 +503,7 @@ export const ApplicationSchema = ApplicationBaseSchema.extend({
   sputumDetails: SputumResponseSchema,
   tbCertificate: TbCertificateResponseSchema,
 });
+
+export const ApplicationsSchema = z.array(ApplicationBaseSchema).openapi({
+  description: "Applicant's applications",
+});
