@@ -34,7 +34,7 @@ afterEach(() => {
   msalTester.resetSpyMsal();
 });
 
-test("In authenticated state, user is taken to Applicant Search page ('/search-for-visa-applicant') when accessing landing page ('/') via browser", async () => {
+test("In authenticated state, user is taken to Applicant Search page ('/what-do-you-need-to-do') when accessing landing page ('/') via browser", async () => {
   await msalTester.isLogged();
 
   renderWithProvidersWithoutRouter(
@@ -49,7 +49,7 @@ test("In authenticated state, user is taken to Applicant Search page ('/search-f
 
   await msalTester.waitForRedirect();
 
-  expect(await screen.findByText("Search for a visa applicant")).toBeVisible();
+  expect(await screen.findByText("What do you need to do?")).toBeVisible();
 });
 
 test("In authenticated state, user is able to access authenticated paths", async () => {
