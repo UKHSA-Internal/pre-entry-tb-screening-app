@@ -7,7 +7,7 @@ import { selectApplicant } from "@/redux/store";
 export const RedirectedRouteIfReduxEmpty = ({ children }: { children: ReactNode }) => {
   const applicantData = useAppSelector(selectApplicant);
   if (applicantData.passportNumber == "" || applicantData.countryOfIssue == "") {
-    return <Navigate to="/search-for-visa-applicant" />;
+    return <Navigate to="/what-do-you-need-to-do" />;
   }
   return <>{children}</>;
 };
