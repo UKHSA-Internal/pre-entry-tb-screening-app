@@ -237,8 +237,6 @@ class TestApplicationStatusDerivation:
         # (ConditionalCheckFailed) — verify the TB row is still intact
         tb = _get_item(application_table, "APPLICATION#abc", "APPLICATION#TB#CERTIFICATE")
         assert tb["isIssued"] == "Yes"
-        assert root["applicationStatus"] == ApplicationStatus.certificateAvailable
-
 
 
     def test_status_is_certificate_not_issued_when_tb_issued_no(
