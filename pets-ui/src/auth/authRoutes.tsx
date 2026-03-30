@@ -24,7 +24,7 @@ export const AuthenticatedRoute = ({ children }: { children: ReactNode }) => {
 export const UnauthenticatedRoute = ({ children }: { children: ReactNode }) => {
   const isAuthenticated = useIsAuthenticated();
   if (isAuthenticated) {
-    return <Navigate to="/search-for-visa-applicant" />;
+    return <Navigate to="/what-do-you-need-to-do" />;
   }
   return <UnauthenticatedTemplate>{children}</UnauthenticatedTemplate>;
 };

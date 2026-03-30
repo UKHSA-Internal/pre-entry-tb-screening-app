@@ -160,6 +160,7 @@ describe("ApplicantReview", () => {
         applicationId: "abc-123",
         dateCreated: { year: "2010", month: "1", day: "1" },
         applicationStatus: ApplicationStatus.IN_PROGRESS,
+        clinicId: "clinic-001",
       },
     };
 

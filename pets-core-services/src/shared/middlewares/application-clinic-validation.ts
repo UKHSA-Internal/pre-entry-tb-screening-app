@@ -19,19 +19,19 @@ export const validateClinicAndApplication = async (request: {
     }
 
     const { clinicId } = event.requestContext.authorizer;
-    const SUPPORT_CLINIC_ID = process.env.SUPPORT_CLINIC_ID;
+    const VITE_SUPPORT_CLINIC_ID = process.env.VITE_SUPPORT_CLINIC_ID;
 
     if (!clinicId) {
       logger.error("Clinic Id missing");
       return HttpErrors.badRequest("Clinic Id missing");
     }
 
-    if (clinicId !== SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
+    if (clinicId !== VITE_SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
       logger.error("Clinic Id mismatch");
       return HttpErrors.forbidden("Clinic Id mismatch");
     }
 
-    if (clinicId === SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
+    if (clinicId === VITE_SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
       logger.info("Validated clinic Id is a support clinicId");
     }
   } catch (error) {

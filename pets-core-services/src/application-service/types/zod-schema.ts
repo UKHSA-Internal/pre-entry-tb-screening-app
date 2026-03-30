@@ -31,8 +31,14 @@ export const CreateApplicationResponseSchema = z.object({
   applicationId: z.string().openapi({
     description: "ID of newly created application",
   }),
+  clinicId: z.string().openapi({
+    description: "ID of the Clinic",
+  }),
   dateCreated: z.string().date().openapi({
     description: "Creation Date in UTC timezone",
+  }),
+  applicationStatus: z.nativeEnum(ApplicationStatus).openapi({
+    description: "Application current status",
   }),
 });
 

@@ -8,6 +8,7 @@ import Heading from "@/components/heading/heading";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
+import { setExpiryDate } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import {
   selectApplicant,
@@ -79,6 +80,7 @@ const TbSummary = () => {
           issueDate,
           medicalScreeningData.closeContactWithTb === "Yes",
         );
+        dispatch(setExpiryDate(expiryDate));
         const certificateExpiryDateStr = `${expiryDate.year}-${standardiseDayOrMonth(expiryDate.month)}-${standardiseDayOrMonth(expiryDate.day)}`;
 
         await postTbCerificateDetails(applicationData.applicationId, {

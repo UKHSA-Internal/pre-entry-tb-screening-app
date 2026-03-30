@@ -1,12 +1,13 @@
 export type TableRow = {
   rowTitle: string;
-  cells: string[];
+  cells: (string | React.JSX.Element)[];
 };
 
 interface TableProps {
   title?: string;
   columnHeaders?: string[];
   tableRows: TableRow[];
+  removeRowTitleStyling?: boolean;
 }
 
 export default function Table(props: Readonly<TableProps>) {
@@ -18,9 +19,9 @@ export default function Table(props: Readonly<TableProps>) {
       {props.columnHeaders && (
         <thead className="govuk-table__head">
           <tr className="govuk-table__row">
-            {props.columnHeaders.map((columnHeader) => {
+            {props.columnHeaders.map((columnHeader, index) => {
               return (
-                <th scope="col" className="govuk-table__header" key={columnHeader}>
+                <th scope="col" className="govuk-table__header" key={`${index}: ${columnHeader}`}>
                   {columnHeader}
                 </th>
               );
@@ -29,15 +30,21 @@ export default function Table(props: Readonly<TableProps>) {
         </thead>
       )}
       <tbody className="govuk-table__body">
-        {props.tableRows.map((tableRow) => {
+        {props.tableRows.map((tableRow, i) => {
           return (
-            <tr className="govuk-table__row" key={tableRow.rowTitle}>
-              <th scope="row" className="govuk-table__header">
-                {tableRow.rowTitle}
-              </th>
-              {tableRow.cells.map((cell) => {
+            <tr className="govuk-table__row" key={i + ": " + tableRow.rowTitle}>
+              {props.removeRowTitleStyling ? (
+                <td scope="row" className="govuk-table__cell">
+                  {tableRow.rowTitle}
+                </td>
+              ) : (
+                <th scope="row" className="govuk-table__header">
+                  {tableRow.rowTitle}
+                </th>
+              )}
+              {tableRow.cells.map((cell, j) => {
                 return (
-                  <td className="govuk-table__cell" key={cell}>
+                  <td className="govuk-table__cell" key={"cell-" + i + "-" + j}>
                     {cell}
                   </td>
                 );
