@@ -1,3 +1,5 @@
+name: Upload Migration Script
+
 permissions:
   id-token: write
   contents: read
