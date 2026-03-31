@@ -189,7 +189,7 @@ describe("TBSummaryPage", () => {
     it("renders the page titles and data ", () => {
       expect(screen.getByText("Certificate reference number")).toBeInTheDocument();
       expect(screen.getByText("12345")).toBeInTheDocument();
-      expect(screen.getAllByText("Physician's comments")[0]).toBeInTheDocument();
+      expect(screen.getAllByText("Physician's notes")[0]).toBeInTheDocument();
       expect(screen.getByText("Extra Details")).toBeInTheDocument();
       expect(screen.getByText("Certificate issue date")).toBeInTheDocument();
       expect(screen.getByText("25 March 2025")).toBeInTheDocument();
@@ -246,7 +246,7 @@ describe("TBSummaryPage", () => {
         { preloadedState: completeState },
       );
 
-      const nameChangeLinks = screen.getAllByRole("link", { name: "Change Name" });
+      const nameChangeLinks = screen.getAllByRole("link", { name: "Change Full name" });
       expect(nameChangeLinks[0]).toHaveAttribute(
         "href",
         "/visa-applicant-personal-information?from=tb-certificate-summary#name",
@@ -283,7 +283,7 @@ describe("TBSummaryPage", () => {
       );
 
       const ukAddressChangeLinks = screen.getAllByRole("link", {
-        name: "Change UK address line 1",
+        name: "Change UK address line 1 (optional)",
       });
       expect(ukAddressChangeLinks[0]).toHaveAttribute(
         "href",
