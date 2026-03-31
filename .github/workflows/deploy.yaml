@@ -429,7 +429,6 @@ jobs:
     name: Copy clinics onboarding script to S3 bucket
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: inputs.environment == 'dev'
 
     env:
       ONBOARDING_FILE: "clinics_data_load.py"
