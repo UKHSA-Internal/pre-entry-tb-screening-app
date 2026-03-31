@@ -23,6 +23,7 @@ import {
   selectTravel,
 } from "@/redux/store";
 import { setTbCertificateStatus } from "@/redux/tbCertificateSlice";
+import { ReduxApplicantDetailsType, ReduxTravelDetailsType } from "@/types";
 import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 import {
   calculateCertificateExpiryDate,
@@ -118,6 +119,62 @@ const TbSummary = () => {
     }
   };
 
+  const CURRENT_ADDRESS_FIELDS: {
+    key: string;
+    field: keyof ReduxApplicantDetailsType;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    formatter?: (value: any) => string;
+  }[] = [
+    { key: "Address line 1", field: "applicantHomeAddress1" },
+    { key: "Address line 2 (optional)", field: "applicantHomeAddress2" },
+    { key: "Address line 3 (optional)", field: "applicantHomeAddress3" },
+    { key: "Town or city", field: "townOrCity" },
+    { key: "Province or state", field: "provinceOrState" },
+    { key: "Postal code", field: "postcode" },
+    { key: "Country", field: "country", formatter: getCountryName },
+  ];
+
+  const UK_ADDRESS_FIELDS: {
+    key: string;
+    field: keyof ReduxTravelDetailsType;
+  }[] = [
+    { key: "Address line 1 (optional)", field: "applicantUkAddress1" },
+    { key: "Address line 2 (optional)", field: "applicantUkAddress2" },
+    { key: "Address line 3 (optional)", field: "applicantUkAddress3" },
+    { key: "Town or city (optional)", field: "townOrCity" },
+    { key: "Postcode (optional)", field: "postcode" },
+  ];
+
+  const CURRENT_ADDRESS_BASE_URL =
+    "/visa-applicant-contact-information?from=tb-certificate-summary";
+
+  const UK_ADDRESS_BASE_URL = "/visa-applicant-proposed-uk-address";
+
+  const currentAddressData = isIssued
+    ? CURRENT_ADDRESS_FIELDS.map(({ key, field, formatter }) => {
+        const rawValue = applicantData[field] as string | undefined;
+        const value = formatter ? formatter(rawValue) : rawValue;
+
+        return {
+          key,
+          value,
+          link: `${CURRENT_ADDRESS_BASE_URL}#${attributeToComponentId[field]}`,
+          hiddenLabel: `Current ${key.toLowerCase()}`,
+        };
+      })
+    : [];
+
+  const ukAddressData = isIssued
+    ? UK_ADDRESS_FIELDS.map(({ key, field }) => {
+        return {
+          key,
+          value: travelData[field],
+          link: `${UK_ADDRESS_BASE_URL}#${attributeToComponentId[field]}`,
+          hiddenLabel: `UK ${key.toLowerCase()}`,
+        };
+      })
+    : [];
+
   const summaryData = isIssued
     ? [
         {
@@ -194,88 +251,6 @@ const TbSummary = () => {
           hiddenLabel: "Physician's comments",
         },
       ];
-
-  const currentAddressData = isIssued
-    ? [
-        {
-          key: "Address line 1",
-          value: applicantData.applicantHomeAddress1,
-          link: `/visa-applicant-contact-information?from=tb-certificate-summary#${attributeToComponentId.applicantHomeAddress1}`,
-          hiddenLabel: "Current address line 1",
-        },
-        {
-          key: "Address line 2 (optional)",
-          value: applicantData.applicantHomeAddress2,
-          link: `/visa-applicant-contact-information?from=tb-certificate-summary#${attributeToComponentId.applicantHomeAddress2}`,
-          hiddenLabel: "Current address line 2 (optional)",
-        },
-        {
-          key: "Address line 3 (optional)",
-          value: applicantData.applicantHomeAddress3,
-          link: `/visa-applicant-contact-information?from=tb-certificate-summary#${attributeToComponentId.applicantHomeAddress3}`,
-          hiddenLabel: "Current address line 3 (optional)",
-        },
-        {
-          key: "Town or city",
-          value: applicantData.townOrCity,
-          link: `/visa-applicant-contact-information?from=tb-certificate-summary#${attributeToComponentId.townOrCity}`,
-          hiddenLabel: "Current town or city",
-        },
-        {
-          key: "Province or state",
-          value: applicantData.provinceOrState,
-          link: `/visa-applicant-contact-information?from=tb-certificate-summary#${attributeToComponentId.provinceOrState}`,
-          hiddenLabel: "Current province or state",
-        },
-        {
-          key: "Postal code",
-          value: applicantData.postcode,
-          link: `/visa-applicant-contact-information?from=tb-certificate-summary#${attributeToComponentId.postcode}`,
-          hiddenLabel: "Current postal code",
-        },
-        {
-          key: "Country",
-          value: getCountryName(applicantData.country),
-          link: `/visa-applicant-contact-information?from=tb-certificate-summary#${attributeToComponentId.country}`,
-          hiddenLabel: "Current country",
-        },
-      ]
-    : [];
-
-  const ukAddressData = isIssued
-    ? [
-        {
-          key: "Address line 1 (optional)",
-          value: travelData.applicantUkAddress1,
-          link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.applicantUkAddress1}`,
-          hiddenLabel: "UK address line 1 (optional)",
-        },
-        {
-          key: "Address line 2 (optional)",
-          value: travelData.applicantUkAddress2,
-          link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.applicantUkAddress2}`,
-          hiddenLabel: "UK address line 2 (optional)",
-        },
-        {
-          key: "Address line 3 (optional)",
-          value: travelData.applicantUkAddress3,
-          link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.applicantUkAddress3}`,
-          hiddenLabel: "UK address line 3 (optional)",
-        },
-        {
-          key: "Town or city (optional)",
-          value: travelData.townOrCity,
-          link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.townOrCity}`,
-          hiddenLabel: "UK town or city (optional)",
-        },
-        {
-          key: "Postcode (optional)",
-          value: travelData.postcode,
-          link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.postcode}`,
-          hiddenLabel: "UK postcode (optional)",
-        },
-      ]
-    : [];
 
   const certificateData = isIssued
     ? [
