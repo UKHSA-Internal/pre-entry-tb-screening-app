@@ -42,6 +42,7 @@ import PrivacyNoticePage from "./pages/privacy-notice";
 import ProgressTrackerPage from "./pages/progress-tracker";
 import RadiologicalOutcomeConfirmation from "./pages/radiological-outcome-confirmation";
 import RadiologicalOutcomeSummaryPage from "./pages/radiological-outcome-summary";
+import ScreeningHistoryPage from "./pages/screening-history";
 import SignOutPage from "./pages/sign-out";
 import SignedOutPage from "./pages/signed-out";
 import AutoSignedOutPage from "./pages/signed-out-auto";
@@ -50,6 +51,7 @@ import SputumConfirmation from "./pages/sputum-confirmation";
 import SputumDecisionConfirmation from "./pages/sputum-decision-confirmation";
 import SputumDecisionSummaryPage from "./pages/sputum-decision-summary";
 import SputumQuestionPage from "./pages/sputum-question";
+import TaskChoicePage from "./pages/task-choice";
 import TbCertificateDeclarationPage from "./pages/tb-certificate-declaration";
 import TbCertificateNotIssuedPage from "./pages/tb-certificate-not-issued";
 import TbCertificatePrintPage from "./pages/tb-certificate-print";
@@ -81,10 +83,28 @@ function App() {
         }
       />
       <Route
+        path="/what-do-you-need-to-do"
+        element={
+          <AuthenticatedRoute>
+            <TaskChoicePage />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
         path="/search-for-visa-applicant"
         element={
           <AuthenticatedRoute>
             <ApplicantSearchPage />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/screening-history"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfReduxEmpty>
+              <ScreeningHistoryPage />
+            </RedirectedRouteIfReduxEmpty>
           </AuthenticatedRoute>
         }
       />

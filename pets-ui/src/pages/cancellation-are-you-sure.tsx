@@ -6,10 +6,14 @@ import { cancelApplication } from "@/api/api";
 import Button from "@/components/button/button";
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
-import { setCancellationFurtherInfo, setCancellationReason } from "@/redux/applicationSlice";
+import {
+  setApplicationStatus,
+  setCancellationFurtherInfo,
+  setCancellationReason,
+} from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication } from "@/redux/store";
-import { ButtonClass } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass } from "@/utils/enums";
 import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function CancellationAreYouSurePage() {
@@ -33,6 +37,9 @@ export default function CancellationAreYouSurePage() {
           cancellationReason: applicationData.cancellationReason,
           cancellationFurtherInfo: applicationData.cancellationFurtherInfo ?? "",
         });
+        dispatch(setApplicationStatus(ApplicationStatus.CANCELLED));
+        dispatch(setCancellationReason(applicationData.cancellationReason));
+        dispatch(setCancellationFurtherInfo(applicationData.cancellationFurtherInfo ?? ""));
         navigate("/tb-screening-cancelled");
       } else {
         throw new Error("Cancellation reason is missing blank");

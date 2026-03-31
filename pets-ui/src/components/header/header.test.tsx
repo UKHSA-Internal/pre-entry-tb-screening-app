@@ -39,6 +39,15 @@ describe("Header component", () => {
     );
   });
 
+  it("sign out link on the task choice page directs the user to the sign out page with the skipSignOutCheck query param set to true", () => {
+    window.history.pushState({}, "", "/what-do-you-need-to-do");
+    renderHeader();
+    expect(screen.getByRole("link", { name: "Sign out" })).toHaveAttribute(
+      "href",
+      "/are-you-sure-you-want-to-sign-out?skipSignOutCheck=true",
+    );
+  });
+
   it("sign out link on the applicant search page directs the user to the sign out page with the skipSignOutCheck query param set to true", () => {
     window.history.pushState({}, "", "/search-for-visa-applicant");
     renderHeader();
