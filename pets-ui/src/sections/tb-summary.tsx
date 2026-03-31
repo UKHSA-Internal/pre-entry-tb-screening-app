@@ -121,10 +121,10 @@ const TbSummary = () => {
   const summaryData = isIssued
     ? [
         {
-          key: "Name",
+          key: "Full name",
           value: applicantData.fullName,
           link: `/visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.fullName}`,
-          hiddenLabel: "Name",
+          hiddenLabel: "Full name",
         },
         {
           key: "Nationality",
@@ -204,10 +204,16 @@ const TbSummary = () => {
           hiddenLabel: "Current address line 1",
         },
         {
-          key: "Address line 2",
+          key: "Address line 2 (optional)",
           value: applicantData.applicantHomeAddress2,
           link: `/visa-applicant-contact-information?from=tb-certificate-summary#${attributeToComponentId.applicantHomeAddress2}`,
-          hiddenLabel: "Current address line 2",
+          hiddenLabel: "Current address line 2 (optional)",
+        },
+        {
+          key: "Address line 3 (optional)",
+          value: applicantData.applicantHomeAddress3,
+          link: `/visa-applicant-contact-information?from=tb-certificate-summary#${attributeToComponentId.applicantHomeAddress3}`,
+          hiddenLabel: "Current address line 3 (optional)",
         },
         {
           key: "Town or city",
@@ -216,16 +222,22 @@ const TbSummary = () => {
           hiddenLabel: "Current town or city",
         },
         {
+          key: "Province or state",
+          value: applicantData.provinceOrState,
+          link: `/visa-applicant-contact-information?from=tb-certificate-summary#${attributeToComponentId.provinceOrState}`,
+          hiddenLabel: "Current province or state",
+        },
+        {
+          key: "Postal code",
+          value: applicantData.postcode,
+          link: `/visa-applicant-contact-information?from=tb-certificate-summary#${attributeToComponentId.postcode}`,
+          hiddenLabel: "Current postal code",
+        },
+        {
           key: "Country",
           value: getCountryName(applicantData.country),
           link: `/visa-applicant-contact-information?from=tb-certificate-summary#${attributeToComponentId.country}`,
           hiddenLabel: "Current country",
-        },
-        {
-          key: "Postcode",
-          value: applicantData.postcode,
-          link: `/visa-applicant-contact-information?from=tb-certificate-summary#${attributeToComponentId.postcode}`,
-          hiddenLabel: "Current postcode",
         },
       ]
     : [];
@@ -233,34 +245,34 @@ const TbSummary = () => {
   const ukAddressData = isIssued
     ? [
         {
-          key: "Address line 1",
+          key: "Address line 1 (optional)",
           value: travelData.applicantUkAddress1,
           link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.applicantUkAddress1}`,
-          hiddenLabel: "UK address line 1",
+          hiddenLabel: "UK address line 1 (optional)",
         },
         {
-          key: "Address line 2",
+          key: "Address line 2 (optional)",
           value: travelData.applicantUkAddress2,
           link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.applicantUkAddress2}`,
-          hiddenLabel: "UK address line 2",
+          hiddenLabel: "UK address line 2 (optional)",
         },
         {
-          key: "Town or city",
-          value: travelData.townOrCity,
-          link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.townOrCity}`,
-          hiddenLabel: "UK town or city",
-        },
-        {
-          key: "County",
+          key: "Address line 3 (optional)",
           value: travelData.applicantUkAddress3,
           link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.applicantUkAddress3}`,
-          hiddenLabel: "UK county",
+          hiddenLabel: "UK address line 3 (optional)",
         },
         {
-          key: "Postcode",
+          key: "Town or city (optional)",
+          value: travelData.townOrCity,
+          link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.townOrCity}`,
+          hiddenLabel: "UK town or city (optional)",
+        },
+        {
+          key: "Postcode (optional)",
           value: travelData.postcode,
           link: `/visa-applicant-proposed-uk-address#${attributeToComponentId.postcode}`,
-          hiddenLabel: "UK postcode",
+          hiddenLabel: "UK postcode (optional)",
         },
       ]
     : [];
@@ -300,10 +312,10 @@ const TbSummary = () => {
           hiddenLabel: "Declaring physician name",
         },
         {
-          key: "Physician's comments",
+          key: "Physician's notes",
           value: tbCertificateData.comments,
           link: clinicInfoLink(isCertificateIssued, attributeToComponentId.comments),
-          hiddenLabel: "Physician's comments",
+          hiddenLabel: "Physician's notes",
         },
       ]
     : [];
@@ -359,7 +371,7 @@ const TbSummary = () => {
 
             {currentAddressData.length > 0 && (
               <>
-                <h2 className="govuk-heading-m">Current residential address</h2>
+                <h2 className="govuk-heading-m">Current home address</h2>
                 <Summary
                   taskStatus={summaryStatus}
                   applicationStatus={applicationData.applicationStatus}
@@ -402,9 +414,11 @@ const TbSummary = () => {
                 />
               </>
             )}
+
+            <Heading title="Now submit your certificate information" level={2} size="m" />
             <p className="govuk-body">
-              By submitting this certificate information you are confirming that, to the best of
-              your knowledge, there is no clinical suspicious of pulmonary TB.
+              By submitting this information you are confirming that, to the best of your knowledge,
+              there is no clinical suspicion of pulmonary TB.
             </p>
           </div>
           {applicantPhotoContext?.applicantPhotoDataUrl && (
