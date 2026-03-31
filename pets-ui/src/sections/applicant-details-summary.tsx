@@ -33,6 +33,7 @@ const ApplicantReview = () => {
 
   const { applicantPhotoFile } = useApplicantPhoto();
   const taskComplete = applicantData.status === TaskStatus.COMPLETE;
+  const isFirstApplication = applicationsListData.length < 1;
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -98,53 +99,67 @@ const ApplicantReview = () => {
     {
       key: "Full name",
       value: applicantData.fullName,
-      link: `/visa-applicant-personal-information?from=check-visa-applicant-details#${attributeToComponentId.fullName}`,
+      link: isFirstApplication
+        ? `/visa-applicant-personal-information?from=check-visa-applicant-details#${attributeToComponentId.fullName}`
+        : undefined,
       hiddenLabel: "full name",
     },
     {
       key: "Date of birth",
       value: formatDateForDisplay(applicantData.dateOfBirth),
-      link: `/visa-applicant-personal-information?from=check-visa-applicant-details#${attributeToComponentId.dateOfBirth}`,
+      link: isFirstApplication
+        ? `/visa-applicant-personal-information?from=check-visa-applicant-details#${attributeToComponentId.dateOfBirth}`
+        : undefined,
       hiddenLabel: "date of birth",
     },
     {
       key: "Sex",
       value: applicantData.sex,
-      link: `/visa-applicant-personal-information?from=check-visa-applicant-details#${attributeToComponentId.sex}`,
+      link: isFirstApplication
+        ? `/visa-applicant-personal-information?from=check-visa-applicant-details#${attributeToComponentId.sex}`
+        : undefined,
       hiddenLabel: "sex",
     },
     {
       key: "Nationality",
       value: getCountryName(applicantData.countryOfNationality),
-      link: `/visa-applicant-personal-information?from=check-visa-applicant-details#${attributeToComponentId.countryOfNationality}`,
+      link: isFirstApplication
+        ? `/visa-applicant-personal-information?from=check-visa-applicant-details#${attributeToComponentId.countryOfNationality}`
+        : undefined,
       hiddenLabel: "country of nationality",
     },
     {
       key: "Passport number",
       value: applicantData.passportNumber,
-      link: taskComplete
-        ? undefined
-        : `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.passportNumber}`,
+      link:
+        isFirstApplication && !taskComplete
+          ? `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.passportNumber}`
+          : undefined,
       hiddenLabel: "passport number",
     },
     {
       key: "Country of issue",
       value: getCountryName(applicantData.countryOfIssue),
-      link: taskComplete
-        ? undefined
-        : `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.countryOfIssue}`,
+      link:
+        isFirstApplication && !taskComplete
+          ? `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.countryOfIssue}`
+          : undefined,
       hiddenLabel: "country of issue",
     },
     {
       key: "Passport issue date",
       value: formatDateForDisplay(applicantData.passportIssueDate),
-      link: `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.passportIssueDate}`,
+      link: isFirstApplication
+        ? `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.passportIssueDate}`
+        : undefined,
       hiddenLabel: "passport issue date",
     },
     {
       key: "Passport expiry date",
       value: formatDateForDisplay(applicantData.passportExpiryDate),
-      link: `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.passportExpiryDate}`,
+      link: isFirstApplication
+        ? `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.passportExpiryDate}`
+        : undefined,
       hiddenLabel: "passport expiry date",
     },
     {
