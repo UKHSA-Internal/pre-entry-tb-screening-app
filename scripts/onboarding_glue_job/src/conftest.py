@@ -1,9 +1,6 @@
 """
 conftest.py — shared fixtures for integration tests.
 
-Requires:
-  pip install pytest pytest-docker boto3
-
 DynamoDB Local is started automatically via pytest-docker using
 docker-compose.yml in this directory. Tables are recreated before
 each test so every test starts with a clean, predictable state.
@@ -65,10 +62,10 @@ def _is_dynamo_ready() -> bool:
 
 # Function-scoped: recreate both tables before every test
 @pytest.fixture()
-def tables(dynamodb_local):
+def table(dynamodb_local):
     """
     Drops and recreates both DynamoDB tables before each test.
-    Yields (applicant_table, application_table) as boto3 Table resources.
+    Yields clinics_table as boto3 Table resources.
     """
     _drop_table_if_exists(dynamodb_local, CLINICS_TABLE)
 
@@ -102,14 +99,3 @@ def _create_table(dynamodb, table_name: str):
     )
     table.wait_until_exists()
     return table
-
-
-# Helpers used by integration tests
-def make_statistics():
-    return {
-        "all_applicants": 0,
-        "skipped_missing": 0,
-        "skipped_migrated": 0,
-        "migrated_applicants": 0,
-        "applicants_to_remove": [],
-    }
