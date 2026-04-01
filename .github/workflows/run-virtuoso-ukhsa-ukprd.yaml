@@ -1,33 +1,33 @@
-name: Run Virtuoso Goal
+name: Run Virtuoso Plan
 
 on:
-  push:
-    branches:
-      - feature/TBBETA-2067-virtuoso-tests
+  workflow_dispatch:
+    inputs:
+      plan_id:
+        description: "5"
+        required: true
+      plan_name:
+        description: "CI/CD_PETS"
+        required: false
 
 jobs:
-  run-virtuoso:
+  run-virtuoso-plan:
     runs-on: ubuntu-latest
+
+    env:
+      VIRTUOSO_TOKEN: ${{ secrets.VIRTUOSOUKPRD_API_TOKEN }}
+      PLAN_ID: ${{ inputs.plan_id }}
+      PLAN_NAME: ${{ inputs.plan_name }}
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
-      - name: Create scripts folder
-        run: mkdir -p scripts
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Download Virtuoso Shell Script
-        run: |
-          echo "#!/usr/bin/env bash" > scripts/execute.sh
-          echo "# Source: https://docs.virtuoso.qa/integration/execute.sh" >> scripts/execute.sh
-          curl -s https://docs.virtuoso.qa/integration/execute.sh >> scripts/execute.sh
+      - name: Make script executable
+        run: chmod +x .scripts/execute.sh
 
-      - name: Make Script Executable
-        run: chmod +x scripts/execute.sh
-
-      - name: Execute Virtuoso Goal
-        run: |
-          ./scripts/execute.sh \
-            --token ${{ secrets.VIRTUOSOUKPRD_API_TOKEN }} \
-            --goal_id 490 \
-            --api-uk
+      - name: Run Virtuoso plan
+        run: .scripts/execute.sh
