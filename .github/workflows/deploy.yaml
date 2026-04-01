@@ -422,7 +422,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Upload Spec to s3
-        run: aws s3 cp ${{ env.MIGRATION_FILE }} s3://${{ env.MIGRATION_SCRIPT_S3_BUCKET }}/scripts/ --sse aws:kms --sse-kms-key-id ${{ vars.SSE_KEY_ID }}
+        run: aws s3 cp ${{ env.MIGRATION_FILE }} s3://${{ env.MIGRATION_SCRIPT_S3_BUCKET }}/ --sse aws:kms --sse-kms-key-id ${{ vars.SSE_KEY_ID }}
         working-directory: "./scripts/applicant_migration/src/"
 
   upload-onboarding-script:
