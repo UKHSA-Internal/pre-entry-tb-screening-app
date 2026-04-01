@@ -41,6 +41,7 @@ Temporary Items
 # Tests
 pets.code-workspace
 coverage
+.coverage
 
 # aws
 *.pkg
@@ -54,6 +55,10 @@ package-lock.json
 
 # Python env
 ve/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
 
 # Snyk Security Extension - AI Rules (auto-generated)
 .github/instructions/snyk_rules.instructions.md
