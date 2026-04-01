@@ -1,6 +1,7 @@
+import path from "node:path";
+
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import path from "path";
 import { z } from "zod";
 
 import awsClients from "../../shared/clients/aws";

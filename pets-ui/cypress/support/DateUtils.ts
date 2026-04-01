@@ -121,8 +121,8 @@ export class DateUtils {
     const parts = dateString.split("/");
     if (parts.length !== 3) return dateString;
 
-    const day = parseInt(parts[0], 10).toString();
-    const month = parseInt(parts[1], 10).toString();
+    const day = Number.parseInt(parts[0], 10).toString();
+    const month = Number.parseInt(parts[1], 10).toString();
     const year = parts[2];
 
     return `${day}/${month}/${year}`;
@@ -333,8 +333,8 @@ export class DateUtils {
       throw new Error(`Invalid date format: ${dateString}. Expected DD/MM/YYYY format.`);
     }
 
-    const day = parseInt(parts[0], 10); // Remove leading zeros
-    const month = parseInt(parts[1], 10);
+    const day = Number.parseInt(parts[0], 10); // Remove leading zeros
+    const month = Number.parseInt(parts[1], 10);
     const year = parts[2];
 
     const months = [

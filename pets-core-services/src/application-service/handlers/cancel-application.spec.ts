@@ -1,4 +1,5 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
+
 import { describe, expect, test, vi } from "vitest";
 
 import { CountryCode } from "../../shared/country";
