@@ -48,7 +48,7 @@
     "react-redux": "^9.2.0",
     "react-router": "^7.10.1",
     "sass": "^1.81.0",
-    "swagger-ui-react": "^5.28.0",
+    "swagger-ui-react": "^5.32.1",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
