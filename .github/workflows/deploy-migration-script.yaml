@@ -13,7 +13,8 @@ on:
         default: "dev"
         type: choice
         options: [dev, qat, preprod, prod]
-
+  push:
+    branches: [release/**]
 jobs:
   upload-migration-script:
     name: Copy migration script to S3 bucket
