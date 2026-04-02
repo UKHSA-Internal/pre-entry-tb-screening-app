@@ -98,6 +98,37 @@ describe("ApplicantSearchForm", () => {
     });
   });
 
+  test("correct errors show when freeText field has an input over 256 chars", async () => {
+    const input256Chars =
+      "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd";
+
+    renderWithProviders(
+      <ApplicantPhotoProvider>
+        <ApplicantSearchForm />
+      </ApplicantPhotoProvider>,
+    );
+    const user = userEvent.setup();
+
+    await user.type(screen.getByTestId("passport-number"), input256Chars + "x");
+    await user.click(screen.getByRole("button"));
+
+    await waitFor(() => {
+      expect(
+        screen.getAllByText(`"Visa applicant's passport number" must be 256 characters or less`),
+      ).toHaveLength(2);
+    });
+
+    await user.clear(screen.getByTestId("passport-number"));
+    await user.type(screen.getByTestId("passport-number"), input256Chars);
+    await user.click(screen.getByRole("button"));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(`"Visa applicant's passport number" must be 256 characters or less`),
+      ).not.toBeInTheDocument();
+    });
+  });
+
   test("store is correctly populated and user is navigated to screening history page on a 200 response", async () => {
     const { store } = renderWithProviders(
       <ApplicantPhotoProvider>
