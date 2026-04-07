@@ -62,11 +62,6 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
       return HttpErrors.badRequest("Clinic Id missing");
     }
 
-    if (clinicId !== VITE_SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
-      logger.error("Clinic Id mismatch");
-      return HttpErrors.forbidden("Clinic Id mismatch");
-    }
-
     if (clinicId === VITE_SUPPORT_CLINIC_ID && application.clinicId !== clinicId) {
       logger.info("Getting an application for the support clinic");
     }
