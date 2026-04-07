@@ -2,7 +2,9 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
 import { applicantReducer } from "./applicantSlice";
 import { applicationReducer } from "./applicationSlice";
+import { applicationsListReducer } from "./applicationsListSlice";
 import { chestXrayReducer } from "./chestXraySlice";
+import { clinicReducer } from "./clinicSlice";
 import { medicalScreeningReducer } from "./medicalScreeningSlice";
 import { radiologicalOutcomeReducer } from "./radiologicalOutcomeSlice";
 import { sputumDecisionReducer } from "./sputumDecisionSlice";
@@ -13,6 +15,8 @@ import { travelReducer } from "./travelSlice";
 const rootReducer = combineReducers({
   applicant: applicantReducer,
   application: applicationReducer,
+  applicationsList: applicationsListReducer,
+  clinic: clinicReducer,
   chestXray: chestXrayReducer,
   radiologicalOutcome: radiologicalOutcomeReducer,
   medicalScreening: medicalScreeningReducer,
@@ -36,6 +40,7 @@ export type AppDispatch = AppStore["dispatch"];
 
 export const selectApplicant = (state: RootState) => state.applicant;
 export const selectApplication = (state: RootState) => state.application;
+export const selectApplicationsList = (state: RootState) => state.applicationsList;
 export const selectChestXray = (state: RootState) => state.chestXray;
 export const selectRadiologicalOutcome = (state: RootState) => state.radiologicalOutcome;
 export const selectMedicalScreening = (state: RootState) => state.medicalScreening;
@@ -43,4 +48,5 @@ export const selectSputum = (state: RootState) => state.sputum;
 export const selectSputumDecision = (state: RootState) => state.sputumDecision;
 export const selectTbCertificate = (state: RootState) => state.tbCertificate;
 export const selectClinic = (state: RootState) => state.tbCertificate.clinic;
+export const selectUserClinic = (state: RootState) => state.clinic;
 export const selectTravel = (state: RootState) => state.travel;

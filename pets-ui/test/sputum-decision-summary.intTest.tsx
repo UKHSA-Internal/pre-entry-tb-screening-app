@@ -39,6 +39,7 @@ describe("SputumDecisionSummary", () => {
         applicationId: "test-app-id",
         dateCreated: { year: "2010", month: "1", day: "1" },
         applicationStatus: ApplicationStatus.IN_PROGRESS,
+        clinicId: "clinic-001",
       },
       sputumDecision: {
         status: TaskStatus.NOT_YET_STARTED,
@@ -58,6 +59,7 @@ describe("SputumDecisionSummary", () => {
         applicationId: "test-app-id",
         dateCreated: { year: "2010", month: "1", day: "1" },
         applicationStatus: ApplicationStatus.IN_PROGRESS,
+        clinicId: "clinic-001",
       },
       sputumDecision: {
         status: TaskStatus.NOT_YET_STARTED,
@@ -80,6 +82,7 @@ describe("SputumDecisionSummary", () => {
         applicationId: "test-app-id",
         dateCreated: { year: "2010", month: "1", day: "1" },
         applicationStatus: ApplicationStatus.IN_PROGRESS,
+        clinicId: "clinic-001",
       },
       sputumDecision: {
         status: TaskStatus.COMPLETE,
@@ -97,6 +100,7 @@ describe("SputumDecisionSummary", () => {
         applicationId: "test-app-id",
         dateCreated: { year: "2010", month: "1", day: "1" },
         applicationStatus: ApplicationStatus.IN_PROGRESS,
+        clinicId: "clinic-001",
       },
       sputumDecision: {
         status: TaskStatus.COMPLETE,
@@ -115,6 +119,7 @@ describe("SputumDecisionSummary", () => {
         applicationId: "test-app-id",
         dateCreated: { year: "2010", month: "1", day: "1" },
         applicationStatus: ApplicationStatus.IN_PROGRESS,
+        clinicId: "clinic-001",
       },
       sputumDecision: {
         status: TaskStatus.NOT_YET_STARTED,

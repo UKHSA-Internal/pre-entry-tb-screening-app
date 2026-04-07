@@ -4,6 +4,15 @@ import sys
 import time
 from botocore.exceptions import ClientError
 from awsglue.utils import getResolvedOptions
+from enum import Enum
+
+
+class ApplicationStatus(str, Enum):
+  inProgress = "In Progress",
+  certificateNotIssued = "Certificate Not Issued",
+  certificateAvailable = "Certificate Available",
+  cancelled = "Cancelled",
+
 
 print(sys.argv)
 
@@ -80,12 +89,12 @@ def migrate_item(args):
             is_issued = applicationTBRow.get("isIssued")
 
         if is_issued == "Yes":
-            new_application_status = "Certificate Available"
+            new_application_status =  ApplicationStatus.certificateAvailable
             # TODO: should expiryDate also be added to application in this case?
         elif is_issued == "No":
-            new_application_status = "Certificate not issued"
+            new_application_status = ApplicationStatus.certificateNotIssued
         else:
-            new_application_status = "In progress"
+            new_application_status = ApplicationStatus.inProgress
 
     print(f"Updating application status to : {new_application_status}")
 

@@ -66,8 +66,8 @@ export default function AccessibilityStatementPage() {
         <p className="govuk-body">
           The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public
           Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018
-          (the ‘accessibility regulations&apos;). If you&apos;re not happy with how we respond to
-          your complaint,{" "}
+          (the &apos;accessibility regulations&apos;). If you&apos;re not happy with how we respond
+          to your complaint,{" "}
           <LinkLabel
             title="contact the Equality Advisory and Support Service (EASS) (opens in new tab)"
             to="https://www.equalityadvisoryservice.com/"
@@ -95,7 +95,7 @@ export default function AccessibilityStatementPage() {
       <section className="govuk-!-margin-bottom-6">
         <Heading level={3} size="m" title="Compliance status" />
         <p className="govuk-body">
-          This website is partially compliant with the{" "}
+          This website is fully compliant with the{" "}
           <LinkLabel
             title="Web Content Accessibility Guidelines version 2.2 (opens in new tab)"
             to="https://www.w3.org/TR/WCAG22/"
@@ -105,25 +105,6 @@ export default function AccessibilityStatementPage() {
           />{" "}
           AA standard.
         </p>
-      </section>
-
-      <section className="govuk-!-margin-bottom-6">
-        <Heading level={3} size="m" title="Non-accessible content" />
-        <p className="govuk-body">
-          The content listed below is non-accessible for the following reasons.
-        </p>
-        <Heading level={3} size="m" title="Non-compliance with the accessibility regulations" />
-        <List
-          items={[
-            "Labelling techniques: Duplicated ID values might cause problems for users of assistive technologies. This fails WCAG 2.2 success criterion 1.3.1 (Info and Relationships).",
-            "Incorrect semantics: ARIA/HTML semantic structure has been implemented incorrectly. This fails WCAG 2.2 success criterion 4.1.2 (Name, Role, Value).",
-            "Labels or instructions: Optional fields are not made clear to users throughout the service. This fails WCAG 2.2 success criterion 3.3.2 (Labels or Instructions).",
-            "Information and relationships: Information and relationships in content were not conveyed to users of screen reading assistive technologies as they were presented to users visually. This fails WCAG 2.2 success criterion 1.3.1 (Info and Relationships).",
-            "Incorrect grouping: A <fieldset> and <legend> has been implemented to incorrectly group content on the page. This fails WCAG 2.2 success criterion 1.3.1 (Info and Relationships).",
-            "Low contrast on the Microsoft log in screen. This fails WCAG 2.2 success criterion 1.4.3 (Contrast Minimum).",
-          ]}
-        />
-        <p className="govuk-body">We plan to address these issues soon.</p>
       </section>
 
       <section className="govuk-!-margin-bottom-6">
@@ -139,15 +120,13 @@ export default function AccessibilityStatementPage() {
           We are testing our service with users with a variety of accessibility needs. We will keep
           testing our content to understand where we are non-compliant with accessibility standards.
         </p>
-        <p className="govuk-body">
-          We intend to fix the non-accessible content listed in this statement. Non-compliant
-          components will be raised in our roadmap and improved in the coming months.
-        </p>
       </section>
 
       <section className="govuk-!-margin-bottom-6">
         <Heading level={2} size="l" title="Preparation of this accessibility statement" />
-        <p className="govuk-body">This statement was prepared in August 2025.</p>
+        <p className="govuk-body">
+          This statement was prepared in August 2025. It was last reviewed in April 2026.
+        </p>
         <p className="govuk-body">
           This service was last tested in April 2025 against the WCAG 2.2 AA standard.
         </p>

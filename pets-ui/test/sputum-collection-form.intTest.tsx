@@ -103,6 +103,7 @@ const preloadedStateWithEmptySputum = {
     applicationId: "test-app-123",
     dateCreated: { year: "2010", month: "1", day: "1" },
     applicationStatus: ApplicationStatus.IN_PROGRESS,
+    clinicId: "clinic-001",
   },
   sputum: initialEmptySputumState,
 };
@@ -113,6 +114,7 @@ const preloadedStateWithPartialSputum = {
     applicationId: "test-app-123",
     dateCreated: { year: "2010", month: "1", day: "1" },
     applicationStatus: ApplicationStatus.IN_PROGRESS,
+    clinicId: "clinic-001",
   },
   sputum: {
     status: TaskStatus.IN_PROGRESS,
@@ -138,6 +140,7 @@ const preloadedStateWithSubmittedSample = {
     applicationId: "test-app-123",
     dateCreated: { year: "2010", month: "1", day: "1" },
     applicationStatus: ApplicationStatus.IN_PROGRESS,
+    clinicId: "clinic-001",
   },
   sputum: {
     status: TaskStatus.IN_PROGRESS,
@@ -154,6 +157,7 @@ const preloadedStateWithMixedSamples = {
     applicationId: "test-app-123",
     dateCreated: { year: "2010", month: "1", day: "1" },
     applicationStatus: ApplicationStatus.IN_PROGRESS,
+    clinicId: "clinic-001",
   },
   sputum: {
     status: TaskStatus.IN_PROGRESS,

@@ -10,6 +10,7 @@ export default function Header() {
 
   let signOutUrl = "/are-you-sure-you-want-to-sign-out";
   if (
+    url == "/what-do-you-need-to-do" ||
     url == "/search-for-visa-applicant" ||
     url == "/tracker" ||
     url.includes("confirmed") ||

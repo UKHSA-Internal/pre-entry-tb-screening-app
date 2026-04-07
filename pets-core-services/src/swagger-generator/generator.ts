@@ -1,10 +1,11 @@
+import { writeFileSync } from "node:fs";
+
 import {
   extendZodWithOpenApi,
   OpenApiGeneratorV3,
   OpenAPIRegistry,
 } from "@asteasolutions/zod-to-openapi";
 import { Method } from "@middy/http-router";
-import { writeFileSync } from "fs";
 import { z } from "zod";
 
 import { assertEnvExists } from "../shared/config";

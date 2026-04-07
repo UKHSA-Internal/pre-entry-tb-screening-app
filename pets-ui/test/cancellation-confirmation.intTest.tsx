@@ -1,4 +1,5 @@
 import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { HelmetProvider } from "react-helmet-async";
 import { Mock } from "vitest";
 
@@ -24,6 +25,7 @@ describe("Cancellation confirmation page", () => {
         applicationStatus: ApplicationStatus.IN_PROGRESS,
         cancellationReason: "The clinic uploaded the wrong data",
         cancellationFurtherInfo: "They messed it up big time",
+        clinicId: "clinic-001",
       },
     };
     renderWithProviders(
@@ -65,5 +67,40 @@ describe("Cancellation confirmation page", () => {
     ).toEqual(
       "https://forms.office.com/pages/responsepage.aspx?id=mRRO7jVKLkutR188-d6GZtaAaJfrhApCue13O2-oStFUNlIyRkRMWVBNQkszSTJISDJGU1pJTTkxNy4u&route=shorturl",
     );
+  });
+
+  it("correctly updates state and navigates user to screening history when link is clicked", async () => {
+    const preloadedState = {
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+        cancellationReason: "The clinic uploaded the wrong data",
+        cancellationFurtherInfo: "They messed it up big time",
+        clinicId: "clinic-001",
+      },
+      applicationsList: [],
+    };
+    const { store } = renderWithProviders(
+      <HelmetProvider>
+        <CancellationConfirmationPage />
+      </HelmetProvider>,
+      { preloadedState },
+    );
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("link", { name: "visa applicant's screening history" }));
+
+    expect(store.getState().applicationsList).toStrictEqual([
+      {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+        cancellationReason: "The clinic uploaded the wrong data",
+        cancellationFurtherInfo: "They messed it up big time",
+        clinicId: "clinic-001",
+      },
+    ]);
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/screening-history");
   });
 });

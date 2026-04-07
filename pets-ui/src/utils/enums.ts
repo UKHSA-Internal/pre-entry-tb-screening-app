@@ -67,3 +67,9 @@ export enum TBCertNotIssuedReason {
   TESTING_POSTPONED = "Testing postponed",
   APPLICATION_WITHDRAWN = "Visa applicant has withdrawn their TB screening",
 }
+
+export enum AdditionalStatusTagTexts {
+  CANNOT_START_YET = "Cannot start yet",
+  SCREENING_CANCELLED = "Screening cancelled",
+}
+export type StatusTagText = TaskStatus | ApplicationStatus | AdditionalStatusTagTexts;

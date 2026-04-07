@@ -5,7 +5,6 @@ import { acquireTokenSilently } from "@/auth/auth";
 import {
   ApplicantSearchFormType,
   ApplicationCancellationInfo,
-  ApplicationIdAndDateCreatedType,
   ClinicType,
   GenerateImageUploadUrlRequest,
   GenerateImageUploadUrlResponse,
@@ -20,6 +19,7 @@ import {
   PostedTravelDetailsType,
   ReceivedApplicantDetailsType,
   ReceivedApplicationDetailsType,
+  ReceivedApplicationListType,
 } from "@/types";
 import { sendGoogleAnalyticsHttpError } from "@/utils/google-analytics-utils";
 
@@ -90,7 +90,12 @@ export const getApplication = async (applicationId: string) => {
 
 export const createNewApplication = async (applicantPassportDetails: ApplicantSearchFormType) => {
   const result = await petsApi.post("/application", applicantPassportDetails);
-  return result as AxiosResponse<ApplicationIdAndDateCreatedType>;
+  return result as AxiosResponse<
+    Pick<
+      ReceivedApplicationListType,
+      "applicationId" | "applicationStatus" | "clinicId" | "dateCreated"
+    >
+  >;
 };
 
 export const postApplicantDetails = async (
