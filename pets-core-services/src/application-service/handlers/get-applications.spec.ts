@@ -176,7 +176,7 @@ describe("Getting Applications Handler", () => {
     };
 
     // Act
-    const response = await getApplicationHandler(event);
+    const response = await getApplicationsHandler(event);
     // Assert
     expect(response.statusCode).toBe(200);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -196,7 +196,7 @@ describe("Getting Applications Handler", () => {
       .spyOn(ChestXRay, "getByApplicationId")
       .mockRejectedValue(new Error("DB failure"));
     // Act
-    const response = await getApplicationHandler(event);
+    const response = await getApplicationsHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(500);
