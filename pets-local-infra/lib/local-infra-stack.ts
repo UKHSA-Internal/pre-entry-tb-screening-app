@@ -101,6 +101,17 @@ export class LocalInfrastructureStack extends cdk.Stack {
         type: AttributeType.STRING,
       },
     });
+    applicationServiceDb.addGlobalSecondaryIndex({
+      indexName: process.env.CLINIC_ID_INDEX || "",
+      partitionKey: {
+        name: "clinicId",
+        type: AttributeType.STRING,
+      },
+      sortKey: {
+        name: "applicationStatus",
+        type: AttributeType.STRING,
+      },
+    });
     new Table(this, "audit-service-table", {
       ...tableProps,
       tableName: process.env.AUDIT_SERVICE_DATABASE_NAME,

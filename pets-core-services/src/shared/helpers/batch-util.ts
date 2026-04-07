@@ -1,5 +1,7 @@
 import { BatchGetCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
+import { logger } from "../logger";
+
 type Key = Record<string, any>;
 
 export class DynamoBatchLoader {
@@ -39,13 +41,15 @@ export class DynamoBatchLoader {
       let response;
 
       do {
+        logger.info(requestItems);
         response = await client.send(new BatchGetCommand({ RequestItems: requestItems }));
-
+        logger.info(response);
         const rawItems: Record<string, unknown>[] =
           (response.Responses?.[tableName] as Record<string, unknown>[]) ?? [];
 
         const mappedItems = rawItems.map((item) => mapItem(item));
         results.push(...mappedItems);
+        logger.info(results);
 
         const unprocessed = response.UnprocessedKeys?.[tableName]?.Keys;
 
