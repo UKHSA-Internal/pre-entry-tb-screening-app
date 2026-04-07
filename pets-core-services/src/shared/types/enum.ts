@@ -9,3 +9,8 @@ export enum ApplicationStatus {
   certificateAvailable = "Certificate Available",
   cancelled = "Cancelled",
 }
+
+export enum ApplicationStatusGroup {
+  incomplete = "Incomplete",
+  complete = "Complete",
+}

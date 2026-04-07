@@ -1,10 +1,11 @@
-import { QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { QueryCommand, QueryCommandOutput } from "@aws-sdk/lib-dynamodb";
 
 import awsClients from "../clients/aws";
+import { assertEnvExists } from "../config";
 import { CountryCode } from "../country";
 import { DynamoBatchLoader } from "../helpers/batch-util";
 import { logger } from "../logger";
-import { ApplicationStatus } from "../types/enum";
+import { ApplicationStatus, ApplicationStatusGroup } from "../types/enum";
 import { Applicant, ApplicantBase } from "./applicant";
 
 const { dynamoDBDocClient: docClient } = awsClients;
@@ -73,26 +74,34 @@ export class ApplicationRoot extends IApplicationRoot {
   ): Promise<ApplicationListResult> {
     try {
       logger.info(`Fetching applications by clinicId ${clinicId}`);
-
+      const allItems: any[] = [];
+      let lastEvaluatedKey: Record<string, any> | undefined = undefined;
+      let result: QueryCommandOutput;
       const lastKey = cursor ? JSON.parse(Buffer.from(cursor, "base64").toString()) : undefined;
-
-      const result = await docClient.send(
-        new QueryCommand({
-          TableName: this.getTableName(),
-          IndexName: "CLINIC_ID_INDEX",
-          KeyConditionExpression: "clinicId = :clinicId  AND applicationStatus = :status",
-          ExpressionAttributeValues: {
-            ":clinicId": clinicId,
-            ":status": ApplicationStatus.inProgress,
-          },
-          Limit: limit,
-          ExclusiveStartKey: lastKey,
-          ScanIndexForward: false,
-        }),
-      );
+      logger.info(lastKey);
+      do {
+        result = await docClient.send(
+          new QueryCommand({
+            TableName: this.getTableName(),
+            IndexName: assertEnvExists(process.env.CLINIC_ID_INDEX),
+            KeyConditionExpression:
+              "clinicId = :clinicId  AND applicationStatusGroup = :statusGroup",
+            ExpressionAttributeValues: {
+              ":clinicId": clinicId,
+              ":statusGroup": ApplicationStatusGroup.incomplete,
+            },
+            Limit: limit,
+            ExclusiveStartKey: lastEvaluatedKey,
+            ScanIndexForward: false,
+          }),
+        );
+        allItems.push(...(result?.Items ?? []));
+        lastEvaluatedKey = result?.LastEvaluatedKey;
+      } while (lastEvaluatedKey);
 
       // Convert DB items → models
-      const applications = (result.Items || []).map((item) => ApplicationRoot.fromDynamo(item));
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      const applications = (allItems || []).map((item) => ApplicationRoot.fromDynamo(item));
 
       // Batch load applicants
       const applicantMap = await DynamoBatchLoader.batchLoad({

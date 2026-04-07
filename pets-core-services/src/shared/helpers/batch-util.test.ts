@@ -79,6 +79,7 @@ describe("DynamoBatchLoader", () => {
       // Second response returns the remaining key
       .mockResolvedValueOnce({
         Responses: { TestTable: [{ id: "2", value: "b" }] },
+        UnprocessedKeys: {},
       });
 
     const keys = [{ id: "1" }, { id: "2" }, { id: "1" }]; // duplicate key "1"
