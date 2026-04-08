@@ -1,0 +1,22 @@
+[project]
+name = "clinics_data"
+version = "0.1.0"
+description = "Clinic data loader and tests for UKHSA internal use."
+authors = ["UKHSA"]
+requires-python = ">=3.9,<3.10"
+dependencies = [
+    "boto3>=1.42.67",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "pytest-docker>=3.2.5",
+    "pytest-freezegun>=0.4.2",
+]
+
+[tool.setuptools]
+packages = ["clinics_data"]
+
+[tool.pytest.ini_options]
+addopts = "-p no:warnings -p no:cacheprovider"
+filterwarnings = [
+    "ignore::DeprecationWarning:botocore.*"
+]
