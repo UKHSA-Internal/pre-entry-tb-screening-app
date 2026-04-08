@@ -46,6 +46,20 @@ type ReduxClinicDetailsType = {
 };
 
 // Application types
+type ReceivedApplicationsInProgressType = {
+  applications: {
+    applicationId: string;
+    applicantId: string;
+    applicantName: string;
+    passportNumber: string;
+    countryOfIssue: string;
+    clinicId: string;
+    dateCreated: string;
+    applicationStatus: ApplicationStatus;
+  }[];
+  cursor: null;
+};
+
 type ReceivedApplicationListType = {
   applicationStatus: ApplicationStatus;
   applicationId: string;

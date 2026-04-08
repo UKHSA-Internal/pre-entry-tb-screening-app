@@ -37,8 +37,9 @@ import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/tra
 import { fetchClinic } from "@/utils/clinic";
 import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
 import { convertDateStrToObj, formatDateForDisplay, getCountryName } from "@/utils/helpers";
+import { ReceivedApplicationsInProgressType } from "@/types";
 
-const getApplicationsResFixture = {
+const getApplicationsResFixture: ReceivedApplicationsInProgressType = {
   applications: [
     {
       applicationId: "9189a071-945b-4834-a6cb-8748c4746eba",
