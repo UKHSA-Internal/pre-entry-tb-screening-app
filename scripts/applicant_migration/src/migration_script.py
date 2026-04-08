@@ -1,9 +1,5 @@
 import boto3
-import os
-import sys
-import time
 from botocore.exceptions import ClientError
-from awsglue.utils import getResolvedOptions
 from enum import Enum
 
 
@@ -58,7 +54,7 @@ def migrate_item(applicant_row, applicant_table, application_table, dry_run, sta
 
     new_application_status = applicationRootRow.get("applicationStatus")
     status_group = applicationRootRow.get("statusGroup")
-    new_status_group = applicationRootRow.not_complete.value
+    new_status_group = StatusGroup.not_complete.value
 
     # Getting new applicationStatus
     if new_application_status is None:
@@ -149,6 +145,7 @@ def migrate_item(applicant_row, applicant_table, application_table, dry_run, sta
 
 
 def remove_original_applicants(applicant_table, id_list):
+    """Remove original applicant records after migration (in batches of 25)."""
     while len(id_list) > 0:
         if len(id_list) >= 25:
             # ids25 is the list of IDs up to 25 elements (batch_write_item restrictions)
@@ -202,15 +199,24 @@ def scan_applicant_table(
         statistics["all_applicants"] += len(applicants)
 
         for applicant_row in applicants:
-            migrate_item((applicant_row, applicant_table, application_table, statistics))
+            migrate_item(
+                applicant_row,
+                applicant_table,
+                application_table,
+                dry_run,
+                statistics,
+            )
 
     if not dry_run:
-        remove_original_applicants(applicant_table,statistics["applicants_to_remove"])
+        remove_original_applicants(applicant_table, statistics["applicants_to_remove"])
 
 
 if __name__ == "__main__":
+    import os
     import sys
+    import time
     from awsglue.utils import getResolvedOptions
+
     print(f"GJ called with args: {sys.argv}")
 
     args = getResolvedOptions(sys.argv, ["customer-executor-env-vars"])

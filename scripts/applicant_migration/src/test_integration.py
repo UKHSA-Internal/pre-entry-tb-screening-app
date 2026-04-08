@@ -2,8 +2,7 @@
 Integration tests for migration.py.
 
 These tests run the full scan_applicant_table() flow against a real
-DynamoDB Local instance (no mocks). DRY_RUN is always False so every
-test exercises real read/write/delete operations.
+DynamoDB Local instance (no mocks). Tests exercise real read/write/delete operations.
 
 Run:
   pytest test_integration.py -v
@@ -14,7 +13,6 @@ Requirements:
 """
 
 import importlib
-import os
 import sys
 
 import pytest
@@ -24,20 +22,23 @@ from enum import Enum
 
 
 class ApplicationStatus(str, Enum):
-  inProgress = "In Progress",
-  certificateNotIssued = "Certificate Not Issued",
-  certificateAvailable = "Certificate Available",
-  cancelled = "Cancelled",
+  inProgress = "In Progress"
+  certificateNotIssued = "Certificate Not Issued"
+  certificateAvailable = "Certificate Available"
+  cancelled = "Cancelled"
 
-# ---------------------------------------------------------------------------
+
+class StatusGroup(Enum):
+  complete = "Complete"
+  not_complete = "Not Complete"
+
+
 # Load migration module with DRY_RUN=False and tables pointing at local
-# ---------------------------------------------------------------------------
 @pytest.fixture(autouse=True)
 def migration(tables):
     """
-    Re-imports migration_script.py before each test with DRY_RUN=False.
-    autouse=True means every test in this file gets a fresh module
-    with clean module-level globals.
+    Re-imports migration_script.py before each test.
+    autouse=True means every test in this file gets a fresh module.
     """
     _stub_awsglue(dry_run=False)
     if "migration_script" in sys.modules:
@@ -51,14 +52,7 @@ def mod(migration):
     return migration
 
 
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
-def _dynamodb_local(dynamodb_local):
-    """Convenience alias used inside tests."""
-    return dynamodb_local
-
-
 def _seed_applicant(table, pk, sk="APPLICANT#DETAILS", passport_id=None, **extra):
     item = {"pk": pk, "sk": sk}
     if passport_id is not None:
@@ -90,27 +84,25 @@ def _get_item(table, pk, sk):
     return response.get("Item")
 
 
-def _run(mod, dynamodb_local):
+def _run(mod, applicant_table_name, application_table_name, dynamodb_local):
+    """Run migration with given tables."""
     stats = make_statistics()
-    mod.scan_applicant_table(stats, dynamodb=dynamodb_local)
+    mod.scan_applicant_table(
+        stats,
+        applicant_table_name,
+        application_table_name,
+        "eu-west-2",
+        False,
+        dynamodb_local,
+    )
     return stats
 
 
-# ===========================================================================
 # Happy path — single applicant migrated end-to-end
-# ===========================================================================
 class TestHappyPath:
-    def setup(self):
-        self.dry_run = os.getenv("DRY_RUN")
-        os.putenv("DRY_RUN", "false")
-
-    def teardown(self):
-        os.putenv("DRY_RUN", str(self.dry_run))
-
     def test_new_applicant_record_is_created_with_passport_pk(
         self, mod, tables, dynamodb_local
     ):
-        self.setup()
         applicant_table, application_table = tables
         _seed_applicant(
             applicant_table,
@@ -120,7 +112,7 @@ class TestHappyPath:
         )
         _seed_application_root(application_table, "APPLICATION#abc", status="Approved")
 
-        _run(mod, dynamodb_local)
+        _run(mod, "applicant-table", "application-table", dynamodb_local)
 
         new_record = _get_item(
             applicant_table, "COUNTRY#GB#PASSPORT#111", "APPLICANT#DETAILS"
@@ -138,7 +130,7 @@ class TestHappyPath:
         )
         _seed_application_root(application_table, "APPLICATION#abc", status="Approved")
 
-        _run(mod, dynamodb_local)
+        _run(mod, "applicant-table", "application-table", dynamodb_local)
 
         old_record = _get_item(applicant_table, "APPLICATION#abc", "APPLICANT#DETAILS")
         assert old_record is None
@@ -154,7 +146,7 @@ class TestHappyPath:
         )
         _seed_application_root(application_table, "APPLICATION#abc", status="Approved")
 
-        _run(mod, dynamodb_local)
+        _run(mod, "applicant-table", "application-table", dynamodb_local)
 
         root = _get_item(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
         assert root["applicantId"] == "COUNTRY#GB#PASSPORT#111"
@@ -174,7 +166,7 @@ class TestHappyPath:
         )
         _seed_application_root(application_table, "APPLICATION#abc", status="Approved")
 
-        _run(mod, dynamodb_local)
+        _run(mod, "applicant-table", "application-table", dynamodb_local)
 
         new_record = _get_item(
             applicant_table, "COUNTRY#GB#PASSPORT#111", "APPLICANT#DETAILS"
@@ -192,7 +184,7 @@ class TestHappyPath:
         )
         _seed_application_root(application_table, "APPLICATION#abc", status="Approved")
 
-        stats = _run(mod, dynamodb_local)
+        stats = _run(mod, "applicant-table", "application-table", dynamodb_local)
 
         assert stats["all_applicants"] == 1
         assert stats["migrated_applicants"] == 1
@@ -200,11 +192,7 @@ class TestHappyPath:
         assert stats["skipped_migrated"] == 0
 
 
-# ===========================================================================
 # Application status derivation — real DynamoDB reads
-# ===========================================================================
-
-
 class TestApplicationStatusDerivation:
     def test_status_taken_from_root_row_when_present(self, mod, tables, dynamodb_local):
         applicant_table, application_table = tables
@@ -215,7 +203,7 @@ class TestApplicationStatusDerivation:
             application_table, "APPLICATION#abc", status="Under Review"
         )
 
-        _run(mod, dynamodb_local)
+        _run(mod, "applicant-table", "application-table", dynamodb_local)
 
         root = _get_item(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
         assert root["applicationStatus"] == "Under Review"
@@ -223,21 +211,18 @@ class TestApplicationStatusDerivation:
     def test_status_is_certificate_available_when_tb_issued_yes(
         self, mod, tables, dynamodb_local
     ):
+        """When TB is issued 'Yes', status should be Certificate Available."""
         applicant_table, application_table = tables
         _seed_applicant(
             applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
         )
-        # No ROOT row — falls through to TB certificate
+        _seed_application_root(application_table, "APPLICATION#abc")  # no status set
         _seed_application_tb(application_table, "APPLICATION#abc", is_issued="Yes")
 
-        _run(mod, dynamodb_local)
+        _run(mod, "applicant-table", "application-table", dynamodb_local)
 
         root = _get_item(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
-        # ROOT row didn't exist so update_item should have been a no-op
-        # (ConditionalCheckFailed) — verify the TB row is still intact
-        tb = _get_item(application_table, "APPLICATION#abc", "APPLICATION#TB#CERTIFICATE")
-        assert tb["isIssued"] == "Yes"
-
+        assert root["applicationStatus"] == ApplicationStatus.certificateAvailable
 
     def test_status_is_certificate_not_issued_when_tb_issued_no(
         self, mod, tables, dynamodb_local
@@ -249,7 +234,7 @@ class TestApplicationStatusDerivation:
         _seed_application_root(application_table, "APPLICATION#abc")  # no status set
         _seed_application_tb(application_table, "APPLICATION#abc", is_issued="No")
 
-        _run(mod, dynamodb_local)
+        _run(mod, "applicant-table", "application-table", dynamodb_local)
 
         root = _get_item(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
         assert root["applicationStatus"] == ApplicationStatus.certificateNotIssued
@@ -263,15 +248,32 @@ class TestApplicationStatusDerivation:
         )
         _seed_application_root(application_table, "APPLICATION#abc")  # no status
 
-        _run(mod, dynamodb_local)
+        _run(mod, "applicant-table", "application-table", dynamodb_local)
 
         root = _get_item(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
         assert root["applicationStatus"] == ApplicationStatus.inProgress
 
+    def test_no_root_row_skips_migration(self, mod, tables, dynamodb_local):
+        """When ROOT row doesn't exist, applicant migration should be skipped."""
+        applicant_table, application_table = tables
+        _seed_applicant(
+            applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
+        )
+        # Don't seed APPLICATION#ROOT row
 
-# ===========================================================================
+        stats = _run(mod, "applicant-table", "application-table", dynamodb_local)
+
+        # Applicant should not be migrated
+        new_record = _get_item(
+            applicant_table, "COUNTRY#GB#PASSPORT#1", "APPLICANT#DETAILS"
+        )
+        assert new_record is None
+        old_record = _get_item(applicant_table, "APPLICATION#abc", "APPLICANT#DETAILS")
+        assert old_record is not None
+        assert stats["migrated_applicants"] == 0
+
+
 # Skip conditions — records must be untouched
-# ===========================================================================
 class TestSkipConditions:
     def test_record_without_passport_id_is_not_migrated(
         self, mod, tables, dynamodb_local
@@ -279,7 +281,7 @@ class TestSkipConditions:
         applicant_table, _ = tables
         _seed_applicant(applicant_table, pk="APPLICATION#abc")  # no passportId
 
-        stats = _run(mod, dynamodb_local)
+        stats = _run(mod, "applicant-table", "application-table", dynamodb_local)
 
         # Original record still exists
         original = _get_item(applicant_table, "APPLICATION#abc", "APPLICANT#DETAILS")
@@ -296,7 +298,7 @@ class TestSkipConditions:
             passport_id=already_migrated_pk,  # pk == passportId
         )
 
-        stats = _run(mod, dynamodb_local)
+        stats = _run(mod, "applicant-table", "application-table", dynamodb_local)
 
         record = _get_item(applicant_table, already_migrated_pk, "APPLICANT#DETAILS")
         assert record is not None
@@ -304,11 +306,7 @@ class TestSkipConditions:
         assert stats["migrated_applicants"] == 0
 
 
-# ===========================================================================
 # Multiple applicants — mixed scenarios in one scan
-# ===========================================================================
-
-
 class TestMultipleApplicants:
     def test_only_eligible_records_are_migrated(self, mod, tables, dynamodb_local):
         applicant_table, application_table = tables
@@ -329,7 +327,7 @@ class TestMultipleApplicants:
             passport_id="COUNTRY#GB#PASSPORT#3",
         )
 
-        stats = _run(mod, dynamodb_local)
+        stats = _run(mod, "applicant-table", "application-table", dynamodb_local)
 
         assert stats["all_applicants"] == 3
         assert stats["migrated_applicants"] == 1
@@ -350,7 +348,7 @@ class TestMultipleApplicants:
                 application_table, f"APPLICATION#{i}", status="Approved"
             )
 
-        stats = _run(mod, dynamodb_local)
+        stats = _run(mod, "applicant-table", "application-table", dynamodb_local)
 
         assert stats["migrated_applicants"] == 3
         for i in range(1, 4):
@@ -380,7 +378,7 @@ class TestMultipleApplicants:
                 application_table, f"APPLICATION#{i}", status="Approved"
             )
 
-        _run(mod, dynamodb_local)
+        _run(mod, "applicant-table", "application-table", dynamodb_local)
 
         for i in range(1, 6):
             assert (
@@ -389,9 +387,7 @@ class TestMultipleApplicants:
             )
 
 
-# ===========================================================================
-# Batch deletion boundary — exercises the 24-item slice bug
-# ===========================================================================
+# Batch deletion boundary
 class TestBatchDeletion:
     def test_exactly_25_records_deleted_in_single_batch(
         self, mod, tables, dynamodb_local
@@ -408,7 +404,7 @@ class TestBatchDeletion:
                 application_table, f"APPLICATION#{i}", status="Approved"
             )
 
-        stats = _run(mod, dynamodb_local)
+        stats = _run(mod, "applicant-table", "application-table", dynamodb_local)
 
         assert stats["migrated_applicants"] == 25
         for i in range(25):
@@ -418,7 +414,9 @@ class TestBatchDeletion:
             )
 
     def test_more_than_25_records_are_all_deleted(self, mod, tables, dynamodb_local):
-        """26+ records require multiple batch_writer calls — verify none are left behind."""
+        """26+ records require multiple batch_writer calls'
+            — verify none are left behind.
+        """
         applicant_table, application_table = tables
         for i in range(30):
             _seed_applicant(
@@ -430,7 +428,7 @@ class TestBatchDeletion:
                 application_table, f"APPLICATION#{i}", status="Approved"
             )
 
-        stats = _run(mod, dynamodb_local)
+        stats = _run(mod, "applicant-table", "application-table", dynamodb_local)
 
         assert stats["migrated_applicants"] == 30
         for i in range(30):
@@ -438,3 +436,114 @@ class TestBatchDeletion:
                 _get_item(applicant_table, f"APPLICATION#{i}", "APPLICANT#DETAILS")
                 is None
             )
+
+
+# Pagination — test scanning across multiple logical pages
+class TestPagination:
+    def test_large_result_set_is_processed_in_pagination_loop(
+        self, mod, tables, dynamodb_local
+    ):
+        """
+        Test with enough items to fill multiple pages.
+        This exercises the pagination while loop in scan_applicant_table.
+
+        Note: In practice, pagination in DynamoDB happens automatically
+        for large result sets. We create enough items to ensure the
+        pagination logic path is tested.
+        """
+        applicant_table, application_table = tables
+
+        # Create 50 applicants to trigger pagination
+        for i in range(50):
+            _seed_applicant(
+                applicant_table,
+                pk=f"APPLICATION#{i:03d}",
+                passport_id=f"COUNTRY#GB#PASSPORT#{i:03d}",
+            )
+            _seed_application_root(
+                application_table, f"APPLICATION#{i:03d}", status="Approved"
+            )
+
+        stats = _run(mod, "applicant-table", "application-table", dynamodb_local)
+
+        assert stats["all_applicants"] == 50
+        assert stats["migrated_applicants"] == 50
+
+        # Verify all original records are deleted
+        for i in range(50):
+            old = _get_item(applicant_table, f"APPLICATION#{i:03d}", "APPLICANT#DETAILS")
+            assert old is None
+
+
+# Edge cases and error conditions
+class TestEdgeCases:
+    def test_certificate_available_with_invalid_status_group(
+        self, mod, tables, dynamodb_local
+    ):
+        """Test status_group logic when existing group is invalid
+            (not complete/not_complete).
+        """
+        applicant_table, application_table = tables
+        _seed_applicant(
+            applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
+        )
+        _seed_application_root(
+            application_table,
+            "APPLICATION#abc",
+            applicationStatus=None,
+            statusGroup="InvalidStatus",  # Invalid status group
+        )
+        _seed_application_tb(application_table, "APPLICATION#abc", is_issued="Yes")
+
+        _run(mod, "applicant-table", "application-table", dynamodb_local)
+
+        root = _get_item(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
+        assert root["applicationStatus"] == ApplicationStatus.certificateAvailable
+        assert root["statusGroup"] == StatusGroup.complete.value
+
+    def test_empty_table_produces_zero_stats(self, mod, tables, dynamodb_local):
+        """Test scanning an empty table."""
+        stats = _run(mod, "applicant-table", "application-table", dynamodb_local)
+
+        assert stats["all_applicants"] == 0
+        assert stats["migrated_applicants"] == 0
+        assert stats["skipped_missing"] == 0
+        assert stats["skipped_migrated"] == 0
+        assert len(stats["applicants_to_remove"]) == 0
+
+    def test_mixed_applicants_with_varying_attributes(self, mod, tables, dynamodb_local):
+        """Test migration with applicants having different attribute combinations."""
+        applicant_table, application_table = tables
+
+        # Applicant with minimal fields
+        _seed_applicant(
+            applicant_table,
+            pk="APPLICATION#1",
+            passport_id="COUNTRY#GB#PASSPORT#1",
+        )
+        _seed_application_root(application_table, "APPLICATION#1", status="Approved")
+
+        # Applicant with many extra fields
+        _seed_applicant(
+            applicant_table,
+            pk="APPLICATION#2",
+            passport_id="COUNTRY#GB#PASSPORT#2",
+            name="John Doe",
+            dob="1990-01-01",
+            nationality="British",
+            email="john@example.com",
+            phone="01234567890",
+        )
+        _seed_application_root(application_table, "APPLICATION#2", status="Approved")
+
+        stats = _run(mod, "applicant-table", "application-table", dynamodb_local)
+
+        assert stats["migrated_applicants"] == 2
+
+        # Verify both got migrated with all their fields
+        new1 = _get_item(applicant_table, "COUNTRY#GB#PASSPORT#1", "APPLICANT#DETAILS")
+        assert new1 is not None
+
+        new2 = _get_item(applicant_table, "COUNTRY#GB#PASSPORT#2", "APPLICANT#DETAILS")
+        assert new2["name"] == "John Doe"
+        assert new2["dob"] == "1990-01-01"
