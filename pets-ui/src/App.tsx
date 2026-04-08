@@ -51,6 +51,7 @@ import SputumConfirmation from "./pages/sputum-confirmation";
 import SputumDecisionConfirmation from "./pages/sputum-decision-confirmation";
 import SputumDecisionSummaryPage from "./pages/sputum-decision-summary";
 import SputumQuestionPage from "./pages/sputum-question";
+import TaskChoicePage from "./pages/task-choice";
 import TbCertificateDeclarationPage from "./pages/tb-certificate-declaration";
 import TbCertificateNotIssuedPage from "./pages/tb-certificate-not-issued";
 import TbCertificatePrintPage from "./pages/tb-certificate-print";
@@ -79,6 +80,14 @@ function App() {
           <UnauthenticatedRoute>
             <HomePage />
           </UnauthenticatedRoute>
+        }
+      />
+      <Route
+        path="/what-do-you-need-to-do"
+        element={
+          <AuthenticatedRoute>
+            <TaskChoicePage />
+          </AuthenticatedRoute>
         }
       />
       <Route

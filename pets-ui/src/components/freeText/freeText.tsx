@@ -66,6 +66,10 @@ export default function FreeText(props: Readonly<FreeTextProps>) {
             value: props.patternValue,
             message: props.patternError,
           },
+          maxLength: {
+            value: 256,
+            message: `"${props.heading ?? props.label}" must be 256 characters or less`,
+          },
           setValueAs: (value: string) => value.trim(),
         })}
         defaultValue={props.defaultValue ?? ""}

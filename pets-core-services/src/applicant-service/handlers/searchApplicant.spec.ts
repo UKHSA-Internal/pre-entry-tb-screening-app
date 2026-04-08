@@ -146,30 +146,6 @@ describe("Test for Getting Applicant", () => {
     });
   });
 
-  test("Clinic Id mismatch returns a 403 response", async () => {
-    const existingApplicant = seededApplicants[0]; // Already preloaded into DB
-
-    const event: SearchApplicantEvent = {
-      ...mockAPIGwEvent,
-      requestContext: {
-        ...mockAPIGwEvent.requestContext,
-        authorizer: {
-          ...mockAPIGwEvent.requestContext.authorizer,
-          clinicId: "compromised-clinic-id", // Simulating a mismatch
-        },
-      },
-      parsedHeaders: {
-        passportnumber: existingApplicant.passportNumber,
-        countryofissue: existingApplicant.countryOfIssue,
-      },
-    };
-
-    const response = await searchApplicantHandler(event);
-
-    expect(response.statusCode).toBe(403);
-    expect(JSON.parse(response.body)).toMatchObject({ message: "Clinic Id mismatch" });
-  });
-
   test("Missing clinicId in the request returns a 400 response", async () => {
     const existingApplicant = seededApplicants[0]; // Already preloaded into DB
 

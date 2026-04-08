@@ -110,7 +110,13 @@ test("Sputum confirmation page renders correctly when sputum task is in progress
   renderWithProviders(<SputumConfirmation />, { preloadedState });
 
   const user = userEvent.setup();
-  expect(screen.getByText("Partial sputum sample information confirmed")).toBeTruthy();
+  expect(screen.getByText("Your progress has been saved")).toBeInTheDocument();
+  expect(screen.getByText("The information you entered has been saved.")).toBeInTheDocument();
+  expect(
+    screen.getByText(
+      "You need to enter results for all 3 sputum samples before you can complete the TB health screening.",
+    ),
+  ).toBeInTheDocument();
   await user.click(screen.getAllByRole("button")[0]);
   expect(useNavigateMock).toHaveBeenLastCalledWith("/tracker");
 });

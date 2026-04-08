@@ -193,3 +193,49 @@ input[type='file'].hide-text {
 .summary-list-value {
   text-align: right;
 }
+
+// DFE card styles extracted from https://github.com/DFE-Digital/dfe-frontend/blob/main/dist/dfefrontend-2.0.0.min.css & updated
+// Card styles START
+.dfe-grid-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.dfe-card {
+  box-sizing: border-box;
+  padding: 10px;
+  width: 100%;
+}
+
+@media (min-width: 40.0625em) {
+  .dfe-card {
+    width: 50%;
+  }
+}
+
+@media (min-width: 48.0625em) {
+  .dfe-card {
+    width: 50%;
+  }
+}
+
+.dfe-card-container {
+  height: 100%;
+  padding: 15px;
+  border: 1px solid #b1b4b6;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.dfe-card-container .dfe-card-link--header {
+  text-decoration: none;
+}
+// Card styles END
+
+.task-choice-link {
+  margin-bottom: 0;
+  text-decoration-line: none;
+}

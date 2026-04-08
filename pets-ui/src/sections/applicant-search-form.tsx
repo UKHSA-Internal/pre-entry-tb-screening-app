@@ -23,7 +23,6 @@ import {
   setApplicationsListDetailsFromApiResponse,
 } from "@/redux/applicationsListSlice";
 import { clearChestXrayDetails } from "@/redux/chestXraySlice";
-import { setUserClinicId } from "@/redux/clinicSlice";
 import { useAppDispatch } from "@/redux/hooks";
 import { clearMedicalScreeningDetails } from "@/redux/medicalScreeningSlice";
 import { clearRadiologicalOutcomeDetails } from "@/redux/radiologicalOutcomeSlice";
@@ -35,9 +34,7 @@ import { ApplicantSearchFormType, ReceivedApplicantDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { countryList } from "@/utils/countryList";
 import { ButtonClass } from "@/utils/enums";
-import { setGoogleAnalyticsParams } from "@/utils/google-analytics-utils";
 import { formRegex } from "@/utils/records";
-import { getUserProperties } from "@/utils/userProperties";
 
 import { getApplicants } from "../api/api";
 
@@ -62,19 +59,6 @@ const ApplicantSearchForm = () => {
     dispatch(clearTbCertificateDetails());
     dispatch(setApplicantPhotoFileName(""));
     setApplicantPhotoUrl(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    const setUserProperties = async () => {
-      const userProperties = await getUserProperties();
-      setGoogleAnalyticsParams("user_properties", {
-        user_role: userProperties.jobTitle,
-        clinic_id: userProperties.clinicId,
-      });
-      dispatch(setUserClinicId(userProperties.clinicId ?? ""));
-    };
-    void setUserProperties();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

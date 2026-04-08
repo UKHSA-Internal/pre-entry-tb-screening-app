@@ -1,4 +1,5 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
+
 import { z } from "zod";
 
 import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
