@@ -223,7 +223,6 @@ const Dashboard = () => {
       if (applicationRes.data.tbCertificate) {
         dispatch(setTbCertificateFromApiResponse(applicationRes.data.tbCertificate));
       }
-      console.log("Success");
       navigate("/tracker");
       return;
     } catch (error) {
