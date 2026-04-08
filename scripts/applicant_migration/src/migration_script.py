@@ -19,34 +19,7 @@ class StatusGroup(Enum):
   not_complete = "Not Complete"
 
 
-print(sys.argv)
-
-args = getResolvedOptions(
-    sys.argv,
-    ["APPLICANT_TABLE", "APPLICATION_TABLE", "DRY_RUN"]
-)
-
-APPLICANT_TABLE_NAME = args["APPLICANT_TABLE"]
-APPLICATION_TABLE_NAME = args["APPLICATION_TABLE"]
-AWS_REGION = os.getenv("AWS_REGION", "eu-west-2")
-DRY_RUN = args["DRY_RUN"]
-
-# Print out the missing parameters
-if not APPLICANT_TABLE_NAME or not APPLICATION_TABLE_NAME or DRY_RUN is None:
-    print("ERROR: Missing required parameters")
-    print(f"APPLICANT_TABLE_NAME: {APPLICANT_TABLE_NAME}")
-    print(f"APPLICATION_TABLE_NAME: {APPLICATION_TABLE_NAME}")
-    print(f"DRY_RUN: {DRY_RUN}")
-
-    sys.exit(1)
-else:
-    APPLICANT_TABLE_NAME = APPLICANT_TABLE_NAME.strip()
-    APPLICATION_TABLE_NAME = APPLICATION_TABLE_NAME.strip()
-    DRY_RUN = DRY_RUN.lower() == "true"
-
-
-def migrate_item(args):
-    applicant_row, applicant_table, application_table, statistics = args
+def migrate_item(applicant_row, applicant_table, application_table, dry_run, statistics):
     # applicant PK is just APPLICATION#<applicationId>
     applicationId = applicant_row["pk"]
     # SK is always APPLICANT#DETAILS
@@ -122,7 +95,7 @@ def migrate_item(args):
 
     print(f"Updating application status to : {new_application_status}")
 
-    if DRY_RUN:
+    if dry_run:
         # just to mark what would be done
         statistics["migrated_applicants"] += 1
         statistics["applicants_to_remove"].append({"pk": applicationId, "sk": sk})
@@ -155,7 +128,7 @@ def migrate_item(args):
             UpdateExpression=(
                 "SET applicantId = :new_applicant_pk, "
                 "applicationStatus = :new_application_status, "
-                "StatusGroup = :new_status_group"
+                "statusGroup = :new_status_group"
             ),
             ExpressionAttributeValues={
                 ":new_applicant_pk": new_applicant_pk,
@@ -191,12 +164,19 @@ def remove_original_applicants(applicant_table, id_list):
                 ddb_batch.delete_item(Key=key)
 
 
-def scan_applicant_table(statistics, dynamodb=None):
+def scan_applicant_table(
+        statistics,
+        applicant_table_name,
+        application_table_name,
+        aws_region,
+        dry_run,
+        dynamodb=None
+    ):
     if dynamodb is None:
-        dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
+        dynamodb = boto3.resource("dynamodb", region_name=aws_region)
 
-    applicant_table = dynamodb.Table(APPLICANT_TABLE_NAME)
-    application_table = dynamodb.Table(APPLICATION_TABLE_NAME)
+    applicant_table = dynamodb.Table(applicant_table_name)
+    application_table = dynamodb.Table(application_table_name)
 
     print(f"[MIGRATION] Applicant table - {applicant_table}")
     print(f"[MIGRATION] Application table - {application_table}")
@@ -206,7 +186,13 @@ def scan_applicant_table(statistics, dynamodb=None):
     statistics["all_applicants"] += len(applicants)
 
     for applicant_row in applicants:
-        migrate_item((applicant_row, applicant_table, application_table, statistics))
+        migrate_item(
+            applicant_row,
+            applicant_table,
+            application_table,
+            dry_run,
+            statistics,
+        )
 
     while "LastEvaluatedKey" in response:
         response = applicant_table.scan(
@@ -218,11 +204,47 @@ def scan_applicant_table(statistics, dynamodb=None):
         for applicant_row in applicants:
             migrate_item((applicant_row, applicant_table, application_table, statistics))
 
-    if not DRY_RUN:
+    if not dry_run:
         remove_original_applicants(applicant_table,statistics["applicants_to_remove"])
 
 
-def main():
+if __name__ == "__main__":
+    import sys
+    from awsglue.utils import getResolvedOptions
+    print(f"GJ called with args: {sys.argv}")
+
+    args = getResolvedOptions(sys.argv, ["customer-executor-env-vars"])
+    print(f"Received arguments: {args}")
+
+    try:
+        for pair in args["customer_executor_env_vars"].split(','):
+            k, v = pair.split('=', 1)
+            os.environ[k] = v
+    except Exception as e:
+        print(f"Error parsing environment variables from arguments: {e}")
+        raise
+
+    APPLICANT_TABLE_NAME = args["APPLICANT_TABLE"]
+    APPLICATION_TABLE_NAME = args["APPLICATION_TABLE"]
+    AWS_REGION = os.getenv("AWS_REGION")
+    DRY_RUN = args["DRY_RUN"]
+
+    # Print out the missing parameters
+    if not APPLICANT_TABLE_NAME or not APPLICATION_TABLE_NAME or DRY_RUN is None:
+        print("ERROR: Missing required parameters")
+        print(f"APPLICANT_TABLE_NAME: {APPLICANT_TABLE_NAME}")
+        print(f"APPLICATION_TABLE_NAME: {APPLICATION_TABLE_NAME}")
+        print(f"AWS_REGION: {AWS_REGION}")
+        print(f"DRY_RUN: {DRY_RUN}")
+
+        sys.exit(1)
+    else:
+        APPLICANT_TABLE_NAME = APPLICANT_TABLE_NAME.strip()
+        APPLICATION_TABLE_NAME = APPLICATION_TABLE_NAME.strip()
+        DRY_RUN = DRY_RUN.lower() == "true"
+
+
+
     print(f"Starting Glue DynamoDB migration (DRY_RUN={DRY_RUN})")
 
     statistics = {
@@ -234,7 +256,13 @@ def main():
     }
     start_time = time.time()
 
-    scan_applicant_table(statistics)
+    scan_applicant_table(
+        statistics,
+        APPLICANT_TABLE_NAME,
+        APPLICATION_TABLE_NAME,
+        AWS_REGION,
+        DRY_RUN,
+    )
 
     print()
     print(f"Read applicant rows: {statistics['all_applicants']}")
@@ -246,6 +274,3 @@ def main():
     print(f"Duration: {duration // 60} min {duration % 60} sec")
 
     print("Migration complete")
-
-if __name__ == "__main__":
-    main()
