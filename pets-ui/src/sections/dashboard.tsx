@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
-import { getApplication } from "@/api/api";
+import { getApplicants, getApplication } from "@/api/api";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import Spinner from "@/components/spinner/spinner";
 import Table from "@/components/table/table";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
-import { setApplicantPhotoFileName } from "@/redux/applicantSlice";
+import {
+  setApplicantDetailsFromApiResponse,
+  setApplicantPassportDetails,
+  setApplicantPhotoFileName,
+} from "@/redux/applicantSlice";
 import { clearApplicationDetails, setApplicationDetails } from "@/redux/applicationSlice";
 import { clearChestXrayDetails, setChestXrayFromApiResponse } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -37,7 +41,10 @@ import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/tra
 import { fetchClinic } from "@/utils/clinic";
 import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
 import { convertDateStrToObj, formatDateForDisplay, getCountryName } from "@/utils/helpers";
-import { ReceivedApplicationsInProgressType } from "@/types";
+import { ReceivedApplicantDetailsType, ReceivedApplicationsInProgressType } from "@/types";
+import { AxiosResponse } from "axios";
+import { validate as uuidValidate } from "uuid";
+import { setApplicationsListDetailsFromApiResponse } from "@/redux/applicationsListSlice";
 
 const getApplicationsResFixture: ReceivedApplicationsInProgressType = {
   applications: [
@@ -137,14 +144,37 @@ const Dashboard = () => {
     }
   };
 
-  const loadSingleApplication = async (
+  const loadApplicantAndApplication = async (
     e: React.MouseEvent<HTMLAnchorElement>,
     applicationId: string,
+    passportNumber: string,
+    countryOfIssue: string,
   ) => {
     e.preventDefault();
     setIsLoading(true);
+    let applicantRes: AxiosResponse<ReceivedApplicantDetailsType> | null = null;
 
     try {
+      dispatch(
+        setApplicantPassportDetails({
+          passportNumber: passportNumber,
+          countryOfIssue: countryOfIssue,
+        }),
+      );
+      setApplicantPhotoUrl(null);
+      applicantRes = await getApplicants({
+        passportNumber: passportNumber,
+        countryOfIssue: countryOfIssue,
+      });
+      for (const application of applicantRes.data.applications) {
+        const applicationId = application.applicationId;
+        if (!uuidValidate(application.applicationId)) {
+          throw new Error(`Application ID (${applicationId}) is in an invalid UUID format`);
+        }
+      }
+      dispatch(setApplicantDetailsFromApiResponse(applicantRes.data));
+      dispatch(setApplicationsListDetailsFromApiResponse(applicantRes.data.applications));
+
       const applicationRes = await getApplication(applicationId);
       dispatch(
         setApplicationDetails({
@@ -193,6 +223,7 @@ const Dashboard = () => {
       if (applicationRes.data.tbCertificate) {
         dispatch(setTbCertificateFromApiResponse(applicationRes.data.tbCertificate));
       }
+      console.log("Success");
       navigate("/tracker");
       return;
     } catch (error) {
@@ -218,7 +249,15 @@ const Dashboard = () => {
           title="Continue with screening"
           to="/tracker"
           externalLink={false}
-          onClick={(e) => loadSingleApplication(e, app.applicationId)}
+          onClick={(e) => {
+            setIsLoading(true);
+            loadApplicantAndApplication(
+              e,
+              app.applicationId,
+              app.passportNumber,
+              app.countryOfIssue,
+            );
+          }}
         />,
       ],
     }));
