@@ -1,5 +1,7 @@
+import { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { validate as uuidValidate } from "uuid";
 
 import { getApplicants, getApplication } from "@/api/api";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
@@ -12,6 +14,7 @@ import {
   setApplicantPhotoFileName,
 } from "@/redux/applicantSlice";
 import { clearApplicationDetails, setApplicationDetails } from "@/redux/applicationSlice";
+import { setApplicationsListDetailsFromApiResponse } from "@/redux/applicationsListSlice";
 import { clearChestXrayDetails, setChestXrayFromApiResponse } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
@@ -38,13 +41,10 @@ import {
   setTbCertificateFromApiResponse,
 } from "@/redux/tbCertificateSlice";
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
+import { ReceivedApplicantDetailsType, ReceivedApplicationsInProgressType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
 import { convertDateStrToObj, formatDateForDisplay, getCountryName } from "@/utils/helpers";
-import { ReceivedApplicantDetailsType, ReceivedApplicationsInProgressType } from "@/types";
-import { AxiosResponse } from "axios";
-import { validate as uuidValidate } from "uuid";
-import { setApplicationsListDetailsFromApiResponse } from "@/redux/applicationsListSlice";
 
 const getApplicationsResFixture: ReceivedApplicationsInProgressType = {
   applications: [

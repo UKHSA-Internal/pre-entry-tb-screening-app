@@ -29,6 +29,7 @@ import ChestXrayUploadPage from "./pages/chest-xray-upload";
 import ConsentInstructionPage from "./pages/consent-instruction";
 import ConsentQuestionPage from "./pages/consent-question";
 import CookiesPage from "./pages/cookies";
+import DashboardPage from "./pages/dashboard";
 import EnterSputumSampleResultsPage from "./pages/enter-sputum-sample-results";
 import ErrorPage from "./pages/error-page";
 import HomePage from "./pages/home-page";
@@ -64,7 +65,6 @@ import TravelAddressAndContactDetailsPage from "./pages/travel-uk-address";
 import TravelVisaCategoryPage from "./pages/travel-visa-category";
 import { updateGoogleAnalyticsConsent } from "./utils/google-analytics-utils";
 import { RedirectedRouteIfReduxEmpty } from "./utils/redirect";
-import DashboardPage from "./pages/dashboard";
 
 function App() {
   useEffect(() => {
