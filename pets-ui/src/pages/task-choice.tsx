@@ -7,6 +7,16 @@ import { setUserClinicId } from "@/redux/clinicSlice";
 import { useAppDispatch } from "@/redux/hooks";
 import { setGoogleAnalyticsParams } from "@/utils/google-analytics-utils";
 import { getUserProperties } from "@/utils/userProperties";
+import { clearApplicationDetails } from "@/redux/applicationSlice";
+import { clearMedicalScreeningDetails } from "@/redux/medicalScreeningSlice";
+import { clearChestXrayDetails } from "@/redux/chestXraySlice";
+import { clearRadiologicalOutcomeDetails } from "@/redux/radiologicalOutcomeSlice";
+import { clearSputumDecision } from "@/redux/sputumDecisionSlice";
+import { clearSputumDetails } from "@/redux/sputumSlice";
+import { clearTbCertificateDetails } from "@/redux/tbCertificateSlice";
+import { clearTravelDetails } from "@/redux/travelSlice";
+import { clearApplicantDetails } from "@/redux/applicantSlice";
+import { clearApplicationsListDetails } from "@/redux/applicationsListSlice";
 
 export default function TaskChoicePage() {
   const dispatch = useAppDispatch();
@@ -24,9 +34,23 @@ export default function TaskChoicePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    dispatch(clearApplicantDetails());
+    dispatch(clearApplicationsListDetails());
+    dispatch(clearApplicationDetails());
+    dispatch(clearMedicalScreeningDetails());
+    dispatch(clearTravelDetails());
+    dispatch(clearChestXrayDetails());
+    dispatch(clearRadiologicalOutcomeDetails());
+    dispatch(clearSputumDetails());
+    dispatch(clearSputumDecision());
+    dispatch(clearTbCertificateDetails());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Container
-      title="No visa applicant found - Complete UK pre-entry health screening - GOV.UK"
+      title="What do you need to do? - Complete UK pre-entry health screening - GOV.UK"
       useTwoThirdsColumn={false}
     >
       <Heading level={1} size="l" title="What do you need to do?" />
