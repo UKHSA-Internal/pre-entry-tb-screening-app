@@ -27,9 +27,9 @@ describe("Tests for Applications Model", () => {
 
   const clinicId = "test-clinic-id";
   const applicationId = "test=app-id";
-  const createdBy = "test-email";
   const passportNumber = "Test";
   const countryOfIssue = CountryCode.IND;
+  const applicantId = "COUNTRY#IND#PASSPORT#Test";
 
   test("Getting all in progress applications for users clinic", async () => {
     // Mock DynamoDB query response
@@ -39,6 +39,7 @@ describe("Tests for Applications Model", () => {
           applicationId: applicationId,
           passportNumber: passportNumber,
           countryOfIssue: countryOfIssue,
+          applicantId: applicantId,
           clinicId: clinicId,
           dateCreated: new Date("2025-02-07"),
           applicationStatus: ApplicationStatus.inProgress,
@@ -47,27 +48,31 @@ describe("Tests for Applications Model", () => {
     } as unknown as QueryCommandOutput);
 
     //  Mock batch loader
-    vi.spyOn(DynamoBatchLoader, "batchLoad").mockResolvedValueOnce(
-      new Map([["user1", { applicantId: "user1", applicantName: "John Doe" }]]),
+    vi.spyOn(DynamoBatchLoader, "batchLoad").mockResolvedValue(
+      new Map([[applicantId, { applicantId: "COUNTRY#IND#PASSPORT#Test", fullName: "John Doe" }]]),
     );
 
     const result = await ApplicationRoot.getByClinicId(clinicId, 100);
 
-    expect(result.items).toHaveLength(1);
+    expect(result.applications).toHaveLength(1);
 
-    expect(result.items[0].applicantName).toBe("John Doe");
+    expect(result.applications[0].applicantName).toBe("John Doe");
 
     expect(result.cursor).toBeNull();
 
     // Act
-    const application = await ApplicationRoot.getByClinicId(clinicId, 100);
+    const applications = await ApplicationRoot.getByClinicId(clinicId, 100);
 
     // Assert
-    expect(application).toMatchObject({
-      applicationId,
-      clinicId,
-      createdBy,
+    expect(applications.applications[0]).toMatchObject({
+      applicantId: "COUNTRY#IND#PASSPORT#Test",
+      applicantName: "John Doe",
+      applicationId: "test=app-id",
+      applicationStatus: "In Progress",
+      clinicId: "test-clinic-id",
+      countryOfIssue: "IND",
       dateCreated: new Date("2025-02-07"),
+      passportNumber: "Test",
     });
   });
   // test("should handle pagination cursor", async () => {
@@ -100,7 +105,7 @@ describe("Tests for Applications Model", () => {
     expect(input.TableName).toBe("test-application-details");
     expect(input.IndexName).toBe("application-db-clinic-index");
     expect(input.ExpressionAttributeValues?.[":clinicId"]).toBe("test-clinic-id");
-    expect(input.Limit).toBe(10);
+    expect(input.Limit).toBe(100);
   });
 
   test("should throw error if DynamoDB fails", async () => {

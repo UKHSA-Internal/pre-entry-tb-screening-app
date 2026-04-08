@@ -5,7 +5,7 @@ import { assertEnvExists } from "../config";
 import { CountryCode } from "../country";
 import { DynamoBatchLoader } from "../helpers/batch-util";
 import { logger } from "../logger";
-import { ApplicationStatus, ApplicationStatusGroup } from "../types/enum";
+import { ApplicationStatus } from "../types/enum";
 import { Applicant, ApplicantBase } from "./applicant";
 
 const { dynamoDBDocClient: docClient } = awsClients;
@@ -44,7 +44,7 @@ export abstract class IApplicationRoot {
 }
 
 export interface ApplicationListResult {
-  items: ApplicationRoot[];
+  applications: ApplicationRoot[];
   cursor: string | null;
 }
 
@@ -84,11 +84,10 @@ export class ApplicationRoot extends IApplicationRoot {
           new QueryCommand({
             TableName: this.getTableName(),
             IndexName: assertEnvExists(process.env.CLINIC_ID_INDEX),
-            KeyConditionExpression:
-              "clinicId = :clinicId  AND applicationStatusGroup = :statusGroup",
+            KeyConditionExpression: "clinicId = :clinicId  AND applicationStatus = :status",
             ExpressionAttributeValues: {
               ":clinicId": clinicId,
-              ":statusGroup": ApplicationStatusGroup.incomplete,
+              ":status": ApplicationStatus.inProgress,
             },
             Limit: limit,
             ExclusiveStartKey: lastEvaluatedKey,
@@ -102,20 +101,22 @@ export class ApplicationRoot extends IApplicationRoot {
       // Convert DB items → models
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const applications = (allItems || []).map((item) => ApplicationRoot.fromDynamo(item));
+      logger.info(applications);
 
       // Batch load applicants
       const applicantMap = await DynamoBatchLoader.batchLoad({
         tableName: process.env.APPLICANT_SERVICE_DATABASE_NAME!,
         client: docClient,
         keys: applications.map((app) => ({
-          applicantId: app.applicantId,
+          pk: app.applicantId,
+          sk: "APPLICANT#DETAILS",
         })),
         mapItem: (item) => Applicant.fromDb(item),
         mapKey: (item) => ApplicantBase.getPassportId(item.countryOfIssue, item.passportNumber),
       });
 
+      logger.info(applicantMap);
       // Add applicantName
-
       const enriched = applications.map((app) => {
         const applicant = applicantMap.get(app.applicantId) as Applicant;
         return new ApplicationRoot({
@@ -123,13 +124,15 @@ export class ApplicationRoot extends IApplicationRoot {
           applicantName: applicant.fullName,
         });
       });
+      logger.info("enriched");
+
       //Encode cursor
       const nextCursor = result.LastEvaluatedKey
         ? Buffer.from(JSON.stringify(result.LastEvaluatedKey)).toString("base64")
         : null;
 
       return {
-        items: enriched,
+        applications: enriched,
         cursor: nextCursor,
       };
     } catch (error) {
