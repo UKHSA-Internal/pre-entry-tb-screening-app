@@ -12,6 +12,7 @@ export default function Header() {
   if (
     url == "/what-do-you-need-to-do" ||
     url == "/search-for-visa-applicant" ||
+    url == "/screening-history" ||
     url == "/tracker" ||
     url.includes("confirmed") ||
     url == "/tb-screening-complete"
