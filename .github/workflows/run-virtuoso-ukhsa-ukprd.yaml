@@ -8,8 +8,7 @@ on:
         required: true
       plan_name:
         description: "CI/CD_PETS"
-        required: false
-      
+        required: false   
 
 jobs:
   run-virtuoso-plan:
@@ -19,7 +18,6 @@ jobs:
       VIRTUOSO_TOKEN: ${{ secrets.VIRTUOSOUKPRD_API_TOKEN }}
       PLAN_ID: ${{ inputs.plan_id }}
       PLAN_NAME: ${{ inputs.plan_name }}
-      
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
