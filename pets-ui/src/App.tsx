@@ -64,7 +64,10 @@ import TravelSummaryPage from "./pages/travel-summary";
 import TravelAddressAndContactDetailsPage from "./pages/travel-uk-address";
 import TravelVisaCategoryPage from "./pages/travel-visa-category";
 import { updateGoogleAnalyticsConsent } from "./utils/google-analytics-utils";
-import { RedirectedRouteIfReduxEmpty } from "./utils/redirect";
+import {
+  RedirectedRouteIfApplicationsInProgressEmpty,
+  RedirectedRouteIfReduxEmpty,
+} from "./utils/redirect";
 
 function App() {
   useEffect(() => {
@@ -95,7 +98,9 @@ function App() {
         path="/screenings-in-progress"
         element={
           <AuthenticatedRoute>
-            <DashboardPage />
+            <RedirectedRouteIfApplicationsInProgressEmpty>
+              <DashboardPage />
+            </RedirectedRouteIfApplicationsInProgressEmpty>
           </AuthenticatedRoute>
         }
       />
