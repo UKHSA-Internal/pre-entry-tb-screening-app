@@ -31,6 +31,8 @@ def extract_ts_enums(filepath: str) -> Dict[str, Dict[str, str]]:
 
         enums[enum_name] = members
 
+    print(f"TypeScript enums: {enums}")
+
     return enums
 
 
@@ -58,6 +60,8 @@ def extract_python_enums(filepath: str) -> Dict[str, Dict[str, str]]:
             members[key] = value
 
         enums[enum_name] = members
+
+    print(f"Pyhton enums: {enums}")
 
     return enums
 

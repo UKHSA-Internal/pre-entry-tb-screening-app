@@ -13,7 +13,7 @@ class ApplicationStatus(str, Enum):
 # See the above comment.
 class StatusGroup(Enum):
   complete = "Complete"
-  not_complete = "Not Complete"
+  notComplete = "Not Complete"
 
 
 def migrate_item(applicant_row, applicant_table, application_table, dry_run, statistics):
@@ -54,7 +54,7 @@ def migrate_item(applicant_row, applicant_table, application_table, dry_run, sta
     new_application_status = None
 
     new_application_status = applicationRootRow.get("applicationStatus")
-    new_status_group = StatusGroup.not_complete.value
+    new_status_group = StatusGroup.notComplete.value
 
     # Getting new applicationStatus
     if new_application_status is None:
