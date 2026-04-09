@@ -2,14 +2,15 @@ import boto3
 from botocore.exceptions import ClientError
 from enum import Enum
 
-
+# These enums can't be modified as they are defined in:
+# pets-core-services/src/shared/types/enum.ts and used in the back-end code.
 class ApplicationStatus(str, Enum):
   inProgress = "In Progress"
   certificateNotIssued = "Certificate Not Issued"
   certificateAvailable = "Certificate Available"
   cancelled = "Cancelled"
 
-
+# See the above comment.
 class StatusGroup(Enum):
   complete = "Complete"
   not_complete = "Not Complete"
@@ -53,7 +54,6 @@ def migrate_item(applicant_row, applicant_table, application_table, dry_run, sta
     new_application_status = None
 
     new_application_status = applicationRootRow.get("applicationStatus")
-    status_group = applicationRootRow.get("statusGroup")
     new_status_group = StatusGroup.not_complete.value
 
     # Getting new applicationStatus
@@ -76,18 +76,11 @@ def migrate_item(applicant_row, applicant_table, application_table, dry_run, sta
             new_application_status = ApplicationStatus.inProgress.value
 
     if (
-        status_group is None
-        or (
-           status_group != StatusGroup.complete.value
-            and status_group != StatusGroup.not_complete.value
-        )
+        new_application_status == ApplicationStatus.certificateAvailable.value
+        or new_application_status == ApplicationStatus.certificateNotIssued.value
+        or new_application_status == ApplicationStatus.cancelled.value
     ):
-        if (
-           new_application_status == "Certificate Available"
-           or new_application_status == "Certificate Not Issued"
-           or new_application_status == "Cancelled"
-        ):
-            new_status_group = StatusGroup.complete.value
+        new_status_group = StatusGroup.complete.value
 
     print(f"Updating application status to : {new_application_status}")
 
@@ -105,7 +98,7 @@ def migrate_item(applicant_row, applicant_table, application_table, dry_run, sta
 
     print(
         "[MIGRATION] Applicant table pk updated from "
-        "{applicationId} to {new_applicant_pk}"
+        f"{applicationId} to {new_applicant_pk}"
     )
 
     # --------------- ADDING OLD APPLICANT RECORD TO THE LIST FOR REMOVAL ---------------
@@ -138,7 +131,7 @@ def migrate_item(applicant_row, applicant_table, application_table, dry_run, sta
 
     except ClientError as e:
         if e.response["Error"]["Code"] == "ConditionalCheckFailedException":
-            print(f"Updating applicatoin with pk={applicationId} failed: {e}")
+            print(f"Updating application with pk={applicationId} failed: {e}")
         else:
             raise
     print(f"[MIGRATION] - Application Table - applicantId updated to {new_applicant_pk}")
@@ -219,7 +212,10 @@ if __name__ == "__main__":
 
     print(f"GJ called with args: {sys.argv}")
 
-    args = getResolvedOptions(sys.argv, ["customer-executor-env-vars"])
+    args = getResolvedOptions(
+        sys.argv,
+        ["APPLICANT_TABLE", "APPLICATION_TABLE", "DRY_RUN", "customer-executor-env-vars"]
+    )
     print(f"Received arguments: {args}")
 
     try:

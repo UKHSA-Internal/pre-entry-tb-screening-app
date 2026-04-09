@@ -3,6 +3,8 @@ export enum TaskStatus {
   incompleted = "incompleted",
 }
 
+// If this is modified, then also the enum (StatusGroup class) in this file should be modified:
+// scripts/applicant_migration/src/migration_script.py
 export enum ApplicationStatus {
   inProgress = "In Progress",
   certificateNotIssued = "Certificate Not Issued",
@@ -11,7 +13,7 @@ export enum ApplicationStatus {
 }
 
 // If this is modified, then also the enum (StatusGroup class) in this file should be modified:
-// scripts/application_updates/src/update_application.py
+// scripts/applicant_migration/src/migration_script.py
 export enum StatusGroup {
   complete = "Complete",
   notComplete = "Not Complete",

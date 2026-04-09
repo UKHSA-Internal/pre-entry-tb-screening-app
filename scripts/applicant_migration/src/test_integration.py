@@ -414,7 +414,7 @@ class TestBatchDeletion:
             )
 
     def test_more_than_25_records_are_all_deleted(self, mod, tables, dynamodb_local):
-        """26+ records require multiple batch_writer calls'
+        """26+ records require multiple batch_writer calls
             — verify none are left behind.
         """
         applicant_table, application_table = tables
