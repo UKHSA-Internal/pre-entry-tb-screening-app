@@ -35,75 +35,20 @@ import {
   setSputumDetailsFromApiResponse,
   setSputumStatus,
 } from "@/redux/sputumSlice";
-import { selectUserClinic } from "@/redux/store";
+import { selectApplicationsInProgress, selectUserClinic } from "@/redux/store";
 import {
   clearTbCertificateDetails,
   setTbCertificateFromApiResponse,
 } from "@/redux/tbCertificateSlice";
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
-import { ReceivedApplicantDetailsType, ReceivedApplicationsInProgressType } from "@/types";
+import { ReceivedApplicantDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
 import { convertDateStrToObj, formatDateForDisplay, getCountryName } from "@/utils/helpers";
 
-const getApplicationsResFixture: ReceivedApplicationsInProgressType = {
-  applications: [
-    {
-      applicationId: "9189a071-945b-4834-a6cb-8748c4746eba",
-      applicantId: "COUNTRY#AFG#PASSPORT#abc1",
-      applicantName: "Name One",
-      passportNumber: "abc1",
-      countryOfIssue: "AFG",
-      clinicId: "UK/LHR/00/",
-      dateCreated: "2021-04-07T15:32:34.470Z",
-      applicationStatus: ApplicationStatus.IN_PROGRESS,
-    },
-    {
-      applicationId: "b1a2f682-9281-4b92-b4ef-878edfd06d23",
-      applicantId: "COUNTRY#AFG#PASSPORT#abc2",
-      applicantName: "Name Two",
-      passportNumber: "abc2",
-      countryOfIssue: "AFG",
-      clinicId: "UK/LHR/00/",
-      dateCreated: "2026-04-07T15:32:34.470Z",
-      applicationStatus: ApplicationStatus.IN_PROGRESS,
-    },
-    {
-      applicationId: "17811cbc-501d-4051-94ae-67692fe6f393",
-      applicantId: "COUNTRY#AFG#PASSPORT#abc3",
-      applicantName: "Name Three",
-      passportNumber: "abc3",
-      countryOfIssue: "AFG",
-      clinicId: "UK/LHR/00/",
-      dateCreated: "2023-04-07T15:32:34.470Z",
-      applicationStatus: ApplicationStatus.IN_PROGRESS,
-    },
-    {
-      applicationId: "17811cbc-501d-4051-94ae-67692fe6f363",
-      applicantId: "COUNTRY#AFG#PASSPORT#abc4",
-      applicantName: "Should not see - different clinic",
-      passportNumber: "abc4",
-      countryOfIssue: "AFG",
-      clinicId: "UK/LHR/01/",
-      dateCreated: "2026-04-07T15:32:34.470Z",
-      applicationStatus: ApplicationStatus.IN_PROGRESS,
-    },
-    {
-      applicationId: "17814cbc-501d-4051-94ae-67692fe6f363",
-      applicantId: "COUNTRY#AFG#PASSPORT#abc9",
-      applicantName: "Should not see - different status",
-      passportNumber: "abc9",
-      countryOfIssue: "AFG",
-      clinicId: "UK/LHR/00/",
-      dateCreated: "2026-04-07T15:32:34.470Z",
-      applicationStatus: ApplicationStatus.CERTIFICATE_NOT_ISSUED,
-    },
-  ],
-  cursor: null,
-};
-
 const Dashboard = () => {
   const userClinicData = useAppSelector(selectUserClinic);
+  const applicationsInProgressData = useAppSelector(selectApplicationsInProgress);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { setApplicantPhotoUrl, setApplicantPhotoFile } = useApplicantPhoto();
@@ -232,7 +177,7 @@ const Dashboard = () => {
     }
   };
 
-  const applicationTableInfo = getApplicationsResFixture.applications
+  const applicationTableInfo = applicationsInProgressData.applications
     .filter((app) => app.clinicId == userClinicData.clinicId)
     .filter((app) => app.applicationStatus == ApplicationStatus.IN_PROGRESS)
     .sort(
@@ -245,12 +190,13 @@ const Dashboard = () => {
         getCountryName(app.countryOfIssue),
         formatDateForDisplay(convertDateStrToObj(app.dateCreated)),
         <LinkLabel
+          key={app.applicationId}
           title="Continue with screening"
           to="/tracker"
           externalLink={false}
-          onClick={(e) => {
+          onClick={async (e) => {
             setIsLoading(true);
-            loadApplicantAndApplication(
+            await loadApplicantAndApplication(
               e,
               app.applicationId,
               app.passportNumber,

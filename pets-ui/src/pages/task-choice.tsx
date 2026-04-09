@@ -1,27 +1,37 @@
-import { useEffect } from "react";
+import { AxiosResponse } from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 
+import { getApplications } from "@/api/api";
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
+import Spinner from "@/components/spinner/spinner";
+import { clearApplicantDetails } from "@/redux/applicantSlice";
+import { setApplicationsInProgress } from "@/redux/applicationsInProgressSlice";
+import { clearApplicationDetails } from "@/redux/applicationSlice";
+import { clearApplicationsListDetails } from "@/redux/applicationsListSlice";
+import { clearChestXrayDetails } from "@/redux/chestXraySlice";
 import { setUserClinicId } from "@/redux/clinicSlice";
 import { useAppDispatch } from "@/redux/hooks";
-import { setGoogleAnalyticsParams } from "@/utils/google-analytics-utils";
-import { getUserProperties } from "@/utils/userProperties";
-import { clearApplicationDetails } from "@/redux/applicationSlice";
 import { clearMedicalScreeningDetails } from "@/redux/medicalScreeningSlice";
-import { clearChestXrayDetails } from "@/redux/chestXraySlice";
 import { clearRadiologicalOutcomeDetails } from "@/redux/radiologicalOutcomeSlice";
 import { clearSputumDecision } from "@/redux/sputumDecisionSlice";
 import { clearSputumDetails } from "@/redux/sputumSlice";
 import { clearTbCertificateDetails } from "@/redux/tbCertificateSlice";
 import { clearTravelDetails } from "@/redux/travelSlice";
-import { clearApplicantDetails } from "@/redux/applicantSlice";
-import { clearApplicationsListDetails } from "@/redux/applicationsListSlice";
+import { ReceivedApplicationsInProgressType } from "@/types";
+import { setGoogleAnalyticsParams } from "@/utils/google-analytics-utils";
+import { getUserProperties } from "@/utils/userProperties";
 
 export default function TaskChoicePage() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true);
     const setUserProperties = async () => {
       const userProperties = await getUserProperties();
       setGoogleAnalyticsParams("user_properties", {
@@ -31,6 +41,7 @@ export default function TaskChoicePage() {
       dispatch(setUserClinicId(userProperties.clinicId ?? ""));
     };
     void setUserProperties();
+    setIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -48,11 +59,29 @@ export default function TaskChoicePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const getApplicationsInProgress = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    let applicationsRes: AxiosResponse<ReceivedApplicationsInProgressType> | null = null;
+
+    try {
+      applicationsRes = await getApplications();
+      dispatch(setApplicationsInProgress(applicationsRes.data.applications));
+      navigate("/screenings-in-progress");
+      return;
+    } catch (error) {
+      console.error(error);
+      navigate("/sorry-there-is-problem-with-service");
+      return;
+    }
+  };
+
   return (
     <Container
       title="What do you need to do? - Complete UK pre-entry health screening - GOV.UK"
       useTwoThirdsColumn={false}
     >
+      {isLoading && <Spinner />}
       <Heading level={1} size="l" title="What do you need to do?" />
       <div className="dfe-grid-container">
         <div className="dfe-card">
@@ -72,6 +101,9 @@ export default function TaskChoicePage() {
               to="/screenings-in-progress"
               externalLink={false}
               className="govuk-heading-l govuk-link govuk-link--no-visited-state task-choice-link"
+              onClick={async (e) => {
+                await getApplicationsInProgress(e);
+              }}
             />
           </div>
         </div>
