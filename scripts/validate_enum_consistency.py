@@ -44,7 +44,7 @@ def extract_python_enums(filepath: str) -> Dict[str, Dict[str, str]]:
         content = f.read()
 
     # Match enum class definitions: class EnumName(str, Enum): ...
-    class_pattern = r'class (\w+)\(str,\s*Enum\)\s*:\s*(.*?)(?=class |\Z)'
+    class_pattern = r'class (\w+)\(Enum\)\s*:\s*(.*?)(?=class |\Z)'
 
     for class_match in re.finditer(class_pattern, content, re.DOTALL):
         enum_name = class_match.group(1)

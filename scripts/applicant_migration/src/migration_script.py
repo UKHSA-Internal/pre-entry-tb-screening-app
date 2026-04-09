@@ -4,7 +4,7 @@ from enum import Enum
 
 # These enums can't be modified as they are defined in:
 # pets-core-services/src/shared/types/enum.ts and used in the back-end code.
-class ApplicationStatus(str, Enum):
+class ApplicationStatus(Enum):
   inProgress = "In Progress"
   certificateNotIssued = "Certificate Not Issued"
   certificateAvailable = "Certificate Available"

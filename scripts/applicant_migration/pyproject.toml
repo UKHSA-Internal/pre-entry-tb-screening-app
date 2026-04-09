@@ -12,9 +12,6 @@ dependencies = [
     "pytest-freezegun>=0.4.2",
 ]
 
-[tool.setuptools]
-packages = ["applicant_migration"]
-
 [tool.pytest.ini_options]
 addopts = "-p no:warnings -p no:cacheprovider"
 filterwarnings = [
