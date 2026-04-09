@@ -11,6 +11,7 @@ export default function Header() {
   let signOutUrl = "/are-you-sure-you-want-to-sign-out";
   if (
     url == "/search-for-visa-applicant" ||
+    url == "/screening-history" ||
     url == "/tracker" ||
     url.includes("confirmed") ||
     url == "/tb-screening-complete"
