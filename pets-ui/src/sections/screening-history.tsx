@@ -251,7 +251,7 @@ const ScreeningHistory = () => {
         </div>
       )}
 
-      {appFromOtherClinic && (
+      {userClinicData.clinicId !== import.meta.env.VITE_SUPPORT_CLINIC_ID && appFromOtherClinic && (
         <>
           <br />
           <Details

@@ -17,8 +17,7 @@ jobs:
     env:
       VIRTUOSO_TOKEN: ${{ secrets.VIRTUOSOUKPRD_API_TOKEN }}
       PLAN_ID: ${{ inputs.plan_id }}
-      PLAN_NAME: ${{ inputs.plan_name }}
-
+      PLAN_NAME: ${{ inputs.plan_name }}      
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,7 +26,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Make script executable
-        run: chmod +x ./scripts/execute.sh
+        run: chmod +x scripts/execute.sh
 
       - name: Run Virtuoso plan
-        run: ./scripts/execute.sh
+        run: scripts/execute.sh
