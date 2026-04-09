@@ -8,7 +8,7 @@ on:
         required: true
       plan_name:
         description: "CI/CD_PETS"
-        required: false   
+        required: false
 
 jobs:
   run-virtuoso-plan:
