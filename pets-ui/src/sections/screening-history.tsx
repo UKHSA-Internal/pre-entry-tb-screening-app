@@ -210,6 +210,9 @@ const ScreeningHistory = () => {
       application.applicationStatus !== ApplicationStatus.CANCELLED &&
       application.applicationStatus !== ApplicationStatus.CERTIFICATE_NOT_ISSUED &&
       application.expiryDate &&
+      application.expiryDate.day.length > 0 &&
+      application.expiryDate.month.length > 0 &&
+      application.expiryDate.year.length > 0 &&
       isDateInThePast(
         application.expiryDate.day,
         application.expiryDate.month,

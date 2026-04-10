@@ -171,6 +171,9 @@ const ProgressTracker = () => {
     if (
       tbCertificateData.isIssued === YesOrNo.YES &&
       applicationData.expiryDate &&
+      applicationData.expiryDate.day.length > 0 &&
+      applicationData.expiryDate.month.length > 0 &&
+      applicationData.expiryDate.year.length > 0 &&
       isDateInThePast(
         applicationData.expiryDate.day,
         applicationData.expiryDate.month,

@@ -18,6 +18,9 @@ export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderP
     props.applicationStatus !== ApplicationStatus.CANCELLED &&
     props.applicationStatus !== ApplicationStatus.CERTIFICATE_NOT_ISSUED &&
     props.certificateExpiryDate &&
+    props.certificateExpiryDate.day.length > 0 &&
+    props.certificateExpiryDate.month.length > 0 &&
+    props.certificateExpiryDate.year.length > 0 &&
     isDateInThePast(
       props.certificateExpiryDate.day,
       props.certificateExpiryDate.month,
