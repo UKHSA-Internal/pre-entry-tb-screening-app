@@ -11,9 +11,9 @@ class ApplicationStatus(Enum):
   cancelled = "Cancelled"
 
 # See the above comment.
-class StatusGroup(Enum):
+class ApplicationStatusGroup(Enum):
   complete = "Complete"
-  notComplete = "Not Complete"
+  incomplete = "Incomplete"
 
 
 def migrate_item(applicant_row, applicant_table, application_table, dry_run, statistics):
@@ -54,7 +54,7 @@ def migrate_item(applicant_row, applicant_table, application_table, dry_run, sta
     new_application_status = None
 
     new_application_status = applicationRootRow.get("applicationStatus")
-    new_status_group = StatusGroup.notComplete.value
+    new_status_group = ApplicationStatusGroup.incomplete.value
 
     # Getting new applicationStatus
     if new_application_status is None:
@@ -80,7 +80,7 @@ def migrate_item(applicant_row, applicant_table, application_table, dry_run, sta
         or new_application_status == ApplicationStatus.certificateNotIssued.value
         or new_application_status == ApplicationStatus.cancelled.value
     ):
-        new_status_group = StatusGroup.complete.value
+        new_status_group = ApplicationStatusGroup.complete.value
 
     print(f"Updating application status to : {new_application_status}")
 
@@ -117,7 +117,7 @@ def migrate_item(applicant_row, applicant_table, application_table, dry_run, sta
             UpdateExpression=(
                 "SET applicantId = :new_applicant_pk, "
                 "applicationStatus = :new_application_status, "
-                "statusGroup = :new_status_group"
+                "applicationStatusGroup = :new_status_group"
             ),
             ExpressionAttributeValues={
                 ":new_applicant_pk": new_applicant_pk,

@@ -31,8 +31,6 @@ def extract_ts_enums(filepath: str) -> Dict[str, Dict[str, str]]:
 
         enums[enum_name] = members
 
-    print(f"TypeScript enums: {enums}")
-
     return enums
 
 
@@ -60,8 +58,6 @@ def extract_python_enums(filepath: str) -> Dict[str, Dict[str, str]]:
             members[key] = value
 
         enums[enum_name] = members
-
-    print(f"Pyhton enums: {enums}")
 
     return enums
 
@@ -108,6 +104,8 @@ def main():
         py_enums = extract_python_enums(py_file)
 
         if not validate_consistency(ts_enums, py_enums):
+            print(f"TypeScript enums: {ts_enums}")
+            print(f"Pyhton enums: {py_enums}")
             sys.exit(1)
 
     except FileNotFoundError as e:

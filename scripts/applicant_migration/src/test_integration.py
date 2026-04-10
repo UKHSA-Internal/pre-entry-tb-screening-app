@@ -491,7 +491,7 @@ class TestEdgeCases:
             application_table,
             "APPLICATION#abc",
             applicationStatus=None,
-            statusGroup="InvalidStatus",  # Invalid status group
+            applicationStatusGroup="InvalidStatus",  # Invalid status group
         )
         _seed_application_tb(application_table, "APPLICATION#abc", is_issued="Yes")
 
@@ -499,7 +499,7 @@ class TestEdgeCases:
 
         root = _get_item(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
         assert root["applicationStatus"] == ApplicationStatus.certificateAvailable
-        assert root["statusGroup"] == StatusGroup.complete.value
+        assert root["applicationStatusGroup"] == StatusGroup.complete.value
 
     def test_empty_table_produces_zero_stats(self, mod, tables, dynamodb_local):
         """Test scanning an empty table."""

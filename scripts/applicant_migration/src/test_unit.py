@@ -25,17 +25,7 @@ from unittest.mock import MagicMock, patch
 
 from enum import Enum
 
-
-class ApplicationStatus(str, Enum):
-  inProgress = "In Progress",
-  certificateNotIssued = "Certificate Not Issued",
-  certificateAvailable = "Certificate Available",
-  cancelled = "Cancelled",
-
-
-class StatusGroup(Enum):
-  complete = "Complete"
-  not_complete = "Not Complete"
+from migration_script import ApplicationStatus, ApplicationStatusGroup
 
 
 # Bootstrap: stub out awsglue before importing the module under test
@@ -365,7 +355,9 @@ class TestMigrateItemLive:
 
         update_kwargs = self.application_table.update_item.call_args[1]
         ev = update_kwargs["ExpressionAttributeValues"]
-        assert ev[":new_application_status"] == ApplicationStatus.certificateAvailable
+        assert ev[":new_application_status"] == (
+            ApplicationStatus.certificateAvailable.value
+        )
 
     def test_live_status_derived_from_tb_certificate_issued_no(self):
         """When TB certificate is not issued, status should be certificateNotIssued."""
@@ -386,7 +378,9 @@ class TestMigrateItemLive:
 
         update_kwargs = self.application_table.update_item.call_args[1]
         ev = update_kwargs["ExpressionAttributeValues"]
-        assert ev[":new_application_status"] == ApplicationStatus.certificateNotIssued
+        assert ev[":new_application_status"] == (
+            ApplicationStatus.certificateNotIssued.value
+        )
 
     def test_live_status_defaults_to_in_progress_when_no_tb_data(self):
         """When no TB row exists, status defaults to inProgress."""
@@ -407,17 +401,17 @@ class TestMigrateItemLive:
 
         update_kwargs = self.application_table.update_item.call_args[1]
         ev = update_kwargs["ExpressionAttributeValues"]
-        assert ev[":new_application_status"] == ApplicationStatus.inProgress
+        assert ev[":new_application_status"] == ApplicationStatus.inProgress.value
 
     def test_live_status_group_set_to_complete_when_certificate_available(self):
         """When application status is Certificate Available,
-            statusGroup should be Complete.
+            applicationStatusGroup should be Complete.
         """
         stats = _make_statistics()
         dry_run = False
         self.application_table.get_item.side_effect = [
             # No status, no group
-            {"Item": {"applicationStatus": None, "statusGroup": None}},
+            {"Item": {"applicationStatus": None, "applicationStatusGroup": None}},
             # TB certificate issued
             {"Item": {"isIssued": "Yes"}},
         ]
@@ -432,16 +426,16 @@ class TestMigrateItemLive:
 
         update_kwargs = self.application_table.update_item.call_args[1]
         ev = update_kwargs["ExpressionAttributeValues"]
-        assert ev[":new_status_group"] == StatusGroup.complete.value
+        assert ev[":new_status_group"] == ApplicationStatusGroup.complete.value
 
     def test_live_status_group_set_to_complete_when_certificate_not_issued(self):
         """When application status is Certificate Not Issued,
-            statusGroup should be Complete.
+            applicationStatusGroup should be Complete.
         """
         stats = _make_statistics()
         dry_run = False
         self.application_table.get_item.side_effect = [
-            {"Item": {"applicationStatus": None, "statusGroup": None}},
+            {"Item": {"applicationStatus": None, "applicationStatusGroup": None}},
             {"Item": {"isIssued": "No"}},
         ]
 
@@ -455,14 +449,16 @@ class TestMigrateItemLive:
 
         update_kwargs = self.application_table.update_item.call_args[1]
         ev = update_kwargs["ExpressionAttributeValues"]
-        assert ev[":new_status_group"] == StatusGroup.complete.value
+        assert ev[":new_status_group"] == ApplicationStatusGroup.complete.value
 
     def test_live_status_group_set_to_complete_when_cancelled(self):
-        """When application status is Cancelled, statusGroup should be Complete."""
+        """
+        When application status is Cancelled, applicationStatusGroup should be Complete.
+        """
         stats = _make_statistics()
         dry_run = False
         self.application_table.get_item.return_value = {
-            "Item": {"applicationStatus": "Cancelled", "statusGroup": None}
+            "Item": {"applicationStatus": "Cancelled", "applicationStatusGroup": None}
         }
 
         self.mod.migrate_item(
@@ -475,18 +471,18 @@ class TestMigrateItemLive:
 
         update_kwargs = self.application_table.update_item.call_args[1]
         ev = update_kwargs["ExpressionAttributeValues"]
-        assert ev[":new_status_group"] == StatusGroup.complete.value
+        assert ev[":new_status_group"] == ApplicationStatusGroup.complete.value
 
     def test_live_preserves_existing_valid_status_group(self):
         """When application status is Approved (not in complete list),
-            statusGroup is Not Complete.
+            applicationStatusGroup is Not Complete.
         """
         stats = _make_statistics()
         dry_run = False
         self.application_table.get_item.return_value = {
             "Item": {
                 "applicationStatus": "Approved",
-                "statusGroup": StatusGroup.complete.value
+                "applicationStatusGroup": ApplicationStatusGroup.complete.value
             }
         }
 
@@ -500,8 +496,9 @@ class TestMigrateItemLive:
 
         update_kwargs = self.application_table.update_item.call_args[1]
         ev = update_kwargs["ExpressionAttributeValues"]
-        # Approved status is not a terminal status, so statusGroup should be Not Complete
-        assert ev[":new_status_group"] == StatusGroup.not_complete.value
+        # Approved status is not a terminal status,
+        # so applicationStatusGroup should be Not Complete
+        assert ev[":new_status_group"] == ApplicationStatusGroup.incomplete.value
 
 
 # remove_original_applicants — batching
