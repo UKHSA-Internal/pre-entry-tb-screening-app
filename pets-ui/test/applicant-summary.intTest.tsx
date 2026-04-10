@@ -327,4 +327,67 @@ describe("ApplicantReview", () => {
     expect(screen.queryByRole("link", { name: "Change passport number" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Change country of issue" })).not.toBeInTheDocument();
   });
+
+  test("hides Change links for all personal & passport when previous application exists", () => {
+    const preloadedState = {
+      applicant: {
+        status: TaskStatus.IN_PROGRESS,
+        fullName: "Sigmund Sigmundson",
+        sex: "Male",
+        dateOfBirth: { year: "1901", month: "1", day: "1" },
+        countryOfNationality: "NOR",
+        passportNumber: "1234",
+        countryOfIssue: "FIN",
+        passportIssueDate: { year: "1902", month: "02", day: "2" },
+        passportExpiryDate: { year: "2053", month: "03", day: "3" },
+        applicantHomeAddress1: "The Bell Tower",
+        applicantHomeAddress2: "Hallgrimskirkja",
+        applicantHomeAddress3: "Hallgrimstorg 1",
+        townOrCity: "Reykjavik",
+        provinceOrState: "Reykjavik",
+        country: "ISL",
+        postcode: "101",
+        applicantPhotoFileName: "photo.jpg",
+      },
+      applicationsList: [
+        {
+          applicationStatus: ApplicationStatus.CANCELLED,
+          applicationId: "app-01",
+          clinicId: "my-clinic",
+          dateCreated: {
+            year: "2000",
+            month: "12",
+            day: "12",
+          },
+        },
+      ],
+    };
+
+    renderWithProviders(<ApplicantReview />, { preloadedState });
+
+    expect(screen.queryByRole("link", { name: "Change full name" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change date of birth" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change sex" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Change country of nationality" }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change passport number" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change country of issue" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Change passport issue date" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Change passport expiry date" }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change home address line 1" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change home address line 2" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change home address line 3" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change home town or city" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Change home province or state" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change postcode" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change country" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change applicant photo" })).toBeInTheDocument();
+  });
 });

@@ -1135,5 +1135,5 @@ export function isValidDate(
   year: number | string,
 ): boolean {
   const date = new Date(Number(year), Number(month) - 1, Number(day));
-  return date instanceof Date && !isNaN(date.getTime());
+  return date instanceof Date && !Number.isNaN(date.getTime());
 }

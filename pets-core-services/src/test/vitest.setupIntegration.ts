@@ -1,6 +1,7 @@
+import { execSync } from "node:child_process";
+import crypto from "node:crypto";
+
 import { KeyType, ProjectionType } from "@aws-sdk/client-dynamodb";
-import { execSync } from "child_process";
-import crypto from "crypto";
 import { beforeAll, beforeEach } from "vitest";
 
 import { seedDatabase } from "./seed-data";

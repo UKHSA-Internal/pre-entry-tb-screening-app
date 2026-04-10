@@ -8,7 +8,7 @@ export default function ErrorPage() {
       title={
         "Sorry, there is a problem with the service - Complete UK pre-entry health screening - GOV.UK"
       }
-      backLinkTo="/search-for-visa-applicant"
+      backLinkTo="/what-do-you-need-to-do"
     >
       <Heading level={1} size="l" title="Sorry, there is a problem with the service" />
       <p className="govuk-body">Try again later.</p>

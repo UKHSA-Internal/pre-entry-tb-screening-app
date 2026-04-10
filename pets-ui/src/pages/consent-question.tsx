@@ -7,6 +7,8 @@ import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
+import { useAppSelector } from "@/redux/hooks";
+import { selectApplicationsList } from "@/redux/store";
 import { ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
 import {
   sendGoogleAnalyticsFormErrorEvent,
@@ -14,6 +16,7 @@ import {
 } from "@/utils/google-analytics-utils";
 
 export default function ConsentQuestionPage() {
+  const applicationsListData = useAppSelector(selectApplicationsList);
   const navigate = useNavigate();
   const location = useLocation();
   const methods = useForm<{ consent: YesOrNo }>({ reValidateMode: "onSubmit" });
@@ -31,7 +34,9 @@ export default function ConsentQuestionPage() {
   }, []);
 
   const onSubmit: SubmitHandler<{ consent: YesOrNo }> = (data) => {
-    if (data.consent == YesOrNo.YES) {
+    if (data.consent == YesOrNo.YES && applicationsListData.length > 0) {
+      navigate("/check-visa-applicant-details");
+    } else if (data.consent == YesOrNo.YES) {
       navigate("/visa-applicant-personal-information");
     } else {
       navigate("/get-written-consent");

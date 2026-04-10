@@ -80,9 +80,18 @@ const applicationCertIssued = {
     day: "02",
   },
 };
+const applicatioCertExpired = {
+  ...applicationCertIssued,
+  applicationId: "app-03",
+  expiryDate: {
+    year: "2000",
+    month: "31",
+    day: "12",
+  },
+};
 const applicationCancelled = {
   applicationStatus: ApplicationStatus.CANCELLED,
-  applicationId: "app-02",
+  applicationId: "app-04",
   clinicId: "my-clinic",
   dateCreated: {
     year: "2000",
@@ -236,6 +245,7 @@ describe("ScreeningHistory", () => {
         applicationAtOtherClinic,
         applicationCertIssued,
         applicationCancelled,
+        applicatioCertExpired,
       ],
       clinic: { clinicId: "my-clinic" },
     };
@@ -261,6 +271,11 @@ describe("ScreeningHistory", () => {
     expect(
       screen.getByRole("row", {
         name: "12 December 2000 Not applicable Screening cancelled View screening",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("row", {
+        name: "5 May 2000 12 July 2002 Certificate expired View screening",
       }),
     ).toBeInTheDocument();
   });
