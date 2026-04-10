@@ -45,7 +45,7 @@ export class DynamoBatchLoader {
         response = await client.send(new BatchGetCommand({ RequestItems: requestItems }));
         logger.info(response);
         const rawItems: Record<string, unknown>[] =
-          (response.Responses?.[tableName] as Record<string, unknown>[]) ?? [];
+          (response?.Responses?.[tableName] as Record<string, unknown>[]) ?? [];
 
         const mappedItems = rawItems.map((item) => mapItem(item));
         results.push(...mappedItems);

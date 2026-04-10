@@ -12,7 +12,7 @@ export const getApplicationsHandler = async (event: PetsAPIGatewayProxyEvent) =>
     }
     logger.info({ clinicId }, "Retrieve Applications handler triggered");
 
-    const limit = Number(event.queryStringParameters?.limit || 20);
+    const limit = Number(event.queryStringParameters?.limit || 100);
     const cursor = event.queryStringParameters?.cursor;
     if (!clinicId) {
       logger.error("Clinic Id missing");

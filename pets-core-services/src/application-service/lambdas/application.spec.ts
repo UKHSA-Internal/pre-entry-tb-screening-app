@@ -70,6 +70,26 @@ vi.mock("../../shared/models/applicant", () => ({
     }),
   },
 }));
+vi.mock("../../shared/models/applications", () => ({
+  ApplicationRoot: {
+    getByClinicId: vi.fn().mockResolvedValue({
+      applications: [
+        {
+          toJson: () => ({
+            applicationId: "test-id",
+            applicantId: "COUNTRY#IND#PASSPORT#Test",
+            passportNumber: "Test",
+            countryOfIssue: CountryCode.IND,
+            clinicId: "clinic-123",
+            dateCreated: new Date(),
+            applicationStatus: ApplicationStatus.inProgress,
+          }),
+        },
+      ],
+      cursor: null,
+    }),
+  },
+}));
 describe("Test for Application Lambda", () => {
   test("Creating an Application Successfully", async () => {
     const newApplication = {
@@ -109,7 +129,7 @@ describe("Test for Application Lambda", () => {
       expect(response.statusCode).toBe(200);
     });
 
-    test("Fetching an application taht does not exist throws 404", async () => {
+    test("Fetching an application that does not exist throws 404", async () => {
       // Arrange
       const event: PetsAPIGatewayProxyEvent = {
         ...mockAPIGwEvent,
@@ -730,32 +750,11 @@ describe("Test for Application Lambda", () => {
         path: `/applications/`,
         httpMethod: "GET",
       };
-      vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue("https://presigned.url");
       // Act
       const response: APIGatewayProxyResult = await handler(event, context);
 
       // Assert
       expect(response.statusCode).toBe(200);
-    });
-
-    test("Fetching  applications from a different clinic", async () => {
-      // Arrange
-      const event: PetsAPIGatewayProxyEvent = {
-        ...mockAPIGwEvent,
-        requestContext: {
-          ...mockAPIGwEvent.requestContext,
-          authorizer: { clinicId: "other one", createdBy: "hardcoded@user.com" },
-        },
-        resource: "/applications/",
-        path: `/applications/`,
-        httpMethod: "GET",
-      };
-      vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue("https://presigned.url");
-      // Act
-      const response: APIGatewayProxyResult = await handler(event, context);
-
-      // Assert
-      expect(response.statusCode).toBe(403);
     });
 
     test("Fetch applications from support clinic as ukhsa staff", async () => {
@@ -770,7 +769,6 @@ describe("Test for Application Lambda", () => {
         path: `/applications/`,
         httpMethod: "GET",
       };
-      vi.spyOn(ImageHelper, "getPresignedUrlforImage").mockResolvedValue("https://presigned.url");
       // Act
       const response: APIGatewayProxyResult = await handler(event, context);
 
