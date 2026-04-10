@@ -55,7 +55,6 @@ export const tbCertificateSlice = createSlice({
       state.clinic = action.payload;
     },
     clearTbCertificateDetails: (state) => {
-      console.log("CLEARING CERT SLICE");
       state.status = TaskStatus.NOT_YET_STARTED;
       state.isIssued = YesOrNo.NULL;
       state.comments = "";
