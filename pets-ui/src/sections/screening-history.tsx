@@ -265,9 +265,10 @@ const ScreeningHistory = () => {
           <StartButton
             id="start-new-screening"
             text="Start now"
-            handleClick={() => {
+            handleClick={async () => {
               setIsLoading(true);
               dispatch(setApplicantDetailsStatus(TaskStatus.IN_PROGRESS));
+              await fetchClinic(dispatch, userClinicData.clinicId);
               navigate("/do-you-have-visa-applicant-written-consent-for-tb-screening");
             }}
           />
