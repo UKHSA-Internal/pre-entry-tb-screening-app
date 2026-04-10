@@ -71,5 +71,6 @@ export enum TBCertNotIssuedReason {
 export enum AdditionalStatusTagTexts {
   CANNOT_START_YET = "Cannot start yet",
   SCREENING_CANCELLED = "Screening cancelled",
+  CERTIFICATE_EXPIRED = "Certificate expired",
 }
 export type StatusTagText = TaskStatus | ApplicationStatus | AdditionalStatusTagTexts;

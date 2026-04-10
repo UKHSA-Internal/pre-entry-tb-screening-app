@@ -76,4 +76,30 @@ describe("applicantDataHeader", () => {
 
     expect(screen.queryByText("TB screening")).not.toBeInTheDocument();
   });
+
+  it("correctly overrides status tag when certificate is expired", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2025-01-01"));
+
+    renderWithProviders(
+      <ApplicantDataHeader
+        applicantData={applicantData}
+        showCountryOfIssue={false}
+        applicationStatus={ApplicationStatus.CERTIFICATE_AVAILABLE}
+        certificateExpiryDate={{ day: "01", month: "01", year: "2025" }}
+      />,
+    );
+
+    expect(screen.getAllByRole("rowheader")[0]).toHaveTextContent("Name");
+    expect(screen.getAllByRole("rowheader")[1]).toHaveTextContent("Date of birth");
+    expect(screen.getAllByRole("rowheader")[2]).toHaveTextContent("Passport number");
+    expect(screen.getAllByRole("rowheader")[3]).toHaveTextContent("TB screening");
+
+    expect(screen.getAllByRole("cell")[0]).toHaveTextContent("full name");
+    expect(screen.getAllByRole("cell")[1]).toHaveTextContent("1 February 1980");
+    expect(screen.getAllByRole("cell")[2]).toHaveTextContent("12345");
+    expect(screen.getAllByRole("cell")[3]).toHaveTextContent("Certificate expired");
+
+    vi.useRealTimers();
+  });
 });
