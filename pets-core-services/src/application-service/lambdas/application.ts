@@ -22,6 +22,7 @@ import { setApplicationIdContext } from "../middlewares/application-logger-conte
 import { YesOrNo } from "../types/enums";
 import {
   ApplicationSchema,
+  ApplicationsSchema,
   CancelApplicationRequestSchema,
   ChestXRayRequestSchema,
   ChestXRayResponseSchema,
@@ -217,7 +218,7 @@ export const routes: PetsRoute[] = [
     method: "GET",
     path: "/applications/",
     handler: middy<PetsAPIGatewayProxyEvent>().handler(getApplicationsHandler),
-    responseSchema: ApplicationSchema.openapi({
+    responseSchema: ApplicationsSchema.openapi({
       description: "All in progress applications  root records for a given clinic",
     }),
   },

@@ -491,6 +491,30 @@ export const ApplicationBaseSchema = z.object({
   }),
 });
 
+export const ApplicationRootSchema = z.object({
+  applicationId: z.string().openapi({
+    description: "Application id",
+  }),
+  applicantName: z.string().openapi({
+    description: "Full Name of the applicant",
+  }),
+  clinicId: z.string().openapi({
+    description: "ID of the Clinic",
+  }),
+  passportNumber: z.string().openapi({
+    description: "PassportNumber of Applicant",
+  }),
+  countryOfIssue: z.nativeEnum(CountryCode).openapi({
+    description: "Passport Issue Country",
+  }),
+  dateCreated: z.string().date().openapi({
+    description: "Creation Date in UTC timezone",
+  }),
+  applicationStatus: z.nativeEnum(ApplicationStatus).openapi({
+    description: "Application current status",
+  }),
+});
+
 export const ApplicationSchema = ApplicationBaseSchema.extend({
   applicantPhotoUrl: z.string().openapi({
     description: "Presigned Url for applicant Photo",
@@ -504,6 +528,11 @@ export const ApplicationSchema = ApplicationBaseSchema.extend({
   tbCertificate: TbCertificateResponseSchema,
 });
 
-export const ApplicationsSchema = z.array(ApplicationBaseSchema).openapi({
-  description: "Applicant's applications",
+export const ApplicationsSchema = z.object({
+  applications: z.array(ApplicationRootSchema).openapi({
+    description: "Applicant's applications in Progress",
+  }),
+  cursor: z.string().openapi({
+    description: "Last Evaluated Key for pagination",
+  }),
 });

@@ -5,7 +5,7 @@ import { assertEnvExists } from "../config";
 import { CountryCode } from "../country";
 import { DynamoBatchLoader } from "../helpers/batch-util";
 import { logger } from "../logger";
-import { ApplicationStatus } from "../types/enum";
+import { ApplicationStatus, ApplicationStatusGroup } from "../types/enum";
 import { Applicant, ApplicantBase } from "./applicant";
 
 const { dynamoDBDocClient: docClient } = awsClients;
@@ -84,10 +84,10 @@ export class ApplicationRoot extends IApplicationRoot {
           new QueryCommand({
             TableName: this.getTableName(),
             IndexName: assertEnvExists(process.env.CLINIC_ID_INDEX),
-            KeyConditionExpression: "clinicId = :clinicId  AND applicationStatus = :status",
+            KeyConditionExpression: "clinicId = :clinicId  AND applicationStatusGroup = :status",
             ExpressionAttributeValues: {
               ":clinicId": clinicId,
-              ":status": ApplicationStatus.inProgress,
+              ":status": ApplicationStatusGroup.incomplete,
             },
             Limit: limit,
             ExclusiveStartKey: lastEvaluatedKey,
@@ -101,7 +101,6 @@ export class ApplicationRoot extends IApplicationRoot {
       // Convert DB items → models
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const applications = (allItems || []).map((item) => ApplicationRoot.fromDynamo(item));
-      logger.info(applications);
 
       // Batch load applicants
       const applicantMap = await DynamoBatchLoader.batchLoad({
@@ -115,7 +114,6 @@ export class ApplicationRoot extends IApplicationRoot {
         mapKey: (item) => ApplicantBase.getPassportId(item.countryOfIssue, item.passportNumber),
       });
 
-      logger.info(applicantMap);
       // Add applicantName
       const enriched = applications.map((app) => {
         const applicant = applicantMap.get(app.applicantId) as Applicant;
@@ -124,7 +122,6 @@ export class ApplicationRoot extends IApplicationRoot {
           applicantName: applicant.fullName,
         });
       });
-      logger.info("enriched");
 
       //Encode cursor
       const nextCursor = result.LastEvaluatedKey
@@ -144,7 +141,6 @@ export class ApplicationRoot extends IApplicationRoot {
   toJson() {
     return {
       applicationId: this.applicationId,
-      applicantId: this.applicantId,
       applicantName: this.applicantName,
       passportNumber: this.passportNumber,
       countryOfIssue: this.countryOfIssue,
