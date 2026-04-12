@@ -4,7 +4,9 @@ import { describe, expect, test, vi } from "vitest";
 
 import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
+import { logger } from "../../shared/logger";
 import { Application, IApplication } from "../../shared/models/application";
+import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { TBCertNotIssuedReason, YesOrNo } from "../types/enums";
 import { CancelApplicationEvent, cancelApplicationHandler } from "./cancel-application";
@@ -78,13 +80,16 @@ describe("Test for cancel applicantion handler", () => {
 
     // Assert
     expect(response.statusCode).toBe(200);
+    logger.info(JSON.parse(response.body));
     expect(JSON.parse(response.body)).toMatchObject({
-      applicationId: expect.any(String),
+      applicationId: "generated-app-id-1",
+      applicationStatus: ApplicationStatus.cancelled,
+      applicationStatusgroup: ApplicationStatusGroup.complete,
+      cancellationReason: "not needed anymore",
+      clinicId: "Apollo Clinic",
+      cancellationFurtherInfo: "further Info",
       dateCreated: expect.any(String),
       dateUpdated: expect.any(String),
-      applicationStatus: "Cancelled",
-      cancellationReason: "not needed anymore",
-      cancellationFurtherInfo: "further Info",
     });
   });
 
@@ -170,7 +175,8 @@ describe("Test for cancel applicantion handler", () => {
       dateCreated: expect.any(String),
       dateUpdated: expect.any(String),
       expiryDate: expect.any(String),
-      applicationStatus: "Cancelled",
+      applicationStatus: ApplicationStatus.cancelled,
+      applicationStatusgroup: ApplicationStatusGroup.complete,
       cancellationReason: "not needed anymore",
     });
   });
@@ -197,7 +203,8 @@ describe("Test for cancel applicantion handler", () => {
       applicationId: expect.any(String),
       dateCreated: expect.any(String),
       dateUpdated: expect.any(String),
-      applicationStatus: "Cancelled",
+      applicationStatus: ApplicationStatus.cancelled,
+      applicationStatusgroup: ApplicationStatusGroup.complete,
       cancellationReason: "not needed anymore",
     });
     expect(responseBody?.expiryDate).toBeFalsy();

@@ -233,6 +233,7 @@ export class Application extends IApplication {
       clinicId: this.clinicId,
       dateCreated: this.dateCreated.toISOString(),
       applicationStatus: this.applicationStatus,
+      applicationStatusGroup: this.applicationStatusGroup,
       cancellationReason: this.cancellationReason,
       cancellationFurtherInfo: this.cancellationFurtherInfo,
       expiryDate: this.expiryDate ? this.expiryDate.toISOString() : undefined,

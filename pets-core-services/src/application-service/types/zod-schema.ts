@@ -2,7 +2,7 @@ import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 
 import { CountryCode } from "../../shared/country";
-import { ApplicationStatus, TaskStatus } from "../../shared/types/enum";
+import { ApplicationStatus, ApplicationStatusGroup, TaskStatus } from "../../shared/types/enum";
 import {
   ChestXRayNotTakenReason,
   HistoryOfConditionsUnder11,
@@ -39,6 +39,9 @@ export const CreateApplicationResponseSchema = z.object({
   }),
   applicationStatus: z.nativeEnum(ApplicationStatus).openapi({
     description: "Application current status",
+  }),
+  applicationStatusGroup: z.nativeEnum(ApplicationStatusGroup).openapi({
+    description: "Application status group: complete or incomplete ",
   }),
 });
 
@@ -477,6 +480,9 @@ export const ApplicationBaseSchema = z.object({
   applicationStatus: z.nativeEnum(ApplicationStatus).openapi({
     description: "Application current status",
   }),
+  applicationStatusGroup: z.nativeEnum(ApplicationStatusGroup).openapi({
+    description: "Application status group: complete or incomplete ",
+  }),
   cancellationReason: z.string().optional().openapi({
     description: "Reason for application cancelling",
   }),
@@ -491,7 +497,7 @@ export const ApplicationBaseSchema = z.object({
   }),
 });
 
-export const ApplicationRootSchema = z.object({
+export const ApplicationDashboardSchema = z.object({
   applicationId: z.string().openapi({
     description: "Application id",
   }),
@@ -513,6 +519,9 @@ export const ApplicationRootSchema = z.object({
   applicationStatus: z.nativeEnum(ApplicationStatus).openapi({
     description: "Application current status",
   }),
+  applicationStatusGroup: z.nativeEnum(ApplicationStatusGroup).openapi({
+    description: "Application status group: complete or incomplete ",
+  }),
 });
 
 export const ApplicationSchema = ApplicationBaseSchema.extend({
@@ -529,7 +538,7 @@ export const ApplicationSchema = ApplicationBaseSchema.extend({
 });
 
 export const ApplicationsSchema = z.object({
-  applications: z.array(ApplicationRootSchema).openapi({
+  applications: z.array(ApplicationDashboardSchema).openapi({
     description: "Applicant's applications in Progress",
   }),
   cursor: z.string().openapi({

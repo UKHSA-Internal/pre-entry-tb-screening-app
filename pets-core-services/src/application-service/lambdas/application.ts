@@ -219,7 +219,7 @@ export const routes: PetsRoute[] = [
     path: "/applications/",
     handler: middy<PetsAPIGatewayProxyEvent>().handler(getApplicationsHandler),
     responseSchema: ApplicationsSchema.openapi({
-      description: "All in progress applications  root records for a given clinic",
+      description: "All in progress applications root records for a given clinic",
     }),
   },
 ];
