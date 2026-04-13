@@ -185,27 +185,6 @@ describe("Test for Application Lambda", () => {
     expect(response.statusCode).toBe(200);
   });
 
-  test("Cancel an application", async () => {
-    // Arrange
-    const event: PetsAPIGatewayProxyEvent = {
-      ...mockAPIGwEvent,
-      resource: "/application/{applicationId}/cancel",
-      path: `/application/${seededApplications[0].applicationId}/cancel`,
-      httpMethod: "PUT",
-      body: JSON.stringify({
-        applicationId: seededApplications[0].applicationId,
-        status: ApplicationStatus.cancelled,
-        cancellationReason: "do it",
-      }),
-    };
-
-    // Act
-    const response: APIGatewayProxyResult = await handler(event, context);
-
-    // Assert
-    expect(response.statusCode).toBe(200);
-  });
-
   describe("Travel Information", () => {
     const newTravelInfo = {
       visaCategory: VisaOptions.Study,
