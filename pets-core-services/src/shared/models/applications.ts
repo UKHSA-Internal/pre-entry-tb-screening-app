@@ -19,6 +19,7 @@ export interface IApplicationRootProps {
   clinicId: string;
   dateCreated: Date | string;
   applicationStatus: ApplicationStatus;
+  applicationStatusGroup: ApplicationStatusGroup;
 }
 
 export abstract class IApplicationRoot {
@@ -30,6 +31,7 @@ export abstract class IApplicationRoot {
   clinicId: string;
   dateCreated: Date;
   applicationStatus: ApplicationStatus;
+  applicationStatusGroup: ApplicationStatusGroup;
 
   constructor(details: IApplicationRootProps) {
     this.applicationId = details.applicationId;
@@ -40,6 +42,7 @@ export abstract class IApplicationRoot {
     this.clinicId = details.clinicId;
     this.dateCreated = new Date(details.dateCreated);
     this.applicationStatus = details.applicationStatus;
+    this.applicationStatusGroup = details.applicationStatusGroup;
   }
 }
 
@@ -64,6 +67,7 @@ export class ApplicationRoot extends IApplicationRoot {
       clinicId: item.clinicId,
       dateCreated: item.dateCreated,
       applicationStatus: item.applicationStatus,
+      applicationStatusGroup: item.applicationStatusGroup,
     });
   }
 
@@ -147,6 +151,7 @@ export class ApplicationRoot extends IApplicationRoot {
       clinicId: this.clinicId,
       dateCreated: this.dateCreated.toISOString(),
       applicationStatus: this.applicationStatus,
+      applicationStatusGroup: this.applicationStatusGroup,
     };
   }
 }

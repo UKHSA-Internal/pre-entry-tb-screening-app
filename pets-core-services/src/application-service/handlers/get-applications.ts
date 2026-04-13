@@ -20,8 +20,6 @@ export const getApplicationsHandler = async (event: PetsAPIGatewayProxyEvent) =>
     }
 
     const applicationsListResult = await ApplicationRoot.getByClinicId(clinicId, limit, cursor);
-    logger.info("applicationsListResult");
-    logger.info(applicationsListResult);
 
     return HttpResponses.ok(
       JSON.stringify({

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import { CountryCode } from "../../shared/country";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { ApplicationStatus } from "../../shared/types/enum";
+import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 
 // Mock applications model
@@ -65,6 +65,7 @@ describe("Getting Applications Handler", () => {
             clinicId: "clinic-123",
             dateCreated: new Date(),
             applicationStatus: ApplicationStatus.inProgress,
+            applicationStatusGroup: ApplicationStatusGroup.incomplete,
           }),
         },
       ],
@@ -88,6 +89,7 @@ describe("Getting Applications Handler", () => {
         clinicId: "clinic-123",
         dateCreated: expect.any(String),
         applicationStatus: ApplicationStatus.inProgress,
+        applicationStatusGroup: ApplicationStatusGroup.incomplete,
       },
     ]);
   });
@@ -113,6 +115,7 @@ describe("Getting Applications Handler", () => {
             clinicId: "test-clinic",
             dateCreated: new Date(),
             applicationStatus: ApplicationStatus.inProgress,
+            applicationStatusGroup: ApplicationStatusGroup.incomplete,
           }),
         },
       ],
@@ -134,6 +137,7 @@ describe("Getting Applications Handler", () => {
         clinicId: "test-clinic",
         dateCreated: expect.any(String),
         applicationStatus: ApplicationStatus.inProgress,
+        applicationStatusGroup: ApplicationStatusGroup.incomplete,
       },
     ]);
   });
