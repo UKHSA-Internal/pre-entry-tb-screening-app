@@ -1,7 +1,7 @@
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { DynamoBatchLoader } from "./batch-util";
+import { DynamoBatchLoader } from "./dynamo-batch-util";
 
 // Mock class for client
 class MockDynamoClient {

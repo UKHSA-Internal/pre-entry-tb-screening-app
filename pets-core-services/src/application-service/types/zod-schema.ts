@@ -497,7 +497,20 @@ export const ApplicationBaseSchema = z.object({
   }),
 });
 
-export const ApplicationDashboardSchema = z.object({
+export const ApplicationSchema = ApplicationBaseSchema.extend({
+  applicantPhotoUrl: z.string().openapi({
+    description: "Presigned Url for applicant Photo",
+  }),
+  travelInformation: TravelInformationResponseSchema,
+  medicalScreening: MedicalScreeningResponseSchema,
+  chestXray: ChestXRayResponseSchema,
+  radiologicalOutcome: RadiologicalOutcomeResponseSchema,
+  sputumDecision: SputumDecisionResponseSchema,
+  sputumDetails: SputumResponseSchema,
+  tbCertificate: TbCertificateResponseSchema,
+});
+
+export const DashboardApplicationSchema = z.object({
   applicationId: z.string().openapi({
     description: "Application id",
   }),
@@ -524,21 +537,8 @@ export const ApplicationDashboardSchema = z.object({
   }),
 });
 
-export const ApplicationSchema = ApplicationBaseSchema.extend({
-  applicantPhotoUrl: z.string().openapi({
-    description: "Presigned Url for applicant Photo",
-  }),
-  travelInformation: TravelInformationResponseSchema,
-  medicalScreening: MedicalScreeningResponseSchema,
-  chestXray: ChestXRayResponseSchema,
-  radiologicalOutcome: RadiologicalOutcomeResponseSchema,
-  sputumDecision: SputumDecisionResponseSchema,
-  sputumDetails: SputumResponseSchema,
-  tbCertificate: TbCertificateResponseSchema,
-});
-
-export const ApplicationsSchema = z.object({
-  applications: z.array(ApplicationDashboardSchema).openapi({
+export const DashboardApplicationsSchema = z.object({
+  applications: z.array(DashboardApplicationSchema).openapi({
     description: "Applicant's applications in Progress",
   }),
   cursor: z.string().openapi({

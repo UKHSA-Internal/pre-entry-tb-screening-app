@@ -11,7 +11,7 @@ import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { ApplicationStatus, TaskStatus } from "../../shared/types/enum";
+import { ApplicationStatus, ApplicationStatusGroup, TaskStatus } from "../../shared/types/enum";
 import { context, mockAPIGwEvent } from "../../test/mocks/events";
 import { SaveApplicationEvent } from "../handlers/create-application";
 import { ImageHelper } from "../helpers/image-helper";
@@ -70,8 +70,8 @@ vi.mock("../../shared/models/applicant", () => ({
     }),
   },
 }));
-vi.mock("../../shared/models/applications", () => ({
-  ApplicationRoot: {
+vi.mock("../models/dashboard-applications", () => ({
+  DashboardApplication: {
     getByClinicId: vi.fn().mockResolvedValue({
       applications: [
         {
@@ -83,6 +83,7 @@ vi.mock("../../shared/models/applications", () => ({
             clinicId: "clinic-123",
             dateCreated: new Date(),
             applicationStatus: ApplicationStatus.inProgress,
+            applicationStatusGroup: ApplicationStatusGroup.incomplete,
           }),
         },
       ],
@@ -746,8 +747,8 @@ describe("Test for Application Lambda", () => {
       // Arrange
       const event: PetsAPIGatewayProxyEvent = {
         ...mockAPIGwEvent,
-        resource: "/applications/",
-        path: `/applications/`,
+        resource: "/dashboard-applications/",
+        path: `/dashboard-applications/`,
         httpMethod: "GET",
       };
       // Act
@@ -765,8 +766,8 @@ describe("Test for Application Lambda", () => {
           ...mockAPIGwEvent.requestContext,
           authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
         },
-        resource: "/applications/",
-        path: `/applications/`,
+        resource: "/dashboard-applications/",
+        path: `/dashboard-applications/`,
         httpMethod: "GET",
       };
       // Act

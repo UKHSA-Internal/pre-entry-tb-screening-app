@@ -6,8 +6,8 @@ import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/en
 import { mockAPIGwEvent } from "../../test/mocks/events";
 
 // Mock applications model
-vi.mock("../../shared/models/applications", () => ({
-  ApplicationRoot: {
+vi.mock("../models/dashboard-applications", () => ({
+  DashboardApplication: {
     getByClinicId: vi.fn(),
   },
 }));
@@ -18,8 +18,8 @@ vi.mock("../../shared/logger", () => ({
     error: vi.fn(),
   },
 }));
-import { ApplicationRoot } from "../../shared/models/applications";
-import { getApplicationsHandler } from "./get-applications";
+import { DashboardApplication } from "../models/dashboard-applications";
+import { getDashboardApplicationsHandler } from "./get-dashboard-applications";
 
 describe("Getting Applications Handler", () => {
   beforeEach(() => {
@@ -36,7 +36,7 @@ describe("Getting Applications Handler", () => {
     };
 
     // Act
-    const response = await getApplicationsHandler(event);
+    const response = await getDashboardApplicationsHandler(event);
     // Assert
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
@@ -54,7 +54,7 @@ describe("Getting Applications Handler", () => {
       },
     };
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    (ApplicationRoot.getByClinicId as any).mockResolvedValue({
+    (DashboardApplication.getByClinicId as any).mockResolvedValue({
       applications: [
         {
           toJson: () => ({
@@ -72,11 +72,11 @@ describe("Getting Applications Handler", () => {
       cursor: null,
     });
     // Act
-    const response = await getApplicationsHandler(event);
+    const response = await getDashboardApplicationsHandler(event);
     // Assert
     expect(response.statusCode).toBe(200);
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(ApplicationRoot.getByClinicId).toHaveBeenCalledWith("clinic-123", 100, undefined);
+    expect(DashboardApplication.getByClinicId).toHaveBeenCalledWith("clinic-123", 100, undefined);
     const body = JSON.parse(response.body);
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -104,7 +104,7 @@ describe("Getting Applications Handler", () => {
       },
     };
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    (ApplicationRoot.getByClinicId as any).mockResolvedValue({
+    (DashboardApplication.getByClinicId as any).mockResolvedValue({
       applications: [
         {
           toJson: () => ({
@@ -122,7 +122,7 @@ describe("Getting Applications Handler", () => {
       cursor: null,
     });
     // Act
-    const response = await getApplicationsHandler(event);
+    const response = await getDashboardApplicationsHandler(event);
     // Assert
     expect(response.statusCode).toBe(200);
     const body = JSON.parse(response.body);
@@ -148,8 +148,8 @@ describe("Getting Applications Handler", () => {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    (ApplicationRoot.getByClinicId as any).mockRejectedValue(new Error("DB error"));
-    const response = await getApplicationsHandler(event);
+    (DashboardApplication.getByClinicId as any).mockRejectedValue(new Error("DB error"));
+    const response = await getDashboardApplicationsHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(500);
