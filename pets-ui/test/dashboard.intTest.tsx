@@ -125,16 +125,6 @@ const applicationsInProgressSlice = {
       dateCreated: "2026-04-07T15:32:34.470Z",
       applicationStatus: ApplicationStatus.IN_PROGRESS,
     },
-    {
-      applicationId: "17814cbc-501d-4051-94ae-67692fe6f363",
-      applicantId: "COUNTRY#AFG#PASSPORT#abc9",
-      applicantName: "Should not see - different status",
-      passportNumber: "abc9",
-      countryOfIssue: "AFG",
-      clinicId: "my-clinic",
-      dateCreated: "2026-04-07T15:32:34.470Z",
-      applicationStatus: ApplicationStatus.CERTIFICATE_NOT_ISSUED,
-    },
   ],
   cursor: null,
 };

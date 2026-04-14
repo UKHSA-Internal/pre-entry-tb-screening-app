@@ -43,7 +43,7 @@ import {
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
 import { ReceivedApplicantDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
-import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
+import { TaskStatus, YesOrNo } from "@/utils/enums";
 import { convertDateStrToObj, formatDateForDisplay, getCountryName } from "@/utils/helpers";
 
 const Dashboard = () => {
@@ -179,7 +179,6 @@ const Dashboard = () => {
 
   const applicationTableInfo = applicationsInProgressData.applications
     .filter((app) => app.clinicId == userClinicData.clinicId)
-    .filter((app) => app.applicationStatus == ApplicationStatus.IN_PROGRESS)
     .sort(
       (app1, app2) => new Date(app2.dateCreated).getTime() - new Date(app1.dateCreated).getTime(),
     )
