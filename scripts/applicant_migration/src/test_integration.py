@@ -88,11 +88,11 @@ def _run(mod, applicant_table_name, application_table_name, dynamodb_local):
     """Run migration with given tables."""
     stats = make_statistics()
     mod.scan_applicant_table(
-        stats,
         applicant_table_name,
         application_table_name,
         "eu-west-2",
         False,
+        stats,
         dynamodb_local,
     )
     return stats

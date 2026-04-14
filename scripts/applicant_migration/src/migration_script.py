@@ -1,3 +1,6 @@
+# It has to be import early for pytest to be able to test
+# the functions separately without running the whole script
+import logging
 import boto3
 from botocore.exceptions import ClientError
 from enum import Enum
@@ -16,7 +19,13 @@ class ApplicationStatusGroup(Enum):
   incomplete = "Incomplete"
 
 
-def migrate_item(applicant_row, applicant_table, application_table, dry_run, statistics):
+def migrate_applicant(
+        applicant_row,
+        applicant_table,
+        application_table,
+        dry_run,
+        statistics,
+    ):
     # applicant PK is just APPLICATION#<applicationId>
     applicationId = applicant_row["pk"]
     # SK is always APPLICANT#DETAILS
@@ -26,7 +35,7 @@ def migrate_item(applicant_row, applicant_table, application_table, dry_run, sta
 
     # --------------- APPLICANT RECORD CHANGES SECTION ---------------
     if not new_applicant_pk:
-        print(f"SKIP Missing passportId for: {applicationId}")
+        logging.info(f"SKIP Missing passportId for: {applicationId}")
         statistics["skipped_missing"] += 1
         # TODO: shouldn't it be deleted as it looks like incomplete/invalid record
 
@@ -34,12 +43,12 @@ def migrate_item(applicant_row, applicant_table, application_table, dry_run, sta
 
 
     if applicationId == new_applicant_pk:
-        print(f"SKIP already migrated: {applicationId}")
+        logging.info(f"SKIP already migrated: {applicationId}")
         statistics["skipped_migrated"] += 1
 
         return
 
-    print(f"MIGRATE {applicationId} -> {new_applicant_pk} (sk={sk})")
+    logging.info(f"MIGRATE {applicationId} -> {new_applicant_pk} (sk={sk})")
 
     # --------------- APPLICATION RECORD CHANGES SECTION ---------------
     response = application_table.get_item(
@@ -48,7 +57,9 @@ def migrate_item(applicant_row, applicant_table, application_table, dry_run, sta
     applicationRootRow = response.get("Item")
 
     if not applicationRootRow:
-        print(f"WARNING: No ROOT row in application table for pk={applicationId}")
+        logging.warning(
+            f"WARNING: No ROOT row in application table for pk={applicationId}"
+        )
         return
 
     new_application_status = None
@@ -82,7 +93,7 @@ def migrate_item(applicant_row, applicant_table, application_table, dry_run, sta
     ):
         new_status_group = ApplicationStatusGroup.complete.value
 
-    print(f"Updating application status to : {new_application_status}")
+    logging.info(f"Updating application status to : {new_application_status}")
 
     if dry_run:
         # just to mark what would be done
@@ -96,7 +107,7 @@ def migrate_item(applicant_row, applicant_table, application_table, dry_run, sta
     new_item["pk"] = new_applicant_pk
     applicant_table.put_item(Item=new_item)
 
-    print(
+    logging.info(
         "[MIGRATION] Applicant table pk updated from "
         f"{applicationId} to {new_applicant_pk}"
     )
@@ -131,10 +142,11 @@ def migrate_item(applicant_row, applicant_table, application_table, dry_run, sta
 
     except ClientError as e:
         if e.response["Error"]["Code"] == "ConditionalCheckFailedException":
-            print(f"Updating application with pk={applicationId} failed: {e}")
+            logging.erro(f"Updating application with pk={applicationId} failed: {e}")
         else:
             raise
-    print(f"[MIGRATION] - Application Table - applicantId updated to {new_applicant_pk}")
+
+    logging.info(f"Application Table - applicantId updated to {new_applicant_pk}")
 
 
 def remove_original_applicants(applicant_table, id_list):
@@ -154,13 +166,70 @@ def remove_original_applicants(applicant_table, id_list):
                 ddb_batch.delete_item(Key=key)
 
 
-def scan_applicant_table(
+def add_application_statusgroup(
+        # application_row should always be the APPLICATION#ROOT row
+        application_row,
+        application_table,
+        dry_run,
         statistics,
+    ):
+    application_pk = application_row["pk"]
+    sk = application_row["sk"]
+    # Simple validation
+    if sk != "APPLICATION#ROOT":
+        statistics["skipped_rows_not_root"] += 1
+        logging.error(f"SKIP Unexpected sk value for application {application_pk}: {sk}")
+        return
+    application_status = application_row.get("applicationStatus")
+    new_status_group = ApplicationStatusGroup.incomplete.value
+
+
+    if (
+        application_status == ApplicationStatus.certificateAvailable.value
+        or application_status == ApplicationStatus.certificateNotIssued.value
+        or application_status == ApplicationStatus.cancelled.value
+    ):
+        new_status_group = ApplicationStatusGroup.complete.value
+
+    if dry_run:
+        # just to mark what would be done
+        statistics["migrated_applications"] += 1
+
+        return
+
+    try:
+        application_table.update_item(
+            Key={"pk": application_pk, "sk": "APPLICATION#ROOT"},
+            UpdateExpression=(
+                "SET applicationStatusGroup = :new_status_group"
+            ),
+            ExpressionAttributeValues={
+                ":new_status_group": new_status_group,
+            },
+            ConditionExpression=(
+                # "attribute_exists(pk) AND attribute_not_exists(applicantId)"
+                "attribute_exists(pk)"
+            )
+        )
+
+    except ClientError as e:
+        if e.response["Error"]["Code"] == "ConditionalCheckFailedException":
+            logging.error(f"Updating application with pk={application_pk} failed: {e}")
+        else:
+            raise
+    logging.info(
+        f"[MIGRATION] - Application {application_pk} - "
+        f"applicationStatusGroup updated to {new_status_group}"
+    )
+
+
+def scan_applicant_table(
         applicant_table_name,
         application_table_name,
         aws_region,
         dry_run,
-        dynamodb=None
+        statistics,
+        dynamodb=None,
     ):
     if dynamodb is None:
         dynamodb = boto3.resource("dynamodb", region_name=aws_region)
@@ -168,15 +237,15 @@ def scan_applicant_table(
     applicant_table = dynamodb.Table(applicant_table_name)
     application_table = dynamodb.Table(application_table_name)
 
-    print(f"[MIGRATION] Applicant table - {applicant_table}")
-    print(f"[MIGRATION] Application table - {application_table}")
+    logging.info(f"[MIGRATION] Applicant table - {applicant_table}")
+    logging.info(f"[MIGRATION] Application table - {application_table}")
 
     response = applicant_table.scan()
     applicants = response.get("Items", [])
     statistics["all_applicants"] += len(applicants)
 
     for applicant_row in applicants:
-        migrate_item(
+        migrate_applicant(
             applicant_row,
             applicant_table,
             application_table,
@@ -192,7 +261,7 @@ def scan_applicant_table(
         statistics["all_applicants"] += len(applicants)
 
         for applicant_row in applicants:
-            migrate_item(
+            migrate_applicant(
                 applicant_row,
                 applicant_table,
                 application_table,
@@ -204,51 +273,55 @@ def scan_applicant_table(
         remove_original_applicants(applicant_table, statistics["applicants_to_remove"])
 
 
-if __name__ == "__main__":
-    import os
-    import sys
-    import time
-    from awsglue.utils import getResolvedOptions
+def scan_application_table(
+        application_table_name,
+        aws_region,
+        dry_run,
+        statistics,
+        dynamodb=None,
+    ):
+    if dynamodb is None:
+        dynamodb = boto3.resource("dynamodb", region_name=aws_region)
 
-    print(f"GJ called with args: {sys.argv}")
+    application_table = dynamodb.Table(application_table_name)
 
-    args = getResolvedOptions(
-        sys.argv,
-        ["APPLICANT_TABLE", "APPLICATION_TABLE", "DRY_RUN", "customer-executor-env-vars"]
+    logging.info(f"[MIGRATION] Application table - {application_table}")
+
+    # We only want to scan the APPLICATION#ROOT rows,
+    # as they are the ones containing applicationStatus
+    # and the ones we want to update with applicationStatusGroup
+    response = application_table.scan(
+        FilterExpression="sk = :sk",
+        ExpressionAttributeValues={":sk": "APPLICATION#ROOT"},
     )
-    print(f"Received arguments: {args}")
+    applications = response.get("Items", [])
+    statistics["all_applications"] += len(applications)
+    first_batch = True
 
-    try:
-        for pair in args["customer_executor_env_vars"].split(','):
-            k, v = pair.split('=', 1)
-            os.environ[k] = v
-    except Exception as e:
-        print(f"Error parsing environment variables from arguments: {e}")
-        raise
+    while first_batch or "LastEvaluatedKey" in response:
+        first_batch = False
+        response = application_table.scan(
+            ExclusiveStartKey=response["LastEvaluatedKey"]
+        )
+        applications = response.get("Items", [])
+        statistics["all_applications"] += len(applications)
 
-    APPLICANT_TABLE_NAME = args["APPLICANT_TABLE"]
-    APPLICATION_TABLE_NAME = args["APPLICATION_TABLE"]
-    AWS_REGION = os.getenv("AWS_REGION")
-    DRY_RUN = args["DRY_RUN"]
-
-    # Print out the missing parameters
-    if not APPLICANT_TABLE_NAME or not APPLICATION_TABLE_NAME or DRY_RUN is None:
-        print("ERROR: Missing required parameters")
-        print(f"APPLICANT_TABLE_NAME: {APPLICANT_TABLE_NAME}")
-        print(f"APPLICATION_TABLE_NAME: {APPLICATION_TABLE_NAME}")
-        print(f"AWS_REGION: {AWS_REGION}")
-        print(f"DRY_RUN: {DRY_RUN}")
-
-        sys.exit(1)
-    else:
-        APPLICANT_TABLE_NAME = APPLICANT_TABLE_NAME.strip()
-        APPLICATION_TABLE_NAME = APPLICATION_TABLE_NAME.strip()
-        DRY_RUN = DRY_RUN.lower() == "true"
+        for application_row in applications:
+            add_application_statusgroup(
+                application_row,
+                application_table,
+                dry_run,
+                statistics,
+            )
 
 
-
-    print(f"Starting Glue DynamoDB migration (DRY_RUN={DRY_RUN})")
-
+def applicant_migration(
+        applicant_table_name,
+        application_table_name,
+        aws_region,
+        dry_run,
+        dynamodb=None
+    ):
     statistics = {
         "all_applicants": 0,
         "skipped_missing": 0,
@@ -259,20 +332,138 @@ if __name__ == "__main__":
     start_time = time.time()
 
     scan_applicant_table(
+        applicant_table_name,
+        application_table_name,
+        aws_region,
+        dry_run,
         statistics,
-        APPLICANT_TABLE_NAME,
-        APPLICATION_TABLE_NAME,
-        AWS_REGION,
-        DRY_RUN,
+        dynamodb,
     )
 
-    print()
-    print(f"Read applicant rows: {statistics['all_applicants']}")
-    print(f"Skipped applicants without passportId: {statistics['skipped_missing']}")
-    print(f"Skipped already migrated applicants: {statistics['skipped_migrated']}")
-    print(f"Migrated applicant records: {statistics['migrated_applicants']}")
-    print(f"Applicants to remove/removed: {len(statistics['applicants_to_remove'])}")
+    logging.info()
+    logging.info(f"Read applicant rows: {statistics['all_applicants']}")
+    logging.info(f"Skipped applicants without passportId: {statistics['skipped_missing']}")
+    logging.info(f"Skipped already migrated applicants: {statistics['skipped_migrated']}")
+    logging.info(f"Migrated applicant records: {statistics['migrated_applicants']}")
+    logging.info(f"Applicants to remove/removed: {len(statistics['applicants_to_remove'])}")
     duration = round(time.time() - start_time)
-    print(f"Duration: {duration // 60} min {duration % 60} sec")
+    logging.info(f"Duration: {duration // 60} min {duration % 60} sec")
 
-    print("Migration complete")
+
+def application_migration(
+        applicant_table_name,
+        application_table_name,
+        aws_region,
+        dry_run,
+        dynamodb=None
+    ):
+    statistics = {
+        "all_applications": 0,
+        "skipped_rows_not_root": 0,
+        "skipped_migrated": 0,
+        "migrated_applications": 0,
+    }
+    start_time = time.time()
+
+    scan_application_table(
+        applicant_table_name,
+        application_table_name,
+        aws_region,
+        dry_run,
+        statistics,
+        dynamodb,
+    )
+
+    logging.info()
+    logging.info(f"Read applicant rows: {statistics['all_applicants']}")
+    logging.info(f"Skipped applicants without passportId: {statistics['skipped_missing']}")
+    logging.info(f"Skipped already migrated applicants: {statistics['skipped_migrated']}")
+    logging.info(f"Migrated applicant records: {statistics['migrated_applicants']}")
+    logging.info(f"Applicants to remove/removed: {len(statistics['applicants_to_remove'])}")
+    duration = round(time.time() - start_time)
+    logging.info(f"Duration: {duration // 60} min {duration % 60} sec")
+
+
+if __name__ == "__main__":
+    import os
+    import sys
+    import time
+    from awsglue.utils import getResolvedOptions
+
+    # Setting up logging
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
+
+    logging.info(f"GJ called with args: {sys.argv}")
+
+    args = getResolvedOptions(
+        sys.argv,
+        ["APPLICANT_TABLE", "APPLICATION_TABLE", "MIGRATIONS", "REGION", "DRY_RUN"]
+    )
+    logging.info(f"Received arguments: {args}")
+
+    try:
+        for pair in args["customer_executor_env_vars"].split(','):
+            k, v = pair.split('=', 1)
+            os.environ[k] = v
+    except Exception as e:
+        logging.info(f"Error parsing environment variables from arguments: {e}")
+        raise
+
+    APPLICANT_TABLE_NAME = args.get("APPLICANT_TABLE")
+    APPLICATION_TABLE_NAME = args.get("APPLICATION_TABLE")
+    MIGRATIONS = args.get("MIGRATIONS")
+    AWS_REGION = args.get("AWS_REGION")
+    DRY_RUN = args["DRY_RUN"]
+    # List of correct migration names used in the code, to validate the input MIGRATIONS parameter
+    VALID_MIGRATIONS = ["applicant_migration", "application_statusgroup"]
+
+    # Print out the missing parameters
+    if not APPLICATION_TABLE_NAME or not MIGRATIONS or DRY_RUN is None:
+        logging.error("Missing required parameters, all provided parameters:")
+        logging.info(f"APPLICANT_TABLE_NAME: {APPLICANT_TABLE_NAME}")
+        logging.info(f"APPLICATION_TABLE_NAME: {APPLICATION_TABLE_NAME}")
+        logging.info(f"MIGRATIONS: {MIGRATIONS}")
+        logging.info(f"AWS_REGION: {AWS_REGION}")
+        logging.info(f"DRY_RUN: {DRY_RUN}")
+
+        sys.exit(1)
+    else:
+        if APPLICANT_TABLE_NAME:
+            APPLICANT_TABLE_NAME = APPLICANT_TABLE_NAME.strip()
+
+        APPLICATION_TABLE_NAME = APPLICATION_TABLE_NAME.strip()
+        # Converting MIGRATIONS to a list of migration names,
+        # in case there are multiple migrations to run
+        if "," in MIGRATIONS:
+            MIGRATIONS = [m.strip() for m in MIGRATIONS.split(",")]
+        else:
+            MIGRATIONS = [MIGRATIONS.strip()]
+        DRY_RUN = DRY_RUN.lower() == "true"
+
+    # Validate that the provided migration names are correct
+    for migration in MIGRATIONS:
+        if migration not in VALID_MIGRATIONS:
+            logging.info(f"Invalid migration name '{migration}' provided in MIGRATIONS parameter.")
+            logging.info(f"Valid migration names are: {VALID_MIGRATIONS}")
+            sys.exit(1)
+
+    logging.info(f"Starting Glue DynamoDB migration (DRY_RUN={DRY_RUN})")
+
+    for migration in MIGRATIONS:
+        if migration == "applicant_migration":
+            logging.info("Running applicant migration...")
+            applicant_migration(
+                APPLICANT_TABLE_NAME,
+                APPLICATION_TABLE_NAME,
+                AWS_REGION,
+                DRY_RUN
+            )
+        elif migration == "application_statusgroup":
+            logging.info("Running application status group migration...")
+            application_migration(
+                APPLICANT_TABLE_NAME,
+                APPLICATION_TABLE_NAME,
+                AWS_REGION,
+                DRY_RUN
+            )
+        logging.info(f"Migration {migration} completed.")

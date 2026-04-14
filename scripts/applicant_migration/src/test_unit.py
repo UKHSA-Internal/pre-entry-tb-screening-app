@@ -2,7 +2,7 @@
 Tests for the DynamoDB migration Glue script.
 
 Scope:
-  - migrate_item() logic (all branches)
+  - migrate_applicant() logic (all branches)
   - remove_original_applicants() batching logic
   - scan_applicant_table() pagination + DRY_RUN flag
 
@@ -75,7 +75,7 @@ def _mock_tables():
     return applicant_table, application_table
 
 
-# migrate_item — happy path & skip branches
+# migrate_applicant — happy path & skip branches
 class TestMigrateItemSkips:
     def setup_method(self):
         self.mod = _load_migration(dry_run=False)
@@ -84,7 +84,7 @@ class TestMigrateItemSkips:
         at, apt = _mock_tables()
         stats = _make_statistics()
         dry_run = False
-        self.mod.migrate_item(
+        self.mod.migrate_applicant(
             applicant_row,
             applicant_table or at,
             application_table or apt,
@@ -146,7 +146,7 @@ class TestMigrateItemDryRun:
         else:
             self.application_table.get_item.return_value = {}
 
-        self.mod.migrate_item(
+        self.mod.migrate_applicant(
             row,
             self.applicant_table,
             self.application_table,
@@ -178,7 +178,7 @@ class TestMigrateItemDryRun:
         dry_run = True
         self.application_table.get_item.return_value = {"Item": None}  # No ROOT row
 
-        self.mod.migrate_item(
+        self.mod.migrate_applicant(
             self._base_row(),
             self.applicant_table,
             self.application_table,
@@ -209,7 +209,7 @@ class TestMigrateItemLive:
             "Item": {"applicationStatus": "Approved"}
         }
 
-        self.mod.migrate_item(
+        self.mod.migrate_applicant(
             self._base_row(),
             self.applicant_table,
             self.application_table,
@@ -228,7 +228,7 @@ class TestMigrateItemLive:
             "Item": {"applicationStatus": "Approved"}
         }
 
-        self.mod.migrate_item(
+        self.mod.migrate_applicant(
             self._base_row(),
             self.applicant_table,
             self.application_table,
@@ -247,7 +247,7 @@ class TestMigrateItemLive:
             "Item": {"applicationStatus": "Approved"}
         }
 
-        self.mod.migrate_item(
+        self.mod.migrate_applicant(
             self._base_row(),
             self.applicant_table,
             self.application_table,
@@ -277,7 +277,7 @@ class TestMigrateItemLive:
             "UpdateItem",
         )
         # Should complete without raising
-        self.mod.migrate_item(
+        self.mod.migrate_applicant(
             self._base_row(), self.applicant_table, self.application_table, dry_run, stats
         )
         assert stats["migrated_applicants"] == 1
@@ -296,7 +296,7 @@ class TestMigrateItemLive:
             "UpdateItem",
         )
         with pytest.raises(ClientError):
-            self.mod.migrate_item(
+            self.mod.migrate_applicant(
                 self._base_row(),
                 self.applicant_table,
                 self.application_table,
@@ -310,7 +310,7 @@ class TestMigrateItemLive:
         self.application_table.get_item.return_value = {
             "Item": {"applicationStatus": "Approved"}
         }
-        self.mod.migrate_item(
+        self.mod.migrate_applicant(
             self._base_row(),
             self.applicant_table,
             self.application_table,
@@ -325,7 +325,7 @@ class TestMigrateItemLive:
         dry_run = False
         self.application_table.get_item.return_value = {"Item": None}  # No ROOT row
 
-        self.mod.migrate_item(
+        self.mod.migrate_applicant(
             self._base_row(),
             self.applicant_table,
             self.application_table,
@@ -345,7 +345,7 @@ class TestMigrateItemLive:
             {"Item": {"isIssued": "Yes"}},  # TB certificate issued
         ]
 
-        self.mod.migrate_item(
+        self.mod.migrate_applicant(
             self._base_row(),
             self.applicant_table,
             self.application_table,
@@ -368,7 +368,7 @@ class TestMigrateItemLive:
             {"Item": {"isIssued": "No"}},  # TB certificate not issued
         ]
 
-        self.mod.migrate_item(
+        self.mod.migrate_applicant(
             self._base_row(),
             self.applicant_table,
             self.application_table,
@@ -391,7 +391,7 @@ class TestMigrateItemLive:
             {},  # No TB row
         ]
 
-        self.mod.migrate_item(
+        self.mod.migrate_applicant(
             self._base_row(),
             self.applicant_table,
             self.application_table,
@@ -416,7 +416,7 @@ class TestMigrateItemLive:
             {"Item": {"isIssued": "Yes"}},
         ]
 
-        self.mod.migrate_item(
+        self.mod.migrate_applicant(
             self._base_row(),
             self.applicant_table,
             self.application_table,
@@ -439,7 +439,7 @@ class TestMigrateItemLive:
             {"Item": {"isIssued": "No"}},
         ]
 
-        self.mod.migrate_item(
+        self.mod.migrate_applicant(
             self._base_row(),
             self.applicant_table,
             self.application_table,
@@ -461,7 +461,7 @@ class TestMigrateItemLive:
             "Item": {"applicationStatus": "Cancelled", "applicationStatusGroup": None}
         }
 
-        self.mod.migrate_item(
+        self.mod.migrate_applicant(
             self._base_row(),
             self.applicant_table,
             self.application_table,
@@ -486,7 +486,7 @@ class TestMigrateItemLive:
             }
         }
 
-        self.mod.migrate_item(
+        self.mod.migrate_applicant(
             self._base_row(),
             self.applicant_table,
             self.application_table,
@@ -616,11 +616,11 @@ class TestScanApplicantTable:
 
         stats = _make_statistics()
         self.mod.scan_applicant_table(
-            stats,
             "applicant-table",
             "application-table",
             "eu-west-2",
             False,
+            stats,
             self.dynamodb,
         )
 
@@ -649,11 +649,11 @@ class TestScanApplicantTable:
 
         stats = _make_statistics()
         self.mod.scan_applicant_table(
-            stats,
             "applicant-table",
             "application-table",
             "eu-west-2",
             True,  # dry_run=True
+            stats,
             self.dynamodb,
         )
 
@@ -682,11 +682,11 @@ class TestScanApplicantTable:
 
         stats = _make_statistics()
         self.mod.scan_applicant_table(
-            stats,
             "applicant-table",
             "application-table",
             "eu-west-2",
             False,  # dry_run=False
+            stats,
             self.dynamodb,
         )
 
@@ -705,11 +705,11 @@ class TestScanApplicantTable:
         stats = _make_statistics()
         # Call WITHOUT passing dynamodb parameter (None by default)
         self.mod.scan_applicant_table(
-            stats,
             "applicant-table",
             "application-table",
             "eu-west-2",
             False,
+            stats,
             dynamodb=None,  # Explicitly None
         )
 
@@ -727,11 +727,11 @@ class TestScanApplicantTable:
 
         stats = _make_statistics()
         self.mod.scan_applicant_table(
-            stats,
             "applicant-table",
             "application-table",
             "eu-west-2",
             False,
+            stats,
             self.dynamodb,
         )
 
