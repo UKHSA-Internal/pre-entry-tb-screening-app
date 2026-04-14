@@ -64,9 +64,6 @@ def migrate_applicant(
 
     new_application_status = None
 
-    new_application_status = applicationRootRow.get("applicationStatus")
-    new_status_group = ApplicationStatusGroup.incomplete.value
-
     # Getting new applicationStatus
     if new_application_status is None:
         response = application_table.get_item(
@@ -85,13 +82,6 @@ def migrate_applicant(
             new_application_status = ApplicationStatus.certificateNotIssued.value
         else:
             new_application_status = ApplicationStatus.inProgress.value
-
-    if (
-        new_application_status == ApplicationStatus.certificateAvailable.value
-        or new_application_status == ApplicationStatus.certificateNotIssued.value
-        or new_application_status == ApplicationStatus.cancelled.value
-    ):
-        new_status_group = ApplicationStatusGroup.complete.value
 
     logging.info(f"Updating application status to : {new_application_status}")
 
@@ -127,13 +117,11 @@ def migrate_applicant(
             Key={"pk": applicationId, "sk": "APPLICATION#ROOT"},
             UpdateExpression=(
                 "SET applicantId = :new_applicant_pk, "
-                "applicationStatus = :new_application_status, "
-                "applicationStatusGroup = :new_status_group"
+                "applicationStatus = :new_application_status"
             ),
             ExpressionAttributeValues={
                 ":new_applicant_pk": new_applicant_pk,
                 ":new_application_status": new_application_status,
-                ":new_status_group": new_status_group,
             },
             ConditionExpression=(
                 "attribute_exists(pk) AND attribute_not_exists(applicantId)"
