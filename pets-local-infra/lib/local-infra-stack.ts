@@ -89,11 +89,18 @@ export class LocalInfrastructureStack extends cdk.Stack {
       },
     });
 
-    new Table(this, "application-service-table", {
+    const applicationServiceDb = new Table(this, "application-service-table", {
       ...tableProps,
       tableName: process.env.APPLICATION_SERVICE_DATABASE_NAME,
     });
 
+    applicationServiceDb.addGlobalSecondaryIndex({
+      indexName: process.env.APPLICANT_ID_INDEX || "",
+      partitionKey: {
+        name: "applicantId",
+        type: AttributeType.STRING,
+      },
+    });
     new Table(this, "audit-service-table", {
       ...tableProps,
       tableName: process.env.AUDIT_SERVICE_DATABASE_NAME,

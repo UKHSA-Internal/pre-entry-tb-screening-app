@@ -2,9 +2,10 @@ import "react-router";
 
 import {
   ApplicationStatus,
-  BackendApplicationStatus,
+  BackendTaskStatus,
   ImageType,
   PositiveOrNegative,
+  TaskStatus,
   YesOrNo,
 } from "./utils/enums";
 
@@ -37,17 +38,44 @@ type ReceivedApplicationAttributesType = {
   applicationId: string;
   clinicId: string;
   dateCreated: string;
-  status: BackendApplicationStatus;
+  status: BackendTaskStatus;
+};
+
+type ReduxClinicDetailsType = {
+  clinicId: string;
 };
 
 // Application types
-type ApplicationIdAndDateCreatedType = {
+type ReceivedApplicationListType = {
+  applicationStatus: ApplicationStatus;
   applicationId: string;
+  clinicId: string;
   dateCreated: string;
+  dateUpdated?: string;
+  expiryDate?: string;
+  cancellationReason?: string;
+  cancellationFurtherInfo?: string;
+};
+
+type ReduxApplicationDetailsType = {
+  applicationStatus: ApplicationStatus;
+  applicationId: string;
+  clinicId: string;
+  dateCreated: DateType;
+  dateUpdated?: DateType;
+  expiryDate?: DateType;
+  cancellationReason?: string;
+  cancellationFurtherInfo?: string;
 };
 
 type ReceivedApplicationDetailsType = {
   applicationId: string;
+  applicationStatus: ApplicationStatus;
+  dateCreated?: string;
+  dateUpdated?: string;
+  expiryDate?: string;
+  cancellationReason?: string;
+  cancellationFurtherInfo?: string;
   clinicId: string;
   applicantPhotoUrl?: string;
   travelInformation: ReceivedTravelDetailsType | undefined;
@@ -59,9 +87,14 @@ type ReceivedApplicationDetailsType = {
   tbCertificate: ReceivedTbCertificateType | undefined;
 };
 
+type ApplicationCancellationInfo = {
+  cancellationReason: string;
+  cancellationFurtherInfo: string;
+};
+
 // Applicant types
 type ReduxApplicantDetailsType = {
-  status: ApplicationStatus;
+  status: TaskStatus;
   fullName: string;
   sex: string;
   dateOfBirth: DateType;
@@ -99,11 +132,30 @@ type PostedApplicantDetailsType = {
   applicantPhotoFileName?: string;
 };
 
-type ReceivedApplicantDetailsType = PostedApplicantDetailsType & ReceivedApplicationAttributesType;
+type ReceivedApplicantDetailsType = {
+  fullName: string;
+  sex: string;
+  dateOfBirth: string;
+  countryOfNationality: string;
+  passportNumber: string;
+  countryOfIssue: string;
+  issueDate: string;
+  expiryDate: string;
+  applicantHomeAddress1: string;
+  applicantHomeAddress2?: string;
+  applicantHomeAddress3?: string;
+  townOrCity: string;
+  provinceOrState: string;
+  country: string;
+  postcode?: string;
+  applications: ReceivedApplicationListType[];
+  dateCreated: string;
+  status: BackendTaskStatus;
+};
 
 // Travel types
 type ReduxTravelDetailsType = {
-  status: ApplicationStatus;
+  status: TaskStatus;
   visaCategory: string;
   applicantUkAddress1?: string;
   applicantUkAddress2?: string;
@@ -129,7 +181,7 @@ type ReceivedTravelDetailsType = PostedTravelDetailsType & ReceivedApplicationAt
 
 // Medical Screening types
 type ReduxMedicalScreeningType = {
-  status: ApplicationStatus;
+  status: TaskStatus;
   tbSymptoms: string;
   tbSymptomsList: string[];
   otherSymptomsDetail: string;
@@ -177,7 +229,7 @@ type ReceivedMedicalScreeningType = PostedMedicalScreeningType &
 
 // Chest X-ray types
 type ReduxChestXrayDetailsType = {
-  status: ApplicationStatus;
+  status: TaskStatus;
   posteroAnteriorXrayFileName: string;
   posteroAnteriorXrayFile: string;
   apicalLordoticXrayFileName?: string;
@@ -202,7 +254,7 @@ type ReceivedChestXrayDetailsType = PostedChestXrayDetailsType & ReceivedApplica
 
 // Radiological outcome types
 type ReduxRadiologicalOutcomeDetailsType = {
-  status: ApplicationStatus;
+  status: TaskStatus;
   reasonXrayWasNotTaken: string;
   xrayWasNotTakenFurtherDetails: string;
   xrayResult: string;
@@ -242,7 +294,7 @@ type PostedChestXrayNotTakenDetailsType = {
 type PostedChestXrayUnionType = PostedChestXrayDetailsType | PostedChestXrayNotTakenDetailsType;
 
 type ReduxSputumRequirementType = {
-  status: ApplicationStatus;
+  status: TaskStatus;
   isSputumRequired: YesOrNo;
   completionDate?: DateType;
 };
@@ -279,7 +331,7 @@ type ReduxSputumSampleType = {
 };
 
 type ReduxSputumType = {
-  status: ApplicationStatus;
+  status: TaskStatus;
   version?: number;
   sample1: ReduxSputumSampleType;
   sample2: ReduxSputumSampleType;
@@ -309,7 +361,7 @@ type ReceivedSputumType = ReceivedApplicationAttributesType & {
 
 // TB Declaration certificate types
 type ReduxTbCertificateType = {
-  status: ApplicationStatus;
+  status: TaskStatus;
   isIssued: YesOrNo;
   comments: string;
   certificateDate: DateType;
@@ -332,7 +384,7 @@ type PostedTbCertificateType = {
 
 type ReceivedTbCertificateType = {
   applicationId: string;
-  status: BackendApplicationStatus;
+  status: BackendTaskStatus;
   isIssued: YesOrNo;
   comments?: string;
   issueDate: string;

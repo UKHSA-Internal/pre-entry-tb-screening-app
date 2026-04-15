@@ -133,5 +133,23 @@
     "startDate": "2023-04-01",
     "endDate": "2043-04-01",
     "createdBy": "devs@test.pets.org"
+  },
+  {
+    "clinicId": "IND/Chandigarh/AS/07/00X",
+    "name": "clinic IND/Chandigarh/AS/07/00X",
+    "city": "city",
+    "country": "IND",
+    "startDate": "2025-03-01",
+    "endDate": "2043-04-01",
+    "createdBy": "devs@test.pets.org"
+  },
+  {
+    "clinicId": "AGO/Luanda/AF/01/00X",
+    "name": "clinic AGO/Luanda/AF/01/00X",
+    "city": "city",
+    "country": "AGO",
+    "startDate": "2025-03-01",
+    "endDate": "2043-04-01",
+    "createdBy": "devs@test.pets.org"
   }
 ]

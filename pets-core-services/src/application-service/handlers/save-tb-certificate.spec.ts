@@ -37,7 +37,7 @@ describe("Test for Saving TB Certificate into DB", () => {
     });
   });
 
-  test("Duplicate post throws a 400 error", async () => {
+  test("Duplicate post throws a 409 error", async () => {
     // Arrange
     const event: SaveTbCertificateEvent = {
       ...mockAPIGwEvent,
@@ -49,11 +49,11 @@ describe("Test for Saving TB Certificate into DB", () => {
     const response = await saveTbCertificateHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(409);
     expect(JSON.parse(response.body)).toMatchObject({ message: "TB Certificate already saved" });
   });
 
-  test("Missing required body returns a 500 response", async () => {
+  test("Missing required body returns a 400 response", async () => {
     // Arrange
     const event: SaveTbCertificateEvent = {
       ...mockAPIGwEvent,
@@ -63,9 +63,9 @@ describe("Test for Saving TB Certificate into DB", () => {
     const response = await saveTbCertificateHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: TB Certificate Request not parsed correctly",
+      message: "Request event missing body",
     });
   });
 

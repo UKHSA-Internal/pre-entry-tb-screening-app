@@ -5,7 +5,7 @@ import { Mock } from "vitest";
 
 import TbCertificateDeclarationPage from "@/pages/tb-certificate-declaration";
 import TbCertificateDeclarationForm from "@/sections/tb-certificate-declaration-form";
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -53,7 +53,7 @@ describe("TB Certificate Declaration Page", () => {
     renderWithProviders(<TbCertificateDeclarationForm />, {
       preloadedState: {
         tbCertificate: {
-          status: ApplicationStatus.NOT_YET_STARTED,
+          status: TaskStatus.NOT_YET_STARTED,
           isIssued: YesOrNo.NULL,
           comments: "",
           certificateDate: { year: "", month: "", day: "" },

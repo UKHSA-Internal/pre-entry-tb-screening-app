@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { DateType, ReceivedChestXrayDetailsType, ReduxChestXrayDetailsType } from "@/types";
-import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
+import { BackendTaskStatus, TaskStatus } from "@/utils/enums";
+import { convertDateStrToObj } from "@/utils/helpers";
 
 const initialState: ReduxChestXrayDetailsType = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   posteroAnteriorXrayFileName: "",
   posteroAnteriorXrayFile: "",
   apicalLordoticXrayFileName: "",
@@ -22,7 +23,7 @@ export const chestXraySlice = createSlice({
   name: "chestXrayDetails",
   initialState,
   reducers: {
-    setChestXrayStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+    setChestXrayStatus: (state, action: PayloadAction<TaskStatus>) => {
       state.status = action.payload;
     },
     setPosteroAnteriorXrayFileName: (state, action: PayloadAction<string>) => {
@@ -55,7 +56,7 @@ export const chestXraySlice = createSlice({
       state.lateralDecubitusXrayFile = action.payload.lateralDecubitusXrayFile;
     },
     clearChestXrayDetails: (state) => {
-      state.status = ApplicationStatus.NOT_YET_STARTED;
+      state.status = TaskStatus.NOT_YET_STARTED;
       state.posteroAnteriorXrayFileName = "";
       state.apicalLordoticXrayFileName = "";
       state.lateralDecubitusXrayFileName = "";
@@ -70,28 +71,16 @@ export const chestXraySlice = createSlice({
     },
     setChestXrayFromApiResponse: (state, action: PayloadAction<ReceivedChestXrayDetailsType>) => {
       state.status =
-        action.payload.status == BackendApplicationStatus.COMPLETE
-          ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.IN_PROGRESS;
+        action.payload.status == BackendTaskStatus.COMPLETE
+          ? TaskStatus.COMPLETE
+          : TaskStatus.IN_PROGRESS;
       state.posteroAnteriorXrayFileName = action.payload.posteroAnteriorXrayFileName;
       state.posteroAnteriorXrayFile = action.payload.posteroAnteriorXray;
       state.apicalLordoticXrayFileName = action.payload.apicalLordoticXrayFileName;
       state.apicalLordoticXrayFile = action.payload.apicalLordoticXray;
       state.lateralDecubitusXrayFileName = action.payload.lateralDecubitusXrayFileName;
       state.lateralDecubitusXrayFile = action.payload.lateralDecubitusXray;
-      state.dateXrayTaken = action.payload.dateXrayTaken
-        ? {
-            year: action.payload.dateXrayTaken.split("-")[0],
-            month: action.payload.dateXrayTaken.split("-")[1],
-            day: action.payload.dateXrayTaken.includes("T")
-              ? action.payload.dateXrayTaken.split("-")[2].split("T")[0]
-              : action.payload.dateXrayTaken.split("-")[2],
-          }
-        : {
-            year: "",
-            month: "",
-            day: "",
-          };
+      state.dateXrayTaken = convertDateStrToObj(action.payload.dateXrayTaken);
     },
   },
 });

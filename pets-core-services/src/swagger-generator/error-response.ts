@@ -11,6 +11,12 @@ export const errorResponses = {
   "404": {
     description: "404 response",
   },
+  "409": {
+    description: "409 response",
+  },
+  "422": {
+    description: "422 response",
+  },
   "500": {
     description: "500 response",
   },

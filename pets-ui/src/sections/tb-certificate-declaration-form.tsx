@@ -24,7 +24,7 @@ import {
   setTbCertificateStatus,
 } from "@/redux/tbCertificateSlice";
 import { ReduxTbCertificateType } from "@/types";
-import { ApplicationStatus, ButtonClass } from "@/utils/enums";
+import { ButtonClass, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import {
   calculateCertificateExpiryDate,
@@ -73,7 +73,7 @@ const TbCertificateDeclarationForm = () => {
     );
     dispatch(setCertificateNumber(applicationData.applicationId));
     dispatch(setDeclaringPhysicianName(data.declaringPhysicianName));
-    dispatch(setTbCertificateStatus(ApplicationStatus.IN_PROGRESS));
+    dispatch(setTbCertificateStatus(TaskStatus.IN_PROGRESS));
     navigate("/tb-certificate-summary");
   };
 
@@ -115,7 +115,8 @@ const TbCertificateDeclarationForm = () => {
         <Heading level={1} size="l" title="Clinic and certificate information" />
 
         <Summary
-          status={tbCertificateData.status}
+          taskStatus={tbCertificateData.status}
+          applicationStatus={applicationData.applicationStatus}
           summaryElements={[
             {
               key: "Clinic name",

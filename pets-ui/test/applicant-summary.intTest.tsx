@@ -6,7 +6,7 @@ import { Mock } from "vitest";
 import { petsApi } from "@/api/api";
 import ApplicantSummaryPage from "@/pages/applicant-summary";
 import ApplicantReview from "@/sections/applicant-details-summary";
-import { ApplicationStatus, ImageType } from "@/utils/enums";
+import { ApplicationStatus, ImageType, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 import uploadFile from "@/utils/uploadFile";
 
@@ -50,7 +50,7 @@ describe("ApplicantReview", () => {
   test("state is displayed correctly & user is navigated to confirmation page when both api calls are successful", async () => {
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.NOT_YET_STARTED,
+        status: TaskStatus.NOT_YET_STARTED,
         fullName: "Sigmund Sigmundson",
         sex: "Male",
         dateOfBirth: {
@@ -84,7 +84,7 @@ describe("ApplicantReview", () => {
 
     renderWithProviders(<ApplicantReview />, { preloadedState });
 
-    mock.onPost("/application").reply(200, { applicationId: "abc-123" });
+    mock.onPost("/application").reply(200, { applicationId: "abc-123", dateCreated: "2010-01-01" });
     mock.onPost("/applicant/register/abc-123").reply(200);
 
     expect(screen.getAllByRole("term")[0]).toHaveTextContent("Full name");
@@ -143,7 +143,7 @@ describe("ApplicantReview", () => {
   test("user is navigated to error page when second api call is unsuccessful", async () => {
     renderWithProviders(<ApplicantReview />);
 
-    mock.onPost("/application").reply(200, { applicationId: "abc-123" });
+    mock.onPost("/application").reply(200, { applicationId: "abc-123", dateCreated: "2010-01-01" });
     mock.onPost("/applicant/register/abc-123").reply(500);
 
     await user.click(screen.getByRole("button"));
@@ -156,7 +156,12 @@ describe("ApplicantReview", () => {
 
   test("calls uploadFile to upload applicant photo if present", async () => {
     const preloadedState = {
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+        clinicId: "clinic-001",
+      },
     };
 
     renderWithProviders(<ApplicantReview />, { preloadedState });
@@ -174,7 +179,7 @@ describe("ApplicantReview", () => {
   test("back link points to tracker when status is complete", () => {
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         fullName: "Sigmund Sigmundson",
         sex: "Male",
         dateOfBirth: {
@@ -217,7 +222,7 @@ describe("ApplicantReview", () => {
   test("back link points to applicant photo page when status is not complete", () => {
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.IN_PROGRESS,
+        status: TaskStatus.IN_PROGRESS,
         fullName: "Sigmund Sigmundson",
         sex: "Male",
         dateOfBirth: {
@@ -260,7 +265,7 @@ describe("ApplicantReview", () => {
   test("shows Change links for Passport number and Country of issue when task is IN_PROGRESS", () => {
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.IN_PROGRESS,
+        status: TaskStatus.IN_PROGRESS,
         fullName: "Sigmund Sigmundson",
         sex: "Male",
         dateOfBirth: { year: "1901", month: "1", day: "1" },
@@ -297,7 +302,7 @@ describe("ApplicantReview", () => {
   test("hides Change links for Passport number and Country of issue when task is COMPLETE", () => {
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         fullName: "Sigmund Sigmundson",
         sex: "Male",
         dateOfBirth: { year: "1901", month: "1", day: "1" },
@@ -321,5 +326,68 @@ describe("ApplicantReview", () => {
 
     expect(screen.queryByRole("link", { name: "Change passport number" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Change country of issue" })).not.toBeInTheDocument();
+  });
+
+  test("hides Change links for all personal & passport when previous application exists", () => {
+    const preloadedState = {
+      applicant: {
+        status: TaskStatus.IN_PROGRESS,
+        fullName: "Sigmund Sigmundson",
+        sex: "Male",
+        dateOfBirth: { year: "1901", month: "1", day: "1" },
+        countryOfNationality: "NOR",
+        passportNumber: "1234",
+        countryOfIssue: "FIN",
+        passportIssueDate: { year: "1902", month: "02", day: "2" },
+        passportExpiryDate: { year: "2053", month: "03", day: "3" },
+        applicantHomeAddress1: "The Bell Tower",
+        applicantHomeAddress2: "Hallgrimskirkja",
+        applicantHomeAddress3: "Hallgrimstorg 1",
+        townOrCity: "Reykjavik",
+        provinceOrState: "Reykjavik",
+        country: "ISL",
+        postcode: "101",
+        applicantPhotoFileName: "photo.jpg",
+      },
+      applicationsList: [
+        {
+          applicationStatus: ApplicationStatus.CANCELLED,
+          applicationId: "app-01",
+          clinicId: "my-clinic",
+          dateCreated: {
+            year: "2000",
+            month: "12",
+            day: "12",
+          },
+        },
+      ],
+    };
+
+    renderWithProviders(<ApplicantReview />, { preloadedState });
+
+    expect(screen.queryByRole("link", { name: "Change full name" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change date of birth" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change sex" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Change country of nationality" }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change passport number" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change country of issue" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Change passport issue date" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Change passport expiry date" }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change home address line 1" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change home address line 2" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change home address line 3" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change home town or city" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Change home province or state" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change postcode" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change country" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change applicant photo" })).toBeInTheDocument();
   });
 });

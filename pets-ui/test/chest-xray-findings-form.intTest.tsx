@@ -7,7 +7,7 @@ import { Mock } from "vitest";
 
 import ChestXrayFindingsPage from "@/pages/chest-xray-findings";
 import ChestXrayFindingsForm from "@/sections/chest-xray-findings-form";
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -70,7 +70,7 @@ describe("ChestXrayFindings Form", () => {
   it("navigates to cxr summary when form is complete and submit button is clicked", async () => {
     const preloadedState = {
       radiologicalOutcome: {
-        status: ApplicationStatus.NOT_YET_STARTED,
+        status: TaskStatus.NOT_YET_STARTED,
         chestXrayTaken: YesOrNo.YES,
         reasonXrayWasNotTaken: "",
         xrayWasNotTakenFurtherDetails: "",

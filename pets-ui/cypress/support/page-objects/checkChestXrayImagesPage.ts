@@ -101,7 +101,7 @@ export class CheckChestXrayImagesPage extends BasePage {
     return this;
   }
   verifyDateOfXrayComponents(day: string, month: string, year: string): CheckChestXrayImagesPage {
-    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    const date = new Date(Number.parseInt(year), Number.parseInt(month) - 1, Number.parseInt(day));
     const formattedDate = DateUtils.formatDateGOVUK(date);
 
     cy.contains("dt.govuk-summary-list__key", "Date of X-ray")

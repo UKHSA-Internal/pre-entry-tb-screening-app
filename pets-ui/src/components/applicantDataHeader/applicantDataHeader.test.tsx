@@ -1,12 +1,12 @@
 import { screen } from "@testing-library/react";
 
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 import ApplicantDataHeader from "./applicantDataHeader";
 
 const applicantData = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   fullName: "full name",
   sex: "male",
   dateOfBirth: {
@@ -37,23 +37,69 @@ const applicantData = {
 };
 
 describe("applicantDataHeader", () => {
-  it("correctly displays values", () => {
+  it("correctly displays values when applicationStatus specified and showCountryOfIssue is false", () => {
     renderWithProviders(
       <ApplicantDataHeader
         applicantData={applicantData}
-        tbCertificateStatus={ApplicationStatus.NOT_YET_STARTED}
-        tbCertificateIsIssued={YesOrNo.YES}
+        applicationStatus={ApplicationStatus.IN_PROGRESS}
+        showCountryOfIssue={false}
       />,
     );
 
-    expect(screen.getAllByRole("term")[0]).toHaveTextContent("Name");
-    expect(screen.getAllByRole("term")[1]).toHaveTextContent("Date of birth");
-    expect(screen.getAllByRole("term")[2]).toHaveTextContent("Passport number");
-    expect(screen.getAllByRole("term")[3]).toHaveTextContent("TB screening");
+    expect(screen.getAllByRole("rowheader")[0]).toHaveTextContent("Name");
+    expect(screen.getAllByRole("rowheader")[1]).toHaveTextContent("Date of birth");
+    expect(screen.getAllByRole("rowheader")[2]).toHaveTextContent("Passport number");
+    expect(screen.getAllByRole("rowheader")[3]).toHaveTextContent("TB screening");
 
-    expect(screen.getAllByRole("definition")[0]).toHaveTextContent("full name");
-    expect(screen.getAllByRole("definition")[1]).toHaveTextContent("01/02/1980");
-    expect(screen.getAllByRole("definition")[2]).toHaveTextContent("12345");
-    expect(screen.getAllByRole("definition")[3]).toHaveTextContent("In progress");
+    expect(screen.getAllByRole("cell")[0]).toHaveTextContent("full name");
+    expect(screen.getAllByRole("cell")[1]).toHaveTextContent("1 February 1980");
+    expect(screen.getAllByRole("cell")[2]).toHaveTextContent("12345");
+    expect(screen.getAllByRole("cell")[3]).toHaveTextContent("In progress");
+
+    expect(screen.queryByText("Country of Issue")).not.toBeInTheDocument();
+  });
+
+  it("correctly displays values when applicationStatus not specified and showCountryOfIssue is true", () => {
+    renderWithProviders(
+      <ApplicantDataHeader applicantData={applicantData} showCountryOfIssue={true} />,
+    );
+
+    expect(screen.getAllByRole("rowheader")[0]).toHaveTextContent("Name");
+    expect(screen.getAllByRole("rowheader")[1]).toHaveTextContent("Date of birth");
+    expect(screen.getAllByRole("rowheader")[2]).toHaveTextContent("Passport number");
+    expect(screen.getAllByRole("rowheader")[3]).toHaveTextContent("Country of issue");
+
+    expect(screen.getAllByRole("cell")[0]).toHaveTextContent("full name");
+    expect(screen.getAllByRole("cell")[1]).toHaveTextContent("1 February 1980");
+    expect(screen.getAllByRole("cell")[2]).toHaveTextContent("12345");
+    expect(screen.getAllByRole("cell")[3]).toHaveTextContent("Barbados");
+
+    expect(screen.queryByText("TB screening")).not.toBeInTheDocument();
+  });
+
+  it("correctly overrides status tag when certificate is expired", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2025-01-01"));
+
+    renderWithProviders(
+      <ApplicantDataHeader
+        applicantData={applicantData}
+        showCountryOfIssue={false}
+        applicationStatus={ApplicationStatus.CERTIFICATE_AVAILABLE}
+        certificateExpiryDate={{ day: "01", month: "01", year: "2025" }}
+      />,
+    );
+
+    expect(screen.getAllByRole("rowheader")[0]).toHaveTextContent("Name");
+    expect(screen.getAllByRole("rowheader")[1]).toHaveTextContent("Date of birth");
+    expect(screen.getAllByRole("rowheader")[2]).toHaveTextContent("Passport number");
+    expect(screen.getAllByRole("rowheader")[3]).toHaveTextContent("TB screening");
+
+    expect(screen.getAllByRole("cell")[0]).toHaveTextContent("full name");
+    expect(screen.getAllByRole("cell")[1]).toHaveTextContent("1 February 1980");
+    expect(screen.getAllByRole("cell")[2]).toHaveTextContent("12345");
+    expect(screen.getAllByRole("cell")[3]).toHaveTextContent("Certificate expired");
+
+    vi.useRealTimers();
   });
 });

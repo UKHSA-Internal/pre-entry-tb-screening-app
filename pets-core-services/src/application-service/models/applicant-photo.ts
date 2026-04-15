@@ -1,3 +1,4 @@
+import { CountryCode } from "../../shared/country";
 import { logger } from "../../shared/logger";
 import { ApplicantDbOps } from "../../shared/models/applicant";
 import { getImageBucket, ImageHelper } from "../helpers/image-helper";
@@ -12,16 +13,22 @@ export abstract class IApplicantPhoto {
   }
 }
 export class ApplicantPhoto extends IApplicantPhoto {
-  static async getByApplicationId(applicationId: string, clinicId: string) {
+  static async getByApplicationId(
+    applicationId: string,
+    clinicId: string,
+    passportNumber: string,
+    countryOfIssue: CountryCode,
+  ) {
     try {
       logger.info("Fetching presigned photo Url");
-      const applicant = await ApplicantDbOps.getByApplicationId(applicationId);
+      const applicant = await ApplicantDbOps.findByPassportId(countryOfIssue, passportNumber);
       if (!applicant) {
         logger.error("Application does not have an applicant");
         return;
       }
       const objectKey = generateImageObjectkey({
-        applicant,
+        passportNumber,
+        countryOfIssue,
         clinicId,
         fileName: "applicant-photo",
         imageType: ImageType.Photo,

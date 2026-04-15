@@ -4,7 +4,7 @@ import { logger } from "./logger";
 
 export const createHttpResponse = (
   statusCode: number,
-  body: string | object,
+  body: string | object | null,
   contentType = "application/json",
   headers = {},
 ): APIGatewayProxyResult => {

@@ -29,7 +29,7 @@ import {
 } from "@/redux/medicalScreeningSlice";
 import { selectApplicant, selectMedicalScreening } from "@/redux/store";
 import { DateType } from "@/types";
-import { ApplicationStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
+import { ButtonClass, RadioIsInline, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import {
   calculateApplicantAge,
@@ -106,7 +106,7 @@ const MedicalScreeningForm = () => {
     dispatch(setCloseContactWithTb(medicalScreeningData.closeContactWithTb));
     dispatch(setCloseContactWithTbDetail(medicalScreeningData.closeContactWithTbDetail));
     dispatch(setPhysicalExamNotes(medicalScreeningData.physicalExamNotes));
-    dispatch(setMedicalScreeningStatus(ApplicationStatus.IN_PROGRESS));
+    dispatch(setMedicalScreeningStatus(TaskStatus.IN_PROGRESS));
 
     if (typeof applicantAge.ageInYears == "number" && applicantAge.ageInYears < 11) {
       navigate("/medical-history-under-11-years-old");

@@ -113,7 +113,7 @@ export class TbCertificateConfirmationPage extends BasePage {
       .should("be.visible")
       .and("contain", "What did you think of this service?");
 
-    cy.contains("(takes 30 seconds)").should("be.visible");
+    cy.contains("(takes 10 minutes)").should("be.visible");
     return this;
   }
 

@@ -64,7 +64,7 @@ describe("Test for Saving Sputum Details into DB", () => {
     });
   });
 
-  test("Duplicate update request throws a 400 error", async () => {
+  test("Duplicate update request throws a 409 error", async () => {
     const conditionalError = Object.assign(new Error("Version mismatch"), {
       name: "ConditionalCheckFailedException",
     });
@@ -86,13 +86,13 @@ describe("Test for Saving Sputum Details into DB", () => {
     const response = await saveSputumDetailsHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(409);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Sputum Details already saved",
     });
   });
 
-  test("Missing parsed body returns a 500 response", async () => {
+  test("Missing parsed body returns a 400 response", async () => {
     // Arrange
     const event: SaveSputumDetailsEvent = {
       ...mockAPIGwEvent,
@@ -107,13 +107,13 @@ describe("Test for Saving Sputum Details into DB", () => {
     const response = await saveSputumDetailsHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Sputum Details Request missing",
+      message: "Request event missing body",
     });
   });
 
-  test("Invalid parsed sputum details request throws a 400 error", async () => {
+  test("Invalid parsed sputum details request throws a 422 error", async () => {
     // Arrange
 
     const sputumDetails: SaveSputumDetailsEvent["parsedBody"] = {
@@ -139,7 +139,7 @@ describe("Test for Saving Sputum Details into DB", () => {
     const response = await saveSputumDetailsHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(422);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Sputum Details Request validation failed",
     });

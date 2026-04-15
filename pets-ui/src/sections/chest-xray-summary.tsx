@@ -10,7 +10,7 @@ import Summary from "@/components/summary/summary";
 import { setChestXrayStatus } from "@/redux/chestXraySlice";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectChestXray } from "@/redux/store";
-import { ApplicationStatus, ButtonClass, YesOrNo } from "@/utils/enums";
+import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 import {
   formatDateForDisplay,
   spreadArrayIfNotEmpty,
@@ -42,7 +42,7 @@ const ChestXraySummary = () => {
         dateXrayTaken: dateXrayTakenStr,
       });
 
-      dispatch(setChestXrayStatus(ApplicationStatus.COMPLETE));
+      dispatch(setChestXrayStatus(TaskStatus.COMPLETE));
       navigate("/chest-x-ray-images-confirmed");
     } catch (error) {
       console.error(error);
@@ -72,10 +72,14 @@ const ChestXraySummary = () => {
   return (
     <div>
       {isLoading && <Spinner />}
-      <Summary status={chestXrayData.status} summaryElements={summaryData} />
+      <Summary
+        taskStatus={chestXrayData.status}
+        applicationStatus={applicationData.applicationStatus}
+        summaryElements={summaryData}
+      />
 
-      {(chestXrayData.status == ApplicationStatus.NOT_YET_STARTED ||
-        chestXrayData.status == ApplicationStatus.IN_PROGRESS) && (
+      {(chestXrayData.status == TaskStatus.NOT_YET_STARTED ||
+        chestXrayData.status == TaskStatus.IN_PROGRESS) && (
         <div>
           <Heading title="Now send the X-ray information" level={2} size="m" />
           <p className="govuk-body">
@@ -91,8 +95,8 @@ const ChestXraySummary = () => {
           />
         </div>
       )}
-      {(chestXrayData.status == ApplicationStatus.COMPLETE ||
-        chestXrayData.status == ApplicationStatus.NOT_REQUIRED) && (
+      {(chestXrayData.status == TaskStatus.COMPLETE ||
+        chestXrayData.status == TaskStatus.NOT_REQUIRED) && (
         <Button
           id="back-to-tracker"
           class={ButtonClass.DEFAULT}

@@ -3,7 +3,7 @@ import { setupServer } from "msw/node";
 import { Mock } from "vitest";
 
 import ApplicantResultsPage from "@/pages/applicant-results";
-import { ApplicationStatus } from "@/utils/enums";
+import { TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -35,7 +35,7 @@ afterAll(() => server.close());
 test("No results section is correctly displayed with information from the Redux store", () => {
   const preloadedState = {
     applicant: {
-      status: ApplicationStatus.NOT_YET_STARTED,
+      status: TaskStatus.NOT_YET_STARTED,
       fullName: "",
       sex: "",
       dateOfBirth: {

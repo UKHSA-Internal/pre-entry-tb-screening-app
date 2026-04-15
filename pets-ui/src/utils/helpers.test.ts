@@ -1,6 +1,10 @@
+import { ReduxApplicationDetailsType } from "@/types";
+
+import { ApplicationStatus } from "./enums";
 import {
   calculateApplicantAge,
   calculateCertificateExpiryDate,
+  convertDateStrToObj,
   formatDateType,
   isDateInTheFuture,
   isDateInThePast,
@@ -8,6 +12,7 @@ import {
   missingFieldsMessage,
   spreadArrayIfNotEmpty,
   standardiseDayOrMonth,
+  upsertAppIntoAppList,
   validateDate,
   validateMedicalScreeningDate,
   validatePassportIssueDate,
@@ -76,6 +81,47 @@ describe("FormatDateType function", () => {
     expect(formatDateType({ year: "", month: "5", day: "4" })).toBe("");
     expect(formatDateType({ year: "2025", month: "", day: "4" })).toBe("");
     expect(formatDateType({ year: "2025", month: "5", day: "" })).toBe("");
+  });
+});
+
+describe("convertDateStrToObj function", () => {
+  it("returns a DateType Object in the correct format", () => {
+    expect(convertDateStrToObj("2025-05-04")).toStrictEqual({
+      day: "04",
+      month: "05",
+      year: "2025",
+    });
+    expect(convertDateStrToObj("1999-12-15")).toStrictEqual({
+      day: "15",
+      month: "12",
+      year: "1999",
+    });
+    expect(convertDateStrToObj("2030-01-24")).toStrictEqual({
+      day: "24",
+      month: "01",
+      year: "2030",
+    });
+  });
+  it("returns a DateType Object in the correct format when timestamp is included", () => {
+    expect(convertDateStrToObj("2025-05-04T00:00:00Z")).toStrictEqual({
+      day: "04",
+      month: "05",
+      year: "2025",
+    });
+    expect(convertDateStrToObj("1999-12-15T05:05:05Z")).toStrictEqual({
+      day: "15",
+      month: "12",
+      year: "1999",
+    });
+    expect(convertDateStrToObj("2030-01-24T23:59:59Z")).toStrictEqual({
+      day: "24",
+      month: "01",
+      year: "2030",
+    });
+  });
+  it("should return an empty string if input is missing or an empty string", () => {
+    expect(convertDateStrToObj()).toStrictEqual({ year: "", month: "", day: "" });
+    expect(convertDateStrToObj("")).toStrictEqual({ year: "", month: "", day: "" });
   });
 });
 
@@ -525,5 +571,79 @@ describe("calculateCertificateExpiryDate function", () => {
         true,
       ),
     ).toEqual({ year: "2001", month: "2", day: "28" });
+  });
+});
+
+describe("upsertAppIntoAppList", () => {
+  const application01: ReduxApplicationDetailsType = {
+    applicationId: "app-01",
+    applicationStatus: ApplicationStatus.NULL,
+    clinicId: "clinic-01",
+    dateCreated: {
+      year: "2000",
+      month: "01",
+      day: "01",
+    },
+  };
+  const applicationEmptyId = { ...application01, applicationId: "" };
+  const application02 = { ...application01, applicationId: "app-02", clinicId: "clinic-02" };
+  const application01CertAvailable = {
+    ...application01,
+    applicationStatus: ApplicationStatus.CERTIFICATE_AVAILABLE,
+  };
+
+  it("returns original list if applicationId is empty", () => {
+    const list: ReduxApplicationDetailsType[] = [application01];
+
+    const result = upsertAppIntoAppList(applicationEmptyId, list);
+
+    expect(result).toBe(list);
+  });
+
+  it("adds a new application if not already in list", () => {
+    const list: ReduxApplicationDetailsType[] = [application01];
+
+    const result = upsertAppIntoAppList(application02, [application01]);
+
+    expect(result).toHaveLength(2);
+    expect(result).toContainEqual(application01);
+    expect(result).toContainEqual(application02);
+    expect(result).not.toBe(list);
+  });
+
+  it("updates an existing application", () => {
+    const list: ReduxApplicationDetailsType[] = [application01];
+
+    const result = upsertAppIntoAppList(application01CertAvailable, list);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].applicationId).toBe("app-01");
+    expect(result[0].applicationStatus).toBe(ApplicationStatus.CERTIFICATE_AVAILABLE);
+  });
+
+  it("preserves applicationId, clinicId, and dateCreated on update", () => {
+    const list: ReduxApplicationDetailsType[] = [application01];
+
+    const updatedApp = {
+      applicationId: "app-01",
+      applicationStatus: ApplicationStatus.CERTIFICATE_AVAILABLE,
+      clinicId: "clinic-02",
+      dateCreated: {
+        year: "1999",
+        month: "12",
+        day: "31",
+      },
+    };
+
+    const result = upsertAppIntoAppList(updatedApp, list);
+
+    expect(result[0].applicationId).toBe("app-01");
+    expect(result[0].clinicId).toBe("clinic-01");
+    expect(result[0].dateCreated).toMatchObject({
+      year: "2000",
+      month: "01",
+      day: "01",
+    });
+    expect(result[0].applicationStatus).toBe(ApplicationStatus.CERTIFICATE_AVAILABLE);
   });
 });

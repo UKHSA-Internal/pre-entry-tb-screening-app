@@ -5,7 +5,7 @@ import Heading from "@/components/heading/heading";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectRadiologicalOutcome } from "@/redux/store";
 import RadiologicalOutcomeSummary from "@/sections/radiological-outcome-summary";
-import { ApplicationStatus } from "@/utils/enums";
+import { TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function RadiologicalOutcomeSummaryPage() {
@@ -25,9 +25,7 @@ export default function RadiologicalOutcomeSummaryPage() {
     <Container
       title="Check chest X-ray results and findings - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo={
-        radiologicalOutcomeData.status == ApplicationStatus.COMPLETE
-          ? "/tracker"
-          : "/enter-x-ray-findings"
+        radiologicalOutcomeData.status == TaskStatus.COMPLETE ? "/tracker" : "/enter-x-ray-findings"
       }
     >
       <Heading level={1} size="l" title="Check chest X-ray results and findings" />

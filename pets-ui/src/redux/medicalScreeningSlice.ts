@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { DateType, ReceivedMedicalScreeningType, ReduxMedicalScreeningType } from "@/types";
-import { ApplicationStatus, BackendApplicationStatus, YesOrNo } from "@/utils/enums";
+import { BackendTaskStatus, TaskStatus, YesOrNo } from "@/utils/enums";
+import { convertDateStrToObj } from "@/utils/helpers";
 
 const initialState: ReduxMedicalScreeningType = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   tbSymptoms: "",
   tbSymptomsList: [],
   otherSymptomsDetail: "",
@@ -31,7 +32,7 @@ export const medicalScreeningSlice = createSlice({
   name: "medicalScreeningDetails",
   initialState,
   reducers: {
-    setMedicalScreeningStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+    setMedicalScreeningStatus: (state, action: PayloadAction<TaskStatus>) => {
       state.status = action.payload;
     },
     setMedicalScreeningCompletionDate: (state, action: PayloadAction<DateType>) => {
@@ -106,7 +107,7 @@ export const medicalScreeningSlice = createSlice({
         action.payload.reasonXrayNotRequiredFurtherDetails || "";
     },
     clearMedicalScreeningDetails: (state) => {
-      state.status = ApplicationStatus.NOT_YET_STARTED;
+      state.status = TaskStatus.NOT_YET_STARTED;
       state.tbSymptoms = "";
       state.tbSymptomsList = [];
       state.otherSymptomsDetail = "";
@@ -133,9 +134,9 @@ export const medicalScreeningSlice = createSlice({
       action: PayloadAction<ReceivedMedicalScreeningType>,
     ) => {
       state.status =
-        action.payload.status == BackendApplicationStatus.COMPLETE
-          ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.IN_PROGRESS;
+        action.payload.status == BackendTaskStatus.COMPLETE
+          ? TaskStatus.COMPLETE
+          : TaskStatus.IN_PROGRESS;
       state.tbSymptoms = action.payload.symptomsOfTb;
       state.tbSymptomsList = action.payload.symptoms ? [...action.payload.symptoms] : [];
       state.otherSymptomsDetail = action.payload.symptomsOther;
@@ -154,19 +155,7 @@ export const medicalScreeningSlice = createSlice({
       state.reasonXrayNotRequired = action.payload.reasonXrayNotRequired ?? "";
       state.reasonXrayNotRequiredFurtherDetails =
         action.payload.reasonXrayNotRequiredFurtherDetails ?? "";
-      state.completionDate = action.payload.dateCreated
-        ? {
-            year: action.payload.dateCreated.split("-")[0],
-            month: action.payload.dateCreated.split("-")[1],
-            day: action.payload.dateCreated.includes("T")
-              ? action.payload.dateCreated.split("-")[2].split("T")[0]
-              : action.payload.dateCreated.split("-")[2],
-          }
-        : {
-            year: "",
-            month: "",
-            day: "",
-          };
+      state.completionDate = convertDateStrToObj(action.payload.dateCreated);
     },
   },
 });

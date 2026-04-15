@@ -28,17 +28,6 @@ describe("petsApi response interceptor", () => {
     vi.unstubAllEnvs();
   });
 
-  test("redirects to /page-not-found on 404 error", async () => {
-    vi.stubEnv("VITE_AZURE_SKIP_TOKEN_ACQUISITION", "false");
-
-    const { petsApi } = await import("@/api/api");
-    mockAxios = new MockAdapter(petsApi);
-    mockAxios.onGet("/test-endpoint").reply(404);
-
-    await expect(petsApi.get("/test-endpoint")).rejects.toThrow();
-    expect(window.location.href).toBe("/page-not-found");
-  });
-
   test("redirects to /sorry-there-is-problem-with-service on 500 error", async () => {
     vi.stubEnv("VITE_AZURE_SKIP_TOKEN_ACQUISITION", "false");
 

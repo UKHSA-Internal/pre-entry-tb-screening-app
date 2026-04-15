@@ -4,7 +4,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { describe, expect, it, Mock } from "vitest";
 
 import ChestXrayQuestionPage from "@/pages/chest-xray-question";
-import { ApplicationStatus } from "@/utils/enums";
+import { TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -92,7 +92,7 @@ describe("ChestXrayQuestionForm", () => {
   it("back link points to female Qs form if applicant is female & over 11", () => {
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         fullName: "Full Name",
         sex: "Female",
         dateOfBirth: { year: "1990", month: "1", day: "1" },
@@ -126,7 +126,7 @@ describe("ChestXrayQuestionForm", () => {
   it("back link points to female Qs form if applicant is female & under 11", () => {
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         fullName: "Full Name",
         sex: "Female",
         dateOfBirth: { year: "2020", month: "1", day: "1" },
@@ -160,7 +160,7 @@ describe("ChestXrayQuestionForm", () => {
   it("back link points to under 11 Qs form if applicant is male & under 11", () => {
     const preloadedState = {
       applicant: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         fullName: "Full Name",
         sex: "Male",
         dateOfBirth: { year: "2020", month: "1", day: "1" },

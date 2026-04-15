@@ -19,7 +19,7 @@ const clinicDetails: NewClinic[] = [
     country: CountryCode.ALA,
     startDate: "2025-03-03",
     endDate: null,
-    createdBy: "test-clinic-creator@epost.this",
+    createdBy: "hardcoded@user.com",
   },
 ];
 
@@ -36,7 +36,6 @@ describe("Test for Clinic Lambda", () => {
         clinicId: clinicDetails[0].clinicId,
       },
       httpMethod: "POST",
-      // requestSchema: ClinicSchema,
       body: JSON.stringify({
         ...clinicDetails[0],
       }),
@@ -44,14 +43,14 @@ describe("Test for Clinic Lambda", () => {
 
     // Act
     const response: APIGatewayProxyResult = await handler(event, context);
-    const parsedResponse = JSON.parse(response.body) as { body: string };
-    const parsedBody = JSON.parse(parsedResponse.body) as NewClinic[];
+    const parsedBody = JSON.parse(response.body) as { body: string };
 
     // Assert
     expect(response.statusCode).toBe(200);
 
     expect(parsedBody).toMatchObject({
       ...clinicDetails[0],
+      startDate: new Date(clinicDetails[0].startDate).toISOString(),
     });
   });
 

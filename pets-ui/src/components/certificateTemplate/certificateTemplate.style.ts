@@ -75,14 +75,14 @@ export const styles = StyleSheet.create({
     marginBottom: 10,
   },
   label: {
-    fontSize: 11,
+    fontSize: 10,
     marginBottom: 2,
   },
   valueBox: {
     border: "1.5px solid #000",
     minHeight: 22,
     padding: "5px 7px",
-    fontSize: 11,
+    fontSize: 10,
     display: "flex",
     flexDirection: "row",
     alignItems: "center",

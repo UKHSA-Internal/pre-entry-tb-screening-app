@@ -21,10 +21,11 @@ import {
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant, selectApplication } from "@/redux/store";
 import { DateType, ReduxApplicantDetailsType } from "@/types";
-import { ApplicationStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
+import { countryList } from "@/utils/countryList";
+import { ButtonClass, RadioIsInline, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { standardiseDayOrMonth, validateDate } from "@/utils/helpers";
-import { countryList, formRegex } from "@/utils/records";
+import { formRegex } from "@/utils/records";
 
 interface ApplicantPersonalDetailsData {
   fullName: string;
@@ -41,7 +42,7 @@ const ApplicantPersonalDetailsForm = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
-  const isComplete = applicantData.status === ApplicationStatus.COMPLETE;
+  const isComplete = applicantData.status === TaskStatus.COMPLETE;
 
   const methods = useForm<ReduxApplicantDetailsType>({ reValidateMode: "onSubmit" });
   const {
@@ -64,6 +65,8 @@ const ApplicantPersonalDetailsForm = () => {
         const dateOfBirthStr = `${formData.dateOfBirth.year}-${standardiseDayOrMonth(formData.dateOfBirth.month)}-${standardiseDayOrMonth(formData.dateOfBirth.day)}`;
 
         await putApplicantDetails(applicationData.applicationId, {
+          passportNumber: applicantData.passportNumber,
+          countryOfIssue: applicantData.countryOfIssue,
           fullName: formData.fullName,
           sex: formData.sex,
           dateOfBirth: dateOfBirthStr,
@@ -83,7 +86,7 @@ const ApplicantPersonalDetailsForm = () => {
       }
     } else {
       if (!isComplete) {
-        dispatch(setApplicantDetailsStatus(ApplicationStatus.IN_PROGRESS));
+        dispatch(setApplicantDetailsStatus(TaskStatus.IN_PROGRESS));
       }
       navigate("/visa-applicant-passport-information");
     }

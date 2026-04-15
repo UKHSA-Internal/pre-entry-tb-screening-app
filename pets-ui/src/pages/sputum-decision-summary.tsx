@@ -5,7 +5,7 @@ import Heading from "@/components/heading/heading";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectSputumDecision } from "@/redux/store";
 import SputumDecisionSummary from "@/sections/sputum-decision-summary";
-import { ApplicationStatus } from "@/utils/enums";
+import { TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function SputumDecisionSummaryPage() {
@@ -25,7 +25,7 @@ export default function SputumDecisionSummaryPage() {
     <Container
       title="Check sputum decision information - Complete UK pre-entry health screening - GOV.UK"
       backLinkTo={
-        sputumDecisionData.status == ApplicationStatus.COMPLETE
+        sputumDecisionData.status == TaskStatus.COMPLETE
           ? "/tracker"
           : "/is-sputum-collection-required"
       }

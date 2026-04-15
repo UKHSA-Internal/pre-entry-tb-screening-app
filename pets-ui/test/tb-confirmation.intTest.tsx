@@ -3,7 +3,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { Mock } from "vitest";
 
 import TbConfirmationPage from "@/pages/tb-confirmation";
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -35,7 +35,7 @@ describe("Tb Confirmation page", () => {
         preloadedState: {
           tbCertificate: {
             isIssued: YesOrNo.NO,
-            status: ApplicationStatus.NOT_YET_STARTED,
+            status: TaskStatus.NOT_YET_STARTED,
             comments: "",
             certificateDate: {
               year: "",
@@ -71,7 +71,7 @@ describe("Tb Confirmation page", () => {
         preloadedState: {
           tbCertificate: {
             isIssued: YesOrNo.YES,
-            status: ApplicationStatus.NOT_YET_STARTED,
+            status: TaskStatus.NOT_YET_STARTED,
             comments: "",
             certificateDate: {
               year: "",

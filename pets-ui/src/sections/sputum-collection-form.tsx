@@ -23,7 +23,7 @@ import {
 } from "@/redux/sputumSlice";
 import { selectSputum } from "@/redux/store";
 import { DateType } from "@/types";
-import { ApplicationStatus, ButtonClass, SputumCollectionMethod } from "@/utils/enums";
+import { ButtonClass, SputumCollectionMethod, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { validateDate } from "@/utils/helpers";
 import { dateValidationMessages } from "@/utils/records";
@@ -141,81 +141,49 @@ const SputumCollectionForm = () => {
   const onSubmit: SubmitHandler<SputumCollectionFormFields> = (formData) => {
     const submittedBy = lastClickedButtonId.current;
     lastClickedButtonId.current = null;
+    if (!submittedBy) return; // submittedBy will be null if user presses return
 
     let hasError = false;
-    if (submittedBy === "save-progress" || submittedBy === "save-and-continue-to-results") {
-      const isAnySampleFilled = Object.values(formData).some((field) => {
-        if (typeof field === "string") {
-          return field.trim() !== "";
-        }
-        if (typeof field === "object" && field !== null) {
-          const date = field as DateType;
-          return date.day || date.month || date.year;
-        }
-        return false;
-      });
 
-      if (isAnySampleFilled) {
-        [1, 2, 3].forEach((sampleNumber) => {
-          const dateFieldName =
-            `dateOfSputumSample${sampleNumber}` as keyof SputumCollectionFormFields;
-          const methodFieldName =
-            `collectionMethodSample${sampleNumber}` as keyof SputumCollectionFormFields;
-          const date = formData[dateFieldName] as DateType;
-          const method = formData[methodFieldName] as string;
+    for (const sampleNumber of [1, 2, 3]) {
+      const dateFieldName = `dateOfSputumSample${sampleNumber}` as keyof SputumCollectionFormFields;
+      const methodFieldName =
+        `collectionMethodSample${sampleNumber}` as keyof SputumCollectionFormFields;
+      const date = formData[dateFieldName] as DateType;
+      const method = formData[methodFieldName] as string;
 
-          const hasDate = date.day || date.month || date.year;
+      const hasDate = date.day || date.month || date.year;
 
-          if (!hasDate) {
-            methods.setError(dateFieldName, {
-              type: "manual",
-              message: `Enter the date sample ${sampleNumber} was taken on`,
-            });
-            hasError = true;
-          } else if (!date.day || !date.month || !date.year) {
-            methods.setError(dateFieldName, {
-              type: "manual",
-              message: dateValidationMessages.sputumSampleDate.emptyFieldError.replace(
-                "{sampleNumber}",
-                sampleNumber.toString(),
-              ),
-            });
-            hasError = true;
-          } else {
-            const result = validateDate(date, "sputumSampleDate");
-            if (typeof result === "string") {
-              methods.setError(dateFieldName, {
-                type: "manual",
-                message: result.replace("{sampleNumber}", sampleNumber.toString()),
-              });
-              hasError = true;
-            }
-          }
-
-          if (!method) {
-            methods.setError(methodFieldName, {
-              type: "manual",
-              message: `Enter Sputum sample ${sampleNumber} collection method`,
-            });
-            hasError = true;
-          }
+      if (!hasDate) {
+        methods.setError(dateFieldName, {
+          type: "manual",
+          message: `Enter the date sample ${sampleNumber} was taken on`,
         });
+        hasError = true;
+      } else if (!date.day || !date.month || !date.year) {
+        methods.setError(dateFieldName, {
+          type: "manual",
+          message: dateValidationMessages.sputumSampleDate.emptyFieldError.replace(
+            "{sampleNumber}",
+            sampleNumber.toString(),
+          ),
+        });
+        hasError = true;
       } else {
-        [1, 2, 3].forEach((sampleNumber) => {
-          methods.setError(
-            `dateOfSputumSample${sampleNumber}` as keyof SputumCollectionFormFields,
-            {
-              type: "manual",
-              message: `Enter the date sample ${sampleNumber} was taken on`,
-            },
-          );
-          methods.setError(
-            `collectionMethodSample${sampleNumber}` as keyof SputumCollectionFormFields,
-            {
-              type: "manual",
-              message: `Enter Sputum sample ${sampleNumber} collection method`,
-            },
-          );
+        const result = validateDate(date, "sputumSampleDate");
+        if (typeof result === "string") {
+          methods.setError(dateFieldName, {
+            type: "manual",
+            message: result.replace("{sampleNumber}", sampleNumber.toString()),
+          });
+          hasError = true;
+        }
+      }
+
+      if (!method) {
+        methods.setError(methodFieldName, {
+          type: "manual",
+          message: `Enter Sputum sample ${sampleNumber} collection method`,
         });
         hasError = true;
       }
@@ -225,15 +193,13 @@ const SputumCollectionForm = () => {
       return;
     }
 
-    dispatch(setSputumStatus(ApplicationStatus.IN_PROGRESS));
+    dispatch(setSputumStatus(TaskStatus.IN_PROGRESS));
 
-    const sampleKeys = ["sample1", "sample2", "sample3"] as const;
     const dispatchActions = [setSample1Collection, setSample2Collection, setSample3Collection];
-
-    sampleKeys.forEach((_, index) => {
-      const formDateField = `dateOfSputumSample${index + 1}` as keyof SputumCollectionFormFields;
+    for (const [index, sampleNumber] of [1, 2, 3].entries()) {
+      const formDateField = `dateOfSputumSample${sampleNumber}` as keyof SputumCollectionFormFields;
       const formMethodField =
-        `collectionMethodSample${index + 1}` as keyof SputumCollectionFormFields;
+        `collectionMethodSample${sampleNumber}` as keyof SputumCollectionFormFields;
 
       const dateValue = formData[formDateField] as DateType;
       const methodValue = formData[formMethodField] as string;
@@ -247,7 +213,7 @@ const SputumCollectionForm = () => {
           }),
         );
       }
-    });
+    }
 
     if (submittedBy === "save-progress") {
       navigate("/check-sputum-collection-details-results");

@@ -1,12 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
 
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
+import Button from "@/components/button/button";
 import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
+import NotificationBanner from "@/components/notificationBanner/notificationBanner";
+import Spinner from "@/components/spinner/spinner";
+import StatusTag from "@/components/statusTag/statusTag";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
+import { setApplicationStatus } from "@/redux/applicationSlice";
+import { setApplicationsListDetails } from "@/redux/applicationsListSlice";
 import { useAppSelector } from "@/redux/hooks";
 import {
   selectApplicant,
+  selectApplication,
+  selectApplicationsList,
   selectChestXray,
   selectMedicalScreening,
   selectRadiologicalOutcome,
@@ -15,14 +25,23 @@ import {
   selectTbCertificate,
   selectTravel,
 } from "@/redux/store";
-import { ApplicationStatus, YesOrNo } from "@/utils/enums";
+import { ReduxApplicationDetailsType } from "@/types";
+import {
+  AdditionalStatusTagTexts,
+  ApplicationStatus,
+  ButtonClass,
+  TaskStatus,
+  YesOrNo,
+} from "@/utils/enums";
+import { formatDateForDisplay, isDateInThePast, upsertAppIntoAppList } from "@/utils/helpers";
 
 interface TaskProps {
   description: string;
-  status: ApplicationStatus;
+  taskStatus: TaskStatus;
+  applicationStatus: ApplicationStatus;
   linkWhenIncomplete: string;
   linkWhenComplete: string;
-  prerequisiteTaskStatuses: ApplicationStatus[];
+  prerequisiteTaskStatuses: TaskStatus[];
   statusOverride?: React.ReactNode;
 }
 
@@ -31,26 +50,16 @@ const Task = (props: Readonly<TaskProps>) => {
     props.prerequisiteTaskStatuses.length < 1 ||
     props.prerequisiteTaskStatuses.every(
       (status) =>
-        status == ApplicationStatus.COMPLETE ||
-        status == ApplicationStatus.NOT_REQUIRED ||
-        status == ApplicationStatus.CERTIFICATE_ISSUED ||
-        status == ApplicationStatus.CERTIFICATE_NOT_ISSUED,
+        status == TaskStatus.COMPLETE ||
+        status == TaskStatus.NOT_REQUIRED ||
+        status == TaskStatus.CERTIFICATE_ISSUED ||
+        status == TaskStatus.CERTIFICATE_NOT_ISSUED,
     );
 
   return (
     <li className="govuk-task-list__item govuk-task-list__item--with-link">
       <div className="govuk-task-list__name-and-hint">
-        {allPrerequisitesComplete &&
-          (props.status == ApplicationStatus.NOT_YET_STARTED ||
-            props.status == ApplicationStatus.IN_PROGRESS) && (
-            <LinkLabel
-              className="govuk-link govuk-task-list__link"
-              to={props.linkWhenIncomplete}
-              title={props.description}
-              externalLink={false}
-            />
-          )}
-        {props.status == ApplicationStatus.COMPLETE && (
+        {props.taskStatus == TaskStatus.COMPLETE && (
           <LinkLabel
             className="govuk-link govuk-task-list__link"
             to={props.linkWhenComplete}
@@ -58,40 +67,59 @@ const Task = (props: Readonly<TaskProps>) => {
             externalLink={false}
           />
         )}
-        {(!allPrerequisitesComplete || props.status == ApplicationStatus.NOT_REQUIRED) &&
-          props.status !== ApplicationStatus.COMPLETE && (
-            <p className="govuk-body task-description-static">{props.description}</p>
+        {props.applicationStatus != ApplicationStatus.CANCELLED &&
+          allPrerequisitesComplete &&
+          (props.taskStatus == TaskStatus.NOT_YET_STARTED ||
+            props.taskStatus == TaskStatus.IN_PROGRESS) && (
+            <LinkLabel
+              className="govuk-link govuk-task-list__link"
+              to={props.linkWhenIncomplete}
+              title={props.description}
+              externalLink={false}
+            />
           )}
+        {((props.applicationStatus != ApplicationStatus.CANCELLED &&
+          props.taskStatus != TaskStatus.COMPLETE &&
+          (!allPrerequisitesComplete || props.taskStatus == TaskStatus.NOT_REQUIRED)) ||
+          (props.applicationStatus == ApplicationStatus.CANCELLED &&
+            props.taskStatus != TaskStatus.COMPLETE)) && (
+          <p className="govuk-body task-description-static">{props.description}</p>
+        )}
       </div>
-      {allPrerequisitesComplete && props.status == ApplicationStatus.NOT_YET_STARTED && (
-        <div className="govuk-task-list__status">
-          <strong className="govuk-tag govuk-tag--blue">Not yet started</strong>
-        </div>
-      )}
-      {!allPrerequisitesComplete && props.status == ApplicationStatus.NOT_YET_STARTED && (
-        <div className="govuk-task-list__status">
-          <strong className="govuk-tag govuk-tag--grey">Cannot start yet</strong>
-        </div>
-      )}
-      {props.status == ApplicationStatus.IN_PROGRESS && (
-        <div className="govuk-task-list__status">
-          <strong className="govuk-tag govuk-tag--yellow">In progress</strong>
-        </div>
-      )}
-      {props.status == ApplicationStatus.COMPLETE && (
+
+      {props.applicationStatus != ApplicationStatus.CANCELLED &&
+        allPrerequisitesComplete &&
+        props.taskStatus == TaskStatus.NOT_YET_STARTED && (
+          <StatusTag status={props.taskStatus} taskListWrapper />
+        )}
+      {props.applicationStatus != ApplicationStatus.CANCELLED &&
+        !allPrerequisitesComplete &&
+        props.taskStatus == TaskStatus.NOT_YET_STARTED && (
+          <StatusTag status={AdditionalStatusTagTexts.CANNOT_START_YET} taskListWrapper />
+        )}
+      {props.applicationStatus != ApplicationStatus.CANCELLED &&
+        props.taskStatus == TaskStatus.IN_PROGRESS && (
+          <StatusTag status={props.taskStatus} taskListWrapper />
+        )}
+      {props.taskStatus == TaskStatus.COMPLETE && (
         <div className="govuk-task-list__status">{props.statusOverride ?? <>Completed</>}</div>
       )}
-      {props.status == ApplicationStatus.NOT_REQUIRED && (
-        <div className="govuk-task-list__status">
-          <strong className="govuk-tag govuk-tag--grey">Not required</strong>
-        </div>
+      {props.taskStatus == TaskStatus.NOT_REQUIRED && (
+        <StatusTag status={props.taskStatus} taskListWrapper />
       )}
+      {props.applicationStatus == ApplicationStatus.CANCELLED &&
+        props.taskStatus != TaskStatus.COMPLETE &&
+        props.taskStatus != TaskStatus.NOT_REQUIRED && (
+          <StatusTag status={props.applicationStatus} taskListWrapper />
+        )}
     </li>
   );
 };
 
 const ProgressTracker = () => {
   const applicantData = useAppSelector(selectApplicant);
+  const applicationData = useAppSelector(selectApplication);
+  const applicationsListData = useAppSelector(selectApplicationsList);
   const travelData = useAppSelector(selectTravel);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const chestXrayData = useAppSelector(selectChestXray);
@@ -100,6 +128,17 @@ const ProgressTracker = () => {
   const sputumData = useAppSelector(selectSputum);
   const tbCertificateData = useAppSelector(selectTbCertificate);
   const applicantPhotoContext = useApplicantPhoto();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (applicationData.applicationStatus == ApplicationStatus.NULL) {
+      dispatch(setApplicationStatus(ApplicationStatus.IN_PROGRESS));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [applicationData]);
 
   const allSputumSamplesSubmitted =
     sputumData.sample1.collection.submittedToDatabase &&
@@ -108,7 +147,7 @@ const ProgressTracker = () => {
 
   let sputumLink = "/sputum-collection-details";
 
-  if (sputumData.status === ApplicationStatus.COMPLETE) {
+  if (sputumData.status === TaskStatus.COMPLETE) {
     sputumLink = "/check-sputum-collection-details-results";
   } else if (allSputumSamplesSubmitted) {
     sputumLink = "/sputum-results";
@@ -116,44 +155,104 @@ const ProgressTracker = () => {
 
   let sputumCollectionStatus = sputumData.status;
   if (sputumDecisionData.isSputumRequired === YesOrNo.NO) {
-    sputumCollectionStatus = ApplicationStatus.NOT_REQUIRED;
+    sputumCollectionStatus = TaskStatus.NOT_REQUIRED;
   }
 
   let chestXrayStatus = chestXrayData.status;
   let radiologicalOutcomeStatus = radiologicalOutcomeData.status;
 
   if (medicalScreeningData.chestXrayTaken === YesOrNo.NO) {
-    chestXrayStatus = ApplicationStatus.NOT_REQUIRED;
-    radiologicalOutcomeStatus = ApplicationStatus.NOT_REQUIRED;
+    chestXrayStatus = TaskStatus.NOT_REQUIRED;
+    radiologicalOutcomeStatus = TaskStatus.NOT_REQUIRED;
   }
 
   let tbCertificateStatusOverride = undefined;
-  if (tbCertificateData.status === ApplicationStatus.COMPLETE) {
-    if (tbCertificateData.isIssued === YesOrNo.YES) {
+  if (tbCertificateData.status === TaskStatus.COMPLETE) {
+    if (
+      tbCertificateData.isIssued === YesOrNo.YES &&
+      applicationData.expiryDate &&
+      applicationData.expiryDate.day.length > 0 &&
+      applicationData.expiryDate.month.length > 0 &&
+      applicationData.expiryDate.year.length > 0 &&
+      isDateInThePast(
+        applicationData.expiryDate.day,
+        applicationData.expiryDate.month,
+        applicationData.expiryDate.year,
+      )
+    ) {
+      tbCertificateStatusOverride = (
+        <strong className="govuk-tag govuk-tag--grey">Certificate expired</strong>
+      );
+    } else if (tbCertificateData.isIssued === YesOrNo.YES) {
       tbCertificateStatusOverride = (
         <strong className="govuk-tag govuk-tag--green">Certificate issued</strong>
       );
     } else {
       tbCertificateStatusOverride = (
-        <strong className="govuk-tag govuk-tag--red progress-tracker-certificate-not-issued">
+        <strong className="govuk-tag govuk-tag--red progress-tracker-task-nowrap">
           Certificate not issued
         </strong>
       );
     }
   }
 
+  const returnToScreeningHistory = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    currentApplication: ReduxApplicationDetailsType,
+    applicationsList: ReduxApplicationDetailsType[],
+  ) => {
+    e.preventDefault();
+    setIsLoading(true);
+    dispatch(
+      setApplicationsListDetails(upsertAppIntoAppList(currentApplication, applicationsList)),
+    );
+    navigate("/screening-history");
+  };
+
   return (
     <div>
-      <div className="progress-tracker-header">
-        <div className="progress-tracker-header-content">
+      {isLoading && <Spinner />}
+
+      {applicationData.applicationStatus == ApplicationStatus.CANCELLED && (
+        <div className="govuk-grid-row">
+          <div className="govuk-grid-column-two-thirds">
+            <NotificationBanner
+              bannerTitle="Important"
+              bannerHeading={`Start date: ${formatDateForDisplay(applicationData.dateCreated)}`}
+            >
+              <p className="govuk-body">
+                This screening was cancelled because {applicationData.cancellationReason}.
+              </p>
+              {applicationData.cancellationFurtherInfo && (
+                <p className="govuk-body">
+                  <strong>Further information</strong>
+                  <br />
+                  {applicationData.cancellationFurtherInfo}
+                </p>
+              )}
+              <LinkLabel
+                title="Return to screening history for this visa applicant"
+                to="/screening-history"
+                externalLink={false}
+                onClick={(e) => {
+                  returnToScreeningHistory(e, applicationData, applicationsListData);
+                }}
+              />
+            </NotificationBanner>
+          </div>
+        </div>
+      )}
+      <div className="govuk-grid-row progress-tracker-header">
+        <div className="govuk-grid-column-two-thirds progress-tracker-header-content">
           <ApplicantDataHeader
             applicantData={applicantData}
-            tbCertificateStatus={tbCertificateData.status}
-            tbCertificateIsIssued={tbCertificateData.isIssued}
+            applicationStatus={applicationData.applicationStatus}
+            showCountryOfIssue={false}
+            certificateExpiryDate={applicationData.expiryDate}
           />
         </div>
-        {applicantPhotoContext?.applicantPhotoDataUrl && (
-          <div className="progress-tracker-photo-container">
+        {applicantPhotoContext?.applicantPhotoDataUrl ? (
+          <div className="govuk-grid-column-one-third progress-tracker-photo-container">
             <img
               src={applicantPhotoContext.applicantPhotoDataUrl}
               alt={"Applicant"}
@@ -161,39 +260,43 @@ const ProgressTracker = () => {
               className="progress-tracker-photo"
             />
           </div>
+        ) : (
+          <div className="govuk-grid-column-one-third" />
         )}
       </div>
-
       <Heading title="1. Visa applicant information" level={2} size="s" />
       <ul className="govuk-task-list">
         <Task
           description="Visa applicant details"
-          status={applicantData.status}
+          taskStatus={applicantData.status}
+          applicationStatus={applicationData.applicationStatus}
           linkWhenIncomplete="/visa-applicant-personal-information"
           linkWhenComplete="/check-visa-applicant-details"
           prerequisiteTaskStatuses={[]}
         />
         <Task
           description="UK travel information"
-          status={travelData.status}
+          taskStatus={travelData.status}
+          applicationStatus={applicationData.applicationStatus}
           linkWhenIncomplete="/proposed-visa-category"
           linkWhenComplete="/check-travel-information"
           prerequisiteTaskStatuses={[applicantData.status]}
         />
       </ul>
-
       <Heading title="2. Medical screening" level={2} size="s" />
       <ul className="govuk-task-list">
         <Task
           description="Medical history and TB symptoms"
-          status={medicalScreeningData.status}
+          taskStatus={medicalScreeningData.status}
+          applicationStatus={applicationData.applicationStatus}
           linkWhenIncomplete="/record-medical-history-tb-symptoms"
           linkWhenComplete="/check-medical-history-and-tb-symptoms"
           prerequisiteTaskStatuses={[applicantData.status, travelData.status]}
         />
         <Task
           description="Upload chest X-ray images"
-          status={chestXrayStatus}
+          taskStatus={chestXrayStatus}
+          applicationStatus={applicationData.applicationStatus}
           linkWhenIncomplete="/upload-chest-x-ray-images"
           linkWhenComplete="/check-chest-x-ray-images"
           prerequisiteTaskStatuses={[
@@ -204,7 +307,8 @@ const ProgressTracker = () => {
         />
         <Task
           description="Radiological outcome"
-          status={radiologicalOutcomeStatus}
+          taskStatus={radiologicalOutcomeStatus}
+          applicationStatus={applicationData.applicationStatus}
           linkWhenIncomplete="/chest-x-ray-results"
           linkWhenComplete="/check-chest-x-ray-results-findings"
           prerequisiteTaskStatuses={[
@@ -216,7 +320,8 @@ const ProgressTracker = () => {
         />
         <Task
           description="Make a sputum decision"
-          status={sputumDecisionData.status}
+          taskStatus={sputumDecisionData.status}
+          applicationStatus={applicationData.applicationStatus}
           linkWhenIncomplete="/is-sputum-collection-required"
           linkWhenComplete="/check-sputum-decision-information"
           prerequisiteTaskStatuses={[
@@ -229,7 +334,8 @@ const ProgressTracker = () => {
         />
         <Task
           description="Sputum collection and results"
-          status={sputumCollectionStatus}
+          taskStatus={sputumCollectionStatus}
+          applicationStatus={applicationData.applicationStatus}
           linkWhenIncomplete={sputumLink}
           linkWhenComplete={sputumLink}
           prerequisiteTaskStatuses={[
@@ -242,12 +348,12 @@ const ProgressTracker = () => {
           ]}
         />
       </ul>
-
       <Heading title="3. Review outcome" level={2} size="s" />
       <ul className="govuk-task-list">
         <Task
           description="TB certificate outcome"
-          status={tbCertificateData.status}
+          taskStatus={tbCertificateData.status}
+          applicationStatus={applicationData.applicationStatus}
           linkWhenIncomplete="/will-you-issue-tb-clearance-certificate"
           linkWhenComplete="/tb-screening-complete"
           prerequisiteTaskStatuses={[
@@ -262,12 +368,49 @@ const ProgressTracker = () => {
           statusOverride={tbCertificateStatusOverride}
         />
       </ul>
+      <Heading
+        title="View screening history"
+        level={2}
+        size="s"
+        additionalClasses="progress-tracker-lower-headings"
+      />
+      <p className="govuk-body">
+        <LinkLabel
+          className="govuk-link"
+          to="/screening-history"
+          title="View the screening history for this visa applicant"
+          externalLink={false}
+          onClick={(e) => {
+            returnToScreeningHistory(e, applicationData, applicationsListData);
+          }}
+        />
+      </p>
 
+      {(applicationData.applicationStatus == ApplicationStatus.IN_PROGRESS ||
+        applicationData.applicationStatus == ApplicationStatus.NULL) && (
+        <>
+          <Heading
+            title="Cancel screening"
+            level={2}
+            size="s"
+            additionalClasses="progress-tracker-lower-headings"
+          />
+          <Button
+            id="cancel-screening"
+            class={ButtonClass.WARNING}
+            text="Cancel this screening"
+            handleClick={() => {
+              navigate("/why-are-you-cancelling-this-screening");
+            }}
+            style={{ marginTop: 0 }}
+          />
+        </>
+      )}
       <Heading
         title="Start a new search"
         level={2}
         size="s"
-        additionalClasses="progress-tracker-start-search"
+        additionalClasses="progress-tracker-lower-headings"
       />
       <p className="govuk-body">
         <LinkLabel

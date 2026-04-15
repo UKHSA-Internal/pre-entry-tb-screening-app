@@ -13,7 +13,7 @@ import {
   setPregnant,
 } from "@/redux/medicalScreeningSlice";
 import { selectMedicalScreening } from "@/redux/store";
-import { ApplicationStatus, ButtonClass, RadioIsInline } from "@/utils/enums";
+import { ButtonClass, RadioIsInline, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 
 interface MedicalScreeningFemaleData {
@@ -42,7 +42,7 @@ const MedicalScreeningFormFemaleQs = () => {
   const onSubmit: SubmitHandler<MedicalScreeningFemaleData> = (medicalScreeningData) => {
     dispatch(setPregnant(medicalScreeningData.pregnant));
     dispatch(setMenstrualPeriods(medicalScreeningData.menstrualPeriods));
-    dispatch(setMedicalScreeningStatus(ApplicationStatus.IN_PROGRESS));
+    dispatch(setMedicalScreeningStatus(TaskStatus.IN_PROGRESS));
     navigate("/is-an-x-ray-required");
   };
 

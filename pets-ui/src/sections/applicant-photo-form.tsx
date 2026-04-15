@@ -12,7 +12,7 @@ import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplicant } from "@/redux/store";
 import { ReduxApplicantDetailsType } from "@/types";
-import { ApplicationStatus, ButtonClass, ImageType } from "@/utils/enums";
+import { ButtonClass, ImageType, TaskStatus } from "@/utils/enums";
 
 const ApplicantPhotoForm = () => {
   const applicantData = useAppSelector(selectApplicant);
@@ -44,7 +44,7 @@ const ApplicantPhotoForm = () => {
     const fromParam = searchParams.get("from");
     let destination: string;
 
-    if (applicantData.status === ApplicationStatus.COMPLETE) {
+    if (applicantData.status === TaskStatus.COMPLETE) {
       if (fromParam === "tb-certificate-summary") {
         destination = "/tb-certificate-summary";
       } else if (fromParam === "check-visa-applicant-details") {

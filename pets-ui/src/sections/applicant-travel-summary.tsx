@@ -9,7 +9,7 @@ import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTravel } from "@/redux/store";
 import { setTravelDetailsStatus } from "@/redux/travelSlice";
-import { ApplicationStatus, ButtonClass } from "@/utils/enums";
+import { ButtonClass, TaskStatus } from "@/utils/enums";
 import { attributeToComponentId } from "@/utils/records";
 
 const TravelReview = () => {
@@ -19,11 +19,6 @@ const TravelReview = () => {
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
-
-  const summaryStatus =
-    travelData.status === ApplicationStatus.COMPLETE
-      ? ApplicationStatus.IN_PROGRESS
-      : travelData.status;
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -39,7 +34,7 @@ const TravelReview = () => {
         ukEmailAddress: travelData.ukEmail,
       });
 
-      dispatch(setTravelDetailsStatus(ApplicationStatus.COMPLETE));
+      dispatch(setTravelDetailsStatus(TaskStatus.COMPLETE));
       navigate("/travel-information-confirmed");
     } catch (error) {
       console.error(error);
@@ -101,10 +96,15 @@ const TravelReview = () => {
   return (
     <div>
       {isLoading && <Spinner />}
-      <Summary status={summaryStatus} summaryElements={summaryData} />
+      <Summary
+        taskStatus={travelData.status}
+        applicationStatus={applicationData.applicationStatus}
+        summaryElements={summaryData}
+        showChangeLinksAfterTaskComplete
+      />
 
-      {(travelData.status == ApplicationStatus.NOT_YET_STARTED ||
-        travelData.status == ApplicationStatus.IN_PROGRESS) && (
+      {(travelData.status == TaskStatus.NOT_YET_STARTED ||
+        travelData.status == TaskStatus.IN_PROGRESS) && (
         <Button
           id="submit"
           class={ButtonClass.DEFAULT}
@@ -112,8 +112,8 @@ const TravelReview = () => {
           handleClick={handleSubmit}
         />
       )}
-      {(travelData.status == ApplicationStatus.COMPLETE ||
-        travelData.status == ApplicationStatus.NOT_REQUIRED) && (
+      {(travelData.status == TaskStatus.COMPLETE ||
+        travelData.status == TaskStatus.NOT_REQUIRED) && (
         <Button
           id="submit"
           class={ButtonClass.DEFAULT}

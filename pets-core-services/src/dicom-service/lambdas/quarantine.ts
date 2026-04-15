@@ -1,3 +1,5 @@
+import assert from "node:assert";
+
 import {
   CopyObjectCommand,
   CopyObjectCommandInput,
@@ -5,7 +7,6 @@ import {
   DeleteObjectCommandInput,
   waitUntilObjectExists,
 } from "@aws-sdk/client-s3";
-import assert from "assert";
 
 import awsClients from "../../shared/clients/aws";
 import { assertEnvExists } from "../../shared/config";

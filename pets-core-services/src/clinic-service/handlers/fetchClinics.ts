@@ -1,4 +1,4 @@
-import { createHttpResponse } from "../../shared/http";
+import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { Clinic } from "../models/clinics";
@@ -12,16 +12,12 @@ export const fetchClinicsHandler = async (event: PetsAPIGatewayProxyEvent) => {
 
     const clinics: Clinic[] = await Clinic.getAllClinics(country);
 
-    if (!clinics || clinics?.length < 1)
-      return createHttpResponse(404, { message: "No clinics exist" });
+    if (!clinics || clinics?.length < 1) return HttpErrors.notFound("No clinics exist");
 
-    return createHttpResponse(
-      200,
-      clinics.map((clinic: Clinic) => clinic.toJson()),
-    );
+    return HttpResponses.ok(clinics.map((clinic: Clinic) => clinic.toJson()));
   } catch (error) {
     logger.error(error, "Fetching Clinics Failed");
 
-    return createHttpResponse(500, { message: "Something went wrong" });
+    return HttpErrors.serverError("Something went wrong");
   }
 };

@@ -4,10 +4,11 @@ import {
   ReceivedRadiologicalOutcomeDetailsType,
   ReduxRadiologicalOutcomeDetailsType,
 } from "@/types";
-import { ApplicationStatus, BackendApplicationStatus } from "@/utils/enums";
+import { BackendTaskStatus, TaskStatus } from "@/utils/enums";
+import { convertDateStrToObj } from "@/utils/helpers";
 
 const initialState: ReduxRadiologicalOutcomeDetailsType = {
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   reasonXrayWasNotTaken: "",
   xrayWasNotTakenFurtherDetails: "",
   xrayResult: "",
@@ -26,7 +27,7 @@ export const radiologicalOutcomeSlice = createSlice({
   name: "radiologicalOutcomeDetails",
   initialState,
   reducers: {
-    setRadiologicalOutcomeStatus: (state, action: PayloadAction<ApplicationStatus>) => {
+    setRadiologicalOutcomeStatus: (state, action: PayloadAction<TaskStatus>) => {
       state.status = action.payload;
     },
     setReasonXrayWasNotTaken: (state, action: PayloadAction<string>) => {
@@ -80,7 +81,7 @@ export const radiologicalOutcomeSlice = createSlice({
       state.xrayWasNotTakenFurtherDetails = "";
     },
     clearRadiologicalOutcomeDetails: (state) => {
-      state.status = ApplicationStatus.NOT_YET_STARTED;
+      state.status = TaskStatus.NOT_YET_STARTED;
       state.reasonXrayWasNotTaken = "";
       state.xrayWasNotTakenFurtherDetails = "";
       state.xrayResult = "";
@@ -99,9 +100,9 @@ export const radiologicalOutcomeSlice = createSlice({
       action: PayloadAction<ReceivedRadiologicalOutcomeDetailsType>,
     ) => {
       state.status =
-        action.payload.status == BackendApplicationStatus.COMPLETE
-          ? ApplicationStatus.COMPLETE
-          : ApplicationStatus.IN_PROGRESS;
+        action.payload.status == BackendTaskStatus.COMPLETE
+          ? TaskStatus.COMPLETE
+          : TaskStatus.IN_PROGRESS;
       state.xrayResult = action.payload.xrayResult;
       state.xrayResultDetail = action.payload.xrayResultDetail;
       state.xrayMinorFindings = action.payload.xrayMinorFindings
@@ -113,19 +114,7 @@ export const radiologicalOutcomeSlice = createSlice({
       state.xrayActiveTbFindings = action.payload.xrayActiveTbFindings
         ? [...action.payload.xrayActiveTbFindings]
         : [];
-      state.completionDate = action.payload.dateCreated
-        ? {
-            year: action.payload.dateCreated.split("-")[0],
-            month: action.payload.dateCreated.split("-")[1],
-            day: action.payload.dateCreated.includes("T")
-              ? action.payload.dateCreated.split("-")[2].split("T")[0]
-              : action.payload.dateCreated.split("-")[2],
-          }
-        : {
-            year: "",
-            month: "",
-            day: "",
-          };
+      state.completionDate = convertDateStrToObj(action.payload.dateCreated);
     },
   },
 });

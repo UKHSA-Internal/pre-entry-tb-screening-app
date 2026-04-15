@@ -8,6 +8,7 @@ export interface ButtonProps {
   text: string;
   type?: ButtonType;
   handleClick?: MouseEventHandler<HTMLButtonElement>;
+  style?: React.CSSProperties;
 }
 
 export default function Button(props: Readonly<ButtonProps>) {
@@ -17,7 +18,7 @@ export default function Button(props: Readonly<ButtonProps>) {
       className={props.class}
       data-module="govuk-button"
       onClick={props.handleClick}
-      style={{ marginTop: 30 }}
+      style={{ marginTop: 30, ...props.style }}
     >
       {props.text}
     </button>

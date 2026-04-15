@@ -5,7 +5,7 @@ import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectTravel } from "@/redux/store";
 import ApplicantTravelAddressAndContactDetails from "@/sections/applicant-travel-uk-address";
-import { ApplicationStatus } from "@/utils/enums";
+import { TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function TravelAddressAndContactDetailsPage() {
@@ -16,7 +16,7 @@ export default function TravelAddressAndContactDetailsPage() {
   let backLinkTo: string;
   if (fromParam === "/check-travel-information") {
     backLinkTo = "/check-travel-information";
-  } else if (travelData.status === ApplicationStatus.COMPLETE) {
+  } else if (travelData.status === TaskStatus.COMPLETE) {
     backLinkTo = "/tb-certificate-summary";
   } else {
     backLinkTo = "/proposed-visa-category";

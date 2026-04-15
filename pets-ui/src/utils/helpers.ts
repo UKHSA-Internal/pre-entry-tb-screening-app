@@ -1,6 +1,7 @@
 import {
   DateType,
   ReduxApplicantDetailsType,
+  ReduxApplicationDetailsType,
   ReduxSputumRequirementType,
   ReduxSputumType,
 } from "@/types";
@@ -25,15 +26,15 @@ const standardiseDayOrMonth = (dayOrMonth: string) => {
 
 const isValidDate = (day: string, month: string, year: string) => {
   if (
-    parseInt(year) <= 1900 ||
-    parseInt(year) >= 2100 ||
-    parseInt(month) < 1 ||
-    parseInt(month) > 12 ||
-    parseInt(day) < 1 ||
-    parseInt(day) > 31 ||
-    (parseInt(day) > 28 && parseInt(year) % 4 != 0 && month == "2") ||
-    (parseInt(day) > 29 && parseInt(year) % 4 == 0 && month == "2") ||
-    (parseInt(day) > 30 && (month == "4" || month == "6" || month == "9" || month == "11"))
+    Number.parseInt(year) <= 1900 ||
+    Number.parseInt(year) >= 2100 ||
+    Number.parseInt(month) < 1 ||
+    Number.parseInt(month) > 12 ||
+    Number.parseInt(day) < 1 ||
+    Number.parseInt(day) > 31 ||
+    (Number.parseInt(day) > 28 && Number.parseInt(year) % 4 != 0 && month == "2") ||
+    (Number.parseInt(day) > 29 && Number.parseInt(year) % 4 == 0 && month == "2") ||
+    (Number.parseInt(day) > 30 && (month == "4" || month == "6" || month == "9" || month == "11"))
   ) {
     return false;
   } else {
@@ -235,10 +236,32 @@ const formatDateForDisplay = (date: DateType): string => {
     return "";
   }
 
-  const dateToDisplay = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  const dateToDisplay = new Date(
+    Number.parseInt(year),
+    Number.parseInt(month) - 1,
+    Number.parseInt(day),
+  );
   const dayNumber = dateToDisplay.getDate().toString();
   const monthName = dateToDisplay.toLocaleDateString("en-GB", { month: "long" });
   return `${dayNumber} ${monthName} ${dateToDisplay.getFullYear()}`;
+};
+
+const convertDateStrToObj = (date?: string): DateType => {
+  if (date?.includes("T")) {
+    return {
+      year: date.split("-")[0],
+      month: date.split("-")[1],
+      day: date.split("-")[2].split("T")[0],
+    };
+  } else if (date) {
+    return {
+      year: date.split("-")[0],
+      month: date.split("-")[1],
+      day: date.split("-")[2],
+    };
+  } else {
+    return { year: "", month: "", day: "" };
+  }
 };
 
 const calculateCertificateExpiryDate = (
@@ -403,11 +426,57 @@ const calculateApplicantAge = (dateOfBirth: DateType) => {
   }
 };
 
+const formatCancellationReasonForDisplay = (cancellationReason: string) => {
+  switch (cancellationReason) {
+    case "Did not continue with sputum testing":
+    case "Had inconclusive sputum test results":
+    case "Did not attend their screening appointment":
+    case "Changed their travel plans and does not need TB screening": {
+      return `the visa applicant ${cancellationReason.charAt(0).toLowerCase()}${cancellationReason.slice(1)}`;
+    }
+    case "Uploaded the wrong X-ray":
+    case "Submitted the wrong sputum decision":
+    case "Submitted an error in the screening details": {
+      return `the clinic ${cancellationReason.charAt(0).toLowerCase()}${cancellationReason.slice(1)}`;
+    }
+    default: {
+      return cancellationReason;
+    }
+  }
+};
+
+const upsertAppIntoAppList = (
+  newApplication: ReduxApplicationDetailsType,
+  applicationsList: ReduxApplicationDetailsType[],
+): ReduxApplicationDetailsType[] => {
+  if (newApplication.applicationId.length < 1) {
+    return applicationsList;
+  }
+  const appIndexInList = applicationsList.findIndex(
+    (app) => app.applicationId === newApplication.applicationId,
+  );
+  if (appIndexInList == -1) {
+    return [...applicationsList, newApplication];
+  } else {
+    const updatedList = [...applicationsList];
+    const appToUpdate = applicationsList[appIndexInList];
+    updatedList[appIndexInList] = {
+      ...newApplication,
+      applicationId: appToUpdate.applicationId,
+      clinicId: appToUpdate.clinicId,
+      dateCreated: appToUpdate.dateCreated,
+    };
+    return updatedList;
+  }
+};
+
 export {
   calculateApplicantAge,
   calculateCertificateExpiryDate,
   calculateCertificateIssueDate,
   calculateSputumOutcome,
+  convertDateStrToObj,
+  formatCancellationReasonForDisplay,
   formatDateForDisplay,
   formatDateType,
   getCountryName,
@@ -421,6 +490,7 @@ export {
   spreadArrayIfNotEmpty,
   standardiseDayOrMonth,
   toArray,
+  upsertAppIntoAppList,
   validateDate,
   validateMedicalScreeningDate,
   validatePassportIssueDate,

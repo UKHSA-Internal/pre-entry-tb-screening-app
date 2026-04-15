@@ -1,6 +1,7 @@
+import { execSync } from "node:child_process";
+import crypto from "node:crypto";
+
 import { KeyType, ProjectionType } from "@aws-sdk/client-dynamodb";
-import { execSync } from "child_process";
-import crypto from "crypto";
 import { beforeAll, beforeEach } from "vitest";
 
 import { seedDatabase } from "./seed-data";
@@ -31,9 +32,24 @@ beforeEach(async () => {
     ],
     applicantServiceGSI,
   );
-
+  const applicationServiceGSI = [
+    {
+      IndexName: process.env.APPLICANT_ID_INDEX,
+      KeySchema: [{ KeyType: KeyType.HASH, AttributeName: "applicantId" }],
+      Projection: { ProjectionType: ProjectionType.ALL },
+    },
+  ];
   process.env.APPLICATION_SERVICE_DATABASE_NAME = `test_application_table_${crypto.randomUUID()}`;
-  await createTable(process.env.APPLICATION_SERVICE_DATABASE_NAME, []);
+  await createTable(
+    process.env.APPLICATION_SERVICE_DATABASE_NAME,
+    [
+      {
+        AttributeName: "applicantId",
+        AttributeType: "S",
+      },
+    ],
+    applicationServiceGSI,
+  );
 
   process.env.CLINIC_SERVICE_DATABASE_NAME = `test_clinic_table_${crypto.randomUUID()}`;
   await createTable(process.env.CLINIC_SERVICE_DATABASE_NAME, []);

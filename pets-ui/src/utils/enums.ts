@@ -15,7 +15,7 @@ export enum RadioIsInline {
   FALSE = "govuk-radios",
 }
 
-export enum ApplicationStatus {
+export enum TaskStatus {
   NOT_YET_STARTED = "Not yet started",
   COMPLETE = "Complete",
   IN_PROGRESS = "In progress",
@@ -24,7 +24,15 @@ export enum ApplicationStatus {
   CERTIFICATE_NOT_ISSUED = "Certificate not issued",
 }
 
-export enum BackendApplicationStatus {
+export enum ApplicationStatus {
+  NULL = "",
+  IN_PROGRESS = "In Progress",
+  CERTIFICATE_NOT_ISSUED = "Certificate Not Issued",
+  CERTIFICATE_AVAILABLE = "Certificate Available",
+  CANCELLED = "Cancelled",
+}
+
+export enum BackendTaskStatus {
   INCOMPLETE = "incompleted",
   COMPLETE = "completed",
 }
@@ -59,3 +67,10 @@ export enum TBCertNotIssuedReason {
   TESTING_POSTPONED = "Testing postponed",
   APPLICATION_WITHDRAWN = "Visa applicant has withdrawn their TB screening",
 }
+
+export enum AdditionalStatusTagTexts {
+  CANNOT_START_YET = "Cannot start yet",
+  SCREENING_CANCELLED = "Screening cancelled",
+  CERTIFICATE_EXPIRED = "Certificate expired",
+}
+export type StatusTagText = TaskStatus | ApplicationStatus | AdditionalStatusTagTexts;

@@ -20,7 +20,8 @@ import {
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicant, selectApplication } from "@/redux/store";
 import { DateType, ReduxApplicantDetailsType } from "@/types";
-import { ApplicationStatus, ButtonClass } from "@/utils/enums";
+import { countryList } from "@/utils/countryList";
+import { ButtonClass, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import {
   getCountryName,
@@ -28,7 +29,7 @@ import {
   validateDate,
   validatePassportIssueDate,
 } from "@/utils/helpers";
-import { countryList, formRegex } from "@/utils/records";
+import { formRegex } from "@/utils/records";
 
 interface ApplicantPassportDetailsData {
   passportNumber: string;
@@ -45,8 +46,8 @@ const ApplicantPassportDetailsForm = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
-  const isComplete = applicantData.status === ApplicationStatus.COMPLETE;
-  const summaryStatus = isComplete ? ApplicationStatus.IN_PROGRESS : applicantData.status;
+  const isComplete = applicantData.status === TaskStatus.COMPLETE;
+  const summaryStatus = isComplete ? TaskStatus.IN_PROGRESS : applicantData.status;
 
   const methods = useForm<ReduxApplicantDetailsType>({ reValidateMode: "onSubmit" });
   const {
@@ -134,7 +135,8 @@ const ApplicantPassportDetailsForm = () => {
 
         {isComplete && (
           <Summary
-            status={summaryStatus}
+            taskStatus={summaryStatus}
+            applicationStatus={applicationData.applicationStatus}
             summaryElements={[
               {
                 key: "Passport number",

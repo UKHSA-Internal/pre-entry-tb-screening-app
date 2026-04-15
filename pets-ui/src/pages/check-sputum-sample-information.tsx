@@ -4,7 +4,7 @@ import Container from "@/components/container/container";
 import { useAppSelector } from "@/redux/hooks";
 import { selectApplication, selectSputum } from "@/redux/store";
 import SputumSummary from "@/sections/sputum-summary";
-import { ApplicationStatus } from "@/utils/enums";
+import { TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsJourneyEvent } from "@/utils/google-analytics-utils";
 
 export default function CheckSputumSampleInformationPage() {
@@ -12,7 +12,7 @@ export default function CheckSputumSampleInformationPage() {
   const sputumData = useAppSelector(selectSputum);
 
   let backLinkUrl = "/sputum-collection-details";
-  if (sputumData.status === ApplicationStatus.COMPLETE) {
+  if (sputumData.status === TaskStatus.COMPLETE) {
     backLinkUrl = "/tracker";
   }
 

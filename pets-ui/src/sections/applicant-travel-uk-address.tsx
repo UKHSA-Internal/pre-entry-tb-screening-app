@@ -21,7 +21,7 @@ import {
   setUkMobileNumber,
 } from "@/redux/travelSlice";
 import { ReduxTravelDetailsType } from "@/types";
-import { ApplicationStatus, ButtonClass } from "@/utils/enums";
+import { ButtonClass, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
 import { formRegex } from "@/utils/records";
 
@@ -54,7 +54,7 @@ const ApplicantTravelAddressAndContactDetails = () => {
     dispatch(setUkMobileNumber(travelAddressAndContactDetailsData.ukMobileNumber ?? ""));
     dispatch(setUkEmail(travelAddressAndContactDetailsData.ukEmail ?? ""));
 
-    if (travelData.status === ApplicationStatus.COMPLETE && applicationData.applicationId) {
+    if (travelData.status === TaskStatus.COMPLETE && applicationData.applicationId) {
       setIsLoading(true);
       try {
         await putTravelDetails(applicationData.applicationId, {
@@ -76,7 +76,7 @@ const ApplicantTravelAddressAndContactDetails = () => {
         navigate("/sorry-there-is-problem-with-service");
       }
     } else {
-      dispatch(setTravelDetailsStatus(ApplicationStatus.IN_PROGRESS));
+      dispatch(setTravelDetailsStatus(TaskStatus.IN_PROGRESS));
       navigate("/check-travel-information");
     }
   };

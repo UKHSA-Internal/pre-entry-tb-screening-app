@@ -6,7 +6,7 @@ import { Mock } from "vitest";
 import { petsApi } from "@/api/api";
 import TravelSummaryPage from "@/pages/travel-summary";
 import TravelReview from "@/sections/applicant-travel-summary";
-import { ApplicationStatus } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 const useNavigateMock: Mock = vi.fn();
@@ -28,14 +28,19 @@ const travelState = {
   applicantUkAddress2: "",
   applicantUkAddress3: "",
   postcode: "EH1 2NG",
-  status: ApplicationStatus.NOT_YET_STARTED,
+  status: TaskStatus.NOT_YET_STARTED,
   townOrCity: "Edinburgh",
   ukEmail: "sigmund.sigmundson@asgard.gov",
   ukMobileNumber: "07321900900",
   visaCategory: "Government Sponsored",
 };
 
-const applicationState = { applicationId: "abc-123", dateCreated: "" };
+const applicationState = {
+  applicationId: "abc-123",
+  dateCreated: { year: "2010", month: "1", day: "1" },
+  applicationStatus: ApplicationStatus.IN_PROGRESS,
+  clinicId: "clinic-001",
+};
 
 const preloadedState = {
   travel: { ...travelState },
@@ -97,7 +102,7 @@ describe("TravelReview", () => {
   test("back link points to tracker when status is complete", () => {
     const preloadedState = {
       travel: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         visaCategory: "",
         applicantUkAddress1: "",
         applicantUkAddress2: "",
@@ -120,7 +125,7 @@ describe("TravelReview", () => {
   test("back link points to UK address & contact info page when status is not complete", () => {
     const preloadedState = {
       travel: {
-        status: ApplicationStatus.IN_PROGRESS,
+        status: TaskStatus.IN_PROGRESS,
         visaCategory: "",
         applicantUkAddress1: "",
         applicantUkAddress2: "",
@@ -143,7 +148,7 @@ describe("TravelReview", () => {
   test("shows change links with from query when task is COMPLETE", () => {
     const completeState = {
       travel: {
-        status: ApplicationStatus.COMPLETE,
+        status: TaskStatus.COMPLETE,
         visaCategory: "Work",
         applicantUkAddress1: "1 Street",
         applicantUkAddress2: "",
@@ -153,7 +158,12 @@ describe("TravelReview", () => {
         ukMobileNumber: "07123456789",
         ukEmail: "test@test.com",
       },
-      application: { applicationId: "abc-123", dateCreated: "" },
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+        clinicId: "clinic-001",
+      },
     };
 
     renderWithProviders(<TravelReview />, { preloadedState: completeState });

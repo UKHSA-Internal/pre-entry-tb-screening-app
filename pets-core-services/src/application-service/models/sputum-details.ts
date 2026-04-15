@@ -272,7 +272,7 @@ export class SputumDetailsDbOps {
         );
       }
 
-      const isFirstInsert = !existingItemRaw || existingItemRaw.version === undefined;
+      const isFirstInsert = existingItemRaw?.version === undefined;
       const currentVersion = (existingItemRaw?.version as number) ?? 0;
 
       const updateParams = buildUpdateExpressionsForSputumDetails(
@@ -338,7 +338,7 @@ export class SputumDetailsDbOps {
       }
 
       logger.info("Sputum Details fetched successfully");
-      const samplesRetreived = sputumRecord.sputumSamples as SputumSamples | undefined;
+      const samplesRetrieved = sputumRecord.sputumSamples as SputumSamples | undefined;
 
       const sputumDetails = new SputumDetails({
         applicationId,
@@ -347,12 +347,9 @@ export class SputumDetailsDbOps {
         dateUpdated: new Date(sputumRecord.dateUpdated as string),
 
         sputumSamples: {
-          sample1:
-            samplesRetreived?.sample1 != null ? parseSample(samplesRetreived.sample1) : undefined,
-          sample2:
-            samplesRetreived?.sample2 != null ? parseSample(samplesRetreived.sample2) : undefined,
-          sample3:
-            samplesRetreived?.sample3 != null ? parseSample(samplesRetreived.sample3) : undefined,
+          sample1: samplesRetrieved?.sample1 && parseSample(samplesRetrieved.sample1),
+          sample2: samplesRetrieved?.sample2 && parseSample(samplesRetrieved.sample2),
+          sample3: samplesRetrieved?.sample3 && parseSample(samplesRetrieved.sample3),
         },
         version: sputumRecord.version as number,
       });

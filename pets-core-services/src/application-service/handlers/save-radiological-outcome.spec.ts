@@ -39,7 +39,7 @@ describe("Test for Saving Radiological Outcome into DB", () => {
     });
   });
 
-  test("Duplicate post throws a 400 error", async () => {
+  test("Duplicate post throws a 409 error", async () => {
     // Arrange
     const existingRadiologicalOutcome = seededRadiologicalOutcome[0];
     const event: SaveRadiologicalOutcomeEvent = {
@@ -52,7 +52,7 @@ describe("Test for Saving Radiological Outcome into DB", () => {
     const response = await saveRadiologicalOutcomeHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(409);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Radiological Outcome already saved",
     });
@@ -83,7 +83,7 @@ describe("Test for Saving Radiological Outcome into DB", () => {
     radiologicalOutcomeMock.mockReset();
   });
 
-  test("Missing required body returns a 500 response", async () => {
+  test("Missing required body returns a 400 response", async () => {
     // Arrange
     const event: SaveRadiologicalOutcomeEvent = {
       ...mockAPIGwEvent,
@@ -93,9 +93,9 @@ describe("Test for Saving Radiological Outcome into DB", () => {
     const response = await saveRadiologicalOutcomeHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "Internal Server Error: Radiological Outcome Request not parsed correctly",
+      message: "Request event missing body",
     });
   });
 
