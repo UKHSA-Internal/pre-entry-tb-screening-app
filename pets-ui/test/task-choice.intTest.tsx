@@ -116,7 +116,7 @@ describe("Task choice page", () => {
 
     await user.click(screen.getByRole("link", { name: "View all screenings in progress" }));
 
-    expect(mock.history[0].url).toEqual("/applications");
+    expect(mock.history[0].url).toEqual("/dashboard-applications/");
     expect(mock.history).toHaveLength(1);
 
     await waitFor(() => {
@@ -134,7 +134,7 @@ describe("Task choice page", () => {
 
     await user.click(screen.getByRole("link", { name: "View all screenings in progress" }));
 
-    expect(mock.history[0].url).toEqual("/applications");
+    expect(mock.history[0].url).toEqual("/dashboard-applications/");
     expect(mock.history).toHaveLength(1);
 
     await waitFor(() => {
