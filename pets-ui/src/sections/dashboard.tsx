@@ -121,10 +121,14 @@ const Dashboard = () => {
       dispatch(setApplicationsListDetailsFromApiResponse(applicantRes.data.applications));
 
       const applicationRes = await getApplication(applicationId);
+      const remappedApplicationStatus =
+        applicationRes.data.applicationStatus == ApplicationStatus.SPUTUM_IN_PROGRESS
+          ? ApplicationStatus.IN_PROGRESS
+          : applicationRes.data.applicationStatus;
       dispatch(
         setApplicationDetails({
           applicationId: applicationId,
-          applicationStatus: applicationRes.data.applicationStatus,
+          applicationStatus: remappedApplicationStatus,
           clinicId: applicationRes.data.clinicId,
           dateCreated: convertDateStrToObj(applicationRes?.data.dateCreated ?? ""),
           dateUpdated: convertDateStrToObj(applicationRes?.data.dateUpdated ?? ""),
