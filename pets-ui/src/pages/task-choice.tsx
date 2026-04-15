@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
-import { getApplications } from "@/api/api";
+import { getDashboardApplications } from "@/api/api";
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
@@ -65,7 +65,7 @@ export default function TaskChoicePage() {
     let applicationsRes: AxiosResponse<ReceivedApplicationsInProgressType> | null = null;
 
     try {
-      applicationsRes = await getApplications();
+      applicationsRes = await getDashboardApplications();
       dispatch(setApplicationsInProgress(applicationsRes.data.applications));
       navigate("/screenings-in-progress");
       return;
