@@ -43,7 +43,7 @@ import {
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
 import { ReceivedApplicantDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
-import { TaskStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
 import { convertDateStrToObj, formatDateForDisplay, getCountryName } from "@/utils/helpers";
 
 const Dashboard = () => {
@@ -190,7 +190,11 @@ const Dashboard = () => {
         formatDateForDisplay(convertDateStrToObj(app.dateCreated)),
         <LinkLabel
           key={app.applicationId}
-          title="Continue with screening"
+          title={
+            app.applicationStatus == ApplicationStatus.SPUTUM_IN_PROGRESS
+              ? "Continue: sputum results"
+              : "Continue with screening"
+          }
           to="/tracker"
           externalLink={false}
           onClick={async (e) => {

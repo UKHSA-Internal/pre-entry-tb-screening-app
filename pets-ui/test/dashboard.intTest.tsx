@@ -116,6 +116,16 @@ const applicationsInProgressSlice = {
       applicationStatus: ApplicationStatus.IN_PROGRESS,
     },
     {
+      applicationId: "17811cbc-501d-9951-94ae-67692fe6f393",
+      applicantId: "COUNTRY#AFG#PASSPORT#abc4",
+      applicantName: "Name Four",
+      passportNumber: "abc4",
+      countryOfIssue: "AFG",
+      clinicId: "my-clinic",
+      dateCreated: "2022-04-07T15:32:34.470Z",
+      applicationStatus: ApplicationStatus.SPUTUM_IN_PROGRESS,
+    },
+    {
       applicationId: "17811cbc-501d-4051-94ae-67692fe6f363",
       applicantId: "COUNTRY#AFG#PASSPORT#abc4",
       applicantName: "Should not see - different clinic",
@@ -191,6 +201,11 @@ describe("Dashboard", () => {
     expect(
       screen.getByRole("row", {
         name: "Name Three abc3 Afghanistan 7 April 2023 Continue with screening",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("row", {
+        name: "Name Four abc4 Afghanistan 7 April 2022 Continue: sputum results",
       }),
     ).toBeInTheDocument();
 
