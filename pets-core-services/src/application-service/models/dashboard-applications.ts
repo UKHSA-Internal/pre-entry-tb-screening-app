@@ -1,16 +1,16 @@
 import { QueryCommand, QueryCommandOutput } from "@aws-sdk/lib-dynamodb";
 
-import awsClients from "../clients/aws";
-import { assertEnvExists } from "../config";
-import { CountryCode } from "../country";
-import { DynamoBatchLoader } from "../helpers/batch-util";
-import { logger } from "../logger";
-import { ApplicationStatus } from "../types/enum";
-import { Applicant, ApplicantBase } from "./applicant";
+import awsClients from "../../shared/clients/aws";
+import { assertEnvExists } from "../../shared/config";
+import { CountryCode } from "../../shared/country";
+import { logger } from "../../shared/logger";
+import { Applicant, ApplicantBase } from "../../shared/models/applicant";
+import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
+import { DynamoBatchLoader } from "../helpers/dynamo-batch-util";
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
-export interface IApplicationRootProps {
+export interface IDashboardApplicationProps {
   applicationId: string;
   applicantId: string;
   applicantName?: string;
@@ -19,9 +19,10 @@ export interface IApplicationRootProps {
   clinicId: string;
   dateCreated: Date | string;
   applicationStatus: ApplicationStatus;
+  applicationStatusGroup: ApplicationStatusGroup;
 }
 
-export abstract class IApplicationRoot {
+export abstract class IDashboardApplication {
   readonly applicationId: string;
   applicantId: string;
   passportNumber: string;
@@ -30,8 +31,9 @@ export abstract class IApplicationRoot {
   clinicId: string;
   dateCreated: Date;
   applicationStatus: ApplicationStatus;
+  applicationStatusGroup: ApplicationStatusGroup;
 
-  constructor(details: IApplicationRootProps) {
+  constructor(details: IDashboardApplicationProps) {
     this.applicationId = details.applicationId;
     this.applicantId = details.applicantId;
     this.applicantName = details.applicantName;
@@ -40,23 +42,20 @@ export abstract class IApplicationRoot {
     this.clinicId = details.clinicId;
     this.dateCreated = new Date(details.dateCreated);
     this.applicationStatus = details.applicationStatus;
+    this.applicationStatusGroup = details.applicationStatusGroup;
   }
 }
 
-export interface ApplicationListResult {
-  applications: ApplicationRoot[];
+export interface DashboardApplicationsList {
+  applications: DashboardApplication[];
   cursor: string | null;
 }
 
-export class ApplicationRoot extends IApplicationRoot {
+export class DashboardApplication extends IDashboardApplication {
   static readonly getTableName = () => process.env.APPLICATION_SERVICE_DATABASE_NAME!;
 
-  constructor(details: IApplicationRootProps) {
-    super(details);
-  }
-
-  static fromDynamo(item: Record<string, any>): ApplicationRoot {
-    return new ApplicationRoot({
+  static fromDynamo(item: Record<string, any>): DashboardApplication {
+    return new DashboardApplication({
       applicationId: item.applicationId,
       applicantId: item.applicantId,
       passportNumber: item.passportNumber,
@@ -64,6 +63,7 @@ export class ApplicationRoot extends IApplicationRoot {
       clinicId: item.clinicId,
       dateCreated: item.dateCreated,
       applicationStatus: item.applicationStatus,
+      applicationStatusGroup: item.applicationStatusGroup,
     });
   }
 
@@ -71,7 +71,7 @@ export class ApplicationRoot extends IApplicationRoot {
     clinicId: string,
     limit = 100,
     cursor?: string,
-  ): Promise<ApplicationListResult> {
+  ): Promise<DashboardApplicationsList> {
     try {
       logger.info(`Fetching applications by clinicId ${clinicId}`);
       const allItems: any[] = [];
@@ -84,10 +84,10 @@ export class ApplicationRoot extends IApplicationRoot {
           new QueryCommand({
             TableName: this.getTableName(),
             IndexName: assertEnvExists(process.env.CLINIC_ID_INDEX),
-            KeyConditionExpression: "clinicId = :clinicId  AND applicationStatus = :status",
+            KeyConditionExpression: "clinicId = :clinicId  AND applicationStatusGroup = :status",
             ExpressionAttributeValues: {
               ":clinicId": clinicId,
-              ":status": ApplicationStatus.inProgress,
+              ":status": ApplicationStatusGroup.incomplete,
             },
             Limit: limit,
             ExclusiveStartKey: lastEvaluatedKey,
@@ -98,10 +98,10 @@ export class ApplicationRoot extends IApplicationRoot {
         lastEvaluatedKey = result?.LastEvaluatedKey;
       } while (lastEvaluatedKey);
 
-      // Convert DB items → models
+      // Convert DB items  to model
+
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      const applications = (allItems || []).map((item) => ApplicationRoot.fromDynamo(item));
-      logger.info(applications);
+      const applications = (allItems || []).map((item) => DashboardApplication.fromDynamo(item));
 
       // Batch load applicants
       const applicantMap = await DynamoBatchLoader.batchLoad({
@@ -115,16 +115,14 @@ export class ApplicationRoot extends IApplicationRoot {
         mapKey: (item) => ApplicantBase.getPassportId(item.countryOfIssue, item.passportNumber),
       });
 
-      logger.info(applicantMap);
       // Add applicantName
       const enriched = applications.map((app) => {
         const applicant = applicantMap.get(app.applicantId) as Applicant;
-        return new ApplicationRoot({
+        return new DashboardApplication({
           ...app,
           applicantName: applicant.fullName,
         });
       });
-      logger.info("enriched");
 
       //Encode cursor
       const nextCursor = result.LastEvaluatedKey
@@ -144,13 +142,13 @@ export class ApplicationRoot extends IApplicationRoot {
   toJson() {
     return {
       applicationId: this.applicationId,
-      applicantId: this.applicantId,
       applicantName: this.applicantName,
       passportNumber: this.passportNumber,
       countryOfIssue: this.countryOfIssue,
       clinicId: this.clinicId,
       dateCreated: this.dateCreated.toISOString(),
       applicationStatus: this.applicationStatus,
+      applicationStatusGroup: this.applicationStatusGroup,
     };
   }
 }

@@ -2,8 +2,11 @@ import { z } from "zod";
 
 import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
+import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
+import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { SputumDecision } from "../models/sputum-decision";
+import { YesOrNo } from "../types/enums";
 import { SputumDecisionRequestSchema } from "../types/zod-schema";
 
 export type SputumDecisionRequestSchema = z.infer<typeof SputumDecisionRequestSchema>;
@@ -46,6 +49,18 @@ export const saveSputumDecisionHandler = async (event: SaveSputumDecisionEvent) 
         return HttpErrors.conflictError("Sputum Decision already saved");
       throw error;
     }
+    // Update details in APPLICATION#ROOT record as well
+    const applicationStatus =
+      sputumDecision.sputumRequired === YesOrNo.Yes
+        ? ApplicationStatus.sputumInProgress
+        : ApplicationStatus.inProgress;
+
+    await Application.updateApplication({
+      applicationId: applicationId,
+      updatedBy: createdBy,
+      applicationStatus: applicationStatus,
+      applicationStatusGroup: ApplicationStatusGroup.incomplete,
+    });
 
     return HttpResponses.ok({
       ...sputumDecision.toJson(),

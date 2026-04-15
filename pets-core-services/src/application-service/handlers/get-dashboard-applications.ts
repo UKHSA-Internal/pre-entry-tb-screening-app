@@ -1,9 +1,9 @@
 import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
-import { ApplicationRoot } from "../../shared/models/applications";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
+import { DashboardApplication } from "../models/dashboard-applications";
 
-export const getApplicationsHandler = async (event: PetsAPIGatewayProxyEvent) => {
+export const getDashboardApplicationsHandler = async (event: PetsAPIGatewayProxyEvent) => {
   try {
     const { clinicId } = event.requestContext.authorizer;
     const SUPPORT_CLINIC_ID = process.env.SUPPORT_CLINIC_ID;
@@ -12,16 +12,18 @@ export const getApplicationsHandler = async (event: PetsAPIGatewayProxyEvent) =>
     }
     logger.info({ clinicId }, "Retrieve Applications handler triggered");
 
-    const limit = Number(event.queryStringParameters?.limit || 20);
+    const limit = Number(event.queryStringParameters?.limit || 100);
     const cursor = event.queryStringParameters?.cursor;
     if (!clinicId) {
       logger.error("Clinic Id missing");
       return HttpErrors.badRequest("Clinic Id missing");
     }
 
-    const applicationsListResult = await ApplicationRoot.getByClinicId(clinicId, limit, cursor);
-    logger.info("applicationsListResult");
-    logger.info(applicationsListResult);
+    const applicationsListResult = await DashboardApplication.getByClinicId(
+      clinicId,
+      limit,
+      cursor,
+    );
 
     return HttpResponses.ok(
       JSON.stringify({

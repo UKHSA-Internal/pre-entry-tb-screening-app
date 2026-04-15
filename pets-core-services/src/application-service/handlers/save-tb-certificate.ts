@@ -5,7 +5,7 @@ import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { ApplicationStatus } from "../../shared/types/enum";
+import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import {
   TbCertificateDbOps,
   TbCertificateIssued,
@@ -60,6 +60,7 @@ export const saveTbCertificateHandler = async (event: SaveTbCertificateEvent) =>
       applicationId: applicationId,
       updatedBy: createdBy,
       applicationStatus: applicationStatus,
+      applicationStatusGroup: ApplicationStatusGroup.complete,
       expiryDate: expiryDate,
     });
 

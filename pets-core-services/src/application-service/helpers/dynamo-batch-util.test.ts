@@ -1,7 +1,7 @@
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { DynamoBatchLoader } from "./batch-util";
+import { DynamoBatchLoader } from "./dynamo-batch-util";
 
 // Mock class for client
 class MockDynamoClient {
@@ -72,11 +72,17 @@ describe("DynamoBatchLoader", () => {
   it("deduplicates keys and handles unprocessed keys", async () => {
     // First response returns one unprocessed key
     client.send
+      // Chunk 1
       .mockResolvedValueOnce({
         Responses: { TestTable: [{ id: "1", value: "a" }] },
         UnprocessedKeys: { TestTable: { Keys: [{ id: "2" }] } },
       })
-      // Second response returns the remaining key
+      .mockResolvedValueOnce({
+        Responses: { TestTable: [{ id: "2", value: "b" }] },
+        UnprocessedKeys: {},
+      })
+
+      // Chunk 2
       .mockResolvedValueOnce({
         Responses: { TestTable: [{ id: "2", value: "b" }] },
         UnprocessedKeys: {},
@@ -98,6 +104,6 @@ describe("DynamoBatchLoader", () => {
     expect(result.get("2")?.value).toBe("b");
 
     // Ensure client.send was called twice (chunking + retry)
-    expect(client.send).toHaveBeenCalledTimes(2);
+    expect(client.send).toHaveBeenCalledTimes(3);
   });
 });

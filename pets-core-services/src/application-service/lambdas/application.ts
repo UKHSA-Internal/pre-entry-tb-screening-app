@@ -9,7 +9,7 @@ import { cancelApplicationHandler } from "../handlers/cancel-application";
 import { createApplicationHandler } from "../handlers/create-application";
 import { generateImageUploadUrlHandler } from "../handlers/generate-image-upload-url";
 import { getApplicationHandler } from "../handlers/get-application";
-import { getApplicationsHandler } from "../handlers/get-applications";
+import { getDashboardApplicationsHandler } from "../handlers/get-dashboard-applications";
 import { saveChestXRayHandler } from "../handlers/save-chest-ray";
 import { saveMedicalScreeningHandler } from "../handlers/save-medical-screening";
 import { saveRadiologicalOutcomeHandler } from "../handlers/save-radiological-outcome";
@@ -27,6 +27,7 @@ import {
   ChestXRayResponseSchema,
   CreateApplicationRequestSchema,
   CreateApplicationResponseSchema,
+  DashboardApplicationsSchema,
   ImageUploadUrlRequestSchema,
   ImageUploadUrlResponseSchema,
   MedicalScreeningRequestSchema,
@@ -215,10 +216,10 @@ export const routes: PetsRoute[] = [
   },
   {
     method: "GET",
-    path: "/applications/",
-    handler: middy<PetsAPIGatewayProxyEvent>().handler(getApplicationsHandler),
-    responseSchema: ApplicationSchema.openapi({
-      description: "All in progress applications  root records for a given clinic",
+    path: "/dashboard-applications/",
+    handler: middy<PetsAPIGatewayProxyEvent>().handler(getDashboardApplicationsHandler),
+    responseSchema: DashboardApplicationsSchema.openapi({
+      description: "All in progress applications root records for the clinic of logged in user",
     }),
   },
 ];

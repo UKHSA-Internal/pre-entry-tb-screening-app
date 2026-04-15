@@ -41,8 +41,8 @@ import {
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
 import { ReduxApplicationDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
-import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
-import { convertDateStrToObj, formatDateForDisplay } from "@/utils/helpers";
+import { AdditionalStatusTagTexts, ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
+import { convertDateStrToObj, formatDateForDisplay, isDateInThePast } from "@/utils/helpers";
 
 const getApplicationExpiryDate = (application: ReduxApplicationDetailsType): string => {
   if (
@@ -203,17 +203,40 @@ const ScreeningHistory = () => {
     (application) => application.applicationStatus !== ApplicationStatus.IN_PROGRESS,
   );
 
-  const applicationTableInfo = applicationsListData.map((application) => ({
-    rowTitle: formatDateForDisplay(application.dateCreated),
-    cells: [
-      getApplicationExpiryDate(application),
-      <StatusTag
-        key={`application-${application.applicationId.slice(0, 8)}-state`}
-        status={application.applicationStatus}
-      />,
-      getApplicationAction(application),
-    ],
-  }));
+  const applicationTableInfo = applicationsListData.map((application) => {
+    let textOverride = undefined;
+    let classOverride = undefined;
+    if (
+      application.applicationStatus !== ApplicationStatus.CANCELLED &&
+      application.applicationStatus !== ApplicationStatus.CERTIFICATE_NOT_ISSUED &&
+      application.expiryDate &&
+      application.expiryDate.day.length > 0 &&
+      application.expiryDate.month.length > 0 &&
+      application.expiryDate.year.length > 0 &&
+      isDateInThePast(
+        application.expiryDate.day,
+        application.expiryDate.month,
+        application.expiryDate.year,
+      )
+    ) {
+      textOverride = AdditionalStatusTagTexts.CERTIFICATE_EXPIRED;
+      classOverride = "govuk-tag govuk-tag--grey";
+    }
+
+    return {
+      rowTitle: formatDateForDisplay(application.dateCreated),
+      cells: [
+        getApplicationExpiryDate(application),
+        <StatusTag
+          key={`application-${application.applicationId.slice(0, 8)}-state`}
+          status={application.applicationStatus}
+          textOverride={textOverride}
+          classOverride={classOverride}
+        />,
+        getApplicationAction(application),
+      ],
+    };
+  });
 
   return (
     <div>
@@ -242,9 +265,10 @@ const ScreeningHistory = () => {
           <StartButton
             id="start-new-screening"
             text="Start now"
-            handleClick={() => {
+            handleClick={async () => {
               setIsLoading(true);
               dispatch(setApplicantDetailsStatus(TaskStatus.IN_PROGRESS));
+              await fetchClinic(dispatch, userClinicData.clinicId);
               navigate("/do-you-have-visa-applicant-written-consent-for-tb-screening");
             }}
           />

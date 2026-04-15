@@ -2,11 +2,11 @@ import { QueryCommand, QueryCommandOutput } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-import awsClients from "../clients/aws";
-import { CountryCode } from "../country";
-import { DynamoBatchLoader } from "../helpers/batch-util";
-import { ApplicationStatus } from "../types/enum";
-import { ApplicationRoot } from "./applications";
+import awsClients from "../../shared/clients/aws";
+import { CountryCode } from "../../shared/country";
+import { ApplicationStatus } from "../../shared/types/enum";
+import { DynamoBatchLoader } from "../helpers/dynamo-batch-util";
+import { DashboardApplication } from "./dashboard-applications";
 
 describe("Tests for Applications Model", () => {
   const ddbMock = mockClient(awsClients.dynamoDBDocClient);
@@ -52,7 +52,7 @@ describe("Tests for Applications Model", () => {
       new Map([[applicantId, { applicantId: "COUNTRY#IND#PASSPORT#Test", fullName: "John Doe" }]]),
     );
 
-    const result = await ApplicationRoot.getByClinicId(clinicId, 100);
+    const result = await DashboardApplication.getByClinicId(clinicId, 100);
 
     expect(result.applications).toHaveLength(1);
 
@@ -61,7 +61,7 @@ describe("Tests for Applications Model", () => {
     expect(result.cursor).toBeNull();
 
     // Act
-    const applications = await ApplicationRoot.getByClinicId(clinicId, 100);
+    const applications = await DashboardApplication.getByClinicId(clinicId, 100);
 
     // Assert
     expect(applications.applications[0]).toMatchObject({
@@ -97,7 +97,7 @@ describe("Tests for Applications Model", () => {
 
     vi.spyOn(DynamoBatchLoader, "batchLoad").mockResolvedValueOnce(new Map());
 
-    await ApplicationRoot.getByClinicId(clinicId, 100);
+    await DashboardApplication.getByClinicId(clinicId, 100);
 
     const calls = ddbMock.commandCalls(QueryCommand);
     const input = calls[0].args[0].input;
@@ -111,6 +111,8 @@ describe("Tests for Applications Model", () => {
   test("should throw error if DynamoDB fails", async () => {
     ddbMock.on(QueryCommand).rejects(new Error("DynamoDB error"));
 
-    await expect(ApplicationRoot.getByClinicId(clinicId, 100)).rejects.toThrow("DynamoDB error");
+    await expect(DashboardApplication.getByClinicId(clinicId, 100)).rejects.toThrow(
+      "DynamoDB error",
+    );
   });
 });

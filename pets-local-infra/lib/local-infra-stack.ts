@@ -1,3 +1,5 @@
+import { basename, dirname, join, posix, relative, sep } from "node:path";
+
 import * as cdk from "aws-cdk-lib";
 import { Tags } from "aws-cdk-lib";
 import { ApiDefinition, SpecRestApi } from "aws-cdk-lib/aws-apigateway";
@@ -7,7 +9,6 @@ import { NodejsFunctionProps } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Bucket, HttpMethods } from "aws-cdk-lib/aws-s3";
 import { Queue } from "aws-cdk-lib/aws-sqs";
 import { Construct } from "constructs";
-import { basename, dirname, join, posix, relative, sep } from "path";
 export class LocalInfrastructureStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -108,7 +109,7 @@ export class LocalInfrastructureStack extends cdk.Stack {
         type: AttributeType.STRING,
       },
       sortKey: {
-        name: "applicationStatus",
+        name: "applicationStatusGroup",
         type: AttributeType.STRING,
       },
     });

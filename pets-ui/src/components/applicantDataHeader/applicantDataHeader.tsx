@@ -1,6 +1,6 @@
-import { ReduxApplicantDetailsType } from "@/types";
-import { ApplicationStatus } from "@/utils/enums";
-import { formatDateForDisplay, getCountryName } from "@/utils/helpers";
+import { DateType, ReduxApplicantDetailsType } from "@/types";
+import { AdditionalStatusTagTexts, ApplicationStatus } from "@/utils/enums";
+import { formatDateForDisplay, getCountryName, isDateInThePast } from "@/utils/helpers";
 
 import StatusTag from "../statusTag/statusTag";
 
@@ -8,9 +8,29 @@ interface ApplicantDataHeaderProps {
   applicantData: ReduxApplicantDetailsType;
   applicationStatus?: ApplicationStatus;
   showCountryOfIssue: boolean;
+  certificateExpiryDate?: DateType;
 }
 
 export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderProps>) {
+  let textOverride = undefined;
+  let classOverride = undefined;
+  if (
+    props.applicationStatus !== ApplicationStatus.CANCELLED &&
+    props.applicationStatus !== ApplicationStatus.CERTIFICATE_NOT_ISSUED &&
+    props.certificateExpiryDate &&
+    props.certificateExpiryDate.day.length > 0 &&
+    props.certificateExpiryDate.month.length > 0 &&
+    props.certificateExpiryDate.year.length > 0 &&
+    isDateInThePast(
+      props.certificateExpiryDate.day,
+      props.certificateExpiryDate.month,
+      props.certificateExpiryDate.year,
+    )
+  ) {
+    textOverride = AdditionalStatusTagTexts.CERTIFICATE_EXPIRED;
+    classOverride = "govuk-tag govuk-tag--grey";
+  }
+
   return (
     <table className="govuk-table">
       <tbody className="govuk-table__body">
@@ -54,7 +74,11 @@ export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderP
               TB screening
             </th>
             <td className="govuk-table__cell progress-tracker-header-cells">
-              <StatusTag status={props.applicationStatus} />
+              <StatusTag
+                status={props.applicationStatus}
+                textOverride={textOverride}
+                classOverride={classOverride}
+              />
             </td>
           </tr>
         )}

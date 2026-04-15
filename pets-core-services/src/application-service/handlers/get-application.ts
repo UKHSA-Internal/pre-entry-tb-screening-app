@@ -51,6 +51,7 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
       applicantPhotoUrl,
       clinicId,
       applicationStatus: application.applicationStatus,
+      applicationStatusGroup: application.applicationStatusGroup,
       dateCreated: application.dateCreated ? application.dateCreated.toISOString() : undefined,
       expiryDate: application.expiryDate ? application.expiryDate?.toISOString() : undefined,
       cancellationReason: application.cancellationReason,
