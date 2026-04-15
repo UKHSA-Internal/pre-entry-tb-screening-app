@@ -8,6 +8,7 @@ from enum import Enum
 
 # Setting up logger
 logger = logging.getLogger(__name__)
+# Use DEBUG instead of INFO for more details (it could be parameterized)
 logger.setLevel(logging.INFO)
 
 handler = logging.StreamHandler(sys.stdout)
@@ -16,6 +17,21 @@ formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+# All combined statistics globally available and updated across the functions
+# during the migration process,
+# (applicants_to_remove is used to remove old migrated applicant records)
+statistics = {
+    "all_applicants": 0,
+    "all_applications": 0,
+    "skipped_missing": 0,
+    "skipped_migrated": 0,
+    # This is added with the check while it's still in development
+    "skipped_rows_not_root": 0,
+    "skipped_updating_statusgroup": 0,
+    "migrated_applicants": 0,
+    "migrated_applications": 0,
+    "applicants_to_remove": [],
+}
 
 # These enums can't be modified as they are defined in:
 # pets-core-services/src/shared/types/enum.ts and used in the back-end code.
@@ -47,7 +63,7 @@ def migrate_applicant(
 
     # --------------- APPLICANT RECORD CHANGES SECTION ---------------
     if not new_applicant_pk:
-        logger.info(f"SKIP Missing passportId for: {applicationId}")
+        logger.debug(f"SKIP Missing passportId for: {applicationId}")
         statistics["skipped_missing"] += 1
         # TODO: shouldn't it be deleted as it looks like incomplete/invalid record
 
@@ -55,12 +71,12 @@ def migrate_applicant(
 
 
     if applicationId == new_applicant_pk:
-        logger.info(f"SKIP already migrated: {applicationId}")
+        logger.debug(f"SKIP already migrated: {applicationId}")
         statistics["skipped_migrated"] += 1
 
         return
 
-    logger.info(f"MIGRATE {applicationId} -> {new_applicant_pk} (sk={sk})")
+    logger.debug(f"MIGRATE {applicationId} -> {new_applicant_pk} (sk={sk})")
 
     # --------------- APPLICATION RECORD CHANGES SECTION ---------------
     response = application_table.get_item(
@@ -95,7 +111,7 @@ def migrate_applicant(
         else:
             new_application_status = ApplicationStatus.inProgress.value
 
-    logger.info(f"Updating application status to : {new_application_status}")
+    logger.debug(f"Updating application status to : {new_application_status}")
 
     if dry_run:
         # just to mark what would be done
@@ -109,13 +125,13 @@ def migrate_applicant(
     new_item["pk"] = new_applicant_pk
     applicant_table.put_item(Item=new_item)
 
-    logger.info(
+    logger.debug(
         "[MIGRATION] Applicant table pk updated from "
         f"{applicationId} to {new_applicant_pk}"
     )
 
     # --------------- ADDING OLD APPLICANT RECORD TO THE LIST FOR REMOVAL ---------------
-    # just keep all the applicationsIds in a list for now,
+    # just keep all the applicationsIds (pk values) in a list for now,
     # and delete them later as a batch-action
     statistics["migrated_applicants"] += 1
     # TODO: Is it only APPLITATION#ROOT?
@@ -142,11 +158,11 @@ def migrate_applicant(
 
     except ClientError as e:
         if e.response["Error"]["Code"] == "ConditionalCheckFailedException":
-            logger.erro(f"Updating application with pk={applicationId} failed: {e}")
+            logger.error(f"Updating application with pk={applicationId} failed: {e}")
         else:
             raise
 
-    logger.info(f"Application Table - applicantId updated to {new_applicant_pk}")
+    logger.debug(f"Application Table - applicantId updated to {new_applicant_pk}")
 
 
 def remove_original_applicants(applicant_table, id_list):
@@ -173,6 +189,7 @@ def add_application_statusgroup(
         dry_run,
         statistics,
     ):
+    statistics["all_applications"] += 1
     application_pk = application_row["pk"]
     sk = application_row["sk"]
     # Simple validation, while the script is in development stage,
@@ -191,9 +208,8 @@ def add_application_statusgroup(
         or application_status == ApplicationStatus.cancelled.value
     ):
         new_status_group = ApplicationStatusGroup.complete.value
-        statistics["migrated_applications"] += 1
-    else:
-        statistics["skipped_updating_statusgroup"] += 1
+
+    statistics["migrated_applications"] += 1
 
     if dry_run:
         # Don't update for real, return
@@ -219,7 +235,7 @@ def add_application_statusgroup(
             logger.error(f"Updating application with pk={application_pk} failed: {e}")
         else:
             raise
-    logger.info(
+    logger.debug(
         f"Updated application {application_pk} - "
         f"applicationStatusGroup set to {new_status_group}"
     )
@@ -251,26 +267,14 @@ def data_migration(
         dynamodb=None,
         migration=None,
     ):
+    global statistics
+
     if dynamodb is None:
         dynamodb = boto3.resource("dynamodb", region_name=aws_region)
 
     applicant_table = dynamodb.Table(applicant_table_name)
     application_table = dynamodb.Table(application_table_name)
 
-    # All combined statistics (applicants_to_remove is used to remove
-    # old applicant records after migration in case of applicant_migration)
-    statistics = {
-        "all_applicants": 0,
-        "all_applications": 0,
-        "skipped_missing": 0,
-        "skipped_migrated": 0,
-        # This is added with the check while it's still in development
-        "skipped_rows_not_root": 0,
-        "skipped_updating_statusgroup": 0,
-        "migrated_applicants": 0,
-        "migrated_applications": 0,
-        "applicants_to_remove": [],
-    }
     start_time = time.time()
     table = (
         application_table
@@ -307,9 +311,6 @@ def data_migration(
                     dry_run,
                     statistics,
                 )
-                remove_original_applicants(
-                    applicant_table, statistics["applicants_to_remove"]
-                )
         elif migration == "application_statusgroup":
             for row in rows:
                 add_application_statusgroup(
@@ -319,7 +320,21 @@ def data_migration(
                     statistics,
                 )
 
+
+    # Post-migration cleanup actions, e.g. removing old applicant records after migration
+    if migration == "applicant_migration" and not dry_run:
+        logger.info("Now removing the original applicant records...")
+        remove_original_applicants(
+            applicant_table, statistics["applicants_to_remove"]
+        )
+        logger.info(
+            f"Removed {len(statistics['applicants_to_remove'])} original applicant records"
+        )
+
+
     for key, value in statistics.items():
+        # if isinstance(value, list) and len(value) > 50 and key == "applicants_to_remove":
+        #     value = f"number of records: {len(value)}"
         logger.info(f"{key}: {value}")
 
     duration = round(time.time() - start_time)
@@ -360,7 +375,8 @@ if __name__ == "__main__":
         MIGRATIONS = [m.strip() for m in MIGRATIONS.split(",")]
     else:
         MIGRATIONS = [MIGRATIONS.strip()]
-    DRY_RUN = DRY_RUN.lower() == "true"
+    # Converting DRY_RUN to a boolean value, it should default to True
+    DRY_RUN = not bool(DRY_RUN.lower() == "false")
 
     # Validate that the provided migration names are correct
     for migration in MIGRATIONS:
@@ -381,6 +397,8 @@ if __name__ == "__main__":
     logger.info(f"Starting Glue DynamoDB migration (DRY_RUN={DRY_RUN})")
     run_migrations = []
 
+    # -------------------------------- Running Migrations --------------------------------
+    # Running the specified migrations sequentially
     for migration in MIGRATIONS:
         logger.info(f"Running migration: {migration}")
 
@@ -390,9 +408,10 @@ if __name__ == "__main__":
             AWS_REGION,
             DRY_RUN,
             dynamodb=None,
-            migration="application_statusgroup",
+            migration=migration,
         )
         run_migrations.append(migration)
 
         logger.info(f"Migration {migration} completed.")
+
     logger.info(f"Completed migrations: {run_migrations}")
