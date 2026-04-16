@@ -43,6 +43,21 @@ describe("Test for create applicantion handler", () => {
     expect(responseBodyOne.applicationId).not.toEqual(responseBodyTwo.applicationId);
   });
 
+  test("Provided applicationId is used instead of auto-generating", async () => {
+    const providedId = "550e8400-e29b-41d4-a716-446655440000";
+    const event: SaveApplicationEvent = {
+      ...mockAPIGwEvent,
+      parsedBody: { ...newApplication, applicationId: providedId },
+    };
+
+    const response = await createApplicationHandler(event);
+
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toMatchObject({
+      applicationId: providedId,
+    });
+  });
+
   test("Missing required body returns a 500 response", async () => {
     // Arrange
     const event: SaveApplicationEvent = {
