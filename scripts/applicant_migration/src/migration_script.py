@@ -62,17 +62,19 @@ def migrate_applicant(
     new_applicant_pk = applicant_row.get("passportId")
 
     # --------------- APPLICANT RECORD CHANGES SECTION ---------------
+    if applicationId == new_applicant_pk:
+        logger.debug(f"SKIP already migrated: {applicationId}")
+        statistics["skipped_migrated"] += 1
+
+        return
+
+    # Already migrated applicants are not included
+    statistics["all_applicants"] += 1
+
     if not new_applicant_pk:
         logger.debug(f"SKIP Missing passportId for: {applicationId}")
         statistics["skipped_missing"] += 1
         # TODO: shouldn't it be deleted as it looks like incomplete/invalid record
-
-        return
-
-
-    if applicationId == new_applicant_pk:
-        logger.debug(f"SKIP already migrated: {applicationId}")
-        statistics["skipped_migrated"] += 1
 
         return
 
@@ -331,6 +333,10 @@ def data_migration(
             f"Removed {len(statistics['applicants_to_remove'])} original applicant records"
         )
 
+    # If it's not applicant_migration, then remove applicants_to_remove
+    # (in case that migration was run before) from statistics as it's not relevant
+    if migration != "applicant_migration":
+        statistics["applicants_to_remove"] = []
 
     for key, value in statistics.items():
         # if isinstance(value, list) and len(value) > 50 and key == "applicants_to_remove":
@@ -376,7 +382,7 @@ if __name__ == "__main__":
     else:
         MIGRATIONS = [MIGRATIONS.strip()]
     # Converting DRY_RUN to a boolean value, it should default to True
-    DRY_RUN = not bool(DRY_RUN.lower() == "false")
+    dry_run = not bool(DRY_RUN.lower() == "false")
 
     # Validate that the provided migration names are correct
     for migration in MIGRATIONS:
@@ -394,7 +400,7 @@ if __name__ == "__main__":
                 )
                 sys.exit(1)
 
-    logger.info(f"Starting Glue DynamoDB migration (DRY_RUN={DRY_RUN})")
+    logger.info(f"Starting Glue DynamoDB migration (DRY_RUN={dry_run})")
     run_migrations = []
 
     # -------------------------------- Running Migrations --------------------------------
@@ -406,7 +412,7 @@ if __name__ == "__main__":
             APPLICANT_TABLE_NAME,
             APPLICATION_TABLE_NAME,
             AWS_REGION,
-            DRY_RUN,
+            dry_run,
             dynamodb=None,
             migration=migration,
         )
@@ -414,4 +420,4 @@ if __name__ == "__main__":
 
         logger.info(f"Migration {migration} completed.")
 
-    logger.info(f"Completed migrations: {run_migrations}")
+    logger.info(f"Completed migrations: {run_migrations} (DRY_RUN={dry_run})")
