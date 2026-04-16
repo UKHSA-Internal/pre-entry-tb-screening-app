@@ -33,7 +33,7 @@ import {
   TaskStatus,
   YesOrNo,
 } from "@/utils/enums";
-import { formatDateForDisplay, upsertAppIntoAppList } from "@/utils/helpers";
+import { formatDateForDisplay, isDateInThePast, upsertAppIntoAppList } from "@/utils/helpers";
 
 interface TaskProps {
   description: string;
@@ -168,7 +168,22 @@ const ProgressTracker = () => {
 
   let tbCertificateStatusOverride = undefined;
   if (tbCertificateData.status === TaskStatus.COMPLETE) {
-    if (tbCertificateData.isIssued === YesOrNo.YES) {
+    if (
+      tbCertificateData.isIssued === YesOrNo.YES &&
+      applicationData.expiryDate &&
+      applicationData.expiryDate.day.length > 0 &&
+      applicationData.expiryDate.month.length > 0 &&
+      applicationData.expiryDate.year.length > 0 &&
+      isDateInThePast(
+        applicationData.expiryDate.day,
+        applicationData.expiryDate.month,
+        applicationData.expiryDate.year,
+      )
+    ) {
+      tbCertificateStatusOverride = (
+        <strong className="govuk-tag govuk-tag--grey">Certificate expired</strong>
+      );
+    } else if (tbCertificateData.isIssued === YesOrNo.YES) {
       tbCertificateStatusOverride = (
         <strong className="govuk-tag govuk-tag--green">Certificate issued</strong>
       );
@@ -233,6 +248,7 @@ const ProgressTracker = () => {
             applicantData={applicantData}
             applicationStatus={applicationData.applicationStatus}
             showCountryOfIssue={false}
+            certificateExpiryDate={applicationData.expiryDate}
           />
         </div>
         {applicantPhotoContext?.applicantPhotoDataUrl ? (
