@@ -110,9 +110,13 @@ class TestApplicantMigrationLive:
     ):
         """Extra attributes copied to the new record."""
         applicant_table, application_table = tables
-        _seed_applicant(applicant_table, "APPLICATION#abc",
-                        passport_id="COUNTRY#GB#PASSPORT#1",
-                        name="Alice", dob="1990-01-01", nationality="British")
+        _seed_applicant(
+            applicant_table, "APPLICATION#abc",
+            passport_id="COUNTRY#GB#PASSPORT#1",
+            name="Alice",
+            dob="1990-01-01",
+            nationality="British",
+        )
         _seed_application_root(application_table, "APPLICATION#abc")
 
         _run(mod, dry_run=False, dynamodb_local=dynamodb_local)
@@ -125,8 +129,9 @@ class TestApplicantMigrationLive:
     def test_old_applicant_record_deleted(self, mod, tables, dynamodb_local):
         """Original APPLICATION# key is removed after migration."""
         applicant_table, application_table = tables
-        _seed_applicant(applicant_table, "APPLICATION#abc",
-                        passport_id="COUNTRY#GB#PASSPORT#1")
+        _seed_applicant(
+            applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
+        )
         _seed_application_root(application_table, "APPLICATION#abc")
 
         _run(mod, dry_run=False, dynamodb_local=dynamodb_local)
@@ -137,8 +142,9 @@ class TestApplicantMigrationLive:
     def test_application_root_applicant_id_updated(self, mod, tables, dynamodb_local):
         """applicantId field written to APPLICATION#ROOT."""
         applicant_table, application_table = tables
-        _seed_applicant(applicant_table, "APPLICATION#abc",
-                        passport_id="COUNTRY#GB#PASSPORT#1")
+        _seed_applicant(
+            applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
+        )
         _seed_application_root(application_table, "APPLICATION#abc")
 
         _run(mod, dry_run=False, dynamodb_local=dynamodb_local)
@@ -146,21 +152,26 @@ class TestApplicantMigrationLive:
         root = _get(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
         assert root["applicantId"] == "COUNTRY#GB#PASSPORT#1"
 
-    @pytest.mark.parametrize("is_issued,expected_status", [
-        ("Yes", "Certificate Available"),
-        ("No", "Certificate Not Issued"),
-        (None, "In Progress"),
-    ])
+    @pytest.mark.parametrize(
+        "is_issued,expected_status", [
+            ("Yes", "Certificate Available"),
+            ("No", "Certificate Not Issued"),
+            (None, "In Progress"),
+        ]
+    )
     def test_application_status_derived_from_tb_certificate(
         self, mod, tables, dynamodb_local, is_issued, expected_status
     ):
         """applicationStatus set correctly based on TB isIssued value."""
         applicant_table, application_table = tables
-        _seed_applicant(applicant_table, "APPLICATION#abc",
-                        passport_id="COUNTRY#GB#PASSPORT#1")
+        _seed_applicant(
+            applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
+        )
         _seed_application_root(application_table, "APPLICATION#abc")
         if is_issued is not None:
-            _seed_application_tb(application_table, "APPLICATION#abc", is_issued=is_issued)
+            _seed_application_tb(
+                application_table, "APPLICATION#abc", is_issued=is_issued
+            )
 
         _run(mod, dry_run=False, dynamodb_local=dynamodb_local)
 
@@ -170,8 +181,9 @@ class TestApplicantMigrationLive:
     def test_statistics_reflect_migrated_applicants(self, mod, tables, dynamodb_local):
         """Statistics counters correct after single migration."""
         applicant_table, application_table = tables
-        _seed_applicant(applicant_table, "APPLICATION#abc",
-                        passport_id="COUNTRY#GB#PASSPORT#1")
+        _seed_applicant(
+            applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
+        )
         _seed_application_root(application_table, "APPLICATION#abc")
 
         stats = _run(mod, dry_run=False, dynamodb_local=dynamodb_local)
@@ -214,8 +226,9 @@ class TestApplicantMigrationDryRun:
     def test_application_root_not_modified(self, mod, tables, dynamodb_local):
         """dry_run=True → APPLICATION#ROOT row unchanged (no applicantId)."""
         applicant_table, application_table = tables
-        _seed_applicant(applicant_table, "APPLICATION#abc",
-                        passport_id="COUNTRY#GB#PASSPORT#1")
+        _seed_applicant(
+            applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
+        )
         _seed_application_root(application_table, "APPLICATION#abc")
 
         _run(mod, dry_run=True, dynamodb_local=dynamodb_local)
@@ -226,8 +239,9 @@ class TestApplicantMigrationDryRun:
     def test_statistics_still_counted(self, mod, tables, dynamodb_local):
         """dry_run=True → migrated_applicants still incremented."""
         applicant_table, application_table = tables
-        _seed_applicant(applicant_table, "APPLICATION#abc",
-                        passport_id="COUNTRY#GB#PASSPORT#1")
+        _seed_applicant(
+            applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
+        )
         _seed_application_root(application_table, "APPLICATION#abc")
 
         stats = _run(mod, dry_run=True, dynamodb_local=dynamodb_local)
@@ -268,8 +282,9 @@ class TestApplicantMigrationSkips:
     def test_missing_application_root_row_skipped(self, mod, tables, dynamodb_local):
         """No APPLICATION#ROOT in application table → applicant not migrated."""
         applicant_table, _ = tables
-        _seed_applicant(applicant_table, "APPLICATION#abc",
-                        passport_id="COUNTRY#GB#PASSPORT#1")
+        _seed_applicant(
+            applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
+        )
         # Do NOT seed APPLICATION#ROOT
 
         stats = _run(mod, dry_run=False, dynamodb_local=dynamodb_local)
@@ -295,8 +310,12 @@ class TestApplicationStatusgroupLive:
         _, application_table = tables
         _seed_application_root(application_table, "APPLICATION#abc", status=app_status)
 
-        _run(mod, dry_run=False, dynamodb_local=dynamodb_local,
-             migration="application_statusgroup")
+        _run(
+            mod,
+            dry_run=False,
+            dynamodb_local=dynamodb_local,
+            migration="application_statusgroup"
+        )
 
         root = _get(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
         assert root["applicationStatusGroup"] == expected_group
@@ -313,11 +332,15 @@ class TestApplicationStatusgroupLive:
             "isIssued": "Yes",
         })
 
-        stats = _run(mod, dry_run=False, dynamodb_local=dynamodb_local,
-                     migration="application_statusgroup")
+        stats = _run(
+            mod,
+            dry_run=False,
+            dynamodb_local=dynamodb_local,
+            migration="application_statusgroup"
+        )
 
         # Only the root row should have been processed
-        assert stats["skipped_rows_not_root"] == 0  # FilterExpression excludes non-root
+        assert stats["skipped_rows_not_root"] == 0
         assert stats["migrated_applications"] == 1
 
     def test_statistics_migrated_applications_incremented(
@@ -326,8 +349,12 @@ class TestApplicationStatusgroupLive:
         _, application_table = tables
         _seed_application_root(application_table, "APPLICATION#abc", status="In Progress")
 
-        stats = _run(mod, dry_run=False, dynamodb_local=dynamodb_local,
-                     migration="application_statusgroup")
+        stats = _run(
+            mod,
+            dry_run=False,
+            dynamodb_local=dynamodb_local,
+            migration="application_statusgroup"
+        )
 
         assert stats["migrated_applications"] == 1
         assert stats["all_applications"] == 1
@@ -352,8 +379,12 @@ class TestApplicationStatusgroupDryRun:
         _, application_table = tables
         _seed_application_root(application_table, "APPLICATION#abc", status="In Progress")
 
-        stats = _run(mod, dry_run=True, dynamodb_local=dynamodb_local,
-                     migration="application_statusgroup")
+        stats = _run(
+            mod,
+            dry_run=True,
+            dynamodb_local=dynamodb_local,
+            migration="application_statusgroup"
+        )
 
         assert stats["migrated_applications"] == 1
 
@@ -394,11 +425,16 @@ class TestPagination:
         n = 30
 
         for i in range(n):
-            _seed_application_root(application_table, f"APPLICATION#{i}",
-                                   status="In Progress")
+            _seed_application_root(
+                application_table, f"APPLICATION#{i}", status="In Progress"
+            )
 
-        stats = _run(mod, dry_run=False, dynamodb_local=dynamodb_local,
-                     migration="application_statusgroup")
+        stats = _run(
+            mod,
+            dry_run=False,
+            dynamodb_local=dynamodb_local,
+            migration="application_statusgroup"
+        )
 
         assert stats["migrated_applications"] == n
 
