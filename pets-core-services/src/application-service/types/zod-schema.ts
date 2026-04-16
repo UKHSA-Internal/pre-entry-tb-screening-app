@@ -19,6 +19,10 @@ import {
 extendZodWithOpenApi(z);
 
 export const CreateApplicationRequestSchema = z.object({
+  applicationId: z.string().uuid().optional().openapi({
+    description:
+      "Optional Application ID (UUID). If omitted, one is auto-generated. Used by the public API only, the web app will not provide one.",
+  }),
   passportNumber: z.string().openapi({
     description: "PassportNumber of Applicant",
   }),
