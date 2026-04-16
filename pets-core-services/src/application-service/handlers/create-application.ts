@@ -29,7 +29,7 @@ export const createApplicationHandler = async (event: SaveApplicationEvent) => {
     ...parsedBody,
     clinicId,
     createdBy,
-    applicationId: crypto.randomUUID(),
+    applicationId: parsedBody.applicationId ?? crypto.randomUUID(),
   });
 
   return HttpResponses.ok(newApplication.toJson());
