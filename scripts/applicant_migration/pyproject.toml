@@ -13,7 +13,15 @@ dependencies = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "-p no:warnings -p no:cacheprovider"
+addopts = "-p no:warnings -p no:cacheprovider --cov=migration_script --cov-report=term-missing"
+testpaths = ["src"]
+pythonpath = ["src"]
 filterwarnings = [
     "ignore::DeprecationWarning:botocore.*"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
 ]

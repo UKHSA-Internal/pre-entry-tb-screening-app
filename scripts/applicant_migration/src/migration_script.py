@@ -1,6 +1,7 @@
 # It has to be import early for pytest to be able to test
 # the functions separately without running the whole script
 import logging
+import time
 import boto3
 import sys
 from botocore.exceptions import ClientError
@@ -351,7 +352,6 @@ def data_migration(
 # The main function is only executed when running the script directly.
 # It sets up the parameters and calls the data_migration function.
 if __name__ == "__main__":
-    import time
     from awsglue.utils import getResolvedOptions
 
     logger.info(f"GJ called with args: {sys.argv}")
