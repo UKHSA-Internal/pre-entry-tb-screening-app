@@ -39,7 +39,7 @@ statistics = {
 # pets-core-services/src/shared/types/enum.ts and used in the back-end code.
 class ApplicationStatus(Enum):
     inProgress = "In Progress"
-    sputumInProgress = "Sputum In Progress",
+    sputumInProgress = "Sputum In Progress"
     certificateNotIssued = "Certificate Not Issued"
     certificateAvailable = "Certificate Available"
     cancelled = "Cancelled"
@@ -242,7 +242,7 @@ def add_application_statusgroup(
     )
 
 
-def scan_table(table, last_evaluated_key=None, scan_filter={}):
+def scan_table(table, last_evaluated_key=None, scan_filter={}):  # noqa: B006
     params = (
         scan_filter
         if not last_evaluated_key
@@ -324,7 +324,8 @@ def data_migration(
         logger.info("Now removing the original applicant records...")
         remove_original_applicants(applicant_table, statistics["applicants_to_remove"])
         logger.info(
-            f"Removed {len(statistics['applicants_to_remove'])} original applicant records"
+            f"Removed {len(statistics['applicants_to_remove'])} "
+            "original applicant records"
         )
 
     # If it's not applicant_migration, then remove applicants_to_remove
@@ -333,8 +334,6 @@ def data_migration(
         statistics["applicants_to_remove"] = []
 
     for key, value in statistics.items():
-        # if isinstance(value, list) and len(value) > 50 and key == "applicants_to_remove":
-        #     value = f"number of records: {len(value)}"
         logger.info(f"{key}: {value}")
 
     duration = round(time.time() - start_time)

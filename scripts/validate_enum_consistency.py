@@ -67,7 +67,7 @@ def validate_consistency(ts_enums: Dict, py_enums: Dict) -> bool:
     errors = []
 
     # Check for enums that should exist in both places
-    required_enums = {'ApplicationStatus', 'StatusGroup'}
+    required_enums = {'ApplicationStatus', 'ApplicationStatusGroup'}
 
     for enum_name in required_enums:
         if enum_name not in ts_enums:

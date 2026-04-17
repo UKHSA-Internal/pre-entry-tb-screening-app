@@ -10,6 +10,7 @@ dependencies = [
     "pytest-cov>=7.0.0",
     "pytest-docker>=3.2.5",
     "pytest-freezegun>=0.4.2",
+    "ruff>=0.15.11",
 ]
 
 [tool.pytest.ini_options]

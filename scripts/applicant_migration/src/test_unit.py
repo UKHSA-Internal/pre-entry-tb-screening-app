@@ -6,7 +6,7 @@ All DynamoDB calls are mocked via unittest.mock — no Docker / network required
 
 import sys
 import types
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
 
 import pytest
 from botocore.exceptions import ClientError
