@@ -93,9 +93,10 @@ class TestApplicantMigrationLive:
         """New record exists at passportId PK after migration."""
         applicant_table, application_table = tables
         _seed_applicant(
-            applicant_table, "APPLICATION#abc",
+            applicant_table,
+            "APPLICATION#abc",
             passport_id="COUNTRY#GB#PASSPORT#1",
-            name="Alice"
+            name="Alice",
         )
         _seed_application_root(application_table, "APPLICATION#abc")
 
@@ -105,13 +106,12 @@ class TestApplicantMigrationLive:
         assert new is not None
         assert new["pk"] == "COUNTRY#GB#PASSPORT#1"
 
-    def test_all_attributes_preserved_on_new_record(
-        self, mod, tables, dynamodb_local
-    ):
+    def test_all_attributes_preserved_on_new_record(self, mod, tables, dynamodb_local):
         """Extra attributes copied to the new record."""
         applicant_table, application_table = tables
         _seed_applicant(
-            applicant_table, "APPLICATION#abc",
+            applicant_table,
+            "APPLICATION#abc",
             passport_id="COUNTRY#GB#PASSPORT#1",
             name="Alice",
             dob="1990-01-01",
@@ -153,11 +153,12 @@ class TestApplicantMigrationLive:
         assert root["applicantId"] == "COUNTRY#GB#PASSPORT#1"
 
     @pytest.mark.parametrize(
-        "is_issued,expected_status", [
+        "is_issued,expected_status",
+        [
             ("Yes", "Certificate Available"),
             ("No", "Certificate Not Issued"),
             (None, "In Progress"),
-        ]
+        ],
     )
     def test_application_status_derived_from_tb_certificate(
         self, mod, tables, dynamodb_local, is_issued, expected_status
@@ -297,12 +298,15 @@ class TestApplicantMigrationSkips:
 class TestApplicationStatusgroupLive:
     """application_statusgroup migration writes applicationStatusGroup correctly."""
 
-    @pytest.mark.parametrize("app_status,expected_group", [
-        ("Certificate Available", "Complete"),
-        ("Certificate Not Issued", "Complete"),
-        ("Cancelled", "Complete"),
-        ("In Progress", "Incomplete"),
-    ])
+    @pytest.mark.parametrize(
+        "app_status,expected_group",
+        [
+            ("Certificate Available", "Complete"),
+            ("Certificate Not Issued", "Complete"),
+            ("Cancelled", "Complete"),
+            ("In Progress", "Incomplete"),
+        ],
+    )
     def test_statusgroup_written_for_each_application_status(
         self, mod, tables, dynamodb_local, app_status, expected_group
     ):
@@ -314,7 +318,7 @@ class TestApplicationStatusgroupLive:
             mod,
             dry_run=False,
             dynamodb_local=dynamodb_local,
-            migration="application_statusgroup"
+            migration="application_statusgroup",
         )
 
         root = _get(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
@@ -326,17 +330,19 @@ class TestApplicationStatusgroupLive:
         # Seed a root row and a non-root row in the same table
         _seed_application_root(application_table, "APPLICATION#abc", status="In Progress")
         # Seed a TB certificate row (non-root) — it should be filtered out by scan
-        application_table.put_item(Item={
-            "pk": "APPLICATION#abc",
-            "sk": "APPLICATION#TB#CERTIFICATE",
-            "isIssued": "Yes",
-        })
+        application_table.put_item(
+            Item={
+                "pk": "APPLICATION#abc",
+                "sk": "APPLICATION#TB#CERTIFICATE",
+                "isIssued": "Yes",
+            }
+        )
 
         stats = _run(
             mod,
             dry_run=False,
             dynamodb_local=dynamodb_local,
-            migration="application_statusgroup"
+            migration="application_statusgroup",
         )
 
         # Only the root row should have been processed
@@ -353,7 +359,7 @@ class TestApplicationStatusgroupLive:
             mod,
             dry_run=False,
             dynamodb_local=dynamodb_local,
-            migration="application_statusgroup"
+            migration="application_statusgroup",
         )
 
         assert stats["migrated_applications"] == 1
@@ -368,8 +374,12 @@ class TestApplicationStatusgroupDryRun:
         _, application_table = tables
         _seed_application_root(application_table, "APPLICATION#abc", status="In Progress")
 
-        _run(mod, dry_run=True, dynamodb_local=dynamodb_local,
-             migration="application_statusgroup")
+        _run(
+            mod,
+            dry_run=True,
+            dynamodb_local=dynamodb_local,
+            migration="application_statusgroup",
+        )
 
         root = _get(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
         assert "applicationStatusGroup" not in root
@@ -383,7 +393,7 @@ class TestApplicationStatusgroupDryRun:
             mod,
             dry_run=True,
             dynamodb_local=dynamodb_local,
-            migration="application_statusgroup"
+            migration="application_statusgroup",
         )
 
         assert stats["migrated_applications"] == 1
@@ -433,7 +443,7 @@ class TestPagination:
             mod,
             dry_run=False,
             dynamodb_local=dynamodb_local,
-            migration="application_statusgroup"
+            migration="application_statusgroup",
         )
 
         assert stats["migrated_applications"] == n

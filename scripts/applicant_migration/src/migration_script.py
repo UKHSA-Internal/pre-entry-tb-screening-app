@@ -14,7 +14,7 @@ logger.setLevel(logging.INFO)
 
 handler = logging.StreamHandler(sys.stdout)
 handler.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
@@ -34,27 +34,29 @@ statistics = {
     "applicants_to_remove": [],
 }
 
+
 # These enums can't be modified as they are defined in:
 # pets-core-services/src/shared/types/enum.ts and used in the back-end code.
 class ApplicationStatus(Enum):
-  inProgress = "In Progress"
-  certificateNotIssued = "Certificate Not Issued"
-  certificateAvailable = "Certificate Available"
-  cancelled = "Cancelled"
+    inProgress = "In Progress"
+    certificateNotIssued = "Certificate Not Issued"
+    certificateAvailable = "Certificate Available"
+    cancelled = "Cancelled"
+
 
 # See the above comment.
 class ApplicationStatusGroup(Enum):
-  complete = "Complete"
-  incomplete = "Incomplete"
+    complete = "Complete"
+    incomplete = "Incomplete"
 
 
 def migrate_applicant(
-        applicant_row,
-        applicant_table,
-        application_table,
-        dry_run,
-        statistics,
-    ):
+    applicant_row,
+    applicant_table,
+    application_table,
+    dry_run,
+    statistics,
+):
     # applicant PK is just APPLICATION#<applicationId>
     applicationId = applicant_row["pk"]
     # SK is always APPLICANT#DETAILS
@@ -107,7 +109,7 @@ def migrate_applicant(
             is_issued = applicationTBRow.get("isIssued")
 
         if is_issued == "Yes":
-            new_application_status =  ApplicationStatus.certificateAvailable.value
+            new_application_status = ApplicationStatus.certificateAvailable.value
             # TODO: should expiryDate also be added to application in this case?
         elif is_issued == "No":
             new_application_status = ApplicationStatus.certificateNotIssued.value
@@ -138,9 +140,7 @@ def migrate_applicant(
     # and delete them later as a batch-action
     statistics["migrated_applicants"] += 1
     # TODO: Is it only APPLITATION#ROOT?
-    statistics["applicants_to_remove"].append(
-        {"pk": applicationId, "sk": sk}
-    )
+    statistics["applicants_to_remove"].append({"pk": applicationId, "sk": sk})
 
     # --------------- SAVING UPDATED APPLICATION DETAILS ---------------
     try:
@@ -156,7 +156,7 @@ def migrate_applicant(
             },
             ConditionExpression=(
                 "attribute_exists(pk) AND attribute_not_exists(applicantId)"
-            )
+            ),
         )
 
     except ClientError as e:
@@ -186,12 +186,12 @@ def remove_original_applicants(applicant_table, id_list):
 
 
 def add_application_statusgroup(
-        # application_row should always be the APPLICATION#ROOT row
-        application_row,
-        application_table,
-        dry_run,
-        statistics,
-    ):
+    # application_row should always be the APPLICATION#ROOT row
+    application_row,
+    application_table,
+    dry_run,
+    statistics,
+):
     statistics["all_applications"] += 1
     application_pk = application_row["pk"]
     sk = application_row["sk"]
@@ -203,7 +203,6 @@ def add_application_statusgroup(
         return
     application_status = application_row.get("applicationStatus")
     new_status_group = ApplicationStatusGroup.incomplete.value
-
 
     if (
         application_status == ApplicationStatus.certificateAvailable.value
@@ -221,16 +220,14 @@ def add_application_statusgroup(
     try:
         application_table.update_item(
             Key={"pk": application_pk, "sk": "APPLICATION#ROOT"},
-            UpdateExpression=(
-                "SET applicationStatusGroup = :new_status_group"
-            ),
+            UpdateExpression=("SET applicationStatusGroup = :new_status_group"),
             ExpressionAttributeValues={
                 ":new_status_group": new_status_group,
             },
             ConditionExpression=(
                 # "attribute_exists(pk) AND attribute_not_exists(applicantId)"
                 "attribute_exists(pk)"
-            )
+            ),
         )
 
     except ClientError as e:
@@ -244,7 +241,7 @@ def add_application_statusgroup(
     )
 
 
-def scan_table(table, last_evaluated_key=None, scan_filter={},):
+def scan_table(table, last_evaluated_key=None, scan_filter={}):
     params = (
         scan_filter
         if not last_evaluated_key
@@ -263,13 +260,13 @@ def scan_table(table, last_evaluated_key=None, scan_filter={},):
 
 
 def data_migration(
-        applicant_table_name,
-        application_table_name,
-        aws_region,
-        dry_run,
-        dynamodb=None,
-        migration=None,
-    ):
+    applicant_table_name,
+    application_table_name,
+    aws_region,
+    dry_run,
+    dynamodb=None,
+    migration=None,
+):
     global statistics
 
     if dynamodb is None:
@@ -280,9 +277,7 @@ def data_migration(
 
     start_time = time.time()
     table = (
-        application_table
-        if migration == "application_statusgroup"
-        else applicant_table
+        application_table if migration == "application_statusgroup" else applicant_table
     )
     last_evaluated_key = None
     first_scan = True
@@ -323,13 +318,10 @@ def data_migration(
                     statistics,
                 )
 
-
     # Post-migration cleanup actions, e.g. removing old applicant records after migration
     if migration == "applicant_migration" and not dry_run:
         logger.info("Now removing the original applicant records...")
-        remove_original_applicants(
-            applicant_table, statistics["applicants_to_remove"]
-        )
+        remove_original_applicants(applicant_table, statistics["applicants_to_remove"])
         logger.info(
             f"Removed {len(statistics['applicants_to_remove'])} original applicant records"
         )
@@ -358,7 +350,7 @@ if __name__ == "__main__":
 
     args = getResolvedOptions(
         sys.argv,
-        ["APPLICANT_TABLE", "APPLICATION_TABLE", "MIGRATIONS", "AWS_REGION", "DRY_RUN"]
+        ["APPLICANT_TABLE", "APPLICATION_TABLE", "MIGRATIONS", "AWS_REGION", "DRY_RUN"],
     )
     logger.info(f"Received arguments: {args}")
 
