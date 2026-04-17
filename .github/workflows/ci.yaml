@@ -173,14 +173,6 @@ jobs:
         working-directory: "scripts/applicant_migration/"
         run: uv run pytest -c ./pyproject.toml --cov=migration_script --cov-report=html ./src/test_integration.py
 
-      - name: Ruff code check
-        working-directory: "scripts/applicant_migration"
-        run: uv run ruff check ./src --config pyproject.toml
-
-      - name: Ruff format check
-        working-directory: "scripts/applicant_migration"
-        run: uv run ruff format --check ./src --config scripts/applicant_migration/pyproject.toml
-
   migration-script-linter-checks:
     runs-on: ubuntu-latest
     steps:
