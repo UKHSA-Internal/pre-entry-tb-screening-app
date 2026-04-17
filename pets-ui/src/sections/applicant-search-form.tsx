@@ -33,7 +33,7 @@ import { clearTravelDetails } from "@/redux/travelSlice";
 import { ApplicantSearchFormType, ReceivedApplicantDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { countryList } from "@/utils/countryList";
-import { ButtonClass } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass } from "@/utils/enums";
 import { formRegex } from "@/utils/records";
 
 import { getApplicants } from "../api/api";
@@ -81,6 +81,9 @@ const ApplicantSearchForm = () => {
         const applicationId = application.applicationId;
         if (!uuidValidate(application.applicationId)) {
           throw new Error(`Application ID (${applicationId}) is in an invalid UUID format`);
+        }
+        if (application.applicationStatus == ApplicationStatus.SPUTUM_IN_PROGRESS) {
+          application.applicationStatus = ApplicationStatus.IN_PROGRESS;
         }
       }
       dispatch(setApplicantDetailsFromApiResponse(applicantRes.data));
