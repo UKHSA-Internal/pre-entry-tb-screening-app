@@ -112,7 +112,7 @@ describe("Task choice page", () => {
 
     const user = userEvent.setup();
 
-    mock.onGet("/applications").reply(200, applicationsResFixture);
+    mock.onGet("/dashboard-applications/").reply(200, applicationsResFixture);
 
     await user.click(screen.getByRole("link", { name: "View all screenings in progress" }));
 
