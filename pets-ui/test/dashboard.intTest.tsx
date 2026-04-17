@@ -6,7 +6,7 @@ import { Mock } from "vitest";
 
 import { ApplicantPhotoProvider, useApplicantPhoto } from "@/context/applicantPhotoContext";
 import Dashboard from "@/sections/dashboard";
-import { ApplicationStatus, TaskStatus } from "@/utils/enums";
+import { ApplicationStatus, PositiveOrNegative, TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
 import { petsApi } from "../src/api/api";
@@ -258,6 +258,164 @@ describe("Dashboard", () => {
         ukMobileNumber: "",
         ukEmail: "",
       },
+      medicalScreening: {
+        status: TaskStatus.NOT_YET_STARTED,
+        tbSymptoms: "",
+        tbSymptomsList: [],
+        otherSymptomsDetail: "",
+        underElevenConditions: [],
+        underElevenConditionsDetail: "",
+        previousTb: "",
+        previousTbDetail: "",
+        closeContactWithTb: "",
+        closeContactWithTbDetail: "",
+        pregnant: "",
+        menstrualPeriods: "",
+        physicalExamNotes: "",
+        chestXrayTaken: YesOrNo.NULL,
+        reasonXrayNotRequired: "",
+        reasonXrayNotRequiredFurtherDetails: "",
+        completionDate: {
+          year: "",
+          month: "",
+          day: "",
+        },
+      },
+      chestXray: {
+        status: TaskStatus.NOT_YET_STARTED,
+        posteroAnteriorXrayFileName: "",
+        posteroAnteriorXrayFile: "",
+        apicalLordoticXrayFileName: "",
+        apicalLordoticXrayFile: "",
+        lateralDecubitusXrayFileName: "",
+        lateralDecubitusXrayFile: "",
+        dateXrayTaken: {
+          year: "",
+          month: "",
+          day: "",
+        },
+      },
+      radiologicalOutcome: {
+        status: TaskStatus.NOT_YET_STARTED,
+        reasonXrayWasNotTaken: "",
+        xrayWasNotTakenFurtherDetails: "",
+        xrayResult: "",
+        xrayResultDetail: "",
+        xrayMinorFindings: [],
+        xrayAssociatedMinorFindings: [],
+        xrayActiveTbFindings: [],
+        completionDate: {
+          year: "",
+          month: "",
+          day: "",
+        },
+      },
+      sputumDecision: {
+        status: TaskStatus.NOT_YET_STARTED,
+        isSputumRequired: YesOrNo.NULL,
+        completionDate: {
+          year: "",
+          month: "",
+          day: "",
+        },
+      },
+      sputum: {
+        status: TaskStatus.NOT_YET_STARTED,
+        version: undefined,
+        sample1: {
+          collection: {
+            submittedToDatabase: false,
+            dateOfSample: {
+              year: "",
+              month: "",
+              day: "",
+            },
+            collectionMethod: "",
+          },
+          smearResults: {
+            submittedToDatabase: false,
+            smearResult: PositiveOrNegative.NOT_YET_ENTERED,
+          },
+          cultureResults: {
+            submittedToDatabase: false,
+            cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
+          },
+          lastUpdatedDate: {
+            year: "",
+            month: "",
+            day: "",
+          },
+        },
+        sample2: {
+          collection: {
+            submittedToDatabase: false,
+            dateOfSample: {
+              year: "",
+              month: "",
+              day: "",
+            },
+            collectionMethod: "",
+          },
+          smearResults: {
+            submittedToDatabase: false,
+            smearResult: PositiveOrNegative.NOT_YET_ENTERED,
+          },
+          cultureResults: {
+            submittedToDatabase: false,
+            cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
+          },
+          lastUpdatedDate: {
+            year: "",
+            month: "",
+            day: "",
+          },
+        },
+        sample3: {
+          collection: {
+            submittedToDatabase: false,
+            dateOfSample: {
+              year: "",
+              month: "",
+              day: "",
+            },
+            collectionMethod: "",
+          },
+          smearResults: {
+            submittedToDatabase: false,
+            smearResult: PositiveOrNegative.NOT_YET_ENTERED,
+          },
+          cultureResults: {
+            submittedToDatabase: false,
+            cultureResult: PositiveOrNegative.NOT_YET_ENTERED,
+          },
+          lastUpdatedDate: {
+            year: "",
+            month: "",
+            day: "",
+          },
+        },
+      },
+      tbCertificate: {
+        status: TaskStatus.NOT_YET_STARTED,
+        isIssued: YesOrNo.NULL,
+        comments: "",
+        certificateDate: {
+          year: "",
+          month: "",
+          day: "",
+        },
+        certificateNumber: "",
+        reasonNotIssued: "",
+        declaringPhysicianName: "",
+        clinic: {
+          clinicId: "",
+          name: "",
+          country: "",
+          city: "",
+          startDate: "",
+          createdBy: "",
+        },
+      },
       applicationsInProgress: {
         applications: [
           {
@@ -321,6 +479,97 @@ describe("Dashboard", () => {
         ukEmailAddress: "Maxwell@Spiffington.com",
         ukMobileNumber: "071234567890",
         visaCategory: "Visitor",
+        applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+        dateCreated: "2026-04-17",
+      },
+      medicalScreening: {
+        dateOfMedicalScreening: "2026-04-17",
+        age: 0,
+        symptomsOfTb: "Yes",
+        symptoms: ["Cough"],
+        symptomsOther: "other symptoms",
+        historyOfConditionsUnder11: [],
+        historyOfConditionsUnder11Details: "",
+        historyOfPreviousTb: "Yes",
+        previousTbDetails: "",
+        contactWithPersonWithTb: "Yes",
+        contactWithTbDetails: "",
+        pregnant: "Yes",
+        haveMenstralPeriod: "Yes",
+        physicalExaminationNotes: "",
+        isXrayRequired: "Yes",
+        reasonXrayNotRequired: "",
+        applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+        dateCreated: "2026-04-17",
+        status: "completed",
+      },
+      chestXray: {
+        dateXrayTaken: "2026-04-01",
+        posteroAnteriorXrayFileName: "pa file name",
+        posteroAnteriorXray: "pa-file.dcm",
+        apicalLordoticXrayFileName: "",
+        apicalLordoticXray: "",
+        lateralDecubitusXrayFileName: "",
+        lateralDecubitusXray: "",
+        dateCreated: "2026-04-17",
+        status: "completed",
+      },
+      radiologicalOutcome: {
+        xrayResult: "normal",
+        xrayResultDetail: "detail",
+        xrayMinorFindings: [],
+        xrayAssociatedMinorFindings: [],
+        xrayActiveTbFindings: [],
+        applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+        dateCreated: "2026-04-17",
+        status: "completed",
+      },
+      sputumRequirement: {
+        sputumRequired: "Yes",
+        applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+        dateCreated: "2026-04-17",
+        status: "completed",
+      },
+      sputumDetails: {
+        sputumSamples: {
+          sample1: {
+            dateOfSample: "2026-04-01",
+            collectionMethod: "Coughed up",
+            smearResult: "Positive",
+            cultureResult: "Positive",
+            dateUpdated: "2026-04-17",
+          },
+          sample2: {
+            dateOfSample: "2026-04-02",
+            collectionMethod: "Coughed up",
+            smearResult: "Positive",
+            cultureResult: "Positive",
+            dateUpdated: "2026-04-17",
+          },
+          sample3: {
+            dateOfSample: "2026-04-03",
+            collectionMethod: "Coughed up",
+            smearResult: "Positive",
+            cultureResult: "Positive",
+            dateUpdated: "2026-04-17",
+          },
+        },
+        version: 0,
+        applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+        dateCreated: "2026-04-17",
+        dateUpdated: "2026-04-17",
+        status: "completed",
+      },
+      tbCertificate: {
+        isIssued: "Yes",
+        clinicName: "clinic 1",
+        physicianName: "Dr. No",
+        comments: "",
+        issueDate: "2026-04-17",
+        expiryDate: "2026-10-17",
+        certificateNumber: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+        dateCreated: "2026-04-17",
+        status: "completed",
       },
     });
 
@@ -344,6 +593,164 @@ describe("Dashboard", () => {
       ukEmail: "Maxwell@Spiffington.com",
       ukMobileNumber: "071234567890",
       visaCategory: "Visitor",
+    });
+    expect(store.getState().medicalScreening).toMatchObject({
+      chestXrayTaken: "Yes",
+      closeContactWithTb: "Yes",
+      closeContactWithTbDetail: "",
+      completionDate: {
+        day: "17",
+        month: "04",
+        year: "2026",
+      },
+      menstrualPeriods: "Yes",
+      otherSymptomsDetail: "other symptoms",
+      physicalExamNotes: "",
+      pregnant: "Yes",
+      previousTb: "Yes",
+      previousTbDetail: "",
+      reasonXrayNotRequired: "",
+      reasonXrayNotRequiredFurtherDetails: "",
+      status: "Complete",
+      tbSymptoms: "Yes",
+      tbSymptomsList: ["Cough"],
+      underElevenConditions: [],
+      underElevenConditionsDetail: "",
+    });
+    expect(store.getState().chestXray).toMatchObject({
+      apicalLordoticXrayFile: "",
+      apicalLordoticXrayFileName: "",
+      dateXrayTaken: {
+        day: "01",
+        month: "04",
+        year: "2026",
+      },
+      lateralDecubitusXrayFile: "",
+      lateralDecubitusXrayFileName: "",
+      posteroAnteriorXrayFile: "pa-file.dcm",
+      posteroAnteriorXrayFileName: "pa file name",
+      status: "Complete",
+    });
+    expect(store.getState().radiologicalOutcome).toMatchObject({
+      completionDate: {
+        day: "17",
+        month: "04",
+        year: "2026",
+      },
+      reasonXrayWasNotTaken: "",
+      status: "Complete",
+      xrayActiveTbFindings: [],
+      xrayAssociatedMinorFindings: [],
+      xrayMinorFindings: [],
+      xrayResult: "normal",
+      xrayResultDetail: "detail",
+      xrayWasNotTakenFurtherDetails: "",
+    });
+    expect(store.getState().sputumDecision).toMatchObject({
+      completionDate: {
+        day: "",
+        month: "",
+        year: "",
+      },
+      isSputumRequired: "Yes",
+      status: "Complete",
+    });
+    expect(store.getState().sputum).toMatchObject({
+      sample1: {
+        collection: {
+          collectionMethod: "Coughed up",
+          dateOfSample: {
+            day: "01",
+            month: "04",
+            year: "2026",
+          },
+          submittedToDatabase: true,
+        },
+        cultureResults: {
+          cultureResult: "Positive",
+          submittedToDatabase: true,
+        },
+        lastUpdatedDate: {
+          day: "17",
+          month: "04",
+          year: "2026",
+        },
+        smearResults: {
+          smearResult: "Positive",
+          submittedToDatabase: true,
+        },
+      },
+      sample2: {
+        collection: {
+          collectionMethod: "Coughed up",
+          dateOfSample: {
+            day: "02",
+            month: "04",
+            year: "2026",
+          },
+          submittedToDatabase: true,
+        },
+        cultureResults: {
+          cultureResult: "Positive",
+          submittedToDatabase: true,
+        },
+        lastUpdatedDate: {
+          day: "17",
+          month: "04",
+          year: "2026",
+        },
+        smearResults: {
+          smearResult: "Positive",
+          submittedToDatabase: true,
+        },
+      },
+      sample3: {
+        collection: {
+          collectionMethod: "Coughed up",
+          dateOfSample: {
+            day: "03",
+            month: "04",
+            year: "2026",
+          },
+          submittedToDatabase: true,
+        },
+        cultureResults: {
+          cultureResult: "Positive",
+          submittedToDatabase: true,
+        },
+        lastUpdatedDate: {
+          day: "17",
+          month: "04",
+          year: "2026",
+        },
+        smearResults: {
+          smearResult: "Positive",
+          submittedToDatabase: true,
+        },
+      },
+      status: "Complete",
+      version: 0,
+    });
+    expect(store.getState().tbCertificate).toMatchObject({
+      certificateDate: {
+        day: "17",
+        month: "04",
+        year: "2026",
+      },
+      certificateNumber: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+      clinic: {
+        city: "",
+        clinicId: "",
+        country: "",
+        createdBy: "",
+        name: "",
+        startDate: "",
+      },
+      comments: "",
+      declaringPhysicianName: "Dr. No",
+      isIssued: "Yes",
+      reasonNotIssued: "",
+      status: "Complete",
     });
 
     await waitFor(() => {
