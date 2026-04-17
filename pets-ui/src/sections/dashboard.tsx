@@ -1,18 +1,20 @@
+import { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { validate as uuidValidate } from "uuid";
 
-import { getApplication } from "@/api/api";
-import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
-import Details from "@/components/details/details";
-import Heading from "@/components/heading/heading";
+import { getApplicants, getApplication } from "@/api/api";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
 import Spinner from "@/components/spinner/spinner";
-import StartButton from "@/components/startButton/startButton";
-import StatusTag from "@/components/statusTag/statusTag";
 import Table from "@/components/table/table";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
-import { setApplicantDetailsStatus, setApplicantPhotoFileName } from "@/redux/applicantSlice";
+import {
+  setApplicantDetailsFromApiResponse,
+  setApplicantPassportDetails,
+  setApplicantPhotoFileName,
+} from "@/redux/applicantSlice";
 import { clearApplicationDetails, setApplicationDetails } from "@/redux/applicationSlice";
+import { setApplicationsListDetailsFromApiResponse } from "@/redux/applicationsListSlice";
 import { clearChestXrayDetails, setChestXrayFromApiResponse } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
@@ -33,39 +35,20 @@ import {
   setSputumDetailsFromApiResponse,
   setSputumStatus,
 } from "@/redux/sputumSlice";
-import { selectApplicant, selectApplicationsList, selectUserClinic } from "@/redux/store";
+import { selectApplicationsInProgress, selectUserClinic } from "@/redux/store";
 import {
   clearTbCertificateDetails,
   setTbCertificateFromApiResponse,
 } from "@/redux/tbCertificateSlice";
 import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/travelSlice";
-import { ReduxApplicationDetailsType } from "@/types";
+import { ReceivedApplicantDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
-import { AdditionalStatusTagTexts, ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
-import { convertDateStrToObj, formatDateForDisplay, isDateInThePast } from "@/utils/helpers";
+import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
+import { convertDateStrToObj, formatDateForDisplay, getCountryName } from "@/utils/helpers";
 
-const getApplicationExpiryDate = (application: ReduxApplicationDetailsType): string => {
-  if (
-    application.applicationStatus == ApplicationStatus.CANCELLED ||
-    application.applicationStatus == ApplicationStatus.CERTIFICATE_NOT_ISSUED
-  ) {
-    return "Not applicable";
-  } else if (
-    application.expiryDate?.year &&
-    application.expiryDate?.month &&
-    application.expiryDate?.day
-  ) {
-    return formatDateForDisplay(application.expiryDate);
-  } else {
-    return "No data";
-  }
-};
-
-const ScreeningHistory = () => {
-  const applicantData = useAppSelector(selectApplicant);
-  const applicationsListData = useAppSelector(selectApplicationsList);
+const Dashboard = () => {
   const userClinicData = useAppSelector(selectUserClinic);
-  const applicantPhotoContext = useApplicantPhoto();
+  const applicationsInProgressData = useAppSelector(selectApplicationsInProgress);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { setApplicantPhotoUrl, setApplicantPhotoFile } = useApplicantPhoto();
@@ -106,14 +89,37 @@ const ScreeningHistory = () => {
     }
   };
 
-  const loadSingleApplication = async (
+  const loadApplicantAndApplication = async (
     e: React.MouseEvent<HTMLAnchorElement>,
     applicationId: string,
+    passportNumber: string,
+    countryOfIssue: string,
   ) => {
     e.preventDefault();
     setIsLoading(true);
+    let applicantRes: AxiosResponse<ReceivedApplicantDetailsType> | null = null;
 
     try {
+      dispatch(
+        setApplicantPassportDetails({
+          passportNumber: passportNumber,
+          countryOfIssue: countryOfIssue,
+        }),
+      );
+      setApplicantPhotoUrl(null);
+      applicantRes = await getApplicants({
+        passportNumber: passportNumber,
+        countryOfIssue: countryOfIssue,
+      });
+      for (const application of applicantRes.data.applications) {
+        const applicationId = application.applicationId;
+        if (!uuidValidate(application.applicationId)) {
+          throw new Error(`Application ID (${applicationId}) is in an invalid UUID format`);
+        }
+      }
+      dispatch(setApplicantDetailsFromApiResponse(applicantRes.data));
+      dispatch(setApplicationsListDetailsFromApiResponse(applicantRes.data.applications));
+
       const applicationRes = await getApplication(applicationId);
       const remappedApplicationStatus =
         applicationRes.data.applicationStatus == ApplicationStatus.SPUTUM_IN_PROGRESS
@@ -175,137 +181,50 @@ const ScreeningHistory = () => {
     }
   };
 
-  const getApplicationAction = (
-    application: ReduxApplicationDetailsType,
-  ): string | React.JSX.Element => {
-    if (
-      userClinicData.clinicId == import.meta.env.VITE_SUPPORT_CLINIC_ID ||
-      application.clinicId == userClinicData.clinicId
-    ) {
-      return (
+  const applicationTableInfo = applicationsInProgressData.applications
+    .filter((app) => app.clinicId == userClinicData.clinicId)
+    .sort(
+      (app1, app2) => new Date(app2.dateCreated).getTime() - new Date(app1.dateCreated).getTime(),
+    )
+    .map((app) => ({
+      rowTitle: app.applicantName,
+      cells: [
+        app.passportNumber,
+        getCountryName(app.countryOfIssue),
+        formatDateForDisplay(convertDateStrToObj(app.dateCreated)),
         <LinkLabel
+          key={app.applicationId}
           title={
-            application.applicationStatus == ApplicationStatus.IN_PROGRESS
-              ? "Continue screening"
-              : "View screening"
+            app.applicationStatus == ApplicationStatus.SPUTUM_IN_PROGRESS
+              ? "Continue: sputum results"
+              : "Continue with screening"
           }
           to="/tracker"
           externalLink={false}
-          onClick={(e) => loadSingleApplication(e, application.applicationId)}
-        />
-      );
-    } else {
-      return "Not available: screening at another clinic";
-    }
-  };
-
-  const appFromOtherClinic = applicationsListData.some(
-    (application) => application.clinicId !== userClinicData.clinicId,
-  );
-
-  const noInProgressApps = applicationsListData.every(
-    (application) => application.applicationStatus !== ApplicationStatus.IN_PROGRESS,
-  );
-
-  const applicationTableInfo = applicationsListData.map((application) => {
-    let textOverride = undefined;
-    let classOverride = undefined;
-    if (
-      application.applicationStatus !== ApplicationStatus.CANCELLED &&
-      application.applicationStatus !== ApplicationStatus.CERTIFICATE_NOT_ISSUED &&
-      application.expiryDate &&
-      application.expiryDate.day.length > 0 &&
-      application.expiryDate.month.length > 0 &&
-      application.expiryDate.year.length > 0 &&
-      isDateInThePast(
-        application.expiryDate.day,
-        application.expiryDate.month,
-        application.expiryDate.year,
-      )
-    ) {
-      textOverride = AdditionalStatusTagTexts.CERTIFICATE_EXPIRED;
-      classOverride = "govuk-tag govuk-tag--grey";
-    }
-
-    return {
-      rowTitle: formatDateForDisplay(application.dateCreated),
-      cells: [
-        getApplicationExpiryDate(application),
-        <StatusTag
-          key={`application-${application.applicationId.slice(0, 8)}-state`}
-          status={application.applicationStatus}
-          textOverride={textOverride}
-          classOverride={classOverride}
+          onClick={async (e) => {
+            setIsLoading(true);
+            await loadApplicantAndApplication(
+              e,
+              app.applicationId,
+              app.passportNumber,
+              app.countryOfIssue,
+            );
+          }}
         />,
-        getApplicationAction(application),
       ],
-    };
-  });
+    }));
 
   return (
     <div>
       {isLoading && <Spinner />}
-      <div className="govuk-grid-row progress-tracker-header">
-        <div className="govuk-grid-column-two-thirds progress-tracker-header-content">
-          <ApplicantDataHeader applicantData={applicantData} showCountryOfIssue={true} />
-        </div>
-        {applicantPhotoContext?.applicantPhotoDataUrl ? (
-          <div className="govuk-grid-column-one-third progress-tracker-photo-container">
-            <img
-              src={applicantPhotoContext.applicantPhotoDataUrl}
-              alt={"Applicant"}
-              title={applicantData.applicantPhotoFileName ?? undefined}
-              className="progress-tracker-photo"
-            />
-          </div>
-        ) : (
-          <div className="govuk-grid-column-one-third" />
-        )}
-      </div>
-
-      {noInProgressApps && (
-        <div>
-          <Heading title="Start a new screening" level={2} size="m" />
-          <StartButton
-            id="start-new-screening"
-            text="Start now"
-            handleClick={async () => {
-              setIsLoading(true);
-              dispatch(setApplicantDetailsStatus(TaskStatus.IN_PROGRESS));
-              await fetchClinic(dispatch, userClinicData.clinicId);
-              navigate("/do-you-have-visa-applicant-written-consent-for-tb-screening");
-            }}
-          />
-        </div>
-      )}
-
-      {userClinicData.clinicId !== import.meta.env.VITE_SUPPORT_CLINIC_ID && appFromOtherClinic && (
-        <>
-          <br />
-          <Details
-            summary="Help with screening details that are not available"
-            details={
-              <>
-                <p className="govuk-body">
-                  You cannot view details of screenings started at another clinic.
-                </p>
-                <p className="govuk-body">
-                  Contact{" "}
-                  <LinkLabel
-                    to="mailto:uktbscreeningsupport@ukhsa.gov.uk"
-                    title="uktbscreeningsupport@ukhsa.gov.uk"
-                    externalLink
-                  />{" "}
-                  for support with these screenings.
-                </p>
-              </>
-            }
-          />
-        </>
-      )}
-
       <Table
-        columnHeaders={["Start date", "Expiry date", "Status", "Action"]}
+        columnHeaders={[
+          "Name",
+          "Passport number",
+          "Country of issue",
+          "Screening start date",
+          "Next task",
+        ]}
         tableRows={applicationTableInfo}
         removeRowTitleStyling
       />
@@ -313,4 +232,4 @@ const ScreeningHistory = () => {
   );
 };
 
-export default ScreeningHistory;
+export default Dashboard;

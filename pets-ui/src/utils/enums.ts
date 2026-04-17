@@ -30,6 +30,7 @@ export enum ApplicationStatus {
   CERTIFICATE_NOT_ISSUED = "Certificate Not Issued",
   CERTIFICATE_AVAILABLE = "Certificate Available",
   CANCELLED = "Cancelled",
+  SPUTUM_IN_PROGRESS = "Sputum In Progress",
 }
 
 export enum BackendTaskStatus {

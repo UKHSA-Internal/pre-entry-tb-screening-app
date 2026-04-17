@@ -20,6 +20,7 @@ import {
   ReceivedApplicantDetailsType,
   ReceivedApplicationDetailsType,
   ReceivedApplicationListType,
+  ReceivedApplicationsInProgressType,
 } from "@/types";
 import { sendGoogleAnalyticsHttpError } from "@/utils/google-analytics-utils";
 
@@ -86,6 +87,11 @@ export const getApplication = async (applicationId: string) => {
   } else {
     throw new Error("Application ID in unexpected format or does not exist");
   }
+};
+
+export const getDashboardApplications = async () => {
+  const result = await petsApi.get("/dashboard-applications/");
+  return result as AxiosResponse<ReceivedApplicationsInProgressType>;
 };
 
 export const createNewApplication = async (applicantPassportDetails: ApplicantSearchFormType) => {

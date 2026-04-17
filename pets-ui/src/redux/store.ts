@@ -1,6 +1,7 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
 import { applicantReducer } from "./applicantSlice";
+import { applicationsInProgressReducer } from "./applicationsInProgressSlice";
 import { applicationReducer } from "./applicationSlice";
 import { applicationsListReducer } from "./applicationsListSlice";
 import { chestXrayReducer } from "./chestXraySlice";
@@ -15,6 +16,7 @@ import { travelReducer } from "./travelSlice";
 const rootReducer = combineReducers({
   applicant: applicantReducer,
   application: applicationReducer,
+  applicationsInProgress: applicationsInProgressReducer,
   applicationsList: applicationsListReducer,
   clinic: clinicReducer,
   chestXray: chestXrayReducer,
@@ -40,6 +42,7 @@ export type AppDispatch = AppStore["dispatch"];
 
 export const selectApplicant = (state: RootState) => state.applicant;
 export const selectApplication = (state: RootState) => state.application;
+export const selectApplicationsInProgress = (state: RootState) => state.applicationsInProgress;
 export const selectApplicationsList = (state: RootState) => state.applicationsList;
 export const selectChestXray = (state: RootState) => state.chestXray;
 export const selectRadiologicalOutcome = (state: RootState) => state.radiologicalOutcome;
