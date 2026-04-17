@@ -39,6 +39,7 @@ statistics = {
 # pets-core-services/src/shared/types/enum.ts and used in the back-end code.
 class ApplicationStatus(Enum):
     inProgress = "In Progress"
+    sputumInProgress = "Sputum In Progress",
     certificateNotIssued = "Certificate Not Issued"
     certificateAvailable = "Certificate Available"
     cancelled = "Cancelled"

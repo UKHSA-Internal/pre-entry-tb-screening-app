@@ -148,14 +148,14 @@ jobs:
       - name: Ruff code check
         uses: astral-sh/ruff-action@v3
         with:
-          args: check --config ./scripts/applicant_migration/pyproject.toml
-          src: "./scripts/appliant_migration/src"
+          args: check --config scripts/applicant_migration/pyproject.toml
+          src: "scripts/appliant_migration/src"
 
       - name: Ruff format check
         uses: astral-sh/ruff-action@v3
         with:
-          args: format --check --config ./scripts/applicant_migration/pyproject.toml
-          src: "./scripts/appliant_migration/src"
+          args: format --check --config scripts/applicant_migration/pyproject.toml
+          src: "scripts/appliant_migration/src"
 
       - name: Set up Python
         if: steps.check_file_changed.outputs.run_tests == 'true'
