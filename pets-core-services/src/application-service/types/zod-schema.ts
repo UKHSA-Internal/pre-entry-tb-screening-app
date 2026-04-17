@@ -2,7 +2,7 @@ import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 
 import { CountryCode } from "../../shared/country";
-import { ApplicationStatus, TaskStatus } from "../../shared/types/enum";
+import { ApplicationStatus, ApplicationStatusGroup, TaskStatus } from "../../shared/types/enum";
 import {
   ChestXRayNotTakenReason,
   HistoryOfConditionsUnder11,
@@ -43,6 +43,9 @@ export const CreateApplicationResponseSchema = z.object({
   }),
   applicationStatus: z.nativeEnum(ApplicationStatus).openapi({
     description: "Application current status",
+  }),
+  applicationStatusGroup: z.nativeEnum(ApplicationStatusGroup).openapi({
+    description: "Application status group: complete or incomplete ",
   }),
 });
 
@@ -481,6 +484,9 @@ export const ApplicationBaseSchema = z.object({
   applicationStatus: z.nativeEnum(ApplicationStatus).openapi({
     description: "Application current status",
   }),
+  applicationStatusGroup: z.nativeEnum(ApplicationStatusGroup).openapi({
+    description: "Application status group: complete or incomplete ",
+  }),
   cancellationReason: z.string().optional().openapi({
     description: "Reason for application cancelling",
   }),
@@ -506,4 +512,40 @@ export const ApplicationSchema = ApplicationBaseSchema.extend({
   sputumDecision: SputumDecisionResponseSchema,
   sputumDetails: SputumResponseSchema,
   tbCertificate: TbCertificateResponseSchema,
+});
+
+export const DashboardApplicationSchema = z.object({
+  applicationId: z.string().openapi({
+    description: "Application id",
+  }),
+  applicantName: z.string().openapi({
+    description: "Full Name of the applicant",
+  }),
+  clinicId: z.string().openapi({
+    description: "ID of the Clinic",
+  }),
+  passportNumber: z.string().openapi({
+    description: "PassportNumber of Applicant",
+  }),
+  countryOfIssue: z.nativeEnum(CountryCode).openapi({
+    description: "Passport Issue Country",
+  }),
+  dateCreated: z.string().date().openapi({
+    description: "Creation Date in UTC timezone",
+  }),
+  applicationStatus: z.nativeEnum(ApplicationStatus).openapi({
+    description: "Application current status",
+  }),
+  applicationStatusGroup: z.nativeEnum(ApplicationStatusGroup).openapi({
+    description: "Application status group: complete or incomplete ",
+  }),
+});
+
+export const DashboardApplicationsSchema = z.object({
+  applications: z.array(DashboardApplicationSchema).openapi({
+    description: "Applicant's applications in Progress",
+  }),
+  cursor: z.string().openapi({
+    description: "Last Evaluated Key for pagination",
+  }),
 });

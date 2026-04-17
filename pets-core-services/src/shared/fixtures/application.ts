@@ -1,6 +1,6 @@
 import { CountryCode } from "../country";
 import { IApplication } from "../models/application";
-import { ApplicationStatus } from "../types/enum";
+import { ApplicationStatus, ApplicationStatusGroup } from "../types/enum";
 
 export const seededApplications: IApplication[] = [
   {
@@ -11,6 +11,7 @@ export const seededApplications: IApplication[] = [
     createdBy: "clinic-one-user@email",
     dateCreated: new Date(),
     applicationStatus: ApplicationStatus.inProgress,
+    applicationStatusGroup: ApplicationStatusGroup.incomplete,
   },
   {
     applicationId: "generated-app-id-2",
@@ -20,6 +21,7 @@ export const seededApplications: IApplication[] = [
     createdBy: "appollo-clinic-user@email",
     dateCreated: new Date(),
     applicationStatus: ApplicationStatus.inProgress,
+    applicationStatusGroup: ApplicationStatusGroup.incomplete,
   },
   {
     applicationId: "cbdcc218-316e-4ae1-835f-ccde4c17a7e2",
@@ -29,6 +31,7 @@ export const seededApplications: IApplication[] = [
     createdBy: "clinic-three-user@email",
     dateCreated: new Date(),
     applicationStatus: ApplicationStatus.inProgress,
+    applicationStatusGroup: ApplicationStatusGroup.incomplete,
   },
   {
     applicationId: "d9505644-1c9a-46ff-8195-b144b4556352",
@@ -38,6 +41,7 @@ export const seededApplications: IApplication[] = [
     createdBy: "clinic-four-user@email",
     dateCreated: new Date(),
     applicationStatus: ApplicationStatus.inProgress,
+    applicationStatusGroup: ApplicationStatusGroup.incomplete,
   },
   {
     applicationId: "42a17558-8727-4ab6-b155-8af44f5a6723",
@@ -47,5 +51,6 @@ export const seededApplications: IApplication[] = [
     createdBy: "clinic-four-user@email",
     dateCreated: new Date(),
     applicationStatus: ApplicationStatus.inProgress,
+    applicationStatusGroup: ApplicationStatusGroup.incomplete,
   },
 ];

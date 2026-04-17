@@ -5,7 +5,13 @@ export enum TaskStatus {
 
 export enum ApplicationStatus {
   inProgress = "In Progress",
+  sputumInProgress = "Sputum In Progress",
   certificateNotIssued = "Certificate Not Issued",
   certificateAvailable = "Certificate Available",
   cancelled = "Cancelled",
+}
+
+export enum ApplicationStatusGroup {
+  incomplete = "Incomplete",
+  complete = "Complete",
 }
