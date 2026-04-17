@@ -147,11 +147,11 @@ jobs:
 
       - name: Ruff code check
         working-directory: "scripts/applicant_migration"
-        run: ruff check ./src --config pyproject.toml
+        run: uv run ruff check ./src --config pyproject.toml
 
       - name: Ruff format check
         working-directory: "scripts/applicant_migration"
-        run: ruff format --check ./src --config scripts/applicant_migration/pyproject.toml
+        run: uv run ruff format --check ./src --config scripts/applicant_migration/pyproject.toml
 
       - name: Set up Python
         if: steps.check_file_changed.outputs.run_tests == 'true'

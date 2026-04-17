@@ -37,6 +37,7 @@ statistics = {
 
 # These enums can't be modified as they are defined in:
 # pets-core-services/src/shared/types/enum.ts and used in the back-end code.
+# Also check if the Enum names in file: scripts/validate_enum_consistency.py are correct.
 class ApplicationStatus(Enum):
     inProgress = "In Progress"
     sputumInProgress = "Sputum In Progress"
