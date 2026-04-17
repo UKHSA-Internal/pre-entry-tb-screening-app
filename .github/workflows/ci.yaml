@@ -200,7 +200,7 @@ jobs:
 
       - name: Ruff format check
         working-directory: "scripts/applicant_migration"
-        run: uv run ruff format --check ./src --config scripts/applicant_migration/pyproject.toml
+        run: uv run ruff format --check ./src --config ./pyproject.toml
 
   onboarding-script-tests:
     runs-on: ubuntu-latest
