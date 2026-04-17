@@ -145,6 +145,18 @@ jobs:
           echo "run tests?: $run_tests"
           echo "run_tests=$run_tests" >> $GITHUB_OUTPUT
 
+      - name: Ruff code check
+        uses: astral-sh/ruff-action@v3
+        with:
+          args: check --config ./scripts/applicant_migration/pyproject.toml
+          src: "./scripts/appliant_migration/src"
+
+      - name: Ruff format check
+        uses: astral-sh/ruff-action@v3
+        with:
+          args: format --check --config ./scripts/applicant_migration/pyproject.toml
+          src: "./scripts/appliant_migration/src"
+
       - name: Set up Python
         if: steps.check_file_changed.outputs.run_tests == 'true'
         uses: actions/setup-python@v6
