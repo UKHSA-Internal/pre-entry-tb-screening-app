@@ -90,7 +90,7 @@ export const getApplication = async (applicationId: string) => {
 };
 
 export const getDashboardApplications = async () => {
-  const result = await petsApi.get("/dashboard-applications/");
+  const result = await petsApi.get("/application/dashboard");
   return result as AxiosResponse<ReceivedApplicationsInProgressType>;
 };
 
