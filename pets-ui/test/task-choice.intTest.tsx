@@ -112,11 +112,11 @@ describe("Task choice page", () => {
 
     const user = userEvent.setup();
 
-    mock.onGet("/dashboard-applications/").reply(200, applicationsResFixture);
+    mock.onGet("/application/dashboard").reply(200, applicationsResFixture);
 
     await user.click(screen.getByRole("link", { name: "View all screenings in progress" }));
 
-    expect(mock.history[0].url).toEqual("/dashboard-applications/");
+    expect(mock.history[0].url).toEqual("/application/dashboard");
     expect(mock.history).toHaveLength(1);
 
     await waitFor(() => {
@@ -134,7 +134,7 @@ describe("Task choice page", () => {
 
     await user.click(screen.getByRole("link", { name: "View all screenings in progress" }));
 
-    expect(mock.history[0].url).toEqual("/dashboard-applications/");
+    expect(mock.history[0].url).toEqual("/application/dashboard");
     expect(mock.history).toHaveLength(1);
 
     await waitFor(() => {
