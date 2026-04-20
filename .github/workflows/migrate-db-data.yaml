@@ -1,4 +1,4 @@
-name: Migrate Applicant Data
+name: Migrate DB Data (AWS Glue Job)
 
 permissions:
   id-token: write
@@ -19,10 +19,21 @@ on:
         default: "false"
         type: choice
         options: ["false", "true"]
+      migrations:
+        description: "Select which data migration to run (Applicant migration or adding 'applicantStatusGroup' to Applications or both)"
+        required: true
+        default: "application_statusgroup"
+        type: choice
+        options:
+          [
+            "applicant_migration",
+            "application_statusgroup",
+            "applicant_migration,application_statusgroup",
+          ]
 
 jobs:
   migrate_applicant_data:
-    name: Migrate Applicant Data (trigger Glue job)
+    name: Migrate Applicant/Application Data (trigger Glue job)
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
 
@@ -36,4 +47,4 @@ jobs:
       - name: Trigger Glue job (migration script)
         run: |
           aws glue start-job-run --job-name "${{ vars.GLUE_MIGRATION_JOB_NAME }}" \
-            --arguments '{"--APPLICANT_TABLE":"${{ vars.GLUE_APPLICANT_TABLE_NAME }}","--APPLICATION_TABLE":"${{ vars.GLUE_APPLICATION_TABLE_NAME }}","--DRY_RUN":"${{ github.event.inputs.dry_run }}","--customer-executor-env-vars":"AWS_REGION=${{ vars.AWS_REGION }}"}'
+            --arguments '{"--APPLICANT_TABLE":"${{ vars.GLUE_APPLICANT_TABLE_NAME }}","--APPLICATION_TABLE":"${{ vars.GLUE_APPLICATION_TABLE_NAME }}","--MIGRATIONS":"${{ github.event.inputs.migrations }}","--AWS_REGION":"${{ vars.AWS_REGION }}","--DRY_RUN":"${{ github.event.inputs.dry_run }}"}'

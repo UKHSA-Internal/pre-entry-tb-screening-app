@@ -1,0 +1,23 @@
+name: Validate Enum Consistency
+
+on:
+  pull_request:
+    paths:
+      - "pets-core-services/src/shared/types/enum.ts"
+      - "scripts/applicant_migration/src/migration_script.py"
+      - "scripts/application_updates/src/update_application.py"
+      - ".github/workflows/validate-enums.yml"
+
+jobs:
+  validate-enums:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Run enum validation
+        run: python scripts/validate_enum_consistency.py
