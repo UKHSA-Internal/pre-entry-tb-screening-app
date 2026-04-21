@@ -99,18 +99,10 @@ export class DashboardApplication extends IDashboardApplication {
       } while (lastEvaluatedKey);
 
       // Convert DB items  to model
-      logger.info(JSON.stringify(allItems, null, 2));
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const applications = (allItems || []).map((item) => DashboardApplication.fromDynamo(item));
-      logger.info(JSON.stringify(applications, null, 2));
 
-      const keys = applications.map((app) => ({
-        PK: app.applicantId,
-        SK: "APPLICANT#DETAILS",
-      }));
-
-      logger.info(JSON.stringify(keys, null, 2));
       // Batch load applicants
       const applicantMap = await DynamoBatchLoader.batchLoad({
         tableName: process.env.APPLICANT_SERVICE_DATABASE_NAME!,
@@ -122,9 +114,6 @@ export class DashboardApplication extends IDashboardApplication {
         mapItem: (item) => Applicant.fromDb(item),
         mapKey: (item) => ApplicantBase.getPassportId(item.countryOfIssue, item.passportNumber),
       });
-
-      logger.info("applicantMap");
-      logger.info(applicantMap);
 
       // Add applicantName
       const enriched = applications.map((app) => {
