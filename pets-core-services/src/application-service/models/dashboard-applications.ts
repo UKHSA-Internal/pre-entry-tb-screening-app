@@ -99,12 +99,14 @@ export class DashboardApplication extends IDashboardApplication {
       } while (lastEvaluatedKey);
 
       // Convert DB items  to model
+      logger.info(JSON.stringify(allItems, null, 2));
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const applications = (allItems || []).map((item) => DashboardApplication.fromDynamo(item));
+      logger.info(JSON.stringify(applications, null, 2));
 
       const keys = applications.map((app) => ({
-        PK: ApplicantBase.getPassportId(app.countryOfIssue, app.passportNumber),
+        PK: app.applicantId,
         SK: "APPLICANT#DETAILS",
       }));
 
@@ -114,7 +116,7 @@ export class DashboardApplication extends IDashboardApplication {
         tableName: process.env.APPLICANT_SERVICE_DATABASE_NAME!,
         client: docClient,
         keys: applications.map((app) => ({
-          pk: ApplicantBase.getPassportId(app.countryOfIssue, app.passportNumber),
+          pk: app.applicantId,
           sk: "APPLICANT#DETAILS",
         })),
         mapItem: (item) => Applicant.fromDb(item),
