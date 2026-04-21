@@ -1,4 +1,5 @@
 import importlib
+
 # It has to be import early for pytest to be able to test
 # the functions separately without running the whole script
 import logging
@@ -342,10 +343,11 @@ def data_migration(
     start_time = time.time()
     table = (
         application_table
-        if migration in (
+        if migration
+        in (
             "application_statusgroup",
             "touch_application_root_records",
-            "touch_application_other_records"
+            "touch_application_other_records",
         )
         else applicant_table
     )
@@ -476,9 +478,7 @@ if __name__ == "__main__":
     # Validate that the provided migration names are correct
     for migration in MIGRATIONS:
         if migration not in VALID_MIGRATIONS:
-            logger.info(
-                f"Invalid migration name '{migration}' provided in MIGRATIONS parameter."
-            )
+            logger.info(f"Invalid migration name '{migration}' provided in MIGRATIONS parameter.")
             logger.info(f"Valid migration names are: {VALID_MIGRATIONS}")
             sys.exit(1)
 
@@ -490,7 +490,7 @@ if __name__ == "__main__":
 
     # In case of "db_items_refresh" migration, it will be replaced with the list of sub-migrations
     # for refreshing different types of items (it's better to do it after validation)
-    if  "db_items_refresh" in MIGRATIONS:
+    if "db_items_refresh" in MIGRATIONS:
         MIGRATIONS.pop(migration).extend(DB_ITEM_REFRESH_SUBMIGRATIONS)
 
     logger.info(f"Starting Glue DynamoDB migration (DRY_RUN={dry_run})")

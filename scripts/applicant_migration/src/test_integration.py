@@ -87,9 +87,7 @@ def _run(mod, dry_run, dynamodb_local, migration="applicant_migration"):
 class TestApplicantMigrationLive:
     """End-to-end applicant migration with real DynamoDB Local (dry_run=False)."""
 
-    def test_new_applicant_record_created_under_passport_pk(
-        self, mod, tables, dynamodb_local
-    ):
+    def test_new_applicant_record_created_under_passport_pk(self, mod, tables, dynamodb_local):
         """New record exists at passportId PK after migration."""
         applicant_table, application_table = tables
         _seed_applicant(
@@ -129,9 +127,7 @@ class TestApplicantMigrationLive:
     def test_old_applicant_record_deleted(self, mod, tables, dynamodb_local):
         """Original APPLICATION# key is removed after migration."""
         applicant_table, application_table = tables
-        _seed_applicant(
-            applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
-        )
+        _seed_applicant(applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1")
         _seed_application_root(application_table, "APPLICATION#abc")
 
         _run(mod, dry_run=False, dynamodb_local=dynamodb_local)
@@ -142,9 +138,7 @@ class TestApplicantMigrationLive:
     def test_application_root_applicant_id_updated(self, mod, tables, dynamodb_local):
         """applicantId field written to APPLICATION#ROOT."""
         applicant_table, application_table = tables
-        _seed_applicant(
-            applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
-        )
+        _seed_applicant(applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1")
         _seed_application_root(application_table, "APPLICATION#abc")
 
         _run(mod, dry_run=False, dynamodb_local=dynamodb_local)
@@ -165,14 +159,10 @@ class TestApplicantMigrationLive:
     ):
         """applicationStatus set correctly based on TB isIssued value."""
         applicant_table, application_table = tables
-        _seed_applicant(
-            applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
-        )
+        _seed_applicant(applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1")
         _seed_application_root(application_table, "APPLICATION#abc")
         if is_issued is not None:
-            _seed_application_tb(
-                application_table, "APPLICATION#abc", is_issued=is_issued
-            )
+            _seed_application_tb(application_table, "APPLICATION#abc", is_issued=is_issued)
 
         _run(mod, dry_run=False, dynamodb_local=dynamodb_local)
 
@@ -182,9 +172,7 @@ class TestApplicantMigrationLive:
     def test_statistics_reflect_migrated_applicants(self, mod, tables, dynamodb_local):
         """Statistics counters correct after single migration."""
         applicant_table, application_table = tables
-        _seed_applicant(
-            applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
-        )
+        _seed_applicant(applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1")
         _seed_application_root(application_table, "APPLICATION#abc")
 
         stats = _run(mod, dry_run=False, dynamodb_local=dynamodb_local)
@@ -201,9 +189,7 @@ class TestApplicantMigrationDryRun:
     def test_no_new_record_written(self, mod, tables, dynamodb_local):
         """dry_run=True → passport-PK record must not be created."""
         applicant_table, application_table = tables
-        _seed_applicant(
-            applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
-        )
+        _seed_applicant(applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1")
         _seed_application_root(application_table, "APPLICATION#abc")
 
         _run(mod, dry_run=True, dynamodb_local=dynamodb_local)
@@ -214,9 +200,7 @@ class TestApplicantMigrationDryRun:
     def test_old_record_not_deleted(self, mod, tables, dynamodb_local):
         """dry_run=True → original APPLICATION# record still exists."""
         applicant_table, application_table = tables
-        _seed_applicant(
-            applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
-        )
+        _seed_applicant(applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1")
         _seed_application_root(application_table, "APPLICATION#abc")
 
         _run(mod, dry_run=True, dynamodb_local=dynamodb_local)
@@ -227,9 +211,7 @@ class TestApplicantMigrationDryRun:
     def test_application_root_not_modified(self, mod, tables, dynamodb_local):
         """dry_run=True → APPLICATION#ROOT row unchanged (no applicantId)."""
         applicant_table, application_table = tables
-        _seed_applicant(
-            applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
-        )
+        _seed_applicant(applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1")
         _seed_application_root(application_table, "APPLICATION#abc")
 
         _run(mod, dry_run=True, dynamodb_local=dynamodb_local)
@@ -240,9 +222,7 @@ class TestApplicantMigrationDryRun:
     def test_statistics_still_counted(self, mod, tables, dynamodb_local):
         """dry_run=True → migrated_applicants still incremented."""
         applicant_table, application_table = tables
-        _seed_applicant(
-            applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
-        )
+        _seed_applicant(applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1")
         _seed_application_root(application_table, "APPLICATION#abc")
 
         stats = _run(mod, dry_run=True, dynamodb_local=dynamodb_local)
@@ -283,9 +263,7 @@ class TestApplicantMigrationSkips:
     def test_missing_application_root_row_skipped(self, mod, tables, dynamodb_local):
         """No APPLICATION#ROOT in application table → applicant not migrated."""
         applicant_table, _ = tables
-        _seed_applicant(
-            applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1"
-        )
+        _seed_applicant(applicant_table, "APPLICATION#abc", passport_id="COUNTRY#GB#PASSPORT#1")
         # Do NOT seed APPLICATION#ROOT
 
         stats = _run(mod, dry_run=False, dynamodb_local=dynamodb_local)
@@ -349,9 +327,7 @@ class TestApplicationStatusgroupLive:
         assert stats["skipped_rows_not_root"] == 0
         assert stats["migrated_applications"] == 1
 
-    def test_statistics_migrated_applications_incremented(
-        self, mod, tables, dynamodb_local
-    ):
+    def test_statistics_migrated_applications_incremented(self, mod, tables, dynamodb_local):
         _, application_table = tables
         _seed_application_root(application_table, "APPLICATION#abc", status="In Progress")
 
@@ -402,9 +378,7 @@ class TestApplicationStatusgroupDryRun:
 class TestPagination:
     """Seed more records than a single DynamoDB scan page and verify all are migrated."""
 
-    def test_all_applicants_migrated_across_multiple_pages(
-        self, mod, tables, dynamodb_local
-    ):
+    def test_all_applicants_migrated_across_multiple_pages(self, mod, tables, dynamodb_local):
         """With >1 page of applicants, every record is migrated."""
         applicant_table, application_table = tables
         n = 30  # Enough to span multiple pages at default DynamoDB Local limit
@@ -435,9 +409,7 @@ class TestPagination:
         n = 30
 
         for i in range(n):
-            _seed_application_root(
-                application_table, f"APPLICATION#{i}", status="In Progress"
-            )
+            _seed_application_root(application_table, f"APPLICATION#{i}", status="In Progress")
 
         stats = _run(
             mod,

@@ -145,17 +145,13 @@ class TestMigrateApplicantStatusDerivation:
         """isIssued='Yes' → applicationStatus = Certificate Available."""
         apt = self._run({"isIssued": "Yes"})
         ev = apt.update_item.call_args[1]["ExpressionAttributeValues"]
-        assert (
-            ev[":new_application_status"] == ApplicationStatus.certificateAvailable.value
-        )
+        assert ev[":new_application_status"] == ApplicationStatus.certificateAvailable.value
 
     def test_status_certificate_not_issued_when_issued_no(self):
         """isIssued='No' → applicationStatus = Certificate Not Issued."""
         apt = self._run({"isIssued": "No"})
         ev = apt.update_item.call_args[1]["ExpressionAttributeValues"]
-        assert (
-            ev[":new_application_status"] == ApplicationStatus.certificateNotIssued.value
-        )
+        assert ev[":new_application_status"] == ApplicationStatus.certificateNotIssued.value
 
     def test_status_in_progress_when_no_tb_certificate_row(self):
         """No TB certificate row → applicationStatus = In Progress."""
@@ -196,9 +192,7 @@ class TestMigrateApplicantDryRun:
     def test_dry_run_appends_to_applicants_to_remove(self):
         at, apt, stats = self._setup()
         migrate_applicant(self.BASE_ROW, at, apt, True, stats)
-        assert {"pk": "APPLICATION#abc", "sk": "APPLICANT#DETAILS"} in stats[
-            "applicants_to_remove"
-        ]
+        assert {"pk": "APPLICATION#abc", "sk": "APPLICANT#DETAILS"} in stats["applicants_to_remove"]
 
     def test_dry_run_does_not_call_put_item(self):
         at, apt, stats = self._setup()
@@ -263,9 +257,7 @@ class TestMigrateApplicantLive:
     def test_applicants_to_remove_appended(self):
         at, apt, stats = self._setup()
         migrate_applicant(self.BASE_ROW, at, apt, False, stats)
-        assert {"pk": "APPLICATION#abc", "sk": "APPLICANT#DETAILS"} in stats[
-            "applicants_to_remove"
-        ]
+        assert {"pk": "APPLICATION#abc", "sk": "APPLICANT#DETAILS"} in stats["applicants_to_remove"]
 
     def test_conditional_check_failed_is_swallowed(self):
         """ConditionalCheckFailedException on update_item must not propagate."""
@@ -287,9 +279,7 @@ class TestMigrateApplicantLive:
             {"Item": {"pk": "APPLICATION#abc", "sk": "APPLICATION#ROOT"}},
             {},
         ]
-        apt.update_item.side_effect = _client_error(
-            "ProvisionedThroughputExceededException"
-        )
+        apt.update_item.side_effect = _client_error("ProvisionedThroughputExceededException")
         with pytest.raises(ClientError):
             migrate_applicant(self.BASE_ROW, at, apt, False, stats)
 
@@ -361,9 +351,7 @@ class TestAddApplicationStatusgroup:
         """certificateAvailable / certificateNotIssued / cancelled → Complete."""
         _, apt = mock_tables()
         stats = make_statistics()
-        add_application_statusgroup(
-           self._row(application_status=status), _, apt, False, stats
-        )
+        add_application_statusgroup(self._row(application_status=status), _, apt, False, stats)
         ev = apt.update_item.call_args[1]["ExpressionAttributeValues"]
         assert ev[":new_status_group"] == ApplicationStatusGroup.complete.value
 
@@ -439,9 +427,7 @@ class TestAddApplicationStatusgroup:
             False,
             stats,
         )
-        assert (
-            "applicationStatusGroup" in apt.update_item.call_args[1]["UpdateExpression"]
-        )
+        assert "applicationStatusGroup" in apt.update_item.call_args[1]["UpdateExpression"]
 
     def test_conditional_check_failed_is_swallowed(self):
         _, apt = mock_tables()
@@ -657,9 +643,7 @@ class TestDataMigration:
     @patch("migration_script.scan_table")
     @patch("migration_script.add_application_statusgroup")
     @patch("migration_script.time", create=True)
-    def test_application_statusgroup_passes_filter_expression(
-        self, mock_time, mock_add, mock_scan
-    ):
+    def test_application_statusgroup_passes_filter_expression(self, mock_time, mock_add, mock_scan):
         """application_statusgroup → FilterExpression passed to scan_table."""
         mock_time.time.return_value = 0
         mock_scan.return_value = ([], None)
