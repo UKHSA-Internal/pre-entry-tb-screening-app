@@ -108,7 +108,7 @@ export class DashboardApplication extends IDashboardApplication {
         tableName: process.env.APPLICANT_SERVICE_DATABASE_NAME!,
         client: docClient,
         keys: applications.map((app) => ({
-          pk: app.applicantId,
+          pk: ApplicantBase.getPassportId(app.countryOfIssue, app.passportNumber),
           sk: "APPLICANT#DETAILS",
         })),
         mapItem: (item) => Applicant.fromDb(item),
