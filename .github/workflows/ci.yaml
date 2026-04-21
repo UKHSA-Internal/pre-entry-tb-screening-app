@@ -319,3 +319,4 @@ jobs:
     with:
       plan_id: "5"
       plan_name: "CI/CD_PETS"
+    secrets: inherit
