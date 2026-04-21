@@ -115,8 +115,12 @@ export class DashboardApplication extends IDashboardApplication {
         mapKey: (item) => ApplicantBase.getPassportId(item.countryOfIssue, item.passportNumber),
       });
 
+      logger.info("applicantMap");
+      logger.info(applicantMap);
+
       // Add applicantName
       const enriched = applications.map((app) => {
+        logger.info(app);
         const applicant = applicantMap.get(
           ApplicantBase.getPassportId(app.countryOfIssue, app.passportNumber),
         ) as Applicant;
