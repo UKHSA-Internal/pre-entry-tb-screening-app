@@ -103,6 +103,12 @@ export class DashboardApplication extends IDashboardApplication {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const applications = (allItems || []).map((item) => DashboardApplication.fromDynamo(item));
 
+      const keys = applications.map((app) => ({
+        PK: ApplicantBase.getPassportId(app.countryOfIssue, app.passportNumber),
+        SK: "APPLICANT#DETAILS",
+      }));
+
+      logger.info(JSON.stringify(keys, null, 2));
       // Batch load applicants
       const applicantMap = await DynamoBatchLoader.batchLoad({
         tableName: process.env.APPLICANT_SERVICE_DATABASE_NAME!,
