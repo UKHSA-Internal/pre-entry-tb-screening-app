@@ -270,6 +270,10 @@ Kindly check `pets-core-services/src/applicant-service/fixtures/applicants.ts` f
 - Start the deployment workflow by clicking on the button and providing your branch name. Please note that this would overwrite any existing deployment at the target environment.
 - If a PR is already raised for your branch, after successful deployment, you should receive an email with the deployment url
 
+## Workflows to trigger DB migrations
+
+There are some migrations that can be applied to Applicant or/and Application tables. More details about them [in this file](scripts/applicant_migration/README.md)
+
 ## Automated dependency updates
 
 ### Renovate

@@ -30,7 +30,7 @@ exclude_lines = [
 [tool.isort]
 py_version=311
 skip = [".gitignore", ".json"]
-line_length = 90
+line_length = 100
 multi_line_output = 3
 # default_section = FIRSTPARTY
 use_parentheses = true
@@ -68,7 +68,7 @@ exclude = [
 ]
 
 # Same as Black.
-line-length = 90
+line-length = 100
 indent-width = 4
 
 # Assume Python 3.9

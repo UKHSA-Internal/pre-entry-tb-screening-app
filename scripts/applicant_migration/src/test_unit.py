@@ -344,7 +344,7 @@ class TestAddApplicationStatusgroup:
         _, apt = mock_tables()
         stats = make_statistics()
         add_application_statusgroup(
-            self._row(sk="APPLICATION#TB#CERTIFICATE"), apt, False, stats
+            self._row(sk="APPLICATION#TB#CERTIFICATE"), _, apt, False, stats
         )
         assert stats["skipped_rows_not_root"] == 1
         apt.update_item.assert_not_called()
@@ -362,7 +362,7 @@ class TestAddApplicationStatusgroup:
         _, apt = mock_tables()
         stats = make_statistics()
         add_application_statusgroup(
-            self._row(application_status=status), apt, False, stats
+           self._row(application_status=status), _, apt, False, stats
         )
         ev = apt.update_item.call_args[1]["ExpressionAttributeValues"]
         assert ev[":new_status_group"] == ApplicationStatusGroup.complete.value
@@ -373,6 +373,7 @@ class TestAddApplicationStatusgroup:
         stats = make_statistics()
         add_application_statusgroup(
             self._row(application_status=ApplicationStatus.inProgress.value),
+            _,
             apt,
             False,
             stats,
@@ -384,7 +385,7 @@ class TestAddApplicationStatusgroup:
         """No applicationStatus → defaults to Incomplete."""
         _, apt = mock_tables()
         stats = make_statistics()
-        add_application_statusgroup(self._row(), apt, False, stats)
+        add_application_statusgroup(self._row(), _, apt, False, stats)
         ev = apt.update_item.call_args[1]["ExpressionAttributeValues"]
         assert ev[":new_status_group"] == ApplicationStatusGroup.incomplete.value
 
@@ -393,6 +394,7 @@ class TestAddApplicationStatusgroup:
         stats = make_statistics()
         add_application_statusgroup(
             self._row(application_status=ApplicationStatus.inProgress.value),
+            _,
             apt,
             True,
             stats,
@@ -404,6 +406,7 @@ class TestAddApplicationStatusgroup:
         stats = make_statistics()
         add_application_statusgroup(
             self._row(application_status=ApplicationStatus.inProgress.value),
+            _,
             apt,
             True,
             stats,
@@ -415,6 +418,7 @@ class TestAddApplicationStatusgroup:
         stats = make_statistics()
         add_application_statusgroup(
             self._row(application_status=ApplicationStatus.inProgress.value),
+            _,
             apt,
             False,
             stats,
@@ -430,6 +434,7 @@ class TestAddApplicationStatusgroup:
         stats = make_statistics()
         add_application_statusgroup(
             self._row(application_status=ApplicationStatus.inProgress.value),
+            _,
             apt,
             False,
             stats,
@@ -444,6 +449,7 @@ class TestAddApplicationStatusgroup:
         apt.update_item.side_effect = _client_error("ConditionalCheckFailedException")
         add_application_statusgroup(
             self._row(application_status=ApplicationStatus.inProgress.value),
+            _,
             apt,
             False,
             stats,
@@ -456,6 +462,7 @@ class TestAddApplicationStatusgroup:
         with pytest.raises(ClientError):
             add_application_statusgroup(
                 self._row(application_status=ApplicationStatus.inProgress.value),
+                _,
                 apt,
                 False,
                 stats,
